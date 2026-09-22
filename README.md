@@ -7,5 +7,28 @@ Skills: `formulating-features`, `slicing-into-increments`, `bdd-red-green`.
 Design: `docs/superpowers/specs/2026-09-22-bdd-workflow-design.md`.
 Test logs: `docs/superpowers/testing/`.
 
-Install into a project the same way as any marketplace or local plugin, for
-example `claude --plugin-dir <path to this checkout>` while developing.
+## Requires
+
+The [superpowers](https://github.com/obra/superpowers) plugin, 6.4.0 or
+later, declared as a dependency in `.claude-plugin/plugin.json`. Claude Code
+refuses to load this plugin without it. The three skills assume the rest of
+the superpowers pipeline around them:
+
+- `superpowers:brainstorming` produces the approved spec that
+  `formulating-features` reads.
+- `slicing-into-increments` invokes `superpowers:writing-plans` to turn
+  slices into tasks.
+- `superpowers:executing-plans` or `superpowers:subagent-driven-development`
+  runs those tasks, with `bdd-red-green` firing where they would otherwise
+  fire `superpowers:test-driven-development`. All three skills state that
+  they supersede test-driven-development when both apply.
+
+## Install
+
+```
+claude plugin marketplace add dstengle/shopsystem-bdd
+claude plugin install shopsystem-bdd@shopsystem-bdd
+```
+
+While developing, `claude --plugin-dir <path to this checkout>` loads the
+working copy instead.

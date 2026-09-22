@@ -2,5 +2,20 @@
   "name": "shopsystem-bdd",
   "description": "BDD workflow skills for the shopsystem harness: formulate Gherkin features, slice them into thin increments, and implement them red-green.",
   "version": "0.1.0",
-  "author": { "name": "David Stenglein" }
+  "author": {
+    "name": "David Stenglein"
+  },
+  "dependencies": [
+    {
+      "name": "superpowers",
+      "version": ">=6.4.0"
+    }
+  ],
+  "keywords": [
+    "bdd",
+    "gherkin",
+    "pytest-bdd",
+    "superpowers",
+    "shopsystem"
+  ]
 }
