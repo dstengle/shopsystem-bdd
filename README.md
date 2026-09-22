@@ -11,7 +11,10 @@ Test logs: `docs/superpowers/testing/`.
 
 The [superpowers](https://github.com/obra/superpowers) plugin, 6.4.0 or
 later, declared as a dependency in `.claude-plugin/plugin.json`. Claude Code
-refuses to load this plugin without it. The three skills assume the rest of
+refuses to load this plugin when superpowers is not installed (a
+`dependency-unsatisfied` load error). As of Claude Code on 2026-09-22 the
+version constraint is recorded but not enforced, so the minimum is
+documentation. The three skills assume the rest of
 the superpowers pipeline around them:
 
 - `superpowers:brainstorming` produces the approved spec that
