@@ -10,7 +10,9 @@ Test logs: `docs/superpowers/testing/`.
 ## Requires
 
 The [superpowers](https://github.com/obra/superpowers) plugin, 6.4.0 or
-later, declared as a dependency in `.claude-plugin/plugin.json`. Claude Code
+later, declared as the dependency `superpowers@claude-plugins-official` in
+`.claude-plugin/plugin.json` (the marketplace suffix is required: a bare name
+is resolved against this plugin's own marketplace and reported missing). Claude Code
 refuses to load this plugin when superpowers is not installed (a
 `dependency-unsatisfied` load error). As of Claude Code on 2026-09-22 the
 version constraint is recorded but not enforced, so the minimum is
