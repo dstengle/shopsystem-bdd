@@ -122,6 +122,12 @@ Definitions:
   into two slices that each still pass end to end; (b) does it contain any
   work no scenario in the slice needs. A yes to either means split or trim.
 
+Already-green check: before the plan is finalised, run the feature suite.
+Any scenario that already passes is credited to the slice whose work made
+it pass (or to a "satisfied by existing behaviour" line when none did) and
+is never placed in a later slice. This keeps `bdd-red-green`'s first stop
+condition rare enough that a hard stop is justified when it fires.
+
 Ordering: by the assumption tested, riskiest first, with value as the
 tiebreaker. The first slice is always the thinnest walking skeleton through
 the happy path of the highest-value feature.
@@ -243,5 +249,5 @@ the skill passes.
 - Changing any superpowers skill.
 - Unit-test guidance beyond "optional, never first".
 - Non-Python examples.
-- Tooling to enforce the source-tree restriction beyond the dispatch prompt
-  and agent type.
+- Tooling to enforce the source-tree restriction beyond a plugin agent
+  definition with a tools allowlist (SKILL.md cannot restrict tools).
