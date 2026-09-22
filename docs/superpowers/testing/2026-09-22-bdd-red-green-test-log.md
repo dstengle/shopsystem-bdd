@@ -123,7 +123,7 @@ Commit behaviour on hand-back: 5 runs, 3 different answers (log only / log+code 
    I never reached that scenario". The A3 wobble is closed.
 ## B rep 1 -- COMPLIANT. Same commit shape as B rep 2. Evidence from run.
 ## Trigger test (headless `claude -p --plugin-dir`, superpowers + this plugin, skill NOT named)
-- Skills invoked: ['shopsystem-knowledge:bdd-red-green'] only. TDD never invoked.
+- Skills invoked: ['shopsystem-bdd:bdd-red-green'] only. TDD never invoked.
 - Behaviour: full compliance, hand-back commit a0791a4 with correct message prefix.
 
 # VERDICT bdd-red-green v2: bulletproof against the observed rationalizations.

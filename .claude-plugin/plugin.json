@@ -1,5 +1,5 @@
 {
-  "name": "shopsystem-knowledge",
+  "name": "shopsystem-bdd",
   "description": "BDD workflow skills for the shopsystem harness: formulate Gherkin features, slice them into thin increments, and implement them red-green.",
   "version": "0.1.0",
   "author": { "name": "David Stenglein" }

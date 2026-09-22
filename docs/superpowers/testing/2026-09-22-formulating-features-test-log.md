@@ -55,8 +55,8 @@ Shape WITH an example file present (formb-1) was already correct on F1-F5, F7. F
    must be structural (agent definition with read-only tools + path list).
 
 # GREEN v1 (headless, --plugin-dir, skill not named) formg-1..3
-- 3/3 invoked shopsystem-knowledge:formulating-features; 3/3 dispatched
-  shopsystem-knowledge:feature-formulator with the path-restricted brief; formulator subagent
+- 3/3 invoked shopsystem-bdd:formulating-features; 3/3 dispatched
+  shopsystem-bdd:feature-formulator with the path-restricted brief; formulator subagent
   transcript shows Read(spec), Glob(features/**), Glob(docs/**) only. 0 source reads.
 - 3/3 "so that" line; 3/3 every scenario tagged; 0 impl/UI/schema; verb-phrase file names;
   3/3 stopped for approval. Scenario count 12/15/14 (baseline 14-23).
