@@ -1,0 +1,11 @@
+{
+  "name": "shopsystem-bdd",
+  "owner": { "name": "David Stenglein" },
+  "plugins": [
+    {
+      "name": "shopsystem-bdd",
+      "source": "./",
+      "description": "BDD workflow skills for the shopsystem harness: formulate Gherkin features, slice them into thin increments, and implement them red-green."
+    }
+  ]
+}
