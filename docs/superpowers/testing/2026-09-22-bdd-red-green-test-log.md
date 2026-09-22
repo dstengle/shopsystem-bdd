@@ -131,3 +131,8 @@ Commit behaviour on hand-back: 5 runs, 3 different answers (log only / log+code 
 - 3/3 post-refactor runs converge on one commit shape and on run-based evidence.
 - Open design question for the user: stop condition 1 (pre-passing scenario) halts the whole
   slice before any code; consider "record and continue, hand back at slice end".
+
+# Addendum: trigger re-test with superpowers loaded
+The original trigger test ran without superpowers (it is enabled only in this repo's project
+settings, not user settings, so fixture sessions lacked it). Re-run with --plugin-dir for both:
+bdd-red-green fired, test-driven-development did not, hand-back correct. Claim now verified.

@@ -74,3 +74,10 @@ Shape WITH an example file present (formb-1) was already correct on F1-F5, F7. F
   with near-identical scenario sets. The brief wording is binding.
 
 # VERDICT formulating-features v2: passes. Baseline F1-F8 all closed; GREEN-v1 loopholes closed.
+
+# Addendum (during slicing tests)
+- Hand-back mode was missing from the brief: on a RE-FORMULATE with no spec in the repo, 3/3
+  runs improvised the right outcome (stopped, asked the human). Added the hand-back brief.
+- With a spec present (fixture F2), 4/4 runs rewrote only the contested line, cited the deciding
+  spec sentence, committed alone, and stopped for approval. 0/4 continued.
+- Trigger re-test with superpowers loaded (brainstorming/writing-plans competing): fired 1/1.

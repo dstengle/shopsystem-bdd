@@ -11,10 +11,10 @@ Feature files are the contract the human approves and the code must satisfy. The
 
 ## Process
 
-1. **Dispatch the `feature-formulator` agent** (provided by this plugin, read-only tools) with the brief below. Fill in the spec path. Give it no other paths.
+1. **Dispatch the `feature-formulator` agent** (provided by this plugin, read-only tools) with the brief below. Fill in the spec path. Give it no other paths. On a hand-back from slicing, use the hand-back brief instead.
 2. **Check the coverage report** it returns, both directions: every business rule in the spec maps to at least one scenario, and every scenario cites the spec sentence that requires it. A scenario with no citation is removed. A rule with no scenario goes back to the agent.
 3. **Write the files** under `features/` exactly as returned, then commit them alone.
-4. **Stop for approval.** Show the person the files and wait for an explicit yes. Do not invoke slicing-into-increments, write step definitions, or write code until then. When a hand-back from slicing triggered this skill, the changed feature needs the same approval.
+4. **Stop for approval.** Show the person the files and wait for an explicit yes. Do not invoke slicing-into-increments or writing-plans, write step definitions, or write code until then. When a hand-back from slicing triggered this skill, the changed feature needs the same approval.
 
 ## The Brief
 
@@ -59,6 +59,25 @@ not stated in the spec, if any; (5) questions for the spec: cases you
 noticed that the spec does not mention, one line each, with no scenario
 written for them.
 ```
+
+## The Hand-back Brief
+
+When `slicing-into-increments` logged a `RE-FORMULATE` entry, send this instead, filled in from that entry:
+
+```
+The scenario "<SCENARIO>" in <FEATURE PATH> was handed back during
+implementation. The plan log at <PLAN PATH> has the RE-FORMULATE entry with
+the evidence. You may read that feature file, the plan, anything under
+docs/, and anything under features/. Nothing else.
+
+Return the scenario rewritten so that it is consistent with the rest of the
+feature and cites the spec sentence (or the other approved scenario) that
+decides it. Change only the lines the evidence requires. If nothing in the
+spec or the approved scenarios decides it, return no scenario: return the
+question the human must answer, in one sentence, with the two readings.
+```
+
+The main agent writes the returned scenario over the old one, commits, and stops for approval as in step 4. If a question came back instead, log it under the RE-FORMULATE entry as `QUESTION FOR THE SPEC:` and stop; nothing is written to the feature file.
 
 ## Why the agent cannot see the code
 
