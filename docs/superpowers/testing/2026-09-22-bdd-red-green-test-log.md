@@ -140,3 +140,8 @@ bdd-red-green fired, test-driven-development did not, hand-back correct. Claim n
 # v0.2.0 (2026-09-23): assumption verdict and stop condition removed; -m slice<n>
 Verification: v2rg-1, v2rg-2 (headless, both plugins, skill unnamed): 2/2 fired, handed back
 correctly, no assumption prose in the log entry.
+
+# v0.3.0 (2026-09-23): check cycle for enabling and stack slices
+Verification: v4rg-1 (fixture G: slice 2 is enabling, Check = a module imports). Skill fired,
+ran the check red, created the module, check green, suite still green, committed "slice 2
+green", checkpoint written, no scenarios invented, no feature-file edits.

@@ -91,3 +91,13 @@ real kb/shop-knowledge plan, 65 with "Unknown: none".
 Verification: v3sle-1 (cart fixture, headless, both plugins): bundles of 2 and 3 appear in the
 tail, head unchanged. Real re-slice: 84 -> 47 slices, slices 1-19 unchanged, 47 distinct tags on
 89 scenarios, 0 non-tag feature edits.
+
+# v0.3.0 (2026-09-23): slices verified by scenarios or by a check; kinds keyed to delivery
+Change: a slice is incremental work with an observable done, verified by feature scenarios
+(capability) or by a check command with a required result (enabling, stack). Kind is what the
+slice delivers, never what its unknown is about. Reason: the real plan labelled all 24 kb-side
+slices "stack" because the contract read as infrastructure; error paths and the contract are
+capability. Non-scenario increments such as "the development environment works" had no home.
+Verification: v4sle-1 (cart fixture): 11/11 capability, no stack mislabels. Real re-plan: 47
+capability + 1 enabling slice 0 with four checks, order and tags unchanged, slice 1's Needs
+trimmed to what its scenarios require.

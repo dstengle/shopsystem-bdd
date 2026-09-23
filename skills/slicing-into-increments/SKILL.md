@@ -13,28 +13,31 @@ The plan is an ordered list of thin vertical slices: which scenarios go green ne
 
 ## What a Slice Is
 
-A slice is the smallest set of scenarios that, once green, lets someone do or see one thing end to end that they could not before. While a slice carries an unknown it is usually one scenario, and more than one only when the scenarios share step definitions and none is observable without the others. Once the unknowns are spent, scenarios that share a feature and step definitions bundle into one slice, so the tail of a plan reads as a few slices per feature rather than one per scenario.
+A slice is a unit of incremental work with an observable done. What makes it done is one of two things:
 
-Three tests, all required:
-- **End to end.** The scenarios pass against the system's real entry point, with real storage and real side effects behind it. Internals may be hard-coded or stubbed only where no scenario in the slice asserts on them.
-- **Thin.** It cannot be split into two sets that each still pass end to end.
-- **Trimmed.** It contains no work that none of its scenarios needs. Non-behavioural work rides with the first slice that needs it and is never a slice itself.
+- **Scenarios** from the approved feature files, for behaviour of the system being built. This is BDD.
+- **A check**: a command someone runs and the result it must give, written in the plan. It fails before the slice and passes after. `python -m pytest -q` collects the feature files; `python -c "import kb"` succeeds from the client's checkout; search over a generated corpus of five thousand artifacts returns inside a bound.
 
-Two kinds, same three tests:
-- **Capability slice.** A user or client can do one new thing. Observed by them.
-- **Stack slice.** One path through the running system is proven: a transport carries a message, a write lands as a file and a commit, an index answers over a real corpus. Observed by the operator or by the client through the contract, and demoable: a command runs and something real happens.
+Three kinds, keyed to what the slice delivers, never to what its unknown is about:
 
-A stack risk with no observer at all is not a slice. It is a measurement, logged when taken, or a unit test the implementer adds under a capability slice.
+- **capability**: verified by scenarios. Someone can do one new thing. Every slice cut from a feature file is this, including its refusals and error paths, whatever technology its unknown concerns.
+- **enabling**: verified by a check. The environment, packaging, wiring, or tooling the next slices stand on. "The development environment works" is this.
+- **stack**: verified by a check. A property of the running system the spec states outside any user scenario: transport, throughput, load time, contention. Cut from the spec's non-functional sentences, and only when the spec states a bound or the skeleton needs it.
 
-Not a slice: a layer, a module, a feature file, a schema, "set up the project", "wire up the tests".
+Three tests, all required, for every kind:
+- **End to end.** Scenarios pass against the system's real entry point with real storage and real side effects behind it; a check runs against the real thing, not a mock. Internals may be hard-coded or stubbed only where nothing in the slice asserts on them.
+- **Thin.** One done. A slice with an unknown is usually one scenario or one check, and more than one only when they share step definitions and none is observable without the others. Once the unknowns are spent, scenarios that share a feature and step definitions bundle into one slice.
+- **Trimmed.** It contains no work its scenarios or its check don't need.
+
+Not a slice: anything with no scenario and no check. A layer, a module, or a library is not a done; "the module imports" is.
 
 ## Process
 
 1. **Run the feature suite** (`python -m pytest -q`, or the project's equivalent) and paste its summary line into the log as `Suite: <N> passed, <M> failed`. Every scenario that passes is credited to the slice whose work made it pass, or to a "Satisfied by existing behaviour" line citing that run. It never appears in a later slice. Reading the step definitions is not a run.
-2. **Cut slices** by the three tests. Give each slice one unknown: the question building it will settle. A candidate with two unknowns is two slices. A candidate with none bundles with its neighbours in the same feature that share step definitions.
-3. **Order slices.** First the walking skeleton: the shortest path through every layer that someone can observe. Then by implementation risk, the slice with the largest unknown first, so a surprise arrives while the least code depends on it. Value breaks ties. Dependency is a constraint, not an ordering: a slice may not need another slice's code to pass, so it comes later or the two merge.
+2. **Cut slices** by the three tests. Capability slices come from the feature files. Enabling slices come from what the skeleton stands on: a runnable package, the suite wired up, a dependency installed, a contract file generating code. Stack slices come from the spec's non-functional sentences. Give each slice one unknown: the question building it will settle. A candidate with two unknowns is two slices. A candidate with none bundles with its neighbours in the same feature that share step definitions.
+3. **Order slices.** First the enabling slice the skeleton stands on, if any. Then the walking skeleton: the shortest path through every layer that someone can observe. Then by implementation risk, the slice with the largest unknown first, so a surprise arrives while the least code depends on it. Value breaks ties. Dependency is a constraint, not an ordering: a slice may not need another slice's code to pass, so it comes later or the two merge.
 4. **Write the plan** in the shape below, in the project's one living plan file. If `docs/superpowers/plans/*-slices.md` exists, extend it; never start a second plan file.
-5. **Mark the scenarios.** Write a tag `@slice-<n>` on every scenario the plan assigns, one tag per scenario, replacing any earlier slice tag. This is the only edit this skill ever makes to a feature file: a tag line, never a Given, When, or Then. pytest-bdd turns the tag into a marker, so `pytest -m slice<n>` runs a slice.
+5. **Mark the scenarios.** Write a tag `@slice-<n>` on every scenario a capability slice assigns, one tag per scenario, replacing any earlier slice tag. This is the only edit this skill ever makes to a feature file: a tag line, never a Given, When, or Then. pytest-bdd turns the tag into a marker, so `pytest -m slice<n>` runs a slice.
 6. **Invoke superpowers:writing-plans** with the plan file as its input and this constraint: one task per slice, in slice order, no task that isn't a slice. That is where module names, signatures, and fixture layouts belong. Skip this step while any feature awaits approval.
 
 ## The Plan File
@@ -43,8 +46,9 @@ Not a slice: a layer, a module, a feature file, a schema, "set up the project", 
 # <topic> slices
 
 ## Slice <n>: <name>
-- Kind: capability | stack
-- Scenarios: <repo or feature> / <scenario name>; ...
+- Kind: capability | enabling | stack
+- Scenarios: <repo or feature> / <scenario name>; ...      (capability)
+- Check: `<command>` -> <the result it must give>            (enabling, stack)
 - Observable: <one sentence: what someone can do or see when this is green>
 - Unknown: <the one question building this settles> | none
 - Needs: <non-behavioural work, needed by which scenario> | none
@@ -58,7 +62,7 @@ Not a slice: a layer, a module, a feature file, a schema, "set up the project", 
 - <date> <one line per checkpoint, hand-back, or re-slice>
 ```
 
-The plan names scenarios, observables, unknowns, and non-behavioural work. It contains no module, class, function, fixture, or variable names, no expressions, no diagrams, and no "target design" or "modelling decisions" section. If you have written any of those, you are doing writing-plans' job in the wrong file.
+A slice has Scenarios or Check, never both. The plan names scenarios, checks, observables, unknowns, and what rides along. It contains no module, class, function, fixture, or variable names, no expressions, no diagrams, and no "target design" or "modelling decisions" section. If you have written any of those, you are doing writing-plans' job in the wrong file.
 
 ## Re-planning After a Hand-back
 
@@ -94,6 +98,8 @@ The plan does not choose them. "Clamp rather than raise", "keep the first code w
 | "The implementer will need this design to start" | The implementer gets a task from writing-plans. The slice plan is not that document. |
 | "I can see from the step definitions that it passes" | You can see that steps exist. Only a run shows they pass. Run it. |
 | "Setting up the transport and the store is one slice" | That's two unknowns. Two slices, each demoable on its own. |
+| "The contract is infrastructure, so its slices are stack" | The contract is behaviour a client observes, verified by scenarios. Capability. Stack is only what no scenario covers. |
+| "Error handling is a stack concern" | A refusal is part of the capability it refuses. Capability. |
 | "This scenario can't go first, it needs the store" | Then it isn't the skeleton. The skeleton is whatever is observable with the least behind it. |
 
 ## Red Flags
@@ -107,6 +113,8 @@ The plan does not choose them. "Clamp rather than raise", "keep the first code w
 - "passed" or "already green" in the plan with no `Suite:` line from a real run in the log
 - A slice whose Unknown line has an "and" in it
 - A run of one-scenario slices with `Unknown: none` from the same feature
-- A slice named after a layer or a library
+- A slice named after a layer or a library with no check
+- `Kind: stack` on a slice that has a Scenarios line
+- A Kind line that follows the repository instead of the verification
 
 **Any of these: undo it, and take the row of the table that applies.**

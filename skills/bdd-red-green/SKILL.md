@@ -23,6 +23,17 @@ Work through the slice's scenarios in the order the plan lists them. The slice's
 
 **Code only what a scenario asserts.** Where the scenarios are silent, the code is silent. Do not choose semantics for cases no scenario covers, not as a "guard", not as "the forgiving option". If the silence matters, it goes in the checkpoint entry as an open question.
 
+## Slices Verified by a Check
+
+An enabling or stack slice has a `Check:` line instead of scenarios: a command and the result it must give. The cycle is the same with the check in the scenario's place:
+
+1. **Run the check.** It must fail, and for the reason the slice exists: the module isn't there, the stubs aren't generated, the bound isn't met. A check that passes before any work is a stop condition.
+2. **Do the least work** that makes the check give its stated result.
+3. **Run the check again**, then the whole feature suite. Everything previously green stays green.
+4. Commit, then the checkpoint. The checkpoint's "someone can now" line says what the check proves.
+
+No scenarios are written for a check slice, and no check is added to a capability slice.
+
 ## Feature Files Are Read-Only Here
 
 This skill never edits a `.feature` file. Not to fix a typo, not to correct arithmetic, not to align wording. There is no step in the cycle that opens one for writing.
@@ -36,6 +47,7 @@ Each of these is observable. When one occurs, hand back immediately:
 | Observed | Meaning |
 |---|---|
 | A scenario passes before you wrote any step definition or code for it | The contract already covered it, or the scenario doesn't test what its tag claims. Slicing decides. |
+| A slice's check passes before you did any work | The slice is already done or the check doesn't check what it says. Slicing decides. |
 | A scenario can't be made to fail on its Then line, only on setup or an undefined Given | The Given describes a state the system can't represent yet. Slicing may need to re-order. |
 | A Then line can only pass through code you'd be embarrassed to explain | The line is wrong or you've misread it. Either way, not yours to decide. |
 | Going green needs work no scenario in the slice describes, beyond a trivial helper | Missing scenario or a mis-sized slice. |

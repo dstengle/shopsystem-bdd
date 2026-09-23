@@ -126,10 +126,13 @@ it pass (or to a "satisfied by existing behaviour" line when none did) and
 is never placed in a later slice. This keeps `bdd-red-green`'s first stop
 condition rare enough that a hard stop is justified when it fires.
 
-Two kinds of slice, both end to end, thin, and trimmed: a capability
-slice, observed by a user or client, and a stack slice, which proves one
-path through the running system and is observed by the operator or through
-the contract. Each slice has one unknown; once the unknowns are spent, scenarios that
+A slice is a unit of incremental work with an observable done, verified
+either by feature scenarios or by a check (a command and its required
+result). Three kinds, keyed to what is delivered: capability (scenarios),
+enabling (a check; what the next slices stand on), stack (a check; a
+non-functional property the spec states). (Amended 2026-09-23: earlier
+wording tied kind to the nature of the unknown and mislabelled contract
+behaviour as stack.) Each slice has one unknown; once the unknowns are spent, scenarios that
 share a feature and step definitions bundle into one slice. Ordering: the walking skeleton
 first, then by implementation risk, largest unknown first, value as the
 tiebreaker; dependency is a constraint, not an ordering. Slicing writes
