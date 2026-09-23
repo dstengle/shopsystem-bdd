@@ -81,3 +81,7 @@ Shape WITH an example file present (formb-1) was already correct on F1-F5, F7. F
 - With a spec present (fixture F2), 4/4 runs rewrote only the contested line, cited the deciding
   spec sentence, committed alone, and stopped for approval. 0/4 continued.
 - Trigger re-test with superpowers loaded (brainstorming/writing-plans competing): fired 1/1.
+
+# v0.2.0 (2026-09-23): tag requirement removed; operator is a role where the spec gives one
+Verification: v2form-1, v2form-2 (headless, both plugins): 2/2 fired, formulator read only the
+spec, 0 tags, shape unchanged (so-that, no impl/UI/first-person).

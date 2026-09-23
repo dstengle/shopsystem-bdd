@@ -136,3 +136,7 @@ Commit behaviour on hand-back: 5 runs, 3 different answers (log only / log+code 
 The original trigger test ran without superpowers (it is enabled only in this repo's project
 settings, not user settings, so fixture sessions lacked it). Re-run with --plugin-dir for both:
 bdd-red-green fired, test-driven-development did not, hand-back correct. Claim now verified.
+
+# v0.2.0 (2026-09-23): assumption verdict and stop condition removed; -m slice<n>
+Verification: v2rg-1, v2rg-2 (headless, both plugins, skill unnamed): 2/2 fired, handed back
+correctly, no assumption prose in the log entry.

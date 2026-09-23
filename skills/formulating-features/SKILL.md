@@ -12,7 +12,7 @@ Feature files are the contract the human approves and the code must satisfy. The
 ## Process
 
 1. **Dispatch the `feature-formulator` agent** (provided by this plugin, read-only tools) with the brief below. Fill in the spec path. Give it no other paths. On a hand-back from slicing, use the hand-back brief instead.
-2. **Check the coverage report** it returns, both directions: every business rule in the spec maps to at least one scenario, and every scenario cites the spec sentence that requires it. A scenario with no citation is removed. A rule with no scenario goes back to the agent.
+2. **Check the coverage report** it returns, both directions: every business rule in the spec maps to at least one scenario, and every scenario cites the spec sentence that requires it. A scenario with no citation is removed. A rule with no scenario goes back to the agent. Feature files carry no tags from this skill; slicing adds `@slice-<n>` tags later and owns them.
 3. **Write the files** under `features/` exactly as returned, then commit them alone.
 4. **Stop for approval.** Show the person the files and wait for an explicit yes. Do not invoke slicing-into-increments or writing-plans, write step definitions, or write code until then. When a hand-back from slicing triggered this skill, the changed feature needs the same approval.
 
@@ -37,9 +37,9 @@ Each feature file has this shape:
   boundary ("inclusive", "at least", "at most"), then the rejections the spec
   lists. A scenario exists because a sentence in the spec requires it; there
   are no others.
-- Every scenario carries exactly one tag `@assumes-<slug>` naming the belief
-  it tests. Use the assumptions the spec states. If none fits, name the belief
-  and list it as new in the report.
+- Roles are the ones the spec names. Where the spec gives an operator or an
+  administrator a command line, the operator is a role and scenarios from
+  their perspective are features like any other.
 - Steps: Given is the state of the world in the customer's words. When is one
   action by one named role, in the third person (`the customer applies`, never
   `I apply` or `my cart`). Then is an outcome the customer can observe. A
@@ -53,10 +53,9 @@ Each feature file has this shape:
   appear. Amounts are plain decimals with no currency symbol.
 
 Return: (1) each file as a fenced block; (2) a coverage table with one row per
-scenario: scenario name, the spec sentence (quoted) that requires it, its
-assumption tag; (3) spec rules with no scenario, if any; (4) assumption tags
-not stated in the spec, if any; (5) questions for the spec: cases you
-noticed that the spec does not mention, one line each, with no scenario
+scenario: scenario name and the spec sentence (quoted) that requires it;
+(3) spec rules with no scenario, if any; (4) questions for the spec: cases
+you noticed that the spec does not mention, one line each, with no scenario
 written for them.
 ```
 
@@ -88,7 +87,6 @@ Given the code, a writer describes what it does. Given only the spec, a writer d
 | Seen in baseline | Fix in the brief |
 |---|---|
 | Feature description paraphrases the spec's background paragraph | Line 2 is the value statement, full stop |
-| No assumption tags, spec's stated assumptions ignored | Exactly one `@assumes-` tag per scenario, from the spec |
 | File named after the database table | Verb-phrase name in the customer's words |
 | Background table with the schema's column names | Customer's words for columns; data-model names never appear |
 | A second feature file for the HTTP API with status codes | One file per customer capability; transport is not a capability |

@@ -72,3 +72,14 @@ S6. Thinness and order: 1-2 scenarios per slice, happy path first, assumption na
 # VERDICT slicing-into-increments v3: passes. Baseline F/S1-S4 closed; v1/v2 loopholes closed.
 Open note: a full run (slicing + formulating + writing-plans) exceeded the 570s test timeout once;
 that is a test-harness limit, not a skill issue.
+
+# v0.2.0 (2026-09-23): assumption tags removed, slice definition rewritten
+Change: two kinds of slice (capability, stack), one unknown per slice, walking skeleton then
+implementation risk, plan entry = Kind/Scenarios/Observable/Unknown/Needs/Status, slicing writes
+@slice-<n> tags as its only feature-file edit. Reason: assumption tags named beliefs only use can
+test; the checkpoint verdict was always a guess and ordering by them was nominal.
+Verification (headless, both plugins): v2sle-1, v2sle-2 (initial), v2slf-1 (re-plan).
+- 3/3 new plan shape, Suite: line, @slice-n on every planned scenario, no other feature edits
+  except the re-formulated line via formulating-features, writing-plans deferred, stopped.
+- Note: some Unknown lines restate a contract question the scenario already answers rather than
+  an implementation unknown. Acceptable; watch on real plans.

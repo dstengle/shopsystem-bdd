@@ -13,7 +13,7 @@ The `.feature` files are the contract. Code exists to satisfy them, one scenario
 
 ## The Cycle
 
-Work through the slice's scenarios in the order the plan lists them. For each scenario:
+Work through the slice's scenarios in the order the plan lists them. The slice's scenarios carry a `@slice-<n>` tag, so `python -m pytest -q -m slice<n>` runs the slice. For each scenario:
 
 1. **Run that one scenario** (`python -m pytest -q -k "<scenario name>"`). It must fail for the right reason: an undefined step, or the Then assertion on the outcome. Any other result is a stop condition (below).
 2. **Write only the step definitions this scenario needs.** Given and When steps drive the system's real entry point. Then steps assert exactly what the line says, nothing more.
@@ -40,7 +40,6 @@ Each of these is observable. When one occurs, hand back immediately:
 | A Then line can only pass through code you'd be embarrassed to explain | The line is wrong or you've misread it. Either way, not yours to decide. |
 | Going green needs work no scenario in the slice describes, beyond a trivial helper | Missing scenario or a mis-sized slice. |
 | A previously green scenario breaks and the fix would change what a step means | Two scenarios contradict each other. |
-| What you built contradicts the slice's assumption | The plan's next slice may be wrong. |
 
 A stop condition is triggered by a test-run result, never by reading. If a line looks wrong, run the cycle on it until a run shows the failure; the run output is the evidence.
 
@@ -60,10 +59,10 @@ Hand-back entry (all fields required):
 
 ## Checkpoint
 
-When every scenario in the slice is green, append this entry to the plan log and continue to the next slice without asking:
+When every scenario in the slice is green, set the slice's Status to `green`, append this entry to the plan log, and continue to the next slice without asking:
 ```
-- <date> slice <n> green. A user can now: <one sentence>.
-  Assumption "<tag>": held | not held | untested. Evidence: <one sentence>.
+- <date> slice <n> green. Someone can now: <one sentence>.
+  Surprised by: <what building it turned out to involve that the plan didn't say | nothing>.
   Open questions: <none | list>. Next: slice <n+1>.
 ```
 

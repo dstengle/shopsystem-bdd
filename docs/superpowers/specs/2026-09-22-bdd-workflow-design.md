@@ -98,8 +98,6 @@ Process:
      world. When describes one action by one role. Then describes an
      observable outcome. Steps state intent; they never name clicks,
      fields, endpoints, tables, or functions.
-   - Each scenario carries a tag naming the assumption it exists to test,
-     in the form `@assumes-<short-slug>`.
    - The happy path first, then only the failure and edge scenarios the
      spec requires.
 3. The main agent reviews the returned files against the spec for coverage,
@@ -128,15 +126,21 @@ it pass (or to a "satisfied by existing behaviour" line when none did) and
 is never placed in a later slice. This keeps `bdd-red-green`'s first stop
 condition rare enough that a hard stop is justified when it fires.
 
-Ordering: by the assumption tested, riskiest first, with value as the
-tiebreaker. The first slice is always the thinnest walking skeleton through
-the happy path of the highest-value feature.
+Two kinds of slice, both end to end, thin, and trimmed: a capability
+slice, observed by a user or client, and a stack slice, which proves one
+path through the running system and is observed by the operator or through
+the contract. Each slice has one unknown. Ordering: the walking skeleton
+first, then by implementation risk, largest unknown first, value as the
+tiebreaker; dependency is a constraint, not an ordering. Slicing writes
+`@slice-<n>` tags on scenarios as the one edit it makes to feature files.
+(Amended 2026-09-23: assumption tags and assumption-based ordering removed;
+beliefs about use are tested by use, not by scenarios.)
 
 Plan format, one markdown file:
 
-- Per slice: number; scenarios turned green, by feature and scenario name;
-  the single assumption tested and how its failure would be recognised;
-  non-behavioural work the slice needs (migrations, dependencies).
+- Per slice: number and name; kind; scenarios, by feature and scenario
+  name; what is observable when green; the one unknown; non-behavioural
+  work the slice needs; status.
   Non-behavioural work never forms its own slice; it attaches to the first
   slice that needs it.
 - A log at the bottom. Each re-slice and each checkpoint appends one entry.
@@ -176,9 +180,9 @@ Never touched: feature files. The skill's checklist contains no step that
 opens a `.feature` file for writing. A scenario that seems wrong is a
 hand-back.
 
-Checkpoint, after every slice goes green: append to the plan's log what a
-user can now do, whether the slice's assumption held and the evidence, and
-the next slice number. Continue without asking.
+Checkpoint, after every slice goes green: append to the plan's log what
+someone can now do, what surprised the implementer, and the next slice
+number. Continue without asking.
 
 Stop conditions (hand back to `slicing-into-increments`), all observable:
 
@@ -189,7 +193,6 @@ Stop conditions (hand back to `slicing-into-increments`), all observable:
   beyond a trivial helper.
 - A previously green scenario breaks and fixing it would change what a step
   means.
-- The assumption the slice tests is contradicted by what was built.
 
 Anything else, including doubt about scenario wording, goes into the
 checkpoint entry and does not stop the run.
