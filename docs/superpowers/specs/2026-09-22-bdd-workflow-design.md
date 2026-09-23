@@ -129,7 +129,8 @@ condition rare enough that a hard stop is justified when it fires.
 Two kinds of slice, both end to end, thin, and trimmed: a capability
 slice, observed by a user or client, and a stack slice, which proves one
 path through the running system and is observed by the operator or through
-the contract. Each slice has one unknown. Ordering: the walking skeleton
+the contract. Each slice has one unknown; once the unknowns are spent, scenarios that
+share a feature and step definitions bundle into one slice. Ordering: the walking skeleton
 first, then by implementation risk, largest unknown first, value as the
 tiebreaker; dependency is a constraint, not an ordering. Slicing writes
 `@slice-<n>` tags on scenarios as the one edit it makes to feature files.

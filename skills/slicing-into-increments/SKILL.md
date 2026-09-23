@@ -13,7 +13,7 @@ The plan is an ordered list of thin vertical slices: which scenarios go green ne
 
 ## What a Slice Is
 
-A slice is the smallest set of scenarios that, once green, lets someone do or see one thing end to end that they could not before. Usually one scenario. More than one only when the scenarios share step definitions and none is observable without the others.
+A slice is the smallest set of scenarios that, once green, lets someone do or see one thing end to end that they could not before. While a slice carries an unknown it is usually one scenario, and more than one only when the scenarios share step definitions and none is observable without the others. Once the unknowns are spent, scenarios that share a feature and step definitions bundle into one slice, so the tail of a plan reads as a few slices per feature rather than one per scenario.
 
 Three tests, all required:
 - **End to end.** The scenarios pass against the system's real entry point, with real storage and real side effects behind it. Internals may be hard-coded or stubbed only where no scenario in the slice asserts on them.
@@ -31,7 +31,7 @@ Not a slice: a layer, a module, a feature file, a schema, "set up the project", 
 ## Process
 
 1. **Run the feature suite** (`python -m pytest -q`, or the project's equivalent) and paste its summary line into the log as `Suite: <N> passed, <M> failed`. Every scenario that passes is credited to the slice whose work made it pass, or to a "Satisfied by existing behaviour" line citing that run. It never appears in a later slice. Reading the step definitions is not a run.
-2. **Cut slices** by the three tests. Give each slice one unknown: the question building it will settle. A candidate with two unknowns is two slices.
+2. **Cut slices** by the three tests. Give each slice one unknown: the question building it will settle. A candidate with two unknowns is two slices. A candidate with none bundles with its neighbours in the same feature that share step definitions.
 3. **Order slices.** First the walking skeleton: the shortest path through every layer that someone can observe. Then by implementation risk, the slice with the largest unknown first, so a surprise arrives while the least code depends on it. Value breaks ties. Dependency is a constraint, not an ordering: a slice may not need another slice's code to pass, so it comes later or the two merge.
 4. **Write the plan** in the shape below, in the project's one living plan file. If `docs/superpowers/plans/*-slices.md` exists, extend it; never start a second plan file.
 5. **Mark the scenarios.** Write a tag `@slice-<n>` on every scenario the plan assigns, one tag per scenario, replacing any earlier slice tag. This is the only edit this skill ever makes to a feature file: a tag line, never a Given, When, or Then. pytest-bdd turns the tag into a marker, so `pytest -m slice<n>` runs a slice.
@@ -106,6 +106,7 @@ The plan does not choose them. "Clamp rather than raise", "keep the first code w
 - "Safe default" for a case no scenario covers
 - "passed" or "already green" in the plan with no `Suite:` line from a real run in the log
 - A slice whose Unknown line has an "and" in it
+- A run of one-scenario slices with `Unknown: none` from the same feature
 - A slice named after a layer or a library
 
 **Any of these: undo it, and take the row of the table that applies.**

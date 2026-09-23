@@ -83,3 +83,11 @@ Verification (headless, both plugins): v2sle-1, v2sle-2 (initial), v2slf-1 (re-p
   except the re-formulated line via formulating-features, writing-plans deferred, stopped.
 - Note: some Unknown lines restate a contract question the scenario already answers rather than
   an implementation unknown. Acceptable; watch on real plans.
+
+# v0.2.1 (2026-09-23): bundling once unknowns are spent
+Change: scenarios sharing a feature and step definitions bundle into one slice once a slice has no
+unknown. Reason: the thinness test alone produced 84 one-scenario slices for 89 scenarios on the
+real kb/shop-knowledge plan, 65 with "Unknown: none".
+Verification: v3sle-1 (cart fixture, headless, both plugins): bundles of 2 and 3 appear in the
+tail, head unchanged. Real re-slice: 84 -> 47 slices, slices 1-19 unchanged, 47 distinct tags on
+89 scenarios, 0 non-tag feature edits.
