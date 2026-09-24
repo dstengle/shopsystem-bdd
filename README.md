@@ -29,6 +29,18 @@ the superpowers pipeline around them:
   fire `superpowers:test-driven-development`. All three skills state that
   they supersede test-driven-development when both apply.
 
+## Models
+
+The `feature-formulator` agent pins `model: opus`, so formulation runs on
+Opus whatever the session runs on; verified by the subagent turns in a
+Sonnet session. A skill's own turns run on the session's model: a `model:`
+field in SKILL.md did not change a session's model when the skill was
+invoked by the model rather than by a slash command, so the skills carry
+none. Launch a headless formulation, slicing, or planning session with
+`--model opus` and an execution session with `--model sonnet`;
+subagent-driven-development puts implementers on Sonnet and reviewers on
+Opus by its own rules, and `bdd-red-green` pins nothing.
+
 ## Install
 
 ```

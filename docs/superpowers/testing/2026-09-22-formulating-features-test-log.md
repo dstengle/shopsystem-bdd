@@ -85,3 +85,12 @@ Shape WITH an example file present (formb-1) was already correct on F1-F5, F7. F
 # v0.2.0 (2026-09-23): tag requirement removed; operator is a role where the spec gives one
 Verification: v2form-1, v2form-2 (headless, both plugins): 2/2 fired, formulator read only the
 spec, 0 tags, shape unchanged (so-that, no impl/UI/first-person).
+
+# v0.3.1 (2026-09-24): model pins
+- agents/feature-formulator.md `model: opus`: in a `--model sonnet` session (v5form-1, v5sle-1)
+  every formulator subagent turn ran on Opus while every main-session turn stayed on Sonnet.
+- SKILL.md `model: opus` on formulating-features and slicing-into-increments: no effect on the
+  main session's turns when the skill was invoked through the Skill tool. Removed; the README
+  says the session model is chosen at launch.
+- Both skills fired and produced correct output on Sonnet sessions (formulation: 2 files, clean
+  shape; slicing: 12 capability slices).
