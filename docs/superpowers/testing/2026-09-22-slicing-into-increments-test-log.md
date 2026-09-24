@@ -101,3 +101,14 @@ capability. Non-scenario increments such as "the development environment works" 
 Verification: v4sle-1 (cart fixture): 11/11 capability, no stack mislabels. Real re-plan: 47
 capability + 1 enabling slice 0 with four checks, order and tags unchanged, slice 1's Needs
 trimmed to what its scenarios require.
+
+# v0.4.0 (2026-09-24): placement by risk, dotted sub-slices, execution-order numbering
+Change: a scenario added after the cut is placed by its unknown among remaining slices, never
+ahead of all of them; a slice placed between two takes a dotted number under its predecessor;
+whole numbers renumber only when whole slices move; `-m "slice-<n>"` is the marker form that
+selects a slice (verified; the earlier `slice<n>` wording selected nothing).
+Reason: on the real plan three review rounds inserted 17 slices ahead of slice 2 and numbers
+diverged from execution order (54-70 ran before 2).
+Verification (v6sle-1, Opus, cart fixture with one scenario added after the cut): placed as
+slice 4.1 after "Refuse an unknown code" by its unknown; the only feature diff is that one tag
+line; no other tag or number changed.

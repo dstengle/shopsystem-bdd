@@ -37,6 +37,10 @@ Each feature file has this shape:
   boundary ("inclusive", "at least", "at most"), then the rejections the spec
   lists. A scenario exists because a sentence in the spec requires it; there
   are no others.
+- Every scenario carries a one-line description between its title and its
+  first step: what it pins and why, in plain words, so a reader who has not
+  seen the spec knows what the scenario is for. It is not a step and does
+  not restate the steps.
 - Roles are the ones the spec names. Where the spec gives an operator or an
   administrator a command line, the operator is a role and scenarios from
   their perspective are features like any other.
@@ -76,7 +80,7 @@ spec or the approved scenarios decides it, return no scenario: return the
 question the human must answer, in one sentence, with the two readings.
 ```
 
-The main agent writes the returned scenario over the old one, commits, and stops for approval as in step 4. If a question came back instead, log it under the RE-FORMULATE entry as `QUESTION FOR THE SPEC:` and stop; nothing is written to the feature file.
+The returned scenario carries its one-line description like any other. The main agent writes it over the old one, commits, and stops for approval as in step 4. If a question came back instead, log it under the RE-FORMULATE entry as `QUESTION FOR THE SPEC:` and stop; nothing is written to the feature file.
 
 ## Why the agent cannot see the code
 

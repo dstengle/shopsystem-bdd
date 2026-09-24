@@ -13,7 +13,7 @@ The `.feature` files are the contract. Code exists to satisfy them, one scenario
 
 ## The Cycle
 
-Work through the slice's scenarios in the order the plan lists them. The slice's scenarios carry a `@slice-<n>` tag, so `python -m pytest -q -m slice<n>` runs the slice. For each scenario:
+Work through the slice's scenarios in the order the plan lists them. The slice's scenarios carry a `@slice-<n>` tag, so `python -m pytest -q -m "slice-<n>"` runs the slice. For each scenario:
 
 1. **Run that one scenario** (`python -m pytest -q -k "<scenario name>"`). It must fail for the right reason: an undefined step, or the Then assertion on the outcome. Any other result is a stop condition (below).
 2. **Write only the step definitions this scenario needs.** Given and When steps drive the system's real entry point. Then steps assert exactly what the line says, nothing more.

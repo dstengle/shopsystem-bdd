@@ -36,8 +36,16 @@ Not a slice: anything with no scenario and no check. A layer, a module, or a lib
 1. **Run the feature suite** (`python -m pytest -q`, or the project's equivalent) and paste its summary line into the log as `Suite: <N> passed, <M> failed`. Every scenario that passes is credited to the slice whose work made it pass, or to a "Satisfied by existing behaviour" line citing that run. It never appears in a later slice. Reading the step definitions is not a run.
 2. **Cut slices** by the three tests. Capability slices come from the feature files. Enabling slices come from what the skeleton stands on: a runnable package, the suite wired up, a dependency installed, a contract file generating code. Stack slices come from the spec's non-functional sentences. Give each slice one unknown: the question building it will settle. A candidate with two unknowns is two slices. A candidate with none bundles with its neighbours in the same feature that share step definitions.
 3. **Order slices.** First the enabling slice the skeleton stands on, if any. Then the walking skeleton: the shortest path through every layer that someone can observe. Then by implementation risk, the slice with the largest unknown first, so a surprise arrives while the least code depends on it. Value breaks ties. Dependency is a constraint, not an ordering: a slice may not need another slice's code to pass, so it comes later or the two merge.
+   A scenario added after the plan was cut, from a review, a hand-back, or a
+   spec amendment, is placed by its unknown among the remaining slices,
+   never ahead of all of them. Only work the next slice needs precedes it.
+   A plan is numbered in the order it runs. A slice placed between two
+   existing slices takes a dotted number under the one before it (1.1, 1.2
+   after 1, before 2), so existing numbers and tags stay valid; order is
+   numeric with sub-slices after their parent. Whole numbers are renumbered,
+   and tags rewritten, only when whole slices change order.
 4. **Write the plan** in the shape below, in the project's one living plan file. If `docs/superpowers/plans/*-slices.md` exists, extend it; never start a second plan file.
-5. **Mark the scenarios.** Write a tag `@slice-<n>` on every scenario a capability slice assigns, one tag per scenario, replacing any earlier slice tag. This is the only edit this skill ever makes to a feature file: a tag line, never a Given, When, or Then. pytest-bdd turns the tag into a marker, so `pytest -m slice<n>` runs a slice.
+5. **Mark the scenarios.** Write a tag `@slice-<n>` on every scenario a capability slice assigns, one tag per scenario, replacing any earlier slice tag. This is the only edit this skill ever makes to a feature file: a tag line, never a Given, When, or Then. pytest-bdd turns the tag into a marker, so `pytest -m "slice-<n>"` runs a slice.
 6. **Invoke superpowers:writing-plans** with the plan file as its input and this constraint: one task per slice, in slice order, no task that isn't a slice. That is where module names, signatures, and fixture layouts belong. Skip this step while any feature awaits approval.
 
 ## The Plan File
@@ -45,7 +53,7 @@ Not a slice: anything with no scenario and no check. A layer, a module, or a lib
 ```
 # <topic> slices
 
-## Slice <n>: <name>
+## Slice <n>: <name>            (<n> is 2, or 1.3 for a slice placed after 1)
 - Kind: capability | enabling | stack
 - Scenarios: <repo or feature> / <scenario name>; ...      (capability)
 - Check: `<command>` -> <the result it must give>            (enabling, stack)
@@ -101,6 +109,7 @@ The plan does not choose them. "Clamp rather than raise", "keep the first code w
 | "The contract is infrastructure, so its slices are stack" | The contract is behaviour a client observes, verified by scenarios. Capability. Stack is only what no scenario covers. |
 | "Error handling is a stack concern" | A refusal is part of the capability it refuses. Capability. |
 | "This scenario can't go first, it needs the store" | Then it isn't the skeleton. The skeleton is whatever is observable with the least behind it. |
+| "It came from a review, so it goes before everything" | A review finding is a scenario like any other. Place it by its unknown; the plan's head stays the plan's head. |
 
 ## Red Flags
 
@@ -113,6 +122,8 @@ The plan does not choose them. "Clamp rather than raise", "keep the first code w
 - "passed" or "already green" in the plan with no `Suite:` line from a real run in the log
 - A slice whose Unknown line has an "and" in it
 - A run of one-scenario slices with `Unknown: none` from the same feature
+- A batch of new slices inserted ahead of the whole remaining plan
+- Slice numbers that do not read in execution order, dotted sub-slices counted after their parent
 - A slice named after a layer or a library with no check
 - `Kind: stack` on a slice that has a Scenarios line
 - A Kind line that follows the repository instead of the verification

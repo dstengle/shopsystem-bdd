@@ -94,3 +94,9 @@ spec, 0 tags, shape unchanged (so-that, no impl/UI/first-person).
   says the session model is chosen at launch.
 - Both skills fired and produced correct output on Sonnet sessions (formulation: 2 files, clean
   shape; slicing: 12 capability slices).
+
+# v0.4.0 (2026-09-24): one-line description on every scenario
+Change: the brief requires a description line between the Scenario title and the first step,
+saying what the scenario pins and why. Reason: the user asked for the explanations given in
+review to live on the scenarios. Verification (v6form-1, Opus, fixture D): 11/11 scenarios
+described, shape otherwise unchanged (2 files, no impl/UI/first-person).
