@@ -37,6 +37,9 @@ Each feature file has this shape:
   boundary ("inclusive", "at least", "at most"), then the rejections the spec
   lists. A scenario exists because a sentence in the spec requires it; there
   are no others.
+- Cases of one rule are one `Scenario Outline` with an `Examples` table,
+  never a scenario per case: eight kinds of unacceptable content are one
+  outline with eight rows. A scenario of its own is for a rule of its own.
 - Every scenario carries a one-line description between its title and its
   first step: what it pins and why, in plain words, so a reader who has not
   seen the spec knows what the scenario is for. It is not a step and does
@@ -99,3 +102,4 @@ Given the code, a writer describes what it does. Given only the spec, a writer d
 | `£` in amounts "to match the UI section" | Plain decimals |
 | `When I apply the code`, `my cart` | Third person with the role named: `the customer applies` |
 | "Applying the same code again does not discount twice", cited to the one-code rule | Unmentioned cases go under questions for the spec, never as scenarios |
+| Eight scenarios, one per unacceptable input, each with the same Then | One Scenario Outline, eight Examples rows |

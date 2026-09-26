@@ -46,7 +46,15 @@ Not a slice: anything with no scenario and no check. A layer, a module, or a lib
    and tags rewritten, only when whole slices change order.
 4. **Write the plan** in the shape below, in the project's one living plan file. If `docs/superpowers/plans/*-slices.md` exists, extend it; never start a second plan file.
 5. **Mark the scenarios.** Write a tag `@slice-<n>` on every scenario a capability slice assigns, one tag per scenario, replacing any earlier slice tag. This is the only edit this skill ever makes to a feature file: a tag line, never a Given, When, or Then. pytest-bdd turns the tag into a marker, so `pytest -m "slice-<n>"` runs a slice.
-6. **Invoke superpowers:writing-plans** with the plan file as its input and this constraint: one task per slice, in slice order, no task that isn't a slice. That is where module names, signatures, and fixture layouts belong. Skip this step while any feature awaits approval.
+6. **Cut an architecture review** as an enabling slice after every six
+   implemented slices, or when a module has crossed a size limit the
+   project's conventions state. Its check: an Opus review of the code's
+   shape against the project's `CLAUDE.md` is logged, and every refactor it
+   calls for is cut as its own enabling slice with a measurable check (the
+   suite green and the structural target met). Defect reviews already run
+   per batch; this one asks whether the code is shaped the way the
+   conventions say.
+7. **Invoke superpowers:writing-plans** with the plan file as its input and this constraint: one task per slice, in slice order, no task that isn't a slice. That is where module names, signatures, and fixture layouts belong. Skip this step while any feature awaits approval.
 
 ## The Plan File
 
