@@ -48,12 +48,15 @@ Not a slice: anything with no scenario and no check. A layer, a module, or a lib
 5. **Mark the scenarios.** Write a tag `@slice-<n>` on every scenario a capability slice assigns, one tag per scenario, replacing any earlier slice tag. This is the only edit this skill ever makes to a feature file: a tag line, never a Given, When, or Then. pytest-bdd turns the tag into a marker, so `pytest -m "slice-<n>"` runs a slice.
 6. **Cut an architecture review** as an enabling slice after every six
    implemented slices, or when a module has crossed a size limit the
-   project's conventions state. Its check: an Opus review of the code's
-   shape against the project's `CLAUDE.md` is logged, and every refactor it
-   calls for is cut as its own enabling slice with a measurable check (the
-   suite green and the structural target met). Defect reviews already run
-   per batch; this one asks whether the code is shaped the way the
-   conventions say.
+   project's conventions state. Its check: a review of the code's shape
+   against the project's `CLAUDE.md`, by the `shopsystem-bdd:architecture-reviewer`
+   agent, is logged, and every refactor it calls for is cut as its own
+   enabling slice with a measurable check (the suite green and the structural
+   target met). The review also lists every point where the code relies on a
+   project it depends on beyond what that project publishes. Defect reviews
+   already run per batch; this one asks whether the code is shaped the way
+   the conventions say. It runs before the next plan is written, never as a
+   task inside one.
 7. **Invoke superpowers:writing-plans** with the plan file as its input and the constraint below. Skip this step while any scenario the formulator marked *deciding* awaits approval; settled scenarios never wait.
 
 ## The Hand-off to writing-plans

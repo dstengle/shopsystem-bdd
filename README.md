@@ -4,6 +4,8 @@ that replaces test-driven development with Gherkin feature files as the
 contract, thin vertical slicing, and one human gate at feature approval.
 
 Skills: `formulating-features`, `slicing-into-increments`, `bdd-red-green`.
+Agents: `feature-formulator`, `bdd-implementer`, `bdd-task-reviewer`,
+`bdd-branch-reviewer`, `architecture-reviewer`.
 Design: `docs/superpowers/specs/2026-09-22-bdd-workflow-design.md`.
 Test logs: `docs/superpowers/testing/`.
 
@@ -58,3 +60,28 @@ From 0.6.0 the planner plans and the implementer implements. `slicing-into-incre
 When execution runs under `superpowers:subagent-driven-development`, say so in the prompt: implementers work from intent under `bdd-red-green` and hand back on its stop conditions; task reviewers run the suite and every check themselves, and "cannot verify" fails the review rather than passing it; main is pushed when the batch is green and reviewed.
 
 `formulating-features` sorts each scenario as *settled*, when the spec sentence it cites admits one reading, or *deciding*, when it fixes something the spec leaves open or picks one of two readings. Only deciding scenarios wait for the person's approval; settled ones go straight to slicing. The person approves decisions, not transcription.
+
+## Agents: rules held by tools, not by asking
+
+From 0.7.0 the plugin gives each role in the workflow an agent whose tools are exactly the role's. A controller running `superpowers:subagent-driven-development` dispatches these types instead of `general-purpose`.
+
+| agent | tools | model | for |
+|---|---|---|---|
+| `shopsystem-bdd:feature-formulator` | Read, Glob, Grep | opus | writing feature files from the spec, blind to the code |
+| `shopsystem-bdd:bdd-implementer` | Read, Edit, Write, Glob, Grep, Bash, Skill | sonnet | one task of a no-code plan, `bdd-red-green` preloaded |
+| `shopsystem-bdd:bdd-task-reviewer` | Read, Glob, Grep, Bash | opus | a task's review, and the scoped re-review of a fix round |
+| `shopsystem-bdd:bdd-branch-reviewer` | Read, Glob, Grep, Bash | opus | the whole-branch review at the end of a batch |
+| `shopsystem-bdd:architecture-reviewer` | Read, Glob, Grep, Bash, Write | opus | the review cut after every six slices, coupling included |
+
+What the tools make structural:
+- **No agent can start another.** None has the Agent tool, so an implementer cannot spawn helpers or its own reviewer, and a reviewer cannot ask for a second opinion.
+- **The reviewers cannot edit the code they judge.** They have no Edit tool. The architecture reviewer's one Write is for its report file.
+- **The implementer always has `bdd-red-green` in its context.** It is loaded through the `skills` field.
+
+What stays a request:
+- **Bash is still available.** Reviewers need it to run the suite, so "no commit, no push, no tag" is still asked, not enforced.
+- **Command restrictions don't carry over from a plugin.** A plugin agent's `hooks` and `permissionMode` are ignored, and a tool entry with a specifier such as `Bash(git push *)` removes Bash altogether.
+- **The fuller guarantee needs repository settings.** It is `permissions.deny` in the repository's `.claude/settings.json`, which binds the controller too, so the controller's own push must then run where those rules do not apply.
+
+`model` is a default: a dispatch that names a model overrides it, as the controller does for the final review on the most capable model.
+
