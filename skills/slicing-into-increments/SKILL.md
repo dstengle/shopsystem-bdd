@@ -54,7 +54,20 @@ Not a slice: anything with no scenario and no check. A layer, a module, or a lib
    suite green and the structural target met). Defect reviews already run
    per batch; this one asks whether the code is shaped the way the
    conventions say.
-7. **Invoke superpowers:writing-plans** with the plan file as its input and this constraint: one task per slice, in slice order, no task that isn't a slice. That is where module names, signatures, and fixture layouts belong. Skip this step while any feature awaits approval.
+7. **Invoke superpowers:writing-plans** with the plan file as its input and the constraint below. Skip this step while any scenario the formulator marked *deciding* awaits approval; settled scenarios never wait.
+
+## The Hand-off to writing-plans
+
+The plan carries no code. The planner plans; the implementer writes the code under bdd-red-green. Give writing-plans this constraint, in these words or their equal:
+
+- One task per slice, in slice order, no task that isn't a slice.
+- No code blocks, file contents, diffs, or step-definition bodies. writing-plans' own template shows code; here that code is the implementer's to write. Nothing is built in a scratch copy first, and no plan is replayed.
+- What each task carries instead: the slice's scenarios or check; why each scenario is red today, found by reading the current code and running the red scenarios (running the suite and probing current behaviour is allowed, building the change is not); where the change lands by the project's conventions (`CLAUDE.md`'s module map) and which of its rules the task implements once; the decisions the spec leaves open, each stated as a decision with the spec passage it rests on, so the implementer does not decide them alone; the existing step definitions and fixtures the scenarios can reuse, by name; the verification commands, with expected counts derived from the tags (`pytest --collect-only -q -m slice-N`), never from a build; and the checkpoint the implementer logs.
+- A genuine unknown may be answered by a throwaway spike whose result is a sentence in the plan, never its code.
+- Questions for the spec found while probing go in the plan's Review Focus with a reproduction.
+- Paths in commands are relative to the checkout, never absolute temporary paths.
+
+A plan that carries code makes red a performance: the implementer pastes what already went green elsewhere, the reviewer checks a diff against a plan instead of code against a scenario, and hand-backs stop happening because the plan pre-authorised every stop condition. A plan that carries intent keeps the red run an observation.
 
 ## The Plan File
 
@@ -109,7 +122,9 @@ The plan does not choose them. "Clamp rather than raise", "keep the first code w
 | "I verified the scenario passes with the corrected line" | Passing against a line you wrote proves nothing about the line they wrote. |
 | "The hand-back said slicing or formulating decides" | Slicing decides which row of the table applies. Formulating decides what the line says. |
 | "They're away for an hour, so I made the call" | Re-formulate and stop. The plan waits; the contract doesn't get edited to save an hour. |
-| "The rest of the plan doesn't depend on that line, so I went on to writing-plans" | Slicing the independent parts is fine. Tasks are not: writing-plans waits for the approval. |
+| "The rest of the plan doesn't depend on that line, so I went on to writing-plans" | Slicing the independent parts is fine. Tasks for a deciding scenario are not: writing-plans waits for its approval. Settled scenarios go on. |
+| "writing-plans' template has code in every step, so the plan should too" | The template shows a shape, not this workflow's division of labour. The code is the implementer's; a plan with code makes red performed rather than observed. Hand off with the constraint above. |
+| "I'll build it in a scratch copy first so the plan's counts are right" | Counts come from the tags. A scratch build is the implementation done on the wrong model by the wrong role, and its code leaks into the plan. |
 | "It's the safe default, and I noted it in the log" | A default no scenario asserts is a contract decision. Log it as a question, don't plan it. |
 | "The implementer will need this design to start" | The implementer gets a task from writing-plans. The slice plan is not that document. |
 | "I can see from the step definitions that it passes" | You can see that steps exist. Only a run shows they pass. Run it. |

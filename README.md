@@ -50,3 +50,11 @@ claude plugin install shopsystem-bdd@shopsystem-bdd
 
 While developing, `claude --plugin-dir <path to this checkout>` loads the
 working copy instead.
+
+## Plans carry no code; approval is for decisions
+
+From 0.6.0 the planner plans and the implementer implements. `slicing-into-increments` hands writing-plans a constraint: no code blocks, file contents or diffs in the plan; each task says which scenarios go green, why they are red today, where the change lands by the project's `CLAUDE.md`, what the spec left open and how it was decided, which steps and fixtures to reuse, and the verification commands with counts taken from the tags. Nothing is built in a scratch copy first and no plan is replayed. Under `bdd-red-green` the implementer writes the code after the red run; a task that carries code is not pasted.
+
+When execution runs under `superpowers:subagent-driven-development`, say so in the prompt: implementers work from intent under `bdd-red-green` and hand back on its stop conditions; task reviewers run the suite and every check themselves, and "cannot verify" fails the review rather than passing it; main is pushed when the batch is green and reviewed.
+
+`formulating-features` sorts each scenario as *settled*, when the spec sentence it cites admits one reading, or *deciding*, when it fixes something the spec leaves open or picks one of two readings. Only deciding scenarios wait for the person's approval; settled ones go straight to slicing. The person approves decisions, not transcription.

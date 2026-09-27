@@ -11,6 +11,10 @@ The `.feature` files are the contract. Code exists to satisfy them, one scenario
 
 **Violating the letter of these rules is violating the spirit of these rules.**
 
+## The Task Is Intent, Not Code
+
+The task writing-plans hands you says which scenarios go green, why they are red today, where the change lands, and what was decided; it does not carry the code. You write the code, after the red run, from what the scenario asks. If a task does carry code, do not paste it: run the scenario red first, write your own, and say in the checkpoint that the task carried code.
+
 ## The Cycle
 
 Work through the slice's scenarios in the order the plan lists them. The slice's scenarios carry a `@slice-<n>` tag, so `python -m pytest -q -m "slice-<n>"` runs the slice. For each scenario:

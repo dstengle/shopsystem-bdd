@@ -14,7 +14,8 @@ Feature files are the contract the human approves and the code must satisfy. The
 1. **Dispatch the `feature-formulator` agent** (provided by this plugin, read-only tools) with the brief below. Fill in the spec path. Give it no other paths. On a hand-back from slicing, use the hand-back brief instead.
 2. **Check the coverage report** it returns, both directions: every business rule in the spec maps to at least one scenario, and every scenario cites the spec sentence that requires it. A scenario with no citation is removed. A rule with no scenario goes back to the agent. Feature files carry no tags from this skill; slicing adds `@slice-<n>` tags later and owns them.
 3. **Write the files** under `features/` exactly as returned, then commit them alone.
-4. **Stop for approval.** Show the person the files and wait for an explicit yes. Do not invoke slicing-into-increments or writing-plans, write step definitions, or write code until then. When a hand-back from slicing triggered this skill, the changed feature needs the same approval.
+4. **Sort the scenarios by what decides them.** A scenario is *settled* when the coverage table cites a spec sentence that requires it and admits one reading; it is *deciding* when it fixes something the spec leaves open, chooses between two readings of the spec, or changes what an approved scenario means. The brief the agent returns marks each row one or the other, and that mark stands: the main agent may move a row from settled to deciding when it sees a second reading, never from deciding to settled, because the agent that could not see the code is the one that judged the spec. Settled scenarios need no approval: hand them to slicing-into-increments now. Deciding scenarios wait.
+5. **Stop for approval of the deciding scenarios only.** Show the person those scenarios with the two readings, and wait for an explicit yes on each. Do not write step definitions or code for them until then, and slicing does not place them until then. When nothing is deciding, say so in one line and continue; the person is not asked to approve what the spec already said. When a hand-back from slicing triggered this skill, the changed scenario is settled if the rewrite cites the sentence that decides it, and deciding otherwise.
 
 ## The Brief
 
@@ -60,10 +61,12 @@ Each feature file has this shape:
   appear. Amounts are plain decimals with no currency symbol.
 
 Return: (1) each file as a fenced block; (2) a coverage table with one row per
-scenario: scenario name and the spec sentence (quoted) that requires it;
-(3) spec rules with no scenario, if any; (4) questions for the spec: cases
-you noticed that the spec does not mention, one line each, with no scenario
-written for them.
+scenario: scenario name, the spec sentence (quoted) that requires it, and one
+word, `settled` when that sentence admits one reading and the scenario is it,
+`deciding` when the scenario fixes something the sentence leaves open or picks
+one of two readings (say which two); (3) spec rules with no scenario, if any;
+(4) questions for the spec: cases you noticed that the spec does not mention,
+one line each, with no scenario written for them.
 ```
 
 ## The Hand-back Brief
@@ -83,7 +86,7 @@ spec or the approved scenarios decides it, return no scenario: return the
 question the human must answer, in one sentence, with the two readings.
 ```
 
-The returned scenario carries its one-line description like any other. The main agent writes it over the old one, commits, and stops for approval as in step 4. If a question came back instead, log it under the RE-FORMULATE entry as `QUESTION FOR THE SPEC:` and stop; nothing is written to the feature file.
+The returned scenario carries its one-line description like any other. The main agent writes it over the old one, commits, and sorts it as in step 4: settled when it cites the sentence or approved scenario that decides it, and then slicing resumes without approval; deciding otherwise, and then it waits as in step 5. If a question came back instead, log it under the RE-FORMULATE entry as `QUESTION FOR THE SPEC:` and stop; nothing is written to the feature file.
 
 ## Why the agent cannot see the code
 
@@ -102,4 +105,6 @@ Given the code, a writer describes what it does. Given only the spec, a writer d
 | `£` in amounts "to match the UI section" | Plain decimals |
 | `When I apply the code`, `my cart` | Third person with the role named: `the customer applies` |
 | "Applying the same code again does not discount twice", cited to the one-code rule | Unmentioned cases go under questions for the spec, never as scenarios |
+| "The writer marked it deciding, but 'minimum' normally includes the value itself, so I treated it as settled" | That is the second reading being chosen. A deciding mark is the formulator's; the main agent never lowers it. Show the person the two readings |
+| Every feature file held for approval, spec-settled and deciding alike | The person approves decisions, not transcription. A scenario whose cited sentence admits one reading is settled and goes to slicing; only what the spec leaves open waits |
 | Eight scenarios, one per unacceptable input, each with the same Then | One Scenario Outline, eight Examples rows |
