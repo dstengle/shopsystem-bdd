@@ -39,6 +39,8 @@ frequency is measurable.
 
 ## Pipeline
 
+> Superseded in part by `2026-09-29-capability-spec-design.md` (0.8.0): the spec is `spec/`, a note is integrated into it by `integrating-a-proposal`, and the human gate is on Behaviour lines. The formulating-features section below describes 0.1–0.7.
+
 1. superpowers brainstorming produces and commits a spec, unchanged.
 2. `formulating-features` fires on spec approval. Output: `.feature` files
    under `features/`. Ends at the human gate.

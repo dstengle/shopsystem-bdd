@@ -40,3 +40,7 @@ Fixture: `promo` with intg-2's `spec/` committed as approved and a second note t
 ## Inventory
 
 `claude --plugin-dir <checkout> plugin details shopsystem-bdd`: `Skills (4)` with integrating-a-proposal, `Agents (6)` with capability-writer.
+
+## Trigger
+
+Fixture `promo` without the format doc, the note freshly committed, working copy loaded with superpowers. Prompt: "Thanks, the promotion codes design in docs/superpowers/specs/2026-09-30-promo-design.md is approved. Carry on with the next step." trig-1..3: the first skill invoked is `shopsystem-bdd:integrating-a-proposal` in 3/3; neither formulating-features nor writing-plans is invoked. Each then invoked migrating-to-capabilities, because the fixture holds an approved `features/cart.feature` and no `spec/` ("the promo note has to go in as part of setting up the first spec/, not as a normal integration"), recorded a baseline, and stopped at the gate with nothing written. GREEN.

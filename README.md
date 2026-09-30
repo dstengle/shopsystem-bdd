@@ -1,12 +1,16 @@
 # shopsystem-bdd
 Claude Code plugin for the shopsystem harness: a behaviour-driven workflow
-that replaces test-driven development with Gherkin feature files as the
-contract, thin vertical slicing, and one human gate at feature approval.
+that replaces test-driven development with a single spec of capability
+files, Gherkin feature files paired with them as the contract, thin vertical
+slicing, and one human gate on the spec's Behaviour lines.
 
-Skills: `formulating-features`, `slicing-into-increments`, `bdd-red-green`.
-Agents: `feature-formulator`, `bdd-implementer`, `bdd-task-reviewer`,
-`bdd-branch-reviewer`, `architecture-reviewer`.
-Design: `docs/superpowers/specs/2026-09-22-bdd-workflow-design.md`.
+Skills: `integrating-a-proposal`, `formulating-features`,
+`slicing-into-increments`, `bdd-red-green`, `migrating-to-capabilities`.
+Agents: `capability-writer`, `feature-formulator`, `bdd-implementer`,
+`bdd-task-reviewer`, `bdd-branch-reviewer`, `architecture-reviewer`.
+Format: `docs/capability-format.md`.
+Design: `docs/superpowers/specs/2026-09-22-bdd-workflow-design.md`, and
+`docs/superpowers/specs/2026-09-29-capability-spec-design.md` for 0.8.0.
 Test logs: `docs/superpowers/testing/`.
 
 ## Requires
@@ -19,16 +23,17 @@ the object form of a dependency rejects a suffixed name, so it is a string). Cla
 refuses to load this plugin when superpowers is not installed (a
 `dependency-unsatisfied` load error). As of Claude Code on 2026-09-22 version
 constraints on dependencies are not enforced, so the minimum version here is
-documentation. The three skills assume the rest of
+documentation. The skills assume the rest of
 the superpowers pipeline around them:
 
-- `superpowers:brainstorming` produces the approved spec that
-  `formulating-features` reads.
+- `superpowers:brainstorming` produces an approved note, a proposal that
+  `integrating-a-proposal` merges into `spec/`; `formulating-features` reads
+  `spec/`, never the note.
 - `slicing-into-increments` invokes `superpowers:writing-plans` to turn
   slices into tasks.
 - `superpowers:executing-plans` or `superpowers:subagent-driven-development`
   runs those tasks, with `bdd-red-green` firing where they would otherwise
-  fire `superpowers:test-driven-development`. All three skills state that
+  fire `superpowers:test-driven-development`. formulating-features, slicing and bdd-red-green state that
   they supersede test-driven-development when both apply.
 
 ## Models
@@ -52,6 +57,17 @@ claude plugin install shopsystem-bdd@shopsystem-bdd
 
 While developing, `claude --plugin-dir <path to this checkout>` loads the
 working copy instead.
+
+## One spec per context; the gate is on Behaviour lines
+
+From 0.8.0 a bounded context has one spec: `spec/index.md`, the decision ledger `spec/decisions.md`, and `spec/capabilities/<name>.md`, each capability formulated as `features/<name>.feature`. The format is `docs/capability-format.md`.
+
+- A brainstorming note is a proposal. `integrating-a-proposal` has the `capability-writer` agent (read-only, blind to the code) merge it into `spec/`, and stops at the one human gate: the added, changed and removed Behaviour lines and the questions the note left open. It never starts a second spec.
+- `formulating-features` writes one scenario per approved line and needs no second approval. A line with two readings gets no scenario; its question goes to the person and the answer back through integration. This replaces 0.6.0's settled/deciding sort.
+- Slicing cuts stack slices from the bounds in `spec/index.md`; its `QUESTION FOR THE SPEC:` lines end in a capability line or a ledger entry.
+- `migrating-to-capabilities` moves a repository with notes and approved features onto `spec/`: capabilities grouped by behaviour, not by the old files; scenarios moved verbatim; test bindings follow the step definitions, which are never edited; the suite, the passing tests and every slice-tag count equal before and after. On a copy of shopsystem-kb: 171 scenarios from 16 features into 20 capabilities, 265 passed before and after, all 89 slice-tag counts equal.
+
+A consuming repository's `CLAUDE.md` can say: "Brainstorming reads `spec/` first. Its note proposes changes to `spec/`, which integrating-a-proposal merges; it never starts a second spec."
 
 ## Plans carry no code; approval is for decisions
 
