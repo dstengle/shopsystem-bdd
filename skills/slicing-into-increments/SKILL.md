@@ -22,7 +22,7 @@ Three kinds, keyed to what the slice delivers, never to what its unknown is abou
 
 - **capability**: verified by scenarios. Someone can do one new thing. Every slice cut from a feature file is this, including its refusals and error paths, whatever technology its unknown concerns.
 - **enabling**: verified by a check. The environment, packaging, wiring, or tooling the next slices stand on. "The development environment works" is this.
-- **stack**: verified by a check. A property of the running system the spec states outside any user scenario: transport, throughput, load time, contention. Cut from the spec's non-functional sentences, and only when the spec states a bound or the skeleton needs it.
+- **stack**: verified by a check. A property of the running system the spec states outside any user scenario: transport, throughput, load time, contention. Cut from the bounds among the constraints in `spec/index.md`, and only when a bound is stated or the skeleton needs it.
 
 Three tests, all required, for every kind:
 - **End to end.** Scenarios pass against the system's real entry point with real storage and real side effects behind it; a check runs against the real thing, not a mock. Internals may be hard-coded or stubbed only where nothing in the slice asserts on them.
@@ -34,8 +34,8 @@ Not a slice: anything with no scenario and no check. A layer, a module, or a lib
 ## Process
 
 1. **Run the feature suite** (`python -m pytest -q`, or the project's equivalent) and paste its summary line into the log as `Suite: <N> passed, <M> failed`. Every scenario that passes is credited to the slice whose work made it pass, or to a "Satisfied by existing behaviour" line citing that run. It never appears in a later slice. Reading the step definitions is not a run.
-2. **Cut slices** by the three tests. Capability slices come from the feature files. Enabling slices come from what the skeleton stands on: a runnable package, the suite wired up, a dependency installed, a contract file generating code. Stack slices come from the spec's non-functional sentences. Give each slice one unknown: the question building it will settle. A candidate with two unknowns is two slices. A candidate with none bundles with its neighbours in the same feature that share step definitions.
-3. **Order slices.** First the enabling slice the skeleton stands on, if any. Then the walking skeleton: the shortest path through every layer that someone can observe. Then by implementation risk, the slice with the largest unknown first, so a surprise arrives while the least code depends on it. Value breaks ties. Dependency is a constraint, not an ordering: a slice may not need another slice's code to pass, so it comes later or the two merge.
+2. **Cut slices** by the three tests. Capability slices come from the feature files. Enabling slices come from what the skeleton stands on: a runnable package, the suite wired up, a dependency installed, a contract file generating code. Stack slices come from the bounds in `spec/index.md`. Give each slice one unknown: the question building it will settle. A candidate with two unknowns is two slices. A candidate with none bundles with its neighbours in the same feature that share step definitions.
+3. **Order slices.** First the enabling slice the skeleton stands on, if any. Then the walking skeleton: the shortest path through every layer that someone can observe. Then by implementation risk, the slice with the largest unknown first, so a surprise arrives while the least code depends on it. Value breaks ties. Dependency is a constraint, not an ordering: a slice may not need another slice's code to pass, so it comes later or the two merge. The order of building in `spec/index.md` is such a constraint.
    A scenario added after the plan was cut, from a review, a hand-back, or a
    spec amendment, is placed by its unknown among the remaining slices,
    never ahead of all of them. Only work the next slice needs precedes it.
@@ -57,7 +57,7 @@ Not a slice: anything with no scenario and no check. A layer, a module, or a lib
    already run per batch; this one asks whether the code is shaped the way
    the conventions say. It runs before the next plan is written, never as a
    task inside one.
-7. **Invoke superpowers:writing-plans** with the plan file as its input and the constraint below. Skip this step while any scenario the formulator marked *deciding* awaits approval; settled scenarios never wait.
+7. **Invoke superpowers:writing-plans** with the plan file as its input and the constraint below. Skip this step while a `RE-FORMULATE` entry or a `QUESTION FOR THE SPEC:` a slice depends on is unanswered.
 
 ## The Hand-off to writing-plans
 
@@ -65,7 +65,7 @@ The plan carries no code. The planner plans; the implementer writes the code und
 
 - One task per slice, in slice order, no task that isn't a slice.
 - No code blocks, file contents, diffs, or step-definition bodies. writing-plans' own template shows code; here that code is the implementer's to write. Nothing is built in a scratch copy first, and no plan is replayed.
-- What each task carries instead: the slice's scenarios or check; why each scenario is red today, found by reading the current code and running the red scenarios (running the suite and probing current behaviour is allowed, building the change is not); where the change lands by the project's conventions (`CLAUDE.md`'s module map) and which of its rules the task implements once; the decisions the spec leaves open, each stated as a decision with the spec passage it rests on, so the implementer does not decide them alone; the existing step definitions and fixtures the scenarios can reuse, by name; the verification commands, with expected counts derived from the tags (`pytest --collect-only -q -m slice-N`), never from a build; and the checkpoint the implementer logs.
+- What each task carries instead: the slice's scenarios or check; why each scenario is red today, found by reading the current code and running the red scenarios (running the suite and probing current behaviour is allowed, building the change is not); where the change lands by the project's conventions (`CLAUDE.md`'s module map) and which of its rules the task implements once; the decisions the capability's Behaviour leaves open, each stated as a decision with the line or ledger entry it rests on, so the implementer does not decide them alone; the existing step definitions and fixtures the scenarios can reuse, by name; the verification commands, with expected counts derived from the tags (`pytest --collect-only -q -m slice-N`), never from a build; and the checkpoint the implementer logs.
 - A genuine unknown may be answered by a throwaway spike whose result is a sentence in the plan, never its code.
 - Questions for the spec found while probing go in the plan's Review Focus with a reproduction.
 - Paths in commands are relative to the checkout, never absolute temporary paths.
@@ -104,15 +104,17 @@ Read the HAND-BACK entry. Then do exactly one of these:
 |---|---|
 | Re-order or split remaining slices | This skill, alone |
 | Drop a slice whose unknown is already settled | This skill, alone |
-| Change what any Given, When, or Then line says, add a scenario, or remove one | **Not this skill.** Invoke `formulating-features` for that feature. The human approves the result. |
+| Change what any Given, When, or Then line says, add a scenario, or remove one | **Not this skill.** Invoke `formulating-features` for that feature. A question it returns goes to the person and then to `integrating-a-proposal`. |
 
 The test for the third row is mechanical: would any Given, When, or Then line differ afterwards, including a number. If yes, it is the third row. This skill never decides what a scenario should have said.
 
-When the third row applies: append a `RE-FORMULATE` entry to the log naming the feature, the scenario, and the hand-back evidence, commit the plan, and invoke `formulating-features`. When it returns, finish cutting and ordering every slice that does not contain that scenario, mark the slice that does `blocked: awaiting approval`, commit, and stop. Do not invoke writing-plans: its tasks would derive from an unapproved contract. writing-plans runs once the human has approved the feature.
+When the third row applies: append a `RE-FORMULATE` entry to the log naming the feature, the scenario, and the hand-back evidence, commit the plan, and invoke `formulating-features`. When it returns, finish cutting and ordering every slice that does not contain that scenario, mark the slice that does `blocked: awaiting approval`, commit, and stop. Do not invoke writing-plans: its tasks would derive from an unapproved contract. writing-plans runs once the scenario is re-formulated from its line.
+
+A scenario removed because its capability line was removed is logged; its step definitions and code are left for the architecture review to flag.
 
 ## Semantics the Scenarios Don't Cover
 
-The plan does not choose them. "Clamp rather than raise", "keep the first code when the second is rejected", "check unknown before expired" are contract decisions. They go in the log as `QUESTION FOR THE SPEC:` lines, and a slice that cannot be cut without answering one is blocked, not guessed.
+The plan does not choose them. "Clamp rather than raise", "keep the first code when the second is rejected", "check unknown before expired" are contract decisions. They go in the log as `QUESTION FOR THE SPEC:` lines, then to the person and, with their answer, to `integrating-a-proposal`, so the answer lands in a capability line or the ledger. A slice that cannot be cut without answering one is blocked, not guessed.
 
 ## Rationalizations That Do Not Hold
 
@@ -125,7 +127,7 @@ The plan does not choose them. "Clamp rather than raise", "keep the first code w
 | "I verified the scenario passes with the corrected line" | Passing against a line you wrote proves nothing about the line they wrote. |
 | "The hand-back said slicing or formulating decides" | Slicing decides which row of the table applies. Formulating decides what the line says. |
 | "They're away for an hour, so I made the call" | Re-formulate and stop. The plan waits; the contract doesn't get edited to save an hour. |
-| "The rest of the plan doesn't depend on that line, so I went on to writing-plans" | Slicing the independent parts is fine. Tasks for a deciding scenario are not: writing-plans waits for its approval. Settled scenarios go on. |
+| "The rest of the plan doesn't depend on that line, so I went on to writing-plans" | Slicing the independent parts is fine. Tasks for a scenario awaiting its line are not: writing-plans waits for the changed line. |
 | "writing-plans' template has code in every step, so the plan should too" | The template shows a shape, not this workflow's division of labour. The code is the implementer's; a plan with code makes red performed rather than observed. Hand off with the constraint above. |
 | "I'll build it in a scratch copy first so the plan's counts are right" | Counts come from the tags. A scratch build is the implementation done on the wrong model by the wrong role, and its code leaks into the plan. |
 | "It's the safe default, and I noted it in the log" | A default no scenario asserts is a contract decision. Log it as a question, don't plan it. |

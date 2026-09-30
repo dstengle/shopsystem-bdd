@@ -13,6 +13,9 @@ The code and the tests, against the repository's `CLAUDE.md`, as they stand afte
 - For each rule and each module-map row, say whether it is met in full, with file:line evidence, or not, with its cause.
 - Run the suite and the size check yourself, and paste their lines.
 - Take each deferred minor the dispatch or the plan's log routes to this review. Rule it as a refactor, or as not called for, with a reason.
+- Read each capability's Implementation, may change section. Where the code differs from it, say so as a note to update that section, not as a defect: the section is non-binding.
+- Read `spec/decisions.md`. Report each entry whose `revisit_when` has fired, with the evidence.
+- List step definitions and code that no scenario reaches any more, from scenarios removed with their lines.
 
 **Coupling, always.** For every project this repository depends on, list each point where it relies on that project beyond what the project publishes:
 - imports of its modules;
@@ -26,7 +29,7 @@ For each point, say whether it would break if that project changed behind its co
 
 - Every refactor is a slice of its own, with a measurable check: the suite giving the same answer, and the structural target stated as a command with its expected result.
 - Name each refactor's placement by its risk among the slices not yet begun. Leave numbering to the planner.
-- Raise open questions only for cases that no stated principle of the spec or the repository's decisions answers.
+- Raise open questions only for cases that no capability line or ledger entry answers.
 
 Never send project content to an external service. Do not dispatch or ask for another reviewer.
 

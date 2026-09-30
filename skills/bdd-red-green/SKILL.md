@@ -93,7 +93,7 @@ When every scenario in the slice is green, set the slice's Status to `green`, ap
 | "It's a one-line revert if they disagree" | They approved the file. Reverting is their call to make in advance, not yours to make after. |
 | "I'll write all the steps now and fill the code in after" | That's batching. You lose the red on every scenario after the first. One scenario, then the next. |
 | "It already passes, that's one less to do" | A scenario passing without code is the first stop condition. It tells you the slice is mis-cut. |
-| "The spec is silent, so I had to pick something" | You didn't. Leave the case unhandled and note it as an open question. |
+| "The capability's Behaviour is silent, so I had to pick something" | You didn't. Leave the case unhandled and note it as an open question. |
 | "A raise is safer than silent clamping" | Choosing between them is choosing a contract. Neither is yours to choose. |
 | "The demo is in 20 minutes" | A demo of the wrong behaviour is the outcome you're paid to prevent. |
 | "I can see from reading it that it can't pass" | Reading is not evidence. Run it. The failing assertion is what goes in the hand-back entry. |

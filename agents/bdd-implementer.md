@@ -28,7 +28,7 @@ You have no tool for starting other agents. Do the whole task yourself, and do n
 ## Stopping
 
 Stop and report `BLOCKED` or `NEEDS_CONTEXT`, with the specifics in your reply, when any of these happens:
-- the task needs a decision the brief and the spec leave open;
+- the task needs a decision the brief and the capability's Behaviour leave open;
 - a previously green scenario breaks and fixing it would change what a step means;
 - a file would cross the repository's size limit;
 - you are unsure your approach is right.
