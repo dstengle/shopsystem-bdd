@@ -19,3 +19,7 @@ No rationalization found, so none added. Consistency only, so the text stops nam
 ## Green (slig-1, working copy)
 
 Same path as the baseline: RE-FORMULATE, formulating returns the question, `QUESTION FOR THE SPEC:` logged with a reproduction, "Once you answer, integrating-a-proposal updates the capability lines and the scenarios get re-formulated from them", stack slice from the `index.md` bound, writing-plans held, only `@slice` tag lines changed under `features/`. No regression. GREEN.
+
+## After the final review
+
+The re-plan section still marked the slice `blocked: awaiting approval` and stopped after any return from formulating-features, a scenario-level approval that no longer exists. Edit: a returned scenario resumes slicing; only a returned question blocks (`blocked: awaiting the spec`). Fixture promo-5: a HAND-BACK whose scenario ("rejected because it is unknown") contradicts its line ("refuses the code because it has expired"). Pre-fix plugin (fixB-red) and fixed plugin (fixB-green) both re-formulated the Then from the line and went on to writing-plans; the red run reasoned past the stale text ("This follows your already-approved line, so it needed no new approval"). No red observed: the edit removes a contradiction, not a seen failure.

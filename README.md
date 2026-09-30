@@ -75,7 +75,7 @@ From 0.6.0 the planner plans and the implementer implements. `slicing-into-incre
 
 When execution runs under `superpowers:subagent-driven-development`, say so in the prompt: implementers work from intent under `bdd-red-green` and hand back on its stop conditions; task reviewers run the suite and every check themselves, and "cannot verify" fails the review rather than passing it; main is pushed when the batch is green and reviewed.
 
-`formulating-features` sorts each scenario as *settled*, when the spec sentence it cites admits one reading, or *deciding*, when it fixes something the spec leaves open or picks one of two readings. Only deciding scenarios wait for the person's approval; settled ones go straight to slicing. The person approves decisions, not transcription.
+0.6.0's settled/deciding sort of scenarios is replaced in 0.8.0 by the gate on Behaviour lines (above). The principle stands: the person approves decisions, not transcription.
 
 ## Agents: rules held by tools, not by asking
 
@@ -83,6 +83,7 @@ From 0.7.0 the plugin gives each role in the workflow an agent whose tools are e
 
 | agent | tools | model | for |
 |---|---|---|---|
+| `shopsystem-bdd:capability-writer` | Read, Glob, Grep | opus | integrating a note into `spec/`, and a repository's first `spec/`, blind to the code |
 | `shopsystem-bdd:feature-formulator` | Read, Glob, Grep | opus | writing feature files from the spec, blind to the code |
 | `shopsystem-bdd:bdd-implementer` | Read, Edit, Write, Glob, Grep, Bash, Skill | sonnet | one task of a no-code plan, `bdd-red-green` preloaded |
 | `shopsystem-bdd:bdd-task-reviewer` | Read, Glob, Grep, Bash | opus | a task's review, and the scoped re-review of a fix round |

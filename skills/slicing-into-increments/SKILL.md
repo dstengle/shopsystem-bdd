@@ -108,7 +108,7 @@ Read the HAND-BACK entry. Then do exactly one of these:
 
 The test for the third row is mechanical: would any Given, When, or Then line differ afterwards, including a number. If yes, it is the third row. This skill never decides what a scenario should have said.
 
-When the third row applies: append a `RE-FORMULATE` entry to the log naming the feature, the scenario, and the hand-back evidence, commit the plan, and invoke `formulating-features`. When it returns, finish cutting and ordering every slice that does not contain that scenario, mark the slice that does `blocked: awaiting approval`, commit, and stop. Do not invoke writing-plans: its tasks would derive from an unapproved contract. writing-plans runs once the scenario is re-formulated from its line.
+When the third row applies: append a `RE-FORMULATE` entry to the log naming the feature, the scenario, and the hand-back evidence, commit the plan, and invoke `formulating-features`. When it returns a rewritten scenario, the line decided it: slicing resumes with that scenario in its slice. When it returns a question, finish cutting and ordering every slice that does not contain that scenario, mark the slice that does `blocked: awaiting the spec`, commit, and stop. Do not invoke writing-plans: its tasks would derive from an undecided contract. writing-plans runs once the line is changed and the scenario re-formulated from it.
 
 A scenario removed because its capability line was removed is logged; its step definitions and code are left for the architecture review to flag.
 

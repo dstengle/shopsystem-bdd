@@ -19,17 +19,16 @@ Format: `docs/capability-format.md` in this plugin. The gate is integrating-a-pr
 ## Process
 
 1. **Dispatch the `capability-writer` agent** with the migration brief below.
-2. **Check the mapping table.** Every existing scenario maps to exactly one line; every line cites a note sentence or a scenario. A scenario with no row goes back to the agent.
+2. **Check the mapping table.** Every existing scenario maps to exactly one line; every line cites a note sentence or a scenario. A scenario with no row goes back to the agent. Two scenarios with one title that land in one capability are a question for the gate: pytest-bdd binds one of them and drops the other without a word. The person's retitle is the one title change migration makes, and it is applied to the baseline too.
 3. **Stop at the gate.** Show the person: the capabilities and which old features' scenarios each receives; every unbacked line (a note sentence with no scenario behind it: new contract); every question. Lines written from approved scenarios are approved already. Wait for an explicit yes and the answers; answers go back to the agent. Then write `spec/`, append the ledger, and commit `spec/` alone.
 4. **Re-pair**, the main agent:
    - One file `features/<name>.feature` per capability: `# formulated from spec/capabilities/<name>.md`, `Feature: <title>`, `  Narrator: <narrator>`. The old `So that …` line goes: Purpose carries it.
    - Move each mapped scenario in, in line order, verbatim: its tags (`@slice-<n>` included), title, description, steps, tables and Examples.
-   - Two scenarios with one title in one capability are a question for the gate, never renamed silently: pytest-bdd binds one of them and drops the other without a word.
    - A Background stays only if every source file of that capability had the same one. Otherwise each scenario's source Background is inlined as its first steps. The test: each scenario's Background steps followed by its own steps are identical before and after.
    - Test bindings follow the step definitions, which never change. Where every step a capability's scenarios use has one body, one test module per capability binds its feature file (`scenarios(...)`), and step definitions from old modules move unedited to `conftest.py`. Where one step text has different bodies in different old modules, those old modules stay, with their definitions, fixtures and constants untouched, and each binds its own scenarios from the new file by title (`@scenario("<new file>", "<title>")`) in place of `scenarios(...)`. A feature file bound by title anywhere is bound by title everywhere, since `scenarios(...)` would bind its scenarios a second time: each scenario is bound by exactly one module.
    - Rewrite the feature half of `Scenarios:` lines in the living `*-slices.md` and log the migration there. Batch implementation plans are history: leave them.
-   - Delete the old feature files and test modules.
-5. **Verify** against the baseline: the same summary line (warnings aside), the same passing tests, the same count per slice tag. Any difference: stop and report it. Never edit a scenario to make the numbers match. Commit features, tests and the slice plan together.
+   - Delete the old feature files, and the old test modules that no longer bind any scenario.
+5. **Verify** against the baseline: the same summary line (warnings aside); the same passing scenarios, compared by scenario title through the mapping table (module paths in test ids change with the rebinding; gate-approved retitles are applied to the baseline); the same count per slice tag. Any difference: stop and report it. Never edit a scenario to make the numbers match. Commit features, tests and the slice plan together.
 6. **Hand off.** Head each note with `Proposal, integrated into spec/ on <date>.` and commit. Approved unbacked lines go to formulating-features, then slicing.
 
 ## The Migration Brief
@@ -62,7 +61,7 @@ Return the five parts your definition lists, and the migration mapping table.
 ## Red Flags
 
 - A capability file for every old feature file, with the same names
-- A diff to any Given, When or Then line, a title, a description or a tag other than its file
+- A diff to any Given, When or Then line, a description or a tag, or to a title the person did not retitle at the gate
 - A step definition's body edited while moving it
-- A verify step that compares counts but not the passing tests
+- A verify step that compares counts but not the passing scenarios by title
 - A suite that did not run cleanly before migration, recorded as the baseline

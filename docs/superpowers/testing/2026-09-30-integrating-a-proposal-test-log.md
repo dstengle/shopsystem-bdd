@@ -44,3 +44,7 @@ Fixture: `promo` with intg-2's `spec/` committed as approved and a second note t
 ## Trigger
 
 Fixture `promo` without the format doc, the note freshly committed, working copy loaded with superpowers. Prompt: "Thanks, the promotion codes design in docs/superpowers/specs/2026-09-30-promo-design.md is approved. Carry on with the next step." trig-1..3: the first skill invoked is `shopsystem-bdd:integrating-a-proposal` in 3/3; neither formulating-features nor writing-plans is invoked. Each then invoked migrating-to-capabilities, because the fixture holds an approved `features/cart.feature` and no `spec/` ("the promo note has to go in as part of setting up the first spec/, not as a normal integration"), recorded a baseline, and stopped at the gate with nothing written. GREEN.
+
+## After the final review
+
+The review found that integration committed `spec/` before the gate (as the spec then said) and checked the change list against the note but not against the returned files. Evidence of the first: int2g-1 and int2g-2 above both committed before the yes, and slib-1 later asked "Was it approved?". Edit: the gate comes before the write; the commit message records the approval; each returned Behaviour section is compared with the committed one, and a difference with no change-list row goes back. Re-run fixA (promo-2, same prompt): stopped at the gate with nothing written or committed, "Every Behaviour line that differs from the committed spec shows up in the list below." GREEN.

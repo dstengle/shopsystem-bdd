@@ -14,9 +14,9 @@ Format: `docs/capability-format.md` in this plugin, which the `capability-writer
 ## Process
 
 1. **Dispatch the `capability-writer` agent** (this plugin, read-only tools) with the brief below. On a question from formulating-features or slicing, use the question brief instead.
-2. **Check the change list, both directions.** Every behavioural sentence of the note is a line, a question, or a cut sentence; a sentence that is none goes back to the agent. Every added or changed line quotes the note sentence it comes from; a line with no quote is removed and asked as a question.
-3. **Write the files** exactly as returned. Append the ledger entries; never edit an existing entry. Commit `spec/` alone.
-4. **Stop at the gate.** Show the person the added, changed and removed Behaviour lines (a removed line deletes contract) and the questions, each with the lines its answers would give. Wait for an explicit yes on the lines and an answer to each question. Answers go back to the agent with the question brief; its result is written, committed and shown again. Nothing is formulated while a line awaits approval.
+2. **Check the change list, both directions.** Every behavioural sentence of the note is a line, a question, or a cut sentence; a sentence that is none goes back to the agent. Every added or changed line quotes the note sentence it comes from; a line with no quote is removed and asked as a question. Then compare each returned capability file's Behaviour section with the committed one: every line that differs has its row in the change list. A difference with no row goes back to the agent.
+3. **Stop at the gate.** Show the person the added, changed and removed Behaviour lines (a removed line deletes contract) and the questions, each with the lines its answers would give. Wait for an explicit yes on the lines and an answer to each question. Answers go back to the agent with the question brief, and its result is checked as in step 2 and shown again. A line the person rejects is dropped from the returned files. Nothing is written to `spec/` before the yes.
+4. **Write the files** exactly as approved. Append the ledger entries; never edit an existing entry. Commit `spec/` alone, with the approval in the message (`spec: <note>, lines approved <date>`): a committed Behaviour line is an approved one.
 5. **Hand off.** Invoke formulating-features with the changed capability paths and the change list.
 
 ## The Brief

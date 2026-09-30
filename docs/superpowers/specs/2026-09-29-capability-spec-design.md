@@ -125,12 +125,14 @@ Process:
 2. Check the change list both ways: every behavioural sentence of the note
    is a line, a question, or a cut sentence; every added or changed line
    cites its note sentence. Missing rows go back to the agent.
-3. Write the files. Append ledger entries; never edit an existing one.
-   Commit `spec/` alone.
-4. Gate: show the person the added, changed and removed lines and the
+3. Gate: show the person the added, changed and removed lines and the
    questions. Wait for an explicit yes. Removed lines are shown because
    they delete contract. Answers are integrated by another dispatch and
-   shown again.
+   shown again. Nothing is written before the yes.
+4. Write the files. Append ledger entries; never edit an existing one.
+   Commit `spec/` alone, the approval in the message: a committed line is
+   an approved one. (Amended 2026-09-30 after the final review: the gate
+   comes before the commit, as in migration.)
 5. Invoke `formulating-features` with the changed capabilities and the
    change list.
 
@@ -216,7 +218,7 @@ and the collected count for each `@slice-<n>` tag.
      decisions dated by their note. `index.md` from the notes' purpose,
      constraints, order of building and testing. Not yet from the notes'
      deferrals.
-2. **Gate.** As step 4 of `integrating-a-proposal`, showing only unbacked
+2. **Gate.** As step 3 of `integrating-a-proposal`, showing only unbacked
    lines and questions. Commit `spec/`.
 3. **Re-pair.** The main agent, which may touch tests:
    - Build each capability's feature file from its mapped scenarios in

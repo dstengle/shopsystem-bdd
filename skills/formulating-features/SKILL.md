@@ -16,7 +16,7 @@ A note under `docs/` is not the spec. If lines are not yet in `spec/`, integrati
 1. **Dispatch the `feature-formulator` agent** (this plugin, read-only tools) with the brief below, once per changed capability. Give it no other paths. On a hand-back from slicing, use the hand-back brief instead.
 2. **Check coverage, both directions, one to one.** Every added or changed Behaviour line has exactly one scenario (or one outline), and every scenario names the line it formulates. A scenario with no line is removed. A line with no scenario goes back to the agent. A removed line's scenario is removed. Feature files carry no tags from this skill; slicing adds `@slice-<n>` tags later and owns them.
 3. **Route every question to the spec.** A line the agent returned as a question, because it admits two readings, gets no scenario. Show the person the question with its two readings. Their answer goes to integrating-a-proposal with its question brief, which changes the line; the changed line comes back here. The rest of the capability is not held up.
-4. **Write the files** under `features/` exactly as returned, then commit them alone. Hand them to slicing-into-increments.
+4. **Write the files.** A new feature file is written as returned. In an existing one, only the new and changed scenarios are spliced in and the removed ones taken out; every other scenario, with its tags, stays byte for byte as it was. Check that before committing: an approved scenario missing or changed in the result goes back to the agent. Commit the files alone and hand them to slicing-into-increments.
 
 ## The Brief
 
@@ -57,7 +57,7 @@ The file has this shape:
 - A line that admits two readings gets no scenario, including one written to
   hold under both. Return it as a question.
 
-Return: (1) the file as a fenced block; (2) a coverage table with one row per
+Return: (1) for a new feature, the file as a fenced block; for an existing one, only the new and changed scenarios, each headed by the line it formulates; (2) a coverage table with one row per
 line: the line (quoted) and the scenario title that formulates it; (3)
 questions: each line with two readings, quoted, and the two readings, one
 line each; (4) cases you noticed that no line mentions, one line each, with
