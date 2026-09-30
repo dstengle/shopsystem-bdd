@@ -1,6 +1,6 @@
-# Stage 1: capability files paired with feature files
+# Capability files paired with feature files
 
-Date: 2026-09-29
+Date: 2026-09-29 (stage 1; adopted by the plugin in 0.8.0)
 Scope: one context, on its own. Nothing here needs agreement with another
 repo, a product level, or any tooling beyond markdown and Gherkin.
 
@@ -26,11 +26,11 @@ spec/
     ...
 features/
   identity.feature      one per capability, same name
-  write_path.feature
+  write-path.feature
   ...
 ```
 
-The pairing is by name. `capabilities/identity.md` is formulated as
+The pairing is by name, hyphenated on both sides. `capabilities/identity.md` is formulated as
 `features/identity.feature`, the capability says so in its frontmatter,
 and the feature says so in its header. Nothing else links them.
 
@@ -97,6 +97,9 @@ not *the system shall mint*.
 returned, a refusal and what it names, a file at a path. If you can't
 write the response that way, the sentence is implementation and moves
 down a section. This is the rule that keeps mechanism out of behaviour.
+A refusal names its reason (*kb refuses the code because it has
+expired*); the words of a message, a status code and a field name are
+implementation.
 
 Tables stay tables: a table of commands or rpcs is a row of implicit
 When-lines and doesn't need rewriting. A list of properties (a canonical
@@ -185,15 +188,21 @@ Feature: Identity
 ## decision/primary-model
 A graph whose serialization is documents: one file per artifact, parts
 inline with ids, references as a schema primitive.
+date: 2026-09-23
 revisit_when: a request needs a traversal the reference index cannot serve
+source: docs/superpowers/specs/2026-09-23-kb-design.md
 
 ## decision/delete-refuse-only
 The only delete rule is `refuse`.
+date: 2026-09-23
 revisit_when: a request asks for cascade or detach
 ```
 
-An entry is one line and a `revisit_when`. It is never edited; a later
-entry names what it supersedes. Write `revisit_when` only where someone
+The file is a ledger. An entry is a heading id, one line, and property
+lines: `date` always; `revisit_when`, `supersedes` and `source` (the note
+or ADR it came from) when they apply. Properties are one per line, so the
+ledger can later be rendered from a query over them. An entry is never
+edited; a later entry names what it supersedes. Write `revisit_when` only where someone
 will actually see the signal — in stage 1 that means a request or
 something already measured; otherwise leave it out and put the reasoning
 in the line itself.
@@ -212,7 +221,8 @@ in the line itself.
    spanning capabilities is rendered from them, not authored.
 5. Formulate one feature per capability, one scenario per line.
 6. Keep the note as a dated proposal; from here the capability files are
-   the spec.
+   the spec. A later note is integrated into the same `spec/`: it never
+   starts a second one.
 
 ## Not in stage 1
 
