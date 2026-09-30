@@ -5,7 +5,7 @@
     {
       "name": "shopsystem-bdd",
       "source": "./",
-      "description": "BDD workflow skills for the shopsystem harness: formulate Gherkin features, slice them into thin increments, and implement them red-green."
+      "description": "BDD workflow skills for the shopsystem harness: keep one spec of capability files, formulate one Gherkin feature per capability, slice into thin increments, implement red-green, and migrate existing repositories."
     }
   ]
 }
