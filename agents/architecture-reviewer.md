@@ -1,6 +1,6 @@
 ---
 name: architecture-reviewer
-description: The recurring architecture review slicing-into-increments cuts after every six implemented slices. It checks the code's shape against the repository's CLAUDE.md, and its coupling to the projects it depends on, and cuts each refactor it calls for as a slice with a check. Writes its report to a file it is given and changes nothing else. Not for general use.
+description: An architecture review run when the person asks for one (the batch's branch review checks shape and coupling every batch). It checks the code's shape against the repository's CLAUDE.md, and its coupling to the projects it depends on, and cuts each refactor it calls for as a slice with a check. Writes its report to a file it is given and changes nothing else. Not for general use.
 tools: Read, Glob, Grep, Bash, Write
 model: opus
 ---

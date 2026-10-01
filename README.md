@@ -58,6 +58,18 @@ claude plugin install shopsystem-bdd@shopsystem-bdd
 While developing, `claude --plugin-dir <path to this checkout>` loads the
 working copy instead.
 
+## Sized to the change (0.9.0)
+
+0.9.0 makes the workflow's cost follow the size and risk of a change. Measured on shopsystem-kb, about half of a batch's agent time went to running the full pipeline around one-line changes, re-reviewing small tasks, and a two-minute suite run many times a slice.
+
+- **A small-change path.** At most two Behaviour lines in existing capabilities, no contract change, nothing unknown: the controller writes the lines and their scenarios itself, from the spec alone. The gate on the lines stays. Anything larger takes the full path (`integrating-a-proposal`, `formulating-features`).
+- **Review by risk.** Each planned task carries `Review:` and `Model:` lines. Concurrency, the published contract, data integrity and moving stored data get a per-task review on Opus; everything else, refactors and small slices included, is reviewed once at the batch's end and implemented on Sonnet (`slicing-into-increments`).
+- **Findings triaged.** Correctness and data loss are fixed now; hardening goes to the plan's backlog with its reproduction, and is cut only when the person asks or it bites; polish is fixed when cheap (`slicing-into-increments`, both reviewers).
+- **A line every call must keep is one scenario per reason,** with one representative call; a table-driven test checks every call goes through the boundary (`formulating-features`).
+- **The architecture review folds into the branch review,** which now checks shape against `CLAUDE.md` and coupling every batch. `architecture-reviewer` runs only on request.
+- **A short living plan.** A batch's green slices and log move to `docs/superpowers/plans/archive/` when its branch review is done.
+- **A fast suite.** `bdd-red-green` runs the slice's marker during red-green and the whole suite once per slice, and asks for a parallel suite (`pytest-xdist`) that drives commands in-process.
+
 ## One spec per context; the gate is on Behaviour lines
 
 From 0.8.0 a bounded context has one spec: `spec/index.md`, the decision ledger `spec/decisions.md`, and `spec/capabilities/<name>.md`, each capability formulated as `features/<name>.feature`. The format is `docs/capability-format.md`.
@@ -87,8 +99,8 @@ From 0.7.0 the plugin gives each role in the workflow an agent whose tools are e
 | `shopsystem-bdd:feature-formulator` | Read, Glob, Grep | opus | writing feature files from the spec, blind to the code |
 | `shopsystem-bdd:bdd-implementer` | Read, Edit, Write, Glob, Grep, Bash, Skill | sonnet | one task of a no-code plan, `bdd-red-green` preloaded |
 | `shopsystem-bdd:bdd-task-reviewer` | Read, Glob, Grep, Bash | opus | a task's review, and the scoped re-review of a fix round |
-| `shopsystem-bdd:bdd-branch-reviewer` | Read, Glob, Grep, Bash | opus | the whole-branch review at the end of a batch |
-| `shopsystem-bdd:architecture-reviewer` | Read, Glob, Grep, Bash, Write | opus | the review cut after every six slices, coupling included |
+| `shopsystem-bdd:bdd-branch-reviewer` | Read, Glob, Grep, Bash | opus | the whole-branch review at the end of a batch, shape and coupling included |
+| `shopsystem-bdd:architecture-reviewer` | Read, Glob, Grep, Bash, Write | opus | an architecture review when the person asks for one (the branch review checks shape and coupling every batch from 0.9.0) |
 
 What the tools make structural:
 - **No agent can start another.** None has the Agent tool, so an implementer cannot spawn helpers or its own reviewer, and a reviewer cannot ask for a second opinion.

@@ -46,17 +46,15 @@ Not a slice: anything with no scenario and no check. A layer, a module, or a lib
    and tags rewritten, only when whole slices change order.
 4. **Write the plan** in the shape below, in the project's one living plan file. If `docs/superpowers/plans/*-slices.md` exists, extend it; never start a second plan file.
 5. **Mark the scenarios.** Write a tag `@slice-<n>` on every scenario a capability slice assigns, one tag per scenario, replacing any earlier slice tag. This is the only edit this skill ever makes to a feature file: a tag line, never a Given, When, or Then. pytest-bdd turns the tag into a marker, so `pytest -m "slice-<n>"` runs a slice.
-6. **Cut an architecture review** as an enabling slice after every six
-   implemented slices, or when a module has crossed a size limit the
-   project's conventions state. Its check: a review of the code's shape
-   against the project's `CLAUDE.md`, by the `shopsystem-bdd:architecture-reviewer`
-   agent, is logged, and every refactor it calls for is cut as its own
+6. **Shape is reviewed at each batch's end**, by the
+   `shopsystem-bdd:bdd-branch-reviewer`, which checks the code against the
+   project's `CLAUDE.md` and its coupling to the projects it depends on as
+   well as the batch's defects. Every refactor it calls for is cut as its own
    enabling slice with a measurable check (the suite green and the structural
-   target met). The review also lists every point where the code relies on a
-   project it depends on beyond what that project publishes. Defect reviews
-   already run per batch; this one asks whether the code is shaped the way
-   the conventions say. It runs before the next plan is written, never as a
-   task inside one.
+   target met), placed by its risk among the next batch's slices. A module
+   that has crossed a size limit the project's conventions state is split by
+   an enabling slice before the slice that would grow it. The separate
+   `architecture-reviewer` runs only when the person asks for one.
 7. **Invoke superpowers:writing-plans** with the plan file as its input and the constraint below. Skip this step while a `RE-FORMULATE` entry or a `QUESTION FOR THE SPEC:` a slice depends on is unanswered.
 
 ## The Hand-off to writing-plans
@@ -66,6 +64,8 @@ The plan carries no code. The planner plans; the implementer writes the code und
 - One task per slice, in slice order, no task that isn't a slice.
 - No code blocks, file contents, diffs, or step-definition bodies. writing-plans' own template shows code; here that code is the implementer's to write. Nothing is built in a scratch copy first, and no plan is replayed.
 - What each task carries instead: the slice's scenarios or check; why each scenario is red today, found by reading the current code and running the red scenarios (running the suite and probing current behaviour is allowed, building the change is not); where the change lands by the project's conventions (`CLAUDE.md`'s module map) and which of its rules the task implements once; the decisions the capability's Behaviour leaves open, each stated as a decision with the line or ledger entry it rests on, so the implementer does not decide them alone; the existing step definitions and fixtures the scenarios can reuse, by name; the verification commands, with expected counts derived from the tags (`pytest --collect-only -q -m slice-N`), never from a build; and the checkpoint the implementer logs.
+- Each task carries a `Review:` line and a `Model:` line. `Review: per-task` and `Model: opus` for a task that touches concurrency, the published contract, data integrity, or moving stored data; `Review: batch-end` and `Model: sonnet` for every other task, refactors and small slices included. A batch-end task gets no task review: the batch's branch review covers it. Say this in the plan's Global Constraints so the controller dispatches by it.
+- Each task's verification runs the slice's marker (`pytest -q -m slice-N`) during red-green, and the whole suite once before the slice's last commit.
 - A genuine unknown may be answered by a throwaway spike whose result is a sentence in the plan, never its code.
 - Questions for the spec found while probing go in the plan's Review Focus with a reproduction.
 - Paths in commands are relative to the checkout, never absolute temporary paths.
@@ -89,10 +89,15 @@ A plan that carries code makes red a performance: the implementer pastes what al
 ## Satisfied by existing behaviour
 - <feature> / <scenario name>: passed on <date> with no slice
 
+## Backlog
+- <date> <hardening finding, one line, with its reproduction> (from <review>)
+
 ## Log
 - <date> Suite: <N> passed, <M> failed
 - <date> <one line per checkpoint, hand-back, or re-slice>
 ```
+
+The living plan holds the slices not yet green, the backlog, and the log since the last batch closed. When a batch's branch review is done, move that batch's green slices and their log lines to `docs/superpowers/plans/archive/<plan name>-<batch>.md`, leaving one log line that names the archive file and the batch's last `Suite:` line, so every agent that reads the plan reads only what is still open.
 
 A slice has Scenarios or Check, never both. The plan names scenarios, checks, observables, unknowns, and what rides along. It contains no module, class, function, fixture, or variable names, no expressions, no diagrams, and no "target design" or "modelling decisions" section. If you have written any of those, you are doing writing-plans' job in the wrong file.
 
@@ -110,7 +115,16 @@ The test for the third row is mechanical: would any Given, When, or Then line di
 
 When the third row applies: append a `RE-FORMULATE` entry to the log naming the feature, the scenario, and the hand-back evidence, commit the plan, and invoke `formulating-features`. When it returns a rewritten scenario, the line decided it: slicing resumes with that scenario in its slice. When it returns a question, finish cutting and ordering every slice that does not contain that scenario, mark the slice that does `blocked: awaiting the spec`, commit, and stop. Do not invoke writing-plans: its tasks would derive from an undecided contract. writing-plans runs once the line is changed and the scenario re-formulated from it.
 
-A scenario removed because its capability line was removed is logged; its step definitions and code are left for the architecture review to flag.
+A scenario removed because its capability line was removed is logged; its step definitions and code are left for the batch's branch review to flag.
+
+## Review Findings
+
+A review's finding is triaged before anything is cut from it:
+
+- **Correctness or data loss** (a refusal answered as a crash, a wrong answer, a write that should not land, a regression): fixed now, in the batch's one fix wave or as a slice of the next batch, through the small-change path when it needs a line.
+- **Hardening** (an input no client sends today, an edge case no line names, robustness against a dependency changing): one line in the plan's `## Backlog` with its reproduction. It is cut as a slice only when the person asks for it or when it bites.
+
+Polish (wording, naming, a test that could be stronger) is fixed in the fix wave when it is cheap, and otherwise dropped.
 
 ## Semantics the Scenarios Don't Cover
 

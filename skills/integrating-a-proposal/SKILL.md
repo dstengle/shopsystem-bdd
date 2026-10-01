@@ -19,6 +19,18 @@ Format: `docs/capability-format.md` in this plugin, which the `capability-writer
 4. **Write the files** exactly as approved. Append the ledger entries; never edit an existing entry. Commit `spec/` alone, with the approval in the message (`spec: <note>, lines approved <date>`): a committed Behaviour line is an approved one.
 5. **Hand off.** Invoke formulating-features with the changed capability paths and the change list.
 
+## The Small-Change Path
+
+A change is small when it adds or changes at most two Behaviour lines, all in capabilities that already exist, changes no published contract (no rpc, message, command, rule name or file form a client depends on), and leaves nothing unknown about what the lines mean. A review finding that becomes a line, a refusal the code already makes but no line states, a case added to a line already there: these are small.
+
+A small change skips the note and the `capability-writer`:
+
+1. **Write the lines yourself**, in the capability's narrator voice and `docs/capability-format.md`'s form, with a ledger entry when the change is a decision. Read only `spec/` while you write them, never the code.
+2. **Stop at the gate exactly as above**: show the person the added and changed lines; nothing is written to `spec/` before the yes. Where the person has delegated decisions to your recommendations, record it in the commit (`lines approved <date> under the person's delegation`) and in the ledger entry's `source`.
+3. **Hand off** to formulating-features' small-change path.
+
+Anything larger, a new capability, any change to the published contract, or a line you cannot write without choosing between two readings, takes the full process above.
+
 ## The Brief
 
 ```

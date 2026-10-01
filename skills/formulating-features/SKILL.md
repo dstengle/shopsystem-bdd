@@ -18,6 +18,14 @@ A note under `docs/` is not the spec. If lines are not yet in `spec/`, integrati
 3. **Route every question to the spec.** A line the agent returned as a question, because it admits two readings, gets no scenario. Show the person the question with its two readings. Their answer goes to integrating-a-proposal with its question brief, which changes the line; the changed line comes back here. The rest of the capability is not held up.
 4. **Write the files.** A new feature file is written as returned. In an existing one, only the new and changed scenarios are spliced in and the removed ones taken out; every other scenario, with its tags, stays byte for byte as it was. Check that before committing: an approved scenario missing or changed in the result goes back to the agent. Commit the files alone and hand them to slicing-into-increments.
 
+## The Small-Change Path
+
+For a small change (integrating-a-proposal's small-change path: at most two lines, no new capability, no contract change), write the scenarios yourself instead of dispatching the agent, by the brief's rules below, from the lines alone: read the capability and the feature file, never the code or the step definitions, so the scenario says what the narrator needs rather than what the code does. Check coverage and splice as in steps 2 and 4.
+
+## A Line Every Call Must Keep
+
+A line that every call or command must keep, because it is a property of the boundary they all pass through (a damaged store refused, a busy store refused, a missing role refused), is formulated as one scenario per reason the line gives, each with one representative call, never as an Examples row per call. That every call goes through the boundary is the suite's job: one table-driven test lists every call and command and checks each answers through it. Rows per call multiply the suite by the number of calls and test one code path that many times.
+
 ## The Brief
 
 Send this to the agent verbatim, with the paths and lines filled in.
@@ -41,7 +49,8 @@ The file has this shape:
   configurations, or with several cases, is one Scenario Outline with an
   Examples table, never a scenario per case. A table of commands in
   Behaviour is one scenario per row. A boundary the line does not state is
-  not a scenario.
+  not a scenario. A line every call or command must keep is one scenario
+  per reason it gives, with one representative call, never a row per call.
 - Every scenario carries a one-line description between its title and its
   first step: what it pins, in plain words. It is not a step and does not
   restate the steps.
@@ -100,3 +109,4 @@ Given the code, a writer describes what it does. Given only the spec, a writer d
 | "Both scenarios use one of each product, so it doesn't matter yet whether items means units or products" | A scenario that holds under both readings pins neither. No scenario; return the question |
 | `Then the customer is told "That code has expired"` | `Then the code is rejected because it has expired` |
 | Eight scenarios, one per unacceptable input, each with the same Then | One Scenario Outline, eight Examples rows |
+| An outline of seventeen rows, one per call, for "every call is refused when the store is damaged" | One scenario with one representative call; a table-driven test checks every call goes through the boundary |

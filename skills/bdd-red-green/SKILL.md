@@ -22,10 +22,22 @@ Work through the slice's scenarios in the order the plan lists them. The slice's
 1. **Run that one scenario** (`python -m pytest -q -k "<scenario name>"`). It must fail for the right reason: an undefined step, or the Then assertion on the outcome. Any other result is a stop condition (below).
 2. **Write only the step definitions this scenario needs.** Given and When steps drive the system's real entry point. Then steps assert exactly what the line says, nothing more.
 3. **Write the least production code that turns this scenario green.** Hard-coded values are fine inside a slice.
-4. **Run the whole feature suite.** Everything previously green stays green.
-5. **Refactor** with the suite green, then commit, then the next scenario.
+4. **Run the slice** (`python -m pytest -q -m "slice-<n>"`) and the test module the scenario lives in. Everything previously green there stays green.
+5. **Refactor** with them green, then commit, then the next scenario.
+
+Before the slice's last commit, run the whole feature suite once. Everything previously green stays green.
 
 **Code only what a scenario asserts.** Where the scenarios are silent, the code is silent. Do not choose semantics for cases no scenario covers, not as a "guard", not as "the forgiving option". If the silence matters, it goes in the checkpoint entry as an open question.
+
+## Keep the Suite Fast
+
+The suite runs many times in every slice, so its speed is the workflow's speed:
+
+- Tests run in parallel (`pytest-xdist`, `-n auto` in the project's test command). Each test works in a directory of its own, so nothing they share needs a lock.
+- The system's real entry point is driven in-process wherever the project allows: a command line is called through its `main` with its arguments and environment, not started as a program. One test per command runs it as a program, to show the installed command works.
+- A test that waits does so for a signal, never for a fixed time.
+
+A project whose suite cannot do one of these says why in its `CLAUDE.md`.
 
 ## Slices Verified by a Check
 

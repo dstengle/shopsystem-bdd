@@ -41,5 +41,5 @@ Begin directly with the verdict. Every line is a verdict, a finding with file:li
 
 - **Spec Compliance:** ✅ or ❌, with what is missing, extra or misunderstood. List separately, marked ⚠️, anything you cannot verify from the diff.
 - **Strengths:** what was done well, specifically.
-- **Issues:** Critical, Important and Minor. Each gives file:line, what is wrong, why it matters, and the fix. Important means the task cannot be trusted until it is fixed; polish is Minor. Something the brief mandates that this rubric calls a defect is Important, labelled plan-mandated.
+- **Issues:** Critical, Important and Minor. Each gives file:line, what is wrong, why it matters, and the fix. Important means the task cannot be trusted until it is fixed; polish is Minor. A hardening finding (an input no client sends today, an edge case no line names) is Minor and marked `backlog`, with its reproduction, so the controller adds it to the plan's backlog instead of a fix round. Something the brief mandates that this rubric calls a defect is Important, labelled plan-mandated.
 - **Assessment:** Task quality: Approved or Needs fixes, with one or two sentences of reasoning.
