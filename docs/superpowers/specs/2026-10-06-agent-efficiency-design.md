@@ -78,10 +78,13 @@ Removes the leftovers 0.9.0 did not clean up, and lets a recorded result stand f
   scenario lives in, as `skills/bdd-red-green` says. The whole suite once, before the slice's last commit.
 - **A result holds for its commit.** The `Suite:` line, wherever it is recorded (the implementer's report, the
   plan's log, the branch review), carries the commit's short hash: `Suite: <N> passed, <M> failed at <hash>`,
-  with the failing list beside it when non-zero. Whoever needs a result for `HEAD` with a clean working tree
-  (`git status --porcelain` empty) and finds one uses it rather than running again: the task reviewer (who
-  already does not re-run), the branch reviewer for its baseline, the controller before a push, slicing's
-  step 1. Installing or upgrading a dependency without a commit invalidates the record; run again.
+  with the failing list beside it when non-zero. A record names the commit that was run, so it is written after
+  that commit: the implementer commits the change, then commits its checkpoint and `Suite:` line to the plan's
+  log. A record holds at `HEAD` when nothing outside `docs/superpowers/plans/` differs between its commit,
+  `HEAD` and the working tree (`plan show --last-suite --current` says so). Whoever needs a result and finds
+  one that holds uses it rather than running again: the task reviewer (who already does not re-run), the
+  branch reviewer for its baseline, the controller before a push, slicing's step 1. Installing or upgrading a
+  dependency without a commit invalidates the record; run again.
 - The branch reviewer runs the suite once, at the batch's head, and records it; the controller pushes on that
   record when nothing has been committed since. A fix wave's last commit gets one whole run by its implementer,
   which then stands for the push.
@@ -144,8 +147,9 @@ standard library, each with `--help` as its contract and its own tests on a fixt
 short result and exits non-zero on failure, and refuses an edit that would leave its file invalid.
 
 A skill names a script by its path relative to the skill's base directory (`../../scripts/features`), which a
-loaded skill knows. An agent that needs one gets its absolute path in the dispatch from the controller. The
-skills name the commands, never their internals.
+loaded skill knows. An agent that needs one gets its absolute path in the dispatch: slicing, which knows its
+base directory, writes `Scripts: <absolute path>` into the plan's Global Constraints, which every task brief
+carries. The skills name the commands, never their internals.
 
 1. **`features`**, for feature files read and edited without the test runner.
    - `features count --by-tag` and `features list --tag T | --title S` parse Gherkin directly; outlines count
