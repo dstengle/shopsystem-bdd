@@ -138,6 +138,15 @@ class FeaturesTest(unittest.TestCase):
         self.assertEqual(done.returncode, 1)
         self.assertIn("changed: Adding a product (tags)", done.stdout)
 
+    def test_move_carrying_feature_tags_verifies(self):
+        checkout = self._before_and_checkout(header="Feature: Checkout\n  Narrator: a shopper\n")
+        done = self.run_script("move", "Adding a product", "--to", "features/checkout.feature",
+                               "--inline-background", "--carry-feature-tags")
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertIn("  @slice-1\n  @cart\n  Scenario: Adding a product\n", checkout.read_text())
+        done = self.run_script("verify-moved", "--from", "before")
+        self.assertEqual((done.returncode, done.stdout), (0, "3 scenarios match\n"))
+
     def test_verify_catches_a_changed_step(self):
         shutil.copytree(self.tmp / "features", self.tmp / "before")
         self.cart.write_text(CART.replace("holds 1 item", "holds one item"))

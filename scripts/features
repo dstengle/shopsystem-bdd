@@ -24,7 +24,9 @@ contract:
   - move takes a scenario's block verbatim (trailing blank lines dropped) to
     the end of an existing file; with --inline-background, the source
     Background's steps are inserted before the scenario's first step at the
-    scenario's step indentation.
+    scenario's step indentation; with --carry-feature-tags, the source file's
+    feature tags the destination's feature tags lack go on a tag line of their
+    own above the Scenario: line, at its indentation.
   - verify-moved compares, by title, each scenario's effective tags, its
     description, and its Background steps followed by its own steps, all
     stripped of indentation, blanks and comments.
@@ -268,6 +270,13 @@ def cmd_move(args, files):
             indent = line[:len(line) - len(line.lstrip())]
             at = step - sc.start
             block[at:at] = [indent + s for s in f.background_steps()]
+    if args.carry_feature_tags:
+        with open(dest) as handle:
+            have = set(Feature(handle.read()).tags)
+        carry = ["@" + t for t in f.tags if t not in have]
+        if carry:
+            text = block[sc.line - sc.start]
+            block.insert(sc.line - sc.start, text[:len(text) - len(text.lstrip())] + " ".join(carry))
     source = f.lines[:sc.start] + f.lines[sc.end:]
     if sc.start > 0 and not f.lines[sc.start - 1].strip() and sc.end >= len(f.lines):
         while source and not source[-1].strip():
@@ -348,6 +357,7 @@ def main():
     move.add_argument("title")
     move.add_argument("--to", required=True)
     move.add_argument("--inline-background", action="store_true")
+    move.add_argument("--carry-feature-tags", action="store_true")
     move.set_defaults(run=cmd_move)
     verify = sub.add_parser("verify-moved")
     verify.add_argument("--from", dest="from_dir", required=True)

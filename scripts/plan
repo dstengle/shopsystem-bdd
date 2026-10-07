@@ -27,9 +27,10 @@ contract:
   - log and backlog append '- <date> <text>' to their section (date default
     today). archive writes the green slices and the whole log to
     archive/<plan name>-<batch>.md beside the plan, then leaves the log holding
-    the REQUEST entries (with their continuation lines) and one line naming
-    the archive and the last 'Suite:' line; it refuses when the archive file
-    exists or nothing is green.
+    the REQUEST, RE-FORMULATE and QUESTION FOR THE SPEC: entries (with their
+    continuation lines), one line naming the archive and the last 'Suite:'
+    line, and that 'Suite:' entry again, so show --last-suite still finds it;
+    it refuses when the archive file exists or nothing is green.
   - show --current compares the suite record's 'at <hash>' with HEAD and the
     working tree through 'git diff --name-only' and 'git status --porcelain',
     run in the current directory: a path outside docs/superpowers/plans/
@@ -43,6 +44,7 @@ exit status: 0 success, 1 a check failed or an edit was refused, 2 bad usage.
 SLICE = re.compile(r"## Slice (\d+(?:\.\d+)*): (.+)$")
 SECTIONS = ["Satisfied by existing behaviour", "Backlog", "Log"]
 KINDS = ("capability", "enabling", "stack")
+KEPT = r"^- \S+ (REQUEST |RE-FORMULATE\b|QUESTION FOR THE SPEC:)"
 STATUS = re.compile(r"(planned|in progress|green)(: .+)?$|blocked: .+$")
 
 
@@ -245,7 +247,7 @@ def cmd_archive(args, path, plan):
     log = plan.ensure_section("Log")
     last = bullets(plan, "Log", r"^- \S+ Suite: ")[-1:]
     entries = bullets(plan, "Log")
-    requests = bullets(plan, "Log", r"^- \S+ REQUEST ")
+    kept = bullets(plan, "Log", KEPT)
     archived = Plan("".join(plan.preamble) + "".join("".join(b.lines) for b in green)
                     + "## Log\n" + "".join(e + "\n" for e in entries))
     plan.blocks = [b for b in plan.blocks if b not in green]
@@ -253,11 +255,10 @@ def cmd_archive(args, path, plan):
     while body and not body[-1].strip():
         body.pop()
     tail = log.lines[len(body) + 1:]
-    kept = [e + "\n" for e in requests]
     note = "- %s Batch %s archived to %s" % (today(args), args.batch, relative)
     if last:
         note += "; last " + last[0].split("\n")[0][2:]
-    log.lines = [log.lines[0]] + kept + [note + "\n"] + tail
+    log.lines = [log.lines[0]] + [e + "\n" for e in kept + [note] + last] + tail
     refuse_if_invalid(plan, path)
     os.makedirs(os.path.dirname(target), exist_ok=True)
     with open(target, "w") as handle:

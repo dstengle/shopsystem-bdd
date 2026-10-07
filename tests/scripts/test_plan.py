@@ -139,7 +139,8 @@ class PlanTest(unittest.TestCase):
         self.assertTrue(text.endswith(
             "## Log\n- 2026-10-02 REQUEST shopsystem-kb: kb serve is not built\n"
             "- 2026-10-06 Batch 14 archived to archive/cart-slices-14.md; "
-            "last 2026-10-01 Suite: 3 passed, 1 failed at abc1234 in 12 s\n"))
+            "last 2026-10-01 Suite: 3 passed, 1 failed at abc1234 in 12 s\n"
+            "- 2026-10-01 Suite: 3 passed, 1 failed at abc1234 in 12 s\n"))
 
     def test_archive_keeps_continuation_lines_with_their_entries(self):
         self.plan.write_text(PLAN.replace(
@@ -152,6 +153,34 @@ class PlanTest(unittest.TestCase):
                       "- 2026-10-03 HAND-BACK slice 2\n  evidence: red\n", archived)
         self.assertIn("## Log\n- 2026-10-02 REQUEST shopsystem-kb: kb serve is not built\n"
                       "  needed by slice 53\n- 2026-10-06 Batch 14", self.plan.read_text())
+
+    def test_archive_keeps_open_questions_in_the_log(self):
+        self.plan.write_text(PLAN.replace(
+            "kb serve is not built\n",
+            "kb serve is not built\n- 2026-10-03 RE-FORMULATE cart / Adding several\n  evidence: red\n"
+            "- 2026-10-03 QUESTION FOR THE SPEC: clamp or raise?\n- 2026-10-04 slice 1 green\n"))
+        done = self.run_script("archive", "14", "--date", "2026-10-06")
+        self.assertEqual(done.returncode, 0, done.stderr)
+        text = self.plan.read_text()
+        self.assertIn("- 2026-10-03 RE-FORMULATE cart / Adding several\n  evidence: red\n"
+                      "- 2026-10-03 QUESTION FOR THE SPEC: clamp or raise?\n- 2026-10-06 Batch 14", text)
+        self.assertNotIn("slice 1 green", text)
+
+    def test_last_suite_holds_after_archive(self):
+        self.git("init", "-q")
+        (self.tmp / "code.txt").write_text("one\n")
+        self.git("add", "code.txt")
+        self.git("commit", "-qm", "code")
+        tested = self.git("rev-parse", "--short", "HEAD")
+        self.plan.write_text(PLAN.replace("abc1234", tested))
+        self.git("add", "-A")
+        self.git("commit", "-qm", "checkpoint")
+        self.assertEqual(self.run_script("archive", "14", "--date", "2026-10-06").returncode, 0)
+        self.git("add", "-A")
+        self.git("commit", "-qm", "archive")
+        done = self.run_script("show", "--last-suite", "--current")
+        self.assertEqual(done.returncode, 0, done.stdout + done.stderr)
+        self.assertEqual(done.stdout, "- 2026-10-01 Suite: 3 passed, 1 failed at %s in 12 s\ncurrent\n" % tested)
 
     def test_current_without_last_suite_is_a_usage_error(self):
         self.assertEqual(self.run_script("show", "--open", "--current").returncode, 2)
