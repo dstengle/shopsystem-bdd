@@ -41,7 +41,7 @@ A project whose suite cannot do one of these says why in its `CLAUDE.md`.
 
 ## The Suite Record
 
-A whole-suite run is recorded once and used while it holds. After the slice's change is committed, record the run in the plan's log with the plugin's `scripts/plan log`, as `Suite: <N> passed, <M> failed at <short hash of the commit that was run> in <seconds> s`, with `; failing: <titles>` when M is not 0, and commit the log with the checkpoint. A record holds while nothing outside `docs/superpowers/plans/` has changed since its commit: `scripts/plan show --last-suite --current` says `current` or `stale`.
+A whole-suite run is recorded once and used while it holds. After the slice's change is committed, record the run in the plan's log with the plugin's `scripts/plan log`, as its own entry after the checkpoint entry, never a line inside it: `Suite: <N> passed, <M> failed at <short hash of the commit that was run> in <seconds> s`, with `; failing: <titles>` when M is not 0, and commit the log with the checkpoint. A record holds while nothing outside `docs/superpowers/plans/` has changed since its commit: `scripts/plan show --last-suite --current` says `current` or `stale`.
 
 - A slice starts from the last record; its failing list is the scenarios already red. Do not run the whole suite at a slice's start. Only when the plan has no record yet, run it once to make one.
 - Whoever needs the suite's result (a reviewer, slicing, the controller before a push) and finds a record that holds uses it.
@@ -95,11 +95,12 @@ Hand-back entry (all fields required):
 
 ## Checkpoint
 
-When every scenario in the slice is green, set the slice's Status to `green`, append this entry to the plan log, and continue to the next slice without asking:
+When every scenario in the slice is green, set the slice's Status to `green`, append these two entries to the plan log, each with its own `plan log "<text>"` (it writes the `- <date> ` itself), and continue to the next slice without asking:
 ```
 - <date> slice <n> green. Someone can now: <one sentence>.
   Surprised by: <what building it turned out to involve that the plan didn't say | nothing>.
   Open questions: <none | list>. Next: slice <n+1>.
+- <date> Suite: <N> passed, <M> failed at <short hash of the change's commit> in <seconds> s
 ```
 
 ## Rationalizations That Do Not Hold
@@ -130,7 +131,7 @@ When every scenario in the slice is green, set the slice's Status to `green`, ap
 - "already passes" said with relief
 - A whole-suite run before a slice's first scenario, with a record that holds
 
-**Any of these: stop, undo the edit, hand back.**
+**Any of these but the last: stop, undo the edit, hand back.** The last is no hand-back: skip the run and carry on from the record.
 
 ## pytest-bdd Notes
 

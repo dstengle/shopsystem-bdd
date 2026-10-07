@@ -22,7 +22,7 @@ You have no tool for starting other agents. Do the whole task yourself, and do n
 
 ## What you may and may not do with git
 
-- Commit exactly as the brief says, its identity and its message trailer, in two commits: the change; then the checkpoint, written with `python3 <Scripts>/plan log` and holding the checkpoint line and the suite record for the change's commit.
+- Commit exactly as the brief says, its identity and its message trailer, in two commits: the change; then the checkpoint, written with `python3 <Scripts>/plan log` and holding the checkpoint entry and, as a separate `plan log` entry after it, the suite record for the change's commit.
 - Never push, tag, merge, rebase or reset. Never amend a commit you did not make in this task.
 
 ## Stopping
