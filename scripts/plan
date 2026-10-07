@@ -1,0 +1,358 @@
+#!/usr/bin/env python3
+"""Edit and read a repository's living slice plan, keeping its shape valid."""
+import argparse
+import datetime
+import glob
+import os
+import re
+import subprocess
+import sys
+
+CONTRACT = """\
+contract:
+  - The plan is a '# ' title, then '## Slice <n>: <name>' blocks in number
+    order (dotted numbers sort numerically: 1, 1.1, 1.2, 2), then sections.
+    'Satisfied by existing behaviour', 'Backlog' and 'Log' appear at most once
+    each, in that order; a section the script does not know is kept byte for
+    byte wherever it is.
+  - A slice has '- Kind:' (capability, enabling or stack), '- Status:', and
+    '- Scenarios:' (capability) or '- Check:' (enabling, stack), never both.
+    A Status is 'planned', 'in progress' or 'green', each with an optional
+    ': <note>', or 'blocked: <why>'; only the word before the colon decides
+    whether a slice is green.
+  - The plan is validated on reading and before every write. An invalid plan,
+    or an edit that would make one, is refused, naming every problem, and the
+    file is left as it was. A missing Backlog or Log section is created in its
+    place when a command needs it.
+"""
+
+SLICE = re.compile(r"## Slice (\d+(?:\.\d+)*): (.+)$")
+SECTIONS = ["Satisfied by existing behaviour", "Backlog", "Log"]
+KINDS = ("capability", "enabling", "stack")
+STATUS = re.compile(r"(planned|in progress|green)(: .+)?$|blocked: .+$")
+
+
+class Refused(Exception):
+    pass
+
+
+def number(text):
+    return tuple(int(p) for p in text.split("."))
+
+
+class Block:
+    def __init__(self, lines):
+        self.lines = lines
+        head = lines[0]
+        match = SLICE.match(head.rstrip("\n"))
+        self.slice = match.group(1) if match else None
+        self.name = match.group(2) if match else None
+        self.section = head[3:].strip() if head.startswith("## ") and not match else None
+
+    def field(self, key):
+        prefix = "- %s:" % key
+        for line in self.lines:
+            if line.startswith(prefix):
+                return line[len(prefix):].strip()
+        return None
+
+    def status(self):
+        return self.field("Status")
+
+
+class Plan:
+    def __init__(self, text):
+        self.preamble, self.blocks = [], []
+        for line in text.splitlines(keepends=True):
+            if line.startswith("## "):
+                self.blocks.append(Block([line]))
+            elif self.blocks:
+                self.blocks[-1].lines.append(line)
+            else:
+                self.preamble.append(line)
+
+    def section(self, name):
+        for b in self.blocks:
+            if b.section == name:
+                return b
+        return None
+
+    def ensure_section(self, name):
+        """Return the named section, creating it in its place when missing."""
+        found = self.section(name)
+        if found:
+            return found
+        later = SECTIONS[SECTIONS.index(name) + 1:]
+        at = next((i for i, b in enumerate(self.blocks) if b.section in later), len(self.blocks))
+        if at == len(self.blocks):
+            tail = self.blocks[-1].lines if self.blocks else self.preamble
+            if tail and not tail[-1].endswith("\n"):
+                tail[-1] += "\n"
+            if tail and tail[-1].strip():
+                tail.append("\n")
+        block = Block(["## %s\n" % name, "\n"])
+        self.blocks.insert(at, block)
+        return block
+
+    def append_line(self, name, line):
+        """Add a bullet after the last non-blank line of a section."""
+        block = self.ensure_section(name)
+        last = len(block.lines)
+        while last > 1 and not block.lines[last - 1].strip():
+            last -= 1
+        if not block.lines[last - 1].endswith("\n"):
+            block.lines[last - 1] += "\n"
+        block.lines.insert(last, line + "\n")
+
+    def text(self):
+        return "".join(self.preamble) + "".join("".join(b.lines) for b in self.blocks)
+
+    def problems(self):
+        out = []
+        if not (self.preamble and self.preamble[0].startswith("# ")):
+            out.append("the plan does not start with a '# ' title")
+        seen, last, sections = set(), None, []
+        for b in self.blocks:
+            if b.slice:
+                out += self._slice_problems(b)
+                if b.slice in seen:
+                    out.append("slice %s appears twice" % b.slice)
+                elif last and number(b.slice) < number(last):
+                    out.append("slice %s is out of order after slice %s" % (b.slice, last))
+                if sections:
+                    out.append("slice %s is out of order after section %s" % (b.slice, sections[-1]))
+                seen.add(b.slice)
+                last = b.slice
+            elif b.section in SECTIONS:
+                if b.section in sections:
+                    out.append("section %s appears twice" % b.section)
+                elif sections and SECTIONS.index(b.section) < SECTIONS.index(sections[-1]):
+                    out.append("section %s is out of order after %s" % (b.section, sections[-1]))
+                sections.append(b.section)
+        return out
+
+    def _slice_problems(self, b):
+        label, out = "slice " + b.slice, []
+        kind, status = b.field("Kind"), b.status()
+        if kind not in KINDS:
+            out.append("%s: Kind must be capability, enabling or stack" % label)
+        if status is None or not STATUS.match(status):
+            out.append("%s: Status must be planned, in progress, green or blocked: <why>, "
+                       "with an optional note" % label)
+        want, other = ("Scenarios", "Check") if kind == "capability" else ("Check", "Scenarios")
+        if kind in KINDS and b.field(want) is None:
+            out.append("%s: a %s slice needs %s" % (label, kind, want))
+        if kind in KINDS and b.field(other) is not None:
+            out.append("%s: a %s slice has %s, not %s" % (label, kind, want, other))
+        return out
+
+
+def find_file(given):
+    if given:
+        return given
+    found = glob.glob("docs/superpowers/plans/*-slices.md")
+    if len(found) != 1:
+        raise Refused("expected one docs/superpowers/plans/*-slices.md, found %d; "
+                      "name it with --file" % len(found))
+    return found[0]
+
+
+def load(path):
+    try:
+        with open(path) as handle:
+            plan = Plan(handle.read())
+    except OSError as why:
+        raise Refused("cannot read %s: %s" % (path, why))
+    refuse_if_invalid(plan, path)
+    return plan
+
+
+def refuse_if_invalid(plan, path):
+    found = plan.problems()
+    if found:
+        raise Refused("%s is not a valid plan:\n  %s" % (path, "\n  ".join(found)))
+
+
+def save(plan, path):
+    refuse_if_invalid(plan, path)
+    with open(path, "w") as handle:
+        handle.write(plan.text())
+
+
+def today(args):
+    return args.date or datetime.date.today().isoformat()
+
+
+def cmd_check(args, path, plan):
+    print("ok")
+    return 0
+
+
+def slice_block(plan, n):
+    for b in plan.blocks:
+        if b.slice == n:
+            return b
+    raise Refused("no slice %s" % n)
+
+
+def cmd_status(args, path, plan):
+    block = slice_block(plan, args.n)
+    for i, line in enumerate(block.lines):
+        if line.startswith("- Status:"):
+            block.lines[i] = "- Status: %s\n" % args.status
+    save(plan, path)
+    return 0
+
+
+def cmd_add_slice(args, path, plan):
+    if any(b.slice == args.n for b in plan.blocks):
+        raise Refused("slice %s exists" % args.n)
+    lines = ["## Slice %s: %s\n" % (args.n, args.name), "- Kind: %s\n" % args.kind]
+    lines.append("- Scenarios: %s\n" % args.scenarios if args.scenarios else "- Check: %s\n" % args.check)
+    lines += ["- Observable: %s\n" % args.observable, "- Unknown: %s\n" % args.unknown,
+              "- Needs: %s\n" % args.needs, "- Status: planned\n", "\n"]
+    slices = [i for i, b in enumerate(plan.blocks) if b.slice]
+    at = next((i for i in slices if number(plan.blocks[i].slice) > number(args.n)),
+              slices[-1] + 1 if slices else 0)
+    plan.blocks.insert(at, Block(lines))
+    save(plan, path)
+    return 0
+
+
+def cmd_archive(args, path, plan):
+    green = [b for b in plan.blocks if b.slice and b.status().split(":")[0] == "green"]
+    if not green:
+        raise Refused("no green slice to archive")
+    stem = os.path.basename(path)[:-len(".md")]
+    relative = "archive/%s-%s.md" % (stem, args.batch)
+    target = os.path.join(os.path.dirname(path), relative)
+    if os.path.exists(target):
+        raise Refused("%s exists" % target)
+    log = plan.ensure_section("Log")
+    entries = bullets(plan, "Log")
+    last = bullets(plan, "Log", r"^- \S+ Suite: ")[-1:]
+    archived = Plan("".join(plan.preamble) + "".join("".join(b.lines) for b in green)
+                    + "## Log\n" + "".join(l + "\n" for l in entries))
+    plan.blocks = [b for b in plan.blocks if b not in green]
+    body = log.lines[1:]
+    while body and not body[-1].strip():
+        body.pop()
+    tail = log.lines[len(body) + 1:]
+    kept = [l for l in body if re.match(r"- \S+ REQUEST ", l)]
+    note = "- %s Batch %s archived to %s" % (today(args), args.batch, relative)
+    if last:
+        note += "; last " + last[0][2:]
+    log.lines = [log.lines[0]] + kept + [note + "\n"] + tail
+    refuse_if_invalid(plan, path)
+    os.makedirs(os.path.dirname(target), exist_ok=True)
+    with open(target, "w") as handle:
+        handle.write(archived.text())
+    save(plan, path)
+    return 0
+
+
+def bullets(plan, section, pattern=""):
+    block = plan.section(section)
+    return [l.rstrip("\n") for l in (block.lines[1:] if block else [])
+            if l.startswith("- ") and re.search(pattern, l)]
+
+
+def git(*args):
+    done = subprocess.run(["git", *args], capture_output=True, text=True)
+    return done.returncode, done.stdout
+
+
+def staleness(record):
+    """None when the record holds at HEAD, else the reason it does not."""
+    match = re.search(r" at ([0-9a-f]{7,40})\b", record)
+    if not match:
+        return "the record names no commit"
+    commit = match.group(1)
+    if git("rev-parse", "--verify", "-q", commit + "^{commit}")[0]:
+        return "commit %s is not in this repository" % commit
+    changed = set(git("diff", "--name-only", commit)[1].splitlines())
+    for line in git("status", "--porcelain")[1].splitlines():
+        changed.add(line[3:].split(" -> ")[-1])
+    outside = sorted(p for p in changed if not p.startswith("docs/superpowers/plans/"))
+    if outside:
+        return "%d files changed since %s: %s" % (len(outside), commit, ", ".join(outside))
+    return None
+
+
+def cmd_show(args, path, plan):
+    if args.open:
+        lines = ["%s %s: %s" % (b.slice, b.name, b.status()) for b in plan.blocks
+                 if b.slice and b.status().split(":")[0] != "green"]
+    elif args.backlog:
+        lines = bullets(plan, "Backlog")
+    elif args.requests:
+        lines = bullets(plan, "Log", r"^- \S+ REQUEST ")
+    else:
+        lines = bullets(plan, "Log", r"^- \S+ Suite: ")[-1:]
+        if args.current:
+            if not lines:
+                raise Refused("no suite record")
+            why = staleness(lines[0])
+            print(lines[0])
+            print("stale: " + why if why else "current")
+            return 1 if why else 0
+    print("".join(l + "\n" for l in lines), end="")
+    return 0
+
+
+def cmd_note(section):
+    def run(args, path, plan):
+        plan.append_line(section, "- %s %s" % (today(args), args.text))
+        save(plan, path)
+        return 0
+    return run
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog="plan", description=__doc__, epilog=CONTRACT,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--file")
+    sub = parser.add_subparsers(dest="command", required=True)
+    sub.add_parser("check").set_defaults(run=cmd_check)
+    for name, section in (("log", "Log"), ("backlog", "Backlog")):
+        note = sub.add_parser(name)
+        note.add_argument("text")
+        note.add_argument("--date")
+        note.set_defaults(run=cmd_note(section))
+    status = sub.add_parser("status")
+    status.add_argument("n")
+    status.add_argument("status")
+    status.set_defaults(run=cmd_status)
+    show = sub.add_parser("show")
+    what = show.add_mutually_exclusive_group(required=True)
+    for flag in ("open", "backlog", "requests", "last-suite"):
+        what.add_argument("--" + flag, action="store_true")
+    show.add_argument("--current", action="store_true")
+    show.set_defaults(run=cmd_show)
+    add = sub.add_parser("add-slice")
+    add.add_argument("n")
+    add.add_argument("name")
+    add.add_argument("--kind", required=True, choices=KINDS)
+    where = add.add_mutually_exclusive_group(required=True)
+    where.add_argument("--scenarios")
+    where.add_argument("--check")
+    add.add_argument("--observable", required=True)
+    add.add_argument("--unknown", default="none")
+    add.add_argument("--needs", default="none")
+    add.set_defaults(run=cmd_add_slice)
+    archive = sub.add_parser("archive")
+    archive.add_argument("batch")
+    archive.add_argument("--date")
+    archive.set_defaults(run=cmd_archive)
+    args = parser.parse_args()
+    try:
+        path = find_file(args.file)
+        return args.run(args, path, load(path))
+    except Refused as why:
+        sys.stderr.write("plan: %s\n" % why)
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
