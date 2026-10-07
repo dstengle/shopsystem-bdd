@@ -24,6 +24,20 @@ contract:
     or an edit that would make one, is refused, naming every problem, and the
     file is left as it was. A missing Backlog or Log section is created in its
     place when a command needs it.
+  - log and backlog append '- <date> <text>' to their section (date default
+    today). archive writes the green slices and the whole log to
+    archive/<plan name>-<batch>.md beside the plan, then leaves the log holding
+    the REQUEST entries (with their continuation lines) and one line naming
+    the archive and the last 'Suite:' line; it refuses when the archive file
+    exists or nothing is green.
+  - show --current compares the suite record's 'at <hash>' with HEAD and the
+    working tree through 'git diff --name-only' and 'git status --porcelain',
+    run in the current directory: a path outside docs/superpowers/plans/
+    makes it stale, and so does a commit git cannot find. It prints the
+    record, then 'current' (exit 0) or 'stale: <reason>' (exit 1). It goes
+    with --last-suite only.
+
+exit status: 0 success, 1 a check failed or an edit was refused, 2 bad usage.
 """
 
 SLICE = re.compile(r"## Slice (\d+(?:\.\d+)*): (.+)$")
@@ -229,19 +243,20 @@ def cmd_archive(args, path, plan):
     if os.path.exists(target):
         raise Refused("%s exists" % target)
     log = plan.ensure_section("Log")
-    entries = bullets(plan, "Log")
     last = bullets(plan, "Log", r"^- \S+ Suite: ")[-1:]
+    entries = bullets(plan, "Log")
+    requests = bullets(plan, "Log", r"^- \S+ REQUEST ")
     archived = Plan("".join(plan.preamble) + "".join("".join(b.lines) for b in green)
-                    + "## Log\n" + "".join(l + "\n" for l in entries))
+                    + "## Log\n" + "".join(e + "\n" for e in entries))
     plan.blocks = [b for b in plan.blocks if b not in green]
     body = log.lines[1:]
     while body and not body[-1].strip():
         body.pop()
     tail = log.lines[len(body) + 1:]
-    kept = [l for l in body if re.match(r"- \S+ REQUEST ", l)]
+    kept = [e + "\n" for e in requests]
     note = "- %s Batch %s archived to %s" % (today(args), args.batch, relative)
     if last:
-        note += "; last " + last[0][2:]
+        note += "; last " + last[0].split("\n")[0][2:]
     log.lines = [log.lines[0]] + kept + [note + "\n"] + tail
     refuse_if_invalid(plan, path)
     os.makedirs(os.path.dirname(target), exist_ok=True)
@@ -252,9 +267,15 @@ def cmd_archive(args, path, plan):
 
 
 def bullets(plan, section, pattern=""):
+    """Entries of a section: each bullet with the lines that continue it."""
     block = plan.section(section)
-    return [l.rstrip("\n") for l in (block.lines[1:] if block else [])
-            if l.startswith("- ") and re.search(pattern, l)]
+    found = []
+    for line in (block.lines[1:] if block else []):
+        if line.startswith("- "):
+            found.append([line.rstrip("\n")])
+        elif found and line.strip():
+            found[-1].append(line.rstrip("\n"))
+    return ["\n".join(e) for e in found if re.search(pattern, e[0])]
 
 
 def git(*args):
@@ -290,6 +311,7 @@ def cmd_show(args, path, plan):
     else:
         lines = bullets(plan, "Log", r"^- \S+ Suite: ")[-1:]
         if args.current:
+            lines = [l.split("\n")[0] for l in lines]
             if not lines:
                 raise Refused("no suite record")
             why = staleness(lines[0])
@@ -346,6 +368,8 @@ def main():
     archive.add_argument("--date")
     archive.set_defaults(run=cmd_archive)
     args = parser.parse_args()
+    if args.command == "show" and args.current and not args.last_suite:
+        parser.error("--current goes with --last-suite")
     try:
         path = find_file(args.file)
         return args.run(args, path, load(path))

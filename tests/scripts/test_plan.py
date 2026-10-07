@@ -141,6 +141,21 @@ class PlanTest(unittest.TestCase):
             "- 2026-10-06 Batch 14 archived to archive/cart-slices-14.md; "
             "last 2026-10-01 Suite: 3 passed, 1 failed at abc1234 in 12 s\n"))
 
+    def test_archive_keeps_continuation_lines_with_their_entries(self):
+        self.plan.write_text(PLAN.replace(
+            "kb serve is not built\n",
+            "kb serve is not built\n  needed by slice 53\n- 2026-10-03 HAND-BACK slice 2\n  evidence: red\n"))
+        done = self.run_script("archive", "14", "--date", "2026-10-06")
+        self.assertEqual(done.returncode, 0, done.stderr)
+        archived = (self.plan.parent / "archive" / "cart-slices-14.md").read_text()
+        self.assertIn("kb serve is not built\n  needed by slice 53\n"
+                      "- 2026-10-03 HAND-BACK slice 2\n  evidence: red\n", archived)
+        self.assertIn("## Log\n- 2026-10-02 REQUEST shopsystem-kb: kb serve is not built\n"
+                      "  needed by slice 53\n- 2026-10-06 Batch 14", self.plan.read_text())
+
+    def test_current_without_last_suite_is_a_usage_error(self):
+        self.assertEqual(self.run_script("show", "--open", "--current").returncode, 2)
+
     def test_last_suite_holds_until_code_changes(self):
         self.git("init", "-q")
         (self.tmp / "code.txt").write_text("one\n")
