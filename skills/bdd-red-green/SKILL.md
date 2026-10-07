@@ -25,7 +25,7 @@ Work through the slice's scenarios in the order the plan lists them. The slice's
 4. **Run the slice** (`python -m pytest -q -m "slice-<n>"`) and the test module the scenario lives in. Everything previously green there stays green.
 5. **Refactor** with them green, then commit, then the next scenario.
 
-Before the slice's last commit, run the whole feature suite once. Everything previously green stays green.
+Before the slice's last commit, run the whole feature suite once. Everything previously green stays green. That run is the slice's suite record (below).
 
 **Code only what a scenario asserts.** Where the scenarios are silent, the code is silent. Do not choose semantics for cases no scenario covers, not as a "guard", not as "the forgiving option". If the silence matters, it goes in the checkpoint entry as an open question.
 
@@ -39,13 +39,21 @@ The suite runs many times in every slice, so its speed is the workflow's speed:
 
 A project whose suite cannot do one of these says why in its `CLAUDE.md`.
 
+## The Suite Record
+
+A whole-suite run is recorded once and used while it holds. After the slice's change is committed, record the run in the plan's log with the plugin's `scripts/plan log`, as `Suite: <N> passed, <M> failed at <short hash of the commit that was run> in <seconds> s`, with `; failing: <titles>` when M is not 0, and commit the log with the checkpoint. A record holds while nothing outside `docs/superpowers/plans/` has changed since its commit: `scripts/plan show --last-suite --current` says `current` or `stale`.
+
+- A slice starts from the last record; its failing list is the scenarios already red. Do not run the whole suite at a slice's start. Only when the plan has no record yet, run it once to make one.
+- Whoever needs the suite's result (a reviewer, slicing, the controller before a push) and finds a record that holds uses it.
+- Installing or upgrading a dependency without a commit makes every record stale.
+
 ## Slices Verified by a Check
 
 An enabling or stack slice has a `Check:` line instead of scenarios: a command and the result it must give. The cycle is the same with the check in the scenario's place:
 
 1. **Run the check.** It must fail, and for the reason the slice exists: the module isn't there, the stubs aren't generated, the bound isn't met. A check that passes before any work is a stop condition.
 2. **Do the least work** that makes the check give its stated result.
-3. **Run the check again**, then the whole feature suite. Everything previously green stays green.
+3. **Run the check again**, and the test modules the work touches and any the check's failure names. Iterate on those. Once the check gives its result, run the whole feature suite once: everything previously green stays green. That run is the record.
 4. Commit, then the checkpoint. The checkpoint's "someone can now" line says what the check proves.
 
 No scenarios are written for a check slice, and no check is added to a capability slice.
@@ -110,6 +118,7 @@ When every scenario in the slice is green, set the slice's Status to `green`, ap
 | "The demo is in 20 minutes" | A demo of the wrong behaviour is the outcome you're paid to prevent. |
 | "I can see from reading it that it can't pass" | Reading is not evidence. Run it. The failing assertion is what goes in the hand-back entry. |
 | "Nothing is green, so there's nothing to commit" | The hand-back entry and the honest code are the commit. Uncommitted work is lost work in a hand-off. |
+| "I'll run the whole suite first to see where we start" | The last record is where you start. A start-of-slice run is one run too many. |
 
 ## Red Flags
 
@@ -119,6 +128,7 @@ When every scenario in the slice is green, set the slice's Status to `green`, ap
 - The phrase "typo", "obviously meant", or "arithmetically impossible" about a Then line
 - A `try`, `raise`, `max(0, ...)`, or default branch no scenario exercises
 - "already passes" said with relief
+- A whole-suite run before a slice's first scenario, with a record that holds
 
 **Any of these: stop, undo the edit, hand back.**
 

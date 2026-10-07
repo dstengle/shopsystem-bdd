@@ -21,7 +21,7 @@ The report is a set of claims to check against the diff, including its rationale
 
 ## Tests
 
-- Do not re-run the whole suite to confirm the report.
+- Do not re-run the whole suite to confirm the report: the implementer's suite record is the run. Check it names the task's change commit.
 - Run a focused marker only for a doubt no existing run answers.
 - Run the brief's cheap checks (greps, one-liners) yourself.
 - Evidence you cannot find is a gap to report, not a pass.
@@ -41,5 +41,5 @@ Begin directly with the verdict. Every line is a verdict, a finding with file:li
 
 - **Spec Compliance:** ✅ or ❌, with what is missing, extra or misunderstood. List separately, marked ⚠️, anything you cannot verify from the diff.
 - **Strengths:** what was done well, specifically.
-- **Issues:** Critical, Important and Minor. Each gives file:line, what is wrong, why it matters, and the fix. Important means the task cannot be trusted until it is fixed; polish is Minor. A hardening finding (an input no client sends today, an edge case no line names) is Minor and marked `backlog`, with its reproduction, so the controller adds it to the plan's backlog instead of a fix round. Something the brief mandates that this rubric calls a defect is Important, labelled plan-mandated.
+- **Issues:** Critical, Important and Minor. Each gives file:line, what is wrong, why it matters, and the fix. Important means the task cannot be trusted until it is fixed; polish is Minor. Behaviour that contradicts a Behaviour line or the capability's Purpose is Important, whether or not a scenario covers it. When none does, say so and mark it `spec question`, so the controller has the line's scenario formulated with the fix. It is never Minor and never carried to a later task. A hardening finding (an input no client sends today, an edge case no line names) is Minor and marked `backlog`, with its reproduction, so the controller adds it to the plan's backlog instead of a fix round. Something the brief mandates that this rubric calls a defect is Important, labelled plan-mandated.
 - **Assessment:** Task quality: Approved or Needs fixes, with one or two sentences of reasoning.

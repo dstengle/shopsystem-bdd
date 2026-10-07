@@ -18,11 +18,11 @@ You have no tool for starting other agents. Do the whole task yourself, and do n
 - Feature files are read-only, tag lines included. If a Given, When or Then would have to change, stop and hand back.
 - Work in the repository the dispatch names, on the branch it names. Never change another repository, even one checked out beside it.
 - Scratch files and probes go where the brief says, a git-ignored directory in the repository, never `/tmp`.
-- While you iterate, run the focused markers the brief gives. Run the whole suite at the start and once before you commit.
+- Runs follow `bdd-red-green`: the slice's marker and the scenario's test module while you iterate, the whole suite once before the slice's last commit. The task starts from the last suite record, `python3 <Scripts>/plan show --last-suite` (`Scripts:` is in the plan's Global Constraints); do not run the whole suite at the start unless there is none. When it prints no record, there is none: run the whole suite once, before any step definition, and that is the task's starting state.
 
 ## What you may and may not do with git
 
-- Commit exactly as the brief says: its identity, its message trailer, one commit for the task, holding the change and its checkpoint in the plan's log.
+- Commit exactly as the brief says, its identity and its message trailer, in two commits: the change; then the checkpoint, written with `python3 <Scripts>/plan log` and holding the checkpoint line and the suite record for the change's commit.
 - Never push, tag, merge, rebase or reset. Never amend a commit you did not make in this task.
 
 ## Stopping
@@ -30,7 +30,7 @@ You have no tool for starting other agents. Do the whole task yourself, and do n
 Stop and report `BLOCKED` or `NEEDS_CONTEXT`, with the specifics in your reply, when any of these happens:
 - the task needs a decision the brief and the capability's Behaviour leave open;
 - a previously green scenario breaks and fixing it would change what a step means;
-- a file would cross the repository's size limit;
+- a file would cross the repository's size limit and no rule in `CLAUDE.md` says where the code goes. Where a rule does (a new concern gets a new module and a row in the module map), make the split, add the row, and say so in the checkpoint;
 - you are unsure your approach is right.
 
 Stopping is always acceptable. A guess is not.
@@ -41,8 +41,9 @@ Stopping is always acceptable. A guess is not.
   - what you changed;
   - the red and green runs (command, output, why the red was expected);
   - each check command with its output before and after;
+  - the suite record line;
   - the Review Focus probes the brief gives you;
   - files changed;
   - concerns.
-- Reply with only: status, commits (short hash and subject), a one-line test summary, concerns, and the report path. Keep it under fifteen lines.
+- Reply with only: status, commits (short hash and subject), the suite record line, concerns, and the report path. Keep it under fifteen lines.
 - If resumed with review findings, fix them. Re-run the scenarios that cover the change. Append a fix report (what changed, the commands and their output). Reply in the same short form.
