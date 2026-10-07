@@ -95,7 +95,7 @@ Hand-back entry (all fields required):
 
 ## Checkpoint
 
-When every scenario in the slice is green, set the slice's Status to `green`, append these two entries to the plan log, each with its own `plan log "<text>"` (it writes the `- <date> ` itself), and continue to the next slice without asking:
+When every scenario in the slice is green, set the slice's Status with `plan status <n> green`, append these two entries to the plan log, each with its own `plan log "<text>"` (it writes the `- <date> ` itself), and continue to the next slice without asking:
 ```
 - <date> slice <n> green. Someone can now: <one sentence>.
   Surprised by: <what building it turned out to involve that the plan didn't say | nothing>.

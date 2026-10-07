@@ -18,11 +18,11 @@ You have no tool for starting other agents. Do the whole task yourself, and do n
 - Feature files are read-only, tag lines included. If a Given, When or Then would have to change, stop and hand back.
 - Work in the repository the dispatch names, on the branch it names. Never change another repository, even one checked out beside it.
 - Scratch files and probes go where the brief says, a git-ignored directory in the repository, never `/tmp`.
-- Runs follow `bdd-red-green`: the slice's marker and the scenario's test module while you iterate, the whole suite once before the slice's last commit. The task starts from the last suite record, `python3 <Scripts>/plan show --last-suite` (`Scripts:` is in the plan's Global Constraints); do not run the whole suite at the start unless there is none. When it prints no record, there is none: run the whole suite once, before any step definition, and that is the task's starting state.
+- Runs follow `bdd-red-green`: the slice's marker and the scenario's test module while you iterate, the whole suite once before the slice's last commit. The task starts from the last suite record, `python3 <Scripts>/plan show --last-suite` (`Scripts:` is in the brief); do not run the whole suite at the start unless there is none. Only empty output with exit 0 means there is none: then run the whole suite once, before any step definition, and that is the task's starting state. A brief without `Scripts:`, or a script that exits non-zero or is not found, is `NEEDS_CONTEXT`, never "no record".
 
 ## What you may and may not do with git
 
-- Commit exactly as the brief says, its identity and its message trailer, in two commits: the change; then the checkpoint, written with `python3 <Scripts>/plan log` and holding the checkpoint entry and, as a separate `plan log` entry after it, the suite record for the change's commit.
+- Commit exactly as the brief says, its identity and its message trailer, in two commits: the change; then the checkpoint, the slice's Status set with `python3 <Scripts>/plan status <n> green` and its entries written with `python3 <Scripts>/plan log`, holding the checkpoint entry and, as a separate `plan log` entry after it, the suite record for the change's commit.
 - Never push, tag, merge, rebase or reset. Never amend a commit you did not make in this task.
 
 ## Stopping
@@ -46,4 +46,4 @@ Stopping is always acceptable. A guess is not.
   - files changed;
   - concerns.
 - Reply with only: status, commits (short hash and subject), the suite record line, concerns, and the report path. Keep it under fifteen lines.
-- If resumed with review findings, fix them. Re-run the scenarios that cover the change. Append a fix report (what changed, the commands and their output). Reply in the same short form.
+- If resumed with review findings, fix them. Re-run the scenarios that cover the change. After the last fix commit, run the whole suite once and log its record as in the checkpoint. Append a fix report (what changed, the commands and their output). Reply in the same short form.
