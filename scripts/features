@@ -1,0 +1,364 @@
+#!/usr/bin/env python3
+"""Read and edit Gherkin feature files without the test runner."""
+import argparse
+import os
+import re
+import sys
+
+CONTRACT = """\
+contract:
+  - It reads every *.feature under --dir (default: features), recursively,
+    parsing Gherkin directly. Text inside a docstring (\"\"\" or three
+    backticks) is never a keyword or a tag. A Rule: block is refused, not
+    guessed at.
+  - A scenario's block is its tag lines, its Scenario: line and everything up
+    to the next scenario's tag lines. Feature tags apply to every scenario in
+    the file; tags above an Examples: apply to that table's rows. A Scenario
+    Outline counts once per Examples row, header excluded, as pytest-bdd
+    collects it.
+  - tag finds the scenario by its exact title, refuses unless exactly one file
+    has it (naming every file that does), and changes only its tag lines: the
+    first @slice-... becomes the new one, any further @slice-... go, other
+    tags stay; with no slice tag, the new one joins the last tag line, or gets
+    a tag line of its own at the scenario's indentation.
+  - move takes a scenario's block verbatim (trailing blank lines dropped) to
+    the end of an existing file; with --inline-background, the source
+    Background's steps are inserted before the scenario's first step at the
+    scenario's step indentation.
+  - verify-moved compares, by title, each scenario's effective tags, its
+    description, and its Background steps followed by its own steps, all
+    stripped of indentation, blanks and comments.
+
+exit status: 0 success, 1 a check failed or an edit was refused, 2 bad usage.
+An edit that would leave its file invalid is refused and the file left as it was.
+"""
+
+STEP = re.compile(r"(Given|When|Then|And|But|\*)\s")
+SCENARIO = re.compile(r"(Scenario Outline|Scenario Template|Scenario|Example):")
+EXAMPLES = re.compile(r"(Examples|Scenarios):")
+SLICE = re.compile(r"slice-\d+(\.\d+)*$")
+
+
+class Refused(Exception):
+    pass
+
+
+class Scenario:
+    def __init__(self, title, start, line, tag_lines, tags):
+        self.title, self.start, self.line = title, start, line
+        self.tag_lines, self.tags = tag_lines, tags
+        self.end = None
+        self.tables = []  # (tags, row count)
+
+
+class Feature:
+    def __init__(self, text):
+        self.lines = text.split("\n")
+        self.tags, self.scenarios = [], []
+        self.background = None  # (first line, end)
+        self.in_doc = [False] * len(self.lines)
+        self.tag_line_set = set()
+        self._parse()
+
+    def _tags(self, indexes):
+        found = []
+        for i in indexes:
+            self.tag_line_set.add(i)
+            for word in self.lines[i].split():
+                if word.startswith("#"):
+                    break
+                found.append(word.lstrip("@"))
+        return found
+
+    def _parse(self):
+        delim, pending, table = None, [], None
+        for i, line in enumerate(self.lines):
+            s = line.strip()
+            if delim:
+                self.in_doc[i] = True
+                if s.startswith(delim):
+                    delim = None
+                continue
+            if s.startswith('"""') or s.startswith("```"):
+                self.in_doc[i] = True
+                if s.find(s[:3], 3) < 0:
+                    delim = s[:3]
+                continue
+            if s.startswith("@"):
+                pending.append(i)
+            elif s.startswith("Feature:"):
+                self.tags, pending = self._tags(pending), []
+            elif s.startswith("Rule:"):
+                raise Refused("line %d: Rule: blocks are not supported" % (i + 1))
+            elif s.startswith("Background:"):
+                self.background, pending = [i + 1, None], []
+            elif SCENARIO.match(s):
+                if self.scenarios:
+                    self.scenarios[-1].end = pending[0] if pending else i
+                elif self.background:
+                    self.background[1] = pending[0] if pending else i
+                title = s.split(":", 1)[1].strip()
+                self.scenarios.append(Scenario(
+                    title, pending[0] if pending else i, i, list(pending),
+                    self._tags(pending)))
+                pending, table = [], None
+            elif EXAMPLES.match(s):
+                table = (self._tags(pending), [0])
+                self.scenarios[-1].tables.append(table)
+                pending = []
+            elif s.startswith("|") and table:
+                table[1][0] += 1
+            elif s and not s.startswith("#"):
+                pending = []
+        for sc in self.scenarios:
+            if sc.end is None:
+                sc.end = len(self.lines)
+        if self.background and self.background[1] is None:
+            self.background[1] = len(self.lines)
+
+    def content(self, first, last):
+        return [(i, self.lines[i].strip()) for i in range(first, last)
+                if self.lines[i].strip() and i not in self.tag_line_set
+                and (self.in_doc[i] or not self.lines[i].strip().startswith("#"))]
+
+    def block(self, sc):
+        end = sc.end
+        while end > sc.start and not self.lines[end - 1].strip():
+            end -= 1
+        return end
+
+    def rows(self, sc):
+        """One tag set per collected test."""
+        base = set(self.tags) | set(sc.tags)
+        if not sc.tables:
+            return [base]
+        return [base | set(t) for t, n in sc.tables for _ in range(max(n[0] - 1, 0))]
+
+    def effective_tags(self, sc):
+        return set(self.tags) | set(sc.tags) | {x for t, _ in sc.tables for x in t}
+
+    def first_step(self, sc):
+        for i, s in self.content(sc.line + 1, sc.end):
+            if not self.in_doc[i] and STEP.match(s):
+                return i
+        return None
+
+    def description(self, sc):
+        step = self.first_step(sc)
+        return [s for _, s in self.content(sc.line + 1, step if step is not None else sc.end)]
+
+    def steps(self, sc):
+        step = self.first_step(sc)
+        return [] if step is None else [s for _, s in self.content(step, sc.end)]
+
+    def background_steps(self):
+        if not self.background:
+            return []
+        return [s for _, s in self.content(*self.background)]
+
+
+def load(directory):
+    found = []
+    for root, _, names in sorted(os.walk(directory)):
+        for name in sorted(names):
+            if name.endswith(".feature"):
+                path = os.path.join(root, name)
+                with open(path) as handle:
+                    try:
+                        found.append((path, Feature(handle.read())))
+                    except Refused as why:
+                        raise Refused("%s: %s" % (path, why))
+    return found
+
+
+def locate(files, title):
+    hits = [(p, f, sc) for p, f in files for sc in f.scenarios if sc.title == title]
+    if not hits:
+        raise Refused("no scenario titled %r" % title)
+    if len(hits) > 1:
+        raise Refused("title %r is in several scenarios: %s" % (
+            title, ", ".join(sorted({p for p, _, _ in hits}))))
+    return hits[0]
+
+
+def natural(tag):
+    return [int(p) if p.isdigit() else p for p in re.split(r"(\d+)", tag)]
+
+
+def cmd_count(args, files):
+    counts, total = {}, 0
+    for _, f in files:
+        for sc in f.scenarios:
+            for tags in f.rows(sc):
+                total += 1
+                for t in tags:
+                    counts[t] = counts.get(t, 0) + 1
+    for t in sorted(counts, key=natural):
+        print(t, counts[t])
+    print("total", total)
+    return 0
+
+
+def cmd_list(args, files):
+    want = args.tag.lstrip("@") if args.tag else None
+    hits = [(p, sc.title) for p, f in files for sc in f.scenarios
+            if (want in f.effective_tags(sc) if want else args.title in sc.title)]
+    for path, title in hits:
+        print("%s: %s" % (path, title))
+    return 0 if hits else 1
+
+
+def write_checked(edits):
+    """edits: {path: lines}. Validate every file parses, then write."""
+    texts = {p: "\n".join(lines) for p, lines in edits.items()}
+    for text in texts.values():
+        Feature(text)
+    for path, text in texts.items():
+        with open(path, "w") as handle:
+            handle.write(text)
+
+
+def cmd_tag(args, files):
+    if not SLICE.match(args.slice):
+        sys.exit(usage_error("slice must look like slice-<n> or slice-<n>.<m>"))
+    path, f, sc = locate(files, args.title)
+    lines = _retag(f, sc, args.slice)
+    write_checked({path: lines})
+    return 0
+
+
+def _retag(f, sc, slice_tag):
+    lines = list(f.lines)
+    new = "@" + slice_tag
+    placed = False
+    for i in sc.tag_lines:
+        indent = lines[i][:len(lines[i]) - len(lines[i].lstrip())]
+        words = []
+        for word in lines[i].split():
+            if word.startswith("@slice-"):
+                if not placed:
+                    words.append(new)
+                    placed = True
+            else:
+                words.append(word)
+        lines[i] = indent + " ".join(words) if words else None
+    if not placed:
+        if sc.tag_lines:
+            last = sc.tag_lines[-1]
+            lines[last] = lines[last].rstrip() + " " + new
+        else:
+            text = lines[sc.line]
+            lines[sc.line] = text[:len(text) - len(text.lstrip())] + new + "\n" + text
+    return [x for x in lines if x is not None]
+
+
+def cmd_move(args, files):
+    path, f, sc = locate(files, args.title)
+    dest = args.to
+    if not os.path.isfile(dest):
+        raise Refused("%s does not exist" % dest)
+    if os.path.abspath(dest) == os.path.abspath(path):
+        raise Refused("%s is the scenario's own file" % dest)
+    end = f.block(sc)
+    block = f.lines[sc.start:end]
+    if args.inline_background:
+        step = f.first_step(sc)
+        if step is not None:
+            line = f.lines[step]
+            indent = line[:len(line) - len(line.lstrip())]
+            at = step - sc.start
+            block[at:at] = [indent + s for s in f.background_steps()]
+    source = f.lines[:sc.start] + f.lines[sc.end:]
+    if sc.start > 0 and not f.lines[sc.start - 1].strip() and sc.end >= len(f.lines):
+        while source and not source[-1].strip():
+            source.pop()
+        source.append("")
+    with open(dest) as handle:
+        target = handle.read().split("\n")
+    while target and not target[-1].strip():
+        target.pop()
+    target += [""] + block + [""]
+    write_checked({path: source, dest: target})
+    return 0
+
+
+def summarise(files):
+    by_title = {}
+    for _, f in files:
+        for sc in f.scenarios:
+            by_title.setdefault(sc.title, []).append((f, sc))
+    return by_title
+
+
+def cmd_verify(args, files):
+    before = summarise(load(args.from_dir))
+    after = summarise(files)
+    out = []
+    for label, side in (("before", before), ("after", after)):
+        out += ["duplicate title %s: %s" % (label, t) for t in sorted(side) if len(side[t]) > 1]
+    out += ["missing: " + t for t in sorted(set(before) - set(after))]
+    out += ["added: " + t for t in sorted(set(after) - set(before))]
+    matched = 0
+    for title in sorted(set(before) & set(after)):
+        if len(before[title]) > 1 or len(after[title]) > 1:
+            continue
+        (bf, bs), (af, a_s) = before[title][0], after[title][0]
+        differs = []
+        if bf.effective_tags(bs) != af.effective_tags(a_s):
+            differs.append("tags")
+        if bf.description(bs) != af.description(a_s):
+            differs.append("description")
+        if bf.background_steps() + bf.steps(bs) != af.background_steps() + af.steps(a_s):
+            differs.append("steps")
+        if differs:
+            out.append("changed: %s (%s)" % (title, ", ".join(differs)))
+        else:
+            matched += 1
+    if out:
+        print("\n".join(out))
+        return 1
+    print("%d scenarios match" % matched)
+    return 0
+
+
+def usage_error(message):
+    sys.stderr.write("features: error: %s\n" % message)
+    return 2
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog="features", description=__doc__, epilog=CONTRACT,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--dir", default="features")
+    sub = parser.add_subparsers(dest="command", required=True)
+    count = sub.add_parser("count")
+    count.add_argument("--by-tag", action="store_true", required=True)
+    count.set_defaults(run=cmd_count)
+    lst = sub.add_parser("list")
+    group = lst.add_mutually_exclusive_group(required=True)
+    group.add_argument("--tag")
+    group.add_argument("--title")
+    lst.set_defaults(run=cmd_list)
+    tag = sub.add_parser("tag")
+    tag.add_argument("title")
+    tag.add_argument("slice")
+    tag.set_defaults(run=cmd_tag)
+    move = sub.add_parser("move")
+    move.add_argument("title")
+    move.add_argument("--to", required=True)
+    move.add_argument("--inline-background", action="store_true")
+    move.set_defaults(run=cmd_move)
+    verify = sub.add_parser("verify-moved")
+    verify.add_argument("--from", dest="from_dir", required=True)
+    verify.set_defaults(run=cmd_verify)
+    args = parser.parse_args()
+    try:
+        return args.run(args, load(args.dir))
+    except Refused as why:
+        sys.stderr.write("features: %s\n" % why)
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
