@@ -1,7 +1,7 @@
 {
   "name": "shopsystem-bdd",
   "description": "BDD workflow skills for the shopsystem harness: keep one spec of capability files, formulate one Gherkin feature per capability, slice into thin increments, implement red-green, and migrate existing repositories.",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "author": {
     "name": "David Stenglein"
   },

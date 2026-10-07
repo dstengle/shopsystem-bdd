@@ -70,11 +70,28 @@ working copy instead.
 - **A short living plan.** A batch's green slices and log move to `docs/superpowers/plans/archive/` when its branch review is done.
 - **A fast suite.** `bdd-red-green` runs the slice's marker during red-green and the whole suite once per slice, and asks for a parallel suite (`pytest-xdist`) that drives commands in-process.
 
+## Fewer runs, fewer round trips (0.10.0)
+
+0.10.0 removes the repeated work a 0.9.0 session showed: a suite run about 34 times at 100-206 s each, a dependency read instead of probed, splits and defects bounced between agents, and a controller context of half a million tokens.
+
+- **The suite fast first.** Slicing records the suite's wall time in its `Suite:` log line and checks whether it runs in parallel and drives commands in-process. A suite over 60 s that fails either property, with no reason in `CLAUDE.md`, gets an enabling slice cut first in the batch (`slicing-into-increments`). The branch reviewer reports the wall time beside its summary.
+- **A suite record per commit.** `Suite: <N> passed, <M> failed at <hash> in <seconds> s` holds while nothing outside `docs/superpowers/plans/` differs between its commit, `HEAD` and the working tree. Whoever finds a record that holds uses it instead of running again. The implementer drops the run at the start and runs the whole suite once, before the slice's last commit; the branch reviewer runs it once at the batch's head. Plans carry no run protocol (`bdd-red-green`, `bdd-implementer`, both reviewers).
+- **Probes at the pin.** A slice whose Needs names something a dependency provides carries a probe, a command run against the installed version, with its result in the plan's log. A failing probe marks the slice `blocked: awaiting <dependency>` and logs the request. Reading the dependency's spec is not a probe, and a capability file is read whole, never by range (`slicing-into-increments`).
+- **Rule-decided splits and behaviour defects.** When a module would cross a size limit and the repository's rules say where the code goes, the implementer splits it and records that in the checkpoint; it hands back only when no rule decides. Behaviour that contradicts a Behaviour line or a capability's Purpose is Important, covered by a scenario or not, never Minor (`bdd-implementer`, both reviewers).
+- **Drafts to files, and a fresh session.** `capability-writer` and `feature-formulator` write drafts under `.superpowers/spec-drafts/<run>/round-<n>/`, one directory per dispatch, applied in order, and reply with the change list and paths. The controller checks every file written is under that path before the gate. Slicing recommends executing the plan in a new session that reads the plan file, not the one that integrated, formulated and sliced.
+
+## Scripts
+
+Plain Python 3, standard library only, in `scripts/`. `--help` is the contract; tests: `python3 -m unittest discover -s tests/scripts`.
+
+- `scripts/features`: count, list, tag, move and verify-moved for feature files, without the test runner.
+- `scripts/plan`: edit and read the living slice plan (log, status, slices, backlog, archive, `show`), keeping its sections and order valid.
+
 ## One spec per context; the gate is on Behaviour lines
 
 From 0.8.0 a bounded context has one spec: `spec/index.md`, the decision ledger `spec/decisions.md`, and `spec/capabilities/<name>.md`, each capability formulated as `features/<name>.feature`. The format is `docs/capability-format.md`.
 
-- A brainstorming note is a proposal. `integrating-a-proposal` has the `capability-writer` agent (read-only, blind to the code) merge it into `spec/`, and stops at the one human gate: the added, changed and removed Behaviour lines and the questions the note left open. It never starts a second spec.
+- A brainstorming note is a proposal. `integrating-a-proposal` has the `capability-writer` agent (blind to the code; it reads `spec/`, `features/` and `docs/`, and writes only drafts under `.superpowers/spec-drafts/`) merge it into `spec/`, and stops at the one human gate: the added, changed and removed Behaviour lines and the questions the note left open. It never starts a second spec.
 - `formulating-features` writes one scenario per approved line and needs no second approval. A line with two readings gets no scenario; its question goes to the person and the answer back through integration. This replaces 0.6.0's settled/deciding sort.
 - Slicing cuts stack slices from the bounds in `spec/index.md`; its `QUESTION FOR THE SPEC:` lines end in a capability line or a ledger entry.
 - `migrating-to-capabilities` moves a repository with notes and approved features onto `spec/`: capabilities grouped by behaviour, not by the old files; scenarios moved verbatim; test bindings follow the step definitions, which are never edited; the suite, the passing tests and every slice-tag count equal before and after. On a copy of shopsystem-kb: 171 scenarios from 16 features into 20 capabilities, 265 passed before and after, all 89 slice-tag counts equal.
@@ -95,8 +112,8 @@ From 0.7.0 the plugin gives each role in the workflow an agent whose tools are e
 
 | agent | tools | model | for |
 |---|---|---|---|
-| `shopsystem-bdd:capability-writer` | Read, Glob, Grep | opus | integrating a note into `spec/`, and a repository's first `spec/`, blind to the code |
-| `shopsystem-bdd:feature-formulator` | Read, Glob, Grep | opus | writing feature files from the spec, blind to the code |
+| `shopsystem-bdd:capability-writer` | Read, Glob, Grep, Write | opus | integrating a note into `spec/`, and a repository's first `spec/`, blind to the code; writes only under `.superpowers/spec-drafts/` |
+| `shopsystem-bdd:feature-formulator` | Read, Glob, Grep, Write | opus | writing feature files from the spec, blind to the code; writes only under `.superpowers/spec-drafts/` |
 | `shopsystem-bdd:bdd-implementer` | Read, Edit, Write, Glob, Grep, Bash, Skill | sonnet | one task of a no-code plan, `bdd-red-green` preloaded |
 | `shopsystem-bdd:bdd-task-reviewer` | Read, Glob, Grep, Bash | opus | a task's review, and the scoped re-review of a fix round |
 | `shopsystem-bdd:bdd-branch-reviewer` | Read, Glob, Grep, Bash | opus | the whole-branch review at the end of a batch, shape and coupling included |
