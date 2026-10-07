@@ -46,6 +46,10 @@ First turn, then resumed once.
 - writing-plans plan: one task, slice 3; Global Constraints `- Scripts: /home/vscode/shopsystem-bdd/scripts`; "Their tasks are written when stock ships." Verification lists each marker with its expected result, counts "from `features count --by-tag`", and no when-to-run. It first wrote "`plan log` a suite record with the new time" into the checkpoint and edited it out before committing. No code blocks, file contents, diffs or step-definition bodies.
 - Final message: "I recommend running the plan from a new session that reads the plan file, so it doesn't carry this session's spec and slicing context."
 
+**Fix round 1 (task review).** Two clauses amended, no headless re-run, by the controller's ruling: the green run already behaved as the corrected wording says.
+- The fast-suite trigger now reads "over 60 s, and either the test command does not run in parallel or the step definitions start the entry point as a program in more than one test per command". Before, the second arm could be read without the bound. In the green run the slice was cut for a 65 s serial suite, which both readings cover.
+- The hand-off's "why each scenario is red today" now takes "the suite's result from its record" and allows running only the red scenarios, not the suite. The green run's writing-plans phase ran no suite: it took the failures from the record.
+
 ## Not verified by a run
 
 The archive paragraph (`plan archive`) and the slow-suite trigger's second arm (the entry point started as a program in more than one test per command) had no fixture here.
