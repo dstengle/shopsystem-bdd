@@ -18,9 +18,9 @@ Format: `docs/capability-format.md` in this plugin. The gate is integrating-a-pr
 
 ## Process
 
-1. **Dispatch the `capability-writer` agent** with the migration brief below. Choose the drafts path `.superpowers/spec-drafts/<date>-migration/`, inside the repository, and name it in the brief. If `.gitignore` lacks `.superpowers/`, add it and commit that line alone.
+1. **Dispatch the `capability-writer` agent** with the migration brief below. Choose the drafts path `.superpowers/spec-drafts/<date>-migration/`, inside the repository; each dispatch is a round in its own `<drafts path>/round-<n>/`, named in its brief, as integrating-a-proposal's rounds are. If `.gitignore` lacks `.superpowers/`, add it and commit that line alone.
 2. **Check the mapping table.** First, check `git status --porcelain` shows nothing but that `.gitignore` line: an agent that wrote outside the drafts path goes back with its files removed. Every existing scenario maps to exactly one line; every line cites a note sentence or a scenario. A scenario with no row goes back to the agent. Two scenarios with one title that land in one capability are a question for the gate: pytest-bdd binds one of them and drops the other without a word. The person's retitle is the one title change migration makes, and it is applied to the baseline too.
-3. **Stop at the gate.** Show the person: the capabilities and which old features' scenarios each receives; every unbacked line (a note sentence with no scenario behind it: new contract); every question. Lines written from approved scenarios are approved already. Wait for an explicit yes and the answers; answers go back to the agent. Then copy the drafts into `spec/`, `decisions.append.md` as `spec/decisions.md` under a `# Decisions` heading, and commit `spec/` alone.
+3. **Stop at the gate.** Show the person: the capabilities and which old features' scenarios each receives; every unbacked line (a note sentence with no scenario behind it: new contract); every question. Lines written from approved scenarios are approved already. Wait for an explicit yes and the answers; answers go back to the agent. Then copy the drafts into `spec/` round by round in order, `decisions.append.md` as `spec/decisions.md` under a `# Decisions` heading, and commit `spec/` alone.
 4. **Re-pair**, the main agent:
    - One file `features/<name>.feature` per capability: `# formulated from spec/capabilities/<name>.md`, `Feature: <title>`, `  Narrator: <narrator>`. The old `So that …` line goes: Purpose carries it.
    - Move each mapped scenario in, in line order, verbatim: its tags (`@slice-<n>` included), title, description, steps, tables and Examples, with `features move "<title>" --to features/<name>.feature`, adding `--inline-background` where the capability's source files did not share one Background.
@@ -39,8 +39,8 @@ Notes, oldest first (a later note supersedes an earlier one where they differ):
 <NOTE PATHS>
 ADRs: <adrs/ | none>. Approved feature files: everything under features/.
 You may read those notes, the ADRs, anything under features/, and anything
-under docs/. Nothing else. Write your drafts under <DRAFTS PATH> and nowhere
-else.
+under docs/. Nothing else. Write your drafts under <DRAFTS PATH>/round-1/ and
+nowhere else.
 
 Group lines into capabilities by narrator and cluster of behaviour, as if
 the feature files had never been split. Their current names and boundaries

@@ -85,3 +85,13 @@ Iteration 3 edit: `migrating-to-capabilities` steps 1 and 2 name `.superpowers/s
 - The Question Brief and the Hand-back Brief: no fixture reached either.
 - An agent that writes outside the drafts path (Review Focus 5): no run did, so the porcelain check never had to send an agent back. In every green run it was clean at the gate, and the controller ran the check before the gate.
 - The capability-writer's reply in migration mode stays over 4 KB (5487 and 5805 bytes): the mapping table is part of it. Migration had no size criterion.
+
+## Fix round 1 (task review)
+
+Each dispatch is now a round with its own directory, `<drafts path>/round-<n>/`, named in its brief:
+- integrating-a-proposal: The Brief writes to `round-1/`. The Question Brief writes to `round-<N>/`, may read the earlier rounds, and drafts a section it changes whole, with the earlier rounds' drafts of that section applied.
+- Step 4 applies the rounds in order: a later round's section replaces an earlier round's, and the `decisions.append.md` files are appended in order.
+- formulating-features (Brief, Hand-back Brief, step 4) and migrating-to-capabilities (steps 1 and 3, the Migration Brief) take the same rule.
+- capability-writer may read the earlier rounds in a question round.
+
+Before this fix, a question round on the same path would have replaced round one's drafts with ones built from the committed spec. No headless re-run, by the controller's ruling: the question round had no run before the fix either. Every green run above answered "Leave every question open" and had a single round.

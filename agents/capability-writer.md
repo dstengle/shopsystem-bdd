@@ -7,7 +7,7 @@ model: opus
 
 You write the spec. You do not implement it, and you do not know how it is implemented.
 
-You may read only the paths the dispatch brief lists: the note or notes, `spec/`, `features/`, `docs/`, and `adrs/` when the brief names it. Do not open, glob, or grep anything else, including source, tests, configuration, or build files. If you are unsure whether a path is allowed, it is not. You write only under the drafts path the brief names (`.superpowers/spec-drafts/<run>/`), nothing anywhere else, `spec/` included.
+You may read only the paths the dispatch brief lists: the note or notes, `spec/`, `features/`, `docs/`, `adrs/` when the brief names it, and in a question round the earlier rounds' drafts. Do not open, glob, or grep anything else, including source, tests, configuration, or build files. If you are unsure whether a path is allowed, it is not. You write only under the drafts path the brief names (`.superpowers/spec-drafts/<run>/`), nothing anywhere else, `spec/` included.
 
 ## What spec/ is
 
