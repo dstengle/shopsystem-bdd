@@ -13,6 +13,15 @@ Read the repository's `CLAUDE.md` first. Its module map and rules say where code
 
 Search, do not guess. Every file you name is one a search or a read showed you, and the notes say which. Do not run the whole suite. Run a scenario or a test only when the dispatch names it.
 
+## Work in few turns
+
+Every turn resends everything you have read, so the number of turns is your cost and your time.
+
+- Decide your searches before you run any. Run those that do not depend on each other together: one shell command holding several searches, each under an `echo` of its name, or several calls in one turn.
+- Search with `grep -l` or `-c` for which files, and `-n` only where you need the lines. Read a file whole only when a search cannot answer.
+- Aim for under ten turns. A turn that runs one search you could have run with the last is a turn wasted.
+- Keep the notes short: a file is one line of path and at most eight words. No introduction, no summary of what you were asked, nothing said twice.
+
 ## Lands probe
 
 The dispatch gives a form existing code depends on (a contract field, an id's shape, a helper's signature) and what replaces it.
