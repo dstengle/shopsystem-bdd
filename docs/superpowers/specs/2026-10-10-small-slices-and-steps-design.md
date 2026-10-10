@@ -209,7 +209,7 @@ in the plan's Global Constraints.
   Lanes may run at once, each in its own git worktree and branch with its own virtualenv. This overrides
   subagent-driven-development's rule against parallel implementers, and the constraint says so.
 - **A lane's checkpoint is the controller's.** In a lane the implementer makes no checkpoint commit; its suite
-  record goes in its report. The controller merges lanes one at a time, runs the suite after each merge, and
+  record goes in its report and its checkpoint entry in its reply, for the controller to log. The controller merges lanes one at a time, runs the suite after each merge, and
   writes the Status and the `Suite:` entry itself with `plan`. Checkpoints written in each lane would conflict
   in the plan's log at every merge.
 - **Split reviews.** A diff over the slice budget is reviewed by area, in parallel.
@@ -218,7 +218,8 @@ in the plan's Global Constraints.
 
 `scripts/plan`, `tests/scripts/test_plan.py`.
 
-- A slice may carry `- Lands: <p> production, <t> test`. `plan add-slice` takes it as it takes the other lines.
+- A slice may carry `- Lands: <p> production, <t> test`. `plan add-slice` takes it as it takes the other lines,
+  and `plan lands <n> "<p> production, <t> test"` sets or replaces it on a slice already in the plan.
 - `plan check`, and so every write, refuses a `Lands:` that is malformed or over 8 production or 4 test,
   naming the slice and the budget. A slice with no `Lands:` line stays valid, so plans written before 0.11.0
   still load.
@@ -226,7 +227,7 @@ in the plan's Global Constraints.
 
 ### 9. Release
 
-- `.claude-plugin/plugin.json` and `marketplace.json` to 0.11.0.
+- `.claude-plugin/plugin.json` to 0.11.0 (`marketplace.json` carries no version).
 - README: a section "Small slices, steps and fresh agents (0.11.0)"; `code-scout` in the agents list and table;
   the task reviewer's row gains Write; the note on running under subagent-driven-development points to the
   plan's Global Constraints.
@@ -235,6 +236,10 @@ in the plan's Global Constraints.
 
 ## Not yet
 
+- **A PARTIAL that holds.** In the release's runs an implementer given a 22-file task as one dispatch stopped
+  at 15 files once and finished the task four times, whatever the wording. The slice budget and Steps are what
+  bound a dispatch. Promoted with a fixture where the work is long enough to tempt a stop, or held by the
+  controller counting `git diff --stat` after each reply.
 - **A tool-call budget for PARTIAL.** The request proposed about 100 calls. An agent cannot count its calls
   reliably; files touched can be read from git. Promoted if a session shows a long run over few files.
 - **A controller skill.** The rules reach the controller through the plan. Promoted if a session shows a

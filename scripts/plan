@@ -23,7 +23,8 @@ contract:
   - A slice may carry '- Lands: <p> production, <t> test', the modules its
     work lands in, counting the migration it forces. More than 8 production
     or 4 test is over the budget and is refused like any other invalid plan.
-    A slice without the line is valid.
+    A slice without the line is valid. 'lands <n> "<p> production, <t> test"'
+    sets or replaces the line on one slice.
   - The plan is validated on reading and before every write. An invalid plan,
     or an edit that would make one, is refused, naming every problem, and the
     file is left as it was. A missing Backlog or Log section is created in its
@@ -167,6 +168,8 @@ class Plan:
         if kind in KINDS and b.field(other) is not None:
             out.append("%s: a %s slice has %s, not %s" % (label, kind, want, other))
         lands = b.field("Lands")
+        if sum(line.startswith("- Lands:") for line in b.lines) > 1:
+            out.append("%s: more than one Lands line" % label)
         counted = LANDS.match(lands) if lands is not None else None
         if lands is not None and not counted:
             out.append("%s: Lands must be '<p> production, <t> test'" % label)
@@ -229,6 +232,15 @@ def cmd_status(args, path, plan):
     for i, line in enumerate(block.lines):
         if line.startswith("- Status:"):
             block.lines[i] = "- Status: %s\n" % args.status
+    save(plan, path)
+    return 0
+
+
+def cmd_lands(args, path, plan):
+    block = slice_block(plan, args.n)
+    block.lines = [line for line in block.lines if not line.startswith("- Lands:")]
+    at = next(i for i, line in enumerate(block.lines) if line.startswith("- Status:"))
+    block.lines.insert(at, "- Lands: %s\n" % args.lands)
     save(plan, path)
     return 0
 
@@ -363,6 +375,10 @@ def main():
     status.add_argument("n")
     status.add_argument("status")
     status.set_defaults(run=cmd_status)
+    lands = sub.add_parser("lands")
+    lands.add_argument("n")
+    lands.add_argument("lands")
+    lands.set_defaults(run=cmd_lands)
     show = sub.add_parser("show")
     what = show.add_mutually_exclusive_group(required=True)
     for flag in ("open", "backlog", "requests", "last-suite"):

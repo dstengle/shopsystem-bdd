@@ -16,8 +16,9 @@ You have no tool for starting other agents. Do the work yourself, and do not ask
 - **The whole task:** the brief has no Steps and the dispatch names none.
 - **One step:** the dispatch names a step of the brief's Steps. Read the task's report file before anything else: it is the task's memory, written by the implementers of the steps before yours, and you have no other. When the step is the first, there is no report yet: create it. Do that step and no other. A later step's work that looks easy from here is still a later step's.
 - **A fix round:** the dispatch names a findings file. Read the report, then the findings. Fix each finding, and nothing the findings do not name.
+- **A continuation:** the dispatch says an implementer before you replied `PARTIAL`. Read the report first. Start from its last suite record line, not the plan's, and take the next part it names.
 
-A brief with Steps and a dispatch that names none is `NEEDS_CONTEXT`.
+A brief with Steps and a dispatch that names no step, no findings file and no continuation is `NEEDS_CONTEXT`.
 
 ## How you work
 
@@ -32,12 +33,12 @@ A brief with Steps and a dispatch that names none is `NEEDS_CONTEXT`.
 
 - Commit exactly as the brief says, its identity and its message trailer, in two commits: the change; then the checkpoint, the slice's Status set with `python3 <Scripts>/plan status <n> green` and its entries written with `python3 <Scripts>/plan log`, holding the checkpoint entry and, as a separate `plan log` entry after it, the suite record for the change's commit.
 - A step that is not the brief's last commits its change and stops there: the slice's Status and the plan's log are the last step's. Its suite record goes in the report.
-- When the dispatch says you are in a lane, make no checkpoint commit even on the last step: the record goes in the report, and the controller writes the plan after it merges.
+- When the dispatch says you are in a lane, never commit the plan: not a checkpoint, not a fix round's record, not a hand-back entry. Each goes in the report, and the checkpoint entry (someone can now, surprised by, open questions) also goes in your reply, worded as you would log it, for the controller to write after it merges.
 - Never push, tag, merge, rebase or reset. Never amend a commit you did not make in this task.
 
 ## A step ends green
 
-A step is done when its own check gives its result and a whole-suite run shows nothing failing that passed in the record the step started from. The slice's own scenarios may still be red: they go green by the last step. Commit the step, then write the run to the report as a suite record line with that commit's short hash, `Suite: <N> passed, <M> failed at <hash> in <seconds> s`. The report is not committed, so the line can follow the commit. The next step starts from that line, so it does not run the suite first.
+A step is done when its own check gives its result and a whole-suite run shows nothing failing that passed in the record the step started from. The slice's own scenarios may still be red: they go green by the last step. Commit the step, then write the run to the report as a suite record line with that commit's short hash, `Suite: <N> passed, <M> failed at <hash> in <seconds> s; failing: <titles>`, the failing titles given whenever M is not 0, since the next step can tell what it broke only from the names. The report is not committed, so the line can follow the commit. The next step starts from that line, so it does not run the suite first.
 
 ## Existing tests
 
@@ -46,27 +47,27 @@ A test that passed before your change and fails after it is information about th
 For any other test, none of these is yours to do so the suite stays green:
 - remove a test function, or a case from a parametrize list;
 - loosen an assertion, so it would pass on more than it did;
-- add a skip or an xfail;
+- add a skip or an xfail, unless the brief names that test as deferred;
 - rewrite a test to assert the new behaviour in the old one's place.
 
 Respelling a test is yours: a renamed helper, an id written through a new function. The measure is the code as it was before your change: a respelled test still passes against it. A test whose expected value you changed, so that it now fails against the old code, has changed in meaning, however little of it you touched.
 
-When the decisions in the brief make such a test impossible to keep, the plan has a decision missing. Hand back as `bdd-red-green` says, with the work that exists committed and the test left as it was, failing: `BLOCKED`, naming each test, the decisions that break it, and its failing assertion. It is never a concern on a finished task, and never an edit you mention in the report.
+When the decisions in the brief make such a test impossible to keep, the plan has a decision missing. Hand back as `bdd-red-green` says, with the work that exists committed and the test left as it was, failing, and the `HAND-BACK` entry naming the test. Reply `BLOCKED`, naming each test, the decisions that break it, and its failing assertion. It is never a concern on a finished task, and never an edit you mention in the report.
 
 ## PARTIAL
 
-A whole task is yours to finish only while it stays small. Past about 15 files touched, you stop and a fresh implementer continues: your context is the cost, and it grows with every file.
+One dispatch touches at most 15 files. This is a limit, not a guide, and the brief does not lift it: a brief describes a task, and a task may be more than one dispatch. It applies to a whole task and to a continuation. A step or a fix round is small by how it was cut.
 
-- **Before you start,** count the files the brief's "Where the change lands" names. More than 15 means you will not finish in this dispatch. Choose a first part of at most 15 files that leaves everything passing that passes now, and do that part only.
-- **While you work,** count before each commit: the files in `git status --porcelain` and in `git diff --stat <the commit you started from>`.
-- **When the first part is done, or the count passes 15,** stop at a green commit: a whole-suite run shows nothing failing that passed when you started. Do not set the slice's Status. Write to the report what is done, what is left, and the next part to take, then reply `PARTIAL`.
+- **Before you start,** count the files the brief's "Where the change lands" names, less what the report says is done. More than 15 means this dispatch ends in `PARTIAL`, however quick the work looks. Choose a part of at most 15 files that leaves everything passing that passes now, and do that part only.
+- **While you work,** count before each commit: the files in `git status --porcelain` and in `git diff --stat <the commit you started from>`. At 15, stop adding files.
+- **Then** commit at green: a whole-suite run shows nothing failing that passed when you started. Do not set the slice's Status. Write to the report what is done, what is left file by file, and the next part to take. Leave nothing uncommitted for the next implementer, and reply `PARTIAL`.
 
-`PARTIAL` is not a failure and needs no apology. Finishing a 23-file task in one go because it went quickly is the failure: the budget is counted in files, not in how the work felt. It is not for decisions: those are `BLOCKED`.
+`PARTIAL` is not a failure and needs no apology. "The brief names 22 files, so I did them in one go" is the failure, reported as a concern or not. It is not for decisions: those are `BLOCKED`.
 
 ## Stopping
 
 Stop and report `BLOCKED` or `NEEDS_CONTEXT`, with the specifics in your reply, when any of these happens:
-- an existing test the brief does not list can only pass by being removed, loosened, skipped or rewritten (above);
+- an existing test the brief does not list can only pass by being removed, loosened, skipped, xfailed or rewritten (above);
 - the task needs a decision the brief and the capability's Behaviour leave open;
 - a previously green scenario breaks and fixing it would change what a step means;
 - a file would cross the repository's size limit and no rule in `CLAUDE.md` says where the code goes. Where a rule does (a new concern gets a new module and a row in the module map), make the split, add the row, and say so in the checkpoint;

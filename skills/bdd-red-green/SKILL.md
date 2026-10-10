@@ -74,7 +74,7 @@ Each of these is observable. When one occurs, hand back immediately:
 | A slice's check passes before you did any work | The slice is already done or the check doesn't check what it says. Slicing decides. |
 | A scenario can't be made to fail on its Then line, only on setup or an undefined Given | The Given describes a state the system can't represent yet. Slicing may need to re-order. |
 | A Then line can only pass through code you'd be embarrassed to explain | The line is wrong or you've misread it. Either way, not yours to decide. |
-| Going green needs work no scenario in the slice describes, beyond a trivial helper | Missing scenario or a mis-sized slice. |
+| Going green needs work no scenario in the slice describes and the task's "Where the change lands" does not name, beyond a trivial helper | Missing scenario or a mis-sized slice. Migration the task names is the slice's work. |
 | A previously green scenario breaks and the fix would change what a step means | Two scenarios contradict each other. |
 | An existing test can only stay green by being removed, loosened, skipped, xfailed or rewritten to assert something else, and the task does not list it under "Tests the decisions break" | The plan has a decision missing. The planner decides what happens to the test. |
 
@@ -89,7 +89,7 @@ If the person asked for "green by the demo" and can't be reached, the answer is 
 
 Hand-back entry (all fields required):
 ```
-- <date> HAND-BACK slice <n>, scenario "<name>": <which stop condition>.
+- <date> HAND-BACK slice <n>, scenario "<name>" | test <file>::<name>: <which stop condition>.
   Evidence: <the failing assertion or observation, verbatim>.
   Green in this slice: <scenario names>. Red: <scenario names>.
 ```
@@ -132,7 +132,7 @@ When every scenario in the slice is green, set the slice's Status with `plan sta
 - The phrase "typo", "obviously meant", or "arithmetically impossible" about a Then line
 - A `try`, `raise`, `max(0, ...)`, or default branch no scenario exercises
 - "already passes" said with relief
-- A deleted test function or parametrize case, a loosened assertion, or a new skip or xfail, on a test the task does not list
+- A deleted test function or parametrize case, a loosened assertion, a new skip or xfail, or a test rewritten to assert something else, on a test the task does not list
 - A whole-suite run before a slice's first scenario, with a record that holds
 
 **Any of these but the last: stop, undo the edit, hand back.** The last is no hand-back: skip the run and carry on from the record.

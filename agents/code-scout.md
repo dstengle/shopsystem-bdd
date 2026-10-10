@@ -11,7 +11,7 @@ You have no tool for starting other agents. You change nothing in the repository
 
 Read the repository's `CLAUDE.md` first. Its module map and rules say where code goes.
 
-Search, do not guess. Every file you name is one a search or a read showed you, and the notes say which. Do not run the whole suite. Run a scenario or a test only when the dispatch names it.
+Search, do not guess. Every file you name is one a search or a read showed you, and the notes say which. Do not run the whole suite. You may run the slice's own red scenarios, by name or marker, to see why they fail, and any other test only when the dispatch names it.
 
 ## Work in few turns
 
@@ -37,7 +37,7 @@ Reply: `Lands: <p> production, <t> test`, the searches in one line, and the note
 
 ## Task research
 
-The dispatch gives a slice (its scenarios or its check) and the decisions the plan has taken. The notes have exactly these four parts.
+The dispatch gives a slice (its scenarios or its check) and the decisions the plan has taken. The notes have exactly these four parts. A dispatch may ask for part 4 alone, once the decisions are written: then do only that.
 
 1. **Why it is red today.** For each scenario, what is missing in the step definitions and in the code behind them, with file and function names. For a check, what makes it fail.
 2. **Where the change lands.** Every production module and every test file that must change for the slice to go green and for everything that passes today to keep passing, grouped by concern, each with a few words on what changes, following `CLAUDE.md`. Then the two counts.

@@ -62,7 +62,7 @@ No baseline for `steps`, `fix`, `review-scoped` and `breaking-listed`: each depe
 
 Re-runs:
 - breaking-licensed: PASS. `BLOCKED`, a hand-back commit, "its line \"tests/test_rename.py moves with the change\" lists nothing", the four tests named and left failing.
-- partial: PASS. `PARTIAL`: "I stopped at 15 files. The brief's change touches about 22, so I committed the first part and left the rest." One commit of 15 files, the suite at 24 passed and 0 failed, the slice's Status not set, what is left written to the report.
+- partial: PASS on this run (see "PARTIAL does not hold" below). `PARTIAL`: "I stopped at 15 files. The brief's change touches about 22, so I committed the first part and left the rest." One commit of 15 files, the suite at 24 passed and 0 failed, the slice's Status not set, what is left written to the report.
 - fix: PASS. `DONE` first; two commits, the fix and "Plan: suite record at 065b7f6"; `current`.
 - steps: PASS. The report's three records name `43f711b`, `4d01438` and `536f34c`, the three steps' commits.
 
@@ -100,8 +100,32 @@ With the two general-purpose runs that preceded the design (Haiku found it, Sonn
 
 A research dispatch for "Tests the decisions break" alone, three Haiku runs: 51 to 98 s, the dangling reference named in 2 of 3. No better than the whole research, so a second, conflicts-only scout is not adopted.
 
+## Final review and fix pass
+
+A fresh reviewer read the branch against the spec: no Critical, seven Important, all fixed in one pass.
+
+1. `bdd-red-green`'s older stop condition ("work no scenario in the slice describes") would hand back any task carrying migration. It now excepts work the task's "Where the change lands" names.
+2. The unlisted-test stop had nowhere to go: the `HAND-BACK` template takes a test as well as a scenario, slicing's hand-back table has a fourth row (the planner decides what becomes of the test), and in a lane the entry goes in the report.
+3. A continuation after `PARTIAL` is a fourth kind of dispatch: read the report, start from its last record.
+4. "Tests the decisions break" is searched against the decisions as written: a scout is sent again for that part alone when a task's decisions came after its scout.
+5. `plan lands <n> "<p> production, <t> test"` sets or replaces the line on an existing slice; a second `Lands:` line is refused (5 tests added, 51 OK).
+6. A step's record line carries `; failing: <titles>` when anything fails.
+7. In a lane the checkpoint entry goes in the implementer's reply, for the controller to log.
+
+Re-runs after the fix pass: steps PASS (three commits, three records with their hashes, checkpoint after step 3); breaking-licensed PASS (`BLOCKED`, a hand-back commit, "test_rename.py tests need the planner").
+
+## PARTIAL does not hold
+
+After the fix pass the `migrate` case was run with a controller told to answer `PARTIAL` with a continuation.
+
+- One run on the iteration 2 text plus the continuation wording: `DONE_WITH_CONCERNS`, 22 files in one commit. "about 22 files were touched, over the 15-file guide, because the brief itself names that many. I did it in one go."
+- The section was rewritten as a limit ("One dispatch touches at most 15 files. This is a limit, not a guide, and the brief does not lift it"). Three runs: `DONE` all three, 22 files in one commit each, and no reply mentions the limit.
+
+So `PARTIAL` passed once (iteration 2) and failed in four later runs. On this fixture the whole task is under a minute of work, and an implementer that can see the end finishes. The rule is in the agent's text and is not to be relied on. What bounds a dispatch in 0.11.0 is upstream of it, and those held in every run: the slice budget at slicing, and Steps, where each of three implementers did only its own three files. The fixtures were in a scratch directory that was withdrawn before more wording could be tried; a continuation was never exercised.
+
 ## Not tested
 
+- A continuation after `PARTIAL`, and the fix pass's wording for lanes, a second scout pass and failing titles in a step's record: written after the last runs that could exercise them.
 - Lanes: no run merged parallel worktrees. The rules are in the hand-off's text only.
 - A whole plan written by writing-plans from the new hand-off, and a controller running by its Global Constraints. The first kb batch on 0.11.0 is that test; the spec's Verification lists what to compare.
 - The branch reviewer's removed-tests rule: the task reviewer's same rule was run, the branch reviewer's was not.

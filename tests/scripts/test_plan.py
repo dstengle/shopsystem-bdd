@@ -257,6 +257,33 @@ class PlanTest(unittest.TestCase):
         archived = (self.plan.parent / "archive" / "cart-slices-b1.md").read_text()
         self.assertIn("- Lands: 3 production, 2 test", archived)
 
+    def test_lands_sets_the_line_on_a_slice_without_one(self):
+        done = self.run_script("lands", "2", "3 production, 1 test")
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertIn("- Needs: none\n- Lands: 3 production, 1 test\n- Status: planned\n", self.plan.read_text())
+
+    def test_lands_replaces_the_line(self):
+        self.run_script("lands", "2", "3 production, 1 test")
+        self.assertEqual(self.run_script("lands", "2", "5 production, 2 test").returncode, 0)
+        text = self.plan.read_text()
+        self.assertIn("- Lands: 5 production, 2 test\n", text)
+        self.assertNotIn("3 production", text)
+
+    def test_lands_over_the_budget_is_refused_and_the_file_unchanged(self):
+        before = self.plan.read_text()
+        done = self.run_script("lands", "2", "9 production, 1 test")
+        self.assertEqual(done.returncode, 1)
+        self.assertIn("over the budget", done.stderr)
+        self.assertEqual(self.plan.read_text(), before)
+
+    def test_a_second_lands_line_is_refused(self):
+        done = self.lands("2 production, 1 test\n- Lands: 30 production, 1 test")
+        self.assertEqual(done.returncode, 1)
+        self.assertIn("slice 2: more than one Lands line", done.stderr)
+
+    def test_a_lands_line_with_extra_text_is_refused(self):
+        self.assertEqual(self.lands("2 production, 1 test (a floor)").returncode, 1)
+
 
 if __name__ == "__main__":
     unittest.main()

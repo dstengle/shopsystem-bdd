@@ -89,9 +89,9 @@ working copy instead.
 - **Expand, migrate, contract.** A breaking change is cut as the new form beside the old, callers moved a group to a slice behind a test seam, the capability slices, then the old form removed, each with the suite and a search for its check (`slicing-into-increments`).
 - **A scout reads; the planner plans.** `code-scout`, on Haiku, runs the Lands probe and each task's research and writes notes to `.superpowers/scout/`. The planning session reads the notes, not the source.
 - **Tests the decisions break.** Each task lists the existing tests its decisions make impossible to keep and what the plan decides for each. An implementer may change what a test asserts only when it is listed; any other test it would have to remove, loosen, skip or rewrite is a stop, `BLOCKED` with the test named (`bdd-implementer`, `bdd-red-green`). Both reviewers list every removed or weakened test, and one no task lists is Important.
-- **Steps.** A task over about 5 files is written as ordered Steps, each with its own check and files, each run by a fresh implementer from the task's one report file. A step ends with the whole suite run once. An implementer running a whole task past about 15 files stops at a green commit and replies `PARTIAL`.
+- **Steps.** A task over about 5 files is written as ordered Steps, each with its own check and files, each run by a fresh implementer from the task's one report file. A step ends with the whole suite run once. An implementer running a whole task is told to stop at 15 files, at a green commit, and reply `PARTIAL`; in testing it did so once in five runs, so the slice budget and Steps are what bound a dispatch.
 - **Fresh agents, a thin controller.** Review findings go to a file and then to a fresh implementer; no agent is resumed. The controller passes paths and reads short replies, not diffs, reports or source. A large diff is reviewed by area, in parallel.
-- **Lanes.** Tasks the planner marks `Lane:` (disjoint files, neither needing the other) may run at once, each lane in its own worktree, branch and virtualenv. The controller merges one at a time, runs the suite after each merge and writes the plan's checkpoints itself.
+- **Lanes.** Tasks the planner marks `Lane:` (disjoint files, neither needing the other) may run at once, each lane in its own worktree, branch and virtualenv. The controller merges one at a time, runs the suite after each merge and writes the plan's checkpoints itself, from each lane's reply.
 
 These rules reach a controller through the plan: the hand-off has writing-plans copy them into the plan's Global Constraints.
 
@@ -100,7 +100,7 @@ These rules reach a controller through the plan: the hand-off has writing-plans 
 Plain Python 3, standard library only, in `scripts/`. `--help` is the contract; tests: `python3 -m unittest discover -s tests/scripts`.
 
 - `scripts/features`: count, list, tag, move and verify-moved for feature files, without the test runner.
-- `scripts/plan`: edit and read the living slice plan (log, status, slices, backlog, archive, `show`), keeping its sections and order valid and refusing a slice whose `Lands:` is over the budget.
+- `scripts/plan`: edit and read the living slice plan (log, status, slices, backlog, archive, `show`), keeping its sections and order valid and refusing a slice whose `Lands:` is over the budget (`plan lands` sets it).
 
 ## One spec per context; the gate is on Behaviour lines
 
@@ -137,7 +137,7 @@ From 0.7.0 the plugin gives each role in the workflow an agent whose tools are e
 
 What the tools make structural:
 - **No agent can start another.** None has the Agent tool, so an implementer cannot spawn helpers or its own reviewer, and a reviewer cannot ask for a second opinion.
-- **The reviewers cannot edit the code they judge.** They have no Edit tool. The architecture reviewer's one Write is for its report file, and the task reviewer's for its findings file.
+- **The branch reviewer cannot edit the code it judges.** It has no Edit and no Write tool. The architecture reviewer and the task reviewer have no Edit; each has Write for one file, its report or its findings, which is asked and not enforced (below).
 - **The implementer always has `bdd-red-green` in its context.** It is loaded through the `skills` field.
 
 What stays a request:
