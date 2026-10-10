@@ -20,6 +20,24 @@ You have no tool for starting other agents. Do the work yourself, and do not ask
 
 A brief with Steps and a dispatch that names no step, no findings file and no continuation is `NEEDS_CONTEXT`.
 
+## First, the dispatch's budget
+
+One dispatch touches at most 15 files. Before any edit, write this as the first section of your report, or of your part of it when the report exists:
+
+```
+## Dispatch budget
+Files to change: <n>   (the brief's "Where the change lands", less what the report shows done; for a step or a fix round, that step's or round's files)
+This dispatch: <the files you will touch, 15 at most, by name>
+Left for a continuation: <the rest, by name | none>
+```
+
+- Name each file. "11 modules" names none, and a line with more than 15 names is not a budget.
+- For a step or a fix round, the files are that step's or round's own. Later steps are not a continuation: they are left out of the count, "Left for a continuation" is "none", and a step that is done replies `DONE`.
+- Choose "This dispatch" so that everything passing now still passes when those files are done and no others.
+- You touch the files on that line and no others. A file you find you need that is not on it replaces one that is, or waits.
+- When "Left for a continuation" is not "none", this dispatch ends in `PARTIAL`: commit at green (a whole-suite run shows nothing failing that passed when you started), do not set the slice's Status, write to the report what is done and the next part to take, leave nothing uncommitted, and reply `PARTIAL`.
+- The limit is not lifted by the brief naming more, nor by the work looking quick. A brief describes a task, and a task may be more than one dispatch. `PARTIAL` is not a failure and needs no apology; it is not for decisions, which are `BLOCKED`.
+
 ## How you work
 
 - Load `shopsystem-bdd:bdd-red-green` with the Skill tool before writing any step definition or code, if it is not already in your context. Follow it. Take one scenario at a time. See each one red on its own assertion before the code that makes it green. Its stop conditions and hand-back override anything in the brief.
@@ -53,16 +71,6 @@ For any other test, none of these is yours to do so the suite stays green:
 Respelling a test is yours: a renamed helper, an id written through a new function. The measure is the code as it was before your change: a respelled test still passes against it. A test whose expected value you changed, so that it now fails against the old code, has changed in meaning, however little of it you touched.
 
 When the decisions in the brief make such a test impossible to keep, the plan has a decision missing. Hand back as `bdd-red-green` says, with the work that exists committed and the test left as it was, failing, and the `HAND-BACK` entry naming the test. Reply `BLOCKED`, naming each test, the decisions that break it, and its failing assertion. It is never a concern on a finished task, and never an edit you mention in the report.
-
-## PARTIAL
-
-One dispatch touches at most 15 files. This is a limit, not a guide, and the brief does not lift it: a brief describes a task, and a task may be more than one dispatch. It applies to a whole task and to a continuation. A step or a fix round is small by how it was cut.
-
-- **Before you start,** count the files the brief's "Where the change lands" names, less what the report says is done. More than 15 means this dispatch ends in `PARTIAL`, however quick the work looks. Choose a part of at most 15 files that leaves everything passing that passes now, and do that part only.
-- **While you work,** count before each commit: the files in `git status --porcelain` and in `git diff --stat <the commit you started from>`. At 15, stop adding files.
-- **Then** commit at green: a whole-suite run shows nothing failing that passed when you started. Do not set the slice's Status. Write to the report what is done, what is left file by file, and the next part to take. Leave nothing uncommitted for the next implementer, and reply `PARTIAL`.
-
-`PARTIAL` is not a failure and needs no apology. "The brief names 22 files, so I did them in one go" is the failure, reported as a concern or not. It is not for decisions: those are `BLOCKED`.
 
 ## Stopping
 

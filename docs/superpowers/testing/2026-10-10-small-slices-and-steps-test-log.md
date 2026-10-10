@@ -114,7 +114,7 @@ A fresh reviewer read the branch against the spec: no Critical, seven Important,
 
 Re-runs after the fix pass: steps PASS (three commits, three records with their hashes, checkpoint after step 3); breaking-licensed PASS (`BLOCKED`, a hand-back commit, "test_rename.py tests need the planner").
 
-## PARTIAL does not hold
+## PARTIAL does not hold (0.11.0)
 
 After the fix pass the `migrate` case was run with a controller told to answer `PARTIAL` with a continuation.
 
@@ -123,9 +123,32 @@ After the fix pass the `migrate` case was run with a controller told to answer `
 
 So `PARTIAL` passed once (iteration 2) and failed in four later runs. On this fixture the whole task is under a minute of work, and an implementer that can see the end finishes. The rule is in the agent's text and is not to be relied on. What bounds a dispatch in 0.11.0 is upstream of it, and those held in every run: the slice budget at slicing, and Steps, where each of three implementers did only its own three files. The fixtures were in a scratch directory that was withdrawn before more wording could be tried; a continuation was never exercised.
 
+This was taken up again in 0.11.1, below.
+
+## PARTIAL and continuation, 0.11.1
+
+A new scratch directory and a rebuilt fixture, since the first was lost: `shelf` with eleven modules of K functions each that split or build an id themselves, eight test modules, and slice 8 as one task with no Steps whose brief names 22 files. K is 1 (a 20 s task) or 6. The controller prompt answers `PARTIAL` with a fresh implementer told it is a continuation, until a reply is `DONE`. Runs are scored from git: files in each commit, the tree clean, the suite passing, no module left spelling the form, the slice green.
+
+| implementer text | K | stopped at 15 files or fewer | continuation finished the task |
+|---|---|---|---|
+| 0.11.0 ("One dispatch touches at most 15 files", in a PARTIAL section late in the file) | 1 | 0 of 3 | n/a |
+| the same | 6 | 3 of 3 | 3 of 3 |
+| a written budget, asked of a whole task or a continuation only, steps and fix rounds exempt | 1 | 1 of 3 | 1 of 1 |
+| a written budget before any edit, asked of every dispatch | 1 and 6 | 9 of 10 | 9 of 9 |
+| the same, with "name each file" and the step rule below | 1 | 4 of 4 | 4 of 4 |
+
+What binds is an artifact written before the work: the report's first section, `## Dispatch budget`, with the files to change, the files this dispatch will touch (15 at most, by name) and the files left for a continuation. A rule to count and stop, however firmly worded, lost to a task that looked quick. Making the section conditional lost too: the two runs that did not stop had written no section at all. The one miss with the unconditional text wrote "This dispatch: shelf/names.py, 11 modules, 9 test files, CLAUDE.md (22)", which is why the text now says to name each file and that more than 15 names is not a budget.
+
+A continuation, in every run that reached one: read the report, wrote its own budget for what was left, did not run the suite at its start, committed the rest, set the slice green and logged the suite record. A typical report: "Left for a continuation: tests/test_read.py, test_listing.py, ..." then "## Dispatch 2 (DONE) Added the plain made-id test to the 7 remaining test modules". The first dispatch's commit was checked out in one run and the suite passed there (11 passed).
+
+Step mode under the budget text, a brief with three Steps of 6, 4 and 3 files:
+- With the first unconditional text, step 1 replied `PARTIAL`, listing steps 2 and 3 as "Left for a continuation". The text now says later steps are not a continuation and a finished step replies `DONE`.
+- After that, two runs: three dispatches each, every step touching its own files, `DONE` each, records with their hashes. In one, step 1 amended the plan's commit by mistake, undid it and reported it as a concern.
+
 ## Not tested
 
-- A continuation after `PARTIAL`, and the fix pass's wording for lanes, a second scout pass and failing titles in a step's record: written after the last runs that could exercise them.
+- The fix pass's wording for lanes, a second scout pass and failing titles in a step's record: written after the last runs that could exercise them.
+- The minors taken in 0.11.1 beyond the script's tests: the branch reviewer's findings file and scoped mode were not run.
 - Lanes: no run merged parallel worktrees. The rules are in the hand-off's text only.
 - A whole plan written by writing-plans from the new hand-off, and a controller running by its Global Constraints. The first kb batch on 0.11.0 is that test; the spec's Verification lists what to compare.
 - The branch reviewer's removed-tests rule: the task reviewer's same rule was run, the branch reviewer's was not.

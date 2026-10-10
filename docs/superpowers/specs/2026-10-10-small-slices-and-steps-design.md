@@ -161,10 +161,14 @@ New `agents/code-scout.md`.
 - **Fix mode.** Review findings go to a fresh implementer, dispatched with the report file and a findings file.
   It fixes the findings, re-runs the scenarios that cover the change, runs the whole suite once after the last
   fix commit, logs the record, and appends a fix report. This replaces "if resumed with review findings".
-- **PARTIAL.** A new status. An implementer that has touched more than about 15 files (`git status --porcelain`
-  and its own commits in the task) stops at its next green commit, writes what is done and the next step to the
-  report, and replies `PARTIAL`. The controller dispatches a fresh implementer to continue from the report.
-  PARTIAL is not failure; `BLOCKED` stays for decisions.
+- **PARTIAL, by a written budget.** A new status. One dispatch touches at most 15 files. Before any edit, every
+  dispatch writes a `## Dispatch budget` section at the head of its part of the report: the files to change, the
+  files this dispatch will touch (15 at most, by name), and the files left for a continuation. When files are
+  left, it stops at a green commit, writes what is done and the next part to the report, and replies `PARTIAL`.
+  The controller dispatches a fresh implementer as a continuation, which reads the report and writes its own
+  budget. A step or a fix round lists its own files, and later steps are not a continuation. PARTIAL is not
+  failure; `BLOCKED` stays for decisions. (0.11.0 asked the implementer to count as it went; that held in one
+  run of five. The written budget held in 13 of 14; see the test log.)
 - **A test is never deleted or weakened to stay green.** Removing a test function or a parametrize case,
   loosening an assertion, or adding a skip or an xfail, to a test the brief does not list under "Tests the
   decisions break", is a stop condition: `BLOCKED`, with the test and the decisions that break it named. It is
@@ -236,10 +240,6 @@ in the plan's Global Constraints.
 
 ## Not yet
 
-- **A PARTIAL that holds.** In the release's runs an implementer given a 22-file task as one dispatch stopped
-  at 15 files once and finished the task four times, whatever the wording. The slice budget and Steps are what
-  bound a dispatch. Promoted with a fixture where the work is long enough to tempt a stop, or held by the
-  controller counting `git diff --stat` after each reply.
 - **A tool-call budget for PARTIAL.** The request proposed about 100 calls. An agent cannot count its calls
   reliably; files touched can be read from git. Promoted if a session shows a long run over few files.
 - **A controller skill.** The rules reach the controller through the plan. Promoted if a session shows a
