@@ -6,8 +6,9 @@ slicing, and one human gate on the spec's Behaviour lines.
 
 Skills: `integrating-a-proposal`, `formulating-features`,
 `slicing-into-increments`, `bdd-red-green`, `migrating-to-capabilities`.
-Agents: `capability-writer`, `feature-formulator`, `bdd-implementer`,
-`bdd-task-reviewer`, `bdd-branch-reviewer`, `architecture-reviewer`.
+Agents: `capability-writer`, `feature-formulator`, `code-scout`,
+`bdd-implementer`, `bdd-task-reviewer`, `bdd-branch-reviewer`,
+`architecture-reviewer`.
 Format: `docs/capability-format.md`.
 Design: `docs/superpowers/specs/2026-09-22-bdd-workflow-design.md`, and
 `docs/superpowers/specs/2026-09-29-capability-spec-design.md` for 0.8.0.
@@ -80,12 +81,26 @@ working copy instead.
 - **Rule-decided splits and behaviour defects.** When a module would cross a size limit and the repository's rules say where the code goes, the implementer splits it and records that in the checkpoint; it hands back only when no rule decides. Behaviour that contradicts a Behaviour line or a capability's Purpose is Important, covered by a scenario or not, never Minor (`bdd-implementer`, both reviewers).
 - **Drafts to files, and a fresh session.** `capability-writer` and `feature-formulator` write drafts under `.superpowers/spec-drafts/<run>/round-<n>/`, one directory per dispatch, applied in order, and reply with the change list and paths. The controller checks every file written is under that path before the gate. Slicing recommends executing the plan in a new session that reads the plan file, not the one that integrated, formulated and sliced.
 
+## Small slices, steps and fresh agents (0.11.0)
+
+0.11.0 measures a slice's size before the work and holds it during the work. On shopsystem-kb one slice passed every test of slicing and then ran as one implementer over 72 files and 426k tokens; its review had to be split, and it removed the tests that covered a regression two of the plan's decisions caused together. Design: `docs/superpowers/specs/2026-10-10-small-slices-and-steps-design.md`.
+
+- **Small, a fourth test.** A slice lands in at most 8 production and 4 test modules, counting the migration it forces. Each slice carries `Lands: <p> production, <t> test`. For a slice that changes a form existing code depends on, the count is a probe, logged; `plan` refuses a slice over the budget (`slicing-into-increments`).
+- **Expand, migrate, contract.** A breaking change is cut as the new form beside the old, callers moved a group to a slice behind a test seam, the capability slices, then the old form removed, each with the suite and a search for its check (`slicing-into-increments`).
+- **A scout reads; the planner plans.** `code-scout`, on Haiku, runs the Lands probe and each task's research and writes notes to `.superpowers/scout/`. The planning session reads the notes, not the source.
+- **Tests the decisions break.** Each task lists the existing tests its decisions make impossible to keep and what the plan decides for each. An implementer may change what a test asserts only when it is listed; any other test it would have to remove, loosen, skip or rewrite is a stop, `BLOCKED` with the test named (`bdd-implementer`, `bdd-red-green`). Both reviewers list every removed or weakened test, and one no task lists is Important.
+- **Steps.** A task over about 5 files is written as ordered Steps, each with its own check and files, each run by a fresh implementer from the task's one report file. A step ends with the whole suite run once. An implementer running a whole task past about 15 files stops at a green commit and replies `PARTIAL`.
+- **Fresh agents, a thin controller.** Review findings go to a file and then to a fresh implementer; no agent is resumed. The controller passes paths and reads short replies, not diffs, reports or source. A large diff is reviewed by area, in parallel.
+- **Lanes.** Tasks the planner marks `Lane:` (disjoint files, neither needing the other) may run at once, each lane in its own worktree, branch and virtualenv. The controller merges one at a time, runs the suite after each merge and writes the plan's checkpoints itself.
+
+These rules reach a controller through the plan: the hand-off has writing-plans copy them into the plan's Global Constraints.
+
 ## Scripts
 
 Plain Python 3, standard library only, in `scripts/`. `--help` is the contract; tests: `python3 -m unittest discover -s tests/scripts`.
 
 - `scripts/features`: count, list, tag, move and verify-moved for feature files, without the test runner.
-- `scripts/plan`: edit and read the living slice plan (log, status, slices, backlog, archive, `show`), keeping its sections and order valid.
+- `scripts/plan`: edit and read the living slice plan (log, status, slices, backlog, archive, `show`), keeping its sections and order valid and refusing a slice whose `Lands:` is over the budget.
 
 ## One spec per context; the gate is on Behaviour lines
 
@@ -102,7 +117,7 @@ A consuming repository's `CLAUDE.md` can say: "Brainstorming reads `spec/` first
 
 From 0.6.0 the planner plans and the implementer implements. `slicing-into-increments` hands writing-plans a constraint: no code blocks, file contents or diffs in the plan; each task says which scenarios go green, why they are red today, where the change lands by the project's `CLAUDE.md`, what the spec left open and how it was decided, which steps and fixtures to reuse, and the verification commands with counts taken from the tags. Nothing is built in a scratch copy first and no plan is replayed. Under `bdd-red-green` the implementer writes the code after the red run; a task that carries code is not pasted.
 
-When execution runs under `superpowers:subagent-driven-development`, say so in the prompt: implementers work from intent under `bdd-red-green` and hand back on its stop conditions; task reviewers run the suite and every check themselves, and "cannot verify" fails the review rather than passing it; main is pushed when the batch is green and reviewed.
+When execution runs under `superpowers:subagent-driven-development`, the controller dispatches by the plan's Global Constraints (from 0.11.0 they carry the execution rules: by step, paths in and short replies out, fresh fix rounds, lanes). Implementers work from intent under `bdd-red-green` and hand back on its stop conditions; "cannot verify" fails a review rather than passing it; main is pushed when the batch is green and reviewed.
 
 0.6.0's settled/deciding sort of scenarios is replaced in 0.8.0 by the gate on Behaviour lines (above). The principle stands: the person approves decisions, not transcription.
 
@@ -114,18 +129,20 @@ From 0.7.0 the plugin gives each role in the workflow an agent whose tools are e
 |---|---|---|---|
 | `shopsystem-bdd:capability-writer` | Read, Glob, Grep, Write | opus | integrating a note into `spec/`, and a repository's first `spec/`, blind to the code; writes only under `.superpowers/spec-drafts/` |
 | `shopsystem-bdd:feature-formulator` | Read, Glob, Grep, Write | opus | writing feature files from the spec, blind to the code; writes only under `.superpowers/spec-drafts/` |
-| `shopsystem-bdd:bdd-implementer` | Read, Edit, Write, Glob, Grep, Bash, Skill | sonnet | one task of a no-code plan, `bdd-red-green` preloaded |
-| `shopsystem-bdd:bdd-task-reviewer` | Read, Glob, Grep, Bash | opus | a task's review, and the scoped re-review of a fix round |
+| `shopsystem-bdd:code-scout` | Read, Glob, Grep, Bash, Write | haiku | the Lands probe at slicing and a task's research at planning; writes only its notes under `.superpowers/scout/` |
+| `shopsystem-bdd:bdd-implementer` | Read, Edit, Write, Glob, Grep, Bash, Skill | sonnet | one task of a no-code plan, one step of it, or one fix round, `bdd-red-green` preloaded |
+| `shopsystem-bdd:bdd-task-reviewer` | Read, Glob, Grep, Bash, Write | opus | a task's review, whole or one area of it, and the scoped re-review of a fix round; writes only its findings file |
 | `shopsystem-bdd:bdd-branch-reviewer` | Read, Glob, Grep, Bash | opus | the whole-branch review at the end of a batch, shape and coupling included |
 | `shopsystem-bdd:architecture-reviewer` | Read, Glob, Grep, Bash, Write | opus | an architecture review when the person asks for one (the branch review checks shape and coupling every batch from 0.9.0) |
 
 What the tools make structural:
 - **No agent can start another.** None has the Agent tool, so an implementer cannot spawn helpers or its own reviewer, and a reviewer cannot ask for a second opinion.
-- **The reviewers cannot edit the code they judge.** They have no Edit tool. The architecture reviewer's one Write is for its report file.
+- **The reviewers cannot edit the code they judge.** They have no Edit tool. The architecture reviewer's one Write is for its report file, and the task reviewer's for its findings file.
 - **The implementer always has `bdd-red-green` in its context.** It is loaded through the `skills` field.
 
 What stays a request:
 - **Bash is still available.** Reviewers need it to run the suite, so "no commit, no push, no tag" is still asked, not enforced.
+- **Write is not limited to one path.** The task reviewer, the scout and the spec agents are asked to write only their one file. Bash could already write files, so Write gives the reviewer and the scout no power they lacked.
 - **Command restrictions don't carry over from a plugin.** A plugin agent's `hooks` and `permissionMode` are ignored, and a tool entry with a specifier such as `Bash(git push *)` removes Bash altogether.
 - **The fuller guarantee needs repository settings.** It is `permissions.deny` in the repository's `.claude/settings.json`, which binds the controller too, so the controller's own push must then run where those rules do not apply.
 

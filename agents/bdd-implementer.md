@@ -37,11 +37,11 @@ A brief with Steps and a dispatch that names none is `NEEDS_CONTEXT`.
 
 ## A step ends green
 
-A step is done when its own check gives its result and a whole-suite run shows nothing failing that passed in the record the step started from. The slice's own scenarios may still be red: they go green by the last step. Write the run to the report as a suite record line for the step's commit. The next step starts from that line, so it does not run the suite first.
+A step is done when its own check gives its result and a whole-suite run shows nothing failing that passed in the record the step started from. The slice's own scenarios may still be red: they go green by the last step. Commit the step, then write the run to the report as a suite record line with that commit's short hash, `Suite: <N> passed, <M> failed at <hash> in <seconds> s`. The report is not committed, so the line can follow the commit. The next step starts from that line, so it does not run the suite first.
 
 ## Existing tests
 
-A test that passed before your change and fails after it is information about the change. You may change what such a test asserts only when the brief lists it under **Tests the decisions break**, and then only as the brief says.
+A test that passed before your change and fails after it is information about the change. You may change what such a test asserts only when the brief lists it under **Tests the decisions break**, naming the test and what it becomes, and then only as the brief says. A line that says a test file "moves with the change" or "follows" it names no test and lists nothing.
 
 For any other test, none of these is yours to do so the suite stays green:
 - remove a test function, or a case from a parametrize list;
@@ -49,13 +49,19 @@ For any other test, none of these is yours to do so the suite stays green:
 - add a skip or an xfail;
 - rewrite a test to assert the new behaviour in the old one's place.
 
-Updating a test's spelling without changing what it proves (a renamed helper, an id written through a new function) is not weakening. If you cannot tell which it is, it is weakening.
+Respelling a test is yours: a renamed helper, an id written through a new function. The measure is the code as it was before your change: a respelled test still passes against it. A test whose expected value you changed, so that it now fails against the old code, has changed in meaning, however little of it you touched.
 
-When the decisions in the brief make such a test impossible to keep, the plan has a decision missing. Stop: `BLOCKED`, naming the test, the decisions that break it, and the failing assertion. Leave the test as it was. It is never a concern on a finished task.
+When the decisions in the brief make such a test impossible to keep, the plan has a decision missing. Hand back as `bdd-red-green` says, with the work that exists committed and the test left as it was, failing: `BLOCKED`, naming each test, the decisions that break it, and its failing assertion. It is never a concern on a finished task, and never an edit you mention in the report.
 
 ## PARTIAL
 
-Running a whole task, count the files your work has touched whenever you commit: `git status --porcelain` and `git diff --stat <the commit you started from>`. Past about 15 files, stop at your next green commit, one where a whole-suite run shows nothing failing that passed when you started. Write to the report what is done, what is left, and the next step to take, then reply `PARTIAL`. A fresh implementer continues from the report. `PARTIAL` is not a failure and needs no apology. It is not for decisions: those are `BLOCKED`.
+A whole task is yours to finish only while it stays small. Past about 15 files touched, you stop and a fresh implementer continues: your context is the cost, and it grows with every file.
+
+- **Before you start,** count the files the brief's "Where the change lands" names. More than 15 means you will not finish in this dispatch. Choose a first part of at most 15 files that leaves everything passing that passes now, and do that part only.
+- **While you work,** count before each commit: the files in `git status --porcelain` and in `git diff --stat <the commit you started from>`.
+- **When the first part is done, or the count passes 15,** stop at a green commit: a whole-suite run shows nothing failing that passed when you started. Do not set the slice's Status. Write to the report what is done, what is left, and the next part to take, then reply `PARTIAL`.
+
+`PARTIAL` is not a failure and needs no apology. Finishing a 23-file task in one go because it went quickly is the failure: the budget is counted in files, not in how the work felt. It is not for decisions: those are `BLOCKED`.
 
 ## Stopping
 
@@ -79,5 +85,5 @@ Stopping is always acceptable. A guess is not.
   - files changed;
   - concerns;
   - working by step, what the next step needs to know that the brief does not say.
-- Reply with only: status, commits (short hash and subject), the suite record line, concerns, and the report path. Keep it under fifteen lines. The status is one of `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `NEEDS_CONTEXT`.
-- In a fix round: re-run the scenarios and tests that cover each fix. After the last fix commit, run the whole suite once and log its record as in the checkpoint. The report section gives, for each finding, what changed and the commands with their output, or why the finding does not hold. Reply in the same short form.
+- Reply with only: status, commits (short hash and subject), the suite record line, concerns, and the report path. Keep it under fifteen lines, whatever the dispatch asked for. It begins with the status, one of `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `NEEDS_CONTEXT`.
+- In a fix round: re-run the scenarios and tests that cover each fix. After the last fix commit, run the whole suite once, log its record with `python3 <Scripts>/plan log` and commit the plan, as in the checkpoint, unless the dispatch says you are in a lane. The report section gives, for each finding, what changed and the commands with their output, or why the finding does not hold. Reply in the same short form.
