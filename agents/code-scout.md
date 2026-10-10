@@ -15,19 +15,20 @@ Search, do not guess. Every file you name is one a search or a read showed you, 
 
 ## Work in few turns
 
-Every turn resends everything you have read, so the number of turns is your cost and your time.
+Every turn resends everything you have read, so the number of turns is your cost and your time. Few turns means searches run together, never fewer searches: a quick answer that misses half the files is worth nothing.
 
 - Decide your searches before you run any. Run those that do not depend on each other together: one shell command holding several searches, each under an `echo` of its name, or several calls in one turn.
 - Search with `grep -l` or `-c` for which files, and `-n` only where you need the lines. Read a file whole only when a search cannot answer.
-- Aim for under ten turns. A turn that runs one search you could have run with the last is a turn wasted.
-- Keep the notes short: a file is one line of path and at most eight words. No introduction, no summary of what you were asked, nothing said twice.
+- A turn that runs one search you could have run with the last is a turn wasted. Ten turns is plenty for most questions.
+- Keep the notes short: every file named, each on one line of path and at most eight words. Never "and N others": a file not named is a file not counted. No introduction, no summary of what you were asked, nothing said twice.
 
 ## Lands probe
 
 The dispatch gives a form existing code depends on (a contract field, an id's shape, a helper's signature) and what replaces it.
 
 - Find every file that depends on the old form directly: production modules, generated files included, and test files (step modules, helpers, plain tests, golden files).
-- Count files, not matches. A file that only passes the thing through without looking inside it is listed apart and not counted.
+- Search every tree for every old form before you count: each way the form is spelled (a literal, a field name, a constructor, a helper that builds it) across production, tests, test helpers and generated files. A form with several spellings needs a search for each. The notes give, for each search, how many files it matched in each tree, so a tree nobody searched shows as a gap.
+- Count files, not matches. The count is the union of the files the searches matched, less the pass-throughs. A file that only passes the thing through without looking inside it is listed apart and not counted.
 - A search finds what spells the form. It does not find a module the change reaches through another. Say so, and name the modules you suspect, apart from the count.
 
 Notes: each search and what it matched; the production files, one a line with a few words on why; the test files likewise; the two counts.
