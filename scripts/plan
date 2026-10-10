@@ -20,6 +20,10 @@ contract:
     A Status is 'planned', 'in progress' or 'green', each with an optional
     ': <note>', or 'blocked: <why>'; only the word before the colon decides
     whether a slice is green.
+  - A slice may carry '- Lands: <p> production, <t> test', the modules its
+    work lands in, counting the migration it forces. More than 8 production
+    or 4 test is over the budget and is refused like any other invalid plan.
+    A slice without the line is valid.
   - The plan is validated on reading and before every write. An invalid plan,
     or an edit that would make one, is refused, naming every problem, and the
     file is left as it was. A missing Backlog or Log section is created in its
@@ -46,6 +50,8 @@ SECTIONS = ["Satisfied by existing behaviour", "Backlog", "Log"]
 KINDS = ("capability", "enabling", "stack")
 KEPT = r"^- \S+ (REQUEST |RE-FORMULATE\b|QUESTION FOR THE SPEC:)"
 STATUS = re.compile(r"(planned|in progress|green)(: .+)?$|blocked: .+$")
+LANDS = re.compile(r"(\d+) production, (\d+) test$")
+LANDS_PRODUCTION, LANDS_TEST = 8, 4
 
 
 class Refused(Exception):
@@ -160,6 +166,13 @@ class Plan:
             out.append("%s: a %s slice needs %s" % (label, kind, want))
         if kind in KINDS and b.field(other) is not None:
             out.append("%s: a %s slice has %s, not %s" % (label, kind, want, other))
+        lands = b.field("Lands")
+        counted = LANDS.match(lands) if lands is not None else None
+        if lands is not None and not counted:
+            out.append("%s: Lands must be '<p> production, <t> test'" % label)
+        elif counted and (int(counted.group(1)) > LANDS_PRODUCTION or int(counted.group(2)) > LANDS_TEST):
+            out.append("%s: Lands %s is over the budget of %d production, %d test"
+                       % (label, lands, LANDS_PRODUCTION, LANDS_TEST))
         return out
 
 
@@ -226,7 +239,10 @@ def cmd_add_slice(args, path, plan):
     lines = ["## Slice %s: %s\n" % (args.n, args.name), "- Kind: %s\n" % args.kind]
     lines.append("- Scenarios: %s\n" % args.scenarios if args.scenarios else "- Check: %s\n" % args.check)
     lines += ["- Observable: %s\n" % args.observable, "- Unknown: %s\n" % args.unknown,
-              "- Needs: %s\n" % args.needs, "- Status: planned\n", "\n"]
+              "- Needs: %s\n" % args.needs]
+    if args.lands:
+        lines.append("- Lands: %s\n" % args.lands)
+    lines += ["- Status: planned\n", "\n"]
     slices = [i for i, b in enumerate(plan.blocks) if b.slice]
     at = next((i for i in slices if number(plan.blocks[i].slice) > number(args.n)),
               slices[-1] + 1 if slices else 0)
@@ -363,6 +379,7 @@ def main():
     add.add_argument("--observable", required=True)
     add.add_argument("--unknown", default="none")
     add.add_argument("--needs", default="none")
+    add.add_argument("--lands")
     add.set_defaults(run=cmd_add_slice)
     archive = sub.add_parser("archive")
     archive.add_argument("batch")

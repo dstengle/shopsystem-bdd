@@ -211,6 +211,52 @@ class PlanTest(unittest.TestCase):
         self.assertEqual(done.returncode, 1)
         self.assertIn("stale: commit deadbee is not in this repository", done.stdout)
 
+    def lands(self, text):
+        self.plan.write_text(PLAN.replace("- Status: planned", "- Lands: %s\n- Status: planned" % text))
+        return self.run_script("check")
+
+    def test_a_slice_without_lands_stays_valid(self):
+        self.assertEqual(self.run_script("check").returncode, 0)
+        self.assertEqual(self.run_script("status", "2", "green").returncode, 0)
+
+    def test_lands_at_the_budget_is_accepted(self):
+        self.assertEqual(self.lands("8 production, 4 test").returncode, 0)
+
+    def test_lands_over_the_budget_is_refused_naming_slice_and_budget(self):
+        for text in ("9 production, 4 test", "8 production, 5 test"):
+            done = self.lands(text)
+            self.assertEqual(done.returncode, 1)
+            self.assertIn("slice 2: Lands %s is over the budget of 8 production, 4 test" % text, done.stderr)
+
+    def test_a_malformed_lands_is_refused(self):
+        done = self.lands("about twenty files")
+        self.assertEqual(done.returncode, 1)
+        self.assertIn("slice 2: Lands must be '<p> production, <t> test'", done.stderr)
+
+    def test_an_edit_is_refused_while_a_slice_is_over_budget(self):
+        self.lands("30 production, 20 test")
+        done = self.run_script("status", "2", "in progress")
+        self.assertEqual(done.returncode, 1)
+        self.assertIn("over the budget", done.stderr)
+
+    def test_add_slice_writes_lands_before_status(self):
+        done = self.run_script("add-slice", "3", "Remove", "--kind", "capability", "--scenarios", "cart / Removing",
+                               "--observable", "gone", "--lands", "2 production, 1 test")
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertIn("- Needs: none\n- Lands: 2 production, 1 test\n- Status: planned\n", self.plan.read_text())
+
+    def test_add_slice_refuses_lands_over_the_budget(self):
+        done = self.run_script("add-slice", "3", "Remove", "--kind", "capability", "--scenarios", "cart / Removing",
+                               "--observable", "gone", "--lands", "12 production, 1 test")
+        self.assertEqual(done.returncode, 1)
+        self.assertNotIn("Slice 3", self.plan.read_text())
+
+    def test_archive_keeps_a_green_slices_lands(self):
+        self.plan.write_text(PLAN.replace("- Status: green", "- Lands: 3 production, 2 test\n- Status: green"))
+        self.assertEqual(self.run_script("archive", "b1").returncode, 0)
+        archived = (self.plan.parent / "archive" / "cart-slices-b1.md").read_text()
+        self.assertIn("- Lands: 3 production, 2 test", archived)
+
 
 if __name__ == "__main__":
     unittest.main()
