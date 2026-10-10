@@ -26,10 +26,11 @@ Three kinds, keyed to what the slice delivers, never to what its unknown is abou
 - **enabling**: verified by a check. The environment, packaging, wiring, or tooling the next slices stand on. "The development environment works" is this.
 - **stack**: verified by a check. A property of the running system the spec states outside any user scenario: transport, throughput, load time, contention. Cut from the bounds among the constraints in `spec/index.md`, and only when a bound is stated or the skeleton needs it.
 
-Three tests, all required, for every kind:
+Four tests, all required, for every kind:
 - **End to end.** Scenarios pass against the system's real entry point with real storage and real side effects behind it; a check runs against the real thing, not a mock. Internals may be hard-coded or stubbed only where nothing in the slice asserts on them.
 - **Thin.** One done. A slice with an unknown is usually one scenario or one check, and more than one only when they share step definitions and none is observable without the others. Once the unknowns are spent, scenarios that share a feature and step definitions bundle into one slice.
 - **Trimmed.** It contains no work its scenarios or its check don't need.
+- **Small.** Its work lands in at most 8 production modules and 4 test modules. That counts the migration it forces: every existing module and test that must change so that what passes today still passes. No scenario describes that work, and it is most of a breaking change.
 
 Not a slice: anything with no scenario and no check. A layer, a module, or a library is not a done; "the module imports" is.
 
@@ -39,7 +40,22 @@ Not a slice: anything with no scenario and no check. A layer, a module, or a lib
    **Check the suite is fast.** If the record's time is over 60 s, and either the test command does not run in parallel or the step definitions start the entry point as a program in more than one test per command, and `CLAUDE.md` gives no reason, the batch needs an enabling slice that makes it fast: `Check: the suite -> <N> passed, <M> failed, in under <bound> s`.
 2. **Cut slices** by the three tests. Capability slices come from the feature files. Enabling slices come from what the skeleton stands on: a runnable package, the suite wired up, a dependency installed, a contract file generating code. Stack slices come from the bounds in `spec/index.md`. Give each slice one unknown: the question building it will settle. A candidate with two unknowns is two slices. A candidate with none bundles with its neighbours in the same feature that share step definitions.
    **Probe what a dependency provides.** A slice whose Needs names something another project provides gets a probe: a command run now, against the installed version, whose result shows the thing exists (`<command> --help` exits 0; a call returns). Log it, `plan log "Probe: <command> -> <result>"`. A failing probe makes the slice `blocked: awaiting <project>`, with `plan log "REQUEST <project>: <what is needed>"`; no task is written for it. Reading the project's spec is not a probe. Where you read it, read the capability file whole: what is not built is listed under Not yet.
-3. **Order slices.** First the enabling slice that makes the suite fast, when step 1 calls for one; then the enabling slice the skeleton stands on, if any. Then the walking skeleton: the shortest path through every layer that someone can observe. Then by implementation risk, the slice with the largest unknown first, so a surprise arrives while the least code depends on it. Value breaks ties. Dependency is a constraint, not an ordering: a slice may not need another slice's code to pass, so it comes later or the two merge. The order of building in `spec/index.md` is such a constraint.
+   **Count where it lands.** Every slice carries `Lands: <p> production, <t> test`: numbers, never names.
+   - A slice that changes a form existing code depends on (a contract field, an id's shape, a shared helper's signature, a stored layout) is measured, not judged. Dispatch `shopsystem-bdd:code-scout` for a Lands probe: the repository, the old form and what replaces it, and a notes path under `.superpowers/scout/<run>/` (add `.superpowers/` to `.gitignore` if it is missing). Take the counts from its reply and log them, `plan log "Probe: <its searches> -> <p> production, <t> test"`. You do not read the code, and you do not read its notes unless a count needs explaining.
+   - The count is a floor. A search shows what spells the form, not what the change reaches through another module.
+   - A slice that only adds gets your estimate of what it adds.
+   - A slice over the budget is not written into the plan, and `plan` refuses it. Split it, or cut it as a breaking change. A task's Steps are not a way to keep it: Steps divide a slice that fits.
+
+   **Cut a breaking change as expand, migrate, contract.** When a probe is over the budget, or the spec replaces a form that scenarios, step modules or stored data already use, the old form does not change in one slice. Cut:
+   - **Expand:** enabling slices that add the new form beside the old. Check: the suite passes what the last record passes.
+   - **Migrate:** enabling slices that move what uses the old form, a group to a slice, each within the budget. Each check names its group: the suite passes what the record passes, and a search shows the group no longer uses the old form. Where tests spell the old form, the first migrate slice is a test seam: helpers that give today's form, and the test modules moved onto them a group at a time, so that flipping the helpers later moves every test at once.
+   - **The capability slices**, each now small, against the expanded form.
+   - **Contract:** one enabling slice that removes the old form. Check: the suite, and the search over the whole tree finding nothing.
+
+   Code the decision reaches and no scenario covers is migrate or contract work with a search for its check, not a slice left out. Whether its behaviour should change is a question for the spec; that the old form goes is already decided.
+
+   As an example: a store's ids move from names it mints to IRIs its client chooses, and a probe counts 30 production and 40 test modules. The cut is a test seam (name helpers that return today's names, test modules moved onto them a few to a slice); the IRI values written and tested but not wired; the contract carrying the new fields beside the old; one capability slice for a create held at its IRI, then one for types at client IRIs; the seam flipped to IRIs; export and import by the IRI layout; then the old fields removed.
+3. **Order slices.** First the enabling slice that makes the suite fast, when step 1 calls for one; then the enabling slice the skeleton stands on, if any. Then the walking skeleton: the shortest path through every layer that someone can observe. In a breaking change it is the first capability slice after expand. Then by implementation risk, the slice with the largest unknown first, so a surprise arrives while the least code depends on it. Value breaks ties. Dependency is a constraint, not an ordering: a slice may not need another slice's code to pass, so it comes later or the two merge. The order of building in `spec/index.md` is such a constraint.
    A scenario added after the plan was cut, from a review, a hand-back, or a
    spec amendment, is placed by its unknown among the remaining slices,
    never ahead of all of them. Only work the next slice needs precedes it.
@@ -48,7 +64,7 @@ Not a slice: anything with no scenario and no check. A layer, a module, or a lib
    after 1, before 2), so existing numbers and tags stay valid; order is
    numeric with sub-slices after their parent. Whole numbers are renumbered,
    and tags rewritten, only when whole slices change order.
-4. **Write the plan** in the shape below, in the project's one living plan file. If `docs/superpowers/plans/*-slices.md` exists, extend it; never start a second plan file. Every edit goes through `plan` (`add-slice`, `status`, `log`, `backlog`); never `sed`, a heredoc or a one-off script on the plan.
+4. **Write the plan** in the shape below, in the project's one living plan file. If `docs/superpowers/plans/*-slices.md` exists, extend it; never start a second plan file. Every edit goes through `plan` (`add-slice` with `--lands`, `status`, `log`, `backlog`); never `sed`, a heredoc or a one-off script on the plan.
 5. **Mark the scenarios.** Write a tag `@slice-<n>` on every scenario a capability slice assigns, one tag per scenario, replacing any earlier slice tag. This is the only edit this skill ever makes to a feature file: a tag line, never a Given, When, or Then. pytest-bdd turns the tag into a marker, so `pytest -m "slice-<n>"` runs a slice. Tag with `features tag "<title>" slice-<n>`; `features count --by-tag` gives each slice's count.
 6. **Shape is reviewed at each batch's end**, by the
    `shopsystem-bdd:bdd-branch-reviewer`, which checks the code against the
@@ -66,14 +82,28 @@ Not a slice: anything with no scenario and no check. A layer, a module, or a lib
 The plan carries no code. The planner plans; the implementer writes the code under bdd-red-green. Give writing-plans this constraint, in these words or their equal:
 
 - One task per slice, in slice order, no task that isn't a slice.
+- **Research is a scout's.** For each task, dispatch `shopsystem-bdd:code-scout` for task research, with the slice, the decisions taken so far, and a notes path under `.superpowers/scout/<run>/`. Write the task from its notes file. The planning session reads the notes, not the source: reading the source here is what every later task then pays for.
 - No code blocks, file contents, diffs, or step-definition bodies. writing-plans' own template shows code; here that code is the implementer's to write. Nothing is built in a scratch copy first, and no plan is replayed.
 - What each task carries instead: the slice's scenarios or check; why each scenario is red today, found by reading the current code and running the red scenarios (the suite's result from its record; running the red scenarios and probing current behaviour is allowed, building the change is not); where the change lands by the project's conventions (`CLAUDE.md`'s module map) and which of its rules the task implements once; the decisions the capability's Behaviour leaves open, each stated as a decision with the line or ledger entry it rests on, so the implementer does not decide them alone; the existing step definitions and fixtures the scenarios can reuse, by name; the verification commands, with expected counts derived from the tags (`features count --by-tag`), never from a build; and the checkpoint the implementer logs.
-- Each task carries a `Review:` line and a `Model:` line. `Review: per-task` and `Model: opus` for a task that touches concurrency, the published contract, data integrity, or moving stored data; `Review: batch-end` and `Model: sonnet` for every other task, refactors and small slices included. A batch-end task gets no task review: the batch's branch review covers it. Say this in the plan's Global Constraints so the controller dispatches by it.
+- **Tests the decisions break.** Each task lists, under that title, every existing test its decisions make impossible to keep as it is, from the scout's notes: the test, the decisions, and what the plan decides. The plan decides one of three things: the test is rewritten, and to assert what; it is deferred, to which slice; or it is a `QUESTION FOR THE SPEC:`, and the task waits. The scout finds these and the planner decides them. An implementer may change what a test asserts only when it is listed here, so an empty list is a statement: "none: the scout checked <what>". "Tests move with the change" is not a list.
+- **Re-count.** The scout's "where the change lands" names the files, so count them. A task over the slice budget (8 production, 4 test) is not written: its slice goes back to step 2 to be split, with a log entry. Record the count in the task.
+- **Steps.** A task whose change lands in more than about 5 files is written as ordered Steps, each one dispatch. Each step says what it does, its own check (a marker green, a plain test, a search) and where it lands, about 5 files. A step leaves everything passing that passed before it. Steps are not slices: they share the slice's scenarios, take no number and no tag, and the slice is green only after the last. A task at or under about 5 files has no Steps.
+- **Lanes.** Give a task a `Lane: <letter>` line only when its files are disjoint from every task of another lane and neither needs the other's code. A task with no `Lane:` runs in order, in the main worktree.
+- Each task carries a `Review:` line and a `Model:` line, which stand for all its steps unless a step carries its own `Model:`. `Review: per-task` and `Model: opus` for a task that touches concurrency, the published contract, data integrity, or moving stored data; `Review: batch-end` and `Model: sonnet` for every other task, refactors and small slices included. A batch-end task gets no task review: the batch's branch review covers it. Say this in the plan's Global Constraints so the controller dispatches by it.
 - Each task names its markers and expected counts. When to run what is bdd-red-green's and the agents': a plan that says when to run the suite, or to record a failing list, is wrong.
 - The plan's Global Constraints carry `Scripts: <absolute path of this plugin's scripts/>`, and each task repeats that `Scripts:` line: a task brief carries its task's section, not the Global Constraints.
+- The plan's Global Constraints carry the execution rules below, word for word, so the controller dispatches by them.
 - A genuine unknown may be answered by a throwaway spike whose result is a sentence in the plan, never its code.
 - Questions for the spec found while probing go in the plan's Review Focus with a reproduction.
 - Paths in commands are relative to the checkout, never absolute temporary paths.
+
+The execution rules, for the plan's Global Constraints:
+
+> - **Paths in, short replies out.** The controller dispatches with paths (brief, report, findings, review package, notes) and reads replies, `plan show` and `git log --oneline`. It does not open a diff, a report, a findings file or source: it writes a review package by redirecting `git` output to a file. The one exception is a `BLOCKED` or `NEEDS_CONTEXT` reply, where it reads the part of the report the reply names, to decide or to ask the person.
+> - **By step.** A task with Steps is dispatched one step at a time, each to a fresh `bdd-implementer` that is told the step and the task's one report file. One implementer at a time in a worktree. A `PARTIAL` reply is answered with a fresh implementer on the same report.
+> - **One review per task,** after its last step, from the commit before its first. The reviewer is given a findings file to write. A diff over 8 production or 4 test files is reviewed by area, each reviewer given its paths and its own findings file, in parallel.
+> - **Fresh fixes.** Findings go to a fresh `bdd-implementer` as a fix round, with the report and the findings file, then to a scoped re-review. No agent is resumed.
+> - **Lanes.** Tasks in different lanes may run at once, each lane in its own git worktree and branch with its own virtualenv, and the dispatch tells each implementer it is in a lane. This replaces subagent-driven-development's rule against parallel implementers, for lanes only. A lane's implementer makes no checkpoint commit. The controller merges the lanes one at a time, runs the suite after each merge, and writes each slice's Status and the `Suite:` entry itself with `plan`.
 
 When writing-plans asks how to execute, recommend a new session that reads the plan file. This session holds integration, formulation and slicing, which no task needs and every later turn would re-read.
 
@@ -91,6 +121,7 @@ A plan that carries code makes red a performance: the implementer pastes what al
 - Observable: <one sentence: what someone can do or see when this is green>
 - Unknown: <the one question building this settles> | none
 - Needs: <non-behavioural work, needed by which scenario> | none
+- Lands: <p> production, <t> test         (at most 8 and 4, migration counted)
 - Status: planned | in progress | green | blocked: <why>
 
 ## Satisfied by existing behaviour
@@ -102,6 +133,7 @@ A plan that carries code makes red a performance: the implementer pastes what al
 ## Log
 - <date> Suite: <N> passed, <M> failed at <short hash> in <seconds> s[; failing: <titles>]
 - <date> Probe: <command> -> <result>
+- <date> Probe: <searches> -> <p> production, <t> test
 - <date> REQUEST <project>: <what is needed>
 - <date> <one line per checkpoint, hand-back, or re-slice>
 ```
@@ -156,6 +188,12 @@ The plan does not choose them. "Clamp rather than raise", "keep the first code w
 | "It's the safe default, and I noted it in the log" | A default no scenario asserts is a contract decision. Log it as a question, don't plan it. |
 | "The implementer will need this design to start" | The implementer gets a task from writing-plans. The slice plan is not that document. |
 | "I can see from the step definitions that it passes" | You can see that steps exist. Only a run shows they pass. Run it. |
+| "It's one unknown, so it's one slice" | One unknown can still be forty files. Count where it lands. |
+| "Moving the old tests rides along with the first slice" | Riding work is counted work. Probe it. Over the budget, it is migrate slices of its own, behind a seam. |
+| "No scenario covers that code, so the slices leave it as it is" | The decision removed the old form everywhere. What still holds it is migrate or contract work, checked by a search. |
+| "I can see how many files it touches" | You can see the ones you thought of. The probe is a search; log its count. |
+| "It's over the budget, so its task gets Steps" | Steps divide a slice that fits. A slice over the budget is cut again. |
+| "The implementer will sort out the tests that break" | An implementer who sorts them out deletes the ones in the way. The task lists them and says what happens to each. |
 | "Setting up the transport and the store is one slice" | That's two unknowns. Two slices, each demoable on its own. |
 | "The contract is infrastructure, so its slices are stack" | The contract is behaviour a client observes, verified by scenarios. Capability. Stack is only what no scenario covers. |
 | "Error handling is a stack concern" | A refusal is part of the capability it refuses. Capability. |
@@ -186,6 +224,11 @@ The plan does not choose them. "Clamp rather than raise", "keep the first code w
 - A slice planned on a dependency's command with no `Probe:` line
 - A dependency's capability read by a section range
 - A task written for a `blocked` slice
+- A slice with no `Lands:` line, or a `Lands:` with no `Probe:` entry on a slice that changes an existing form
+- A plan task whose "where the change lands" names more than 8 production or 4 test files, or says "every step module"
+- A migrate or contract slice whose check has no search
+- "Tests move with the change" in a task, with no test named
+- A planning session opening source files a scout was not sent to read
 - `sed`, a heredoc or `python -c` on the slice plan or on a tag line
 - A plan task that says when to run the whole suite
 

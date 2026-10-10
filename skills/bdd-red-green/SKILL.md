@@ -25,7 +25,7 @@ Work through the slice's scenarios in the order the plan lists them. The slice's
 4. **Run the slice** (`python -m pytest -q -m "slice-<n>"`) and the test module the scenario lives in. Everything previously green there stays green.
 5. **Refactor** with them green, then commit, then the next scenario.
 
-Before the slice's last commit, run the whole feature suite once. Everything previously green stays green. That run is the slice's suite record (below).
+Before the slice's last commit, run the whole feature suite once. Everything previously green stays green. That run is the slice's suite record (below). A task worked by Steps runs it once before each step's commit: a step leaves everything passing that passed before it, whatever of the slice is still red.
 
 **Code only what a scenario asserts.** Where the scenarios are silent, the code is silent. Do not choose semantics for cases no scenario covers, not as a "guard", not as "the forgiving option". If the silence matters, it goes in the checkpoint entry as an open question.
 
@@ -76,6 +76,7 @@ Each of these is observable. When one occurs, hand back immediately:
 | A Then line can only pass through code you'd be embarrassed to explain | The line is wrong or you've misread it. Either way, not yours to decide. |
 | Going green needs work no scenario in the slice describes, beyond a trivial helper | Missing scenario or a mis-sized slice. |
 | A previously green scenario breaks and the fix would change what a step means | Two scenarios contradict each other. |
+| An existing test can only stay green by being removed, loosened, skipped, xfailed or rewritten to assert something else, and the task does not list it under "Tests the decisions break" | The plan has a decision missing. The planner decides what happens to the test. |
 
 A stop condition is triggered by a test-run result, never by reading. If a line looks wrong, run the cycle on it until a run shows the failure; the run output is the evidence.
 
@@ -119,6 +120,8 @@ When every scenario in the slice is green, set the slice's Status with `plan sta
 | "The demo is in 20 minutes" | A demo of the wrong behaviour is the outcome you're paid to prevent. |
 | "I can see from reading it that it can't pass" | Reading is not evidence. Run it. The failing assertion is what goes in the hand-back entry. |
 | "Nothing is green, so there's nothing to commit" | The hand-back entry and the honest code are the commit. Uncommitted work is lost work in a hand-off. |
+| "The decisions make that test impossible, so I removed it and said so in the concerns" | A removed test with a note is still a removed test, and the behaviour it held is gone unseen. Stop with the test and the decisions named. |
+| "The task says the tests move with the change" | Moving a test is respelling it. Changing what it proves needs the test named in the task, with what it becomes. |
 | "I'll run the whole suite first to see where we start" | The last record is where you start. A start-of-slice run is one run too many. |
 
 ## Red Flags
@@ -129,6 +132,7 @@ When every scenario in the slice is green, set the slice's Status with `plan sta
 - The phrase "typo", "obviously meant", or "arithmetically impossible" about a Then line
 - A `try`, `raise`, `max(0, ...)`, or default branch no scenario exercises
 - "already passes" said with relief
+- A deleted test function or parametrize case, a loosened assertion, or a new skip or xfail, on a test the task does not list
 - A whole-suite run before a slice's first scenario, with a record that holds
 
 **Any of these but the last: stop, undo the edit, hand back.** The last is no hand-back: skip the run and carry on from the record.

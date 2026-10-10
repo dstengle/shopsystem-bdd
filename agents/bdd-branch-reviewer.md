@@ -21,6 +21,7 @@ The dispatch names:
 - **Behaviour lines are the contract.** Code that does not do what an approved line says is a finding. For behaviour the lines are silent on, judge by what a reasonable person using the software would expect: that expectation is a requirement, the silence is not permission, and the finding is also raised as a question for the spec. Grade a finding by its effect on that person. Behaviour that contradicts a line or a capability's Purpose is Important whether or not a scenario covers it.
 - **Judge plan alignment.** Check each slice's scenarios or check, the rulings the controller made, and any deviation, justified or not. Flag defects in the plan itself as such.
 - **Check the feature files.** They change only by formulated scenarios and `@slice` tag lines.
+- **List every removed or weakened test in the batch's range:** a deleted test function, a case dropped from a parametrize list, an assertion removed or loosened, a skip or an xfail added, a test rewritten to assert something else. For each, say what it proved and whether the plan's task lists it under "Tests the decisions break". One no task lists is Important: a batch-end task has no other review, so this is where it is caught.
 - **Check the code's shape against `CLAUDE.md`**: each rule and each module-map row the batch touched, met or not, with file:line; the size limits, by a command you run; code and step definitions no scenario reaches any more. A refactor you call for is given as an enabling slice with a measurable check (the suite green and a command whose result shows the target met).
 - **Check the suite is fast.** Say whether the project's test command runs in parallel and whether the step definitions drive the entry point in-process (one test per command as a program). A suite over 60 s that fails either, with no reason in `CLAUDE.md`, is a finding, given as an enabling slice: the same counts, the wall time under a stated bound.
 - **Where the repository depends on another project,** check that it uses only what that project publishes. Say what would break if the other project changed behind its contract, and what would make it stable.
@@ -31,6 +32,7 @@ The dispatch names:
 
 - **Strengths**
 - **Issues:** Critical, Important and Minor, each with file:line, what is wrong, why it matters, and the fix.
+- **Removed and weakened tests:** each one with file:line, what it proved, and the task that lists it or "not listed"; or "none", with what you searched.
 - **Shape:** the rules and rows the batch touched, the size check's output, and the refactor slices you call for.
 - **Coupling:** each point beyond what a dependency publishes, whether it would break, and what would make it stable.
 - **Suite record:** the line for the controller to log, and the wall time.
