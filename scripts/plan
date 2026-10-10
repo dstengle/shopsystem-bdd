@@ -23,8 +23,9 @@ contract:
   - A slice may carry '- Lands: <p> production, <t> test', the modules its
     work lands in, counting the migration it forces. More than 8 production
     or 4 test is over the budget and is refused like any other invalid plan.
-    A slice without the line is valid. 'lands <n> "<p> production, <t> test"'
-    sets or replaces the line on one slice.
+    A slice without the line is valid, and add-slice says so on stderr when
+    it writes one. 'lands <n> "<p> production, <t> test"' sets or replaces the
+    line on one slice. A Lands line spelled any other way is refused.
   - The plan is validated on reading and before every write. An invalid plan,
     or an edit that would make one, is refused, naming every problem, and the
     file is left as it was. A missing Backlog or Log section is created in its
@@ -53,6 +54,7 @@ KEPT = r"^- \S+ (REQUEST |RE-FORMULATE\b|QUESTION FOR THE SPEC:)"
 STATUS = re.compile(r"(planned|in progress|green)(: .+)?$|blocked: .+$")
 LANDS = re.compile(r"(\d+) production, (\d+) test$")
 LANDS_PRODUCTION, LANDS_TEST = 8, 4
+LANDS_LINE = re.compile(r"\s*-\s*lands\s*:", re.I)
 
 
 class Refused(Exception):
@@ -170,6 +172,8 @@ class Plan:
         lands = b.field("Lands")
         if sum(line.startswith("- Lands:") for line in b.lines) > 1:
             out.append("%s: more than one Lands line" % label)
+        if any(LANDS_LINE.match(line) and not line.startswith("- Lands:") for line in b.lines):
+            out.append("%s: write the line as '- Lands: <p> production, <t> test'" % label)
         counted = LANDS.match(lands) if lands is not None else None
         if lands is not None and not counted:
             out.append("%s: Lands must be '<p> production, <t> test'" % label)
@@ -260,6 +264,9 @@ def cmd_add_slice(args, path, plan):
               slices[-1] + 1 if slices else 0)
     plan.blocks.insert(at, Block(lines))
     save(plan, path)
+    if not args.lands:
+        sys.stderr.write("plan: note: slice %s has no Lands line; set it with: plan lands %s "
+                         "\"<p> production, <t> test\"\n" % (args.n, args.n))
     return 0
 
 

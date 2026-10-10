@@ -132,12 +132,12 @@ From 0.7.0 the plugin gives each role in the workflow an agent whose tools are e
 | `shopsystem-bdd:code-scout` | Read, Glob, Grep, Bash, Write | haiku | the Lands probe at slicing and a task's research at planning; writes only its notes under `.superpowers/scout/` |
 | `shopsystem-bdd:bdd-implementer` | Read, Edit, Write, Glob, Grep, Bash, Skill | sonnet | one task of a no-code plan, one step of it, or one fix round, `bdd-red-green` preloaded |
 | `shopsystem-bdd:bdd-task-reviewer` | Read, Glob, Grep, Bash, Write | opus | a task's review, whole or one area of it, and the scoped re-review of a fix round; writes only its findings file |
-| `shopsystem-bdd:bdd-branch-reviewer` | Read, Glob, Grep, Bash | opus | the whole-branch review at the end of a batch, shape and coupling included |
+| `shopsystem-bdd:bdd-branch-reviewer` | Read, Glob, Grep, Bash, Write | opus | the whole-branch review at the end of a batch, or one area of it, shape and coupling included; writes only its findings file |
 | `shopsystem-bdd:architecture-reviewer` | Read, Glob, Grep, Bash, Write | opus | an architecture review when the person asks for one (the branch review checks shape and coupling every batch from 0.9.0) |
 
 What the tools make structural:
 - **No agent can start another.** None has the Agent tool, so an implementer cannot spawn helpers or its own reviewer, and a reviewer cannot ask for a second opinion.
-- **The branch reviewer cannot edit the code it judges.** It has no Edit and no Write tool. The architecture reviewer and the task reviewer have no Edit; each has Write for one file, its report or its findings, which is asked and not enforced (below).
+- **No reviewer has the Edit tool.** Each has Write for one file, its report or its findings, which is asked and not enforced (below).
 - **The implementer always has `bdd-red-green` in its context.** It is loaded through the `skills` field.
 
 What stays a request:

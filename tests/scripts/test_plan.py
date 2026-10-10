@@ -284,6 +284,35 @@ class PlanTest(unittest.TestCase):
     def test_a_lands_line_with_extra_text_is_refused(self):
         self.assertEqual(self.lands("2 production, 1 test (a floor)").returncode, 1)
 
+    def test_a_misspelt_lands_line_is_refused(self):
+        for line in ("- lands: 30 production, 1 test", "  - Lands: 30 production, 1 test", "-  Lands: 2 production, 1 test"):
+            self.plan.write_text(PLAN.replace("- Status: planned", line + "\n- Status: planned"))
+            done = self.run_script("check")
+            self.assertEqual(done.returncode, 1, line)
+            self.assertIn("slice 2: write the line as '- Lands: <p> production, <t> test'", done.stderr)
+
+    def test_lands_spacing_is_exact(self):
+        self.assertEqual(self.lands("2 production,  1 test").returncode, 1)
+        self.assertEqual(self.lands("2 production,1 test").returncode, 1)
+        self.assertEqual(self.lands("2 production, 1 tests").returncode, 1)
+
+    def test_show_is_refused_while_a_slice_is_over_budget(self):
+        self.lands("30 production, 20 test")
+        done = self.run_script("show", "--open")
+        self.assertEqual(done.returncode, 1)
+        self.assertIn("slice 2: Lands 30 production, 20 test is over the budget", done.stderr)
+
+    def test_add_slice_without_lands_says_so_and_succeeds(self):
+        done = self.run_script("add-slice", "3", "Remove", "--kind", "capability", "--scenarios", "cart / Removing",
+                               "--observable", "gone")
+        self.assertEqual(done.returncode, 0)
+        self.assertIn("plan: note: slice 3 has no Lands line; set it with: plan lands 3", done.stderr)
+
+    def test_add_slice_with_lands_is_silent(self):
+        done = self.run_script("add-slice", "3", "Remove", "--kind", "capability", "--scenarios", "cart / Removing",
+                               "--observable", "gone", "--lands", "1 production, 1 test")
+        self.assertEqual((done.returncode, done.stderr), (0, ""))
+
 
 if __name__ == "__main__":
     unittest.main()
