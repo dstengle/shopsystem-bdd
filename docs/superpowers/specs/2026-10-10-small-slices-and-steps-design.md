@@ -1,7 +1,7 @@
 # Small Slices and Steps Design
 
 Date: 2026-10-10
-Status: Draft, awaiting review
+Status: Approved
 Release: 0.11.0
 Request: `docs/superpowers/requests/2026-10-10-small-slices-and-steps.md`
 
@@ -241,6 +241,9 @@ in the plan's Global Constraints.
   controller not following Global Constraints.
 - **Lanes found by a script.** The planner marks them from the tasks' file lists. Promoted if lanes are marked
   wrongly by hand.
+- **A second, conflicts-only scout.** Across this release's runs each model named kb's dangling reference in
+  about half its runs, and a dispatch for "Tests the decisions break" alone did no better (2 of 3). The
+  implementer's stop on an unlisted test is the guard. Promoted if a way of asking is found that raises the rate.
 - **A scout on the small-change path.** At most two lines in existing capabilities; the controller's own reading
   is cheaper than a dispatch.
 
