@@ -76,7 +76,7 @@ Each of these is observable. When one occurs, hand back immediately:
 | A Then line can only pass through code you'd be embarrassed to explain | The line is wrong or you've misread it. Either way, not yours to decide. |
 | Going green needs work no scenario in the slice describes and the task's "Where the change lands" does not name, beyond a trivial helper | Missing scenario or a mis-sized slice. Migration the task names is the slice's work. |
 | A previously green scenario breaks and the fix would change what a step means | Two scenarios contradict each other. |
-| An existing test can only stay green by being removed, loosened, skipped, xfailed or rewritten to assert something else, and the task does not list it under "Tests the decisions break" | The plan has a decision missing. The planner decides what happens to the test. |
+| An existing test can only stay green by being removed, loosened, skipped, xfailed or rewritten to assert something else, and the task does not list it under "Tests the decisions break" | The plan has a decision missing. The planner decides what happens to the test. Two changes are not this: a test's setup changed with no assertion, expected value or parametrize case touched; and a test first committed after the task's `Batch base:` rewritten to what a decision in the task says. Each is reported by name. |
 
 A stop condition is triggered by a test-run result, never by reading. If a line looks wrong, run the cycle on it until a run shows the failure; the run output is the evidence.
 
@@ -121,6 +121,7 @@ When every scenario in the slice is green, set the slice's Status with `plan sta
 | "I can see from reading it that it can't pass" | Reading is not evidence. Run it. The failing assertion is what goes in the hand-back entry. |
 | "Nothing is green, so there's nothing to commit" | The hand-back entry and the honest code are the commit. Uncommitted work is lost work in a hand-off. |
 | "The decisions make that test impossible, so I removed it and said so in the concerns" | A removed test with a note is still a removed test, and the behaviour it held is gone unseen. Stop with the test and the decisions named. |
+| "Only the setup changed, and the expected value had to follow" | Then more than the setup changed. An expected value is what the test proves. Stop with the test named. |
 | "The task says the tests move with the change" | Moving a test is respelling it. Changing what it proves needs the test named in the task, with what it becomes. |
 | "I'll run the whole suite first to see where we start" | The last record is where you start. A start-of-slice run is one run too many. |
 
@@ -132,7 +133,7 @@ When every scenario in the slice is green, set the slice's Status with `plan sta
 - The phrase "typo", "obviously meant", or "arithmetically impossible" about a Then line
 - A `try`, `raise`, `max(0, ...)`, or default branch no scenario exercises
 - "already passes" said with relief
-- A deleted test function or parametrize case, a loosened assertion, a new skip or xfail, or a test rewritten to assert something else, on a test the task does not list
+- A deleted test function or parametrize case, a loosened assertion, a new skip or xfail, or a test rewritten to assert something else, on a test the task does not list and this batch did not write
 - A whole-suite run before a slice's first scenario, with a record that holds
 
 **Any of these but the last: stop, undo the edit, hand back.** The last is no hand-back: skip the run and carry on from the record.

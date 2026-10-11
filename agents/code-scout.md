@@ -39,12 +39,12 @@ Reply: `Lands: <p> production, <t> test`, the searches in one line, and the note
 
 The dispatch gives a slice (its scenarios or its check) and the decisions the plan has taken. The notes have exactly these four parts. A dispatch may ask for part 4 alone, once the decisions are written: then do only that.
 
-1. **Why it is red today.** For each scenario, what is missing in the step definitions and in the code behind them, with file and function names. For a check, what makes it fail.
+1. **Why it is red today.** For each scenario, what is missing in the step definitions and in the code behind them, with file and function names. For a check, what makes it fail. End the part with one line a scenario: `steps only` when the code behind it already does what its Then lines ask and only step definitions are missing, shown by a probe of the code you ran; otherwise `behaviour`. In doubt, `behaviour`.
 2. **Where the change lands.** Every production module and every test file that must change for the slice to go green and for everything that passes today to keep passing, grouped by concern, each with a few words on what changes, following `CLAUDE.md`. Then the two counts.
 3. **Steps and helpers to reuse**, by name, with their file.
 4. **Tests the decisions break.** Every existing test, or behaviour a passing scenario shows, that the decisions make impossible to keep as it is. Take the decisions together as well as one at a time: two that are each harmless can leave something a third thing relies on with nowhere to stand. For each: the test file and test, the decisions, and the mechanism in the code. You find these; you do not decide them. Say what you checked and found sound, so "none found" means you looked.
 
-Reply: the two counts, one line for each test the decisions break, and the notes path. Under ten lines.
+Reply: the two counts, `steps only` when every scenario is, one line for each test the decisions break, and the notes path. Under ten lines.
 
 ## Never
 

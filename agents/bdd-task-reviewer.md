@@ -31,7 +31,11 @@ Search the diff for every existing test it removes or weakens: a deleted test fu
 
 List every one, under its own heading, with file:line, what it proved before, and whether the brief lists it under "Tests the decisions break".
 - Listed, and changed as the brief says: no finding.
-- Not listed: Important, whatever the reason given and however reasonable the new test looks. The behaviour the old test held is no longer held by anything, and nobody decided that. The fix is the test restored, or the planner's decision.
+- Not listed, and in the report under `## Tests changed under an allowance`: check the row against the diff.
+  - `setup`: the test's diff adds, removes or changes no `assert`, no expected value and no parametrize case. Read the test before and after; a changed literal that an assertion compares against is an expected value.
+  - `interim`: the test function was first committed after the brief's `Batch base:` (`git log --format=%h <Batch base>..<head> -S"def <test name>" -- <file>` shows a commit), and it now asserts what the cited decision says.
+  - A row that holds: no finding. A row that claims more than its allowance covers: Important, as for a test not listed.
+- Not listed, and under no allowance: Important, whatever the reason given and however reasonable the new test looks. The behaviour the old test held is no longer held by anything, and nobody decided that. The fix is the test restored, or the planner's decision.
 - "It is moot now" is the implementer's judgement, not a decision. It is still Important.
 
 A report that says "Concerns: none" over a removed test is itself a finding.

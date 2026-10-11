@@ -90,7 +90,7 @@ working copy instead.
 - **Expand, migrate, contract.** A breaking change is cut as the new form beside the old, callers moved a group to a slice behind a test seam, the capability slices, then the old form removed, each with the suite and a search for its check (`slicing-into-increments`).
 - **A scout reads; the planner plans.** `code-scout`, on Haiku, runs the Lands probe and each task's research and writes notes to `.superpowers/scout/`. The planning session reads the notes, not the source.
 - **Tests the decisions break.** Each task lists the existing tests its decisions make impossible to keep and what the plan decides for each. An implementer may change what a test asserts only when it is listed; any other test it would have to remove, loosen, skip or rewrite is a stop, `BLOCKED` with the test named (`bdd-implementer`, `bdd-red-green`). Both reviewers list every removed or weakened test, and one no task lists is Important.
-- **Steps.** A task over about 5 files is written as ordered Steps, each with its own check and files, each run by a fresh implementer from the task's one report file. A step ends with the whole suite run once. One dispatch touches at most 15 files: before any edit an implementer writes a `Dispatch budget` at the head of its report, naming the files it will touch and the files it leaves, and when files are left it stops at a green commit and replies `PARTIAL`; a fresh implementer continues from the report (0.11.1: the written budget held in 13 of 14 runs, where a rule to count and stop held in one of five).
+- **Steps.** (0.13.0: only where an order must be seen.) A task over about 5 files is written as ordered Steps, each with its own check and files, each run by a fresh implementer from the task's one report file. A step ends with the whole suite run once. One dispatch touches at most 15 files: before any edit an implementer writes a `Dispatch budget` at the head of its report, naming the files it will touch and the files it leaves, and when files are left it stops at a green commit and replies `PARTIAL`; a fresh implementer continues from the report (0.11.1: the written budget held in 13 of 14 runs, where a rule to count and stop held in one of five).
 - **Fresh agents, a thin controller.** Review findings go to a file and then to a fresh implementer; no agent is resumed. The controller passes paths and reads short replies, not diffs, reports or source. A large diff is reviewed by area, in parallel.
 - **Lanes.** Tasks the planner marks `Lane:` (disjoint files, neither needing the other) may run at once, each lane in its own worktree, branch and virtualenv. The controller merges one at a time, runs the suite after each merge and writes the plan's checkpoints itself, from each lane's reply.
 
@@ -107,6 +107,18 @@ These rules reach a controller through the plan: the hand-off has writing-plans 
 - **An experiment is a release.** One change to the workflow per version; a batch run on it; `measure compare` against the batch before. The facts record the plugin version they ran on.
 
 The transcripts are Claude Code's own files and not a published format: `measure` refuses a shape it does not know instead of guessing. On shopsystem-kb's batches 32 to 35 it reproduced the figures a session had summed by hand, and showed two it could not: the controller's cache reads (26M to 31M tokens a batch, more than the implementers' in batch 33) and the context each dispatch starts with (29k for an implementer, 15k for a reviewer or a scout).
+
+## Rules adjusted (0.13.0)
+
+0.13.0 adjusts the rules of 0.11.0 that the kb baseline shows costing more than they return. Each change names the number in a batch's facts that should move. Design: `docs/superpowers/specs/2026-10-11-rules-adjusted-design.md`.
+
+- **Two allowances for unlisted tests.** An implementer may change a test's setup, with no assertion, expected value or parametrize case touched, and may rewrite a test this batch wrote (first committed after the task's `Batch base:`) that pinned an interim state. It lists each in its report, and both reviewers check each row against the diff. Changing what any other test asserts is still `BLOCKED` (`bdd-implementer`, `bdd-red-green`, both reviewers). Watch: hand-backs a batch.
+- **Steps where an order must be seen.** A task has Steps only when a contract field, a stored layout, a port or a seam must be green alone first. Otherwise it is one dispatch, whatever its file count (`slicing-into-increments`). Watch: dispatches per slice.
+- **The implementer has no Skill tool.** `bdd-red-green` reaches it through its `skills` field; the tool only brought the listing of every installed skill into each dispatch. Watch: the implementers' mean starting context.
+- **Steps-only slices.** The scout marks each scenario `steps only` or `behaviour`; a task that is all steps runs on Sonnet with a batch-end review. Sizes are probed one batch ahead, not for the whole release. Lanes are marked where file lists are disjoint, never planned for.
+- **The controller** writes one line a slice and stops at a batch's close, so the next batch starts in a new session. Watch: the controller's cache read and peak context.
+
+Held, each with the measurement that would decide it: resuming an implementer in place of a fresh one, narrower triggers for `Review: per-task`, a budget by kind of change, and one research scout a batch.
 
 ## Scripts
 
@@ -144,7 +156,7 @@ From 0.7.0 the plugin gives each role in the workflow an agent whose tools are e
 | `shopsystem-bdd:capability-writer` | Read, Glob, Grep, Write | opus | integrating a note into `spec/`, and a repository's first `spec/`, blind to the code; writes only under `.superpowers/spec-drafts/` |
 | `shopsystem-bdd:feature-formulator` | Read, Glob, Grep, Write | opus | writing feature files from the spec, blind to the code; writes only under `.superpowers/spec-drafts/` |
 | `shopsystem-bdd:code-scout` | Read, Glob, Grep, Bash, Write | haiku | the Lands probe at slicing and a task's research at planning; writes only its notes under `.superpowers/scout/` |
-| `shopsystem-bdd:bdd-implementer` | Read, Edit, Write, Glob, Grep, Bash, Skill | sonnet | one task of a no-code plan, one step of it, or one fix round, `bdd-red-green` preloaded |
+| `shopsystem-bdd:bdd-implementer` | Read, Edit, Write, Glob, Grep, Bash | sonnet | one task of a no-code plan, one step of it, or one fix round, `bdd-red-green` preloaded |
 | `shopsystem-bdd:bdd-task-reviewer` | Read, Glob, Grep, Bash, Write | opus | a task's review, whole or one area of it, and the scoped re-review of a fix round; writes only its findings file |
 | `shopsystem-bdd:bdd-branch-reviewer` | Read, Glob, Grep, Bash, Write | opus | the whole-branch review at the end of a batch, or one area of it, shape and coupling included; writes only its findings file |
 | `shopsystem-bdd:architecture-reviewer` | Read, Glob, Grep, Bash, Write | opus | an architecture review when the person asks for one (the branch review checks shape and coupling every batch from 0.9.0) |
@@ -152,7 +164,7 @@ From 0.7.0 the plugin gives each role in the workflow an agent whose tools are e
 What the tools make structural:
 - **No agent can start another.** None has the Agent tool, so an implementer cannot spawn helpers or its own reviewer, and a reviewer cannot ask for a second opinion.
 - **No reviewer has the Edit tool.** Each has Write for one file, its report or its findings, which is asked and not enforced (below).
-- **The implementer always has `bdd-red-green` in its context.** It is loaded through the `skills` field.
+- **The implementer always has `bdd-red-green` in its context.** It is loaded through the `skills` field, and from 0.13.0 it has no Skill tool to load anything else.
 
 What stays a request:
 - **Bash is still available.** Reviewers need it to run the suite, so "no commit, no push, no tag" is still asked, not enforced.

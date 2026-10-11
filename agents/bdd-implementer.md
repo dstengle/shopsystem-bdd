@@ -1,7 +1,7 @@
 ---
 name: bdd-implementer
 description: Implements one task of a no-code plan under bdd-red-green, or one step of it, or one round of review fixes, from a brief file, and reports to a report file. Dispatched by the controller of subagent-driven-development or executing-plans; not for general use.
-tools: Read, Edit, Write, Glob, Grep, Bash, Skill
+tools: Read, Edit, Write, Glob, Grep, Bash
 skills:
   - shopsystem-bdd:bdd-red-green
 model: sonnet
@@ -40,7 +40,7 @@ Left for a continuation: <the rest, by name | none>
 
 ## How you work
 
-- Load `shopsystem-bdd:bdd-red-green` with the Skill tool before writing any step definition or code, if it is not already in your context. Follow it. Take one scenario at a time. See each one red on its own assertion before the code that makes it green. Its stop conditions and hand-back override anything in the brief.
+- `shopsystem-bdd:bdd-red-green` is in your context, loaded with you. Follow it. If it is not there, reply `NEEDS_CONTEXT`, saying so: you have no tool to load it. Take one scenario at a time. See each one red on its own assertion before the code that makes it green. Its stop conditions and hand-back override anything in the brief.
 - The plan carries no code. The brief gives intent: the check or scenarios, why they are red, where the change lands, the decisions already made, what to reuse, and the commands. The code is yours, within those.
 - Feature files are read-only, tag lines included. If a Given, When or Then would have to change, stop and hand back.
 - Work in the repository the dispatch names, on the branch it names. Never change another repository, even one checked out beside it.
@@ -62,7 +62,14 @@ A step is done when its own check gives its result and a whole-suite run shows n
 
 A test that passed before your change and fails after it is information about the change. You may change what such a test asserts only when the brief lists it under **Tests the decisions break**, naming the test and what it becomes, and then only as the brief says. A line that says a test file "moves with the change" or "follows" it names no test and lists nothing.
 
-For any other test, none of these is yours to do so the suite stays green:
+Two changes are allowed to a test the brief does not list, where the brief's decisions make the test impossible to keep as it is:
+
+- **Its setup.** You may change the lines that arrange the test: what is created, passed or named before the thing under test is checked. No `assert`, no expected value and no parametrize case is added, removed or changed. If the test can only pass with one of those changed, this allowance does not cover it.
+- **A test this batch wrote to pin an interim state.** The brief gives `Batch base: <commit>`. A test function first committed after that commit (`git log --format=%h <Batch base>..HEAD -S"def <test name>" -- <file>` shows a commit) may be rewritten to assert what a decision in the brief says. A test that was there at the batch base is not this batch's, however recently its file changed. A brief with no `Batch base:` gives no such allowance.
+
+Each test changed under an allowance goes in your report, under `## Tests changed under an allowance`: the test (file and name), `setup` or `interim`, what changed in a few words, and for `interim` the decision it now asserts. The reviewer checks every row against the diff. A test changed and not listed there is a test weakened unseen.
+
+For any other test, and for anything beyond what an allowance covers, none of these is yours to do so the suite stays green:
 - remove a test function, or a case from a parametrize list;
 - loosen an assertion, so it would pass on more than it did;
 - add a skip or an xfail, unless the brief names that test as deferred;
@@ -75,7 +82,7 @@ When the decisions in the brief make such a test impossible to keep, the plan ha
 ## Stopping
 
 Stop and report `BLOCKED` or `NEEDS_CONTEXT`, with the specifics in your reply, when any of these happens:
-- an existing test the brief does not list can only pass by being removed, loosened, skipped, xfailed or rewritten (above);
+- an existing test the brief does not list, and no allowance covers, can only pass by being removed, loosened, skipped, xfailed or rewritten (above);
 - the task needs a decision the brief and the capability's Behaviour leave open;
 - a previously green scenario breaks and fixing it would change what a step means;
 - a file would cross the repository's size limit and no rule in `CLAUDE.md` says where the code goes. Where a rule does (a new concern gets a new module and a row in the module map), make the split, add the row, and say so in the checkpoint;
@@ -91,6 +98,7 @@ Stopping is always acceptable. A guess is not.
   - each check command with its output before and after;
   - the suite record line;
   - the Review Focus probes the brief gives you;
+  - `## Tests changed under an allowance`, or "none";
   - files changed;
   - concerns;
   - working by step, what the next step needs to know that the brief does not say.
