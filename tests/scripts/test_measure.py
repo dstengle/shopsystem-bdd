@@ -84,10 +84,11 @@ class MeasureTest(unittest.TestCase):
         content = [{"type": "text", "text": text}] if text else []
         if tool:
             content.append({"type": "tool_use", "id": rid + "t", "name": tool, "input": {}})
-        return {"type": "assistant", "timestamp": when, "requestId": rid, "version": "2.1.0",
+        return {"type": "assistant", "timestamp": when, "requestId": rid, "version": "2.1.0", "effort": "low",
                 "message": {"model": "claude-x", "content": content,
                             "usage": {"input_tokens": 10, "cache_creation_input_tokens": new - 10,
-                                      "cache_read_input_tokens": read, "output_tokens": output}}}
+                                      "cache_read_input_tokens": read, "output_tokens": output,
+                                      "output_tokens_details": {"thinking_tokens": output // 10}}}}
 
     def write(self, path, rows):
         path.write_text("".join(json.dumps(row) + "\n" for row in rows))
@@ -134,6 +135,15 @@ class MeasureTest(unittest.TestCase):
         self.assertEqual((one["requests"], one["output"], one["tool_calls"]), (2, 100, 2))
         self.assertEqual((one["new_input"], one["cache_read"]), (100, 6000))
         self.assertEqual((one["first_context"], one["peak_context"], one["seconds"]), (1050, 5050, 600))
+        self.assertEqual((one["thinking"], one["effort"]), (10, "low"))
+
+    def test_reasoning_is_summed_by_role_and_shown(self):
+        facts = self.measure()
+        self.assertEqual(facts["roles"]["bdd-implementer"]["thinking"], 20)
+        self.assertEqual(facts["summary"]["thinking"], 5 * 10 + 30)
+        shown = self.run_script("show", str(self.tmp / "facts.json")).stdout
+        self.assertIn("| of which reasoning", shown)
+        self.assertRegex(shown, r"\| bdd-implementer +\| +2 \| +low \|")
 
     def test_attribution_by_description_by_prompt_and_none(self):
         facts = self.measure()

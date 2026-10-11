@@ -25,8 +25,10 @@ contract:
   - The transcripts are not a published format. One whose shape is not known
     is refused, naming the file and what was missing; no number is guessed. A
     request's usage is counted once, however many rows carry it. Tokens are
-    output, new input (input and cache writes) and cache read; context is the
-    whole input of one request.
+    output, new input (input and cache writes) and cache read; reasoning is
+    the part of output the model spent thinking, and is inside the output
+    figure, not beside it; context is the whole input of one request. A
+    dispatch's effort is the setting most of its requests ran at.
   - A dispatch is attributed by its description: 'slice <n>', 'step <k>',
     'task <n>', or 'batch' and 'slices' for work that belongs to no one slice.
     Failing that, by the task or slice its prompt names. Its kind follows its
@@ -75,7 +77,8 @@ MINOR = re.compile(r"(\d+)\s+Minor\b|\bMinor(?: issues)?\W{1,4}(\d+)\b", re.I)
 SUMMARY = (
     ("slices", "slices"), ("dispatches", "dispatches"), ("dispatches_per_slice", "dispatches per slice"),
     ("tasks_planned", "tasks planned"), ("tasks_run", "tasks run"), ("hand_backs", "hand-backs"),
-    ("not_done", "replies not done"), ("output", "output tokens"), ("new_input", "new input tokens"),
+    ("not_done", "replies not done"), ("output", "output tokens"), ("thinking", "of which reasoning"),
+    ("new_input", "new input tokens"),
     ("cache_read", "cache read tokens"), ("agent_minutes", "agent minutes"), ("span_minutes", "span, minutes"),
     ("closing_share", "share closing"), ("mean_first_context", "mean starting context"),
     ("first_context_total", "starting context, summed"), ("reviews", "task reviews"),
@@ -160,6 +163,7 @@ def read_transcript(path, start=None, end=None):
     """One transcript's requests, within start and end when they are given."""
     requests = collections.OrderedDict()
     tools, prompts, first_prompt, final = set(), 0, "", ""
+    efforts = collections.Counter()
     times, plugins, harness = [], set(), set()
     with open(path, encoding="utf-8") as lines:
         for number, line in enumerate(lines, 1):
@@ -196,11 +200,15 @@ def read_transcript(path, start=None, end=None):
             if not isinstance(usage, dict) or not isinstance(usage.get("output_tokens"), int):
                 raise Refused("transcript shape not known: %s has no usage" % where)
             key = row.get("requestId") or message.get("id") or row.get("uuid")
+            if row.get("effort"):
+                efforts[str(row["effort"])] += 1
+            thought = (usage.get("output_tokens_details") or {}).get("thinking_tokens", 0)
             new = usage.get("input_tokens", 0) + usage.get("cache_creation_input_tokens", 0)
             read = usage.get("cache_read_input_tokens", 0)
             before = requests.get(key)
             requests[key] = {"at": before["at"] if before else at, "new": new, "read": read, "model": message.get("model"),
-                             "output": max(usage["output_tokens"], before["output"] if before else 0)}
+                             "output": max(usage["output_tokens"], before["output"] if before else 0),
+                             "thinking": max(thought, before["thinking"] if before else 0)}
             said = "".join(b.get("text", "") for b in blocks if isinstance(b, dict) and b.get("type") == "text")
             if said.strip():
                 final = said
@@ -212,6 +220,8 @@ def read_transcript(path, start=None, end=None):
         "start": min(times) if times else None, "end": max(times) if times else None,
         "requests": len(asked), "tool_calls": len(tools), "prompts": prompts,
         "agent_calls": sum(1 for _, name in tools if name in ("Agent", "Task")),
+        "effort": efforts.most_common(1)[0][0] if efforts else None,
+        "thinking": sum(r["thinking"] for r in asked),
         "output": sum(r["output"] for r in asked), "new_input": sum(r["new"] for r in asked),
         "cache_read": sum(r["read"] for r in asked),
         "first_context": asked[0]["new"] + asked[0]["read"] if asked else 0,
@@ -325,7 +335,7 @@ def total(rows, key):
 
 def tally(rows):
     seconds = sum(row["seconds"] for row in rows)
-    return {"dispatches": len(rows), "output": total(rows, "output"), "new_input": total(rows, "new_input"),
+    return {"dispatches": len(rows), "output": total(rows, "output"), "thinking": total(rows, "thinking"), "new_input": total(rows, "new_input"),
             "cache_read": total(rows, "cache_read"), "minutes": minutes(seconds),
             "mean_first_context": round(total(rows, "first_context") / len(rows)) if rows else 0,
             "peak_context": max([row["peak_context"] for row in rows] or [0])}
@@ -386,7 +396,7 @@ def cmd_batch(args):
                 plugins |= one["plugins"]
                 harness |= one["harness"]
             sessions.append({"session": os.path.basename(path)[:8], "requests": main["requests"],
-                             "dispatched": len(mine), "output": main["output"], "new_input": main["new_input"],
+                             "dispatched": len(mine), "output": main["output"], "thinking": main["thinking"], "new_input": main["new_input"],
                              "cache_read": main["cache_read"], "peak_context": main["peak_context"],
                              "start": iso(main["start"]), "end": iso(main["end"])})
     out = args.out or os.path.join(top, "docs/superpowers/measurements", name + ".json")
@@ -408,14 +418,15 @@ def cmd_batch(args):
     for one in sorted(raw, key=lambda one: one["start"]):
         role = one["meta"]["agentType"].split(":")[-1]
         description = one["meta"].get("description") or ""
-        row = {"role": role, "model": one["model"] or one["meta"].get("model"), "description": description}
+        row = {"role": role, "model": one["model"] or one["meta"].get("model"), "effort": one["effort"],
+               "description": description}
         row.update(attribute(role, description, one["first_prompt"], task_slices))
         status, findings = reply_of(role, one["final"])
         row.update({"start": iso(one["start"]), "end": iso(one["end"]),
                     "seconds": round((one["end"] - one["start"]).total_seconds()),
                     "requests": one["requests"], "tool_calls": one["tool_calls"], "prompts": one["prompts"],
-                    "output": one["output"], "new_input": one["new_input"], "cache_read": one["cache_read"],
-                    "first_context": one["first_context"], "peak_context": one["peak_context"],
+                    "output": one["output"], "thinking": one["thinking"], "new_input": one["new_input"],
+                    "cache_read": one["cache_read"], "first_context": one["first_context"], "peak_context": one["peak_context"],
                     "status": status, "findings": findings, "commits": [], "files": []})
         row["_at"] = (one["start"], one["end"])
         dispatches.append(row)
@@ -457,7 +468,8 @@ def cmd_batch(args):
         roles[role] = tally([d for d in dispatches if d["role"] == role])
     controllers = [s for s in sessions if s["dispatched"]]
     roles["controller"] = {"dispatches": 0, "requests": total(controllers, "requests"),
-                           "output": total(controllers, "output"), "new_input": total(controllers, "new_input"),
+                           "output": total(controllers, "output"), "thinking": total(controllers, "thinking"),
+                           "new_input": total(controllers, "new_input"),
                            "cache_read": total(controllers, "cache_read"), "minutes": None, "mean_first_context": None,
                            "peak_context": max([s["peak_context"] for s in controllers] or [0])}
 
@@ -479,6 +491,7 @@ def cmd_batch(args):
         "hand_backs": len(hand_backs),
         "not_done": len([d for d in dispatches if d["status"] in ("BLOCKED", "PARTIAL", "NEEDS_CONTEXT")]),
         "output": total(dispatches, "output") + roles["controller"]["output"],
+        "thinking": total(dispatches, "thinking") + roles["controller"]["thinking"],
         "new_input": total(dispatches, "new_input") + roles["controller"]["new_input"],
         "cache_read": total(dispatches, "cache_read") + roles["controller"]["cache_read"],
         "agent_minutes": minutes(total(dispatches, "seconds")),
@@ -554,8 +567,12 @@ def cmd_show(args):
         print(facts["suite"])
     print()
     table(["batch", "value"], [[label, facts["summary"].get(key)] for key, label in SUMMARY])
-    table(["role", "dispatches", "output", "new input", "cache read", "minutes", "mean start", "peak"],
-          [[role, one["dispatches"] or None, one["output"], one["new_input"], one["cache_read"], one["minutes"],
+    efforts = {}
+    for d in facts["dispatches"]:
+        efforts.setdefault(d["role"], set()).add(d.get("effort") or "-")
+    table(["role", "dispatches", "effort", "output", "reasoning", "new input", "cache read", "minutes", "mean start", "peak"],
+          [[role, one["dispatches"] or None, ", ".join(sorted(efforts.get(role, []))) or None, one["output"],
+            one.get("thinking"), one["new_input"], one["cache_read"], one["minutes"],
             one["mean_first_context"], one["peak_context"]] for role, one in facts["roles"].items()])
     table(["slice", "dispatches", "output", "new input", "cache read", "minutes", "lands", "touched"],
           [[number, one["dispatches"], one["output"], one["new_input"], one["cache_read"], one["minutes"],

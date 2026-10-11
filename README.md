@@ -148,6 +148,15 @@ Held, each with the measurement that would decide it: resuming an implementer in
 - **A dry run agrees with the real run.** Where a system has both for one operation, the batch keeps one randomized test that they give the same answer, and the branch reviewer runs it.
 - **Fix rounds end.** After the fix wave's re-review, another round is run only for data left invalid, the system's own fault on input, or a write that lands where a refusal belongs. Everything else is a backlog line.
 
+## Effort where the work is searching (0.17.0)
+
+About a third of what the agents write is reasoning: on shopsystem-kb, 29% of the implementers' output tokens, 39% and 44% of the reviewers', and 64% of the scouts'. Every agent ran at medium effort.
+
+- **The scout runs at low effort** (`effort: low` in `agents/code-scout.md`). On the same model and fixtures its output fell by about a third and its time with it, with the same parts in its notes and the same places found on kb.
+- **`measure` records effort and reasoning.** Each dispatch has the effort it ran at and its reasoning tokens, which are part of its output tokens; `measure show` gives both by role.
+
+Not changed: the implementer and the reviewers. A steps-only task on Sonnet reasons for a few hundred tokens at any setting, and a reviewer's reasoning is what finds defects.
+
 ## Scripts
 
 Plain Python 3, standard library only, in `scripts/`. `--help` is the contract; tests: `python3 -m unittest discover -s tests/scripts`.
