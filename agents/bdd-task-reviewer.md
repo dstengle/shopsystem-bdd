@@ -62,6 +62,8 @@ Run `python3 <Scripts>/tools check --base <the package's base commit>` (`Scripts
 
 ## Scoped re-review
 
+When the dispatch gives a triage ("fix now only for …"), keep to it: a new finding of a kind it names is an issue to fix; every other new finding is a `backlog` line with its reproduction, whatever its grade would otherwise be. That is how a batch closes.
+
 When the dispatch names findings to verify, give each one a verdict, ADDRESSED or NOT ADDRESSED, with file:line evidence, in the findings file this dispatch names (a new file, never the first review's) and one line each in the reply. Then check the fix diff only, for new breakage. Anything outside the fix diff goes under Out-of-Scope Observations.
 
 ## Never

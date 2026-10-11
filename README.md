@@ -138,6 +138,16 @@ Held, each with the measurement that would decide it: resuming an implementer in
 - **A guard names its test.** A task says "a test that breaks is a stop" only by naming the passing test that executes the behaviour; where none does, the task writes it first.
 - **Invariants.** A project lists under `## Invariants` in its `CLAUDE.md` what must hold after any change, each with its test; slicing cuts the missing ones as an early enabling slice. A reviewer's probe that finds a defect is handed on as a test to keep, and one that checks such a property is proposed as an invariant.
 
+## Research that runs the system (0.16.0)
+
+0.16.0 has the plan written from what the system does today, found by running it. Design: `docs/superpowers/specs/2026-10-11-research-probes-design.md`.
+
+- **The scout probes.** Task research drives the system through its real entry point, in a scratch directory and never on the checkout's data: the Givens and Whens of the slice's scenarios against today's code, and the nearest cases they do not state. Each probe is recorded with its command and what came back, marked `run`; what was only concluded from the code is marked `read`. A defect a probe finds is reported and triaged like a review's finding.
+- **A path that leaves a stage out.** When a slice adds a way through the system that skips a stage, the research lists every refusal and effect that stage alone produces, and the task's decisions say what the new path does about each.
+- **Sizes and zeros.** The research gives the line count and room of every module on the change's path. `Lands: 0 production` stands only on a probe that was run. One scout a task, never one a batch.
+- **A dry run agrees with the real run.** Where a system has both for one operation, the batch keeps one randomized test that they give the same answer, and the branch reviewer runs it.
+- **Fix rounds end.** After the fix wave's re-review, another round is run only for data left invalid, the system's own fault on input, or a write that lands where a refusal belongs. Everything else is a backlog line.
+
 ## Scripts
 
 Plain Python 3, standard library only, in `scripts/`. `--help` is the contract; tests: `python3 -m unittest discover -s tests/scripts`.
