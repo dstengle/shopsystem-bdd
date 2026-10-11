@@ -9,7 +9,7 @@ description: Use when approved Gherkin feature files exist and implementation ha
 
 The plan is an ordered list of thin vertical slices: which scenarios go green next, what someone can observe when they do, what is unknown about building them, and what non-behavioural work rides along. It says nothing about how. This skill owns the plan and is the only place that decides whether the contract has changed. It supersedes superpowers:test-driven-development for deciding what gets built next.
 
-Scripts: this plugin's `scripts/`, at `<this skill's base directory>/../../scripts/`, run with `python3`. `plan` edits and reads the living plan; `features` counts, lists and tags scenarios. Their `--help` is their contract.
+Scripts: this plugin's `scripts/`, at `<this skill's base directory>/../../scripts/`, run with `python3`. `plan` edits and reads the living plan; `features` counts, lists and tags scenarios. `measure` writes a closed batch's facts. Their `--help` is their contract.
 
 **Violating the letter of these rules is violating the spirit of these rules.**
 
@@ -104,6 +104,8 @@ The execution rules, for the plan's Global Constraints:
 > - **One review per `Review: per-task` task,** after its last step, from the commit before its first. The reviewer is given a findings file to write. A `Review: batch-end` task gets none. A diff over 8 production or 4 test files is reviewed by area, each reviewer given its paths and its own findings file, in parallel.
 > - **Fresh fixes.** Findings go to a fresh `bdd-implementer` as a fix round, with the report and the findings file, then to a scoped re-review. No agent is resumed. The branch reviewer is given a findings file too, and the batch's fix wave works from it.
 > - **Lanes.** Tasks in different lanes may run at once, each lane in its own git worktree and branch with its own virtualenv, and the dispatch tells each implementer it is in a lane. This replaces subagent-driven-development's rule against parallel implementers, for lanes only. Tasks in one lane run in order; a task with no `Lane:` runs in the main worktree, in order, and not beside a lane. A lane's task is reviewed in its lane, before the merge. A lane's implementer never commits the plan: its reply carries the checkpoint entry. The controller merges the lanes one at a time, runs the suite after each merge, and writes each slice's Status, the checkpoint entry from the reply and the `Suite:` entry itself with `plan`.
+> - **Descriptions say what a dispatch is.** Every dispatch's description starts `slice <n>: ` or `slice <n> step <k>: `, then one of `implement`, `fix`, `review`, `re-review`, `research`, `probe`. Work that belongs to no one slice (the branch review, the fix wave, a probe over several slices) starts `batch <name>: `. `measure` attributes each agent's cost by this line.
+> - **Measure at the close.** After `plan archive`, the controller runs `python3 <Scripts>/measure batch <the archive file>` and commits the facts file it writes under `docs/superpowers/measurements/` with the archive. It reads nothing from it. The harness removes transcripts after some weeks; the facts are what is kept.
 
 When writing-plans asks how to execute, recommend a new session that reads the plan file. This session holds integration, formulation and slicing, which no task needs and every later turn would re-read.
 

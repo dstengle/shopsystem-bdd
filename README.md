@@ -5,7 +5,8 @@ files, Gherkin feature files paired with them as the contract, thin vertical
 slicing, and one human gate on the spec's Behaviour lines.
 
 Skills: `integrating-a-proposal`, `formulating-features`,
-`slicing-into-increments`, `bdd-red-green`, `migrating-to-capabilities`.
+`slicing-into-increments`, `bdd-red-green`, `migrating-to-capabilities`,
+`analyzing-a-batch`.
 Agents: `capability-writer`, `feature-formulator`, `code-scout`,
 `bdd-implementer`, `bdd-task-reviewer`, `bdd-branch-reviewer`,
 `architecture-reviewer`.
@@ -95,11 +96,24 @@ working copy instead.
 
 These rules reach a controller through the plan: the hand-off has writing-plans copy them into the plan's Global Constraints.
 
+## Measuring a batch (0.12.0)
+
+0.12.0 changes no rule. It makes a batch measurable, so that a change to the workflow is tried on a real batch and kept or dropped by what the numbers show. Design: `docs/superpowers/specs/2026-10-11-measuring-a-batch-design.md`.
+
+- **`scripts/measure batch <archive file>`** reads the session transcripts Claude Code keeps for the repository and its worktrees, the archive `plan archive` wrote, the batch plan and git, and writes one facts file under `docs/superpowers/measurements/`. No agent runs. For every dispatch: role, model, slice, kind, time, requests, tokens (output, new input, cache read), the context it started with and its peak, how it closed, and the files its commits touched. For the batch: tasks planned against tasks run, hand-backs, reviews that came back clean, `Lands:` against files touched, and the share of time spent closing. The controller session is a role of its own.
+- **`measure show`** prints a facts file as tables; **`measure compare <a> <b>`** sets two batches side by side.
+- **The controller measures at the close.** The plan's execution rules have it run `measure batch` after `plan archive` and commit the facts, and have every dispatch's description start `slice <n>: <kind>` or `batch <name>: `, so each agent's cost is attributed.
+- **`analyzing-a-batch`** turns the facts into a report, in the repository that ran the batch: the tables, a comparison with an earlier batch, a judgement of each hand-back's cause and of where each defect was found against where it could have been, and candidates to try. Every number is the script's; the report words no rule. It is brought to this repository as a request.
+- **An experiment is a release.** One change to the workflow per version; a batch run on it; `measure compare` against the batch before. The facts record the plugin version they ran on.
+
+The transcripts are Claude Code's own files and not a published format: `measure` refuses a shape it does not know instead of guessing. On shopsystem-kb's batches 32 to 35 it reproduced the figures a session had summed by hand, and showed two it could not: the controller's cache reads (26M to 31M tokens a batch, more than the implementers' in batch 33) and the context each dispatch starts with (29k for an implementer, 15k for a reviewer or a scout).
+
 ## Scripts
 
 Plain Python 3, standard library only, in `scripts/`. `--help` is the contract; tests: `python3 -m unittest discover -s tests/scripts`.
 
 - `scripts/features`: count, list, tag, move and verify-moved for feature files, without the test runner.
+- `scripts/measure`: write, show and compare a batch's facts, from the session transcripts, the plan and git.
 - `scripts/plan`: edit and read the living slice plan (log, status, slices, backlog, archive, `show`), keeping its sections and order valid and refusing a slice whose `Lands:` is over the budget (`plan lands` sets it).
 
 ## One spec per context; the gate is on Behaviour lines

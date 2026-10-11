@@ -1,0 +1,587 @@
+{
+ "measure": 1,
+ "repository": "shopsystem-kb-main",
+ "batch": "2026-09-24-kb-slices-batch34",
+ "window": {
+  "from": "2026-10-11T00:11:41Z",
+  "to": "2026-10-11T01:04:52Z",
+  "from_commit": "fbbb7b8",
+  "to_commit": "c6bf495"
+ },
+ "plugin_versions": [
+  "0.11.0"
+ ],
+ "harness_versions": [
+  "2.1.296"
+ ],
+ "suite": "2026-10-11 Suite: 878 passed, 91 failed at 1fe51e3 in 25 s; failing: slice-166 onward scenarios, test_the_rule_names_kb_gives_are_exactly_the_spec_lists",
+ "summary": {
+  "slices": 5,
+  "dispatches": 11,
+  "dispatches_per_slice": 1.6,
+  "tasks_planned": 5,
+  "tasks_run": 5,
+  "hand_backs": 1,
+  "not_done": 1,
+  "output": 255017,
+  "new_input": 1061079,
+  "cache_read": 32762946,
+  "agent_minutes": 49.6,
+  "span_minutes": 51.0,
+  "closing_share": 0.38,
+  "mean_first_context": 25113,
+  "first_context_total": 276245,
+  "reviews": 1,
+  "reviews_clean": 1,
+  "findings_task_review": 0,
+  "findings_branch_review": 1,
+  "files_changed": 25,
+  "lines_changed": 1839,
+  "unattributed": 0,
+  "ambiguous_commits": 0,
+  "resumed": 8
+ },
+ "roles": {
+  "bdd-branch-reviewer": {
+   "dispatches": 1,
+   "output": 41404,
+   "new_input": 163096,
+   "cache_read": 3757225,
+   "minutes": 9.6,
+   "mean_first_context": 15140,
+   "peak_context": 163024
+  },
+  "bdd-implementer": {
+   "dispatches": 8,
+   "output": 120823,
+   "new_input": 671956,
+   "cache_read": 9750188,
+   "minutes": 33.0,
+   "mean_first_context": 28947,
+   "peak_context": 161203
+  },
+  "bdd-task-reviewer": {
+   "dispatches": 2,
+   "output": 28632,
+   "new_input": 147388,
+   "cache_read": 1198933,
+   "minutes": 7.0,
+   "mean_first_context": 14766,
+   "peak_context": 90992
+  },
+  "controller": {
+   "dispatches": 0,
+   "requests": 38,
+   "output": 64158,
+   "new_input": 78639,
+   "cache_read": 18056600,
+   "minutes": null,
+   "mean_first_context": null,
+   "peak_context": 518941
+  }
+ },
+ "slices": {
+  "165.2": {
+   "name": "The tests' view of an export lists every version's file",
+   "lands": [
+    0,
+    2
+   ],
+   "dispatches": 1,
+   "output": 4125,
+   "new_input": 47870,
+   "cache_read": 375167,
+   "minutes": 2.8,
+   "mean_first_context": 28713,
+   "peak_context": 47852,
+   "by_role": {
+    "bdd-implementer": 1
+   },
+   "touched": [
+    0,
+    2,
+    1
+   ],
+   "start": "2026-10-11T00:13:33Z",
+   "end": "2026-10-11T00:16:22Z"
+  },
+  "165.3": {
+   "name": "The operator's export gives every version of a type, each artifact as its version declares",
+   "lands": [
+    2,
+    2
+   ],
+   "dispatches": 3,
+   "output": 32392,
+   "new_input": 196328,
+   "cache_read": 2290599,
+   "minutes": 8.8,
+   "mean_first_context": 24163,
+   "peak_context": 103075,
+   "by_role": {
+    "bdd-implementer": 2,
+    "bdd-task-reviewer": 1
+   },
+   "touched": [
+    2,
+    2,
+    2
+   ],
+   "start": "2026-10-11T00:16:40Z",
+   "end": "2026-10-11T00:26:07Z"
+  },
+  "165.4": {
+   "name": "importing.py split before the import of versions grows it",
+   "lands": [
+    2,
+    0
+   ],
+   "dispatches": 1,
+   "output": 3788,
+   "new_input": 35309,
+   "cache_read": 264089,
+   "minutes": 1.4,
+   "mean_first_context": 28676,
+   "peak_context": 41987,
+   "by_role": {
+    "bdd-implementer": 1
+   },
+   "touched": [
+    5,
+    0,
+    2
+   ],
+   "start": "2026-10-11T00:24:18Z",
+   "end": "2026-10-11T00:25:41Z"
+  },
+  "165.5": {
+   "name": "An import tells the versions of one type apart",
+   "lands": [
+    2,
+    1
+   ],
+   "dispatches": 1,
+   "output": 9537,
+   "new_input": 46683,
+   "cache_read": 574683,
+   "minutes": 1.7,
+   "mean_first_context": 28968,
+   "peak_context": 53349,
+   "by_role": {
+    "bdd-implementer": 1
+   },
+   "touched": [
+    3,
+    1,
+    2
+   ],
+   "start": "2026-10-11T00:25:57Z",
+   "end": "2026-10-11T00:27:37Z"
+  },
+  "165.6": {
+   "name": "A store with an artifact behind its type comes back from its export",
+   "lands": [
+    7,
+    3
+   ],
+   "dispatches": 2,
+   "output": 59399,
+   "new_input": 289714,
+   "cache_read": 5348419,
+   "minutes": 16.0,
+   "mean_first_context": 29522,
+   "peak_context": 161203,
+   "by_role": {
+    "bdd-implementer": 2
+   },
+   "touched": [
+    7,
+    3,
+    2
+   ],
+   "start": "2026-10-11T00:27:59Z",
+   "end": "2026-10-11T00:44:24Z"
+  }
+ },
+ "tasks": {
+  "plan": "docs/superpowers/plans/2026-10-11-kb-batch34-implementation.md",
+  "planned": 5,
+  "run": 5
+ },
+ "hand_backs": [
+  {
+   "slice": "165.3",
+   "entry": "2026-10-11 HAND-BACK slice 165.3, test tests/test_export_and_import_a_store.py::test_an_artifact_left_at_its_version_when_its_type_reordered_its_fields_exports_in_the_order_that_version_declares (was ..._exports_in_the_order_its_type_now_declares): an existing test can only stay green by being loosened, beyond what the task lists. The task lists it as rewritten to the export order of the version conformed to, and that part is done and passes; the same test then checks and imports its export, which now holds two versions of the note type, and the task leaves the import of such an export to slice 165.6. Evidence: assert (checked.faults, list(checked.errors), list(checked.skipped)) == ([], [], []) fails with errors [artifact: \"shop.example/kb/note/x.yaml\" rule: \"content\" message: \"it is not in canonical form: its text is not the text kb writes\"]. Green in this slice: The operator exports the store to a directory that is empty or does not exist (both examples); An artifact that conforms to an earlier version of its type is exported in the order that version declares. Red: none of the slice; the test named above."
+  }
+ ],
+ "sessions": [
+  {
+   "session": "7b4e0c83",
+   "requests": 38,
+   "dispatched": 11,
+   "output": 64158,
+   "new_input": 78639,
+   "cache_read": 18056600,
+   "peak_context": 518941,
+   "start": "2026-10-11T00:11:41Z",
+   "end": "2026-10-11T01:04:36Z"
+  }
+ ],
+ "dispatches": [
+  {
+   "role": "bdd-implementer",
+   "model": "claude-sonnet-5-5",
+   "description": "Implement slice 165.2",
+   "slice": "165.2",
+   "step": null,
+   "task": null,
+   "attributed": "description",
+   "kind": "implement",
+   "start": "2026-10-11T00:13:33Z",
+   "end": "2026-10-11T00:16:22Z",
+   "seconds": 169,
+   "requests": 10,
+   "tool_calls": 11,
+   "prompts": 2,
+   "output": 4125,
+   "new_input": 47870,
+   "cache_read": 375167,
+   "first_context": 28713,
+   "peak_context": 47852,
+   "status": "DONE_WITH_CONCERNS",
+   "findings": null,
+   "commits": [
+    "4031428",
+    "c4308c7"
+   ],
+   "touched": [
+    0,
+    2,
+    1
+   ]
+  },
+  {
+   "role": "bdd-implementer",
+   "model": "claude-opus-5-5",
+   "description": "Implement slice 165.3",
+   "slice": "165.3",
+   "step": null,
+   "task": null,
+   "attributed": "description",
+   "kind": "implement",
+   "start": "2026-10-11T00:16:40Z",
+   "end": "2026-10-11T00:22:18Z",
+   "seconds": 338,
+   "requests": 26,
+   "tool_calls": 28,
+   "prompts": 2,
+   "output": 23197,
+   "new_input": 103125,
+   "cache_read": 1887484,
+   "first_context": 29050,
+   "peak_context": 103075,
+   "status": "BLOCKED",
+   "findings": null,
+   "commits": [
+    "398790a"
+   ],
+   "touched": [
+    2,
+    2,
+    2
+   ]
+  },
+  {
+   "role": "bdd-implementer",
+   "model": "claude-sonnet-5-5",
+   "description": "Finish slice 165.3",
+   "slice": "165.3",
+   "step": null,
+   "task": null,
+   "attributed": "description",
+   "kind": "implement",
+   "start": "2026-10-11T00:22:40Z",
+   "end": "2026-10-11T00:23:50Z",
+   "seconds": 70,
+   "requests": 5,
+   "tool_calls": 4,
+   "prompts": 2,
+   "output": 2728,
+   "new_input": 36837,
+   "cache_read": 131841,
+   "first_context": 28483,
+   "peak_context": 36829,
+   "status": "DONE",
+   "findings": null,
+   "commits": [
+    "7673be4",
+    "a3f1f6f"
+   ],
+   "touched": [
+    0,
+    1,
+    1
+   ]
+  },
+  {
+   "role": "bdd-task-reviewer",
+   "model": "claude-opus-5-5",
+   "description": "Review slice 165.3",
+   "slice": "165.3",
+   "step": null,
+   "task": null,
+   "attributed": "description",
+   "kind": "review",
+   "start": "2026-10-11T00:24:08Z",
+   "end": "2026-10-11T00:26:07Z",
+   "seconds": 119,
+   "requests": 8,
+   "tool_calls": 9,
+   "prompts": 1,
+   "output": 6467,
+   "new_input": 56366,
+   "cache_read": 271274,
+   "first_context": 14957,
+   "peak_context": 56352,
+   "status": "Approved",
+   "findings": {
+    "critical": 0,
+    "important": 0,
+    "minor": null
+   },
+   "commits": [],
+   "touched": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "role": "bdd-implementer",
+   "model": "claude-sonnet-5-5",
+   "description": "Implement slice 165.4",
+   "slice": "165.4",
+   "step": null,
+   "task": null,
+   "attributed": "description",
+   "kind": "implement",
+   "start": "2026-10-11T00:24:18Z",
+   "end": "2026-10-11T00:25:41Z",
+   "seconds": 83,
+   "requests": 8,
+   "tool_calls": 9,
+   "prompts": 2,
+   "output": 3788,
+   "new_input": 35309,
+   "cache_read": 264089,
+   "first_context": 28676,
+   "peak_context": 41987,
+   "status": "DONE",
+   "findings": null,
+   "commits": [
+    "29f6bd2",
+    "8e58698"
+   ],
+   "touched": [
+    5,
+    0,
+    2
+   ]
+  },
+  {
+   "role": "bdd-implementer",
+   "model": "claude-sonnet-5-5",
+   "description": "Implement slice 165.5",
+   "slice": "165.5",
+   "step": null,
+   "task": null,
+   "attributed": "description",
+   "kind": "implement",
+   "start": "2026-10-11T00:25:57Z",
+   "end": "2026-10-11T00:27:37Z",
+   "seconds": 100,
+   "requests": 14,
+   "tool_calls": 13,
+   "prompts": 2,
+   "output": 9537,
+   "new_input": 46683,
+   "cache_read": 574683,
+   "first_context": 28968,
+   "peak_context": 53349,
+   "status": "DONE",
+   "findings": null,
+   "commits": [
+    "3d7444e",
+    "4ece7ed"
+   ],
+   "touched": [
+    3,
+    1,
+    2
+   ]
+  },
+  {
+   "role": "bdd-implementer",
+   "model": "claude-opus-5-5",
+   "description": "Implement slice 165.6 step 1",
+   "slice": "165.6",
+   "step": "1",
+   "task": null,
+   "attributed": "description",
+   "kind": "implement",
+   "start": "2026-10-11T00:27:59Z",
+   "end": "2026-10-11T00:34:07Z",
+   "seconds": 368,
+   "requests": 20,
+   "tool_calls": 22,
+   "prompts": 2,
+   "output": 21419,
+   "new_input": 135143,
+   "cache_read": 1830529,
+   "first_context": 29447,
+   "peak_context": 135105,
+   "status": "DONE_WITH_CONCERNS",
+   "findings": null,
+   "commits": [
+    "e269eab"
+   ],
+   "touched": [
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "role": "bdd-implementer",
+   "model": "claude-opus-5-5",
+   "description": "Implement slice 165.6 steps 2-3",
+   "slice": "165.6",
+   "step": "2-3",
+   "task": null,
+   "attributed": "description",
+   "kind": "implement",
+   "start": "2026-10-11T00:34:31Z",
+   "end": "2026-10-11T00:44:24Z",
+   "seconds": 592,
+   "requests": 31,
+   "tool_calls": 42,
+   "prompts": 2,
+   "output": 37980,
+   "new_input": 154571,
+   "cache_read": 3517890,
+   "first_context": 29596,
+   "peak_context": 161203,
+   "status": "DONE_WITH_CONCERNS",
+   "findings": null,
+   "commits": [
+    "d2c345d",
+    "d745fb4",
+    "781a959"
+   ],
+   "touched": [
+    7,
+    2,
+    2
+   ]
+  },
+  {
+   "role": "bdd-branch-reviewer",
+   "model": "claude-opus-5-5",
+   "description": "Branch review batch 34",
+   "slice": null,
+   "step": null,
+   "task": null,
+   "attributed": "description",
+   "kind": "branch review",
+   "start": "2026-10-11T00:44:50Z",
+   "end": "2026-10-11T00:54:25Z",
+   "seconds": 575,
+   "requests": 37,
+   "tool_calls": 42,
+   "prompts": 1,
+   "output": 41404,
+   "new_input": 163096,
+   "cache_read": 3757225,
+   "first_context": 15140,
+   "peak_context": 163024,
+   "status": null,
+   "findings": {
+    "critical": 0,
+    "important": 1,
+    "minor": null
+   },
+   "commits": [],
+   "touched": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "role": "bdd-implementer",
+   "model": "claude-opus-5-5",
+   "description": "Batch 34 fix wave",
+   "slice": null,
+   "step": null,
+   "task": null,
+   "attributed": "description",
+   "kind": "fix",
+   "start": "2026-10-11T00:54:57Z",
+   "end": "2026-10-11T00:59:17Z",
+   "seconds": 260,
+   "requests": 15,
+   "tool_calls": 22,
+   "prompts": 2,
+   "output": 18049,
+   "new_input": 112418,
+   "cache_read": 1168505,
+   "first_context": 28640,
+   "peak_context": 112390,
+   "status": "DONE_WITH_CONCERNS",
+   "findings": null,
+   "commits": [
+    "36cf736",
+    "1fe51e3"
+   ],
+   "touched": [
+    1,
+    1,
+    2
+   ]
+  },
+  {
+   "role": "bdd-task-reviewer",
+   "model": "claude-opus-5-5",
+   "description": "Re-review batch 34 fix wave",
+   "slice": null,
+   "step": null,
+   "task": null,
+   "attributed": "description",
+   "kind": "re-review",
+   "start": "2026-10-11T00:59:31Z",
+   "end": "2026-10-11T01:04:32Z",
+   "seconds": 301,
+   "requests": 16,
+   "tool_calls": 18,
+   "prompts": 1,
+   "output": 22165,
+   "new_input": 91022,
+   "cache_read": 927659,
+   "first_context": 14575,
+   "peak_context": 90992,
+   "status": "Approved",
+   "findings": {
+    "critical": 0,
+    "important": 0,
+    "minor": 0
+   },
+   "commits": [],
+   "touched": [
+    0,
+    0,
+    0
+   ]
+  }
+ ],
+ "notes": []
+}
