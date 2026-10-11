@@ -128,12 +128,23 @@ Held, each with the measurement that would decide it: resuming an implementer in
 - **A scenario that passes today is held, not removed.** When a line is re-worded or removed, formulation keeps the old scenario in the feature file, tagged `@holding` with " (held)" on its title, its steps unchanged, so it still passes. Slicing gives it a slice that retires it, the task lists it under `Retires:`, and the implementer removes it with `features retire` in the commit that turns its replacement green (`formulating-features`, `slicing-into-increments`, `bdd-red-green`).
 - **A changed title never stops a module collecting.** `features bindings` reports every `scenario(…, "<title>")` call that names no scenario; `features rebind` rewrites the title in those calls. Formulation runs both before it commits.
 
+## Analysis tools, a consequence sweep and invariants (0.15.0)
+
+0.15.0 gives the workflow tools in place of text search and hand probes. Design: `docs/superpowers/specs/2026-10-11-analysis-tools-design.md`.
+
+- **`scripts/tools`.** `probe` looks for the project's analysis tools in its own virtualenv (for Python: coverage, pytest-cov, jedi, ast-grep, ruff, vulture, import-linter, hypothesis); `install` installs what is missing there and edits no dependency file; anything still missing is told to the person in plain words, with what the workflow does without it, and logged in the plan. `map` runs the suite once under coverage with a context per test; `tests-of <file>:<function>` and `untested` answer from it; `refs <name>` gives exact references; `check` runs the lint, dead-code and import-contract tools for the reviewers.
+- **The scout uses them before it searches,** and its notes say of each count whether it came from `refs`, `tests-of` or a search. "Tests the decisions break" starts from the tests that execute the changed code, where that is a list short enough to read; on kb, code on every call's path is executed by two thirds of the suite, and there the scout says so and searches.
+- **A consequence sweep.** Before a batch's slices are final, each decision that replaces something the code assumes is traced by a scout: every place that still embodies the old assumption, with the tests that execute it. Slicing gives every row a slice, a question for the spec, or a deferral logged with its price.
+- **A guard names its test.** A task says "a test that breaks is a stop" only by naming the passing test that executes the behaviour; where none does, the task writes it first.
+- **Invariants.** A project lists under `## Invariants` in its `CLAUDE.md` what must hold after any change, each with its test; slicing cuts the missing ones as an early enabling slice. A reviewer's probe that finds a defect is handed on as a test to keep, and one that checks such a property is proposed as an invariant.
+
 ## Scripts
 
 Plain Python 3, standard library only, in `scripts/`. `--help` is the contract; tests: `python3 -m unittest discover -s tests/scripts`.
 
 - `scripts/features`: count, list, tag, move and verify-moved for feature files, without the test runner; hold, retire and holding for scenarios kept while they still pass; bindings and rebind for the titles test modules bind; plugin, which writes `slice_expectations.py` into a repository.
 - `scripts/measure`: write, show and compare a batch's facts, from the session transcripts, the plan and git.
+- `scripts/tools`: probe and install the project's analysis tools, and use them through one interface: `map`, `tests-of`, `untested`, `refs`, `check`.
 - `scripts/plan`: edit and read the living slice plan (log, status, slices, backlog, archive, `show`), keeping its sections and order valid and refusing a slice whose `Lands:` is over the budget (`plan lands` sets it).
 
 ## One spec per context; the gate is on Behaviour lines

@@ -26,11 +26,20 @@ When the dispatch gives paths, another reviewer has the rest of the batch. Read 
 - **Judge plan alignment.** Check each slice's scenarios or check, the rulings the controller made, and any deviation, justified or not. Flag defects in the plan itself as such.
 - **Check the feature files.** They change only by formulated scenarios, `@slice` tag lines, and held scenarios (`@holding`) added at formulation or retired by a task that lists them under `Retires:`. Run `features holding`: a held scenario whose replacement's slice is green was not retired, and is a finding; so is a scenario removed that was not held. Run `features bindings`: a binding that names no scenario is a finding.
 - **List every removed or weakened test in the batch's range:** a deleted test function, a case dropped from a parametrize list, an assertion removed or loosened, a skip or an xfail added, a test rewritten to assert something else. For each, say what it proved and whether the plan's task lists it under "Tests the decisions break". One no task lists is Important: a batch-end task has no other review, so this is where it is caught. The exception is a test an implementer's report lists under `## Tests changed under an allowance`: check its row as the task reviewer does (`setup`: no assertion, expected value or parametrize case differs; `interim`: the test was first committed after the task's `Batch base:` and asserts the decision cited). A row that holds is no finding; one that claims more than its allowance is Important.
-- **Check the code's shape against `CLAUDE.md`**: each rule and each module-map row the batch touched, met or not, with file:line; the size limits, by a command you run; code and step definitions no scenario reaches any more. A refactor you call for is given as an enabling slice with a measurable check (the suite green and a command whose result shows the target met).
+- **Check the code's shape against `CLAUDE.md`**: each rule and each module-map row the batch touched, met or not, with file:line; the size limits, by a command you run; code and step definitions no scenario reaches any more (`tools check`, and `tools untested` over the modules the batch touched when the plan's log shows a map). Where `CLAUDE.md` has `## Invariants`, each names a test and each test is in the suite. A refactor you call for is given as an enabling slice with a measurable check (the suite green and a command whose result shows the target met).
 - **Check the suite is fast.** Say whether the project's test command runs in parallel and whether the step definitions drive the entry point in-process (one test per command as a program). A suite over 60 s that fails either, with no reason in `CLAUDE.md`, is a finding, given as an enabling slice: the same counts, the wall time under a stated bound.
 - **Where the repository depends on another project,** check that it uses only what that project publishes. Say what would break if the other project changed behind its contract, and what would make it stable.
 - **Triage every finding.** Correctness or data loss (a crash where a refusal belongs, a wrong answer, a write that should not land, a regression) is an issue to fix now. Hardening (an input no client sends today, an edge case no line names, robustness against a dependency changing) goes to the plan's backlog, one line with its reproduction, and is not an issue to fix before merge.
 - **Never send project content to an external service,** a rendering or formatting API included. Do not dispatch or ask for another reviewer.
+
+## What a tool decides
+
+Run `python3 <Scripts>/tools check --base <the package's base commit>` (`Scripts:` is in the brief) and read its output: lint and unused imports, code with no caller left, and the project's import contracts. Paste each heading with its result into the findings file. What a tool reports is a finding at the grade this rubric gives it; what it covers you do not also read for. A heading that says `missing` names what you now read for yourself, and the findings say so.
+
+## Probes are kept
+
+- A probe that found a defect is a test someone already wrote. Give it in the finding, as `Keep as a test:` with the probe's file in the scratch directory and the command that runs it, so the fix round adds it to the suite and sees it red before the fix.
+- A probe that checks something which should hold after any change (what is held reads back; a refused change writes nothing; out and in again gives the same bytes) is given once, under `Invariant proposed:`, in a line the controller can log. Whether it becomes a line of `CLAUDE.md`'s `## Invariants` is the person's.
 
 ## Output
 
@@ -40,7 +49,7 @@ Reply with only, in under twenty lines:
 - the assessment, ready to merge Yes, No or With fixes;
 - the suite record line, for the controller to log;
 - one line per Critical and Important issue: its grade, file:line, and five to ten words;
-- one line per backlog item and per refactor slice, in words the controller can log as they are;
+- one line per backlog item, per refactor slice and per invariant proposed, in words the controller can log as they are;
 - the counts of Minor issues and of deferred minors that must be fixed before merge;
 - the findings file's path.
 
@@ -53,6 +62,8 @@ The findings file holds:
 - **Coupling:** each point beyond what a dependency publishes, whether it would break, and what would make it stable.
 - **Suite record:** the line for the controller to log, and the wall time.
 - **Backlog:** the hardening findings, one line each with its reproduction.
+- **Tools:** each heading of `tools check` with its result.
+- **Invariant proposed:** each, in a line; or none.
 - **Deferred minors triage:** one line per ledger minor, marked must fix before merge, can stay deferred, or route to formulation, with the reason.
 - **Declined to judge:** every behaviour you considered and set aside, one line each, with the reason. An empty list means you set nothing aside.
 - **Recommendations**

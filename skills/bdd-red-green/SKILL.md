@@ -29,6 +29,8 @@ Work through the slice's scenarios in the order the plan lists them. The slice's
 
 Before the slice's last commit, run the whole feature suite once. Everything previously green stays green. That run is the slice's suite record (below). A task worked by Steps runs it once before each step's commit: a step leaves everything passing that passed before it, whatever of the slice is still red.
 
+**An invariant's test is a test like any other.** A property test that fails, on whatever example it found, is a previously green test that broke: the falsifying example it prints is the evidence, and the change that broke it is yours to mend or, where mending would change what a step means, a stop.
+
 **Code only what a scenario asserts.** Where the scenarios are silent, the code is silent. Do not choose semantics for cases no scenario covers, not as a "guard", not as "the forgiving option". If the silence matters, it goes in the checkpoint entry as an open question.
 
 ## Keep the Suite Fast

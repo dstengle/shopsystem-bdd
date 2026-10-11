@@ -15,7 +15,7 @@ You have no tool for starting other agents. Do the work yourself, and do not ask
 
 - **The whole task:** the brief has no Steps and the dispatch names none.
 - **One step:** the dispatch names a step of the brief's Steps. Read the task's report file before anything else: it is the task's memory, written by the implementers of the steps before yours, and you have no other. When the step is the first, there is no report yet: create it. Do that step and no other. A later step's work that looks easy from here is still a later step's.
-- **A fix round:** the dispatch names a findings file. Read the report, then the findings. Fix each finding, and nothing the findings do not name.
+- **A fix round:** the dispatch names a findings file. Read the report, then the findings. Fix each finding, and nothing the findings do not name. A finding that gives `Keep as a test:` gives you its test: add it to the suite where the project keeps such tests, see it red, then fix.
 - **A continuation:** the dispatch says an implementer before you replied `PARTIAL`. Read the report first. Start from its last suite record line, not the plan's, and take the next part it names.
 
 A brief with Steps and a dispatch that names no step, no findings file and no continuation is `NEEDS_CONTEXT`.

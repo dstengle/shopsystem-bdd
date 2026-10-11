@@ -44,6 +44,15 @@ A report that says "Concerns: none" over a removed test is itself a finding.
 
 A task changes no feature file, with one exception: a scenario tagged `@holding` that the brief lists under `Retires:` is removed, with its binding. Any other change under `features/` is Critical.
 
+## What a tool decides
+
+Run `python3 <Scripts>/tools check --base <the package's base commit>` (`Scripts:` is in the brief) and read its output: lint and unused imports, code with no caller left, and the project's import contracts. Paste each heading with its result into the findings file. What a tool reports is a finding at the grade this rubric gives it; what it covers you do not also read for. A heading that says `missing` names what you now read for yourself, and the findings say so.
+
+## Probes are kept
+
+- A probe that found a defect is a test someone already wrote. Give it in the finding, as `Keep as a test:` with the probe's file in the scratch directory and the command that runs it, so the fix round adds it to the suite and sees it red before the fix.
+- A probe that checks something which should hold after any change (what is held reads back; a refused change writes nothing; out and in again gives the same bytes) is given once, under `Invariant proposed:`, in a line the controller can log. Whether it becomes a line of `CLAUDE.md`'s `## Invariants` is the person's.
+
 ## Tests
 
 - Do not re-run the whole suite to confirm the report: the implementer's suite record is the run. Check it names the task's change commit.
@@ -77,4 +86,6 @@ The findings file begins directly with the verdict. Every line is a verdict, a f
 - **Removed and weakened tests:** each one, as above, or "none: searched the diff for removed test functions, dropped cases, loosened assertions, skips and xfails".
 - **Strengths:** what was done well, specifically.
 - **Issues:** Critical, Important and Minor. Each gives file:line, what is wrong, why it matters, and the fix. Important means the task cannot be trusted until it is fixed; polish is Minor. Behaviour that contradicts a Behaviour line or the capability's Purpose is Important, whether or not a scenario covers it. When none does, say so and mark it `spec question`, so the controller has the line's scenario formulated with the fix. It is never Minor and never carried to a later task. A hardening finding (an input no client sends today, an edge case no line names) is Minor and marked `backlog`, with its reproduction, so the controller adds it to the plan's backlog instead of a fix round. Something the brief mandates that this rubric calls a defect is Important, labelled plan-mandated.
+- **Tools:** each heading of `tools check` with its result.
+- **Invariant proposed:** each, in a line; or none.
 - **Assessment:** Task quality: Approved or Needs fixes, with one or two sentences of reasoning.
