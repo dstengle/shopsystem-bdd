@@ -37,6 +37,7 @@ Not a slice: anything with no scenario and no check. A layer, a module, or a lib
 ## Process
 
 1. **Take the suite's result.** If `plan show --last-suite --current` says `current`, that record is this step's run. Otherwise run the feature suite (`python -m pytest -q`, or the project's equivalent), timed, and record it with `plan log` as bdd-red-green's suite record (its "The Suite Record"). Every scenario that passes is credited to the slice whose work made it pass, or to a "Satisfied by existing behaviour" line citing that run. It never appears in a later slice. Reading the step definitions is not a run.
+   **Check the suite is green.** Between slices nothing fails: a scenario tagged to a slice not yet built is expected to fail, and the record says `<N> passed, 0 failed, <X> expected`. If the record's failures are such scenarios and `python -m pytest --help` lists no `--slice`, the batch's first enabling slice is the slice expectations plugin: `features plugin <the tests directory>` writes it and says how to register it. `Check: the suite -> <N> passed, 0 failed, <X> expected`. A plain test that fails until a later slice takes that slice's marker in the same slice.
    **Check the suite is fast.** If the record's time is over 60 s, and either the test command does not run in parallel or the step definitions start the entry point as a program in more than one test per command, and `CLAUDE.md` gives no reason, the batch needs an enabling slice that makes it fast: `Check: the suite -> <N> passed, <M> failed, in under <bound> s`.
 2. **Cut slices** by the four tests. Capability slices come from the feature files. Enabling slices come from what the skeleton stands on: a runnable package, the suite wired up, a dependency installed, a contract file generating code. Stack slices come from the bounds in `spec/index.md`. Give each slice one unknown: the question building it will settle. A candidate with two unknowns is two slices. A candidate with none bundles with its neighbours in the same feature that share step definitions.
    **Probe what a dependency provides.** A slice whose Needs names something another project provides gets a probe: a command run now, against the installed version, whose result shows the thing exists (`<command> --help` exits 0; a call returns). Log it, `plan log "Probe: <command> -> <result>"`. A failing probe makes the slice `blocked: awaiting <project>`, with `plan log "REQUEST <project>: <what is needed>"`; no task is written for it. Reading the project's spec is not a probe. Where you read it, read the capability file whole: what is not built is listed under Not yet.
@@ -66,6 +67,7 @@ Not a slice: anything with no scenario and no check. A layer, a module, or a lib
    and tags rewritten, only when whole slices change order.
 4. **Write the plan** in the shape below, in the project's one living plan file. If `docs/superpowers/plans/*-slices.md` exists, extend it; never start a second plan file. Every edit goes through `plan` (`add-slice` with `--lands`, `status`, `log`, `backlog`); never `sed`, a heredoc or a one-off script on the plan.
 5. **Mark the scenarios.** Write a tag `@slice-<n>` on every scenario a capability slice assigns, one tag per scenario, replacing any earlier slice tag. This is the only edit this skill ever makes to a feature file: a tag line, never a Given, When, or Then. pytest-bdd turns the tag into a marker, so `pytest -m "slice-<n>"` runs a slice. Tag with `features tag "<title>" slice-<n>`; `features count --by-tag` gives each slice's count.
+   **Give every held scenario a slice that retires it.** `features holding` lists each scenario formulation held because it still passed, with what it is held for and the slice its replacement is tagged to. A scenario held for one with no slice yet waits for that scenario's slice. A scenario held for removal is retired by the slice that removes its behaviour: cut that as an enabling slice when no slice does (`Check: features holding no longer lists it, and a search for what it drove finds nothing`).
 6. **Shape is reviewed at each batch's end**, by the
    `shopsystem-bdd:bdd-branch-reviewer`, which checks the code against the
    project's `CLAUDE.md` and its coupling to the projects it depends on as
@@ -90,6 +92,7 @@ The plan carries no code. The planner plans; the implementer writes the code und
 - **Steps, where an order must be seen.** A task is written as ordered Steps only when something must land and be seen green alone before what uses it: a contract field, a stored layout, a port or a seam. Each step is one dispatch and says what it does, its own check (a marker green, a plain test, a search) and where it lands. A step leaves everything passing that passed before it. Steps are not slices: they share the slice's scenarios, take no number and no tag, and the slice is green only after the last. A task with no such order has no Steps and is one dispatch, whatever its count: a slice within the budget fits one. The number of files is never the reason for a step.
 - **A task that needs steps only.** When the scout's notes mark every scenario of a task `steps only`, the task says so, has no Steps, and is `Review: batch-end` and `Model: sonnet` whatever it touches. An implementer who finds one of its scenarios red on behaviour hands back.
 - **Batch base.** Each task carries `Batch base: <the commit the batch started from>`. An implementer may rewrite a test first committed after it that pinned an interim state, and may change any test's setup, without the test being listed; it reports each, and the reviewers check them. What a test asserts is otherwise changed only by the list above.
+- **Retires.** Each task carries `Retires:` with the held scenarios whose replacement is among its scenarios (`features holding`), or "none". The implementer removes each with `features retire` in the commit that binds its replacement, with its binding and the step definitions nothing else uses. Until then a held scenario stays green; one the task does not list that breaks is a stop.
 - **Lanes.** Give a task a `Lane: <letter>` line only when the scouts' file lists show its files disjoint from every task of another lane and neither needs the other's code. A task with no `Lane:` runs in order, in the main worktree. Lanes are rare: a plan is not ordered or cut to make them. Reviews and scouts beside the implementer are where a batch runs in parallel.
 - Each task carries a `Review:` line and a `Model:` line, which stand for all its steps unless a step carries its own `Model:`. `Review: per-task` and `Model: opus` for a task that touches concurrency, the published contract, data integrity, or moving stored data; `Review: batch-end` and `Model: sonnet` for every other task, refactors, small slices and tasks that need steps only included. A batch-end task gets no task review: the batch's branch review covers it. Say this in the plan's Global Constraints so the controller dispatches by it.
 - Each task names its markers and expected counts. When to run what is bdd-red-green's and the agents': a plan that says when to run the suite, or to record a failing list, is wrong.
@@ -137,7 +140,7 @@ A plan that carries code makes red a performance: the implementer pastes what al
 - <date> <hardening finding, one line, with its reproduction> (from <review>)
 
 ## Log
-- <date> Suite: <N> passed, <M> failed at <short hash> in <seconds> s[; failing: <titles>]
+- <date> Suite: <N> passed, <M> failed[, <X> expected] at <short hash> in <seconds> s[; failing: <titles>]
 - <date> Probe: <command> -> <result>
 - <date> Probe: <searches> -> <p> production, <t> test
 - <date> REQUEST <project>: <what is needed>
@@ -163,7 +166,7 @@ The test for the third row is mechanical: would any Given, When, or Then line di
 
 When the third row applies: append a `RE-FORMULATE` entry to the log naming the feature, the scenario, and the hand-back evidence, commit the plan, and invoke `formulating-features`. When it returns a rewritten scenario, the line decided it: slicing resumes with that scenario in its slice. When it returns a question, finish cutting and ordering every slice that does not contain that scenario, mark the slice that does `blocked: awaiting the spec`, commit, and stop. Do not invoke writing-plans: its tasks would derive from an undecided contract. writing-plans runs once the line is changed and the scenario re-formulated from it.
 
-A scenario removed because its capability line was removed is logged; its step definitions and code are left for the batch's branch review to flag.
+A scenario removed because its capability line was removed is logged. If it still passed, formulating-features held it instead, and a slice retires it with the behaviour; if it never passed, its step definitions are left for the batch's branch review to flag.
 
 ## Review Findings
 
@@ -233,6 +236,8 @@ The plan does not choose them. "Clamp rather than raise", "keep the first code w
 - A slice planned on a dependency's command with no `Probe:` line
 - A dependency's capability read by a section range
 - A task written for a `blocked` slice
+- A held scenario (`features holding`) with no slice that retires it
+- A suite record whose failures are scenarios of slices not yet built, in a project with no `--slice` option
 - A slice of the batch about to be planned with no `Lands:` line, or with no `Probe:` entry when it changes an existing form
 - A `Lands:` probe run for a slice two batches or more ahead
 - A task with Steps and no contract, layout, port or seam that its first step lands alone

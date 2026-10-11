@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Read and edit Gherkin feature files without the test runner."""
 import argparse
+import ast
 import os
 import re
+import shutil
 import sys
 
 CONTRACT = """\
@@ -30,6 +32,25 @@ contract:
   - verify-moved compares, by title, each scenario's effective tags, its
     description, and its Background steps followed by its own steps, all
     stripped of indentation, blanks and comments.
+
+  - hold keeps a scenario that passes today in the suite when its line is
+    re-worded or removed: it gains the tag @holding, " (held)" at the end of
+    its title, and a description line 'Held for: <the title that replaces it>'
+    or 'Held for: removal'. Nothing else in it changes, and the replacement
+    need not be written yet. retire removes one
+    scenario's block and refuses any scenario not tagged @holding. holding
+    lists each held scenario with what it is held for and the slice tag its
+    replacement carries.
+  - bindings reads every *.py under --tests (default: tests) and reports each
+    scenario(<feature>, "<title>") call whose title no feature file has: a
+    binding like that stops its whole module collecting. rebind rewrites the
+    title in those calls from one title to another, which must be a scenario
+    in a feature file, and changes nothing else in the file. Only a title
+    written as a plain string in the call is read; a feature given as a name
+    is looked up among the module's own assignments.
+  - plugin writes slice_expectations.py, the pytest plugin that expects a
+    test tagged to a slice the plan has as planned or blocked to fail, into
+    a directory, and says how to register it.
 
 exit status: 0 success, 1 a check failed or an edit was refused, 2 bad usage.
 An edit that would leave its file invalid is refused and the file left as it was.
@@ -330,6 +351,149 @@ def cmd_verify(args, files):
     return 0
 
 
+def indent_of(line):
+    return line[:len(line) - len(line.lstrip())]
+
+
+def cmd_hold(args, files):
+    path, f, sc = locate(files, args.title)
+    if "holding" in sc.tags:
+        raise Refused("%r is held already" % args.title)
+    lines = list(f.lines)
+    text = lines[sc.line]
+    lines[sc.line] = text.rstrip() + " (held)"
+    after = next((lines[i] for i in range(sc.line + 1, sc.end) if lines[i].strip()), None)
+    inner = indent_of(after) if after is not None else indent_of(text) + "  "
+    lines.insert(sc.line + 1, inner + "Held for: " + ("removal" if args.removal else args.held_for))
+    if sc.tag_lines:
+        last = sc.tag_lines[-1]
+        lines[last] = lines[last].rstrip() + " @holding"
+    else:
+        lines.insert(sc.line, indent_of(text) + "@holding")
+    write_checked({path: lines})
+    print("%s: %s (held)" % (path, args.title))
+    return 0
+
+
+def cmd_retire(args, files):
+    path, f, sc = locate(files, args.title)
+    if "holding" not in sc.tags:
+        raise Refused("%r is not tagged @holding: only a held scenario is retired here" % args.title)
+    lines = f.lines[:sc.start] + f.lines[sc.end:]
+    if sc.end >= len(f.lines):
+        while lines and not lines[-1].strip():
+            lines.pop()
+        lines.append("")
+    write_checked({path: lines})
+    return 0
+
+
+def cmd_holding(args, files):
+    titles = {sc.title: (f, sc) for _, f in files for sc in f.scenarios}
+    held = [(p, f, sc) for p, f in files for sc in f.scenarios if "holding" in sc.tags]
+    for path, f, sc in held:
+        wanted = [s[len("Held for:"):].strip() for s in f.description(sc) if s.startswith("Held for:")]
+        target = wanted[0] if wanted else None
+        if target is None:
+            where = "no 'Held for:' line"
+        elif target == "removal":
+            where = "the slice that removes the behaviour"
+        elif target not in titles:
+            where = "no scenario has that title"
+        else:
+            tf, ts = titles[target]
+            tags = sorted((t for t in tf.effective_tags(ts) if SLICE.match(t)), key=natural)
+            where = ", ".join(tags) if tags else "no slice yet"
+        print("%s: %s | for: %s | %s" % (path, sc.title, target, where))
+    if not held:
+        print("none held")
+    return 0
+
+
+def binding_calls(tests):
+    """Every scenario(<feature>, "<title>") call under tests: (path, source bytes, feature or None, title node)."""
+    found = []
+    for root, _, names in sorted(os.walk(tests)):
+        for name in sorted(names):
+            if not name.endswith(".py"):
+                continue
+            path = os.path.join(root, name)
+            with open(path, "rb") as handle:
+                source = handle.read()
+            try:
+                tree = ast.parse(source, path)
+            except SyntaxError as why:
+                raise Refused("%s does not parse: %s" % (path, why))
+            names_ = {t.id: n.value.value for n in tree.body if isinstance(n, ast.Assign)
+                      and isinstance(n.value, ast.Constant) and isinstance(n.value.value, str)
+                      for t in n.targets if isinstance(t, ast.Name)}
+            for node in ast.walk(tree):
+                if not isinstance(node, ast.Call) or len(node.args) < 2:
+                    continue
+                called = node.func.id if isinstance(node.func, ast.Name) else getattr(node.func, "attr", None)
+                title = node.args[1]
+                if called != "scenario" or not isinstance(title, ast.Constant) or not isinstance(title.value, str):
+                    continue
+                first = node.args[0]
+                feature = first.value if isinstance(first, ast.Constant) else names_.get(getattr(first, "id", None))
+                found.append((path, source, feature if isinstance(feature, str) else None, title))
+    return found
+
+
+def cmd_bindings(args, files):
+    titles = {}
+    for path, f in files:
+        for sc in f.scenarios:
+            titles.setdefault(sc.title, set()).add(os.path.basename(path))
+    lost = 0
+    for path, _, feature, title in binding_calls(args.tests):
+        have = titles.get(title.value, set())
+        if not have or (feature and os.path.basename(feature) not in have):
+            lost += 1
+            print('%s:%d: no scenario titled "%s" in %s' % (path, title.lineno, title.value, feature or "any feature file"))
+    if lost:
+        return 1
+    print("every binding names a scenario")
+    return 0
+
+
+def cmd_rebind(args, files):
+    locate(files, args.new)
+    edits = {}
+    for path, source, _, title in binding_calls(args.tests):
+        if title.value != args.old:
+            continue
+        if title.lineno != title.end_lineno:
+            raise Refused("%s:%d: the title is written over several lines" % (path, title.lineno))
+        edits.setdefault(path, (source, []))[1].append(title)
+    literal = ('"%s"' % args.new.replace("\\", "\\\\").replace('"', '\\"')).encode()
+    count = 0
+    for path, (source, nodes) in edits.items():
+        lines = source.split(b"\n")
+        for node in sorted(nodes, key=lambda n: (n.lineno, n.col_offset), reverse=True):
+            line = lines[node.lineno - 1]
+            lines[node.lineno - 1] = line[:node.col_offset] + literal + line[node.end_col_offset:]
+            count += 1
+        with open(path, "wb") as handle:
+            handle.write(b"\n".join(lines))
+    print("%d binding%s rebound" % (count, "" if count == 1 else "s"))
+    return 0
+
+
+def cmd_plugin(args, files):
+    source = os.path.join(os.path.dirname(os.path.abspath(__file__)), "slice_expectations.py")
+    if not os.path.isdir(args.directory):
+        raise Refused("%s is not a directory" % args.directory)
+    target = os.path.join(args.directory, "slice_expectations.py")
+    shutil.copyfile(source, target)
+    package = os.path.isfile(os.path.join(args.directory, "__init__.py"))
+    print("%s written. Register it with this line in the conftest.py beside it:\n"
+          "  from %sslice_expectations import *  # noqa: F401,F403\n"
+          "It is registered when `python -m pytest --help` lists the option --slice."
+          % (target, "." if package else ""))
+    return 0
+
+
 def usage_error(message):
     sys.stderr.write("features: error: %s\n" % message)
     return 2
@@ -362,9 +526,29 @@ def main():
     verify = sub.add_parser("verify-moved")
     verify.add_argument("--from", dest="from_dir", required=True)
     verify.set_defaults(run=cmd_verify)
+    hold = sub.add_parser("hold")
+    hold.add_argument("title")
+    what = hold.add_mutually_exclusive_group(required=True)
+    what.add_argument("--for", dest="held_for")
+    what.add_argument("--for-removal", dest="removal", action="store_true")
+    hold.set_defaults(run=cmd_hold)
+    retire = sub.add_parser("retire")
+    retire.add_argument("title")
+    retire.set_defaults(run=cmd_retire)
+    sub.add_parser("holding").set_defaults(run=cmd_holding)
+    for name, run in (("bindings", cmd_bindings), ("rebind", cmd_rebind)):
+        one = sub.add_parser(name)
+        if name == "rebind":
+            one.add_argument("old")
+            one.add_argument("new")
+        one.add_argument("--tests", default="tests")
+        one.set_defaults(run=run)
+    plugin = sub.add_parser("plugin")
+    plugin.add_argument("directory")
+    plugin.set_defaults(run=cmd_plugin)
     args = parser.parse_args()
     try:
-        return args.run(args, load(args.dir))
+        return args.run(args, [] if args.command == "plugin" else load(args.dir))
     except Refused as why:
         sys.stderr.write("features: %s\n" % why)
         return 1

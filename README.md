@@ -120,11 +120,19 @@ The transcripts are Claude Code's own files and not a published format: `measure
 
 Held, each with the measurement that would decide it: resuming an implementer in place of a fresh one, narrower triggers for `Review: per-task`, a budget by kind of change, and one research scout a batch.
 
+## A green suite (0.14.0)
+
+0.14.0 keeps the suite passing between slices, and keeps behaviour tested until a slice changes it. Design: `docs/superpowers/specs/2026-10-11-green-suite-design.md`.
+
+- **Unbuilt slices are expected to fail.** `features plugin <tests directory>` writes a small pytest plugin into the repository. A test tagged to a slice the plan has as `planned` or `blocked` is a strict expected failure: failing is quiet, and passing early fails the suite. `--slice <n>` runs the slice being built as it is. The suite record reads `<N> passed, 0 failed, <X> expected`, and nobody compares lists of failing names.
+- **A scenario that passes today is held, not removed.** When a line is re-worded or removed, formulation keeps the old scenario in the feature file, tagged `@holding` with " (held)" on its title, its steps unchanged, so it still passes. Slicing gives it a slice that retires it, the task lists it under `Retires:`, and the implementer removes it with `features retire` in the commit that turns its replacement green (`formulating-features`, `slicing-into-increments`, `bdd-red-green`).
+- **A changed title never stops a module collecting.** `features bindings` reports every `scenario(…, "<title>")` call that names no scenario; `features rebind` rewrites the title in those calls. Formulation runs both before it commits.
+
 ## Scripts
 
 Plain Python 3, standard library only, in `scripts/`. `--help` is the contract; tests: `python3 -m unittest discover -s tests/scripts`.
 
-- `scripts/features`: count, list, tag, move and verify-moved for feature files, without the test runner.
+- `scripts/features`: count, list, tag, move and verify-moved for feature files, without the test runner; hold, retire and holding for scenarios kept while they still pass; bindings and rebind for the titles test modules bind; plugin, which writes `slice_expectations.py` into a repository.
 - `scripts/measure`: write, show and compare a batch's facts, from the session transcripts, the plan and git.
 - `scripts/plan`: edit and read the living slice plan (log, status, slices, backlog, archive, `show`), keeping its sections and order valid and refusing a slice whose `Lands:` is over the budget (`plan lands` sets it).
 

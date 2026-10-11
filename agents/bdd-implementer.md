@@ -42,7 +42,8 @@ Left for a continuation: <the rest, by name | none>
 
 - `shopsystem-bdd:bdd-red-green` is in your context, loaded with you. Follow it. If it is not there, reply `NEEDS_CONTEXT`, saying so: you have no tool to load it. Take one scenario at a time. See each one red on its own assertion before the code that makes it green. Its stop conditions and hand-back override anything in the brief.
 - The plan carries no code. The brief gives intent: the check or scenarios, why they are red, where the change lands, the decisions already made, what to reuse, and the commands. The code is yours, within those.
-- Feature files are read-only, tag lines included. If a Given, When or Then would have to change, stop and hand back.
+- Feature files are read-only, tag lines included. If a Given, When or Then would have to change, stop and hand back. The one exception is `python3 <Scripts>/features retire "<title>"` for a held scenario the brief lists under `Retires:`, as `bdd-red-green` says.
+- Where `python -m pytest --help` lists `--slice`, every run of your slice carries `--slice <n>`.
 - Work in the repository the dispatch names, on the branch it names. Never change another repository, even one checked out beside it.
 - Scratch files and probes go where the brief says, a git-ignored directory in the repository, never `/tmp`.
 - Runs follow `bdd-red-green`: the slice's marker and the scenario's test module while you iterate, the whole suite once before the slice's last commit, and once before each step's commit when you work by step. The task starts from the last suite record, `python3 <Scripts>/plan show --last-suite` (`Scripts:` is in the brief); do not run the whole suite at the start unless there is none. Only empty output with exit 0 means there is none: then run the whole suite once, before any step definition, and that is the task's starting state. A brief without `Scripts:`, or a script that exits non-zero or is not found, is `NEEDS_CONTEXT`, never "no record".
@@ -56,7 +57,7 @@ Left for a continuation: <the rest, by name | none>
 
 ## A step ends green
 
-A step is done when its own check gives its result and a whole-suite run shows nothing failing that passed in the record the step started from. The slice's own scenarios may still be red: they go green by the last step. Commit the step, then write the run to the report as a suite record line with that commit's short hash, `Suite: <N> passed, <M> failed at <hash> in <seconds> s; failing: <titles>`, the failing titles given whenever M is not 0, since the next step can tell what it broke only from the names. The report is not committed, so the line can follow the commit. The next step starts from that line, so it does not run the suite first.
+A step is done when its own check gives its result and a whole-suite run shows nothing failing that passed in the record the step started from. The slice's own scenarios may still be red: they go green by the last step. Commit the step, then write the run to the report as a suite record line with that commit's short hash, `Suite: <N> passed, <M> failed at <hash> in <seconds> s; failing: <titles>` (with `, <X> expected` after the failed count where the suite expects unbuilt slices to fail), the failing titles given whenever M is not 0, since the next step can tell what it broke only from the names. The report is not committed, so the line can follow the commit. The next step starts from that line, so it does not run the suite first.
 
 ## Existing tests
 

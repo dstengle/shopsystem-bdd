@@ -25,6 +25,8 @@ Work through the slice's scenarios in the order the plan lists them. The slice's
 4. **Run the slice** (`python -m pytest -q -m "slice-<n>"`) and the test module the scenario lives in. Everything previously green there stays green.
 5. **Refactor** with them green, then commit, then the next scenario.
 
+**Where the suite has the slice expectations plugin** (`python -m pytest --help` lists `--slice`), a scenario of a slice the plan has as planned is expected to fail, and passes for a failure. So every run of the slice you are building carries `--slice <n>`: the one scenario, the marker and the whole suite. Then red is red and green is green. Set the slice's Status green before the run that makes the record, or keep `--slice <n>` on it.
+
 Before the slice's last commit, run the whole feature suite once. Everything previously green stays green. That run is the slice's suite record (below). A task worked by Steps runs it once before each step's commit: a step leaves everything passing that passed before it, whatever of the slice is still red.
 
 **Code only what a scenario asserts.** Where the scenarios are silent, the code is silent. Do not choose semantics for cases no scenario covers, not as a "guard", not as "the forgiving option". If the silence matters, it goes in the checkpoint entry as an open question.
@@ -41,9 +43,9 @@ A project whose suite cannot do one of these says why in its `CLAUDE.md`.
 
 ## The Suite Record
 
-A whole-suite run is recorded once and used while it holds. After the slice's change is committed, record the run in the plan's log with the plugin's `scripts/plan log`, as its own entry after the checkpoint entry, never a line inside it: `Suite: <N> passed, <M> failed at <short hash of the commit that was run> in <seconds> s`, with `; failing: <titles>` when M is not 0, and commit the log with the checkpoint. A record holds while nothing outside `docs/superpowers/plans/` has changed since its commit: `scripts/plan show --last-suite --current` says `current` or `stale`.
+A whole-suite run is recorded once and used while it holds. After the slice's change is committed, record the run in the plan's log with the plugin's `scripts/plan log`, as its own entry after the checkpoint entry, never a line inside it: `Suite: <N> passed, <M> failed at <short hash of the commit that was run> in <seconds> s`, with `, <X> expected` after the failed count where the suite expects the scenarios of slices not yet built to fail (pytest's `xfailed`), and with `; failing: <titles>` when M is not 0, and commit the log with the checkpoint. A record holds while nothing outside `docs/superpowers/plans/` has changed since its commit: `scripts/plan show --last-suite --current` says `current` or `stale`.
 
-- A slice starts from the last record; its failing list is the scenarios already red. Do not run the whole suite at a slice's start. Only when the plan has no record yet, run it once to make one.
+- A slice starts from the last record; its failing list is the scenarios already red. Where the suite expects unbuilt slices to fail, that list is empty and any failure is yours or new. Do not run the whole suite at a slice's start. Only when the plan has no record yet, run it once to make one.
 - Whoever needs the suite's result (a reviewer, slicing, the controller before a push) and finds a record that holds uses it.
 - Installing or upgrading a dependency without a commit makes every record stale.
 
@@ -62,6 +64,8 @@ No scenarios are written for a check slice, and no check is added to a capabilit
 
 This skill never edits a `.feature` file. Not to fix a typo, not to correct arithmetic, not to align wording. There is no step in the cycle that opens one for writing.
 
+One command removes a scenario, and only one kind: `features retire "<title> (held)"` takes out a scenario tagged `@holding`, the old wording of a line kept while it still passed. You run it for each scenario the task lists under `Retires:`, in the commit that turns its replacement green, and remove with it its binding and the step definitions nothing else uses. It refuses any other scenario, and so do you.
+
 A scenario that is wrong is a **stop condition**, not a chore. Handling it is someone else's job: `slicing-into-increments` decides whether the contract changes, and only `formulating-features` writes features.
 
 ## Stop Conditions
@@ -70,6 +74,7 @@ Each of these is observable. When one occurs, hand back immediately:
 
 | Observed | Meaning |
 |---|---|
+| A scenario of a slice not yet built fails the suite as `XPASS(strict)` | Something built it early, or it does not test what its tag says. Slicing decides. |
 | A scenario passes before you wrote any step definition or code for it | The contract already covered it, or the scenario doesn't test what its tag claims. Slicing decides. |
 | A slice's check passes before you did any work | The slice is already done or the check doesn't check what it says. Slicing decides. |
 | A scenario can't be made to fail on its Then line, only on setup or an undefined Given | The Given describes a state the system can't represent yet. Slicing may need to re-order. |
@@ -101,7 +106,7 @@ When every scenario in the slice is green, set the slice's Status with `plan sta
 - <date> slice <n> green. Someone can now: <one sentence>.
   Surprised by: <what building it turned out to involve that the plan didn't say | nothing>.
   Open questions: <none | list>. Next: slice <n+1>.
-- <date> Suite: <N> passed, <M> failed at <short hash of the change's commit> in <seconds> s
+- <date> Suite: <N> passed, <M> failed[, <X> expected] at <short hash of the change's commit> in <seconds> s
 ```
 
 ## Rationalizations That Do Not Hold
@@ -127,7 +132,7 @@ When every scenario in the slice is green, set the slice's Status with `plan sta
 
 ## Red Flags
 
-- Any diff touching a `.feature` file
+- Any diff touching a `.feature` file, other than `features retire` of a scenario the task lists under `Retires:`
 - `sed -i` or an editor on anything under `features/`
 - Writing a second step definition before the first scenario is green
 - The phrase "typo", "obviously meant", or "arithmetically impossible" about a Then line

@@ -40,6 +40,10 @@ List every one, under its own heading, with file:line, what it proved before, an
 
 A report that says "Concerns: none" over a removed test is itself a finding.
 
+## Feature files
+
+A task changes no feature file, with one exception: a scenario tagged `@holding` that the brief lists under `Retires:` is removed, with its binding. Any other change under `features/` is Critical.
+
 ## Tests
 
 - Do not re-run the whole suite to confirm the report: the implementer's suite record is the run. Check it names the task's change commit.
