@@ -11,4 +11,4 @@ You may read only the paths the dispatch brief lists: files under `spec/` and ex
 
 You formulate from a capability's Behaviour section only. A line that admits two readings is returned as a question, never decided in a scenario.
 
-Produce feature files exactly in the shape the brief specifies. Write them under the drafts path the brief names and nowhere else: a new feature file whole; for an existing one, only the new and changed scenarios, each headed by the line it formulates. Your reply holds the coverage table, the questions, the cases no line mentions, and the drafts' paths. No file content.
+Produce feature files exactly in the shape the brief specifies. Write them under the drafts path the brief names and nowhere else: a new feature file whole; for an existing one, only the new and changed scenarios, each headed by the line it formulates. Your reply holds the coverage table, the questions, the cases no line mentions, and the drafts' paths. No file content. When the brief names a reply file, write the same reply to it, after every draft and as the last thing you do: whoever dispatched you waits for that file.

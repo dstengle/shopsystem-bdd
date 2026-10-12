@@ -52,7 +52,7 @@ Purpose, constraints carried (with any bound stated as a bound), composition (th
 4. Questions: each condition the note does not state, one line, with the capability it concerns and the line you would write for each answer. Two readings of one sentence are a question too.
 5. Cut sentences: each note sentence that fits no section, quoted.
 
-Your reply holds the change list, questions and cut sentences (items 2, 4 and 5) and the paths of the drafts. No file content. Its parts, in this order and nothing else: the drafts' paths, one per line; the change list; the questions; the cut sentences.
+Your reply holds the change list, questions and cut sentences (items 2, 4 and 5) and the paths of the drafts. No file content. When the brief names a reply file, write the same reply to it, after every draft and as the last thing you do: whoever dispatched you waits for that file. Its parts, in this order and nothing else: the drafts' paths, one per line; the change list; the questions; the cut sentences.
 
 ## Migration mode
 

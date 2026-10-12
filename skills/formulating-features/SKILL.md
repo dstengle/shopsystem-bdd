@@ -11,6 +11,16 @@ Each capability file `spec/capabilities/<name>.md` is formulated as one feature 
 
 A note under `docs/` is not the spec. If lines are not yet in `spec/`, integrating-a-proposal runs first.
 
+## Who Does What
+
+The session the person talks to hands a formulation round to `shopsystem-bdd:spec-round` and reads only its reply, for the reason integrating-a-proposal gives.
+
+**If the person is talking to you:** dispatch one `spec-round` with the job `formulate`, the changed capability paths, the change list, a drafts path, the round's number and `Scripts:`, described `spec <note's name>: formulate round <n>`. It carries out steps 1, 2 and 4 below and commits. Step 3 is yours: each question in its reply goes to the person with its two readings; their answer goes to integrating-a-proposal as a round of its own, and the changed line comes back here as the next formulation round, for that capability alone. You do not dispatch a `feature-formulator`, read a draft or splice a scenario yourself.
+
+**If you are `spec-round`:** steps 1, 2 and 4 are yours. A question is returned in your reply, never shown to anyone and never decided.
+
+The small-change path below has no round: the session writes its scenarios itself.
+
 ## Process
 
 1. **Dispatch the `feature-formulator` agent** (this plugin; it reads only the brief's paths and writes only drafts) with the brief below, once per changed capability. Give it no other paths. On a hand-back from slicing, use the hand-back brief instead. Choose the drafts path `.superpowers/spec-drafts/<date>-<capability name>/`. Each dispatch is a round with its own directory, `<drafts path>/round-<n>/`, named in its brief; the hand-back brief and a changed line coming back are later rounds. If `.gitignore` lacks `.superpowers/`, add it and commit that line alone. Then note `git status --porcelain`.
@@ -77,7 +87,8 @@ line it formulates. Reply with (2) a coverage table with one row per line:
 the line (quoted) and the scenario title that formulates it; (3) questions:
 each line with two readings, quoted, and the two readings, one line each;
 (4) cases you noticed that no line mentions, one line each, with no scenario
-written for them; and the drafts' paths.
+written for them; and the drafts' paths. Write that same reply, last of all,
+to <DRAFTS PATH>/round-<N>/<NAME>.reply.md.
 ```
 
 ## The Hand-back Brief
@@ -94,7 +105,8 @@ Write the rewritten scenario to <DRAFTS PATH>/round-<N>/, and nowhere else, so t
 formulates its line in spec/capabilities/<NAME>.md and is consistent with
 the rest of the feature. Change only the lines the evidence requires. Reply
 with the draft's path. If the line does not decide it, write no scenario:
-reply with the question, in one sentence, with the two readings.
+reply with the question, in one sentence, with the two readings. Write that
+same reply, last of all, to <DRAFTS PATH>/round-<N>/<NAME>.reply.md.
 ```
 
 The main agent checks `git status --porcelain` as in step 2, writes the drafted scenario over the old one, commits, and slicing resumes. A question in the reply goes to integrating-a-proposal as in step 3, and the scenario waits for the changed line.

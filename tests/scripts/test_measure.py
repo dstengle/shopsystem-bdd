@@ -151,6 +151,9 @@ class MeasureTest(unittest.TestCase):
         self.assertEqual([self.by(facts, "Do the reading")[k] for k in ("slice", "task", "attributed")], ["9", 2, "prompt"])
         self.assertEqual([self.by(facts, "batch 2: branch review")[k] for k in ("slice", "kind", "attributed")], [None, "branch review", "description"])
         self.assertIsNone(self.by(facts, "Look around")["attributed"])
+        self.agent("a7", "spec-round", "spec lending: formulate round 1", at(9, 5), at(9, 15))
+        spec = self.by(self.measure("--replace"), "spec lending: formulate round 1")
+        self.assertEqual((spec["kind"], spec["attributed"], spec["slice"]), ("spec", "description", None))
         self.assertEqual(facts["summary"]["unattributed"], 1)
 
     def test_statuses_and_findings_as_replied(self):

@@ -30,7 +30,8 @@ contract:
     figure, not beside it; context is the whole input of one request. A
     dispatch's effort is the setting most of its requests ran at.
   - A dispatch is attributed by its description: 'slice <n>', 'step <k>',
-    'task <n>', or 'batch' and 'slices' for work that belongs to no one slice.
+    'task <n>', or 'batch' and 'slices' for work that belongs to no one slice,
+    or a leading 'spec' for the spec work before any slice exists.
     Failing that, by the task or slice its prompt names. Its kind follows its
     role and the words fix, re-review and probe. What neither names is counted
     as unattributed.
@@ -246,7 +247,7 @@ def attribute(role, description, prompt, task_slices):
         if found["slice"]:
             found["attributed"] = source
             break
-        if source == "description" and re.search(r"\b(batch|slices)\b", text, re.I):
+        if source == "description" and (re.search(r"\b(batch|slices)\b", text, re.I) or re.match(r"\s*spec\b", text, re.I)):
             found["attributed"] = "description"
             break
     step = STEP.search(description)
@@ -260,6 +261,8 @@ def attribute(role, description, prompt, task_slices):
         kind = "branch review"
     elif role.endswith("scout"):
         kind = "probe" if "probe" in words else "research"
+    elif role.split("-")[0] in ("spec", "capability", "feature"):
+        kind = "spec"
     else:
         kind = "other"
     found["kind"] = kind

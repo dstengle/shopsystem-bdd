@@ -7,7 +7,7 @@ slicing, and one human gate on the spec's Behaviour lines.
 Skills: `integrating-a-proposal`, `formulating-features`,
 `slicing-into-increments`, `bdd-red-green`, `migrating-to-capabilities`,
 `analyzing-a-batch`.
-Agents: `capability-writer`, `feature-formulator`, `code-scout`,
+Agents: `capability-writer`, `feature-formulator`, `spec-round`, `code-scout`,
 `bdd-implementer`, `bdd-task-reviewer`, `bdd-branch-reviewer`,
 `architecture-reviewer`.
 Format: `docs/capability-format.md`.
@@ -157,6 +157,17 @@ About a third of what the agents write is reasoning: on shopsystem-kb, 29% of th
 
 Not changed: the implementer and the reviewers. A steps-only task on Sonnet reasons for a few hundred tokens at any setting, and a reviewer's reasoning is what finds defects.
 
+## A controller for each spec round (0.18.0)
+
+In shopsystem-knowledge's batch 19 the session that integrated and formulated a note read 30M tokens from cache, eleven times what its writers and formulators read together. It held the brainstorm (181k of context before integration began), and every writer and formulator that finished cost it another turn at that size: 53 turns for three formulation rounds.
+
+- **`spec-round`**, a new agent, runs one round and ends with it: an integration round (it dispatches the `capability-writer` and checks the change list), the applying of approved drafts, or a formulation round (it dispatches the `feature-formulator`s, checks coverage, holds, splices and commits). It waits for its agents by a reply file each writes last.
+- **The session the person talks to keeps the gate and nothing else.** `integrating-a-proposal` and `formulating-features` each begin with who does what: that session dispatches a fresh `spec-round` for each round, shows the person the lines and questions that come back, and passes their answers to the next round. It opens no draft and dispatches no writer.
+- **A new session for a note that was brainstormed here** is recommended before integration starts.
+- **`measure`** attributes a dispatch whose description starts `spec` and gives the three spec agents the kind `spec`, so the 22 unattributed dispatches of batch 19 would have been counted.
+
+With a controller holding 270k: formulating six capabilities read 1.8M tokens from cache in all against 5.4M, and integrating a note 0.8M against 1.6M. The round costs about 6k more output tokens each time, and in a session that holds little it saves nothing.
+
 ## Scripts
 
 Plain Python 3, standard library only, in `scripts/`. `--help` is the contract; tests: `python3 -m unittest discover -s tests/scripts`.
@@ -193,6 +204,7 @@ From 0.7.0 the plugin gives each role in the workflow an agent whose tools are e
 |---|---|---|---|
 | `shopsystem-bdd:capability-writer` | Read, Glob, Grep, Write | opus | integrating a note into `spec/`, and a repository's first `spec/`, blind to the code; writes only under `.superpowers/spec-drafts/` |
 | `shopsystem-bdd:feature-formulator` | Read, Glob, Grep, Write | opus | writing feature files from the spec, blind to the code; writes only under `.superpowers/spec-drafts/` |
+| `shopsystem-bdd:spec-round` | Read, Glob, Grep, Bash, Write, Edit, Agent | sonnet | one round of spec work for the session that keeps the gate: an integration round, the applying of approved drafts, or a formulation round; dispatches only the two agents above |
 | `shopsystem-bdd:code-scout` | Read, Glob, Grep, Bash, Write | haiku | the Lands probe at slicing and a task's research at planning; writes only its notes under `.superpowers/scout/` |
 | `shopsystem-bdd:bdd-implementer` | Read, Edit, Write, Glob, Grep, Bash | sonnet | one task of a no-code plan, one step of it, or one fix round, `bdd-red-green` preloaded |
 | `shopsystem-bdd:bdd-task-reviewer` | Read, Glob, Grep, Bash, Write | opus | a task's review, whole or one area of it, and the scoped re-review of a fix round; writes only its findings file |
@@ -200,7 +212,7 @@ From 0.7.0 the plugin gives each role in the workflow an agent whose tools are e
 | `shopsystem-bdd:architecture-reviewer` | Read, Glob, Grep, Bash, Write | opus | an architecture review when the person asks for one (the branch review checks shape and coupling every batch from 0.9.0) |
 
 What the tools make structural:
-- **No agent can start another.** None has the Agent tool, so an implementer cannot spawn helpers or its own reviewer, and a reviewer cannot ask for a second opinion.
+- **One agent can start another, and only for one purpose.** `spec-round` has the Agent tool, to dispatch the `capability-writer` and the `feature-formulator` of its round; that it dispatches nothing else is asked, not enforced. No other agent has the tool, so an implementer cannot spawn helpers or its own reviewer, and a reviewer cannot ask for a second opinion.
 - **No reviewer has the Edit tool.** Each has Write for one file, its report or its findings, which is asked and not enforced (below).
 - **The implementer always has `bdd-red-green` in its context.** It is loaded through the `skills` field, and from 0.13.0 it has no Skill tool to load anything else.
 
