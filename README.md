@@ -11,9 +11,12 @@ Agents: `capability-writer`, `feature-formulator`, `spec-round`, `code-scout`,
 `bdd-implementer`, `bdd-task-reviewer`, `bdd-branch-reviewer`,
 `architecture-reviewer`.
 Format: `docs/capability-format.md`.
-Design: `docs/superpowers/specs/2026-09-22-bdd-workflow-design.md`, and
-`docs/superpowers/specs/2026-09-29-capability-spec-design.md` for 0.8.0.
-Test logs: `docs/superpowers/testing/`.
+Spec: `spec/index.md` and `spec/capabilities/`, with decisions under `decisions/`
+(index: `spec/decisions.md`), work under `work/`, and history and evidence under
+`records/` — the layout of the design model in `docs/design-model/` (version 3).
+Check it with `python3 scripts/model check`.
+Earlier design notes: `records/archive/design-notes/`. Test logs:
+`records/measurements/fixture-runs/`.
 
 ## Requires
 
@@ -84,7 +87,7 @@ working copy instead.
 
 ## Small slices, steps and fresh agents (0.11.0)
 
-0.11.0 measures a slice's size before the work and holds it during the work. On shopsystem-kb one slice passed every test of slicing and then ran as one implementer over 72 files and 426k tokens; its review had to be split, and it removed the tests that covered a regression two of the plan's decisions caused together. Design: `docs/superpowers/specs/2026-10-10-small-slices-and-steps-design.md`.
+0.11.0 measures a slice's size before the work and holds it during the work. On shopsystem-kb one slice passed every test of slicing and then ran as one implementer over 72 files and 426k tokens; its review had to be split, and it removed the tests that covered a regression two of the plan's decisions caused together. Design: `records/archive/design-notes/2026-10-10-small-slices-and-steps-design.md`.
 
 - **Small, a fourth test.** A slice lands in at most 8 production and 4 test modules, counting the migration it forces. Each slice carries `Lands: <p> production, <t> test`. For a slice that changes a form existing code depends on, the count is a probe, logged; `plan` refuses a slice over the budget (`slicing-into-increments`).
 - **Expand, migrate, contract.** A breaking change is cut as the new form beside the old, callers moved a group to a slice behind a test seam, the capability slices, then the old form removed, each with the suite and a search for its check (`slicing-into-increments`).
@@ -98,7 +101,7 @@ These rules reach a controller through the plan: the hand-off has writing-plans 
 
 ## Measuring a batch (0.12.0)
 
-0.12.0 changes no rule. It makes a batch measurable, so that a change to the workflow is tried on a real batch and kept or dropped by what the numbers show. Design: `docs/superpowers/specs/2026-10-11-measuring-a-batch-design.md`.
+0.12.0 changes no rule. It makes a batch measurable, so that a change to the workflow is tried on a real batch and kept or dropped by what the numbers show. Design: `records/archive/design-notes/2026-10-11-measuring-a-batch-design.md`.
 
 - **`scripts/measure batch <archive file>`** reads the session transcripts Claude Code keeps for the repository and its worktrees, the archive `plan archive` wrote, the batch plan and git, and writes one facts file under `docs/superpowers/measurements/`. No agent runs. For every dispatch: role, model, slice, kind, time, requests, tokens (output, new input, cache read), the context it started with and its peak, how it closed, and the files its commits touched. For the batch: tasks planned against tasks run, hand-backs, reviews that came back clean, `Lands:` against files touched, and the share of time spent closing. The controller session is a role of its own.
 - **`measure show`** prints a facts file as tables; **`measure compare <a> <b>`** sets two batches side by side.
@@ -110,7 +113,7 @@ The transcripts are Claude Code's own files and not a published format: `measure
 
 ## Rules adjusted (0.13.0)
 
-0.13.0 adjusts the rules of 0.11.0 that the kb baseline shows costing more than they return. Each change names the number in a batch's facts that should move. Design: `docs/superpowers/specs/2026-10-11-rules-adjusted-design.md`.
+0.13.0 adjusts the rules of 0.11.0 that the kb baseline shows costing more than they return. Each change names the number in a batch's facts that should move. Design: `records/archive/design-notes/2026-10-11-rules-adjusted-design.md`.
 
 - **Two allowances for unlisted tests.** An implementer may change a test's setup, with no assertion, expected value or parametrize case touched, and may rewrite a test this batch wrote (first committed after the task's `Batch base:`) that pinned an interim state. It lists each in its report, and both reviewers check each row against the diff. Changing what any other test asserts is still `BLOCKED` (`bdd-implementer`, `bdd-red-green`, both reviewers). Watch: hand-backs a batch.
 - **Steps where an order must be seen.** A task has Steps only when a contract field, a stored layout, a port or a seam must be green alone first. Otherwise it is one dispatch, whatever its file count (`slicing-into-increments`). Watch: dispatches per slice.
@@ -122,7 +125,7 @@ Held, each with the measurement that would decide it: resuming an implementer in
 
 ## A green suite (0.14.0)
 
-0.14.0 keeps the suite passing between slices, and keeps behaviour tested until a slice changes it. Design: `docs/superpowers/specs/2026-10-11-green-suite-design.md`.
+0.14.0 keeps the suite passing between slices, and keeps behaviour tested until a slice changes it. Design: `records/archive/design-notes/2026-10-11-green-suite-design.md`.
 
 - **Unbuilt slices are expected to fail.** `features plugin <tests directory>` writes a small pytest plugin into the repository. A test tagged to a slice the plan has as `planned` or `blocked` is a strict expected failure: failing is quiet, and passing early fails the suite. `--slice <n>` runs the slice being built as it is. The suite record reads `<N> passed, 0 failed, <X> expected`, and nobody compares lists of failing names.
 - **A scenario that passes today is held, not removed.** When a line is re-worded or removed, formulation keeps the old scenario in the feature file, tagged `@holding` with " (held)" on its title, its steps unchanged, so it still passes. Slicing gives it a slice that retires it, the task lists it under `Retires:`, and the implementer removes it with `features retire` in the commit that turns its replacement green (`formulating-features`, `slicing-into-increments`, `bdd-red-green`).
@@ -130,7 +133,7 @@ Held, each with the measurement that would decide it: resuming an implementer in
 
 ## Analysis tools, a consequence sweep and invariants (0.15.0)
 
-0.15.0 gives the workflow tools in place of text search and hand probes. Design: `docs/superpowers/specs/2026-10-11-analysis-tools-design.md`.
+0.15.0 gives the workflow tools in place of text search and hand probes. Design: `records/archive/design-notes/2026-10-11-analysis-tools-design.md`.
 
 - **`scripts/tools`.** `probe` looks for the project's analysis tools in its own virtualenv (for Python: coverage, pytest-cov, jedi, ast-grep, ruff, vulture, import-linter, hypothesis); `install` installs what is missing there and edits no dependency file; anything still missing is told to the person in plain words, with what the workflow does without it, and logged in the plan. `map` runs the suite once under coverage with a context per test; `tests-of <file>:<function>` and `untested` answer from it; `refs <name>` gives exact references; `check` runs the lint, dead-code and import-contract tools for the reviewers.
 - **The scout uses them before it searches,** and its notes say of each count whether it came from `refs`, `tests-of` or a search. "Tests the decisions break" starts from the tests that execute the changed code, where that is a list short enough to read; on kb, code on every call's path is executed by two thirds of the suite, and there the scout says so and searches.
@@ -140,7 +143,7 @@ Held, each with the measurement that would decide it: resuming an implementer in
 
 ## Research that runs the system (0.16.0)
 
-0.16.0 has the plan written from what the system does today, found by running it. Design: `docs/superpowers/specs/2026-10-11-research-probes-design.md`.
+0.16.0 has the plan written from what the system does today, found by running it. Design: `records/archive/design-notes/2026-10-11-research-probes-design.md`.
 
 - **The scout probes.** Task research drives the system through its real entry point, in a scratch directory and never on the checkout's data: the Givens and Whens of the slice's scenarios against today's code, and the nearest cases they do not state. Each probe is recorded with its command and what came back, marked `run`; what was only concluded from the code is marked `read`. A defect a probe finds is reported and triaged like a review's finding.
 - **A path that leaves a stage out.** When a slice adds a way through the system that skips a stage, the research lists every refusal and effect that stage alone produces, and the task's decisions say what the new path does about each.
@@ -170,11 +173,12 @@ With a controller holding 270k: formulating six capabilities read 1.8M tokens fr
 
 ## Scripts
 
-Plain Python 3, standard library only, in `scripts/`. `--help` is the contract; tests: `python3 -m unittest discover -s tests/scripts`.
+Plain Python 3, standard library only, in `scripts/` (`model check` alone needs clingo). `--help` is the contract; tests: `python3 -m unittest discover -s tests/scripts`.
 
 - `scripts/features`: count, list, tag, move and verify-moved for feature files, without the test runner; hold, retire and holding for scenarios kept while they still pass; bindings and rebind for the titles test modules bind; plugin, which writes `slice_expectations.py` into a repository.
 - `scripts/measure`: write, show and compare a batch's facts, from the session transcripts, the plan and git.
 - `scripts/tools`: probe and install the project's analysis tools, and use them through one interface: `map`, `tests-of`, `untested`, `refs`, `check`.
+- `scripts/model`: read a bounded context's spec, feature files, decisions, work and records as the facts of the design model's grammar (`facts`), check them against `scripts/model.lp` with clingo (`check`), write the decisions index (`decisions`), and trace a requirement to why it exists (`why`). Only `check` needs a package: `python3 -m pip install clingo`.
 - `scripts/plan`: edit and read the living slice plan (log, status, slices, backlog, archive, `show`), keeping its sections and order valid and refusing a slice whose `Lands:` is over the budget (`plan lands` sets it).
 
 ## One spec per context; the gate is on Behaviour lines

@@ -1,0 +1,618 @@
+#!/usr/bin/env python3
+"""Check a repository's files against the design model's grammar (version 3)."""
+
+import argparse
+import datetime
+import json
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+CONTRACT = """\
+contract:
+  - It reads, under --root (default: the current directory):
+    spec/index.md, whose frontmatter `id` names the bounded-context;
+    spec/capabilities/*.md, each a capability with frontmatter (id, narrator,
+    group, rests_on, formulated_as, retired) and a `## Behaviour` section;
+    features/*.feature, the containers of acceptance-scenarios;
+    decisions/*.md, one design-decision each (frontmatter id, summary, date,
+    status, supersedes, revisit_when, revisit_signal);
+    work/<initiative>/initiative.md and work/<initiative>/<part>.md;
+    records/observations.md (one `## <id>` heading an observation) and any
+    other Markdown under records/ whose frontmatter has an `id`.
+  - A capability's id is <context>/<name>. Each bullet of its Behaviour
+    section is a capability-requirement; `- [r<n>] ...` gives it the id
+    <capability>#r<n>. A bullet with no [r<n>] is a requirement with no id.
+    `retired: [r4, ...]` lists ids the capability used and retired.
+    A reference may be written <capability>#r<n> or, inside one context,
+    <name>#r<n>; in a list, <capability>#r<a>-r<b> stands for each id from
+    a to b.
+  - A scenario names its requirement by a tag @r<n> in the capability's own
+    feature file; its title is free. A scenario with no such tag names none.
+  - facts prints the facts it read, one a line, in clingo's syntax, under
+    grammar.md's relation names. It needs nothing beyond the standard
+    library.
+  - check solves the facts with model.lp (beside this script) and prints every
+    non-empty v_ relation, then the w_ relations with their counts, then the
+    references that name nothing. It exits 1 when any v_ relation is
+    non-empty or any reference names nothing, 0 otherwise. It needs the
+    clingo package in the interpreter that runs it; without it, check says
+    so with the command that installs it and exits 2.
+  - decisions writes spec/decisions.md, the generated index of decisions/,
+    and nothing else; --check writes nothing and exits 1 when the file on
+    disk is not what it would write.
+  - why <capability>#r<n> prints the trace the model gives for a
+    requirement: the requirement, each capability-proposal that adds or
+    changes it, the part_of chain to its initiative, and the initiative's
+    sources. It exits 1 when no proposal names the id.
+"""
+
+LP = Path(__file__).resolve().with_name("model.lp")
+RID = re.compile(r"^\[r(\d+)\]\s*")
+REF = re.compile(r"^(?:(?P<cap>[\w.-]+(?:/[\w.-]+)?))#r(?P<n>\d+)$")
+STATUSES = {
+    "initiative": {"proposed", "started", "done", "abandoned"},
+    "capability-proposal": {"drafted", "approved", "merged", "formulated"},
+    "work-item": {"drafted", "researched", "planned", "ready", "claimed", "done", "green", "awaiting-ruling"},
+}
+PART_KINDS = {"job-proposal", "map-proposal", "vision-proposal", "job-thread", "capability-proposal",
+              "cross-context-request", "map-escalation", "work-item"}
+RECORD_KINDS = {"observation", "measurement", "review-finding", "decision-argument", "initiative-archive"}
+
+
+# ---------------------------------------------------------------- reading
+
+def frontmatter(text):
+    """The YAML subset the model's files use: scalars, [a, b] lists and '- x' block lists."""
+    if not text.startswith("---\n"):
+        return {}, text
+    end = text.find("\n---", 4)
+    if end < 0:
+        return {}, text
+    head, body = text[4:end], text[end + 4:].lstrip("\n")
+    data, key = {}, None
+    for line in head.splitlines():
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        m = re.match(r"^\s+-\s+(.*)$", line)
+        if m and key is not None:
+            if not isinstance(data.get(key), list):
+                data[key] = []
+            data[key].append(scalar(m.group(1)))
+            continue
+        m = re.match(r"^([\w-]+):\s*(.*)$", line)
+        if not m:
+            continue
+        key, value = m.group(1), m.group(2).strip()
+        if value.startswith("[") and value.endswith("]"):
+            inner = value[1:-1].strip()
+            data[key] = [scalar(v) for v in split_list(inner)] if inner else []
+        elif value == "":
+            data[key] = None
+        else:
+            data[key] = scalar(value)
+    return data, body
+
+
+def split_list(inner):
+    out, cur, quote = [], "", None
+    for ch in inner:
+        if quote:
+            cur += ch
+            if ch == quote:
+                quote = None
+        elif ch in "'\"":
+            quote, cur = ch, cur + ch
+        elif ch == ",":
+            out.append(cur.strip())
+            cur = ""
+        else:
+            cur += ch
+    if cur.strip():
+        out.append(cur.strip())
+    return out
+
+
+def scalar(v):
+    v = v.strip()
+    if len(v) >= 2 and v[0] == v[-1] and v[0] in "'\"":
+        return v[1:-1]
+    return v
+
+
+def as_list(v):
+    if v is None:
+        return []
+    return v if isinstance(v, list) else [v]
+
+
+def expand(refs):
+    """<capability>#r<a>-r<b> (or an en dash) stands for every id from a to b."""
+    out = []
+    for ref in refs:
+        m = re.fullmatch(r"(.+)#r(\d+)\s*[-–]\s*r?(\d+)", str(ref).strip())
+        if m:
+            out += [f"{m.group(1)}#r{n}" for n in range(int(m.group(2)), int(m.group(3)) + 1)]
+        else:
+            out.append(ref)
+    return out
+
+
+def section(body, title):
+    """The lines of a `## <title>` section, up to the next `## `."""
+    out, inside = [], False
+    for line in body.splitlines():
+        if line.startswith("## "):
+            inside = line[3:].strip().lower() == title.lower()
+            continue
+        if inside:
+            out.append(line)
+    return out
+
+
+def bullets(lines):
+    """Top-level '- ' bullets, with their continuation lines joined."""
+    out = []
+    for line in lines:
+        if line.startswith("- "):
+            out.append(line[2:].strip())
+        elif out and line.startswith("  ") and line.strip():
+            out[-1] += " " + line.strip()
+    return out
+
+
+def scenarios(text):
+    """(title, tags) for each Scenario or Scenario Outline of a feature file."""
+    out, pending, in_doc = [], [], None
+    for raw in text.splitlines():
+        line = raw.strip()
+        if in_doc:
+            if line.startswith(in_doc):
+                in_doc = None
+            continue
+        if line.startswith('"""') or line.startswith("```"):
+            in_doc = line[:3]
+            continue
+        if line.startswith("@"):
+            pending += [t for t in line.split() if t.startswith("@")]
+            continue
+        m = re.match(r"^Scenario(?: Outline| Template)?:\s*(.*)$", line)
+        if m:
+            out.append((m.group(1).strip(), pending))
+            pending = []
+        elif line.startswith(("Feature:", "Background:", "Examples:", "Rule:")):
+            pending = []
+    return out
+
+
+# ---------------------------------------------------------------- facts
+
+class Model:
+    def __init__(self, root, today=None):
+        self.root = Path(root)
+        self.today = today or datetime.date.today()
+        self.facts = []
+        self.nodes = {}
+        self.dangling = []
+        self.problems = []
+        self.context = None
+        self.caps = {}          # capability id -> {"name", "reqs": {n: node id}, "group"}
+        self.proposals = {}     # part id -> frontmatter
+        self.parents = {}       # part id -> part_of
+        self.sources = {}       # initiative id -> [record ids]
+        self.req_text = {}
+
+    def fact(self, name, *args):
+        self.facts.append((name, args))
+
+    def node(self, ident, kind):
+        if ident in self.nodes and self.nodes[ident] != kind:
+            self.problems.append(f"{ident} is both a {self.nodes[ident]} and a {kind}")
+        self.nodes[ident] = kind
+        self.fact("node", ident, kind)
+
+    def rel(self, path):
+        try:
+            return str(path.relative_to(self.root))
+        except ValueError:
+            return str(path)
+
+    def resolve_req(self, ref, where):
+        m = REF.match(str(ref).strip())
+        if not m:
+            self.dangling.append(f"{where}: {ref!r} is not a requirement reference (<capability>#r<n>)")
+            return None
+        cap = m.group("cap")
+        if "/" not in cap and self.context:
+            cap = f"{self.context}/{cap}"
+        return f"{cap}#r{m.group('n')}"
+
+    def read(self):
+        self.read_index()
+        self.read_capabilities()
+        self.read_features()
+        self.read_decisions()
+        self.read_records()
+        self.read_work()
+        self.check_refs()
+        return self
+
+    def read_index(self):
+        path = self.root / "spec" / "index.md"
+        if not path.exists():
+            self.problems.append("spec/index.md is missing: no bounded-context is named")
+            return
+        data, _ = frontmatter(path.read_text())
+        self.context = data.get("id")
+        if not self.context:
+            self.problems.append("spec/index.md has no frontmatter id naming the bounded-context")
+            return
+        self.node(self.context, "bounded-context")
+
+    def read_capabilities(self):
+        for path in sorted((self.root / "spec" / "capabilities").glob("*.md")):
+            data, body = frontmatter(path.read_text())
+            name = path.stem
+            cap = data.get("id") or (f"{self.context}/{name}" if self.context else name)
+            expected = f"{self.context}/{name}" if self.context else None
+            if expected and cap != expected:
+                self.problems.append(f"{self.rel(path)}: id {cap!r} is not {expected!r}")
+            self.node(cap, "capability")
+            if self.context:
+                self.fact("in", cap, self.context)
+            if data.get("narrator"):
+                self.fact("narrator", cap, data["narrator"])
+            if data.get("group"):
+                self.fact("group", cap, data["group"])
+            for d in as_list(data.get("rests_on")):
+                self.fact("rests_on", cap, d)
+                self.want(d, "design-decision", self.rel(path))
+            retired = set()
+            for r in as_list(data.get("retired")):
+                m = re.fullmatch(r"r?(\d+)", str(r))
+                if m:
+                    retired.add(int(m.group(1)))
+                    self.fact("retired_id", cap, int(m.group(1)))
+                else:
+                    self.problems.append(f"{self.rel(path)}: retired {r!r} is not r<n>")
+            entry = {"name": name, "reqs": {}, "group": data.get("group"), "path": path,
+                     "feature": data.get("formulated_as") or f"features/{name}.feature"}
+            for i, text in enumerate(bullets(section(body, "Behaviour")), 1):
+                m = RID.match(text)
+                if m:
+                    n = int(m.group(1))
+                    q = f"{cap}#r{n}"
+                    if n in entry["reqs"]:
+                        q = f"{cap}#r{n}~{i}"   # a second bullet with the same id: its own node, so v15b sees both
+                    self.fact("req_id", q, cap, n)
+                    entry["reqs"].setdefault(n, q)
+                    self.req_text[q] = text[m.end():]
+                else:
+                    q = f"{cap}#line{i}"
+                    self.req_text[q] = text
+                self.node(q, "capability-requirement")
+                self.fact("has_req", cap, q)
+            self.caps[cap] = entry
+
+    def read_features(self):
+        by_feature = {}
+        for cap, entry in self.caps.items():
+            by_feature[str(Path(entry["feature"]))] = cap
+        for path in sorted((self.root / "features").glob("*.feature")):
+            key = self.rel(path)
+            cap = by_feature.get(key)
+            if cap is None:
+                self.problems.append(f"{key}: no capability is formulated as this file")
+            for title, tags in scenarios(path.read_text()):
+                s = f"{key}:{title}"
+                self.node(s, "acceptance-scenario")
+                for tag in tags:
+                    m = re.fullmatch(r"@r(\d+)", tag)
+                    if not m or cap is None:
+                        continue
+                    q = f"{cap}#r{m.group(1)}"
+                    if q in self.nodes:
+                        self.fact("has_sc", q, s)
+                    else:
+                        self.dangling.append(f"{key}: scenario {title!r} names {q}, which {cap} does not have")
+
+    def read_decisions(self):
+        for path in sorted((self.root / "decisions").glob("*.md")):
+            data, _ = frontmatter(path.read_text())
+            d = data.get("id")
+            if not d:
+                self.problems.append(f"{self.rel(path)}: no frontmatter id")
+                continue
+            self.node(d, "design-decision")
+            if data.get("summary"):
+                self.fact("summary", d, data["summary"])
+            for old in as_list(data.get("supersedes")):
+                self.fact("supersedes", d, old)
+                self.want(old, "design-decision", self.rel(path))
+            if data.get("revisit_signal"):
+                self.fact("revisit_signal", d, data["revisit_signal"])
+
+    def read_records(self):
+        obs = self.root / "records" / "observations.md"
+        if obs.exists():
+            current = None
+            for line in obs.read_text().splitlines():
+                if line.startswith("## "):
+                    current = line[3:].strip()
+                    self.node(current, "observation")
+                elif current:
+                    m = re.match(r"^about:\s*(.+)$", line.strip())
+                    if m:
+                        self.fact("about", current, scalar(m.group(1)))
+        for path in sorted((self.root / "records").rglob("*.md")):
+            if path == obs:
+                continue
+            data, _ = frontmatter(path.read_text())
+            if not data.get("id"):
+                continue
+            kind = data.get("kind")
+            if kind not in RECORD_KINDS:
+                self.problems.append(f"{self.rel(path)}: kind {kind!r} is not a record kind")
+                continue
+            self.node(data["id"], kind)
+            for a in as_list(data.get("about")):
+                self.fact("about", data["id"], a)
+
+    def read_work(self):
+        for idir in sorted(p for p in (self.root / "work").glob("*") if p.is_dir()):
+            ipath = idir / "initiative.md"
+            if not ipath.exists():
+                self.problems.append(f"{self.rel(idir)}: no initiative.md")
+                continue
+            data, _ = frontmatter(ipath.read_text())
+            i = data.get("id")
+            if not i:
+                self.problems.append(f"{self.rel(ipath)}: no frontmatter id")
+                continue
+            self.node(i, "initiative")
+            self.status(i, "initiative", data.get("status"), ipath)
+            if data.get("kind"):
+                self.fact("ikind", i, data["kind"])
+            if data.get("priority") is not None:
+                try:
+                    self.fact("priority", i, int(data["priority"]))
+                except ValueError:
+                    self.problems.append(f"{self.rel(ipath)}: priority {data['priority']!r} is not a number")
+            self.sources[i] = as_list(data.get("source"))
+            for s in self.sources[i]:
+                self.fact("source", i, s)
+            if data.get("date"):
+                try:
+                    days = (self.today - datetime.date.fromisoformat(str(data["date"]))).days
+                    self.fact("age", i, days)
+                except ValueError:
+                    self.problems.append(f"{self.rel(ipath)}: date {data['date']!r} is not YYYY-MM-DD")
+            for ppath in sorted(idir.glob("*.md")):
+                if ppath.name != "initiative.md":
+                    self.read_part(ppath)
+
+    def read_part(self, path):
+        data, _ = frontmatter(path.read_text())
+        p, kind = data.get("id"), data.get("kind")
+        where = self.rel(path)
+        if not p or kind not in PART_KINDS:
+            self.problems.append(f"{where}: needs an id and a kind among {', '.join(sorted(PART_KINDS))}")
+            return
+        self.node(p, kind)
+        self.status(p, kind, data.get("status"), path)
+        if data.get("part_of"):
+            self.fact("part_of", p, data["part_of"])
+            self.parents[p] = data["part_of"]
+        for a in as_list(data.get("argues")):
+            a = f"{self.context}/{a}" if self.context and "/" not in a else a
+            self.fact("argues", p, a)
+        if kind == "capability-proposal":
+            self.proposals[p] = data
+            for rel in ("adds", "changes", "removes"):
+                for ref in expand(as_list(data.get(rel))):
+                    q = self.resolve_req(ref, where)
+                    if q:
+                        self.fact(rel, p, q)
+                        if rel == "adds" and q not in self.nodes:
+                            self.dangling.append(f"{where}: adds {q}, which no capability has")
+        if kind == "work-item":
+            if data.get("wkind"):
+                self.fact("wkind", p, data["wkind"])
+            if data.get("under"):
+                c = data["under"]
+                c = f"{self.context}/{c}" if self.context and "/" not in c else c
+                self.fact("under", p, c)
+            if data.get("for"):
+                self.fact("for", p, data["for"])
+            if data.get("check"):
+                self.fact("check", p, data["check"])
+            for ref in expand(as_list(data.get("accepts"))):
+                q = self.resolve_req(ref, where)
+                for name, args in list(self.facts):
+                    if name == "has_sc" and args[0] == q:
+                        self.fact("accepts", p, args[1])
+            for b in as_list(data.get("blocked_by")):
+                self.fact("blocked_by", p, b)
+            for d in as_list(data.get("depends_on")):
+                self.fact("wi_depends", p, d)
+            for f in as_list(data.get("fileset")):
+                self.fact("fileset", p, f)
+
+    def status(self, ident, kind, value, path):
+        if value is None:
+            self.problems.append(f"{self.rel(path)}: no status")
+            return
+        allowed = STATUSES.get(kind)
+        if allowed and value not in allowed:
+            self.problems.append(f"{self.rel(path)}: status {value!r} is not one of {', '.join(sorted(allowed))}")
+        self.fact("status", ident, value)
+
+    def want(self, ident, kind, where):
+        self._wanted = getattr(self, "_wanted", [])
+        self._wanted.append((ident, kind, where))
+
+    def check_refs(self):
+        for ident, kind, where in getattr(self, "_wanted", []):
+            if self.nodes.get(ident) != kind:
+                self.dangling.append(f"{where}: {ident} is not a {kind} in this repository")
+
+    def asp(self):
+        def term(a):
+            if isinstance(a, int):
+                return str(a)
+            return '"' + str(a).replace("\\", "\\\\").replace('"', '\\"') + '"'
+        return "\n".join(f"{n}({', '.join(term(a) for a in args)})." for n, args in self.facts)
+
+
+# ---------------------------------------------------------------- commands
+
+def solve(model):
+    try:
+        import clingo
+    except ImportError:
+        return None
+    ctl = clingo.Control(["--warn=none"])
+    ctl.add("base", [], LP.read_text() + "\n" + model.asp())
+    ctl.ground([("base", [])])
+    atoms = []
+    ctl.solve(on_model=lambda m: atoms.extend(m.symbols(shown=True)))
+    out = []
+    for a in atoms:
+        args = [x.string if x.type == clingo.SymbolType.String else
+                x.number if x.type == clingo.SymbolType.Number else str(x) for x in a.arguments]
+        out.append((a.name, args))
+    return sorted(out, key=lambda t: (t[0], [str(x) for x in t[1]]))
+
+
+def cmd_facts(args):
+    print(Model(args.root).read().asp())
+    return 0
+
+
+def cmd_check(args):
+    model = Model(args.root).read()
+    found = solve(model)
+    if found is None:
+        print("check needs the clingo package, which this interpreter lacks.\n"
+              f"  install: {sys.executable} -m pip install clingo\n"
+              "  without it: `model facts` prints the facts for any Datalog or ASP engine.")
+        return 2
+    violations = [f for f in found if f[0].startswith("v")]
+    warnings = [f for f in found if f[0].startswith("w_")]
+    if args.json:
+        print(json.dumps({"violations": violations, "warnings": warnings,
+                          "unresolved": model.dangling, "problems": model.problems}, indent=1))
+    else:
+        by = {}
+        for name, a in violations:
+            by.setdefault(name, []).append(a)
+        for name in sorted(by):
+            print(f"{name}  ({len(by[name])})")
+            for a in by[name][: args.limit]:
+                print("    " + ", ".join(str(x) for x in a))
+            if len(by[name]) > args.limit:
+                print(f"    ... and {len(by[name]) - args.limit} more")
+        counts = {}
+        for name, _ in warnings:
+            counts[name] = counts.get(name, 0) + 1
+        for name in sorted(counts):
+            print(f"warning {name}  ({counts[name]})")
+        for d in model.dangling:
+            print(f"unresolved: {d}")
+        for p in model.problems:
+            print(f"file: {p}")
+        print(f"{len(violations)} violations, {len(warnings)} warnings, "
+              f"{len(model.dangling)} unresolved references, {len(model.problems)} file problems")
+    return 1 if violations or model.dangling or model.problems else 0
+
+
+def render_decisions(root):
+    rows = []
+    for path in sorted((Path(root) / "decisions").glob("*.md")):
+        data, _ = frontmatter(path.read_text())
+        if not data.get("id"):
+            continue
+        rows.append((path.name, data))
+    lines = ["# Decisions", "",
+             "Generated by `scripts/model decisions` from `decisions/`; never edited by hand.",
+             "Each decision's `## Decision` section is standing; the rest of its file is record.", "",
+             "| decision | summary | status | supersedes | revisit when |",
+             "|---|---|---|---|---|"]
+    for name, d in rows:
+        sup = ", ".join(as_list(d.get("supersedes"))) or ""
+        rev = d.get("revisit_when") or ""
+        cell = lambda s: str(s).replace("|", "\\|")
+        lines.append(f"| [{d['id']}](../decisions/{name}) | {cell(d.get('summary', ''))} | "
+                     f"{d.get('status', '')} | {cell(sup)} | {cell(rev)} |")
+    return "\n".join(lines) + "\n"
+
+
+def cmd_decisions(args):
+    text = render_decisions(args.root)
+    target = Path(args.root) / "spec" / "decisions.md"
+    if args.check:
+        current = target.read_text() if target.exists() else ""
+        if current != text:
+            print("spec/decisions.md is not what `model decisions` writes: run it")
+            return 1
+        print("spec/decisions.md is current")
+        return 0
+    target.write_text(text)
+    print(f"wrote {target.relative_to(args.root) if not os.path.isabs(args.root) else target}")
+    return 0
+
+
+def cmd_why(args):
+    model = Model(args.root).read()
+    q = model.resolve_req(args.ref, "why")
+    if not q:
+        print("\n".join(model.dangling))
+        return 2
+    text = model.req_text.get(q)
+    print(f"{q}: {text}" if text is not None else f"{q}: no capability has this requirement now")
+    found = False
+    for p, data in sorted(model.proposals.items(), key=lambda t: str(t[1].get("date", ""))):
+        rels = [rel for rel in ("adds", "changes", "removes")
+                if q in [model.resolve_req(r, p) for r in expand(as_list(data.get(rel)))]]
+        if not rels:
+            continue
+        found = True
+        print(f"  {'/'.join(rels)} by capability-proposal {p} ({data.get('status')}, {data.get('date', 'undated')})")
+        chain, cur, seen = [], model.parents.get(p), set()
+        while cur and cur not in seen:
+            seen.add(cur)
+            chain.append(cur)
+            cur = model.parents.get(cur)
+        for c in chain:
+            kind = model.nodes.get(c, "?")
+            print(f"    part_of {kind} {c}")
+            if kind == "initiative":
+                for s in model.sources.get(c, []):
+                    print(f"      source {model.nodes.get(s, '?')} {s}")
+    if not found:
+        print("  no capability-proposal adds or changes it")
+        return 1
+    return 0
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(prog="model", description=__doc__, epilog=CONTRACT,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--root", default=".")
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    sub.add_parser("facts", help="print the facts read from the repository")
+    c = sub.add_parser("check", help="solve the facts against model.lp and report")
+    c.add_argument("--json", action="store_true")
+    c.add_argument("--limit", type=int, default=10, help="rows shown per relation")
+    d = sub.add_parser("decisions", help="write spec/decisions.md from decisions/")
+    d.add_argument("--check", action="store_true")
+    w = sub.add_parser("why", help="trace a requirement to its initiative's sources")
+    w.add_argument("ref")
+    args = ap.parse_args(argv)
+    return {"facts": cmd_facts, "check": cmd_check, "decisions": cmd_decisions, "why": cmd_why}[args.cmd](args)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
