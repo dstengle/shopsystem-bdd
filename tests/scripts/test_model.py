@@ -269,6 +269,54 @@ class RangeTest(ModelTest):
         self.assertIn("adds by capability-proposal p1", r.stdout)
 
 
+@unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
+class ReadingTest(ModelTest):
+    """How files are read; not scenarios of their own."""
+
+    def test_a_reversed_range_is_unresolved(self):
+        self.good()
+        self.observation()
+        self.initiative()
+        self.proposal(adds="[thing#r3-r1]")
+        r = self.run_model("check")
+        self.assertIn("'thing#r3-r1' is not a requirement reference", r.stdout)
+
+    def test_a_folded_block_is_a_file_problem(self):
+        self.good()
+        self.write("decisions/0001-x.md", "---\nid: decision/x\nsummary: >-\n  folded\ndate: 2026-01-01\nstatus: accepted\n---\n")
+        r = self.run_model("check")
+        self.assertIn("summary uses a folded or literal block", r.stdout)
+        self.assertEqual(r.returncode, 1)
+
+    def test_a_work_item_under_no_capability_is_unresolved(self):
+        self.good()
+        self.observation()
+        self.initiative(source="[obs-1]")
+        self.proposal(adds="[thing#r1]")
+        self.write("work/i1/w1.md", "---\nid: thing/1\nkind: work-item\npart_of: p1\nstatus: drafted\nunder: nosuch\ncheck: true\n---\n")
+        r = self.run_model("check")
+        self.assertIn("ctx/nosuch is not a capability", r.stdout)
+
+    def test_adding_a_retired_id_is_v15c(self):
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r2] Two."], group="guarantees", retired="[r1]"))
+        self.observation()
+        self.initiative()
+        self.proposal(adds="[thing#r1]")
+        r = self.run_model("check")
+        self.assertRegex(r.stdout, r"v15c\s+\(1\)\n\s+ctx/thing#r1")
+
+    def test_feature_tags_column_zero_lists_and_comments_are_read(self):
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."]).replace(
+            "rests_on: []", "rests_on:\n- decision/x").replace("group: service", "group: service   # a comment"))
+        self.write("decisions/0001-x.md", '---\nid: decision/x\nsummary: "X."\ndate: 2026-01-01\nstatus: accepted\n---\n')
+        self.write("features/thing.feature", "@r1\nFeature: thing\n\n  Example: one\n    Given a\n")
+        r = self.run_model("check")
+        self.assertEqual(r.returncode, 0, r.stdout)
+        facts = self.run_model("facts").stdout
+        self.assertIn('rests_on("ctx/thing", "decision/x").', facts)
+        self.assertIn('group("ctx/thing", "service").', facts)
+
+
 class BindingTest(unittest.TestCase):
     def test_every_scenario_has_its_test(self):
         titles = re.findall(r"^\s*Scenario(?: Outline)?:\s*(.+?)\s*$", FEATURE.read_text(), re.M)

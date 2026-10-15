@@ -12,11 +12,12 @@ retired: []
 
 ## Purpose
 What the plugin's agent definitions guarantee about each role, whatever a dispatch asks. Each is checked
-against the definitions under `agents/`, not by a scenario.
+by reading the definitions under `agents/`, not by a scenario; no script checks them yet. Tool lists bound
+what an agent can do directly: an agent with Bash can still write files through the shell.
 
 ## Behaviour
 - [r1] Only `spec-round` can start another agent.
-- [r2] No reviewer and no scout has an edit tool.
+- [r2] No reviewer and no scout has the Edit tool.
 - [r3] The `capability-writer` and the `feature-formulator` have no edit and no shell tool.
 - [r4] The implementer has `bdd-red-green` in its context and no Skill tool.
 - [r5] Each agent names its model: Opus for the spec writers and reviewers, Sonnet for the implementer and `spec-round`, Haiku for the scout.

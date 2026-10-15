@@ -18,14 +18,14 @@ the person talks to, with each round handed to a fresh `spec-round` that dispatc
 
 ## Behaviour
 - [r1] **When** an approved note is integrated, the session shows the person every added, changed and removed Behaviour line and every question the note left open, each question with the lines its answers would give.
-- [r2] Every added or changed line the person is shown quotes the note sentence it comes from.
+- [r2] **Where** the change comes from a note, a drafted line that quotes no sentence of the note is shown to the person as a question, not as a line.
 - [r3] **While** the person has not said yes to the lines and answered every question, nothing under `spec/` changes.
 - [r4] **When** the person answers a question, the answer is drafted as a further round and the changed lines are shown again before anything is written.
 - [r5] **If** the person rejects a line, that line is not written to `spec/`.
-- [r6] **When** the person says yes, the approved drafts are applied to `spec/` exactly as shown and committed alone, with the approval and its date in the commit message.
+- [r6] **When** the person says yes, the approved drafts are applied to `spec/`, with the Behaviour lines exactly as approved, and committed alone, with the approval and its date in the commit message.
 - [r7] **When** a note would start a second spec in a context that has one, the session integrates it into the existing `spec/` instead.
 - [r8] **Where** a change adds or changes at most two Behaviour lines in existing capabilities, changes no published contract and leaves nothing unknown, the session writes the lines itself from `spec/` alone and still stops at the gate before writing them.
-- [r9] **Where** the person has delegated decisions to the session's recommendations, the commit and the decision's source say that the lines were approved under that delegation.
+- [r9] **Where** the person has delegated decisions to the session's recommendations, the commit, and the decision's source where the change is a decision, say that the lines were approved under that delegation.
 - [r10] **When** this session is the one that brainstormed the note, it says so and recommends a new session for the integration before starting it.
 - [r11] **When** integration is applied, the session hands the changed capabilities to formulation.
 

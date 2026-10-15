@@ -17,7 +17,7 @@ the checkout.
 
 ## Behaviour
 - [r1] **When** research ends, its notes are in the file the dispatch named and its reply is a few lines; the checkout is unchanged.
-- [r2] **When** a Lands probe is asked, the reply gives the production and test modules the change reaches, with the searches that found them.
+- [r2] **When** a Lands probe is asked, the reply gives counts of production and test modules that spell the old form, a floor rather than everything the change reaches, with the searches that found them; the notes name the modules.
 - [r3] **When** a consequence sweep is asked for a decision, the notes list every place that still holds the old assumption, with the tests that execute it.
 - [r4] **When** a task is researched, the notes say why each scenario is red today from a run of it, and each probe of today's behaviour with its command and what came back, marked `run`; what was concluded from reading is marked `read`.
 - [r5] **When** a task is researched, the notes list the existing tests its decisions make impossible to keep, starting from the tests that execute the changed code.

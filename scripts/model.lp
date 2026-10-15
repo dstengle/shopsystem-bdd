@@ -39,7 +39,11 @@ cap_of_wi(W, C)       :- under(W, C).
 cap_of_wi(W, C)       :- for(W, W2), cap_of_wi(W2, C).
 root(P, I)            :- part_of(P, I), node(I, "initiative").
 root(P, I)            :- part_of(P, P2), root(P2, I).
-closed(P)             :- status(P, S), S = ("merged"; "built"; "delivered"; "ruled"; "green"; "refused").
+% FIX g:92: v3 makes `formulated` a capability-proposal's last stage (g:221-224) but closed() stops at
+% `merged`. Read with the lifecycle: a capability-proposal is closed at `formulated`, any other part as listed.
+closed(P)             :- status(P, S), S = ("merged"; "built"; "delivered"; "ruled"; "green"; "refused"), not node(P, "capability-proposal").
+closed(P)             :- status(P, S), S = ("built"; "delivered"; "ruled"; "green"; "refused"), node(P, "capability-proposal").
+closed(P)             :- status(P, "formulated").
 
 % helpers for Soufflé's "!rel(X, _)"
 has_part_of(P)  :- part_of(P, _).        has_root(P)    :- root(P, _).
@@ -66,6 +70,9 @@ v2(Q, S) :- has_sc(Q, S),       nonstanding(Q).    v2(Q, S) :- has_sc(Q, S),    
 v2(A, B) :- supersedes(A, B),   nonstanding(A).    v2(A, B) :- supersedes(A, B),   nonstanding(B).
 v2(A, B) :- pins(A, B, _),      nonstanding(A).    v2(A, B) :- pins(A, B, _),      nonstanding(B).
 v2(V, J) :- orders(V, J),       nonstanding(V).    v2(V, J) :- orders(V, J),       nonstanding(J).
+v2(C, X) :- in(C, X),           nonstanding(C).    v2(C, X) :- in(C, X),           nonstanding(X).
+v2(R, X) :- seam(R, X, _),      nonstanding(R).    v2(R, X) :- seam(R, X, _),      nonstanding(X).
+v2(R, X) :- seam(R, _, X),      nonstanding(X).
 
 % 3. an acceptance-scenario is never on needs
 v3(S) :- needs(S, _), node(S, "acceptance-scenario").
@@ -84,8 +91,10 @@ v6b(T)    :- status(T, "mapped"), crosses(T, R), not node(R, "context-seam").
 % 7. a cross-context-request comes from a capability, across the seam between its two contexts; upstream names no client
 v7(Q)     :- node(Q, "cross-context-request"), not has_from(Q).
 v7b(Q)    :- across(Q, R), from_cap(Q, C), in(C, X), needs(Q, U), in(U, Y), not seam(R, Y, X).
-% FIX g:124: standing_edge is not defined in grammar.md. Read as any standing edge from an upstream capability to a downstream one.
-standing_edge(U, D) :- serves(U, D).  standing_edge(U, D) :- using(U, _, D).  standing_edge(U, D) :- rests_on(U, D).
+% FIX g:124: standing_edge is not defined in grammar.md. Read as any standing edge from an upstream
+% capability to a downstream one; between two capabilities that is only `using` (serves ends at a job,
+% rests_on at a decision, and neither has an `in`).
+standing_edge(U, D) :- using(U, _, D).
 v7c(U, D) :- in(U, X), in(D, Y), pins(Y, X, _), standing_edge(U, D).
 
 % 8. a work-item names a capability, directly or through for:
@@ -106,7 +115,7 @@ v9g(P) :- po_tc(P, P).
 v10a(I, R) :- source(I, R), nonorigin(R).
 v10a(I, R) :- source(I, R), not node(R, _).          % FIX g:141: a source naming nothing is read as not an origin
 v10b(R)    :- node(R, K), record(K), not has_about(R).
-v10c(R)    :- about(R, A), not is_standing(A).
+v10c(R)    :- about(R, A), not is_standing(A).          % also fires on an `about` naming nothing (stricter than g:143)
 
 % 11. one narrator per capability
 v11(C) :- node(C, "capability"), not has_narrator(C).
@@ -123,11 +132,11 @@ v13(D) :- revisit_signal(D, Sig), Sig != "requests", not node(Sig, "measurement"
 
 % 15. requirement ids: present, unique within the capability, never reused; references by id
 v15a(Q)     :- node(Q, "capability-requirement"), not has_req_id(Q).
-v15b(Q1,Q2) :- req_id(Q1, C, N), req_id(Q2, C, N), Q1 != Q2.
+v15b(Q1,Q2) :- req_id(Q1, C, N), req_id(Q2, C, N), Q1 < Q2.     % FIX g:157: Q1 < Q2, so one duplicate is one row
 v15c(Q)     :- req_id(Q, C, N), retired_id(C, N).
 v15d(Q, C)  :- req_id(Q, C, _), not has_req(C, Q).
 v15e(P, Q)  :- changes(P, Q), not has_any_req(Q).
-% FIX g:161: Soufflé's disjunction in a body is split into two clauses; C is bound by has_req(C, Q).
+% g:161's disjunction in a body is split into two clauses for clingo; C is bound by has_req(C, Q).
 v15f(P)     :- status(P, "formulated"), adds(P, Q),    not has_sc_q(Q), has_req(C, Q), not group(C, "guarantees").
 v15f(P)     :- status(P, "formulated"), changes(P, Q), not has_sc_q(Q), has_req(C, Q), not group(C, "guarantees").
 
@@ -140,6 +149,7 @@ v_k5(I) :- node(I, "initiative"), part_of(P1, I), part_of(P2, I), P1 != P2.
 
 % breakdown shape: work-items only under capability-proposals (or a defect initiative)
 defect_init(X) :- node(X, "initiative"), ikind(X, "defect").
+% g:174's negated conjunction !(node(X, "initiative"), ikind(X, "defect")) is named defect_init.
 v_b1(W) :- node(W, "work-item"), part_of(W, X), not node(X, "capability-proposal"), not defect_init(X).
 v_b2(Q) :- node(Q, "cross-context-request"), part_of(P, Q), not node(P, "capability-proposal").
 v_b3(T) :- node(T, "job-thread"), part_of(P, T), not node(P, "capability-proposal"), not node(P, "cross-context-request"), not node(P, "map-escalation").

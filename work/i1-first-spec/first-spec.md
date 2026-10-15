@@ -9,10 +9,10 @@ adds:
   - spec-integration#r1-r11
   - formulation#r1-r10
   - spec-migration#r1-r8
-  - slicing#r1-r13
+  - slicing#r1-r15
   - code-research#r1-r9
-  - red-green#r1-r11
-  - review#r1-r9
+  - red-green#r1-r16
+  - review#r1-r11
   - role-boundaries#r1-r5
   - batch-measurement#r1-r20
   - batch-analysis#r1-r8

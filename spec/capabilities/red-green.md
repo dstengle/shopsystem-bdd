@@ -22,11 +22,16 @@ be satisfied honestly. It never decides what a scenario should have said.
 - [r4] **If** a Then line can only pass through code that contradicts it, or a scenario can only fail on setup, the implementer hands back.
 - [r5] **If** an existing test could stay green only by being removed, loosened, skipped or rewritten to assert something else, and the task does not list it, the implementer replies `BLOCKED` naming the test.
 - [r6] **When** the implementer changes a test's setup without touching what it asserts, or rewrites a test first committed after the task's batch base, its report names each such test.
-- [r7] **When** the implementer hands back, the plan's log has a HAND-BACK entry with the stop condition, the evidence verbatim and which scenarios are green and red, and the work so far is committed.
+- [r7] **When** the implementer hands back, a HAND-BACK entry with the stop condition, the evidence verbatim and which scenarios are green and red is in the plan's log, or in a lane in its report, and the work so far is committed.
 - [r8] **When** a slice goes green, the plan's log has a checkpoint saying what someone can now do, what was surprising, and the open questions, followed by its suite record.
-- [r9] **If** a dispatch would touch more files than its written budget, the implementer stops at a green commit and replies `PARTIAL`, and a fresh implementer can continue from the report.
+- [r9] **If** the task needs more than 15 files touched, the implementer names in its report, before any edit, the files this dispatch will touch, touches only those, stops at a green commit and replies `PARTIAL`, and a fresh implementer can continue from the report.
 - [r10] **When** the scenarios are silent about a case, the code does not choose its behaviour and the checkpoint names it as an open question.
 - [r11] **When** the task carries code, the implementer does not paste it and says so in the checkpoint.
+- [r12] **If** going green needs work that no scenario of the slice describes and the task's "where the change lands" does not name, beyond a trivial helper, the implementer hands back.
+- [r13] **If** a previously green scenario breaks and fixing it would change what a step means, the implementer replies `BLOCKED`.
+- [r14] **If** the task needs a decision the brief and the capability's Behaviour leave open, or a file would cross the repository's size limit with no rule in `CLAUDE.md` saying where the code goes, the implementer replies `BLOCKED` with the specifics.
+- [r15] **If** the brief has no `Scripts:`, `bdd-red-green` is not in its context, or the brief has Steps and the dispatch names no step, findings file or continuation, the implementer replies `NEEDS_CONTEXT`.
+- [r16] Every reply begins with one of `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `NEEDS_CONTEXT` and is under fifteen lines.
 
 ## Implementation, may change
 - The cycle: run one scenario red, write the step definitions it needs, the least code, run the slice's

@@ -17,7 +17,7 @@ Turns approved feature files into one living plan of thin vertical slices, and h
 It does not write scenarios and does not implement.
 
 ## Behaviour
-- [r1] Each slice in the plan is a capability slice with scenarios, or an enabling or stack slice with a check, never both, and has one unknown.
+- [r1] Each slice in the plan is a capability slice with scenarios, or an enabling or stack slice with a check, never both, and has at most one unknown.
 - [r2] **When** slicing starts, the plan's log holds the analysis tools found, and the person is told of any that are missing, what each is for and what the workflow does without it.
 - [r3] **When** slices are cut, every scenario that passes in the latest suite record is credited to a slice or to "satisfied by existing behaviour", never to a later slice.
 - [r4] **If** the suite takes over 60 seconds and runs serially, with no reason in `CLAUDE.md`, the batch's first slice makes it fast.
@@ -26,10 +26,12 @@ It does not write scenarios and does not implement.
 - [r7] **When** a decision replaces something existing code assumes, each place that still holds the assumption is owned by a slice, a question for the spec, or a deferral logged with its price.
 - [r8] Each capability slice's scenarios carry the tag `@slice-<n>`, and slicing changes nothing else in a feature file.
 - [r9] **When** the plan is handed to writing-plans, each task carries its scenarios or check, why each is red today, where the change lands, the decisions taken, the tests those decisions break and what becomes of each, `Review:`, `Model:` and `Retires:`, and no code.
-- [r10] **If** a hand-back needs a Given, When or Then line to differ, slicing logs RE-FORMULATE and sends it to formulation, and writes no task for that slice until the line is decided.
-- [r11] **When** a semantic the scenarios do not cover must be chosen, slicing logs it as a question for the spec and the slice that depends on it is blocked.
+- [r10] **If** a hand-back needs a Given, When or Then line to differ, slicing logs RE-FORMULATE and sends it to formulation; slices that do not depend on it are still cut and ordered, and the plan is not handed to writing-plans while it is open.
+- [r11] **When** a semantic the scenarios do not cover must be chosen, slicing logs it as a question for the spec, the slice that depends on it is blocked, and the plan is not handed to writing-plans while the question is open.
 - [r12] **When** a review finding is triaged, correctness and data loss become work in this batch or the next, hardening becomes a backlog line with its reproduction, and polish is fixed only when cheap.
 - [r13] **When** the plan is ready for execution, slicing recommends a new session that reads the plan file.
+- [r14] Every held scenario has a slice that retires it: the slice of its replacement, or one that removes its behaviour.
+- [r15] **When** a change replaces a form existing code, scenarios or stored data use, or its count is over the budget, slicing cuts it as enabling slices that add the new form, enabling slices that move its users a group at a time, the capability slices, and one slice that removes the old form, each migrate and contract slice checked by a search.
 
 ## Implementation, may change
 - The plan is `docs/superpowers/plans/*-slices.md`, edited only through `scripts/plan`; slices are numbered in

@@ -35,11 +35,11 @@ about: shopsystem-bdd/design-model-check
 by: the session adopting the model
 date: 2026-10-15
 
-grammar.md v3's `closed(P)` counts a part closed at `merged`, but v3 adds `formulated` after `merged` for a capability-proposal. So v_d1 lets an initiative be `done` while a proposal's requirements have no scenarios.
+grammar.md v3's `closed(P)` counts a part closed at `merged` and not at `formulated`, though v3 makes `formulated` a capability-proposal's last stage. Read as written, v_d1 lets an initiative be `done` while a proposal's requirements have no scenarios, and refuses `done` once the proposal is `formulated`. `scripts/model.lp` carries a FIX: a capability-proposal is closed at `formulated` only.
 
 ## obs/2026-10-15-script-behaviour-unpinned
 about: shopsystem-bdd/feature-file-tools
 by: the session drafting the script capabilities
 date: 2026-10-15
 
-Behaviour seen in the scripts' source that neither `--help` nor a test establishes, left out of the first spec: `features verify-moved` reporting titles missing or added; `features move` refusing its own file as destination; `features hold` on a held scenario leaving the file unchanged; what `plan show --backlog` prints; `plan archive`'s refusals (contract only, untested); the plan file's discovery (exactly one `docs/superpowers/plans/*-slices.md`); `measure`'s refusals for an open batch with no plan and for no earlier archive without `--from`, its ambiguous-commit count and its note when tasks cannot be counted; `tools install`'s output for a non-virtualenv interpreter; `tools untested`'s exit status; `tools check`'s output with nothing to check.
+Behaviour seen in the scripts' source that neither `--help` nor a test establishes, left out of the first spec: `features verify-moved` reporting titles missing or added; `features move` refusing its own file as destination; what `plan show --backlog` prints; the plan file's discovery (exactly one `docs/superpowers/plans/*-slices.md`); `measure`'s refusals for an open batch with no plan and for no earlier archive without `--from`, its ambiguous-commit count and its note when tasks cannot be counted; `tools install`'s output for a non-virtualenv interpreter; `tools untested`'s exit status; `tools check`'s output with nothing to check.

@@ -19,7 +19,7 @@ existing scenarios. It changes the meaning of no approved scenario.
 - [r1] **If** the working tree is not clean, a slice is in progress, or the suite does not run cleanly, migration stops before any change and says which.
 - [r2] **When** migration drafts the spec, the person is shown the capabilities, which old features' scenarios each receives, every line no scenario backs, and every question, and nothing under `spec/` changes before their yes.
 - [r3] **If** two scenarios with one title would land in one capability, the person is asked to retitle one at the gate.
-- [r4] **When** migration is done, each capability has one feature file named for it, holding the scenarios mapped to it with their tags, titles, descriptions, steps and tables unchanged.
+- [r4] **When** migration is done, each capability has one feature file named for it, holding the scenarios mapped to it; each scenario's effective tags, title, description and tables, and its Background steps followed by its own steps, are as they were.
 - [r5] **When** migration is done, the suite's summary, its passing scenarios by title and its count of scenarios per tag equal those before it, retitles approved at the gate aside.
 - [r6] **If** any of those differ, migration stops and reports the difference without editing a scenario.
 - [r7] No step definition's body changes in a migration.

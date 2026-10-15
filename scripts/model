@@ -36,8 +36,10 @@ contract:
     library.
   - check solves the facts with model.lp (beside this script) and prints every
     non-empty v_ relation, then the w_ relations with their counts, then the
-    references that name nothing. It exits 1 when any v_ relation is
-    non-empty or any reference names nothing, 0 otherwise. It needs the
+    references that name nothing and the file problems (a missing id, a
+    status not in a lifecycle, a block it cannot read). It exits 1 when any
+    v_ relation is non-empty, any reference names nothing or any file has a
+    problem, 0 otherwise. It needs the
     clingo package in the interpreter that runs it; without it, check says
     so with the command that installs it and exits 2.
   - decisions writes spec/decisions.md, the generated index of decisions/,
@@ -46,7 +48,8 @@ contract:
   - why <capability>#r<n> prints the trace the model gives for a
     requirement: the requirement, each capability-proposal that adds or
     changes it, the part_of chain to its initiative, and the initiative's
-    sources. It exits 1 when no proposal names the id.
+    sources. It exits 1 when no proposal adds or changes the id, and 2 when
+    the argument is not a requirement reference.
 """
 
 LP = Path(__file__).resolve().with_name("model.lp")
@@ -72,12 +75,13 @@ def frontmatter(text):
     if end < 0:
         return {}, text
     head, body = text[4:end], text[end + 4:].lstrip("\n")
-    data, key = {}, None
+    data, key, unread = {}, None, []
     for line in head.splitlines():
         if not line.strip() or line.lstrip().startswith("#"):
             continue
-        m = re.match(r"^\s+-\s+(.*)$", line)
-        if m and key is not None:
+        line = strip_comment(line)
+        m = re.match(r"^\s*-\s+(.*)$", line)
+        if m and key is not None and (data.get(key) is None or isinstance(data.get(key), list)):
             if not isinstance(data.get(key), list):
                 data[key] = []
             data[key].append(scalar(m.group(1)))
@@ -86,14 +90,33 @@ def frontmatter(text):
         if not m:
             continue
         key, value = m.group(1), m.group(2).strip()
-        if value.startswith("[") and value.endswith("]"):
+        if value in (">", ">-", ">+", "|", "|-", "|+"):
+            unread.append(key)
+            data[key] = None
+        elif value.startswith("[") and value.endswith("]"):
             inner = value[1:-1].strip()
             data[key] = [scalar(v) for v in split_list(inner)] if inner else []
         elif value == "":
             data[key] = None
         else:
             data[key] = scalar(value)
+    if unread:
+        data["__unread__"] = unread
     return data, body
+
+
+def strip_comment(line):
+    """Drop a ' # comment' that is outside quotes."""
+    quote = None
+    for i, ch in enumerate(line):
+        if quote:
+            if ch == quote:
+                quote = None
+        elif ch in "'\"":
+            quote = ch
+        elif ch == "#" and i > 0 and line[i - 1] in " \t":
+            return line[:i].rstrip()
+    return line
 
 
 def split_list(inner):
@@ -133,7 +156,7 @@ def expand(refs):
     out = []
     for ref in refs:
         m = re.fullmatch(r"(.+)#r(\d+)\s*[-–]\s*r?(\d+)", str(ref).strip())
-        if m:
+        if m and int(m.group(2)) <= int(m.group(3)):
             out += [f"{m.group(1)}#r{n}" for n in range(int(m.group(2)), int(m.group(3)) + 1)]
         else:
             out.append(ref)
@@ -156,7 +179,7 @@ def bullets(lines):
     """Top-level '- ' bullets, with their continuation lines joined."""
     out = []
     for line in lines:
-        if line.startswith("- "):
+        if line.startswith(("- ", "* ")):
             out.append(line[2:].strip())
         elif out and line.startswith("  ") and line.strip():
             out[-1] += " " + line.strip()
@@ -165,7 +188,7 @@ def bullets(lines):
 
 def scenarios(text):
     """(title, tags) for each Scenario or Scenario Outline of a feature file."""
-    out, pending, in_doc = [], [], None
+    out, pending, in_doc, feature_tags = [], [], None, []
     for raw in text.splitlines():
         line = raw.strip()
         if in_doc:
@@ -178,11 +201,13 @@ def scenarios(text):
         if line.startswith("@"):
             pending += [t for t in line.split() if t.startswith("@")]
             continue
-        m = re.match(r"^Scenario(?: Outline| Template)?:\s*(.*)$", line)
+        m = re.match(r"^(?:Scenario(?: Outline| Template)?|Example):\s*(.*)$", line)
         if m:
-            out.append((m.group(1).strip(), pending))
+            out.append((m.group(1).strip(), feature_tags + pending))
             pending = []
-        elif line.startswith(("Feature:", "Background:", "Examples:", "Rule:")):
+        elif line.startswith("Feature:"):
+            feature_tags, pending = pending, []
+        elif line.startswith(("Background:", "Examples:", "Scenarios:", "Rule:")):
             pending = []
     return out
 
@@ -203,6 +228,7 @@ class Model:
         self.parents = {}       # part id -> part_of
         self.sources = {}       # initiative id -> [record ids]
         self.req_text = {}
+        self.retired = set()    # (capability id, n)
 
     def fact(self, name, *args):
         self.facts.append((name, args))
@@ -222,7 +248,7 @@ class Model:
     def resolve_req(self, ref, where):
         m = REF.match(str(ref).strip())
         if not m:
-            self.dangling.append(f"{where}: {ref!r} is not a requirement reference (<capability>#r<n>)")
+            self.dangling.append(f"{where}: {ref!r} is not a requirement reference (<capability>#r<n>, or #r<a>-r<b> with a <= b)")
             return None
         cap = m.group("cap")
         if "/" not in cap and self.context:
@@ -274,9 +300,13 @@ class Model:
                 m = re.fullmatch(r"r?(\d+)", str(r))
                 if m:
                     retired.add(int(m.group(1)))
+                    self.retired.add((cap, int(m.group(1))))
                     self.fact("retired_id", cap, int(m.group(1)))
                 else:
                     self.problems.append(f"{self.rel(path)}: retired {r!r} is not r<n>")
+            self.unread(data, path)
+            if not any(l.startswith("## ") and l[3:].strip().lower() == "behaviour" for l in body.splitlines()):
+                self.problems.append(f"{self.rel(path)}: no '## Behaviour' section")
             entry = {"name": name, "reqs": {}, "group": data.get("group"), "path": path,
                      "feature": data.get("formulated_as") or f"features/{name}.feature"}
             for i, text in enumerate(bullets(section(body, "Behaviour")), 1):
@@ -300,13 +330,17 @@ class Model:
         by_feature = {}
         for cap, entry in self.caps.items():
             by_feature[str(Path(entry["feature"]))] = cap
-        for path in sorted((self.root / "features").glob("*.feature")):
+        for path in sorted((self.root / "features").rglob("*.feature")):
             key = self.rel(path)
             cap = by_feature.get(key)
             if cap is None:
                 self.problems.append(f"{key}: no capability is formulated as this file")
+            seen = set()
             for title, tags in scenarios(path.read_text()):
                 s = f"{key}:{title}"
+                if s in seen:
+                    self.problems.append(f"{key}: two scenarios are titled {title!r}")
+                seen.add(s)
                 self.node(s, "acceptance-scenario")
                 for tag in tags:
                     m = re.fullmatch(r"@r(\d+)", tag)
@@ -321,6 +355,7 @@ class Model:
     def read_decisions(self):
         for path in sorted((self.root / "decisions").glob("*.md")):
             data, _ = frontmatter(path.read_text())
+            self.unread(data, path)
             d = data.get("id")
             if not d:
                 self.problems.append(f"{self.rel(path)}: no frontmatter id")
@@ -352,6 +387,7 @@ class Model:
             data, _ = frontmatter(path.read_text())
             if not data.get("id"):
                 continue
+            self.unread(data, path)
             kind = data.get("kind")
             if kind not in RECORD_KINDS:
                 self.problems.append(f"{self.rel(path)}: kind {kind!r} is not a record kind")
@@ -383,6 +419,7 @@ class Model:
             self.sources[i] = as_list(data.get("source"))
             for s in self.sources[i]:
                 self.fact("source", i, s)
+                self.want(s, None, self.rel(ipath))
             if data.get("date"):
                 try:
                     days = (self.today - datetime.date.fromisoformat(str(data["date"]))).days
@@ -405,18 +442,28 @@ class Model:
         if data.get("part_of"):
             self.fact("part_of", p, data["part_of"])
             self.parents[p] = data["part_of"]
+        self.unread(data, path)
+        if data.get("part_of"):
+            self.want(data["part_of"], None, where)
         for a in as_list(data.get("argues")):
             a = f"{self.context}/{a}" if self.context and "/" not in a else a
             self.fact("argues", p, a)
+            self.want(a, None, where)
         if kind == "capability-proposal":
             self.proposals[p] = data
             for rel in ("adds", "changes", "removes"):
                 for ref in expand(as_list(data.get(rel))):
                     q = self.resolve_req(ref, where)
-                    if q:
-                        self.fact(rel, p, q)
-                        if rel == "adds" and q not in self.nodes:
-                            self.dangling.append(f"{where}: adds {q}, which no capability has")
+                    if not q:
+                        continue
+                    self.fact(rel, p, q)
+                    if q in self.nodes:
+                        continue
+                    cap, n = q.rsplit("#r", 1)
+                    if rel == "adds" and (cap, int(n)) in self.retired:
+                        self.fact("req_id", q, cap, int(n))   # grammar.md's refusal table: v15c
+                    elif rel != "changes":                     # changes: v15e reports it
+                        self.dangling.append(f"{where}: {rel} {q}, which no capability has")
         if kind == "work-item":
             if data.get("wkind"):
                 self.fact("wkind", p, data["wkind"])
@@ -424,19 +471,28 @@ class Model:
                 c = data["under"]
                 c = f"{self.context}/{c}" if self.context and "/" not in c else c
                 self.fact("under", p, c)
+                self.want(c, "capability", where)
             if data.get("for"):
                 self.fact("for", p, data["for"])
+                self.want(data["for"], "work-item", where)
             if data.get("check"):
                 self.fact("check", p, data["check"])
             for ref in expand(as_list(data.get("accepts"))):
                 q = self.resolve_req(ref, where)
-                for name, args in list(self.facts):
-                    if name == "has_sc" and args[0] == q:
-                        self.fact("accepts", p, args[1])
+                if not q:
+                    continue
+                found = [args[1] for name, args in self.facts if name == "has_sc" and args[0] == q]
+                for s in found:
+                    self.fact("accepts", p, s)
+                if not found:
+                    self.problems.append(f"{where}: accepts {q}, which no scenario names yet")
             for b in as_list(data.get("blocked_by")):
                 self.fact("blocked_by", p, b)
+                self.want(b, "work-item", where)
             for d in as_list(data.get("depends_on")):
+                d = f"{self.context}/{d}" if self.context and "/" not in d else d
                 self.fact("wi_depends", p, d)
+                self.want(d, "capability", where)
             for f in as_list(data.get("fileset")):
                 self.fact("fileset", p, f)
 
@@ -455,8 +511,14 @@ class Model:
 
     def check_refs(self):
         for ident, kind, where in getattr(self, "_wanted", []):
-            if self.nodes.get(ident) != kind:
+            if kind is None and ident not in self.nodes:
+                self.dangling.append(f"{where}: {ident} names nothing in this repository")
+            elif kind is not None and self.nodes.get(ident) != kind:
                 self.dangling.append(f"{where}: {ident} is not a {kind} in this repository")
+
+    def unread(self, data, path):
+        for key in data.get("__unread__", []):
+            self.problems.append(f"{self.rel(path)}: {key} uses a folded or literal block, which is not read; write it on one line")
 
     def asp(self):
         def term(a):
@@ -578,7 +640,7 @@ def cmd_why(args):
                 if q in [model.resolve_req(r, p) for r in expand(as_list(data.get(rel)))]]
         if not rels:
             continue
-        found = True
+        found = found or bool(set(rels) & {"adds", "changes"})
         print(f"  {'/'.join(rels)} by capability-proposal {p} ({data.get('status')}, {data.get('date', 'undated')})")
         chain, cur, seen = [], model.parents.get(p), set()
         while cur and cur not in seen:
