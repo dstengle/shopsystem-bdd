@@ -404,8 +404,7 @@ class PlanTest(unittest.TestCase):
         problems = [line for line in done.stderr.splitlines() if "slice 4:" in line]
         self.assertEqual(len(problems), 2, done.stderr)
         self.assertTrue(any("needs Scenarios" in line for line in problems), problems)
-        # plan words this problem "has Scenarios, not Check"; it names both and says the slice has a Check
-        self.assertTrue(any("Check" in line and "needs" not in line for line in problems), problems)
+        self.assertTrue(any("has Check, not Scenarios" in line for line in problems), problems)
         self.assertEqual(self.plan.read_bytes(), before)
 
     def test_a_section_plan_does_not_know_survives_an_edit_untouched(self):

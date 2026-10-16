@@ -168,7 +168,7 @@ class Plan:
         if kind in KINDS and b.field(want) is None:
             out.append("%s: a %s slice needs %s" % (label, kind, want))
         if kind in KINDS and b.field(other) is not None:
-            out.append("%s: a %s slice has %s, not %s" % (label, kind, want, other))
+            out.append("%s: a %s slice has %s, not %s" % (label, kind, other, want))
         lands = b.field("Lands")
         if sum(line.startswith("- Lands:") for line in b.lines) > 1:
             out.append("%s: more than one Lands line" % label)
