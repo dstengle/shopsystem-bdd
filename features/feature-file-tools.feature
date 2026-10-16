@@ -28,7 +28,7 @@ Feature: Feature file tools
 
     Examples:
       | result                                       | outcome                                                                                                      |
-      | a Rule: block outside a docstring            | the edit is rejected because features could not read features/cart.feature, and every file is as it was     |
+      | a Rule: block outside a docstring            | the edit is rejected because features could not read the result, and every file is as it was                 |
       | a Rule: line inside a docstring              | the edit is made                                                                                             |
       | two scenarios titled "Apply a code"          | the edit is made                                                                                             |
 
