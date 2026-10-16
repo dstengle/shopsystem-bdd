@@ -1,5 +1,5 @@
 ---
-id: shopsystem-bdd/spec-migration
+id: missingmass.io/shopsystem/shopsystem-bdd/spec-migration
 title: Spec migration
 narrator: the person migrating a repository onto spec/
 group: service

@@ -1,5 +1,5 @@
 ---
-id: shopsystem-bdd/red-green
+id: missingmass.io/shopsystem/shopsystem-bdd/red-green
 title: Red-green
 narrator: the controller that dispatched the implementer
 group: service

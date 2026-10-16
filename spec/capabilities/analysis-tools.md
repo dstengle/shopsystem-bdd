@@ -1,5 +1,5 @@
 ---
-id: shopsystem-bdd/analysis-tools
+id: missingmass.io/shopsystem/shopsystem-bdd/analysis-tools
 title: Analysis tools
 narrator: an agent researching or reviewing a project's code
 group: service

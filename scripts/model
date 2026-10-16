@@ -26,9 +26,12 @@ contract:
     section is a capability-requirement; `- [r<n>] ...` gives it the id
     <capability>#r<n>. A bullet with no [r<n>] is a requirement with no id.
     `retired: [r4, ...]` lists ids the capability used and retired.
-    A reference may be written <capability>#r<n> or, inside one context,
-    <name>#r<n>; in a list, <capability>#r<a>-r<b> stands for each id from
-    a to b.
+    A reference may be written <capability>#r<n> or <capability>#behaviour/r<n>
+    (the requirement as a part, in shopsystem-knowledge's IRI form); inside
+    one context <capability> may be <name> or <context name>/<name>, the
+    context name being the last segment of the context's id, and that name
+    alone names the context. In a list, <capability>#r<a>-r<b> stands for
+    each id from a to b.
   - A scenario names its requirement by a tag @r<n> in the capability's own
     feature file; its title is free. A scenario with no such tag names none.
   - facts prints the facts it read, one a line, in clingo's syntax, under
@@ -54,7 +57,7 @@ contract:
 
 LP = Path(__file__).resolve().with_name("model.lp")
 RID = re.compile(r"^\[r(\d+)\]\s*")
-REF = re.compile(r"^(?:(?P<cap>[\w.-]+(?:/[\w.-]+)?))#r(?P<n>\d+)$")
+REF = re.compile(r"^(?P<cap>[\w.-]+(?:/[\w.-]+)*)#(?:behaviour/)?r(?P<n>\d+)$")
 STATUSES = {
     "initiative": {"proposed", "started", "done", "abandoned"},
     "capability-proposal": {"drafted", "approved", "merged", "formulated"},
@@ -155,7 +158,7 @@ def expand(refs):
     """<capability>#r<a>-r<b> (or an en dash) stands for every id from a to b."""
     out = []
     for ref in refs:
-        m = re.fullmatch(r"(.+)#r(\d+)\s*[-–]\s*r?(\d+)", str(ref).strip())
+        m = re.fullmatch(r"(.+)#(?:behaviour/)?r(\d+)\s*[-–]\s*r?(\d+)", str(ref).strip())
         if m and int(m.group(2)) <= int(m.group(3)):
             out += [f"{m.group(1)}#r{n}" for n in range(int(m.group(2)), int(m.group(3)) + 1)]
         else:
@@ -245,14 +248,27 @@ class Model:
         except ValueError:
             return str(path)
 
+    def qualify(self, ref):
+        """<name>, <context name>/<name> or the context's own name, read inside this context."""
+        ref = str(ref)
+        if not self.context or ref == self.context or ref.startswith(self.context + "/"):
+            return ref
+        cname = self.context.rsplit("/", 1)[-1]
+        if ref == cname:
+            return self.context
+        if "/" not in ref:
+            return f"{self.context}/{ref}"
+        head, rest = ref.split("/", 1)
+        if head == cname and "/" not in rest:
+            return f"{self.context}/{rest}"
+        return ref
+
     def resolve_req(self, ref, where):
         m = REF.match(str(ref).strip())
         if not m:
             self.dangling.append(f"{where}: {ref!r} is not a requirement reference (<capability>#r<n>, or #r<a>-r<b> with a <= b)")
             return None
-        cap = m.group("cap")
-        if "/" not in cap and self.context:
-            cap = f"{self.context}/{cap}"
+        cap = self.qualify(m.group("cap"))
         return f"{cap}#r{m.group('n')}"
 
     def read(self):
@@ -380,7 +396,7 @@ class Model:
                 elif current:
                     m = re.match(r"^about:\s*(.+)$", line.strip())
                     if m:
-                        self.fact("about", current, scalar(m.group(1)))
+                        self.fact("about", current, self.qualify(scalar(m.group(1))))
         for path in sorted((self.root / "records").rglob("*.md")):
             if path == obs:
                 continue
@@ -394,7 +410,7 @@ class Model:
                 continue
             self.node(data["id"], kind)
             for a in as_list(data.get("about")):
-                self.fact("about", data["id"], a)
+                self.fact("about", data["id"], self.qualify(a))
 
     def read_work(self):
         for idir in sorted(p for p in (self.root / "work").glob("*") if p.is_dir()):
@@ -446,7 +462,7 @@ class Model:
         if data.get("part_of"):
             self.want(data["part_of"], None, where)
         for a in as_list(data.get("argues")):
-            a = f"{self.context}/{a}" if self.context and "/" not in a else a
+            a = self.qualify(a)
             self.fact("argues", p, a)
             self.want(a, None, where)
         if kind == "capability-proposal":
@@ -469,7 +485,7 @@ class Model:
                 self.fact("wkind", p, data["wkind"])
             if data.get("under"):
                 c = data["under"]
-                c = f"{self.context}/{c}" if self.context and "/" not in c else c
+                c = self.qualify(c)
                 self.fact("under", p, c)
                 self.want(c, "capability", where)
             if data.get("for"):
@@ -490,7 +506,7 @@ class Model:
                 self.fact("blocked_by", p, b)
                 self.want(b, "work-item", where)
             for d in as_list(data.get("depends_on")):
-                d = f"{self.context}/{d}" if self.context and "/" not in d else d
+                d = self.qualify(d)
                 self.fact("wi_depends", p, d)
                 self.want(d, "capability", where)
             for f in as_list(data.get("fileset")):

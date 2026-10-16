@@ -1,5 +1,5 @@
 ---
-id: shopsystem-bdd/review
+id: missingmass.io/shopsystem/shopsystem-bdd/review
 title: Review
 narrator: the controller closing a task or a batch
 group: service

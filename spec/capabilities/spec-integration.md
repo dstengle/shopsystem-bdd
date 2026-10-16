@@ -1,5 +1,5 @@
 ---
-id: shopsystem-bdd/spec-integration
+id: missingmass.io/shopsystem/shopsystem-bdd/spec-integration
 title: Spec integration
 narrator: the person at the gate
 group: service

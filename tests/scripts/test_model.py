@@ -353,6 +353,47 @@ class GrammarFixTest(ModelTest):
         self.assertRegex(r.stdout, r"v_k5\s+\(1\)\n\s+i1")
 
 
+@unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
+class IriFormTest(ModelTest):
+    """Ids in shopsystem-knowledge's IRI form (decision/capability-ids-are-context-scoped); not scenarios of their own."""
+
+    CTX = "missingmass.io/shopsystem/ctx"
+
+    def setUp(self):
+        super().setUp()
+        self.write("spec/index.md", f"---\nid: {self.CTX}\n---\n# ctx\n")
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One.", "- [r2] Two."], group="guarantees")
+                   .replace("id: ctx/thing", f"id: {self.CTX}/thing"))
+        self.observation()
+        self.initiative()
+
+    def test_every_written_form_names_the_same_requirement(self):
+        refs = ["thing#r1", "ctx/thing#r1", f"{self.CTX}/thing#r1", "thing#behaviour/r1", f"{self.CTX}/thing#behaviour/r1"]
+        for i, ref in enumerate(refs):
+            self.proposal(f"p{i}", adds=f"[{ref}]")
+        r = self.run_model("check")
+        self.assertIn("0 unresolved references, 0 file problems", r.stdout, r.stdout)
+        facts = self.run_model("facts").stdout
+        for i in range(len(refs)):
+            self.assertIn(f'adds("p{i}", "{self.CTX}/thing#r1").', facts)
+
+    def test_a_range_in_the_context_name_form_expands(self):
+        self.proposal(adds="[ctx/thing#r1-r2]")
+        facts = self.run_model("facts").stdout
+        self.assertIn(f'adds("p1", "{self.CTX}/thing#r2").', facts)
+
+    def test_the_context_name_alone_names_the_context(self):
+        self.write("records/observations.md", "# Observations\n\n## obs-1\nabout: ctx\nabout: ctx/thing\nby: someone\ndate: 2026-10-15\n\nSeen.\n")
+        facts = self.run_model("facts").stdout
+        self.assertIn(f'about("obs-1", "{self.CTX}").', facts)
+        self.assertIn(f'about("obs-1", "{self.CTX}/thing").', facts)
+
+    def test_a_capability_id_in_short_form_is_a_file_problem(self):
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees"))
+        r = self.run_model("check")
+        self.assertIn(f"is not '{self.CTX}/thing'", r.stdout)
+
+
 class BindingTest(unittest.TestCase):
     def test_every_scenario_has_its_test(self):
         titles = re.findall(r"^\s*Scenario(?: Outline)?:\s*(.+?)\s*$", FEATURE.read_text(), re.M)

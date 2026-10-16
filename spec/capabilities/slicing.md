@@ -1,5 +1,5 @@
 ---
-id: shopsystem-bdd/slicing
+id: missingmass.io/shopsystem/shopsystem-bdd/slicing
 title: Slicing
 narrator: the session that plans a batch
 group: service

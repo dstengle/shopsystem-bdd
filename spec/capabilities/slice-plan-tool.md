@@ -1,5 +1,5 @@
 ---
-id: shopsystem-bdd/slice-plan-tool
+id: missingmass.io/shopsystem/shopsystem-bdd/slice-plan-tool
 title: Slice plan tool
 narrator: an agent or session editing a living slice plan
 group: service

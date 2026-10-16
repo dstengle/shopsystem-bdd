@@ -1,5 +1,5 @@
 ---
-id: shopsystem-bdd/feature-file-tools
+id: missingmass.io/shopsystem/shopsystem-bdd/feature-file-tools
 title: Feature file tools
 narrator: an agent or session editing feature files
 group: service

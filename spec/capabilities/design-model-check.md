@@ -1,5 +1,5 @@
 ---
-id: shopsystem-bdd/design-model-check
+id: missingmass.io/shopsystem/shopsystem-bdd/design-model-check
 title: Design model check
 narrator: a person or agent checking a repository against the design model
 group: service
@@ -38,7 +38,7 @@ records, and it checks one bounded context: product-level artifacts are read onl
 - [r19] `model` reads, under `--root` (default the current directory), `spec/index.md`, `spec/capabilities/*.md`, every `*.feature` under `features/`, `decisions/*.md`, `work/<initiative>/*.md`, `records/observations.md` and any other Markdown under `records/` whose frontmatter has an `id`.
 - [r20] A scenario names a requirement by a tag `@r<n>`, its own or its feature's, in the feature file its capability is `formulated_as`, or `features/<capability name>.feature` when it gives none.
 - [r21] A reference written `<name>#r<n>` is read as a requirement of the capability `<name>` in the bounded context.
-- [r22] **If** a list names a reference that is not `<capability>#r<n>`, or a range `#r<a>-r<b>` with a greater than b, `model check` reports it as unresolved.
+- [r22] **If** a list names a reference that is not `<capability>#r<n>` or `<capability>#behaviour/r<n>`, or a range `#r<a>-r<b>` with a greater than b, `model check` reports it as unresolved.
 - [r23] **If** a capability-proposal adds or removes a requirement no capability has, `model check` reports it as unresolved, except that adding an id the capability lists as retired is reported under v15c.
 - [r24] **If** a `supersedes`, `source`, `part_of`, `argues`, `under`, `for`, `blocked_by` or `depends_on` names nothing, or nothing of the kind it needs, in the repository, `model check` reports it as unresolved.
 - [r25] **If** `spec/index.md` is missing or has no `id`, a capability's `id` is not `<context>/<file name>`, a capability has no `## Behaviour` section, or its `retired` lists an entry not written `r<n>`, `model check` reports a file problem naming the file.
@@ -58,6 +58,8 @@ records, and it checks one bounded context: product-level artifacts are read onl
 - [r39] **If** `model why` is given an argument that is not a requirement reference, it says why and exits 2.
 - [r40] **If** no capability has the requirement `model why` names, it says so in place of the requirement's text and still lists the proposals that name it.
 - [r41] **When** `model why` is run, it lists each capability-proposal that adds, changes or removes the requirement, in date order with its status and date, and one that only removes it leaves `model why` exiting 1.
+- [r42] A reference written `<capability>#behaviour/r<n>`, the requirement as a part in shopsystem-knowledge's IRI form, names the same requirement as `<capability>#r<n>`.
+- [r43] **Where** the bounded context's id is a path such as `<owner>/<product>/<context name>`, a capability written `<context name>/<name>` is read as `<context id>/<name>`, and the context name alone as the bounded context.
 
 ## Implementation, may change
 - `scripts/model.lp` is grammar.md v3 sections 1, 3 and 4 in clingo, with FIX notes where grammar.md does not

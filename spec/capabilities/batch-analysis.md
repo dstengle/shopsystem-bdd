@@ -1,5 +1,5 @@
 ---
-id: shopsystem-bdd/batch-analysis
+id: missingmass.io/shopsystem/shopsystem-bdd/batch-analysis
 title: Batch analysis
 narrator: the person deciding a change to the workflow
 group: operations

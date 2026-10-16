@@ -1,5 +1,5 @@
 ---
-id: shopsystem-bdd/role-boundaries
+id: missingmass.io/shopsystem/shopsystem-bdd/role-boundaries
 title: Role boundaries
 narrator: the person running the workflow
 group: guarantees

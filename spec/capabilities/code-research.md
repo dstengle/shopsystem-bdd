@@ -1,5 +1,5 @@
 ---
-id: shopsystem-bdd/code-research
+id: missingmass.io/shopsystem/shopsystem-bdd/code-research
 title: Code research
 narrator: the session that plans a batch
 group: service

@@ -1,5 +1,5 @@
 ---
-id: shopsystem-bdd
+id: missingmass.io/shopsystem/shopsystem-bdd
 title: shopsystem-bdd
 ---
 

@@ -1,5 +1,5 @@
 ---
-id: shopsystem-bdd/formulation
+id: missingmass.io/shopsystem/shopsystem-bdd/formulation
 title: Formulation
 narrator: the person who approved the lines
 group: service

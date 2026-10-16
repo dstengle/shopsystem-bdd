@@ -1,5 +1,5 @@
 ---
-id: shopsystem-bdd/batch-measurement
+id: missingmass.io/shopsystem/shopsystem-bdd/batch-measurement
 title: Batch measurement
 narrator: a session measuring a closed batch
 group: service
