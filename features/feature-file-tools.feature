@@ -1,0 +1,522 @@
+# formulated from spec/capabilities/feature-file-tools.md
+Feature: Feature file tools
+  Narrator: an agent or session editing feature files
+
+  @r1
+  Scenario: every feature file under the directory is read, and docstring text is not
+    A feature file in a nested directory under the default features directory is read, and a tag or scenario written inside a docstring is not.
+    Given a feature file features/cart/nested.feature with a scenario "Nested" tagged @slice-1
+    And the scenario "Nested" has a docstring holding the lines "@slice-1" and "Scenario: Phantom"
+    When the agent runs features list --tag slice-1 without --dir
+    Then the output lists features/cart/nested.feature with "Nested"
+    And the output does not list "Phantom"
+
+  @r2
+  Scenario: a feature file with a Rule block is refused
+    A Rule block is not read as part of the feature; the command refuses and says which file holds it.
+    Given a feature file features/rules.feature that holds a Rule: block
+    When the agent runs features list --title Cart
+    Then the command is rejected because the feature file holds a Rule: block
+    And the refusal names features/rules.feature
+
+  @r5
+  Scenario: listing by tag includes the feature's and the Examples' tags
+    A scenario holds a tag when it carries it itself, when its feature carries it, or when its Examples table carries it.
+    Given a feature file features/cart.feature tagged @cart
+    And it has a scenario "Plain" with no tags of its own
+    And it has a scenario "Own tag" tagged @checkout
+    And it has a Scenario Outline "Outlined" whose one Examples table is tagged @checkout and has one row
+    And another feature file features/stock.feature tagged @checkout has a scenario "Elsewhere"
+    And a feature file features/misc.feature has a scenario "Untagged" with no tags
+    When the agent runs features list --tag checkout
+    Then the output lists features/cart.feature with "Own tag"
+    And the output lists features/cart.feature with "Outlined"
+    And the output lists features/stock.feature with "Elsewhere"
+    And the output does not list "Plain" or "Untagged"
+
+  @r6
+  Scenario: listing by title finds every scenario whose title contains the text
+    A title matches when the text appears anywhere in it, not only when it equals it.
+    Given a feature file features/cart.feature with scenarios "Apply a code", "Code expired" and "Empty cart"
+    When the agent runs features list --title "ode"
+    Then the output lists features/cart.feature with "Apply a code"
+    And the output lists features/cart.feature with "Code expired"
+    And the output does not list "Empty cart"
+
+  @r7
+  Scenario: listing that matches nothing prints nothing and fails
+    An empty result is not a success.
+    Given a feature file features/cart.feature with no scenario tagged @slice-9
+    When the agent runs features list --tag slice-9
+    Then nothing is printed
+    And it exits 1
+
+  @r8
+  Scenario: retagging replaces the first slice tag and drops the others
+    A scenario ends with exactly one slice tag, in the place of its first, and keeps every other tag and line.
+    Given a feature file features/cart.feature whose only scenario "Apply a code" has the tag line "@wip @slice-1 @slice-2 @r3"
+    When the agent runs features tag "Apply a code" slice-4
+    Then the scenario's tag line is "@wip @slice-4 @r3"
+    And every other line of features/cart.feature is unchanged
+
+  @r9
+  Scenario Outline: a scenario without a slice tag gets one
+    The new slice tag joins the scenario's last tag line, or stands on a tag line of its own when the scenario has none.
+    Given a feature file features/cart.feature whose only scenario "Apply a code" has the tag lines <tag lines before>
+    When the agent runs features tag "Apply a code" slice-2
+    Then the scenario's tag lines are <tag lines after>
+
+    Examples:
+      | tag lines before  | tag lines after               |
+      | "@wip"            | "@wip @slice-2"               |
+      | "@wip" then "@r1" | "@wip" then "@r1 @slice-2"    |
+      | none              | "@slice-2" above the scenario |
+
+  @r10
+  Scenario Outline: retagging a title that is not in exactly one file is refused
+    The title must pick out one file; otherwise nothing is changed and every file holding it is named.
+    Given the title "Apply a code" is held by <files holding it>
+    When the agent runs features tag "Apply a code" slice-2
+    Then the command is rejected because the title is not held by exactly one file
+    And the refusal names <files named>
+    And no file is changed
+
+    Examples:
+      | files holding it                               | files named                                    |
+      | no feature file                                | no file                                        |
+      | features/cart.feature and features/old.feature | features/cart.feature and features/old.feature |
+
+  @r11
+  Scenario: retagging with a tag that is neither a slice nor a requirement tag is bad usage
+    Only slice-<n>, slice-<n>.<m> and r<n> are tags features tag accepts.
+    Given a feature file features/cart.feature with a scenario "Apply a code"
+    When the agent runs features tag "Apply a code" wip
+    Then the command is rejected as bad usage because the tag is not written slice-<n>, slice-<n>.<m> or r<n>
+    And no file is changed
+
+  @r12
+  Scenario: moving a scenario takes its block to the end of the destination
+    The block leaves its source file and arrives unchanged after everything already in the destination.
+    Given a feature file features/old.feature with scenarios "Apply a code" and "Empty cart"
+    And a feature file features/cart.feature whose last scenario is "Checkout"
+    When the agent runs features move "Apply a code" --to features/cart.feature
+    Then features/old.feature holds "Empty cart" and not "Apply a code"
+    And the block of "Apply a code" follows "Checkout" at the end of features/cart.feature, unchanged
+
+  @r13
+  Scenario: moving with the Background inlined puts its steps first
+    A moved scenario keeps the steps its source Background gave it.
+    Given a feature file features/old.feature whose Background has the step "Given the date is 2026-10-16"
+    And its scenario "Apply a code" has first step "Given a cart holding product Mug at price 8.00"
+    And a feature file features/cart.feature
+    When the agent runs features move "Apply a code" --to features/cart.feature --inline-background
+    Then the moved "Apply a code" has the steps "Given the date is 2026-10-16" then "Given a cart holding product Mug at price 8.00"
+
+  @r15
+  Scenario: moving to a destination that does not exist is refused
+    A move never creates a file.
+    Given a feature file features/old.feature with a scenario "Apply a code"
+    And no file features/missing.feature
+    When the agent runs features move "Apply a code" --to features/missing.feature
+    Then the command is rejected because the destination does not exist
+    And no file is changed
+
+  @r16
+  Scenario: two trees alike scenario by scenario pass the move check
+    Scenarios may sit in other files, but alike by title in tags, description and steps they all match.
+    Given a tree old/ with "Apply a code" and "Empty cart" in old/cart.feature
+    And a tree features/ with "Apply a code" in features/codes.feature and "Empty cart" in features/cart.feature, each alike in effective tags, description, Background and own steps
+    When the agent runs features verify-moved --from old
+    Then it prints that 2 scenarios match
+    And it exits 0
+
+  @r17
+  Scenario Outline: a scenario that changed in the move is named with what changed
+    The check names which of effective tags, description or steps differ.
+    Given trees old/ and features/ that both hold "Apply a code"
+    And the two copies of "Apply a code" differ in their <part>
+    When the agent runs features verify-moved --from old
+    Then it names "Apply a code" with its <part> as changed
+    And it exits 1
+
+    Examples:
+      | part           |
+      | effective tags |
+      | description    |
+      | steps          |
+
+  @r18
+  Scenario Outline: a title held twice in either tree is a duplicate
+    Scenarios are matched by title, so a title held twice cannot be matched.
+    Given trees old/ and features/ that both hold "Apply a code"
+    And <tree> holds a second scenario titled "Apply a code"
+    When the agent runs features verify-moved --from old
+    Then it names "Apply a code" as a duplicate
+    And it exits 1
+
+    Examples:
+      | tree      |
+      | old/      |
+      | features/ |
+
+  @r19
+  Scenario Outline: holding a scenario marks it held and records what for
+    A held scenario carries @holding, a "(held)" title and a line naming what it is held for, and nothing else in it changes.
+    Given a feature file features/cart.feature with a scenario "Apply a code"
+    And <replacement>
+    When the agent runs features hold "Apply a code" <option>
+    Then the scenario carries the tag @holding
+    And its title is "Apply a code (held)"
+    And it has a description line naming <held for> as what it is held for
+    And nothing else in the scenario is changed
+
+    Examples:
+      | replacement                          | option                  | held for        |
+      | a scenario "Apply a voucher" exists  | --for "Apply a voucher" | Apply a voucher |
+      | no scenario "Apply a voucher" exists | --for "Apply a voucher" | Apply a voucher |
+      | no replacement is planned            | --for-removal           | removal         |
+
+  @r20
+  Scenario: holding a scenario already held is refused
+    A scenario is held once.
+    Given a feature file features/cart.feature with a scenario "Apply a code (held)" tagged @holding
+    When the agent runs features hold "Apply a code (held)" --for "Apply a voucher"
+    Then the command is rejected because the scenario is already held
+
+  @r21
+  Scenario Outline: the holding list shows each held scenario and what will retire it
+    For each held scenario the list says what it is held for and how its replacement stands.
+    Given a feature file features/cart.feature with a held scenario "Apply a code (held)" held for <held for>
+    And <replacement>
+    When the agent runs features holding
+    Then the list shows "Apply a code (held)" held for <held for>, with <shown>
+
+    Examples:
+      | held for          | replacement                                  | shown                                            |
+      | "Apply a voucher" | a scenario "Apply a voucher" tagged @slice-3 | the slice tag slice-3                            |
+      | "Apply a voucher" | no scenario titled "Apply a voucher"         | that no scenario has the title "Apply a voucher" |
+      | removal           | no replacement                               | that the slice removing the behaviour retires it |
+
+  @r22
+  Scenario: the holding list says when nothing is held
+    An empty holding list is stated, not left blank.
+    Given feature files in which no scenario is tagged @holding
+    When the agent runs features holding
+    Then it says that none is held
+
+  @r23
+  Scenario: retiring a held scenario removes its block
+    Only the held scenario's block goes; the rest of the file stays as it was.
+    Given a feature file features/cart.feature with a scenario "Empty cart" and a scenario "Apply a code (held)" tagged @holding
+    When the agent runs features retire "Apply a code (held)"
+    Then features/cart.feature no longer holds "Apply a code (held)"
+    And the rest of features/cart.feature is as it was
+
+  @r24
+  Scenario: retiring a scenario that is not held is refused
+    Only a held scenario can be retired.
+    Given a feature file features/cart.feature with a scenario "Apply a code" not tagged @holding
+    When the agent runs features retire "Apply a code"
+    Then the command is rejected because the scenario is not held
+    And features/cart.feature is as it was
+
+  @r25
+  Scenario Outline: a binding that names no scenario is reported
+    A binding fails when no feature file has its title, or when the feature it names does not have it.
+    Given a test module tests/test_cart.py whose line 12 binds the title "Apply a code" in the feature cart.feature
+    And <where the title is>
+    When the agent runs features bindings without --tests
+    Then it reports tests/test_cart.py, line 12, the title "Apply a code" and the feature cart.feature
+    And it exits 1
+
+    Examples:
+      | where the title is                                       |
+      | no feature file has the title "Apply a code"             |
+      | only features/codes.feature has the title "Apply a code" |
+
+  @r26
+  Scenario: bindings that all name a scenario pass
+    The check says so when every binding is good.
+    Given a test module tests/test_cart.py binding "Apply a code" in cart.feature
+    And features/cart.feature has the scenario "Apply a code"
+    When the agent runs features bindings
+    Then it says that every binding names a scenario
+    And it exits 0
+
+  @r27
+  Scenario: a test module that does not parse is refused
+    Bindings cannot be read from a module that does not parse, and the module is named.
+    Given a test module tests/test_broken.py that does not parse
+    When the agent runs features bindings
+    Then the command is rejected because the test module does not parse
+    And the refusal names tests/test_broken.py
+
+  @r28
+  Scenario Outline: rebinding rewrites each binding of the old title and counts them
+    Only the title in the binding calls changes, and the count is printed even when it is zero.
+    Given a feature file features/cart.feature with a scenario "Apply a voucher"
+    And test modules with <bindings> binding calls naming "Apply a code"
+    When the agent runs features rebind "Apply a code" "Apply a voucher"
+    Then each of those binding calls names "Apply a voucher"
+    And nothing else in the test modules is changed
+    And it prints that <bindings> bindings were rebound
+
+    Examples:
+      | bindings |
+      | 2        |
+      | 0        |
+
+  @r29
+  Scenario: rebinding to a title no scenario has is refused
+    A binding is never pointed at a scenario that does not exist.
+    Given a test module binding "Apply a code"
+    And no feature file has a scenario "Apply a voucher"
+    When the agent runs features rebind "Apply a code" "Apply a voucher"
+    Then the command is rejected because no scenario has the new title
+    And no test module is changed
+
+  @r30
+  Scenario: the plugin is written into the directory with its registration line
+    The plugin file arrives in the directory, and the line to register it in the conftest.py there is printed.
+    Given a directory tests/
+    When the agent runs features plugin tests
+    Then tests/slice_expectations.py is written
+    And it prints the line that registers it in tests/conftest.py
+
+  @r31
+  Scenario Outline: a test of a planned or blocked slice is expected to fail
+    A waiting slice's failing test is reported as expected, and its passing test fails the run.
+    Given slice_expectations.py is registered
+    And one living plan in which slice-2 is <status>
+    And a test tagged @slice-2 that <result>
+    When the agent runs pytest
+    Then the test is reported as <reported as>
+    And the run <run outcome>
+    And the run reports 1 test of slice-2 expected to fail
+
+    Examples:
+      | status  | result | reported as                    | run outcome |
+      | planned | fails  | an expected failure            | passes      |
+      | planned | passes | a pass that should have failed | fails       |
+      | blocked | fails  | an expected failure            | passes      |
+      | blocked | passes | a pass that should have failed | fails       |
+
+  @r32
+  Scenario Outline: a test of a slice under way, done or gone from the plan runs as it is
+    Only waiting slices are expected to fail.
+    Given slice_expectations.py is registered
+    And one living plan in which slice-2 is <standing>
+    And a test tagged @slice-2 that passes
+    When the agent runs pytest
+    Then the test passes
+    And the run passes
+
+    Examples:
+      | standing         |
+      | in progress      |
+      | green            |
+      | no longer listed |
+
+  @r33
+  Scenario: naming a slice runs its tests as they are
+    A planned slice's tests can be run without being expected to fail.
+    Given slice_expectations.py is registered
+    And one living plan in which slice-2 is planned
+    And a test tagged @slice-2 that passes
+    When the agent runs pytest --slice 2
+    Then the test passes
+    And the run passes
+
+  @r34
+  Scenario Outline: with no one living plan no test is expected to fail
+    Without a single plan to read, every test runs as it is and the run says so.
+    Given slice_expectations.py is registered
+    And <plans>
+    And a test tagged @slice-2 that passes
+    When the agent runs pytest
+    Then the test passes
+    And the run says no test is expected to fail
+
+    Examples:
+      | plans            |
+      | no living plan   |
+      | two living plans |
+
+  @r35
+  Scenario: moving a title no file holds is refused
+    A move, hold or retire needs the title in exactly one file; here it is in none.
+    Given no feature file holds the title "Apply a code"
+    When the agent runs features move "Apply a code" --to features/cart.feature
+    Then the command is rejected because no file holds the title
+    And no file is changed
+
+  @r35
+  Scenario: moving a title several files hold is refused
+    A move, hold or retire needs the title in exactly one file; here it is in several, and each is named.
+    Given features/cart.feature and features/old.feature both hold the title "Apply a code"
+    When the agent runs features move "Apply a code" --to features/codes.feature
+    Then the command is rejected because several files hold the title
+    And the refusal names features/cart.feature and features/old.feature
+    And no file is changed
+
+  @r36
+  Scenario: moving a scenario to its own file is refused
+    A move must take the scenario somewhere else.
+    Given a feature file features/cart.feature with a scenario "Apply a code"
+    When the agent runs features move "Apply a code" --to features/cart.feature
+    Then the command is rejected because the destination is the scenario's own file
+    And no file is changed
+
+  @r37
+  Scenario Outline: a title in only one tree is missing or added
+    Every title must be in both trees; one in only the source is missing, one in only the other is added.
+    Given trees old/ and features/
+    And the title "Apply a code" is only in <tree>
+    When the agent runs features verify-moved --from old
+    Then it names "Apply a code" as <named as>
+    And it exits 1
+
+    Examples:
+      | tree      | named as |
+      | old/      | missing  |
+      | features/ | added    |
+
+  @r38
+  Scenario Outline: a tag is found with or without its leading @
+    The leading @ is optional when listing by tag.
+    Given a feature file features/cart.feature with a scenario "Apply a code" tagged @slice-2
+    When the agent runs features list --tag <tag>
+    Then the output lists features/cart.feature with "Apply a code"
+
+    Examples:
+      | tag      |
+      | @slice-2 |
+      | slice-2  |
+
+  @r39
+  Scenario: holding a scenario prints its file and new title
+    The agent sees where the held scenario is and what it is now called.
+    Given a feature file features/cart.feature with a scenario "Apply a code"
+    When the agent runs features hold "Apply a code" --for-removal
+    Then it prints features/cart.feature and "Apply a code (held)"
+
+  @r40
+  Scenario Outline: the holding list flags a held scenario it cannot place
+    A held scenario with nothing to say what it is held for, or whose replacement has no slice tag, is flagged on its own line.
+    Given a feature file features/cart.feature with a scenario "Apply a code (held)" tagged @holding
+    And <condition>
+    When the agent runs features holding
+    Then the line for "Apply a code (held)" says <said>
+
+    Examples:
+      | condition                                                                | said                                      |
+      | the scenario has no Held for: line                                       | that it has no Held for: line             |
+      | it is held for "Apply a voucher", and "Apply a voucher" has no slice tag | that the replacement carries no slice tag |
+
+  @r41
+  Scenario: rebinding to a title several feature files hold is refused
+    The new title must pick out one scenario.
+    Given a test module binding "Apply a code"
+    And features/cart.feature and features/codes.feature both hold a scenario "Apply a voucher"
+    When the agent runs features rebind "Apply a code" "Apply a voucher"
+    Then the command is rejected because several feature files hold the new title
+    And no test module is changed
+
+  @r42
+  Scenario: rebinding a title written over several lines is refused
+    A binding whose title string spans lines is not rewritten, and the module and line are named.
+    Given a feature file with a scenario "Apply a voucher"
+    And a test module tests/test_cart.py whose binding call at line 20 names "Apply a code" in a string written over several lines
+    When the agent runs features rebind "Apply a code" "Apply a voucher"
+    Then the command is rejected because the binding's title is written over several lines
+    And the refusal names tests/test_cart.py and line 20
+    And no test module is changed
+
+  @r43
+  Scenario: writing the plugin to a path that is not a directory is refused
+    The plugin is written only into a directory.
+    Given a file tests/notes.txt
+    When the agent runs features plugin tests/notes.txt
+    Then the command is rejected because the path is not a directory
+    And nothing is written
+
+  @r44
+  Scenario: writing the plugin replaces an existing one and reads no feature file
+    The plugin is written whatever is already there, and the feature files play no part.
+    Given a directory tests/ holding an older slice_expectations.py
+    And a feature file features/rules.feature that holds a Rule: block
+    When the agent runs features plugin tests
+    Then tests/slice_expectations.py is replaced by the plugin
+    And the command is not refused
+
+  @r45
+  Scenario: the registration line for a package imports relatively
+    In a package directory the plugin is imported relative to the package.
+    Given a directory tests/ holding an __init__.py
+    When the agent runs features plugin tests
+    Then the line it prints imports slice_expectations relative to the package
+
+  @r46
+  Scenario: a refusal says why on stderr and fails
+    Whatever is refused, the reason goes to stderr and the command fails.
+    Given a feature file features/cart.feature with a scenario "Apply a code" not tagged @holding
+    When the agent runs features retire "Apply a code"
+    Then the reason for the refusal is written to stderr
+    And it exits 1
+
+  @r47
+  Scenario Outline: the living plan is the one slice_plan names, or else the one plan file
+    The ini value slice_plan wins; otherwise the single slices plan under docs/superpowers/plans is read, and none or several give no plan.
+    Given slice_expectations.py is registered
+    And <slice_plan>
+    And <plan files> under docs/superpowers/plans in pytest's root directory
+    When the agent runs pytest
+    Then the living plan read is <plan read>
+
+    Examples:
+      | slice_plan                                                    | plan files                    | plan read                                   |
+      | the ini value slice_plan names plans/current.md, which exists | one file 2026-10-01-slices.md | plans/current.md                            |
+      | no ini value slice_plan                                       | one file 2026-10-01-slices.md | docs/superpowers/plans/2026-10-01-slices.md |
+      | no ini value slice_plan                                       | no -slices.md file            | none                                        |
+      | no ini value slice_plan                                       | two -slices.md files          | none                                        |
+
+  @r48
+  Scenario: naming several slices runs each one's tests as they are
+    Each --slice adds a slice, written with or without its slice- prefix.
+    Given slice_expectations.py is registered
+    And one living plan in which slice-2 and slice-3 are planned
+    And a passing test tagged @slice-2 and a passing test tagged @slice-3
+    When the agent runs pytest --slice 2 --slice slice-3
+    Then both tests pass
+    And the run passes
+
+  @r49
+  Scenario Outline: the run's header names the living plan or says there is none
+    The run shows which plan it read, relative to the root directory.
+    Given slice_expectations.py is registered
+    And <plans>
+    When the agent runs pytest
+    Then the run's header <header>
+
+    Examples:
+      | plans                                                       | header                                            |
+      | one living plan docs/superpowers/plans/2026-10-01-slices.md | names docs/superpowers/plans/2026-10-01-slices.md |
+      | no living plan                                              | says no one living plan was found                 |
+
+  @r50
+  Scenario: a slice_plan naming a missing file expects nothing to fail
+    A plan file that is not there gives no expected failures, and the header shows which file was looked for.
+    Given slice_expectations.py is registered
+    And the ini value slice_plan names plans/missing.md, which does not exist
+    And a test tagged @slice-2 that passes
+    When the agent runs pytest
+    Then the test passes
+    And the run's header names plans/missing.md
+
+  @r51
+  Scenario: tagging with a requirement id makes it the scenario's one requirement tag
+    A scenario ends with one @r<n> tag, the new one, and keeps every other tag and line.
+    Given a feature file features/cart.feature whose only scenario "Apply a code" has the tags @wip, @slice-2, @r1 and @r4
+    When the agent runs features tag "Apply a code" r7
+    Then the scenario's tags are @wip, @slice-2 and @r7
+    And every other line of features/cart.feature is unchanged

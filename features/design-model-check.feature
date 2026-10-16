@@ -115,3 +115,258 @@ Feature: Design model check
     Given a capability-proposal that adds thing#r1-r3
     When model why is run for thing#r2
     Then it prints the proposal as adding it
+
+  @r19
+  Scenario Outline: model reads the repository's files under its root
+    Pins which files of a repository model reads, and that the root is the current directory unless --root names one.
+    Given a repository in a directory holding <file>
+    When model facts is run <how>
+    Then the facts printed <outcome> what <file> holds
+
+    Examples:
+      | file                               | how                                   | outcome         |
+      | spec/index.md                      | with --root naming that directory     | include         |
+      | spec/capabilities/thing.md         | with --root naming that directory     | include         |
+      | features/sub/thing.feature         | with --root naming that directory     | include         |
+      | decisions/0001-one.md              | with --root naming that directory     | include         |
+      | work/i1/p1.md                      | with --root naming that directory     | include         |
+      | records/observations.md            | with --root naming that directory     | include         |
+      | records/review/f1.md with an id    | with --root naming that directory     | include         |
+      | records/review/f2.md with no id    | with --root naming that directory     | do not include  |
+      | spec/capabilities/thing.md         | from that directory with no --root    | include         |
+
+  @r20
+  Scenario Outline: a scenario names a requirement by its tag in its capability's feature file
+    Pins where an @r<n> tag may sit, and which feature file a capability's scenarios are read from.
+    Given a capability thing with requirement r2, <formulated as>
+    And a scenario in <feature file> with the tag @r2 <placed>
+    When model check is run
+    Then the requirement thing#r2 is <reported> under v_s3
+
+    Examples:
+      | formulated as                                  | feature file              | placed                  | reported |
+      | formulated_as features/thing.feature           | features/thing.feature    | on the scenario         | not      |
+      | formulated_as features/thing.feature           | features/thing.feature    | on its feature          | not      |
+      | giving no formulated_as                        | features/thing.feature    | on the scenario         | not      |
+      | formulated_as features/sub/thing-flow.feature  | features/sub/thing-flow.feature | on the scenario   | not      |
+      | formulated_as features/sub/thing-flow.feature  | features/other.feature    | on the scenario         | still    |
+
+  @r21
+  Scenario: a reference written name#r<n> is that capability's requirement
+    Pins that the part before # is the capability's name in this bounded context and the part after it the requirement's id.
+    Given a capability thing with requirement r2
+    And a capability-proposal that adds thing#r2
+    When model why is run for thing#r2
+    Then it prints thing's requirement r2 and the proposal as adding it
+
+  @r22
+  Scenario Outline: a reference in neither requirement form, or a reversed range, is unresolved
+    Pins the forms a requirement reference in a list may take.
+    Given a capability thing with requirements r1 to r3
+    And a capability-proposal whose list names <reference>
+    When model check is run
+    Then <reference> is reported as unresolved
+
+    Examples:
+      | reference      |
+      | thing          |
+      | thing#2        |
+      | thing#line2    |
+      | thing#r3-r1    |
+
+  @r24
+  Scenario Outline: a frontmatter reference to nothing, or to the wrong kind, is unresolved
+    Pins that each named frontmatter reference must reach a node of the kind it needs.
+    Given a file whose <field> names <target>
+    When model check is run
+    Then that <field> is reported as unresolved
+
+    Examples:
+      | field      | target                                   |
+      | supersedes | an id nothing in the repository has      |
+      | source     | an id nothing in the repository has      |
+      | part_of    | an id nothing in the repository has      |
+      | argues     | an id nothing in the repository has      |
+      | under      | an id nothing in the repository has      |
+      | for        | an id nothing in the repository has      |
+      | blocked_by | an id nothing in the repository has      |
+      | depends_on | an id nothing in the repository has      |
+      | argues     | a decision, where a capability is needed |
+
+  @r25
+  Scenario Outline: a malformed index or capability file is a file problem
+    Pins the shape spec/index.md and each capability file must have to be read.
+    Given a bounded context with id acme/shop/cart in which <case>
+    When model check is run
+    Then it reports a file problem naming <file>
+
+    Examples:
+      | case                                                       | file                       |
+      | spec/index.md is missing                                   | spec/index.md              |
+      | spec/index.md has no id                                    | spec/index.md              |
+      | spec/capabilities/thing.md has the id acme/shop/cart/other | spec/capabilities/thing.md |
+      | spec/capabilities/thing.md has no ## Behaviour section     | spec/capabilities/thing.md |
+      | spec/capabilities/thing.md lists retired: [3]              | spec/capabilities/thing.md |
+
+  @r28
+  Scenario: a work-item accepting a requirement no scenario names is a file problem
+    Pins that a work-item may accept only requirements a scenario already names.
+    Given a capability thing with requirement r2 that no scenario names
+    And a work-item in work/i1/w1.md that accepts thing#r2
+    When model check is run
+    Then it reports a file problem naming work/i1/w1.md
+
+  @r29
+  Scenario Outline: a malformed decision, record or frontmatter is a file problem
+    Pins the frontmatter faults in decisions, records and shared ids that model check refuses.
+    Given a repository in which <case>
+    When model check is run
+    Then it reports a file problem
+
+    Examples:
+      | case                                                         |
+      | a decision under decisions/ has no id                        |
+      | a record under records/ with an id has the kind banana       |
+      | a frontmatter value is written as a folded block, with >     |
+      | a frontmatter value is written as a literal block, with \|   |
+      | a decision and an observation have the same id               |
+
+  @r30
+  Scenario: file problems are each printed and fail the check
+    Pins that every file problem is shown and that any one of them fails the check.
+    Given a repository with two capabilities that each have no ## Behaviour section
+    When model check is run
+    Then it prints a file problem for each of the two capabilities
+    And it exits 1
+
+  @r31
+  Scenario: the check ends with the four counts
+    Pins the summary every plain-text check ends with.
+    Given a repository with one violation, one warning, one unresolved reference and one file problem
+    When model check is run without --json
+    Then it prints 1 violation, 1 warning, 1 unresolved reference and 1 file problem
+
+  @r32
+  Scenario Outline: rows of a violated relation are limited, saying how many more there are
+    Pins the row limit per violated relation, given or by default.
+    Given a repository with <rows> requirements no scenario names
+    When model check is run <limit>
+    Then it prints <shown> rows under v_s3
+    And it says there are <more> more
+
+    Examples:
+      | rows | limit           | shown | more |
+      | 5    | with --limit 2  | 2     | 3    |
+      | 12   | with no --limit | 10    | 2    |
+
+  @r33
+  Scenario Outline: with --json the check's findings are one JSON object
+    Pins the machine-readable output and that it does not change the exit status.
+    Given a repository <state>
+    When model check is run with --json
+    Then it prints one JSON object holding the violations, warnings, unresolved references and file problems
+    And it exits <status>
+
+    Examples:
+      | state                                  | status |
+      | the grammar accepts                    | 0      |
+      | with a requirement no scenario names   | 1      |
+
+  @r34
+  Scenario Outline: only a capability-change initiative may hold several parts directly
+    Pins that an initiative holds one part directly, except a capability-change holding capability-proposals.
+    Given <initiative> with <parts> directly under it
+    When model check is run
+    Then the initiative is <reported> under v_k5
+
+    Examples:
+      | initiative                                   | parts                    | reported |
+      | an initiative that is not a capability-change | two parts                | reported |
+      | a capability-change initiative               | two capability-proposals | not reported |
+
+  @r35
+  Scenario: a proposal arguing two capabilities is refused
+    Pins that a capability-proposal argues one capability.
+    Given capabilities thing and other
+    And a capability-proposal that argues both thing and other
+    When model check is run
+    Then the output names v_k6 with the proposal
+
+  @r36
+  Scenario: an initiative may be done when its proposal is formulated
+    Pins that formulated is a closed status for a capability-proposal under a done initiative.
+    Given a capability-change initiative with status done
+    And under it a capability-proposal with status formulated, whose requirements scenarios name
+    When model check is run
+    Then no violation names the initiative
+
+  @r37
+  Scenario: a current decisions index passes the check
+    Pins the passing outcome of the decisions index check.
+    Given a spec/decisions.md that is what model decisions writes
+    When model decisions --check is run
+    Then it says the file is current
+    And it exits 0
+
+  @r38
+  Scenario: writing the decisions index names the file and leaves out decisions with no id
+    Pins what writing the index reports and that only decisions with an id are indexed.
+    Given two decisions under decisions/, one of them with no id
+    When model decisions is run
+    Then it prints spec/decisions.md as the file it wrote
+    And spec/decisions.md lists the decision with an id and not the one without
+
+  @r39
+  Scenario: why refuses an argument that is not a requirement reference
+    Pins that model why takes only a requirement reference.
+    Given a capability thing
+    When model why is run for thing
+    Then it is refused because thing is not a requirement reference
+    And it exits 2
+
+  @r40
+  Scenario: why on a requirement no capability has still lists its proposals
+    Pins that a missing requirement does not hide the proposals that name it.
+    Given a capability thing with no requirement r9
+    And a capability-proposal that changes thing#r9
+    When model why is run for thing#r9
+    Then it says no capability has thing#r9 where the requirement's text would be
+    And it lists the proposal
+
+  @r42
+  Scenario: the behaviour/ form of a reference names the same requirement
+    Pins that #behaviour/r<n> and #r<n> are one requirement.
+    Given a capability thing with requirement r2
+    And a capability-proposal that adds thing#behaviour/r2
+    When model why is run for thing#r2
+    Then it prints the proposal as adding it
+
+  @r43
+  Scenario Outline: a path-shaped context id may be written by its context name
+    Pins the short forms of a capability and of the bounded context when the context's id is a path.
+    Given a bounded context with id acme/shop/cart and a capability thing
+    And <reference>
+    When model check is run
+    Then <written> is read as <read> and is not reported as unresolved
+
+    Examples:
+      | reference                                                  | written    | read                  |
+      | a capability-proposal that argues cart/thing               | cart/thing | acme/shop/cart/thing  |
+      | a reference to the bounded context written cart            | cart       | the bounded context   |
+
+  @r44
+  Scenario: a held scenario names no requirement
+    Pins that a scenario tagged @holding does not count as a requirement's acceptance-scenario.
+    Given a capability thing with requirement r2
+    And its only scenario tagged @r2 is also tagged @holding
+    When model check is run
+    Then the requirement thing#r2 is reported under v_s3
+
+  @r45
+  Scenario: without a decisions directory the index's headings are the decisions
+    Pins where decisions come from in a repository that keeps them only in spec/decisions.md.
+    Given a repository with no decisions/ directory
+    And a spec/decisions.md with the heading ## decision/one
+    And a capability that rests on decision/one
+    When model check is run
+    Then decision/one is not reported as unresolved
