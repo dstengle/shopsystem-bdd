@@ -229,7 +229,7 @@ Feature: Slice plan tool
   Scenario: the current flag without last-suite is bad usage
     --current only means something alongside --last-suite.
     Given a valid plan
-    When the agent runs `plan show --current`
+    When the agent runs `plan show --open --current`
     Then the command is rejected as bad usage
     And it exits 2
 
@@ -268,13 +268,13 @@ Feature: Slice plan tool
     The plan is the --file argument when given, otherwise the single slices plan found under the current directory.
     Given the current directory holds the one plan docs/superpowers/plans/2026-10-01-cart-slices.md
     And there is another plan at other/2026-10-02-refunds-slices.md
-    When the agent runs `plan log "started batch"` <file option>
+    When the agent runs <command>
     Then the entry is appended to <plan>
 
     Examples:
-      | file option                                  | plan                                             |
-      |                                              | docs/superpowers/plans/2026-10-01-cart-slices.md |
-      | --file other/2026-10-02-refunds-slices.md    | other/2026-10-02-refunds-slices.md               |
+      | command                                                              | plan                                             |
+      | `plan log "started batch"`                                           | docs/superpowers/plans/2026-10-01-cart-slices.md |
+      | `plan --file other/2026-10-02-refunds-slices.md log "started batch"` | other/2026-10-02-refunds-slices.md               |
 
   @r27
   Scenario Outline: without --file, no plan or several plans is refused
@@ -293,7 +293,7 @@ Feature: Slice plan tool
   Scenario: a plan file that cannot be read is refused
     An unreadable plan stops the command, and the refusal says which file.
     Given --file names a plan file that cannot be read
-    When the agent runs `plan check` with that --file
+    When the agent runs `plan --file <that file> check`
     Then the command is rejected because the plan file cannot be read
     And the refusal names the file
 
