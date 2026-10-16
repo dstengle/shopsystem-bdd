@@ -52,6 +52,22 @@ any test; it edits only the feature files, test modules and directory it is poin
 - [r32] **Where** `slice_expectations.py` is registered, a test tagged to a slice that is in progress, green or no longer in the plan runs as it is.
 - [r33] **Where** `--slice <n>` is given to pytest, `slice_expectations.py` runs that slice's tests as they are.
 - [r34] **Where** no one living plan is found, `slice_expectations.py` expects no test to fail and the run says so.
+- [r35] **If** `features move`, `features hold` or `features retire` is given a title no file holds, or one several files hold, `features` refuses, naming every file that holds it, and changes no file.
+- [r36] **If** the destination of `features move` is the scenario's own file, `features` refuses and changes no file.
+- [r37] **If** a title is in the `--from` tree and not the other, or in the other tree and not `--from`, `features verify-moved` names it as missing or as added, and exits 1.
+- [r38] `features list --tag` finds the tag whether it is given with its leading `@` or without.
+- [r39] **When** `features hold` has held a scenario, `features` prints its file and its new title.
+- [r40] **When** `features holding` finds a held scenario with no `Held for:` line, or whose replacement carries no slice tag, `features` says so on that scenario's line.
+- [r41] **If** `features rebind` is given a new title that several feature files hold, `features` refuses and changes no test module.
+- [r42] **If** a binding call names the old title of `features rebind` in a string written over several lines, `features` refuses, naming the module and line, and changes no test module.
+- [r43] **If** `features plugin` is given a path that is not a directory, `features` refuses and writes nothing.
+- [r44] **When** `features plugin` is run, `features` writes over any `slice_expectations.py` already in the directory, and reads no feature file.
+- [r45] **Where** the directory given to `features plugin` holds an `__init__.py`, the line `features plugin` prints imports `slice_expectations` relative to the package.
+- [r46] **If** `features` refuses a command or an edit, it says why on stderr and exits 1.
+- [r47] `slice_expectations.py` reads as the living plan the file the ini value `slice_plan` names under pytest's root directory, or else the one `docs/superpowers/plans/*-slices.md` under it, and finds none when there are none or several.
+- [r48] **Where** `--slice` is given to pytest more than once, `slice_expectations.py` runs the tests of every slice named, each written `<n>` or `slice-<n>`, as they are.
+- [r49] **Where** `slice_expectations.py` is registered, the run's header names the living plan it read, relative to the root directory, or says no one living plan was found.
+- [r50] **If** the ini value `slice_plan` names a file that does not exist, `slice_expectations.py` expects no test to fail, and the run's header names that file.
 
 ## Implementation, may change
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three

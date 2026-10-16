@@ -42,6 +42,19 @@ shape and its slice budget. It is not a scheduler and does not run the suite; it
 - [r23] **When** `plan archive <batch>` is run, `plan` writes the green slices and the whole Log to `archive/<plan name>-<batch>.md` beside the plan and removes those slices from the plan.
 - [r24] **When** `plan archive` is run, `plan` leaves the Log holding the REQUEST, RE-FORMULATE and QUESTION FOR THE SPEC: entries with their continuation lines, one line naming the archive and the last `Suite:` entry, and that `Suite:` entry again, so `plan show --last-suite --current` still finds it.
 - [r25] **If** the archive file exists or no slice is green, `plan archive` refuses.
+- [r26] `plan` works on the plan `--file` names, or else on the one `docs/superpowers/plans/*-slices.md` under the current directory.
+- [r27] **If** no `--file` is given and the current directory holds no `docs/superpowers/plans/*-slices.md` or several, `plan` refuses every command, saying how many it found and to name the plan with `--file`.
+- [r28] **If** the plan file cannot be read, `plan` refuses, naming the file.
+- [r29] **When** `plan show --backlog` is run, `plan` prints each Backlog entry with its continuation lines, and nothing when the Backlog is empty or missing.
+- [r30] **When** `plan show --requests` or `plan show --last-suite` without `--current` is run, `plan` prints each entry with its continuation lines.
+- [r31] **If** the Log has no `Suite:` entry, `plan show --last-suite` prints nothing and exits 0, and with `--current` `plan` refuses because there is no suite record.
+- [r32] **If** the suite record names no commit, `plan show --last-suite --current` says it is stale because the record names no commit, and exits 1.
+- [r33] **When** `plan show --last-suite --current` finds files changed, committed or not, outside `docs/superpowers/plans/` since the record's commit, the stale reason gives how many and names each.
+- [r34] **If** `plan lands` names a slice the plan does not have, `plan` refuses and leaves the file as it was.
+- [r35] `plan` takes a slice as green, for `show --open` and `archive`, by the word before its Status's colon, so a Status of `green: <note>` is green.
+- [r36] **When** `plan archive` is run, `plan` creates the `archive/` directory beside the plan when it is missing, and the archive file begins with the plan's title.
+- [r37] **Where** `--date` is given to `plan archive`, the Log's line naming the archive carries that date, and otherwise today's.
+- [r38] **If** `plan` refuses a command or an edit, it says why on stderr and exits 1.
 
 ## Implementation, may change
 - The plan is `--file`, or the one `docs/superpowers/plans/*-slices.md` under the current directory; with none

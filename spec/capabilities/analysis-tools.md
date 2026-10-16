@@ -34,6 +34,24 @@ file; it reports what the tools found and names a tool that is missing rather th
 - [r15] **If** nothing in the project is defined as `<name>`, `tools refs` exits 1.
 - [r16] **When** `tools check` is run, `tools` runs ruff, vulture and, where the project has import contracts, import-linter, over the paths given or the Python files changed since `--base`, each under its own heading, and exits 1 when any reports.
 - [r17] **If** a tool `tools check` would run is missing, `tools` names it as missing under its heading instead of skipping it.
+- [r18] **If** the interpreter is not a virtualenv and a tool is missing, `tools install` installs nothing, prints for each missing tool the tool, what it is for, what the workflow does without it and that the interpreter is not a virtualenv, and exits 1.
+- [r19] **When** `tools install` finds every tool present, `tools` says so and exits 0, whether or not the interpreter is a virtualenv.
+- [r20] **When** `tools install` installs a tool, `tools` prints that the tool is installed.
+- [r21] **If** the interpreter does not run, `tools probe`, `tools install` and `tools check` refuse, naming it and the end of its error.
+- [r22] **When** `tools probe --log` is run, the line names every tool with its version or `missing`.
+- [r23] **When** `tools map` is run, `tools` replaces any earlier map, prints pytest's last line, where the map is and the commit it was made at, and exits 0 whether or not the tests passed.
+- [r24] **If** `tools map` makes no map, `tools` refuses, naming the command it ran and the end of its output.
+- [r25] **When** `tools untested` is run, `tools` prints each function as `<path>:<line> <name>`, then how many functions no test executed and the commit the map was made at, and exits 0 however many there are.
+- [r26] **If** no map has been made, `tools untested` refuses and says to make one with `tools map`.
+- [r27] **If** coverage is missing from the interpreter, `tools tests-of` and `tools untested` refuse, saying to run `tools install`.
+- [r28] **If** jedi is missing from the interpreter, `tools refs` refuses, saying to run `tools install`.
+- [r29] **If** the file `tools tests-of` is given does not exist, `tools` refuses, naming it.
+- [r30] **When** `tools refs` is run on a name the project defines, `tools` names where it is defined, counts no definition as a reference, and exits 0 however many references there are.
+- [r31] **Where** `--base` is given, `tools check` checks the Python files changed since it and not deleted, in place of any paths given.
+- [r32] **If** git cannot compare the working tree with `--base`, `tools check` refuses with git's error.
+- [r33] **Where** `tools check` has no file to check, it says under the ruff and vulture headings that there is nothing to check, and those two do not make it exit 1.
+- [r34] **Where** the project states no import contracts, `tools check` says so under the import-linter heading and does not run it.
+- [r35] **When** a tool `tools check` runs prints nothing, `tools check` says under its heading that it is clean.
 
 ## Implementation, may change
 - The tools probed are coverage, pytest-cov, jedi, ast-grep, ruff, vulture, import-linter and hypothesis.

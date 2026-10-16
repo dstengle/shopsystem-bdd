@@ -5,11 +5,11 @@ part_of: i1
 status: drafted
 date: 2026-10-15
 argues: [feature-file-tools]
-adds: [feature-file-tools#r1-r34]
+adds: [feature-file-tools#r1-r50]
 ---
 
 # Feature file tools: first spec
 
-What the gate approves: `feature-file-tools#r1-r34`, as written in `spec/capabilities/feature-file-tools.md`. Each line describes
+What the gate approves: `feature-file-tools#r1-r50`, as written in `spec/capabilities/feature-file-tools.md`. Each line describes
 what 0.18.0 does today; none adds behaviour. One of i1's thirteen proposals
 (decision/one-capability-per-proposal).

@@ -19,12 +19,10 @@ Decisions 0001-0021 record rules already released; 0022-0028 are new with this i
 
 ## Questions for the person
 
-1. **How do the workflow capabilities get scenarios?** spec-integration, formulation, spec-migration,
-   slicing, code-research, red-green, review and batch-analysis describe what agents do. Their evidence
-   today is fixture runs (`records/measurements/fixture-runs/`) and measured batches. Readings:
-   (a) Gherkin scenarios run as fixture sessions with `claude -p` against a fixture repository, bound like
-   decision/plugin-scenarios-run-as-unittest; (b) group them as guarantees, checked by `measure` against
-   a bound, with no scenarios. Until this is answered, `model check` lists their requirements under v_s3,
-   and their proposals cannot reach `formulated`.
-2. **Behaviour seen only in the scripts' source** (obs/2026-10-15-script-behaviour-unpinned): add any of
-   it as requirements, with tests, or leave it as implementation?
+1. **Answered 2026-10-16: how the workflow capabilities get scenarios.** As fixture sessions, several
+   runs each (decision/workflow-scenarios-run-as-fixture-sessions). Still open: how many runs a scenario
+   takes and how many must pass; the command that runs them apart from the unittest suite.
+2. **Answered 2026-10-16: behaviour seen only in the scripts' source.** Every script is to be described by
+   its requirements. A sweep of all five scripts added feature-file-tools#r35-r50, slice-plan-tool#r26-r38,
+   batch-measurement#r21-r38, analysis-tools#r18-r35 and design-model-check#r19-r41, each stating what
+   0.18.0 does today; their tests come with formulation.

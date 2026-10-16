@@ -38,6 +38,24 @@ guesses when its inputs are not what it knows.
 - [r18] **When** `measure show <file>` is run, `measure` prints the facts file as tables.
 - [r19] **When** `measure compare <a> <b>` is run, `measure` prints the two facts files side by side.
 - [r20] **If** `measure show` is given a file that is not a facts file `measure` wrote, `measure` refuses, naming the file.
+- [r21] **If** no archive file is given, no `--plan` is given and the repository holds no `docs/superpowers/plans/*-slices.md` or several, `measure batch` refuses, saying to name the living plan with `--plan`.
+- [r22] **If** no archive file was added before the batch's end and no `--from` is given, `measure batch` refuses, saying to give the batch's start with `--from`.
+- [r23] **If** `--from` or `--to` is neither a commit nor an ISO time, `measure batch` refuses, naming what it was given.
+- [r24] **If** `--repo`, default the current directory, is not inside a git repository, or a git command `measure batch` runs fails, `measure` refuses with git's error.
+- [r25] **Where** no archive file is given, `measure batch` names the batch `--name`, default `open`, and without `--out` writes the facts to `docs/superpowers/measurements/<name>.json`.
+- [r26] **Where** no archive file is given, the open batch starts at the last commit that added a file under `--archive-dir`, default `docs/superpowers/plans/archive`.
+- [r27] The facts hold the archive file's slices and every other slice a dispatch is attributed to, and for the open batch only the slices a dispatch is attributed to.
+- [r28] The facts count, as ambiguous, the commits made while more than one implementer was running.
+- [r29] **If** no dispatch names a ledger and no `--tasks` is given, or the batch plan is in no commit, the facts leave tasks uncounted and hold a note saying why, and `measure batch` writes the note on stderr.
+- [r30] **When** `measure batch` has written the facts, it prints one line naming the file, the number of dispatches and slices, and the window.
+- [r31] The facts give each dispatch the closing status its reply states, and count replies that close BLOCKED, PARTIAL or NEEDS_CONTEXT as not done.
+- [r32] The facts record the plugin and harness versions the transcripts name, and the batch's window as times and, where known, commits.
+- [r33] **Where** the batch starts at a commit, the facts give the files and lines changed from it to the batch's end commit, or to HEAD when the end is not a commit.
+- [r34] The facts count the dispatches given more than one prompt as resumed, the share of building time from the first branch review on with scouts left out, and the mean and summed starting context of the dispatches.
+- [r35] **When** `measure show` is run, `measure` prints the repository, batch, window, plugin and harness versions and suite record, then the summary, roles and slices tables, the dispatches not done or not attributed, each hand-back and each note.
+- [r36] **When** `measure compare` is run, `measure` prints each summary figure and the output, new input, cache read and agent minutes per slice of both files, each file headed by its batch and plugin versions, with the ratio of the second to the first.
+- [r37] **If** `measure compare` is given a file that is not a facts file `measure` wrote, or `measure show` or `measure compare` a file it cannot read as JSON, `measure` refuses, naming the file.
+- [r38] **If** `measure` refuses, it says why on stderr and exits 1.
 
 ## Implementation, may change
 - Sessions are read from `~/.claude/projects` (or `--projects`), in the directory named after each worktree of

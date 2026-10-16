@@ -35,6 +35,29 @@ records, and it checks one bounded context: product-level artifacts are read onl
 - [r16] **When** `model why <capability>#r<n>` is run, it prints the requirement, each capability-proposal that adds or changes it, the `part_of` chain to its initiative and the initiative's sources.
 - [r17] **If** no capability-proposal adds or changes the requirement, `model why` says so and exits 1.
 - [r18] **Where** a proposal's or work-item's list names `<capability>#r<a>-r<b>`, `model` reads it as every id from a to b.
+- [r19] `model` reads, under `--root` (default the current directory), `spec/index.md`, `spec/capabilities/*.md`, every `*.feature` under `features/`, `decisions/*.md`, `work/<initiative>/*.md`, `records/observations.md` and any other Markdown under `records/` whose frontmatter has an `id`.
+- [r20] A scenario names a requirement by a tag `@r<n>`, its own or its feature's, in the feature file its capability is `formulated_as`, or `features/<capability name>.feature` when it gives none.
+- [r21] A reference written `<name>#r<n>` is read as a requirement of the capability `<name>` in the bounded context.
+- [r22] **If** a list names a reference that is not `<capability>#r<n>`, or a range `#r<a>-r<b>` with a greater than b, `model check` reports it as unresolved.
+- [r23] **If** a capability-proposal adds or removes a requirement no capability has, `model check` reports it as unresolved, except that adding an id the capability lists as retired is reported under v15c.
+- [r24] **If** a `supersedes`, `source`, `part_of`, `argues`, `under`, `for`, `blocked_by` or `depends_on` names nothing, or nothing of the kind it needs, in the repository, `model check` reports it as unresolved.
+- [r25] **If** `spec/index.md` is missing or has no `id`, a capability's `id` is not `<context>/<file name>`, a capability has no `## Behaviour` section, or its `retired` lists an entry not written `r<n>`, `model check` reports a file problem naming the file.
+- [r26] **If** a feature file is no capability's `formulated_as`, or two of its scenarios share a title, `model check` reports a file problem naming the file.
+- [r27] **If** a work directory has no `initiative.md`, an initiative or part has no `id`, a part's kind is not a part kind, a status is missing or not in its kind's lifecycle, a priority is not a number or a date is not `YYYY-MM-DD`, `model check` reports a file problem naming the file.
+- [r28] **If** a work-item accepts a requirement no scenario names yet, `model check` reports a file problem naming the work-item's file.
+- [r29] **If** a decision has no `id`, a record with an `id` has a kind that is not a record kind, a frontmatter value is written as a folded or literal block, or one id names nodes of two kinds, `model check` reports a file problem.
+- [r30] **If** `model check` finds a file problem, it prints each and exits 1.
+- [r31] **When** `model check` ends without `--json`, it prints the counts of violations, warnings, unresolved references and file problems.
+- [r32] **Where** `--limit <n>` is given, default 10, `model check` prints at most n rows of each violated relation and how many more there are.
+- [r33] **Where** `--json` is given, `model check` prints the violations, warnings, unresolved references and file problems as one JSON object, with the same exit status.
+- [r34] **If** an initiative that is not a capability-change has more than one part directly under it, `model check` reports it under v_k5, while a capability-change initiative may hold several capability-proposals.
+- [r35] **If** a capability-proposal argues more than one capability, `model check` reports it under v_k6.
+- [r36] A capability-proposal at `formulated` counts as closed when `model check` decides whether an initiative may be done.
+- [r37] **When** `model decisions --check` finds `spec/decisions.md` is what `model decisions` would write, it says the file is current and exits 0.
+- [r38] **When** `model decisions` is run, it prints the file it wrote, and a decision file with no `id` is left out of the index.
+- [r39] **If** `model why` is given an argument that is not a requirement reference, it says why and exits 2.
+- [r40] **If** no capability has the requirement `model why` names, it says so in place of the requirement's text and still lists the proposals that name it.
+- [r41] **When** `model why` is run, it lists each capability-proposal that adds, changes or removes the requirement, in date order with its status and date, and one that only removes it leaves `model why` exiting 1.
 
 ## Implementation, may change
 - `scripts/model.lp` is grammar.md v3 sections 1, 3 and 4 in clingo, with FIX notes where grammar.md does not
