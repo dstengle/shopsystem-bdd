@@ -21,7 +21,7 @@ guesses when its inputs are not what it knows.
 - [r1] **When** `measure batch <archive file>` is run, `measure` writes one facts file for the batch running from the commit that added the archive file before it to the commit that added its own.
 - [r2] **Where** no archive file is given, `measure batch` measures the open batch, from the last archive commit to now, reading the living plan.
 - [r3] **Where** `--from` or `--to` is given, as a commit or an ISO time, `measure batch` uses it in place of that end of the batch.
-- [r4] **Where** no `--out` is given, `measure batch` writes the facts to `docs/superpowers/measurements/<archive file's name>.json`.
+- [r4] **Where** no `--out` is given, `measure batch` writes the facts to `docs/superpowers/measurements/<archive file's name without .md>.json`.
 - [r5] **If** the archive file was not added by any commit, `measure batch` refuses, naming the file.
 - [r6] **If** a transcript's shape is not known, `measure batch` refuses, naming the file and what was missing, and writes no facts file.
 - [r7] **If** the facts file exists and `--replace` is not given, `measure batch` refuses and leaves the file as it was.

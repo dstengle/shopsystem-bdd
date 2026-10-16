@@ -32,9 +32,9 @@ Feature: Analysis tools
     Pins the probe's report and that one missing tool fails it.
     Given a Python project whose interpreter has every tool but vulture
     When the agent runs `tools probe`
-    Then tools prints one line for each tool with what it is for
-    And each installed tool's line gives its version
-    And vulture's line says it is missing
+    Then tools prints one line for each tool
+    And each installed tool's line gives its name and version
+    And vulture's line says it is missing and what it is for
     And the interpreter is printed after the tools
     And it exits 1
 

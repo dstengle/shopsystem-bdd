@@ -17,9 +17,9 @@ references to a name, and a lint check. It is not a test runner for the fast sui
 file; it reports what the tools found and names a tool that is missing rather than skipping it.
 
 ## Behaviour
-- [r1] **When** `tools` needs an interpreter, it uses the first of these, in this order: the one `--python` gives, used as given; `.venv/bin/python` under the current directory, if that file exists; `venv/bin/python` under the current directory, if that file exists; `$VIRTUAL_ENV/bin/python`, if that file exists, wherever `$VIRTUAL_ENV` points; and else the interpreter running the script. Unless `--log` is given, `tools probe` prints that interpreter's path and which of these it came from.
+- [r1] **When** `tools` needs an interpreter, it uses the first of these, in this order: the one `--python` gives, used as given; `.venv/bin/python` under the current directory, if that file exists; `venv/bin/python` under the current directory, if that file exists; `$VIRTUAL_ENV/bin/python`, if that file exists, wherever `$VIRTUAL_ENV` points; and else the interpreter running the script. Unless `--log` is given, `tools probe` prints that interpreter's path and whether it came from `--python`, from the project's virtualenv (`.venv`, `venv` or `$VIRTUAL_ENV` alike), or from neither.
 - [r2] **If** the project is not a Python project, `tools` says in one line that no analysis tools are known for its language and exits 1.
-- [r3] **When** `tools probe` is run, `tools` prints one line per tool, its version or that it is missing and what it is for, then the interpreter, and exits 1 when any tool is missing.
+- [r3] **When** `tools probe` is run, `tools` prints one line per tool, `<name> <version>` for an installed tool and `<name> missing: <what it is for>` for a missing one, then the interpreter, and exits 1 when any tool is missing.
 - [r4] **When** `tools probe --log` is run, `tools` prints the one `Probe: tools -> ...` line to give `plan log`.
 - [r5] **When** `tools install` is run, `tools` installs each missing tool into the interpreter with pip and edits no dependency file.
 - [r6] **If** the interpreter is not a virtualenv, `tools install` refuses to install into it and says so.

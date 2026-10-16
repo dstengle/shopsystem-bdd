@@ -39,7 +39,7 @@ Feature: Batch measurement
     The default place for an archive batch's facts follows the archive file's name.
     Given archive file 2026-09-15-slices.md with dispatches inside its batch
     When the session runs measure batch for 2026-09-15-slices.md with no --out
-    Then the facts are written to docs/superpowers/measurements/2026-09-15-slices.md.json
+    Then the facts are written to docs/superpowers/measurements/2026-09-15-slices.json
 
   @r5
   Scenario: an archive file no commit added is refused

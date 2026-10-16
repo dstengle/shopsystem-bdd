@@ -18,9 +18,9 @@ Feature: Slice plan tool
   Scenario: an edit that would break the plan is refused with every problem named
     An edit that would leave the plan invalid is not made, and every problem it would cause is listed.
     Given a valid plan that has a slice 3
-    When the agent runs `plan add-slice 3 "Checkout"` giving the slice the one of Scenarios and Check its Kind does not take
+    When the agent runs `plan add-slice 4 "Checkout"` with Kind capability, giving a Check and no Scenarios
     Then the command is rejected because the edit would make the plan invalid
-    And the refusal names both the repeated slice number and the wrong one of Scenarios and Check
+    And the refusal names both that the slice needs Scenarios and that it has a Check
     And the plan file is unchanged
 
   @r3
