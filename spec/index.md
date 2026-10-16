@@ -5,9 +5,10 @@ title: shopsystem-bdd
 
 # shopsystem-bdd
 
-**State.** Plugin 0.18.0. Every Behaviour line on `main` describes what 0.18.0 does, except
-`design-model-check`, which arrives with initiative i2. What is approved and unbuilt lives on its
-branch with its code, and under `Not yet`. Requirements carry ids from the start (design model v3).
+**State.** Plugin 0.19.0. Every approved Behaviour line describes what the plugin does; requirements carry
+ids from the start (design model v3). Drafted and not yet approved, all awaiting the gate: i1's thirteen
+proposals, i2's, and i3's five, and the script capabilities' lines reworded to the code during formulation
+(listed for the gate in the release's test log). What is approved and unbuilt lives under `Not yet`.
 Check with `python3 scripts/model check`; the decisions index is `python3 scripts/model decisions`.
 
 ## Purpose

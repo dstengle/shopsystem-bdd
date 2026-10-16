@@ -171,6 +171,17 @@ In shopsystem-knowledge's batch 19 the session that integrated and formulated a 
 
 With a controller holding 270k: formulating six capabilities read 1.8M tokens from cache in all against 5.4M, and integrating a note 0.8M against 1.6M. The round costs about 6k more output tokens each time, and in a session that holds little it saves nothing.
 
+## Requirement ids (0.19.0)
+
+Every Behaviour line carries a stable id, `[r<n>]`, and every scenario names its line by the tag `@r<n>`
+(design model v3). A new line takes the next free id, a changed line keeps its id, a removed line's id is
+retired in the capability's frontmatter and never reused. The gate shows ids and the spec commit names them.
+Capability ids follow shopsystem-knowledge's IRIs: `<owner domain>/<product>/<context>/<name>`.
+`scripts/model check` checks ids and coverage where clingo is installed. A repository already on capability
+files is migrated with migrating-to-capabilities' "Adding ids". The release's fixture runs are pending: they
+need the person's permission for nested `claude -p` sessions. Test log:
+`records/measurements/fixture-runs/2026-10-16-requirement-ids-test-log.md`.
+
 ## Scripts
 
 Plain Python 3, standard library only, in `scripts/` (`model check` alone needs clingo). `--help` is the contract; tests: `python3 -m unittest discover -s tests/scripts`.
