@@ -316,6 +316,25 @@ class ReadingTest(ModelTest):
         self.assertIn('rests_on("ctx/thing", "decision/x").', facts)
         self.assertIn('group("ctx/thing", "service").', facts)
 
+    def test_a_held_scenario_is_no_acceptance_scenario(self):
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], retired="[r2]"))
+        self.write("features/thing.feature", "\n".join([
+            "Feature: thing", "",
+            "  @r1", "  Scenario: one", "    Given a", "",
+            "  @r1 @holding", "  Scenario: one as it was (held)", "    Given a", "",
+            "  @r2 @holding", "  Scenario: two as it was (held)", "    Given a", ""]))
+        r = self.run_model("check")
+        self.assertEqual(r.returncode, 0, r.stdout)
+        facts = self.run_model("facts").stdout
+        self.assertNotIn("(held)", facts)
+
+    def test_a_ledger_is_read_where_there_is_no_decisions_directory(self):
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees", rests_on="[decision/x]"))
+        self.write("spec/decisions.md", "# Decisions\n\n## decision/x\nX.\ndate: 2026-01-01\n")
+        r = self.run_model("check")
+        self.assertEqual(r.returncode, 0, r.stdout)
+        self.assertIn('node("decision/x", "design-decision").', self.run_model("facts").stdout)
+
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
 class GrammarFixTest(ModelTest):

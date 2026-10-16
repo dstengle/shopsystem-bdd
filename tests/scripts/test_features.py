@@ -107,6 +107,20 @@ class FeaturesTest(unittest.TestCase):
     def test_tag_rejects_a_malformed_slice(self):
         self.assertEqual(self.run_script("tag", "Adding a product", "3").returncode, 2)
 
+    def test_tag_sets_a_requirement_tag_and_keeps_slice_tags(self):
+        done = self.run_script("tag", "Adding a product", "r4")
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertEqual(self.cart.read_text(), CART.replace("  @slice-1\n", "  @slice-1 @r4\n"))
+
+    def test_tag_replaces_a_requirement_tag(self):
+        self.run_script("tag", "Adding a product", "r4")
+        self.run_script("tag", "Adding a product", "r7")
+        self.assertEqual(self.cart.read_text(), CART.replace("  @slice-1\n", "  @slice-1 @r7\n"))
+
+    def test_tag_rejects_a_three_part_slice(self):
+        self.assertEqual(self.run_script("tag", "Adding a product", "slice-1.2.3").returncode, 2)
+        self.assertEqual(self.cart.read_text(), CART)
+
     def _before_and_checkout(self, header="@cart\nFeature: Checkout\n  Narrator: a shopper\n"):
         shutil.copytree(self.tmp / "features", self.tmp / "before")
         checkout = self.tmp / "features" / "checkout.feature"

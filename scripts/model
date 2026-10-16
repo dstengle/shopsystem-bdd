@@ -19,6 +19,9 @@ contract:
     features/*.feature, the containers of acceptance-scenarios;
     decisions/*.md, one design-decision each (frontmatter id, summary, date,
     status, supersedes, revisit_when, revisit_signal);
+    or, where there is no decisions/ directory, the ledger spec/decisions.md,
+    each `## decision/<slug>` heading a design-decision whose first line is
+    its summary;
     work/<initiative>/initiative.md and work/<initiative>/<part>.md;
     records/observations.md (one `## <id>` heading an observation) and any
     other Markdown under records/ whose frontmatter has an `id`.
@@ -34,6 +37,7 @@ contract:
     each id from a to b.
   - A scenario names its requirement by a tag @r<n> in the capability's own
     feature file; its title is free. A scenario with no such tag names none.
+    A scenario tagged @holding is no acceptance-scenario.
   - facts prints the facts it read, one a line, in clingo's syntax, under
     grammar.md's relation names. It needs nothing beyond the standard
     library.
@@ -353,6 +357,8 @@ class Model:
                 self.problems.append(f"{key}: no capability is formulated as this file")
             seen = set()
             for title, tags in scenarios(path.read_text()):
+                if "@holding" in tags:
+                    continue        # a held scenario formulates no line (decision/held-scenario-formulates-no-requirement)
                 s = f"{key}:{title}"
                 if s in seen:
                     self.problems.append(f"{key}: two scenarios are titled {title!r}")
@@ -369,7 +375,26 @@ class Model:
                         self.dangling.append(f"{key}: scenario {title!r} names {q}, which {cap} does not have")
 
     def read_decisions(self):
-        for path in sorted((self.root / "decisions").glob("*.md")):
+        ddir = self.root / "decisions"
+        if not ddir.is_dir():
+            ledger = self.root / "spec" / "decisions.md"
+            if ledger.exists():
+                lines = ledger.read_text().splitlines()
+                for i, line in enumerate(lines):
+                    m = re.match(r"^## (decision/\S+)\s*$", line)
+                    if not m:
+                        continue
+                    d = m.group(1)
+                    self.node(d, "design-decision")
+                    summary = []
+                    for below in lines[i + 1:]:
+                        if below.startswith("## ") or not below.strip() or re.match(r"(date|revisit_when|supersedes|source):", below):
+                            break
+                        summary.append(below.strip())
+                    if summary:
+                        self.fact("summary", d, " ".join(summary))
+            return
+        for path in sorted(ddir.glob("*.md")):
             data, _ = frontmatter(path.read_text())
             self.unread(data, path)
             d = data.get("id")

@@ -20,9 +20,10 @@ contract:
     collects it.
   - tag finds the scenario by its exact title, refuses unless exactly one file
     has it (naming every file that does), and changes only its tag lines: the
-    first @slice-... becomes the new one, any further @slice-... go, other
-    tags stay; with no slice tag, the new one joins the last tag line, or gets
-    a tag line of its own at the scenario's indentation.
+    first tag of the new tag's kind (@slice-... or @r<n>) becomes the new one,
+    any further tags of that kind go, other tags stay; with no tag of that
+    kind, the new one joins the last tag line, or gets a tag line of its own
+    at the scenario's indentation.
   - move takes a scenario's block verbatim (trailing blank lines dropped) to
     the end of an existing file; with --inline-background, the source
     Background's steps are inserted before the scenario's first step at the
@@ -59,7 +60,8 @@ An edit that would leave its file invalid is refused and the file left as it was
 STEP = re.compile(r"(Given|When|Then|And|But|\*)\s")
 SCENARIO = re.compile(r"(Scenario Outline|Scenario Template|Scenario|Example):")
 EXAMPLES = re.compile(r"(Examples|Scenarios):")
-SLICE = re.compile(r"slice-\d+(\.\d+)*$")
+SLICE = re.compile(r"slice-\d+(\.\d+)?$")
+REQ_TAG = re.compile(r"r\d+$")
 
 
 class Refused(Exception):
@@ -242,23 +244,27 @@ def write_checked(edits):
 
 
 def cmd_tag(args, files):
-    if not SLICE.match(args.slice):
-        sys.exit(usage_error("slice must look like slice-<n> or slice-<n>.<m>"))
+    if SLICE.match(args.slice):
+        family = re.compile(r"@slice-")
+    elif REQ_TAG.match(args.slice):
+        family = re.compile(r"@r\d+$")
+    else:
+        sys.exit(usage_error("tag must look like slice-<n>, slice-<n>.<m> or r<n>"))
     path, f, sc = locate(files, args.title)
-    lines = _retag(f, sc, args.slice)
+    lines = _retag(f, sc, args.slice, family)
     write_checked({path: lines})
     return 0
 
 
-def _retag(f, sc, slice_tag):
+def _retag(f, sc, new_tag, family):
     lines = list(f.lines)
-    new = "@" + slice_tag
+    new = "@" + new_tag
     placed = False
     for i in sc.tag_lines:
         indent = lines[i][:len(lines[i]) - len(lines[i].lstrip())]
         words = []
         for word in lines[i].split():
-            if word.startswith("@slice-"):
+            if family.match(word):
                 if not placed:
                     words.append(new)
                     placed = True
@@ -515,7 +521,7 @@ def main():
     lst.set_defaults(run=cmd_list)
     tag = sub.add_parser("tag")
     tag.add_argument("title")
-    tag.add_argument("slice")
+    tag.add_argument("slice", help="slice-<n>, slice-<n>.<m> or r<n>")
     tag.set_defaults(run=cmd_tag)
     move = sub.add_parser("move")
     move.add_argument("title")
