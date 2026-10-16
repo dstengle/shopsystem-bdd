@@ -157,11 +157,12 @@ Feature: Analysis tools
 
   @r16
   Scenario Outline: check runs each tool under its own heading and fails when any reports
-    Pins which tools check runs over the paths given, and that a report from any one fails it.
+    Pins which tools check runs, over what, and that a report from any one fails it.
     Given a Python project with import contracts
-    And <tool> reports a finding in src/cart.py and the other tools report nothing
+    And <tool> reports a finding and the other tools report nothing
     When the agent runs `tools check src/cart.py`
-    Then tools prints a heading for ruff, for vulture and for import-linter, each over src/cart.py
+    Then tools prints a heading for ruff, for vulture and for import-linter
+    And ruff and vulture are run over src/cart.py and import-linter over the project
     And <tool>'s finding is under <tool>'s heading
     And it exits 1
 

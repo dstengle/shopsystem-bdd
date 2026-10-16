@@ -18,7 +18,7 @@ file; it reports what the tools found and names a tool that is missing rather th
 
 ## Behaviour
 - [r1] **When** `tools` needs an interpreter, it uses the first of these, in this order: the one `--python` gives, used as given; `.venv/bin/python` under the current directory, if that file exists; `venv/bin/python` under the current directory, if that file exists; `$VIRTUAL_ENV/bin/python`, if that file exists, wherever `$VIRTUAL_ENV` points; and else the interpreter running the script. Unless `--log` is given, `tools probe` prints that interpreter's path and whether it came from `--python`, from the project's virtualenv (`.venv`, `venv` or `$VIRTUAL_ENV` alike), or from neither.
-- [r2] **If** the project is not a Python project, `tools` says in one line that no analysis tools are known for its language and exits 1.
+- [r2] **If** the project is not a Python project, `tools probe`, `tools install` and `tools check` say in one line that no analysis tools are known for its language and exit 1.
 - [r3] **When** `tools probe` is run, `tools` prints one line per tool, `<name> <version>` for an installed tool and `<name> missing: <what it is for>` for a missing one, then the interpreter, and exits 1 when any tool is missing.
 - [r4] **When** `tools probe --log` is run, `tools` prints the one `Probe: tools -> ...` line to give `plan log`.
 - [r5] **When** `tools install` is run, `tools` installs each missing tool into the interpreter with pip and edits no dependency file.
@@ -32,7 +32,7 @@ file; it reports what the tools found and names a tool that is missing rather th
 - [r13] **When** `tools untested <file>...` is run, `tools` prints each function in the files that no test in the last map executed.
 - [r14] **When** `tools refs <name>` is run, `tools` prints every reference to that function, class or name defined in the project as `path:line`, including uses through an import or an alias, then one summary line with the number of references, the number of production files holding them and, as a separate number, the number of test files holding them, and where the name is defined.
 - [r15] **If** nothing in the project is defined as `<name>`, `tools refs` exits 1.
-- [r16] **When** `tools check` is run, `tools` runs ruff, vulture and, where the project has import contracts, import-linter, over the paths given or the Python files changed since `--base`, each under its own heading, and exits 1 when any reports.
+- [r16] **When** `tools check` is run, `tools` runs ruff and vulture over the paths given or the Python files changed since `--base` and, where the project has import contracts, import-linter over the project, each under its own heading, and exits 1 when any reports.
 - [r17] **If** a tool `tools check` would run is missing, `tools` names it as missing under its heading instead of skipping it.
 - [r18] **If** the interpreter is not a virtualenv and a tool is missing, `tools install` installs nothing, prints for each missing tool the tool, what it is for, what the workflow does without it and that the interpreter is not a virtualenv, and exits 1.
 - [r19] **When** `tools install` finds every tool present, `tools` says so and exits 0, whether or not the interpreter is a virtualenv.
