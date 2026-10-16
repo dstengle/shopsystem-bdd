@@ -293,7 +293,7 @@ Feature: Design model check
     Pins the summary every plain-text check ends with.
     Given a repository with one violation, one warning, one unresolved reference and one file problem
     When model check is run without --json
-    Then it prints 1 violation, 1 warning, 1 unresolved reference and 1 file problem
+    Then it prints the four counts, each 1
 
   @r32
   Scenario Outline: rows of a violated relation are limited, saying how many more there are
