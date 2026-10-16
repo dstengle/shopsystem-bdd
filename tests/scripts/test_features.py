@@ -746,21 +746,20 @@ class ScenarioTest(Workspace, unittest.TestCase):
         self.assertEqual(done.stdout, "")
         self.assertEqual(done.stderr, "features: 'Apply a code' is not tagged @holding: only a held scenario is retired here\n")
 
-    def test_moving_a_title_no_file_holds_is_refused(self):
-        """moving a title no file holds is refused"""
-        self.write("features/cart.feature", feature(scenario("Empty cart")))
-        reason = self.refused("move", "Apply a code", "--to", "features/cart.feature")
-        self.assertIn("no scenario titled 'Apply a code'", reason)
-
-    def test_moving_a_title_several_files_hold_is_refused(self):
-        """moving a title several files hold is refused"""
-        self.write("features/cart.feature", feature(scenario("Apply a code")))
-        self.write("features/old.feature", feature(scenario("Apply a code")))
-        self.write("features/codes.feature", feature(scenario("Empty cart")))
-        reason = self.refused("move", "Apply a code", "--to", "features/codes.feature")
-        self.assertIn("several", reason)
-        self.assertIn("features/cart.feature, features/old.feature", reason)
-        self.assertNotIn("codes.feature", reason)
+    def test_moving_a_title_that_no_file_or_several_files_hold_is_refused(self):
+        """moving a title that no file or several files hold is refused"""
+        for holders, says, named in (([], "no scenario titled 'Apply a code'", []),
+                                     (["cart", "old"], "several", ["features/cart.feature", "features/old.feature"])):
+            with self.subTest(holders):
+                self.fresh()
+                self.write("features/codes.feature", feature(scenario("Empty cart")))
+                for name in holders:
+                    self.write("features/%s.feature" % name, feature(scenario("Apply a code")))
+                reason = self.refused("move", "Apply a code", "--to", "features/codes.feature")
+                self.assertIn(says, reason)
+                self.assertEqual(re.findall(r"features/\w+\.feature", reason), named)
+                if named:
+                    self.assertIn(", ".join(named), reason)
 
     def test_moving_a_scenario_to_its_own_file_is_refused(self):
         """moving a scenario to its own file is refused"""

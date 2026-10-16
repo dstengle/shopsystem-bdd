@@ -382,21 +382,18 @@ Feature: Feature file tools
       | two living plans |
 
   @r35
-  Scenario: moving a title no file holds is refused
-    A move, hold or retire needs the title in exactly one file; here it is in none.
-    Given no feature file holds the title "Apply a code"
-    When the agent runs features move "Apply a code" --to features/cart.feature
-    Then the command is rejected because no file holds the title
+  Scenario Outline: moving a title that no file or several files hold is refused
+    A move, hold or retire needs the title in exactly one file; a refusal names every file that holds it.
+    Given <holders> the title "Apply a code"
+    When the agent runs features move "Apply a code" --to features/codes.feature
+    Then the command is rejected because <reason>
+    And the refusal names <named>
     And no file is changed
 
-  @r35
-  Scenario: moving a title several files hold is refused
-    A move, hold or retire needs the title in exactly one file; here it is in several, and each is named.
-    Given features/cart.feature and features/old.feature both hold the title "Apply a code"
-    When the agent runs features move "Apply a code" --to features/codes.feature
-    Then the command is rejected because several files hold the title
-    And the refusal names features/cart.feature and features/old.feature
-    And no file is changed
+    Examples:
+      | holders                                                  | reason                       | named                                          |
+      | no feature file holds                                    | no file holds the title      | no file                                        |
+      | features/cart.feature and features/old.feature both hold | several files hold the title | features/cart.feature and features/old.feature |
 
   @r36
   Scenario: moving a scenario to its own file is refused
