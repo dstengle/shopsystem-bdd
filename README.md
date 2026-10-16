@@ -178,8 +178,7 @@ Every Behaviour line carries a stable id, `[r<n>]`, and every scenario names its
 retired in the capability's frontmatter and never reused. The gate shows ids and the spec commit names them.
 Capability ids follow shopsystem-knowledge's IRIs: `<owner domain>/<product>/<context>/<name>`.
 `scripts/model check` checks ids and coverage where clingo is installed. A repository already on capability
-files is migrated with migrating-to-capabilities' "Adding ids". The release's fixture runs are pending: they
-need the person's permission for nested `claude -p` sessions. Test log:
+files is migrated with migrating-to-capabilities' "Adding ids". The release's fixture runs (15 B, 4 A) are recorded in the test log:
 `records/measurements/fixture-runs/2026-10-16-requirement-ids-test-log.md`.
 
 ## Scripts
