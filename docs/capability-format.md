@@ -1,6 +1,6 @@
 # Capability files paired with feature files
 
-Date: 2026-09-29 (stage 1; adopted by the plugin in 0.8.0)
+Date: 2026-09-29 (stage 1; adopted by the plugin in 0.8.0); requirement ids 2026-10-16 (0.19.0, design model v3)
 Scope: one context, on its own. Nothing here needs agreement with another
 repo, a product level, or any tooling beyond markdown and Gherkin.
 
@@ -38,11 +38,12 @@ and the feature says so in its header. Nothing else links them.
 
 ```markdown
 ---
-id: capability/identity
+id: missingmass.io/shopsystem/shop-kb/identity
 title: Identity
 narrator: a client of the contract
 rests_on: [decision/primary-model]
 formulated_as: features/identity.feature
+retired: []
 ---
 
 # Identity
@@ -51,7 +52,7 @@ formulated_as: features/identity.feature
 One paragraph: what this is, and what it isn't.
 
 ## Behaviour
-EARS lines. This is the only section scenarios are formulated from.
+EARS lines, each with its id: `- [r1] **When** ...`. This is the only section scenarios are formulated from.
 
 ## Implementation, may change
 Mechanism. Non-binding. Nothing here gets a scenario.
@@ -105,12 +106,30 @@ Tables stay tables: a table of commands or rpcs is a row of implicit
 When-lines and doesn't need rewriting. A list of properties (a canonical
 format) stays a list.
 
+## Requirement ids
+
+Every Behaviour line carries an id, `[r<n>]`, written first: `- [r3] **If** ...`. The id is the line's
+name for good: scenarios, proposals and commits point at it, and it survives re-wording.
+
+- A new line takes the id one above every id the capability has used or retired, wherever it sits in the
+  section. Ids are never renumbered, so they need not be in order.
+- A changed line keeps its id. A line whose meaning is replaced by a different rule is a removal and an
+  addition, not a change.
+- A removed line's id goes into the frontmatter's `retired: [r<n>, ...]` and is never taken again.
+- A requirement is named `<capability id>#r<n>`, or `<name>#r<n>` inside its own context.
+
+Ids follow shopsystem-knowledge's IRIs. `spec/index.md`'s `id` is the context: the owner's domain, the
+product and the context name, such as `missingmass.io/shopsystem/shop-kb`. A capability's id is the context's
+id, a `/`, and its file's name. A requirement `<capability>#r<n>` is short for the part
+`<capability>#behaviour/r<n>`.
+
 ## The feature file
 
 One feature per capability. One scenario per EARS line; a scenario
 outline where the line has a Where and several configurations matter.
-The scenario title restates the line's condition, so a reader can find
-the line from the scenario and the scenario from the line.
+Each scenario is tagged `@r<n>` with the id of the line it formulates, on its own tag line; the tag is
+what binds them. The title is free; restating the line's condition is still a good title. A held scenario
+(tagged `@holding`) keeps the tag it had and formulates no line.
 
 ```gherkin
 # formulated from spec/capabilities/identity.md
@@ -135,14 +154,14 @@ scenarios; the other four follow the same shape.
 
 ### `spec/capabilities/identity.md` — Behaviour
 
-- **When** `Create` is called with a title, kb mints `id` as
+- [r1] **When** `Create` is called with a title, kb mints `id` as
   `<type>/<slug>` and returns it with `revision` 1.
-- **When** a minted id collides with an existing one, kb appends `-2`,
+- [r2] **When** a minted id collides with an existing one, kb appends `-2`,
   `-3`, and so on, and returns the id it chose.
-- **If** content on `Create`, `Write`, or `Append` carries an identity
+- [r3] **If** content on `Create`, `Write`, or `Append` carries an identity
   key, `title` included, kb refuses the write with a violation naming the
   key.
-- **Where** an item schema declares `title`, **when** an item is appended,
+- [r4] **Where** an item schema declares `title`, **when** an item is appended,
   kb mints its id from the title; otherwise from its position.
 
 ### `features/identity.feature`
@@ -152,23 +171,27 @@ scenarios; the other four follow the same shape.
 Feature: Identity
   Narrator: a client of the contract
 
+  @r1
   Scenario: Create with a title mints the id
     Given a store with a "decision" schema
     When Create is called with type "decision" and title "Use YAML"
     Then the response id is "decision/use-yaml"
     And the response revision is 1
 
+  @r2
   Scenario: a colliding id gets a suffix
     Given a store holding "decision/use-yaml"
     When Create is called with type "decision" and title "Use YAML"
     Then the response id is "decision/use-yaml-2"
 
+  @r3
   Scenario: content carrying an identity key is refused
     Given a store with a "decision" schema
     When Write is called on "decision/use-yaml" with content that carries "title"
     Then the write is refused
     And the violation names "title"
 
+  @r4
   Scenario Outline: an item id is minted from title where the schema declares one
     Given a "process" schema whose step items <declare> a title
     When Append is called on "process/review#steps" with <item>
@@ -207,6 +230,14 @@ will actually see the signal — in stage 1 that means a request or
 something already measured; otherwise leave it out and put the reasoning
 in the line itself.
 
+## Checking
+
+`scripts/model check` (this plugin; needs `python3 -m pip install clingo`) reads `spec/`, `features/` and
+the ledger, and reports by rule name: a line with no id (`v15a`), two lines with one id (`v15b`), a retired
+id taken again (`v15c`), a line with no scenario (`v_s3`), a scenario that names no line or two (`v_s1`,
+`v_s2`), and references that name nothing. It exits 0 when everything holds. Without clingo it says how to
+install it and exits 2; the coverage check is then done by hand.
+
 ## Doing it
 
 1. Read the note and list its capabilities: clusters of behaviour with one
@@ -216,6 +247,7 @@ in the line itself.
 3. Rewrite Behaviour as EARS lines. Each line you can't give an observable
    response to moves to Implementation. Each condition the note never
    stated becomes either a line or a question — write the questions down.
+   Number the lines `[r1]` on in each capability.
 4. Write `spec/index.md`: purpose, constraints carried, composition (the
    capabilities in reading order), order of building, testing. Any table
    spanning capabilities is rendered from them, not authored.
@@ -232,4 +264,4 @@ in the line itself.
 - Capability groups (model / service / operations / guarantees). A column
   to add when the list gets long enough to need it.
 - Beliefs. Rationale goes in the decision that carries it.
-- Any tooling. The pairing is a naming convention and a header comment.
+- Tooling beyond scripts/features and scripts/model. The pairing is a naming convention, a header comment and the @r<n> tags.
