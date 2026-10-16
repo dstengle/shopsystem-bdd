@@ -24,14 +24,14 @@ The small-change path below has no round: the session writes its scenarios itsel
 ## Process
 
 1. **Dispatch the `feature-formulator` agent** (this plugin; it reads only the brief's paths and writes only drafts) with the brief below, once per changed capability. Give it no other paths. On a hand-back from slicing, use the hand-back brief instead. Choose the drafts path `.superpowers/spec-drafts/<date>-<capability name>/`. Each dispatch is a round with its own directory, `<drafts path>/round-<n>/`, named in its brief; the hand-back brief and a changed line coming back are later rounds. If `.gitignore` lacks `.superpowers/`, add it and commit that line alone. Then note `git status --porcelain`.
-2. **Check coverage, both directions, one to one.** First, check `git status --porcelain` matches the porcelain noted before dispatch: only an entry new since then is the agent's, and an agent that wrote outside the drafts path goes back with those files removed. Every added or changed Behaviour line has exactly one scenario (or one outline), and every scenario names the line it formulates. A scenario with no line is removed. A line with no scenario goes back to the agent. A removed line's scenario is removed, or held (step 4). A scenario tagged `@holding` formulates no line: it is a line as it was, and is left out of this check. Feature files carry no slice tags from this skill; slicing adds `@slice-<n>` tags later and owns them.
+2. **Check coverage, both directions, one to one.** First, check `git status --porcelain` matches the porcelain noted before dispatch: only an entry new since then is the agent's, and an agent that wrote outside the drafts path goes back with those files removed. Every added or changed Behaviour line has exactly one scenario (or one outline), and every scenario carries the `@r<n>` tag of the line it formulates. Where clingo is present, `scripts/model check` (at `<this skill's base directory>/../../scripts/`) does this check on the written files in step 4; by hand, it is the check before writing. A scenario with no line is removed. A line with no scenario goes back to the agent. A removed line's scenario is removed, or held (step 4). A scenario tagged `@holding` formulates no line: it is a line as it was, keeps the `@r<n>` tag it had, and is left out of this check (`model check` reads it as none). Feature files carry no slice tags from this skill; slicing adds `@slice-<n>` tags later and owns them.
 3. **Route every question to the spec.** A line the agent returned as a question, because it admits two readings, gets no scenario. Show the person the question with its two readings. Their answer goes to integrating-a-proposal with its question brief, which changes the line; the changed line comes back here. The rest of the capability is not held up.
 4. **Write the files**, round by round in order; a later round's scenario replaces an earlier round's. A new feature file is copied from its draft. In an existing one, only the new and changed scenarios are spliced in and the removed ones taken out; every other scenario, with its tags, stays byte for byte as it was. Check that before committing: an approved scenario missing or changed in the result goes back to the agent.
    **A scenario that passes today does not leave the suite here.** Its behaviour is still in the code, and stays tested until a slice makes it untrue. Before a changed scenario is spliced over the old one, and before a removed line's scenario is taken out, run the old scenario alone (`python -m pytest -q -k "<its name>"`). This is a run, not a reading: you open no step definition and no code.
    - It passes: hold it. `features hold "<old title>" --for "<the new scenario's title>"` (`--for-removal` for a removed line), then `features rebind "<old title>" "<old title> (held)"`, then splice the new scenario in after it. The held scenario keeps every step it had; it gains the tag `@holding`, " (held)" on its title and a `Held for:` line.
-   - It fails or is not collected, because its slice was never built: replace or remove it as before. If its title changed, `features rebind "<old title>" "<new title>"`.
+   - It fails or is not collected, because its slice was never built: replace or remove it as before. If its title changed, `features rebind "<old title>" "<new title>"`. A changed line keeps its id; when its new scenario keeps the old title, nothing is rebound.
 
-   Then `features bindings` must say every binding names a scenario: a binding that names a title no feature has stops its whole test module collecting. Commit the feature files with the test files `rebind` changed, nothing else, and hand them to slicing-into-increments.
+   Then `features bindings` must say every binding names a scenario: a binding that names a title no feature has stops its whole test module collecting. Run `scripts/model check` on the written files before the commit: it must report no `v_s1` or `v_s2`, and no `v_s3` for the lines this round formulated. A scenario it names goes back to its formulator, as the other failures of this step do, and nothing is committed until the check is clean. Where it exits 2 for want of clingo, the reply says so and the hand check of step 2 stands. Then commit the feature files with the test files `rebind` changed, nothing else, and hand them to slicing-into-increments.
 
 ## The Small-Change Path
 
@@ -58,9 +58,9 @@ The file has this shape:
 - Line 2: `Feature: <the capability's title>`
 - Line 3: `  Narrator: <the capability's narrator>`
 - A Background only for a fixed date or shared products, nothing else.
-- One scenario per Behaviour line, in the lines' order, and no others. The
-  title restates the line's condition, so the line can be found from the
-  scenario and the scenario from the line. A line with a Where and several
+- One scenario per Behaviour line, in the lines' order, and no others.
+  Each scenario has a tag line `@r<n>`, the id of the line it formulates, directly above `Scenario:`; its
+  title is free, and restating the line's condition makes a good one. A line with a Where and several
   configurations, or with several cases, is one Scenario Outline with an
   Examples table, never a scenario per case. A table of commands in
   Behaviour is one scenario per row. A boundary the line does not state is
@@ -84,7 +84,7 @@ The file has this shape:
 Write to <DRAFTS PATH>/round-<N>/, and nowhere else: (1) for a new feature, the file;
 for an existing one, only the new and changed scenarios, each headed by the
 line it formulates. Reply with (2) a coverage table with one row per line:
-the line (quoted) and the scenario title that formulates it; (3) questions:
+the line's id, the line (quoted) and the scenario title that formulates it; (3) questions:
 each line with two readings, quoted, and the two readings, one line each;
 (4) cases you noticed that no line mentions, one line each, with no scenario
 written for them; and the drafts' paths. Write that same reply, last of all,
@@ -130,4 +130,5 @@ Given the code, a writer describes what it does. Given only the spec, a writer d
 | Eight scenarios, one per unacceptable input, each with the same Then | One Scenario Outline, eight Examples rows |
 | An outline of seventeen rows, one per call, for "every call is refused when the store is damaged" | One scenario with one representative call; a table-driven test checks every call goes through the boundary |
 | A re-worded scenario spliced over one that passes, its steps left bound to a title that is gone: 32 collection errors in one module, and the behaviour untested until its slice | Hold the old one, rebind it, `features bindings` before the commit |
+| A scenario with no @r tag, found by its title alone | The tag names the line; the title is free |
 | Three new scenarios and a coverage row for every unchanged line returned as text, a 4.8 KB reply, then spliced in by the controller | Drafts to the drafts path; the reply is the coverage table, questions and paths |
