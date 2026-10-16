@@ -32,7 +32,7 @@ the person talks to, with each round handed to a fresh `spec-round` that dispatc
 - [r13] **When** a line is changed, it keeps its id.
 - [r14] **When** a line is removed, its id is added to the capability's `retired` list and no later line takes it.
 - [r15] **When** the approved drafts are committed, the commit message names each id added, changed and removed.
-- [r16] **Where** `model check` can run, **when** the approved drafts are committed, it reports no unresolved reference, no file problem, and no violation but the added and changed lines that have no scenario yet.
+- [r16] **Where** `model check` can run, **when** the approved drafts are committed, it reports nothing that was not there before they were applied, but each added line as having no scenario yet and each removed line's scenario as naming a line its capability no longer has.
 
 ## Implementation, may change
 - The session dispatches `spec-round` with the job `integrate` or `apply`, the note's path, a drafts path
@@ -45,4 +45,4 @@ the person talks to, with each round handed to a fresh `spec-round` that dispatc
 - The format the writer carries is `docs/capability-format.md`.
 
 ## Not yet
-- The gate approves requirement ids listed by a capability-proposal (`adds`, `changes`, `removes`) rather than lines shown as text — trigger: initiative i3 is approved.
+- The gate approves requirement ids listed by a capability-proposal (`adds`, `changes`, `removes`) under `work/` rather than lines shown as text; until then the gate shows each line with its id — trigger: initiative i8 is approved.
