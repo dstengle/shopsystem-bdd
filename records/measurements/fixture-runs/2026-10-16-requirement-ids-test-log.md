@@ -29,7 +29,7 @@ Five `feature-formulator` agents were dispatched with the new brief, one per cap
 written out as the skill gives it. This exercises the brief and the agents, not the skill's end-to-end run:
 `spec-round`, `model check` inside the round and the commit step were done by an implementer by hand.
 
-- The brief is 186 lines.
+- Requirement lines per capability, each with a scenario tagged to it (from the capability files and the feature files' distinct `@r<n>` tags): analysis-tools 35, batch-measurement 38, slice-plan-tool 38, design-model-check 45, feature-file-tools 51; 207 in all.
 - The formulators returned 14 questions between them (analysis-tools r1, r14; batch-measurement r10, r34;
   slice-plan-tool r8, r10, r23; design-model-check r23, r26, r27, r41; feature-file-tools r3, r4, r14). The lines
   were drafted from the 0.18.0 code and admitted two readings.
@@ -74,9 +74,9 @@ the run must say model check did not run), `migrate` (adding ids to a repository
 `run-all.sh` runs three B runs per case (the branch) and two A runs of integrate and formulate (0.18.0, cost only).
 
 The self-test needs no model. Fresh fixtures fail every check a run has to achieve; a hand-made correct result
-passes every check (integrate 6, apply 5, formulate 7, noclingo 6, migrate 12); mutation cases (a renumbered
+passes every check (ok lines in selftest.out: integrate 7, apply 7, formulate 8, noclingo 7, migrate 12); mutation cases (a renumbered
 line, an apply message that names the wrong lines, an unformulated lend-items, a v_s3 left, the index id not
-changed, spec and features in two commits) each fail exactly the check meant for them. Two rounds of review
+changed, spec and features in two commits) each fail the check meant for them (some fail others too: the stale index id also fails `model check` and the one-commit check). Two rounds of review
 of the harness fixed: a correct same-line gate misread, the missing index id and one-commit checks, and prompts
 that hinted the checks.
 
@@ -106,3 +106,7 @@ Command: `/home/vscode/scratch/shopsystem-bdd/ids/run-all.sh`. **Its results are
 - The skills run end to end on this repository: `spec-round` with `model check` inside the round.
 - Decisions as files in consuming repositories, which is not in this release.
 - A harness that blocks subagents from writing reply files.
+
+## Fix note
+
+Corrected after review: the harness's ok counts are taken from selftest.out; "exactly" dropped from the mutation sentence; the unsupported "186 lines" replaced by counts of requirement lines per capability.
