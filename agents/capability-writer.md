@@ -51,7 +51,7 @@ Purpose, constraints carried (with any bound stated as a bound), composition (th
 
 ## What you return
 
-1. Drafts, written under the drafts path: a new file whole at its `spec/` path under the drafts path; for a changed capability file, only its changed sections, each headed by the section's heading; new ledger entries only, in `decisions.append.md`. Never an unchanged file or section.
+1. Drafts, written under the drafts path: a new file whole at its `spec/` path under the drafts path; for a changed capability file, only its changed sections, each headed by the section's heading, and a changed frontmatter (a removed line's id added to `retired`) drafted whole, headed `frontmatter`; new ledger entries only, in `decisions.append.md`. Never an unchanged file or section.
 2. The change list, one row per Behaviour line added, changed or removed: `added | changed | removed`, capability, the id, the line (for `changed`, the old line too), and the note sentence it comes from, quoted.
 3. The ledger entries, in `decisions.append.md`.
 4. Questions: each condition the note does not state, one line, with the capability it concerns and the line you would write for each answer. Two readings of one sentence are a question too.
