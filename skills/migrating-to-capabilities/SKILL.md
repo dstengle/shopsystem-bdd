@@ -1,6 +1,6 @@
 ---
 name: migrating-to-capabilities
-description: Use when a repository has approved Gherkin feature files and design notes under docs/superpowers/specs/ but no spec/ directory of capability files, or when asked to migrate a project to capability files, one feature per capability, or the stage-1 layout. Also use when tempted to keep the old feature file names so tests need no changes.
+description: Use when a repository has approved Gherkin feature files and design notes under docs/superpowers/specs/ but no spec/ directory of capability files, or when asked to migrate a project to capability files, one feature per capability, or the stage-1 layout. Also use when tempted to keep the old feature file names so tests need no changes. Also use when a repository has spec/capabilities/ files whose Behaviour lines carry no [r<n>] ids.
 ---
 
 # Migrating to Capabilities
@@ -30,6 +30,23 @@ Format: `docs/capability-format.md` in this plugin. The gate is integrating-a-pr
    - Delete the old feature files, and the old test modules that no longer bind any scenario.
 5. **Verify** against the baseline: `features verify-moved --from <baseline>/features` prints `<n> scenarios match`; the same summary line (warnings aside); the same passing scenarios by title through the mapping table (module paths in test ids change with the rebinding; gate-approved retitles are applied to the baseline); `features count --by-tag` equal to the baseline's. Any difference: stop and report it. Never edit a scenario to make the numbers match. Commit features, tests and the slice plan together.
 6. **Hand off.** Head each note with `Proposal, integrated into spec/ on <date>.` and commit. Approved unbacked lines go to formulating-features, then slicing.
+
+## Adding Ids
+
+A repository already on capability files, with no `[r<n>]` ids, is migrated to ids. Nothing changes meaning: lines keep their text, scenarios their steps and titles.
+
+1. **Preconditions** as above, and the baseline: the summary line, the passing tests (`-q -rA`) and `features count --by-tag`. Choose the drafts path `.superpowers/spec-drafts/<date>-ids/`, as in Process step 1.
+2. **Number the lines.** In each capability, give each Behaviour line `[r<n>]` in its order from r1, add `retired: []` to the frontmatter, and set its `id` to `<context id>/<name>`. The context id is the owner's domain, product and context name: take it from `spec/index.md` if it names them; otherwise stop and ask the person, and number nothing before the answer. No line's text changes: `git diff --word-diff` shows only `[r<n>]` added.
+3. **Map the scenarios.** Dispatch a `feature-formulator` with this brief, once per capability:
+
+       Map the scenarios of features/<NAME>.feature to the lines of spec/capabilities/<NAME>.md.
+       You may read those two files and nothing else. Write nothing but <DRAFTS PATH>/round-1/<NAME>.reply.md:
+       one row per scenario not tagged @holding, `<title> | r<n>`, the line it formulates; then each
+       scenario that formulates no line or more than one, with the lines it touches.
+
+4. **Stop at the gate.** Show the person the context id and every scenario the mapping could not place, each as a question. Wait for the answers. A scenario that is not placed is tagged by no one before its answer. The rows the mapping placed need no approval: they are transcription.
+5. **Tag.** Only after the gate. For each row, and each answer, `features tag "<title>" r<n>`; it makes `@r<n>` the scenario's one requirement tag and keeps its other tags. Held scenarios are tagged with the id of the line they were held for when there is one, and otherwise left without a requirement tag. Nothing else in a feature file changes.
+6. **Verify.** Run `scripts/model check` from this plugin, with no arguments: it reads the whole repository. It reports no `v15a`, `v_s1`, `v_s2`, and no `v_s3` but for lines that had no scenario before. Exit 2 with a message naming clingo and `pip install clingo` means clingo is missing: do this check by hand and say so in the reply. Any other exit 2 is a failed run: stop and report it. The summary line and passing tests equal the baseline's; `features count --by-tag` equals the baseline's but for the new `r<n>` tags. Then commit `spec/` and `features/` together, never before the gate: `spec: requirement ids, <n> lines, <m> scenarios tagged`.
 
 ## The Migration Brief
 
@@ -70,3 +87,6 @@ paths, and the migration mapping table.
 - A step definition's body edited while moving it
 - A verify step that compares counts but not the passing scenarios by title
 - A suite that did not run cleanly before migration, recorded as the baseline
+- A Behaviour line whose words changed while it was numbered
+- An @r<n> tag on a Feature: line
+- A `features tag` run before the gate, or a scenario tagged that the mapping did not place
