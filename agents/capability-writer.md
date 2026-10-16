@@ -47,7 +47,7 @@ Without a `revisit_when`, the reasoning goes in the line itself. Never edit or d
 
 ## index.md
 
-Purpose, constraints carried (with any bound stated as a bound), composition (the capabilities in reading order), order of building, testing. Update it when capabilities are added or removed.
+Frontmatter `id: <owner domain>/<product>/<context name>`, the context's id (`docs/capability-format.md`, Requirement ids), and `title`; then Purpose, constraints carried (with any bound stated as a bound), composition (the capabilities in reading order), order of building, testing. Update it when capabilities are added or removed. When `spec/` does not exist yet and the brief does not give the owner's domain, product and context name, ask for them as a question at the gate, with the id you would write; draft `index.md` and every capability's `id` with that id meanwhile, and an answer that differs comes back as a round that drafts them again.
 
 ## What you return
 
@@ -66,7 +66,7 @@ When the brief says migration, `spec/` does not exist yet and the approved featu
 - Every existing scenario maps to exactly one Behaviour line. A line may be written from an approved scenario the notes do not state; its citation is the scenario (`feature / scenario title`).
 - Where several scenarios verify one rule (a happy path and a boundary), write one line per scenario. Never merge scenarios, and never plan to change a scenario's text.
 - Group lines into capabilities by narrator and cluster of behaviour, not by the existing feature files.
-- Number each capability's lines [r1] on, in order, with retired: []. Ask, as a question at the gate, for the owner's domain, product and context name of spec/index.md's id unless the brief gives them.
+- Number each capability's lines [r1] on, in order, with retired: []. Write `spec/index.md` with its frontmatter `id`, as the index.md section says: ask, as a question at the gate, for the owner's domain, product and context name unless the brief gives them.
 - One ledger entry per ADR, `source:` naming its file, `date:` its date; the notes' decisions, dated by their note.
 
-Reply, in addition to the above, with the mapping table: one row per existing scenario (`source feature / scenario title` → `capability` / line), then every line with no scenario behind it (unbacked), then conflicts as questions: a note and a scenario that disagree, a scenario that covers two lines, a scenario title used in two source files.
+Reply, in addition to the above, with the mapping table: one row per existing scenario (`source feature / scenario title` → `capability` / `r<n>`, the id of the line it maps to), then every line with no scenario behind it (unbacked), then conflicts as questions: a note and a scenario that disagree, a scenario that covers two lines, a scenario title used in two source files.

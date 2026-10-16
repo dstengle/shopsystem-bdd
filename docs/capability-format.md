@@ -123,11 +123,22 @@ product and the context name, such as `missingmass.io/shopsystem/shop-kb`. A cap
 id, a `/`, and its file's name. A requirement `<capability>#r<n>` is short for the part
 `<capability>#behaviour/r<n>`.
 
+`spec/index.md` begins with the context's id:
+
+```markdown
+---
+id: missingmass.io/shopsystem/shop-kb
+title: shop-kb
+---
+
+# shop-kb
+```
+
 ## The feature file
 
 One feature per capability. One scenario per EARS line; a scenario
 outline where the line has a Where and several configurations matter.
-Each scenario is tagged `@r<n>` with the id of the line it formulates, on its own tag line; the tag is
+Each scenario is tagged `@r<n>` with the id of the line it formulates, on the scenario's tag line; the tag is
 what binds them. The title is free; restating the line's condition is still a good title. A held scenario
 (tagged `@holding`) keeps the tag it had and formulates no line.
 
@@ -248,9 +259,12 @@ install it and exits 2; the coverage check is then done by hand.
    response to moves to Implementation. Each condition the note never
    stated becomes either a line or a question — write the questions down.
    Number the lines `[r1]` on in each capability.
-4. Write `spec/index.md`: purpose, constraints carried, composition (the
-   capabilities in reading order), order of building, testing. Any table
-   spanning capabilities is rendered from them, not authored.
+4. Write `spec/index.md`: frontmatter `id`, the context's id
+   (`<owner domain>/<product>/<context name>`; ask the person when you do
+   not know them) and `title`; then purpose, constraints carried,
+   composition (the capabilities in reading order), order of building,
+   testing. Any table spanning capabilities is rendered from them, not
+   authored.
 5. Formulate one feature per capability, one scenario per line.
 6. Keep the note as a dated proposal; from here the capability files are
    the spec. A later note is integrated into the same `spec/`: it never
