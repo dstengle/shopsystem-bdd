@@ -19,6 +19,31 @@ Feature: Feature file tools
     Then the command is rejected because the feature file holds a Rule: block
     And the refusal names features/rules.feature
 
+  @r3
+  Scenario Outline: an edit is refused only when it would leave a Rule: block outside a docstring
+    Pins that the one thing an edit's result is checked for is a Rule: block outside a docstring, and that a refused edit changes no file.
+    Given an edit by features that would leave features/cart.feature holding <result>
+    When the agent runs that edit
+    Then <outcome>
+
+    Examples:
+      | result                                       | outcome                                                                                                      |
+      | a Rule: block outside a docstring            | the edit is rejected because features could not read features/cart.feature, and every file is as it was     |
+      | a Rule: line inside a docstring              | the edit is made                                                                                             |
+      | two scenarios titled "Apply a code"          | the edit is made                                                                                             |
+
+  @r4
+  Scenario: counting by tag counts outline rows, inherited tags and untagged scenarios
+    Pins that each Examples row is a scenario carrying its feature's and its own table's tags, and that the total leaves no scenario out.
+    Given a feature file features/cart.feature tagged @cart
+    And it has a scenario "Plain" with no tags of its own
+    And it has a scenario "Own tag" tagged @slice-1
+    And it has a Scenario Outline "Outlined" tagged @slice-2 with an Examples table tagged @r3 of 2 rows and an untagged Examples table of 1 row
+    And a feature file features/misc.feature with no tags has a scenario "Untagged" with no tags
+    When the agent runs features count --by-tag
+    Then it prints 5 scenarios for cart, 1 for slice-1, 3 for slice-2 and 2 for r3
+    And it prints a total of 6
+
   @r5
   Scenario: listing by tag includes the feature's and the Examples' tags
     A scenario holds a tag when it carries it itself, when its feature carries it, or when its Examples table carries it.
@@ -111,6 +136,20 @@ Feature: Feature file tools
     And a feature file features/cart.feature
     When the agent runs features move "Apply a code" --to features/cart.feature --inline-background
     Then the moved "Apply a code" has the steps "Given the date is 2026-10-16" then "Given a cart holding product Mug at price 8.00"
+
+  @r14
+  Scenario Outline: moving with feature tags carried adds the missing ones on a tag line of their own
+    Pins that only the feature tags the destination lacks are carried, on their own line just above the Scenario: line, with the scenario's own tag lines left as they were.
+    Given a feature file features/old.feature with the feature tags @cart and @checkout
+    And its scenario "Apply a code" has <own tag lines>
+    And a feature file features/cart.feature with the feature tag @cart
+    When the agent runs features move "Apply a code" --to features/cart.feature --carry-feature-tags
+    Then the moved "Apply a code" has the tag lines <tag lines after>, the last directly above its Scenario: line
+
+    Examples:
+      | own tag lines         | tag lines after                  |
+      | the tag line "@slice-2" | "@slice-2" then "@checkout"    |
+      | no tag line           | "@checkout"                      |
 
   @r15
   Scenario: moving to a destination that does not exist is refused

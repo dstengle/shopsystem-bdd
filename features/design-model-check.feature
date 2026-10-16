@@ -174,6 +174,21 @@ Feature: Design model check
       | thing#line2    |
       | thing#r3-r1    |
 
+  @r23
+  Scenario Outline: a proposal adding or removing a requirement no capability has is unresolved, unless it adds a retired id
+    Pins that an absent requirement is an unresolved reference whether added or removed, and that adding a retired id is a v15c instead.
+    Given a capability thing with requirement r1 that lists r4 as retired
+    And a capability-proposal that <change> thing#<id>
+    When model check is run
+    Then thing#<id> is <reported>
+
+    Examples:
+      | change  | id | reported                                  |
+      | adds    | r9 | reported as unresolved                    |
+      | removes | r9 | reported as unresolved                    |
+      | adds    | r4 | reported under v15c and not as unresolved |
+      | removes | r4 | reported as unresolved                    |
+
   @r24
   Scenario Outline: a frontmatter reference to nothing, or to the wrong kind, is unresolved
     Pins that each named frontmatter reference must reach a node of the kind it needs.
@@ -207,6 +222,40 @@ Feature: Design model check
       | spec/capabilities/thing.md has the id acme/shop/cart/other | spec/capabilities/thing.md |
       | spec/capabilities/thing.md has no ## Behaviour section     | spec/capabilities/thing.md |
       | spec/capabilities/thing.md lists retired: [3]              | spec/capabilities/thing.md |
+
+  @r26
+  Scenario Outline: a feature file no capability is formulated as, or with a title twice, is a file problem
+    Pins which feature files belong to a capability, and that titles are unique among the scenarios not held.
+    Given a capability thing, <formulated as>
+    And a feature file <file> in which <titles>
+    When model check is run
+    Then it <reports> a file problem naming <file>
+
+    Examples:
+      | formulated as                                  | file                   | titles                                                                     | reports         |
+      | formulated_as features/thing.feature           | features/stray.feature | every scenario has its own title                                           | reports         |
+      | giving no formulated_as                        | features/thing.feature | every scenario has its own title                                           | does not report |
+      | formulated_as features/sub/thing-flow.feature  | features/thing.feature | every scenario has its own title                                           | reports         |
+      | formulated_as features/thing.feature           | features/thing.feature | two scenarios are titled "Apply a code"                                    | reports         |
+      | formulated_as features/thing.feature           | features/thing.feature | two scenarios are titled "Apply a code" and one of them is tagged @holding | does not report |
+
+  @r27
+  Scenario Outline: a malformed work directory or work file is a file problem
+    Pins the shape each initiative and part file must have, and that a missing initiative.md is charged to its directory.
+    Given a repository with a work directory work/i1 in which <case>
+    When model check is run
+    Then it reports a file problem naming <named>
+
+    Examples:
+      | case                                                  | named                                     |
+      | there is no initiative.md                             | work/i1, and not work/i1/initiative.md    |
+      | initiative.md has no id                               | work/i1/initiative.md                     |
+      | the part p1.md has no id                              | work/i1/p1.md                             |
+      | the part p1.md has the kind banana                    | work/i1/p1.md                             |
+      | the part p1.md has no status                          | work/i1/p1.md                             |
+      | the part p1.md has a status not in its kind's lifecycle | work/i1/p1.md                           |
+      | the part p1.md has the priority high                  | work/i1/p1.md                             |
+      | the part p1.md has a date written 16/10/2026          | work/i1/p1.md                             |
 
   @r28
   Scenario: a work-item accepting a requirement no scenario names is a file problem
@@ -332,6 +381,22 @@ Feature: Design model check
     When model why is run for thing#r9
     Then it says no capability has thing#r9 where the requirement's text would be
     And it lists the proposal
+
+  @r41
+  Scenario Outline: why lists every proposal naming the requirement by date, and fails when none adds or changes it
+    Pins that removing proposals are listed too, in date order with status and date, but only one that adds or changes the requirement makes why succeed.
+    Given a capability thing with requirement r2
+    And <proposals>
+    When model why is run for thing#r2
+    Then it lists <listed>, in that order, each with its status and date
+    And it exits <status>
+
+    Examples:
+      | proposals                                                                                                   | listed      | status |
+      | a capability-proposal p2 dated 2026-10-01 that removes thing#r2 and a capability-proposal p1 dated 2026-09-01 that adds thing#r2    | p1 then p2  | 0      |
+      | a capability-proposal p2 dated 2026-10-01 that removes thing#r2 and a capability-proposal p1 dated 2026-09-01 that changes thing#r2 | p1 then p2  | 0      |
+      | a capability-proposal p2 dated 2026-10-01 that removes thing#r2 and a capability-proposal p1 dated 2026-09-01 that removes thing#r2 | p1 then p2  | 1      |
+      | only a capability-proposal p2 dated 2026-10-01 that removes thing#r2                                        | p2          | 1      |
 
   @r42
   Scenario: the behaviour/ form of a reference names the same requirement

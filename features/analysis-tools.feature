@@ -2,6 +2,23 @@
 Feature: Analysis tools
   Narrator: an agent researching or reviewing a project's code
 
+  @r1
+  Scenario Outline: the interpreter is the first of --python, .venv, venv, $VIRTUAL_ENV and the running one
+    Pins the order in which tools picks its interpreter, and that probe says which one it picked and why.
+    Given a Python project in the current directory
+    And <setting>
+    When the agent runs `tools probe <option>`
+    Then tools prints the path of <interpreter>
+    And it says the interpreter came from <source>
+
+    Examples:
+      | setting                                                                                                         | option                         | interpreter                                     | source                          |
+      | the project has .venv/bin/python and venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python | --python /opt/py/bin/python    | /opt/py/bin/python                              | --python                        |
+      | the project has .venv/bin/python and venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python |                                | .venv/bin/python under the current directory    | .venv                           |
+      | the project has venv/bin/python and no .venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python |                             | venv/bin/python under the current directory     | venv                            |
+      | the project has neither .venv/bin/python nor venv/bin/python, and $VIRTUAL_ENV points at /opt/env, outside the project, which has bin/python | |  /opt/env/bin/python                         | $VIRTUAL_ENV                    |
+      | the project has neither .venv/bin/python nor venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has no bin/python |                    | the interpreter running the script              | the interpreter running the script |
+
   @r2
   Scenario: a project that is not a Python project has no known analysis tools
     Pins that tools names the gap in one line and fails rather than guessing at another language's tools.
@@ -118,6 +135,18 @@ Feature: Analysis tools
     When the agent runs `tools untested src/cart.py src/report.py`
     Then tools prints refund and export
     And it prints no other function
+
+  @r14
+  Scenario: refs prints each reference as path:line, through imports and aliases, then one summary line
+    Pins that a use under another file's import or an alias is still found, and that the summary keeps production and test files apart.
+    Given a Python project that defines the function total in src/cart.py
+    And src/checkout.py imports total and calls it
+    And src/report.py imports total under the alias cart_total and calls cart_total
+    And tests/test_cart.py imports total and calls it
+    When the agent runs `tools refs total`
+    Then tools prints each reference as `path:line`
+    And the references printed include the calls in src/checkout.py, src/report.py and tests/test_cart.py
+    And then it prints one summary line giving the number of references printed, 2 production files, 1 test file, and src/cart.py as where total is defined
 
   @r15
   Scenario: refs fails for a name the project does not define

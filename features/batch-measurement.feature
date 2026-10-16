@@ -89,6 +89,16 @@ Feature: Batch measurement
       | before | is not counted |
       | after  | is not counted |
 
+  @r10
+  Scenario: a request's usage is counted once, and its reasoning is part of its output
+    A request repeated across transcript rows is not counted again, and reasoning tokens are shown inside the output figure, not on top of it.
+    Given a batch with one dispatch that made one request
+    And the request's usage, 500 new input and 1200 output tokens of which 300 are reasoning, is carried by three transcript rows
+    When the session runs measure batch for the batch
+    Then the facts count the request's 500 new input and 1200 output tokens once
+    And the facts give its output as 1200, of which 300 reasoning
+    And no output figure in the facts is 1500
+
   @r11
   Scenario: a dispatching session's own requests are the controller's
     The session that dispatched inside the batch has its own requests there counted to the controller.
@@ -333,6 +343,22 @@ Feature: Batch measurement
       | at commit B               | commit B |
       | at 2026-09-14T18:00:00Z   | HEAD     |
       | now                       | HEAD     |
+
+  @r34
+  Scenario: the facts count resumed dispatches, the late share of building time without scouts, and starting context
+    Building time is the dispatches' own durations added up, scouts aside, and the share after the first branch review is taken of that.
+    Given a batch whose dispatches are
+      | dispatch      | role          | prompts | starts               | own duration in minutes | starting context |
+      | implementer 1 | implementer   | 1       | before any review    | 30                      | 20000            |
+      | implementer 2 | implementer   | 1       | with implementer 1   | 30                      | 30000            |
+      | review 1      | branch review | 1       | after both           | 10                      | 40000            |
+      | fix 1         | implementer   | 2       | after review 1       | 30                      | 10000            |
+      | scout 1       | scout         | 1       | after review 1       | 15                      | 50000            |
+    And implementer 1 and implementer 2 ran at the same time
+    When the session runs measure batch for the batch
+    Then the facts count 1 dispatch as resumed
+    And the facts give 0.4 as the share of building time from the first branch review on
+    And the facts give a mean starting context of 30000 and a summed starting context of 150000
 
   @r35
   Scenario: show prints the header, the tables, the exceptions, the hand-backs and the notes

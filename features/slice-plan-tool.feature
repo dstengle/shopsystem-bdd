@@ -72,12 +72,40 @@ Feature: Slice plan tool
     Then slice 2's Status is in progress
     And every other line of the plan is as it was
 
+  @r8
+  Scenario Outline: a status plan does not know is refused
+    Pins that only planned, in progress and green, each with an optional note, or blocked with its reason, can be set.
+    Given a valid plan whose slice 2 has Status planned
+    When the agent runs `plan status 2 "<status>"`
+    Then the command is rejected because <status> is not a status a slice may have
+    And the plan file is unchanged
+
+    Examples:
+      | status        |
+      | done          |
+      | done: merged  |
+      | blocked       |
+
   @r9
   Scenario: setting the status of a slice the plan does not have is refused
     The status command needs a slice that exists.
     Given a valid plan with slices 1 and 2
     When the agent runs `plan status 7 green`
     Then the command is rejected because the plan has no slice 7
+
+  @r10
+  Scenario Outline: an added slice goes in number order with Status planned
+    Pins where a new slice lands among dotted numbers, compared part by part as whole numbers.
+    Given a valid plan with slices <slices before>, in that order
+    When the agent runs `plan add-slice <number> "Checkout"`
+    Then the plan's slices are <slices after>, in that order
+    And slice <number> has Status planned
+
+    Examples:
+      | slices before | number | slices after         |
+      | 1, 2.9 and 3  | 2.10   | 1, 2.9, 2.10 and 3   |
+      | 1.1 and 2     | 1      | 1, 1.1 and 2         |
+      | 1 and 3       | 2      | 1, 2 and 3           |
 
   @r11
   Scenario Outline: adding a slice that does not fit is refused
@@ -204,6 +232,16 @@ Feature: Slice plan tool
     When the agent runs `plan show --current`
     Then the command is rejected as bad usage
     And it exits 2
+
+  @r23
+  Scenario: archiving writes the green slices and the Log beside the plan and removes those slices
+    Pins the archive file's name and place, what goes into it, and that the archived slices leave the plan.
+    Given a valid plan docs/superpowers/plans/foo-slices.md with slice 1 green, slice 2 planned and slice 3 green
+    And its Log holds three entries
+    When the agent runs `plan archive batch-1`
+    Then docs/superpowers/plans/archive/foo-slices-batch-1.md holds slices 1 and 3 and not slice 2
+    And it holds the three entries the Log held
+    And the plan holds slice 2 and not slices 1 or 3
 
   @r24
   Scenario: archiving leaves the Log holding what is still owed and the suite record
