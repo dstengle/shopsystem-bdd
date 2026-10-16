@@ -55,17 +55,18 @@ def test_the_shelf_counts():
 CART = """\"\"\"The cart.\"\"\"
 
 
+def refund(order):
+    return -order
+
+
 def total(items):
+    \"\"\"Sum the items.\"\"\"
     return sum(items)
 
 
 class Cart:
     def total(self, items):
-        return total(items)
-
-
-def unused():
-    return None
+        return sum(items)
 """
 CART_ALL = "def total(items):\n    return sum(items)\n"
 OTHER = "def other():\n    return 1\n"
@@ -391,12 +392,22 @@ class ToolsTest(unittest.TestCase):
     @unittest.skipUnless(HAVE, "coverage, pytest-cov and jedi are needed")
     def test_tests_of_lists_the_tests_that_executed_a_target_in_the_last_map(self):
         """tests-of lists the tests that executed a target in the last map"""
-        root = self.mapped({"src/cart.py": CART, "src/other.py": OTHER, "tests/test_cart.py": TEST_TOTAL,
-                            "tests/test_checkout.py": TEST_CHECKOUT, "tests/test_other.py": TEST_OTHER})
-        commit = self.git(root, "rev-parse", "--short", "HEAD")
-        for target, argument in (("the file", "src/cart.py"), ("the function", "src/cart.py:total"),
-                                 ("the method", "src/cart.py:Cart.total"), ("a line range", "src/cart.py:10-20")):
+        # each row has the one other test that would show the form ignored: one that ran other code in src/cart.py
+        refund = ("test_refund", "from cart import refund", "refund(1)")
+        plain = ("test_plain", "from cart import total", "total([1])")
+        others = [("test_other_%d" % n, "from other import other", "other()") for n in range(3)]
+        rows = [("the file", "src/cart.py", "Cart().total([1])", others),
+                ("the function", "src/cart.py:total", "total([1])", [refund] + others[:2]),
+                ("the method", "src/cart.py:Cart.total", "Cart().total([1])", [plain, refund] + others[:1]),
+                ("a line range", "src/cart.py:10-20", "total([1])", [refund] + others[:2])]
+        for target, argument, call, extras in rows:
             with self.subTest(target=target):
+                tests = {"tests/test_cart.py": "from cart import Cart, total\n\n\ndef test_total():\n    assert %s\n" % call,
+                         "tests/test_checkout.py": "from cart import Cart, total\n\n\ndef test_checkout():\n    assert %s\n" % call,
+                         "tests/test_extra.py": "".join("%s\n\n\ndef %s():\n    assert %s\n\n\n" % (imp, name, body)
+                                                       for name, imp, body in extras)}
+                root = self.mapped({"src/cart.py": CART, "src/other.py": OTHER, **tests})
+                commit = self.git(root, "rev-parse", "--short", "HEAD")
                 done = self.cli("tests-of", argument, cwd=root, python=sys.executable)
                 self.assertEqual(done.returncode, 0, done.stderr)
                 lines = done.stdout.splitlines()
@@ -418,7 +429,7 @@ class ToolsTest(unittest.TestCase):
     def test_tests_of_fails_when_nothing_executed_the_target_or_the_function_does_not_exist(self):
         """tests-of fails when nothing executed the target or the function does not exist"""
         root = self.mapped({"src/cart.py": CART, "tests/test_cart.py": TEST_TOTAL})
-        for argument in ("src/cart.py:unused", "src/cart.py:missing"):
+        for argument in ("src/cart.py:refund", "src/cart.py:missing"):
             with self.subTest(argument=argument):
                 done = self.cli("tests-of", argument, cwd=root, python=sys.executable)
                 self.assertEqual(done.returncode, 1)

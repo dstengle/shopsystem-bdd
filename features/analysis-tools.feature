@@ -304,7 +304,7 @@ Feature: Analysis tools
     Given a map has been made
     And the project has no file src/gone.py
     When the agent runs `tools tests-of src/gone.py`
-    Then the command is refused because src/gone.py does not exist
+    Then the command is refused
     And it names src/gone.py
 
   @r30
