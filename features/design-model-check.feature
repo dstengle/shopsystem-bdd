@@ -129,7 +129,7 @@ Feature: Design model check
       | spec/capabilities/thing.md         | with --root naming that directory     | include         |
       | features/sub/thing.feature         | with --root naming that directory     | include         |
       | decisions/0001-one.md              | with --root naming that directory     | include         |
-      | work/i1/p1.md                      | with --root naming that directory     | include         |
+      | work/i1/initiative.md              | with --root naming that directory     | include         |
       | records/observations.md            | with --root naming that directory     | include         |
       | records/review/f1.md with an id    | with --root naming that directory     | include         |
       | records/review/f2.md with no id    | with --root naming that directory     | do not include  |
@@ -191,7 +191,7 @@ Feature: Design model check
 
   @r24
   Scenario Outline: a frontmatter reference to nothing, or to the wrong kind, is unresolved
-    Pins that each named frontmatter reference must reach a node of the kind it needs.
+    Pins that each named frontmatter reference must reach a node, and that supersedes, under, for, blocked_by and depends_on must reach a node of the kind they need.
     Given a file whose <field> names <target>
     When model check is run
     Then that <field> is reported as unresolved
@@ -206,7 +206,7 @@ Feature: Design model check
       | for        | an id nothing in the repository has      |
       | blocked_by | an id nothing in the repository has      |
       | depends_on | an id nothing in the repository has      |
-      | argues     | a decision, where a capability is needed |
+      | under      | a decision, where a capability is needed |
 
   @r25
   Scenario Outline: a malformed index or capability file is a file problem
@@ -221,7 +221,7 @@ Feature: Design model check
       | spec/index.md has no id                                    | spec/index.md              |
       | spec/capabilities/thing.md has the id acme/shop/cart/other | spec/capabilities/thing.md |
       | spec/capabilities/thing.md has no ## Behaviour section     | spec/capabilities/thing.md |
-      | spec/capabilities/thing.md lists retired: [3]              | spec/capabilities/thing.md |
+      | spec/capabilities/thing.md lists retired: [three]          | spec/capabilities/thing.md |
 
   @r26
   Scenario Outline: a feature file no capability is formulated as, or with a title twice, is a file problem
@@ -254,8 +254,8 @@ Feature: Design model check
       | the part p1.md has the kind banana                    | work/i1/p1.md                             |
       | the part p1.md has no status                          | work/i1/p1.md                             |
       | the part p1.md has a status not in its kind's lifecycle | work/i1/p1.md                           |
-      | the part p1.md has the priority high                  | work/i1/p1.md                             |
-      | the part p1.md has a date written 16/10/2026          | work/i1/p1.md                             |
+      | initiative.md has the priority high                   | work/i1/initiative.md                     |
+      | initiative.md has a date written 16/10/2026           | work/i1/initiative.md                     |
 
   @r28
   Scenario: a work-item accepting a requirement no scenario names is a file problem
@@ -393,10 +393,10 @@ Feature: Design model check
 
     Examples:
       | proposals                                                                                                   | listed      | status |
-      | a capability-proposal p2 dated 2026-10-01 that removes thing#r2 and a capability-proposal p1 dated 2026-09-01 that adds thing#r2    | p1 then p2  | 0      |
-      | a capability-proposal p2 dated 2026-10-01 that removes thing#r2 and a capability-proposal p1 dated 2026-09-01 that changes thing#r2 | p1 then p2  | 0      |
-      | a capability-proposal p2 dated 2026-10-01 that removes thing#r2 and a capability-proposal p1 dated 2026-09-01 that removes thing#r2 | p1 then p2  | 1      |
-      | only a capability-proposal p2 dated 2026-10-01 that removes thing#r2                                        | p2          | 1      |
+      | a capability-proposal p1 dated 2026-10-01 that removes thing#r2 and a capability-proposal p2 dated 2026-09-01 that adds thing#r2    | p2 then p1  | 0      |
+      | a capability-proposal p1 dated 2026-10-01 that removes thing#r2 and a capability-proposal p2 dated 2026-09-01 that changes thing#r2 | p2 then p1  | 0      |
+      | a capability-proposal p1 dated 2026-10-01 that removes thing#r2 and a capability-proposal p2 dated 2026-09-01 that removes thing#r2 | p2 then p1  | 1      |
+      | only a capability-proposal p1 dated 2026-10-01 that removes thing#r2                                        | p1          | 1      |
 
   @r42
   Scenario: the behaviour/ form of a reference names the same requirement
@@ -417,7 +417,7 @@ Feature: Design model check
     Examples:
       | reference                                                  | written    | read                  |
       | a capability-proposal that argues cart/thing               | cart/thing | acme/shop/cart/thing  |
-      | a reference to the bounded context written cart            | cart       | the bounded context   |
+      | a capability-proposal that argues cart                     | cart       | the bounded context   |
 
   @r44
   Scenario: a held scenario names no requirement
@@ -429,9 +429,10 @@ Feature: Design model check
 
   @r45
   Scenario: without a decisions directory the index's headings are the decisions
-    Pins where decisions come from in a repository that keeps them only in spec/decisions.md.
+    Pins where decisions and their summaries come from in a repository that keeps them only in spec/decisions.md.
     Given a repository with no decisions/ directory
-    And a spec/decisions.md with the heading ## decision/one
+    And a spec/decisions.md with the heading ## decision/one, a line of text below it, and a date: line after that
     And a capability that rests on decision/one
     When model check is run
     Then decision/one is not reported as unresolved
+    And that line of text is read as the decision's summary

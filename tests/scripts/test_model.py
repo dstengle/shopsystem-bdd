@@ -1,6 +1,7 @@
 """Tests of scripts/model. Each test whose docstring is a scenario title of
 features/design-model-check.feature is that scenario's step definition."""
 
+import json
 import pathlib
 import re
 import shutil
@@ -9,6 +10,8 @@ import sys
 import tempfile
 import textwrap
 import unittest
+
+from binding import missing
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "model"
@@ -66,17 +69,36 @@ class ModelTest(unittest.TestCase):
         cmd = (python or [sys.executable]) + [str(SCRIPT), "--root", str(self.tmp), *args]
         return subprocess.run(cmd, capture_output=True, text=True)
 
+    def reset(self):
+        """A fresh repository directory, for a test that runs one scenario under several examples."""
+        self.tmp = pathlib.Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp)
+        self.write("spec/index.md", "---\nid: ctx\n---\n# ctx\n")
+
+    def check_json(self, *args):
+        r = self.run_model("check", "--json", *args)
+        return json.loads(r.stdout), r
+
+    def violated(self, found, relation):
+        return [a for name, a in found["violations"] if name == relation]
+
+    def work_item(self, ident="w1", **fields):
+        fm = {"id": ident, "kind": "work-item", "part_of": "i1", "status": "drafted", "under": "thing", "check": "true"}
+        fm.update(fields)
+        body = "".join(f"{k}: {v}\n" for k, v in fm.items() if v is not None)
+        self.write(f"work/i1/{ident}.md", f"---\n{body}---\n")
+
     def good(self):
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, it answers."]))
         self.write("features/thing.feature", feature("thing", ("@r1", "it answers")))
 
-    def initiative(self, ident="i1", source="[obs-1]", status="started"):
+    def initiative(self, ident="i1", source="[obs-1]", status="started", kind="capability-change"):
         self.write(f"work/{ident}/initiative.md", textwrap.dedent(f"""\
             ---
             id: {ident}
             title: t
             summary: s
-            kind: capability-change
+            kind: {kind}
             owner-level: ctx
             status: {status}
             priority: 1
@@ -85,7 +107,8 @@ class ModelTest(unittest.TestCase):
             ---
             """))
 
-    def proposal(self, ident="p1", status="drafted", adds="[]", changes="[]", initiative="i1", argues="[thing]"):
+    def proposal(self, ident="p1", status="drafted", adds="[]", changes="[]", initiative="i1", argues="[thing]",
+                 removes="[]", date="2026-10-15"):
         self.write(f"work/{initiative}/{ident}.md", textwrap.dedent(f"""\
             ---
             id: {ident}
@@ -95,7 +118,8 @@ class ModelTest(unittest.TestCase):
             argues: {argues}
             adds: {adds}
             changes: {changes}
-            date: 2026-10-15
+            removes: {removes}
+            date: {date}
             ---
             """))
 
@@ -233,6 +257,24 @@ class DecisionsTest(ModelTest):
         self.assertEqual(r.returncode, 1)
         self.assertIn("not what `model decisions` writes", r.stdout)
         self.assertEqual(target.read_text(), "# Decisions\n\nhand-written\n")
+
+    def test_r37(self):
+        """a current decisions index passes the check"""
+        self.decisions()
+        self.assertEqual(self.run_model("decisions").returncode, 0)
+        r = self.run_model("decisions", "--check")
+        self.assertEqual(r.returncode, 0, r.stdout)
+        self.assertIn("spec/decisions.md is current", r.stdout)
+
+    def test_r38(self):
+        """writing the decisions index names the file and leaves out decisions with no id"""
+        self.decisions()
+        self.write("decisions/0003-anon.md", "---\nsummary: Nameless.\nstatus: accepted\n---\n")
+        r = subprocess.run([sys.executable, str(SCRIPT), "--root", ".", "decisions"], capture_output=True, text=True, cwd=self.tmp)
+        self.assertEqual(r.stdout.strip(), "wrote spec/decisions.md", r.stderr)
+        text = (self.tmp / "spec" / "decisions.md").read_text()
+        self.assertIn("[decision/new]", text)
+        self.assertNotIn("Nameless.", text)
 
 
 class WhyTest(ModelTest):
@@ -413,15 +455,421 @@ class IriFormTest(ModelTest):
         self.assertIn(f"is not '{self.CTX}/thing'", r.stdout)
 
 
+@unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
+class FilesReadTest(ModelTest):
+    """Which files are read, and how references and file shapes are judged (r19-r30)."""
+
+    def test_r19(self):
+        """model reads the repository's files under its root"""
+        feat = feature("thing", ("@r1", "it answers"))
+        rows = [
+            ("spec/index.md", "---\nid: rowctx\n---\n", 'node("rowctx", "bounded-context").', True, True),
+            ("spec/capabilities/thing.md", cap("thing", ["- [r1] One."]), 'node("ctx/thing", "capability").', True, True),
+            ("features/sub/thing.feature", feat, 'features/sub/thing.feature:it answers', True, True),
+            ("decisions/0001-one.md", "---\nid: decision/one\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n",
+             'node("decision/one", "design-decision").', True, True),
+            ("work/i1/initiative.md", "---\nid: i1\nstatus: started\n---\n", 'node("i1", "initiative").', True, True),
+            ("records/observations.md", "# Observations\n\n## obs-1\nabout: ctx\n", 'node("obs-1", "observation").', True, True),
+            ("records/review/f1.md", "---\nid: f1\nkind: review-finding\n---\n", 'node("f1", "review-finding").', True, True),
+            ("records/review/f2.md", "---\nkind: review-finding\nabout: ctx/zzmark\n---\n", "zzmark", False, True),
+            ("spec/capabilities/thing.md", cap("thing", ["- [r1] One."]), 'node("ctx/thing", "capability").', True, False),
+        ]
+        for rel, text, marker, included, with_root in rows:
+            with self.subTest(file=rel, with_root=with_root, included=included):
+                self.reset()
+                self.write(rel, text)
+                if with_root:
+                    facts = self.run_model("facts").stdout
+                else:
+                    facts = subprocess.run([sys.executable, str(SCRIPT), "facts"], capture_output=True, text=True, cwd=self.tmp).stdout
+                self.assertEqual(marker in facts, included, facts)
+
+    def test_r20(self):
+        """a scenario names a requirement by its tag in its capability's feature file"""
+        scenario_tag = "Feature: thing\n\n  @r2\n  Scenario: two\n    Given a\n"
+        feature_tag = "@r2\nFeature: thing\n\n  Scenario: two\n    Given a\n"
+        own = "formulated_as: features/thing.feature\n"
+        sub = "formulated_as: features/sub/thing-flow.feature\n"
+        rows = [
+            (own, "features/thing.feature", scenario_tag, False),
+            (own, "features/thing.feature", feature_tag, False),
+            ("", "features/thing.feature", scenario_tag, False),
+            (sub, "features/sub/thing-flow.feature", scenario_tag, False),
+            (sub, "features/other.feature", scenario_tag, True),
+        ]
+        for formulated, path, text, reported in rows:
+            with self.subTest(formulated=formulated, path=path, reported=reported):
+                self.reset()
+                self.write("spec/capabilities/thing.md", cap("thing", ["- [r2] Two."]).replace(own, formulated))
+                self.write(path, text)
+                found, _ = self.check_json()
+                self.assertEqual(["ctx/thing#r2"] in self.violated(found, "v_s3"), reported, found)
+
+    def test_r21(self):
+        """a reference written name#r<n> is that capability's requirement"""
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One.", "- [r2] Two."]))
+        self.observation()
+        self.initiative()
+        self.proposal(adds="[thing#r2]")
+        r = self.run_model("why", "thing#r2")
+        self.assertEqual(r.returncode, 0, r.stdout)
+        self.assertIn("ctx/thing#r2: Two.", r.stdout)
+        self.assertIn("adds by capability-proposal p1", r.stdout)
+
+    def test_r22(self):
+        """a reference in neither requirement form, or a reversed range, is unresolved"""
+        for ref in ["thing", "thing#2", "thing#line2", "thing#r3-r1"]:
+            with self.subTest(reference=ref):
+                self.reset()
+                self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One.", "- [r2] Two.", "- [r3] Three."], group="guarantees"))
+                self.observation()
+                self.initiative()
+                self.proposal(adds=f"[{ref}]")
+                found, _ = self.check_json()
+                self.assertEqual(len([d for d in found["unresolved"] if f"'{ref}' is not a requirement reference" in d]), 1, found)
+
+    def test_r23(self):
+        """a proposal adding or removing a requirement no capability has is unresolved, unless it adds a retired id"""
+        rows = [("adds", "r9", "unresolved"), ("removes", "r9", "unresolved"),
+                ("adds", "r4", "v15c"), ("removes", "r4", "unresolved")]
+        for change, rid, reported in rows:
+            with self.subTest(change=change, id=rid):
+                self.reset()
+                self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees", retired="[r4]"))
+                self.observation()
+                self.initiative()
+                self.proposal(**{change: f"[thing#{rid}]"})
+                found, _ = self.check_json()
+                unresolved = [d for d in found["unresolved"] if f"ctx/thing#{rid}" in d]
+                v15c = [a for a in self.violated(found, "v15c") if a == [f"ctx/thing#{rid}"]]
+                if reported == "unresolved":
+                    self.assertEqual((len(unresolved), v15c), (1, []), found)
+                else:
+                    self.assertEqual((unresolved, len(v15c)), ([], 1), found)
+
+    def test_r24(self):
+        """a frontmatter reference to nothing, or to the wrong kind, is unresolved"""
+        def supersedes():
+            self.write("decisions/0001-x.md", "---\nid: decision/x\nsummary: S\ndate: 2026-01-01\nstatus: accepted\nsupersedes: ghost\n---\n")
+        rows = [
+            ("supersedes", supersedes),
+            ("source", lambda: self.initiative(source="[ghost]")),
+            ("part_of", lambda: self.work_item(part_of="ghost")),
+            ("argues", lambda: self.proposal(argues="[ghost]")),
+            ("under", lambda: self.work_item(under="ghost")),
+            ("for", lambda: self.work_item(**{"for": "ghost"})),
+            ("blocked_by", lambda: self.work_item(blocked_by="ghost")),
+            ("depends_on", lambda: self.work_item(depends_on="ghost")),
+            ("under", lambda: (self.write("decisions/0001-x.md", "---\nid: decision/ghost\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n"),
+                               self.work_item(under="decision/ghost"))),
+        ]
+        for field, make in rows:
+            with self.subTest(field=field):
+                self.reset()
+                self.good()
+                self.observation()
+                self.initiative()
+                make()
+                found, _ = self.check_json()
+                self.assertEqual(len([d for d in found["unresolved"] if "ghost" in d]), 1, found)
+
+    def test_r25(self):
+        """a malformed index or capability file is a file problem"""
+        def capfile(ident="acme/shop/cart/thing", behaviour=True, retired="[]"):
+            text = cap("thing", ["- [r1] One."], group="guarantees", retired=retired).replace("id: ctx/thing", f"id: {ident}")
+            return text if behaviour else text.replace("## Behaviour", "## Requirements")
+        rows = [
+            ("spec/index.md is missing", None, "spec/index.md"),
+            ("spec/index.md has no id", "---\ntitle: x\n---\n", "spec/index.md"),
+            ("id other", capfile("acme/shop/cart/other"), "spec/capabilities/thing.md"),
+            ("no Behaviour", capfile(behaviour=False), "spec/capabilities/thing.md"),
+            ("retired three", capfile(retired="[three]"), "spec/capabilities/thing.md"),
+        ]
+        for case, text, named in rows:
+            with self.subTest(case=case):
+                self.reset()
+                if case.startswith("spec/index.md"):
+                    (self.tmp / "spec/index.md").unlink()
+                    if text:
+                        self.write("spec/index.md", text)
+                else:
+                    self.write("spec/index.md", "---\nid: acme/shop/cart\n---\n")
+                    self.write("spec/capabilities/thing.md", text)
+                found, _ = self.check_json()
+                self.assertEqual(len([p for p in found["problems"] if p.startswith(named)]), 1, found)
+
+    def test_r26(self):
+        """a feature file no capability is formulated as, or with a title twice, is a file problem"""
+        own = "formulated_as: features/thing.feature\n"
+        sub = "formulated_as: features/sub/thing-flow.feature\n"
+        one = feature("thing", ("@r1", "one"))
+        rows = [
+            (own, "features/stray.feature", one, True),
+            ("", "features/thing.feature", one, False),
+            (sub, "features/thing.feature", one, True),
+            (own, "features/thing.feature", feature("thing", ("@r1", "Apply a code"), ("@r1", "Apply a code")), True),
+            (own, "features/thing.feature", feature("thing", ("@r1", "Apply a code"), ("@r1 @holding", "Apply a code")), False),
+        ]
+        for formulated, path, text, reports in rows:
+            with self.subTest(formulated=formulated, path=path, reports=reports):
+                self.reset()
+                self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees").replace(own, formulated))
+                self.write(path, text)
+                found, _ = self.check_json()
+                self.assertEqual(any(p.startswith(path) for p in found["problems"]), reports, found)
+
+    def test_r27(self):
+        """a malformed work directory or work file is a file problem"""
+        def part(**changes):
+            fm = {"id": "p1", "kind": "work-item", "part_of": "i1", "status": "drafted", "under": "thing", "check": "true"}
+            fm.update(changes)
+            self.write("work/i1/p1.md", "---\n" + "".join(f"{k}: {v}\n" for k, v in fm.items() if v is not None) + "---\n")
+
+        def initiative_with(old, new):
+            p = self.tmp / "work/i1/initiative.md"
+            p.write_text(p.read_text().replace(old, new))
+        rows = [
+            ("no initiative.md", lambda: part(), "work/i1:"),
+            ("initiative.md no id", lambda: (self.initiative(), initiative_with("id: i1\n", "")), "work/i1/initiative.md:"),
+            ("part no id", lambda: (self.initiative(), part(id=None)), "work/i1/p1.md:"),
+            ("part kind banana", lambda: (self.initiative(), part(kind="banana")), "work/i1/p1.md:"),
+            ("part no status", lambda: (self.initiative(), part(status=None)), "work/i1/p1.md:"),
+            ("part status outside lifecycle", lambda: (self.initiative(), part(status="loved")), "work/i1/p1.md:"),
+            ("initiative priority high", lambda: (self.initiative(), initiative_with("priority: 1", "priority: high")), "work/i1/initiative.md:"),
+            ("initiative date 16/10/2026", lambda: (self.initiative(), initiative_with("date: 2026-10-15", "date: 16/10/2026")), "work/i1/initiative.md:"),
+        ]
+        for case, make, named in rows:
+            with self.subTest(case=case):
+                self.reset()
+                self.good()
+                make()
+                found, _ = self.check_json()
+                self.assertEqual(len([p for p in found["problems"] if p.startswith(named)]), 1, found)
+                if case == "no initiative.md":
+                    self.assertFalse(any("work/i1/initiative.md" in p for p in found["problems"]), found)
+
+    def test_r28(self):
+        """a work-item accepting a requirement no scenario names is a file problem"""
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r2] Two."]))
+        self.observation()
+        self.initiative()
+        self.work_item(accepts="[thing#r2]")
+        found, _ = self.check_json()
+        self.assertEqual(len([p for p in found["problems"] if p.startswith("work/i1/w1.md") and "ctx/thing#r2" in p]), 1, found)
+
+    def test_r29(self):
+        """a malformed decision, record or frontmatter is a file problem"""
+        decision = "---\nid: {}\nsummary: {}\ndate: 2026-01-01\nstatus: accepted\n---\n"
+        rows = [
+            ("decision no id", lambda: self.write("decisions/0001-x.md", "---\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n")),
+            ("record kind banana", lambda: self.write("records/note.md", "---\nid: n1\nkind: banana\n---\n")),
+            ("folded block", lambda: self.write("decisions/0001-x.md", decision.format("decision/x", ">-\n  folded"))),
+            ("literal block", lambda: self.write("decisions/0001-x.md", decision.format("decision/x", "|\n  literal"))),
+            ("same id twice", lambda: (self.write("decisions/0001-x.md", decision.format("same", "S")),
+                                       self.write("records/observations.md", "# Observations\n\n## same\nabout: ctx\n"))),
+        ]
+        for case, make in rows:
+            with self.subTest(case=case):
+                self.reset()
+                self.good()
+                make()
+                found, r = self.check_json()
+                self.assertEqual(len(found["problems"]), 1, found)
+
+    def test_r30(self):
+        """file problems are each printed and fail the check"""
+        for name in ("thing", "other"):
+            self.write(f"spec/capabilities/{name}.md", cap(name, ["- [r1] One."], group="guarantees").replace("## Behaviour", "## Requirements"))
+        r = self.run_model("check")
+        self.assertEqual(r.returncode, 1, r.stdout)
+        self.assertEqual(len(re.findall(r"^file: spec/capabilities/(thing|other)\.md: no '## Behaviour' section$", r.stdout, re.M)), 2, r.stdout)
+
+
+@unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
+class OutputTest(ModelTest):
+    """What the check prints and how a repository's parts are judged (r31-r36)."""
+
+    def unscenarioed(self, count):
+        self.write("spec/capabilities/thing.md", cap("thing", [f"- [r{n}] Req {n}." for n in range(1, count + 1)]))
+
+    def test_r31(self):
+        """the check ends with the four counts"""
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], rests_on="[decision/nope]"))
+        self.write("features/stray.feature", "Feature: stray\n")
+        r = self.run_model("check")
+        self.assertIn("1 violations, 1 warnings, 1 unresolved references, 1 file problems", r.stdout.splitlines()[-1], r.stdout)
+
+    def test_r32(self):
+        """rows of a violated relation are limited, saying how many more there are"""
+        for rows, limit, shown, more in [(5, ["--limit", "2"], 2, 3), (12, [], 10, 2)]:
+            with self.subTest(rows=rows, limit=limit):
+                self.reset()
+                self.unscenarioed(rows)
+                r = self.run_model("check", *limit)
+                m = re.search(rf"^v_s3  \({rows}\)\n((?:    .*\n)+)", r.stdout, re.M)
+                lines = m.group(1).splitlines()
+                self.assertEqual(len([l for l in lines if "ctx/thing#r" in l]), shown, r.stdout)
+                self.assertIn(f"    ... and {more} more", lines)
+
+    def test_r33(self):
+        """with --json the check's findings are one JSON object"""
+        for state, status in [("accepts", 0), ("unnamed", 1)]:
+            with self.subTest(state=state):
+                self.reset()
+                if state == "accepts":
+                    self.good()
+                else:
+                    self.unscenarioed(1)
+                found, r = self.check_json()
+                self.assertEqual(sorted(found), ["problems", "unresolved", "violations", "warnings"])
+                self.assertEqual(r.returncode, status)
+                self.assertEqual(bool(found["violations"]), status == 1)
+
+    def test_r34(self):
+        """only a capability-change initiative may hold several parts directly"""
+        self.write("spec/capabilities/other.md", cap("other", ["- [r1] One."], group="guarantees"))
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees"))
+        self.observation()
+        self.initiative(kind="defect")
+        for w in ("w1", "w2"):
+            self.work_item(w)
+        found, _ = self.check_json()
+        self.assertEqual(self.violated(found, "v_k5"), [["i1"]], found)
+        self.reset()
+        self.write("spec/capabilities/other.md", cap("other", ["- [r1] One."], group="guarantees"))
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees"))
+        self.observation()
+        self.initiative()
+        self.proposal("p1", adds="[thing#r1]")
+        self.proposal("p2", adds="[other#r1]", argues="[other]")
+        found, _ = self.check_json()
+        self.assertEqual(self.violated(found, "v_k5"), [], found)
+
+    def test_r35(self):
+        """a proposal arguing two capabilities is refused"""
+        self.write("spec/capabilities/other.md", cap("other", ["- [r1] One."], group="guarantees"))
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees"))
+        self.observation()
+        self.initiative()
+        self.proposal(adds="[thing#r1, other#r1]", argues="[thing, other]")
+        r = self.run_model("check")
+        self.assertRegex(r.stdout, r"v_k6\s+\(1\)\n\s+p1")
+
+    def test_r36(self):
+        """an initiative may be done when its proposal is formulated"""
+        self.good()
+        self.observation()
+        self.initiative(status="done")
+        self.proposal(status="formulated", adds="[thing#r1]")
+        found, _ = self.check_json()
+        self.assertEqual([v for v in found["violations"] if "i1" in v[1]], [], found)
+
+
+class WhyScenarioTest(ModelTest):
+    """model why and the forms of a reference (r39-r43)."""
+
+    def thing(self):
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r2] Two."]))
+        self.observation()
+        self.initiative()
+
+    def test_r39(self):
+        """why refuses an argument that is not a requirement reference"""
+        self.good()
+        r = self.run_model("why", "thing")
+        self.assertEqual(r.returncode, 2, r.stdout)
+        self.assertIn("'thing' is not a requirement reference", r.stdout)
+
+    def test_r40(self):
+        """why on a requirement no capability has still lists its proposals"""
+        self.good()
+        self.observation()
+        self.initiative()
+        self.proposal(changes="[thing#r9]")
+        r = self.run_model("why", "thing#r9")
+        lines = r.stdout.splitlines()
+        self.assertEqual(lines[0], "ctx/thing#r9: no capability has this requirement now")
+        self.assertIn("  changes by capability-proposal p1 (drafted, 2026-10-15)", lines)
+
+    def test_r41(self):
+        """why lists every proposal naming the requirement by date, and fails when none adds or changes it"""
+        p1 = dict(ident="p1", removes="[thing#r2]", date="2026-10-01")
+        rows = [
+            ([p1, dict(ident="p2", adds="[thing#r2]", date="2026-09-01")], ["p2", "p1"], 0),
+            ([p1, dict(ident="p2", changes="[thing#r2]", date="2026-09-01")], ["p2", "p1"], 0),
+            ([p1, dict(ident="p2", removes="[thing#r2]", date="2026-09-01")], ["p2", "p1"], 1),
+            ([p1], ["p1"], 1),
+        ]
+        for proposals, listed, status in rows:
+            with self.subTest(listed=listed, status=status, n=len(proposals)):
+                self.reset()
+                self.thing()
+                for p in proposals:
+                    self.proposal(**p)
+                r = self.run_model("why", "thing#r2")
+                self.assertEqual(r.returncode, status, r.stdout)
+                seen = re.findall(r"^  [\w/]+ by capability-proposal (p\d) \((\w+), (\d{4}-\d\d-\d\d)\)$", r.stdout, re.M)
+                self.assertEqual([p for p, _, _ in seen], listed, r.stdout)
+                self.assertTrue(all(s == "drafted" for _, s, _ in seen))
+                self.assertEqual([d for _, _, d in seen], sorted(d for _, _, d in seen))
+
+    def test_r42(self):
+        """the behaviour/ form of a reference names the same requirement"""
+        self.thing()
+        self.proposal(adds="[thing#behaviour/r2]")
+        r = self.run_model("why", "thing#r2")
+        self.assertEqual(r.returncode, 0, r.stdout)
+        self.assertIn("adds by capability-proposal p1", r.stdout)
+
+
+@unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
+class PathContextTest(ModelTest):
+    """A bounded context whose id is a path (r43)."""
+
+    def setUp(self):
+        super().setUp()
+        self.write("spec/index.md", "---\nid: acme/shop/cart\n---\n# cart\n")
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees")
+                   .replace("id: ctx/thing", "id: acme/shop/cart/thing"))
+        self.observation()
+        self.initiative()
+
+    def test_r43(self):
+        """a path-shaped context id may be written by its context name"""
+        for written, read in [("cart/thing", "acme/shop/cart/thing"), ("cart", "acme/shop/cart")]:
+            with self.subTest(written=written):
+                self.proposal(argues=f"[{written}]")
+                found, _ = self.check_json()
+                self.assertEqual(found["unresolved"], [], found)
+                self.assertIn(f'argues("p1", "{read}").', self.run_model("facts").stdout)
+
+
+@unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
+class HeldAndLedgerTest(ModelTest):
+    """r44-r45."""
+
+    def test_r44(self):
+        """a held scenario names no requirement"""
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r2] Two."]))
+        self.write("features/thing.feature", "Feature: thing\n\n  @r2 @holding\n  Scenario: two as it was\n    Given a\n")
+        found, _ = self.check_json()
+        self.assertEqual(self.violated(found, "v_s3"), [["ctx/thing#r2"]], found)
+
+    def test_r45(self):
+        """without a decisions directory the index's headings are the decisions"""
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees", rests_on="[decision/one]"))
+        self.write("spec/decisions.md", "# Decisions\n\n## decision/one\nOne way\nto do it.\n\ndate: 2026-01-01\n")
+        found, _ = self.check_json()
+        self.assertEqual(found["unresolved"], [], found)
+        self.assertEqual(self.violated(found, "v12a"), [], found)
+        self.assertIn('summary("decision/one", "One way to do it.").', self.run_model("facts").stdout)
+
+
 class BindingTest(unittest.TestCase):
     def test_every_scenario_has_its_test(self):
-        titles = re.findall(r"^\s*Scenario(?: Outline)?:\s*(.+?)\s*$", FEATURE.read_text(), re.M)
-        docs = set()
-        for cls in (CheckTest, NoSolverTest, DecisionsTest, WhyTest, RangeTest):
-            for name in dir(cls):
-                if name.startswith("test_"):
-                    docs.add((getattr(cls, name).__doc__ or "").strip())
-        self.assertEqual([t for t in titles if t not in docs], [])
+        self.assertEqual(missing(FEATURE, CheckTest, NoSolverTest, DecisionsTest, WhyTest, RangeTest,
+                                 ReadingTest, GrammarFixTest, IriFormTest, FilesReadTest, OutputTest,
+                                 WhyScenarioTest, PathContextTest, HeldAndLedgerTest), [])
 
 
 if __name__ == "__main__":

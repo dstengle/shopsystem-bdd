@@ -20,8 +20,9 @@ contract:
     decisions/*.md, one design-decision each (frontmatter id, summary, date,
     status, supersedes, revisit_when, revisit_signal);
     or, where there is no decisions/ directory, the ledger spec/decisions.md,
-    each `## decision/<slug>` heading a design-decision whose first line is
-    its summary;
+    each `## decision/<slug>` heading a design-decision whose summary is the
+    entry's text up to a blank line, a heading or a property line (date:,
+    revisit_when:, supersedes:, source:), its lines joined by a space;
     work/<initiative>/initiative.md and work/<initiative>/<part>.md;
     records/observations.md (one `## <id>` heading an observation) and any
     other Markdown under records/ whose frontmatter has an `id`.
