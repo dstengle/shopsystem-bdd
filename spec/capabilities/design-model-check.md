@@ -60,6 +60,8 @@ records, and it checks one bounded context: product-level artifacts are read onl
 - [r41] **When** `model why` is run, it lists each capability-proposal that adds, changes or removes the requirement, in date order with its status and date, and one that only removes it leaves `model why` exiting 1.
 - [r42] A reference written `<capability>#behaviour/r<n>`, the requirement as a part in shopsystem-knowledge's IRI form, names the same requirement as `<capability>#r<n>`.
 - [r43] **Where** the bounded context's id is a path such as `<owner>/<product>/<context name>`, a capability written `<context name>/<name>` is read as `<context id>/<name>`, and the context name alone as the bounded context.
+- [r44] A scenario tagged `@holding` is not read as an acceptance-scenario, whatever `@r<n>` tag it carries.
+- [r45] **Where** a repository has no `decisions/` directory, `model` reads each `## decision/<slug>` heading of `spec/decisions.md` as a design-decision.
 
 ## Implementation, may change
 - `scripts/model.lp` is grammar.md v3 sections 1, 3 and 4 in clingo, with FIX notes where grammar.md does not

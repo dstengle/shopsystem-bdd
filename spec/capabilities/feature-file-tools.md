@@ -28,7 +28,7 @@ any test; it edits only the feature files, test modules and directory it is poin
 - [r8] **When** `features tag <title> <slice>` is run on a title exactly one file holds, `features` makes the scenario's first slice tag the new one, removes any further slice tags, and leaves its other tags and every other line unchanged.
 - [r9] **Where** the scenario has no slice tag, **when** `features tag` is run, `features` adds the new slice tag to the scenario's last tag line, or on a tag line of its own above the scenario when it has none.
 - [r10] **If** `features tag` is given a title no file holds, or one several files hold, `features` refuses, naming every file that holds it, and changes no file.
-- [r11] **If** `features tag` is given a slice not written `slice-<n>` or `slice-<n>.<m>`, `features` exits 2 as bad usage and changes no file.
+- [r11] **If** `features tag` is given a tag not written `slice-<n>`, `slice-<n>.<m>` or `r<n>`, `features` exits 2 as bad usage and changes no file.
 - [r12] **When** `features move <title> --to <file>` is run, `features` removes the scenario's block from its file and appends it unchanged to the end of the destination file.
 - [r13] **Where** `--inline-background` is given, **when** `features move` is run, `features` puts the source Background's steps before the moved scenario's first step.
 - [r14] **Where** `--carry-feature-tags` is given, **when** `features move` is run, `features` puts the source's feature tags that the destination's feature tags lack on a tag line above the moved scenario.
@@ -68,6 +68,7 @@ any test; it edits only the feature files, test modules and directory it is poin
 - [r48] **Where** `--slice` is given to pytest more than once, `slice_expectations.py` runs the tests of every slice named, each written `<n>` or `slice-<n>`, as they are.
 - [r49] **Where** `slice_expectations.py` is registered, the run's header names the living plan it read, relative to the root directory, or says no one living plan was found.
 - [r50] **If** the ini value `slice_plan` names a file that does not exist, `slice_expectations.py` expects no test to fail, and the run's header names that file.
+- [r51] **When** `features tag <title> r<n>` is run on a title exactly one file holds, `features` makes `@r<n>` the scenario's one requirement tag, removing any other `@r<m>` tag it has, and leaves its other tags and every other line unchanged.
 
 ## Implementation, may change
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three

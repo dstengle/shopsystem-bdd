@@ -26,12 +26,15 @@ dispatches `feature-formulator`s. It decides nothing: a line with two readings c
 - [r8] A feature file begins `# formulated from spec/capabilities/<name>.md`, then `Feature: <title>`, then `Narrator: <narrator>`.
 - [r9] A line every call must keep is formulated as one scenario per reason the line gives, each with one representative call.
 - [r10] **When** slicing hands back a scenario with evidence, the scenario is rewritten to fit its line and the evidence, or a question with two readings goes to the person.
+- [r11] Each scenario carries the tag `@r<n>` of the one line it formulates, on its own tag line, and its title is free.
+- [r12] A scenario tagged `@holding` keeps the `@r<n>` tag it had and formulates no line.
+- [r13] **Where** `model check` can run, **when** feature files are committed, it reports no scenario that names no line or two, and no added or changed line without a scenario; **where** it cannot, the round says so and checks coverage by hand.
 
 ## Implementation, may change
 - The session dispatches `spec-round` with the job `formulate`; the round dispatches one `feature-formulator`
   a capability with the brief in the skill, checks coverage one to one, runs each old scenario alone before
   replacing it, uses `features hold`, `features rebind` and `features bindings`, splices and commits.
-- Scenario titles restate the line's condition; Then lines name a refusal's reason, never message text.
+- A scenario's title usually restates its line's condition, though the `@r<n>` tag is what names the line; Then lines name a refusal's reason, never message text.
 
 ## Not yet
 - A scenario names its requirement by `@r<n>` and its title is free, so `rebind` is no longer needed for a re-worded line — trigger: initiative i3 is approved.

@@ -17,7 +17,7 @@ the person talks to, with each round handed to a fresh `spec-round` that dispatc
 `capability-writer`. It is not formulation and not planning; it writes nothing a client can run.
 
 ## Behaviour
-- [r1] **When** an approved note is integrated, the session shows the person every added, changed and removed Behaviour line and every question the note left open, each question with the lines its answers would give.
+- [r1] **When** an approved note is integrated, the session shows the person every added, changed and removed Behaviour line, each with its id, and every question the note left open, each question with the lines its answers would give.
 - [r2] **Where** the change comes from a note, a drafted line that quotes no sentence of the note is shown to the person as a question, not as a line.
 - [r3] **While** the person has not said yes to the lines and answered every question, nothing under `spec/` changes.
 - [r4] **When** the person answers a question, the answer is drafted as a further round and the changed lines are shown again before anything is written.
@@ -28,6 +28,11 @@ the person talks to, with each round handed to a fresh `spec-round` that dispatc
 - [r9] **Where** the person has delegated decisions to the session's recommendations, the commit, and the decision's source where the change is a decision, say that the lines were approved under that delegation.
 - [r10] **When** this session is the one that brainstormed the note, it says so and recommends a new session for the integration before starting it.
 - [r11] **When** integration is applied, the session hands the changed capabilities to formulation.
+- [r12] **When** a line is added to a capability, it takes the id one above every id the capability has used or retired, wherever the line sits in the section.
+- [r13] **When** a line is changed, it keeps its id.
+- [r14] **When** a line is removed, its id is added to the capability's `retired` list and no later line takes it.
+- [r15] **When** the approved drafts are committed, the commit message names each id added, changed and removed.
+- [r16] **Where** `model check` can run, **when** the approved drafts are committed, it reports no unresolved reference, no file problem, and no violation but the added and changed lines that have no scenario yet.
 
 ## Implementation, may change
 - The session dispatches `spec-round` with the job `integrate` or `apply`, the note's path, a drafts path
