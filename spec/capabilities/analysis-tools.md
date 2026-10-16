@@ -17,7 +17,7 @@ references to a name, and a lint check. It is not a test runner for the fast sui
 file; it reports what the tools found and names a tool that is missing rather than skipping it.
 
 ## Behaviour
-- [r1] `tools` looks for the tools in the interpreter given by `--python`, or else in `.venv/bin/python`, `venv/bin/python` or `$VIRTUAL_ENV` under the current directory, or else in the interpreter running the script, and `tools probe` says which it used.
+- [r1] **When** `tools` needs an interpreter, it uses the first of these, in this order: the one `--python` gives, used as given; `.venv/bin/python` under the current directory, if that file exists; `venv/bin/python` under the current directory, if that file exists; `$VIRTUAL_ENV/bin/python`, if that file exists, wherever `$VIRTUAL_ENV` points; and else the interpreter running the script. Unless `--log` is given, `tools probe` prints that interpreter's path and which of these it came from.
 - [r2] **If** the project is not a Python project, `tools` says in one line that no analysis tools are known for its language and exits 1.
 - [r3] **When** `tools probe` is run, `tools` prints one line per tool, its version or that it is missing and what it is for, then the interpreter, and exits 1 when any tool is missing.
 - [r4] **When** `tools probe --log` is run, `tools` prints the one `Probe: tools -> ...` line to give `plan log`.
@@ -30,7 +30,7 @@ file; it reports what the tools found and names a tool that is missing rather th
 - [r11] **If** no test in the map executed the target, or the file has no function by that name, `tools tests-of` exits 1.
 - [r12] **If** no map has been made, `tools tests-of` refuses and says to make one with `tools map`.
 - [r13] **When** `tools untested <file>...` is run, `tools` prints each function in the files that no test in the last map executed.
-- [r14] **When** `tools refs <name>` is run, `tools` prints every reference to that function, class or name defined in the project as `path:line`, including uses through an import or an alias, with the count of production and test files.
+- [r14] **When** `tools refs <name>` is run, `tools` prints every reference to that function, class or name defined in the project as `path:line`, including uses through an import or an alias, then one summary line with the number of references, the number of production files holding them and, as a separate number, the number of test files holding them, and where the name is defined.
 - [r15] **If** nothing in the project is defined as `<name>`, `tools refs` exits 1.
 - [r16] **When** `tools check` is run, `tools` runs ruff, vulture and, where the project has import contracts, import-linter, over the paths given or the Python files changed since `--base`, each under its own heading, and exits 1 when any reports.
 - [r17] **If** a tool `tools check` would run is missing, `tools` names it as missing under its heading instead of skipping it.

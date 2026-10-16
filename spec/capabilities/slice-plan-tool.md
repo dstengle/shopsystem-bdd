@@ -24,9 +24,9 @@ shape and its slice budget. It is not a scheduler and does not run the suite; it
 - [r5] **When** `plan log <text>` or `plan backlog <text>` is run, `plan` appends `- <date> <text>` to the Log or Backlog section, the date being `--date` or today.
 - [r6] **Where** the Backlog or Log section is missing, **when** a command needs it, `plan` creates it in its place in the section order.
 - [r7] **When** `plan status <n> <status>` is run, `plan` sets slice `<n>`'s Status and changes nothing else.
-- [r8] **If** `plan status` is given a status that is not planned, in progress or green with an optional note, or `blocked: <why>`, `plan` refuses and leaves the file as it was.
+- [r8] **If** `plan status` is given a status that is not `planned`, `in progress` or `green`, each with an optional `: <note>`, or `blocked: <why>`, `plan` refuses and leaves the file as it was.
 - [r9] **If** `plan status` names a slice the plan does not have, `plan` refuses.
-- [r10] **When** `plan add-slice <n> <name>` is run, `plan` writes the slice in number order, dotted numbers sorting numerically, with Status planned.
+- [r10] **When** `plan add-slice <n> <name>` is run, `plan` writes the slice in number order, with Status planned. It compares dotted numbers part by part as whole numbers, so `2.10` follows `2.9` and `1` precedes `1.1`.
 - [r11] **If** `plan add-slice` gives a slice the wrong one of Scenarios and Check for its Kind, or a number the plan already has, `plan` refuses and leaves the file as it was.
 - [r12] **Where** `plan add-slice` is given no `--lands`, `plan` writes the slice and says on stderr that it has no Lands line and how to set it; with `--lands` it writes the line and says nothing.
 - [r13] **If** a slice's Lands line counts more than 8 production or 4 test modules, `plan` refuses, naming the slice, its Lands and the budget, whatever the command, and leaves the file as it was.
@@ -39,7 +39,7 @@ shape and its slice budget. It is not a scheduler and does not run the suite; it
 - [r20] **Where** `--current` is given with `--last-suite`, `plan show` prints the record, then `current` and exits 0 when no path outside `docs/superpowers/plans/` has changed since the commit it names, or `stale:` with the reason and exits 1.
 - [r21] **If** the suite record names a commit the repository does not have, `plan show --last-suite --current` says it is stale because of that commit and exits 1.
 - [r22] **If** `--current` is given without `--last-suite`, `plan` exits 2 as bad usage.
-- [r23] **When** `plan archive <batch>` is run, `plan` writes the green slices and the whole Log to `archive/<plan name>-<batch>.md` beside the plan and removes those slices from the plan.
+- [r23] **When** `plan archive <batch>` is run, `plan` writes the green slices and the whole Log to `archive/<plan file name without .md>-<batch>.md` beside the plan, so `foo-slices.md` archives to `archive/foo-slices-<batch>.md`, and removes those slices from the plan.
 - [r24] **When** `plan archive` is run, `plan` leaves the Log holding the REQUEST, RE-FORMULATE and QUESTION FOR THE SPEC: entries with their continuation lines, one line naming the archive and the last `Suite:` entry, and that `Suite:` entry again, so `plan show --last-suite --current` still finds it.
 - [r25] **If** the archive file exists or no slice is green, `plan archive` refuses.
 - [r26] `plan` works on the plan `--file` names, or else on the one `docs/superpowers/plans/*-slices.md` under the current directory.

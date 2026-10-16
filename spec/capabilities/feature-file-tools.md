@@ -20,8 +20,8 @@ any test; it edits only the feature files, test modules and directory it is poin
 ## Behaviour
 - [r1] `features` reads every `*.feature` under `--dir` (default `features`), recursively, and text inside a docstring is never taken as a scenario, keyword or tag.
 - [r2] **If** a feature file holds a `Rule:` block, `features` refuses, naming the file.
-- [r3] **If** an edit would leave its file invalid, `features` refuses the edit and leaves the file as it was.
-- [r4] **When** `features count --by-tag` is run, `features` prints the number of scenarios carrying each tag and the total, counting a Scenario Outline once per Examples row and giving each scenario its feature's tags and its Examples table's tags.
+- [r3] **If** an edit would leave a file that `features` cannot read, `features` refuses the edit and leaves every file as it was. `features` reads a file as invalid when it holds a `Rule:` block outside a docstring, and checks nothing else of the result.
+- [r4] **When** `features count --by-tag` is run, `features` prints the number of scenarios carrying each tag and a total, counting a Scenario Outline once per Examples row and giving each scenario its feature's tags and its Examples table's tags. The total counts every scenario, those carrying no tag included.
 - [r5] **When** `features list --tag <tag>` is run, `features` prints the file and title of each scenario whose tags, its feature's and its Examples' included, hold that tag.
 - [r6] **When** `features list --title <text>` is run, `features` prints the file and title of each scenario whose title contains the text.
 - [r7] **If** `features list` matches no scenario, `features` prints nothing and exits 1.
@@ -31,7 +31,7 @@ any test; it edits only the feature files, test modules and directory it is poin
 - [r11] **If** `features tag` is given a tag not written `slice-<n>`, `slice-<n>.<m>` or `r<n>`, `features` exits 2 as bad usage and changes no file.
 - [r12] **When** `features move <title> --to <file>` is run, `features` removes the scenario's block from its file and appends it unchanged to the end of the destination file.
 - [r13] **Where** `--inline-background` is given, **when** `features move` is run, `features` puts the source Background's steps before the moved scenario's first step.
-- [r14] **Where** `--carry-feature-tags` is given, **when** `features move` is run, `features` puts the source's feature tags that the destination's feature tags lack on a tag line above the moved scenario.
+- [r14] **Where** `--carry-feature-tags` is given, **when** `features move` is run, `features` puts the source's feature tags that the destination's feature tags lack on a tag line of their own immediately above the moved scenario's `Scenario:` line, after any tag line the scenario already has, and joins them to none.
 - [r15] **If** the destination of `features move` does not exist, `features` refuses and changes no file.
 - [r16] **When** `features verify-moved --from <dir>` finds every scenario in the two trees alike by title in its effective tags, description, and Background and own steps, `features` prints how many scenarios match and exits 0.
 - [r17] **If** a scenario's effective tags, description or steps differ between the two trees, `features verify-moved` names the scenario and which of them changed, and exits 1.

@@ -27,7 +27,7 @@ guesses when its inputs are not what it knows.
 - [r7] **If** the facts file exists and `--replace` is not given, `measure batch` refuses and leaves the file as it was.
 - [r8] **If** no dispatch is found inside the batch, `measure batch` refuses, naming the window it searched, and writes nothing.
 - [r9] A subagent transcript that starts inside the batch is counted as a dispatch, and one that starts outside it is not.
-- [r10] A request's usage is counted once in the facts, however many transcript rows carry it, and its reasoning is counted inside its output, not beside it.
+- [r10] A request's usage is counted once in the facts, however many transcript rows carry it, and its reasoning tokens are a part of its output tokens: the facts report reasoning as "of which" the output figure and never add it to that figure.
 - [r11] The facts count a session's own requests inside the batch as the controller's when that session dispatched there.
 - [r12] The facts attribute a dispatch to a slice or batch work by its description, failing that by the task or slice its prompt names, and otherwise count it as unattributed.
 - [r13] The facts count a reviewer's findings as it wrote them: its lines beginning Critical or Important, and its stated count of Minor.
@@ -51,7 +51,7 @@ guesses when its inputs are not what it knows.
 - [r31] The facts give each dispatch the closing status its reply states, and count replies that close BLOCKED, PARTIAL or NEEDS_CONTEXT as not done.
 - [r32] The facts record the plugin and harness versions the transcripts name, and the batch's window as times and, where known, commits.
 - [r33] **Where** the batch starts at a commit, the facts give the files and lines changed from it to the batch's end commit, or to HEAD when the end is not a commit.
-- [r34] The facts count the dispatches given more than one prompt as resumed, the share of building time from the first branch review on with scouts left out, and the mean and summed starting context of the dispatches.
+- [r34] The facts count the dispatches given more than one prompt as resumed; they give the share of building time from the first branch review on, where building time is the dispatches' own durations summed and not wall-clock time, and a scout's dispatches are left out of both that time and the part of it from the first branch review on; and they give the mean and summed starting context of the dispatches.
 - [r35] **When** `measure show` is run, `measure` prints the repository, batch, window, plugin and harness versions and suite record, then the summary, roles and slices tables, the dispatches not done or not attributed, each hand-back and each note.
 - [r36] **When** `measure compare` is run, `measure` prints each summary figure and the output, new input, cache read and agent minutes per slice of both files, each file headed by its batch and plugin versions, with the ratio of the second to the first.
 - [r37] **If** `measure compare` is given a file that is not a facts file `measure` wrote, or `measure show` or `measure compare` a file it cannot read as JSON, `measure` refuses, naming the file.
