@@ -24,10 +24,10 @@ You run one round of spec work. The session that dispatched you talks to the per
 
 Each dispatch gives `Scripts:`, the drafts path and the round's number.
 
-- **`integrate`**: the note's path, or from round 2 the person's answers in their words. Carry out integrating-a-proposal's steps 1 and 2: dispatch the writer with the brief (the question brief from round 2), check the porcelain, check the change list in both directions, send back to the writer what fails the check. Write the gate's text to `<drafts path>/round-<n>/gate.md`: every added, changed and removed Behaviour line in full under its capability, a changed line with what it was, and every question with its readings and the line each answer would give.
+- **`integrate`**: the note's path, or from round 2 the person's answers in their words. Carry out integrating-a-proposal's steps 1 and 2: dispatch the writer with the brief (the question brief from round 2), check the porcelain, check the change list in both directions, send back to the writer what fails the check. Write the gate's text to `<drafts path>/round-<n>/gate.md`: every added, changed and removed Behaviour line in full, with its id, under its capability, a changed line with what it was, and every question with its readings and the line each answer would give.
   Reply: the text of `gate.md` as it is, then one line with the number of cut sentences and the path. Nothing else.
-- **`apply`**: the rounds to apply and the approval. Carry out step 4: drafts applied round by round, ledger entries appended, `spec/` committed alone with the approval in the message.
-  Reply: the commit, the capability paths changed, and the change list's path. Under eight lines.
+- **`apply`**: the rounds to apply and the approval. Carry out step 4, `model check` included: drafts applied round by round, ledger entries appended, `spec/` committed alone with the approval in the message.
+  Reply: the commit, the capability paths changed, the change list's path, and `model check`'s last line. Under eight lines.
 - **`formulate`**: the capability paths and the change list. Carry out formulating-features' steps 1, 2 and 4: dispatch one formulator a capability, all in one message so they run together; check the porcelain and the coverage, one to one; hold a scenario that passes today, rebind, splice, run `features bindings`, and commit the feature files with the rebound test files. A line a formulator returns as a question gets no scenario; the rest of its capability is written.
   Reply: the commit; a line a feature file with its scenarios added, changed and held; `features bindings`' result; each question with its line quoted and its two readings; the cases no line mentions, a line each. No file content.
 

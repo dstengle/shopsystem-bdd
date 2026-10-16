@@ -13,7 +13,12 @@ You may read only the paths the dispatch brief lists: the note or notes, `spec/`
 
 One `spec/` per bounded context: `index.md`, `decisions.md`, `capabilities/<name>.md`. A note is a proposal against it. When `spec/` exists, read all of it first and change it; never start a second spec, and never write a capability that duplicates one that exists.
 
-A capability file is frontmatter (`id: capability/<name>`, `title`, `narrator`, `rests_on`, `formulated_as: features/<name>.feature`) and four sections: Purpose (one paragraph: what it is, what it isn't), Behaviour, Implementation, may change, Not yet (each deferral with the trigger that promotes it). Names are hyphenated on both sides: `write-path.md` ↔ `features/write-path.feature`.
+A capability file is frontmatter (`id: <context id>/<name>`, `title`, `narrator`, `rests_on`, `formulated_as: features/<name>.feature`, `retired`) and four sections: Purpose (one paragraph: what it is, what it isn't), Behaviour, Implementation, may change, Not yet (each deferral with the trigger that promotes it). Names are hyphenated on both sides: `write-path.md` ↔ `features/write-path.feature`.
+
+Every Behaviour line starts with its id, `[r<n>]` (`docs/capability-format.md`, Requirement ids). A line
+you add takes the id one above every id the capability has used or retired (its lines' ids and its
+`retired` list), wherever you place it. A line you change keeps its id. A line you remove is taken out and
+its id added to `retired`. Never renumber. A new capability starts at r1 with `retired: []`.
 
 Every sentence of the note lands in exactly one place: a Behaviour line, an Implementation line, a Not yet entry, a ledger entry, a question, or the cut list. Rationale, intent and comparisons with what was rejected are cut, or go into the ledger line of the decision they explain.
 
@@ -47,7 +52,7 @@ Purpose, constraints carried (with any bound stated as a bound), composition (th
 ## What you return
 
 1. Drafts, written under the drafts path: a new file whole at its `spec/` path under the drafts path; for a changed capability file, only its changed sections, each headed by the section's heading; new ledger entries only, in `decisions.append.md`. Never an unchanged file or section.
-2. The change list, one row per Behaviour line added, changed or removed: `added | changed | removed`, capability, the line (for `changed`, the old line too), and the note sentence it comes from, quoted.
+2. The change list, one row per Behaviour line added, changed or removed: `added | changed | removed`, capability, the id, the line (for `changed`, the old line too), and the note sentence it comes from, quoted.
 3. The ledger entries, in `decisions.append.md`.
 4. Questions: each condition the note does not state, one line, with the capability it concerns and the line you would write for each answer. Two readings of one sentence are a question too.
 5. Cut sentences: each note sentence that fits no section, quoted.
@@ -61,6 +66,7 @@ When the brief says migration, `spec/` does not exist yet and the approved featu
 - Every existing scenario maps to exactly one Behaviour line. A line may be written from an approved scenario the notes do not state; its citation is the scenario (`feature / scenario title`).
 - Where several scenarios verify one rule (a happy path and a boundary), write one line per scenario. Never merge scenarios, and never plan to change a scenario's text.
 - Group lines into capabilities by narrator and cluster of behaviour, not by the existing feature files.
+- Number each capability's lines [r1] on, in order, with retired: []. Ask, as a question at the gate, for the owner's domain, product and context name of spec/index.md's id unless the brief gives them.
 - One ledger entry per ADR, `source:` naming its file, `date:` its date; the notes' decisions, dated by their note.
 
 Reply, in addition to the above, with the mapping table: one row per existing scenario (`source feature / scenario title` → `capability` / line), then every line with no scenario behind it (unbacked), then conflicts as questions: a note and a scenario that disagree, a scenario that covers two lines, a scenario title used in two source files.
