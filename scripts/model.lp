@@ -145,7 +145,11 @@ v_k1(I) :- ikind(I, "job"),               part_of(P, I), not node(P, "job-propos
 v_k2(I) :- ikind(I, "job-path"),          part_of(P, I), not node(P, "job-thread").
 v_k3(I) :- ikind(I, "capability-change"), part_of(P, I), not node(P, "capability-proposal").
 v_k4(I) :- ikind(I, "defect"),            part_of(P, I), not node(P, "work-item").
-v_k5(I) :- node(I, "initiative"), part_of(P1, I), part_of(P2, I), P1 != P2.
+% FIX g:171 (decision/one-capability-per-proposal): a capability-change initiative may hold several
+% capability-proposals, one per capability; every other kind keeps one first part.
+v_k5(I) :- node(I, "initiative"), part_of(P1, I), part_of(P2, I), P1 != P2, not ikind(I, "capability-change").
+% FIX g:72 (same decision): `argues` is 1..n for other proposals, exactly 1 for a capability-proposal.
+v_k6(P) :- node(P, "capability-proposal"), argues(P, A1), argues(P, A2), A1 < A2.
 
 % breakdown shape: work-items only under capability-proposals (or a defect initiative)
 defect_init(X) :- node(X, "initiative"), ikind(X, "defect").
@@ -186,7 +190,7 @@ w_stale_intake(I)  :- status(I, "proposed"), age(I, Days), Days > 90.
 #show v9d/1. #show v9e/1. #show v9f/1. #show v9g/1. #show v10a/2. #show v10b/1. #show v10c/1.
 #show v11/1. #show v12a/1. #show v12b/1. #show v13/1.
 #show v15a/1. #show v15b/2. #show v15c/1. #show v15d/2. #show v15e/2. #show v15f/1.
-#show v_k1/1. #show v_k2/1. #show v_k3/1. #show v_k4/1. #show v_k5/1.
+#show v_k1/1. #show v_k2/1. #show v_k3/1. #show v_k4/1. #show v_k5/1. #show v_k6/1.
 #show v_b1/1. #show v_b2/1. #show v_b3/1. #show v_s1/1. #show v_s2/1. #show v_s3/1.
 #show v_w1/1. #show v_w2/1. #show v_w3/2. #show v_w4/1. #show v_d1/1.
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.

@@ -85,14 +85,14 @@ class ModelTest(unittest.TestCase):
             ---
             """))
 
-    def proposal(self, ident="p1", status="drafted", adds="[]", changes="[]", initiative="i1"):
+    def proposal(self, ident="p1", status="drafted", adds="[]", changes="[]", initiative="i1", argues="[thing]"):
         self.write(f"work/{initiative}/{ident}.md", textwrap.dedent(f"""\
             ---
             id: {ident}
             kind: capability-proposal
             part_of: {initiative}
             status: {status}
-            argues: [thing]
+            argues: {argues}
             adds: {adds}
             changes: {changes}
             date: 2026-10-15
@@ -315,6 +315,42 @@ class ReadingTest(ModelTest):
         facts = self.run_model("facts").stdout
         self.assertIn('rests_on("ctx/thing", "decision/x").', facts)
         self.assertIn('group("ctx/thing", "service").', facts)
+
+
+@unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
+class GrammarFixTest(ModelTest):
+    """FIX notes of model.lp that change what grammar.md v3 accepts; not scenarios of their own."""
+
+    def test_a_capability_change_holds_one_proposal_per_capability(self):
+        self.write("spec/capabilities/other.md", cap("other", ["- [r1] One."], group="guarantees"))
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees"))
+        self.observation()
+        self.initiative()
+        self.proposal("p1", adds="[thing#r1]")
+        self.proposal("p2", adds="[other#r1]", argues="[other]")
+        r = self.run_model("check")
+        self.assertNotIn("v_k5", r.stdout)
+        self.assertNotIn("v_k6", r.stdout)
+
+    def test_a_capability_proposal_arguing_two_capabilities_is_v_k6(self):
+        self.write("spec/capabilities/other.md", cap("other", ["- [r1] One."], group="guarantees"))
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees"))
+        self.observation()
+        self.initiative()
+        self.proposal(adds="[thing#r1, other#r1]", argues="[thing, other]")
+        r = self.run_model("check")
+        self.assertRegex(r.stdout, r"v_k6\s+\(1\)\n\s+p1")
+
+    def test_another_kind_keeps_one_first_part(self):
+        self.good()
+        self.observation()
+        self.initiative()
+        p = self.tmp / "work/i1/initiative.md"
+        p.write_text(p.read_text().replace("kind: capability-change", "kind: defect"))
+        for w in ("w1", "w2"):
+            self.write(f"work/i1/{w}.md", f"---\nid: thing/{w}\nkind: work-item\npart_of: i1\nstatus: drafted\nunder: thing\ncheck: true\n---\n")
+        r = self.run_model("check")
+        self.assertRegex(r.stdout, r"v_k5\s+\(1\)\n\s+i1")
 
 
 class BindingTest(unittest.TestCase):

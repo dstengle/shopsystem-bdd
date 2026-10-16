@@ -1,0 +1,15 @@
+---
+id: first-spec/spec-integration
+kind: capability-proposal
+part_of: i1
+status: drafted
+date: 2026-10-15
+argues: [spec-integration]
+adds: [spec-integration#r1-r11]
+---
+
+# Spec integration: first spec
+
+What the gate approves: `spec-integration#r1-r11`, as written in `spec/capabilities/spec-integration.md`. Each line describes
+what 0.18.0 does today; none adds behaviour. One of i1's thirteen proposals
+(decision/one-capability-per-proposal).
