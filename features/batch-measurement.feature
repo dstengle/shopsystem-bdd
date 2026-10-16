@@ -141,10 +141,10 @@ Feature: Batch measurement
   @r15
   Scenario Outline: each slice's Lands line sits beside the files its dispatches touched
     What a slice said it would land is set against what its dispatches actually touched.
-    Given a <batch> whose <source> gives slice 1 the Lands line "src/cart.py"
+    Given a <batch> whose <source> gives slice 1 the Lands line "2 production, 1 test"
     And slice 1's dispatches touched src/cart.py and tests/test_cart.py
     When the session runs measure batch for the <batch>
-    Then the facts give slice 1 the Lands line "src/cart.py" beside src/cart.py and tests/test_cart.py
+    Then the facts give slice 1 the Lands line 2 production, 1 test beside 1 production, 1 test and 0 other files touched
 
     Examples:
       | batch         | source       |
@@ -373,12 +373,12 @@ Feature: Batch measurement
   @r36
   Scenario: compare prints both files' figures with the ratio of the second to the first
     Compare sets each summary figure and each slice's costs side by side, with how the second batch differs.
-    Given facts file a for batch 2026-09-01 on plugin version 0.17.0 with slice 1
-    And facts file b for batch 2026-09-15 on plugin version 0.18.0 with slice 1
+    Given facts file a for batch 2026-09-01 on plugin version 0.17.0 with 2 slices
+    And facts file b for batch 2026-09-15 on plugin version 0.18.0 with 2 slices
     When the session runs measure compare for a and b
     Then each file is headed by its batch and plugin versions
     And each summary figure of both files is printed with the ratio of b's to a's
-    And slice 1's output, new input, cache read and agent minutes of both files are printed with the ratio of b's to a's
+    And the output, new input, cache read and agent minutes per slice of both files are printed with the ratio of b's to a's
 
   @r37
   Scenario Outline: a file measure cannot read as its facts is refused
