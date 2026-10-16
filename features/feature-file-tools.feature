@@ -147,9 +147,9 @@ Feature: Feature file tools
     Then the moved "Apply a code" has the tag lines <tag lines after>, the last directly above its Scenario: line
 
     Examples:
-      | own tag lines         | tag lines after                  |
-      | the tag line "@slice-2" | "@slice-2" then "@checkout"    |
-      | no tag line           | "@checkout"                      |
+      | own tag lines           | tag lines after             |
+      | the tag line "@slice-2" | "@slice-2" then "@checkout" |
+      | no tag line             | "@checkout"                 |
 
   @r15
   Scenario: moving to a destination that does not exist is refused

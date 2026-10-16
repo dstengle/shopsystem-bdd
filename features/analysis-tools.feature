@@ -12,12 +12,12 @@ Feature: Analysis tools
     And it says the interpreter came from <source>
 
     Examples:
-      | setting                                                                                                         | option                         | interpreter                                     | source                          |
-      | the project has .venv/bin/python and venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python | --python /opt/py/bin/python    | /opt/py/bin/python                              | --python                        |
-      | the project has .venv/bin/python and venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python |                                | .venv/bin/python under the current directory    | .venv                           |
-      | the project has venv/bin/python and no .venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python |                             | venv/bin/python under the current directory     | venv                            |
-      | the project has neither .venv/bin/python nor venv/bin/python, and $VIRTUAL_ENV points at /opt/env, outside the project, which has bin/python | |  /opt/env/bin/python                         | $VIRTUAL_ENV                    |
-      | the project has neither .venv/bin/python nor venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has no bin/python |                    | the interpreter running the script              | the interpreter running the script |
+      | setting                                                                                                                                      | option                      | interpreter                                      | source                   |
+      | the project has .venv/bin/python and venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python                              | --python /opt/py/bin/python | /opt/py/bin/python                               | --python                 |
+      | the project has .venv/bin/python and venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python                              |                             | the .venv/bin/python under the current directory | the project's virtualenv |
+      | the project has venv/bin/python and no .venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python                           |                             | the venv/bin/python under the current directory  | the project's virtualenv |
+      | the project has neither .venv/bin/python nor venv/bin/python, and $VIRTUAL_ENV points at /opt/env, outside the project, which has bin/python |                             | /opt/env/bin/python                              | the project's virtualenv |
+      | the project has neither .venv/bin/python nor venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has no bin/python                   |                             | the interpreter running the script               | neither                  |
 
   @r2
   Scenario: a project that is not a Python project has no known analysis tools
