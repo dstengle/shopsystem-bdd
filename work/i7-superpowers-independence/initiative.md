@@ -5,7 +5,7 @@ summary: Remove the declared superpowers dependency once no skill invokes a supe
 kind: capability-change
 owner-level: shopsystem-bdd
 status: proposed
-priority: 6
+priority: 5
 source: [review-finding/2026-10-13-kb-and-bdd-assessment]
 date: 2026-10-15
 ---

@@ -5,7 +5,7 @@ summary: The plugin creates and keeps work/ and records/ in a consuming reposito
 kind: capability-change
 owner-level: shopsystem-bdd
 status: proposed
-priority: 7
+priority: 6
 source: [review-finding/2026-10-13-kb-and-bdd-assessment]
 date: 2026-10-15
 ---

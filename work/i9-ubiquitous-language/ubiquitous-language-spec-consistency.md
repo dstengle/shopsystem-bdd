@@ -5,7 +5,7 @@ part_of: initiative/i9
 status: drafted
 date: 2026-10-17
 argues: [spec-consistency]
-adds: [spec-consistency#r1-r10]
+adds: [spec-consistency#r1-r11]
 ---
 
 # Spec consistency: the on-demand check

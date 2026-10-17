@@ -5,7 +5,7 @@ summary: Demote the Lands refusal to an estimate and enforce review by risk, eac
 kind: capability-change
 owner-level: shopsystem-bdd
 status: proposed
-priority: 3
+priority: 2
 source: [measurement/kb-batches-32-35, observation/2026-10-15-unmeasured-releases]
 date: 2026-10-15
 ---

@@ -5,7 +5,7 @@ part_of: initiative/i9
 status: drafted
 date: 2026-10-17
 argues: [spec-integration]
-adds: [spec-integration#r17-r18]
+adds: [spec-integration#r17-r19]
 ---
 
 # Spec integration: a term rides with a change

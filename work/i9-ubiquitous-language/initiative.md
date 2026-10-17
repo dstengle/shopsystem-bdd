@@ -5,7 +5,7 @@ summary: A context's terms are standing glossary entries that model check judges
 kind: capability-change
 owner-level: shopsystem-bdd
 status: started
-priority: 2
+priority: 8
 source: [observation/2026-10-15-design-model-v3]
 date: 2026-10-17
 ---

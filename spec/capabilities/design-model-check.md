@@ -68,7 +68,7 @@ records, and it checks one bounded context: product-level artifacts are read onl
 - [r49] **If** a bullet in `spec/index.md`'s `## Glossary` is not of that form, `model check` reports a file problem naming the file.
 - [r50] **When** `model facts` is run, it prints for each glossary entry a `node` fact of kind `term`, a `term_of` fact naming the bounded context, and an `avoid` fact for each word after its `Not:`.
 - [r51] **When** `model facts` is run, it prints a `mentions` fact for each requirement and each scenario and each term or avoided word it holds, matching a whole word, whatever its case, with a plural "s" allowed, so that "restore" is no mention of "store".
-- [r52] **If** a requirement or a scenario mentions a word that its context's glossary lists after `Not:`, `model check` reports it under v_t1 with the word and the term.
+- [r52] **If** a requirement or a scenario mentions a word that its context's glossary lists after `Not:`, `model check` reports it under v_t1, naming the requirement or scenario, the word and the term.
 - [r53] **If** two glossary entries have one term, `model check` reports it under v_t2.
 - [r54] **If** a word one term lists after `Not:` is another term of the context, or the term itself, `model check` reports it under v_t3.
 - [r55] **If** `import clingo` fails, `model check` looks for an interpreter that has clingo in this order: `$SHOPSYSTEM_MODEL_PYTHON`, each `python3` on `PATH` outside the active virtualenv's `bin/`, `/usr/local/bin/python3`, `/usr/bin/python3`, and runs again under the first that has it.
