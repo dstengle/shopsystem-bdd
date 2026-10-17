@@ -497,7 +497,7 @@ def cmd_bindings(args, files):
 
 
 def cmd_rebind(args, files):
-    locate(files, args.new)
+    locate(files, args.new, args)
     edits = {}
     only = os.path.realpath(args.file) if args.file else None
     for path, source, feature, title in binding_calls(args.tests):

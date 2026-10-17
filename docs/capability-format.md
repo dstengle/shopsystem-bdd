@@ -164,13 +164,13 @@ problem.
 
 A term is standing, like a Behaviour line, and is approved at the gate like one. Its id is
 `term/<context path>/<term>`, the term lowercased with spaces as hyphens (`term/missingmass.io/shopsystem/shop-kb/revision`);
-inside its context, `term/<term>`. Renaming a term is removing one entry and adding another. A glossary
+inside its context, `term/<term>`. A term holds letters, digits and hyphens once lowercased; any other character in it is a file problem. Renaming a term is removing one entry and adding another. A glossary
 change is shown at the gate with the lines it comes with, and the spec commit names each term added,
 changed and removed. In a repository that keeps `work/`, a term change rides with the capability-proposal
 that needs it, which lists the term in `adds`, `changes` or `removes` (`adds: [term/revision]`).
 
 `model check` reads every Behaviour line and every scenario not held for the terms and the avoided words,
-matched as whole words, whatever their case, with a plural "s" allowed: "restore" is no mention of "store".
+matched as whole words, whatever their case, with a plural "s" allowed. A scenario's mentions come from its title and its steps, not its Background, description, docstrings or tables: "restore" is no mention of "store".
 It reports:
 
 | rule | what it found |

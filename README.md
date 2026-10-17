@@ -191,6 +191,8 @@ A context's words are now checked, not only its lines. The glossary entries in `
 - **`model` finds clingo behind a virtualenv**: run from a virtualenv without clingo, `check` tries the other `python3` interpreters on the PATH (and `SHOPSYSTEM_MODEL_PYTHON`), and says what it tried when none holds clingo.
 - **`features` takes `--file`**: `tag`, `hold`, `retire`, `move` and `rebind` can be limited to one feature file, so a title that appears in two files is no longer tagged by hand.
 
+An existing `## Glossary` whose bullets are in another form gives a file problem per bullet: rewrite them to the form (this repository's own already fit).
+
 Fixture runs on a seeded shelf spec (a planted `volume` for `book`, a scenario answering with titles where its line says the number, a line with no bound): report mode 3/3 and fix mode 3/3, $0.29 a report run and $0.42 to $0.54 a fix run. A report-mode run on a clone of shopsystem-kb found 77 findings for $3.28, among them the trial's three known issues. The runs, the scorer fix and what is not tested are in `records/measurements/fixture-runs/2026-10-17-ubiquitous-language-test-log.md`.
 
 ## Scripts

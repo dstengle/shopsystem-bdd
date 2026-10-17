@@ -69,7 +69,7 @@ A clone of the id-migrated kb trial (`a52b712`), plugin B at `73ee3fb`, one sess
   know what `v_s3` means: the skill does not gloss it.
 - Nothing outside `.superpowers/spec-drafts/` changed and nothing was committed.
 
-## What the reviews caught
+## What the reviews and rounds caught
 
 - **Search order**: `model` did not pin the order it searched interpreters in; fixed and asserted (the tried list too).
 - **Paths**: an empty PATH entry and a virtualenv's `bin/` were not resolved.
@@ -85,4 +85,7 @@ A clone of the id-migrated kb trial (`a52b712`), plugin B at `73ee3fb`, one sess
 
 - Fix mode on kb.
 - A run where a term change rides with a capability-proposal in a repository with `work/`.
+- The full path of fix step 1 (more than two lines changed, through `spec-round`).
+- The clingo-missing path of `checking-spec-consistency`.
+- A title shared by two feature files, held and rebound through `--file` in a session (the script test covers it).
 - A real batch in a consuming repository, measured with `scripts/measure`.

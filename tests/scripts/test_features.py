@@ -965,6 +965,24 @@ class BindingsScenarioTest(Workspace, unittest.TestCase):
             expected = text if name == "tests/test_old.py" else text.replace('"Apply a code")', '"Apply a code (held)")')
             self.assertEqual((self.tmp / name).read_text(), expected)
 
+    def test_rebind_with_file_takes_a_new_title_that_several_feature_files_hold(self):
+        """rebind --file follows only its own file when both files hold the new title"""
+        self.write("features/cart.feature", feature(scenario("Apply a code")))
+        self.write("features/old.feature", feature(scenario("Apply a code")))
+        modules = {"tests/test_cart.py": binding("Apply a code", "cart.feature"),
+                   "tests/test_old.py": binding("Apply a code", "old.feature")}
+        for name, text in modules.items():
+            self.write(name, text)
+        for name in ("cart", "old"):
+            done = self.run_script("hold", "Apply a code", "--for-removal", "--file", "features/%s.feature" % name)
+            self.assertEqual(done.returncode, 0, done.stderr)
+        for name in ("cart", "old"):
+            done = self.run_script("rebind", "Apply a code", "Apply a code (held)", "--file", "features/%s.feature" % name)
+            self.assertEqual((done.returncode, done.stdout), (0, "1 binding rebound\n"), done.stderr)
+            moved = [m for m in modules if '"Apply a code (held)")' in (self.tmp / m).read_text()]
+            self.assertEqual(moved, ["tests/test_cart.py"] if name == "cart" else list(modules))
+        self.assertEqual(self.run_script("bindings").returncode, 0)
+
     def test_rebinding_to_a_title_no_scenario_has_is_refused(self):
         """rebinding to a title no scenario has is refused"""
         self.write("features/cart.feature", feature(scenario("Empty cart")))
