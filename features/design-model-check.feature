@@ -154,10 +154,10 @@ Feature: Design model check
   @r21
   Scenario: a reference written name#r<n> is that capability's requirement
     Pins that the part before # is the capability's name in this bounded context and the part after it the requirement's id.
-    Given a capability thing with requirement r2
+    Given a bounded context with id bounded-context/ex.com/prod/ctx and a capability thing with requirement r2
     And a capability-proposal that adds thing#r2
-    When model why is run for thing#r2
-    Then it prints thing's requirement r2 and the proposal as adding it
+    When model why is run for capability/thing#r2
+    Then it prints capability/ex.com/prod/ctx/thing#r2 with its text and the proposal as adding it
 
   @r22
   Scenario Outline: a reference in neither requirement form, or a reversed range, is unresolved
@@ -168,11 +168,12 @@ Feature: Design model check
     Then <reference> is reported as unresolved
 
     Examples:
-      | reference      |
-      | thing          |
-      | thing#2        |
-      | thing#line2    |
-      | thing#r3-r1    |
+      | reference                |
+      | thing                    |
+      | thing#2                  |
+      | thing#line2              |
+      | thing#r3-r1              |
+      | design-decision/thing#r1 |
 
   @r23
   Scenario Outline: a proposal adding or removing a requirement no capability has is unresolved, unless it adds a retired id
@@ -211,17 +212,17 @@ Feature: Design model check
   @r25
   Scenario Outline: a malformed index or capability file is a file problem
     Pins the shape spec/index.md and each capability file must have to be read.
-    Given a bounded context with id acme/shop/cart in which <case>
+    Given a bounded context with id bounded-context/acme.com/shop/cart in which <case>
     When model check is run
     Then it reports a file problem naming <file>
 
     Examples:
-      | case                                                       | file                       |
-      | spec/index.md is missing                                   | spec/index.md              |
-      | spec/index.md has no id                                    | spec/index.md              |
-      | spec/capabilities/thing.md has the id acme/shop/cart/other | spec/capabilities/thing.md |
-      | spec/capabilities/thing.md has no ## Behaviour section     | spec/capabilities/thing.md |
-      | spec/capabilities/thing.md lists retired: [three]          | spec/capabilities/thing.md |
+      | case                                                                      | file                       |
+      | spec/index.md is missing                                                  | spec/index.md              |
+      | spec/index.md has no id                                                   | spec/index.md              |
+      | spec/capabilities/thing.md has the id capability/acme.com/shop/cart/other | spec/capabilities/thing.md |
+      | spec/capabilities/thing.md has no ## Behaviour section                    | spec/capabilities/thing.md |
+      | spec/capabilities/thing.md lists retired: [three]                         | spec/capabilities/thing.md |
 
   @r26
   Scenario Outline: a feature file no capability is formulated as, or with a title twice, is a file problem
@@ -401,23 +402,26 @@ Feature: Design model check
   @r42
   Scenario: the behaviour/ form of a reference names the same requirement
     Pins that #behaviour/r<n> and #r<n> are one requirement.
-    Given a capability thing with requirement r2
-    And a capability-proposal that adds thing#behaviour/r2
-    When model why is run for thing#r2
+    Given a bounded context with id bounded-context/ex.com/prod/ctx and a capability thing with requirement r2
+    And a capability-proposal that adds capability/ex.com/prod/ctx/thing#behaviour/r2
+    When model why is run for capability/ex.com/prod/ctx/thing#r2
     Then it prints the proposal as adding it
 
   @r43
-  Scenario Outline: a path-shaped context id may be written by its context name
-    Pins the short forms of a capability and of the bounded context when the context's id is a path.
-    Given a bounded context with id acme/shop/cart and a capability thing
-    And <reference>
+  Scenario Outline: a node may be written in short where its field allows it
+    Pins that the kind-and-name short form is read in any field, and the bare name only in a field that fixes the kind.
+    Given a bounded context with id bounded-context/ex.com/prod/ctx, a capability thing and an initiative i1
+    And a capability-proposal whose <field> is written <written>
     When model check is run
-    Then <written> is read as <read> and is not reported as unresolved
+    Then <written> is <outcome>
 
     Examples:
-      | reference                                                  | written    | read                  |
-      | a capability-proposal that argues cart/thing               | cart/thing | acme/shop/cart/thing  |
-      | a capability-proposal that argues cart                     | cart       | the bounded context   |
+      | field   | written                          | outcome                                                                 |
+      | argues  | thing                            | read as capability/ex.com/prod/ctx/thing and not reported as unresolved |
+      | argues  | capability/thing                 | read as capability/ex.com/prod/ctx/thing and not reported as unresolved |
+      | argues  | capability/ex.com/prod/ctx/thing | read as capability/ex.com/prod/ctx/thing and not reported as unresolved |
+      | part_of | initiative/i1                    | read as initiative/ex.com/prod/ctx/i1 and not reported as unresolved    |
+      | part_of | i1                               | reported as unresolved                                                  |
 
   @r44
   Scenario: a held scenario names no requirement
@@ -436,3 +440,39 @@ Feature: Design model check
     When model check is run
     Then decision/one is not reported as unresolved
     And that line of text is read as the decision's summary
+
+  @r46
+  Scenario Outline: a node whose id is not in type-first form is a file problem
+    Pins that every id a file gives is its own kind, the context path and a name, and that the bounded context's is bounded-context and the context path.
+    Given a bounded context whose context path is ex.com/prod/ctx
+    And <file> gives <node> the id <id>
+    When model check is run
+    Then it reports a file problem naming <file>
+
+    Examples:
+      | file                       | node                        | id                                     |
+      | spec/index.md              | the bounded context         | ctx                                    |
+      | spec/index.md              | the bounded context         | bounded-context/ctx                    |
+      | spec/capabilities/thing.md | the capability              | thing                                  |
+      | spec/capabilities/thing.md | the capability              | ctx/thing                              |
+      | spec/capabilities/thing.md | the capability              | design-decision/ex.com/prod/ctx/thing  |
+      | decisions/0001-x.md        | the decision                | decision/x                             |
+      | work/i1/initiative.md      | the initiative              | i1                                     |
+      | work/i1/p1.md              | a work-item                 | capability-proposal/ex.com/prod/ctx/p1 |
+      | records/observations.md    | an observation, by heading, | obs-1                                  |
+      | records/f1.md              | a review-finding            | f1                                     |
+
+  @r47
+  Scenario Outline: a reference in a refused form is unresolved
+    Pins that the context-name form and the old decision/ and obs/ prefixes name nothing, even where a node of that name exists.
+    Given a bounded context with id bounded-context/ex.com/prod/ctx, a capability thing with requirement r1, a decision x and an observation x
+    And <file> whose <field> is written <reference>
+    When model check is run
+    Then <reference> is reported as unresolved
+
+    Examples:
+      | file                  | field    | reference    |
+      | a capability-proposal | adds     | ctx/thing#r1 |
+      | a capability-proposal | argues   | ctx/thing    |
+      | a capability          | rests_on | decision/x   |
+      | an initiative         | source   | obs/x        |

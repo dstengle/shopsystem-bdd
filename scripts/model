@@ -13,29 +13,36 @@ from pathlib import Path
 CONTRACT = """\
 contract:
   - It reads, under --root (default: the current directory):
-    spec/index.md, whose frontmatter `id` names the bounded-context;
+    spec/index.md, whose frontmatter `id` names the bounded-context,
+    written bounded-context/<context path>, the path being
+    <owner>/<product>/<context name>;
     spec/capabilities/*.md, each a capability with frontmatter (id, narrator,
     group, rests_on, formulated_as, retired) and a `## Behaviour` section;
     features/*.feature, the containers of acceptance-scenarios;
     decisions/*.md, one design-decision each (frontmatter id, summary, date,
     status, supersedes, revisit_when, revisit_signal);
     or, where there is no decisions/ directory, the ledger spec/decisions.md,
-    each `## decision/<slug>` heading a design-decision whose summary is the
+    each `## design-decision/<name>` heading a design-decision whose summary is the
     entry's text up to a blank line, a heading or a property line (date:,
     revisit_when:, supersedes:, source:), its lines joined by a space;
     work/<initiative>/initiative.md and work/<initiative>/<part>.md;
     records/observations.md (one `## <id>` heading an observation) and any
     other Markdown under records/ whose frontmatter has an `id`.
-  - A capability's id is <context>/<name>. Each bullet of its Behaviour
-    section is a capability-requirement; `- [r<n>] ...` gives it the id
-    <capability>#r<n>. A bullet with no [r<n>] is a requirement with no id.
+  - Ids are type-first: a node's id is <kind>/<context path>/<name>, with
+    the design model's kind name and <name> matching [a-z0-9]+(-[a-z0-9]+)*;
+    an id in any other form is a file problem. A capability's id is
+    capability/<context path>/<its file name>. A reference may be written in
+    full, in short as <kind>/<name> (in this context), or as the bare <name>
+    in a field that fixes the kind (rests_on, supersedes, argues, under,
+    depends_on, and the capability of a requirement reference). The forms
+    <context name>/<name>, decision/<name> and obs/<name> name nothing.
+  - Each bullet of a capability's Behaviour section is a
+    capability-requirement; `- [r<n>] ...` gives it the id <capability>#r<n>.
+    A bullet with no [r<n>] is a requirement with no id.
     `retired: [r4, ...]` lists ids the capability used and retired.
     A reference may be written <capability>#r<n> or <capability>#behaviour/r<n>
-    (the requirement as a part, in shopsystem-knowledge's IRI form); inside
-    one context <capability> may be <name> or <context name>/<name>, the
-    context name being the last segment of the context's id, and that name
-    alone names the context. In a list, <capability>#r<a>-r<b> stands for
-    each id from a to b.
+    (the requirement as a part, in shopsystem-knowledge's IRI form). In a
+    list, <capability>#r<a>-r<b> stands for each id from a to b.
   - A scenario names its requirement by a tag @r<n> in the capability's own
     feature file; its title is free. A scenario with no such tag names none.
     A scenario tagged @holding is no acceptance-scenario.
@@ -71,6 +78,12 @@ STATUSES = {
 PART_KINDS = {"job-proposal", "map-proposal", "vision-proposal", "job-thread", "capability-proposal",
               "cross-context-request", "map-escalation", "work-item"}
 RECORD_KINDS = {"observation", "measurement", "review-finding", "decision-argument", "initiative-archive"}
+KINDS = {"bounded-context", "capability", "design-decision", "acceptance-scenario", "term", "initiative",
+         "capability-proposal", "job-proposal", "map-proposal", "vision-proposal", "job-thread",
+         "cross-context-request", "map-escalation", "work-item", "observation", "measurement", "review-finding",
+         "decision-argument", "initiative-archive", "job", "context-seam", "product-vision"}
+NAME = r"[a-z0-9]+(?:-[a-z0-9]+)*"
+CONTEXT_PATH = rf"{NAME}(?:\.{NAME})*/{NAME}/{NAME}"     # <owner>/<product>/<context name>; the owner may be a domain
 
 
 # ---------------------------------------------------------------- reading
@@ -230,7 +243,8 @@ class Model:
         self.nodes = {}
         self.dangling = []
         self.problems = []
-        self.context = None
+        self.context = None     # bounded-context/<path>
+        self.path = None        # <owner>/<product>/<context name>
         self.caps = {}          # capability id -> {"name", "reqs": {n: node id}, "group"}
         self.proposals = {}     # part id -> frontmatter
         self.parents = {}       # part id -> part_of
@@ -253,27 +267,36 @@ class Model:
         except ValueError:
             return str(path)
 
-    def qualify(self, ref):
-        """<name>, <context name>/<name> or the context's own name, read inside this context."""
-        ref = str(ref)
-        if not self.context or ref == self.context or ref.startswith(self.context + "/"):
+    def qualify(self, ref, kind=None):
+        """<kind>/<path>/<name> as is; <kind>/<name> in this context; <name> where the field fixes the kind."""
+        ref = str(ref).strip()
+        if not self.path:
             return ref
-        cname = self.context.rsplit("/", 1)[-1]
-        if ref == cname:
-            return self.context
-        if "/" not in ref:
-            return f"{self.context}/{ref}"
-        head, rest = ref.split("/", 1)
-        if head == cname and "/" not in rest:
-            return f"{self.context}/{rest}"
+        head, _, rest = ref.partition("/")
+        if head in KINDS:
+            if rest.startswith(self.path + "/") or (head == "bounded-context" and rest == self.path):
+                return ref
+            if re.fullmatch(NAME, rest):
+                return f"{head}/{self.path}/{rest}"
+            return ref      # another context's full id, or malformed: want() or resolve_req() reports it
+        if kind and re.fullmatch(NAME, ref):
+            return f"{kind}/{self.path}/{ref}"
         return ref
+
+    def check_id(self, ident, kind, where):
+        """A node's id is <kind>/<context path>/<name>, with its own kind."""
+        prefix = f"{kind}/{self.path}/"
+        if self.path and not (str(ident).startswith(prefix) and re.fullmatch(NAME, str(ident)[len(prefix):])):
+            self.problems.append(f"{where}: id {ident!r} is not {prefix}<name>")
 
     def resolve_req(self, ref, where):
         m = REF.match(str(ref).strip())
-        if not m:
-            self.dangling.append(f"{where}: {ref!r} is not a requirement reference (<capability>#r<n>, or #r<a>-r<b> with a <= b)")
+        cap = self.qualify(m.group("cap"), "capability") if m else None
+        if not m or (self.path and not re.fullmatch(rf"capability/{re.escape(self.path)}/{NAME}", cap)):
+            self.dangling.append(f"{where}: {ref!r} is not a requirement reference "
+                                 "(<capability>#r<n>, or #r<a>-r<b> with a <= b, the capability written "
+                                 "capability/<context path>/<name>, capability/<name> or <name>)")
             return None
-        cap = self.qualify(m.group("cap"))
         return f"{cap}#r{m.group('n')}"
 
     def read(self):
@@ -292,18 +315,23 @@ class Model:
             self.problems.append("spec/index.md is missing: no bounded-context is named")
             return
         data, _ = frontmatter(path.read_text())
-        self.context = data.get("id")
-        if not self.context:
+        ident = data.get("id")
+        if not ident:
             self.problems.append("spec/index.md has no frontmatter id naming the bounded-context")
             return
+        m = re.fullmatch(rf"bounded-context/({CONTEXT_PATH})", str(ident))
+        if not m:
+            self.problems.append(f"spec/index.md: id {ident!r} is not bounded-context/<owner>/<product>/<context name>")
+            return
+        self.context, self.path = m.group(0), m.group(1)
         self.node(self.context, "bounded-context")
 
     def read_capabilities(self):
         for path in sorted((self.root / "spec" / "capabilities").glob("*.md")):
             data, body = frontmatter(path.read_text())
             name = path.stem
-            cap = data.get("id") or (f"{self.context}/{name}" if self.context else name)
-            expected = f"{self.context}/{name}" if self.context else None
+            expected = f"capability/{self.path}/{name}" if self.path else None
+            cap = data.get("id") or expected or name
             if expected and cap != expected:
                 self.problems.append(f"{self.rel(path)}: id {cap!r} is not {expected!r}")
             self.node(cap, "capability")
@@ -314,6 +342,7 @@ class Model:
             if data.get("group"):
                 self.fact("group", cap, data["group"])
             for d in as_list(data.get("rests_on")):
+                d = self.qualify(d, "design-decision")
                 self.fact("rests_on", cap, d)
                 self.want(d, "design-decision", self.rel(path))
             retired = set()
@@ -382,10 +411,14 @@ class Model:
             if ledger.exists():
                 lines = ledger.read_text().splitlines()
                 for i, line in enumerate(lines):
-                    m = re.match(r"^## (decision/\S+)\s*$", line)
+                    m = re.match(r"^## ((?:design-)?decision/\S+)\s*$", line)
                     if not m:
                         continue
-                    d = m.group(1)
+                    d = self.qualify(m.group(1), "design-decision")
+                    if not d.startswith("design-decision/"):
+                        self.problems.append(f"spec/decisions.md: heading {m.group(1)!r} is not design-decision/<name>")
+                        continue
+                    self.check_id(d, "design-decision", "spec/decisions.md")
                     self.node(d, "design-decision")
                     summary = []
                     for below in lines[i + 1:]:
@@ -402,10 +435,12 @@ class Model:
             if not d:
                 self.problems.append(f"{self.rel(path)}: no frontmatter id")
                 continue
+            self.check_id(d, "design-decision", self.rel(path))
             self.node(d, "design-decision")
             if data.get("summary"):
                 self.fact("summary", d, data["summary"])
             for old in as_list(data.get("supersedes")):
+                old = self.qualify(old, "design-decision")
                 self.fact("supersedes", d, old)
                 self.want(old, "design-decision", self.rel(path))
             if data.get("revisit_signal"):
@@ -418,11 +453,14 @@ class Model:
             for line in obs.read_text().splitlines():
                 if line.startswith("## "):
                     current = line[3:].strip()
+                    self.check_id(current, "observation", self.rel(obs))
                     self.node(current, "observation")
                 elif current:
                     m = re.match(r"^about:\s*(.+)$", line.strip())
                     if m:
-                        self.fact("about", current, self.qualify(scalar(m.group(1))))
+                        a = self.qualify(scalar(m.group(1)))
+                        self.fact("about", current, a)
+                        self.want(a, None, self.rel(obs))
         for path in sorted((self.root / "records").rglob("*.md")):
             if path == obs:
                 continue
@@ -434,9 +472,12 @@ class Model:
             if kind not in RECORD_KINDS:
                 self.problems.append(f"{self.rel(path)}: kind {kind!r} is not a record kind")
                 continue
+            self.check_id(data["id"], kind, self.rel(path))
             self.node(data["id"], kind)
             for a in as_list(data.get("about")):
-                self.fact("about", data["id"], self.qualify(a))
+                a = self.qualify(a)
+                self.fact("about", data["id"], a)
+                self.want(a, None, self.rel(path))
 
     def read_work(self):
         for idir in sorted(p for p in (self.root / "work").glob("*") if p.is_dir()):
@@ -449,6 +490,7 @@ class Model:
             if not i:
                 self.problems.append(f"{self.rel(ipath)}: no frontmatter id")
                 continue
+            self.check_id(i, "initiative", self.rel(ipath))
             self.node(i, "initiative")
             self.status(i, "initiative", data.get("status"), ipath)
             if data.get("kind"):
@@ -458,7 +500,7 @@ class Model:
                     self.fact("priority", i, int(data["priority"]))
                 except ValueError:
                     self.problems.append(f"{self.rel(ipath)}: priority {data['priority']!r} is not a number")
-            self.sources[i] = as_list(data.get("source"))
+            self.sources[i] = [self.qualify(s) for s in as_list(data.get("source"))]
             for s in self.sources[i]:
                 self.fact("source", i, s)
                 self.want(s, None, self.rel(ipath))
@@ -479,16 +521,17 @@ class Model:
         if not p or kind not in PART_KINDS:
             self.problems.append(f"{where}: needs an id and a kind among {', '.join(sorted(PART_KINDS))}")
             return
+        self.check_id(p, kind, where)
         self.node(p, kind)
         self.status(p, kind, data.get("status"), path)
-        if data.get("part_of"):
-            self.fact("part_of", p, data["part_of"])
-            self.parents[p] = data["part_of"]
         self.unread(data, path)
         if data.get("part_of"):
-            self.want(data["part_of"], None, where)
+            parent = self.qualify(data["part_of"])
+            self.fact("part_of", p, parent)
+            self.parents[p] = parent
+            self.want(parent, None, where)
         for a in as_list(data.get("argues")):
-            a = self.qualify(a)
+            a = self.qualify(a, "capability")
             self.fact("argues", p, a)
             self.want(a, None, where)
         if kind == "capability-proposal":
@@ -510,13 +553,13 @@ class Model:
             if data.get("wkind"):
                 self.fact("wkind", p, data["wkind"])
             if data.get("under"):
-                c = data["under"]
-                c = self.qualify(c)
+                c = self.qualify(data["under"], "capability")
                 self.fact("under", p, c)
                 self.want(c, "capability", where)
             if data.get("for"):
-                self.fact("for", p, data["for"])
-                self.want(data["for"], "work-item", where)
+                f = self.qualify(data["for"])
+                self.fact("for", p, f)
+                self.want(f, "work-item", where)
             if data.get("check"):
                 self.fact("check", p, data["check"])
             for ref in expand(as_list(data.get("accepts"))):
@@ -529,10 +572,11 @@ class Model:
                 if not found:
                     self.problems.append(f"{where}: accepts {q}, which no scenario names yet")
             for b in as_list(data.get("blocked_by")):
+                b = self.qualify(b)
                 self.fact("blocked_by", p, b)
                 self.want(b, "work-item", where)
             for d in as_list(data.get("depends_on")):
-                d = self.qualify(d)
+                d = self.qualify(d, "capability")
                 self.fact("wi_depends", p, d)
                 self.want(d, "capability", where)
             for f in as_list(data.get("fileset")):
@@ -633,6 +677,8 @@ def cmd_check(args):
 
 
 def render_decisions(root):
+    index = Model(root)
+    index.read_index()
     rows = []
     for path in sorted((Path(root) / "decisions").glob("*.md")):
         data, _ = frontmatter(path.read_text())
@@ -645,7 +691,7 @@ def render_decisions(root):
              "| decision | summary | status | supersedes | revisit when |",
              "|---|---|---|---|---|"]
     for name, d in rows:
-        sup = ", ".join(as_list(d.get("supersedes"))) or ""
+        sup = ", ".join(index.qualify(s, "design-decision") for s in as_list(d.get("supersedes"))) or ""
         rev = d.get("revisit_when") or ""
         cell = lambda s: str(s).replace("|", "\\|")
         lines.append(f"| [{d['id']}](../decisions/{name}) | {cell(d.get('summary', ''))} | "

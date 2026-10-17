@@ -23,12 +23,28 @@ try:
 except ImportError:
     HAVE_CLINGO = False
 
+PATH = "ex.com/prod/ctx"
+CONTEXT = f"bounded-context/{PATH}"
+INDEX = f"---\nid: {CONTEXT}\n---\n# ctx\n"
+
+
+def full(kind, name):
+    """A node's id in full: <kind>/<context path>/<name>."""
+    return f"{kind}/{PATH}/{name}"
+
+
+THING = full("capability", "thing")
+P1 = full("capability-proposal", "p1")
+I1 = full("initiative", "i1")
+W1 = full("work-item", "w1")
+OBS1 = full("observation", "obs-1")
+
 
 def cap(name, reqs, group="service", retired="[]", rests_on="[]"):
     lines = "\n".join(reqs)
     return textwrap.dedent(f"""\
         ---
-        id: ctx/{name}
+        id: capability/{PATH}/{name}
         title: {name}
         narrator: a client
         group: {group}
@@ -57,7 +73,7 @@ class ModelTest(unittest.TestCase):
     def setUp(self):
         self.tmp = pathlib.Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, self.tmp)
-        self.write("spec/index.md", "---\nid: ctx\n---\n# ctx\n")
+        self.write("spec/index.md", INDEX)
 
     def write(self, rel, text):
         p = self.tmp / rel
@@ -73,7 +89,7 @@ class ModelTest(unittest.TestCase):
         """A fresh repository directory, for a test that runs one scenario under several examples."""
         self.tmp = pathlib.Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, self.tmp)
-        self.write("spec/index.md", "---\nid: ctx\n---\n# ctx\n")
+        self.write("spec/index.md", INDEX)
 
     def check_json(self, *args):
         r = self.run_model("check", "--json", *args)
@@ -83,7 +99,7 @@ class ModelTest(unittest.TestCase):
         return [a for name, a in found["violations"] if name == relation]
 
     def work_item(self, ident="w1", **fields):
-        fm = {"id": ident, "kind": "work-item", "part_of": "i1", "status": "drafted", "under": "thing", "check": "true"}
+        fm = {"id": full("work-item", ident), "kind": "work-item", "part_of": "initiative/i1", "status": "drafted", "under": "thing", "check": "true"}
         fm.update(fields)
         body = "".join(f"{k}: {v}\n" for k, v in fm.items() if v is not None)
         self.write(f"work/i1/{ident}.md", f"---\n{body}---\n")
@@ -92,10 +108,10 @@ class ModelTest(unittest.TestCase):
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, it answers."]))
         self.write("features/thing.feature", feature("thing", ("@r1", "it answers")))
 
-    def initiative(self, ident="i1", source="[obs-1]", status="started", kind="capability-change"):
+    def initiative(self, ident="i1", source="[observation/obs-1]", status="started", kind="capability-change"):
         self.write(f"work/{ident}/initiative.md", textwrap.dedent(f"""\
             ---
-            id: {ident}
+            id: {full("initiative", ident)}
             title: t
             summary: s
             kind: {kind}
@@ -111,9 +127,9 @@ class ModelTest(unittest.TestCase):
                  removes="[]", date="2026-10-15"):
         self.write(f"work/{initiative}/{ident}.md", textwrap.dedent(f"""\
             ---
-            id: {ident}
+            id: {full("capability-proposal", ident)}
             kind: capability-proposal
-            part_of: {initiative}
+            part_of: initiative/{initiative}
             status: {status}
             argues: {argues}
             adds: {adds}
@@ -124,7 +140,7 @@ class ModelTest(unittest.TestCase):
             """))
 
     def observation(self, ident="obs-1"):
-        self.write("records/observations.md", f"# Observations\n\n## {ident}\nabout: ctx\nby: someone\ndate: 2026-10-15\n\nSeen.\n")
+        self.write("records/observations.md", f"# Observations\n\n## {full('observation', ident)}\nabout: {CONTEXT}\nby: someone\ndate: 2026-10-15\n\nSeen.\n")
 
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
@@ -142,7 +158,7 @@ class CheckTest(ModelTest):
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, it answers."]))
         r = self.run_model("check")
         self.assertEqual(r.returncode, 1)
-        self.assertRegex(r.stdout, r"v_s3\s+\(1\)\n\s+ctx/thing#r1")
+        self.assertRegex(r.stdout, r"v_s3\s+\(1\)\n\s+" + re.escape(THING + "#r1"))
 
     def test_r3(self):
         """a requirement bullet without an id is refused"""
@@ -170,7 +186,7 @@ class CheckTest(ModelTest):
         self.initiative()
         self.proposal(changes="[thing#r9]")
         r = self.run_model("check")
-        self.assertRegex(r.stdout, r"v15e\s+\(1\)\n\s+p1, ctx/thing#r9")
+        self.assertRegex(r.stdout, r"v15e\s+\(1\)\n\s+" + re.escape(f"{P1}, {THING}#r9"))
 
     def test_r7(self):
         """a proposal formulated before its requirement has a scenario is refused"""
@@ -179,7 +195,7 @@ class CheckTest(ModelTest):
         self.initiative()
         self.proposal(status="formulated", adds="[thing#r1]")
         r = self.run_model("check")
-        self.assertRegex(r.stdout, r"v15f\s+\(1\)\n\s+p1")
+        self.assertRegex(r.stdout, r"v15f\s+\(1\)\n\s+" + re.escape(P1))
 
     def test_r8(self):
         """a guarantees capability needs no scenarios"""
@@ -190,11 +206,11 @@ class CheckTest(ModelTest):
 
     def test_r9(self):
         """references that name nothing are reported"""
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], rests_on="[decision/nope]"))
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], rests_on="[nope]"))
         self.write("features/thing.feature", feature("thing", ("@r1", "one"), ("@r7", "seven")))
         r = self.run_model("check")
-        self.assertIn("unresolved: features/thing.feature: scenario 'seven' names ctx/thing#r7", r.stdout)
-        self.assertIn("unresolved: spec/capabilities/thing.md: decision/nope is not a design-decision", r.stdout)
+        self.assertIn(f"unresolved: features/thing.feature: scenario 'seven' names {THING}#r7", r.stdout)
+        self.assertIn(f"unresolved: spec/capabilities/thing.md: {full('design-decision', 'nope')} is not a design-decision", r.stdout)
         self.assertEqual(r.returncode, 1)
 
     def test_r10(self):
@@ -202,9 +218,9 @@ class CheckTest(ModelTest):
         self.good()
         self.observation()
         self.initiative()
-        self.write("work/i1/w1.md", "---\nid: w1\nkind: work-item\npart_of: nowhere\nstatus: drafted\nunder: thing\ncheck: true\n---\n")
+        self.work_item(part_of="initiative/nowhere")
         r = self.run_model("check")
-        self.assertRegex(r.stdout, r"v9c\s+\(1\)\n\s+w1")
+        self.assertRegex(r.stdout, r"v9c\s+\(1\)\n\s+" + re.escape(W1))
 
     def test_r11(self):
         """warnings are counted and do not fail the check"""
@@ -230,15 +246,15 @@ class NoSolverTest(ModelTest):
         r = self.run_model("facts", python=[sys.executable, "-I", "-S"])
         self.assertEqual(r.returncode, 0, r.stderr)
         lines = r.stdout.splitlines()
-        self.assertIn('node("ctx/thing", "capability").', lines)
-        self.assertIn('req_id("ctx/thing#r1", "ctx/thing", 1).', lines)
+        self.assertIn(f'node("{THING}", "capability").', lines)
+        self.assertIn(f'req_id("{THING}#r1", "{THING}", 1).', lines)
         self.assertTrue(all(re.fullmatch(r"\w+\(.*\)\.", l) for l in lines))
 
 
 class DecisionsTest(ModelTest):
     def decisions(self):
-        self.write("decisions/0001-old.md", '---\nid: decision/old\nsummary: "Do it the old way."\ndate: 2026-01-01\nstatus: superseded\n---\n# 1\n')
-        self.write("decisions/0002-new.md", '---\nid: decision/new\nsummary: "Do it | the new way."\ndate: 2026-02-01\nstatus: accepted\nsupersedes: decision/old\nrevisit_when: "it hurts"\nrevisit_signal: requests\n---\n# 2\n')
+        self.write("decisions/0001-old.md", f'---\nid: {full("design-decision", "old")}\nsummary: "Do it the old way."\ndate: 2026-01-01\nstatus: superseded\n---\n# 1\n')
+        self.write("decisions/0002-new.md", f'---\nid: {full("design-decision", "new")}\nsummary: "Do it | the new way."\ndate: 2026-02-01\nstatus: accepted\nsupersedes: design-decision/old\nrevisit_when: "it hurts"\nrevisit_signal: requests\n---\n# 2\n')
 
     def test_r14(self):
         """the decisions index lists every decision"""
@@ -246,8 +262,9 @@ class DecisionsTest(ModelTest):
         r = self.run_model("decisions")
         self.assertEqual(r.returncode, 0, r.stderr)
         text = (self.tmp / "spec" / "decisions.md").read_text()
-        self.assertIn("| [decision/old](../decisions/0001-old.md) | Do it the old way. | superseded |  |  |", text)
-        self.assertIn("| [decision/new](../decisions/0002-new.md) | Do it \\| the new way. | accepted | decision/old | it hurts |", text)
+        old, new = full("design-decision", "old"), full("design-decision", "new")
+        self.assertIn(f"| [{old}](../decisions/0001-old.md) | Do it the old way. | superseded |  |  |", text)
+        self.assertIn(f"| [{new}](../decisions/0002-new.md) | Do it \\| the new way. | accepted | {old} | it hurts |", text)
 
     def test_r15(self):
         """a stale decisions index is reported and left alone"""
@@ -273,7 +290,7 @@ class DecisionsTest(ModelTest):
         r = subprocess.run([sys.executable, str(SCRIPT), "--root", ".", "decisions"], capture_output=True, text=True, cwd=self.tmp)
         self.assertEqual(r.stdout.strip(), "wrote spec/decisions.md", r.stderr)
         text = (self.tmp / "spec" / "decisions.md").read_text()
-        self.assertIn("[decision/new]", text)
+        self.assertIn(f"[{full('design-decision', 'new')}]", text)
         self.assertNotIn("Nameless.", text)
 
 
@@ -286,15 +303,15 @@ class WhyTest(ModelTest):
         self.proposal(status="merged", adds="[thing#r1]")
         r = self.run_model("why", "thing#r1")
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
-        self.assertIn("ctx/thing#r1: **When** asked, it answers.", r.stdout)
-        self.assertIn("adds by capability-proposal p1 (merged, 2026-10-15)", r.stdout)
-        self.assertIn("part_of initiative i1", r.stdout)
-        self.assertIn("source observation obs-1", r.stdout)
+        self.assertIn(f"{THING}#r1: **When** asked, it answers.", r.stdout)
+        self.assertIn(f"adds by capability-proposal {P1} (merged, 2026-10-15)", r.stdout)
+        self.assertIn(f"part_of initiative {I1}", r.stdout)
+        self.assertIn(f"source observation {OBS1}", r.stdout)
 
     def test_r17(self):
         """why with no proposal says so"""
         self.good()
-        r = self.run_model("why", "ctx/thing#r1")
+        r = self.run_model("why", "capability/thing#r1")
         self.assertEqual(r.returncode, 1)
         self.assertIn("no capability-proposal adds or changes it", r.stdout)
 
@@ -308,7 +325,7 @@ class RangeTest(ModelTest):
         self.proposal(adds="[thing#r1-r3]")
         r = self.run_model("why", "thing#r2")
         self.assertEqual(r.returncode, 0, r.stdout)
-        self.assertIn("adds by capability-proposal p1", r.stdout)
+        self.assertIn(f"adds by capability-proposal {P1}", r.stdout)
 
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
@@ -325,7 +342,7 @@ class ReadingTest(ModelTest):
 
     def test_a_folded_block_is_a_file_problem(self):
         self.good()
-        self.write("decisions/0001-x.md", "---\nid: decision/x\nsummary: >-\n  folded\ndate: 2026-01-01\nstatus: accepted\n---\n")
+        self.write("decisions/0001-x.md", f"---\nid: {full('design-decision', 'x')}\nsummary: >-\n  folded\ndate: 2026-01-01\nstatus: accepted\n---\n")
         r = self.run_model("check")
         self.assertIn("summary uses a folded or literal block", r.stdout)
         self.assertEqual(r.returncode, 1)
@@ -333,11 +350,11 @@ class ReadingTest(ModelTest):
     def test_a_work_item_under_no_capability_is_unresolved(self):
         self.good()
         self.observation()
-        self.initiative(source="[obs-1]")
+        self.initiative()
         self.proposal(adds="[thing#r1]")
-        self.write("work/i1/w1.md", "---\nid: thing/1\nkind: work-item\npart_of: p1\nstatus: drafted\nunder: nosuch\ncheck: true\n---\n")
+        self.work_item("thing-1", part_of="capability-proposal/p1", under="nosuch")
         r = self.run_model("check")
-        self.assertIn("ctx/nosuch is not a capability", r.stdout)
+        self.assertIn(f"{full('capability', 'nosuch')} is not a capability", r.stdout)
 
     def test_adding_a_retired_id_is_v15c(self):
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r2] Two."], group="guarantees", retired="[r1]"))
@@ -345,18 +362,18 @@ class ReadingTest(ModelTest):
         self.initiative()
         self.proposal(adds="[thing#r1]")
         r = self.run_model("check")
-        self.assertRegex(r.stdout, r"v15c\s+\(1\)\n\s+ctx/thing#r1")
+        self.assertRegex(r.stdout, r"v15c\s+\(1\)\n\s+" + re.escape(THING + "#r1"))
 
     def test_feature_tags_column_zero_lists_and_comments_are_read(self):
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."]).replace(
-            "rests_on: []", "rests_on:\n- decision/x").replace("group: service", "group: service   # a comment"))
-        self.write("decisions/0001-x.md", '---\nid: decision/x\nsummary: "X."\ndate: 2026-01-01\nstatus: accepted\n---\n')
+            "rests_on: []", "rests_on:\n- x").replace("group: service", "group: service   # a comment"))
+        self.write("decisions/0001-x.md", f'---\nid: {full("design-decision", "x")}\nsummary: "X."\ndate: 2026-01-01\nstatus: accepted\n---\n')
         self.write("features/thing.feature", "@r1\nFeature: thing\n\n  Example: one\n    Given a\n")
         r = self.run_model("check")
         self.assertEqual(r.returncode, 0, r.stdout)
         facts = self.run_model("facts").stdout
-        self.assertIn('rests_on("ctx/thing", "decision/x").', facts)
-        self.assertIn('group("ctx/thing", "service").', facts)
+        self.assertIn(f'rests_on("{THING}", "{full("design-decision", "x")}").', facts)
+        self.assertIn(f'group("{THING}", "service").', facts)
 
     def test_a_held_scenario_is_no_acceptance_scenario(self):
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], retired="[r2]"))
@@ -371,11 +388,11 @@ class ReadingTest(ModelTest):
         self.assertNotIn("(held)", facts)
 
     def test_a_ledger_is_read_where_there_is_no_decisions_directory(self):
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees", rests_on="[decision/x]"))
-        self.write("spec/decisions.md", "# Decisions\n\n## decision/x\nX.\ndate: 2026-01-01\n")
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees", rests_on="[x]"))
+        self.write("spec/decisions.md", "# Decisions\n\n## design-decision/x\nX.\ndate: 2026-01-01\n")
         r = self.run_model("check")
         self.assertEqual(r.returncode, 0, r.stdout)
-        self.assertIn('node("decision/x", "design-decision").', self.run_model("facts").stdout)
+        self.assertIn(f'node("{full("design-decision", "x")}", "design-decision").', self.run_model("facts").stdout)
 
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
@@ -400,7 +417,7 @@ class GrammarFixTest(ModelTest):
         self.initiative()
         self.proposal(adds="[thing#r1, other#r1]", argues="[thing, other]")
         r = self.run_model("check")
-        self.assertRegex(r.stdout, r"v_k6\s+\(1\)\n\s+p1")
+        self.assertRegex(r.stdout, r"v_k6\s+\(1\)\n\s+" + re.escape(P1))
 
     def test_another_kind_keeps_one_first_part(self):
         self.good()
@@ -408,51 +425,55 @@ class GrammarFixTest(ModelTest):
         self.initiative()
         p = self.tmp / "work/i1/initiative.md"
         p.write_text(p.read_text().replace("kind: capability-change", "kind: defect"))
-        for w in ("w1", "w2"):
-            self.write(f"work/i1/{w}.md", f"---\nid: thing/{w}\nkind: work-item\npart_of: i1\nstatus: drafted\nunder: thing\ncheck: true\n---\n")
+        for w in ("thing-w1", "thing-w2"):
+            self.work_item(w)
         r = self.run_model("check")
-        self.assertRegex(r.stdout, r"v_k5\s+\(1\)\n\s+i1")
+        self.assertRegex(r.stdout, r"v_k5\s+\(1\)\n\s+" + re.escape(I1))
 
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
-class IriFormTest(ModelTest):
-    """Ids in shopsystem-knowledge's IRI form (decision/capability-ids-are-context-scoped); not scenarios of their own."""
-
-    CTX = "missingmass.io/shopsystem/ctx"
+class TypeFirstTest(ModelTest):
+    """Ids are type-first (decision/capability-ids-are-context-scoped); not scenarios of their own."""
 
     def setUp(self):
         super().setUp()
-        self.write("spec/index.md", f"---\nid: {self.CTX}\n---\n# ctx\n")
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One.", "- [r2] Two."], group="guarantees")
-                   .replace("id: ctx/thing", f"id: {self.CTX}/thing"))
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One.", "- [r2] Two."], group="guarantees"))
         self.observation()
         self.initiative()
 
-    def test_every_written_form_names_the_same_requirement(self):
-        refs = ["thing#r1", "ctx/thing#r1", f"{self.CTX}/thing#r1", "thing#behaviour/r1", f"{self.CTX}/thing#behaviour/r1"]
+    def test_every_accepted_form_names_the_same_requirement(self):
+        refs = ["thing#r1", "capability/thing#r1", f"{THING}#r1",
+                "thing#behaviour/r1", "capability/thing#behaviour/r1", f"{THING}#behaviour/r1"]
         for i, ref in enumerate(refs):
             self.proposal(f"p{i}", adds=f"[{ref}]")
         r = self.run_model("check")
         self.assertIn("0 unresolved references, 0 file problems", r.stdout, r.stdout)
         facts = self.run_model("facts").stdout
         for i in range(len(refs)):
-            self.assertIn(f'adds("p{i}", "{self.CTX}/thing#r1").', facts)
+            self.assertIn(f'adds("{full("capability-proposal", f"p{i}")}", "{THING}#r1").', facts)
 
-    def test_a_range_in_the_context_name_form_expands(self):
-        self.proposal(adds="[ctx/thing#r1-r2]")
+    def test_a_range_in_a_short_form_expands(self):
+        self.proposal(adds="[capability/thing#r1-r2]")
         facts = self.run_model("facts").stdout
-        self.assertIn(f'adds("p1", "{self.CTX}/thing#r2").', facts)
+        self.assertIn(f'adds("{P1}", "{THING}#r2").', facts)
 
-    def test_the_context_name_alone_names_the_context(self):
-        self.write("records/observations.md", "# Observations\n\n## obs-1\nabout: ctx\nabout: ctx/thing\nby: someone\ndate: 2026-10-15\n\nSeen.\n")
+    def test_about_needs_a_kind(self):
+        self.write("records/observations.md", f"# Observations\n\n## {OBS1}\nabout: {CONTEXT}\nabout: capability/thing\nabout: thing\n")
+        found, _ = self.check_json()
+        self.assertEqual([d for d in found["unresolved"] if "thing" in d], ["records/observations.md: thing names nothing in this repository"], found)
         facts = self.run_model("facts").stdout
-        self.assertIn(f'about("obs-1", "{self.CTX}").', facts)
-        self.assertIn(f'about("obs-1", "{self.CTX}/thing").', facts)
+        self.assertIn(f'about("{OBS1}", "{CONTEXT}").', facts)
+        self.assertIn(f'about("{OBS1}", "{THING}").', facts)
 
-    def test_a_capability_id_in_short_form_is_a_file_problem(self):
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees"))
-        r = self.run_model("check")
-        self.assertIn(f"is not '{self.CTX}/thing'", r.stdout)
+    def test_a_ledger_heading_is_type_first(self):
+        shutil.rmtree(self.tmp / "work")
+        for heading, problems in [("design-decision/x", 0), (full("design-decision", "x"), 0), ("decision/x", 1)]:
+            with self.subTest(heading=heading):
+                self.write("spec/decisions.md", f"# Decisions\n\n## {heading}\nX.\n")
+                found, _ = self.check_json()
+                self.assertEqual(len([p for p in found["problems"] if p.startswith("spec/decisions.md")]), problems, found)
+                facts = self.run_model("facts").stdout
+                self.assertEqual(f'node("{full("design-decision", "x")}", "design-decision").' in facts, not problems, facts)
 
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
@@ -463,16 +484,18 @@ class FilesReadTest(ModelTest):
         """model reads the repository's files under its root"""
         feat = feature("thing", ("@r1", "it answers"))
         rows = [
-            ("spec/index.md", "---\nid: rowctx\n---\n", 'node("rowctx", "bounded-context").', True, True),
-            ("spec/capabilities/thing.md", cap("thing", ["- [r1] One."]), 'node("ctx/thing", "capability").', True, True),
+            ("spec/index.md", "---\nid: bounded-context/row.com/prod/rowctx\n---\n",
+             'node("bounded-context/row.com/prod/rowctx", "bounded-context").', True, True),
+            ("spec/capabilities/thing.md", cap("thing", ["- [r1] One."]), f'node("{THING}", "capability").', True, True),
             ("features/sub/thing.feature", feat, 'features/sub/thing.feature:it answers', True, True),
-            ("decisions/0001-one.md", "---\nid: decision/one\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n",
-             'node("decision/one", "design-decision").', True, True),
-            ("work/i1/initiative.md", "---\nid: i1\nstatus: started\n---\n", 'node("i1", "initiative").', True, True),
-            ("records/observations.md", "# Observations\n\n## obs-1\nabout: ctx\n", 'node("obs-1", "observation").', True, True),
-            ("records/review/f1.md", "---\nid: f1\nkind: review-finding\n---\n", 'node("f1", "review-finding").', True, True),
-            ("records/review/f2.md", "---\nkind: review-finding\nabout: ctx/zzmark\n---\n", "zzmark", False, True),
-            ("spec/capabilities/thing.md", cap("thing", ["- [r1] One."]), 'node("ctx/thing", "capability").', True, False),
+            ("decisions/0001-one.md", f"---\nid: {full('design-decision', 'one')}\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n",
+             f'node("{full("design-decision", "one")}", "design-decision").', True, True),
+            ("work/i1/initiative.md", f"---\nid: {I1}\nstatus: started\n---\n", f'node("{I1}", "initiative").', True, True),
+            ("records/observations.md", f"# Observations\n\n## {OBS1}\nabout: {CONTEXT}\n", f'node("{OBS1}", "observation").', True, True),
+            ("records/review/f1.md", f"---\nid: {full('review-finding', 'f1')}\nkind: review-finding\n---\n",
+             f'node("{full("review-finding", "f1")}", "review-finding").', True, True),
+            ("records/review/f2.md", "---\nkind: review-finding\nabout: capability/zzmark\n---\n", "zzmark", False, True),
+            ("spec/capabilities/thing.md", cap("thing", ["- [r1] One."]), f'node("{THING}", "capability").', True, False),
         ]
         for rel, text, marker, included, with_root in rows:
             with self.subTest(file=rel, with_root=with_root, included=included):
@@ -503,7 +526,7 @@ class FilesReadTest(ModelTest):
                 self.write("spec/capabilities/thing.md", cap("thing", ["- [r2] Two."]).replace(own, formulated))
                 self.write(path, text)
                 found, _ = self.check_json()
-                self.assertEqual(["ctx/thing#r2"] in self.violated(found, "v_s3"), reported, found)
+                self.assertEqual([THING + "#r2"] in self.violated(found, "v_s3"), reported, found)
 
     def test_r21(self):
         """a reference written name#r<n> is that capability's requirement"""
@@ -511,14 +534,14 @@ class FilesReadTest(ModelTest):
         self.observation()
         self.initiative()
         self.proposal(adds="[thing#r2]")
-        r = self.run_model("why", "thing#r2")
+        r = self.run_model("why", "capability/thing#r2")
         self.assertEqual(r.returncode, 0, r.stdout)
-        self.assertIn("ctx/thing#r2: Two.", r.stdout)
-        self.assertIn("adds by capability-proposal p1", r.stdout)
+        self.assertIn(f"{THING}#r2: Two.", r.stdout)
+        self.assertIn(f"adds by capability-proposal {P1}", r.stdout)
 
     def test_r22(self):
         """a reference in neither requirement form, or a reversed range, is unresolved"""
-        for ref in ["thing", "thing#2", "thing#line2", "thing#r3-r1"]:
+        for ref in ["thing", "thing#2", "thing#line2", "thing#r3-r1", "design-decision/thing#r1"]:
             with self.subTest(reference=ref):
                 self.reset()
                 self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One.", "- [r2] Two.", "- [r3] Three."], group="guarantees"))
@@ -540,8 +563,8 @@ class FilesReadTest(ModelTest):
                 self.initiative()
                 self.proposal(**{change: f"[thing#{rid}]"})
                 found, _ = self.check_json()
-                unresolved = [d for d in found["unresolved"] if f"ctx/thing#{rid}" in d]
-                v15c = [a for a in self.violated(found, "v15c") if a == [f"ctx/thing#{rid}"]]
+                unresolved = [d for d in found["unresolved"] if f"{THING}#{rid}" in d]
+                v15c = [a for a in self.violated(found, "v15c") if a == [f"{THING}#{rid}"]]
                 if reported == "unresolved":
                     self.assertEqual((len(unresolved), v15c), (1, []), found)
                 else:
@@ -550,18 +573,18 @@ class FilesReadTest(ModelTest):
     def test_r24(self):
         """a frontmatter reference to nothing, or to the wrong kind, is unresolved"""
         def supersedes():
-            self.write("decisions/0001-x.md", "---\nid: decision/x\nsummary: S\ndate: 2026-01-01\nstatus: accepted\nsupersedes: ghost\n---\n")
+            self.write("decisions/0001-x.md", f"---\nid: {full('design-decision', 'x')}\nsummary: S\ndate: 2026-01-01\nstatus: accepted\nsupersedes: ghost\n---\n")
         rows = [
             ("supersedes", supersedes),
-            ("source", lambda: self.initiative(source="[ghost]")),
-            ("part_of", lambda: self.work_item(part_of="ghost")),
+            ("source", lambda: self.initiative(source="[observation/ghost]")),
+            ("part_of", lambda: self.work_item(part_of="initiative/ghost")),
             ("argues", lambda: self.proposal(argues="[ghost]")),
             ("under", lambda: self.work_item(under="ghost")),
-            ("for", lambda: self.work_item(**{"for": "ghost"})),
-            ("blocked_by", lambda: self.work_item(blocked_by="ghost")),
+            ("for", lambda: self.work_item(**{"for": "work-item/ghost"})),
+            ("blocked_by", lambda: self.work_item(blocked_by="work-item/ghost")),
             ("depends_on", lambda: self.work_item(depends_on="ghost")),
-            ("under", lambda: (self.write("decisions/0001-x.md", "---\nid: decision/ghost\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n"),
-                               self.work_item(under="decision/ghost"))),
+            ("under", lambda: (self.write("decisions/0001-x.md", f"---\nid: {full('design-decision', 'ghost')}\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n"),
+                               self.work_item(under="design-decision/ghost"))),
         ]
         for field, make in rows:
             with self.subTest(field=field):
@@ -575,13 +598,13 @@ class FilesReadTest(ModelTest):
 
     def test_r25(self):
         """a malformed index or capability file is a file problem"""
-        def capfile(ident="acme/shop/cart/thing", behaviour=True, retired="[]"):
-            text = cap("thing", ["- [r1] One."], group="guarantees", retired=retired).replace("id: ctx/thing", f"id: {ident}")
+        def capfile(ident="capability/acme.com/shop/cart/thing", behaviour=True, retired="[]"):
+            text = cap("thing", ["- [r1] One."], group="guarantees", retired=retired).replace(f"id: {THING}", f"id: {ident}")
             return text if behaviour else text.replace("## Behaviour", "## Requirements")
         rows = [
             ("spec/index.md is missing", None, "spec/index.md"),
             ("spec/index.md has no id", "---\ntitle: x\n---\n", "spec/index.md"),
-            ("id other", capfile("acme/shop/cart/other"), "spec/capabilities/thing.md"),
+            ("id other", capfile("capability/acme.com/shop/cart/other"), "spec/capabilities/thing.md"),
             ("no Behaviour", capfile(behaviour=False), "spec/capabilities/thing.md"),
             ("retired three", capfile(retired="[three]"), "spec/capabilities/thing.md"),
         ]
@@ -593,7 +616,7 @@ class FilesReadTest(ModelTest):
                     if text:
                         self.write("spec/index.md", text)
                 else:
-                    self.write("spec/index.md", "---\nid: acme/shop/cart\n---\n")
+                    self.write("spec/index.md", "---\nid: bounded-context/acme.com/shop/cart\n---\n")
                     self.write("spec/capabilities/thing.md", text)
                 found, _ = self.check_json()
                 self.assertEqual(len([p for p in found["problems"] if p.startswith(named)]), 1, found)
@@ -621,7 +644,7 @@ class FilesReadTest(ModelTest):
     def test_r27(self):
         """a malformed work directory or work file is a file problem"""
         def part(**changes):
-            fm = {"id": "p1", "kind": "work-item", "part_of": "i1", "status": "drafted", "under": "thing", "check": "true"}
+            fm = {"id": full("work-item", "p1"), "kind": "work-item", "part_of": "initiative/i1", "status": "drafted", "under": "thing", "check": "true"}
             fm.update(changes)
             self.write("work/i1/p1.md", "---\n" + "".join(f"{k}: {v}\n" for k, v in fm.items() if v is not None) + "---\n")
 
@@ -630,7 +653,7 @@ class FilesReadTest(ModelTest):
             p.write_text(p.read_text().replace(old, new))
         rows = [
             ("no initiative.md", lambda: part(), "work/i1:"),
-            ("initiative.md no id", lambda: (self.initiative(), initiative_with("id: i1\n", "")), "work/i1/initiative.md:"),
+            ("initiative.md no id", lambda: (self.initiative(), initiative_with(f"id: {I1}\n", "")), "work/i1/initiative.md:"),
             ("part no id", lambda: (self.initiative(), part(id=None)), "work/i1/p1.md:"),
             ("part kind banana", lambda: (self.initiative(), part(kind="banana")), "work/i1/p1.md:"),
             ("part no status", lambda: (self.initiative(), part(status=None)), "work/i1/p1.md:"),
@@ -655,18 +678,19 @@ class FilesReadTest(ModelTest):
         self.initiative()
         self.work_item(accepts="[thing#r2]")
         found, _ = self.check_json()
-        self.assertEqual(len([p for p in found["problems"] if p.startswith("work/i1/w1.md") and "ctx/thing#r2" in p]), 1, found)
+        self.assertEqual(len([p for p in found["problems"] if p.startswith("work/i1/w1.md") and f"{THING}#r2" in p]), 1, found)
 
     def test_r29(self):
         """a malformed decision, record or frontmatter is a file problem"""
         decision = "---\nid: {}\nsummary: {}\ndate: 2026-01-01\nstatus: accepted\n---\n"
+        x = full("design-decision", "x")
         rows = [
             ("decision no id", lambda: self.write("decisions/0001-x.md", "---\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n")),
-            ("record kind banana", lambda: self.write("records/note.md", "---\nid: n1\nkind: banana\n---\n")),
-            ("folded block", lambda: self.write("decisions/0001-x.md", decision.format("decision/x", ">-\n  folded"))),
-            ("literal block", lambda: self.write("decisions/0001-x.md", decision.format("decision/x", "|\n  literal"))),
-            ("same id twice", lambda: (self.write("decisions/0001-x.md", decision.format("same", "S")),
-                                       self.write("records/observations.md", "# Observations\n\n## same\nabout: ctx\n"))),
+            ("record kind banana", lambda: self.write("records/note.md", f"---\nid: {full('review-finding', 'n1')}\nkind: banana\n---\n")),
+            ("folded block", lambda: self.write("decisions/0001-x.md", decision.format(x, ">-\n  folded"))),
+            ("literal block", lambda: self.write("decisions/0001-x.md", decision.format(x, "|\n  literal"))),
+            ("same id twice", lambda: (self.write("decisions/0001-x.md", decision.format(x, "S")),
+                                       self.write("records/observations.md", f"# Observations\n\n## {x}\nabout: {CONTEXT}\n"))),
         ]
         for case, make in rows:
             with self.subTest(case=case):
@@ -674,7 +698,11 @@ class FilesReadTest(ModelTest):
                 self.good()
                 make()
                 found, r = self.check_json()
-                self.assertEqual(len(found["problems"]), 1, found)
+                if case == "same id twice":
+                    # a type-first id names its kind, so the observation's heading is also not an observation id (r46)
+                    self.assertEqual(len([p for p in found["problems"] if f"{x} is both" in p]), 1, found)
+                else:
+                    self.assertEqual(len(found["problems"]), 1, found)
 
     def test_r30(self):
         """file problems are each printed and fail the check"""
@@ -694,7 +722,7 @@ class OutputTest(ModelTest):
 
     def test_r31(self):
         """the check ends with the four counts"""
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], rests_on="[decision/nope]"))
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], rests_on="[nope]"))
         self.write("features/stray.feature", "Feature: stray\n")
         r = self.run_model("check")
         self.assertIn("1 violations, 1 warnings, 1 unresolved references, 1 file problems", r.stdout.splitlines()[-1], r.stdout)
@@ -708,7 +736,7 @@ class OutputTest(ModelTest):
                 r = self.run_model("check", *limit)
                 m = re.search(rf"^v_s3  \({rows}\)\n((?:    .*\n)+)", r.stdout, re.M)
                 lines = m.group(1).splitlines()
-                self.assertEqual(len([l for l in lines if "ctx/thing#r" in l]), shown, r.stdout)
+                self.assertEqual(len([l for l in lines if THING + "#r" in l]), shown, r.stdout)
                 self.assertIn(f"    ... and {more} more", lines)
 
     def test_r33(self):
@@ -734,7 +762,7 @@ class OutputTest(ModelTest):
         for w in ("w1", "w2"):
             self.work_item(w)
         found, _ = self.check_json()
-        self.assertEqual(self.violated(found, "v_k5"), [["i1"]], found)
+        self.assertEqual(self.violated(found, "v_k5"), [[I1]], found)
         self.reset()
         self.write("spec/capabilities/other.md", cap("other", ["- [r1] One."], group="guarantees"))
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees"))
@@ -753,7 +781,7 @@ class OutputTest(ModelTest):
         self.initiative()
         self.proposal(adds="[thing#r1, other#r1]", argues="[thing, other]")
         r = self.run_model("check")
-        self.assertRegex(r.stdout, r"v_k6\s+\(1\)\n\s+p1")
+        self.assertRegex(r.stdout, r"v_k6\s+\(1\)\n\s+" + re.escape(P1))
 
     def test_r36(self):
         """an initiative may be done when its proposal is formulated"""
@@ -762,7 +790,7 @@ class OutputTest(ModelTest):
         self.initiative(status="done")
         self.proposal(status="formulated", adds="[thing#r1]")
         found, _ = self.check_json()
-        self.assertEqual([v for v in found["violations"] if "i1" in v[1]], [], found)
+        self.assertEqual([v for v in found["violations"] if I1 in v[1]], [], found)
 
 
 class WhyScenarioTest(ModelTest):
@@ -788,8 +816,8 @@ class WhyScenarioTest(ModelTest):
         self.proposal(changes="[thing#r9]")
         r = self.run_model("why", "thing#r9")
         lines = r.stdout.splitlines()
-        self.assertEqual(lines[0], "ctx/thing#r9: no capability has this requirement now")
-        self.assertIn("  changes by capability-proposal p1 (drafted, 2026-10-15)", lines)
+        self.assertEqual(lines[0], f"{THING}#r9: no capability has this requirement now")
+        self.assertIn(f"  changes by capability-proposal {P1} (drafted, 2026-10-15)", lines)
 
     def test_r41(self):
         """why lists every proposal naming the requirement by date, and fails when none adds or changes it"""
@@ -808,7 +836,8 @@ class WhyScenarioTest(ModelTest):
                     self.proposal(**p)
                 r = self.run_model("why", "thing#r2")
                 self.assertEqual(r.returncode, status, r.stdout)
-                seen = re.findall(r"^  [\w/]+ by capability-proposal (p\d) \((\w+), (\d{4}-\d\d-\d\d)\)$", r.stdout, re.M)
+                seen = re.findall(r"^  [\w/]+ by capability-proposal " + re.escape(full("capability-proposal", "")) +
+                                  r"(p\d) \((\w+), (\d{4}-\d\d-\d\d)\)$", r.stdout, re.M)
                 self.assertEqual([p for p, _, _ in seen], listed, r.stdout)
                 self.assertTrue(all(s == "drafted" for _, s, _ in seen))
                 self.assertEqual([d for _, _, d in seen], sorted(d for _, _, d in seen))
@@ -816,32 +845,91 @@ class WhyScenarioTest(ModelTest):
     def test_r42(self):
         """the behaviour/ form of a reference names the same requirement"""
         self.thing()
-        self.proposal(adds="[thing#behaviour/r2]")
-        r = self.run_model("why", "thing#r2")
+        self.proposal(adds=f"[{THING}#behaviour/r2]")
+        r = self.run_model("why", f"{THING}#r2")
         self.assertEqual(r.returncode, 0, r.stdout)
-        self.assertIn("adds by capability-proposal p1", r.stdout)
+        self.assertIn(f"adds by capability-proposal {P1}", r.stdout)
 
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
-class PathContextTest(ModelTest):
-    """A bounded context whose id is a path (r43)."""
+class IdFormTest(ModelTest):
+    """The forms an id and a reference take (r43, r46, r47)."""
 
     def setUp(self):
         super().setUp()
-        self.write("spec/index.md", "---\nid: acme/shop/cart\n---\n# cart\n")
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees")
-                   .replace("id: ctx/thing", "id: acme/shop/cart/thing"))
+        self.files()
+
+    def files(self):
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees"))
         self.observation()
         self.initiative()
 
     def test_r43(self):
-        """a path-shaped context id may be written by its context name"""
-        for written, read in [("cart/thing", "acme/shop/cart/thing"), ("cart", "acme/shop/cart")]:
-            with self.subTest(written=written):
-                self.proposal(argues=f"[{written}]")
+        """a node may be written in short where its field allows it"""
+        rows = [("argues", "thing", THING), ("argues", "capability/thing", THING), ("argues", THING, THING),
+                ("part_of", "initiative/i1", I1), ("part_of", "i1", None)]
+        for field, written, read in rows:
+            with self.subTest(field=field, written=written):
+                self.proposal(argues=f"[{written}]" if field == "argues" else "[thing]")
+                if field == "part_of":
+                    p = self.tmp / "work/i1/p1.md"
+                    p.write_text(p.read_text().replace("part_of: initiative/i1", f"part_of: {written}"))
                 found, _ = self.check_json()
-                self.assertEqual(found["unresolved"], [], found)
-                self.assertIn(f'argues("p1", "{read}").', self.run_model("facts").stdout)
+                facts = self.run_model("facts").stdout
+                if read:
+                    self.assertEqual(found["unresolved"], [], found)
+                    self.assertIn(f'{field}("{P1}", "{read}").', facts)
+                else:
+                    self.assertEqual([d for d in found["unresolved"] if f" {written} " in d], [f"work/i1/p1.md: {written} names nothing in this repository"], found)
+
+    def test_r46(self):
+        """a node whose id is not in type-first form is a file problem"""
+        def capability(ident):
+            self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees").replace(f"id: {THING}", f"id: {ident}"))
+
+        def initiative(ident):
+            p = self.tmp / "work/i1/initiative.md"
+            p.write_text(p.read_text().replace(f"id: {I1}", f"id: {ident}"))
+        rows = [
+            ("spec/index.md", lambda: self.write("spec/index.md", "---\nid: ctx\n---\n")),
+            ("spec/index.md", lambda: self.write("spec/index.md", "---\nid: bounded-context/ctx\n---\n")),
+            ("spec/capabilities/thing.md", lambda: capability("thing")),
+            ("spec/capabilities/thing.md", lambda: capability("ctx/thing")),
+            ("spec/capabilities/thing.md", lambda: capability(full("design-decision", "thing"))),
+            ("decisions/0001-x.md", lambda: self.write("decisions/0001-x.md", "---\nid: decision/x\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n")),
+            ("work/i1/initiative.md", lambda: initiative("i1")),
+            ("work/i1/p1.md", lambda: self.work_item("p1", id=full("capability-proposal", "p1"))),
+            ("records/observations.md", lambda: self.write("records/observations.md", f"# Observations\n\n## obs-1\nabout: {CONTEXT}\n")),
+            ("records/f1.md", lambda: self.write("records/f1.md", "---\nid: f1\nkind: review-finding\n---\n")),
+        ]
+        for named, make in rows:
+            with self.subTest(file=named):
+                self.reset()
+                self.files()
+                make()
+                found, _ = self.check_json()
+                self.assertEqual(len([p for p in found["problems"] if p.startswith(named)]), 1, found)
+
+    def test_r47(self):
+        """a reference in a refused form is unresolved"""
+        def refs():
+            self.write("decisions/0001-x.md", f"---\nid: {full('design-decision', 'x')}\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n")
+            self.write("records/observations.md", f"# Observations\n\n## {OBS1}\nabout: {CONTEXT}\n\n## {full('observation', 'x')}\nabout: {CONTEXT}\n")
+        rows = [
+            ("ctx/thing#r1", lambda: self.proposal(adds="[ctx/thing#r1]")),
+            ("ctx/thing", lambda: self.proposal(argues="[ctx/thing]")),
+            ("decision/x", lambda: self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees", rests_on="[decision/x]"))),
+            ("obs/x", lambda: self.initiative(source="[obs/x]")),
+        ]
+        for written, make in rows:
+            with self.subTest(reference=written):
+                self.reset()
+                self.files()
+                refs()
+                make()
+                found, _ = self.check_json()
+                self.assertEqual(len([d for d in found["unresolved"] if written in d]), 1, found)
+                self.assertEqual(found["problems"], [], found)
 
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
@@ -853,23 +941,23 @@ class HeldAndLedgerTest(ModelTest):
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r2] Two."]))
         self.write("features/thing.feature", "Feature: thing\n\n  @r2 @holding\n  Scenario: two as it was\n    Given a\n")
         found, _ = self.check_json()
-        self.assertEqual(self.violated(found, "v_s3"), [["ctx/thing#r2"]], found)
+        self.assertEqual(self.violated(found, "v_s3"), [[THING + "#r2"]], found)
 
     def test_r45(self):
         """without a decisions directory the index's headings are the decisions"""
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees", rests_on="[decision/one]"))
-        self.write("spec/decisions.md", "# Decisions\n\n## decision/one\nOne way\nto do it.\n\ndate: 2026-01-01\n")
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees", rests_on="[one]"))
+        self.write("spec/decisions.md", "# Decisions\n\n## design-decision/one\nOne way\nto do it.\n\ndate: 2026-01-01\n")
         found, _ = self.check_json()
         self.assertEqual(found["unresolved"], [], found)
         self.assertEqual(self.violated(found, "v12a"), [], found)
-        self.assertIn('summary("decision/one", "One way to do it.").', self.run_model("facts").stdout)
+        self.assertIn(f'summary("{full("design-decision", "one")}", "One way to do it.").', self.run_model("facts").stdout)
 
 
 class BindingTest(unittest.TestCase):
     def test_every_scenario_has_its_test(self):
         self.assertEqual(missing(FEATURE, CheckTest, NoSolverTest, DecisionsTest, WhyTest, RangeTest,
-                                 ReadingTest, GrammarFixTest, IriFormTest, FilesReadTest, OutputTest,
-                                 WhyScenarioTest, PathContextTest, HeldAndLedgerTest), [])
+                                 ReadingTest, GrammarFixTest, TypeFirstTest, FilesReadTest, OutputTest,
+                                 WhyScenarioTest, IdFormTest, HeldAndLedgerTest), [])
 
 
 if __name__ == "__main__":
