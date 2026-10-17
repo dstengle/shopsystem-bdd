@@ -5,6 +5,8 @@
 % carries a FIX note and the change is the smallest that keeps the stated
 % intent. Facts come from `model facts`, which reads a repository's files.
 % Every v_ relation must be empty; w_ relations are warnings.
+% A clause marked EXTENSION is not in grammar.md v3 at all; it is proposed against
+% grammar.md v3 (design-model-check r48-r54) and kept apart from the FIX notes.
 
 % ---------------------------------------------------------------- inputs
 #defined node/2.      #defined narrator/2.   #defined group/2.     #defined external/1.
@@ -22,10 +24,16 @@
 % Used by grammar.md with no .decl and no §2 row:
 #defined authored_depends_on/2.   % g:112 (v4); the parse of "CAP depends on X"
 #defined age/2.                   % g:203 (w_stale_intake); days since an initiative was proposed
+% EXTENSION (proposed against grammar.md v3): the glossary of spec/index.md.
+#defined term_of/2.               % term_of(T, Ctx): term T is a term of bounded-context Ctx
+#defined avoid/2.                 % avoid(T, W): term T's entry lists word W after `Not:`
+#defined glossary_entry/3.        % glossary_entry(T, N, W): glossary bullet N writes term T as word W
+#defined mentions/2.              % mentions(X, W): requirement or scenario X holds W, a term or avoided word
 
 % ---------------------------------------------------------------- §1 g:9-50
 standing("product-vision").  standing("job").  standing("bounded-context").  standing("context-seam").
 standing("capability").  standing("capability-requirement").  standing("acceptance-scenario").  standing("design-decision").
+standing("term").         % EXTENSION (proposed against grammar.md v3): a glossary term is standing
 part("job-proposal").  part("map-proposal").  part("vision-proposal").  part("job-thread").
 part("capability-proposal").  part("cross-context-request").  part("map-escalation").  part("work-item").
 record("observation").  record("measurement").  record("review-finding").  record("decision-argument").  record("initiative-archive").
@@ -174,6 +182,20 @@ v_w4(W)      :- node(W, "work-item"), not has_accepts(W), not has_check(W).
 % initiative done only when every part is closed
 v_d1(I) :- status(I, "done"), root(P, I), not closed(P).
 
+% ---------------------------------------------------------------- EXTENSION: terms
+% Proposed against grammar.md v3 (design-model-check r52-r54); grammar.md has no terms yet.
+% A requirement is in its capability's context; a scenario in its requirement's. A scenario that
+% names no requirement (v_s1 reports it) is read in the repository's own, the one bounded-context.
+ctx_of(Q, X) :- has_req(C, Q), in(C, X).
+ctx_of(S, X) :- has_sc(Q, S), ctx_of(Q, X).
+ctx_of(S, X) :- node(S, "acceptance-scenario"), not has_sc_of(S), node(X, "bounded-context").
+% t1. a requirement or scenario uses no word its context's glossary avoids
+v_t1(X, W, T) :- mentions(X, W), avoid(T, W), term_of(T, Ctx), ctx_of(X, Ctx).
+% t2. one entry per term
+v_t2(T)       :- glossary_entry(T, N1, _), glossary_entry(T, N2, _), N1 < N2.
+% t3. no term avoids a term of its context, itself included
+v_t3(W)       :- avoid(T, W), term_of(T, Ctx), glossary_entry(T2, _, W), term_of(T2, Ctx).
+
 % ---------------------------------------------------------------- warnings g:193-204
 w_unserved_cap(C)  :- node(C, "capability"), not serves(C, _).
 w_unserved_job(J)  :- node(J, "job"), not serves(_, J), not of_job(_, J).
@@ -193,5 +215,6 @@ w_stale_intake(I)  :- status(I, "proposed"), age(I, Days), Days > 90.
 #show v_k1/1. #show v_k2/1. #show v_k3/1. #show v_k4/1. #show v_k5/1. #show v_k6/1.
 #show v_b1/1. #show v_b2/1. #show v_b3/1. #show v_s1/1. #show v_s2/1. #show v_s3/1.
 #show v_w1/1. #show v_w2/1. #show v_w3/2. #show v_w4/1. #show v_d1/1.
+#show v_t1/3. #show v_t2/1. #show v_t3/1.    % EXTENSION (proposed against grammar.md v3)
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
 #show w_many_requests/1. #show w_stale_intake/1.

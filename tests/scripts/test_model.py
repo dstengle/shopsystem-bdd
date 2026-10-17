@@ -2,6 +2,7 @@
 features/design-model-check.feature is that scenario's step definition."""
 
 import json
+import os
 import pathlib
 import re
 import shutil
@@ -22,6 +23,9 @@ try:
     HAVE_CLINGO = True
 except ImportError:
     HAVE_CLINGO = False
+
+# On PYTHONPATH, a clingo.py that hides clingo from an interpreter, as the fixture harness does.
+HIDE_CLINGO = 'raise ImportError("clingo is hidden for this test")\n'
 
 PATH = "ex.com/prod/ctx"
 CONTEXT = f"bounded-context/{PATH}"
@@ -235,7 +239,10 @@ class NoSolverTest(ModelTest):
     def test_r12(self):
         """without clingo the check says how to install it"""
         self.good()
-        r = self.run_model("check", python=[sys.executable, "-I", "-S"])
+        self.write("hidden/clingo.py", HIDE_CLINGO)
+        env = {k: v for k, v in os.environ.items() if k not in ("SHOPSYSTEM_MODEL_PYTHON", "SHOPSYSTEM_MODEL_REEXEC")}
+        env.update(PYTHONPATH=str(self.tmp / "hidden"), PATH=str(self.tmp / "empty"))
+        r = subprocess.run([sys.executable, str(SCRIPT), "--root", str(self.tmp), "check"], capture_output=True, text=True, env=env, timeout=60)
         self.assertEqual(r.returncode, 2, r.stdout + r.stderr)
         self.assertIn("clingo", r.stdout)
         self.assertIn("-m pip install clingo", r.stdout)
@@ -1000,11 +1007,228 @@ class HeldAndLedgerTest(ModelTest):
         self.assertIn(f'summary("{full("design-decision", "one")}", "One way to do it.").', self.run_model("facts").stdout)
 
 
+def index(*glossary):
+    """spec/index.md with a ## Glossary section holding these bullets."""
+    return INDEX + "\n## Glossary\n\n" + "\n".join(glossary) + "\n\n## Where things live\n\n- Here.\n"
+
+
+def term(name):
+    return full("term", name)
+
+
+class GlossaryFactsTest(ModelTest):
+    """r48, r50, r51: the glossary read into facts (no solver needed)."""
+
+    def facts(self):
+        r = self.run_model("facts", python=[sys.executable, "-I", "-S"])
+        self.assertEqual(r.returncode, 0, r.stderr)
+        return r.stdout.splitlines()
+
+    def test_r48(self):
+        """a glossary bullet is a term of the bounded context"""
+        self.write("spec/index.md", index("- **Suite record**: a whole-suite result, e.g. a green run, logged once. Not: test record, run."))
+        lines = self.facts()
+        self.assertIn(f'node("{term("suite-record")}", "term").', lines)
+        self.assertIn(f'avoid("{term("suite-record")}", "test record").', lines)
+        self.assertIn(f'avoid("{term("suite-record")}", "run").', lines)
+        self.assertEqual([l for l in lines if l.startswith("avoid(")], [f'avoid("{term("suite-record")}", "test record").', f'avoid("{term("suite-record")}", "run").'])
+
+    def test_a_definition_with_a_period_is_one_definition(self):
+        self.write("spec/index.md", index("- **store**: where things are kept, e.g. a shelf."))
+        lines = self.facts()
+        self.assertIn(f'node("{term("store")}", "term").', lines)
+        self.assertEqual([l for l in lines if l.startswith("avoid(")], [])
+
+    def test_r50(self):
+        """facts give each term its kind, its context and its avoided words"""
+        self.write("spec/index.md", index("- **batch**: the slices one session plans. Not: sprint, lot.",
+                                          "- **slice**: a unit of work with an observable done."))
+        lines = self.facts()
+        for t in ("batch", "slice"):
+            self.assertIn(f'node("{term(t)}", "term").', lines)
+            self.assertIn(f'term_of("{term(t)}", "{CONTEXT}").', lines)
+        self.assertIn(f'avoid("{term("batch")}", "sprint").', lines)
+        self.assertIn(f'avoid("{term("batch")}", "lot").', lines)
+        self.assertFalse([l for l in lines if l.startswith(f'avoid("{term("slice")}"')])
+
+    def test_r51(self):
+        """a mention is a whole word in any case, plural allowed"""
+        self.write("spec/index.md", index("- **store**: where things are kept. Not: shelf."))
+        self.write("spec/capabilities/thing.md", cap("thing", [
+            "- [r1] **When** asked, the Store answers.",
+            "- [r2] **When** asked, it lists the stores.",
+            "- [r3] **When** asked, it can restore a backup.",
+            "- [r4] **When** asked, it reads a shelf and a store-front."]))
+        self.write("features/thing.feature", "Feature: thing\n\n  @r1\n  Scenario: one\n    Given SHELVES\n    When a shelf is read\n    Then it answers\n\n"
+                                             "  @r2\n  Scenario: the store answers\n    Given a thing\n    Then it holds\n")
+        lines = self.facts()
+        mentions = sorted(l for l in lines if l.startswith("mentions("))
+        self.assertEqual(mentions, sorted([
+            f'mentions("{THING}#r1", "store").',
+            f'mentions("{THING}#r2", "store").',
+            f'mentions("{THING}#r4", "shelf").',
+            'mentions("features/thing.feature:one", "shelf").',
+            'mentions("features/thing.feature:the store answers", "store").']))
+
+
+@unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
+class GlossaryCheckTest(ModelTest):
+    """r49, r52-r54: the glossary checked."""
+
+    def test_r49(self):
+        """a glossary bullet not in the entry form is a file problem"""
+        rows = ["- batch: the slices one session plans.",
+                "- **batch** the slices one session plans.",
+                "- **batch**: the slices one session plans",
+                "- **batch**: the slices one session plans. Not: sprint",
+                "- **batch**: . Not: sprint.",
+                "- **batch**: the slices. Not: sprint, , lot."]
+        for bullet in rows:
+            with self.subTest(bullet=bullet):
+                self.reset()
+                self.write("spec/index.md", index("- **slice**: a unit of work.", bullet))
+                found, r = self.check_json()
+                self.assertEqual(len(found["problems"]), 1, found)
+                self.assertTrue(found["problems"][0].startswith("spec/index.md"), found)
+                self.assertEqual(r.returncode, 1)
+
+    def test_a_good_glossary_passes(self):
+        self.write("spec/index.md", index("- **slice**: a unit of work, e.g. a scenario. Not: chunk.",
+                                          "- **batch**: the slices one session plans."))
+        self.good()
+        found, r = self.check_json()
+        self.assertEqual((found["violations"], found["problems"], found["unresolved"]), ([], [], []), found)
+        self.assertEqual(r.returncode, 0)
+
+    def test_r52(self):
+        """a requirement or scenario using an avoided word is v_t1"""
+        self.write("spec/index.md", index("- **slice**: a unit of work. Not: chunk."))
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, it plans each chunk.", "- [r2] It plans a slice."]))
+        self.write("features/thing.feature", feature("thing", ("@r1", "it plans"), ("@r2", "chunks are planned")))
+        found, r = self.check_json()
+        self.assertEqual(sorted(self.violated(found, "v_t1")), sorted([
+            [THING + "#r1", "chunk", term("slice")],
+            ["features/thing.feature:chunks are planned", "chunk", term("slice")]]), found)
+        self.assertEqual(r.returncode, 1)
+        text = self.run_model("check").stdout
+        self.assertIn("v_t1  (2)", text)
+
+    def test_a_restore_is_no_store(self):
+        self.write("spec/index.md", index("- **depot**: where things are kept. Not: store."))
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, it can restore a backup."]))
+        self.write("features/thing.feature", feature("thing", ("@r1", "a restore")))
+        found, _ = self.check_json()
+        self.assertEqual(self.violated(found, "v_t1"), [], found)
+
+    def test_r53(self):
+        """two entries for one term are v_t2"""
+        self.write("spec/index.md", index("- **slice**: a unit of work.", "- **Slice**: a piece of a batch."))
+        found, r = self.check_json()
+        self.assertEqual(self.violated(found, "v_t2"), [[term("slice")]], found)
+        self.assertEqual(r.returncode, 1)
+
+    def test_r54(self):
+        """an avoided word that is a term is v_t3"""
+        self.write("spec/index.md", index("- **slice**: a unit of work. Not: batch.",
+                                          "- **batch**: the slices one session plans.",
+                                          "- **hand-back**: an implementer's stop. Not: Hand-back, halt."))
+        found, r = self.check_json()
+        self.assertEqual(sorted(self.violated(found, "v_t3")), [["batch"], ["hand-back"]], found)
+        self.assertEqual(r.returncode, 1)
+
+
+
+class InterpreterSearchTest(ModelTest):
+    """r12, r55-r57: model check finds clingo behind a virtualenv. clingo is hidden from the first
+    interpreter by a clingo.py on PYTHONPATH that raises ImportError; a fake python3 drops PYTHONPATH."""
+
+    def setUp(self):
+        super().setUp()
+        self.good()
+        self.hidden = self.tmp / "hidden"
+        self.write("hidden/clingo.py", HIDE_CLINGO)
+        self.log = self.tmp / "calls.log"
+
+    def fake(self, dirname, behaviour="find"):
+        """A python3 in <dirname> that logs each call. find: runs the real interpreter without the hiding
+        PYTHONPATH; probe-only: says yes to the probe but runs the real interpreter with clingo still
+        hidden; lack: has no clingo."""
+        real = sys.executable
+        body = {"find": f'exec /usr/bin/env -u PYTHONPATH "{real}" "$@"',
+                "probe-only": f'if [ "$1" = "-c" ]; then exit 0; fi\nexec "{real}" "$@"',
+                "lack": "exit 1"}[behaviour]
+        p = self.write(f"{dirname}/python3", f'#!/bin/sh\necho "{dirname}: $*" >> "{self.log}"\n{body}\n')
+        p.chmod(0o755)
+        return p
+
+    def env(self, path_dirs, **extra):
+        env = {k: v for k, v in os.environ.items() if k not in ("SHOPSYSTEM_MODEL_PYTHON", "VIRTUAL_ENV", "SHOPSYSTEM_MODEL_REEXEC")}
+        env["PYTHONPATH"] = str(self.hidden)
+        env["PATH"] = os.pathsep.join(str(d) for d in path_dirs)
+        env.update(extra)
+        return env
+
+    def run_check(self, env):
+        return subprocess.run([sys.executable, str(SCRIPT), "--root", str(self.tmp), "check"],
+                              capture_output=True, text=True, env=env, timeout=60)
+
+    def calls(self):
+        return self.log.read_text().splitlines() if self.log.exists() else []
+
+    @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
+    def test_r55(self):
+        """without clingo the check runs again under the first interpreter that has it"""
+        self.fake("venv/bin")
+        self.fake("lacks", "lack")
+        self.fake("bin")
+        self.fake("chosen")
+        cases = [
+            ("PATH, the virtualenv's bin/ skipped", [self.tmp / "venv/bin", self.tmp / "lacks", self.tmp / "bin"],
+             {"VIRTUAL_ENV": str(self.tmp / "venv")}, "bin"),
+            ("$SHOPSYSTEM_MODEL_PYTHON first", [self.tmp / "bin"], {"SHOPSYSTEM_MODEL_PYTHON": str(self.tmp / "chosen/python3")}, "chosen"),
+        ]
+        for name, path_dirs, extra, used in cases:
+            with self.subTest(name):
+                self.log.unlink(missing_ok=True)
+                r = self.run_check(self.env(path_dirs, **extra))
+                self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+                self.assertIn("0 violations", r.stdout)
+                runs = [c for c in self.calls() if str(SCRIPT) in c]
+                self.assertEqual(runs, [f"{used}: {SCRIPT} --root {self.tmp} check"], self.calls())
+                self.assertNotIn("venv/bin: ", "\n".join(self.calls()))
+
+    def test_r56(self):
+        """the check runs again only once"""
+        self.fake("bin", "probe-only")
+        r = self.run_check(self.env([self.tmp / "bin"]))
+        self.assertEqual(r.returncode, 2, r.stdout + r.stderr)
+        self.assertIn("clingo", r.stdout)
+        self.assertEqual(len([c for c in self.calls() if str(SCRIPT) in c]), 1, self.calls())
+
+    def test_r57(self):
+        """with no interpreter that has clingo the check names each one it tried"""
+        self.fake("lacks", "lack")
+        missing_python = self.tmp / "nowhere/python3"
+        for name, path_dirs, extra, tried in [
+                ("no interpreter on PATH", [self.tmp / "empty"], {}, []),
+                ("interpreters that lack it", [self.tmp / "lacks"], {"SHOPSYSTEM_MODEL_PYTHON": str(missing_python)},
+                 [str(missing_python), str(self.tmp / "lacks/python3")])]:
+            with self.subTest(name):
+                r = self.run_check(self.env(path_dirs, **extra))
+                self.assertEqual(r.returncode, 2, r.stdout + r.stderr)
+                self.assertIn("clingo", r.stdout)
+                self.assertIn("pip install clingo", r.stdout)
+                for python in tried + ["/usr/local/bin/python3", "/usr/bin/python3"]:
+                    self.assertIn(python, r.stdout)
+                self.assertEqual([c for c in self.calls() if str(SCRIPT) in c], [])
+
+
 class BindingTest(unittest.TestCase):
     def test_every_scenario_has_its_test(self):
         self.assertEqual(missing(FEATURE, CheckTest, NoSolverTest, DecisionsTest, WhyTest, RangeTest,
                                  ReadingTest, GrammarFixTest, TypeFirstTest, FilesReadTest, OutputTest,
-                                 WhyScenarioTest, IdFormTest, HeldAndLedgerTest), [])
+                                 WhyScenarioTest, IdFormTest, HeldAndLedgerTest, GlossaryFactsTest,
+                                 GlossaryCheckTest, InterpreterSearchTest), [])
 
 
 if __name__ == "__main__":

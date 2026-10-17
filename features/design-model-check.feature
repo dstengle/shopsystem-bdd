@@ -476,3 +476,95 @@ Feature: Design model check
       | a capability-proposal | argues   | ctx/thing    |
       | a capability          | rests_on | decision/x   |
       | an initiative         | source   | obs/x        |
+
+  @r48
+  Scenario: a glossary bullet is a term of the bounded context
+    Pins that a definition holding a period, as in "e.g. a", is one definition, split from its avoided words only at ". Not:".
+    Given a bounded context whose glossary has the bullet "- **Suite record**: a whole-suite result, e.g. a green run, logged once. Not: test record, run."
+    When model facts is run
+    Then it prints the term term/ex.com/prod/ctx/suite-record
+    And its avoided words are "test record" and "run", and nothing else
+
+  @r49
+  Scenario Outline: a glossary bullet not in the entry form is a file problem
+    Given a bounded context whose glossary has the bullet <bullet>
+    When model check is run
+    Then it reports one file problem naming spec/index.md
+    And it exits 1
+
+    Examples:
+      | bullet                                                   |
+      | - batch: the slices one session plans.                   |
+      | - **batch** the slices one session plans.                |
+      | - **batch**: the slices one session plans                |
+      | - **batch**: the slices one session plans. Not: sprint   |
+      | - **batch**: . Not: sprint.                              |
+      | - **batch**: the slices. Not: sprint, , lot.             |
+
+  @r50
+  Scenario: facts give each term its kind, its context and its avoided words
+    Given a bounded context whose glossary defines batch, avoiding sprint and lot, and slice, avoiding nothing
+    When model facts is run
+    Then each term has a node fact of kind term and a term_of fact naming the bounded context
+    And batch has an avoid fact for sprint and one for lot
+    And slice has no avoid fact
+
+  @r51
+  Scenario: a mention is a whole word in any case, plural allowed
+    Given a glossary term store that avoids shelf
+    And requirements that say "the Store", "the stores", "restore" and "a shelf and a store-front"
+    And a scenario whose steps say "a shelf" and another whose title says "the store"
+    When model facts is run
+    Then "the Store" and "the stores" each mention store
+    And "restore" and "store-front" mention nothing
+    And the requirement and the scenario saying "a shelf" each mention shelf
+
+  @r52
+  Scenario: a requirement or scenario using an avoided word is v_t1
+    Given a glossary term slice that avoids chunk
+    And a requirement that says "chunk" and a scenario titled "chunks are planned"
+    When model check is run
+    Then v_t1 names the requirement, chunk and the term slice
+    And v_t1 names the scenario, chunk and the term slice
+    And it exits 1
+
+  @r53
+  Scenario: two entries for one term are v_t2
+    Given a glossary with an entry for slice and another for Slice
+    When model check is run
+    Then v_t2 names term/ex.com/prod/ctx/slice
+    And it exits 1
+
+  @r54
+  Scenario: an avoided word that is a term is v_t3
+    Given a glossary where slice avoids batch, batch is a term, and hand-back avoids Hand-back
+    When model check is run
+    Then v_t3 names batch and hand-back
+    And it exits 1
+
+  @r55
+  Scenario: without clingo the check runs again under the first interpreter that has it
+    Pins the order of the search and that the active virtualenv's bin/ is skipped.
+    Given an interpreter that cannot import clingo
+    And on PATH, in order, a virtualenv's python3 that has clingo, a python3 without it and a python3 with it
+    When model check is run
+    Then it runs again under the third, never asking the virtualenv's
+    And it exits 0
+    But when $SHOPSYSTEM_MODEL_PYTHON names a python3 with clingo, it runs again under that one
+
+  @r56
+  Scenario: the check runs again only once
+    Given an interpreter that cannot import clingo
+    And a python3 on PATH that says it has clingo but runs the check without it
+    When model check is run
+    Then the check runs again under that python3 once
+    And it exits 2
+
+  @r57
+  Scenario: with no interpreter that has clingo the check names each one it tried
+    Given an interpreter that cannot import clingo
+    And no python3 that can, whether PATH holds none or $SHOPSYSTEM_MODEL_PYTHON and PATH name ones without it
+    When model check is run
+    Then it names clingo and pip install clingo
+    And it names each interpreter it tried, /usr/local/bin/python3 and /usr/bin/python3 among them
+    And it exits 2

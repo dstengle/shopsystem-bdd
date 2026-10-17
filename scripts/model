@@ -15,7 +15,11 @@ contract:
   - It reads, under --root (default: the current directory):
     spec/index.md, whose frontmatter `id` names the bounded-context,
     written bounded-context/<context path>, the path being
-    <owner>/<product>/<context name>;
+    <owner>/<product>/<context name>, and whose `## Glossary` bullets,
+    each written `- **<term>**: <definition>. Not: <word>, <word>.` (the
+    `Not:` part optional, split on `. Not:` only), are the context's terms,
+    term/<context path>/<term lowercased, spaces as hyphens>; a bullet of
+    that section in any other form is a file problem;
     spec/capabilities/*.md, each a capability with frontmatter (id, narrator,
     group, rests_on, formulated_as, retired) and a `## Behaviour` section;
     features/*.feature, the containers of acceptance-scenarios;
@@ -47,16 +51,24 @@ contract:
     feature file; its title is free. A scenario with no such tag names none.
     A scenario tagged @holding is no acceptance-scenario.
   - facts prints the facts it read, one a line, in clingo's syntax, under
-    grammar.md's relation names. It needs nothing beyond the standard
-    library.
+    grammar.md's relation names. A term gives node(T, "term"),
+    term_of(T, <bounded-context>), avoid(T, <word>) for each word after its
+    `Not:`, and glossary_entry(T, <bullet number>, <term lowercased>); each
+    requirement (its line) and each acceptance-scenario (its title and steps)
+    gives mentions(X, <word>) for each term or avoided word it holds, as a
+    whole word in any case, with a plural "s" allowed. It needs nothing
+    beyond the standard library.
   - check solves the facts with model.lp (beside this script) and prints every
     non-empty v_ relation, then the w_ relations with their counts, then the
     references that name nothing and the file problems (a missing id, a
     status not in a lifecycle, a block it cannot read). It exits 1 when any
     v_ relation is non-empty, any reference names nothing or any file has a
-    problem, 0 otherwise. It needs the
-    clingo package in the interpreter that runs it; without it, check says
-    so with the command that installs it and exits 2.
+    problem, 0 otherwise. It needs the clingo package. When the
+    interpreter that runs it lacks clingo, check runs again, once, under the
+    first of $SHOPSYSTEM_MODEL_PYTHON, each python3 on PATH outside the
+    active virtualenv's bin/, /usr/local/bin/python3 and /usr/bin/python3
+    whose `-c "import clingo"` succeeds; when none does, it says so with the
+    command that installs clingo and each interpreter it tried, and exits 2.
   - decisions writes spec/decisions.md, the generated index of decisions/,
     and nothing else; --check writes nothing and exits 1 when the file on
     disk is not what it would write.
@@ -84,6 +96,8 @@ KINDS = {"bounded-context", "capability", "design-decision", "acceptance-scenari
          "decision-argument", "initiative-archive", "job", "context-seam", "product-vision"}
 NAME = r"[a-z0-9]+(?:-[a-z0-9]+)*"
 CONTEXT_PATH = rf"{NAME}(?:\.{NAME})*/{NAME}/{NAME}"     # <owner>/<product>/<context name>; the owner may be a domain
+ENTRY = re.compile(r"^\*\*(?P<term>[^*]+?)\*\*: (?P<rest>.+)$")    # a glossary bullet, after its "- "
+REEXEC = "SHOPSYSTEM_MODEL_REEXEC"      # set when check runs again under another interpreter (r56)
 
 
 # ---------------------------------------------------------------- reading
@@ -208,8 +222,8 @@ def bullets(lines):
 
 
 def scenarios(text):
-    """(title, tags) for each Scenario or Scenario Outline of a feature file."""
-    out, pending, in_doc, feature_tags = [], [], None, []
+    """(title, tags, steps) for each Scenario or Scenario Outline of a feature file."""
+    out, pending, in_doc, feature_tags, steps = [], [], None, [], None
     for raw in text.splitlines():
         line = raw.strip()
         if in_doc:
@@ -224,13 +238,34 @@ def scenarios(text):
             continue
         m = re.match(r"^(?:Scenario(?: Outline| Template)?|Example):\s*(.*)$", line)
         if m:
-            out.append((m.group(1).strip(), feature_tags + pending))
+            steps = []
+            out.append((m.group(1).strip(), feature_tags + pending, steps))
             pending = []
         elif line.startswith("Feature:"):
-            feature_tags, pending = pending, []
+            feature_tags, pending, steps = pending, [], None
         elif line.startswith(("Background:", "Examples:", "Scenarios:", "Rule:")):
-            pending = []
+            pending, steps = [], None
+        elif steps is not None and re.match(r"^(?:Given|When|Then|And|But|\*)\s", line):
+            steps.append(line)
     return out
+
+
+def glossary_entry(bullet):
+    """(term, [avoided words]) of a bullet written **<term>**: <definition>. Not: <word>, <word>.; None otherwise."""
+    m = ENTRY.match(bullet)
+    if not m or not m.group("rest").endswith("."):
+        return None
+    definition, _, avoided = m.group("rest").partition(". Not: ")
+    words = [" ".join(w.split()).lower() for w in avoided[:-1].split(",")] if avoided else []
+    if not definition.strip(" .") or not m.group("term").strip() or any(not w for w in words):
+        return None
+    return m.group("term").strip(), words
+
+
+def mention(word):
+    """A whole-word, any-case match of <word>, a plural "s" allowed; a hyphen joins a word."""
+    body = r"\s+".join(re.escape(w) for w in word.split())
+    return re.compile(rf"(?<![\w-]){body}s?(?![\w-])", re.IGNORECASE)
 
 
 # ---------------------------------------------------------------- facts
@@ -250,7 +285,9 @@ class Model:
         self.parents = {}       # part id -> part_of
         self.sources = {}       # initiative id -> [record ids]
         self.req_text = {}
+        self.sc_text = {}       # acceptance-scenario id -> its title and steps
         self.retired = set()    # (capability id, n)
+        self.words = set()      # each term and avoided word, lowercased
 
     def fact(self, name, *args):
         self.facts.append((name, args))
@@ -307,6 +344,7 @@ class Model:
         self.read_records()
         self.read_work()
         self.check_refs()
+        self.read_mentions()
         return self
 
     def read_index(self):
@@ -314,7 +352,7 @@ class Model:
         if not path.exists():
             self.problems.append("spec/index.md is missing: no bounded-context is named")
             return
-        data, _ = frontmatter(path.read_text())
+        data, body = frontmatter(path.read_text())
         ident = data.get("id")
         if not ident:
             self.problems.append("spec/index.md has no frontmatter id naming the bounded-context")
@@ -325,6 +363,33 @@ class Model:
             return
         self.context, self.path = m.group(0), m.group(1)
         self.node(self.context, "bounded-context")
+        self.read_glossary(body)
+
+    def read_glossary(self, body):
+        for n, bullet in enumerate(bullets(section(body, "Glossary")), 1):
+            entry = glossary_entry(bullet)
+            if entry is None:
+                self.problems.append(f"spec/index.md: glossary bullet {n} is not "
+                                     "'- **<term>**: <definition>. Not: <word>, <word>.' (Not: optional)")
+                continue
+            word, avoided = entry
+            t = f"term/{self.path}/{'-'.join(word.lower().split())}"
+            self.check_id(t, "term", "spec/index.md")
+            self.node(t, "term")
+            self.fact("term_of", t, self.context)
+            self.fact("glossary_entry", t, n, " ".join(word.lower().split()))
+            self.words.add(" ".join(word.lower().split()))
+            for w in avoided:
+                self.fact("avoid", t, w)
+                self.words.add(w)
+
+    def read_mentions(self):
+        """mentions(X, W) for each requirement and scenario X and each term or avoided word W it holds."""
+        found = [(w, mention(w)) for w in sorted(self.words)]
+        for x, text in list(self.req_text.items()) + list(self.sc_text.items()):
+            for w, pattern in found:
+                if pattern.search(text):
+                    self.fact("mentions", x, w)
 
     def read_capabilities(self):
         for path in sorted((self.root / "spec" / "capabilities").glob("*.md")):
@@ -388,7 +453,7 @@ class Model:
             if cap is None:
                 self.problems.append(f"{key}: no capability is formulated as this file")
             seen = set()
-            for title, tags in scenarios(path.read_text()):
+            for title, tags, steps in scenarios(path.read_text()):
                 if "@holding" in tags:
                     continue        # a held scenario formulates no line (design-decision/held-scenario-formulates-no-requirement)
                 s = f"{key}:{title}"
@@ -396,6 +461,7 @@ class Model:
                     self.problems.append(f"{key}: two scenarios are titled {title!r}")
                 seen.add(s)
                 self.node(s, "acceptance-scenario")
+                self.sc_text[s] = "\n".join([title] + steps)
                 for tag in tags:
                     m = re.fullmatch(r"@r(\d+)", tag)
                     if not m or cap is None:
@@ -619,10 +685,7 @@ class Model:
 # ---------------------------------------------------------------- commands
 
 def solve(model):
-    try:
-        import clingo
-    except ImportError:
-        return None
+    import clingo
     ctl = clingo.Control(["--warn=none"])
     ctl.add("base", [], LP.read_text() + "\n" + model.asp())
     ctl.ground([("base", [])])
@@ -641,14 +704,56 @@ def cmd_facts(args):
     return 0
 
 
+def interpreters():
+    """The interpreters check tries for clingo, in order (r55)."""
+    out = []
+    if os.environ.get("SHOPSYSTEM_MODEL_PYTHON"):
+        out.append(os.environ["SHOPSYSTEM_MODEL_PYTHON"])
+    venvs = {Path(v).resolve() / "bin" for v in (os.environ.get("VIRTUAL_ENV"),
+                                                  sys.prefix if sys.prefix != sys.base_prefix else None) if v}
+    for d in os.environ.get("PATH", "").split(os.pathsep):
+        p = Path(d or ".") / "python3"
+        if p.is_file() and os.access(p, os.X_OK) and Path(d or ".").resolve() not in venvs:
+            out.append(str(p))
+    out += ["/usr/local/bin/python3", "/usr/bin/python3"]
+    return list(dict.fromkeys(out))
+
+
+def has_clingo(python):
+    try:
+        return subprocess.run([python, "-c", "import clingo"], capture_output=True, timeout=60).returncode == 0
+    except (OSError, subprocess.SubprocessError):
+        return False
+
+
+def run_again_with_clingo():
+    """Run check again under the first interpreter that has clingo (r55); the interpreters tried when none has it."""
+    tried = []
+    for python in interpreters():
+        tried.append(python)
+        if has_clingo(python):
+            sys.stdout.flush()
+            try:
+                os.execvpe(python, [python, str(Path(__file__).resolve()), *sys.argv[1:]], {**os.environ, REEXEC: "1"})
+            except OSError:
+                continue
+    return tried
+
+
 def cmd_check(args):
-    model = Model(args.root).read()
-    found = solve(model)
-    if found is None:
-        print("check needs the clingo package, which this interpreter lacks.\n"
+    try:
+        import clingo  # noqa: F401
+    except ImportError:
+        if os.environ.get(REEXEC):      # this is the run again (r56): it does not search a second time
+            why = f"it ran again under {sys.executable}, which also failed to import clingo"
+        else:
+            why = "no interpreter it tried has it: " + ", ".join(run_again_with_clingo())
+        print(f"check needs the clingo package, which this interpreter lacks; {why}.\n"
               f"  install: {sys.executable} -m pip install clingo\n"
               "  without it: `model facts` prints the facts for any Datalog or ASP engine.")
         return 2
+    model = Model(args.root).read()
+    found = solve(model)
     violations = [f for f in found if f[0].startswith("v")]
     warnings = [f for f in found if f[0].startswith("w_")]
     if args.json:
