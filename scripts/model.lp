@@ -145,7 +145,7 @@ v_k1(I) :- ikind(I, "job"),               part_of(P, I), not node(P, "job-propos
 v_k2(I) :- ikind(I, "job-path"),          part_of(P, I), not node(P, "job-thread").
 v_k3(I) :- ikind(I, "capability-change"), part_of(P, I), not node(P, "capability-proposal").
 v_k4(I) :- ikind(I, "defect"),            part_of(P, I), not node(P, "work-item").
-% FIX g:171 (decision/one-capability-per-proposal): a capability-change initiative may hold several
+% FIX g:171 (design-decision/one-capability-per-proposal): a capability-change initiative may hold several
 % capability-proposals, one per capability; every other kind keeps one first part.
 v_k5(I) :- node(I, "initiative"), part_of(P1, I), part_of(P2, I), P1 != P2, not ikind(I, "capability-change").
 % FIX g:72 (same decision): `argues` is 1..n for other proposals, exactly 1 for a capability-proposal.

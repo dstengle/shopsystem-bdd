@@ -116,7 +116,7 @@ name for good: scenarios, proposals and commits point at it, and it survives re-
 - A changed line keeps its id. A line whose meaning is replaced by a different rule is a removal and an
   addition, not a change.
 - A removed line's id goes into the frontmatter's `retired: [r<n>, ...]` and is never taken again.
-- A requirement is named `capability/<context path>/<name>#r<n>`, or `<name>#r<n>` inside its own context.
+- A requirement is named `capability/<context path>/<name>#r<n>`, `capability/<name>#r<n>` or `<name>#r<n>` inside its own context.
 
 Ids are type-first, as in shopsystem-knowledge's IRIs: `<kind>/<context path>/<name>`. The context path is
 the owner's domain, the product and the context name, such as `missingmass.io/shopsystem/shop-kb`. The
@@ -269,8 +269,8 @@ install it and exits 2; the coverage check is then done by hand.
    response to moves to Implementation. Each condition the note never
    stated becomes either a line or a question — write the questions down.
    Number the lines `[r1]` on in each capability.
-4. Write `spec/index.md`: frontmatter `id`, the context's id
-   (`<owner domain>/<product>/<context name>`; ask the person when you do
+4. Write `spec/index.md`: frontmatter `id: bounded-context/<context path>`, the context path
+   being `<owner domain>/<product>/<context name>` (ask the person when you do
    not know them) and `title`; then purpose, constraints carried,
    composition (the capabilities in reading order), order of building,
    testing. Any table spanning capabilities is rendered from them, not

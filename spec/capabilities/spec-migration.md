@@ -29,7 +29,7 @@ existing scenarios. It changes the meaning of no approved scenario.
 - [r11] **When** a repository is migrated onto `spec/` or to ids, each scenario that is not held gets the `@r<n>` tag of the line it formulates, and nothing else in a scenario changes but the holds the gate led to.
 - [r12] **If** a scenario formulates no line or more than one, migration to ids shows it to the person at the gate as a question and tags nothing before the answer.
 - [r13] **When** migration onto `spec/` or to ids is done, the suite's summary, its passing scenarios by title and its count of scenarios per tag equal those before it, the new `@r<n>` tags, the holds the gate led to and their " (held)" titles aside.
-- [r14] **When** a repository is migrated to ids, its `decision/<name>` references and ledger headings become `design-decision/<name>`, and nothing else in a reference changes.
+- [r14] **When** a repository is migrated to ids, its `decision/<name>` references and ledger headings become `design-decision/<name>`, every frontmatter `id` outside `spec/` is written in full, its observation headings `## obs/<x>` become `## observation/<context path>/<x>`, and nothing else in a reference changes.
 
 ## Implementation, may change
 - A baseline under the scratch directory: the summary line, the passing tests (`-q -rA`), a copy of
