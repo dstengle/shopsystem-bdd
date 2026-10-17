@@ -592,3 +592,11 @@ Feature: Feature file tools
     When the agent runs features tag "Apply a code" r7 --file elsewhere/other.feature
     Then the command is rejected because the file is outside --dir
     And no file is changed
+
+  @r56
+  Scenario: rebind --file rewrites only the bindings whose feature names that file
+    After one of two files holding a title is held, only the bindings of that file follow it.
+    Given tests binding "Apply a code" to features/cart.feature and to features/old.feature
+    When the agent runs features rebind "Apply a code" "Apply a code (held)" --file features/cart.feature
+    Then the binding to features/cart.feature names "Apply a code (held)"
+    And the binding to features/old.feature is unchanged

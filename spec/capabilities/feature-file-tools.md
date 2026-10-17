@@ -73,6 +73,7 @@ any test; it edits only the feature files, test modules and directory it is poin
 - [r53] **If** `--file` names a file that does not hold the title, `features` refuses, naming the file, and changes no file.
 - [r54] **If** `--file` names a file that holds the title twice, `features` refuses, naming the file, and changes no file.
 - [r55] **If** `--file` names a file outside `--dir`, `features` refuses and changes no file.
+- [r56] **Where** `--file <feature path>` is given, **when** `features rebind` is run, `features` rewrites only the bindings whose feature argument names that file, the feature argument resolved against `--dir`; without `--file` it rewrites every binding of the old title.
 
 ## Implementation, may change
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three

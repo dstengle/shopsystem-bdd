@@ -55,7 +55,10 @@ contract:
     title in those calls from one title to another, which must be a scenario
     in a feature file, and changes nothing else in the file. Only a title
     written as a plain string in the call is read; a feature given as a name
-    is looked up among the module's own assignments.
+    is looked up among the module's own assignments. With --file <feature
+    path>, rebind rewrites only the bindings whose feature argument names that
+    file, both paths resolved (the argument against --dir); without it, every
+    binding of the old title.
   - plugin writes slice_expectations.py, the pytest plugin that expects a
     test tagged to a slice the plan has as planned or blocked to fail, into
     a directory, and says how to register it.
@@ -496,8 +499,11 @@ def cmd_bindings(args, files):
 def cmd_rebind(args, files):
     locate(files, args.new)
     edits = {}
-    for path, source, _, title in binding_calls(args.tests):
+    only = os.path.realpath(args.file) if args.file else None
+    for path, source, feature, title in binding_calls(args.tests):
         if title.value != args.old:
+            continue
+        if only and (feature is None or os.path.realpath(os.path.join(args.dir, feature)) != only):
             continue
         if title.lineno != title.end_lineno:
             raise Refused("%s:%d: the title is written over several lines" % (path, title.lineno))
@@ -581,6 +587,7 @@ def main():
         if name == "rebind":
             one.add_argument("old")
             one.add_argument("new")
+            one.add_argument("--file", help="rewrite only the bindings whose feature argument names this feature file")
         one.add_argument("--tests", default="tests")
         one.set_defaults(run=run)
     plugin = sub.add_parser("plugin")

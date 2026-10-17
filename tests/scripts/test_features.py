@@ -950,6 +950,21 @@ class BindingsScenarioTest(Workspace, unittest.TestCase):
                     expected = text.replace('"%s")' % old, '"Apply a voucher")') if count else text
                     self.assertEqual((self.tmp / name).read_text(), expected)
 
+    def test_rebind_with_file_rewrites_only_the_bindings_that_name_that_feature_file(self):
+        """rebind --file rewrites only the bindings whose feature names that file"""
+        self.write("features/cart.feature", feature(scenario("Apply a code (held)", "@holding")))
+        self.write("features/old.feature", feature(scenario("Apply a code")))
+        modules = {"tests/test_cart.py": binding("Apply a code", "cart.feature"),
+                   "tests/test_old.py": binding("Apply a code", "old.feature"),
+                   "tests/test_path.py": binding("Apply a code", "../features/cart.feature")}
+        for name, text in modules.items():
+            self.write(name, text)
+        done = self.run_script("rebind", "Apply a code", "Apply a code (held)", "--file", "features/cart.feature")
+        self.assertEqual((done.returncode, done.stdout), (0, "2 bindings rebound\n"), done.stderr)
+        for name, text in modules.items():
+            expected = text if name == "tests/test_old.py" else text.replace('"Apply a code")', '"Apply a code (held)")')
+            self.assertEqual((self.tmp / name).read_text(), expected)
+
     def test_rebinding_to_a_title_no_scenario_has_is_refused(self):
         """rebinding to a title no scenario has is refused"""
         self.write("features/cart.feature", feature(scenario("Empty cart")))
