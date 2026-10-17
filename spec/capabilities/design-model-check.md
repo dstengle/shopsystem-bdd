@@ -61,7 +61,7 @@ records, and it checks one bounded context: product-level artifacts are read onl
 - [r42] A reference written `capability/<context path>/<name>#behaviour/r<n>`, the requirement as a part in shopsystem-knowledge's IRI form, names the same requirement as `capability/<context path>/<name>#r<n>`.
 - [r43] A node is written `<kind>/<context path>/<name>`, or in short `<kind>/<name>`, and a field that fixes the kind (`rests_on`, `supersedes`, `argues`, `under`, `depends_on`) and the capability part of a `#r<n>` reference may write the bare `<name>`; `part_of`, `for` and `blocked_by` need `<kind>/<name>`; the context path is `<owner>/<product>/<context name>` and the bounded context is `bounded-context/<context path>`.
 - [r44] A scenario tagged `@holding` is not read as an acceptance-scenario, whatever `@r<n>` tag it carries.
-- [r45] **Where** a repository has no `decisions/` directory, `model` reads each `## decision/<slug>` heading of `spec/decisions.md` as a design-decision, and the entry's text up to a blank line, a heading or a property line (`date:`, `revisit_when:`, `supersedes:` or `source:`) as its summary.
+- [r45] **Where** a repository has no `decisions/` directory, `model` reads each `## design-decision/<slug>` heading of `spec/decisions.md` as a design-decision, and the entry's text up to a blank line, a heading or a property line (`date:`, `revisit_when:`, `supersedes:` or `source:`) as its summary.
 - [r46] **If** a node's `id` is not `<kind>/<context path>/<name>` with its own kind, or spec/index.md's `id` is not `bounded-context/<context path>`, `model check` reports a file problem naming the file.
 - [r47] **If** a reference is written `<context name>/<name>`, `decision/<name>` or `obs/<name>`, `model check` reports it as unresolved.
 

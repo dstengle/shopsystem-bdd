@@ -432,13 +432,13 @@ Feature: Design model check
     Then the requirement thing#r2 is reported under v_s3
 
   @r45
-  Scenario: without a decisions directory the index's headings are the decisions
+  Scenario: without a decisions directory the ledger's design-decision headings are the decisions
     Pins where decisions and their summaries come from in a repository that keeps them only in spec/decisions.md.
     Given a repository with no decisions/ directory
-    And a spec/decisions.md with the heading ## decision/one, a line of text below it, and a date: line after that
-    And a capability that rests on decision/one
+    And a spec/decisions.md with the heading ## design-decision/one, a line of text below it, and a date: line after that
+    And a capability that rests on design-decision/one
     When model check is run
-    Then decision/one is not reported as unresolved
+    Then design-decision/one is not reported as unresolved
     And that line of text is read as the decision's summary
 
   @r46

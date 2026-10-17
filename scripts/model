@@ -272,8 +272,8 @@ class Model:
         ref = str(ref).strip()
         if not self.path:
             return ref
-        head, _, rest = ref.partition("/")
-        if head in KINDS:
+        head, slash, rest = ref.partition("/")
+        if slash and head in KINDS:
             if rest.startswith(self.path + "/") or (head == "bounded-context" and rest == self.path):
                 return ref
             if re.fullmatch(NAME, rest):
@@ -334,6 +334,8 @@ class Model:
             cap = data.get("id") or expected or name
             if expected and cap != expected:
                 self.problems.append(f"{self.rel(path)}: id {cap!r} is not {expected!r}")
+            elif expected:
+                self.check_id(cap, "capability", self.rel(path))     # the file name must be a <name>
             self.node(cap, "capability")
             if self.context:
                 self.fact("in", cap, self.context)

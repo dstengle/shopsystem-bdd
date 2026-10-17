@@ -465,6 +465,42 @@ class TypeFirstTest(ModelTest):
         self.assertIn(f'about("{OBS1}", "{CONTEXT}").', facts)
         self.assertIn(f'about("{OBS1}", "{THING}").', facts)
 
+    def test_a_capability_may_be_named_as_a_kind(self):
+        self.write("spec/capabilities/job.md", cap("job", ["- [r1] One."], group="guarantees"))
+        self.proposal(adds="[job#r1]", argues="[job]")
+        found, _ = self.check_json()
+        self.assertEqual((found["unresolved"], found["problems"]), ([], []), found)
+        facts = self.run_model("facts").stdout
+        self.assertIn(f'argues("{P1}", "{full("capability", "job")}").', facts)
+        self.assertIn(f'adds("{P1}", "{full("capability", "job")}#r1").', facts)
+
+    def test_a_capability_file_name_must_be_a_name(self):
+        self.write("spec/capabilities/My.Thing.md", cap("My.Thing", ["- [r1] One."], group="guarantees"))
+        found, _ = self.check_json()
+        self.assertEqual(len([p for p in found["problems"] if p.startswith("spec/capabilities/My.Thing.md")]), 1, found)
+
+    def test_forms_outside_the_convention_are_unresolved(self):
+        other = "capability/other.com/x/y/thing"
+        rows = [
+            (other, lambda: self.proposal(argues=f"[{other}]")),
+            (f"{other}#r1", lambda: self.proposal(adds=f"[{other}#r1]")),
+            ("Thing", lambda: self.proposal(argues="[Thing]")),
+            ("Thing#r1", lambda: self.proposal(adds="[Thing#r1]")),
+            ("capability/Thing", lambda: self.proposal(argues="[capability/Thing]")),
+            ("thing.v2", lambda: self.proposal(argues="[thing.v2]")),
+            ("thing.v2#r1", lambda: self.proposal(adds="[thing.v2#r1]")),
+            ("for: w1", lambda: (self.work_item("w1"), self.work_item("w2", **{"for": "w1"}))),
+            ("blocked_by: w1", lambda: (self.work_item("w1"), self.work_item("w2", blocked_by="[w1]"))),
+            ("source: obs-1", lambda: self.initiative(source="[obs-1]")),
+        ]
+        for written, make in rows:
+            with self.subTest(reference=written):
+                self.setUp()
+                make()
+                ref = written.split(": ")[-1]
+                found, _ = self.check_json()
+                self.assertEqual(len([d for d in found["unresolved"] if f"{ref!r}" in d or f" {ref} " in d]), 1, found)
+
     def test_a_ledger_heading_is_type_first(self):
         shutil.rmtree(self.tmp / "work")
         for heading, problems in [("design-decision/x", 0), (full("design-decision", "x"), 0), ("decision/x", 1)]:
@@ -944,8 +980,8 @@ class HeldAndLedgerTest(ModelTest):
         self.assertEqual(self.violated(found, "v_s3"), [[THING + "#r2"]], found)
 
     def test_r45(self):
-        """without a decisions directory the index's headings are the decisions"""
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees", rests_on="[one]"))
+        """without a decisions directory the ledger's design-decision headings are the decisions"""
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees", rests_on="[design-decision/one]"))
         self.write("spec/decisions.md", "# Decisions\n\n## design-decision/one\nOne way\nto do it.\n\ndate: 2026-01-01\n")
         found, _ = self.check_json()
         self.assertEqual(found["unresolved"], [], found)
