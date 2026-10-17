@@ -1,5 +1,5 @@
 ---
-id: decision/workflow-scenarios-run-as-fixture-sessions
+id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/workflow-scenarios-run-as-fixture-sessions
 summary: "A workflow capability's scenarios run as headless claude -p sessions of the plugin against a fixture repository, several runs each, and judge the behaviour by what the runs left; none is grouped as guarantees to spare the cost."
 date: 2026-10-16
 status: accepted

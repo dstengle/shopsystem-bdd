@@ -1,5 +1,5 @@
 ---
-id: i8
+id: initiative/missingmass.io/shopsystem/shopsystem-bdd/i8
 title: Initiatives and records in consuming repositories
 summary: The plugin creates and keeps work/ and records/ in a consuming repository, for capability-change and defect initiatives, with observations in place of the plan's backlog.
 kind: capability-change

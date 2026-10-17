@@ -1,5 +1,5 @@
 ---
-id: i7
+id: initiative/missingmass.io/shopsystem/shopsystem-bdd/i7
 title: Superpowers no longer a dependency
 summary: Remove the declared superpowers dependency once no skill invokes a superpowers skill; brainstorming stays an optional source of proposals.
 kind: capability-change
@@ -10,4 +10,4 @@ source: [review-finding/2026-10-13-kb-and-bdd-assessment]
 date: 2026-10-15
 ---
 
-Follows i4, which removes the writing-plans hand-off. Supersedes decision/superpowers-dependency.
+Follows i4, which removes the writing-plans hand-off. Supersedes design-decision/superpowers-dependency.

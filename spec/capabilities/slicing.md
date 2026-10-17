@@ -1,9 +1,9 @@
 ---
-id: missingmass.io/shopsystem/shopsystem-bdd/slicing
+id: capability/missingmass.io/shopsystem/shopsystem-bdd/slicing
 title: Slicing
 narrator: the session that plans a batch
 group: service
-rests_on: [decision/plans-carry-intent-not-code, decision/slice-budget-refused-by-plan, decision/tests-the-decisions-break, decision/review-by-risk, decision/superpowers-dependency, decision/one-batch-one-session]
+rests_on: [design-decision/plans-carry-intent-not-code, design-decision/slice-budget-refused-by-plan, design-decision/tests-the-decisions-break, design-decision/review-by-risk, design-decision/superpowers-dependency, design-decision/one-batch-one-session]
 formulated_as: features/slicing.feature
 retired: []
 ---

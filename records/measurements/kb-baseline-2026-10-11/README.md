@@ -1,7 +1,7 @@
 ---
-id: measurement/kb-batches-32-35
+id: measurement/missingmass.io/shopsystem/shopsystem-bdd/kb-batches-32-35
 kind: measurement
-about: shopsystem-bdd
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
 date: 2026-10-11
 ---
 

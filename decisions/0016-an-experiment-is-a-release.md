@@ -1,5 +1,5 @@
 ---
-id: decision/an-experiment-is-a-release
+id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/an-experiment-is-a-release
 summary: "One change to the workflow per release, run on a real batch and compared with the batch before."
 date: 2026-10-11
 status: accepted

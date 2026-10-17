@@ -1,9 +1,9 @@
 ---
-id: missingmass.io/shopsystem/shopsystem-bdd/spec-integration
+id: capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration
 title: Spec integration
 narrator: the person at the gate
 group: service
-rests_on: [decision/one-spec-per-context, decision/gate-on-behaviour-lines, decision/spec-writers-blind-to-code, decision/controller-per-spec-round]
+rests_on: [design-decision/one-spec-per-context, design-decision/gate-on-behaviour-lines, design-decision/spec-writers-blind-to-code, design-decision/controller-per-spec-round]
 formulated_as: features/spec-integration.feature
 retired: []
 ---

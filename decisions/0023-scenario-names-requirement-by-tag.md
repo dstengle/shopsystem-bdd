@@ -1,5 +1,5 @@
 ---
-id: decision/scenario-names-requirement-by-tag
+id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/scenario-names-requirement-by-tag
 summary: "An acceptance-scenario names its requirement with a tag @r<n> in its capability's own feature file."
 date: 2026-10-15
 status: proposed

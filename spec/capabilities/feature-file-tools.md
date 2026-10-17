@@ -1,9 +1,9 @@
 ---
-id: missingmass.io/shopsystem/shopsystem-bdd/feature-file-tools
+id: capability/missingmass.io/shopsystem/shopsystem-bdd/feature-file-tools
 title: Feature file tools
 narrator: an agent or session editing feature files
 group: service
-rests_on: [decision/scripts-stdlib-only, decision/held-scenarios]
+rests_on: [design-decision/scripts-stdlib-only, design-decision/held-scenarios]
 formulated_as: features/feature-file-tools.feature
 retired: []
 ---

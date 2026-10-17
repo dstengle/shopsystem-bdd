@@ -1,9 +1,9 @@
 ---
-id: missingmass.io/shopsystem/shopsystem-bdd/formulation
+id: capability/missingmass.io/shopsystem/shopsystem-bdd/formulation
 title: Formulation
 narrator: the person who approved the lines
 group: service
-rests_on: [decision/formulation-needs-no-second-approval, decision/spec-writers-blind-to-code, decision/held-scenarios, decision/controller-per-spec-round]
+rests_on: [design-decision/formulation-needs-no-second-approval, design-decision/spec-writers-blind-to-code, design-decision/held-scenarios, design-decision/controller-per-spec-round]
 formulated_as: features/formulation.feature
 retired: []
 ---

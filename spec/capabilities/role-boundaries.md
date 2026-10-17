@@ -1,9 +1,9 @@
 ---
-id: missingmass.io/shopsystem/shopsystem-bdd/role-boundaries
+id: capability/missingmass.io/shopsystem/shopsystem-bdd/role-boundaries
 title: Role boundaries
 narrator: the person running the workflow
 group: guarantees
-rests_on: [decision/rules-held-by-agent-tools, decision/model-pinned-in-agent-definitions, decision/spec-writers-blind-to-code]
+rests_on: [design-decision/rules-held-by-agent-tools, design-decision/model-pinned-in-agent-definitions, design-decision/spec-writers-blind-to-code]
 formulated_as: features/role-boundaries.feature
 retired: []
 ---

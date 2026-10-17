@@ -1,9 +1,9 @@
 ---
-id: missingmass.io/shopsystem/shopsystem-bdd/code-research
+id: capability/missingmass.io/shopsystem/shopsystem-bdd/code-research
 title: Code research
 narrator: the session that plans a batch
 group: service
-rests_on: [decision/scout-on-haiku-at-low-effort, decision/slice-budget-refused-by-plan]
+rests_on: [design-decision/scout-on-haiku-at-low-effort, design-decision/slice-budget-refused-by-plan]
 formulated_as: features/code-research.feature
 retired: []
 ---

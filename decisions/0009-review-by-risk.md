@@ -1,10 +1,10 @@
 ---
-id: decision/review-by-risk
+id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/review-by-risk
 summary: "A per-task review on Opus only for tasks touching concurrency, the published contract, data integrity or stored data; every other task is covered by the batch's branch review."
 date: 2026-10-01
 status: accepted
 revisit_when: "more than half of a measured batch's per-task reviews come back clean"
-revisit_signal: measurement/kb-batches-32-35
+revisit_signal: measurement/missingmass.io/shopsystem/shopsystem-bdd/kb-batches-32-35
 source: "0.9.0 (d0abe14)"
 ---
 

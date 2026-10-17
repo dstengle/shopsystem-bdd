@@ -1,5 +1,5 @@
 ---
-id: decision/controller-per-spec-round
+id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/controller-per-spec-round
 summary: "A fresh spec-round agent runs each integration, apply or formulation round; the session the person talks to keeps the gate and nothing else."
 date: 2026-10-12
 status: accepted

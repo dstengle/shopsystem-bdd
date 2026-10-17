@@ -1,5 +1,5 @@
 ---
-id: i4
+id: initiative/missingmass.io/shopsystem/shopsystem-bdd/i4
 title: Work-items in place of slices, tasks, steps and lanes
 summary: Slicing drafts work-items under a capability-proposal, filled in stages (drafted, researched, planned, ready), with the scout's file set kept as the claim; writing-plans is no longer invoked.
 kind: capability-change
@@ -14,6 +14,6 @@ Run by hand first: one session pulls items one at a time, to learn whether an it
 enough that a fresh agent needs nothing else. `scripts/plan` becomes a `work` script over `work/`.
 
 The workflow capabilities get their first scenarios here, as fixture sessions
-(decision/workflow-scenarios-run-as-fixture-sessions), against the behaviour this initiative brings
+(design-decision/workflow-scenarios-run-as-fixture-sessions), against the behaviour this initiative brings
 rather than 0.18.0's; i1 leaves them unformulated for that reason. The fixture generators and run
 harness move into the repository with them.

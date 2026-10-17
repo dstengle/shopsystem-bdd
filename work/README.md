@@ -3,7 +3,7 @@
 The intake backlog and the work-breakdowns of this bounded context (design model v3, sections 3 and 8).
 Each directory is one initiative: `initiative.md`, the root, with its priority and sources; every other
 file is a part, with exactly one `part_of`. Only an initiative is ranked. Forms:
-decision/work-file-forms. Check: `python3 scripts/model check`.
+design-decision/work-file-forms. Check: `python3 scripts/model check`.
 
 | id | kind | status | priority | summary |
 |---|---|---|---|---|
@@ -17,4 +17,4 @@ decision/work-file-forms. Check: `python3 scripts/model check`.
 | i8 | capability-change | proposed | 6 | Initiatives and records in consuming repositories |
 
 Before i6 or i5 starts: one kb batch run on 0.18.0 unchanged, with its facts committed, as the baseline
-(obs/2026-10-15-unmeasured-releases). That run changes nothing here; it produces a measurement.
+(observation/2026-10-15-unmeasured-releases). That run changes nothing here; it produces a measurement.

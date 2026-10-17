@@ -1,5 +1,5 @@
 ---
-id: decision/retired-ids-in-capability-frontmatter
+id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/retired-ids-in-capability-frontmatter
 summary: "A capability's retired requirement ids are listed in its frontmatter as retired: [r<n>, ...]."
 date: 2026-10-15
 status: proposed

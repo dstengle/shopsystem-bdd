@@ -1,7 +1,7 @@
 ---
-id: design-model-check/1
+id: work-item/missingmass.io/shopsystem/shopsystem-bdd/design-model-check-1
 kind: work-item
-part_of: model-check
+part_of: capability-proposal/model-check
 status: done
 wkind: capability
 under: design-model-check

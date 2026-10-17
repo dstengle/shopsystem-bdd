@@ -1,9 +1,9 @@
 ---
-id: missingmass.io/shopsystem/shopsystem-bdd/spec-migration
+id: capability/missingmass.io/shopsystem/shopsystem-bdd/spec-migration
 title: Spec migration
 narrator: the person migrating a repository onto spec/
 group: service
-rests_on: [decision/one-spec-per-context, decision/gate-on-behaviour-lines]
+rests_on: [design-decision/one-spec-per-context, design-decision/gate-on-behaviour-lines]
 formulated_as: features/spec-migration.feature
 retired: []
 ---

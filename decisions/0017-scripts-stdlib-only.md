@@ -1,5 +1,5 @@
 ---
-id: decision/scripts-stdlib-only
+id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/scripts-stdlib-only
 summary: "The plugin's scripts are plain Python 3 on the standard library; --help is each one's contract."
 date: 2026-10-07
 status: accepted
@@ -24,4 +24,4 @@ A packaged CLI with dependencies.
 
 ## Consequences
 
-`tools` drives the project's own analysis tools rather than depending on them. `model check` needs a solver: see decision/model-check-solves-with-clingo.
+`tools` drives the project's own analysis tools rather than depending on them. `model check` needs a solver: see design-decision/model-check-solves-with-clingo.

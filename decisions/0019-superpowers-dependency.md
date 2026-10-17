@@ -1,5 +1,5 @@
 ---
-id: decision/superpowers-dependency
+id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/superpowers-dependency
 summary: "The plugin declares superpowers@claude-plugins-official as a string dependency and assumes its brainstorming, writing-plans and subagent-driven-development around its own skills."
 date: 2026-09-22
 status: accepted

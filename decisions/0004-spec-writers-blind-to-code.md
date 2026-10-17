@@ -1,5 +1,5 @@
 ---
-id: decision/spec-writers-blind-to-code
+id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/spec-writers-blind-to-code
 summary: "The capability-writer and feature-formulator read only spec/, features/ and the brief's notes, and write only drafts."
 date: 2026-09-27
 status: accepted

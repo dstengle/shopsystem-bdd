@@ -1,7 +1,7 @@
 ---
-id: model-check
+id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/model-check
 kind: capability-proposal
-part_of: i2
+part_of: initiative/i2
 status: drafted
 date: 2026-10-15
 argues: [design-model-check]

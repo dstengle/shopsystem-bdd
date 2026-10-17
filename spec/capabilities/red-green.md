@@ -1,9 +1,9 @@
 ---
-id: missingmass.io/shopsystem/shopsystem-bdd/red-green
+id: capability/missingmass.io/shopsystem/shopsystem-bdd/red-green
 title: Red-green
 narrator: the controller that dispatched the implementer
 group: service
-rests_on: [decision/feature-files-read-only-in-red-green, decision/tests-the-decisions-break, decision/suite-record-holds, decision/fresh-agents-short-replies]
+rests_on: [design-decision/feature-files-read-only-in-red-green, design-decision/tests-the-decisions-break, design-decision/suite-record-holds, design-decision/fresh-agents-short-replies]
 formulated_as: features/red-green.feature
 retired: []
 ---

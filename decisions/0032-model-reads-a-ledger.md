@@ -1,5 +1,5 @@
 ---
-id: decision/model-reads-a-ledger
+id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/model-reads-a-ledger
 summary: "Where a repository keeps its decisions as a ledger in spec/decisions.md and has no decisions/ directory, model reads each ## design-decision/<slug> heading as a design-decision."
 date: 2026-10-16
 status: proposed
@@ -18,7 +18,7 @@ source: "work/i3-requirement-ids/initiative.md; docs/capability-format.md (the d
 
 ## Alternatives
 
-Ship decisions as files in the same release (two workflow changes in one, against decision/an-experiment-is-a-release); leave `rests_on` unresolved in consuming repositories (every capability reported).
+Ship decisions as files in the same release (two workflow changes in one, against design-decision/an-experiment-is-a-release); leave `rests_on` unresolved in consuming repositories (every capability reported).
 
 ## Consequences
 

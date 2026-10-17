@@ -1,7 +1,7 @@
 ---
-id: requirement-ids/feature-file-tools
+id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/requirement-ids-feature-file-tools
 kind: capability-proposal
-part_of: i3
+part_of: initiative/i3
 status: drafted
 date: 2026-10-16
 argues: [feature-file-tools]

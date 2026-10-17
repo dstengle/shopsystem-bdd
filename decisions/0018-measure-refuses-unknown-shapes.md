@@ -1,5 +1,5 @@
 ---
-id: decision/measure-refuses-unknown-shapes
+id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/measure-refuses-unknown-shapes
 summary: "measure refuses a transcript whose shape it does not know, naming the file and what was missing, rather than guess a number."
 date: 2026-10-11
 status: accepted

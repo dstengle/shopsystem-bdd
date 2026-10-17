@@ -1,5 +1,5 @@
 ---
-id: missingmass.io/shopsystem/shopsystem-bdd
+id: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
 title: shopsystem-bdd
 ---
 
@@ -22,12 +22,12 @@ own outside the consuming repository's files.
 ## Constraints carried
 
 - The design model, version 3 (`docs/design-model/`): standing artifacts, initiatives and parts, records;
-  grammar.md's rules hold over this repository's files (decision/plugin-adopts-the-design-model).
+  grammar.md's rules hold over this repository's files (design-decision/plugin-adopts-the-design-model).
 - Claude Code's plugin format: skills, agents with tool lists, `skills` preloading; a plugin agent's hooks
-  and permissionMode are ignored (decision/rules-held-by-agent-tools).
-- superpowers as a declared dependency (decision/superpowers-dependency).
-- Scripts on the standard library (decision/scripts-stdlib-only), except the solver behind `model check`
-  (decision/model-check-solves-with-clingo).
+  and permissionMode are ignored (design-decision/rules-held-by-agent-tools).
+- superpowers as a declared dependency (design-decision/superpowers-dependency).
+- Scripts on the standard library (design-decision/scripts-stdlib-only), except the solver behind `model check`
+  (design-decision/model-check-solves-with-clingo).
 
 ## Composition
 
@@ -69,7 +69,7 @@ Tools the skills and agents run:
 
 - Script capabilities: `python3 -m unittest discover -s tests/scripts`. A capability formulated in
   `features/` binds each scenario to the test whose docstring is its title
-  (decision/plugin-scenarios-run-as-unittest); so far `design-model-check`.
+  (design-decision/plugin-scenarios-run-as-unittest); so far `design-model-check`.
 - Workflow capabilities (agents and skills): fixture runs recorded under `records/measurements/fixture-runs/`,
   and batches measured with `scripts/measure`. How their requirements get acceptance-scenarios is open
   (initiative i1); until then `model check` reports them under v_s3.

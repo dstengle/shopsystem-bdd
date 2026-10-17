@@ -1,5 +1,5 @@
 ---
-id: decision/capability-ids-are-context-scoped
+id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/capability-ids-are-context-scoped
 summary: "Ids are type-first: <kind>/<context path>/<name>, with the design model's kind names; the context is bounded-context/missingmass.io/shopsystem/shopsystem-bdd, a requirement capability/<path>/<name>#r<n>, short forms <kind>/<name> and, where a field fixes the kind, <name>."
 date: 2026-10-17
 status: proposed

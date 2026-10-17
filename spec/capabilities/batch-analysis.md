@@ -1,9 +1,9 @@
 ---
-id: missingmass.io/shopsystem/shopsystem-bdd/batch-analysis
+id: capability/missingmass.io/shopsystem/shopsystem-bdd/batch-analysis
 title: Batch analysis
 narrator: the person deciding a change to the workflow
 group: operations
-rests_on: [decision/an-experiment-is-a-release, decision/measure-refuses-unknown-shapes]
+rests_on: [design-decision/an-experiment-is-a-release, design-decision/measure-refuses-unknown-shapes]
 formulated_as: features/batch-analysis.feature
 retired: []
 ---

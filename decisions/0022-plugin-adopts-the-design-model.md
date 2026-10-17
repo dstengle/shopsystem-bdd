@@ -1,5 +1,5 @@
 ---
-id: decision/plugin-adopts-the-design-model
+id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/plugin-adopts-the-design-model
 summary: "This repository is a bounded context in design-model v3's layout: spec/, decisions/, features/, work/ and records/."
 date: 2026-10-15
 status: proposed

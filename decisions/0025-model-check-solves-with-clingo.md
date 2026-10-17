@@ -1,5 +1,5 @@
 ---
-id: decision/model-check-solves-with-clingo
+id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/model-check-solves-with-clingo
 summary: "scripts/model reads facts with the standard library and solves grammar.md's constraints with clingo, from scripts/model.lp."
 date: 2026-10-15
 status: proposed

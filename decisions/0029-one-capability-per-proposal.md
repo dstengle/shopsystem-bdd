@@ -1,9 +1,9 @@
 ---
-id: decision/one-capability-per-proposal
+id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/one-capability-per-proposal
 summary: "A capability-proposal argues exactly one capability; a capability-change initiative may hold several, each passing the gate and reaching formulated on its own."
 date: 2026-10-16
 status: accepted
-source: "obs/2026-10-15-proposal-argues-many; the person, 2026-10-16"
+source: "observation/2026-10-15-proposal-argues-many; the person, 2026-10-16"
 ---
 
 # 0029. One capability per proposal
@@ -22,4 +22,4 @@ One migration proposal arguing many capabilities, as a stated exception; one ini
 
 ## Consequences
 
-i1 holds thirteen proposals, `first-spec/<capability>`. A capability whose question is open (how workflow capabilities get scenarios) no longer holds back the script capabilities.
+i1 holds thirteen proposals, `capability-proposal/first-spec-<capability>`. A capability whose question is open (how workflow capabilities get scenarios) no longer holds back the script capabilities.

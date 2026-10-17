@@ -1,5 +1,5 @@
 ---
-id: i5
+id: initiative/missingmass.io/shopsystem/shopsystem-bdd/i5
 title: A pull loop in place of the LLM controller
 summary: Workers started by a shell loop with claude -p pull one work-item at one stage each; a script alone writes status, checking each transition's guard.
 kind: capability-change

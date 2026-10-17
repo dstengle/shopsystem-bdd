@@ -1,9 +1,9 @@
 ---
-id: missingmass.io/shopsystem/shopsystem-bdd/review
+id: capability/missingmass.io/shopsystem/shopsystem-bdd/review
 title: Review
 narrator: the controller closing a task or a batch
 group: service
-rests_on: [decision/review-by-risk, decision/rules-held-by-agent-tools, decision/fresh-agents-short-replies]
+rests_on: [design-decision/review-by-risk, design-decision/rules-held-by-agent-tools, design-decision/fresh-agents-short-replies]
 formulated_as: features/review.feature
 retired: []
 ---

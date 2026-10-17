@@ -1,7 +1,7 @@
 ---
-id: review-finding/2026-10-13-kb-and-bdd-assessment
+id: review-finding/missingmass.io/shopsystem/shopsystem-bdd/2026-10-13-kb-and-bdd-assessment
 kind: review-finding
-about: shopsystem-bdd
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
 date: 2026-10-13
 ---
 

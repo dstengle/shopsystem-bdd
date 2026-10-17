@@ -1,9 +1,9 @@
 ---
-id: missingmass.io/shopsystem/shopsystem-bdd/analysis-tools
+id: capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools
 title: Analysis tools
 narrator: an agent researching or reviewing a project's code
 group: service
-rests_on: [decision/scripts-stdlib-only]
+rests_on: [design-decision/scripts-stdlib-only]
 formulated_as: features/analysis-tools.feature
 retired: []
 ---

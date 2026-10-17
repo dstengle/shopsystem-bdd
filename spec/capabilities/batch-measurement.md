@@ -1,9 +1,9 @@
 ---
-id: missingmass.io/shopsystem/shopsystem-bdd/batch-measurement
+id: capability/missingmass.io/shopsystem/shopsystem-bdd/batch-measurement
 title: Batch measurement
 narrator: a session measuring a closed batch
 group: service
-rests_on: [decision/scripts-stdlib-only, decision/measure-refuses-unknown-shapes, decision/an-experiment-is-a-release]
+rests_on: [design-decision/scripts-stdlib-only, design-decision/measure-refuses-unknown-shapes, design-decision/an-experiment-is-a-release]
 formulated_as: features/batch-measurement.feature
 retired: []
 ---

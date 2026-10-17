@@ -1,9 +1,9 @@
 ---
-id: missingmass.io/shopsystem/shopsystem-bdd/slice-plan-tool
+id: capability/missingmass.io/shopsystem/shopsystem-bdd/slice-plan-tool
 title: Slice plan tool
 narrator: an agent or session editing a living slice plan
 group: service
-rests_on: [decision/scripts-stdlib-only, decision/slice-budget-refused-by-plan, decision/suite-record-holds]
+rests_on: [design-decision/scripts-stdlib-only, design-decision/slice-budget-refused-by-plan, design-decision/suite-record-holds]
 formulated_as: features/slice-plan-tool.feature
 retired: []
 ---

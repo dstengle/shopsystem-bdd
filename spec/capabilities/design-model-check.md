@@ -1,9 +1,9 @@
 ---
-id: missingmass.io/shopsystem/shopsystem-bdd/design-model-check
+id: capability/missingmass.io/shopsystem/shopsystem-bdd/design-model-check
 title: Design model check
 narrator: a person or agent checking a repository against the design model
 group: service
-rests_on: [decision/plugin-adopts-the-design-model, decision/model-check-solves-with-clingo, decision/scenario-names-requirement-by-tag, decision/retired-ids-in-capability-frontmatter, decision/work-file-forms, decision/capability-ids-are-context-scoped]
+rests_on: [design-decision/plugin-adopts-the-design-model, design-decision/model-check-solves-with-clingo, design-decision/scenario-names-requirement-by-tag, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped]
 formulated_as: features/design-model-check.feature
 retired: []
 ---
