@@ -6,10 +6,10 @@ slicing, and one human gate on the spec's Behaviour lines.
 
 Skills: `integrating-a-proposal`, `formulating-features`,
 `slicing-into-increments`, `bdd-red-green`, `migrating-to-capabilities`,
-`analyzing-a-batch`.
+`analyzing-a-batch`, `checking-spec-consistency`.
 Agents: `capability-writer`, `feature-formulator`, `spec-round`, `code-scout`,
 `bdd-implementer`, `bdd-task-reviewer`, `bdd-branch-reviewer`,
-`architecture-reviewer`.
+`architecture-reviewer`, `spec-checker`.
 Format: `docs/capability-format.md`.
 Spec: `spec/index.md` and `spec/capabilities/`, with decisions under `decisions/`
 (index: `spec/decisions.md`), work under `work/`, and history and evidence under
@@ -183,6 +183,16 @@ model's kind names (`capability/missingmass.io/shopsystem/shopsystem-bdd/spec-mi
 files is migrated with migrating-to-capabilities' "Adding ids". The release's fixture runs (15 B, 4 A) are recorded in the test log:
 `records/measurements/fixture-runs/2026-10-16-requirement-ids-test-log.md`.
 
+## A ubiquitous language (0.20.0)
+
+A context's words are now checked, not only its lines. The glossary entries in `spec/index.md` are terms (`term/<name>`), each with the words it avoids (`Not:`), and `scripts/model check` reports a line or scenario that uses an avoided word (`v_t1`), a term with two entries (`v_t2`) and a term that avoids a term of its own glossary (`v_t3`).
+
+- **`checking-spec-consistency`** and the **`spec-checker`** agent judge a spec against itself, blind to the code: one capability's lines against its scenarios, and every line against the glossary. Report mode writes findings and changes nothing; fix mode takes the person's answers, changes the spec and its scenarios, and commits each with the ids and terms it names. The integration and formulation skills teach the glossary terms.
+- **`model` finds clingo behind a virtualenv**: run from a virtualenv without clingo, `check` tries the other `python3` interpreters on the PATH (and `SHOPSYSTEM_MODEL_PYTHON`), and says what it tried when none holds clingo.
+- **`features` takes `--file`**: `tag`, `hold`, `retire`, `move` and `rebind` can be limited to one feature file, so a title that appears in two files is no longer tagged by hand.
+
+Fixture runs on a seeded shelf spec (a planted `volume` for `book`, a scenario answering with titles where its line says the number, a line with no bound): report mode 3/3 and fix mode 3/3, $0.29 a report run and $0.42 to $0.54 a fix run. A report-mode run on a clone of shopsystem-kb found 77 findings for $3.28, among them the trial's three known issues. The runs, the scorer fix and what is not tested are in `records/measurements/fixture-runs/2026-10-17-ubiquitous-language-test-log.md`.
+
 ## Scripts
 
 Plain Python 3, standard library only, in `scripts/` (`model check` alone needs clingo). `--help` is the contract; tests: `python3 -m unittest discover -s tests/scripts`.
@@ -221,6 +231,7 @@ From 0.7.0 the plugin gives each role in the workflow an agent whose tools are e
 | `shopsystem-bdd:capability-writer` | Read, Glob, Grep, Write | opus | integrating a note into `spec/`, and a repository's first `spec/`, blind to the code; writes only under `.superpowers/spec-drafts/` |
 | `shopsystem-bdd:feature-formulator` | Read, Glob, Grep, Write | opus | writing feature files from the spec, blind to the code; writes only under `.superpowers/spec-drafts/` |
 | `shopsystem-bdd:spec-round` | Read, Glob, Grep, Bash, Write, Edit, Agent | sonnet | one round of spec work for the session that keeps the gate: an integration round, the applying of approved drafts, or a formulation round; dispatches only the two agents above |
+| `shopsystem-bdd:spec-checker` | Read, Glob, Grep, Write | sonnet | judging a spec against itself, blind to the code: one capability's lines against its scenarios, or every line against the glossary; dispatched by `checking-spec-consistency`; writes only its findings file |
 | `shopsystem-bdd:code-scout` | Read, Glob, Grep, Bash, Write | haiku | the Lands probe at slicing and a task's research at planning; writes only its notes under `.superpowers/scout/` |
 | `shopsystem-bdd:bdd-implementer` | Read, Edit, Write, Glob, Grep, Bash | sonnet | one task of a no-code plan, one step of it, or one fix round, `bdd-red-green` preloaded |
 | `shopsystem-bdd:bdd-task-reviewer` | Read, Glob, Grep, Bash, Write | opus | a task's review, whole or one area of it, and the scoped re-review of a fix round; writes only its findings file |
