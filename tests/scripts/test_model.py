@@ -1104,11 +1104,13 @@ class GlossaryCheckTest(ModelTest):
         """a requirement or scenario using an avoided word is v_t1"""
         self.write("spec/index.md", index("- **slice**: a unit of work. Not: chunk."))
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, it plans each chunk.", "- [r2] It plans a slice."]))
-        self.write("features/thing.feature", feature("thing", ("@r1", "it plans"), ("@r2", "chunks are planned")))
+        self.write("features/thing.feature", feature("thing", ("@r1", "it plans"), ("@r2", "chunks are planned"),
+                                                     ("@r2 @holding", "a chunk as it was")))
         found, r = self.check_json()
         self.assertEqual(sorted(self.violated(found, "v_t1")), sorted([
             [THING + "#r1", "chunk", term("slice")],
             ["features/thing.feature:chunks are planned", "chunk", term("slice")]]), found)
+        self.assertFalse([a for a in self.violated(found, "v_t1") if "as it was" in a[0]], found)
         self.assertEqual(r.returncode, 1)
         text = self.run_model("check").stdout
         self.assertIn("v_t1  (2)", text)
@@ -1181,21 +1183,23 @@ class InterpreterSearchTest(ModelTest):
         self.fake("venv/bin")
         self.fake("lacks", "lack")
         self.fake("bin")
+        self.fake("later")
         self.fake("chosen")
+        probe = "-c import clingo"
         cases = [
-            ("PATH, the virtualenv's bin/ skipped", [self.tmp / "venv/bin", self.tmp / "lacks", self.tmp / "bin"],
-             {"VIRTUAL_ENV": str(self.tmp / "venv")}, "bin"),
-            ("$SHOPSYSTEM_MODEL_PYTHON first", [self.tmp / "bin"], {"SHOPSYSTEM_MODEL_PYTHON": str(self.tmp / "chosen/python3")}, "chosen"),
+            ("PATH in order, the virtualenv's bin/ skipped",
+             [self.tmp / "venv/bin", self.tmp / "lacks", self.tmp / "bin", self.tmp / "later"],
+             {"VIRTUAL_ENV": str(self.tmp / "venv")}, "bin", [f"lacks: {probe}", f"bin: {probe}"]),
+            ("$SHOPSYSTEM_MODEL_PYTHON first", [self.tmp / "bin"],
+             {"SHOPSYSTEM_MODEL_PYTHON": str(self.tmp / "chosen/python3")}, "chosen", [f"chosen: {probe}"]),
         ]
-        for name, path_dirs, extra, used in cases:
+        for name, path_dirs, extra, used, probes in cases:
             with self.subTest(name):
                 self.log.unlink(missing_ok=True)
                 r = self.run_check(self.env(path_dirs, **extra))
                 self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
                 self.assertIn("0 violations", r.stdout)
-                runs = [c for c in self.calls() if str(SCRIPT) in c]
-                self.assertEqual(runs, [f"{used}: {SCRIPT} --root {self.tmp} check"], self.calls())
-                self.assertNotIn("venv/bin: ", "\n".join(self.calls()))
+                self.assertEqual(self.calls(), probes + [f"{used}: {SCRIPT} --root {self.tmp} check"])
 
     def test_r56(self):
         """the check runs again only once"""
@@ -1218,8 +1222,9 @@ class InterpreterSearchTest(ModelTest):
                 self.assertEqual(r.returncode, 2, r.stdout + r.stderr)
                 self.assertIn("clingo", r.stdout)
                 self.assertIn("pip install clingo", r.stdout)
-                for python in tried + ["/usr/local/bin/python3", "/usr/bin/python3"]:
-                    self.assertIn(python, r.stdout)
+                named = r.stdout.split("it tried has it:", 1)[1].split("\n", 1)[0]
+                self.assertEqual([p.strip() for p in named.rstrip(".").split(",")],
+                                 tried + ["/usr/local/bin/python3", "/usr/bin/python3"])
                 self.assertEqual([c for c in self.calls() if str(SCRIPT) in c], [])
 
 

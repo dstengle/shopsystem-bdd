@@ -522,10 +522,11 @@ Feature: Design model check
   @r52
   Scenario: a requirement or scenario using an avoided word is v_t1
     Given a glossary term slice that avoids chunk
-    And a requirement that says "chunk" and a scenario titled "chunks are planned"
+    And a requirement that says "chunk", a scenario titled "chunks are planned" and a held scenario titled "a chunk as it was"
     When model check is run
     Then v_t1 names the requirement, chunk and the term slice
     And v_t1 names the scenario, chunk and the term slice
+    And v_t1 does not name the held scenario
     And it exits 1
 
   @r53
@@ -546,9 +547,10 @@ Feature: Design model check
   Scenario: without clingo the check runs again under the first interpreter that has it
     Pins the order of the search and that the active virtualenv's bin/ is skipped.
     Given an interpreter that cannot import clingo
-    And on PATH, in order, a virtualenv's python3 that has clingo, a python3 without it and a python3 with it
+    And on PATH, in order, a virtualenv's python3 that has clingo, a python3 without it and two python3s with it
     When model check is run
-    Then it runs again under the third, never asking the virtualenv's
+    Then it asks the one without clingo, then the first with it, and runs again under that one
+    And it never asks the virtualenv's python3 or the second with clingo
     And it exits 0
     But when $SHOPSYSTEM_MODEL_PYTHON names a python3 with clingo, it runs again under that one
 

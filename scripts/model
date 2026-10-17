@@ -54,8 +54,9 @@ contract:
     grammar.md's relation names. A term gives node(T, "term"),
     term_of(T, <bounded-context>), avoid(T, <word>) for each word after its
     `Not:`, and glossary_entry(T, <bullet number>, <term lowercased>); each
-    requirement (its line) and each acceptance-scenario (its title and steps)
-    gives mentions(X, <word>) for each term or avoided word it holds, as a
+    requirement (its line) and each acceptance-scenario (its title and its
+    Given/When/Then/And/But steps, not its description, docstrings or
+    Examples tables) gives mentions(X, <word>) for each term or avoided word it holds, as a
     whole word in any case, with a plural "s" allowed. It needs nothing
     beyond the standard library.
   - check solves the facts with model.lp (beside this script) and prints every
@@ -709,11 +710,12 @@ def interpreters():
     out = []
     if os.environ.get("SHOPSYSTEM_MODEL_PYTHON"):
         out.append(os.environ["SHOPSYSTEM_MODEL_PYTHON"])
-    venvs = {Path(v).resolve() / "bin" for v in (os.environ.get("VIRTUAL_ENV"),
-                                                  sys.prefix if sys.prefix != sys.base_prefix else None) if v}
+    venvs = {(Path(v) / "bin").resolve() for v in (os.environ.get("VIRTUAL_ENV"),
+                                                    sys.prefix if sys.prefix != sys.base_prefix else None) if v}
     for d in os.environ.get("PATH", "").split(os.pathsep):
-        p = Path(d or ".") / "python3"
-        if p.is_file() and os.access(p, os.X_OK) and Path(d or ".").resolve() not in venvs:
+        here = Path(d or ".").resolve()     # an empty entry is the current directory, named in full
+        p = here / "python3"
+        if p.is_file() and os.access(p, os.X_OK) and here not in venvs:
             out.append(str(p))
     out += ["/usr/local/bin/python3", "/usr/bin/python3"]
     return list(dict.fromkeys(out))
