@@ -176,7 +176,9 @@ With a controller holding 270k: formulating six capabilities read 1.8M tokens fr
 Every Behaviour line carries a stable id, `[r<n>]`, and every scenario names its line by the tag `@r<n>`
 (design model v3). A new line takes the next free id, a changed line keeps its id, a removed line's id is
 retired in the capability's frontmatter and never reused. The gate shows ids and the spec commit names them.
-Capability ids follow shopsystem-knowledge's IRIs: `<owner domain>/<product>/<context>/<name>`.
+Ids are type-first, following shopsystem-knowledge's IRIs: `<kind>/<owner>/<product>/<context>/<name>`, with the design
+model's kind names (`capability/missingmass.io/shopsystem/shopsystem-bdd/spec-migration`). Inside a context the short forms
+`<kind>/<name>` and, where the field fixes the kind, `<name>` are read. Adding Ids also rewrites `decision/` to `design-decision/`.
 `scripts/model check` checks ids and coverage where clingo is installed. A repository already on capability
 files is migrated with migrating-to-capabilities' "Adding ids". The release's fixture runs (15 B, 4 A) are recorded in the test log:
 `records/measurements/fixture-runs/2026-10-16-requirement-ids-test-log.md`.

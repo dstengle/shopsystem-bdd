@@ -224,3 +224,59 @@ with the long run and without it. A was not run on apply, noclingo or migrate.
 Added with the fixture runs: the results, cost and first-runs sections, and the opening, harness and Not tested text that said the runs were not made.
 
 Corrected after review: the harness's ok counts are taken from selftest.out; "exactly" dropped from the mutation sentence; the unsupported "186 lines" replaced by counts of requirement lines per capability.
+
+## Type-first ids (2026-10-17)
+
+### What changed
+
+- The convention: ids are `<kind>/<owner>/<product>/<context>/<name>` with the design model's kind names; short forms
+  `<kind>/<name>` inside a context, and `<name>` where the field fixes the kind. Old forms are refused.
+- Decision 0027 is rewritten; spec lines are reworded (r43: bare names only where the code accepts them).
+- The model resolver: type-first ids, short forms, kind-named capabilities, a file-name check, and r45 reads
+  `design-decision` headings.
+- The teaching text: Adding Ids steps 2 and 4, and the type-first wording in the skills.
+- This repository is renamed to type-first ids (a migration; no content changed).
+- `revisit_signal` is a reference, read in short form.
+
+### Reruns
+
+Plugin B was a detached worktree of the branch at `1a7b92a`.
+
+| Case | Run | Result | Cost |
+|---|---|---|---|
+| T-integrate | 1 | ok 7/7 | $0.58, 119 s |
+| T-integrate | 2 | ok 7/7 | $0.53, 104 s |
+| T-integrate | 3 | ok 7/7 | $0.48, 105 s |
+| T-migrate | 1 | ok 13/13 | $0.18 |
+| T-migrate | 2 | ok 13/13 | $0.16 |
+| T-migrate | 3 | ok 13/13 | $0.18 |
+
+Integrate passed 3/3 at 7/7 and migrate 3/3 at 13/13. In T-integrate-2 the last message answers a late background
+notification, so the gate is the message before it. The one-commit check, which failed once in the 0.19.0 runs,
+passed 3/3. The migrate checks now include the index id `bounded-context/missingmass.io/demo/shelf`, type-first
+capability ids, and `decision/` rewritten.
+
+### Scorer fixes
+
+1. A bold label with trailing text is read as a label.
+2. The gate is read from the last message holding `[rN]` under a label.
+
+### kb clone trial 2
+
+A fresh clone of shopsystem-kb at `2eed357`, git identity set on the clone.
+
+- Session 1 ($2.09, 14 turns): numbered 371 lines, ids type-first, index `bounded-context/missingmass.io/shopsystem/kb`,
+  `decision/` to `design-decision/` throughout `spec/` (154 ledger headings, 0 left). It stopped at the gate with two
+  questions: a scenario fitting two lines in hand-over-content, and an outline fitting r1 and r2 in
+  name-what-is-asked-for. The first trial had placed every scenario.
+- The controller answered for the trial only (reading A, A: the session's recommendations, on a throwaway clone) and
+  resumed. Session 2 ($2.24, 11 turns) tagged all 361 and committed `a52b712`.
+- Verified by the controller: `model check` with clingo gave 10 `v_s3` only (the same 10 lines as trial 1), 0
+  unresolved, 0 file problems; the suite 1603 passed, equal to the baseline; the feature diff is only `@r` tags. The
+  duplicate title across two files was again tagged by hand (fix 2, `--file`, is in 0.20.0).
+- Cost: $4.33 in all.
+
+### Not tested
+
+- A real kb migration. The trial ran on a throwaway clone with the gate answered by the controller.
+- `decision/` references outside `spec/` in consuming repositories (CLAUDE.md, docs/), which the skill leaves alone.
