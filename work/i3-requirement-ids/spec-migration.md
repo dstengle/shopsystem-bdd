@@ -5,7 +5,7 @@ part_of: i3
 status: drafted
 date: 2026-10-16
 argues: [spec-migration]
-adds: [spec-migration#r9-r13]
+adds: [spec-migration#r9-r14]
 ---
 
 # Spec migration: requirement ids

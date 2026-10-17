@@ -24,11 +24,12 @@ existing scenarios. It changes the meaning of no approved scenario.
 - [r6] **If** any of those differ beyond what they set aside, migration stops and reports the difference without editing a scenario.
 - [r7] No step definition's body changes in a migration.
 - [r8] **When** migration is done, each note is headed as a proposal integrated into `spec/` on its date.
-- [r9] **Where** a repository has capability files whose Behaviour lines carry no ids, **when** it is migrated to ids, each line gets `[r<n>]` in its order from r1 with its text unchanged, each capability gets `retired: []`, and each capability's id becomes its context's id, a `/`, and its name.
-- [r10] **When** a repository is migrated to ids, its context's id is the owner's domain, product and context name the person gives at the gate, unless `spec/index.md` already names them.
+- [r9] **Where** a repository has capability files whose Behaviour lines carry no ids, **when** it is migrated to ids, each line gets `[r<n>]` in its order from r1 with its text unchanged, each capability gets `retired: []`, and each capability's id becomes `capability/<context path>/<name>`.
+- [r10] **When** a repository is migrated to ids, its context's id is `bounded-context/<context path>`, the context path being the owner's domain, product and context name the person gives at the gate, unless `spec/index.md` already names them.
 - [r11] **When** a repository is migrated onto `spec/` or to ids, each scenario that is not held gets the `@r<n>` tag of the line it formulates, and nothing else in a scenario changes but the holds the gate led to.
 - [r12] **If** a scenario formulates no line or more than one, migration to ids shows it to the person at the gate as a question and tags nothing before the answer.
 - [r13] **When** migration onto `spec/` or to ids is done, the suite's summary, its passing scenarios by title and its count of scenarios per tag equal those before it, the new `@r<n>` tags, the holds the gate led to and their " (held)" titles aside.
+- [r14] **When** a repository is migrated to ids, its `decision/<name>` references and ledger headings become `design-decision/<name>`, and nothing else in a reference changes.
 
 ## Implementation, may change
 - A baseline under the scratch directory: the summary line, the passing tests (`-q -rA`), a copy of
