@@ -24,12 +24,19 @@ contract:
     any further tags of that kind go, other tags stay; with no tag of that
     kind, the new one joins the last tag line, or gets a tag line of its own
     at the scenario's indentation.
+  - move (like hold and retire) finds the scenario by its exact title and
+    refuses unless exactly one file has it, unless --file names the file.
   - move takes a scenario's block verbatim (trailing blank lines dropped) to
     the end of an existing file; with --inline-background, the source
     Background's steps are inserted before the scenario's first step at the
     scenario's step indentation; with --carry-feature-tags, the source file's
     feature tags the destination's feature tags lack go on a tag line of their
     own above the Scenario: line, at its indentation.
+  - tag, hold, retire and move take --file <path>: the command works in that
+    file only, whatever other files hold the title. It refuses, naming the
+    file and changing no file, a file that does not hold the title, a file
+    that holds it twice, and a file outside --dir. Without --file a title in
+    several files is refused, as above.
   - verify-moved compares, by title, each scenario's effective tags, its
     description, and its Background steps followed by its own steps, all
     stripped of indentation, blanks and comments.
@@ -62,6 +69,9 @@ SCENARIO = re.compile(r"(Scenario Outline|Scenario Template|Scenario|Example):")
 EXAMPLES = re.compile(r"(Examples|Scenarios):")
 SLICE = re.compile(r"slice-\d+(\.\d+)?$")
 REQ_TAG = re.compile(r"r\d+$")
+
+
+FILE_HELP = "work in this file only, whatever other files hold the title"
 
 
 class Refused(Exception):
@@ -196,7 +206,10 @@ def load(directory):
     return found
 
 
-def locate(files, title):
+def locate(files, title, args=None):
+    only = getattr(args, "file", None)
+    if only:
+        return locate_in(files, title, only, args.dir)
     hits = [(p, f, sc) for p, f in files for sc in f.scenarios if sc.title == title]
     if not hits:
         raise Refused("no scenario titled %r" % title)
@@ -204,6 +217,23 @@ def locate(files, title):
         raise Refused("title %r is in several scenarios: %s" % (
             title, ", ".join(sorted({p for p, _, _ in hits}))))
     return hits[0]
+
+
+def locate_in(files, title, only, directory):
+    """The one scenario titled `title` in the file `only`, a file under `directory`."""
+    root = os.path.realpath(directory)
+    target = os.path.realpath(only)
+    if os.path.commonpath([root, target]) != root:
+        raise Refused("%s is outside %s" % (only, directory))
+    for path, f in files:
+        if os.path.realpath(path) == target:
+            hits = [sc for sc in f.scenarios if sc.title == title]
+            if len(hits) > 1:
+                raise Refused("%s holds the title %r twice" % (only, title))
+            if hits:
+                return path, f, hits[0]
+            break
+    raise Refused("%s does not hold the title %r" % (only, title))
 
 
 def natural(tag):
@@ -250,7 +280,7 @@ def cmd_tag(args, files):
         family = re.compile(r"@r\d+$")
     else:
         sys.exit(usage_error("tag must look like slice-<n>, slice-<n>.<m> or r<n>"))
-    path, f, sc = locate(files, args.title)
+    path, f, sc = locate(files, args.title, args)
     lines = _retag(f, sc, args.slice, family)
     write_checked({path: lines})
     return 0
@@ -282,7 +312,7 @@ def _retag(f, sc, new_tag, family):
 
 
 def cmd_move(args, files):
-    path, f, sc = locate(files, args.title)
+    path, f, sc = locate(files, args.title, args)
     dest = args.to
     if not os.path.isfile(dest):
         raise Refused("%s does not exist" % dest)
@@ -362,7 +392,7 @@ def indent_of(line):
 
 
 def cmd_hold(args, files):
-    path, f, sc = locate(files, args.title)
+    path, f, sc = locate(files, args.title, args)
     if "holding" in sc.tags:
         raise Refused("%r is held already" % args.title)
     lines = list(f.lines)
@@ -382,7 +412,7 @@ def cmd_hold(args, files):
 
 
 def cmd_retire(args, files):
-    path, f, sc = locate(files, args.title)
+    path, f, sc = locate(files, args.title, args)
     if "holding" not in sc.tags:
         raise Refused("%r is not tagged @holding: only a held scenario is retired here" % args.title)
     lines = f.lines[:sc.start] + f.lines[sc.end:]
@@ -522,12 +552,14 @@ def main():
     tag = sub.add_parser("tag")
     tag.add_argument("title")
     tag.add_argument("slice", help="slice-<n>, slice-<n>.<m> or r<n>")
+    tag.add_argument("--file", help=FILE_HELP)
     tag.set_defaults(run=cmd_tag)
     move = sub.add_parser("move")
     move.add_argument("title")
     move.add_argument("--to", required=True)
     move.add_argument("--inline-background", action="store_true")
     move.add_argument("--carry-feature-tags", action="store_true")
+    move.add_argument("--file", help=FILE_HELP)
     move.set_defaults(run=cmd_move)
     verify = sub.add_parser("verify-moved")
     verify.add_argument("--from", dest="from_dir", required=True)
@@ -537,9 +569,11 @@ def main():
     what = hold.add_mutually_exclusive_group(required=True)
     what.add_argument("--for", dest="held_for")
     what.add_argument("--for-removal", dest="removal", action="store_true")
+    hold.add_argument("--file", help=FILE_HELP)
     hold.set_defaults(run=cmd_hold)
     retire = sub.add_parser("retire")
     retire.add_argument("title")
+    retire.add_argument("--file", help=FILE_HELP)
     retire.set_defaults(run=cmd_retire)
     sub.add_parser("holding").set_defaults(run=cmd_holding)
     for name, run in (("bindings", cmd_bindings), ("rebind", cmd_rebind)):

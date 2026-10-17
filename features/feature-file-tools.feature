@@ -383,9 +383,9 @@ Feature: Feature file tools
 
   @r35
   Scenario Outline: moving a title that no file or several files hold is refused
-    A move, hold or retire needs the title in exactly one file; a refusal names every file that holds it.
+    Without --file, a move, hold or retire needs the title in exactly one file; a refusal names every file that holds it.
     Given <holders> the title "Apply a code"
-    When the agent runs features move "Apply a code" --to features/codes.feature
+    When the agent runs features move "Apply a code" --to features/codes.feature without --file
     Then the command is rejected because <reason>
     And the refusal names <named>
     And no file is changed
@@ -556,3 +556,39 @@ Feature: Feature file tools
     When the agent runs features tag "Apply a code" r7
     Then the scenario's tags are @wip, @slice-2 and @r7
     And every other line of features/cart.feature is unchanged
+
+  @r52
+  Scenario: --file works in that file only, whatever other files hold the title
+    A title two files hold is tagged in either file by naming it, and nothing else in either file changes.
+    Given features/cart.feature and features/old.feature both hold a scenario "Apply a code"
+    When the agent runs features tag "Apply a code" r7 --file features/cart.feature
+    Then the scenario "Apply a code" in features/cart.feature is tagged @r7
+    And every other line of features/cart.feature is unchanged
+    And features/old.feature is unchanged
+
+  @r53
+  Scenario: --file naming a file that does not hold the title is refused
+    The file named must hold the title, or the command stops.
+    Given a feature file features/cart.feature without a scenario "Voucher"
+    And features/codes.feature holds a scenario "Voucher"
+    When the agent runs features tag "Voucher" r7 --file features/cart.feature
+    Then the command is rejected because the file does not hold the title
+    And the refusal names features/cart.feature
+    And no file is changed
+
+  @r54
+  Scenario: --file naming a file that holds the title twice is refused
+    Two scenarios with the title in the file named leave no one scenario to work on.
+    Given a feature file features/cart.feature with two scenarios "Apply a code"
+    When the agent runs features tag "Apply a code" r7 --file features/cart.feature
+    Then the command is rejected because the file holds the title twice
+    And the refusal names features/cart.feature
+    And no file is changed
+
+  @r55
+  Scenario: --file naming a file outside --dir is refused
+    A file outside the directory features reads is not one it edits.
+    Given a feature file elsewhere/other.feature outside the features directory with a scenario "Apply a code"
+    When the agent runs features tag "Apply a code" r7 --file elsewhere/other.feature
+    Then the command is rejected because the file is outside --dir
+    And no file is changed

@@ -816,6 +816,94 @@ class ScenarioTest(Workspace, unittest.TestCase):
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertEqual(path.read_text(), text.replace("@wip @slice-2 @r1 @r4", "@wip @slice-2 @r7"))
 
+    def two_files(self):
+        """kb's case: one title in two feature files, each file with other scenarios."""
+        cart = feature(scenario("Apply a code", "@slice-1 @r1"), scenario("Empty cart", "@r2"))
+        old = feature(scenario("Apply a code", "@slice-2 @r1"), scenario("Checkout", "@r3"))
+        return (self.write("features/cart.feature", cart), cart,
+                self.write("features/old.feature", old), old)
+
+    def test_file_works_in_that_file_only_whatever_other_files_hold_the_title(self):
+        """--file works in that file only, whatever other files hold the title"""
+        cart, cart_text, old, old_text = self.two_files()
+        done = self.run_script("tag", "Apply a code", "r7", "--file", "features/cart.feature")
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertEqual(cart.read_text(), cart_text.replace("@slice-1 @r1", "@slice-1 @r7"))
+        self.assertEqual(old.read_text(), old_text)
+        done = self.run_script("tag", "Apply a code", "r7", "--file", "features/old.feature")
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertEqual(cart.read_text(), cart_text.replace("@slice-1 @r1", "@slice-1 @r7"))
+        self.assertEqual(old.read_text(), old_text.replace("@slice-2 @r1", "@slice-2 @r7"))
+
+    def test_file_is_taken_by_hold_retire_and_move_as_well(self):
+        """--file works in that file only, whatever other files hold the title"""
+        cart, cart_text, old, old_text = self.two_files()
+        done = self.run_script("hold", "Apply a code", "--for-removal", "--file", "features/old.feature")
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertEqual(cart.read_text(), cart_text)
+        held = old.read_text()
+        self.assertIn("Scenario: Apply a code (held)", held)
+        self.assertIn("Scenario: Checkout", held)
+        # The held title is now unique, and retiring it by --file leaves the other file alone.
+        done = self.run_script("retire", "Apply a code (held)", "--file", "features/old.feature")
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertEqual(old.read_text(), feature(scenario("Checkout", "@r3")))
+        self.assertEqual(cart.read_text(), cart_text)
+        # Move takes the scenario out of the named file only.
+        old.write_text(old_text)
+        dest = self.write("features/codes.feature", feature(scenario("Voucher")))
+        done = self.run_script("move", "Apply a code", "--file", "features/old.feature", "--to", "features/codes.feature")
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertEqual(cart.read_text(), cart_text)
+        self.assertEqual(old.read_text(), feature(scenario("Checkout", "@r3")))
+        self.assertIn("Scenario: Apply a code", dest.read_text())
+        self.assertIn("@slice-2 @r1", dest.read_text())
+
+    def test_without_file_a_title_in_several_files_is_refused_as_before(self):
+        """--file works in that file only, whatever other files hold the title"""
+        self.two_files()
+        for command in (("tag", "Apply a code", "r7"), ("hold", "Apply a code", "--for-removal"),
+                        ("retire", "Apply a code")):
+            with self.subTest(command):
+                reason = self.refused(*command)
+                self.assertIn("features/cart.feature", reason)
+                self.assertIn("features/old.feature", reason)
+
+    def test_file_naming_a_file_that_does_not_hold_the_title_is_refused(self):
+        """--file naming a file that does not hold the title is refused"""
+        self.two_files()
+        self.write("features/codes.feature", feature(scenario("Voucher", "@holding")))
+        for command in (("tag", "Voucher", "r7"), ("hold", "Voucher", "--for-removal"),
+                        ("retire", "Voucher"), ("move", "Voucher", "--to", "features/old.feature")):
+            with self.subTest(command):
+                reason = self.refused(*command, "--file", "features/cart.feature")
+                self.assertIn("features/cart.feature", reason)
+                self.assertIn("does not hold", reason)
+
+    def test_file_naming_a_file_that_holds_the_title_twice_is_refused(self):
+        """--file naming a file that holds the title twice is refused"""
+        self.write("features/cart.feature", feature(scenario("Apply a code", "@r1"), scenario("Apply a code", "@r2")))
+        self.write("features/old.feature", feature(scenario("Apply a code", "@r3")))
+        for command in (("tag", "Apply a code", "r7"), ("hold", "Apply a code", "--for-removal"),
+                        ("move", "Apply a code", "--to", "features/old.feature")):
+            with self.subTest(command):
+                reason = self.refused(*command, "--file", "features/cart.feature")
+                self.assertIn("features/cart.feature", reason)
+                self.assertIn("twice", reason)
+
+    def test_file_naming_a_file_outside_dir_is_refused(self):
+        """--file naming a file outside --dir is refused"""
+        self.two_files()
+        self.write("elsewhere/other.feature", feature(scenario("Apply a code", "@r9")))
+        self.write("features/codes.feature", feature(scenario("Voucher")))
+        for path in ("elsewhere/other.feature", "features/../elsewhere/other.feature"):
+            for command in (("tag", "Apply a code", "r7"), ("hold", "Apply a code", "--for-removal"),
+                            ("retire", "Apply a code"),
+                            ("move", "Apply a code", "--to", "features/codes.feature")):
+                with self.subTest(path=path, command=command):
+                    reason = self.refused(*command, "--file", path)
+                    self.assertIn("outside", reason)
+
 
 def binding(title, feature_name="cart.feature", line=12):
     pad = "".join("# filler\n" for _ in range(line - 2))
