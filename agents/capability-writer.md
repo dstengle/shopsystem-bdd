@@ -13,7 +13,7 @@ You may read only the paths the dispatch brief lists: the note or notes, `spec/`
 
 One `spec/` per bounded context: `index.md`, `decisions.md`, `capabilities/<name>.md`. A note is a proposal against it. When `spec/` exists, read all of it first and change it; never start a second spec, and never write a capability that duplicates one that exists.
 
-A capability file is frontmatter (`id: <context id>/<name>`, `title`, `narrator`, `rests_on`, `formulated_as: features/<name>.feature`, `retired`) and four sections: Purpose (one paragraph: what it is, what it isn't), Behaviour, Implementation, may change, Not yet (each deferral with the trigger that promotes it). Names are hyphenated on both sides: `write-path.md` ↔ `features/write-path.feature`.
+A capability file is frontmatter (`id: capability/<context path>/<name>`, `title`, `narrator`, `rests_on`, `formulated_as: features/<name>.feature`, `retired`) and four sections: Purpose (one paragraph: what it is, what it isn't), Behaviour, Implementation, may change, Not yet (each deferral with the trigger that promotes it). Names are hyphenated on both sides: `write-path.md` ↔ `features/write-path.feature`.
 
 Every Behaviour line starts with its id, `[r<n>]` (`docs/capability-format.md`, Requirement ids). A line
 you add takes the id one above every id the capability has used or retired (its lines' ids and its
@@ -35,11 +35,11 @@ Every sentence of the note lands in exactly one place: a Behaviour line, an Impl
 `spec/decisions.md` is append-only. An entry:
 
 ```
-## decision/<slug>
+## design-decision/<slug>
 <one line: the decision>
 date: <the note's date>
 revisit_when: <a signal someone will actually see>      (only when there is one)
-supersedes: decision/<slug>                             (only when it replaces one)
+supersedes: design-decision/<slug>                     (only when it replaces one)
 source: <path of the note or ADR>
 ```
 
@@ -47,7 +47,7 @@ Without a `revisit_when`, the reasoning goes in the line itself. Never edit or d
 
 ## index.md
 
-Frontmatter `id: <owner domain>/<product>/<context name>`, the context's id (`docs/capability-format.md`, Requirement ids), and `title`; then Purpose, constraints carried (with any bound stated as a bound), composition (the capabilities in reading order), order of building, testing. Update it when capabilities are added or removed. When `spec/` does not exist yet and the brief does not give the owner's domain, product and context name, ask for them as a question at the gate, with the id you would write; draft `index.md` and every capability's `id` with that id meanwhile, and an answer that differs comes back as a round that drafts them again.
+Frontmatter `id: bounded-context/<context path>`, the context path being `<owner domain>/<product>/<context name>`, the context's id (`docs/capability-format.md`, Requirement ids), and `title`; then Purpose, constraints carried (with any bound stated as a bound), composition (the capabilities in reading order), order of building, testing. Update it when capabilities are added or removed. When `spec/` does not exist yet and the brief does not give the owner's domain, product and context name, ask for them as a question at the gate, with the id you would write; draft `index.md` and every capability's `id` with that id meanwhile, and an answer that differs comes back as a round that drafts them again.
 
 ## What you return
 

@@ -38,10 +38,10 @@ and the feature says so in its header. Nothing else links them.
 
 ```markdown
 ---
-id: missingmass.io/shopsystem/shop-kb/identity
+id: capability/missingmass.io/shopsystem/shop-kb/identity
 title: Identity
 narrator: a client of the contract
-rests_on: [decision/primary-model]
+rests_on: [design-decision/primary-model]
 formulated_as: features/identity.feature
 retired: []
 ---
@@ -116,18 +116,28 @@ name for good: scenarios, proposals and commits point at it, and it survives re-
 - A changed line keeps its id. A line whose meaning is replaced by a different rule is a removal and an
   addition, not a change.
 - A removed line's id goes into the frontmatter's `retired: [r<n>, ...]` and is never taken again.
-- A requirement is named `<capability id>#r<n>`, or `<name>#r<n>` inside its own context.
+- A requirement is named `capability/<context path>/<name>#r<n>`, or `<name>#r<n>` inside its own context.
 
-Ids follow shopsystem-knowledge's IRIs. `spec/index.md`'s `id` is the context: the owner's domain, the
-product and the context name, such as `missingmass.io/shopsystem/shop-kb`. A capability's id is the context's
-id, a `/`, and its file's name. A requirement `<capability>#r<n>` is short for the part
-`<capability>#behaviour/r<n>`.
+Ids are type-first, as in shopsystem-knowledge's IRIs: `<kind>/<context path>/<name>`. The context path is
+the owner's domain, the product and the context name, such as `missingmass.io/shopsystem/shop-kb`. The
+bounded context is `bounded-context/<context path>`, and it is `spec/index.md`'s `id`. A capability is
+`capability/<context path>/<name>`, `<name>` being its file's name, and that is its `id`. A ledger entry's heading
+is `## design-decision/<slug>`. A frontmatter `id` is always written in full.
+
+A reference may be shorter. `<kind>/<name>` names a node of the same context, as `design-decision/primary-model`.
+A field that fixes the kind (`rests_on`, `supersedes`, `argues`, `under`, `depends_on`) and the capability part
+of a `#r<n>` reference may write the bare `<name>`. Any other field, `about:` for one, needs `<kind>/<name>`.
+`<context name>/<name>`, `decision/<name>` and `obs/<name>` are not ids; `model check` reports them as
+unresolved.
+
+A requirement `capability/<context path>/<name>#r<n>` is short for the part `capability/<context path>/<name>#behaviour/r<n>`.
+The IRI of an id is shopsystem-knowledge's base followed by the id.
 
 `spec/index.md` begins with the context's id:
 
 ```markdown
 ---
-id: missingmass.io/shopsystem/shop-kb
+id: bounded-context/missingmass.io/shopsystem/shop-kb
 title: shop-kb
 ---
 
@@ -219,14 +229,14 @@ Feature: Identity
 ```markdown
 # Decisions
 
-## decision/primary-model
+## design-decision/primary-model
 A graph whose serialization is documents: one file per artifact, parts
 inline with ids, references as a schema primitive.
 date: 2026-09-23
 revisit_when: a request needs a traversal the reference index cannot serve
 source: docs/superpowers/specs/2026-09-23-kb-design.md
 
-## decision/delete-refuse-only
+## design-decision/delete-refuse-only
 The only delete rule is `refuse`.
 date: 2026-09-23
 revisit_when: a request asks for cascade or detach

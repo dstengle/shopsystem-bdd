@@ -1,6 +1,6 @@
 ---
 id: decision/model-reads-a-ledger
-summary: "Where a repository keeps its decisions as a ledger in spec/decisions.md and has no decisions/ directory, model reads each ## decision/<slug> heading as a design-decision."
+summary: "Where a repository keeps its decisions as a ledger in spec/decisions.md and has no decisions/ directory, model reads each ## design-decision/<slug> heading as a design-decision."
 date: 2026-10-16
 status: proposed
 source: "work/i3-requirement-ids/initiative.md; docs/capability-format.md (the decisions file)"
@@ -10,7 +10,7 @@ source: "work/i3-requirement-ids/initiative.md; docs/capability-format.md (the d
 
 ## Decision
 
-`scripts/model` reads `decisions/*.md` when that directory exists. Where it does not, it reads `spec/decisions.md` as the ledger `docs/capability-format.md` teaches: each `## decision/<slug>` heading is a design-decision, so a capability's `rests_on` resolves.
+`scripts/model` reads `decisions/*.md` when that directory exists. Where it does not, it reads `spec/decisions.md` as the ledger `docs/capability-format.md` teaches: each `## design-decision/<slug>` heading is a design-decision, so a capability's `rests_on` resolves.
 
 ## Context
 
