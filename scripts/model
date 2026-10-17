@@ -446,7 +446,7 @@ class Model:
                 self.fact("supersedes", d, old)
                 self.want(old, "design-decision", self.rel(path))
             if data.get("revisit_signal"):
-                self.fact("revisit_signal", d, data["revisit_signal"])
+                self.fact("revisit_signal", d, self.qualify(data["revisit_signal"]))   # "requests" stays as written
 
     def read_records(self):
         obs = self.root / "records" / "observations.md"

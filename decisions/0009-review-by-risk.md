@@ -4,7 +4,7 @@ summary: "A per-task review on Opus only for tasks touching concurrency, the pub
 date: 2026-10-01
 status: accepted
 revisit_when: "more than half of a measured batch's per-task reviews come back clean"
-revisit_signal: measurement/missingmass.io/shopsystem/shopsystem-bdd/kb-batches-32-35
+revisit_signal: measurement/kb-batches-32-35
 source: "0.9.0 (d0abe14)"
 ---
 

@@ -501,6 +501,17 @@ class TypeFirstTest(ModelTest):
                 found, _ = self.check_json()
                 self.assertEqual(len([d for d in found["unresolved"] if f"{ref!r}" in d or f" {ref} " in d]), 1, found)
 
+    def test_a_revisit_signal_is_a_reference(self):
+        decision = "---\nid: {}\nsummary: S\ndate: 2026-01-01\nstatus: accepted\nrevisit_signal: {}\n---\n"
+        self.write("decisions/0001-x.md", decision.format(full("design-decision", "x"), "measurement/m1"))
+        self.write("decisions/0002-y.md", decision.format(full("design-decision", "y"), "requests"))
+        self.write("records/m1.md", f"---\nid: {full('measurement', 'm1')}\nkind: measurement\nabout: {CONTEXT}\n---\n")
+        found, _ = self.check_json()
+        self.assertEqual(self.violated(found, "v13"), [], found)
+        facts = self.run_model("facts").stdout
+        self.assertIn(f'revisit_signal("{full("design-decision", "x")}", "{full("measurement", "m1")}").', facts)
+        self.assertIn(f'revisit_signal("{full("design-decision", "y")}", "requests").', facts)
+
     def test_a_ledger_heading_is_type_first(self):
         shutil.rmtree(self.tmp / "work")
         for heading, problems in [("design-decision/x", 0), (full("design-decision", "x"), 0), ("decision/x", 1)]:

@@ -4,7 +4,7 @@ summary: "A slice lands in at most 8 production and 4 test modules, and `plan` r
 date: 2026-10-10
 status: accepted
 revisit_when: "the Lands count is exceeded in more than half of a measured batch's slices"
-revisit_signal: measurement/missingmass.io/shopsystem/shopsystem-bdd/kb-batches-32-35
+revisit_signal: measurement/kb-batches-32-35
 source: "records/archive/design-notes/2026-10-10-small-slices-and-steps-design.md; 0.11.0"
 ---
 
