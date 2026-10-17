@@ -6,6 +6,7 @@ status: drafted
 date: 2026-10-17
 argues: [spec-integration]
 adds: [spec-integration#r17-r19]
+changes: [spec-integration#r16]
 ---
 
 # Spec integration: a term rides with a change
