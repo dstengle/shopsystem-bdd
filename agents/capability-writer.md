@@ -20,7 +20,7 @@ you add takes the id one above every id the capability has used or retired (its 
 `retired` list), wherever you place it. A line you change keeps its id. A line you remove is taken out and
 its id added to `retired`. Never renumber. A new capability starts at r1 with `retired: []`.
 
-Every sentence of the note lands in exactly one place: a Behaviour line, an Implementation line, a Not yet entry, a ledger entry, a question, or the cut list. Rationale, intent and comparisons with what was rejected are cut, or go into the ledger line of the decision they explain.
+Every sentence of the note lands in exactly one place: a Behaviour line, a glossary entry, an Implementation line, a Not yet entry, a ledger entry, a question, or the cut list. Rationale, intent and comparisons with what was rejected are cut, or go into the ledger line of the decision they explain.
 
 ## A Behaviour line
 
@@ -29,6 +29,7 @@ Every sentence of the note lands in exactly one place: a Behaviour line, an Impl
 - The response is something the narrator observes: a value returned, a refusal and the reason it names, a file at a path. A refusal names its reason: *the code is refused because it has expired*. The words of a message, a status code, a field name, a table or a column are Implementation.
 - Every Behaviour line cites the note sentence that states it, in the change list you reply with; the capability file carries the line alone. A line the note does not state is not written, however obvious it seems (a refused code leaving the total unchanged; a nullable column implying "no minimum means any total"; a rounding mode from the implementation notes becoming a rule). It is a question, with the line you would write if the answer is yes.
 - A table of commands stays a table; a list of properties stays a list.
+- Use the glossary's terms for what they name, and never a word an entry lists after `Not:`.
 
 ## The ledger
 
@@ -47,12 +48,16 @@ Without a `revisit_when`, the reasoning goes in the line itself. Never edit or d
 
 ## index.md
 
-Frontmatter `id: bounded-context/<context path>`, the context path being `<owner domain>/<product>/<context name>`, the context's id (`docs/capability-format.md`, Requirement ids), and `title`; then Purpose, constraints carried (with any bound stated as a bound), composition (the capabilities in reading order), order of building, testing. Update it when capabilities are added or removed. When `spec/` does not exist yet and the brief does not give the owner's domain, product and context name, ask for them as a question at the gate, with the id you would write; draft `index.md` and every capability's `id` with that id meanwhile, and an answer that differs comes back as a round that drafts them again.
+Frontmatter `id: bounded-context/<context path>`, the context path being `<owner domain>/<product>/<context name>`, the context's id (`docs/capability-format.md`, Requirement ids), and `title`; then Purpose, constraints carried (with any bound stated as a bound), composition (the capabilities in reading order), order of building, testing, and the Glossary (below). Update it when capabilities are added or removed. When `spec/` does not exist yet and the brief does not give the owner's domain, product and context name, ask for them as a question at the gate, with the id you would write; draft `index.md` and every capability's `id` with that id meanwhile, and an answer that differs comes back as a round that drafts them again.
+
+## The glossary
+
+A term is a bullet of `spec/index.md`'s `## Glossary`, written exactly `- **<term>**: <one-sentence definition>. Not: <word>, <word>.` (`docs/capability-format.md`, Glossary). The `Not:` part is optional: write it only with words the note says to avoid, or words the note or the spec uses for the same thing. A term's id is `term/<context path>/<term>`, the term lowercased with spaces as hyphens, `term/<term>` for short. A term the note adds, changes or removes is drafted as the whole `## Glossary` section of `index.md`, headed by the section's heading, with every other entry as it is. Renaming a term is removing one entry and adding another. A word in a `Not:` list is never another term of the context, nor the term itself. A term the note does not state is a question, with the entry you would write.
 
 ## What you return
 
 1. Drafts, written under the drafts path: a new file whole at its `spec/` path under the drafts path; for a changed capability file, only its changed sections, each headed by the section's heading, and a changed frontmatter (a removed line's id added to `retired`) drafted whole, headed `frontmatter`; new ledger entries only, in `decisions.append.md`. Never an unchanged file or section.
-2. The change list, one row per Behaviour line added, changed or removed: `added | changed | removed`, capability, the id, the line (for `changed`, the old line too), and the note sentence it comes from, quoted.
+2. The change list, one row per Behaviour line added, changed or removed: `added | changed | removed`, capability, the id, the line (for `changed`, the old line too), and the note sentence it comes from, quoted. Then one row per glossary term added, changed or removed: `added | changed | removed`, `term/<term>`, the entry (for `changed`, the old entry too), and the note sentence it comes from, quoted.
 3. The ledger entries, in `decisions.append.md`.
 4. Questions: each condition the note does not state, one line, with the capability it concerns and the line you would write for each answer. Two readings of one sentence are a question too.
 5. Cut sentences: each note sentence that fits no section, quoted.

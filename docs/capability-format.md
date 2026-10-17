@@ -144,6 +144,44 @@ title: shop-kb
 # shop-kb
 ```
 
+## Glossary
+
+A bounded context's terms are its ubiquitous language: the one word its lines and scenarios use for each
+thing the narrator names. Each term is a bullet of `spec/index.md`'s `## Glossary`, in exactly this form:
+
+```markdown
+## Glossary
+
+- **revision**: the count of writes an item has had, 1 when it is created. Not: version.
+- **journal**: the record of every write to the store, oldest first. Not: history, log.
+- **schema**: the declaration of an item type's fields.
+```
+
+`- **<term>**: <one-sentence definition>. Not: <word>, <word>.` The definition is one sentence. The `Not:`
+part is optional: it lists the words the context avoids for that thing, and it is split from the definition
+at `. Not:` only, so a definition may hold a period. A bullet in that section of any other form is a file
+problem.
+
+A term is standing, like a Behaviour line, and is approved at the gate like one. Its id is
+`term/<context path>/<term>`, the term lowercased with spaces as hyphens (`term/missingmass.io/shopsystem/shop-kb/revision`);
+inside its context, `term/<term>`. Renaming a term is removing one entry and adding another. A glossary
+change is shown at the gate with the lines it comes with, and the spec commit names each term added,
+changed and removed. In a repository that keeps `work/`, a term change rides with the capability-proposal
+that needs it, which lists the term in `adds`, `changes` or `removes` (`adds: [term/revision]`).
+
+`model check` reads every Behaviour line and every scenario not held for the terms and the avoided words,
+matched as whole words, whatever their case, with a plural "s" allowed: "restore" is no mention of "store".
+It reports:
+
+| rule | what it found |
+|---|---|
+| `v_t1` | a line or a scenario uses a word its context's glossary lists after `Not:`; the row names the line or scenario, the word and the term |
+| `v_t2` | two glossary entries have one term |
+| `v_t3` | a word one term lists after `Not:` is another term of the context, or the term itself |
+
+A word used for two things, or two words used for one thing that no `Not:` lists yet, is a judgment of
+meaning, not a word match: `checking-spec-consistency` finds it, on demand.
+
 ## The feature file
 
 One feature per capability. One scenario per EARS line; a scenario
@@ -256,8 +294,12 @@ in the line itself.
 `scripts/model check` (this plugin; needs `python3 -m pip install clingo`) reads `spec/`, `features/` and
 the ledger, and reports by rule name: a line with no id (`v15a`), two lines with one id (`v15b`), a retired
 id taken again (`v15c`), a line with no scenario (`v_s3`), a scenario that names no line or two (`v_s1`,
-`v_s2`), and references that name nothing. It exits 0 when everything holds. Without clingo it says how to
-install it and exits 2; the coverage check is then done by hand.
+`v_s2`), a word the glossary avoids, or a glossary at odds with itself (`v_t1`, `v_t2`, `v_t3`), and
+references that name nothing. It exits 0 when everything holds. When the interpreter running it lacks
+clingo, it looks for one that has it (`$SHOPSYSTEM_MODEL_PYTHON`, each `python3` on `PATH` outside the
+active virtualenv's `bin/`, `/usr/local/bin/python3`, `/usr/bin/python3`) and runs again under the first it
+finds. When none has it, it exits 2 with a message that names clingo, `pip install clingo` and each
+interpreter it tried; the coverage check is then done by hand.
 
 ## Doing it
 
@@ -273,7 +315,7 @@ install it and exits 2; the coverage check is then done by hand.
    being `<owner domain>/<product>/<context name>` (ask the person when you do
    not know them) and `title`; then purpose, constraints carried,
    composition (the capabilities in reading order), order of building,
-   testing. Any table spanning capabilities is rendered from them, not
+   testing, and the Glossary in the form above. Any table spanning capabilities is rendered from them, not
    authored.
 5. Formulate one feature per capability, one scenario per line.
 6. Keep the note as a dated proposal; from here the capability files are
