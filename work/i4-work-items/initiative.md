@@ -5,7 +5,7 @@ summary: Slicing drafts work-items under a capability-proposal, filled in stages
 kind: capability-change
 owner-level: shopsystem-bdd
 status: proposed
-priority: 3
+priority: 4
 source: [review-finding/2026-10-13-kb-and-bdd-assessment]
 date: 2026-10-15
 ---

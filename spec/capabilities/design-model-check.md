@@ -64,6 +64,16 @@ records, and it checks one bounded context: product-level artifacts are read onl
 - [r45] **Where** a repository has no `decisions/` directory, `model` reads each `## design-decision/<slug>` heading of `spec/decisions.md` as a design-decision, and the entry's text up to a blank line, a heading or a property line (`date:`, `revisit_when:`, `supersedes:` or `source:`) as its summary.
 - [r46] **If** a node's `id` is not `<kind>/<context path>/<name>` with its own kind, or spec/index.md's `id` is not `bounded-context/<context path>`, `model check` reports a file problem naming the file.
 - [r47] **If** a reference is written `<context name>/<name>`, `decision/<name>` or `obs/<name>`, `model check` reports it as unresolved.
+- [r48] A glossary entry is a bullet of `spec/index.md`'s `## Glossary` written `- **<term>**: <one-sentence definition>. Not: <word>, <word>.`, the `Not:` part optional, and `model` reads it as a term of the bounded context, with the id `term/<context path>/<term>`, the term lowercased with spaces as hyphens.
+- [r49] **If** a bullet in `spec/index.md`'s `## Glossary` is not of that form, `model check` reports a file problem naming the file.
+- [r50] **When** `model facts` is run, it prints for each glossary entry a `node` fact of kind `term`, a `term_of` fact naming the bounded context, and an `avoid` fact for each word after its `Not:`.
+- [r51] **When** `model facts` is run, it prints a `mentions` fact for each requirement and each scenario and each term or avoided word it holds, matching a whole word, whatever its case, with a plural "s" allowed, so that "restore" is no mention of "store".
+- [r52] **If** a requirement or a scenario mentions a word that its context's glossary lists after `Not:`, `model check` reports it under v_t1 with the word and the term.
+- [r53] **If** two glossary entries have one term, `model check` reports it under v_t2.
+- [r54] **If** a word one term lists after `Not:` is another term of the context, or the term itself, `model check` reports it under v_t3.
+- [r55] **If** `import clingo` fails, `model check` looks for an interpreter that has clingo in this order: `$SHOPSYSTEM_MODEL_PYTHON`, each `python3` on `PATH` outside the active virtualenv's `bin/`, `/usr/local/bin/python3`, `/usr/bin/python3`, and runs again under the first that has it.
+- [r56] **When** `model check` has run again under another interpreter, it does so once, and a second failure to import clingo does not run it again.
+- [r57] **If** no interpreter has clingo, `model check` exits 2 with its message naming each interpreter it tried.
 
 ## Implementation, may change
 - `scripts/model.lp` is grammar.md v3 sections 1, 3 and 4 in clingo, with FIX notes where grammar.md does not

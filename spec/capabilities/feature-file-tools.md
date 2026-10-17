@@ -52,7 +52,7 @@ any test; it edits only the feature files, test modules and directory it is poin
 - [r32] **Where** `slice_expectations.py` is registered, a test tagged to a slice that is in progress, green or no longer in the plan runs as it is.
 - [r33] **Where** `--slice <n>` is given to pytest, `slice_expectations.py` runs that slice's tests as they are.
 - [r34] **Where** no one living plan is found, `slice_expectations.py` expects no test to fail and the run says so.
-- [r35] **If** `features move`, `features hold` or `features retire` is given a title no file holds, or one several files hold, `features` refuses, naming every file that holds it, and changes no file.
+- [r35] **If** `features move`, `features hold` or `features retire` is given a title no file holds, or, without `--file`, one several files hold, `features` refuses, naming every file that holds it, and changes no file.
 - [r36] **If** the destination of `features move` is the scenario's own file, `features` refuses and changes no file.
 - [r37] **If** a title is in the `--from` tree and not the other, or in the other tree and not `--from`, `features verify-moved` names it as missing or as added, and exits 1.
 - [r38] `features list --tag` finds the tag whether it is given with its leading `@` or without.
@@ -69,6 +69,10 @@ any test; it edits only the feature files, test modules and directory it is poin
 - [r49] **Where** `slice_expectations.py` is registered, the run's header names the living plan it read, relative to the root directory, or says no one living plan was found.
 - [r50] **If** the ini value `slice_plan` names a file that does not exist, `slice_expectations.py` expects no test to fail, and the run's header names that file.
 - [r51] **When** `features tag <title> r<n>` is run on a title exactly one file holds, `features` makes `@r<n>` the scenario's one requirement tag, removing any other `@r<m>` tag it has, and leaves its other tags and every other line unchanged.
+- [r52] **Where** `--file <path>` is given, **when** `features tag`, `features hold`, `features retire` or `features move` is run, `features` works in that file only, whatever other files hold the title.
+- [r53] **If** `--file` names a file that does not hold the title, `features` refuses, naming the file, and changes no file.
+- [r54] **If** `--file` names a file that holds the title twice, `features` refuses, naming the file, and changes no file.
+- [r55] **If** `--file` names a file outside `--dir`, `features` refuses and changes no file.
 
 ## Implementation, may change
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three

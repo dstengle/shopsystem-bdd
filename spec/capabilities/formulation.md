@@ -29,6 +29,7 @@ dispatches `feature-formulator`s. It decides nothing: a line with two readings c
 - [r11] Each scenario carries the tag `@r<n>` of the one line it formulates, on the scenario's tag line, and its title is free.
 - [r12] A scenario tagged `@holding` keeps the `@r<n>` tag it had and formulates no line.
 - [r13] **Where** `model check` can run, **when** feature files are committed, it reports no scenario that names no line or two, and no added or changed line without a scenario; **where** it cannot, the round says so and checks coverage by hand.
+- [r14] **When** a scenario uses a word its context's glossary avoids, the scenario is reworded to its line through the small-change path, without a further gate.
 
 ## Implementation, may change
 - The session dispatches `spec-round` with the job `formulate`; the round dispatches one `feature-formulator`

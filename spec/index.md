@@ -38,6 +38,7 @@ The spec side, with the person:
 | `spec-integration` | the person at the gate | service |
 | `formulation` | the person who approved the lines | service |
 | `spec-migration` | the person migrating a repository onto spec/ | service |
+| `spec-consistency` | the person keeping a spec | service |
 
 The build side, dispatched:
 

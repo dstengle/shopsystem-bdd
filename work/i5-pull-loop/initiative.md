@@ -5,7 +5,7 @@ summary: Workers started by a shell loop with claude -p pull one work-item at on
 kind: capability-change
 owner-level: shopsystem-bdd
 status: proposed
-priority: 4
+priority: 5
 source: [review-finding/2026-10-13-kb-and-bdd-assessment, measurement/kb-batches-32-35]
 date: 2026-10-15
 ---

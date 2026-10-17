@@ -33,6 +33,8 @@ the person talks to, with each round handed to a fresh `spec-round` that dispatc
 - [r14] **When** a line is removed, its id is added to the capability's `retired` list and no later line takes it.
 - [r15] **When** the approved drafts are committed, the commit message names each id added, changed and removed.
 - [r16] **Where** `model check` can run, **when** the approved drafts are committed, it reports nothing that was not there before they were applied, but each added line as having no scenario yet and each removed line's scenario as naming a line its capability no longer has.
+- [r17] **Where** a repository keeps `work/`, a change to a glossary term rides with the capability-proposal that needs it, which lists the term in `adds`, `changes` or `removes`.
+- [r18] **When** the approved drafts are committed, the commit message names each term added, changed and removed.
 
 ## Implementation, may change
 - The session dispatches `spec-round` with the job `integrate` or `apply`, the note's path, a drafts path
