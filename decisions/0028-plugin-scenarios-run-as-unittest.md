@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/plugin-scenarios-run-as-unittest
 summary: "In this repository a scenario's step definition is a unittest test whose docstring is the scenario's title, and a test checks every scenario has one."
 date: 2026-10-15
-status: proposed
+status: rejected
 revisit_when: "a capability's scenarios need Given/When/Then steps shared across tests"
 revisit_signal: requests
 source: "design-decision/scripts-stdlib-only; docs/design-model/design-model.md v3 section 2 (step definitions are code, outside the model)"

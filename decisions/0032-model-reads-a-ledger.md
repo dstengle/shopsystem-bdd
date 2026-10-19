@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/model-reads-a-ledger
 summary: "Where a repository keeps its decisions as a ledger in spec/decisions.md and has no decisions/ directory, model reads each ## design-decision/<slug> heading as a design-decision."
 date: 2026-10-16
-status: proposed
+status: rejected
 source: "work/i3-requirement-ids/initiative.md; docs/capability-format.md (the decisions file)"
 ---
 
