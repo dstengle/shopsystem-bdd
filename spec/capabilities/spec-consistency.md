@@ -26,7 +26,7 @@ meaning. It reads nothing but `spec/` and `features/`, and it is not run by inte
 - [r7] **Where** fix mode is asked for, **when** a line has two readings, the session asks the person one question with its readings, and has the answer integrated through the question path of integrating-a-proposal.
 - [r8] **Where** fix mode is asked for, **when** a finding is drift other than a term or a line with two readings, the session asks the person which side is right, one finding at a time.
 - [r9] **Where** fix mode is asked for, **when** a step is done, the session runs `model check` and reports what it found before the next step.
-- [r10] **When** every finding is applied, rejected or deferred to the backlog, fix mode ends and `model check` reports no `v_t1`, `v_t2` or `v_t3` row.
+- [r10] **When** every finding is applied, rejected or recorded as an observation, fix mode ends and `model check` reports no `v_t1`, `v_t2` or `v_t3` row.
 - [r11] **Where** an integration or formulation round runs, it does not run the consistency check; the check runs when the person asks for it.
 
 ## Implementation, may change
@@ -36,4 +36,4 @@ meaning. It reads nothing but `spec/` and `features/`, and it is not run by inte
   Behaviour line and the glossary, with no scenarios.
 
 ## Not yet
-- The check runs in integration and formulation rounds — trigger: a measured batch shows drift the on-demand check would have caught.
+- The check runs in integration and formulation rounds — trigger: a measured initiative shows drift the on-demand check would have caught.

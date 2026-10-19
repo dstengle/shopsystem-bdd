@@ -1,0 +1,41 @@
+---
+id: work-item/missingmass.io/shopsystem/shopsystem-bdd/formulation-1
+kind: work-item
+part_of: capability-proposal/delivery-on-v3-formulation
+status: drafted
+wkind: enabling
+under: formulation
+check: "python3 -m pytest -q collects no test marked fixture; python3 -m pytest -m fixture tests/workflow/test_harness.py --fixture-runs 1 passes, scoring the seven cases moved from the scratch harness as score.py scored them"
+for: work-item/formulation-2
+blocked_by: [work-item/pytest-bdd-suite, work-item/final-layout-read]
+risk: none
+---
+
+# formulation-1
+
+## Observable
+The fixture harness is in the repository: a case can be built, run headless and scored by `python3 -m pytest -m
+fixture`, and the unit suite runs none of it.
+
+## Unknown
+Whether pytest-bdd's feature tag `@fixture` becomes a marker that `addopts = -m "not fixture"` deselects in this
+repository's configuration from i11, and how the run cache is keyed (the plugin's tree hash with the working tree's
+diff).
+
+## What the check covers
+Moved from `/home/vscode/scratch/shopsystem-bdd/ids/` (outside git): `make_ids.py` and the older `make_shelf.py` become
+`tests/workflow/fixtures/shelf.py` (one builder per case, the shelf repository written in the final layout:
+`.shop/work/`, `spec/decisions/`); `run.sh`'s prompts and `claude -p` call become `tests/workflow/harness.py`;
+`score.py`'s readers and checks become `tests/workflow/checks/` (one module per capability; `model_check`, `suite`,
+`scenarios`, the transcript readers shared); `tests/workflow/conftest.py` adds `--fixture-runs` (3),
+`--fixture-pass` (all), `--fixture-dir` (`~/.cache/shopsystem-bdd/fixture-runs/`), `--fixture-record <label>`,
+and the session-scoped run cache. `tests/workflow/test_harness.py` runs the seven existing cases (integrate, apply,
+formulate, noclingo, migrate, consistency-report, consistency-fix) through the moved checks. The slice-plan parts of
+the old fixtures (`plan add-slice`, `@slice-<n>` tags) are dropped.
+
+## Files, roughly
+New `tests/workflow/` (conftest.py, harness.py, fixtures/shelf.py, checks/*.py, test_harness.py); `pytest.ini`
+(marker, addopts); `.gitignore`.
+
+## Notes
+Needs this repository's scenarios bound as pytest-bdd step definitions and the `.shop/` layout, both from initiative i11; the coordinator links i11's work-item into `blocked_by`.

@@ -4,7 +4,6 @@ title: Analysis tools
 narrator: an agent researching or reviewing a project's code
 group: service
 rests_on: [design-decision/plugin-takes-the-dependencies-it-needs]
-formulated_as: features/analysis-tools.feature
 retired: []
 ---
 
@@ -20,17 +19,17 @@ file; it reports what the tools found and names a tool that is missing rather th
 - [r1] **When** `tools` needs an interpreter, it uses the first of these, in this order: the one `--python` gives, used as given; `.venv/bin/python` under the current directory, if that file exists; `venv/bin/python` under the current directory, if that file exists; `$VIRTUAL_ENV/bin/python`, if that file exists, wherever `$VIRTUAL_ENV` points; and else the interpreter running the script. Unless `--log` is given, `tools probe` prints that interpreter's path and whether it came from `--python`, from the project's virtualenv (`.venv`, `venv` or `$VIRTUAL_ENV` alike), or from neither.
 - [r2] **If** the project is not a Python project, `tools probe`, `tools install` and `tools check` say in one line that no analysis tools are known for its language and exit 1.
 - [r3] **When** `tools probe` is run, `tools` prints one line per tool, `<name> <version>` for an installed tool and `<name> missing: <what it is for>` for a missing one, then the interpreter, and exits 1 when any tool is missing.
-- [r4] **When** `tools probe --log` is run, `tools` prints the one `Probe: tools -> ...` line to give `plan log`.
+- [r4] **When** `tools probe --log` is run, `tools` prints one line, `Probe: tools -> ...`, giving each tool with its version or `missing`, for a researcher's notes.
 - [r5] **When** `tools install` is run, `tools` installs each missing tool into the interpreter with pip and edits no dependency file.
 - [r6] **If** the interpreter is not a virtualenv, `tools install` refuses to install into it and says so.
 - [r7] **If** a tool is still missing after `tools install`, `tools` prints the tool, what it is for, what the workflow does without it, and the command that failed with the end of its error, and exits 1.
-- [r8] **When** `tools map` is run, `tools` runs the suite once under coverage with a context per test, passing arguments after `--` to pytest, and keeps the map in `.superpowers/tools/coverage`.
+- [r8] **When** `tools map` is run, `tools` runs the suite once under coverage with a context per test, passing arguments after `--` to pytest, and keeps the map in `.shop/scratch/tools/coverage`.
 - [r9] **When** `tools tests-of <file>[:<function, Class.method or line range>]` is run, `tools` prints each test that executed it in the last map, one a line, and how many of the map's tests that is, with the commit the map was made at.
 - [r10] **Where** `--by-file` is given, `tools tests-of` prints a count for each test file instead of each test.
 - [r11] **If** no test in the map executed the target, or the file has no function by that name, `tools tests-of` exits 1.
 - [r12] **If** no map has been made, `tools tests-of` refuses and says to make one with `tools map`.
 - [r13] **When** `tools untested <file>...` is run, `tools` prints each function in the files that no test in the last map executed.
-- [r14] **When** `tools refs <name>` is run, `tools` prints every reference to that function, class or name defined in the project as `path:line`, including uses through an import or an alias, then one summary line with the number of references, the number of production files holding them and, as a separate number, the number of test files holding them, and where the name is defined.
+- [r14] **When** `tools refs <name>` is run, `tools` prints every reference to that function, class or name defined in the project as `path:line`, including uses through an import or an alias, then one summary line with the number of references, the number of production files that contain them and, as a separate number, the number of test files that contain them, and where the name is defined.
 - [r15] **If** nothing in the project is defined as `<name>`, `tools refs` exits 1.
 - [r16] **When** `tools check` is run, `tools` runs ruff and vulture over the paths given or the Python files changed since `--base` and, where the project has import contracts, import-linter over the project, each under its own heading, and exits 1 when any reports.
 - [r17] **If** a tool `tools check` would run is missing, `tools` names it as missing under its heading instead of skipping it.

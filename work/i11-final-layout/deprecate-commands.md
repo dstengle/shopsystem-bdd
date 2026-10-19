@@ -1,0 +1,24 @@
+---
+id: work-item/missingmass.io/shopsystem/shopsystem-bdd/deprecate-commands
+kind: work-item
+part_of: capability-proposal/final-layout-feature-file-tools
+status: drafted
+wkind: capability
+under: feature-file-tools
+accepts: [feature-file-tools#r19-r24, feature-file-tools#r35, feature-file-tools#r39, feature-file-tools#r40]
+blocked_by: [work-item/feature-file-tools-scenarios]
+fileset: [scripts/features, tests/scenarios/test_feature_file_tools.py, tests/scripts/test_features.py]
+---
+
+# features deprecate, features deprecated, retire on @deprecated
+
+Goes green: the deprecate, deprecated and retire scenarios.
+
+- `scripts/features`: `hold` becomes `deprecate` (same arguments: `<title> --for <new title> | --for-removal`,
+  `--file`), writing `@deprecated`, " (deprecated)" and `Deprecated for: <title|removal>`; `holding` becomes
+  `deprecated`, printing `<path>: <title> | for: <what> | <replacement path> @r<n>`, or the reason in that
+  last field (no scenario has that title; deprecated for removal; no `Deprecated for:` line; the replacement
+  has no `@r<n>` tag), and `none deprecated`; `retire` acts on `@deprecated` only. `hold` and `holding` are
+  removed, not kept as aliases. The contract text in `--help` follows.
+- `for: None` (observation/2026-10-16-release-0-19-0-defects) goes with it: r40 says so on the line.
+- Unit tests in `test_features.py` that call `hold`/`holding` are renamed with the commands.

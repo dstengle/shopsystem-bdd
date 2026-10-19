@@ -4,7 +4,6 @@ title: Batch measurement
 narrator: a session measuring a closed batch
 group: service
 rests_on: [design-decision/plugin-takes-the-dependencies-it-needs, design-decision/measure-refuses-unknown-shapes, design-decision/an-experiment-is-a-release]
-formulated_as: features/batch-measurement.feature
 retired: []
 ---
 
@@ -27,13 +26,13 @@ guesses when its inputs are not what it knows.
 - [r7] **If** the facts file exists and `--replace` is not given, `measure batch` refuses and leaves the file as it was.
 - [r8] **If** no dispatch is found inside the batch, `measure batch` refuses, naming the window it searched, and writes nothing.
 - [r9] A subagent transcript that starts inside the batch is counted as a dispatch, and one that starts outside it is not.
-- [r10] A request's usage is counted once in the facts, however many transcript rows carry it, and its reasoning tokens are a part of its output tokens: the facts report reasoning as "of which" the output figure and never add it to that figure.
+- [r10] A request's usage is counted once in the facts, however many transcript rows it appears in, and its reasoning tokens are a part of its output tokens: the facts report reasoning as "of which" the output figure and never add it to that figure.
 - [r11] The facts count a session's own requests inside the batch as the controller's when that session dispatched there.
 - [r12] The facts attribute a dispatch to a slice or batch work by its description, failing that by the task or slice its prompt names, and otherwise count it as unattributed.
 - [r13] The facts count a reviewer's findings as it wrote them: its lines beginning Critical or Important, and its stated count of Minor.
 - [r14] The facts give each commit to the implementer running when it was made, and count the files it touched as production, test or other.
 - [r15] The facts give each slice its Lands line from the archive file, or the living plan for the open batch, the numbers of production and test files it says it will land, beside the numbers of production, test and other files its dispatches touched.
-- [r16] The facts give the tasks the batch plan held when it was added and the tasks it held at the batch's end, the plan's hand-back entries and its suite record.
+- [r16] The facts give the tasks the batch plan had when it was added and the tasks it had at the batch's end, the plan's hand-back entries and its suite record.
 - [r17] The facts hold no prompt, reply or tool content.
 - [r18] **When** `measure show <file>` is run, `measure` prints the facts file as tables.
 - [r19] **When** `measure compare <a> <b>` is run, `measure` prints the two facts files side by side.

@@ -1,0 +1,28 @@
+---
+id: work-item/missingmass.io/shopsystem/shopsystem-bdd/work-queue-3
+kind: work-item
+part_of: capability-proposal/delivery-on-v3-work-queue
+status: drafted
+wkind: capability
+under: work-queue
+accepts: [work-queue#r13-r15]
+blocked_by: [work-item/work-queue-1]
+risk: none
+---
+
+# work-queue-3
+
+## Observable
+`work questions` lists every open question with its readings and the command that answers it; `work rule` records
+the person's answer and moves the item to planned when none is open.
+
+## Unknown
+none
+
+## What goes green
+work-queue#r13-r15. A question's form (number, text, readings, asked by, asked at) is the one `work run` writes
+from a result's `questions` (design-decision/worker-results-are-files); write it here once, under `## Questions` in
+the work-item, so supervision-1 only fills it.
+
+## Files, roughly
+`scripts/workqueue.py`, `scripts/work`, step definitions.
