@@ -85,3 +85,10 @@ by: the person
 date: 2026-10-19
 
 There are no intermediate states, only the final state, the plugin fully on design model v3, and the tools that migrate a repository to it. Nothing more is invested in the old system (slices, slice plans, lanes, the old rules) beyond those tools. The plugin moves to the model first; shopsystem-kb and shopsystem-knowledge move afterwards. Decision 0017 is retired; 0028 and 0032 are rejected.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-19-lines-not-ears
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+by: the person
+date: 2026-10-19
+
+The Behaviour lines are not in EARS syntax. Beyond the documented adaptations (no "shall", present indicative), lines combine responses with ";", run to two sentences, or describe a form with no system as subject. The person wants EARS syntax, with "shall", ahead of everything else, and the strict form taken back to the design model in shopsystem-knowledge after the migration release.
