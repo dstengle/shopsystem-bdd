@@ -12,7 +12,7 @@ retired: []
 
 ## Purpose
 Writes the acceptance-scenarios for approved Behaviour lines, one feature file per capability, from the
-narrator's side and without sight of the code. It is `formulating-features`, run in a `spec-round` that
+narrator's side and without sight of the code. It is `formulating-features`, run in a `initiative-round` that
 dispatches `feature-formulator`s. It decides nothing: a line with two readings comes back as a question.
 
 ## Behaviour
@@ -32,7 +32,7 @@ dispatches `feature-formulator`s. It decides nothing: a line with two readings c
 - [r14] **When** a scenario uses a word its context's glossary avoids, the scenario is reworded to its line through the small-change path, without a further gate.
 
 ## Implementation, may change
-- The session dispatches `spec-round` with the job `formulate`; the round dispatches one `feature-formulator`
+- The session dispatches `initiative-round` with the job `formulate`; the round dispatches one `feature-formulator`
   a capability with the brief in the skill, checks coverage one to one, runs each old scenario alone before
   replacing it, uses `features hold`, `features rebind` and `features bindings`, splices and commits.
 - A scenario's title usually restates its line's condition, though the `@r<n>` tag is what names the line; Then lines name a refusal's reason, never message text.

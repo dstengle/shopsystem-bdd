@@ -10,6 +10,7 @@ design-decision/work-file-forms. Check: `python3 scripts/model check`.
 | i10 | capability-change | proposed | 1 | Delivery on design model v3 |
 | i11 | capability-change | proposed | 2 | This repository on the final layout and conventions |
 | i8 | capability-change | proposed | 3 | Migrate a consuming repository to design model v3 |
+| i12 | capability-change | proposed | 4 | Batch measurement on design model v3 |
 | i1 | capability-change | started | — | The plugin's first spec |
 | i3 | capability-change | started | 1 | Requirement ids in the format the plugin teaches |
 | i9 | capability-change | started | 8 | A ubiquitous language for the bounded context |

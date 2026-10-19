@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/first-spec-feature-file-tools
 kind: capability-proposal
 part_of: initiative/i1
-status: drafted
+status: formulated
 date: 2026-10-15
 argues: [feature-file-tools]
 adds: [feature-file-tools#r1-r50]

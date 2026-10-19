@@ -13,20 +13,20 @@ Format: `docs/capability-format.md` in this plugin, which the `capability-writer
 
 ## Who Does What
 
-The session the person talks to keeps the gate and hands everything else to `shopsystem-bdd:spec-round`, a fresh one for each round. A round done in that session costs every later turn a re-reading of it: in one measured batch the session that integrated and formulated a note read 30M tokens from cache, eleven times what all its writers and formulators read.
+The session the person talks to keeps the gate and hands everything else to `shopsystem-bdd:initiative-round`, a fresh one for each round. A round done in that session costs every later turn a re-reading of it: in one measured batch the session that integrated and formulated a note read 30M tokens from cache, eleven times what all its writers and formulators read.
 
 **If the person is talking to you:**
 
-1. Choose the drafts path. Dispatch `spec-round` with the job `integrate`, the note's path, the drafts path, round 1 and `Scripts:`. Describe the dispatch `spec <note's name>: integrate round 1`. It carries out steps 1 and 2 below and replies with the gate's text.
-2. Step 3, the gate, is yours: show the person that text as it came, and wait. Their answers go to a new `spec-round`, job `integrate`, round 2, in their own words.
-3. On their yes, dispatch `spec-round` with the job `apply`, the rounds, and the approval in their words with its date. It carries out step 4.
+1. Choose the drafts path. Dispatch `initiative-round` with the job `integrate`, the note's path, the drafts path, round 1 and `Scripts:`. Describe the dispatch `spec <note's name>: integrate round 1`. It carries out steps 1 and 2 below and replies with the gate's text.
+2. Step 3, the gate, is yours: show the person that text as it came, and wait. Their answers go to a new `initiative-round`, job `integrate`, round 2, in their own words.
+3. On their yes, dispatch `initiative-round` with the job `apply`, the rounds, and the approval in their words with its date. It carries out step 4.
 4. Step 5: invoke formulating-features.
 
 You do not dispatch the `capability-writer`, open a draft, check a change list or apply a draft yourself. If the gate's text is not enough to show the person, ask the round for what is missing; do not go and read it.
 
 When this session is the one that brainstormed the note, say so before step 1: a new session that is given the note's path integrates it without re-reading the brainstorm at every turn. Carry on here if the person prefers.
 
-**If you are `spec-round`:** steps 1, 2 and 4 below are yours, as your dispatch's job says. Step 3 is never yours.
+**If you are `initiative-round`:** steps 1, 2 and 4 below are yours, as your dispatch's job says. Step 3 is never yours.
 
 The small-change path below has no round: the session writes its two lines itself.
 

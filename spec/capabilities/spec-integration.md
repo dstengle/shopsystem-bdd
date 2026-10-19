@@ -13,7 +13,7 @@ retired: []
 ## Purpose
 Merges an approved brainstorming note, or a question's answer, into the bounded context's one spec,
 and stops at the one human gate: the Behaviour lines. It is `integrating-a-proposal`, run by the session
-the person talks to, with each round handed to a fresh `spec-round` that dispatches the
+the person talks to, with each round handed to a fresh `initiative-round` that dispatches the
 `capability-writer`. It is not formulation and not planning; it writes nothing a client can run.
 
 ## Behaviour
@@ -38,7 +38,7 @@ the person talks to, with each round handed to a fresh `spec-round` that dispatc
 - [r19] **Where** a repository has no `work/`, **when** a glossary change is drafted, the session shows it to the person like a Behaviour line and writes nothing to `spec/` before the person says yes.
 
 ## Implementation, may change
-- The session dispatches `spec-round` with the job `integrate` or `apply`, the note's path, a drafts path
+- The session dispatches `initiative-round` with the job `integrate` or `apply`, the note's path, a drafts path
   `.superpowers/spec-drafts/<date>-<note>/` and the round number; the round dispatches `capability-writer`,
   which writes only under `<drafts>/round-<n>/` and replies with the change list, questions, cut sentences
   and paths, last of all to a reply file.

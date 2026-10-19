@@ -16,5 +16,7 @@ the person's direction of 2026-10-19 (observation/2026-10-19-final-state-only).
 Covers:
 - removing slicing, slice plans, lanes and steps, with the skills, agents and `scripts/plan` that hold them;
 - red-green, review and code-research in work-item terms;
-- batch-measurement measuring work-items, with "facts file" renamed "measurement file" (the person agreed);
 - no superpowers dependency (superseding design-decision/superpowers-dependency).
+- `model check` accepting one requirement form, `capability/<name>#r<n>` (design-decision/one-requirement-form).
+
+Batch measurement on v3 is i12, the release after this one (the person, 2026-10-19).
