@@ -25,7 +25,7 @@ contract:
     the command that failed with the end of its error. Exit 1 when any is
     still missing.
   - map runs the suite once under coverage with a context per test and keeps
-    the data in .superpowers/tools/coverage. It is its own command, never
+    the data in .shop/scratch/tools/coverage. It is its own command, never
     part of the fast suite; arguments after -- go to pytest. Every tests-of
     and untested answer is as old as the last map, and says the commit it was
     made at.
@@ -66,7 +66,7 @@ TOOLS = (
      "reviewers read the imports against CLAUDE.md"),
     ("hypothesis", "hypothesis", "the project's invariants as property tests", "invariants are probed by hand in review"),
 )
-MAP = os.path.join(".superpowers", "tools", "coverage")
+MAP = os.path.join(".shop", "scratch", "tools", "coverage")
 VERSIONS = ("import json, sys\nfrom importlib import metadata\nout = {}\n"
             "for name in sys.argv[1:]:\n    try:\n        out[name] = metadata.version(name)\n"
             "    except metadata.PackageNotFoundError:\n        out[name] = None\n"
