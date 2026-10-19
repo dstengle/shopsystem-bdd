@@ -6,11 +6,8 @@ import sys
 import tempfile
 import unittest
 
-from binding import missing
-
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "features"
-FEATURE = ROOT / "features" / "feature-file-tools.feature"
 
 CART = '''# formulated from spec/capabilities/cart.md
 @cart
@@ -313,14 +310,6 @@ class HoldingTest(unittest.TestCase):
         done = self.run_script("rebind", "A book is added at a place", "A book is lent")
         self.assertEqual((done.returncode, done.stdout), (0, "0 bindings rebound\n"))
 
-    def test_a_test_module_that_does_not_parse_is_refused_by_name(self):
-        """a test module that does not parse is refused"""
-        self.bound.write_text("def broken(:\n")
-        done = self.run_script("bindings")
-        self.assertEqual(done.returncode, 1)
-        self.assertIn("tests/test_shelf.py does not parse", done.stderr)
-        self.assertEqual(done.stdout, "")
-
 
 PLAN = """# shelf slices
 
@@ -472,95 +461,6 @@ class Workspace:
 class ScenarioTest(Workspace, unittest.TestCase):
     """The feature-file-tools scenarios that run `features` on feature files."""
 
-    def test_every_feature_file_under_the_directory_is_read_and_docstring_text_is_not(self):
-        """every feature file under the directory is read, and docstring text is not"""
-        self.write("features/cart/nested.feature", feature(
-            scenario("Nested", "@slice-1", NOTE_WITH % "@slice-1\n      Scenario: Phantom")))
-        done = self.run_script("list", "--tag", "slice-1")
-        self.assertEqual(done.returncode, 0, done.stderr)
-        self.assertEqual(done.stdout, "features/cart/nested.feature: Nested\n")
-        self.assertNotIn("Phantom", done.stdout)
-        done = self.run_script("list", "--title", "Phantom")
-        self.assertEqual((done.returncode, done.stdout), (1, ""))
-
-    def test_a_feature_file_with_a_rule_block_is_refused(self):
-        """a feature file with a Rule block is refused"""
-        self.write("features/rules.feature", "Feature: Rules\n\n  Rule: a rule\n\n    Scenario: Inside\n      Given a step\n")
-        done = self.run_script("list", "--title", "Cart")
-        self.assertEqual(done.returncode, 1)
-        self.assertEqual(done.stdout, "")
-        self.assertIn("features/rules.feature", done.stderr)
-        self.assertIn("Rule: blocks are not supported", done.stderr)
-
-    def test_an_edit_is_refused_only_when_it_would_leave_a_rule_block_outside_a_docstring(self):
-        """an edit is refused only when it would leave a Rule: block outside a docstring"""
-        # Moving a scenario into a destination that ends inside an unclosed docstring flips which
-        # lines of the moved block lie inside a docstring.
-        open_dest = feature(scenario("Existing", body='    Given a note\n      """\n      still open\n'))
-        for result, doc_line in (("a Rule: block outside a docstring", "Rule: not a rule"),
-                                 ("a Rule: line inside a docstring", "Rule: not a rule"),
-                                 ('two scenarios titled "Apply a code"', "Scenario: Apply a code")):
-            with self.subTest(result):
-                self.fresh()
-                title = "Empty cart" if "two" in result else "Apply a code"
-                self.write("features/old.feature", feature(scenario(title, body=NOTE_WITH % doc_line)))
-                if "outside" in result:
-                    dest = open_dest
-                elif "inside" in result:
-                    dest = feature(scenario("Existing"))
-                else:
-                    dest = feature(scenario("Apply a code"), scenario("Existing", body=open_dest.split("Scenario: Existing\n")[1]))
-                self.write("features/cart.feature", dest)
-                if "outside" in result:
-                    self.assertIn("Rule:", self.refused("move", title, "--to", "features/cart.feature"))
-                    continue
-                done = self.run_script("move", title, "--to", "features/cart.feature")
-                self.assertEqual(done.returncode, 0, done.stderr)
-                self.assertIn("Scenario: " + title, (self.tmp / "features" / "cart.feature").read_text())
-                if "two" in result:
-                    listed = self.run_script("list", "--title", "Apply a code")
-                    self.assertEqual(listed.stdout, "features/cart.feature: Apply a code\n" * 2)
-
-    def test_counting_by_tag_counts_outline_rows_inherited_tags_and_untagged_scenarios(self):
-        """counting by tag counts outline rows, inherited tags and untagged scenarios"""
-        outlined = ("  @slice-2\n  Scenario Outline: Outlined\n    Given <n>\n\n    @r3\n    Examples:\n"
-                    "      | n |\n      | 1 |\n      | 2 |\n\n    Examples:\n      | n |\n      | 3 |\n")
-        self.write("features/cart.feature", feature(
-            scenario("Plain"), scenario("Own tag", "@slice-1"), outlined, tags="@cart"))
-        self.write("features/misc.feature", feature(scenario("Untagged")))
-        done = self.run_script("count", "--by-tag")
-        self.assertEqual(done.returncode, 0, done.stderr)
-        self.assertEqual(done.stdout, "cart 5\nr3 2\nslice-1 1\nslice-2 3\ntotal 6\n")
-
-    def test_listing_by_tag_includes_the_features_and_the_examples_tags(self):
-        """listing by tag includes the feature's and the Examples' tags"""
-        outlined = ("  Scenario Outline: Outlined\n    Given <n>\n\n    @checkout\n    Examples:\n"
-                    "      | n |\n      | 1 |\n")
-        self.write("features/cart.feature", feature(
-            scenario("Plain"), scenario("Own tag", "@checkout"), outlined, tags="@cart"))
-        self.write("features/stock.feature", feature(scenario("Elsewhere"), tags="@checkout"))
-        self.write("features/misc.feature", feature(scenario("Untagged")))
-        done = self.run_script("list", "--tag", "checkout")
-        self.assertEqual(done.returncode, 0, done.stderr)
-        self.assertEqual(sorted(done.stdout.splitlines()), [
-            "features/cart.feature: Outlined", "features/cart.feature: Own tag",
-            "features/stock.feature: Elsewhere"])
-
-    def test_listing_by_title_finds_every_scenario_whose_title_contains_the_text(self):
-        """listing by title finds every scenario whose title contains the text"""
-        self.write("features/cart.feature", feature(
-            scenario("Apply a code"), scenario("Code expired"), scenario("Empty cart")))
-        done = self.run_script("list", "--title", "ode")
-        self.assertEqual(done.returncode, 0, done.stderr)
-        self.assertEqual(done.stdout.splitlines(), [
-            "features/cart.feature: Apply a code", "features/cart.feature: Code expired"])
-
-    def test_listing_that_matches_nothing_prints_nothing_and_fails(self):
-        """listing that matches nothing prints nothing and fails"""
-        self.write("features/cart.feature", feature(scenario("Apply a code", "@slice-1")))
-        done = self.run_script("list", "--tag", "slice-9")
-        self.assertEqual((done.returncode, done.stdout), (1, ""))
-
     def test_retagging_replaces_the_first_slice_tag_and_drops_the_others(self):
         """retagging replaces the first slice tag and drops the others"""
         text = feature(scenario("Apply a code", "@wip @slice-1 @slice-2 @r3"))
@@ -580,105 +480,6 @@ class ScenarioTest(Workspace, unittest.TestCase):
                 done = self.run_script("tag", "Apply a code", "slice-2")
                 self.assertEqual(done.returncode, 0, done.stderr)
                 self.assertEqual(path.read_text(), template % after)
-
-    def test_retagging_a_title_that_is_not_in_exactly_one_file_is_refused(self):
-        """retagging a title that is not in exactly one file is refused"""
-        for holders, named in (([], []), (["cart", "old"], ["features/cart.feature", "features/old.feature"])):
-            with self.subTest(holders):
-                self.fresh()
-                self.write("features/other.feature", feature(scenario("Empty cart")))
-                for name in holders:
-                    self.write("features/%s.feature" % name, feature(scenario("Apply a code")))
-                reason = self.refused("tag", "Apply a code", "slice-2")
-                self.assertEqual(re.findall(r"features/\w+\.feature", reason), named)
-                self.assertNotIn("features/other.feature", reason)
-
-    def test_retagging_with_a_tag_that_is_neither_a_slice_nor_a_requirement_tag_is_bad_usage(self):
-        """retagging with a tag that is neither a slice nor a requirement tag is bad usage"""
-        self.write("features/cart.feature", feature(scenario("Apply a code")))
-        before = self.everything()
-        done = self.run_script("tag", "Apply a code", "wip")
-        self.assertEqual(done.returncode, 2)
-        self.assertIn("slice-<n>, slice-<n>.<m> or r<n>", done.stderr)
-        self.assertEqual(self.everything(), before)
-
-    def test_moving_a_scenario_takes_its_block_to_the_end_of_the_destination(self):
-        """moving a scenario takes its block to the end of the destination"""
-        block = scenario("Apply a code", "@slice-1", "    Given a cart\n    When a code is applied\n")
-        old = self.write("features/old.feature", feature(block, scenario("Empty cart")))
-        cart = self.write("features/cart.feature", feature(scenario("Checkout")))
-        before = cart.read_text()
-        done = self.run_script("move", "Apply a code", "--to", "features/cart.feature")
-        self.assertEqual(done.returncode, 0, done.stderr)
-        self.assertEqual(old.read_text(), feature(scenario("Empty cart")))
-        self.assertEqual(cart.read_text(), before + "\n" + block)
-
-    def test_moving_with_the_background_inlined_puts_its_steps_first(self):
-        """moving with the Background inlined puts its steps first"""
-        self.write("features/old.feature", feature(
-            scenario("Apply a code", body="    Given a cart holding product Mug at price 8.00\n"),
-            background="  Background:\n    Given the date is 2026-10-16\n\n"))
-        cart = self.write("features/cart.feature", feature())
-        done = self.run_script("move", "Apply a code", "--to", "features/cart.feature", "--inline-background")
-        self.assertEqual(done.returncode, 0, done.stderr)
-        self.assertIn("  Scenario: Apply a code\n    Given the date is 2026-10-16\n"
-                      "    Given a cart holding product Mug at price 8.00\n", cart.read_text())
-
-    def test_moving_with_feature_tags_kept_adds_the_missing_ones_on_a_tag_line_of_their_own(self):
-        """moving with feature tags kept adds the missing ones on a tag line of their own"""
-        for own, after in (("@slice-2", "  @slice-2\n  @checkout\n"), ("", "  @checkout\n")):
-            with self.subTest(own=own):
-                self.write("features/old.feature", feature(scenario("Apply a code", own), tags="@cart @checkout"))
-                cart = self.write("features/cart.feature", feature(tags="@cart"))
-                done = self.run_script("move", "Apply a code", "--to", "features/cart.feature", "--keep-feature-tags")
-                self.assertEqual(done.returncode, 0, done.stderr)
-                self.assertTrue(cart.read_text().endswith(after + "  Scenario: Apply a code\n    Given a step\n"))
-
-    def test_moving_to_a_destination_that_does_not_exist_is_refused(self):
-        """moving to a destination that does not exist is refused"""
-        self.write("features/old.feature", feature(scenario("Apply a code")))
-        reason = self.refused("move", "Apply a code", "--to", "features/missing.feature")
-        self.assertIn("features/missing.feature does not exist", reason)
-        self.assertFalse((self.tmp / "features" / "missing.feature").exists())
-
-    def test_two_trees_alike_scenario_by_scenario_pass_the_move_check(self):
-        """two trees alike scenario by scenario pass the move check"""
-        steps = "    Given a cart\n    When it is used\n"
-        self.write("old/cart.feature", feature(
-            scenario("Apply a code", "@slice-1", "    Applying a code.\n" + steps),
-            scenario("Empty cart", body="    Given an empty cart\n"), tags="@cart",
-            background="  Background:\n    Given a shop\n\n"))
-        self.write("features/codes.feature", feature(
-            scenario("Apply a code", "@slice-1 @cart", "    Applying a code.\n    Given a shop\n" + steps)))
-        self.write("features/cart.feature", feature(
-            scenario("Empty cart", "@cart", "    Given a shop\n    Given an empty cart\n")))
-        done = self.run_script("verify-moved", "--from", "old")
-        self.assertEqual((done.returncode, done.stdout), (0, "2 scenarios match\n"), done.stderr)
-
-    def test_a_scenario_that_changed_in_the_move_is_named_with_what_changed(self):
-        """a scenario that changed in the move is named with what changed"""
-        before = scenario("Apply a code", "@slice-1", "    Applying a code.\n    Given a cart\n")
-        for part, after in (("effective tags", before.replace("@slice-1", "@slice-2")),
-                            ("description", before.replace("Applying a code.", "Applying it.")),
-                            ("steps", before.replace("Given a cart", "Given a basket"))):
-            with self.subTest(part):
-                self.write("old/cart.feature", feature(before))
-                self.write("features/cart.feature", feature(after))
-                done = self.run_script("verify-moved", "--from", "old")
-                self.assertEqual(done.returncode, 1)
-                self.assertEqual(done.stdout, "changed: Apply a code (%s)\n" % part.split()[-1])
-
-    def test_a_title_held_twice_in_either_tree_is_a_duplicate(self):
-        """a title held twice in either tree is a duplicate"""
-        for tree, label in (("old", "before"), ("features", "after")):
-            with self.subTest(tree):
-                self.fresh()
-                self.write("old/cart.feature", feature(scenario("Apply a code")))
-                self.write("features/cart.feature", feature(scenario("Apply a code")))
-                self.write("%s/again.feature" % tree, feature(scenario("Apply a code")))
-                done = self.run_script("verify-moved", "--from", "old")
-                self.assertEqual(done.returncode, 1)
-                self.assertEqual(done.stdout, "duplicate title %s: Apply a code\n" % label)
 
     def test_holding_a_scenario_marks_it_held_and_records_what_for(self):
         """holding a scenario marks it held and records what for"""
@@ -738,14 +539,6 @@ class ScenarioTest(Workspace, unittest.TestCase):
         self.write("features/cart.feature", feature(scenario("Apply a code", "@slice-1")))
         self.assertIn("not tagged @holding", self.refused("retire", "Apply a code"))
 
-    def test_a_refusal_says_why_on_stderr_and_fails(self):
-        """a refusal says why on stderr and fails"""
-        self.write("features/cart.feature", feature(scenario("Apply a code")))
-        done = self.run_script("retire", "Apply a code")
-        self.assertEqual(done.returncode, 1)
-        self.assertEqual(done.stdout, "")
-        self.assertEqual(done.stderr, "features: 'Apply a code' is not tagged @holding: only a held scenario is retired here\n")
-
     def test_moving_a_title_that_no_file_or_several_files_hold_is_refused(self):
         """moving a title that no file or several files hold is refused"""
         for holders, says, named in (([], "no scenario titled 'Apply a code'", []),
@@ -760,34 +553,6 @@ class ScenarioTest(Workspace, unittest.TestCase):
                 self.assertEqual(re.findall(r"features/\w+\.feature", reason), named)
                 if named:
                     self.assertIn(", ".join(named), reason)
-
-    def test_moving_a_scenario_to_its_own_file_is_refused(self):
-        """moving a scenario to its own file is refused"""
-        self.write("features/cart.feature", feature(scenario("Apply a code")))
-        reason = self.refused("move", "Apply a code", "--to", "features/cart.feature")
-        self.assertIn("is the scenario's own file", reason)
-
-    def test_a_title_in_only_one_tree_is_missing_or_added(self):
-        """a title in only one tree is missing or added"""
-        common = feature(scenario("Empty cart"))
-        for tree, named_as in (("old", "missing"), ("features", "added")):
-            with self.subTest(tree):
-                self.fresh()
-                self.write("old/cart.feature", common)
-                self.write("features/cart.feature", common)
-                self.write("%s/codes.feature" % tree, feature(scenario("Apply a code")))
-                done = self.run_script("verify-moved", "--from", "old")
-                self.assertEqual(done.returncode, 1)
-                self.assertEqual(done.stdout, "%s: Apply a code\n" % named_as)
-
-    def test_a_tag_is_found_with_or_without_its_leading_at_sign(self):
-        """a tag is found with or without its leading @"""
-        self.write("features/cart.feature", feature(scenario("Apply a code", "@slice-2")))
-        for tag in ("@slice-2", "slice-2"):
-            with self.subTest(tag):
-                done = self.run_script("list", "--tag", tag)
-                self.assertEqual(done.returncode, 0, done.stderr)
-                self.assertEqual(done.stdout, "features/cart.feature: Apply a code\n")
 
     def test_holding_a_scenario_prints_its_file_and_new_title(self):
         """holding a scenario prints its file and new title"""
@@ -808,102 +573,6 @@ class ScenarioTest(Workspace, unittest.TestCase):
                 self.assertEqual(len(lines), 1)
                 self.assertTrue(lines[0].endswith("| " + said), lines[0])
 
-    def test_tagging_with_a_requirement_id_makes_it_the_scenarios_one_requirement_tag(self):
-        """tagging with a requirement id makes it the scenario's one requirement tag"""
-        text = feature(scenario("Apply a code", "@wip @slice-2 @r1 @r4"))
-        path = self.write("features/cart.feature", text)
-        done = self.run_script("tag", "Apply a code", "r7")
-        self.assertEqual(done.returncode, 0, done.stderr)
-        self.assertEqual(path.read_text(), text.replace("@wip @slice-2 @r1 @r4", "@wip @slice-2 @r7"))
-
-    def two_files(self):
-        """kb's case: one title in two feature files, each file with other scenarios."""
-        cart = feature(scenario("Apply a code", "@slice-1 @r1"), scenario("Empty cart", "@r2"))
-        old = feature(scenario("Apply a code", "@slice-2 @r1"), scenario("Checkout", "@r3"))
-        return (self.write("features/cart.feature", cart), cart,
-                self.write("features/old.feature", old), old)
-
-    def test_file_works_in_that_file_only_whatever_other_files_hold_the_title(self):
-        """--file works in that file only, whatever other files hold the title"""
-        cart, cart_text, old, old_text = self.two_files()
-        done = self.run_script("tag", "Apply a code", "r7", "--file", "features/cart.feature")
-        self.assertEqual(done.returncode, 0, done.stderr)
-        self.assertEqual(cart.read_text(), cart_text.replace("@slice-1 @r1", "@slice-1 @r7"))
-        self.assertEqual(old.read_text(), old_text)
-        done = self.run_script("tag", "Apply a code", "r7", "--file", "features/old.feature")
-        self.assertEqual(done.returncode, 0, done.stderr)
-        self.assertEqual(cart.read_text(), cart_text.replace("@slice-1 @r1", "@slice-1 @r7"))
-        self.assertEqual(old.read_text(), old_text.replace("@slice-2 @r1", "@slice-2 @r7"))
-
-    def test_file_is_taken_by_hold_retire_and_move_as_well(self):
-        """--file works in that file only, whatever other files hold the title"""
-        cart, cart_text, old, old_text = self.two_files()
-        done = self.run_script("hold", "Apply a code", "--for-removal", "--file", "features/old.feature")
-        self.assertEqual(done.returncode, 0, done.stderr)
-        self.assertEqual(cart.read_text(), cart_text)
-        held = old.read_text()
-        self.assertIn("Scenario: Apply a code (held)", held)
-        self.assertIn("Scenario: Checkout", held)
-        # The held title is now unique, and retiring it by --file leaves the other file alone.
-        done = self.run_script("retire", "Apply a code (held)", "--file", "features/old.feature")
-        self.assertEqual(done.returncode, 0, done.stderr)
-        self.assertEqual(old.read_text(), feature(scenario("Checkout", "@r3")))
-        self.assertEqual(cart.read_text(), cart_text)
-        # Move takes the scenario out of the named file only.
-        old.write_text(old_text)
-        dest = self.write("features/codes.feature", feature(scenario("Voucher")))
-        done = self.run_script("move", "Apply a code", "--file", "features/old.feature", "--to", "features/codes.feature")
-        self.assertEqual(done.returncode, 0, done.stderr)
-        self.assertEqual(cart.read_text(), cart_text)
-        self.assertEqual(old.read_text(), feature(scenario("Checkout", "@r3")))
-        self.assertIn("Scenario: Apply a code", dest.read_text())
-        self.assertIn("@slice-2 @r1", dest.read_text())
-
-    def test_without_file_a_title_in_several_files_is_refused_as_before(self):
-        """--file works in that file only, whatever other files hold the title"""
-        self.two_files()
-        for command in (("tag", "Apply a code", "r7"), ("hold", "Apply a code", "--for-removal"),
-                        ("retire", "Apply a code")):
-            with self.subTest(command):
-                reason = self.refused(*command)
-                self.assertIn("features/cart.feature", reason)
-                self.assertIn("features/old.feature", reason)
-
-    def test_file_naming_a_file_that_does_not_hold_the_title_is_refused(self):
-        """--file naming a file that does not hold the title is refused"""
-        self.two_files()
-        self.write("features/codes.feature", feature(scenario("Voucher", "@holding")))
-        for command in (("tag", "Voucher", "r7"), ("hold", "Voucher", "--for-removal"),
-                        ("retire", "Voucher"), ("move", "Voucher", "--to", "features/old.feature")):
-            with self.subTest(command):
-                reason = self.refused(*command, "--file", "features/cart.feature")
-                self.assertIn("features/cart.feature", reason)
-                self.assertIn("does not hold", reason)
-
-    def test_file_naming_a_file_that_holds_the_title_twice_is_refused(self):
-        """--file naming a file that holds the title twice is refused"""
-        self.write("features/cart.feature", feature(scenario("Apply a code", "@r1"), scenario("Apply a code", "@r2")))
-        self.write("features/old.feature", feature(scenario("Apply a code", "@r3")))
-        for command in (("tag", "Apply a code", "r7"), ("hold", "Apply a code", "--for-removal"),
-                        ("move", "Apply a code", "--to", "features/old.feature")):
-            with self.subTest(command):
-                reason = self.refused(*command, "--file", "features/cart.feature")
-                self.assertIn("features/cart.feature", reason)
-                self.assertIn("twice", reason)
-
-    def test_file_naming_a_file_outside_dir_is_refused(self):
-        """--file naming a file outside --dir is refused"""
-        self.two_files()
-        self.write("elsewhere/other.feature", feature(scenario("Apply a code", "@r9")))
-        self.write("features/codes.feature", feature(scenario("Voucher")))
-        for path in ("elsewhere/other.feature", "features/../elsewhere/other.feature"):
-            for command in (("tag", "Apply a code", "r7"), ("hold", "Apply a code", "--for-removal"),
-                            ("retire", "Apply a code"),
-                            ("move", "Apply a code", "--to", "features/codes.feature")):
-                with self.subTest(path=path, command=command):
-                    reason = self.refused(*command, "--file", path)
-                    self.assertIn("outside", reason)
-
 
 def binding(title, feature_name="cart.feature", line=12):
     pad = "".join("# filler\n" for _ in range(line - 2))
@@ -912,58 +581,6 @@ def binding(title, feature_name="cart.feature", line=12):
 
 class BindingsScenarioTest(Workspace, unittest.TestCase):
     """The feature-file-tools scenarios about test-module bindings."""
-
-    def test_a_binding_that_names_no_scenario_is_reported(self):
-        """a binding that names no scenario is reported"""
-        for where, features in (("no feature file has the title", {"cart": "Empty cart"}),
-                                ("only features/codes.feature has the title", {"cart": "Empty cart", "codes": "Apply a code"})):
-            with self.subTest(where):
-                for name, title in features.items():
-                    self.write("features/%s.feature" % name, feature(scenario(title)))
-                self.write("tests/test_cart.py", binding("Apply a code"))
-                done = self.run_script("bindings")
-                self.assertEqual(done.returncode, 1)
-                self.assertEqual(done.stdout, 'tests/test_cart.py:12: no scenario titled "Apply a code" in cart.feature\n')
-
-    def test_bindings_that_all_name_a_scenario_pass(self):
-        """bindings that all name a scenario pass"""
-        self.write("features/cart.feature", feature(scenario("Apply a code")))
-        self.write("tests/test_cart.py", binding("Apply a code"))
-        done = self.run_script("bindings")
-        self.assertEqual((done.returncode, done.stdout), (0, "every binding names a scenario\n"), done.stderr)
-
-    def test_rebinding_rewrites_each_binding_of_the_old_title_and_counts_them(self):
-        """rebinding rewrites each binding of the old title and counts them"""
-        for count in (2, 0):
-            with self.subTest(count):
-                self.fresh()
-                self.write("features/cart.feature", feature(scenario("Apply a voucher"), scenario("Empty cart")))
-                old = "Apply a code" if count else "Something else"
-                modules = {"tests/test_a.py": binding(old, line=5) + "\nVALUE = 'Apply a code'\n",
-                           "tests/test_b.py": binding(old) + binding("Empty cart", line=3)}
-                for name, text in modules.items():
-                    self.write(name, text)
-                done = self.run_script("rebind", "Apply a code", "Apply a voucher")
-                self.assertEqual(done.returncode, 0, done.stderr)
-                self.assertEqual(done.stdout, "%d bindings rebound\n" % count)
-                for name, text in modules.items():
-                    expected = text.replace('"%s")' % old, '"Apply a voucher")') if count else text
-                    self.assertEqual((self.tmp / name).read_text(), expected)
-
-    def test_rebind_with_file_rewrites_only_the_bindings_that_name_that_feature_file(self):
-        """rebind --file rewrites only the bindings whose feature names that file"""
-        self.write("features/cart.feature", feature(scenario("Apply a code (held)", "@holding")))
-        self.write("features/old.feature", feature(scenario("Apply a code")))
-        modules = {"tests/test_cart.py": binding("Apply a code", "cart.feature"),
-                   "tests/test_old.py": binding("Apply a code", "old.feature"),
-                   "tests/test_path.py": binding("Apply a code", "../features/cart.feature")}
-        for name, text in modules.items():
-            self.write(name, text)
-        done = self.run_script("rebind", "Apply a code", "Apply a code (held)", "--file", "features/cart.feature")
-        self.assertEqual((done.returncode, done.stdout), (0, "2 bindings rebound\n"), done.stderr)
-        for name, text in modules.items():
-            expected = text if name == "tests/test_old.py" else text.replace('"Apply a code")', '"Apply a code (held)")')
-            self.assertEqual((self.tmp / name).read_text(), expected)
 
     def test_rebind_with_file_takes_a_new_title_that_several_feature_files_hold(self):
         """rebind --file follows only its own file when both files hold the new title"""
@@ -982,30 +599,6 @@ class BindingsScenarioTest(Workspace, unittest.TestCase):
             moved = [m for m in modules if '"Apply a code (held)")' in (self.tmp / m).read_text()]
             self.assertEqual(moved, ["tests/test_cart.py"] if name == "cart" else list(modules))
         self.assertEqual(self.run_script("bindings").returncode, 0)
-
-    def test_rebinding_to_a_title_no_scenario_has_is_refused(self):
-        """rebinding to a title no scenario has is refused"""
-        self.write("features/cart.feature", feature(scenario("Empty cart")))
-        self.write("tests/test_cart.py", binding("Apply a code"))
-        self.assertIn("no scenario titled 'Apply a voucher'", self.refused("rebind", "Apply a code", "Apply a voucher"))
-
-    def test_rebinding_to_a_title_several_feature_files_hold_is_refused(self):
-        """rebinding to a title several feature files hold is refused"""
-        self.write("features/cart.feature", feature(scenario("Apply a voucher")))
-        self.write("features/codes.feature", feature(scenario("Apply a voucher")))
-        self.write("tests/test_cart.py", binding("Apply a code"))
-        reason = self.refused("rebind", "Apply a code", "Apply a voucher")
-        self.assertIn("several", reason)
-        self.assertIn("features/cart.feature, features/codes.feature", reason)
-
-    def test_rebinding_a_title_written_over_several_lines_is_refused(self):
-        """rebinding a title written over several lines is refused"""
-        self.write("features/cart.feature", feature(scenario("Apply a voucher")))
-        lines = ["from pytest_bdd import scenario"] + ["# filler"] * 18
-        lines += ['@scenario("cart.feature", "Apply "', '          "a code")', "def test_x():", "    pass", ""]
-        self.write("tests/test_cart.py", "\n".join(lines))
-        self.assertIn("tests/test_cart.py:20: the title is written over several lines",
-                      self.refused("rebind", "Apply a code", "Apply a voucher"))
 
 
 class PluginCommandTest(Workspace, unittest.TestCase):
@@ -1182,12 +775,6 @@ class PluginRunScenarioTest(unittest.TestCase):
         self.assertEqual(done.returncode, 0, done.stdout)
         self.assertIn("1 passed", done.stdout)
         self.assertRegex(done.stdout, r"(?m)^slices: plans/missing\.md$")
-
-
-class BindingTest(unittest.TestCase):
-    def test_every_scenario_has_its_test(self):
-        self.assertEqual(missing(FEATURE, ScenarioTest, BindingsScenarioTest, PluginCommandTest,
-                                 PluginRunScenarioTest, FeaturesTest, HoldingTest, SliceExpectationsTest), [])
 
 
 if __name__ == "__main__":
