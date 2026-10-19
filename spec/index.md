@@ -6,8 +6,8 @@ title: shopsystem-bdd
 # shopsystem-bdd
 
 **State.** Plugin 0.20.0. Every approved Behaviour line describes what the plugin does; requirements carry
-ids from the start (design model v3). Drafted and not yet approved, all awaiting the gate: i1's thirteen
-proposals, i2's, i3's five, and i9's (the ubiquitous language), and the script capabilities' lines reworded to the code during formulation
+ids from the start (design model v3). Drafted and not yet approved, all awaiting the gate: i1's ten open
+proposals (three withdrawn 2026-10-19 with the slicing, slice-plan-tool and batch-analysis capabilities), i2's, i3's five, and i9's (the ubiquitous language), and the script capabilities' lines reworded to the code during formulation
 (listed for the gate in the release's test log). What is approved and unbuilt lives under `Not yet`.
 Check with `python3 scripts/model check`; the decisions index is `python3 scripts/model decisions`.
 
@@ -44,7 +44,6 @@ The build side, dispatched:
 
 | capability | narrator | group |
 |---|---|---|
-| `slicing` | the session that plans a batch | service |
 | `code-research` | the session that plans a batch | service |
 | `red-green` | the controller that dispatched the implementer | service |
 | `review` | the controller closing a task or a batch | service |
@@ -55,14 +54,12 @@ Measurement:
 | capability | narrator | group |
 |---|---|---|
 | `batch-measurement` | a session measuring a closed batch | service |
-| `batch-analysis` | the person deciding a change to the workflow | operations |
 
 Tools the skills and agents run:
 
 | capability | narrator | group |
 |---|---|---|
 | `feature-file-tools` | an agent or session editing feature files | service |
-| `slice-plan-tool` | an agent or session editing a living slice plan | service |
 | `analysis-tools` | an agent researching or reviewing a project's code | service |
 | `design-model-check` | a person or agent checking a repository against the design model | service |
 

@@ -62,7 +62,6 @@ Seen while stating what the scripts do, and left as they are: `features tag` acc
 
 ## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-16-release-0-19-0-defects
 about: capability/feature-file-tools
-about: capability/slice-plan-tool
 about: capability/analysis-tools
 about: capability/batch-measurement
 about: capability/spec-integration

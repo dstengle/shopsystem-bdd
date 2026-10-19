@@ -7,8 +7,6 @@ import sys
 import tempfile
 import unittest
 
-from binding import missing
-
 SCRIPT = pathlib.Path(__file__).resolve().parents[2] / "scripts" / "plan"
 
 PLAN = '''# Cart slices
@@ -762,14 +760,6 @@ class PlanTest(unittest.TestCase):
         done = self.plan_cli("status", "7", "green")
         self.assertEqual(done.returncode, 1)
         self.assertEqual(done.stderr, "plan: no slice 7\n")
-
-
-FEATURE = pathlib.Path(__file__).resolve().parents[2] / "features" / "slice-plan-tool.feature"
-
-
-class BindingTest(unittest.TestCase):
-    def test_every_scenario_has_its_test(self):
-        self.assertEqual(missing(FEATURE, PlanTest), [])
 
 
 if __name__ == "__main__":

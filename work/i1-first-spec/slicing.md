@@ -2,14 +2,14 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/first-spec-slicing
 kind: capability-proposal
 part_of: initiative/i1
-status: drafted
+status: withdrawn
 date: 2026-10-15
-argues: [slicing]
-adds: [slicing#r1-r15]
+argues: []
+adds: []
 ---
 
 # Slicing: first spec
 
-What the gate approves: `slicing#r1-r15`, as written in `spec/capabilities/slicing.md`. Each line describes
-what 0.18.0 does today; none adds behaviour. One of i1's thirteen proposals
-(design-decision/one-capability-per-proposal).
+Withdrawn 2026-10-19 (the person): the capability `slicing` and its lines r1-r15 are removed, since
+delivery moves to work-items on design model v3 (initiative/i10). They were never approved, so no id is
+retired. One of i1's thirteen proposals (design-decision/one-capability-per-proposal).

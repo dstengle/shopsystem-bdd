@@ -2,14 +2,14 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/first-spec-batch-analysis
 kind: capability-proposal
 part_of: initiative/i1
-status: drafted
+status: withdrawn
 date: 2026-10-15
-argues: [batch-analysis]
-adds: [batch-analysis#r1-r8]
+argues: []
+adds: []
 ---
 
 # Batch analysis: first spec
 
-What the gate approves: `batch-analysis#r1-r8`, as written in `spec/capabilities/batch-analysis.md`. Each line describes
-what 0.18.0 does today; none adds behaviour. One of i1's thirteen proposals
-(design-decision/one-capability-per-proposal).
+Withdrawn 2026-10-19 (the person): the capability `batch-analysis` and its lines r1-r8 are removed, since
+delivery moves to work-items on design model v3 (initiative/i10). They were never approved, so no id is
+retired. One of i1's thirteen proposals (design-decision/one-capability-per-proposal).
