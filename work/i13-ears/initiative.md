@@ -20,7 +20,7 @@ Covers:
   check the strict form;
 - every capability's Behaviour lines restructured to it, not only given a "shall": each line's pattern chosen
   by what starts the behaviour (a command or input: When; a refusal or fault: If … then; a period: While;
-  an option: Where; no trigger: ubiquitous), one trigger or condition and one response per line, the drafted lines of i10, i11 and i8 included: a line
+  an option: Where; no trigger: ubiquitous), one response per line, `If` lines only where design-decision/behaviour-lines-are-ears allows them, the capabilities not yet built cut to walking skeletons, the drafted lines of i10, i11 and i8 included: a line
   whose meaning is unchanged keeps its id; a line split in two keeps its id for one part and takes a new id
   for the other, named by the old line's scenario, so the number of scenarios does not change
   (design-decision/a-scenario-may-name-several-requirements); a form or data shape is written as what the named system shall do
