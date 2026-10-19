@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/glossary-terms-are-standing
 summary: "A bounded context's terms are glossary entries in spec/index.md, standing nodes approved at the gate like Behaviour lines and judged by model check."
 date: 2026-10-17
-status: proposed
+status: accepted
 source: "docs/superpowers/specs/2026-10-17-type-first-ids-and-ubiquitous-language-design.md, Part 2"
 ---
 

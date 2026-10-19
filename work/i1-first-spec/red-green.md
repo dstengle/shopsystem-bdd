@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/first-spec-red-green
 kind: capability-proposal
 part_of: initiative/i1
-status: drafted
+status: merged
 date: 2026-10-15
 argues: [red-green]
 adds: [red-green#r1-r16]

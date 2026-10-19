@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/requirement-ids-formulation
 kind: capability-proposal
 part_of: initiative/i3
-status: drafted
+status: merged
 date: 2026-10-16
 argues: [formulation]
 adds: [formulation#r11-r13]

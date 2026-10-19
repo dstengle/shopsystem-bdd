@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/first-spec-spec-migration
 kind: capability-proposal
 part_of: initiative/i1
-status: drafted
+status: merged
 date: 2026-10-15
 argues: [spec-migration]
 adds: [spec-migration#r1-r8]

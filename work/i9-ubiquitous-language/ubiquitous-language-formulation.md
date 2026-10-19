@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/ubiquitous-language-formulation
 kind: capability-proposal
 part_of: initiative/i9
-status: drafted
+status: merged
 date: 2026-10-17
 argues: [formulation]
 adds: [formulation#r14]

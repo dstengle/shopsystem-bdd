@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/first-spec-analysis-tools
 kind: capability-proposal
 part_of: initiative/i1
-status: drafted
+status: formulated
 date: 2026-10-15
 argues: [analysis-tools]
 adds: [analysis-tools#r1-r35]

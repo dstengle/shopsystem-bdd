@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/consistency-check-on-demand
 summary: "The spec consistency check runs when the person asks for it; integration and formulation rounds do not run it."
 date: 2026-10-17
-status: proposed
+status: accepted
 revisit_when: "a measured batch shows drift the on-demand check would have caught"
 source: "docs/superpowers/specs/2026-10-17-type-first-ids-and-ubiquitous-language-design.md, Part 2"
 ---
