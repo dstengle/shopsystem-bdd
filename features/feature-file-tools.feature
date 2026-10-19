@@ -138,12 +138,12 @@ Feature: Feature file tools
     Then the moved "Apply a code" has the steps "Given the date is 2026-10-16" then "Given a cart holding product Mug at price 8.00"
 
   @r14
-  Scenario Outline: moving with feature tags carried adds the missing ones on a tag line of their own
-    Pins that only the feature tags the destination lacks are carried, on their own line just above the Scenario: line, with the scenario's own tag lines left as they were.
+  Scenario Outline: moving with feature tags kept adds the missing ones on a tag line of their own
+    Pins that only the feature tags the destination lacks are kept, on their own line just above the Scenario: line, with the scenario's own tag lines left as they were.
     Given a feature file features/old.feature with the feature tags @cart and @checkout
     And its scenario "Apply a code" has <own tag lines>
     And a feature file features/cart.feature with the feature tag @cart
-    When the agent runs features move "Apply a code" --to features/cart.feature --carry-feature-tags
+    When the agent runs features move "Apply a code" --to features/cart.feature --keep-feature-tags
     Then the moved "Apply a code" has the tag lines <tag lines after>, the last directly above its Scenario: line
 
     Examples:

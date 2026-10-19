@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/first-spec-review
 kind: capability-proposal
 part_of: initiative/i1
-status: drafted
+status: merged
 date: 2026-10-15
 argues: [review]
 adds: [review#r1-r11]

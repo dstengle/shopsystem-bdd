@@ -78,6 +78,7 @@ Tools the skills and agents run:
 - **batch**: the slices one session plans and one controller executes, archived and measured together.
 - **controller**: the session that dispatches implementers and reviewers for a batch.
 - **hand-back**: an implementer's stop on an observed condition, logged with its evidence.
+- **requirement**: one Behaviour line of a capability, named `#r<n>`. Not: behaviour requirement, capability requirement.
 - **slice**: a unit of work with an observable done (scenarios or a check); to become a work-item (i4).
 - **suite record**: a whole-suite result logged once and used while nothing it depends on has changed.
 

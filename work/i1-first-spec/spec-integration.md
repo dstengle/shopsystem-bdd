@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/first-spec-spec-integration
 kind: capability-proposal
 part_of: initiative/i1
-status: drafted
+status: merged
 date: 2026-10-15
 argues: [spec-integration]
 adds: [spec-integration#r1-r11]

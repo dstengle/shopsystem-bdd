@@ -157,10 +157,10 @@ class FeaturesTest(unittest.TestCase):
         self.assertEqual(done.returncode, 1)
         self.assertIn("changed: Adding a product (tags)", done.stdout)
 
-    def test_move_carrying_feature_tags_verifies(self):
+    def test_move_keeping_feature_tags_verifies(self):
         checkout = self._before_and_checkout(header="Feature: Checkout\n  Narrator: a shopper\n")
         done = self.run_script("move", "Adding a product", "--to", "features/checkout.feature",
-                               "--inline-background", "--carry-feature-tags")
+                               "--inline-background", "--keep-feature-tags")
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertIn("  @slice-1\n  @cart\n  Scenario: Adding a product\n", checkout.read_text())
         done = self.run_script("verify-moved", "--from", "before")
@@ -624,13 +624,13 @@ class ScenarioTest(Workspace, unittest.TestCase):
         self.assertIn("  Scenario: Apply a code\n    Given the date is 2026-10-16\n"
                       "    Given a cart holding product Mug at price 8.00\n", cart.read_text())
 
-    def test_moving_with_feature_tags_carried_adds_the_missing_ones_on_a_tag_line_of_their_own(self):
-        """moving with feature tags carried adds the missing ones on a tag line of their own"""
+    def test_moving_with_feature_tags_kept_adds_the_missing_ones_on_a_tag_line_of_their_own(self):
+        """moving with feature tags kept adds the missing ones on a tag line of their own"""
         for own, after in (("@slice-2", "  @slice-2\n  @checkout\n"), ("", "  @checkout\n")):
             with self.subTest(own=own):
                 self.write("features/old.feature", feature(scenario("Apply a code", own), tags="@cart @checkout"))
                 cart = self.write("features/cart.feature", feature(tags="@cart"))
-                done = self.run_script("move", "Apply a code", "--to", "features/cart.feature", "--carry-feature-tags")
+                done = self.run_script("move", "Apply a code", "--to", "features/cart.feature", "--keep-feature-tags")
                 self.assertEqual(done.returncode, 0, done.stderr)
                 self.assertTrue(cart.read_text().endswith(after + "  Scenario: Apply a code\n    Given a step\n"))
 

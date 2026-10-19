@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/withdrawn-design-model-check
 kind: capability-proposal
 part_of: initiative/i11
-status: drafted
+status: formulated
 date: 2026-10-19
 argues: [design-model-check]
 adds: [design-model-check#r58-r59]

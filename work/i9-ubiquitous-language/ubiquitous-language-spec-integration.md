@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/ubiquitous-language-spec-integration
 kind: capability-proposal
 part_of: initiative/i9
-status: drafted
+status: merged
 date: 2026-10-17
 argues: [spec-integration]
 adds: [spec-integration#r17-r19]

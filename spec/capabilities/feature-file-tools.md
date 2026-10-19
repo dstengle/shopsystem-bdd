@@ -31,7 +31,7 @@ any test; it edits only the feature files, test modules and directory it is poin
 - [r11] **If** `features tag` is given a tag not written `slice-<n>`, `slice-<n>.<m>` or `r<n>`, `features` exits 2 as bad usage and changes no file.
 - [r12] **When** `features move <title> --to <file>` is run, `features` removes the scenario's block from its file and appends it unchanged to the end of the destination file.
 - [r13] **Where** `--inline-background` is given, **when** `features move` is run, `features` puts the source Background's steps before the moved scenario's first step.
-- [r14] **Where** `--carry-feature-tags` is given, **when** `features move` is run, `features` puts the source's feature tags that the destination's feature tags lack on a tag line of their own immediately above the moved scenario's `Scenario:` line, after any tag line the scenario already has, and joins them to none.
+- [r14] **Where** `--keep-feature-tags` is given, **when** `features move` is run, `features` puts the source's feature tags that the destination's feature tags lack on a tag line of their own immediately above the moved scenario's `Scenario:` line, after any tag line the scenario already has, and joins them to none.
 - [r15] **If** the destination of `features move` does not exist, `features` refuses and changes no file.
 - [r16] **When** `features verify-moved --from <dir>` finds every scenario in the two trees alike by title in its effective tags, description, and Background and own steps, `features` prints how many scenarios match and exits 0.
 - [r17] **If** a scenario's effective tags, description or steps differ between the two trees, `features verify-moved` names the scenario and which of them changed, and exits 1.
@@ -80,7 +80,7 @@ any test; it edits only the feature files, test modules and directory it is poin
   backticks. A scenario's block is its tag lines, its `Scenario:` line and everything up to the next
   scenario's tag lines; `move` drops the block's trailing blank lines.
 - `tag` and `hold` add to the last tag line; a new tag line takes the scenario's indentation. Background steps
-  inlined by `move` take the scenario's step indentation; carried feature tags take the `Scenario:` line's.
+  inlined by `move` take the scenario's step indentation; kept feature tags take the `Scenario:` line's.
 - `verify-moved` compares lines stripped of indentation, blank lines and comments, and also reports titles
   missing from or added to the second tree.
 - `move` also refuses a destination that is the scenario's own file.
