@@ -78,3 +78,10 @@ Still open, left as they are:
 - `measure batch` ends in a traceback when `--plan` or the archive file is missing on disk (`scripts/measure:374`, the `open` of `plan_file` after the commit-based checks at 350-366).
 - `tools map` has more than one way of removing the old map: the loop deleting every `coverage*` file (`scripts/tools:168-170`) beside the map file's own replacement through COVERAGE_FILE; one would do.
 - A risk for spec-round, not a script defect: a harness that blocks subagents from writing files (one feature-formulator's `.reply.md` write was refused with "subagents may not write report files") stalls a round, because spec-round waits on reply files.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-19-final-state-only
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+by: the person
+date: 2026-10-19
+
+There are no intermediate states, only the final state, the plugin fully on design model v3, and the tools that migrate a repository to it. Nothing more is invested in the old system (slices, slice plans, lanes, the old rules) beyond those tools. The plugin moves to the model first; shopsystem-kb and shopsystem-knowledge move afterwards. Decision 0017 is retired; 0028 and 0032 are rejected.

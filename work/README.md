@@ -7,15 +7,17 @@ design-decision/work-file-forms. Check: `python3 scripts/model check`.
 
 | id | kind | status | priority | summary |
 |---|---|---|---|---|
+| i10 | capability-change | proposed | 1 | Delivery on design model v3 |
+| i11 | capability-change | proposed | 2 | This repository on the final layout and conventions |
+| i8 | capability-change | proposed | 3 | Migrate a consuming repository to design model v3 |
 | i1 | capability-change | started | — | The plugin's first spec |
-| i2 | capability-change | started | — | Check a repository against the design model |
-| i3 | capability-change | proposed | 1 | Requirement ids in the format the plugin teaches |
-| i6 | capability-change | proposed | 2 | Retire the rules whose signals fired |
-| i4 | capability-change | proposed | 3 | Work-items in place of slices, tasks, steps and lanes |
-| i5 | capability-change | proposed | 4 | A pull loop in place of the LLM controller |
-| i7 | capability-change | proposed | 5 | Superpowers no longer a dependency |
-| i8 | capability-change | proposed | 6 | Initiatives and records in consuming repositories |
+| i3 | capability-change | started | 1 | Requirement ids in the format the plugin teaches |
 | i9 | capability-change | started | 8 | A ubiquitous language for the bounded context |
+| i2 | capability-change | done | — | Check a repository against the design model |
+| i4 | capability-change | abandoned | 3 | Work-items in place of slices, tasks, steps and lanes (replaced by i10) |
+| i5 | capability-change | abandoned | 4 | A pull loop in place of the LLM controller (replaced by i10) |
+| i6 | capability-change | abandoned | 2 | Retire the rules whose signals fired (replaced by i10) |
+| i7 | capability-change | abandoned | 5 | Superpowers no longer a dependency (replaced by i10) |
 
-Before i6 or i5 starts: one kb batch run on 0.18.0 unchanged, with its facts committed, as the baseline
-(observation/2026-10-15-unmeasured-releases). That run changes nothing here; it produces a measurement.
+The baseline kb batch on 0.18.0 that i5 and i6 waited for (observation/2026-10-15-unmeasured-releases) is no
+longer needed by them; whether i10 is measured against it is open.

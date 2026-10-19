@@ -28,3 +28,6 @@ Decisions 0001-0021 record rules already released; 0022-0028 are new with this i
    its requirements. A sweep of all five scripts added feature-file-tools#r35-r50, slice-plan-tool#r26-r38,
    batch-measurement#r21-r38, analysis-tools#r18-r35 and design-model-check#r19-r41, each stating what
    0.18.0 does today; their tests come with formulation.
+
+On 2026-10-19 (the person) the proposals for slicing, slice-plan-tool and batch-analysis were withdrawn and
+their capabilities removed: delivery moves to work-items in initiative/i10.

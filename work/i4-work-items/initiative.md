@@ -4,7 +4,7 @@ title: Work-items in place of slices, tasks, steps and lanes
 summary: Slicing drafts work-items under a capability-proposal, filled in stages (drafted, researched, planned, ready), with the scout's file set kept as the claim; writing-plans is no longer invoked.
 kind: capability-change
 owner-level: shopsystem-bdd
-status: proposed
+status: abandoned
 priority: 3
 source: [review-finding/2026-10-13-kb-and-bdd-assessment]
 date: 2026-10-15
@@ -17,3 +17,5 @@ The workflow capabilities get their first scenarios here, as fixture sessions
 (design-decision/workflow-scenarios-run-as-fixture-sessions), against the behaviour this initiative brings
 rather than 0.18.0's; i1 leaves them unformulated for that reason. The fixture generators and run
 harness move into the repository with them.
+
+Abandoned 2026-10-19 (the person): replaced by initiative/i10, delivery on design model v3, which moves to work-items without an intermediate stage run by hand.
