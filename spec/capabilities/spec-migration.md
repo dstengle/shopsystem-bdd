@@ -34,7 +34,7 @@ existing scenarios. It changes the meaning of no approved scenario.
 ## Implementation, may change
 - A baseline under the scratch directory: the summary line, the passing tests (`-q -rA`), a copy of
   `features/`, and `features count --by-tag`.
-- `capability-writer` drafts with the migration brief; `features move` (with `--carry-feature-tags`,
+- `capability-writer` drafts with the migration brief; `features move` (with `--keep-feature-tags`,
   `--inline-background`) moves scenarios; `features verify-moved` compares them.
 - Bindings follow step definitions: `scenarios(...)` per capability where every step has one body, otherwise
   `@scenario(<file>, <title>)` from the old modules.
