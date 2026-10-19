@@ -560,6 +560,7 @@ Feature: Feature file tools
   @r52
   Scenario: --file works in that file only, whatever other files hold the title
     A title two files hold is tagged in either file by naming it, and nothing else in either file changes.
+    tag is the example; hold, retire and move look for the title in the named file the same way.
     Given features/cart.feature and features/old.feature both hold a scenario "Apply a code"
     When the agent runs features tag "Apply a code" r7 --file features/cart.feature
     Then the scenario "Apply a code" in features/cart.feature is tagged @r7

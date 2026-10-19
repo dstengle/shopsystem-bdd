@@ -32,7 +32,7 @@ the person talks to, with each round handed to a fresh `spec-round` that dispatc
 - [r13] **When** a line is changed, it keeps its id.
 - [r14] **When** a line is removed, its id is added to the capability's `retired` list and no later line takes it.
 - [r15] **When** the approved drafts are committed, the commit message names each id added, changed and removed.
-- [r16] **Where** `model check` can run, **when** the approved drafts are committed, it reports nothing that was not there before they were applied, but each added line as having no scenario yet, each removed line's scenario as naming a line its capability no longer has, and each scenario that uses a word an added or changed glossary entry avoids, until formulation rewords it.
+- [r16] **Where** `model check` can run, **when** the approved drafts are applied, the only new problems it may report are: an added line with no scenario yet, a removed line's scenario that now names no line, and a scenario that uses a word the new glossary entry avoids; formulation clears all three, and any other new problem stops the commit.
 - [r17] **Where** a repository keeps `work/`, a change to a glossary term rides with the capability-proposal that needs it, which lists the term in `adds`, `changes` or `removes`.
 - [r18] **When** the approved drafts are committed, the commit message names each term added, changed and removed.
 - [r19] **Where** a repository has no `work/`, **when** a glossary change is drafted, the session shows it to the person like a Behaviour line and writes nothing to `spec/` before the person says yes.

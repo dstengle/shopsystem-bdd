@@ -1228,12 +1228,45 @@ class InterpreterSearchTest(ModelTest):
                 self.assertEqual([c for c in self.calls() if str(SCRIPT) in c], [])
 
 
+@unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
+class WithdrawnTest(ModelTest):
+    """r58-r59: a withdrawn part is closed; an abandoned initiative has no open part."""
+
+    def breakdown(self, initiative, proposal, item):
+        self.good()
+        self.observation()
+        self.initiative(status=initiative)
+        self.proposal(status=proposal, adds="[thing#r1]")
+        self.work_item(status=item, part_of="capability-proposal/p1")
+
+    def about_initiative(self, found):
+        return [v for v in found["violations"] if I1 in v[1]]
+
+    def test_r58(self):
+        """a withdrawn part is closed"""
+        self.breakdown("done", "withdrawn", "withdrawn")
+        found, _ = self.check_json()
+        self.assertEqual(found["problems"], [], found)
+        self.assertEqual(self.about_initiative(found), [], found)
+
+    def test_r59(self):
+        """an abandoned initiative with an open part is v_d2"""
+        self.breakdown("abandoned", "withdrawn", "drafted")
+        found, r = self.check_json()
+        self.assertEqual(self.violated(found, "v_d2"), [[I1]], found)
+        self.assertEqual(r.returncode, 1)
+        self.reset()
+        self.breakdown("abandoned", "withdrawn", "withdrawn")
+        found, _ = self.check_json()
+        self.assertEqual(self.about_initiative(found), [], found)
+
+
 class BindingTest(unittest.TestCase):
     def test_every_scenario_has_its_test(self):
         self.assertEqual(missing(FEATURE, CheckTest, NoSolverTest, DecisionsTest, WhyTest, RangeTest,
                                  ReadingTest, GrammarFixTest, TypeFirstTest, FilesReadTest, OutputTest,
                                  WhyScenarioTest, IdFormTest, HeldAndLedgerTest, GlossaryFactsTest,
-                                 GlossaryCheckTest, InterpreterSearchTest), [])
+                                 GlossaryCheckTest, InterpreterSearchTest, WithdrawnTest), [])
 
 
 if __name__ == "__main__":

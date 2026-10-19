@@ -69,7 +69,7 @@ any test; it edits only the feature files, test modules and directory it is poin
 - [r49] **Where** `slice_expectations.py` is registered, the run's header names the living plan it read, relative to the root directory, or says no one living plan was found.
 - [r50] **If** the ini value `slice_plan` names a file that does not exist, `slice_expectations.py` expects no test to fail, and the run's header names that file.
 - [r51] **When** `features tag <title> r<n>` is run on a title exactly one file holds, `features` makes `@r<n>` the scenario's one requirement tag, removing any other `@r<m>` tag it has, and leaves its other tags and every other line unchanged.
-- [r52] **Where** `--file <path>` is given, **when** `features tag`, `features hold`, `features retire` or `features move` is run, `features` works in that file only, whatever other files hold the title.
+- [r52] **Where** `--file <path>` is given, the `features` script looks for the scenario's title in that file only, whatever the command.
 - [r53] **If** `--file` names a file that does not hold the title, `features` refuses, naming the file, and changes no file.
 - [r54] **If** `--file` names a file that holds the title twice, `features` refuses, naming the file, and changes no file.
 - [r55] **If** `--file` names a file outside `--dir`, `features` refuses and changes no file.

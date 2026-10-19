@@ -570,3 +570,20 @@ Feature: Design model check
     Then it names clingo and pip install clingo
     And it names each interpreter it tried, /usr/local/bin/python3 and /usr/bin/python3 among them
     And it exits 2
+
+  @r58
+  Scenario: a withdrawn part is closed
+    Pins that withdrawn is a status of a capability-proposal and a work-item, and that it closes the part.
+    Given a capability-change initiative with status done
+    And under it a capability-proposal with status withdrawn, and under that a work-item with status withdrawn
+    When model check is run
+    Then it reports no file problem
+    And no violation names the initiative
+
+  @r59
+  Scenario: an abandoned initiative with an open part is v_d2
+    Given an abandoned capability-change initiative
+    And under it a capability-proposal with status withdrawn, and under that a work-item with status drafted
+    When model check is run
+    Then v_d2 names the initiative
+    And once the work-item is withdrawn too, no violation names the initiative

@@ -74,6 +74,8 @@ records, and it checks one bounded context: product-level artifacts are read onl
 - [r55] **If** `import clingo` fails, `model check` looks for an interpreter that has clingo in this order: `$SHOPSYSTEM_MODEL_PYTHON`, each `python3` on `PATH` outside the active virtualenv's `bin/`, `/usr/local/bin/python3`, `/usr/bin/python3`, and runs again under the first that has it.
 - [r56] **When** `model check` has run again under another interpreter, it does so once, and a second failure to import clingo does not run it again.
 - [r57] **If** no interpreter has clingo, `model check` exits 2 with its message naming each interpreter it tried.
+- [r58] A capability-proposal or a work-item may have the status `withdrawn`, and `model check` counts a withdrawn part as closed when it decides whether an initiative may be done.
+- [r59] **If** an initiative is `abandoned` while a part of it, at any depth, is neither closed nor `withdrawn`, `model check` reports the initiative under v_d2.
 
 ## Implementation, may change
 - `scripts/model.lp` is grammar.md v3 sections 1, 3 and 4 in clingo, with FIX notes where grammar.md does not

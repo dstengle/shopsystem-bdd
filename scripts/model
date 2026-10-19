@@ -70,6 +70,10 @@ contract:
     active virtualenv's bin/, /usr/local/bin/python3 and /usr/bin/python3
     whose `-c "import clingo"` succeeds; when none does, it says so with the
     command that installs clingo and each interpreter it tried, and exits 2.
+  - A capability-proposal or work-item may be `withdrawn`: no longer pursued,
+    and closed (an extension proposed against grammar.md v3). v_d2 names an
+    `abandoned` initiative with a part, at any depth, neither closed nor
+    withdrawn; abandoning an initiative means withdrawing what is open under it.
   - decisions writes spec/decisions.md, the generated index of decisions/,
     and nothing else; --check writes nothing and exits 1 when the file on
     disk is not what it would write.
@@ -85,8 +89,9 @@ RID = re.compile(r"^\[r(\d+)\]\s*")
 REF = re.compile(r"^(?P<cap>[\w.-]+(?:/[\w.-]+)*)#(?:behaviour/)?r(?P<n>\d+)$")
 STATUSES = {
     "initiative": {"proposed", "started", "done", "abandoned"},
-    "capability-proposal": {"drafted", "approved", "merged", "formulated"},
-    "work-item": {"drafted", "researched", "planned", "ready", "claimed", "done", "green", "awaiting-ruling"},
+    "capability-proposal": {"drafted", "approved", "merged", "formulated", "withdrawn"},   # withdrawn: EXTENSION (r58)
+    "work-item": {"drafted", "researched", "planned", "ready", "claimed", "done", "green", "awaiting-ruling",
+                  "withdrawn"},   # withdrawn: EXTENSION (r58)
 }
 PART_KINDS = {"job-proposal", "map-proposal", "vision-proposal", "job-thread", "capability-proposal",
               "cross-context-request", "map-escalation", "work-item"}

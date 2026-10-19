@@ -6,7 +6,7 @@
 % intent. Facts come from `model facts`, which reads a repository's files.
 % Every v_ relation must be empty; w_ relations are warnings.
 % A clause marked EXTENSION is not in grammar.md v3 at all; it is proposed against
-% grammar.md v3 (design-model-check r48-r54) and kept apart from the FIX notes.
+% grammar.md v3 (design-model-check r48-r54, r58-r59) and kept apart from the FIX notes.
 
 % ---------------------------------------------------------------- inputs
 #defined node/2.      #defined narrator/2.   #defined group/2.     #defined external/1.
@@ -52,6 +52,9 @@ root(P, I)            :- part_of(P, P2), root(P2, I).
 closed(P)             :- status(P, S), S = ("merged"; "built"; "delivered"; "ruled"; "green"; "refused"), not node(P, "capability-proposal").
 closed(P)             :- status(P, S), S = ("built"; "delivered"; "ruled"; "green"; "refused"), node(P, "capability-proposal").
 closed(P)             :- status(P, "formulated").
+% EXTENSION (proposed against grammar.md v3; design-model-check r58): a part no longer pursued is
+% `withdrawn`, and is closed.
+closed(P)             :- status(P, "withdrawn").
 
 % helpers for Soufflé's "!rel(X, _)"
 has_part_of(P)  :- part_of(P, _).        has_root(P)    :- root(P, _).
@@ -181,6 +184,11 @@ v_w4(W)      :- node(W, "work-item"), not has_accepts(W), not has_check(W).
 
 % initiative done only when every part is closed
 v_d1(I) :- status(I, "done"), root(P, I), not closed(P).
+% EXTENSION (proposed against grammar.md v3; design-model-check r59): an abandoned initiative leaves
+% no part open; each is closed or withdrawn.
+% CONTRACT (scripts/model --help): `withdrawn` is closed, so "not withdrawn" adds nothing to "not closed"
+% today; it is written out so the rule still holds if a later grammar stops counting withdrawn as closed.
+v_d2(I) :- status(I, "abandoned"), root(P, I), not closed(P), not status(P, "withdrawn").
 
 % ---------------------------------------------------------------- EXTENSION: terms
 % Proposed against grammar.md v3 (design-model-check r52-r54); grammar.md has no terms yet.
@@ -216,5 +224,6 @@ w_stale_intake(I)  :- status(I, "proposed"), age(I, Days), Days > 90.
 #show v_b1/1. #show v_b2/1. #show v_b3/1. #show v_s1/1. #show v_s2/1. #show v_s3/1.
 #show v_w1/1. #show v_w2/1. #show v_w3/2. #show v_w4/1. #show v_d1/1.
 #show v_t1/3. #show v_t2/1. #show v_t3/1.    % EXTENSION (proposed against grammar.md v3)
+#show v_d2/1.                                 % EXTENSION (proposed against grammar.md v3)
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
 #show w_many_requests/1. #show w_stale_intake/1.
