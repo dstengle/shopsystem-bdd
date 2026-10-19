@@ -19,7 +19,7 @@ Feature: Feature file tools
     Then the command is rejected because the feature file holds a Rule: block
     And the refusal names features/rules.feature
 
-  @r3
+  @r2
   Scenario Outline: an edit is refused only when it would leave a Rule: block outside a docstring
     Pins that the one thing an edit's result is checked for is a Rule: block outside a docstring, and that a refused edit changes no file.
     Given an edit by features that would leave features/cart.feature holding <result>
@@ -59,7 +59,7 @@ Feature: Feature file tools
     And the output lists features/stock.feature with "Elsewhere"
     And the output does not list "Plain" or "Untagged"
 
-  @r6
+  @r5
   Scenario: listing by title finds every scenario whose title contains the text
     A title matches when the text appears anywhere in it, not only when it equals it.
     Given a feature file features/cart.feature with scenarios "Apply a code", "Code expired" and "Empty cart"
@@ -97,7 +97,7 @@ Feature: Feature file tools
       | "@wip" then "@r1" | "@wip" then "@r1 @slice-2"    |
       | none              | "@slice-2" above the scenario |
 
-  @r10
+  @r35
   Scenario Outline: retagging a title that is not in exactly one file is refused
     The title must pick out one file; otherwise nothing is changed and every file holding it is named.
     Given the title "Apply a code" is held by <files holding it>
@@ -111,7 +111,7 @@ Feature: Feature file tools
       | no feature file                                | no file                                        |
       | features/cart.feature and features/old.feature | features/cart.feature and features/old.feature |
 
-  @r11
+  @r46
   Scenario: retagging with a tag that is neither a slice nor a requirement tag is bad usage
     Only slice-<n>, slice-<n>.<m> and r<n> are tags features tag accepts.
     Given a feature file features/cart.feature with a scenario "Apply a code"
@@ -151,7 +151,7 @@ Feature: Feature file tools
       | the tag line "@slice-2" | "@slice-2" then "@checkout" |
       | no tag line             | "@checkout"                 |
 
-  @r15
+  @r46
   Scenario: moving to a destination that does not exist is refused
     A move never creates a file.
     Given a feature file features/old.feature with a scenario "Apply a code"
@@ -184,7 +184,7 @@ Feature: Feature file tools
       | description    |
       | steps          |
 
-  @r18
+  @r17
   Scenario Outline: a title held twice in either tree is a duplicate
     Scenarios are matched by title, so a title held twice cannot be matched.
     Given trees old/ and features/ that both hold "Apply a code"
@@ -215,7 +215,7 @@ Feature: Feature file tools
       | no scenario "Apply a voucher" exists | --for "Apply a voucher" | Apply a voucher |
       | no replacement is planned            | --for-removal           | removal         |
 
-  @r20
+  @r46
   Scenario: holding a scenario already held is refused
     A scenario is held once.
     Given a feature file features/cart.feature with a scenario "Apply a code (held)" tagged @holding
@@ -236,7 +236,7 @@ Feature: Feature file tools
       | "Apply a voucher" | no scenario titled "Apply a voucher"         | that no scenario has the title "Apply a voucher" |
       | removal           | no replacement                               | that the slice removing the behaviour retires it |
 
-  @r22
+  @r21
   Scenario: the holding list says when nothing is held
     An empty holding list is stated, not left blank.
     Given feature files in which no scenario is tagged @holding
@@ -282,7 +282,7 @@ Feature: Feature file tools
     Then it says that every binding names a scenario
     And it exits 0
 
-  @r27
+  @r46
   Scenario: a test module that does not parse is refused
     Bindings cannot be read from a module that does not parse, and the module is named.
     Given a test module tests/test_broken.py that does not parse
@@ -395,7 +395,7 @@ Feature: Feature file tools
       | no feature file holds                                    | no file holds the title      | no file                                        |
       | features/cart.feature and features/old.feature both hold | several files hold the title | features/cart.feature and features/old.feature |
 
-  @r36
+  @r46
   Scenario: moving a scenario to its own file is refused
     A move must take the scenario somewhere else.
     Given a feature file features/cart.feature with a scenario "Apply a code"
@@ -403,7 +403,7 @@ Feature: Feature file tools
     Then the command is rejected because the destination is the scenario's own file
     And no file is changed
 
-  @r37
+  @r17
   Scenario Outline: a title in only one tree is missing or added
     Every title must be in both trees; one in only the source is missing, one in only the other is added.
     Given trees old/ and features/
@@ -417,7 +417,7 @@ Feature: Feature file tools
       | old/      | missing  |
       | features/ | added    |
 
-  @r38
+  @r5
   Scenario Outline: a tag is found with or without its leading @
     The leading @ is optional when listing by tag.
     Given a feature file features/cart.feature with a scenario "Apply a code" tagged @slice-2
@@ -429,14 +429,14 @@ Feature: Feature file tools
       | @slice-2 |
       | slice-2  |
 
-  @r39
+  @r19
   Scenario: holding a scenario prints its file and new title
     The agent sees where the held scenario is and what it is now called.
     Given a feature file features/cart.feature with a scenario "Apply a code"
     When the agent runs features hold "Apply a code" --for-removal
     Then it prints features/cart.feature and "Apply a code (held)"
 
-  @r40
+  @r21
   Scenario Outline: the holding list flags a held scenario it cannot place
     A held scenario with nothing to say what it is held for, or whose replacement has no slice tag, is flagged on its own line.
     Given a feature file features/cart.feature with a scenario "Apply a code (held)" tagged @holding
@@ -449,7 +449,7 @@ Feature: Feature file tools
       | the scenario has no Held for: line                                       | that it has no Held for: line             |
       | it is held for "Apply a voucher", and "Apply a voucher" has no slice tag | that the replacement carries no slice tag |
 
-  @r41
+  @r29
   Scenario: rebinding to a title several feature files hold is refused
     The new title must pick out one scenario.
     Given a test module binding "Apply a code"
@@ -458,7 +458,7 @@ Feature: Feature file tools
     Then the command is rejected because several feature files hold the new title
     And no test module is changed
 
-  @r42
+  @r29
   Scenario: rebinding a title written over several lines is refused
     A binding whose title string spans lines is not rewritten, and the module and line are named.
     Given a feature file with a scenario "Apply a voucher"
@@ -567,7 +567,7 @@ Feature: Feature file tools
     And every other line of features/cart.feature is unchanged
     And features/old.feature is unchanged
 
-  @r53
+  @r35
   Scenario: --file naming a file that does not hold the title is refused
     The file named must hold the title, or the command stops.
     Given a feature file features/cart.feature without a scenario "Voucher"
@@ -577,7 +577,7 @@ Feature: Feature file tools
     And the refusal names features/cart.feature
     And no file is changed
 
-  @r54
+  @r35
   Scenario: --file naming a file that holds the title twice is refused
     Two scenarios with the title in the file named leave no one scenario to work on.
     Given a feature file features/cart.feature with two scenarios "Apply a code"
@@ -586,7 +586,7 @@ Feature: Feature file tools
     And the refusal names features/cart.feature
     And no file is changed
 
-  @r55
+  @r35
   Scenario: --file naming a file outside --dir is refused
     A file outside the directory features reads is not one it edits.
     Given a feature file elsewhere/other.feature outside the features directory with a scenario "Apply a code"

@@ -5,7 +5,6 @@ work-items that follow, or retired with the commands they test.)
 A Given writes the feature files, test modules and trees a scenario names into `repo`; the When runs `features`
 once and keeps the files as they were (`context["before"]`); the Then steps read what it printed and what it left.
 """
-import pathlib
 import re
 import shlex
 
@@ -13,33 +12,57 @@ import pytest
 from pytest_bdd import given, parsers, scenario, then, when
 
 FEATURE = "feature-file-tools.feature"
-BOUND = {1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 25, 26, 27, 28, 29, 36, 37, 38, 41, 42, 46,
-         51, 52, 53, 54, 55, 56}
+BOUND = (
+    'every feature file under the directory is read, and docstring text is not',
+    'a feature file with a Rule block is refused',
+    'an edit is refused only when it would leave a Rule: block outside a docstring',
+    'counting by tag counts outline rows, inherited tags and untagged scenarios',
+    "listing by tag includes the feature's and the Examples' tags",
+    'listing by title finds every scenario whose title contains the text',
+    'listing that matches nothing prints nothing and fails',
+    'retagging a title that is not in exactly one file is refused',
+    'retagging with a tag that is neither a slice nor a requirement tag is bad usage',
+    'moving a scenario takes its block to the end of the destination',
+    'moving with the Background inlined puts its steps first',
+    'moving with feature tags kept adds the missing ones on a tag line of their own',
+    'moving to a destination that does not exist is refused',
+    'two trees alike scenario by scenario pass the move check',
+    'a scenario that changed in the move is named with what changed',
+    'a title held twice in either tree is a duplicate',
+    'a binding that names no scenario is reported',
+    'bindings that all name a scenario pass',
+    'a test module that does not parse is refused',
+    'rebinding rewrites each binding of the old title and counts them',
+    'rebinding to a title no scenario has is refused',
+    'moving a scenario to its own file is refused',
+    'a title in only one tree is missing or added',
+    'a tag is found with or without its leading @',
+    'rebinding to a title several feature files hold is refused',
+    'rebinding a title written over several lines is refused',
+    'a refusal says why on stderr and fails',
+    "tagging with a requirement id makes it the scenario's one requirement tag",
+    '--file works in that file only, whatever other files hold the title',
+    '--file naming a file that does not hold the title is refused',
+    '--file naming a file that holds the title twice is refused',
+    '--file naming a file outside --dir is refused',
+    'rebind --file rewrites only the bindings whose feature names that file',
+)
 
 
-def bound_titles():
-    """The scenario titles of the requirements bound here, found by the @r<n> tag above each."""
-    path = pathlib.Path(__file__).resolve().parents[2] / "features" / FEATURE
-    tag = None
-    for line in path.read_text().splitlines():
-        line = line.strip()
-        if re.fullmatch(r"@r\d+", line):
-            tag = int(line[2:])
-        elif line.startswith("Scenario"):
-            if tag in BOUND:
-                yield tag, line.split(":", 1)[1].strip()
-            tag = None
+def _test_name(title):
+    """The test's name, from its scenario's title (a scenario may name several requirements, so not from a tag)."""
+    return "test_" + re.sub(r"\W+", "_", title).strip("_").lower()
 
 
-def _bind(number, title):
+def _bind(title):
     def test():
         pass
-    test.__name__ = "test_r%d" % number
+    test.__name__ = _test_name(title)
     return scenario(FEATURE, title)(test)
 
 
-for _number, _title in bound_titles():
-    globals()["test_r%d" % _number] = _bind(_number, _title)
+for _title in BOUND:
+    globals()[_test_name(_title)] = _bind(_title)
 
 
 # --- the files a scenario writes ----------------------------------------------------------------------------

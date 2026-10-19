@@ -5,7 +5,6 @@ A Given builds the repository in `world` (see conftest); the When runs `model` o
 printed. The checks that read the findings as data (`check --json`) run it a second time, on demand.
 """
 import os
-import pathlib
 import re
 import sys
 
@@ -14,35 +13,45 @@ from pytest_bdd import given, parsers, scenario, then, when
 from .conftest import CONTEXT, I1, P1, THING, cap, feature, full
 
 FEATURE = "design-model-check.feature"
-BOUND = {1, 9, 12, 13, 16, 17, 18, 21, 22, 23, 24, 25, 27, 28, 29, 30, 31, 32}
+BOUND = (
+    'a repository the grammar accepts passes',
+    'references that name nothing are reported',
+    'without clingo the check says how to install it',
+    "facts are printed in clingo's syntax",
+    "why traces a requirement to its initiative's sources",
+    'why with no proposal says so',
+    'a range of ids stands for each id in it',
+    "a reference written name#r<n> is that capability's requirement",
+    'a reference in neither requirement form, or a reversed range, is unresolved',
+    'a proposal adding or removing a requirement no capability has is unresolved, unless it adds a retired id',
+    'a frontmatter reference to nothing, or to the wrong kind, is unresolved',
+    'a malformed index or capability file is a file problem',
+    'a malformed work directory or work file is a file problem',
+    'a work-item accepting a requirement no scenario names is a file problem',
+    'a malformed decision, record or frontmatter is a file problem',
+    'file problems are each printed and fail the check',
+    'the check ends with the four counts',
+    'rows of a violated relation are limited, saying how many more there are',
+)
 
 # HIDE_CLINGO on PYTHONPATH hides clingo from an interpreter, as the fixture harness does.
 HIDE_CLINGO = 'raise ImportError("clingo is hidden for this test")\n'
 
 
-def bound_titles():
-    """The scenario titles of the requirements bound here, found by the @r<n> tag above each."""
-    path = pathlib.Path(__file__).resolve().parents[2] / "features" / FEATURE
-    tag = None
-    for line in path.read_text().splitlines():
-        line = line.strip()
-        if re.fullmatch(r"@r\d+", line):
-            tag = int(line[2:])
-        elif line.startswith("Scenario"):
-            if tag in BOUND:
-                yield tag, line.split(":", 1)[1].strip()
-            tag = None
+def _test_name(title):
+    """The test's name, from its scenario's title (a scenario may name several requirements, so not from a tag)."""
+    return "test_" + re.sub(r"\W+", "_", title).strip("_").lower()
 
 
-def _bind(number, title):
+def _bind(title):
     def test():
         pass
-    test.__name__ = "test_r%d" % number
+    test.__name__ = _test_name(title)
     return scenario(FEATURE, title)(test)
 
 
-for _number, _title in bound_titles():
-    globals()["test_r%d" % _number] = _bind(_number, _title)
+for _title in BOUND:
+    globals()[_test_name(_title)] = _bind(_title)
 
 
 def found(world, context):

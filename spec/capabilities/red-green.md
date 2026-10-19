@@ -5,7 +5,7 @@ narrator: the supervisor that started the implementer
 group: service
 rests_on: [design-decision/feature-files-read-only-in-red-green, design-decision/plans-list-the-tests-they-break, design-decision/worker-results-are-files, design-decision/the-file-set-is-the-claim, design-decision/work-item-lifecycle-as-run]
 formulated_as: features/red-green.feature
-retired: []
+retired: [r4, r8, r12, r13, r14, r19]
 ---
 
 # Red-green
@@ -17,25 +17,20 @@ the contract; the implementer satisfies them and stops when one cannot be satisf
 a scenario should have said, and it never moves a work-item: `work run` reads its result.
 
 ## Behaviour
-- [r1] **When** a work-item is done, every scenario it accepts passes, and so does everything that passed in the suite record its brief gives.
-- [r2] No commit of an implementer changes a `.feature` file, except removing, with `features retire`, a deprecated scenario the work-item lists under Retires.
-- [r3] **If** a scenario the work-item accepts passes before any code is written for it, its check passes before any work, or a scenario of a work-item not yet claimed passes early, the implementer hands back.
-- [r4] **If** a Then line can only pass through code that contradicts it, or a scenario can only fail on setup, the implementer hands back.
-- [r5] **If** an existing test could stay green only by being removed, loosened, skipped or rewritten to assert something else, and the work-item's plan does not list it, the implementer stops `BLOCKED` naming the test.
-- [r6] **When** the implementer changes a test's setup without touching what it asserts, or rewrites a test first committed after the initiative's base, its report names each such test.
-- [r7] **When** the implementer hands back, its result is `HAND-BACK` with the stop condition, the evidence verbatim and which scenarios are green and red, and the work so far is committed on the work-item's branch.
-- [r8] **When** a work-item's scenarios are green, the report says what someone can now do, what was surprising and the open questions, and the result gives the commits.
-- [r9] **If** the work needs more than 15 files touched, the implementer names in its report, before any edit, the files this worker will touch, touches only those, stops at a green commit with the result `PARTIAL`, and a new implementer can continue from the report.
-- [r10] **When** the scenarios are silent about a case, the code does not choose its behaviour and the report names it as an open question.
-- [r11] **When** the plan contains code, the implementer does not paste it and says so in the report.
-- [r12] **If** going green needs work that no scenario of the work-item describes and its plan does not name, beyond a trivial helper, the implementer hands back.
-- [r13] **If** a previously green scenario breaks and fixing it would change what a step means, the implementer stops `BLOCKED`.
-- [r14] **If** the work needs a decision the plan, its rulings and the capability's Behaviour leave open, or a file would cross the repository's size limit with no rule in `CLAUDE.md` saying where the code goes, the implementer stops `BLOCKED` with the specifics.
-- [r15] **If** the brief names no scripts directory or no result file, or `bdd-red-green` is not in the implementer's context, the implementer stops `NEEDS_CONTEXT`.
-- [r16] Every result's status is one of `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `HAND-BACK`, `NEEDS_CONTEXT`, and its summary is under fifteen lines.
-- [r17] **If** the work needs a file outside the work-item's file set, the implementer claims it with `work claim` before editing it. **If** the claim is refused, it commits what is green and stops `BLOCKED`, naming the file and the work-item whose claim has it.
-- [r18] The implementer works only in the worktree and on the branch its brief names, and never pushes, merges, rebases or resets.
-- [r19] No commit of an implementer changes a file under `.shop/work/`.
+- [r1] **When** the implementer reports a work-item done, the implementer shall have every scenario the work-item accepts, and everything that passed in the suite record its brief gives, passing.
+- [r2] The implementer shall not commit a change to a `.feature` file or to a file under `.shop/work/`, except removing, with `features retire`, a deprecated scenario the work-item lists under Retires.
+- [r3] **If** a scenario the work-item accepts passes before any code is written for it or can only fail on setup, the work-item's check passes before any work is done, a scenario of a work-item not yet claimed passes, a Then line can only pass through code that contradicts it, or going green needs work that no scenario of the work-item describes and its plan does not name, beyond a trivial helper, then the implementer shall hand back.
+- [r5] **If** an existing test could stay green only by being removed, loosened, skipped or rewritten to assert something else and the work-item's plan does not list it, a previously green scenario breaks and fixing it would change what a step means, the work needs a decision the plan, its rulings and the capability's Behaviour leave open, or a file would cross the repository's size limit with no rule in `CLAUDE.md` saying where the code goes, then the implementer shall stop `BLOCKED`, naming the test, step, decision or file.
+- [r6] **When** the implementer changes a test's setup without touching what it asserts, or rewrites a test first committed after the initiative's base, the implementer shall name the test in its report.
+- [r7] **When** the implementer hands back, the implementer shall return the result `HAND-BACK` with the stop condition and its evidence verbatim, the work so far committed on the work-item's branch.
+- [r9] **If** the work needs more than 15 files touched, then the implementer shall stop with the result `PARTIAL` at a green commit, having touched only the files it named in its report before its first edit.
+- [r10] **When** the scenarios are silent about a case, the implementer shall name the case in its report as an open question, leaving its behaviour unchosen by the code.
+- [r11] **When** the plan contains code, the implementer shall not paste it.
+- [r15] **If** the implementer cannot do what its brief asks, then the implementer shall stop with the result `NEEDS_CONTEXT`, saying why.
+- [r16] The implementer shall end every run with a result whose status is one of `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `HAND-BACK`, `NEEDS_CONTEXT`.
+- [r17] **When** the work needs a file outside the work-item's file set, the implementer shall claim it with `work claim` before editing it.
+- [r37] **If** the implementer's claim of a file is refused, then the implementer shall stop `BLOCKED` at a green commit, naming the file and the work-item whose claim has it.
+- [r18] The implementer shall work only in the worktree and on the branch its brief names, pushing, merging, rebasing and resetting nothing.
 
 ## Implementation, may change
 - The cycle: run one scenario red, write the step definitions it needs, the least code, run the work-item's
@@ -44,6 +39,11 @@ a scenario should have said, and it never moves a work-item: `work run` reads it
 - The implementer has no Skill tool; `bdd-red-green` is loaded through its `skills` field. Sonnet by default.
 - A continuation reads the report first and takes the next part it names; a fix work-item reads its findings and
   fixes those and nothing else.
+- A `HAND-BACK` result says which scenarios are green and which are red. When a work-item's scenarios are green,
+  the report says what someone can now do, what was surprising and the open questions, and the result gives the
+  commits. The report says when the plan's code was not pasted. A result's summary is under fifteen lines.
+- `NEEDS_CONTEXT` cases seen so far: the brief names no scripts directory or no result file, or `bdd-red-green` is
+  not in the implementer's context.
 
 ## Not yet
 - None.

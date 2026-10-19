@@ -258,7 +258,7 @@ Feature: Design model check
       | initiative.md has the priority high                   | work/i1/initiative.md                     |
       | initiative.md has a date written 16/10/2026           | work/i1/initiative.md                     |
 
-  @r28
+  @r27
   Scenario: a work-item accepting a requirement no scenario names is a file problem
     Pins that a work-item may accept only requirements a scenario already names.
     Given a capability thing with requirement r2 that no scenario names
@@ -281,7 +281,7 @@ Feature: Design model check
       | a frontmatter value is written as a literal block, with \|   |
       | a decision and an observation have the same id               |
 
-  @r30
+  @r2
   Scenario: file problems are each printed and fail the check
     Pins that every file problem is shown and that any one of them fails the check.
     Given a repository with two capabilities that each have no ## Behaviour section
@@ -289,14 +289,14 @@ Feature: Design model check
     Then it prints a file problem for each of the two capabilities
     And it exits 1
 
-  @r31
+  @r2
   Scenario: the check ends with the four counts
     Pins the summary every plain-text check ends with.
     Given a repository with one violation, one warning, one unresolved reference and one file problem
     When model check is run without --json
     Then it prints the four counts, each 1
 
-  @r32
+  @r2
   Scenario Outline: rows of a violated relation are limited, saying how many more there are
     Pins the row limit per violated relation, given or by default.
     Given a repository with <rows> requirements no scenario names
@@ -358,7 +358,7 @@ Feature: Design model check
     Then it says the file is current
     And it exits 0
 
-  @r38
+  @r14
   Scenario: writing the decisions index names the file and leaves out decisions with no id
     Pins what writing the index reports and that only decisions with an id are indexed.
     Given two decisions under decisions/, one of them with no id
@@ -366,7 +366,7 @@ Feature: Design model check
     Then it prints spec/decisions.md as the file it wrote
     And spec/decisions.md lists the decision with an id and not the one without
 
-  @r39
+  @r105
   Scenario: why refuses an argument that is not a requirement reference
     Pins that model why takes only a requirement reference.
     Given a capability thing
@@ -374,7 +374,7 @@ Feature: Design model check
     Then it is refused because thing is not a requirement reference
     And it exits 2
 
-  @r40
+  @r16
   Scenario: why on a requirement no capability has still lists its proposals
     Pins that a missing requirement does not hide the proposals that name it.
     Given a capability thing with no requirement r9
@@ -383,7 +383,7 @@ Feature: Design model check
     Then it says no capability has thing#r9 where the requirement's text would be
     And it lists the proposal
 
-  @r41
+  @r16 @r17
   Scenario Outline: why lists every proposal naming the requirement by date, and fails when none adds or changes it
     Pins that removing proposals are listed too, in date order with status and date, but only one that adds or changes the requirement makes why succeed.
     Given a capability thing with requirement r2
@@ -423,7 +423,7 @@ Feature: Design model check
       | part_of | initiative/i1                    | read as initiative/ex.com/prod/ctx/i1 and not reported as unresolved    |
       | part_of | i1                               | reported as unresolved                                                  |
 
-  @r44
+  @r20
   Scenario: a held scenario names no requirement
     Pins that a scenario tagged @holding does not count as a requirement's acceptance-scenario.
     Given a capability thing with requirement r2
@@ -462,7 +462,7 @@ Feature: Design model check
       | records/observations.md    | an observation, by heading, | obs-1                                  |
       | records/f1.md              | a review-finding            | f1                                     |
 
-  @r47
+  @r24
   Scenario Outline: a reference in a refused form is unresolved
     Pins that the context-name form and the old decision/ and obs/ prefixes name nothing, even where a node of that name exists.
     Given a bounded context with id bounded-context/ex.com/prod/ctx, a capability thing with requirement r1, a decision x and an observation x
@@ -501,7 +501,7 @@ Feature: Design model check
       | - **batch**: . Not: sprint.                              |
       | - **batch**: the slices. Not: sprint, , lot.             |
 
-  @r50
+  @r48
   Scenario: facts give each term its kind, its context and its avoided words
     Given a bounded context whose glossary defines batch, avoiding sprint and lot, and slice, avoiding nothing
     When model facts is run
@@ -554,7 +554,7 @@ Feature: Design model check
     And it exits 0
     But when $SHOPSYSTEM_MODEL_PYTHON names a python3 with clingo, it runs again under that one
 
-  @r56
+  @r55
   Scenario: the check runs again only once
     Given an interpreter that cannot import clingo
     And a python3 on PATH that says it has clingo but runs the check without it
@@ -562,7 +562,7 @@ Feature: Design model check
     Then the check runs again under that python3 once
     And it exits 2
 
-  @r57
+  @r12
   Scenario: with no interpreter that has clingo the check names each one it tried
     Given an interpreter that cannot import clingo
     And no python3 that can, whether PATH holds none or $SHOPSYSTEM_MODEL_PYTHON and PATH name ones without it
@@ -571,7 +571,7 @@ Feature: Design model check
     And it names each interpreter it tried, /usr/local/bin/python3 and /usr/bin/python3 among them
     And it exits 2
 
-  @r58
+  @r36
   Scenario: a withdrawn part is closed
     Pins that withdrawn is a status of a capability-proposal and a work-item, and that it closes the part.
     Given a capability-change initiative with status done

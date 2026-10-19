@@ -16,15 +16,16 @@ the definitions under `agents/`, not by a scenario. Tool lists bound what an age
 Bash can still write files through the shell, which is why `work run` checks the files a worker leaves.
 
 ## Behaviour
-- [r1] Only `initiative-round` can start another agent.
-- [r2] No reviewer, no scout and no planner has the Edit tool.
-- [r3] The `capability-writer` and the `feature-formulator` have no edit and no shell tool.
-- [r4] The implementer's skills are the ones its definition lists under `skills:`, `bdd-red-green` always among them; it has no Skill tool, so the listing of every installed skill never enters its context.
-- [r5] Each agent names its model: Opus for the spec writers, the planner and the reviewers, Sonnet for the implementer and `initiative-round`, Haiku for the scout.
-- [r6] The `bdd-planner` has no shell tool.
+- [r1] The plugin's agent definitions shall let only `initiative-round` start another agent.
+- [r2] The plugin's agent definitions shall give no reviewer, no scout and no planner the Edit tool.
+- [r3] The plugin's agent definitions shall give the `capability-writer` and the `feature-formulator` no edit and no shell tool.
+- [r4] The plugin's agent definitions shall give the implementer only the skills listed under its `skills:`, `bdd-red-green` always among them, and no Skill tool.
+- [r5] The plugin's agent definitions shall name each agent's model: Opus for the spec writers, the planner and the reviewers, Sonnet for the implementer and `initiative-round`, Haiku for the scout.
+- [r6] The plugin's agent definitions shall give the `bdd-planner` no shell tool.
 
 ## Implementation, may change
-- Tool lists and `model:` in `agents/*.md`; `skills:` preloads a skill. `tests/scripts/test_agents.py` reads the
+- Tool lists and `model:` in `agents/*.md`; `skills:` preloads a skill. With no Skill tool, the listing of every
+  installed skill never enters the implementer's context. `tests/scripts/test_agents.py` reads the
   definitions and checks each line.
 - What a tool list cannot enforce (no push, one write path) is asked, or `permissions.deny` in the consuming
   repository's settings.

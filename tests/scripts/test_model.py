@@ -1004,22 +1004,17 @@ class WithdrawnTest(ModelTest):
         self.assertEqual(self.about_initiative(found), [], found)
 
 
-# The scenarios of these requirements are pytest-bdd tests (tests/scenarios/test_design_model_check.py).
-MOVED = {1, 9, 12, 13, 16, 17, 18, 21, 22, 23, 24, 25, 27, 28, 29, 30, 31, 32}
+# The scenarios bound as pytest-bdd tests, by title, in BOUND of tests/scenarios/test_design_model_check.py.
+SCENARIO_MODULE = pathlib.Path(__file__).resolve().parents[1] / "scenarios" / "test_design_model_check.py"
 
 
 def moved_titles():
-    """The titles of the scenarios tagged with a requirement in MOVED."""
-    out, tag = [], None
-    for line in FEATURE.read_text().splitlines():
-        line = line.strip()
-        if re.fullmatch(r"@r\d+", line):
-            tag = int(line[2:])
-        elif line.startswith("Scenario"):
-            if tag in MOVED:
-                out.append(line.split(":", 1)[1].strip())
-            tag = None
-    return out
+    """The titles of the scenarios that the pytest-bdd module binds."""
+    import ast
+    for node in ast.parse(SCENARIO_MODULE.read_text()).body:
+        if isinstance(node, ast.Assign) and [t.id for t in node.targets if isinstance(t, ast.Name)] == ["BOUND"]:
+            return list(ast.literal_eval(node.value))
+    raise AssertionError("no BOUND in %s" % SCENARIO_MODULE)
 
 
 class BindingTest(unittest.TestCase):

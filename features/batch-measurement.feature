@@ -41,7 +41,7 @@ Feature: Batch measurement
     When the session runs measure batch for 2026-09-15-slices.md with no --out
     Then the facts are written to docs/superpowers/measurements/2026-09-15-slices.json
 
-  @r5
+  @r38
   Scenario: an archive file no commit added is refused
     A batch cannot be bounded by an archive file git has no record of adding.
     Given a file 2026-10-01-slices.md that no commit added
@@ -66,7 +66,7 @@ Feature: Batch measurement
     Then measure batch refuses because the facts file exists
     And the facts file is as it was
 
-  @r8
+  @r6
   Scenario: a batch with no dispatch inside it is refused
     A batch in which nothing was dispatched has nothing to measure.
     Given a batch inside whose window no dispatch started
@@ -181,7 +181,7 @@ Feature: Batch measurement
     When the session runs measure compare for the two files
     Then the two files' facts are printed side by side
 
-  @r20
+  @r38
   Scenario: show refuses a file measure did not write as facts
     Show reads only facts files of measure's own making.
     Given a JSON file that is not a facts file measure wrote
@@ -189,7 +189,7 @@ Feature: Batch measurement
     Then measure refuses because the file is not a facts file measure wrote
     And the refusal names the file
 
-  @r21
+  @r38
   Scenario Outline: the open batch needs --plan when the living plan cannot be found
     Without one slices plan in the repository, measure asks for the living plan to be named.
     Given a repository holding <plans> docs/superpowers/plans/*-slices.md files
@@ -202,7 +202,7 @@ Feature: Batch measurement
       | no    |
       | two   |
 
-  @r22
+  @r38
   Scenario Outline: a batch with no archive before it needs --from
     When nothing marks where the batch began, measure asks for the start.
     Given <batch> with no archive file added before the batch's end
@@ -215,7 +215,7 @@ Feature: Batch measurement
       | the open batch of a repository                  |
       | the batch of the first archive file a commit added |
 
-  @r23
+  @r38
   Scenario Outline: a --<option> that is neither a commit nor an ISO time is refused
     An end of the batch must be something measure can place in time.
     Given a repository with no commit named "last-tuesday"
@@ -228,7 +228,7 @@ Feature: Batch measurement
       | from   |
       | to     |
 
-  @r24
+  @r38
   Scenario Outline: git's failures are refused with git's error
     When git cannot answer, measure passes on what git said.
     Given <situation>
@@ -241,7 +241,7 @@ Feature: Batch measurement
       | the current directory is not inside a git repository and no --repo is given |
       | a git command measure batch runs fails                      |
 
-  @r25
+  @r2 @r4
   Scenario Outline: the open batch is named by --name, default open
     The open batch's name, and so its default facts file, can be chosen.
     Given an open batch with dispatches inside it
@@ -254,7 +254,7 @@ Feature: Batch measurement
       | no --name       | open       |
       | --name trial-3  | trial-3    |
 
-  @r26
+  @r2
   Scenario Outline: the open batch starts at the last commit that added a file under the archive directory
     The archive directory that marks batch boundaries defaults to the plans archive and can be changed.
     Given the last commit adding a file under <directory> is commit <commit>
@@ -266,7 +266,7 @@ Feature: Batch measurement
       | no --archive-dir          | docs/superpowers/plans/archive | A      |
       | --archive-dir old/plans   | old/plans                     | B      |
 
-  @r27
+  @r15
   Scenario Outline: the facts hold the slices the batch planned and the slices dispatches were attributed to
     An archive batch keeps all its planned slices; the open batch only those that saw work.
     Given a <batch> whose <source> holds slices 1 and 2
@@ -279,7 +279,7 @@ Feature: Batch measurement
       | archive batch | archive file | 1, 2 and 3 |
       | open batch    | living plan  | 2 and 3    |
 
-  @r28
+  @r14
   Scenario: a commit made while two implementers ran is counted as ambiguous
     Credit for a commit is flagged as uncertain when more than one implementer could have made it.
     Given two implementer dispatches both running at 10:15
@@ -301,7 +301,7 @@ Feature: Batch measurement
       | no dispatch names a ledger and no --tasks is given          |
       | the batch plan is in no commit                              |
 
-  @r30
+  @r1
   Scenario: a written batch is reported in one line
     After writing, the session learns where the facts went and what they cover.
     Given a batch with 6 dispatches across 2 slices
@@ -360,7 +360,7 @@ Feature: Batch measurement
     And the facts give 0.4 as the share of building time from the first branch review on
     And the facts give a mean starting context of 30000 and a summed starting context of 150000
 
-  @r35
+  @r18
   Scenario: show prints the header, the tables, the exceptions, the hand-backs and the notes
     Show lays a facts file out in a fixed order.
     Given a facts file measure wrote, with a dispatch not done, a dispatch not attributed, a hand-back and a note
@@ -370,7 +370,7 @@ Feature: Batch measurement
     And then the dispatch not done and the dispatch not attributed
     And then the hand-back and the note
 
-  @r36
+  @r19
   Scenario: compare prints both files' figures with the ratio of the second to the first
     Compare sets each summary figure and each slice's costs side by side, with how the second batch differs.
     Given facts file a for batch 2026-09-01 on plugin version 0.17.0 with 2 slices
@@ -380,7 +380,7 @@ Feature: Batch measurement
     And each summary figure of both files is printed with the ratio of b's to a's
     And the output, new input, cache read and agent minutes per slice of both files are printed with the ratio of b's to a's
 
-  @r37
+  @r38
   Scenario Outline: a file measure cannot read as its facts is refused
     Compare reads only measure's own facts files, and neither command reads a file that is not JSON.
     Given a file that <file>

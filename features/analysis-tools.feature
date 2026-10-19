@@ -2,7 +2,7 @@
 Feature: Analysis tools
   Narrator: an agent researching or reviewing a project's code
 
-  @r1
+  @r1 @r3
   Scenario Outline: the interpreter is the first of --python, .venv, venv, $VIRTUAL_ENV and the running one
     Pins the order in which tools picks its interpreter, and that probe says which one it picked and why.
     Given a Python project in the current directory
@@ -19,7 +19,7 @@ Feature: Analysis tools
       | the project has neither .venv/bin/python nor venv/bin/python, and $VIRTUAL_ENV points at /opt/env, outside the project, which has bin/python |                             | /opt/env/bin/python                              | the project's virtualenv |
       | the project has neither .venv/bin/python nor venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has no bin/python                   |                             | the interpreter running the script               | neither                  |
 
-  @r2
+  @r49
   Scenario: a project that is not a Python project has no known analysis tools
     Pins that tools names the gap in one line and fails rather than guessing at another language's tools.
     Given a project with no Python in it
@@ -119,7 +119,7 @@ Feature: Analysis tools
       | no test in the map executed the function unused       | src/cart.py:unused  |
       | src/cart.py has no function named missing             | src/cart.py:missing |
 
-  @r12
+  @r49
   Scenario: tests-of without a map says to make one
     Pins that tests-of does not answer before a map exists.
     Given a Python project for which no map has been made
@@ -148,7 +148,7 @@ Feature: Analysis tools
     And the references printed include the calls in src/checkout.py, src/report.py and tests/test_cart.py
     And then it prints one summary line giving the number of references printed, 2 production files, 1 test file, and src/cart.py as where total is defined
 
-  @r15
+  @r49
   Scenario: refs fails for a name the project does not define
     Pins that a name with no definition in the project fails.
     Given a Python project in which nothing is defined as `nowhere`
@@ -179,7 +179,7 @@ Feature: Analysis tools
     When the agent runs `tools check src/cart.py`
     Then under the vulture heading tools says vulture is missing
 
-  @r18
+  @r6
   Scenario: install outside a virtualenv explains each missing tool and installs nothing
     Pins what the agent is told about each missing tool when the interpreter cannot be installed into.
     Given a Python project whose interpreter is not a virtualenv and is missing jedi and vulture
@@ -188,7 +188,7 @@ Feature: Analysis tools
     And for jedi and for vulture tools prints the tool, what it is for, what the workflow does without it and that the interpreter is not a virtualenv
     And it exits 1
 
-  @r19
+  @r5
   Scenario Outline: install with every tool present says so and succeeds
     Pins that nothing to install is success, virtualenv or not.
     Given a Python project whose interpreter <kind> and has every tool
@@ -201,7 +201,7 @@ Feature: Analysis tools
       | is a virtualenv       |
       | is not a virtualenv   |
 
-  @r20
+  @r5
   Scenario: install says each tool it installed
     Pins that a successful install is reported per tool.
     Given a Python project whose interpreter is a virtualenv missing jedi
@@ -209,7 +209,7 @@ Feature: Analysis tools
     When the agent runs `tools install`
     Then tools prints that jedi is installed
 
-  @r21
+  @r49
   Scenario Outline: an interpreter that does not run is refused
     Pins that probe, install and check stop at an interpreter that fails, and say why.
     Given a Python project
@@ -224,7 +224,7 @@ Feature: Analysis tools
       | install             |
       | check src/cart.py   |
 
-  @r22
+  @r4
   Scenario: the probe log line names every tool with its version or missing
     Pins the content of the Probe line.
     Given a Python project whose interpreter has every tool but vulture
@@ -232,7 +232,7 @@ Feature: Analysis tools
     Then the line names each installed tool with its version
     And it names vulture as `missing`
 
-  @r23
+  @r8
   Scenario Outline: map replaces the earlier map and succeeds whether or not the tests pass
     Pins that a failing suite still yields a map, and what map prints about it.
     Given a Python project with a map made at an earlier commit
@@ -247,7 +247,7 @@ Feature: Analysis tools
       | passes          |
       | has a failure   |
 
-  @r24
+  @r49
   Scenario: map that makes no map is refused
     Pins that a run leaving no map is not reported as success.
     Given a Python project in which running the suite under coverage leaves no map
@@ -255,7 +255,7 @@ Feature: Analysis tools
     Then the command is refused because no map was made
     And it names the command it ran and the end of its output
 
-  @r25
+  @r13
   Scenario Outline: untested prints each function with its place, the count and the commit
     Pins untested's report and that finding untested functions is not a failure.
     Given a map made at commit abc1234 in which no test executed <count> functions in src/cart.py
@@ -269,7 +269,7 @@ Feature: Analysis tools
       | 0     |
       | 2     |
 
-  @r26
+  @r49
   Scenario: untested without a map says to make one
     Pins that untested does not answer before a map exists.
     Given a Python project for which no map has been made
@@ -277,7 +277,7 @@ Feature: Analysis tools
     Then the command is refused because no map has been made
     And it says to make one with `tools map`
 
-  @r27
+  @r17
   Scenario Outline: without coverage tests-of and untested say to install it
     Pins that the map readers stop and point to install when coverage is missing.
     Given a Python project whose interpreter is missing coverage
@@ -290,7 +290,7 @@ Feature: Analysis tools
       | tests-of src/cart.py   |
       | untested src/cart.py   |
 
-  @r28
+  @r17
   Scenario: without jedi refs says to install it
     Pins that refs stops and points to install when jedi is missing.
     Given a Python project whose interpreter is missing jedi
@@ -298,7 +298,7 @@ Feature: Analysis tools
     Then the command is refused because jedi is missing from the interpreter
     And it says to run `tools install`
 
-  @r29
+  @r49
   Scenario: tests-of on a file that does not exist is refused
     Pins that an absent file is named, not treated as untested.
     Given a map has been made
@@ -307,7 +307,7 @@ Feature: Analysis tools
     Then the command is refused
     And it names src/gone.py
 
-  @r30
+  @r14
   Scenario Outline: refs on a defined name gives its definition apart from its references
     Pins that the definition is named but not counted, and that any number of references is success.
     Given a Python project that defines the function total in src/cart.py and refers to it <count> times
@@ -322,7 +322,7 @@ Feature: Analysis tools
       | 0     |
       | 3     |
 
-  @r31
+  @r16
   Scenario: check with --base checks the changed Python files that remain, in place of the paths given
     Pins which files --base selects: Python, changed since the base, not deleted.
     Given a Python project in git with base commit abc1234
@@ -331,7 +331,7 @@ Feature: Analysis tools
     Then tools checks src/cart.py
     And it does not check README.md, src/old.py or src/report.py
 
-  @r32
+  @r49
   Scenario: check with a base git cannot compare is refused with git's error
     Pins that a bad base stops the check and passes git's own reason on.
     Given a Python project in git with no ref named nosuchref
@@ -339,7 +339,7 @@ Feature: Analysis tools
     Then the command is refused because git cannot compare the working tree with nosuchref
     And it prints git's error
 
-  @r33
+  @r16
   Scenario: check with no file to check says so under ruff and vulture and does not fail for them
     Pins that an empty selection is not a finding.
     Given a Python project in git whose Python files are unchanged since base commit abc1234
@@ -347,7 +347,7 @@ Feature: Analysis tools
     Then under the ruff heading and under the vulture heading tools says there is nothing to check
     And neither ruff nor vulture makes it exit 1
 
-  @r34
+  @r16
   Scenario: check without import contracts does not run import-linter
     Pins that import-linter is skipped, visibly, when the project states no contracts.
     Given a Python project that states no import contracts
@@ -355,7 +355,7 @@ Feature: Analysis tools
     Then under the import-linter heading tools says the project states no import contracts
     And import-linter is not run
 
-  @r35
+  @r16
   Scenario: a tool that prints nothing is reported clean
     Pins that silence from a tool is shown as clean rather than as an empty heading.
     Given a Python project in which ruff prints nothing for src/cart.py
