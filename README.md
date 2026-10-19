@@ -197,7 +197,7 @@ Fixture runs on a seeded shelf spec (a planted `volume` for `book`, a scenario a
 
 ## Scripts
 
-Plain Python 3, standard library only, in `scripts/` (`model check` alone needs clingo). `--help` is the contract; tests: `python3 -m unittest discover -s tests/scripts`.
+Python 3, in `scripts/`. They take the dependencies they need (design-decision/plugin-takes-the-dependencies-it-needs): clingo for `model check` (`python3 -m pip install clingo`), and pytest and pytest-bdd for the scenarios as they move to pytest-bdd step definitions (initiative i11). `--help` is the contract; tests: `python3 -m unittest discover -s tests/scripts`.
 
 - `scripts/features`: count, list, tag, move and verify-moved for feature files, without the test runner; hold, retire and holding for scenarios kept while they still pass; bindings and rebind for the titles test modules bind; plugin, which writes `slice_expectations.py` into a repository.
 - `scripts/measure`: write, show and compare a batch's facts, from the session transcripts, the plan and git.

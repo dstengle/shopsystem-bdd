@@ -26,8 +26,8 @@ own outside the consuming repository's files.
 - Claude Code's plugin format: skills, agents with tool lists, `skills` preloading; a plugin agent's hooks
   and permissionMode are ignored (design-decision/rules-held-by-agent-tools).
 - superpowers as a declared dependency (design-decision/superpowers-dependency).
-- Scripts on the standard library (design-decision/scripts-stdlib-only), except the solver behind `model check`
-  (design-decision/model-check-solves-with-clingo).
+- The dependencies the plugin needs, named in its documentation: clingo, pytest, pytest-bdd
+  (design-decision/plugin-takes-the-dependencies-it-needs; the solver: design-decision/model-check-solves-with-clingo).
 
 ## Composition
 
