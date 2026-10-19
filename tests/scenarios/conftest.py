@@ -31,3 +31,9 @@ def run(repo):
         cmd = [sys.executable, str(SCRIPTS / script), *map(str, args)]
         return subprocess.run(cmd, capture_output=True, text=True, cwd=cwd or repo, **kwargs)
     return _run
+
+
+def pytest_configure(config):
+    """The feature files' requirement tags (@r1 ...) are marks; register them."""
+    for number in range(1, 200):
+        config.addinivalue_line("markers", "r%d: scenario of requirement r%d" % (number, number))

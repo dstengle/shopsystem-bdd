@@ -330,11 +330,13 @@ def a_map_has_been_made(run, repo, context):
 def nothing_executed(run, repo, context, name):
     put(repo, {"src/cart.py": CART + "\n\ndef %s():\n    return 0\n" % name})
     mapped(run, repo, context)
+    context["unexecuted"] = name
 
 
 @given(parsers.parse("src/cart.py has no function named {name}"))
-def no_function_named(repo, name):
+def no_function_named(repo, context, name):
     assert "def %s" % name not in (repo / "src" / "cart.py").read_text()
+    context["absent"] = name
 
 
 @given("a Python project for which no map has been made")
@@ -390,6 +392,7 @@ def nothing_defined(repo, context):
     real()
     a_python_project(repo, context)
     assert "nowhere" not in CART
+    context["defines_nothing"] = True
 
 
 @given("a Python project with import contracts")
@@ -510,8 +513,18 @@ def agent_runs(run, repo, context, outside, args):
 
 
 @then(parsers.parse("it exits {code:d}"))
-def exits(context, code):
-    assert context["result"].returncode == code, context["result"]
+def exits(run, repo, context, outside, code):
+    result = context["result"]
+    assert result.returncode == code, result
+    assert "Traceback" not in result.stderr
+    if "absent" in context:  # r11: a function the file does not have
+        assert result.stdout == ""
+        assert result.stderr == "tools: src/cart.py has no function named %s\n" % context["absent"]
+        assert invoke(run, repo, context, ["tests-of", "src/cart.py:total"], outside).returncode == 0
+    if "unexecuted" in context:  # r11: a function no test executed
+        assert "0 of the 1 tests in the map executed" in result.stdout
+    if context.get("defines_nothing"):  # r15
+        assert result.stdout == ""
 
 
 def lines(context):
@@ -536,7 +549,7 @@ def says_source(context, source):
 
 
 # r2
-@then("tools says in one line that no analysis tools are known for the project's language")
+@then("tools says in one line that no analysis tools are known for its language")
 def no_tools_known(context):
     stderr = context["result"].stderr
     assert "no analysis tools are known for this project's language" in stderr
@@ -570,12 +583,14 @@ def interpreter_last(context):
 # r4
 @then("tools prints exactly one line, and it begins `Probe: tools -> `")
 def one_probe_line(context):
-    assert len(lines(context)) == 1 and lines(context)[0].startswith("Probe: tools -> ")
+    assert len(lines(context)) == 1
+    assert re.match(r"^Probe: tools -> coverage \S+, pytest-cov \S+, jedi \S+, .*hypothesis \S+$", lines(context)[0])
 
 
 # r5
 @then(parsers.parse("{tools} are installed into the interpreter with pip"))
 def installed_with_pip(context, tools):
+    assert context["result"].returncode == 0, context["result"].stderr
     assert pip_calls(context["python"]) == tools.split(" and ")
 
 
@@ -608,7 +623,8 @@ def explains_one(context, tool):
 @then("it prints the command that failed with the end of its error")
 def failed_command(context):
     stdout = context["result"].stdout
-    assert "  Tried: %s -m pip install jedi\n" % context["python"] in stdout
+    assert re.search(r"(?m)^jedi is missing\.\n  It is for: .+\.\n  Without it: .+\.\n"
+                     r"  Tried: %s -m pip install jedi\n" % re.escape(str(context["python"])), stdout)
     assert "error: no matching distribution" in stdout
     assert "e1" not in stdout
     assert pip_calls(context["python"]) == ["jedi"]
@@ -634,13 +650,14 @@ def only_test_total(repo, run, context):
 
 @then(parsers.parse("the map is kept in `{path}`"))
 def map_kept(repo, path):
-    # the feature still names .superpowers/tools/coverage; the map lives in MAP since the layout move (see the report)
-    assert (repo / MAP).is_file()
+    assert path == MAP
+    assert (repo / path).is_file()
 
 
 # r9
 @then("tools prints test_total and test_checkout, one a line")
 def prints_two(context):
+    assert context["result"].returncode == 0, context["result"].stderr
     assert lines(context)[:-1] == ["tests/test_cart.py::test_total", "tests/test_checkout.py::test_checkout"]
 
 
@@ -657,6 +674,7 @@ def gives_commit(context, label):
 # r10
 @then("tools prints tests/test_cart.py with 2 and tests/test_checkout.py with 1")
 def by_file(context):
+    assert context["result"].returncode == 0, context["result"].stderr
     assert lines(context)[:2] == ["tests/test_cart.py 2", "tests/test_checkout.py 1"]
 
 
@@ -725,7 +743,8 @@ def definition_not_counted(context):
 @then(parsers.parse("{count:d} references are printed"))
 def n_refs(context, count):
     assert len(lines(context)) - 1 == count
-    assert lines(context)[-1].startswith("%d reference%s to total" % (count, "" if count == 1 else "s"))
+    assert lines(context)[-1] == "%d reference%s to total, in %d production and 0 test files; defined at src/cart.py:1" % (
+        count, "" if count == 1 else "s", 1 if count else 0)
 
 
 # r16
@@ -776,10 +795,12 @@ def nothing_installed(context):
 @then("tools says every tool is present")
 def all_present_said(context):
     assert context["result"].stdout == "every tool is present\n"
+    assert pip_calls(context["python"]) == []
 
 
 @then(parsers.parse("tools prints that {tool} is installed"))
 def says_installed(context, tool):
+    assert context["result"].returncode == 0, context["result"].stderr
     assert context["result"].stdout == "%s installed\n" % tool
 
 

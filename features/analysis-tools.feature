@@ -24,7 +24,7 @@ Feature: Analysis tools
     Pins that tools names the gap in one line and fails rather than guessing at another language's tools.
     Given a project with no Python in it
     When the agent runs `tools probe`
-    Then tools says in one line that no analysis tools are known for the project's language
+    Then tools says in one line that no analysis tools are known for its language
     And it exits 1
 
   @r3
@@ -79,7 +79,7 @@ Feature: Analysis tools
     When the agent runs `tools map -- -k test_total`
     Then the suite is run once under coverage with a context for each test
     And only test_total is run
-    And the map is kept in `.superpowers/tools/coverage`
+    And the map is kept in `.shop/scratch/tools/coverage`
 
   @r9
   Scenario Outline: tests-of lists the tests that executed a target in the last map
