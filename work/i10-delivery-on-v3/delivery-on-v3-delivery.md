@@ -2,10 +2,10 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/delivery-on-v3-delivery
 kind: capability-proposal
 part_of: initiative/i10
-status: drafted
+status: approved
 date: 2026-10-19
 argues: [delivery]
-adds: [delivery#r1-r17]
+adds: [delivery#r1-r7]
 changes: []
 removes: []
 ---
@@ -29,3 +29,5 @@ With this proposal `spec/index.md` changes: the Purpose says work-items for thin
 superpowers constraint goes; the build side of Composition lists delivery, code-research, planning, red-green,
 review and role-boundaries with their new narrators, and the tools work-queue and supervision; Testing says the
 workflow capabilities run as fixture scenarios (design-decision/fixture-scenarios-under-pytest-bdd).
+
+Re-synced 2026-10-19 to the EARS lines (initiative/i13, approved by the person): `capabilities/delivery.md` is now a walking skeleton (design-decision/behaviour-lines-are-ears), numbered from r1, which replaces the drafted lines wholesale; the drafted ids in the text above were never published. What the drafted lines said beyond the skeleton is in the initiative's "Ideas to test once the skeleton runs".

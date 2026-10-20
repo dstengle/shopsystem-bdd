@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/a-scenario-may-name-several-requirements
 summary: "A scenario names one or more requirements by @r<n> tags; every requirement is named by at least one scenario."
 date: 2026-10-19
-status: proposed
+status: accepted
 supersedes: design-decision/scenario-names-requirement-by-tag
 source: "observation/2026-10-19-lines-not-ears; the person, 2026-10-19"
 ---

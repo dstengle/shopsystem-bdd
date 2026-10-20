@@ -2,11 +2,11 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/delivery-on-v3-code-research
 kind: capability-proposal
 part_of: initiative/i10
-status: drafted
+status: approved
 date: 2026-10-19
 argues: [code-research]
 adds: [code-research#r10-r12]
-changes: [code-research#r1, code-research#r3, code-research#r4, code-research#r5, code-research#r6]
+changes: [code-research#r1, code-research#r3-r6]
 removes: [code-research#r2]
 ---
 

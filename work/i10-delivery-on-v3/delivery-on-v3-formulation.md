@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/delivery-on-v3-formulation
 kind: capability-proposal
 part_of: initiative/i10
-status: drafted
+status: approved
 date: 2026-10-19
 argues: [formulation]
 adds: []

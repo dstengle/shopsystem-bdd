@@ -2,10 +2,10 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/delivery-on-v3-supervision
 kind: capability-proposal
 part_of: initiative/i10
-status: drafted
+status: approved
 date: 2026-10-19
 argues: [supervision]
-adds: [supervision#r1-r35]
+adds: [supervision#r1-r10]
 changes: []
 removes: []
 ---
@@ -30,3 +30,5 @@ design-decision/the-file-set-is-the-claim (supersedes design-decision/slice-budg
 Glossary, added:
 - **supervisor**: `work run`, the script that starts the workers and alone writes a work-item's status.
 - **worker**: a new `claude -p` session of one agent, started by the supervisor for one stage of one work-item.
+
+Re-synced 2026-10-19 to the EARS lines (initiative/i13, approved by the person): `capabilities/supervision.md` is now a walking skeleton (design-decision/behaviour-lines-are-ears), numbered from r1, which replaces the drafted lines wholesale; the drafted ids in the text above were never published. What the drafted lines said beyond the skeleton is in the initiative's "Ideas to test once the skeleton runs".

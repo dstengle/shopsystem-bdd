@@ -2,10 +2,10 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/model-in-consumers-migration-tools
 kind: capability-proposal
 part_of: initiative/i8
-status: drafted
+status: approved
 date: 2026-10-19
 argues: [migration-tools]
-adds: [migration-tools#r1-r45]
+adds: [migration-tools#r1-r7]
 ---
 
 # Migration tools: scripts/migrate
@@ -38,3 +38,5 @@ slice (180.1, `blocked: done as slice 165.4`), 160 backlog entries and 45 log en
 kb's `tests/slices.py` names the living plan by its path (`PLAN = "docs/superpowers/plans/2026-09-24-kb-slices.md"`)
 and stops the run when it cannot read it; r20 rewrites that path so kb's suite gives the same answer after the
 move. Removing kb's own slice machinery is kb's work, after its migration.
+
+Re-synced 2026-10-19 to the EARS lines (initiative/i13, approved by the person): `capabilities/migration-tools.md` is now a walking skeleton (design-decision/behaviour-lines-are-ears), numbered from r1, which replaces the drafted lines wholesale; the drafted ids in the text above were never published. What the drafted lines said beyond the skeleton is in the initiative's "Ideas to test once the skeleton runs".

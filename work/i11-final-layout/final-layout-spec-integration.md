@@ -2,11 +2,11 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/final-layout-spec-integration
 kind: capability-proposal
 part_of: initiative/i11
-status: drafted
+status: approved
 date: 2026-10-19
 argues: [spec-integration]
 adds: [spec-integration#r20-r22]
-changes: [spec-integration#r9, spec-integration#r17, spec-integration#r19]
+changes: [spec-integration#r15, spec-integration#r17, spec-integration#r19]
 ---
 
 # Spec integration: decision files in the light form
@@ -19,3 +19,5 @@ proposed file is `capabilities/spec-integration.md`.
 
 The Not yet entry's trigger named i8, which is now migration only; it is reworded to a consuming
 repository asking for it.
+
+Re-synced 2026-10-19 to the EARS lines (initiative/i13, approved by the person): spec-integration#r9 -> r15. The ids in the text above are the drafted ones.

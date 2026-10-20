@@ -2,11 +2,11 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/model-in-consumers-spec-migration
 kind: capability-proposal
 part_of: initiative/i8
-status: drafted
+status: approved
 date: 2026-10-19
 argues: [spec-migration]
-adds: [spec-migration#r15-r23]
-changes: [spec-migration#r4, spec-migration#r9, spec-migration#r11, spec-migration#r13, spec-migration#r14]
+adds: [spec-migration#r15-r23, spec-migration#r26]
+changes: [spec-migration#r4-r5, spec-migration#r9, spec-migration#r11, spec-migration#r14]
 ---
 
 # Spec migration: to the final layout, in one pass
@@ -26,3 +26,5 @@ Migration ends on the final layout whatever the repository had of the old system
 
 The mechanical half is a new script capability, capability/migration-tools
 (capability-proposal/model-in-consumers-migration-tools); these lines are the person's view of it.
+
+Re-synced 2026-10-19 to the EARS lines (initiative/i13, approved by the person): spec-migration#r16 -> r16, r26; spec-migration#r13 -> r5. The ids in the text above are the drafted ones.

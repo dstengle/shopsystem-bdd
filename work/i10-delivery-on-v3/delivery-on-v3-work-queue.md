@@ -2,10 +2,10 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/delivery-on-v3-work-queue
 kind: capability-proposal
 part_of: initiative/i10
-status: drafted
+status: approved
 date: 2026-10-19
 argues: [work-queue]
-adds: [work-queue#r1-r24]
+adds: [work-queue#r1-r7]
 changes: []
 removes: []
 ---
@@ -26,3 +26,5 @@ Glossary (`spec/index.md`), added with this proposal:
 - **work-item**: the unit of delivery under a capability-proposal, done when the scenarios it accepts or its check pass, moved through its stages by `work run`.
 - **file set**: the paths a work-item's work changes, found by its researcher and made final by its planner.
 - **claim**: a claimed work-item's hold on its file set, which no other claimed work-item's file set shares.
+
+Re-synced 2026-10-19 to the EARS lines (initiative/i13, approved by the person): `capabilities/work-queue.md` is now a walking skeleton (design-decision/behaviour-lines-are-ears), numbered from r1, which replaces the drafted lines wholesale; the drafted ids in the text above were never published. What the drafted lines said beyond the skeleton is in the initiative's "Ideas to test once the skeleton runs".

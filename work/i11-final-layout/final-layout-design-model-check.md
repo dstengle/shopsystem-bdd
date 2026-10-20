@@ -2,11 +2,11 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/final-layout-design-model-check
 kind: capability-proposal
 part_of: initiative/i11
-status: drafted
+status: approved
 date: 2026-10-19
 argues: [design-model-check]
-adds: [design-model-check#r60-r66]
-changes: [design-model-check#r2-r8, design-model-check#r10, design-model-check#r11, design-model-check#r14, design-model-check#r15, design-model-check#r19, design-model-check#r20, design-model-check#r23, design-model-check#r26, design-model-check#r33-r35, design-model-check#r37, design-model-check#r44, design-model-check#r51-r54, design-model-check#r59]
+adds: [design-model-check#r61, design-model-check#r64-r66]
+changes: [design-model-check#r2-r8, design-model-check#r10-r11, design-model-check#r14-r15, design-model-check#r19-r20, design-model-check#r23, design-model-check#r25-r26, design-model-check#r29, design-model-check#r33-r35, design-model-check#r37, design-model-check#r51-r54, design-model-check#r59]
 removes: [design-model-check#r45]
 ---
 
@@ -107,3 +107,5 @@ The labels, one per rule `model.lp` shows, written once there:
 Formulation follows: the scenarios of the changed lines are reworded; steps that use "holding" or "holds"
 ("a directory holding", "one JSON object holding") are reworded with their lines, since the new glossary
 entry avoids "holding".
+
+Re-synced 2026-10-19 to the EARS lines (initiative/i13, approved by the person): design-model-check#r60 -> r25; design-model-check#r62 -> r26; design-model-check#r63 -> r29; design-model-check#r44 -> r20. The ids in the text above are the drafted ones.

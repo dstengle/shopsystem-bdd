@@ -2,11 +2,11 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/delivery-on-v3-design-model-check
 kind: capability-proposal
 part_of: initiative/i10
-status: drafted
+status: approved
 date: 2026-10-19
 argues: [design-model-check]
-adds: [design-model-check#r67]
-changes: [design-model-check#r6, design-model-check#r22, design-model-check#r23, design-model-check#r24, design-model-check#r43]
+adds: []
+changes: [design-model-check#r6, design-model-check#r22-r24, design-model-check#r43]
 removes: [design-model-check#r42]
 ---
 
@@ -20,3 +20,5 @@ same requirement goes (r42). A fix work-item's `fixes` and `findings` are checke
 proposal retires them, without a report (r6, r23): retiring r42 here would otherwise leave i3's merged proposal under
 v15e, and every removal unresolved once merged. The
 Not yet entry for a work-queue view is done by `work show` and `work next` (work-queue).
+
+Re-synced 2026-10-19 to the EARS lines (initiative/i13, approved by the person): design-model-check#r67 -> r22. The ids in the text above are the drafted ones.

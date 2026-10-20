@@ -2,11 +2,11 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/delivery-on-v3-review
 kind: capability-proposal
 part_of: initiative/i10
-status: drafted
+status: approved
 date: 2026-10-19
 argues: [review]
 adds: [review#r12-r14]
-changes: [review#r1, review#r3, review#r4, review#r6, review#r8, review#r10, review#r11]
+changes: [review#r1, review#r3-r4, review#r6, review#r8, review#r10-r11]
 removes: []
 ---
 

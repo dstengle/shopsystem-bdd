@@ -2,10 +2,10 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/final-layout-formulation
 kind: capability-proposal
 part_of: initiative/i11
-status: drafted
+status: approved
 date: 2026-10-19
 argues: [formulation]
-changes: [formulation#r1, formulation#r4, formulation#r6, formulation#r11, formulation#r12]
+changes: [formulation#r1, formulation#r4, formulation#r6, formulation#r11]
 ---
 
 # Formulation: deprecated scenarios
@@ -16,3 +16,5 @@ work that turns its replacement green retires it", which reads the same under i1
 r6 (holds → contains), r11 (carries → has). The proposed file is `capabilities/formulation.md`.
 
 r10 (slicing hands back a scenario) is left to initiative i10.
+
+Re-synced 2026-10-19 to the EARS lines (initiative/i13, approved by the person): formulation#r12 -> r4. The ids in the text above are the drafted ones.
