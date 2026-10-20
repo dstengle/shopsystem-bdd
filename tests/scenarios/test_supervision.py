@@ -278,6 +278,15 @@ def researcher_meddles(repo, plan, context):
                           "notes": {"notes.md": "what the researcher found\n"}}
 
 
+@given("every worker gives DONE, and while the researcher runs another session commits .shop/work/i2/initiative.md and a "
+       "change to .shop/work/i1/initiative.md in the repository's own checkout")
+def another_session_commits(repo, plan, context):
+    plan["default"] = {"status": "DONE"}
+    context["elsewhere"] = {".shop/work/i2/initiative.md": "---\nid: %s\nkind: initiative\nstatus: proposed\n---\n" % full("initiative", "i2"),
+                            ".shop/work/i1/initiative.md": (repo / ".shop/work/i1/initiative.md").read_text() + "\nChanged by another session.\n"}
+    plan["code-scout"] = {"elsewhere": {"root": str(repo), "commit": context["elsewhere"]}}
+
+
 @given("README.md has a change that is not committed")
 def readme_changed(repo):
     write(repo, "README.md", "# repo\n\nA change not committed.\n")
@@ -440,6 +449,15 @@ def none_after(repo, name, who):
 @then(".shop/work/i1/initiative.md is as it was")
 def initiative_as_it_was(repo, context):
     assert (repo / ".shop/work/i1/initiative.md").read_text() == context["initiative.md"]
+
+
+@then(".shop/work/i2/initiative.md and .shop/work/i1/initiative.md are as that session committed them, with nothing "
+      "under .shop/work/ left uncommitted")
+def elsewhere_kept(repo, context):
+    for rel, text in context["elsewhere"].items():
+        assert (repo / rel).is_file() and (repo / rel).read_text() == text, rel
+        assert git(repo, "show", "HEAD:" + rel) == text, rel
+    assert git(repo, "status", "--porcelain", "--", ".shop/work") == ""
 
 
 @then(parsers.parse("log.jsonl's first move of {name} is from {before} to {after}"))

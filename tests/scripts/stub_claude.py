@@ -19,7 +19,10 @@ The script is the JSON file $STUB_CLAUDE_PLAN: an object whose keys are agents w
   skills     a list of skills to load (`shopsystem-bdd:bdd-red-green`), first;
   run        a list of Bash commands (argument lists), run in the working directory, last;
   names      {result field: path}, a file the result names (`report`), given in the result by its absolute path, the
-             path taken relative to the working directory.
+             path taken relative to the working directory;
+  elsewhere  {"root": a directory, "commit": {path: text}}: while this worker runs, another session (not the worker,
+             so no tool of its own and nothing recorded) writes these files relative to that directory and commits
+             them there, first.
 As the real claude does, it refuses to write any file (a `write` path, the result file) under its --plugin-dir, as a
 sensitive file: the write is recorded as refused (`Write`) and nothing is written.
 Each start and end, and each Bash command, skill load or write outside the working directory run or refused (its `tool`,
@@ -102,6 +105,13 @@ def main(argv):
     short = agent.split(":", 1)[-1]
     step = dict(plan.get("default", {}), **plan.get(short, {}))
     result = pathlib.Path(next(line.split(":", 1)[1].strip() for line in brief.splitlines() if line.startswith("Result file:")))
+    if step.get("elsewhere"):
+        other = pathlib.Path(step["elsewhere"]["root"])
+        for rel, text in step["elsewhere"]["commit"].items():
+            (other / rel).parent.mkdir(parents=True, exist_ok=True)
+            (other / rel).write_text(text)
+        subprocess.run(["git", "add", "--", *step["elsewhere"]["commit"]], cwd=other, check=True, capture_output=True)
+        subprocess.run(["git", "commit", "-q", "-m", "another session's commit"], cwd=other, check=True, capture_output=True)
     for name in step.get("skills", []):
         skill(argv, name)
     for rel, text in step.get("write", {}).items():

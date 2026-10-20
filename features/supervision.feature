@@ -123,6 +123,15 @@ Feature: Supervision
     And w1 is green
 
   @r6
+  Scenario: a file committed under .shop/work/ in the repository's own checkout while a worker runs is kept
+    Pins that work run puts back only what a worker changed, in its worktree or on its branch, and never a change made elsewhere.
+    Given i1's work-item w1 is drafted
+    And every worker gives DONE, and while the researcher runs another session commits .shop/work/i2/initiative.md and a change to .shop/work/i1/initiative.md in the repository's own checkout
+    When the person runs `work run i1`
+    Then .shop/work/i2/initiative.md and .shop/work/i1/initiative.md are as that session committed them, with nothing under .shop/work/ left uncommitted
+    And w1 is green
+
+  @r6
   Scenario Outline: an implementer's commit <change> under .shop/work/ is put back on its branch, the branch is not merged, and the work-item goes to awaiting-ruling naming the file
     Pins that a worker's commit cannot write a status or any other file under .shop/work/ onto the initiative branch.
     Given i1's work-item w1 is ready

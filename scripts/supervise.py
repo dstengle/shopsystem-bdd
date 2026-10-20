@@ -176,25 +176,6 @@ class Run:
         return ["Questions the researcher gave with its DONE, for you to settle or ask:"] + [
             "- %s" % (q if isinstance(q, str) else json.dumps(q)) for q in asked]
 
-    def snapshot(self):
-        """.shop/work/ of the main checkout: its files with their content, and its directories."""
-        outside = list((self.root / WORK).rglob("*"))
-        return {p: p.read_bytes() for p in outside if p.is_file()}, {p for p in outside if p.is_dir()}
-
-    def put_back(self, kept):
-        """.shop/work/ of the main checkout as it was before the worker started: changed and deleted files restored,
-        files and directories added removed (r6)."""
-        files, dirs = kept
-        for path in list((self.root / WORK).rglob("*")):
-            if path.is_dir() and path not in dirs:
-                shutil.rmtree(path, ignore_errors=True)
-            elif path.is_file() and path not in files:
-                path.unlink()
-        for path, content in files.items():
-            if not path.is_file() or path.read_bytes() != content:
-                path.parent.mkdir(parents=True, exist_ok=True)
-                path.write_bytes(content)
-
     def delivery(self):
         path = self.root / ".shop" / "delivery.toml"
         return tomllib.loads(path.read_text()) if path.is_file() else {}
@@ -240,20 +221,21 @@ class Run:
         """Start one worker in `tree` and wait for it; its result as a dict, or the reason there is none.
 
         The worker writes in its worktree's .shop/scratch/<k>-<stage>/; work run copies that into the main checkout's
-        run directory, .shop/work/<initiative>/runs/<work-item>/<k>-<stage>/, and reads the result from there."""
+        run directory, .shop/work/<initiative>/runs/<work-item>/<k>-<stage>/, and reads the result from there.
+        What a worker changes under .shop/work/ is put back where the worker changed it (r6): a detached worktree's
+        changes go with the worktree, a branch's are put back by `under_work`. The main checkout's working tree is not
+        the worker's, so nothing there is put back: a change made there while the worker runs is someone else's."""
         label, kept_at = self.run_dir(name, stage)
         here = tree / ".shop" / "scratch" / label
         here.mkdir(parents=True)
         brief = self.brief(name, stage, agent, here, tree, branch, extra)
         session = str(uuid.uuid4())
         self.log(**{"work-item": name, "stage": stage, "agent": agent, "session": session, "event": "start"})
-        kept = self.snapshot()
         done = subprocess.run([self.claude, "-p", "Read the brief file %s and do what it says." % brief,
                                "--agent", AGENT_PREFIX + agent, "--plugin-dir", str(SCRIPTS.parent),
                                "--session-id", session, "--output-format", "json",
                                "--permission-mode", "acceptEdits", "--allowedTools", ",".join(self.tools(stage, agent))],
                               cwd=tree, capture_output=True, text=True)
-        self.put_back(kept)
         shutil.copytree(here, kept_at)
         (kept_at / "session.json").write_text(done.stdout)
         self.log(**{"work-item": name, "stage": stage, "agent": agent, "session": session, "event": "end"})
