@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/every-scenario-bound
 kind: work-item
 part_of: capability-proposal/final-layout-feature-file-tools
-status: drafted
+status: green
 wkind: enabling
 for: work-item/bindings-unbound
 check: "python3 -m pytest passes and includes tests/scripts/test_bound.py; python3 scripts/features bindings --unbound features/analysis-tools.feature features/design-model-check.feature features/feature-file-tools.feature exits 0; no tests/scripts module but test_measure.py imports binding"
