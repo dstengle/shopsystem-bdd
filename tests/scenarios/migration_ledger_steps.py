@@ -138,3 +138,9 @@ def _(old):
     data, _ = front(old, "spec/decisions/0007-a.md")
     found = (data.get("supersedes"), data.get("revisit_when"))
     assert found == ("design-decision/%s/b" % CONTEXT, "b comes back"), found
+
+
+@then(parsers.parse("spec/decisions/{name}.md's status is {status}"))
+def _(old, name, status):
+    data, _ = front(old, "spec/decisions/%s.md" % name)
+    assert data["status"] == status, data["status"]
