@@ -21,7 +21,7 @@ A repository whose Behaviour lines carry no `[r<n>]` ids is migrated to ids firs
 
 ## The Check
 
-Both modes start here. Choose the drafts path `.superpowers/spec-drafts/<date>-consistency/`; the check is `round-1/`.
+Both modes start here. Choose the drafts path `.shop/scratch/drafts/<date>-consistency/`; the check is `round-1/`.
 
 1. **State the count.** Count the capability files under `spec/capabilities/`. Before anything else, tell the person: "This check runs `model check`, then dispatches <n + 1> spec-checkers: one for each of the <n> capabilities and one for the whole context." Then note `git status --porcelain`.
 2. **Run `scripts/model check --limit 100000`**, with no other argument, and keep its output as `<drafts path>/round-1/model-check.txt`. Its `v_t1`, `v_t2` and `v_t3` rows are findings; rows of any other rule are not this check's findings. Exit 2 with a message that names clingo and `pip install clingo` means clingo is missing: the findings file says that `v_t*` was not checked, and the check goes on. Any other exit 2 is a failed run: stop and report it.
@@ -36,11 +36,11 @@ Both modes start here. Choose the drafts path `.superpowers/spec-drafts/<date>-c
 
    A drift finding about a word goes under that word's term cluster. Number the findings `F1`, `F2` and on, across the file. Each finding names its ids (`capability/<name>#r<n>`, `features/<name>.feature:<title>`, `term/<term>`) and quotes the words. Two agents' findings about one thing are one finding.
 
-**Report mode ends here.** Reply to the person with the findings file's path and the count in each group. Nothing outside the drafts path changes and nothing is committed. If `.gitignore` lacks `.superpowers/`, say so and leave it.
+**Report mode ends here.** Reply to the person with the findings file's path and the count in each group. Nothing outside the drafts path changes and nothing is committed. If `.gitignore` lacks `.shop/scratch/`, say so and leave it.
 
 ## Fix Mode
 
-Fix mode works through a findings file, in four steps, in this order. It takes the findings file of a check this session ran, or one the person names; with neither, it runs The Check first. Before step 1 the working tree is clean of other work, or fix mode stops and says so; if `.gitignore` lacks `.superpowers/`, add it and commit that line alone. A finding's state is written beside it in the findings file as it is settled: `applied <commit>`, `rejected` or `deferred`.
+Fix mode works through a findings file, in four steps, in this order. It takes the findings file of a check this session ran, or one the person names; with neither, it runs The Check first. Before step 1 the working tree is clean of other work, or fix mode stops and says so; if `.gitignore` lacks `.shop/scratch/`, add it and commit that line alone. A finding's state is written beside it in the findings file as it is settled: `applied <commit>`, `rejected` or `deferred`.
 
 Steps 1 to 3 each begin by running `scripts/model check --limit 100000` and keeping its output as `<drafts path>/fix/step-<k>-before.txt`, and each ends by running it again and comparing the rows with that kept run: a row in both was there before and is not the step's. Report to the person, before the next step, the rows that went and the rows that came. The commits inside a step are guarded by the checks the skill they go through runs before each commit; this closing run reports, and it is the next step's kept run. A new row the step made that its skill does not expect is fixed before the next step begins. Where `model check` exits 2 with a message that names clingo and `pip install clingo`, clingo is missing: say so, and the skills a step goes through check by hand, as each says. Any other exit 2 is a failed run: stop and report it.
 
