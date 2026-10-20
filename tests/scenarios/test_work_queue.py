@@ -37,7 +37,8 @@ def initiative(repo, ident):
 
 
 def snapshot(repo):
-    return {str(p.relative_to(repo)): p.read_text() for p in repo.rglob("*") if p.is_file()}
+    """Every file under the repository, its text read so that a file that is not UTF-8 compares too."""
+    return {str(p.relative_to(repo)): p.read_bytes().decode("utf-8", "surrogateescape") for p in repo.rglob("*") if p.is_file()}
 
 
 def fields(path):
@@ -90,12 +91,62 @@ def no_index(repo, ident):
     (repo / "spec/index.md").unlink()
 
 
+@given(parsers.parse("an initiative {ident} under .shop/work/ and a spec/index.md with no id"))
+def index_no_id(repo, ident):
+    initiative(repo, ident)
+    write(repo, "spec/index.md", "---\ntitle: ctx\n---\n# ctx\n")
+
+
+@given(parsers.parse("an initiative {ident} under .shop/work/ and a spec/index.md whose id is {ident2}"))
+def index_short_id(repo, ident, ident2):
+    initiative(repo, ident)
+    write(repo, "spec/index.md", "---\nid: %s\n---\n# ctx\n" % ident2)
+
+
+@given(parsers.parse(".shop/work/i1/{name}.md is not UTF-8 text"))
+def not_utf8(repo, name):
+    (repo / (".shop/work/i1/%s.md" % name)).write_bytes(b"\xff\xfe---\nkind: work-item\n---\n")
+
+
+@given(parsers.parse("an initiative {ident} under .shop/work/ with a work-item {name} that has no status"))
+def no_status(repo, ident, name):
+    initiative(repo, ident)
+    write(repo, ".shop/work/%s/%s.md" % (ident, name), "---\nid: %s\nkind: work-item\n---\n\n# %s\n" % (full("work-item", name), name))
+
+
+@given(parsers.parse("an initiative {ident} under .shop/work/ with a work-item {name} that has no frontmatter"))
+def no_frontmatter(repo, ident, name):
+    initiative(repo, ident)
+    write(repo, ".shop/work/%s/%s.md" % (ident, name), "# %s\n\nstatus: drafted\n" % name)
+
+
+@given(".shop/work/i1/log.jsonl has a line that is not JSON")
+def log_not_json(repo):
+    write(repo, ".shop/work/i1/log.jsonl", log_line("w1", "drafted", "researched").replace("researched", "drafted", 1)
+          + "not json\n")
+
+
+@given(".shop/work/i1/log.jsonl cannot be written")
+def log_read_only(repo):
+    log = write(repo, ".shop/work/i1/log.jsonl", "")
+    log.chmod(0o444)
+
+
 # --- When -----------------------------------------------------------------------------------------------------
 
 @when(parsers.parse("the agent runs `work {args}`"))
 def run_work(repo, run, context, args):
     context["before"] = snapshot(repo)
     context["done"] = run("work", *shlex.split(args))
+
+
+@when(parsers.parse("the agent runs `work {args}` with a newline and `{extra}` in the {option} value"))
+def run_work_newline(repo, run, context, args, extra, option):
+    argv = shlex.split(args)
+    at = argv.index(option) + 1
+    argv[at] = argv[at] + "\n" + extra
+    context["before"] = snapshot(repo)
+    context["done"] = run("work", *argv)
 
 
 @when(parsers.parse("the script moves {name} to {status}"))

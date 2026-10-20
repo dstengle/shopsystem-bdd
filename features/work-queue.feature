@@ -66,6 +66,8 @@ Feature: Work queue
       | state                                                   | reason                                             |
       | a repository with spec/index.md and no initiative i1    | the initiative i1 does not exist                   |
       | an initiative i1 under .shop/work/ and no spec/index.md | spec/index.md, which names the context, is missing |
+      | an initiative i1 under .shop/work/ and a spec/index.md with no id | spec/index.md gives no bounded-context id |
+      | an initiative i1 under .shop/work/ and a spec/index.md whose id is bounded-context | spec/index.md gives no bounded-context id |
 
   @r7
   Scenario: a move of a work-item that does not exist is refused, saying why, and changes nothing
@@ -74,3 +76,62 @@ Feature: Work queue
     When the script moves w1 to researched
     Then the move is refused, naming .shop/work/i1/w1.md
     And nothing under the repository has changed
+
+  @r7
+  Scenario Outline: add refuses a name or an initiative that is not one directory entry under .shop/work/, saying why, and changes nothing
+    Pins that add writes only inside .shop/work/<initiative>/, whatever it is given.
+    Given an initiative i1 under .shop/work/ with no work-item w1
+    When the agent runs `work add <initiative> <name> --part-of capability-proposal/p1 --under thing --accepts thing#r1`
+    Then work says in one line that <reason>
+    And it exits non-zero
+    And nothing under the repository has changed
+
+    Examples:
+      | initiative | name        | reason                                    |
+      | i1         | ../../w1    | the name ../../w1 is not a file name      |
+      | ../../spec | w1          | the initiative ../../spec is not a name   |
+
+  @r7
+  Scenario: add refuses a field value with a newline in it, saying why, and changes nothing
+    Pins that a value given to add cannot write a second line, a status say, into the work-item.
+    Given an initiative i1 under .shop/work/ with no work-item w1
+    When the agent runs `work add i1 w1 --part-of capability-proposal/p1 --under thing --accepts thing#r1` with a newline and `status: ready` in the --part-of value
+    Then work says in one line that the value of --part-of has a newline in it
+    And it exits non-zero
+    And nothing under the repository has changed
+
+  @r7
+  Scenario: show refuses a file under an initiative that is not UTF-8 text, naming it
+    Pins that show stops on a file it cannot read with its reason, never a traceback.
+    Given an initiative i1 under .shop/work/ whose work-item w1 is drafted
+    And .shop/work/i1/w2.md is not UTF-8 text
+    When the agent runs `work show`
+    Then work says in one line that .shop/work/i1/w2.md is not UTF-8 text
+    And it exits non-zero
+
+  @r7
+  Scenario Outline: a move of a work-item whose file <lacks> is refused, saying why, and changes nothing
+    Pins that a move writes a status only into a work-item whose frontmatter holds one, and logs nothing otherwise.
+    Given an initiative i1 under .shop/work/ with a work-item w1 that <lacks>
+    When the script moves w1 to researched
+    Then the move is refused, naming .shop/work/i1/w1.md
+    And nothing under the repository has changed
+
+    Examples:
+      | lacks             |
+      | has no status     |
+      | has no frontmatter |
+
+  @r7
+  Scenario Outline: a move whose log.jsonl <fault> is refused, saying why, and changes nothing
+    Pins that a move is all or nothing: the file and its log line are written together, or neither is.
+    Given an initiative i1 under .shop/work/ whose work-item w1 is drafted
+    And .shop/work/i1/log.jsonl <fault>
+    When the script moves w1 to researched
+    Then the move is refused, naming <named>
+    And nothing under the repository has changed
+
+    Examples:
+      | fault                        | named                              |
+      | has a line that is not JSON  | line 2 of .shop/work/i1/log.jsonl  |
+      | cannot be written            | .shop/work/i1/log.jsonl            |
