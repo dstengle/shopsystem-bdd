@@ -53,15 +53,30 @@ def items(root):
             yield path.parent.name, path.stem, data.get("status")
 
 
+def last_logged(log, name):
+    """The status the last line of `log` for work-item `name` moved it to; None when no line names it."""
+    last = None
+    if log.exists():
+        for line in log.read_text().splitlines():
+            entry = json.loads(line)
+            if entry.get("work-item") == name:
+                last = entry.get("after")
+    return last
+
+
 def move(root, initiative, name, status, by):
     """Move a work-item to `status`, as `by`: work run's way through the lifecycle.
 
     The file gets the new status (r4), then log.jsonl the move's line (r5): a move and its file are written
-    together, the log line last.
+    together, the log line last. A file whose status is not the last one log.jsonl gives it is refused (r6).
     """
     path = Path(root) / WORK / initiative / (name + ".md")
     text = path.read_text()
     before = frontmatter(text)[0].get("status")
+    logged = last_logged(path.parent / "log.jsonl", name)
+    if logged is not None and logged != before:
+        raise Refused("%s gives its status as %s, but log.jsonl's last move of %s is to %s; it is not moved"
+                      % (path.relative_to(root), before, name, logged))
     end = text.find("\n---", 4)
     head = re.sub(r"(?m)^status:.*$", "status: " + status, text[:end], count=1)
     path.write_text(head + text[end:])

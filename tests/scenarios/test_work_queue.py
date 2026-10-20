@@ -74,6 +74,12 @@ def one_line(repo, name, before, after):
     write(repo, ".shop/work/i1/log.jsonl", log_line(name, before, after))
 
 
+@given(parsers.parse(".shop/work/i1/log.jsonl's last line for {name} moves it to {after}"))
+def last_for(repo, name, after):
+    write(repo, ".shop/work/i1/log.jsonl", log_line(name, "drafted", "researched") + log_line(name, "researched", after)
+          + log_line("w9", "planned", "ready"))
+
+
 # --- When -----------------------------------------------------------------------------------------------------
 
 @when(parsers.parse("the agent runs `work {args}`"))
@@ -160,3 +166,17 @@ def last_line(repo, name, before, after):
     when = datetime.datetime.fromisoformat(last.pop("time"))
     assert abs(datetime.datetime.now(datetime.timezone.utc) - when) < datetime.timedelta(minutes=1), when
     assert last == {"work-item": name, "before": before, "after": after, "by": MOVER}, last
+
+
+@then(parsers.parse("the move is refused, naming {rel}, {mine} and {logged}"))
+def refused(context, rel, mine, logged):
+    refusal = context["refused"]
+    assert refusal is not None, "the move was made"
+    assert all(word in str(refusal) for word in (rel, mine, logged)), str(refusal)
+
+
+@then(parsers.parse("{first} and {second} are as they were"))
+def both_as_they_were(repo, context, first, second):
+    for rel in (first, second):
+        assert (repo / rel).read_text() == context["before"][rel], rel
+    assert snapshot(repo) == context["before"]
