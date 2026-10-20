@@ -521,6 +521,13 @@ def prints_end(context, name, status, question, name2, status2):
     assert [l for l in out if question in l], out
 
 
+@then(parsers.re(r"work run prints (?P<name>\w+) with (?P<status>[\w-]+), and (?P<name2>\w+) with (?P<status2>[\w-]+)$"))
+def prints_statuses(context, name, status, name2, status2):
+    out = context["done"].stdout.splitlines()
+    for n, s in ((name, status), (name2, status2)):
+        assert [l for l in out if n in l.split() and s in l.split()], (n, s, out)
+
+
 @then(parsers.parse("work says in one line that {reason}"))
 def says_in_one_line(context, reason):
     err = context["done"].stderr

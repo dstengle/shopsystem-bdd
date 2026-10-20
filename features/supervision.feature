@@ -175,6 +175,14 @@ Feature: Supervision
     Then work run prints w1 with awaiting-ruling and the question "Which module owns the log?", and w2 with green
     And it exits 3
 
+  @r9
+  Scenario: when every work-item is green or withdrawn, work run exits 0, printing each work-item's status
+    Pins that a run whose items all ended well, or were set aside, is no failure; only an open question or an unmoved item is an exit of its own.
+    Given i1's work-items w1 is green and w2 is withdrawn
+    When the person runs `work run i1`
+    Then work run prints w1 with green, and w2 with withdrawn
+    And it exits 0
+
   @r10
   Scenario Outline: work run that cannot do what it was asked exits non-zero, says why in one line, and changes nothing
     Pins that work run checks what it was given before any worker starts, and a refused move is its refusal.

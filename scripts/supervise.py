@@ -390,7 +390,7 @@ class Run:
             if status == "awaiting-ruling":
                 for line in self.questions(name):
                     print("  %s" % line)
-        if all(s == "green" for _, s in statuses):
+        if all(s in ("green", "withdrawn") for _, s in statuses):
             return 0
         return 3 if any(s == "awaiting-ruling" for _, s in statuses) else 1
 
