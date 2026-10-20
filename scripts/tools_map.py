@@ -22,7 +22,10 @@ def cmd_map(args):
         if name.startswith("coverage"):
             os.remove(os.path.join(os.path.dirname(MAP), name))
     env = dict(os.environ, COVERAGE_FILE=os.path.abspath(MAP))
-    command = [python, "-m", "pytest", "-q", "-p", "no:cacheprovider", "--cov=.", "--cov-context=test",
+    # In one process, so each test's coverage context is exact: `-n 0` where the interpreter has pytest-xdist (a
+    # `-p no:xdist` would leave a pytest.ini's `-n auto` an unknown option), nothing where it has not.
+    serial = ["-n", "0"] if subprocess.run([python, "-c", "import xdist"], capture_output=True).returncode == 0 else []
+    command = [python, "-m", "pytest", "-q", "-p", "no:cacheprovider", *serial, "--cov=.", "--cov-context=test",
                "--cov-report="] + args.pytest
     done = subprocess.run(command, env=env, capture_output=True, text=True)
     lines = done.stdout.strip().splitlines()
