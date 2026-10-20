@@ -606,9 +606,13 @@ Feature: Design model check
       | r4 | **When** asked, **Where** configured, `thing` shall answer.                            |
       | r5 | **Where** configured, **While** idle, **When** asked, `thing` shall answer.            |
       | r6 | **If** asked, then `thing` shall answer.                                               |
+      | r7 | **If** asked, then **When** idle, `thing` shall answer.                                |
+      | r8 | when asked, `thing` shall answer.                                                      |
+      | r9 | Sometimes `thing` shall answer.                                                        |
     When model check is run
-    Then v_e1 names r2, r3 and r4
+    Then v_e1 names r2, r3, r4, r7, r8 and r9
     And v_e1 does not name r1, r5 or r6
+    And v_e2 does not name r2
     And it exits 1
 
   @r103
@@ -625,9 +629,10 @@ Feature: Design model check
       | r2 | **When** asked, `thing` shall answer and `thing` shall log.                  |
       | r3 | **When** asked, `thing` shall answer. It is quick.                           |
       | r4 | **When** asked, `thing` shall read `a.b` and say "so. it is."                |
+      | r5 | **When** asked, `thing` shall answer, e.g. with a value.                     |
     When model check is run
     Then v_e2 names r2 and r3
-    And v_e2 does not name r1 or r4
+    And v_e2 does not name r1, r4 or r5
     And it exits 1
 
   @r5 @r23
@@ -656,3 +661,16 @@ Feature: Design model check
       | r4 | The thing shall hold a shelf.              |
     When model facts is run
     Then only r4 mentions shelf
+
+  @r3
+  Scenario: a table row whose id lost its brackets is a line with no id
+    Given a capability whose Behaviour has a table whose row is marked r1 without brackets
+    When model check is run
+    Then the output names v15a
+
+  @r103
+  Scenario: a table is led only by the sentence just before it
+    Given a capability whose Behaviour has a table led by a good sentence, a ### heading, and a second table with a row marked [r2] and no lead
+    When model check is run
+    Then v_e1 names r2
+    And v_e1 does not name r1

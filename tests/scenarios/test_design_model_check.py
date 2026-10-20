@@ -40,6 +40,8 @@ BOUND = (
     "a Behaviour line in none of EARS's patterns is v_e1",
     'a table row is checked by its lead sentence',
     'a Behaviour line with two shalls or two sentences is v_e2',
+    'a table row whose id lost its brackets is a line with no id',
+    'a table is led only by the sentence just before it',
     'a retired id used again is refused',
     'a merged capability-proposal may add or remove an id its capability lists as retired',
     'a table row with an id is a requirement, and its header, separator and lead sentence are not',
@@ -373,6 +375,20 @@ def scenarios_saying(world):
                 "  Scenario: the store\n    Given a thing\n")
 
 
+@given("a capability whose Behaviour has a table whose row is marked r1 without brackets")
+def capability_with_unbracketed_row(world):
+    world.write("spec/capabilities/thing.md", cap("thing", [
+        "**When** asked, `thing` shall answer as the rows say:", "", "| id | what |", "|---|---|", "| r1 | one |"]))
+
+
+@given("a capability whose Behaviour has a table led by a good sentence, a ### heading, and a second table with a row "
+       "marked [r2] and no lead")
+def capability_with_two_tables(world):
+    world.write("spec/capabilities/thing.md", cap("thing", [
+        "**When** asked, `thing` shall answer as the rows say:", "", "| id | what |", "|---|---|", "| [r1] | one |", "",
+        "### More", "", "| id | what |", "|---|---|", "| [r2] | two |"]))
+
+
 @given("a capability whose Behaviour has these lines")
 def capability_with_lines(world, datatable):
     rows = datatable[1:]
@@ -434,7 +450,7 @@ def reports_nothing(context):
     assert "0 unresolved references, 0 file problems" in out
 
 
-@then(parsers.re(r"the output names (?P<code>v15c)"))
+@then(parsers.re(r"the output names (?P<code>v15[ac])"))
 def output_names_code(world, context, code):
     assert code in [name for name, _ in found(world, context)["violations"]], found(world, context)
 

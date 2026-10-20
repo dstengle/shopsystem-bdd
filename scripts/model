@@ -234,27 +234,34 @@ TABLE_ID = re.compile(r"^\[r\d+\]$")
 
 def behaviour_items(lines):
     """(text, lead) of each requirement of a Behaviour section: a top-level '- ' bullet, its continuation lines joined,
-    or a table row whose first cell is `[r<n>]`, its other cells joined by ' | '. `lead` is the sentence that
-    introduces a table row (a bullet with no id that ends in ':', or the paragraph above the table), else None.
+    or a table row whose first cell is `[r<n>]` (a row whose first cell is `r<n>` without brackets is a line with no
+    id), its other cells joined by ' | '. `lead` is the sentence just before the table: a bullet with no id that ends
+    in ':', or a paragraph; None when something else (a heading, a requirement, another table) comes between.
     A table's header row and separator, a '###' heading and a lead sentence are no requirements."""
-    items, lead, open_bullet, paragraph = [], None, False, False
+    items, lead, open_bullet, paragraph, in_table = [], None, False, False, False
     for line in lines:
         stripped = line.strip()
         if stripped.startswith("|"):
             open_bullet = paragraph = False
+            in_table = True
             cells = [c.strip() for c in stripped.strip("|").split("|")]
-            if cells and TABLE_ID.match(cells[0]):
+            if cells and (TABLE_ID.match(cells[0]) or re.fullmatch(r"r\d+", cells[0])):
                 items.append([cells[0] + " " + " | ".join(cells[1:]), lead])
             elif items and items[-1][1] is None and not RID.match(items[-1][0]) and items[-1][0].endswith(":"):
                 lead = items.pop()[0]       # a bullet with no id that ends in ':' above a table leads it
             continue
+        if in_table and stripped:
+            lead, in_table = None, False
         if line.startswith(("- ", "* ")):
             items.append([stripped[2:].strip(), None])
-            lead, open_bullet, paragraph = items[-1][0], True, False
+            lead = None if RID.match(items[-1][0]) else items[-1][0]
+            open_bullet, paragraph = True, False
         elif open_bullet and line.startswith("  ") and stripped:
             items[-1][0] += " " + stripped
-            lead = items[-1][0]
-        elif stripped and not line.startswith(("#", " ")):
+            lead = None if RID.match(items[-1][0]) else items[-1][0]
+        elif stripped.startswith("#"):
+            lead, open_bullet, paragraph = None, False, False
+        elif stripped and not line.startswith(" "):
             lead = lead + " " + stripped if paragraph else stripped
             open_bullet, paragraph = False, True
         elif not stripped:
@@ -304,7 +311,7 @@ def glossary_entry(bullet):
 
 
 CLAUSE_RANK = {"Where": 1, "While": 2, "When": 3, "If": 3}
-CLAUSE = re.compile(r"(Where|While|When|If)\b")
+CLAUSE = re.compile(r"(Where|While|When|If)\b", re.IGNORECASE)
 
 
 def ears(line):
@@ -318,7 +325,8 @@ def ears(line):
     text = RID.sub("", line).replace("**", "")
     text = re.sub(r'`[^`]*`|"[^"]*"', "X", text).strip().rstrip(":")
     shalls = list(re.finditer(r"\bshall\b", text, re.IGNORECASE))
-    one = len(shalls) == 1 and len(re.findall(r"[.!?](?=\s+\S)", text)) == 0
+    plain = re.sub(r"\b(?:e\.g|i\.e|etc)\.", "X", text, flags=re.IGNORECASE)     # an abbreviation ends no sentence
+    one = len(shalls) <= 1 and not re.search(r"[.!?](?=\s+\S)", plain)
     if not shalls:
         return False, one
     rest, rank = text[: shalls[0].start()].strip(), 0
@@ -326,13 +334,20 @@ def ears(line):
         m = CLAUSE.match(rest)
         if not m:
             break
-        if CLAUSE_RANK[m.group(1)] <= rank:
+        kw = m.group(1)
+        if rank == 0 and kw not in CLAUSE_RANK:         # the line opens with its keyword capitalised; later ones may not
             return False, one
-        rank = CLAUSE_RANK[m.group(1)]
-        if m.group(1) == "If":
-            m = re.match(r"If .+?, then (\S.*)$", rest)
-            return (m is not None), one
-        nxt = re.search(r", (?=(?:Where|While|When|If)\b)", rest)
+        kw = kw.capitalize()
+        if CLAUSE_RANK[kw] <= rank:
+            return False, one
+        rank = CLAUSE_RANK[kw]
+        if kw == "If":
+            m = re.match(r"if .+?, then (\S.*)$", rest, re.IGNORECASE)
+            if m is None:
+                return False, one
+            rest = m.group(1)       # what follows `then` may be no further clause: the loop refuses it
+            continue
+        nxt = re.search(r", (?=(?:Where|While|When|If)\b)", rest, re.IGNORECASE)
         if nxt:
             rest = rest[nxt.end():]
             continue
@@ -341,6 +356,8 @@ def ears(line):
             return False, one
         rest = rest[cut + 2:]
         break
+    if rank == 0 and not rest.startswith(("The ", "X")):
+        return False, one       # a ubiquitous line names its system: "The <system>" or a code span
     return bool(rest.strip()), one
 
 

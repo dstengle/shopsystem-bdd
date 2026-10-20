@@ -107,7 +107,7 @@ evidence.
 
 **The response is observable by the narrator.** A value returned, a refusal and what it names, a file at a
 path. If you can't write the response that way, the sentence is implementation and moves down a section.
-A refusal names its reason; the words of a message, a status code and a field name are implementation.
+A refusal names its reason; the words of a message, a status code, a field name and minor refusals are implementation.
 
 **Tables.** A check's rules may be a table: a sentence that names the system and says "shall" leads it, and
 each row carries an id in its first cell, `| [r3] | ... |`, and counts as a line, checked by its lead sentence.
@@ -303,8 +303,8 @@ in the line itself.
 
 `scripts/model check` (this plugin; needs `python3 -m pip install clingo`) reads `spec/`, `features/` and
 the ledger, and reports by rule name: a line with no id (`v15a`), two lines with one id (`v15b`), a retired
-id taken again (`v15c`), a line with no scenario (`v_s3`), a scenario that names no line or two (`v_s1`,
-`v_s2`), a word the glossary avoids, or a glossary at odds with itself (`v_t1`, `v_t2`, `v_t3`), and
+id taken again (`v15c`), a line with no scenario (`v_s3`), a scenario that names no line (`v_s1`), a line not in an EARS pattern or with more than one "shall" or sentence
+(`v_e1`, `v_e2`), a word the glossary avoids, or a glossary at odds with itself (`v_t1`, `v_t2`, `v_t3`), and
 references that name nothing. It exits 0 when everything holds. When the interpreter running it lacks
 clingo, it looks for one that has it (`$SHOPSYSTEM_MODEL_PYTHON`, each `python3` on `PATH` outside the
 active virtualenv's `bin/`, `/usr/local/bin/python3`, `/usr/bin/python3`) and runs again under the first it
