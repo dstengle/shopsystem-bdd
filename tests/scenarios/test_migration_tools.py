@@ -4,6 +4,7 @@ A Given builds a repository on the old system in `repo` and commits it (`old.bef
 When runs `migrate run` once; the Then steps read what it left.
 """
 import pathlib
+import re
 import shutil
 import subprocess
 
@@ -271,6 +272,49 @@ def _(old, context):
     assert "@holding" not in expected
     assert old.read("features/thing.feature") == expected
     assert old.read("tests/test_thing.py") == (copy / "tests/test_thing.py").read_text()
+
+
+@given("a repository on the old system with work/i1/w1.md, and .shop/work/i1/w1.md already exists")
+def _(old):
+    old.write("work/i1/w1.md", "Old work.\n")
+    old.write(".shop/work/i1/w1.md", "Work already in place.\n")
+
+
+@given("it has records/archive/plans/p1.md and docs/superpowers/plans/p1.md, which both move to .shop/records/archive/plans/p1.md")
+def _(old):
+    old.write("records/archive/plans/p1.md", "A plan in records.\n")
+    old.write("docs/superpowers/plans/p1.md", "A plan in docs.\n")
+    old.commit()
+
+
+def said(context):
+    done = context["done"]
+    return done.stdout + done.stderr
+
+
+@then("migrate says it could not move work/i1/w1.md onto .shop/work/i1/w1.md")
+def _(context):
+    assert "could not move work/i1/w1.md onto .shop/work/i1/w1.md" in said(context)
+
+
+@then("it says it could not move both records/archive/plans/p1.md and docs/superpowers/plans/p1.md to .shop/records/archive/plans/p1.md")
+def _(context):
+    found = re.findall(r"could not move both (\S+) and (\S+) to (\S+)", said(context))
+    assert [(set(pair), to) for *pair, to in found] == [({"records/archive/plans/p1.md", "docs/superpowers/plans/p1.md"},
+                                                         ".shop/records/archive/plans/p1.md")], said(context)
+
+
+@then("it exits non-zero")
+def _(context):
+    assert context["done"].returncode != 0
+
+
+@then("nothing under the repository has changed")
+def _(old):
+    now = {p.relative_to(old.root).as_posix(): p.read_bytes()
+           for p in old.root.rglob("*") if p.is_file() and ".git" not in p.relative_to(old.root).parts}
+    assert now == old.before
+    assert old.git("status", "--porcelain").stdout == ""
 
 
 @then("the Behaviour lines of spec/capabilities/thing.md are, in order, [r1], [r5], [r3] and [r6]")

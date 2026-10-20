@@ -263,6 +263,19 @@ def plan_references(plan):
             plan.texts[final] = rewritten
 
 
+def check_moves(plan):
+    """Name each move that cannot be made: onto a file that exists, or two sources to one destination."""
+    present = set(tracked(plan.root)) - set(plan.moves)
+    by_destination = {}
+    for old, new in plan.moves.items():
+        by_destination.setdefault(new, []).append(old)
+    for new, sources in by_destination.items():
+        if len(sources) > 1:
+            plan.failures.append("could not move both %s to %s" % (" and ".join(sources), new))
+        elif new in present:
+            plan.failures.append("could not move %s onto %s" % (sources[0], new))
+
+
 def write(plan):
     root = plan.root
     for old, new in plan.moves.items():
@@ -289,6 +302,12 @@ def cmd_run(args):
     plan_capabilities(plan)
     plan_ids(plan)
     plan_references(plan)
+    check_moves(plan)
+    if plan.failures:
+        print("migrate changed nothing; it could not make these changes:", file=sys.stderr)
+        for failure in plan.failures:
+            print("  " + failure, file=sys.stderr)
+        return 1
     write(plan)
     return 0
 
