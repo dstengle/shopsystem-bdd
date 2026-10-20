@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/retired-lines-out
 kind: work-item
 part_of: capability-proposal/ears-feature-file-tools
-status: drafted
+status: green
 wkind: guarantee
 under: feature-file-tools
 check: "python3 scripts/model check reports no unresolved reference from a feature file, and python3 -m pytest -q passes"
