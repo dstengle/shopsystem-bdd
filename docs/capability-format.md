@@ -84,7 +84,7 @@ decision it explains.
 ## Writing the behaviour section
 
 Every line is one EARS requirement with "shall" (design-decision/behaviour-lines-are-ears). `model check`
-reports a line that is not (`v_e1` (a Behaviour line is not in one of EARS's patterns)) or has more than one "shall" or sentence (`v_e2` (a Behaviour line has more than one shall or more than one sentence)).
+reports a line that is not (`v_e1` (a Behaviour line is not in one of EARS's patterns)) or has more than one "shall" or sentence (`v_e2` (a Behaviour line has more than one "shall" or more than one sentence)).
 
 **The patterns.** In this order of clauses; the system is named in the line.
 
@@ -100,7 +100,7 @@ reports a line that is not (`v_e1` (a Behaviour line is not in one of EARS's pat
 **The pattern follows what starts the behaviour.** A response to a command, an input or an event is
 event-driven, the trigger in its `When`. A refusal or a fault is unwanted behaviour, the condition in
 `If ... then`. Behaviour that lasts for a period is state-driven. Behaviour that depends on an option or
-configuration is optional. Only what holds with no trigger at all is ubiquitous.
+configuration is optional. Only what is true with no trigger at all is ubiquitous.
 
 **One "shall", one response, one sentence.** A line with two responses is two lines. Conditions with the same
 response join in one line: `If A or B, then ...`.
@@ -116,7 +116,7 @@ path. If you can't write the response that way, the sentence is implementation a
 A refusal names its reason; the words of a message, a status code, a field name and minor refusals are implementation.
 
 **Tables.** A check's rules may be a table: a sentence that names the system and says "shall" leads it, and
-each row carries an id in its first cell, `| [r3] | ... |`, and counts as a line, checked by its lead sentence.
+each row has an id in its first cell, `| [r3] | ... |`, and counts as a line, checked by its lead sentence.
 A list of properties (a canonical format) stays a list.
 
 **Skeletons.** A capability not yet built is specified as a walking skeleton, a handful of lines, and grows
@@ -124,7 +124,7 @@ from what running it shows.
 
 ## Requirement ids
 
-Every Behaviour line carries an id, `[r<n>]`, written first: `- [r3] **If** ...`. The id is the line's
+Every Behaviour line has an id, `[r<n>]`, written first: `- [r3] **If** ...`. The id is the line's
 name for good: scenarios, proposals and commits point at it, and it survives re-wording.
 
 - A new line takes the id one above every id the capability has used or retired, wherever it sits in the
@@ -175,25 +175,25 @@ thing the narrator names. Each term is a bullet of `spec/index.md`'s `## Glossar
 
 `- **<term>**: <one-sentence definition>. Not: <word>, <word>.` The definition is one sentence. The `Not:`
 part is optional: it lists the words the context avoids for that thing, and it is split from the definition
-at `. Not:` only, so a definition may hold a period. A bullet in that section of any other form is a file
+at `. Not:` only, so a definition may contain a period. A bullet in that section of any other form is a file
 problem.
 
 A term is standing, like a Behaviour line, and is approved at the gate like one. Its id is
 `term/<context path>/<term>`, the term lowercased with spaces as hyphens (`term/missingmass.io/shopsystem/shop-kb/revision`);
-inside its context, `term/<term>`. A term holds letters, digits and hyphens once lowercased; any other character in it is a file problem. Renaming a term is removing one entry and adding another. A glossary
+inside its context, `term/<term>`. A term contains letters, digits and hyphens once lowercased; any other character in it is a file problem. Renaming a term is removing one entry and adding another. A glossary
 change is shown at the gate with the lines it comes with, and the spec commit names each term added,
 changed and removed. In a repository that keeps `work/`, a term change rides with the capability-proposal
 that needs it, which lists the term in `adds`, `changes` or `removes` (`adds: [term/revision]`).
 
-`model check` reads every Behaviour line and every scenario not held for the terms and the avoided words,
+`model check` reads every Behaviour line and every scenario not deprecated for the terms and the avoided words,
 matched as whole words, whatever their case, with a plural "s" allowed. A scenario's mentions come from its title and its steps, not its Background, description, docstrings or tables: "restore" is no mention of "store".
 It reports:
 
 | rule | what it found |
 |---|---|
-| `v_t1` | a line or a scenario uses a word its context's glossary lists after `Not:`; the row names the line or scenario, the word and the term |
-| `v_t2` | two glossary entries have one term |
-| `v_t3` | a word one term lists after `Not:` is another term of the context, or the term itself |
+| `v_t1` (a word the glossary avoids) | a line or a scenario uses a word its context's glossary lists after `Not:`; the row names the line or scenario, the word and the term |
+| `v_t2` (a term has two entries) | two glossary entries have one term |
+| `v_t3` (an avoided word is a term) | a word one term lists after `Not:` is another term of the context, or the term itself |
 
 A word used for two things, or two words used for one thing that no `Not:` lists yet, is a judgment of
 meaning, not a word match: `checking-spec-consistency` finds it, on demand.
@@ -203,8 +203,8 @@ meaning, not a word match: `checking-spec-consistency` finds it, on demand.
 One feature per capability. A scenario for each EARS line, naming it by its `@r<n>` tag; a scenario may name several lines, and every line is named by at least one; a scenario
 outline where the line has a Where and several configurations matter.
 Each scenario is tagged `@r<n>` with the id of the line it formulates, on the scenario's tag line; the tag is
-what binds them. The title is free; restating the line's condition is still a good title. A held scenario
-(tagged `@holding`) keeps the tag it had and formulates no line.
+what binds them. The title is free; restating the line's condition is still a good title. A deprecated scenario
+(tagged `@deprecated`) keeps the tag it had and formulates no line.
 
 ```gherkin
 # formulated from spec/capabilities/identity.md
@@ -233,7 +233,7 @@ scenarios; the other four follow the same shape.
   `<type>/<slug>` and returns it with `revision` 1.
 - [r2] **When** a minted id collides with an existing one, kb appends `-2`,
   `-3`, and so on, and returns the id it chose.
-- [r3] **If** content on `Create`, `Write`, or `Append` carries an identity
+- [r3] **If** content on `Create`, `Write`, or `Append` has an identity
   key, `title` included, kb refuses the write with a violation naming the
   key.
 - [r4] **Where** an item schema declares `title`, **when** an item is appended,
@@ -255,14 +255,14 @@ Feature: Identity
 
   @r2
   Scenario: a colliding id gets a suffix
-    Given a store holding "decision/use-yaml"
+    Given a store with "decision/use-yaml"
     When Create is called with type "decision" and title "Use YAML"
     Then the response id is "decision/use-yaml-2"
 
   @r3
-  Scenario: content carrying an identity key is refused
+  Scenario: content with an identity key is refused
     Given a store with a "decision" schema
-    When Write is called on "decision/use-yaml" with content that carries "title"
+    When Write is called on "decision/use-yaml" with content that has "title"
     Then the write is refused
     And the violation names "title"
 
@@ -322,8 +322,8 @@ The only delete rule is `refuse`.
 `scripts/model check` (this plugin; needs `python3 -m pip install clingo`) reads the final layout (`spec/`, `features/` and `.shop/`, decisions included) and reports each rule by its name and
 its label: a line with no id (`v15a` (a requirement has no id)), two lines with one id (`v15b` (two requirements share an id)), a retired
 id taken again (`v15c` (a retired id is used again)), a line with no scenario (`v_s3` (a requirement has no scenario)), a scenario that names no line (`v_s1` (a scenario names no requirement)), a line not in an EARS pattern or with more than one "shall" or sentence
-(`v_e1`, `v_e2`), a word the glossary avoids, or a glossary at odds with itself (`v_t1` (a word the glossary avoids), `v_t2` (a term has two entries), `v_t3` (an avoided word is a term)), and
-references that name nothing. It exits 0 when everything holds. When the interpreter running it lacks
+(`v_e1` (a Behaviour line is not in one of EARS's patterns), `v_e2` (a Behaviour line has more than one "shall" or more than one sentence)), a word the glossary avoids, or a glossary at odds with itself (`v_t1` (a word the glossary avoids), `v_t2` (a term has two entries), `v_t3` (an avoided word is a term)), and
+references that name nothing. It exits 0 when it finds nothing. When the interpreter running it lacks
 clingo, it looks for one that has it (`$SHOPSYSTEM_MODEL_PYTHON`, each `python3` on `PATH` outside the
 active virtualenv's `bin/`, `/usr/local/bin/python3`, `/usr/bin/python3`) and runs again under the first it
 finds. When none has it, it exits 2 with a message that names clingo, `pip install clingo` and each
@@ -341,7 +341,7 @@ interpreter it tried; the coverage check is then done by hand.
    Number the lines `[r1]` on in each capability.
 4. Write `spec/index.md`: frontmatter `id: bounded-context/<context path>`, the context path
    being `<owner domain>/<product>/<context name>` (ask the person when you do
-   not know them) and `title`; then purpose, constraints carried,
+   not know them) and `title`; then purpose, constraints,
    composition (the capabilities in reading order), order of building,
    testing, and the Glossary in the form above. Any table spanning capabilities is rendered from them, not
    authored.
@@ -358,5 +358,5 @@ interpreter it tried; the coverage check is then done by hand.
   files is fine.
 - Capability groups (model / service / operations / guarantees). A column
   to add when the list gets long enough to need it.
-- Beliefs. Rationale goes in the decision that carries it.
+- Beliefs. Rationale goes in the decision that gives it.
 - Tooling beyond scripts/features and scripts/model. The pairing is a naming convention, a header comment and the @r<n> tags.
