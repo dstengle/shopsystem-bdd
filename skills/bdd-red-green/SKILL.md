@@ -27,7 +27,7 @@ Work through the work-item's scenarios in the order the plan lists them. Where `
 4. **Run the work-item's scenarios** and the test module the scenario lives in. Everything previously green there stays green.
 5. **Refactor** with them green, then commit, then the next scenario.
 
-Before the last commit, run the whole suite once (`python3 -m pytest -q`, or the project's test command). Everything that passed in the starting record still passes. That run is the work-item's suite record, in the report.
+Before the last commit, run the work-item's scenarios once more, all of them (`python3 -m pytest -q --work-item <name>`, or by title): every scenario the work-item accepts passes. That run, with the test modules you touched, is your final run, in the report. The whole suite is not yours to run: `work run` runs it once on your branch before it merges, and a failure there comes back to the person as its question.
 
 **An invariant's test is a test like any other.** A property test that fails, on whatever example it found, is a previously green test that broke: the falsifying example it prints is the evidence.
 
@@ -35,15 +35,15 @@ Before the last commit, run the whole suite once (`python3 -m pytest -q`, or the
 
 ## A Work-Item Verified by a Check
 
-A work-item with a `check:` (a command and the result it must give) and no scenarios goes through the same cycle with the check in the scenario's place: run the check, which must fail for the reason the work-item exists (a check that passes before any work is a stop condition); do the least work that makes it give its stated result; run it again with the test modules the work touches; then the whole suite once, which is the record. No scenarios are written for it.
+A work-item with a `check:` (a command and the result it must give) and no scenarios goes through the same cycle with the check in the scenario's place: run the check, which must fail for the reason the work-item exists (a check that passes before any work is a stop condition); do the least work that makes it give its stated result; run it again with the test modules the work touches, which is the final run; the whole suite is `work run`'s. No scenarios are written for it.
 
 ## The Suite Record
 
 A suite record is one whole-suite run: `Suite: <N> passed, <M> failed at <short hash of the commit that was run> in <seconds> s`, with `; failing: <titles>` when M is not 0.
 
-- You start from the record your brief gives. Where the brief gives none, run the whole suite once before your first edit: that run, at the commit you started from, is your starting record, and its failing list is what was already red.
-- Do not run the whole suite at any other point but before your last commit.
-- Both records go in the report. You write no log, no plan entry and no status anywhere: `work run` keeps its own record.
+- You start from the record your brief gives (`Suite record:`, `work run`'s own run in your worktree); its failing list is what was already red. Where the brief gives none, say so in the report: you do not make one.
+- Do not run the whole suite: `work run` runs it before it merges (red-green r1). You run the work-item's scenarios and the test modules you touch.
+- The starting record and your final run go in the report. You write no log, no plan entry and no status anywhere: `work run` keeps its own record.
 
 ## Keep the Suite Fast
 
@@ -102,11 +102,11 @@ If the person asked for "green by the demo" and can't be reached, the answer is 
 
 ## The 15-File Budget
 
-One implementer touches at most 15 files. Before your first edit, write in the report, under `## Budget`, the files you will touch, by name. When the work needs more than 15, choose at most 15 whose change leaves everything passing that passes now, touch only those, commit at green (a whole-suite run shows nothing failing that passed in the starting record), say in the report what is done and what is left file by file, and give `PARTIAL`. The limit is not lifted by the plan naming more, nor by the work looking quick. `PARTIAL` is not for decisions: those are `BLOCKED`.
+One implementer touches at most 15 files. Before your first edit, write in the report, under `## Budget`, the files you will touch, by name. When the work needs more than 15, choose at most 15 whose change leaves everything passing that passes now, touch only those, commit at green (the work-item's scenarios and the test modules you touched show nothing failing that passed before your change), say in the report what is done and what is left file by file, and give `PARTIAL`. The limit is not lifted by the plan naming more, nor by the work looking quick. `PARTIAL` is not for decisions: those are `BLOCKED`.
 
 ## When Done
 
-When every scenario (or the check) is green and the whole-suite run fails nothing the starting record passed, the report says what someone can now do, what building it turned out to involve that the plan did not say, and the open questions; the result gives `DONE` and the commits.
+When every scenario the work-item accepts (or the check) passes and the test modules you touched fail nothing they passed before, the report says what someone can now do, what building it turned out to involve that the plan did not say, and the open questions; the result gives `DONE` and the commits.
 
 ## Rationalizations That Fail
 

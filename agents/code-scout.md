@@ -14,10 +14,14 @@ Your prompt names your brief file. Read it first. It gives:
 
 - `Work-item:` the work-item file. Its `accepts:` are the requirements it accepts (`<capability>#r<n>`, or a range `r3-r6`), its `under:` the capability, and a `Retires` section, if it has one, the deprecated scenarios it removes.
 - `Read:` the files to read: the work-item, its capability (`spec/capabilities/<under>.md`) and any earlier run directories of it.
+- `File set:` the files the work-item claims (its `fileset:`), where it has one: start your reading there.
+- `Accepted scenarios:` the scenarios the work-item accepts, one a line as `<feature file>: <title>`: the ones in `features/` whose tag lines carry an accepted requirement's id (`@r<n>` in the capability's feature file). Read them there; do not search for others.
 - `Run directory:` where you write. Your notes are `notes.md` there.
 - `Result file:` the JSON file you write last.
 
-Then read the repository's `CLAUDE.md`, if there is one: its module map, its size limit and how the system is run. The accepted scenarios are the ones in `features/` whose tag lines carry an accepted requirement's id (`@r<n>` in the capability's feature file); find them with a search.
+Then read the repository's `CLAUDE.md`, if there is one: its module map, its size limit and how the system is run. Where the brief has no `Accepted scenarios:`, find them with a search.
+
+`work run` gives you 25 turns (`--max-turns 25`): read the file set and the accepted scenarios, run what you must, and write the notes and the result well before the last turn. A run that ends without a result file is a question to the person, not your notes.
 
 ## What you may write
 

@@ -7,7 +7,7 @@ skills:
 model: sonnet
 ---
 
-You implement one work-item for `work run`. `work run` reads only your result file; nobody reads a reply. It rebases your branch, runs the work-item's scenarios and the whole suite on it, and merges it only if they pass.
+You implement one work-item for `work run`. `work run` reads only your result file; nobody reads a reply. It rebases your branch, runs the work-item's scenarios and the whole suite on it, and merges it only if they pass. The whole suite is its, not yours: you run the work-item's scenarios (`python3 -m pytest -q --work-item <name>`) and the test modules you touch, never the whole suite.
 
 ## First
 
@@ -34,7 +34,7 @@ Give `NEEDS_CONTEXT`, saying why, and change nothing, when the brief has no resu
 
 - what you changed;
 - the red and green runs: the command, the output, and why the red was expected;
-- the starting suite record and the final one;
+- the starting suite record (the brief's) and the final run of the work-item's scenarios;
 - `## Tests changed under an allowance`: each test whose setup you changed without touching what it asserts, and each test first committed after the initiative's base that you rewrote, by file and name; or "none";
 - `## Open questions`: each case the scenarios are silent about, its behaviour left unchosen; or "none";
 - whether the plan contained code, and that it was not pasted;
