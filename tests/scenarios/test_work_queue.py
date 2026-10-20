@@ -10,7 +10,6 @@ import json
 import shlex
 import sys
 
-import pytest
 from pytest_bdd import given, parsers, scenarios, then, when
 
 from .conftest import INDEX, SCRIPTS, full
