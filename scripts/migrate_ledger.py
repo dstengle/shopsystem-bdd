@@ -9,36 +9,43 @@ FIELD = re.compile(r"^(date|source|supersedes|revisit_when):\s*(.*)$")     # an 
 
 
 def ledger_entries(plan, text):
-    """(number, slug, first paragraph, fields) for each `## decision/<nnnn>-<slug>` entry of the ledger. Each `## `
-    heading begins an entry; one in another form, and text before the first, is a change migrate cannot make."""
-    entries, current, outside = [], None, []
+    """(number, slug, paragraphs, fields) for each `## decision/<nnnn>-<slug>` entry of the ledger. Each `## `
+    heading begins an entry; one in another form, one there twice, and text before the first but a `# ` title line,
+    is a change migrate cannot make."""
+    entries, current, outside, title = [], None, [], None
     for line in text.splitlines():
         if line.startswith("## "):
             m = ENTRY.match(line)
             current = [m.group("number"), m.group("slug"), []] if m else [None, None, []]
-            if m:
+            if m and any(e[:2] == current[:2] for e in entries):
+                plan.failures.append("could not replace the ledger entry `%s`, which is there twice in %s"
+                                     % (line.strip(), LEDGER))
+            elif m:
                 entries.append(current)
             else:
                 plan.failures.append("could not replace the ledger entry `%s` of %s: its heading is not "
                                      "`## decision/<nnnn>-<slug>`" % (line.strip(), LEDGER))
         elif current is not None:
             current[2].append(line)
+        elif line.startswith("# ") and not outside and not title:
+            title = line        # the ledger's title, which the decision files' index replaces: dropped
         elif line.strip():
             outside.append(line.strip())
     if outside:
         plan.failures.append('could not replace the ledger text "%s" outside its entries in %s' % (" ".join(outside), LEDGER))
     out = []
     for number, slug, lines in entries:
-        paragraph, fields, in_head = [], {}, True
-        for line in lines:
+        paragraphs, fields, current = [], {}, []
+        for line in lines + [""]:
             m = FIELD.match(line)
-            if in_head and line.strip() and not m:
-                paragraph.append(line.strip())
-                continue
-            in_head = False
             if m:
                 fields[m.group(1)] = m.group(2).strip()
-        out.append((number, slug, " ".join(paragraph), fields))
+            if line.strip() and not m:
+                current.append(line.rstrip())
+            elif current:
+                paragraphs.append(current)
+                current = []
+        out.append((number, slug, paragraphs, fields))
     return out
 
 
@@ -54,18 +61,29 @@ def quoted(plan, key, value):
     return None
 
 
-def decision_text(plan, slug, summary, fields):
-    return ("---\nid: design-decision/%s/%s\nsummary: %s\ndate: %s\nstatus: accepted\nby: %s\n---\n\n# %s\n\n"
+def decision_text(plan, slug, paragraphs, fields):
+    """The decision file of an entry: its first paragraph the summary, every paragraph its Decision, and its supersedes
+    (by the new id of an entry it names) and revisit_when where it has them."""
+    summary = " ".join(line.strip() for line in paragraphs[0]) if paragraphs else ""
+    decision = "\n\n".join("\n".join(p) for p in paragraphs)
+    extra = ""
+    if fields.get("supersedes"):
+        extra += "supersedes: %s\n" % plan.renamed.get(fields["supersedes"], fields["supersedes"])
+    if fields.get("revisit_when"):
+        extra += "revisit_when: %s\n" % quoted(plan, "revisit_when", fields["revisit_when"])
+    return ("---\nid: design-decision/%s/%s\nsummary: %s\ndate: %s\nstatus: accepted\nby: %s\n%s---\n\n# %s\n\n"
             "## Decision\n%s\n" % (plan.context, slug, quoted(plan, "summary", summary), fields.get("date", ""),
-                                  quoted(plan, "by", fields.get("source", "")), slug, summary))
+                                  quoted(plan, "by", fields.get("source", "")), extra, slug, decision))
 
 
 def plan_ledger(plan):
     if LEDGER not in tracked(plan.root):
         return
-    for number, slug, summary, fields in ledger_entries(plan, plan.read(LEDGER)):
+    entries = ledger_entries(plan, plan.read(LEDGER))
+    for number, slug, _, _ in entries:
+        plan.renamed["decision/%s-%s" % (number, slug)] = "design-decision/%s/%s" % (plan.context, slug)
+    for number, slug, paragraphs, fields in entries:
         path = "spec/decisions/%s-%s.md" % (number, slug)
         plan.created[path] = "the ledger entry `## decision/%s-%s`" % (number, slug)
-        plan.texts[path] = decision_text(plan, slug, summary, fields)
-        plan.renamed["decision/%s-%s" % (number, slug)] = "design-decision/%s/%s" % (plan.context, slug)
+        plan.texts[path] = decision_text(plan, slug, paragraphs, fields)
     plan.removes.append(LEDGER)

@@ -80,3 +80,44 @@ def _(old):
 @given("its spec/decisions.md has the entry `## decision/0007-a`")
 def _(old):
     old.write("spec/decisions.md", "## decision/0007-a\nWe do a.\n\ndate: 2025-03-01\nsource: alice\n")
+
+
+@given('a repository on the old system whose spec/decisions.md has the entry `## decision/0007-a` with the paragraphs '
+       '"We do a." and "Because b."')
+def _(old):
+    old.write("spec/decisions.md", "## decision/0007-a\nWe do a.\n\nBecause b.\n\ndate: 2025-03-01\nsource: alice\n")
+    old.commit()
+
+
+@then('spec/decisions/0007-a.md has the summary "We do a." and a Decision of "We do a." and then "Because b."')
+def _(old):
+    data, body = front(old, "spec/decisions/0007-a.md")
+    decision = "\n".join(load_model().section(body, "Decision")).strip()
+    assert (data["summary"], decision) == ("We do a.", "We do a.\n\nBecause b."), (data["summary"], decision)
+
+
+@given("a repository on the old system whose spec/decisions.md starts with the title `# Decisions` and a blank line, "
+       "then the entry `## decision/0007-a`")
+def _(old):
+    old.write("spec/decisions.md", "# Decisions\n\n## decision/0007-a\nWe do a.\n\ndate: 2025-03-01\nsource: alice\n")
+    old.commit()
+
+
+@given("a repository on the old system whose spec/decisions.md has the entries `## decision/0003-b` and `## decision/0007-a`")
+def _(context):
+    context["ledger"] = ["## decision/0003-b\nWe do b.\n\ndate: 2025-02-01\nsource: bob\n",
+                         "## decision/0007-a\nWe do a.\n\ndate: 2025-03-01\nsource: alice\n"]
+
+
+@given("the entry 0007-a has supersedes: decision/0003-b and revisit_when: b comes back")
+def _(old, context):
+    context["ledger"][1] += "supersedes: decision/0003-b\nrevisit_when: b comes back\n"
+    old.write("spec/decisions.md", "\n".join(context["ledger"]))
+    old.commit()
+
+
+@then('spec/decisions/0007-a.md\'s supersedes is design-decision/example.org/acme/shop/b and its revisit_when is "b comes back"')
+def _(old):
+    data, _ = front(old, "spec/decisions/0007-a.md")
+    found = (data.get("supersedes"), data.get("revisit_when"))
+    assert found == ("design-decision/%s/b" % CONTEXT, "b comes back"), found

@@ -129,11 +129,10 @@ def _(old):
     # work/ is final-form but for its place: an initiative is not transcription (it belongs to the living plan)
     old.write("work/i1/initiative.md", "---\nid: initiative/%s/i1\ntitle: t\nsummary: s\nkind: capability-change\nowner-level: ctx\n"
                                        "status: started\npriority: 1\nsource: []\ndate: 2026-10-15\n---\n" % CONTEXT)
-    # each moved record says what it is about already: migrate gives an id, not an `about` (an open question of the report)
-    about = "---\nabout: bounded-context/%s\n---\n" % CONTEXT
-    old.write("records/logs/run1-test-log.md", about + "A test log.\n")
-    old.write("docs/superpowers/plans/p1.md", about + "A plan.\n")
-    old.write("docs/superpowers/specs/s1.md", about + "A design note.\n")
+    # records as the old system wrote them: no id, no about
+    old.write("records/logs/run1-test-log.md", "A test log.\n")
+    old.write("docs/superpowers/plans/p1.md", "A plan.\n")
+    old.write("docs/superpowers/specs/s1.md", "A design note.\n")
     old.commit()
 
 
@@ -160,3 +159,24 @@ def _(old):
     _, body = front(old, "spec/capabilities/thing.md")
     lines = [l for l in load_model().section(body, "Behaviour") if l.startswith("- ")]
     assert [l.split()[1] for l in lines] == ["[r1]", "[r5]", "[r3]", "[r6]"], lines
+
+
+@given("a repository on the old system with docs/superpowers/plans/p1.md and docs/superpowers/specs/s1.md with no about, "
+       "and docs/superpowers/plans/p2.md about capability/example.org/acme/shop/thing")
+def _(old):
+    old.write("docs/superpowers/plans/p1.md", "A plan.\n")
+    old.write("docs/superpowers/specs/s1.md", "---\ntitle: s1\n---\nA design note.\n")
+    old.write("docs/superpowers/plans/p2.md", "---\nabout: capability/%s/thing\n---\nAnother plan.\n" % CONTEXT)
+    old.commit()
+
+
+@then(parsers.parse("{first} and {second} are about {ref}"))
+def _(old, first, second, ref):
+    found = [front(old, rel)[0].get("about") for rel in (first, second)]
+    assert found == [ref, ref], found
+
+
+@then(parsers.parse("{rel} is about {ref}"))
+def _(old, rel, ref):
+    found = front(old, rel)[0].get("about")
+    assert found == ref, found

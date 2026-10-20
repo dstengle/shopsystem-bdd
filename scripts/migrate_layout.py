@@ -49,17 +49,19 @@ def plan_moves(plan):
             plan.moves[path] = target
 
 
-def with_id(text, ident, kind=None):
-    """`text` with `id: <ident>` (and `kind: <kind>`) first in its frontmatter, one is added when it has none;
-    unchanged if it has an id."""
+def with_id(text, ident, kind=None, about=None):
+    """`text` with `id: <ident>` (and `kind: <kind>`, and `about: <about>` where it has no about) first in its
+    frontmatter, one is added when it has none; unchanged if it has an id."""
     given = "id: %s\n" % ident + ("kind: %s\n" % kind if kind else "")
     if text.startswith("---\n"):
         end = text.find("\n---", 4)
         if end > 0:
             if re.search(r"^id:", text[4:end], re.MULTILINE):
                 return text
+            if about and not re.search(r"^about:", text[4:end], re.MULTILINE):
+                given += "about: %s\n" % about
             return "---\n" + given + text[4:]
-    return "---\n" + given + "---\n" + text
+    return "---\n" + given + ("about: %s\n" % about if about else "") + "---\n" + text
 
 
 def record_kind(final):
@@ -77,13 +79,14 @@ def plan_ids(plan):
     """Give each moved plan, design note, test log and decision file the id of its kind."""
     stem = lambda rel: Path(rel).stem
     for old, final in plan.moves.items():
-        text = plan.texts.get(final) or plan.read(old)
+        text = lambda: plan.texts.get(final) or plan.read(old)     # read only a file that gets an id: a moved image is not
         kind = record_kind(final)
         if kind:
-            plan.texts[final] = with_id(text, "%s/%s/%s" % (kind, plan.context, stem(final)), kind)
+            plan.texts[final] = with_id(text(), "%s/%s/%s" % (kind, plan.context, stem(final)), kind,
+                                        "bounded-context/" + plan.context)      # r12
         elif final.startswith("spec/decisions/") and final.endswith(".md"):
             name = re.sub(r"^\d+-", "", stem(final))
-            plan.texts[final] = with_id(text, "design-decision/%s/%s" % (plan.context, name))
+            plan.texts[final] = with_id(text(), "design-decision/%s/%s" % (plan.context, name))
 
 
 def load_model():

@@ -21,6 +21,19 @@ def _(old):
     old.commit()
 
 
+@given("a repository on the old system with records/img/a.png, which is not text")
+def _(old):
+    (old.root / "records/img").mkdir(parents=True)
+    (old.root / "records/img/a.png").write_bytes(b"\x89PNG\r\n\x1a\n\xff\xfe\x00")
+    old.commit()
+
+
+@then(".shop/records/img/a.png is records/img/a.png as it was, byte for byte")
+def _(old, context):
+    assert context["done"].returncode == 0, said(context)
+    assert (old.root / ".shop/records/img/a.png").read_bytes() == old.before["records/img/a.png"]
+
+
 @when(parsers.re(r"the session runs `migrate run --context example.org/acme/shop`( on the repository)?"))
 def _(run, old, context):
     migrate(run, old, context)
@@ -51,13 +64,13 @@ def _(old):
     old.commit()
 
 
-@then(parsers.parse("{new} has the content {was} had, apart from the id r9 gives it"))
+@then(parsers.parse("{new} has the content {was} had, apart from the id r9 and the about r12 give it"))
 def _(old, new, was):
-    """The id r9 gives a moved record is its frontmatter's `id:` and `kind:` lines, in a frontmatter of their own when
-    the file had none."""
+    """The id r9 gives a moved record is its frontmatter's `id:` and `kind:` lines, and the about r12 gives it its
+    `about:` line after them, in a frontmatter of their own when the file had none."""
     text = old.read(new)
     data, _ = front(old, new)
-    given = "id: %s\nkind: %s\n" % (data["id"], data["kind"])
+    given = "id: %s\nkind: %s\nabout: %s\n" % (data["id"], data["kind"], data["about"])
     assert text.startswith("---\n" + given)
     rest = text[len("---\n" + given):]
     kept = rest[len("---\n"):] if rest.startswith("---\n") else "---\n" + rest
