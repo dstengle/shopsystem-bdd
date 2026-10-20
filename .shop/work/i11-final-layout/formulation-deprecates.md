@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/formulation-deprecates
 kind: work-item
 part_of: capability-proposal/final-layout-formulation
-status: drafted
+status: green
 wkind: capability
 under: formulation
 check: "a T-formulate fixture case where one line is changed and its old scenario passes, run 3 times with claude -p: each run deprecates the old scenario with features deprecate (tag @deprecated, ' (deprecated)' title, Deprecated for: the new title), rebinds its test, writes the new scenario tagged with the line's id, and model check reports no v_s1, v_s2 or v_t1; results in .shop/records/measurements/fixture-runs/"
