@@ -16,7 +16,7 @@ the contract; the implementer satisfies them and stops when one cannot be satisf
 a scenario should have said, and it never moves a work-item: `work run` reads its result.
 
 ## Behaviour
-- [r1] **When** the implementer reports a work-item done, the implementer shall have every scenario the work-item accepts, and everything that passed in the suite record its brief gives, passing.
+- [r1] **When** the implementer reports a work-item done, the implementer shall have every scenario the work-item accepts passing, leaving the whole suite to `work run`'s check before it merges.
 - [r2] The implementer shall not commit a change to a `.feature` file or to a file under `.shop/work/`, except removing, with `features retire`, a deprecated scenario the work-item lists under Retires.
 - [r3] **If** a scenario the work-item accepts passes before any code is written for it or can only fail on setup, the work-item's check passes before any work is done, a scenario of a work-item not yet claimed passes, a Then line can only pass through code that contradicts it, or going green needs work that no scenario of the work-item describes and its plan does not name, beyond a trivial helper, then the implementer shall hand back.
 - [r5] **If** an existing test could stay green only by being removed, loosened, skipped or rewritten to assert something else and the work-item's plan does not list it, a previously green scenario breaks and fixing it would change what a step means, the work needs a decision the plan, its rulings and the capability's Behaviour leave open, or a file would cross the repository's size limit with no rule in `CLAUDE.md` saying where the code goes, then the implementer shall stop `BLOCKED`, naming the test, step, decision or file.
@@ -34,7 +34,7 @@ a scenario should have said, and it never moves a work-item: `work run` reads it
 ## Implementation, may change
 - The cycle: run one scenario red, write the step definitions it needs, the least code, run the work-item's
   scenarios (`--work-item <name>` where `work_expectations.py` is registered) and the scenario's module, refactor,
-  commit; the whole suite once before the last commit, its record in the report.
+  commit, with `--work-item`; the whole suite is `work run`'s, run once before it merges (supervision r4).
 - The implementer has no Skill tool; `bdd-red-green` is loaded through its `skills` field. Sonnet by default.
 - A continuation reads the report first and takes the next part it names; a fix work-item reads its findings and
   fixes those and nothing else.

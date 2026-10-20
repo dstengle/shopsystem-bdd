@@ -34,8 +34,11 @@ from what running it shows.
 - [r16] **When** a researcher's result gives `DONE` with questions, `work run` shall put those questions into the planner's brief.
 - [r17] **When** `work run` writes a worker's brief, `work run` shall tell the worker that it starts in its worktree and never changes directory.
 - [r18] **When** `work run` merges a work-item's branch, `work run` shall delete that branch.
+- [r19] **When** `work run` starts a researcher, `work run` shall give it the work-item's file set and accepted scenarios and a limit of 25 turns.
+- [r20] **While** two ready work-items have file sets that do not overlap, `work run` shall run them at the same time, two at most, merging one at a time.
 
 ## Implementation, may change
+- Tests run in parallel with pytest-xdist (`-n auto`), for the work-item's tests and the suite alike (design-decision/plugin-takes-the-dependencies-it-needs).
 - A worker is `claude -p "<brief path>" --agent shopsystem-bdd:<agent> --session-id <uuid> --output-format json
   --permission-mode acceptEdits`; the executable is `$SHOPSYSTEM_WORK_CLAUDE`, else `claude` (the plugin's tests
   set a stub).
