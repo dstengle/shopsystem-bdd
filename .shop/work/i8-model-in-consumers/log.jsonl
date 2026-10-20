@@ -20,3 +20,4 @@
 {"time": "2026-10-20T22:54:42+00:00", "work-item": "migrate-kb", "stage": "plan", "agent": "bdd-planner", "session": "a8fd9df6-83bc-4f6e-8608-dffb8fca605d", "event": "end"}
 {"time": "2026-10-20T22:54:42+00:00", "work-item": "migrate-kb", "before": "researched", "after": "planned", "by": "work run"}
 {"time": "2026-10-20T22:54:42+00:00", "work-item": "migrate-kb", "before": "planned", "after": "ready", "by": "work run"}
+{"time": "2026-10-20T22:54:42+00:00", "work-item": "migrate-kb", "before": "ready", "after": "claimed", "by": "work run"}
