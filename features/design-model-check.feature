@@ -399,14 +399,6 @@ Feature: Design model check
       | a capability-proposal p1 dated 2026-10-01 that removes thing#r2 and a capability-proposal p2 dated 2026-09-01 that removes thing#r2 | p2 then p1  | 1      |
       | only a capability-proposal p1 dated 2026-10-01 that removes thing#r2                                        | p1          | 1      |
 
-  @r42
-  Scenario: the behaviour/ form of a reference names the same requirement
-    Pins that #behaviour/r<n> and #r<n> are one requirement.
-    Given a bounded context with id bounded-context/ex.com/prod/ctx and a capability thing with requirement r2
-    And a capability-proposal that adds capability/ex.com/prod/ctx/thing#behaviour/r2
-    When model why is run for capability/ex.com/prod/ctx/thing#r2
-    Then it prints the proposal as adding it
-
   @r43
   Scenario Outline: a node may be written in short where its field allows it
     Pins that the kind-and-name short form is read in any field, and the bare name only in a field that fixes the kind.
@@ -430,16 +422,6 @@ Feature: Design model check
     And its only scenario tagged @r2 is also tagged @holding
     When model check is run
     Then the requirement thing#r2 is reported under v_s3
-
-  @r45
-  Scenario: without a decisions directory the ledger's design-decision headings are the decisions
-    Pins where decisions and their summaries come from in a repository that keeps them only in spec/decisions.md.
-    Given a repository with no decisions/ directory
-    And a spec/decisions.md with the heading ## design-decision/one, a line of text below it, and a date: line after that
-    And a capability that rests on design-decision/one
-    When model check is run
-    Then design-decision/one is not reported as unresolved
-    And that line of text is read as the decision's summary
 
   @r46
   Scenario Outline: a node whose id is not in type-first form is a file problem

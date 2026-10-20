@@ -320,13 +320,6 @@ class ReadingTest(ModelTest):
         facts = self.run_model("facts").stdout
         self.assertNotIn("(held)", facts)
 
-    def test_a_ledger_is_read_where_there_is_no_decisions_directory(self):
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] `thing` shall answer."], group="guarantees", rests_on="[x]"))
-        self.write("spec/decisions.md", "# Decisions\n\n## design-decision/x\nX.\ndate: 2026-01-01\n")
-        r = self.run_model("check")
-        self.assertEqual(r.returncode, 0, r.stdout)
-        self.assertIn(f'node("{full("design-decision", "x")}", "design-decision").', self.run_model("facts").stdout)
-
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
 class GrammarFixTest(ModelTest):
@@ -375,8 +368,7 @@ class TypeFirstTest(ModelTest):
         self.initiative()
 
     def test_every_accepted_form_names_the_same_requirement(self):
-        refs = ["thing#r1", "capability/thing#r1", f"{THING}#r1",
-                "thing#behaviour/r1", "capability/thing#behaviour/r1", f"{THING}#behaviour/r1"]
+        refs = ["thing#r1", "capability/thing#r1", f"{THING}#r1"]
         for i, ref in enumerate(refs):
             self.proposal(f"p{i}", adds=f"[{ref}]")
         r = self.run_model("check")
@@ -444,16 +436,6 @@ class TypeFirstTest(ModelTest):
         facts = self.run_model("facts").stdout
         self.assertIn(f'revisit_signal("{full("design-decision", "x")}", "{full("measurement", "m1")}").', facts)
         self.assertIn(f'revisit_signal("{full("design-decision", "y")}", "requests").', facts)
-
-    def test_a_ledger_heading_is_type_first(self):
-        shutil.rmtree(self.tmp / "work")
-        for heading, problems in [("design-decision/x", 0), (full("design-decision", "x"), 0), ("decision/x", 1)]:
-            with self.subTest(heading=heading):
-                self.write("spec/decisions.md", f"# Decisions\n\n## {heading}\nX.\n")
-                found, _ = self.check_json()
-                self.assertEqual(len([p for p in found["problems"] if p.startswith("spec/decisions.md")]), problems, found)
-                facts = self.run_model("facts").stdout
-                self.assertEqual(f'node("{full("design-decision", "x")}", "design-decision").' in facts, not problems, facts)
 
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
@@ -639,14 +621,6 @@ class WhyScenarioTest(ModelTest):
                 self.assertTrue(all(s == "drafted" for _, s, _ in seen))
                 self.assertEqual([d for _, _, d in seen], sorted(d for _, _, d in seen))
 
-    def test_r42(self):
-        """the behaviour/ form of a reference names the same requirement"""
-        self.thing()
-        self.proposal(adds=f"[{THING}#behaviour/r2]")
-        r = self.run_model("why", f"{THING}#r2")
-        self.assertEqual(r.returncode, 0, r.stdout)
-        self.assertIn(f"adds by capability-proposal {P1}", r.stdout)
-
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
 class IdFormTest(ModelTest):
@@ -731,7 +705,7 @@ class IdFormTest(ModelTest):
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
 class HeldAndLedgerTest(ModelTest):
-    """r44-r45."""
+    """r44."""
 
     def test_r44(self):
         """a held scenario names no requirement"""
@@ -739,15 +713,6 @@ class HeldAndLedgerTest(ModelTest):
         self.write("features/thing.feature", "Feature: thing\n\n  @r2 @holding\n  Scenario: two as it was\n    Given a\n")
         found, _ = self.check_json()
         self.assertEqual(self.violated(found, "v_s3"), [[THING + "#r2"]], found)
-
-    def test_r45(self):
-        """without a decisions directory the ledger's design-decision headings are the decisions"""
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees", rests_on="[design-decision/one]"))
-        self.write("spec/decisions.md", "# Decisions\n\n## design-decision/one\nOne way\nto do it.\n\ndate: 2026-01-01\n")
-        found, _ = self.check_json()
-        self.assertEqual(found["unresolved"], [], found)
-        self.assertEqual(self.violated(found, "v12a"), [], found)
-        self.assertIn(f'summary("{full("design-decision", "one")}", "One way to do it.").', self.run_model("facts").stdout)
 
 
 def index(*glossary):

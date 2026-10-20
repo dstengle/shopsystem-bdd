@@ -25,10 +25,6 @@ contract:
     features/*.feature, the containers of acceptance-scenarios;
     decisions/*.md, one design-decision each (frontmatter id, summary, date,
     status, supersedes, revisit_when, revisit_signal);
-    or, where there is no decisions/ directory, the ledger spec/decisions.md,
-    each `## design-decision/<name>` heading a design-decision whose summary is the
-    entry's text up to a blank line, a heading or a property line (date:,
-    revisit_when:, supersedes:, source:), its lines joined by a space;
     work/<initiative>/initiative.md and work/<initiative>/<part>.md;
     records/observations.md (one `## <id>` heading an observation) and any
     other Markdown under records/ whose frontmatter has an `id`.
@@ -44,8 +40,7 @@ contract:
     capability-requirement; `- [r<n>] ...` gives it the id <capability>#r<n>.
     A bullet with no [r<n>] is a requirement with no id.
     `retired: [r4, ...]` lists ids the capability used and retired.
-    A reference may be written <capability>#r<n> or <capability>#behaviour/r<n>
-    (the requirement as a part, in shopsystem-knowledge's IRI form). In a
+    A reference is written <capability>#r<n>. In a
     list, <capability>#r<a>-r<b> stands for each id from a to b.
   - A scenario names its requirement by a tag @r<n> in the capability's own
     feature file; its title is free. A scenario with no such tag names none.
@@ -86,7 +81,7 @@ contract:
 
 LP = Path(__file__).resolve().with_name("model.lp")
 RID = re.compile(r"^\[r(\d+)\]\s*")
-REF = re.compile(r"^(?P<cap>[\w.-]+(?:/[\w.-]+)*)#(?:behaviour/)?r(?P<n>\d+)$")
+REF = re.compile(r"^(?P<cap>[\w.-]+(?:/[\w.-]+)*)#r(?P<n>\d+)$")
 STATUSES = {
     "initiative": {"proposed", "started", "done", "abandoned"},
     "capability-proposal": {"drafted", "approved", "merged", "formulated", "withdrawn"},   # withdrawn: EXTENSION (r58)
@@ -198,7 +193,7 @@ def expand(refs):
     """<capability>#r<a>-r<b> (or an en dash) stands for every id from a to b."""
     out = []
     for ref in refs:
-        m = re.fullmatch(r"(.+)#(?:behaviour/)?r(\d+)\s*[-–]\s*r?(\d+)", str(ref).strip())
+        m = re.fullmatch(r"(.+)#r(\d+)\s*[-–]\s*r?(\d+)", str(ref).strip())
         if m and int(m.group(2)) <= int(m.group(3)):
             out += [f"{m.group(1)}#r{n}" for n in range(int(m.group(2)), int(m.group(3)) + 1)]
         else:
@@ -580,26 +575,6 @@ class Model:
     def read_decisions(self):
         ddir = self.root / "decisions"
         if not ddir.is_dir():
-            ledger = self.root / "spec" / "decisions.md"
-            if ledger.exists():
-                lines = ledger.read_text().splitlines()
-                for i, line in enumerate(lines):
-                    m = re.match(r"^## ((?:design-)?decision/\S+)\s*$", line)
-                    if not m:
-                        continue
-                    d = self.qualify(m.group(1), "design-decision")
-                    if not d.startswith("design-decision/"):
-                        self.problems.append(f"spec/decisions.md: heading {m.group(1)!r} is not design-decision/<name>")
-                        continue
-                    self.check_id(d, "design-decision", "spec/decisions.md")
-                    self.node(d, "design-decision")
-                    summary = []
-                    for below in lines[i + 1:]:
-                        if below.startswith("## ") or not below.strip() or re.match(r"(date|revisit_when|supersedes|source):", below):
-                            break
-                        summary.append(below.strip())
-                    if summary:
-                        self.fact("summary", d, " ".join(summary))
             return
         for path in sorted(ddir.glob("*.md")):
             data, _ = frontmatter(path.read_text())

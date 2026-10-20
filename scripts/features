@@ -4,7 +4,6 @@ import argparse
 import ast
 import os
 import re
-import shutil
 import sys
 
 CONTRACT = """\
@@ -20,8 +19,8 @@ contract:
     collects it.
   - tag finds the scenario by its exact title, refuses unless exactly one file
     has it (naming every file that does), and changes only its tag lines: the
-    first tag of the new tag's kind (@slice-... or @r<n>) becomes the new one,
-    any further tags of that kind go, other tags stay; with no tag of that
+    first @r<n> tag becomes the new one,
+    any further @r<n> tags go, other tags stay; with no tag of that
     kind, the new one joins the last tag line, or gets a tag line of its own
     at the scenario's indentation.
   - move (like hold and retire) finds the scenario by its exact title and
@@ -59,9 +58,6 @@ contract:
     path>, rebind rewrites only the bindings whose feature argument names that
     file, both paths resolved (the argument against --dir); without it, every
     binding of the old title.
-  - plugin writes slice_expectations.py, the pytest plugin that expects a
-    test tagged to a slice the plan has as planned or blocked to fail, into
-    a directory, and says how to register it.
 
 exit status: 0 success, 1 a check failed or an edit was refused, 2 bad usage.
 An edit that would leave its file invalid is refused and the file left as it was.
@@ -277,13 +273,10 @@ def write_checked(edits):
 
 
 def cmd_tag(args, files):
-    if SLICE.match(args.slice):
-        family = re.compile(r"@slice-")
-    elif REQ_TAG.match(args.slice):
-        family = re.compile(r"@r\d+$")
-    else:
-        sys.exit(usage_error("tag must look like slice-<n>, slice-<n>.<m> or r<n>"))
     path, f, sc = locate(files, args.title, args)
+    if not REQ_TAG.match(args.slice):
+        sys.exit(usage_error("tag must look like slice-<n>, slice-<n>.<m> or r<n>"))
+    family = re.compile(r"@r\d+$")
     lines = _retag(f, sc, args.slice, family)
     write_checked({path: lines})
     return 0
@@ -522,20 +515,6 @@ def cmd_rebind(args, files):
     return 0
 
 
-def cmd_plugin(args, files):
-    source = os.path.join(os.path.dirname(os.path.abspath(__file__)), "slice_expectations.py")
-    if not os.path.isdir(args.directory):
-        raise Refused("%s is not a directory" % args.directory)
-    target = os.path.join(args.directory, "slice_expectations.py")
-    shutil.copyfile(source, target)
-    package = os.path.isfile(os.path.join(args.directory, "__init__.py"))
-    print("%s written. Register it with this line in the conftest.py beside it:\n"
-          "  from %sslice_expectations import *  # noqa: F401,F403\n"
-          "It is registered when `python -m pytest --help` lists the option --slice."
-          % (target, "." if package else ""))
-    return 0
-
-
 def usage_error(message):
     sys.stderr.write("features: error: %s\n" % message)
     return 2
@@ -557,7 +536,7 @@ def main():
     lst.set_defaults(run=cmd_list)
     tag = sub.add_parser("tag")
     tag.add_argument("title")
-    tag.add_argument("slice", help="slice-<n>, slice-<n>.<m> or r<n>")
+    tag.add_argument("slice", help="r<n>")
     tag.add_argument("--file", help=FILE_HELP)
     tag.set_defaults(run=cmd_tag)
     move = sub.add_parser("move")
@@ -590,12 +569,9 @@ def main():
             one.add_argument("--file", help="rewrite only the bindings whose feature argument names this feature file")
         one.add_argument("--tests", default="tests")
         one.set_defaults(run=run)
-    plugin = sub.add_parser("plugin")
-    plugin.add_argument("directory")
-    plugin.set_defaults(run=cmd_plugin)
     args = parser.parse_args()
     try:
-        return args.run(args, [] if args.command == "plugin" else load(args.dir))
+        return args.run(args, load(args.dir))
     except Refused as why:
         sys.stderr.write("features: %s\n" % why)
         return 1

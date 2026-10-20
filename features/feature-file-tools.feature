@@ -76,27 +76,6 @@ Feature: Feature file tools
     Then nothing is printed
     And it exits 1
 
-  @r8
-  Scenario: retagging replaces the first slice tag and drops the others
-    A scenario ends with exactly one slice tag, in the place of its first, and keeps every other tag and line.
-    Given a feature file features/cart.feature whose only scenario "Apply a code" has the tag line "@wip @slice-1 @slice-2 @r3"
-    When the agent runs features tag "Apply a code" slice-4
-    Then the scenario's tag line is "@wip @slice-4 @r3"
-    And every other line of features/cart.feature is unchanged
-
-  @r9
-  Scenario Outline: a scenario without a slice tag gets one
-    The new slice tag joins the scenario's last tag line, or stands on a tag line of its own when the scenario has none.
-    Given a feature file features/cart.feature whose only scenario "Apply a code" has the tag lines <tag lines before>
-    When the agent runs features tag "Apply a code" slice-2
-    Then the scenario's tag lines are <tag lines after>
-
-    Examples:
-      | tag lines before  | tag lines after               |
-      | "@wip"            | "@wip @slice-2"               |
-      | "@wip" then "@r1" | "@wip" then "@r1 @slice-2"    |
-      | none              | "@slice-2" above the scenario |
-
   @r35
   Scenario Outline: retagging a title that is not in exactly one file is refused
     The title must pick out one file; otherwise nothing is changed and every file holding it is named.
@@ -314,73 +293,6 @@ Feature: Feature file tools
     Then the command is rejected because no scenario has the new title
     And no test module is changed
 
-  @r30
-  Scenario: the plugin is written into the directory with its registration line
-    The plugin file arrives in the directory, and the line to register it in the conftest.py there is printed.
-    Given a directory tests/
-    When the agent runs features plugin tests
-    Then tests/slice_expectations.py is written
-    And it prints the line that registers it in tests/conftest.py
-
-  @r31
-  Scenario Outline: a test of a planned or blocked slice is expected to fail
-    A waiting slice's failing test is reported as expected, and its passing test fails the run.
-    Given slice_expectations.py is registered
-    And one living plan in which slice-2 is <status>
-    And a test tagged @slice-2 that <result>
-    When the agent runs pytest
-    Then the test is reported as <reported as>
-    And the run <run outcome>
-    And the run reports 1 test of slice-2 expected to fail
-
-    Examples:
-      | status  | result | reported as                    | run outcome |
-      | planned | fails  | an expected failure            | passes      |
-      | planned | passes | a pass that should have failed | fails       |
-      | blocked | fails  | an expected failure            | passes      |
-      | blocked | passes | a pass that should have failed | fails       |
-
-  @r32
-  Scenario Outline: a test of a slice under way, done or gone from the plan runs as it is
-    Only waiting slices are expected to fail.
-    Given slice_expectations.py is registered
-    And one living plan in which slice-2 is <standing>
-    And a test tagged @slice-2 that passes
-    When the agent runs pytest
-    Then the test passes
-    And the run passes
-
-    Examples:
-      | standing         |
-      | in progress      |
-      | green            |
-      | no longer listed |
-
-  @r33
-  Scenario: naming a slice runs its tests as they are
-    A planned slice's tests can be run without being expected to fail.
-    Given slice_expectations.py is registered
-    And one living plan in which slice-2 is planned
-    And a test tagged @slice-2 that passes
-    When the agent runs pytest --slice 2
-    Then the test passes
-    And the run passes
-
-  @r34
-  Scenario Outline: with no one living plan no test is expected to fail
-    Without a single plan to read, every test runs as it is and the run says so.
-    Given slice_expectations.py is registered
-    And <plans>
-    And a test tagged @slice-2 that passes
-    When the agent runs pytest
-    Then the test passes
-    And the run says no test is expected to fail
-
-    Examples:
-      | plans            |
-      | no living plan   |
-      | two living plans |
-
   @r35
   Scenario Outline: moving a title that no file or several files hold is refused
     Without --file, a move, hold or retire needs the title in exactly one file; a refusal names every file that holds it.
@@ -468,30 +380,6 @@ Feature: Feature file tools
     And the refusal names tests/test_cart.py and line 20
     And no test module is changed
 
-  @r43
-  Scenario: writing the plugin to a path that is not a directory is refused
-    The plugin is written only into a directory.
-    Given a file tests/notes.txt
-    When the agent runs features plugin tests/notes.txt
-    Then the command is rejected because the path is not a directory
-    And nothing is written
-
-  @r44
-  Scenario: writing the plugin replaces an existing one and reads no feature file
-    The plugin is written whatever is already there, and the feature files play no part.
-    Given a directory tests/ holding an older slice_expectations.py
-    And a feature file features/rules.feature that holds a Rule: block
-    When the agent runs features plugin tests
-    Then tests/slice_expectations.py is replaced by the plugin
-    And the command is not refused
-
-  @r45
-  Scenario: the registration line for a package imports relatively
-    In a package directory the plugin is imported relative to the package.
-    Given a directory tests/ holding an __init__.py
-    When the agent runs features plugin tests
-    Then the line it prints imports slice_expectations relative to the package
-
   @r46
   Scenario: a refusal says why on stderr and fails
     Whatever is refused, the reason goes to stderr and the command fails.
@@ -499,55 +387,6 @@ Feature: Feature file tools
     When the agent runs features retire "Apply a code"
     Then the reason for the refusal is written to stderr
     And it exits 1
-
-  @r47
-  Scenario Outline: the living plan is the one slice_plan names, or else the one plan file
-    The ini value slice_plan wins; otherwise the single slices plan under docs/superpowers/plans is read, and none or several give no plan.
-    Given slice_expectations.py is registered
-    And <slice_plan>
-    And <plan files> under docs/superpowers/plans in pytest's root directory
-    When the agent runs pytest
-    Then the living plan read is <plan read>
-
-    Examples:
-      | slice_plan                                                    | plan files                    | plan read                                   |
-      | the ini value slice_plan names plans/current.md, which exists | one file 2026-10-01-slices.md | plans/current.md                            |
-      | no ini value slice_plan                                       | one file 2026-10-01-slices.md | docs/superpowers/plans/2026-10-01-slices.md |
-      | no ini value slice_plan                                       | no -slices.md file            | none                                        |
-      | no ini value slice_plan                                       | two -slices.md files          | none                                        |
-
-  @r48
-  Scenario: naming several slices runs each one's tests as they are
-    Each --slice adds a slice, written with or without its slice- prefix.
-    Given slice_expectations.py is registered
-    And one living plan in which slice-2 and slice-3 are planned
-    And a passing test tagged @slice-2 and a passing test tagged @slice-3
-    When the agent runs pytest --slice 2 --slice slice-3
-    Then both tests pass
-    And the run passes
-
-  @r49
-  Scenario Outline: the run's header names the living plan or says there is none
-    The run shows which plan it read, relative to the root directory.
-    Given slice_expectations.py is registered
-    And <plans>
-    When the agent runs pytest
-    Then the run's header <header>
-
-    Examples:
-      | plans                                                       | header                                            |
-      | one living plan docs/superpowers/plans/2026-10-01-slices.md | names docs/superpowers/plans/2026-10-01-slices.md |
-      | no living plan                                              | says no one living plan was found                 |
-
-  @r50
-  Scenario: a slice_plan naming a missing file expects nothing to fail
-    A plan file that is not there gives no expected failures, and the header shows which file was looked for.
-    Given slice_expectations.py is registered
-    And the ini value slice_plan names plans/missing.md, which does not exist
-    And a test tagged @slice-2 that passes
-    When the agent runs pytest
-    Then the test passes
-    And the run's header names plans/missing.md
 
   @r51
   Scenario: tagging with a requirement id makes it the scenario's one requirement tag

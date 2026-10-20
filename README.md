@@ -127,7 +127,6 @@ Held, each with the measurement that would decide it: resuming an implementer in
 
 0.14.0 keeps the suite passing between slices, and keeps behaviour tested until a slice changes it. Design: `records/archive/design-notes/2026-10-11-green-suite-design.md`.
 
-- **Unbuilt slices are expected to fail.** `features plugin <tests directory>` writes a small pytest plugin into the repository. A test tagged to a slice the plan has as `planned` or `blocked` is a strict expected failure: failing is quiet, and passing early fails the suite. `--slice <n>` runs the slice being built as it is. The suite record reads `<N> passed, 0 failed, <X> expected`, and nobody compares lists of failing names.
 - **A scenario that passes today is held, not removed.** When a line is re-worded or removed, formulation keeps the old scenario in the feature file, tagged `@holding` with " (held)" on its title, its steps unchanged, so it still passes. Slicing gives it a slice that retires it, the task lists it under `Retires:`, and the implementer removes it with `features retire` in the commit that turns its replacement green (`formulating-features`, `slicing-into-increments`, `bdd-red-green`).
 - **A changed title never stops a module collecting.** `features bindings` reports every `scenario(…, "<title>")` call that names no scenario; `features rebind` rewrites the title in those calls. Formulation runs both before it commits.
 
@@ -199,7 +198,7 @@ Fixture runs on a seeded shelf spec (a planted `volume` for `book`, a scenario a
 
 Python 3, in `scripts/`. They take the dependencies they need (design-decision/plugin-takes-the-dependencies-it-needs): clingo for `model check` (`python3 -m pip install clingo`), and pytest and pytest-bdd for the scenarios as they move to pytest-bdd step definitions (initiative i11). `--help` is the contract; tests: `python3 -m pytest`.
 
-- `scripts/features`: count, list, tag, move and verify-moved for feature files, without the test runner; hold, retire and holding for scenarios kept while they still pass; bindings and rebind for the titles test modules bind; plugin, which writes `slice_expectations.py` into a repository.
+- `scripts/features`: count, list, tag, move and verify-moved for feature files, without the test runner; hold, retire and holding for scenarios kept while they still pass; bindings and rebind for the titles test modules bind.
 - `scripts/measure`: write, show and compare a batch's facts, from the session transcripts, the plan and git.
 - `scripts/tools`: probe and install the project's analysis tools, and use them through one interface: `map`, `tests-of`, `untested`, `refs`, `check`.
 - `scripts/model`: read a bounded context's spec, feature files, decisions, work and records as the facts of the design model's grammar (`facts`), check them against `scripts/model.lp` with clingo (`check`), write the decisions index (`decisions`), and trace a requirement to why it exists (`why`). Only `check` needs a package: `python3 -m pip install clingo`.
