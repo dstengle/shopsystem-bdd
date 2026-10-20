@@ -21,14 +21,13 @@ Feature: Migration tools
     Then .shop/records/img/a.png is records/img/a.png as it was, byte for byte
     And records/img/a.png is gone
 
-  @r2 @r11
-  Scenario: run replaces a ledger that has only entries with a decision file for each, named by its heading, with its first paragraph, accepted, with its date and source
-    Pins the file a ledger entry becomes, where each of its fields comes from, and that a ledger of nothing but entries is gone.
+  @r2
+  Scenario: run replaces a ledger entry with a decision file named by its heading, with its first paragraph, accepted, with its date and source
+    Pins the file a ledger entry that nothing supersedes becomes, and where each of its fields comes from.
     Given a repository on the old system whose spec/decisions.md has nothing but the entry `## decision/0007-a`
     And the entry is dated 2025-03-01, its source is alice, and its first paragraph is "We do a."
     When the session runs `migrate run --context example.org/acme/shop`
-    Then spec/decisions.md is gone
-    And spec/decisions/0007-a.md has the summary "We do a." and its Decision has "We do a."
+    Then spec/decisions/0007-a.md has the summary "We do a." and its Decision has "We do a."
     And its status is accepted, its date is 2025-03-01 and its by is alice
 
   @r2
@@ -60,26 +59,55 @@ Feature: Migration tools
     Then spec/decisions/0007-a.md has the summary "We do a."
     And its Decision has "We do a." and then "Because b."
 
-  @r2 @r5
-  Scenario: run gives a decision file its entry's supersedes and revisit_when
-    Pins that an entry's supersedes and revisit_when are kept, a superseded entry named by its new id.
+  @r2
+  Scenario: run gives a decision file its entry's supersedes and revisit_when, and the entry it supersedes the status superseded
+    Pins that an entry's supersedes and revisit_when are kept, the superseded entry named by its new id and no longer accepted.
     Given a repository on the old system whose spec/decisions.md has the entries `## decision/0003-b` and `## decision/0007-a`
     And the entry 0007-a has supersedes: decision/0003-b and revisit_when: b comes back
     When the session runs `migrate run --context example.org/acme/shop`
     Then spec/decisions/0007-a.md's supersedes is design-decision/example.org/acme/shop/b and its revisit_when is "b comes back"
+    And spec/decisions/0007-a.md's status is accepted
+    And spec/decisions/0003-b.md's status is superseded
 
-  @r2 @r11
-  Scenario: run replaces a ledger that holds a title and its entries
-    Pins that a ledger holding nothing but a title and its entries is gone once its every entry is replaced.
-    Given a repository on the old system whose spec/decisions.md starts with the title `# Decisions` and a blank line, then the entry `## decision/0007-a`
+  @r17
+  Scenario: run writes a qualified supersedes as the decision's id alone, the qualifier going to by beside the source
+    Pins that supersedes names only a decision, and that its qualifier is kept in by after the entry's source.
+    Given a repository on the old system whose spec/decisions.md has the entries `## decision/0003-b` and `## decision/0007-a`
+    And the entry 0007-a's source is alice and its supersedes is decision/0003-b (for artifacts)
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then spec/decisions/0007-a.md's supersedes is design-decision/example.org/acme/shop/b alone
+    And its by is "alice; supersedes design-decision/example.org/acme/shop/b (for artifacts)"
+
+  @r11
+  Scenario Outline: run removes a ledger that holds nothing but <what> once it has replaced every entry
+    Pins the ledgers migrate removes.
+    Given a repository on the old system whose spec/decisions.md has <ledger>
     And the entry's first paragraph is "We do a."
     When the session runs `migrate run --context example.org/acme/shop`
     Then spec/decisions.md is gone
     And spec/decisions/0007-a.md has the summary "We do a."
 
-  @r7 @r11
+    Examples:
+      | what                    | ledger                                                                        |
+      | its entries             | nothing but the entry `## decision/0007-a`                                    |
+      | a title and its entries | the title `# Decisions` and a blank line, then the entry `## decision/0007-a` |
+
+  @r13
+  Scenario Outline: run numbers each ledger entry with no number, in ledger order, from one above the ledger's highest entry number, <case>
+    Pins that a new number is above every number in the ledger, not only the last, starts at 1 in a ledger with none, and follows the ledger's order.
+    Given a repository on the old system whose spec/decisions.md has, in order, the entries <entries>
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then spec/decisions/ has <files>
+    And spec/decisions/<b file> gives the id design-decision/example.org/acme/shop/b
+
+    Examples:
+      | case                   | entries                                                                         | files                                         | b file    |
+      | among numbered entries | `## decision/0007-a`, `## decision/b`, `## decision/0003-c` and `## decision/d` | 0007-a.md, 0008-b.md, 0003-c.md and 0009-d.md | 0008-b.md |
+      | with no numbered entry | `## decision/b` and `## decision/d`                                             | 0001-b.md and 0002-d.md                       | 0001-b.md |
+
+  @r7
   Scenario Outline: run that finds <found> in spec/decisions.md names it, exits non-zero and changes no file, the ledger included
-    Pins that a ledger heading migrate cannot replace, or ledger text that is neither an entry nor its title, stops the run.
+    Pins that ledger text migrate cannot replace stops the run.
     Given a repository on the old system whose spec/decisions.md has the entry `## decision/0007-a` and <found>
     When the session runs `migrate run --context example.org/acme/shop`
     Then migrate says it could not replace <named>
@@ -88,24 +116,24 @@ Feature: Migration tools
 
     Examples:
       | found                                     | named                                                       |
-      | after it the heading `## decision/b`      | the ledger entry `## decision/b`                            |
       | before it the text "Notes on the ledger." | the ledger text "Notes on the ledger." outside its entries  |
       | after it the heading `## decision/0007-a` | the ledger entry `## decision/0007-a`, which is there twice |
 
   @r7
   Scenario Outline: run whose ledger entry's decision file would land on <there> names it, exits non-zero and changes no file
-    Pins that the decision file migrate writes for a ledger entry never takes the place of a file that is there or moves there.
-    Given a repository on the old system whose spec/decisions.md has the entry `## decision/0007-a`, and <there>
+    Pins that the decision file migrate writes for a ledger entry, numbered or numbered by migrate, never takes the place of a file that is there or moves there.
+    Given a repository on the old system whose spec/decisions.md has, in order, the entries <entries>, and <there>
     When the session runs `migrate run --context example.org/acme/shop`
-    Then migrate says it could not write spec/decisions/0007-a.md for the ledger entry `## decision/0007-a`
+    Then migrate says it could not write spec/decisions/<file> for the ledger entry <entry>
     And it exits non-zero
     And nothing under the repository has changed
 
     Examples:
-      | there                                                        |
-      | decisions/0007-a.md, which moves to spec/decisions/0007-a.md |
-      | a tracked spec/decisions/0007-a.md                           |
-      | an untracked spec/decisions/0007-a.md                        |
+      | entries                                  | there                                                        | file      | entry                |
+      | `## decision/0007-a`                     | decisions/0007-a.md, which moves to spec/decisions/0007-a.md | 0007-a.md | `## decision/0007-a` |
+      | `## decision/0007-a`                     | a tracked spec/decisions/0007-a.md                           | 0007-a.md | `## decision/0007-a` |
+      | `## decision/0007-a`                     | an untracked spec/decisions/0007-a.md                        | 0007-a.md | `## decision/0007-a` |
+      | `## decision/0007-a` and `## decision/b` | decisions/0008-b.md, which moves to spec/decisions/0008-b.md | 0008-b.md | `## decision/b`      |
 
   @r3
   Scenario: run deprecates a @holding scenario as `features deprecate` does
@@ -137,12 +165,19 @@ Feature: Migration tools
     And spec/capabilities/thing.md's rests_on names design-decision/example.org/acme/shop/a
 
   @r6
-  Scenario: after run, model check reports no violation, unresolved reference or file problem
-    Pins that a repository run through migrate passes model check.
-    Given a repository on the old system with decisions/, work/, records/, docs/superpowers/plans/, docs/superpowers/specs/, a ledger spec/decisions.md, a capability and a @holding scenario
+  Scenario Outline: after run on a repository with <what>, model check reports no unresolved reference or file problem
+    Pins that a repository run through migrate leaves model check nothing unresolved and no file problem to report.
+    Given a repository on the old system with <what>
     And the session has run `migrate run --context example.org/acme/shop`
     When the session runs `model check`
-    Then it reports no violation, no unresolved reference and no file problem
+    Then it reports no unresolved reference and no file problem
+
+    Examples:
+      | what                                                                                                                                                                                  |
+      | decisions/, work/, records/, adrs/, docs/superpowers/plans/, docs/superpowers/specs/, docs/superpowers/requests/, a ledger spec/decisions.md, a capability and a @holding scenario |
+      | a capability spec/capabilities/thing.md whose frontmatter has formulated_as: features/thing.feature                                                                                  |
+      | a capability spec/capabilities/thing.md whose id is capability/thing                                                                                                                 |
+      | a ledger whose entry 0007-a has supersedes: decision/0003-b (for artifacts), and the entry 0003-b                                                                                    |
 
   @r7
   Scenario: run that cannot make two of its changes names both, exits non-zero and changes no file
@@ -165,27 +200,46 @@ Feature: Migration tools
     And nothing under the repository has changed
 
   @r8
-  Scenario: run moves docs/superpowers/plans/ and docs/superpowers/specs/ under .shop/records/archive/, with git
-    Pins where plans and design notes land, and that git sees each move as a rename.
-    Given a repository on the old system with docs/superpowers/plans/p1.md and docs/superpowers/specs/s1.md
+  Scenario: run moves docs/superpowers/plans/, specs/ and requests/ under .shop/records/archive/, with git
+    Pins where plans, design notes and requests land, and that git sees each move as a rename.
+    Given a repository on the old system with docs/superpowers/plans/p1.md, docs/superpowers/specs/s1.md and docs/superpowers/requests/q1.md
     When the session runs `migrate run --context example.org/acme/shop`
     Then .shop/records/archive/plans/p1.md has the content docs/superpowers/plans/p1.md had, apart from the id r9 and the about r12 give it
     And .shop/records/archive/design-notes/s1.md has the content docs/superpowers/specs/s1.md had, apart from the id r9 and the about r12 give it
-    And docs/superpowers/plans/ and docs/superpowers/specs/ are gone
-    And git status shows each of the two as renamed
+    And .shop/records/archive/requests/q1.md has the content docs/superpowers/requests/q1.md had, apart from the id r9 and the about r12 give it
+    And docs/superpowers/plans/, docs/superpowers/specs/ and docs/superpowers/requests/ are gone
+    And git status shows each of the three as renamed
+
+  @r14
+  Scenario: run moves adrs/ to .shop/records/decision-arguments/, with git
+    Pins where ADRs land, and that git sees the move as a rename.
+    Given a repository on the old system with adrs/0001-use-x.md
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then .shop/records/decision-arguments/0001-use-x.md has the content adrs/0001-use-x.md had, apart from the id r9 and the about r12 give it
+    And adrs/ is gone
+    And git status shows it as renamed
 
   @r9
-  Scenario: run gives a capability, a decision file, a plan, a design note and a test log the type-first id of its kind
-    Pins the id each kind gets, as <kind>/<context path>/<name>, the name being the file's stem.
+  Scenario: run gives a capability, a decision file, a plan, a request, a design note, an ADR and a test log the type-first id of its kind
+    Pins the id each kind gets, as <kind>/<context path>/<name>, the name being the file's stem, a decision file's alone without its number.
     Given a repository on the old system with a capability spec/capabilities/thing.md with no id
     And its spec/decisions.md has the entry `## decision/0007-a`
-    And it has docs/superpowers/plans/p1.md, docs/superpowers/specs/s1.md and records/logs/run1-test-log.md
+    And it has docs/superpowers/plans/p1.md, docs/superpowers/requests/q1.md, docs/superpowers/specs/s1.md, adrs/0001-use-x.md and records/logs/run1-test-log.md
     When the session runs `migrate run --context example.org/acme/shop`
     Then spec/capabilities/thing.md gives the id capability/example.org/acme/shop/thing
     And spec/decisions/0007-a.md gives the id design-decision/example.org/acme/shop/a
     And .shop/records/archive/plans/p1.md gives the id initiative-archive/example.org/acme/shop/p1
+    And .shop/records/archive/requests/q1.md gives the id initiative-archive/example.org/acme/shop/q1
     And .shop/records/archive/design-notes/s1.md gives the id decision-argument/example.org/acme/shop/s1
+    And .shop/records/decision-arguments/0001-use-x.md gives the id decision-argument/example.org/acme/shop/0001-use-x
     And .shop/records/logs/run1-test-log.md gives the id measurement/example.org/acme/shop/run1-test-log
+
+  @r9
+  Scenario: run gives a capability whose id is the short form capability/<name> its full id
+    Pins that a capability's id ends as capability/<context path>/<name> whatever form it had.
+    Given a repository on the old system with a capability spec/capabilities/thing.md whose id is capability/thing
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then spec/capabilities/thing.md gives the id capability/example.org/acme/shop/thing
 
   @r10
   Scenario: run numbers each Behaviour line with no id, in Behaviour order, from one above the highest id its capability has ever used
@@ -196,8 +250,32 @@ Feature: Migration tools
     Then the Behaviour lines of spec/capabilities/thing.md are, in order, [r1], [r5], [r3] and [r6]
 
   @r12
-  Scenario: run gives a moved plan, design note and test log with no about the context as their about
+  Scenario: run gives each moved record kind with no about the context as its about
     Pins what a moved record that is given an id is about when it says nothing of it.
-    Given a repository on the old system with docs/superpowers/plans/p1.md, docs/superpowers/specs/s1.md and records/logs/run1-test-log.md, none with an about
+    Given a repository on the old system with docs/superpowers/plans/p1.md, docs/superpowers/requests/q1.md, docs/superpowers/specs/s1.md, adrs/0001-use-x.md and records/logs/run1-test-log.md, none with an about
     When the session runs `migrate run --context example.org/acme/shop`
-    Then .shop/records/archive/plans/p1.md, .shop/records/archive/design-notes/s1.md and .shop/records/logs/run1-test-log.md are each about bounded-context/example.org/acme/shop
+    Then .shop/records/archive/plans/p1.md, .shop/records/archive/requests/q1.md, .shop/records/archive/design-notes/s1.md, .shop/records/decision-arguments/0001-use-x.md and .shop/records/logs/run1-test-log.md are each about bounded-context/example.org/acme/shop
+
+  @r15
+  Scenario Outline: run on a repository with <change> refuses, naming it, exits non-zero and changes no file
+    Pins that migrate starts only from a working tree with nothing uncommitted, untracked files included.
+    Given a repository on the old system with work/i1/w1.md
+    And <change>
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then migrate refuses, naming <named>
+    And it exits non-zero
+    And nothing under the repository has changed
+
+    Examples:
+      | change                                          | named        |
+      | a tracked README.md changed since the last commit | README.md    |
+      | an untracked notes/n2.md                          | notes/n2.md  |
+
+  @r16
+  Scenario: run adds every file it wrote or moved to git and writes spec/decisions/index.md
+    Pins that git has every file migrate leaves, the decisions index included.
+    Given a repository on the old system with work/i1/w1.md
+    And its spec/decisions.md has nothing but the entry `## decision/0007-a`
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then git status shows .shop/work/i1/w1.md, spec/decisions/0007-a.md and spec/decisions/index.md as staged, and no file as untracked or changed but not staged
+    And `model decisions --check` says spec/decisions/index.md is current

@@ -35,6 +35,7 @@ what running it shows.
 - [r17] **When** a ledger entry's `supersedes` names a decision with a qualifier, `migrate` shall write the decision's id alone in `supersedes` and the qualifier in `by`.
 
 ## Implementation, may change
+- r17's `by`: the entry's source, then `; supersedes <id> <qualifier>`.
 - Python 3 with the standard library; moves are `git mv`; it does not commit. Every change is computed first,
   then written. A move onto a file that exists is a change it cannot make.
 - The destinations under `.shop/records/` (archive, measurements, decision-arguments) and the record ids are
