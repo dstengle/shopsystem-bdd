@@ -278,6 +278,7 @@ Feature: Design model check
       | features/thing.feature     | two scenarios are titled "Apply a code"                                    | reports         |
       | features/thing.feature     | two scenarios are titled "Apply a code" and one of them is tagged @deprecated | does not report |
       | features/thing.feature     | a scenario with its own title is tagged @holding                           | reports         |
+      | features/thing.feature     | a scenario is tagged @deprecated and @holding                              | reports         |
 
   @r27
   Scenario Outline: a malformed work directory or work file is a file problem

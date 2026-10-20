@@ -587,10 +587,10 @@ class Model:
                 self.problems.append(f"{key}: not features/<name>.feature for a capability <name>")
             seen = set()
             for title, tags, steps in scenarios(path.read_text()):
-                if "@deprecated" in tags:
-                    continue        # a deprecated scenario formulates no line (design-decision/held-scenario-formulates-no-requirement)
                 if "@holding" in tags:
                     self.problems.append(f"{key}: scenario {title!r} is tagged @holding; the tag is @deprecated")
+                if "@deprecated" in tags:
+                    continue        # a deprecated scenario formulates no line (design-decision/held-scenario-formulates-no-requirement)
                 s = f"{key}:{title}"
                 if s in seen:
                     self.problems.append(f"{key}: two scenarios are titled {title!r}")

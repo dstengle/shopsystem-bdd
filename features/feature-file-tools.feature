@@ -396,15 +396,6 @@ Feature: Feature file tools
     Then the scenario's tags are @wip, @slice-2, @r1, @r4 and @r7
     And every other line of features/cart.feature is unchanged
 
-  @r51 @deprecated
-  Scenario: tagging with a requirement id makes it the scenario's one requirement tag (deprecated)
-    Deprecated for: tagging with a requirement id adds it to the scenario's requirement tags
-    A scenario ends with one @r<n> tag, the new one, and keeps every other tag and line.
-    Given a feature file features/cart.feature whose only scenario "Apply a code" has the tags @wip, @slice-2, @r1 and @r4
-    When the agent runs features tag "Apply a code" r7
-    Then the scenario's tags are @wip, @slice-2 and @r7
-    And every other line of features/cart.feature is unchanged
-
   @r52
   Scenario: --file works in that file only, whatever other files hold the title
     A title two files hold is tagged in either file by naming it, and nothing else in either file changes.

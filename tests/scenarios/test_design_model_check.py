@@ -243,6 +243,8 @@ def feature_file_with(world, context, path, titles):
     elif titles.startswith("two scenarios are titled"):
         second = "@deprecated" if "@deprecated" in titles else "@r1"
         text = feature("thing", ("@r1", "Apply a code"), (second, "Apply a code"))
+    elif titles == "a scenario is tagged @deprecated and @holding":
+        text = feature("thing", ("@r1", "one"), ("@deprecated @holding", "another"))
     else:
         assert titles == "a scenario with its own title is tagged @holding", titles
         text = feature("thing", ("@r1", "one"), ("@holding", "another"))
