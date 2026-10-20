@@ -50,6 +50,6 @@ from what running it shows.
 - The tests: `python3 -m pytest -q --work-item <name>` and `python3 -m pytest -q`, from `.shop/delivery.toml`.
 
 ## Not yet
-- Retries, continuations after `PARTIAL`, refused claims, several implementers at once, the guards between
+- Retries, continuations after `PARTIAL`, refused claims, the guards between
   work-items, fix work-items and re-reviews, the branch review, time and spending limits and budgets, the lock,
   interruption, `work step`, and the full log of each session's cost (see skeleton-notes.md).
