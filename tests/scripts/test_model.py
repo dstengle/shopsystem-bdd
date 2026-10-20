@@ -1,5 +1,5 @@
-"""Tests of scripts/model. Each test whose docstring is a scenario title of
-features/design-model-check.feature is that scenario's step definition."""
+"""Unit tests of scripts/model. The scenarios of features/design-model-check.feature are bound in
+tests/scenarios/test_design_model_check.py; a test here that shares a scenario's subject checks what its steps do not."""
 
 import json
 import pathlib
@@ -11,12 +11,9 @@ import tempfile
 import textwrap
 import unittest
 
-from binding import missing
-
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "model"
 LP = ROOT / "scripts" / "model.lp"
-FEATURE = ROOT / "features" / "design-model-check.feature"
 
 try:
     import clingo  # noqa: F401
@@ -145,89 +142,25 @@ class ModelTest(unittest.TestCase):
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
 class CheckTest(ModelTest):
-    def test_r2(self):
-        """violations are printed by their grammar name and fail the check"""
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, `thing` shall answer."]))
-        r = self.run_model("check")
-        self.assertEqual(r.returncode, 1)
-        self.assertRegex(r.stdout, r"v_s3  a requirement has no scenario  \(1\)\n\s+" + re.escape(THING + "#r1"))
-
     def test_r3(self):
-        """a requirement bullet without an id is refused"""
         self.write("spec/capabilities/thing.md", cap("thing", ["- **When** asked, `thing` shall answer."], group="guarantees"))
         r = self.run_model("check")
         self.assertIn("v15a", r.stdout)
         self.assertEqual(r.returncode, 1)
 
-    def test_r4(self):
-        """two requirements with one id are refused"""
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One.", "- [r1] Two."], group="guarantees"))
-        r = self.run_model("check")
-        self.assertIn("v15b", r.stdout)
-
     def test_r5(self):
-        """a retired id used again is refused"""
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees", retired="[r1]"))
         r = self.run_model("check")
         self.assertIn("v15c", r.stdout)
 
-    def test_r6(self):
-        """a proposal changing a requirement no capability has is refused"""
-        self.good()
-        self.observation()
-        self.initiative()
-        self.proposal(changes="[thing#r9]")
-        r = self.run_model("check")
-        self.assertRegex(r.stdout, r"v15e  a proposal changes a requirement no capability has  \(1\)\n\s+" + re.escape(f"{P1}, {THING}#r9"))
-
-    def test_r7(self):
-        """a proposal formulated before its requirement has a scenario is refused"""
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."]))
-        self.observation()
-        self.initiative()
-        self.proposal(status="formulated", adds="[thing#r1]")
-        r = self.run_model("check")
-        self.assertRegex(r.stdout, r"v15f  a formulated proposal leaves a requirement without a scenario  \(1\)\n\s+" + re.escape(P1))
-
     def test_r8(self):
-        """a guarantees capability needs no scenarios"""
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] `thing` shall be fast."], group="guarantees"))
         r = self.run_model("check")
         self.assertNotIn("v_s3", r.stdout)
         self.assertEqual(r.returncode, 0, r.stdout)
 
-    def test_r10(self):
-        """a part that reaches no initiative is refused"""
-        self.good()
-        self.observation()
-        self.initiative()
-        self.work_item(part_of="initiative/nowhere")
-        r = self.run_model("check")
-        self.assertRegex(r.stdout, r"v9c  a part reaches no initiative  \(1\)\n\s+" + re.escape(W1))
-
-    def test_r11(self):
-        """warnings are counted and do not fail the check"""
-        self.good()
-        self.observation()
-        r = self.run_model("check")
-        self.assertIn("warning w_uncited_obs  an observation no initiative cites  (1)", r.stdout)
-        self.assertEqual(r.returncode, 0, r.stdout)
-
 
 class RulesTest(ModelTest):
-    def test_model_rules_prints_every_rule_with_its_plain_label(self):
-        """model rules prints every rule with its plain label"""
-        r = self.run_model("rules")
-        self.assertEqual(r.returncode, 0, r.stderr)
-        rows = [line.split("  ", 1) for line in r.stdout.splitlines()]
-        self.assertTrue(all(len(row) == 2 and row[1] for row in rows), r.stdout)
-        codes = [c for c, _ in rows]
-        self.assertEqual(codes, lp_labels(), r.stdout)
-        self.assertIn(["v_s3", "a requirement has no scenario"], rows)
-        firstw = min(i for i, c in enumerate(codes) if c.startswith("w_"))
-        self.assertTrue(all(c.startswith("w_") for c in codes[firstw:]), codes)
-        self.assertTrue(all(c.startswith("v") for c in codes[:firstw]), codes)
-
     def test_every_relation_model_lp_shows_has_one_label(self):
         """r2, r65: a relation model.lp shows has exactly one label, and no label names a relation not shown"""
         text = LP.read_text()
@@ -239,40 +172,14 @@ class RulesTest(ModelTest):
         self.assertEqual(len(names), len(set(names)), "a code has two labels")
 
 
-def lp_labels():
-    return re.findall(r'^label\("([^"]+)",', LP.read_text(), re.M)
-
-
 class DecisionsTest(ModelTest):
-    def decisions(self):
-        self.write("spec/decisions/0001-old.md", f'---\nid: {full("design-decision", "old")}\nsummary: "Do it the old way."\ndate: 2026-01-01\nstatus: superseded\n---\n# 1\n')
-        self.write("spec/decisions/0002-new.md", f'---\nid: {full("design-decision", "new")}\nsummary: "Do it | the new way."\ndate: 2026-02-01\nstatus: accepted\nsupersedes: design-decision/old\nrevisit_when: "it hurts"\nrevisit_signal: requests\n---\n# 2\n')
-
     def test_the_index_is_written_with_no_decision_yet(self):
-        """the decisions index is written when there is no decision yet"""
         r = self.run_model("decisions")
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertIn("spec/decisions/index.md", r.stdout)
         text = (self.tmp / "spec/decisions/index.md").read_text()
         self.assertTrue(text.startswith("# "), text)
         self.assertNotIn("](", text)
-
-    def test_r15(self):
-        """a stale decisions index is reported and left alone"""
-        self.decisions()
-        target = self.write("spec/decisions/index.md", "# Decisions\n\nhand-written\n")
-        r = self.run_model("decisions", "--check")
-        self.assertEqual(r.returncode, 1)
-        self.assertIn("not what `model decisions` writes", r.stdout)
-        self.assertEqual(target.read_text(), "# Decisions\n\nhand-written\n")
-
-    def test_r37(self):
-        """a current decisions index passes the check"""
-        self.decisions()
-        self.assertEqual(self.run_model("decisions").returncode, 0)
-        r = self.run_model("decisions", "--check")
-        self.assertEqual(r.returncode, 0, r.stdout)
-        self.assertIn("spec/decisions/index.md is current", r.stdout)
 
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
@@ -456,42 +363,7 @@ class TypeFirstTest(ModelTest):
 class FilesReadTest(ModelTest):
     """Which files are read, and how references and file shapes are judged (r19-r30)."""
 
-    def test_r19(self):
-        """model reads the repository's files under its root"""
-        feat = feature("thing", ("@r1", "it answers"))
-        decision = f"---\nid: {full('design-decision', 'one')}\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n"
-        one = f'node("{full("design-decision", "one")}", "design-decision").'
-        initiative, i1 = f"---\nid: {I1}\nstatus: started\n---\n", f'node("{I1}", "initiative").'
-        observations, obs = f"# Observations\n\n## {OBS1}\nabout: {CONTEXT}\n", f'node("{OBS1}", "observation").'
-        rows = [
-            ("spec/index.md", "---\nid: bounded-context/row.com/prod/rowctx\n---\n",
-             'node("bounded-context/row.com/prod/rowctx", "bounded-context").', True, True),
-            ("spec/capabilities/thing.md", cap("thing", ["- [r1] One."]), f'node("{THING}", "capability").', True, True),
-            ("features/sub/thing.feature", feat, 'features/sub/thing.feature:it answers', True, True),
-            ("spec/decisions/0001-one.md", decision, one, True, True),
-            ("spec/decisions/index.md", decision, one, False, True),
-            (".shop/work/i1/initiative.md", initiative, i1, True, True),
-            (".shop/records/observations.md", observations, obs, True, True),
-            (".shop/records/review/f1.md", f"---\nid: {full('review-finding', 'f1')}\nkind: review-finding\n---\n",
-             f'node("{full("review-finding", "f1")}", "review-finding").', True, True),
-            (".shop/records/review/f2.md", "---\nkind: review-finding\nabout: capability/zzmark\n---\n", "zzmark", False, True),
-            ("decisions/0001-one.md", decision, one, False, True),
-            ("work/i1/initiative.md", initiative, i1, False, True),
-            ("records/observations.md", observations, obs, False, True),
-            ("spec/capabilities/thing.md", cap("thing", ["- [r1] One."]), f'node("{THING}", "capability").', True, False),
-        ]
-        for rel, text, marker, included, with_root in rows:
-            with self.subTest(file=rel, with_root=with_root, included=included):
-                self.reset()
-                self.write(rel, text)
-                if with_root:
-                    facts = self.run_model("facts").stdout
-                else:
-                    facts = subprocess.run([sys.executable, str(SCRIPT), "facts"], capture_output=True, text=True, cwd=self.tmp).stdout
-                self.assertEqual(marker in facts, included, facts)
-
     def test_r20(self):
-        """a scenario names a requirement by its tag in its capability's feature file"""
         scenario_tag = "Feature: thing\n\n  @r2\n  Scenario: two\n    Given a\n"
         feature_tag = "@r2\nFeature: thing\n\n  Scenario: two\n    Given a\n"
         rows = [
@@ -509,7 +381,6 @@ class FilesReadTest(ModelTest):
                 self.assertEqual([THING + "#r2"] in self.violated(found, "v_s3"), reported, found)
 
     def test_r26(self):
-        """a feature file no capability is formulated as, or with a title twice, is a file problem"""
         one = feature("thing", ("@r1", "one"))
         rows = [
             ("features/stray.feature", one, True),
@@ -528,68 +399,10 @@ class FilesReadTest(ModelTest):
 
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
-class OutputTest(ModelTest):
-    """What the check prints and how a repository's parts are judged (r31-r36)."""
-
-    def unscenarioed(self, count):
-        self.write("spec/capabilities/thing.md", cap("thing", [f"- [r{n}] Req {n}." for n in range(1, count + 1)]))
-
-    def test_r33(self):
-        """with --json the check's findings are one JSON object"""
-        for state, status in [("accepts", 0), ("unnamed", 1)]:
-            with self.subTest(state=state):
-                self.reset()
-                if state == "accepts":
-                    self.good()
-                else:
-                    self.unscenarioed(1)
-                found, r = self.check_json()
-                self.assertEqual(sorted(found), ["labels", "problems", "unresolved", "violations", "warnings"])
-                codes = {name for name, _ in found["violations"] + found["warnings"]}
-                self.assertEqual(set(found["labels"]), codes, found)
-                self.assertTrue(all(isinstance(v, str) and v for v in found["labels"].values()), found)
-                self.assertEqual(r.returncode, status)
-                self.assertEqual(bool(found["violations"]), status == 1)
-
-    def test_r34(self):
-        """only a capability-change initiative may have several parts directly"""
-        self.write("spec/capabilities/other.md", cap("other", ["- [r1] One."], group="guarantees"))
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees"))
-        self.observation()
-        self.initiative(kind="defect")
-        for w in ("w1", "w2"):
-            self.work_item(w)
-        found, _ = self.check_json()
-        self.assertEqual(self.violated(found, "v_k5"), [[I1]], found)
-        self.reset()
-        self.write("spec/capabilities/other.md", cap("other", ["- [r1] One."], group="guarantees"))
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees"))
-        self.observation()
-        self.initiative()
-        self.proposal("p1", adds="[thing#r1]")
-        self.proposal("p2", adds="[other#r1]", argues="[other]")
-        found, _ = self.check_json()
-        self.assertEqual(self.violated(found, "v_k5"), [], found)
-
-    def test_r35(self):
-        """a proposal arguing two capabilities is refused"""
-        self.write("spec/capabilities/other.md", cap("other", ["- [r1] One."], group="guarantees"))
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees"))
-        self.observation()
-        self.initiative()
-        self.proposal(adds="[thing#r1, other#r1]", argues="[thing, other]")
-        r = self.run_model("check")
-        self.assertRegex(r.stdout, r"v_k6  .+  \(1\)\n\s+" + re.escape(P1))
-
-
-
-
-@unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
 class DeprecatedAndLedgerTest(ModelTest):
     """r44."""
 
     def test_r44(self):
-        """a deprecated scenario names no requirement"""
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r2] Two."]))
         self.write("features/thing.feature", "Feature: thing\n\n  @r2 @deprecated\n  Scenario: two as it was\n    Given a\n")
         found, _ = self.check_json()
@@ -620,7 +433,6 @@ class GlossaryFactsTest(ModelTest):
         self.assertEqual([l for l in lines if l.startswith("avoid(")], [])
 
     def test_r51(self):
-        """a mention is a whole word in any case, plural allowed"""
         self.write("spec/index.md", index("- **store**: where things are kept. Not: shelf."))
         self.write("spec/capabilities/thing.md", cap("thing", [
             "- [r1] **When** asked, the Store answers.",
@@ -652,7 +464,6 @@ class GlossaryCheckTest(ModelTest):
         self.assertEqual(r.returncode, 0)
 
     def test_r52(self):
-        """a requirement or scenario using an avoided word is v_t1"""
         self.write("spec/index.md", index("- **slice**: a unit of work. Not: chunk."))
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, it plans each chunk.", "- [r2] It plans a slice."]))
         self.write("features/thing.feature", feature("thing", ("@r1", "it plans"), ("@r2", "chunks are planned"),
@@ -673,24 +484,6 @@ class GlossaryCheckTest(ModelTest):
         found, _ = self.check_json()
         self.assertEqual(self.violated(found, "v_t1"), [], found)
 
-    def test_r53(self):
-        """two entries for one term are v_t2"""
-        self.write("spec/index.md", index("- **slice**: a unit of work.", "- **Slice**: a piece of a batch."))
-        found, r = self.check_json()
-        self.assertEqual(self.violated(found, "v_t2"), [[term("slice")]], found)
-        self.assertEqual(r.returncode, 1)
-
-    def test_r54(self):
-        """an avoided word that is a term is v_t3"""
-        self.write("spec/index.md", index("- **slice**: a unit of work. Not: batch.",
-                                          "- **batch**: the slices one session plans.",
-                                          "- **hand-back**: an implementer's stop. Not: Hand-back, halt."))
-        found, r = self.check_json()
-        self.assertEqual(sorted(self.violated(found, "v_t3")), [["batch"], ["hand-back"]], found)
-        self.assertEqual(r.returncode, 1)
-
-
-
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
 class WithdrawnTest(ModelTest):
@@ -707,7 +500,6 @@ class WithdrawnTest(ModelTest):
         return [v for v in found["violations"] if I1 in v[1]]
 
     def test_r59(self):
-        """an abandoned initiative with an open part is v_d2"""
         self.breakdown("abandoned", "withdrawn", "drafted")
         found, r = self.check_json()
         self.assertEqual(self.violated(found, "v_d2"), [[I1]], found)
@@ -716,28 +508,6 @@ class WithdrawnTest(ModelTest):
         self.breakdown("abandoned", "withdrawn", "withdrawn")
         found, _ = self.check_json()
         self.assertEqual(self.about_initiative(found), [], found)
-
-
-# The scenarios bound as pytest-bdd tests, by title, in BOUND of tests/scenarios/test_design_model_check.py.
-SCENARIO_MODULE = pathlib.Path(__file__).resolve().parents[1] / "scenarios" / "test_design_model_check.py"
-
-
-def moved_titles():
-    """The titles of the scenarios that the pytest-bdd module binds."""
-    import ast
-    for node in ast.parse(SCENARIO_MODULE.read_text()).body:
-        if isinstance(node, ast.Assign) and [t.id for t in node.targets if isinstance(t, ast.Name)] == ["BOUND"]:
-            return list(ast.literal_eval(node.value))
-    raise AssertionError("no BOUND in %s" % SCENARIO_MODULE)
-
-
-class BindingTest(unittest.TestCase):
-    def test_every_scenario_has_its_test(self):
-        gone = set(moved_titles())
-        self.assertEqual([t for t in missing(FEATURE, CheckTest, RulesTest, DecisionsTest,
-                                             ReadingTest, GrammarFixTest, TypeFirstTest, FilesReadTest, OutputTest,
-                                             DeprecatedAndLedgerTest, GlossaryFactsTest,
-                                             GlossaryCheckTest, WithdrawnTest) if t not in gone], [])
 
 
 if __name__ == "__main__":

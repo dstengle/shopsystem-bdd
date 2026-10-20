@@ -1,91 +1,21 @@
-"""features/design-model-check.feature, bound to scripts/model: the scenarios of requirements r1, r9, r12-r14,
-r16-r18, r21-r25, r27-r32, r36, r43, r46, r48, r49, r55, r105 and the EARS lines'. (The rest are bound by the work-items
-that follow.)
+"""features/design-model-check.feature, bound to scripts/model: every scenario of the file, by `scenarios()`.
 
 A Given builds the repository in `world` (see conftest); the When runs `model` once; the Then steps read what it
 printed. The checks that read the findings as data (`check --json`) run it a second time, on demand.
 """
 import os
 import re
+import subprocess
 import sys
 
-from pytest_bdd import given, parsers, scenario, then, when
+from pytest_bdd import given, parsers, scenarios, then, when
 
 from .conftest import CONTEXT, INDEX, I1, OBS1, P1, PATH, SCRIPTS, THING, cap, feature, full
 
-FEATURE = "design-model-check.feature"
-BOUND = (
-    'a repository the grammar accepts passes',
-    'references that name nothing are reported',
-    'without clingo the check says how to install it',
-    "facts are printed in clingo's syntax",
-    "why traces a requirement to its initiative's sources",
-    'why with no proposal says so',
-    'a range of ids stands for each id in it',
-    "a reference written name#r<n> is that capability's requirement",
-    'a reference in neither requirement form, or a reversed range, is unresolved',
-    'a proposal adding or removing a requirement no capability has is unresolved, unless it adds a retired id',
-    "a proposal's list naming a term the glossary lacks is unresolved, unless a merged proposal removes it",
-    'a frontmatter reference to nothing, or to the wrong kind, is unresolved',
-    'a malformed index or capability file is a file problem',
-    'a path of the old layout is a file problem naming scripts/migrate',
-    'a malformed work directory or work file is a file problem',
-    'a work-item accepting a requirement no scenario names is a file problem',
-    'a malformed decision, record or frontmatter is a file problem',
-    'a feature file no capability is formulated as, with a title twice, or with a scenario tagged @holding, is a file problem',
-    "a decision's source is a list of ids and its by is not read",
-    'file problems are each printed and fail the check',
-    'the check ends with the four counts',
-    'rows of a violated relation are limited, saying how many more there are',
-    "a scenario names a requirement by its tag in its capability's feature file",
-    'a deprecated scenario names no requirement',
-    'a scenario tagged with several requirements names each of them',
-    'a mention is a whole word in any case, plural allowed',
-    'a code span, a double-quoted string and a tag are no mention',
-    "a Behaviour line in none of EARS's patterns is v_e1",
-    'a table row is checked by its lead sentence',
-    'a Behaviour line with two shalls or two sentences is v_e2',
-    'a table row whose id lost its brackets is a line with no id',
-    'a table is led only by the sentence just before it',
-    'a retired id used again is refused',
-    'a merged capability-proposal may add or remove an id its capability lists as retired',
-    'a table row with an id is a requirement, and its header, separator and lead sentence are not',
-    'the decisions index lists every decision',
-    'writing the decisions index names the file and leaves out decisions with no id',
-    'why refuses an argument that is not a requirement reference',
-    'why on a requirement no capability has still lists its proposals',
-    'why lists every proposal naming the requirement by date, and fails when none adds or changes it',
-    'a node may be written in short where its field allows it',
-    'a node whose id is not in type-first form is a file problem',
-    'a reference in a refused form is unresolved',
-    'a glossary bullet is a term of the bounded context',
-    'a glossary bullet not in the entry form is a file problem',
-    'facts give each term its kind, its context and its avoided words',
-    'without clingo the check runs again under the first interpreter that has it',
-    'the check runs again only once',
-    'with no interpreter that has clingo the check names each one it tried',
-    'an initiative may be done when its proposal is formulated',
-    'a withdrawn part is closed',
-)
+scenarios("design-model-check.feature")
 
 # HIDE_CLINGO on PYTHONPATH hides clingo from an interpreter, as the fixture harness does.
 HIDE_CLINGO = 'raise ImportError("clingo is hidden for this test")\n'
-
-
-def _test_name(title):
-    """The test's name, from its scenario's title (a scenario may name several requirements, so not from a tag)."""
-    return "test_" + re.sub(r"\W+", "_", title).strip("_").lower()
-
-
-def _bind(title):
-    def test():
-        pass
-    test.__name__ = _test_name(title)
-    return scenario(FEATURE, title)(test)
-
-
-for _title in BOUND:
-    globals()[_test_name(_title)] = _bind(_title)
 
 
 def found(world, context):
@@ -520,8 +450,9 @@ def reports_nothing(context):
     assert "0 unresolved references, 0 file problems" in out
 
 
-@then(parsers.re(r"the output names (?P<code>v15[ac])"))
+@then(parsers.re(r"the output names (?P<code>v15[abc])"))
 def output_names_code(world, context, code):
+    assert code in context["result"].stdout, context["result"].stdout
     assert code in [name for name, _ in found(world, context)["violations"]], found(world, context)
 
 
@@ -1188,3 +1119,372 @@ def names_interpreters_tried(world, context):
         named = result.stdout.split("it tried has it:", 1)[1].split("\n", 1)[0]
         assert [p.strip() for p in named.rstrip(".").split(",")] == tried + TRIED_ALWAYS, (name, named)
     assert _check_calls(world) == [], _calls(world)
+
+
+# === what the check prints, and the refusals (r2-r11, r33-r35) ======================================================
+
+@given("a bounded context with a requirement no scenario names")
+def requirement_no_scenario_names(world):
+    world.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, `thing` shall answer."]))
+
+
+@then("the output names v_s3 with its plain label and the requirement's id")
+def output_names_v_s3(context):
+    out = context["result"].stdout
+    assert re.search(r"v_s3  a requirement has no scenario  \(1\)\n\s+" + re.escape(THING + "#r1"), out), out
+
+
+@given("a capability whose Behaviour has a bullet with no [r<n>]")
+def bullet_without_id(world):
+    world.write("spec/capabilities/thing.md", cap("thing", ["- **When** asked, `thing` shall answer."], group="guarantees"))
+
+
+@given("a capability whose Behaviour has two bullets marked [r1]")
+def two_bullets_r1(world):
+    world.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One.", "- [r1] Two."], group="guarantees"))
+
+
+@given("a capability-proposal that changes r9 of a capability with no r9")
+def proposal_changing_r9(world):
+    world.good()
+    world.observation()
+    world.initiative()
+    world.proposal(changes="[thing#r9]")
+
+
+@then("the output names v15e with the proposal and the requirement")
+def output_names_v15e(context):
+    out = context["result"].stdout
+    assert re.search(r"v15e  a proposal changes a requirement no capability has  \(1\)\n\s+" + re.escape("%s, %s#r9" % (P1, THING)), out), out
+
+
+@given("a capability-proposal with status formulated that adds a requirement no scenario names")
+def formulated_proposal_unscenarioed(world):
+    world.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."]))
+    world.observation()
+    world.initiative()
+    world.proposal(status="formulated", adds="[thing#r1]")
+
+
+@then("the output names v15f with the proposal")
+def output_names_v15f(context):
+    out = context["result"].stdout
+    assert re.search(r"v15f  a formulated proposal leaves a requirement without a scenario  \(1\)\n\s+" + re.escape(P1), out), out
+
+
+@given("a capability in the guarantees group whose requirements no scenario names")
+def guarantees_unscenarioed(world):
+    world.write("spec/capabilities/thing.md", cap("thing", ["- [r1] `thing` shall be fast."], group="guarantees"))
+
+
+@then("the output does not name v_s3")
+def output_without_v_s3(context):
+    assert "v_s3" not in context["result"].stdout, context["result"].stdout
+
+
+@given("a work-item whose part_of names nothing")
+def work_item_reaching_nothing(world):
+    world.good()
+    world.observation()
+    world.initiative()
+    world.work_item(part_of="initiative/nowhere")
+
+
+@then("the output names v9c with the work-item")
+def output_names_v9c(context):
+    out = context["result"].stdout
+    assert re.search(r"v9c  a part reaches no initiative  \(1\)\n\s+" + re.escape(full("work-item", "w1")), out), out
+
+
+@given("a bounded context the grammar accepts, with an observation no initiative cites")
+def uncited_observation(world):
+    world.good()
+    world.observation()
+
+
+@then("the output gives w_uncited_obs with its plain label and its count")
+def output_gives_warning(context):
+    out = context["result"].stdout
+    assert "warning w_uncited_obs  an observation no initiative cites  (1)" in out, out
+
+
+# === the decisions index checked and written, and the rules (r15, r37, r65) ========================================
+
+HAND_WRITTEN = "# Decisions\n\nhand-written\n"
+
+
+@given("a spec/decisions/index.md that differs from what model decisions writes")
+def stale_index(world):
+    _decisions(world)
+    world.write("spec/decisions/index.md", HAND_WRITTEN)
+
+
+@given("a spec/decisions/index.md that is what model decisions writes")
+def current_index(world):
+    _decisions(world)
+    written = world.model("decisions")
+    assert written.returncode == 0, written.stdout + written.stderr
+
+
+@when("model decisions --check is run")
+def model_decisions_check(world, context):
+    context["result"] = world.model("decisions", "--check")
+
+
+@then("it says the file is not current, exits 1, and the file is unchanged")
+def index_not_current(repo, context):
+    result = context["result"]
+    assert result.returncode == 1, result.stdout + result.stderr
+    assert "not what `model decisions` writes" in result.stdout, result.stdout
+    assert _index_text(repo) == HAND_WRITTEN
+
+
+@then("it says the file is current")
+def index_current(context):
+    assert "spec/decisions/index.md is current" in context["result"].stdout, context["result"].stdout
+
+
+@given("a repository with no spec/decisions/")
+def no_decisions_directory(repo):
+    assert not (repo / "spec" / "decisions").exists()
+
+
+@then("the index has its header and no row")
+def index_header_only(repo):
+    text = _index_text(repo)
+    assert text.startswith("# "), text
+    assert "](" not in text, text
+
+
+@given("any repository")
+def any_repository(world):
+    pass  # the World's spec/index.md is enough: the rules are model.lp's, not the repository's
+
+
+@when("model rules is run")
+def model_rules(world, context):
+    context["result"] = world.model("rules")
+
+
+def _lp_labels():
+    """The codes model.lp labels, in its order."""
+    return re.findall(r'^label\("([^"]+)",', (SCRIPTS / "model.lp").read_text(), re.M)
+
+
+@then("it prints each rule's code and plain label, one a line, the violations first and then the warnings")
+def rules_printed(context):
+    out = context["result"].stdout
+    rows = [line.split("  ", 1) for line in out.splitlines()]
+    assert all(len(row) == 2 and row[1] for row in rows), out
+    codes = [c for c, _ in rows]
+    assert codes == _lp_labels(), out
+    assert ["v_s3", "a requirement has no scenario"] in rows
+    firstw = min(i for i, c in enumerate(codes) if c.startswith("w_"))
+    assert all(c.startswith("w_") for c in codes[firstw:]), codes
+    assert all(c.startswith("v") for c in codes[:firstw]), codes
+
+
+# === which files model reads (r19) ===============================================================================
+
+def _files_read():
+    """For each file of r19's Examples: the path written, its text, and a line of the facts that shows it was read."""
+    decision = "---\nid: %s\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n" % full("design-decision", "one")
+    one = 'node("%s", "design-decision").' % full("design-decision", "one")
+    initiative, i1 = "---\nid: %s\nstatus: started\n---\n" % I1, 'node("%s", "initiative").' % I1
+    observations, obs = "# Observations\n\n## %s\nabout: %s\n" % (OBS1, CONTEXT), 'node("%s", "observation").' % OBS1
+    capability = (cap("thing", ["- [r1] One."]), 'node("%s", "capability").' % THING)
+    return {
+        "spec/index.md": ("---\nid: bounded-context/row.com/prod/rowctx\n---\n",
+                          'node("bounded-context/row.com/prod/rowctx", "bounded-context").'),
+        "spec/capabilities/thing.md": capability,
+        "features/sub/thing.feature": (feature("thing", ("@r1", "it answers")), "features/sub/thing.feature:it answers"),
+        "spec/decisions/0001-one.md": (decision, one),
+        "spec/decisions/index.md": (decision, one),
+        ".shop/work/i1/initiative.md": (initiative, i1),
+        ".shop/records/observations.md": (observations, obs),
+        ".shop/records/review/f1.md with an id": ("---\nid: %s\nkind: review-finding\n---\n" % full("review-finding", "f1"),
+                                                  'node("%s", "review-finding").' % full("review-finding", "f1")),
+        ".shop/records/review/f2.md with no id": ("---\nkind: review-finding\nabout: capability/zzmark\n---\n", "zzmark"),
+        "decisions/0001-one.md": (decision, one),
+        "work/i1/initiative.md": (initiative, i1),
+        "records/observations.md": (observations, obs),
+    }
+
+
+@given(parsers.parse("a repository in a directory that has {file}"))
+def repository_with_file(world, context, file):
+    text, marker = _files_read()[file]
+    world.write(file.split(" ", 1)[0], text)
+    context["marker"] = marker
+
+
+@when(parsers.re(r"model facts is run (?P<how>with --root naming that directory|from that directory with no --root)"))
+def model_facts_how(world, repo, context, how):
+    if how.startswith("with --root"):
+        context["result"] = world.model("facts")
+    else:
+        context["result"] = subprocess.run([sys.executable, str(SCRIPTS / "model"), "facts"], capture_output=True, text=True, cwd=repo)
+
+
+@then(parsers.re(r"the facts printed (?P<outcome>include|do not include) what (?P<file>.+) contains"))
+def facts_include(context, outcome, file):
+    facts = context["result"].stdout
+    assert (context["marker"] in facts) == (outcome == "include"), facts
+
+
+# === the check as JSON (r33) =====================================================================================
+
+@given("a repository the grammar accepts")
+def repository_accepted(world, context):
+    world.good()
+    context["violating"] = False
+
+
+@given("a repository with a requirement no scenario names")
+def repository_unscenarioed(world, context):
+    world.write("spec/capabilities/thing.md", cap("thing", ["- [r1] Req 1."]))
+    context["violating"] = True
+
+
+@when("model check is run with --json")
+def model_check_json(world, context):
+    context["found"], context["result"] = world.check_json()
+
+
+@then("it prints one JSON object with the violations, warnings, unresolved references and file problems")
+def one_json_object(context):
+    data = context["found"]
+    assert sorted(data) == ["labels", "problems", "unresolved", "violations", "warnings"], data
+    assert bool(data["violations"]) == context["violating"], data
+
+
+@then("the object maps each code it prints to its plain label")
+def json_labels(context):
+    data = context["found"]
+    codes = {name for name, _ in data["violations"] + data["warnings"]}
+    assert set(data["labels"]) == codes, data
+    assert all(isinstance(v, str) and v for v in data["labels"].values()), data
+
+
+# === one part directly, and one capability argued (r34, r35) =======================================================
+
+def _two_capabilities(world):
+    for name in ("other", "thing"):
+        world.write("spec/capabilities/%s.md" % name, cap(name, ["- [r1] One."], group="guarantees"))
+    world.observation()
+
+
+@given("an initiative that is not a capability-change with two parts directly under it")
+def defect_with_two_parts(world):
+    _two_capabilities(world)
+    world.initiative(kind="defect")
+    for w in ("w1", "w2"):
+        world.work_item(w)
+
+
+@given("a capability-change initiative with two capability-proposals directly under it")
+def change_with_two_proposals(world):
+    _two_capabilities(world)
+    world.initiative()
+    world.proposal("p1", adds="[thing#r1]")
+    world.proposal("p2", adds="[other#r1]", argues="[other]")
+
+
+@then(parsers.re(r"the initiative is (?P<reported>reported|not reported) under v_k5"))
+def initiative_under_v_k5(world, context, reported):
+    data = found(world, context)
+    rows = [a for name, a in data["violations"] if name == "v_k5"]
+    assert rows == ([[I1]] if reported == "reported" else []), data
+
+
+@given("capabilities thing and other")
+def capabilities_thing_and_other(world):
+    _two_capabilities(world)
+    world.initiative()
+
+
+@given("a capability-proposal that argues both thing and other")
+def proposal_arguing_both(world):
+    world.proposal(adds="[thing#r1, other#r1]", argues="[thing, other]")
+
+
+@then("the output names v_k6 with the proposal")
+def output_names_v_k6(context):
+    out = context["result"].stdout
+    assert re.search(r"v_k6  .+  \(1\)\n\s+" + re.escape(P1), out), out
+
+
+# === the glossary checked (r52-r54) ================================================================================
+
+@given("a glossary term slice that avoids chunk")
+def glossary_slice_avoids_chunk(world):
+    _glossary(world, "- **slice**: a unit of work. Not: chunk.")
+
+
+@given('a requirement that says "chunk", a scenario titled "chunks are planned" and a deprecated scenario titled "a chunk as it was"')
+def chunk_everywhere(world):
+    world.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, it plans each chunk.", "- [r2] It plans a slice."]))
+    world.write("features/thing.feature", feature("thing", ("@r1", "it plans"), ("@r2", "chunks are planned"),
+                                                  ("@r2 @deprecated", "a chunk as it was")))
+
+
+def _v_t1(world, context):
+    return [a for name, a in found(world, context)["violations"] if name == "v_t1"]
+
+
+@then("v_t1 names the requirement, chunk and the term slice")
+def v_t1_names_requirement(world, context):
+    assert [THING + "#r1", "chunk", _term("slice")] in _v_t1(world, context), found(world, context)
+
+
+@then("v_t1 names the scenario, chunk and the term slice")
+def v_t1_names_scenario(world, context):
+    assert ["features/thing.feature:chunks are planned", "chunk", _term("slice")] in _v_t1(world, context), found(world, context)
+
+
+@then("v_t1 does not name the deprecated scenario")
+def v_t1_not_deprecated(world, context):
+    assert not [a for a in _v_t1(world, context) if "as it was" in a[0]], found(world, context)
+
+
+@given("a glossary with an entry for slice and another for Slice")
+def glossary_slice_twice(world):
+    _glossary(world, "- **slice**: a unit of work.", "- **Slice**: a piece of a batch.")
+
+
+@then("v_t2 names term/ex.com/prod/ctx/slice")
+def v_t2_names_slice(world, context):
+    assert [a for name, a in found(world, context)["violations"] if name == "v_t2"] == [[_term("slice")]], found(world, context)
+
+
+@given("a glossary where slice avoids batch, batch is a term, and hand-back avoids Hand-back")
+def glossary_avoiding_terms(world):
+    _glossary(world, "- **slice**: a unit of work. Not: batch.", "- **batch**: the slices one session plans.",
+              "- **hand-back**: an implementer's stop. Not: Hand-back, halt.")
+
+
+@then("v_t3 names batch and hand-back")
+def v_t3_names(world, context):
+    rows = [a for name, a in found(world, context)["violations"] if name == "v_t3"]
+    assert sorted(rows) == [["batch"], ["hand-back"]], found(world, context)
+
+
+# === an abandoned initiative (r59) ===============================================================================
+
+@given("an abandoned capability-change initiative")
+def abandoned_initiative(world):
+    world.good()
+    world.observation()
+    world.initiative(status="abandoned")
+
+
+@then("v_d2 names the initiative")
+def v_d2_names_initiative(world, context):
+    assert [a for name, a in found(world, context)["violations"] if name == "v_d2"] == [[I1]], found(world, context)
+
+
+@then("once the work-item is withdrawn too, no violation names the initiative")
+def withdrawn_too(world):
+    world.work_item(status="withdrawn", part_of="capability-proposal/p1")
+    data, _ = world.check_json()
+    assert [v for v in data["violations"] if I1 in v[1]] == [], data
