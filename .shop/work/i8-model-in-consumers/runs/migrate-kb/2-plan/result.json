@@ -1,0 +1,17 @@
+{
+  "status": "DONE",
+  "summary": "migrate-kb plan: migration-tools r1-r17 has 38 scenarios; 22 are red and 16 pass, and the feature file does not change.\nCode: requests/ and adrs/ moves (r8, r14); kinds and short capability ids (r9); unnumbered ledger entries numbered from the ledger alone (r13); superseded status and qualifier split (r2, r17); formulated_as removed (r6); dirty-tree refusal (r15); git add plus the decisions index written by model's own writer (r16); retired-parse traceback made a named refusal (r7).\nC1: a dirty tree is refused together with every other failure, so the untracked-file r7 scenarios keep their move or write messages.\nC2: migrate does not create spec/index.md. The r6 Givens give the repository one (r4, design-decision/migration-in-one-pass, existing row-1 Given).\nTest side: steps reworded to the feature's text, the r11 state fix, r6 Then asserts only unresolved and problems, and record bodies long enough for git rename detection.\nOpen: no spec/index.md, malformed --context, empty date or source, supersedes outside the ledger.",
+  "plan": "/tmp/work-run-i8-model-in-consumers-quu_d53r/migrate-kb-2-plan/.shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/migrate",
+    "scripts/migrate_layout.py",
+    "scripts/migrate_ledger.py",
+    "scripts/migrate_spec.py",
+    "tests/scenarios/test_migration_tools.py",
+    "tests/scenarios/migration_ledger_steps.py",
+    "tests/scenarios/migration_spec_steps.py",
+    "tests/scenarios/migration_old.py",
+    "tests/scripts/test_migrate_layout.py"
+  ],
+  "questions": []
+}
