@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+"""Keep the work-queue of a bounded context in .shop/work/: draft work-items and show them (capability work-queue)."""
+import argparse
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import workqueue  # noqa: E402
+
+
+def cmd_add(args):
+    workqueue.add(args.root, args.initiative, args.name, args.part_of, args.under, args.accepts)
+    return 0
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(prog="work", description=__doc__)
+    ap.add_argument("--root", default=".", help="the repository (default: the current directory)")
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    a = sub.add_parser("add", help="draft a work-item")
+    a.add_argument("initiative")
+    a.add_argument("name")
+    a.add_argument("--part-of", required=True)
+    a.add_argument("--under", required=True)
+    a.add_argument("--accepts", required=True, action="append")
+    args = ap.parse_args(argv)
+    return {"add": cmd_add}[args.cmd](args)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

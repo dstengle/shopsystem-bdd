@@ -1,0 +1,54 @@
+# formulated from spec/capabilities/work-queue.md
+Feature: Work queue
+  Narrator: a person, agent or script reading or moving work-items
+
+  @r1
+  Scenario: add with --part-of, --under and --accepts writes a drafted work-item with the fields given
+    Pins where add writes the work-item and that it holds what the command was given, as drafted.
+    Given an initiative i1 under .shop/work/ with no work-item w1
+    When the agent runs `work add i1 w1 --part-of capability-proposal/p1 --under thing --accepts thing#r1`
+    Then .shop/work/i1/w1.md is a drafted work-item w1
+    And its part_of is capability-proposal/p1, its under is thing and its accepts is thing#r1
+
+  @r2 @r7
+  Scenario: add when the work-item's file already exists leaves the file as it was and fails
+    Pins that add never overwrites a work-item, and says why it did nothing.
+    Given an initiative i1 under .shop/work/ whose work-item w1 is ready
+    When the agent runs `work add i1 w1 --part-of capability-proposal/p1 --under thing --accepts thing#r1`
+    Then .shop/work/i1/w1.md is as it was
+    And work says the work-item already exists
+    And it exits non-zero
+
+  @r3
+  Scenario: show prints each work-item of every initiative with its status
+    Pins that show reads every initiative under .shop/work/, and only their work-items.
+    Given an initiative i1 under .shop/work/ whose work-items w1 is drafted and w2 is ready
+    And an initiative i2 under .shop/work/ whose work-item w3 is claimed and whose capability-proposal p1 is merged
+    When the agent runs `work show`
+    Then work prints w1 with drafted, w2 with ready and w3 with claimed
+    And it prints nothing about p1
+
+  @r4
+  Scenario: a move writes the new status into the work-item's file
+    Pins that the work-item's file holds its status after a move.
+    Given an initiative i1 under .shop/work/ whose work-item w1 is drafted
+    When the script moves w1 to researched
+    Then .shop/work/i1/w1.md gives w1's status as researched
+
+  @r5
+  Scenario: a move appends a line to the initiative's log.jsonl with the time, the work-item, both statuses and who moved it
+    Pins what each move records, and that earlier lines stay.
+    Given an initiative i1 under .shop/work/ whose work-item w1 is researched
+    And .shop/work/i1/log.jsonl has one line, moving w1 from drafted to researched
+    When the script moves w1 to planned
+    Then .shop/work/i1/log.jsonl has two lines, the first as it was
+    And its last line gives the time, w1, researched before, planned after, and the script as who moved it
+
+  @r6
+  Scenario: a move is refused when the work-item's status in its file is not the last status log.jsonl gives it
+    Pins that a file and its log that disagree stop the move, and the refusal names both.
+    Given an initiative i1 under .shop/work/ whose work-item w1 is ready
+    And .shop/work/i1/log.jsonl's last line for w1 moves it to planned
+    When the script moves w1 to claimed
+    Then the move is refused, naming .shop/work/i1/w1.md, ready and planned
+    And .shop/work/i1/w1.md and .shop/work/i1/log.jsonl are as they were
