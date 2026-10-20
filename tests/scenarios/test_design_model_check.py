@@ -1,5 +1,6 @@
-"""features/design-model-check.feature, bound to scripts/model: the scenarios of requirements r1, r9, r12, r13,
-r16-r18, r21-r25 and r27-r32. (The rest are bound by the work-items that follow.)
+"""features/design-model-check.feature, bound to scripts/model: the scenarios of requirements r1, r9, r12-r14,
+r16-r18, r21-r25, r27-r32, r36, r43, r46, r48, r49, r55, r105 and the EARS lines'. (The rest are bound by the work-items
+that follow.)
 
 A Given builds the repository in `world` (see conftest); the When runs `model` once; the Then steps read what it
 printed. The checks that read the findings as data (`check --json`) run it a second time, on demand.
@@ -10,7 +11,7 @@ import sys
 
 from pytest_bdd import given, parsers, scenario, then, when
 
-from .conftest import CONTEXT, INDEX, I1, P1, THING, cap, feature, full
+from .conftest import CONTEXT, INDEX, I1, OBS1, P1, PATH, SCRIPTS, THING, cap, feature, full
 
 FEATURE = "design-model-check.feature"
 BOUND = (
@@ -45,6 +46,22 @@ BOUND = (
     'a retired id used again is refused',
     'a merged capability-proposal may add or remove an id its capability lists as retired',
     'a table row with an id is a requirement, and its header, separator and lead sentence are not',
+    'the decisions index lists every decision',
+    'writing the decisions index names the file and leaves out decisions with no id',
+    'why refuses an argument that is not a requirement reference',
+    'why on a requirement no capability has still lists its proposals',
+    'why lists every proposal naming the requirement by date, and fails when none adds or changes it',
+    'a node may be written in short where its field allows it',
+    'a node whose id is not in type-first form is a file problem',
+    'a reference in a refused form is unresolved',
+    'a glossary bullet is a term of the bounded context',
+    'a glossary bullet not in the entry form is a file problem',
+    'facts give each term its kind, its context and its avoided words',
+    'without clingo the check runs again under the first interpreter that has it',
+    'the check runs again only once',
+    'with no interpreter that has clingo the check names each one it tried',
+    'an initiative may be done when its proposal is formulated',
+    'a withdrawn part is closed',
 )
 
 # HIDE_CLINGO on PYTHONPATH hides clingo from an interpreter, as the fixture harness does.
@@ -554,6 +571,8 @@ def reported_unresolved(world, context, subject):
     elif subject.startswith("that "):  # r24: the field named in the Given's example row
         data = found(world, context)
         assert len([d for d in data["unresolved"] if "ghost" in d]) == 1, data
+    elif "written" in context:  # r43, r24
+        _written_unresolved(world, context, subject)
     elif "listed" in context:  # r22
         ref = context["listed"]
         assert subject == ref
@@ -625,13 +644,18 @@ def why_by_name(context):
     assert "adds by capability-proposal %s" % P1 in result.stdout
 
 
+def _problems_naming(data, named):
+    """The file problems that begin with the path `named` as a whole word (`work/i1:`, not `work/i1/p1.md:`)."""
+    return [p for p in data["problems"] if re.match(re.escape(named) + r"[: ]", p)]
+
+
 @then(parsers.parse("it reports a file problem naming {named}"))
 def file_problem_named(world, context, named):
     data = found(world, context)
     named, _, absent = named.partition(", and not ")
-    count = len([p for p in data["problems"] if p.startswith(named)])
+    count = len(_problems_naming(data, named))
     if "mentions" in context:  # r28: and the requirement the work-item accepts
-        count = len([p for p in data["problems"] if p.startswith(named) and context["mentions"] in p])
+        count = len([p for p in _problems_naming(data, named) if context["mentions"] in p])
     assert count == 1, data
     if absent:
         assert not any(absent in p for p in data["problems"]), data
@@ -676,3 +700,406 @@ def rows_shown(context, shown):
 def rows_more(context, more):
     lines, _ = _v_s3_rows(context)
     assert "    ... and %d more" % more in lines
+
+
+# === decisions index and why (r14, r16, r17, r105) =====================================================================
+
+def _decisions(world):
+    """decisions/ with an old decision and a new one superseding it."""
+    world.write("decisions/0001-old.md", '---\nid: %s\nsummary: "Do it the old way."\ndate: 2026-01-01\nstatus: superseded\n---\n# 1\n'
+                % full("design-decision", "old"))
+    world.write("decisions/0002-new.md", '---\nid: %s\nsummary: "Do it | the new way."\ndate: 2026-02-01\nstatus: accepted\n'
+                'supersedes: design-decision/old\nrevisit_when: "it hurts"\nrevisit_signal: requests\n---\n# 2\n'
+                % full("design-decision", "new"))
+
+
+@given("two decisions under decisions/, one superseding the other")
+def two_decisions(world):
+    _decisions(world)
+
+
+@given("two decisions under decisions/, one of them with no id")
+def two_decisions_one_anonymous(world):
+    _decisions(world)
+    world.write("decisions/0003-anon.md", "---\nsummary: Nameless.\nstatus: accepted\n---\n")
+
+
+@when("model decisions is run")
+def model_decisions(run, context):
+    context["result"] = run("model", "--root", ".", "decisions")  # from the repository's directory, as the index names its file
+
+
+def _index_text(repo):
+    return (repo / "spec" / "decisions.md").read_text()
+
+
+@then("spec/decisions.md has a row for each with its summary, status and what it supersedes")
+def decisions_rows(repo, context):
+    result = context["result"]
+    assert result.returncode == 0, result.stderr
+    text = _index_text(repo)
+    old, new = full("design-decision", "old"), full("design-decision", "new")
+    assert "| [%s](../decisions/0001-old.md) | Do it the old way. | superseded |  |  |" % old in text, text
+    assert "| [%s](../decisions/0002-new.md) | Do it \\| the new way. | accepted | %s | it hurts |" % (new, old) in text, text
+
+
+@then("it prints spec/decisions.md as the file it wrote")
+def decisions_file_named(context):
+    result = context["result"]
+    assert result.stdout.strip() == "wrote spec/decisions.md", result.stdout + result.stderr
+
+
+@then("spec/decisions.md lists the decision with an id and not the one without")
+def decisions_only_with_id(repo):
+    text = _index_text(repo)
+    assert "[%s]" % full("design-decision", "new") in text, text
+    assert "Nameless." not in text, text
+
+
+@given("a capability thing")
+def capability_thing(world):
+    world.good()
+
+
+@then("it is refused because thing is not a requirement reference")
+def why_refused(context):
+    assert "'thing' is not a requirement reference" in context["result"].stdout, context["result"].stdout
+
+
+@given("a capability thing with no requirement r9")
+def capability_without_r9(world):
+    world.good()
+
+
+@then(parsers.parse("it says no capability has {ref} where the requirement's text would be"))
+def why_no_capability(context, ref):
+    lines = context["result"].stdout.splitlines()
+    assert lines[0] == "%s#%s: no capability has this requirement now" % (THING, ref.split("#")[1]), lines
+
+
+@then("it lists the proposal")
+def why_lists_proposal(context):
+    lines = context["result"].stdout.splitlines()
+    assert "  changes by capability-proposal %s (drafted, 2026-10-15)" % P1 in lines, lines
+
+
+@given(parsers.re(r"(?:only )?a capability-proposal (?P<first>p\d) dated (?P<date>[\d-]+) that (?P<verb>adds|changes|removes) thing#r2"
+                  r"(?: and a capability-proposal (?P<second>p\d) dated (?P<date2>[\d-]+) that (?P<verb2>adds|changes|removes) thing#r2)?"))
+def dated_proposals(world, first, date, verb, second, date2, verb2):
+    world.observation()
+    world.initiative()
+    for ident, d, v in [(first, date, verb)] + ([(second, date2, verb2)] if second else []):
+        world.proposal(ident=ident, date=d, **{v: "[thing#r2]"})
+
+
+@then(parsers.parse("it lists {listed}, in that order, each with its status and date"))
+def why_lists_in_order(context, listed):
+    out = context["result"].stdout
+    seen = re.findall(r"^  [\w/]+ by capability-proposal " + re.escape(full("capability-proposal", "")) +
+                      r"(p\d) \((\w+), (\d{4}-\d\d-\d\d)\)$", out, re.M)
+    assert [p for p, _, _ in seen] == listed.split(" then "), out
+    assert all(status == "drafted" for _, status, _ in seen)
+    assert [d for _, _, d in seen] == sorted(d for _, _, d in seen)
+
+
+# === forms of an id and a reference (r24, r43, r46) ===============================================================
+
+def _id_form_files(world):
+    """A guarantees capability thing, the observation obs-1 and the initiative i1."""
+    world.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees"))
+    world.observation()
+    world.initiative()
+
+
+@given(parsers.parse("a bounded context with id {ident}, a capability thing and an initiative i1"))
+def context_with_thing_and_initiative(world, ident):
+    assert ident == CONTEXT
+    _id_form_files(world)
+
+
+@given(parsers.parse("a bounded context whose context path is {path}"))
+def context_path(world, path):
+    assert path == PATH
+    _id_form_files(world)
+
+
+@given(parsers.parse("a bounded context with id {ident}, a capability thing with requirement r1, a decision x and an observation x"))
+def context_with_decision_and_observation(world, context, ident):
+    assert ident == CONTEXT
+    _id_form_files(world)
+    world.write("decisions/0001-x.md", DECISION % (full("design-decision", "x"), ""))
+    world.write("records/observations.md", "# Observations\n\n## %s\nabout: %s\n\n## %s\nabout: %s\n"
+                % (OBS1, CONTEXT, full("observation", "x"), CONTEXT))
+    context["refused"] = True
+
+
+@given(parsers.re(r"(?P<file>a capability-proposal|a capability|an initiative) whose (?P<field>\w+) is written (?P<written>\S+)"))
+def file_whose_field_is_written(world, context, file, field, written):
+    if file == "a capability-proposal":
+        world.proposal(**({field: "[%s]" % written} if field != "part_of" else {}))
+        if field == "part_of":
+            p = world.root / "work/i1/p1.md"
+            p.write_text(p.read_text().replace("part_of: initiative/i1", "part_of: " + written))
+    elif file == "a capability":
+        assert field == "rests_on"
+        world.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees", rests_on="[%s]" % written))
+    else:
+        assert field == "source"
+        world.initiative(source="[%s]" % written)
+    context["written"], context["field"] = written, field
+
+
+def _written_unresolved(world, context, subject):
+    """`<subject> is reported as unresolved`, for r24's refused forms and r43's bare part_of."""
+    data = found(world, context)
+    assert subject == context["written"]
+    if context.get("refused"):  # r24: once, and no file problem
+        assert len([d for d in data["unresolved"] if subject in d]) == 1, data
+        assert data["problems"] == [], data
+    else:  # r43
+        assert [d for d in data["unresolved"] if " %s " % subject in d] == ["work/i1/p1.md: %s names nothing in this repository" % subject], data
+
+
+@then(parsers.re(r"(?P<written>\S+) is read as (?P<read>\S+) and not reported as unresolved"))
+def written_read_as(world, context, written, read):
+    data = found(world, context)
+    assert written == context["written"]
+    assert data["unresolved"] == [], data
+    facts = world.model("facts").stdout
+    assert '%s("%s", "%s").' % (context["field"], P1, read) in facts, facts
+
+
+@given(parsers.parse("{file} gives {node} the id {ident}"))
+def file_gives_id(world, file, node, ident):
+    if file == "spec/index.md":
+        world.write(file, "---\nid: %s\n---\n" % ident)
+    elif file == "spec/capabilities/thing.md":
+        world.write(file, cap("thing", ["- [r1] One."], group="guarantees").replace("id: " + THING, "id: " + ident))
+    elif file == "decisions/0001-x.md":
+        world.write(file, "---\nid: %s\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n" % ident)
+    elif file == "work/i1/initiative.md":
+        _initiative_with(world, "id: %s" % I1, "id: " + ident)
+    elif file == "work/i1/p1.md":
+        world.work_item("p1", id=ident)
+    elif file == "records/observations.md":
+        world.write(file, "# Observations\n\n## %s\nabout: %s\n" % (ident, CONTEXT))
+    else:
+        assert file == "records/f1.md", file
+        world.write(file, "---\nid: %s\nkind: review-finding\n---\n" % ident)
+
+
+# === an initiative done or abandoned (r36) ===========================================================================
+
+@given(parsers.parse("a capability-change initiative with status {status}"))
+def initiative_with_status(world, status):
+    world.good()
+    world.observation()
+    world.initiative(status=status)
+
+
+@given("under it a capability-proposal with status formulated, whose requirements scenarios name")
+def formulated_proposal(world):
+    world.proposal(status="formulated", adds="[thing#r1]")
+
+
+@given(parsers.parse("under it a capability-proposal with status withdrawn, and under that a work-item with status {status}"))
+def withdrawn_proposal_with_item(world, status):
+    world.proposal(status="withdrawn", adds="[thing#r1]")
+    world.work_item(status=status, part_of="capability-proposal/p1")
+
+
+@then("no violation names the initiative")
+def no_violation_names_initiative(world, context):
+    data = found(world, context)
+    assert [v for v in data["violations"] if I1 in v[1]] == [], data
+
+
+# === the glossary (r48, r49) ======================================================================================
+
+def _glossary(world, *bullets):
+    """spec/index.md with a ## Glossary section holding these bullets."""
+    world.write("spec/index.md", INDEX + "\n## Glossary\n\n" + "\n".join(bullets) + "\n\n## Where things live\n\n- Here.\n")
+
+
+def _term(name):
+    return full("term", name)
+
+
+@given(parsers.parse("a bounded context whose glossary has the bullet {bullet}"))
+def glossary_with_bullet(world, context, bullet):
+    if bullet.startswith('"') and bullet.endswith('"'):  # r48 quotes its bullet; r49's examples do not
+        _glossary(world, bullet[1:-1])
+    else:
+        _glossary(world, "- **slice**: a unit of work.", bullet)
+
+
+@given("a bounded context whose glossary defines batch, avoiding sprint and lot, and slice, avoiding nothing")
+def glossary_batch_and_slice(world):
+    _glossary(world, "- **batch**: the slices one session plans. Not: sprint, lot.",
+              "- **slice**: a unit of work with an observable done.")
+
+
+def _fact_lines(context):
+    result = context["result"]
+    assert result.returncode == 0, result.stderr
+    return result.stdout.splitlines()
+
+
+@then("it prints the term term/ex.com/prod/ctx/suite-record")
+def prints_term(context):
+    assert 'node("%s", "term").' % _term("suite-record") in _fact_lines(context)
+
+
+@then('its avoided words are "test record" and "run", and nothing else')
+def avoided_words(context):
+    lines = _fact_lines(context)
+    assert 'avoid("%s", "test record").' % _term("suite-record") in lines
+    assert 'avoid("%s", "run").' % _term("suite-record") in lines
+    assert [l for l in lines if l.startswith("avoid(")] == [
+        'avoid("%s", "test record").' % _term("suite-record"), 'avoid("%s", "run").' % _term("suite-record")]
+
+
+@then("it reports one file problem naming spec/index.md")
+def one_file_problem_in_index(world, context):
+    data = found(world, context)
+    assert len(data["problems"]) == 1, data
+    assert data["problems"][0].startswith("spec/index.md"), data
+
+
+@then("each term has a node fact of kind term and a term_of fact naming the bounded context")
+def terms_have_kind_and_context(context):
+    lines = _fact_lines(context)
+    for t in ("batch", "slice"):
+        assert 'node("%s", "term").' % _term(t) in lines
+        assert 'term_of("%s", "%s").' % (_term(t), CONTEXT) in lines
+
+
+@then("batch has an avoid fact for sprint and one for lot")
+def batch_avoids(context):
+    lines = _fact_lines(context)
+    assert 'avoid("%s", "sprint").' % _term("batch") in lines
+    assert 'avoid("%s", "lot").' % _term("batch") in lines
+
+
+@then("slice has no avoid fact")
+def slice_avoids_nothing(context):
+    assert not [l for l in _fact_lines(context) if l.startswith('avoid("%s"' % _term("slice"))]
+
+
+# === the search for an interpreter with clingo (r12, r55) =========================================================
+
+PROBE = "-c import clingo"
+TRIED_ALWAYS = ["/usr/local/bin/python3", "/usr/bin/python3"]
+
+
+def _fake_python(world, dirname, behaviour="find"):
+    """A python3 in <dirname> that logs each call. find: runs the real interpreter without the hiding PYTHONPATH;
+    probe-only: says yes to the probe but runs the real interpreter with clingo still hidden; lack: has no clingo."""
+    real = sys.executable
+    body = {"find": 'exec /usr/bin/env -u PYTHONPATH "%s" "$@"' % real,
+            "probe-only": 'if [ "$1" = "-c" ]; then exit 0; fi\nexec "%s" "$@"' % real,
+            "lack": "exit 1"}[behaviour]
+    p = world.write("%s/python3" % dirname, '#!/bin/sh\necho "%s: $*" >> "%s"\n%s\n' % (dirname, world.root / "calls.log", body))
+    p.chmod(0o755)
+    return p
+
+
+def _search_env(world, path_dirs, **extra):
+    """The environment of the interpreter without clingo: clingo hidden, PATH as given."""
+    env = {k: v for k, v in os.environ.items() if k not in ("SHOPSYSTEM_MODEL_PYTHON", "VIRTUAL_ENV", "SHOPSYSTEM_MODEL_REEXEC")}
+    env["PYTHONPATH"] = str(world.root / "hidden")
+    env["PATH"] = os.pathsep.join(str(world.root / d) for d in path_dirs)
+    env.update(extra)
+    return env
+
+
+def _calls(world):
+    log = world.root / "calls.log"
+    return log.read_text().splitlines() if log.exists() else []
+
+
+def _check_calls(world):
+    return [c for c in _calls(world) if str(SCRIPTS / "model") in c]
+
+
+@given("an interpreter that cannot import clingo")
+def interpreter_without_clingo(world, context):
+    world.good()
+    world.write("hidden/clingo.py", HIDE_CLINGO)
+    context["env"] = _search_env(world, ["empty"])
+
+
+@given("on PATH, in order, a virtualenv's python3 that has clingo, a python3 without it and two python3s with it")
+def path_of_four(world, context):
+    for d, behaviour in (("venv/bin", "find"), ("lacks", "lack"), ("bin", "find"), ("later", "find")):
+        _fake_python(world, d, behaviour)
+    context["env"] = _search_env(world, ["venv/bin", "lacks", "bin", "later"], VIRTUAL_ENV=str(world.root / "venv"))
+
+
+@given("a python3 on PATH that says it has clingo but runs the check without it")
+def path_of_liar(world, context):
+    _fake_python(world, "bin", "probe-only")
+    context["env"] = _search_env(world, ["bin"])
+
+
+@given("no python3 that can, whether PATH holds none or $SHOPSYSTEM_MODEL_PYTHON and PATH name ones without it")
+def no_python_with_clingo(world, context):
+    _fake_python(world, "lacks", "lack")
+    nowhere = world.root / "nowhere/python3"
+    # the case run by the When has no interpreter on PATH; the other is run by the Then steps (see _tried_cases)
+    context["cases"] = [("no interpreter on PATH", [], context["env"]),
+                        ("interpreters that lack it", [str(nowhere), str(world.root / "lacks/python3")],
+                         _search_env(world, ["lacks"], SHOPSYSTEM_MODEL_PYTHON=str(nowhere)))]
+
+
+@then("it asks the one without clingo, then the first with it, and runs again under that one")
+def asks_in_order(world, context):
+    out = context["result"].stdout
+    assert "0 violations" in out, out
+    assert _calls(world) == ["lacks: " + PROBE, "bin: " + PROBE, "bin: %s --root %s check" % (SCRIPTS / "model", world.root)], _calls(world)
+
+
+@then("it never asks the virtualenv's python3 or the second with clingo")
+def never_asks(world):
+    assert not [c for c in _calls(world) if c.startswith(("venv/bin:", "later:"))], _calls(world)
+
+
+@then("when $SHOPSYSTEM_MODEL_PYTHON names a python3 with clingo, it runs again under that one")
+def explicit_python(world, context):
+    _fake_python(world, "chosen")
+    (world.root / "calls.log").unlink(missing_ok=True)
+    env = _search_env(world, ["bin"], SHOPSYSTEM_MODEL_PYTHON=str(world.root / "chosen/python3"))
+    result = world.model("check", env=env, timeout=60)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "0 violations" in result.stdout
+    assert _calls(world) == ["chosen: " + PROBE, "chosen: %s --root %s check" % (SCRIPTS / "model", world.root)], _calls(world)
+
+
+@then("the check runs again under that python3 once")
+def runs_again_once(world, context):
+    assert "clingo" in context["result"].stdout
+    assert len(_check_calls(world)) == 1, _calls(world)
+
+
+def _each_case(world, context):
+    """The When's result and the other case's, run here: (name, result, interpreters tried) for each."""
+    if "second" not in context:
+        context["second"] = world.model("check", env=context["cases"][1][2], timeout=60)
+    return [(context["cases"][0][0], context["result"], context["cases"][0][1]),
+            (context["cases"][1][0], context["second"], context["cases"][1][1])]
+
+
+@then("it names clingo and pip install clingo")
+def names_pip_install(world, context):
+    for name, result, _ in _each_case(world, context):
+        assert "clingo" in result.stdout, name
+        assert "pip install clingo" in result.stdout, name
+
+
+@then("it names each interpreter it tried, /usr/local/bin/python3 and /usr/bin/python3 among them")
+def names_interpreters_tried(world, context):
+    for name, result, tried in _each_case(world, context):
+        assert result.returncode == 2, (name, result.stdout + result.stderr)
+        named = result.stdout.split("it tried has it:", 1)[1].split("\n", 1)[0]
+        assert [p.strip() for p in named.rstrip(".").split(",")] == tried + TRIED_ALWAYS, (name, named)
+    assert _check_calls(world) == [], _calls(world)
