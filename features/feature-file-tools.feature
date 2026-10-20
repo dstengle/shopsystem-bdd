@@ -91,11 +91,11 @@ Feature: Feature file tools
       | features/cart.feature and features/old.feature | features/cart.feature and features/old.feature |
 
   @r46
-  Scenario: retagging with a tag that is neither a slice nor a requirement tag is bad usage
-    Only slice-<n>, slice-<n>.<m> and r<n> are tags features tag accepts.
+  Scenario: retagging with a tag that is not a requirement tag is bad usage
+    Only r<n> is a tag features tag accepts.
     Given a feature file features/cart.feature with a scenario "Apply a code"
     When the agent runs features tag "Apply a code" wip
-    Then the command is rejected as bad usage because the tag is not written slice-<n>, slice-<n>.<m> or r<n>
+    Then the command is rejected as bad usage because the tag is not written r<n>
     And no file is changed
 
   @r12
@@ -178,64 +178,64 @@ Feature: Feature file tools
       | features/ |
 
   @r19
-  Scenario Outline: holding a scenario marks it held and records what for
-    A held scenario carries @holding, a "(held)" title and a line naming what it is held for, and nothing else in it changes.
+  Scenario Outline: deprecating a scenario marks it deprecated and records what for
+    A deprecated scenario has the tag @deprecated, a "(deprecated)" title and a line naming what it is deprecated for, and nothing else in it changes.
     Given a feature file features/cart.feature with a scenario "Apply a code"
     And <replacement>
-    When the agent runs features hold "Apply a code" <option>
-    Then the scenario carries the tag @holding
-    And its title is "Apply a code (held)"
-    And it has a description line naming <held for> as what it is held for
+    When the agent runs features deprecate "Apply a code" <option>
+    Then the scenario has the tag @deprecated
+    And its title is "Apply a code (deprecated)"
+    And it has a description line naming <deprecated for> as what it is deprecated for
     And nothing else in the scenario is changed
 
     Examples:
-      | replacement                          | option                  | held for        |
+      | replacement                          | option                  | deprecated for  |
       | a scenario "Apply a voucher" exists  | --for "Apply a voucher" | Apply a voucher |
       | no scenario "Apply a voucher" exists | --for "Apply a voucher" | Apply a voucher |
       | no replacement is planned            | --for-removal           | removal         |
 
   @r46
-  Scenario: holding a scenario already held is refused
-    A scenario is held once.
-    Given a feature file features/cart.feature with a scenario "Apply a code (held)" tagged @holding
-    When the agent runs features hold "Apply a code (held)" --for "Apply a voucher"
-    Then the command is rejected because the scenario is already held
+  Scenario: deprecating a scenario already deprecated is refused
+    A scenario is deprecated once.
+    Given a feature file features/cart.feature with a scenario "Apply a code (deprecated)" tagged @deprecated
+    When the agent runs features deprecate "Apply a code (deprecated)" --for "Apply a voucher"
+    Then the command is rejected because the scenario is already deprecated
 
   @r21
-  Scenario Outline: the holding list shows each held scenario and what will retire it
-    For each held scenario the list says what it is held for and how its replacement stands.
-    Given a feature file features/cart.feature with a held scenario "Apply a code (held)" held for <held for>
+  Scenario Outline: the deprecated list shows each deprecated scenario and what will retire it
+    For each deprecated scenario the list says what it is deprecated for and where its replacement stands.
+    Given a feature file features/cart.feature with a deprecated scenario "Apply a code (deprecated)" deprecated for <deprecated for>
     And <replacement>
-    When the agent runs features holding
-    Then the list shows "Apply a code (held)" held for <held for>, with <shown>
+    When the agent runs features deprecated
+    Then the list shows "Apply a code (deprecated)" deprecated for <deprecated for>, with <shown>
 
     Examples:
-      | held for          | replacement                                  | shown                                            |
-      | "Apply a voucher" | a scenario "Apply a voucher" tagged @slice-3 | the slice tag slice-3                            |
-      | "Apply a voucher" | no scenario titled "Apply a voucher"         | that no scenario has the title "Apply a voucher" |
-      | removal           | no replacement                               | that the slice removing the behaviour retires it |
+      | deprecated for    | replacement                                                       | shown                                            |
+      | "Apply a voucher" | a scenario "Apply a voucher" tagged @r3 in features/codes.feature | features/codes.feature and @r3                   |
+      | "Apply a voucher" | no scenario titled "Apply a voucher"                              | that no scenario has the title "Apply a voucher" |
+      | removal           | no replacement                                                    | that it is deprecated for removal                |
 
   @r21
-  Scenario: the holding list says when nothing is held
-    An empty holding list is stated, not left blank.
-    Given feature files in which no scenario is tagged @holding
-    When the agent runs features holding
-    Then it says that none is held
+  Scenario: the deprecated list says when nothing is deprecated
+    An empty list is stated, not left blank.
+    Given feature files in which no scenario is tagged @deprecated
+    When the agent runs features deprecated
+    Then it says that none is deprecated
 
   @r23
-  Scenario: retiring a held scenario removes its block
-    Only the held scenario's block goes; the rest of the file stays as it was.
-    Given a feature file features/cart.feature with a scenario "Empty cart" and a scenario "Apply a code (held)" tagged @holding
-    When the agent runs features retire "Apply a code (held)"
-    Then features/cart.feature no longer holds "Apply a code (held)"
+  Scenario: retiring a deprecated scenario removes its block
+    Only the deprecated scenario's block goes; the rest of the file stays as it was.
+    Given a feature file features/cart.feature with a scenario "Empty cart" and a scenario "Apply a code (deprecated)" tagged @deprecated
+    When the agent runs features retire "Apply a code (deprecated)"
+    Then features/cart.feature no longer holds "Apply a code (deprecated)"
     And the rest of features/cart.feature is as it was
 
   @r24
-  Scenario: retiring a scenario that is not held is refused
-    Only a held scenario can be retired.
-    Given a feature file features/cart.feature with a scenario "Apply a code" not tagged @holding
+  Scenario: retiring a scenario that is not deprecated is refused
+    Only a deprecated scenario can be retired.
+    Given a feature file features/cart.feature with a scenario "Apply a code" not tagged @deprecated
     When the agent runs features retire "Apply a code"
-    Then the command is rejected because the scenario is not held
+    Then the command is rejected because the scenario is not deprecated
     And features/cart.feature is as it was
 
   @r25
@@ -295,7 +295,7 @@ Feature: Feature file tools
 
   @r35
   Scenario Outline: moving a title that no file or several files hold is refused
-    Without --file, a move, hold or retire needs the title in exactly one file; a refusal names every file that holds it.
+    Without --file, a move, deprecate or retire needs the title in exactly one file; a refusal names every file that holds it.
     Given <holders> the title "Apply a code"
     When the agent runs features move "Apply a code" --to features/codes.feature without --file
     Then the command is rejected because <reason>
@@ -342,24 +342,24 @@ Feature: Feature file tools
       | slice-2  |
 
   @r19
-  Scenario: holding a scenario prints its file and new title
-    The agent sees where the held scenario is and what it is now called.
+  Scenario: deprecating a scenario prints its file and new title
+    The agent sees where the deprecated scenario is and what it is now called.
     Given a feature file features/cart.feature with a scenario "Apply a code"
-    When the agent runs features hold "Apply a code" --for-removal
-    Then it prints features/cart.feature and "Apply a code (held)"
+    When the agent runs features deprecate "Apply a code" --for-removal
+    Then it prints features/cart.feature and "Apply a code (deprecated)"
 
   @r21
-  Scenario Outline: the holding list flags a held scenario it cannot place
-    A held scenario with nothing to say what it is held for, or whose replacement has no slice tag, is flagged on its own line.
-    Given a feature file features/cart.feature with a scenario "Apply a code (held)" tagged @holding
+  Scenario Outline: the deprecated list flags a deprecated scenario it cannot place
+    A deprecated scenario with nothing to say what it is deprecated for, or whose replacement has no requirement tag, is flagged on its own line.
+    Given a feature file features/cart.feature with a scenario "Apply a code (deprecated)" tagged @deprecated
     And <condition>
-    When the agent runs features holding
-    Then the line for "Apply a code (held)" says <said>
+    When the agent runs features deprecated
+    Then the line for "Apply a code (deprecated)" says <said>
 
     Examples:
-      | condition                                                                | said                                      |
-      | the scenario has no Held for: line                                       | that it has no Held for: line             |
-      | it is held for "Apply a voucher", and "Apply a voucher" has no slice tag | that the replacement carries no slice tag |
+      | condition                                                                      | said                                      |
+      | the scenario has no Deprecated for: line                                       | that it has no Deprecated for: line       |
+      | it is deprecated for "Apply a voucher", and "Apply a voucher" has no @r<n> tag | that the replacement carries no @r<n> tag |
 
   @r29
   Scenario: rebinding to a title several feature files hold is refused
@@ -383,13 +383,22 @@ Feature: Feature file tools
   @r46
   Scenario: a refusal says why on stderr and fails
     Whatever is refused, the reason goes to stderr and the command fails.
-    Given a feature file features/cart.feature with a scenario "Apply a code" not tagged @holding
+    Given a feature file features/cart.feature with a scenario "Apply a code" not tagged @deprecated
     When the agent runs features retire "Apply a code"
     Then the reason for the refusal is written to stderr
     And it exits 1
 
   @r51
-  Scenario: tagging with a requirement id makes it the scenario's one requirement tag
+  Scenario: tagging with a requirement id adds it to the scenario's requirement tags
+    The new @r<n> joins the scenario's tags; its other tags, other @r<m> tags included, and every other line stay as they were.
+    Given a feature file features/cart.feature whose only scenario "Apply a code" has the tags @wip, @slice-2, @r1 and @r4
+    When the agent runs features tag "Apply a code" r7
+    Then the scenario's tags are @wip, @slice-2, @r1, @r4 and @r7
+    And every other line of features/cart.feature is unchanged
+
+  @r51 @deprecated
+  Scenario: tagging with a requirement id makes it the scenario's one requirement tag (deprecated)
+    Deprecated for: tagging with a requirement id adds it to the scenario's requirement tags
     A scenario ends with one @r<n> tag, the new one, and keeps every other tag and line.
     Given a feature file features/cart.feature whose only scenario "Apply a code" has the tags @wip, @slice-2, @r1 and @r4
     When the agent runs features tag "Apply a code" r7
@@ -399,7 +408,7 @@ Feature: Feature file tools
   @r52
   Scenario: --file works in that file only, whatever other files hold the title
     A title two files hold is tagged in either file by naming it, and nothing else in either file changes.
-    tag is the example; hold, retire and move look for the title in the named file the same way.
+    tag is the example; deprecate, retire and move look for the title in the named file the same way.
     Given features/cart.feature and features/old.feature both hold a scenario "Apply a code"
     When the agent runs features tag "Apply a code" r7 --file features/cart.feature
     Then the scenario "Apply a code" in features/cart.feature is tagged @r7

@@ -109,10 +109,10 @@ class FeaturesTest(unittest.TestCase):
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertEqual(self.cart.read_text(), CART.replace("  @slice-1\n", "  @slice-1 @r4\n"))
 
-    def test_tag_replaces_a_requirement_tag(self):
+    def test_tag_adds_a_requirement_tag_and_keeps_the_others(self):
         self.run_script("tag", "Adding a product", "r4")
         self.run_script("tag", "Adding a product", "r7")
-        self.assertEqual(self.cart.read_text(), CART.replace("  @slice-1\n", "  @slice-1 @r7\n"))
+        self.assertEqual(self.cart.read_text(), CART.replace("  @slice-1\n", "  @slice-1 @r4 @r7\n"))
 
     def test_tag_rejects_a_three_part_slice(self):
         self.assertEqual(self.run_script("tag", "Adding a product", "slice-1.2.3").returncode, 2)
@@ -184,7 +184,7 @@ Feature: Shelf
     When the reader adds "dune"
     Then the shelf holds 1 book
 
-  @slice-4
+  @r4
   Scenario: A book is added at a place
     When the reader adds "dune" at place 2
     Then the shelf holds "dune" at place 2
@@ -215,7 +215,7 @@ def test_plain():
 """
 
 
-class HoldingTest(unittest.TestCase):
+class DeprecatingTest(unittest.TestCase):
     def setUp(self):
         self.tmp = pathlib.Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, self.tmp)
@@ -229,56 +229,56 @@ class HoldingTest(unittest.TestCase):
     def run_script(self, *args):
         return subprocess.run([sys.executable, str(SCRIPT), *args], cwd=self.tmp, capture_output=True, text=True)
 
-    def test_hold_marks_a_scenario_and_changes_nothing_else_in_it(self):
-        done = self.run_script("hold", "A book is added", "--for", "A book is added at a place")
+    def test_deprecate_marks_a_scenario_and_changes_nothing_else_in_it(self):
+        done = self.run_script("deprecate", "A book is added", "--for", "A book is added at a place")
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertEqual(self.shelf.read_text(), SHELF.replace(
             "  @slice-1\n  Scenario: A book is added\n",
-            "  @slice-1 @holding\n  Scenario: A book is added (held)\n    Held for: A book is added at a place\n"))
+            "  @slice-1 @deprecated\n  Scenario: A book is added (deprecated)\n    Deprecated for: A book is added at a place\n"))
 
-    def test_hold_for_removal_on_a_scenario_with_no_tags(self):
-        done = self.run_script("hold", "A book is lent", "--for-removal")
+    def test_deprecate_for_removal_on_a_scenario_with_no_tags(self):
+        done = self.run_script("deprecate", "A book is lent", "--for-removal")
         self.assertEqual(done.returncode, 0, done.stderr)
-        self.assertIn("  @holding\n  Scenario: A book is lent (held)\n    Held for: removal\n    When the reader lends",
+        self.assertIn("  @deprecated\n  Scenario: A book is lent (deprecated)\n    Deprecated for: removal\n    When the reader lends",
                       self.shelf.read_text())
 
-    def test_hold_refuses_a_scenario_held_already_and_shows_a_replacement_not_written(self):
-        self.run_script("hold", "A book is lent", "--for-removal")
-        self.assertEqual(self.run_script("hold", "A book is lent (held)", "--for-removal").returncode, 1)
-        self.assertEqual(self.run_script("hold", "A book is added", "--for", "A book is added").returncode, 0)
-        self.assertIn("A book is added (held) | for: A book is added | no scenario has that title",
-                      self.run_script("holding").stdout)
+    def test_deprecate_refuses_a_scenario_deprecated_already_and_shows_a_replacement_not_written(self):
+        self.run_script("deprecate", "A book is lent", "--for-removal")
+        self.assertEqual(self.run_script("deprecate", "A book is lent (deprecated)", "--for-removal").returncode, 1)
+        self.assertEqual(self.run_script("deprecate", "A book is added", "--for", "A book is added").returncode, 0)
+        self.assertIn("A book is added (deprecated) | for: A book is added | no scenario has that title",
+                      self.run_script("deprecated").stdout)
 
-    def test_holding_lists_each_with_its_replacements_slice(self):
-        self.run_script("hold", "A book is added", "--for", "A book is added at a place")
-        self.run_script("hold", "A book is lent", "--for-removal")
-        done = self.run_script("holding")
+    def test_deprecated_lists_each_with_its_replacements_requirement(self):
+        self.run_script("deprecate", "A book is added", "--for", "A book is added at a place")
+        self.run_script("deprecate", "A book is lent", "--for-removal")
+        done = self.run_script("deprecated")
         self.assertEqual(done.stdout, (
-            "features/shelf.feature: A book is added (held) | for: A book is added at a place | slice-4\n"
-            "features/shelf.feature: A book is lent (held) | for: removal | the slice that removes the behaviour\n"))
+            "features/shelf.feature: A book is added (deprecated) | for: A book is added at a place | features/shelf.feature @r4\n"
+            "features/shelf.feature: A book is lent (deprecated) | for: removal | deprecated for removal\n"))
         self.shelf.write_text(SHELF)
-        self.assertEqual(self.run_script("holding").stdout, "none held\n")
+        self.assertEqual(self.run_script("deprecated").stdout, "none deprecated\n")
 
-    def test_retire_removes_a_held_scenario_only(self):
-        self.run_script("hold", "A book is added", "--for", "A book is added at a place")
-        done = self.run_script("retire", "A book is added (held)")
+    def test_retire_removes_a_deprecated_scenario_only(self):
+        self.run_script("deprecate", "A book is added", "--for", "A book is added at a place")
+        done = self.run_script("retire", "A book is added (deprecated)")
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertEqual(self.shelf.read_text(), SHELF.replace(
             "  @slice-1\n  Scenario: A book is added\n    One book on the shelf.\n    When the reader adds \"dune\"\n    Then the shelf holds 1 book\n\n", ""))
         before = self.shelf.read_text()
         done = self.run_script("retire", "A book is lent")
         self.assertEqual(done.returncode, 1)
-        self.assertIn("not tagged @holding", done.stderr)
+        self.assertIn("not tagged @deprecated", done.stderr)
         self.assertEqual(self.shelf.read_text(), before)
 
     def test_retire_the_last_scenario_leaves_the_file_ending_in_one_newline(self):
-        self.run_script("hold", "A book is lent", "--for-removal")
-        self.run_script("retire", "A book is lent (held)")
+        self.run_script("deprecate", "A book is lent", "--for-removal")
+        self.run_script("retire", "A book is lent (deprecated)")
         self.assertTrue(self.shelf.read_text().endswith('Then the shelf holds "dune" at place 2\n'))
 
     def test_bindings_names_each_binding_whose_title_is_gone(self):
         self.assertEqual(self.run_script("bindings").stdout, "every binding names a scenario\n")
-        self.run_script("hold", "A book is added", "--for", "A book is added at a place")
+        self.run_script("deprecate", "A book is added", "--for", "A book is added at a place")
         done = self.run_script("bindings")
         self.assertEqual(done.returncode, 1)
         self.assertEqual(done.stdout, 'tests/test_shelf.py:7: no scenario titled "A book is added" in shelf.feature\n')
@@ -291,11 +291,11 @@ class HoldingTest(unittest.TestCase):
         self.assertIn('no scenario titled "Elsewhere" in shelf.feature', done.stdout)
 
     def test_rebind_rewrites_the_title_in_the_call_and_nothing_else(self):
-        self.run_script("hold", "A book is added", "--for", "A book is added at a place")
-        done = self.run_script("rebind", "A book is added", "A book is added (held)")
+        self.run_script("deprecate", "A book is added", "--for", "A book is added at a place")
+        done = self.run_script("rebind", "A book is added", "A book is added (deprecated)")
         self.assertEqual((done.returncode, done.stdout), (0, "1 binding rebound\n"), done.stderr)
         self.assertEqual(self.bound.read_text(), BOUND.replace(
-            '@scenario(FEATURE, "A book is added")', '@scenario(FEATURE, "A book is added (held)")'))
+            '@scenario(FEATURE, "A book is added")', '@scenario(FEATURE, "A book is added (deprecated)")'))
         self.assertEqual(self.run_script("bindings").returncode, 0)
 
     def test_rebind_refuses_a_title_no_feature_has_and_says_when_nothing_names_the_old_one(self):
@@ -353,63 +353,63 @@ class Workspace:
 class ScenarioTest(Workspace, unittest.TestCase):
     """The feature-file-tools scenarios that run `features` on feature files."""
 
-    def test_holding_a_scenario_marks_it_held_and_records_what_for(self):
-        """holding a scenario marks it held and records what for"""
+    def test_deprecating_a_scenario_marks_it_deprecated_and_records_what_for(self):
+        """deprecating a scenario marks it deprecated and records what for"""
         plain = scenario("Apply a code", body="    When a code is applied\n    Then the total drops\n")
         voucher = scenario("Apply a voucher")
-        for replacement, option, held_for in (
+        for replacement, option, deprecated_for in (
                 (True, ("--for", "Apply a voucher"), "Apply a voucher"),
                 (False, ("--for", "Apply a voucher"), "Apply a voucher"),
                 (False, ("--for-removal",), "removal")):
             with self.subTest(option=option, replacement=replacement):
                 path = self.write("features/cart.feature", feature(plain, voucher) if replacement else feature(plain))
                 before = path.read_text()
-                done = self.run_script("hold", "Apply a code", *option)
+                done = self.run_script("deprecate", "Apply a code", *option)
                 self.assertEqual(done.returncode, 0, done.stderr)
                 self.assertEqual(path.read_text(), before.replace(
                     "  Scenario: Apply a code\n",
-                    "  @holding\n  Scenario: Apply a code (held)\n    Held for: %s\n" % held_for))
+                    "  @deprecated\n  Scenario: Apply a code (deprecated)\n    Deprecated for: %s\n" % deprecated_for))
 
-    def test_holding_a_scenario_already_held_is_refused(self):
-        """holding a scenario already held is refused"""
+    def test_deprecating_a_scenario_already_deprecated_is_refused(self):
+        """deprecating a scenario already deprecated is refused"""
         self.write("features/cart.feature", feature(scenario(
-            "Apply a code (held)", "@holding", "    Held for: removal\n    Given a step\n")))
-        reason = self.refused("hold", "Apply a code (held)", "--for", "Apply a voucher")
-        self.assertIn("held already", reason)
+            "Apply a code (deprecated)", "@deprecated", "    Deprecated for: removal\n    Given a step\n")))
+        reason = self.refused("deprecate", "Apply a code (deprecated)", "--for", "Apply a voucher")
+        self.assertIn("already deprecated", reason)
 
-    def test_the_holding_list_shows_each_held_scenario_and_what_will_retire_it(self):
-        """the holding list shows each held scenario and what will retire it"""
-        voucher = scenario("Apply a voucher", "@slice-3")
-        for held_for, others, shown in (
-                ("Apply a voucher", [voucher], "slice-3"),
+    def test_the_deprecated_list_shows_each_deprecated_scenario_and_what_will_retire_it(self):
+        """the deprecated list shows each deprecated scenario and what will retire it"""
+        voucher = scenario("Apply a voucher", "@r3")
+        for deprecated_for, others, shown in (
+                ("Apply a voucher", [voucher], "features/cart.feature @r3"),
                 ("Apply a voucher", [], "no scenario has that title"),
-                ("removal", [], "the slice that removes the behaviour")):
-            with self.subTest(held_for):
+                ("removal", [], "deprecated for removal")):
+            with self.subTest(deprecated_for):
                 self.write("features/cart.feature", feature(
-                    scenario("Apply a code (held)", "@holding", "    Held for: %s\n    Given a step\n" % held_for), *others))
-                done = self.run_script("holding")
+                    scenario("Apply a code (deprecated)", "@deprecated", "    Deprecated for: %s\n    Given a step\n" % deprecated_for), *others))
+                done = self.run_script("deprecated")
                 self.assertEqual(done.returncode, 0, done.stderr)
-                self.assertEqual(done.stdout, "features/cart.feature: Apply a code (held) | for: %s | %s\n" % (held_for, shown))
+                self.assertEqual(done.stdout, "features/cart.feature: Apply a code (deprecated) | for: %s | %s\n" % (deprecated_for, shown))
 
-    def test_the_holding_list_says_when_nothing_is_held(self):
-        """the holding list says when nothing is held"""
+    def test_the_deprecated_list_says_when_nothing_is_deprecated(self):
+        """the deprecated list says when nothing is deprecated"""
         self.write("features/cart.feature", feature(scenario("Apply a code", "@slice-1")))
-        done = self.run_script("holding")
-        self.assertEqual((done.returncode, done.stdout), (0, "none held\n"))
+        done = self.run_script("deprecated")
+        self.assertEqual((done.returncode, done.stdout), (0, "none deprecated\n"))
 
-    def test_retiring_a_held_scenario_removes_its_block(self):
-        """retiring a held scenario removes its block"""
-        held = scenario("Apply a code (held)", "@holding", "    Held for: removal\n    Given a step\n")
+    def test_retiring_a_deprecated_scenario_removes_its_block(self):
+        """retiring a deprecated scenario removes its block"""
+        held = scenario("Apply a code (deprecated)", "@deprecated", "    Deprecated for: removal\n    Given a step\n")
         rest = [scenario("Empty cart"), scenario("Checkout")]
         path = self.write("features/cart.feature", feature(rest[0], held, rest[1]))
-        done = self.run_script("retire", "Apply a code (held)")
+        done = self.run_script("retire", "Apply a code (deprecated)")
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertEqual(path.read_text(), feature(*rest))
 
-    def test_retiring_a_scenario_that_is_not_held_is_refused(self):
-        """retiring a scenario that is not held is refused"""
+    def test_retiring_a_scenario_that_is_not_deprecated_is_refused(self):
+        """retiring a scenario that is not deprecated is refused"""
         self.write("features/cart.feature", feature(scenario("Apply a code", "@slice-1")))
-        self.assertIn("not tagged @holding", self.refused("retire", "Apply a code"))
+        self.assertIn("not tagged @deprecated", self.refused("retire", "Apply a code"))
 
     def test_moving_a_title_that_no_file_or_several_files_hold_is_refused(self):
         """moving a title that no file or several files hold is refused"""
@@ -426,22 +426,22 @@ class ScenarioTest(Workspace, unittest.TestCase):
                 if named:
                     self.assertIn(", ".join(named), reason)
 
-    def test_holding_a_scenario_prints_its_file_and_new_title(self):
-        """holding a scenario prints its file and new title"""
+    def test_deprecating_a_scenario_prints_its_file_and_new_title(self):
+        """deprecating a scenario prints its file and new title"""
         self.write("features/cart.feature", feature(scenario("Apply a code")))
-        done = self.run_script("hold", "Apply a code", "--for-removal")
-        self.assertEqual((done.returncode, done.stdout), (0, "features/cart.feature: Apply a code (held)\n"), done.stderr)
+        done = self.run_script("deprecate", "Apply a code", "--for-removal")
+        self.assertEqual((done.returncode, done.stdout), (0, "features/cart.feature: Apply a code (deprecated)\n"), done.stderr)
 
-    def test_the_holding_list_flags_a_held_scenario_it_cannot_place(self):
-        """the holding list flags a held scenario it cannot place"""
+    def test_the_deprecated_list_flags_a_deprecated_scenario_it_cannot_place(self):
+        """the deprecated list flags a deprecated scenario it cannot place"""
         for body, others, said in (
-                ("    Given a step\n", [], "no 'Held for:' line"),
-                ("    Held for: Apply a voucher\n    Given a step\n", [scenario("Apply a voucher")], "no slice yet")):
+                ("    Given a step\n", [], "no Deprecated for: line"),
+                ("    Deprecated for: Apply a voucher\n    Given a step\n", [scenario("Apply a voucher")], "the replacement has no @r<n> tag")):
             with self.subTest(said):
-                self.write("features/cart.feature", feature(scenario("Apply a code (held)", "@holding", body), *others))
-                done = self.run_script("holding")
+                self.write("features/cart.feature", feature(scenario("Apply a code (deprecated)", "@deprecated", body), *others))
+                done = self.run_script("deprecated")
                 self.assertEqual(done.returncode, 0, done.stderr)
-                lines = [x for x in done.stdout.splitlines() if "Apply a code (held)" in x]
+                lines = [x for x in done.stdout.splitlines() if "Apply a code (deprecated)" in x]
                 self.assertEqual(len(lines), 1)
                 self.assertTrue(lines[0].endswith("| " + said), lines[0])
 
@@ -463,12 +463,12 @@ class BindingsScenarioTest(Workspace, unittest.TestCase):
         for name, text in modules.items():
             self.write(name, text)
         for name in ("cart", "old"):
-            done = self.run_script("hold", "Apply a code", "--for-removal", "--file", "features/%s.feature" % name)
+            done = self.run_script("deprecate", "Apply a code", "--for-removal", "--file", "features/%s.feature" % name)
             self.assertEqual(done.returncode, 0, done.stderr)
         for name in ("cart", "old"):
-            done = self.run_script("rebind", "Apply a code", "Apply a code (held)", "--file", "features/%s.feature" % name)
+            done = self.run_script("rebind", "Apply a code", "Apply a code (deprecated)", "--file", "features/%s.feature" % name)
             self.assertEqual((done.returncode, done.stdout), (0, "1 binding rebound\n"), done.stderr)
-            moved = [m for m in modules if '"Apply a code (held)")' in (self.tmp / m).read_text()]
+            moved = [m for m in modules if '"Apply a code (deprecated)")' in (self.tmp / m).read_text()]
             self.assertEqual(moved, ["tests/test_cart.py"] if name == "cart" else list(modules))
         self.assertEqual(self.run_script("bindings").returncode, 0)
 
