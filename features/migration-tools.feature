@@ -7,16 +7,16 @@ Feature: Migration tools
     Pins where each of these old directories lands, keeping a record's path, and that git sees each move as a rename.
     Given a repository on the old system with decisions/0001-d0.md, work/i1/w1.md and records/logs/r1.md
     When the session runs `migrate run --context example.org/acme/shop`
-    Then spec/decisions/0001-d0.md holds what decisions/0001-d0.md held
-    And .shop/work/i1/w1.md holds what work/i1/w1.md held
-    And .shop/records/logs/r1.md holds what records/logs/r1.md held
+    Then spec/decisions/0001-d0.md has the content decisions/0001-d0.md had
+    And .shop/work/i1/w1.md has the content work/i1/w1.md had
+    And .shop/records/logs/r1.md has the content records/logs/r1.md had
     And decisions/, work/ and records/ are gone
     And git status shows each of the three as renamed
 
   @r2 @r11
-  Scenario: run replaces a ledger that holds only entries with a decision file for each, named by its heading, holding its first paragraph, accepted, with its date and source
+  Scenario: run replaces a ledger that has only entries with a decision file for each, named by its heading, with its first paragraph, accepted, with its date and source
     Pins the file a ledger entry becomes, where each of its fields comes from, and that a ledger of nothing but entries is gone.
-    Given a repository on the old system whose spec/decisions.md holds nothing but the entry `## decision/0007-a`
+    Given a repository on the old system whose spec/decisions.md has nothing but the entry `## decision/0007-a`
     And the entry is dated 2025-03-01, its source is alice, and its first paragraph is "We do a."
     When the session runs `migrate run --context example.org/acme/shop`
     Then spec/decisions.md is gone
@@ -25,7 +25,7 @@ Feature: Migration tools
 
   @r3
   Scenario: run deprecates a @holding scenario as `features deprecate` does
-    Pins that migrate leaves a holding scenario, and the tests that name it, as `features deprecate` would.
+    Pins that migrate leaves a with scenario, and the tests that name it, as `features deprecate` would.
     Given a repository on the old system whose features/thing.feature has a scenario "s1" tagged @holding
     And a test that names "s1" by title
     And a copy of that repository on which `features deprecate` has been run for "s1"
@@ -76,8 +76,8 @@ Feature: Migration tools
     Pins where plans and design notes land, and that git sees each move as a rename.
     Given a repository on the old system with docs/superpowers/plans/p1.md and docs/superpowers/specs/s1.md
     When the session runs `migrate run --context example.org/acme/shop`
-    Then .shop/records/archive/plans/p1.md holds what docs/superpowers/plans/p1.md held
-    And .shop/records/archive/design-notes/s1.md holds what docs/superpowers/specs/s1.md held
+    Then .shop/records/archive/plans/p1.md has the content docs/superpowers/plans/p1.md had
+    And .shop/records/archive/design-notes/s1.md has the content docs/superpowers/specs/s1.md had
     And docs/superpowers/plans/ and docs/superpowers/specs/ are gone
     And git status shows each of the two as renamed
 
