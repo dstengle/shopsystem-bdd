@@ -2,7 +2,7 @@
 %
 % Relation names, arities and constraint names follow grammar.md; "g:NN" is
 % its line number. Where grammar.md does not compile as written, the clause
-% carries a FIX note and the change is the smallest that keeps the stated
+% has a FIX note and the change is the smallest that keeps the stated
 % intent. Facts come from `model facts`, which reads a repository's files.
 % Every v_ relation must be empty; w_ relations are warnings.
 % Each shown relation has one plain label, label("<code>", "<label>"), written beside its rule and only here;
@@ -30,7 +30,7 @@
 #defined term_of/2.               % term_of(T, Ctx): term T is a term of bounded-context Ctx
 #defined avoid/2.                 % avoid(T, W): term T's entry lists word W after `Not:`
 #defined glossary_entry/3.        % glossary_entry(T, N, W): glossary bullet N writes term T as word W
-#defined mentions/2.              % mentions(X, W): requirement or scenario X holds W, a term or avoided word
+#defined mentions/2.              % mentions(X, W): requirement or scenario X contains W, a term or avoided word
 
 % ---------------------------------------------------------------- §1 g:9-50
 standing("product-vision").  standing("job").  standing("bounded-context").  standing("context-seam").
@@ -195,7 +195,7 @@ label("v_k3", "a capability-change initiative's first part is not a capability-p
 v_k3(I) :- ikind(I, "capability-change"), part_of(P, I), not node(P, "capability-proposal").
 label("v_k4", "a defect initiative's first part is not a work-item").
 v_k4(I) :- ikind(I, "defect"),            part_of(P, I), not node(P, "work-item").
-% FIX g:171 (design-decision/one-capability-per-proposal): a capability-change initiative may hold several
+% FIX g:171 (design-decision/one-capability-per-proposal): a capability-change initiative may have several
 % capability-proposals, one per capability; every other kind keeps one first part.
 label("v_k5", "an initiative has more than one first part").
 v_k5(I) :- node(I, "initiative"), part_of(P1, I), part_of(P2, I), P1 != P2, not ikind(I, "capability-change").
@@ -238,7 +238,7 @@ v_d1(I) :- status(I, "done"), root(P, I), not closed(P).
 % EXTENSION (proposed against grammar.md v3; design-model-check r59): an abandoned initiative leaves
 % no part open; each is closed or withdrawn.
 % CONTRACT (scripts/model --help): `withdrawn` is closed, so "not withdrawn" adds nothing to "not closed"
-% today; it is written out so the rule still holds if a later grammar stops counting withdrawn as closed.
+% today; it is written out so the rule stays valid if a later grammar stops counting withdrawn as closed.
 label("v_d2", "an abandoned initiative has a part open").
 v_d2(I) :- status(I, "abandoned"), root(P, I), not closed(P), not status(P, "withdrawn").
 
@@ -264,7 +264,7 @@ v_t3(W)       :- avoid(T, W), term_of(T, Ctx), glossary_entry(T2, _, W), term_of
 % scripts/model matches each Behaviour line (a table row by its lead sentence) and gives ears_other(Q) for a line
 % in none of EARS's patterns and ears_many(Q) for one with more than one "shall" or more than one sentence.
 label("v_e1", "a Behaviour line is not in one of EARS's patterns").
-label("v_e2", "a Behaviour line has more than one shall or more than one sentence").
+label("v_e2", "a Behaviour line has more than one \"shall\" or more than one sentence").
 v_e1(Q) :- ears_other(Q).
 v_e2(Q) :- ears_many(Q).
 

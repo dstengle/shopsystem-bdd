@@ -63,7 +63,7 @@ OBS1 = full("observation", "obs-1")
 
 
 def cap(name, reqs, group="service", retired="[]", rests_on="[]"):
-    """The text of a capability file: its Behaviour holds `reqs`, one line each."""
+    """The text of a capability file: its Behaviour has `reqs`, one line each."""
     lines = "\n".join(reqs)
     return textwrap.dedent("""\
         ---
@@ -88,7 +88,7 @@ def feature(name, *scenarios):
     """The text of a feature file: `scenarios` are (tag line, title) pairs."""
     out = ["# formulated from spec/capabilities/%s.md" % name, "Feature: " + name, "  Narrator: a client", ""]
     for tag, title in scenarios:
-        out += ["  " + tag, "  Scenario: " + title, "    Given a thing", "    Then it holds", ""]
+        out += ["  " + tag, "  Scenario: " + title, "    Given a thing", "    Then it is so", ""]
     return "\n".join(out)
 
 

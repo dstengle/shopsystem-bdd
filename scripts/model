@@ -58,7 +58,7 @@ contract:
     `Not:`, and glossary_entry(T, <bullet number>, <term lowercased>); each
     requirement (its line) and each acceptance-scenario (its title and its
     Given/When/Then/And/But steps, not its description, docstrings or
-    Examples tables) gives mentions(X, <word>) for each term or avoided word it holds, as a
+    Examples tables) gives mentions(X, <word>) for each term or avoided word it contains, as a
     whole word in any case, with a plural "s" allowed. It needs nothing
     beyond the standard library.
   - Every rule of model.lp has one plain label, label("<code>", "<label>"),
@@ -508,7 +508,7 @@ class Model:
                 self.words.add(w)
 
     def read_mentions(self):
-        """mentions(X, W) for each requirement and scenario X and each term or avoided word W it holds."""
+        """mentions(X, W) for each requirement and scenario X and each term or avoided word W it contains."""
         found = [(w, mention(w)) for w in sorted(self.words)]
         for x, text in list(self.req_text.items()) + list(self.sc_text.items()):
             text = NOT_PROSE.sub(" ", text)        # code spans, double-quoted strings and @ tags are no mentions (r51)

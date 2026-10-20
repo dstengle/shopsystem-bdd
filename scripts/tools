@@ -62,7 +62,7 @@ TOOLS = (
      "the consequence sweep searches by text and misses what text cannot say"),
     ("ruff", "ruff", "lint, line length, unused imports", "reviewers read for them"),
     ("vulture", "vulture", "code with no caller left", "reviewers find it by reading, after a removal"),
-    ("import-linter", "import-linter", "the module map's 'never holds' column as checked contracts",
+    ("import-linter", "import-linter", "the module map's import rules as checked contracts",
      "reviewers read the imports against CLAUDE.md"),
     ("hypothesis", "hypothesis", "the project's invariants as property tests", "invariants are probed by hand in review"),
 )

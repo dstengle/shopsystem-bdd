@@ -121,7 +121,7 @@ Feature: Design model check
     Pins which files of a repository model reads, and that the root is the current directory unless --root names one.
     Given a repository in a directory that has <file>
     When model facts is run <how>
-    Then the facts printed <outcome> what <file> holds
+    Then the facts printed <outcome> what <file> contains
 
     Examples:
       | file                               | how                                   | outcome         |
@@ -355,7 +355,7 @@ Feature: Design model check
     Pins the machine-readable output and that it does not change the exit status.
     Given a repository <state>
     When model check is run with --json
-    Then it prints one JSON object holding the violations, warnings, unresolved references and file problems
+    Then it prints one JSON object with the violations, warnings, unresolved references and file problems
     And the object maps each code it prints to its plain label
     And it exits <status>
 
@@ -365,8 +365,8 @@ Feature: Design model check
       | with a requirement no scenario names   | 1      |
 
   @r34
-  Scenario Outline: only a capability-change initiative may hold several parts directly
-    Pins that an initiative holds one part directly, except a capability-change holding capability-proposals.
+  Scenario Outline: only a capability-change initiative may have several parts directly
+    Pins that an initiative has one part directly, except a capability-change with capability-proposals.
     Given <initiative> with <parts> directly under it
     When model check is run
     Then the initiative is <reported> under v_k5
@@ -517,7 +517,7 @@ Feature: Design model check
 
   @r48
   Scenario: a glossary bullet is a term of the bounded context
-    Pins that a definition holding a period, as in "e.g. a", is one definition, split from its avoided words only at ". Not:".
+    Pins that a definition containing a period, as in "e.g. a", is one definition, split from its avoided words only at ". Not:".
     Given a bounded context whose glossary has the bullet "- **Suite record**: a whole-suite result, e.g. a green run, logged once. Not: test record, run."
     When model facts is run
     Then it prints the term term/ex.com/prod/ctx/suite-record
@@ -560,11 +560,11 @@ Feature: Design model check
   @r52
   Scenario: a requirement or scenario using an avoided word is v_t1
     Given a glossary term slice that avoids chunk
-    And a requirement that says "chunk", a scenario titled "chunks are planned" and a held scenario titled "a chunk as it was"
+    And a requirement that says "chunk", a scenario titled "chunks are planned" and a deprecated scenario titled "a chunk as it was"
     When model check is run
     Then v_t1 names the requirement, chunk and the term slice
     And v_t1 names the scenario, chunk and the term slice
-    And v_t1 does not name the held scenario
+    And v_t1 does not name the deprecated scenario
     And it exits 1
 
   @r53
@@ -603,7 +603,7 @@ Feature: Design model check
   @r12
   Scenario: with no interpreter that has clingo the check names each one it tried
     Given an interpreter that cannot import clingo
-    And no python3 that can, whether PATH holds none or $SHOPSYSTEM_MODEL_PYTHON and PATH name ones without it
+    And no python3 that can, whether PATH has none or $SHOPSYSTEM_MODEL_PYTHON and PATH name ones without it
     When model check is run
     Then it names clingo and pip install clingo
     And it names each interpreter it tried, /usr/local/bin/python3 and /usr/bin/python3 among them
@@ -693,10 +693,10 @@ Feature: Design model check
     Given a glossary term store that avoids shelf
     And a capability whose Behaviour has these lines
       | id | line                                       |
-      | r1 | The `shelf` shall hold.                    |
+      | r1 | The `shelf` shall stay.                    |
       | r2 | The thing shall say "a shelf".             |
       | r3 | The thing shall name the tag @shelf.       |
-      | r4 | The thing shall hold a shelf.              |
+      | r4 | The thing shall keep a shelf.              |
     When model facts is run
     Then only r4 mentions shelf
 

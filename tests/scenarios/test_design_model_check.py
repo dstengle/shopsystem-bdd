@@ -1002,7 +1002,7 @@ def no_violation_names_initiative(world, context):
 # === the glossary (r48, r49) ======================================================================================
 
 def _glossary(world, *bullets):
-    """spec/index.md with a ## Glossary section holding these bullets."""
+    """spec/index.md with a ## Glossary section with these bullets."""
     world.write("spec/index.md", INDEX + "\n## Glossary\n\n" + "\n".join(bullets) + "\n\n## Where things live\n\n- Here.\n")
 
 
@@ -1127,7 +1127,7 @@ def path_of_liar(world, context):
     context["env"] = _search_env(world, ["bin"])
 
 
-@given("no python3 that can, whether PATH holds none or $SHOPSYSTEM_MODEL_PYTHON and PATH name ones without it")
+@given("no python3 that can, whether PATH has none or $SHOPSYSTEM_MODEL_PYTHON and PATH name ones without it")
 def no_python_with_clingo(world, context):
     _fake_python(world, "lacks", "lack")
     nowhere = world.root / "nowhere/python3"

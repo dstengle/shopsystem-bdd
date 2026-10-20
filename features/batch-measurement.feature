@@ -15,7 +15,7 @@ Feature: Batch measurement
   Scenario: without an archive file the open batch is measured from the last archive commit to now
     With no archive file, the batch is the work since the last archive, read against the living plan.
     Given the last archive file was added by commit B
-    And the repository holds one living plan
+    And the repository has one living plan
     When the session runs measure batch with no archive file
     Then the batch's window runs from commit B to now
     And the slices are read from the living plan
@@ -93,7 +93,7 @@ Feature: Batch measurement
   Scenario: a request's usage is counted once, and its reasoning is part of its output
     A request repeated across transcript rows is not counted again, and reasoning tokens are shown inside the output figure, not on top of it.
     Given a batch with one dispatch that made one request
-    And the request's usage, 500 new input and 1200 output tokens of which 300 are reasoning, is carried by three transcript rows
+    And the request's usage, 500 new input and 1200 output tokens of which 300 are reasoning, appears in three transcript rows
     When the session runs measure batch for the batch
     Then the facts count the request's 500 new input and 1200 output tokens once
     And the facts give its output as 1200, of which 300 reasoning
@@ -154,10 +154,10 @@ Feature: Batch measurement
   @r16
   Scenario: the facts give the plan's tasks at both ends, its hand-backs and suite record
     The batch plan's task list is taken when the plan was added and again at the batch's end.
-    Given a batch plan that held 5 tasks when it was added and 7 tasks at the batch's end
+    Given a batch plan that had 5 tasks when it was added and 7 tasks at the batch's end
     And the plan has two hand-back entries and a suite record
     When the session runs measure batch for the batch
-    Then the facts give the 5 tasks held when it was added and the 7 held at the end
+    Then the facts give the 5 tasks it had when it was added and the 7 it had at the end
     And the facts give both hand-back entries and the suite record
 
   @r17
@@ -192,7 +192,7 @@ Feature: Batch measurement
   @r38
   Scenario Outline: the open batch needs --plan when the living plan cannot be found
     Without one slices plan in the repository, measure asks for the living plan to be named.
-    Given a repository holding <plans> docs/superpowers/plans/*-slices.md files
+    Given a repository with <plans> docs/superpowers/plans/*-slices.md files
     When the session runs measure batch with no archive file and no --plan
     Then measure batch refuses because the living plan cannot be found
     And the refusal says to name the living plan with --plan

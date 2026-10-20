@@ -233,7 +233,7 @@ class RulesTest(ModelTest):
         text = LP.read_text()
         shown = {m for line in text.splitlines() for m in re.findall(r"#show\s+(\w+)/\d+\.", line.split("%")[0])}
         shown -= {"label"}
-        labels = re.findall(r'^label\("([^"]+)",\s*"([^"]+)"\)\.', text, re.M)
+        labels = re.findall(r'^label\("([^"]+)",\s*"((?:[^"\\]|\\.)+)"\)\.', text, re.M)
         names = [c for c, _ in labels]
         self.assertEqual(sorted(set(names)), sorted(shown))
         self.assertEqual(len(names), len(set(names)), "a code has two labels")
@@ -552,7 +552,7 @@ class OutputTest(ModelTest):
                 self.assertEqual(bool(found["violations"]), status == 1)
 
     def test_r34(self):
-        """only a capability-change initiative may hold several parts directly"""
+        """only a capability-change initiative may have several parts directly"""
         self.write("spec/capabilities/other.md", cap("other", ["- [r1] One."], group="guarantees"))
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees"))
         self.observation()
@@ -589,7 +589,7 @@ class HeldAndLedgerTest(ModelTest):
     """r44."""
 
     def test_r44(self):
-        """a held scenario names no requirement"""
+        """a deprecated scenario names no requirement"""
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r2] Two."]))
         self.write("features/thing.feature", "Feature: thing\n\n  @r2 @deprecated\n  Scenario: two as it was\n    Given a\n")
         found, _ = self.check_json()

@@ -1,5 +1,5 @@
 """features/feature-file-tools.feature, bound to scripts/features: the scenarios of requirements r1-r7, r10-r18,
-r25-r29, r36-r38, r41, r42, r46, r51-r58. (The slice, hold, retire and plugin ones are bound by the
+r25-r29, r36-r38, r41, r42, r46, r51-r58. (The slice, deprecate, retire and plugin ones are bound by the
 work-items that follow, or retired with the commands they test.)
 
 A Given writes the feature files, test modules and trees a scenario names into `repo`; the When runs `features`
@@ -28,7 +28,7 @@ BOUND = (
     'moving to a destination that does not exist is refused',
     'two trees alike scenario by scenario pass the move check',
     'a scenario that changed in the move is named with what changed',
-    'a title held twice in either tree is a duplicate',
+    'a title that appears twice in either tree is a duplicate',
     'a binding that names no scenario is reported',
     'bindings that all name a scenario pass',
     'a test module that does not parse is refused',
@@ -37,13 +37,13 @@ BOUND = (
     'moving a scenario to its own file is refused',
     'a title in only one tree is missing or added',
     'a tag is found with or without its leading @',
-    'rebinding to a title several feature files hold is refused',
+    'rebinding to a title several feature files have is refused',
     'rebinding a title written over several lines is refused',
     'a refusal says why on stderr and fails',
     "tagging with a requirement id adds it to the scenario's requirement tags",
-    '--file works in that file only, whatever other files hold the title',
-    '--file naming a file that does not hold the title is refused',
-    '--file naming a file that holds the title twice is refused',
+    '--file works in that file only, whatever other files have the title',
+    '--file naming a file that does not have the title is refused',
+    '--file naming a file that has the title twice is refused',
     '--file naming a file outside --dir is refused',
     'rebind --file rewrites only the bindings whose feature names that file',
     'deprecating a scenario marks it deprecated and records what for',
@@ -120,14 +120,14 @@ def snapshot(repo):
 
 def store(repo, context, path, *scenarios, tags=None, background=None):
     """Write the feature file `path` from what the scenario has told so far: scenarios add up, tags and Background replace."""
-    held = context.setdefault("files", {}).setdefault(path, {"scenarios": [], "tags": "", "background": ""})
-    held["scenarios"].extend(scenarios)
+    entry = context.setdefault("files", {}).setdefault(path, {"scenarios": [], "tags": "", "background": ""})
+    entry["scenarios"].extend(scenarios)
     if tags is not None:
-        held["tags"] = tags
+        entry["tags"] = tags
     if background is not None:
-        held["background"] = background
+        entry["background"] = background
     context["last"] = path
-    write(repo, path, feature_text(*held["scenarios"], tags=held["tags"], background=held["background"]))
+    write(repo, path, feature_text(*entry["scenarios"], tags=entry["tags"], background=entry["background"]))
 
 
 def titles_in(text):
@@ -144,7 +144,7 @@ def tag_line_of(text, title):
 
 @pytest.fixture(autouse=True)
 def whole_output(context):
-    """After each scenario: features never crashed, and a listing held exactly the lines the scenario said it lists."""
+    """After each scenario: features never crashed, and a listing had exactly the lines the scenario said it lists."""
     yield
     result = context.get("result")
     if result is not None:
@@ -179,20 +179,20 @@ def feature_with_scenario(repo, context, path, title, tag):
     store(repo, context, path, scenario_text(title, "@" + tag if tag else ""))
 
 
-@given(parsers.parse('the scenario "{title}" has a docstring holding the lines "@slice-1" and "Scenario: Phantom"'))
+@given(parsers.parse('the scenario "{title}" has a docstring with the lines "@slice-1" and "Scenario: Phantom"'))
 def scenario_with_docstring(repo, context, title):
     path = context["last"]
-    held = context["files"][path]
-    held["scenarios"] = [scenario_text(title, "@slice-1", NOTE_WITH % "@slice-1\n      Scenario: Phantom")]
+    entry = context["files"][path]
+    entry["scenarios"] = [scenario_text(title, "@slice-1", NOTE_WITH % "@slice-1\n      Scenario: Phantom")]
     store(repo, context, path)
 
 
-@given("a feature file features/rules.feature that holds a Rule: block")
+@given("a feature file features/rules.feature that has a Rule: block")
 def feature_with_rule(repo):
     write(repo, "features/rules.feature", RULE)
 
 
-@given(parsers.re(r"an edit by features that would leave features/cart.feature holding (?P<result>.+)"))
+@given(parsers.re(r"an edit by features that would leave features/cart.feature with (?P<result>.+)"))
 def edit_leaving(repo, context, result):
     """Moving a scenario into a destination that ends inside an unclosed docstring flips which lines of the moved block
     lie inside a docstring."""
@@ -299,8 +299,8 @@ def no_file(repo, path):
     assert not (repo / path).exists()
 
 
-@given(parsers.parse('the title "Apply a code" is held by {holders}'))
-def title_held_by(repo, context, holders):
+@given(parsers.parse('the title "Apply a code" is in {holders}'))
+def title_in_files(repo, context, holders):
     write(repo, "features/other.feature", feature_text(scenario_text("Empty cart")))
     for path in re.findall(r"features/\w+\.feature", holders):
         write(repo, path, feature_text(scenario_text("Apply a code")))
@@ -325,8 +325,8 @@ def two_files(repo, context):
                             feature_text(scenario_text("Apply a code", "@slice-2 @r1"), scenario_text("Checkout", "@r3")))
 
 
-@given('features/cart.feature and features/old.feature both hold a scenario "Apply a code"')
-def both_hold_apply(repo, context):
+@given('features/cart.feature and features/old.feature both have a scenario "Apply a code"')
+def both_have_apply(repo, context):
     two_files(repo, context)
 
 
@@ -335,9 +335,9 @@ def cart_without_voucher(repo, context):
     two_files(repo, context)
 
 
-@given('features/codes.feature holds a scenario "Voucher"')
-def codes_holds_voucher(repo, context):
-    write(repo, "features/codes.feature", feature_text(scenario_text("Voucher", "@holding")))
+@given('features/codes.feature has a scenario "Voucher"')
+def codes_has_voucher(repo, context):
+    write(repo, "features/codes.feature", feature_text(scenario_text("Voucher", "@r2")))
 
 
 @given('a feature file features/cart.feature with two scenarios "Apply a code"')
@@ -358,7 +358,7 @@ def a_feature_with_voucher(repo, context):
     store(repo, context, "features/cart.feature", scenario_text("Apply a voucher"))
 
 
-@given('features/cart.feature and features/codes.feature both hold a scenario "Apply a voucher"')
+@given('features/cart.feature and features/codes.feature both have a scenario "Apply a voucher"')
 def both_hold_voucher(repo, context):
     store(repo, context, "features/cart.feature", scenario_text("Apply a voucher"))
     store(repo, context, "features/codes.feature", scenario_text("Apply a voucher"))
@@ -394,7 +394,7 @@ def new_tree_alike(repo):
 BEFORE = scenario_text("Apply a code", "@slice-1", "    Applying a code.\n    Given a cart\n")
 
 
-@given('trees old/ and features/ that both hold "Apply a code"')
+@given('trees old/ and features/ that both have "Apply a code"')
 def trees_both_hold(repo, context):
     write(repo, "old/cart.feature", feature_text(BEFORE))
     write(repo, "features/cart.feature", feature_text(BEFORE))
@@ -408,7 +408,7 @@ def copies_differ(repo, part):
     write(repo, "features/cart.feature", feature_text(after))
 
 
-@given(parsers.re(r'(?P<tree>old|features)/ holds a second scenario titled "Apply a code"'))
+@given(parsers.re(r'(?P<tree>old|features)/ has a second scenario titled "Apply a code"'))
 def tree_holds_second(repo, context, tree):
     write(repo, "%s/again.feature" % tree, feature_text(scenario_text("Apply a code")))
     context["tree"] = tree
@@ -484,7 +484,7 @@ def module_multiline(repo):
 
 @given('tests binding "Apply a code" to features/cart.feature and to features/old.feature')
 def tests_binding_two(repo, context):
-    write(repo, "features/cart.feature", feature_text(scenario_text("Apply a code (held)", "@holding")))
+    write(repo, "features/cart.feature", feature_text(scenario_text("Apply a code (deprecated)", "@deprecated")))
     write(repo, "features/old.feature", feature_text(scenario_text("Apply a code")))
     context["modules"] = {"tests/test_cart.py": binding("Apply a code", "cart.feature"),
                           "tests/test_old.py": binding("Apply a code", "old.feature"),
@@ -585,7 +585,7 @@ def counts_total(context):
 
 # --- Then: refusals ---------------------------------------------------------------------------------------------
 
-@then("the command is rejected because the feature file holds a Rule: block")
+@then("the command is rejected because the feature file has a Rule: block")
 def rejected_rule(context):
     assert "Rule: blocks are not supported" in rejected(context)
 
@@ -602,7 +602,7 @@ def refusal_names(repo, context, names):
     wanted = re.split(r", | and ", names)
     for name in wanted:
         assert name in reason
-    if context.get("exact_files"):  # r10: every file holding the title, no other
+    if context.get("exact_files"):  # r10: every file with the title, no other
         assert re.findall(r"features/\w+\.feature", reason) == wanted
     if names == "tests/test_broken.py":
         assert "tests/test_broken.py does not parse" in reason
@@ -624,7 +624,7 @@ def edit_made(run, repo, context):
         assert listed.stdout == "features/cart.feature: Apply a code\n" * 2
 
 
-@then("the command is rejected because the title is not held by exactly one file")
+@then("the command is rejected because the title is not in exactly one file")
 def rejected_not_one(context):
     rejected(context)
 
@@ -674,7 +674,7 @@ def rejected_no_new_title(context):
     assert "no scenario titled 'Apply a voucher'" in rejected(context)
 
 
-@then("the command is rejected because several feature files hold the new title")
+@then("the command is rejected because several feature files have the new title")
 def rejected_several_new_title(context):
     reason = rejected(context)
     assert "several" in reason
@@ -686,15 +686,15 @@ def rejected_multiline(context):
     assert "tests/test_cart.py:20: the title is written over several lines" in rejected(context)
 
 
-@then("the command is rejected because the file does not hold the title")
+@then("the command is rejected because the file does not have the title")
 def rejected_file_lacks_title(run, repo, context):
-    assert "does not hold" in rejected(context)
+    assert "does not have" in rejected(context)
     for command in (("deprecate", "Voucher", "--for-removal"), ("retire", "Voucher"), ("move", "Voucher", "--to", "features/old.feature")):
         reason = refused(run, repo, *command, "--file", "features/cart.feature")
-        assert "features/cart.feature" in reason and "does not hold" in reason
+        assert "features/cart.feature" in reason and "does not have" in reason
 
 
-@then("the command is rejected because the file holds the title twice")
+@then("the command is rejected because the file has the title twice")
 def rejected_file_twice(run, repo, context):
     assert "twice" in rejected(context)
     for command in (("deprecate", "Apply a code", "--for-removal"), ("move", "Apply a code", "--to", "features/old.feature")):
@@ -856,7 +856,7 @@ def rejected_already_deprecated(context):
 SAYS = {'that no scenario has the title "Apply a voucher"': "no scenario has that title",
         "that it is deprecated for removal": "deprecated for removal",
         "that it has no Deprecated for: line": "no Deprecated for: line",
-        "that the replacement carries no @r<n> tag": "the replacement has no @r<n> tag"}
+        "that the replacement has no @r<n> tag": "the replacement has no @r<n> tag"}
 
 
 def last_field(said):
@@ -886,7 +886,7 @@ def none_deprecated(context):
     assert context["result"].stdout == "none deprecated\n"
 
 
-@then(parsers.re(r'(?P<path>\S+) no longer holds "(?P<title>[^"]+)"'))
+@then(parsers.re(r'(?P<path>\S+) no longer has "(?P<title>[^"]+)"'))
 def no_longer_holds(repo, context, path, title):
     assert context["result"].returncode == 0, context["result"].stderr
     assert "Scenario: " + title not in (repo / path).read_text()
@@ -914,7 +914,7 @@ def prints_path_and_title(context, path, title):
 
 # --- Then: moving -----------------------------------------------------------------------------------------------
 
-@then('features/old.feature holds "Empty cart" and not "Apply a code"')
+@then('features/old.feature has "Empty cart" and not "Apply a code"')
 def old_holds_empty_cart(repo, context):
     assert context["result"].returncode == 0, context["result"].stderr
     assert (repo / "features/old.feature").read_text() == feature_text(scenario_text("Empty cart"))
@@ -996,12 +996,12 @@ def prints_rebound(context, count):
     assert context["result"].stdout == "%s bindings rebound\n" % count
 
 
-@then('the binding to features/cart.feature names "Apply a code (held)"')
+@then('the binding to features/cart.feature names "Apply a code (deprecated)"')
 def cart_bindings_follow(repo, context):
     result = context["result"]
     assert (result.returncode, result.stdout) == (0, "2 bindings rebound\n"), result.stderr
     for name in ("tests/test_cart.py", "tests/test_path.py"):  # the second names the file by a path
-        assert (repo / name).read_text() == context["modules"][name].replace('"Apply a code")', '"Apply a code (held)")')
+        assert (repo / name).read_text() == context["modules"][name].replace('"Apply a code")', '"Apply a code (deprecated)")')
 
 
 @then("the binding to features/old.feature is unchanged")

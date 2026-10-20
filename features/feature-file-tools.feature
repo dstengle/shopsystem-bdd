@@ -6,23 +6,23 @@ Feature: Feature file tools
   Scenario: every feature file under the directory is read, and docstring text is not
     A feature file in a nested directory under the default features directory is read, and a tag or scenario written inside a docstring is not.
     Given a feature file features/cart/nested.feature with a scenario "Nested" tagged @slice-1
-    And the scenario "Nested" has a docstring holding the lines "@slice-1" and "Scenario: Phantom"
+    And the scenario "Nested" has a docstring with the lines "@slice-1" and "Scenario: Phantom"
     When the agent runs features list --tag slice-1 without --dir
     Then the output lists features/cart/nested.feature with "Nested"
     And the output does not list "Phantom"
 
   @r2
   Scenario: a feature file with a Rule block is refused
-    A Rule block is not read as part of the feature; the command refuses and says which file holds it.
-    Given a feature file features/rules.feature that holds a Rule: block
+    A Rule block is not read as part of the feature; the command refuses and says which file has it.
+    Given a feature file features/rules.feature that has a Rule: block
     When the agent runs features list --title Cart
-    Then the command is rejected because the feature file holds a Rule: block
+    Then the command is rejected because the feature file has a Rule: block
     And the refusal names features/rules.feature
 
   @r2
   Scenario Outline: an edit is refused only when it would leave a Rule: block outside a docstring
     Pins that the one thing an edit's result is checked for is a Rule: block outside a docstring, and that a refused edit changes no file.
-    Given an edit by features that would leave features/cart.feature holding <result>
+    Given an edit by features that would leave features/cart.feature with <result>
     When the agent runs that edit
     Then <outcome>
 
@@ -34,7 +34,7 @@ Feature: Feature file tools
 
   @r4
   Scenario: counting by tag counts outline rows, inherited tags and untagged scenarios
-    Pins that each Examples row is a scenario carrying its feature's and its own table's tags, and that the total leaves no scenario out.
+    Pins that each Examples row is a scenario with its feature's and its own table's tags, and that the total leaves no scenario out.
     Given a feature file features/cart.feature tagged @cart
     And it has a scenario "Plain" with no tags of its own
     And it has a scenario "Own tag" tagged @slice-1
@@ -46,7 +46,7 @@ Feature: Feature file tools
 
   @r5
   Scenario: listing by tag includes the feature's and the Examples' tags
-    A scenario holds a tag when it carries it itself, when its feature carries it, or when its Examples table carries it.
+    A scenario has a tag when it has it itself, when its feature has it, or when its Examples table has it.
     Given a feature file features/cart.feature tagged @cart
     And it has a scenario "Plain" with no tags of its own
     And it has a scenario "Own tag" tagged @checkout
@@ -78,15 +78,15 @@ Feature: Feature file tools
 
   @r35
   Scenario Outline: retagging a title that is not in exactly one file is refused
-    The title must pick out one file; otherwise nothing is changed and every file holding it is named.
-    Given the title "Apply a code" is held by <files holding it>
+    The title must pick out one file; otherwise nothing is changed and every file that has it is named.
+    Given the title "Apply a code" is in <files with it>
     When the agent runs features tag "Apply a code" slice-2
-    Then the command is rejected because the title is not held by exactly one file
+    Then the command is rejected because the title is not in exactly one file
     And the refusal names <files named>
     And no file is changed
 
     Examples:
-      | files holding it                               | files named                                    |
+      | files with it                                  | files named                                    |
       | no feature file                                | no file                                        |
       | features/cart.feature and features/old.feature | features/cart.feature and features/old.feature |
 
@@ -104,17 +104,17 @@ Feature: Feature file tools
     Given a feature file features/old.feature with scenarios "Apply a code" and "Empty cart"
     And a feature file features/cart.feature whose last scenario is "Checkout"
     When the agent runs features move "Apply a code" --to features/cart.feature
-    Then features/old.feature holds "Empty cart" and not "Apply a code"
+    Then features/old.feature has "Empty cart" and not "Apply a code"
     And the block of "Apply a code" follows "Checkout" at the end of features/cart.feature, unchanged
 
   @r13
   Scenario: moving with the Background inlined puts its steps first
     A moved scenario keeps the steps its source Background gave it.
     Given a feature file features/old.feature whose Background has the step "Given the date is 2026-10-16"
-    And its scenario "Apply a code" has first step "Given a cart holding product Mug at price 8.00"
+    And its scenario "Apply a code" has first step "Given a cart with product Mug at price 8.00"
     And a feature file features/cart.feature
     When the agent runs features move "Apply a code" --to features/cart.feature --inline-background
-    Then the moved "Apply a code" has the steps "Given the date is 2026-10-16" then "Given a cart holding product Mug at price 8.00"
+    Then the moved "Apply a code" has the steps "Given the date is 2026-10-16" then "Given a cart with product Mug at price 8.00"
 
   @r14
   Scenario Outline: moving with feature tags kept adds the missing ones on a tag line of their own
@@ -151,7 +151,7 @@ Feature: Feature file tools
   @r17
   Scenario Outline: a scenario that changed in the move is named with what changed
     The check names which of effective tags, description or steps differ.
-    Given trees old/ and features/ that both hold "Apply a code"
+    Given trees old/ and features/ that both have "Apply a code"
     And the two copies of "Apply a code" differ in their <part>
     When the agent runs features verify-moved --from old
     Then it names "Apply a code" with its <part> as changed
@@ -164,10 +164,10 @@ Feature: Feature file tools
       | steps          |
 
   @r17
-  Scenario Outline: a title held twice in either tree is a duplicate
-    Scenarios are matched by title, so a title held twice cannot be matched.
-    Given trees old/ and features/ that both hold "Apply a code"
-    And <tree> holds a second scenario titled "Apply a code"
+  Scenario Outline: a title that appears twice in either tree is a duplicate
+    Scenarios are matched by title, so a title that appears twice cannot be matched.
+    Given trees old/ and features/ that both have "Apply a code"
+    And <tree> has a second scenario titled "Apply a code"
     When the agent runs features verify-moved --from old
     Then it names "Apply a code" as a duplicate
     And it exits 1
@@ -227,7 +227,7 @@ Feature: Feature file tools
     Only the deprecated scenario's block goes; the rest of the file stays as it was.
     Given a feature file features/cart.feature with a scenario "Empty cart" and a scenario "Apply a code (deprecated)" tagged @deprecated
     When the agent runs features retire "Apply a code (deprecated)"
-    Then features/cart.feature no longer holds "Apply a code (deprecated)"
+    Then features/cart.feature no longer has "Apply a code (deprecated)"
     And the rest of features/cart.feature is as it was
 
   @r24
@@ -338,8 +338,8 @@ Feature: Feature file tools
     And no test module is changed
 
   @r35
-  Scenario Outline: moving a title that no file or several files hold is refused
-    Without --file, a move, deprecate or retire needs the title in exactly one file; a refusal names every file that holds it.
+  Scenario Outline: moving a title that no file or several files have is refused
+    Without --file, a move, deprecate or retire needs the title in exactly one file; a refusal names every file that has it.
     Given <holders> the title "Apply a code"
     When the agent runs features move "Apply a code" --to features/codes.feature without --file
     Then the command is rejected because <reason>
@@ -348,8 +348,8 @@ Feature: Feature file tools
 
     Examples:
       | holders                                                  | reason                       | named                                          |
-      | no feature file holds                                    | no file holds the title      | no file                                        |
-      | features/cart.feature and features/old.feature both hold | several files hold the title | features/cart.feature and features/old.feature |
+      | no feature file has                                      | no file has the title        | no file                                        |
+      | features/cart.feature and features/old.feature both have | several files have the title | features/cart.feature and features/old.feature |
 
   @r46
   Scenario: moving a scenario to its own file is refused
@@ -403,15 +403,15 @@ Feature: Feature file tools
     Examples:
       | condition                                                                      | said                                      |
       | the scenario has no Deprecated for: line                                       | that it has no Deprecated for: line       |
-      | it is deprecated for "Apply a voucher", and "Apply a voucher" has no @r<n> tag | that the replacement carries no @r<n> tag |
+      | it is deprecated for "Apply a voucher", and "Apply a voucher" has no @r<n> tag | that the replacement has no @r<n> tag     |
 
   @r29
-  Scenario: rebinding to a title several feature files hold is refused
+  Scenario: rebinding to a title several feature files have is refused
     The new title must pick out one scenario.
     Given a test module binding "Apply a code"
-    And features/cart.feature and features/codes.feature both hold a scenario "Apply a voucher"
+    And features/cart.feature and features/codes.feature both have a scenario "Apply a voucher"
     When the agent runs features rebind "Apply a code" "Apply a voucher"
-    Then the command is rejected because several feature files hold the new title
+    Then the command is rejected because several feature files have the new title
     And no test module is changed
 
   @r29
@@ -441,31 +441,31 @@ Feature: Feature file tools
     And every other line of features/cart.feature is unchanged
 
   @r52
-  Scenario: --file works in that file only, whatever other files hold the title
-    A title two files hold is tagged in either file by naming it, and nothing else in either file changes.
+  Scenario: --file works in that file only, whatever other files have the title
+    A title two files have is tagged in either file by naming it, and nothing else in either file changes.
     tag is the example; deprecate, retire and move look for the title in the named file the same way.
-    Given features/cart.feature and features/old.feature both hold a scenario "Apply a code"
+    Given features/cart.feature and features/old.feature both have a scenario "Apply a code"
     When the agent runs features tag "Apply a code" r7 --file features/cart.feature
     Then the scenario "Apply a code" in features/cart.feature is tagged @r7
     And every other line of features/cart.feature is unchanged
     And features/old.feature is unchanged
 
   @r35
-  Scenario: --file naming a file that does not hold the title is refused
-    The file named must hold the title, or the command stops.
+  Scenario: --file naming a file that does not have the title is refused
+    The file named must have the title, or the command stops.
     Given a feature file features/cart.feature without a scenario "Voucher"
-    And features/codes.feature holds a scenario "Voucher"
+    And features/codes.feature has a scenario "Voucher"
     When the agent runs features tag "Voucher" r7 --file features/cart.feature
-    Then the command is rejected because the file does not hold the title
+    Then the command is rejected because the file does not have the title
     And the refusal names features/cart.feature
     And no file is changed
 
   @r35
-  Scenario: --file naming a file that holds the title twice is refused
+  Scenario: --file naming a file that has the title twice is refused
     Two scenarios with the title in the file named leave no one scenario to work on.
     Given a feature file features/cart.feature with two scenarios "Apply a code"
     When the agent runs features tag "Apply a code" r7 --file features/cart.feature
-    Then the command is rejected because the file holds the title twice
+    Then the command is rejected because the file has the title twice
     And the refusal names features/cart.feature
     And no file is changed
 
@@ -479,8 +479,8 @@ Feature: Feature file tools
 
   @r56
   Scenario: rebind --file rewrites only the bindings whose feature names that file
-    After one of two files holding a title is held, only the bindings of that file follow it.
+    After the scenario in one of two files with a title is deprecated, only the bindings of that file follow it.
     Given tests binding "Apply a code" to features/cart.feature and to features/old.feature
-    When the agent runs features rebind "Apply a code" "Apply a code (held)" --file features/cart.feature
-    Then the binding to features/cart.feature names "Apply a code (held)"
+    When the agent runs features rebind "Apply a code" "Apply a code (deprecated)" --file features/cart.feature
+    Then the binding to features/cart.feature names "Apply a code (deprecated)"
     And the binding to features/old.feature is unchanged

@@ -32,9 +32,9 @@ contract:
     feature tags the destination's feature tags lack go on a tag line of their
     own above the Scenario: line, at its indentation.
   - tag, deprecate, retire and move take --file <path>: the command works in that
-    file only, whatever other files hold the title. It refuses, naming the
-    file and changing no file, a file that does not hold the title, a file
-    that holds it twice, and a file outside --dir. Without --file a title in
+    file only, whatever other files have the title. It refuses, naming the
+    file and changing no file, a file that does not have the title, a file
+    that has it twice, and a file outside --dir. Without --file a title in
     several files is refused, as above.
   - verify-moved compares, by title, each scenario's effective tags, its
     description, and its Background steps followed by its own steps, all
@@ -78,7 +78,7 @@ EXAMPLES = re.compile(r"(Examples|Scenarios):")
 REQ_TAG = re.compile(r"r\d+$")
 
 
-FILE_HELP = "work in this file only, whatever other files hold the title"
+FILE_HELP = "work in this file only, whatever other files have the title"
 
 
 class Refused(Exception):
@@ -236,11 +236,11 @@ def locate_in(files, title, only, directory):
         if os.path.realpath(path) == target:
             hits = [sc for sc in f.scenarios if sc.title == title]
             if len(hits) > 1:
-                raise Refused("%s holds the title %r twice" % (only, title))
+                raise Refused("%s has the title %r twice" % (only, title))
             if hits:
                 return path, f, hits[0]
             break
-    raise Refused("%s does not hold the title %r" % (only, title))
+    raise Refused("%s does not have the title %r" % (only, title))
 
 
 def natural(tag):

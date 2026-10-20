@@ -412,7 +412,7 @@ class ScenarioTest(Workspace, unittest.TestCase):
         self.assertIn("not tagged @deprecated", self.refused("retire", "Apply a code"))
 
     def test_moving_a_title_that_no_file_or_several_files_hold_is_refused(self):
-        """moving a title that no file or several files hold is refused"""
+        """moving a title that no file or several files have is refused"""
         for holders, says, named in (([], "no scenario titled 'Apply a code'", []),
                                      (["cart", "old"], "several", ["features/cart.feature", "features/old.feature"])):
             with self.subTest(holders):
