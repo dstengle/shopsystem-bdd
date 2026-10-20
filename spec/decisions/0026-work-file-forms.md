@@ -1,6 +1,6 @@
 ---
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/work-file-forms
-summary: "Initiatives, parts and records are Markdown files whose frontmatter carries the grammar's fields, in the forms `model --help` states."
+summary: "Initiatives, parts and records are Markdown files whose frontmatter has the grammar's fields, in the forms `model --help` states."
 date: 2026-10-15
 status: accepted
 by: "docs/design-model/design-model.md v3 section 8"

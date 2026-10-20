@@ -6,15 +6,15 @@ status: accepted
 by: "0.7.0 (a53d21b); README, Agents"
 ---
 
-# 0020. Rules held by agent tools
+# 0020. Rules enforced by agent tools
 
 ## Decision
 
-Agents: capability-writer, feature-formulator, initiative-round, code-scout, bdd-implementer, bdd-task-reviewer, bdd-branch-reviewer, architecture-reviewer, each with its tool list. What a tool list cannot hold (no push, one write path) stays a request, or `permissions.deny` in the consuming repository.
+Agents: capability-writer, feature-formulator, initiative-round, code-scout, bdd-implementer, bdd-task-reviewer, bdd-branch-reviewer, architecture-reviewer, each with its tool list. What a tool list cannot enforce (no push, one write path) stays a request, or `permissions.deny` in the consuming repository.
 
 ## Context
 
-Rules asked of a general-purpose agent did not hold.
+Rules asked of a general-purpose agent were not kept.
 
 ## Alternatives
 

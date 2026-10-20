@@ -32,4 +32,4 @@ paths are reported as file problems. `scripts/migrate` is the one place that kno
 plugin writes nothing under `docs/superpowers/` or `.superpowers/`.
 
 This replaces design-decision/plugin-adopts-the-design-model, whose layout put decisions, work and records at
-the top level. Its other half stands, restated here: grammar.md's rules hold over these files.
+the top level. Its other half stands, restated here: grammar.md's rules apply to these files.

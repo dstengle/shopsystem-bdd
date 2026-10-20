@@ -23,4 +23,4 @@ Keep rounds in the person's session.
 
 ## Consequences
 
-Each round costs about 6k more output tokens; it saves nothing in a session that holds little.
+Each round costs about 6k more output tokens; it saves nothing in a session with little in its context.

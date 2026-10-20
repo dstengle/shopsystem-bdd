@@ -15,6 +15,6 @@ by: "docs/design-model/design-model.md v3 section 3, the work-item; (Lands excee
 The file set names every file the work-item changes. `work run` never runs two implementers whose sets share a
 path. Each implementer works in `.shop/worktrees/<work-item>/` on a branch from the initiative branch's head; `work
 run` rebases it, tests it there and merges it fast-forward. A file the implementer finds it needs is claimed with
-`work claim`, which refuses one a claimed item holds; the implementer then stops, and the item waits. Where a
+`work claim`, which refuses one a claimed item has; the implementer then stops, and the item waits. Where a
 worktree needs its own environment, `delivery.toml`'s `[worktree] setup` command makes it. Sizing scouts and the
 Lands line go; the implementer's 15-file dispatch budget and `PARTIAL` stay.

@@ -12,7 +12,7 @@ by: "0.9.0 (d0abe14)"
 
 ## Decision
 
-Each task carries `Review:` and `Model:`. Per-task review on Opus for the named risks; `batch-end` and Sonnet for everything else. The branch review runs every batch.
+Each task has `Review:` and `Model:`. Per-task review on Opus for the named risks; `batch-end` and Sonnet for everything else. The branch review runs every batch.
 
 ## Context
 

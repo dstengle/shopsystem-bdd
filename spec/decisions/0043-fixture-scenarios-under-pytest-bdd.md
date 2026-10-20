@@ -13,7 +13,7 @@ by: "(its open question); /home/vscode/scratch/shopsystem-bdd/ids/ (make_ids.py,
 
 ## Decision
 
-A workflow capability's feature file carries the feature tag `@fixture`; pytest-bdd makes it the marker
+A workflow capability's feature file has the feature tag `@fixture`; pytest-bdd makes it the marker
 `fixture`, and the repository's `pytest.ini` has `addopts = -m "not fixture"`, so `python3 -m pytest` runs the
 unit suite only. `python3 -m pytest -m fixture [path]` runs them. The harness is test code under `tests/workflow/`:
 fixture cases (a builder that makes a throwaway repository and the prompt the session is given), the run (`claude

@@ -11,7 +11,7 @@ by: "docs/design-model/ (v3); section 4"
 
 ## Decision
 
-The plugin's own design lives in `spec/` (capabilities with requirement ids), `decisions/` (one file each, `spec/decisions.md` generated), `work/` (initiatives and parts) and `records/` (observations, measurements, review-findings, archive). `docs/design-model/` holds the model it follows. History that was under `docs/superpowers/` is under `records/`.
+The plugin's own design lives in `spec/` (capabilities with requirement ids), `decisions/` (one file each, `spec/decisions.md` generated), `work/` (initiatives and parts) and `records/` (observations, measurements, review-findings, archive). `docs/design-model/` contains the model it follows. History that was under `docs/superpowers/` is under `records/`.
 
 ## Context
 

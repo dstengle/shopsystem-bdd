@@ -10,7 +10,7 @@ source: [decision-argument/2026-09-22-bdd-workflow-design]
 
 ## Decision
 
-Under bdd-red-green no `.feature` file is opened for writing; the one exception is `features retire` of a held scenario the task lists under `Retires:`. A stop condition is observed by a test run, and handing back means a HAND-BACK log entry, a commit of what exists, and a report.
+Under bdd-red-green no `.feature` file is opened for writing; the one exception is `features retire` of a deprecated scenario the task lists under `Retires:`. A stop condition is observed by a test run, and handing back means a HAND-BACK log entry, a commit of what exists, and a report.
 
 ## Context
 

@@ -11,7 +11,7 @@ by: "0.11.0, 0.13.0"
 
 ## Decision
 
-Each task carries "Tests the decisions break": the test, the decisions, and whether it is rewritten (to assert what), deferred (with the slice that brings it back) or a question for the spec. An implementer may change what a test asserts only when it is listed. Two allowances (0.13.0): a test's setup changed with no assertion touched, and a test first committed after the task's batch base rewritten; each is reported.
+Each task has "Tests the decisions break": the test, the decisions, and whether it is rewritten (to assert what), deferred (with the slice that brings it back) or a question for the spec. An implementer may change what a test asserts only when it is listed. Two allowances (0.13.0): a test's setup changed with no assertion touched, and a test first committed after the task's batch base rewritten; each is reported.
 
 ## Context
 

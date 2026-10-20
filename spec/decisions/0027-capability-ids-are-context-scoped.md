@@ -24,4 +24,4 @@ The context path first for capabilities (`<context path>/<name>`), the earlier f
 
 ## Consequences
 
-Every existing id is renamed once, by a mechanical migration that changes no content; that is a migration, not an edit of an accepted decision or observation. A name that once held a `/` is renamed with `-`. Consuming repositories migrate their `decision/<name>` references and ledger headings to `design-decision/<name>`. i3 teaches the same form, each repository with its own owner, product and context name. grammar.md's RID, and whether a type can require part names of the form `r<n>`, go with the model to shopsystem-knowledge.
+Every existing id is renamed once, by a mechanical migration that changes no content; that is a migration, not an edit of an accepted decision or observation. A name that once contained a `/` is renamed with `-`. Consuming repositories migrate their `decision/<name>` references and ledger headings to `design-decision/<name>`. i3 teaches the same form, each repository with its own owner, product and context name. grammar.md's RID, and whether a type can require part names of the form `r<n>`, go with the model to shopsystem-knowledge.

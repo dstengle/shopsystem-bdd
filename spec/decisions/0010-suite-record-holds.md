@@ -6,11 +6,11 @@ status: accepted
 by: "0.10.0 (72d33af)"
 ---
 
-# 0010. Suite record holds
+# 0010. A suite record stays valid
 
 ## Decision
 
-`Suite: <N> passed, <M> failed[, <X> expected] at <hash> in <s> s`. Whoever needs the suite's result and finds a record that holds uses it. `plan show --last-suite --current` says whether it holds.
+`Suite: <N> passed, <M> failed[, <X> expected] at <hash> in <s> s`. Whoever needs the suite's result and finds a record that stays valid uses it. `plan show --last-suite --current` says whether it stays valid.
 
 ## Context
 

@@ -23,4 +23,4 @@ Resume the implementer for its fix round.
 
 ## Consequences
 
-Resuming in place of a fresh agent is held, with the measurement that would decide it.
+Resuming in place of a fresh agent is deferred, with the measurement that would decide it.

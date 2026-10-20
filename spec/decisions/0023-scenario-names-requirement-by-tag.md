@@ -10,7 +10,7 @@ by: "docs/design-model/design-model.md v3 section 2; grammar.md v3 rule 15"
 
 ## Decision
 
-A scenario carries exactly one tag `@r<n>`; the feature file it sits in is its capability's (`formulated_as`), so the tag resolves to `<capability>#r<n>`. Its title is free.
+A scenario has exactly one tag `@r<n>`; the feature file it sits in is its capability's (`formulated_as`), so the tag resolves to `<capability>#r<n>`. Its title is free.
 
 ## Context
 

@@ -35,4 +35,4 @@ in each implementer's brief; implementers do not log suite records.
 ## Consequences
 
 Two transitions are extensions against grammar.md v3, which has awaiting-ruling only from planned: a claimed item
-goes back to ready or to awaiting-ruling, so that a claim is never held by a stopped worker.
+goes back to ready or to awaiting-ruling, so that a claim is never kept by a stopped worker.

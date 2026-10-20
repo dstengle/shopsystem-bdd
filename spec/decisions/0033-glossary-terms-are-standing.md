@@ -15,11 +15,11 @@ Each bullet of `spec/index.md`'s Glossary, `- **<term>**: <definition>. Not: <wo
 
 ## Context
 
-The glossary was prose no tool read, so one thing could carry two names across capabilities without anything noticing.
+The glossary was prose no tool read, so one thing could have two names across capabilities without anything noticing.
 
 ## Alternatives
 
-A glossary kept as prose, judged only by a reviewing agent (no word is ever refused mechanically); terms as files under `decisions/` (a second place for what the index already holds).
+A glossary kept as prose, judged only by a reviewing agent (no word is ever refused mechanically); terms as files under `decisions/` (a second place for what the index already has).
 
 ## Consequences
 

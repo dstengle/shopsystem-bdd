@@ -13,7 +13,7 @@ by: "docs/design-model/design-model.md v3 section 2 (step definitions are code, 
 
 ## Decision
 
-A feature file in this repository holds the acceptance-scenarios of one capability, each tagged `@r<n>`. The test that executes a scenario is a `unittest` test under `tests/scripts/` whose docstring is the scenario's title. For each feature file, one test fails when a scenario has no such test.
+A feature file in this repository contains the acceptance-scenarios of one capability, each tagged `@r<n>`. The test that executes a scenario is a `unittest` test under `tests/scripts/` whose docstring is the scenario's title. For each feature file, one test fails when a scenario has no such test.
 
 ## Context
 
