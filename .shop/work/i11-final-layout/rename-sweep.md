@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/rename-sweep
 kind: work-item
 part_of: capability-proposal/final-layout-feature-file-tools
-status: drafted
+status: green
 wkind: enabling
 for: work-item/deprecate-commands
 check: "grep -rniwE 'hold|holds|holding|held|superseded|carry|carries|carried|carrying' over skills/ agents/ docs/capability-format.md README.md scripts/model scripts/model.lp scripts/features scripts/tools spec/ features/ tests/scenarios/ prints only the exceptions this work-item lists; python3 scripts/model check exits 0 with no v_t1 row; python3 -m pytest passes"
