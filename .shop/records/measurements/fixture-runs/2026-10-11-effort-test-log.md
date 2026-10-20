@@ -1,3 +1,10 @@
+---
+id: measurement/missingmass.io/shopsystem/shopsystem-bdd/2026-10-11-effort-test-log
+kind: measurement
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-10-11
+---
+
 # Effort: test log (0.17.0)
 
 The change: `effort: low` in `agents/code-scout.md`, and `measure` recording each dispatch's effort and reasoning

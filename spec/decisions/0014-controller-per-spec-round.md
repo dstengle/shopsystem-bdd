@@ -3,7 +3,8 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/controller-per-spec
 summary: "A fresh initiative-round agent runs each integration, apply or formulation round; the session the person talks to keeps the gate and nothing else."
 date: 2026-10-12
 status: accepted
-source: "0.18.0 (e3c846d); records/measurements/fixture-runs/2026-10-12-spec-round-test-log.md"
+source: [measurement/2026-10-12-spec-round-test-log]
+by: "0.18.0 (e3c846d)"
 ---
 
 # 0014. Controller per spec round

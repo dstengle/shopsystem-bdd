@@ -5,7 +5,8 @@ date: 2026-10-11
 status: accepted
 revisit_when: "the controller's share of a measured batch's cache reads stays above 40%"
 revisit_signal: measurement/kb-batches-32-35
-source: "records/archive/design-notes/2026-10-11-rules-adjusted-design.md; 0.13.0"
+source: [decision-argument/2026-10-11-rules-adjusted-design]
+by: "0.13.0"
 ---
 
 # 0013. One batch one session

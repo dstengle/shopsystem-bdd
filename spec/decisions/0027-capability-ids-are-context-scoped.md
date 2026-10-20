@@ -3,7 +3,7 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/capability-ids-are-
 summary: "Ids are type-first: <kind>/<context path>/<name>, with the design model's kind names; the context is bounded-context/missingmass.io/shopsystem/shopsystem-bdd, a requirement capability/<path>/<name>#r<n>, short forms <kind>/<name> and, where a field fixes the kind, <name>."
 date: 2026-10-17
 status: accepted
-source: "the person's direction, 2026-10-17; shopsystem-knowledge decision/an-artifacts-iri-is-its-types-then-its-owners-path (adrs/0073) and decision/names-are-iris-printed-short; shopsystem-kb decision/iri-grammar; docs/design-model/grammar.md v3 section 6"
+by: "the person's direction, 2026-10-17; shopsystem-knowledge decision/an-artifacts-iri-is-its-types-then-its-owners-path (adrs/0073) and decision/names-are-iris-printed-short; shopsystem-kb decision/iri-grammar; docs/design-model/grammar.md v3 section 6"
 ---
 
 # 0027. Ids are type-first

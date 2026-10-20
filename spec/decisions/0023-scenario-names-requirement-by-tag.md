@@ -3,7 +3,7 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/scenario-names-requ
 summary: "An acceptance-scenario names its requirement with a tag @r<n> in its capability's own feature file."
 date: 2026-10-15
 status: accepted
-source: "docs/design-model/design-model.md v3 section 2; grammar.md v3 rule 15"
+by: "docs/design-model/design-model.md v3 section 2; grammar.md v3 rule 15"
 ---
 
 # 0023. Scenario names requirement by tag

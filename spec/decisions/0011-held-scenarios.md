@@ -3,7 +3,8 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/held-scenarios
 summary: "A scenario that passes today is held, tagged @holding, when its line is re-worded or removed, and retired by the slice that turns its replacement green."
 date: 2026-10-11
 status: accepted
-source: "records/archive/design-notes/2026-10-11-green-suite-design.md; 0.14.0"
+source: [decision-argument/2026-10-11-green-suite-design]
+by: "0.14.0"
 ---
 
 # 0011. Held scenarios

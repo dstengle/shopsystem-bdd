@@ -1,3 +1,10 @@
+---
+id: initiative-archive/missingmass.io/shopsystem/shopsystem-bdd/2026-10-10-small-slices-and-steps-request
+kind: initiative-archive
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-10-10
+---
+
 # Proposal: slices small enough for one agent, and tasks run as steps
 
 From a kb session, 2026-10-10, for a shopsystem-bdd session to brainstorm into a design and release (0.11.0

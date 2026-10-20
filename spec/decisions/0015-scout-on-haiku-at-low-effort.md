@@ -3,7 +3,8 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/scout-on-haiku-at-l
 summary: "code-scout runs on Haiku at low effort."
 date: 2026-10-11
 status: accepted
-source: "0.11.0, 0.17.0 (a84031a); records/measurements/fixture-runs/2026-10-11-effort-test-log.md"
+source: [measurement/2026-10-11-effort-test-log]
+by: "0.11.0, 0.17.0 (a84031a)"
 ---
 
 # 0015. Scout on haiku at low effort

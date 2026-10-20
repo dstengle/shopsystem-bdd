@@ -5,7 +5,8 @@ date: 2026-10-10
 status: accepted
 revisit_when: "the Lands count is exceeded in more than half of a measured batch's slices"
 revisit_signal: measurement/kb-batches-32-35
-source: "records/archive/design-notes/2026-10-10-small-slices-and-steps-design.md; 0.11.0"
+source: [decision-argument/2026-10-10-small-slices-and-steps-design]
+by: "0.11.0"
 ---
 
 # 0008. Slice budget refused by plan

@@ -4,7 +4,8 @@ summary: "scripts/work run pulls an initiative's work-items through their stages
 date: 2026-10-19
 status: proposed
 supersedes: design-decision/one-batch-one-session
-source: "initiative/i10; review-finding/2026-10-13-kb-and-bdd-assessment, sections 3 and 4; measurement/kb-batches-32-35"
+source: [initiative/i10, review-finding/2026-10-13-kb-and-bdd-assessment, measurement/kb-batches-32-35]
+by: "sections 3 and 4"
 ---
 
 # 0037. A script supervises delivery

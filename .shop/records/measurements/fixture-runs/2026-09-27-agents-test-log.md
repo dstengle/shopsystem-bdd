@@ -1,3 +1,10 @@
+---
+id: measurement/missingmass.io/shopsystem/shopsystem-bdd/2026-09-27-agents-test-log
+kind: measurement
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-09-27
+---
+
 # Test log: agents for each role (0.7.0)
 
 **Baseline.** Before 0.7.0, a controller dispatched `general-purpose` agents for implementers and reviewers, and each rule of the role was asked for in the dispatch prompt:

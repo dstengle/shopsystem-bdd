@@ -3,7 +3,8 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/held-scenario-formu
 summary: "A held scenario keeps the @r<n> tag it had, as the trace of the line it was, and is no acceptance-scenario: model check reads it as none."
 date: 2026-10-16
 status: accepted
-source: "work/i3-requirement-ids/initiative.md (its open question); design-decision/held-scenarios"
+source: [initiative/i3, design-decision/held-scenarios]
+by: "(its open question)"
 ---
 
 # 0031. A held scenario formulates no requirement

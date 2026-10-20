@@ -5,7 +5,7 @@ date: 2026-10-10
 status: accepted
 revisit_when: "a measured batch runs an agent on a model other than its definition's in more than half of its dispatches"
 revisit_signal: measurement/kb-batches-32-35
-source: "README, Models; agents/*.md"
+by: "README, Models; agents/*.md"
 ---
 
 # 0021. Model pinned in agent definitions

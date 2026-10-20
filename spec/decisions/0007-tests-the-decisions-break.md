@@ -3,7 +3,8 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/tests-the-decisions
 summary: "A task lists every existing test its decisions make impossible to keep and what becomes of each; any other test an implementer would weaken is BLOCKED."
 date: 2026-10-10
 status: accepted
-source: "records/archive/design-notes/2026-10-10-small-slices-and-steps-design.md; records/archive/design-notes/2026-10-11-rules-adjusted-design.md; 0.11.0, 0.13.0"
+source: [decision-argument/2026-10-10-small-slices-and-steps-design, decision-argument/2026-10-11-rules-adjusted-design]
+by: "0.11.0, 0.13.0"
 ---
 
 # 0007. Tests the decisions break

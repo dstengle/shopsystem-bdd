@@ -5,7 +5,8 @@ date: 2026-10-16
 status: accepted
 revisit_when: "a scenario's runs disagree often enough that its verdict changes from one suite run to the next"
 revisit_signal: requests
-source: "work/i1-first-spec/initiative.md, question 1; the person, 2026-10-16; records/measurements/fixture-runs/"
+source: [initiative/i1]
+by: "question 1; the person, 2026-10-16; records/measurements/fixture-runs/"
 ---
 
 # 0030. Workflow scenarios run as fixture sessions

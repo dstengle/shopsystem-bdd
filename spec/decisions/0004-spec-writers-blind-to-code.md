@@ -3,7 +3,8 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/spec-writers-blind-
 summary: "The capability-writer and feature-formulator read only spec/, features/ and the brief's notes, and write only drafts."
 date: 2026-09-27
 status: accepted
-source: "records/archive/design-notes/2026-09-22-bdd-workflow-design.md; 0.7.0 (a53d21b); 0.10.0"
+source: [decision-argument/2026-09-22-bdd-workflow-design]
+by: "0.7.0 (a53d21b); 0.10.0"
 ---
 
 # 0004. Spec writers blind to code

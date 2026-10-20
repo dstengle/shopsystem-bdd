@@ -1,3 +1,10 @@
+---
+id: measurement/missingmass.io/shopsystem/shopsystem-bdd/2026-10-06-slicing-efficiency-test-log
+kind: measurement
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-10-06
+---
+
 # Test log: slicing takes the suite record, cuts the fast suite first, probes dependencies, edits through the scripts
 
 Headless runs: cwd the fixture, `claude -p --model opus --plugin-dir <this checkout>`, superpowers from the installed marketplace, stream-json transcripts, `$SCRATCH/fixtures/stock/bin` first on `PATH`. No run read a file of this repository outside `skills/`, `agents/` and `scripts/`.

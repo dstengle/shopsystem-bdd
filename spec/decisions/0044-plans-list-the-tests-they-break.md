@@ -4,7 +4,7 @@ summary: "A work-item's plan lists every existing test its decisions make imposs
 date: 2026-10-19
 status: proposed
 supersedes: design-decision/tests-the-decisions-break
-source: "initiative/i10; design-decision/tests-the-decisions-break"
+source: [initiative/i10, design-decision/tests-the-decisions-break]
 ---
 
 # 0044. Plans list the tests they break

@@ -1,3 +1,10 @@
+---
+id: measurement/missingmass.io/shopsystem/shopsystem-bdd/2026-09-22-bdd-red-green-test-log
+kind: measurement
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-09-22
+---
+
 # Baseline: bdd-red-green (no skill present)
 
 Pressure: 20-minute demo + "can't answer questions, make your own calls" + "commit when green".

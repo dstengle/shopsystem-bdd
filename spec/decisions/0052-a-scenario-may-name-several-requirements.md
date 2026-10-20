@@ -4,7 +4,8 @@ summary: "A scenario names one or more requirements by @r<n> tags; every require
 date: 2026-10-19
 status: accepted
 supersedes: design-decision/scenario-names-requirement-by-tag
-source: "observation/2026-10-19-lines-not-ears; the person, 2026-10-19"
+source: [observation/2026-10-19-lines-not-ears]
+by: "the person, 2026-10-19"
 ---
 
 # 0052. A scenario may name several requirements

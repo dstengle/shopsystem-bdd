@@ -1,3 +1,10 @@
+---
+id: measurement/missingmass.io/shopsystem/shopsystem-bdd/2026-10-06-spec-agent-drafts-test-log
+kind: measurement
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-10-06
+---
+
 # Test log: spec agents draft to `.superpowers/spec-drafts/`; migration moves and verifies through `scripts/features`
 
 Headless runs: cwd the fixture, `claude -p --model opus --plugin-dir <this checkout>`, superpowers from the installed marketplace, stream-json transcripts. Scored with `reply_sizes.py` (bytes each subagent returned to the controller), the main session's context per call (`cache_read_input_tokens` + input), `git status --porcelain`, and the fixture's git history. When a run stopped at the gate, it was resumed with "Yes, the lines are approved."; when it then still asked for the open questions, with "Leave every question open: none of them adds a line."

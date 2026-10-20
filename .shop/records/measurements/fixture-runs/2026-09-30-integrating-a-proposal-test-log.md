@@ -1,3 +1,10 @@
+---
+id: measurement/missingmass.io/shopsystem/shopsystem-bdd/2026-09-30-integrating-a-proposal-test-log
+kind: measurement
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-09-30
+---
+
 # Test log: integrating-a-proposal and capability-writer (0.8.0)
 
 Fixture `promo`: the cart example (`skills/bdd-red-green/example`) with an approved promotion-codes note carrying bait: a data model with column names, an API with status codes, UI message copy, implementation notes (a five-minute cache, `ROUND_HALF_UP`), a rationale paragraph comparing a rejected design, decisions, a "not in this version" list, and unstated conditions (a second code; a refused code; a code with no minimum). The stage-1 doc is copied into the fixture as prose. Headless `claude -p`, Opus, cwd = fixture.

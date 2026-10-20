@@ -1,3 +1,10 @@
+---
+id: measurement/missingmass.io/shopsystem/shopsystem-bdd/2026-10-11-rules-adjusted-test-log
+kind: measurement
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-10-11
+---
+
 # Rules adjusted: test log (0.13.0)
 
 Spec: `docs/superpowers/specs/2026-10-11-rules-adjusted-design.md`. Scripts: 70 OK, unchanged.

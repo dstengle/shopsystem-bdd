@@ -5,7 +5,8 @@ date: 2026-10-19
 status: proposed
 revisit_when: "a fixture scenario's verdict changes between two suite runs on one plugin tree"
 revisit_signal: requests
-source: "design-decision/workflow-scenarios-run-as-fixture-sessions (its open question); /home/vscode/scratch/shopsystem-bdd/ids/ (make_ids.py, score.py, run.sh)"
+source: [design-decision/workflow-scenarios-run-as-fixture-sessions]
+by: "(its open question); /home/vscode/scratch/shopsystem-bdd/ids/ (make_ids.py, score.py, run.sh)"
 ---
 
 # 0043. Fixture scenarios run under pytest-bdd

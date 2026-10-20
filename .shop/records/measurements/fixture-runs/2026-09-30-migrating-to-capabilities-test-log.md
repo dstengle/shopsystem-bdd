@@ -1,3 +1,10 @@
+---
+id: measurement/missingmass.io/shopsystem/shopsystem-bdd/2026-09-30-migrating-to-capabilities-test-log
+kind: measurement
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-09-30
+---
+
 # Test log: migrating-to-capabilities (0.8.0)
 
 Harness check (throwaway, scratchpad): `check_invariant.py <before> <after>` compares, as multisets, every scenario's title, description, tags and effective steps (Background then its own, Examples included) over `features/**`, the suite's summary line (warnings aside), the passing tests by name, and the collected count for every `@slice-<n>` tag. Negative control: one changed Then line → `INVARIANT BROKEN`.

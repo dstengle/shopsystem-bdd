@@ -1,3 +1,10 @@
+---
+id: measurement/missingmass.io/shopsystem/shopsystem-bdd/2026-10-17-ubiquitous-language-test-log
+kind: measurement
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-10-17
+---
+
 # A ubiquitous language: test log (0.20.0)
 
 Branch `0.20.0-ubiquitous-language`, commits `25aaec3` to the release commit. Plugin B for the runs is a detached

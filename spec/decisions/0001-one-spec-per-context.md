@@ -3,7 +3,8 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/one-spec-per-contex
 summary: "A bounded context has one spec: spec/index.md, the decisions, and one file per capability, each paired by name with one feature file."
 date: 2026-09-29
 status: accepted
-source: "records/archive/design-notes/2026-09-29-capability-spec-design.md; 0.8.0 (d034b50)"
+source: [decision-argument/2026-09-29-capability-spec-design]
+by: "0.8.0 (d034b50)"
 ---
 
 # 0001. One spec per context

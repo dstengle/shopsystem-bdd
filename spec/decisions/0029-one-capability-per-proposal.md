@@ -3,7 +3,8 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/one-capability-per-
 summary: "A capability-proposal argues exactly one capability; a capability-change initiative may hold several, each passing the gate and reaching formulated on its own."
 date: 2026-10-16
 status: accepted
-source: "observation/2026-10-15-proposal-argues-many; the person, 2026-10-16"
+source: [observation/2026-10-15-proposal-argues-many]
+by: "the person, 2026-10-16"
 ---
 
 # 0029. One capability per proposal

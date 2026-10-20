@@ -4,7 +4,8 @@ summary: "A worker is a fresh session given one brief file, and its outcome is a
 date: 2026-10-19
 status: proposed
 supersedes: design-decision/fresh-agents-short-replies
-source: "initiative/i10; design-decision/fresh-agents-short-replies; records/measurements/fixture-runs/2026-10-12-spec-round-test-log.md (reply files)"
+source: [initiative/i10, design-decision/fresh-agents-short-replies, measurement/2026-10-12-spec-round-test-log]
+by: "(reply files)"
 ---
 
 # 0038. Worker results are files

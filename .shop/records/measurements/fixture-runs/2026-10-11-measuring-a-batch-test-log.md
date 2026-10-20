@@ -1,3 +1,10 @@
+---
+id: measurement/missingmass.io/shopsystem/shopsystem-bdd/2026-10-11-measuring-a-batch-test-log
+kind: measurement
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-10-11
+---
+
 # Measuring a batch: test log (0.12.0)
 
 Spec: `docs/superpowers/specs/2026-10-11-measuring-a-batch-design.md`.

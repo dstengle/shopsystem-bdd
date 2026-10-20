@@ -5,7 +5,7 @@ date: 2026-10-01
 status: accepted
 revisit_when: "more than half of a measured batch's per-task reviews come back clean"
 revisit_signal: measurement/kb-batches-32-35
-source: "0.9.0 (d0abe14)"
+by: "0.9.0 (d0abe14)"
 ---
 
 # 0009. Review by risk

@@ -5,7 +5,7 @@ date: 2026-10-07
 status: accepted
 revisit_when: "a script needs an engine the standard library lacks"
 revisit_signal: requests
-source: "0.10.0 (72d33af); README, Scripts"
+by: "0.10.0 (72d33af); README, Scripts"
 ---
 
 # 0017. Scripts stdlib only

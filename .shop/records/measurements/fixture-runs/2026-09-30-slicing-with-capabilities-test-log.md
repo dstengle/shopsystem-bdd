@@ -1,3 +1,10 @@
+---
+id: measurement/missingmass.io/shopsystem/shopsystem-bdd/2026-09-30-slicing-with-capabilities-test-log
+kind: measurement
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-09-30
+---
+
 # Test log: slicing and the agents read spec/ (0.8.0)
 
 Fixture `promo-4`: the formulated promo fixture (formg-1) with an approved bound in `spec/index.md` ("applying a code to a cart of 10 lines returns within 200 ms", its own integration commit), a slice plan with slice 1 (expiry) in progress, and a HAND-BACK: the shop's clock runs in UTC, the shop is in London, and neither the scenario nor any Behaviour line says whose date "on its expiry date" means. Prompt: "Slice 1 was handed back; … Re-plan the remaining work and carry on as far as the workflow goes without me. Do not start implementation; stop at writing-plans or wherever the workflow needs me."

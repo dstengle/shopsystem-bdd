@@ -1,3 +1,10 @@
+---
+id: measurement/missingmass.io/shopsystem/shopsystem-bdd/2026-10-12-spec-round-test-log
+kind: measurement
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-10-12
+---
+
 # A controller for each spec round: test log (0.18.0)
 
 From: `/home/vscode/shopsystem-knowledge/docs/superpowers/reports/2026-10-12-batch19-analysis.md`, its third

@@ -1,3 +1,10 @@
+---
+id: measurement/missingmass.io/shopsystem/shopsystem-bdd/2026-09-27-no-code-plans-and-settled-scenarios-test-log
+kind: measurement
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-09-27
+---
+
 # Test log: plans carry no code; spec-settled scenarios need no approval (0.6.0)
 
 Two changes, each with a headless baseline on the cart fixture (cwd = fixture, both plugins via --plugin-dir, Opus) before the skill was edited, then the same prompt again after.

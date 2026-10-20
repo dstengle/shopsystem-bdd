@@ -5,7 +5,8 @@ date: 2026-10-15
 status: rejected
 revisit_when: "a capability's scenarios need Given/When/Then steps shared across tests"
 revisit_signal: requests
-source: "design-decision/scripts-stdlib-only; docs/design-model/design-model.md v3 section 2 (step definitions are code, outside the model)"
+source: [design-decision/scripts-stdlib-only]
+by: "docs/design-model/design-model.md v3 section 2 (step definitions are code, outside the model)"
 ---
 
 # 0028. Plugin scenarios run as unittest

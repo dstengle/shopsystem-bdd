@@ -1,3 +1,10 @@
+---
+id: decision-argument/missingmass.io/shopsystem/shopsystem-bdd/2026-10-17-type-first-ids-and-ubiquitous-language-design
+kind: decision-argument
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-10-17
+---
+
 # Type-first ids and a ubiquitous language: design
 
 Date: 2026-10-17. Agreed with the person in conversation on 2026-10-16/17. Two releases:

@@ -4,7 +4,8 @@ summary: "The spec consistency check runs when the person asks for it; integrati
 date: 2026-10-17
 status: accepted
 revisit_when: "a measured batch shows drift the on-demand check would have caught"
-source: "docs/superpowers/specs/2026-10-17-type-first-ids-and-ubiquitous-language-design.md, Part 2"
+source: [decision-argument/2026-10-17-type-first-ids-and-ubiquitous-language-design]
+by: "Part 2"
 ---
 
 # 0034. The consistency check runs on demand

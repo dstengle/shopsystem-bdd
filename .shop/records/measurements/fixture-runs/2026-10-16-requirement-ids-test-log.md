@@ -1,3 +1,10 @@
+---
+id: measurement/missingmass.io/shopsystem/shopsystem-bdd/2026-10-16-requirement-ids-test-log
+kind: measurement
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-10-16
+---
+
 # Requirement ids: test log (0.19.0)
 
 Branch `0.19.0-requirement-ids`, commits `9038634` to the release commit. Scripts: 307 tests, OK.

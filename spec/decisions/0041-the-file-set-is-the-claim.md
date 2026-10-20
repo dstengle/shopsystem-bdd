@@ -4,7 +4,8 @@ summary: "A work-item's file set, found by its researcher and finalised by its p
 date: 2026-10-19
 status: proposed
 supersedes: design-decision/slice-budget-refused-by-plan
-source: "initiative/i10; docs/design-model/design-model.md v3 section 3, the work-item; measurement/kb-batches-32-35 (Lands exceeded in 15 of 23 slices)"
+source: [initiative/i10, measurement/kb-batches-32-35]
+by: "docs/design-model/design-model.md v3 section 3, the work-item; (Lands exceeded in 15 of 23 slices)"
 ---
 
 # 0041. The file set is the claim

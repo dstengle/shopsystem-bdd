@@ -1,3 +1,10 @@
+---
+id: initiative-archive/missingmass.io/shopsystem/shopsystem-bdd/2026-10-11-predictable-batches-and-analysis-tools
+kind: initiative-archive
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-10-11
+---
+
 # Proposal: predictable batches, and analysis tools in place of grep and hand probes
 
 From a kb session, 2026-10-10 to 2026-10-11, for a shopsystem-bdd session to brainstorm into a design and release.

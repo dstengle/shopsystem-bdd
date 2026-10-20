@@ -1,3 +1,10 @@
+---
+id: measurement/missingmass.io/shopsystem/shopsystem-bdd/2026-09-22-slicing-into-increments-test-log
+kind: measurement
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-09-22
+---
+
 # Baseline: slicing-into-increments (no skill; headless, cwd = fixture, superpowers loaded)
 
 Fixture E: cart project, slice 1 done, cart.feature (3 unimplemented scenarios, one already green)

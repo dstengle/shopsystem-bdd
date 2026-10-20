@@ -1,3 +1,10 @@
+---
+id: measurement/missingmass.io/shopsystem/shopsystem-bdd/2026-10-11-research-probes-test-log
+kind: measurement
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-10-11
+---
+
 # Research probes: test log (0.16.0)
 
 Spec: `docs/superpowers/specs/2026-10-11-research-probes-design.md`. Scripts: 93 OK, unchanged.

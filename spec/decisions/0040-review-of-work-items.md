@@ -6,7 +6,8 @@ status: proposed
 supersedes: design-decision/review-by-risk
 revisit_when: "more than half of a measured initiative's task reviews find nothing to fix now"
 revisit_signal: requests
-source: "initiative/i10; design-decision/review-by-risk; measurement/kb-batches-32-35 (7 of 17 task reviews clean)"
+source: [initiative/i10, design-decision/review-by-risk, measurement/kb-batches-32-35]
+by: "(7 of 17 task reviews clean)"
 ---
 
 # 0040. Review of work-items

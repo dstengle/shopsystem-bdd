@@ -1,3 +1,10 @@
+---
+id: initiative-archive/missingmass.io/shopsystem/shopsystem-bdd/2026-10-11-research-probes-current-behaviour
+kind: initiative-archive
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-10-11
+---
+
 # Request: task research probes current behaviour (follow-up to predictable batches and analysis tools)
 
 From: shopsystem-kb, 2026-10-11, after batches 38 and 39 of its kb.v2 release. Applied locally in kb's batch 39; requested here so the plugin carries it.

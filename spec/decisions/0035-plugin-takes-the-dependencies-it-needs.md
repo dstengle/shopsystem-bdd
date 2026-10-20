@@ -4,7 +4,7 @@ summary: "The plugin and its scripts take the dependencies they need (clingo, py
 date: 2026-10-19
 status: accepted
 supersedes: design-decision/scripts-stdlib-only
-source: "the person, 2026-10-19"
+by: "the person, 2026-10-19"
 ---
 
 # 0035. The plugin takes the dependencies it needs

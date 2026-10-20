@@ -1,3 +1,10 @@
+---
+id: measurement/missingmass.io/shopsystem/shopsystem-bdd/2026-10-06-suite-runs-and-round-trips-test-log
+kind: measurement
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-10-06
+---
+
 # Test log: suite runs count once, rule-decided splits, behaviour defects never Minor
 
 Headless runs: cwd the fixture, `claude -p --model opus --plugin-dir <this checkout>`, superpowers from the installed marketplace, stream-json transcripts. No run read a file of this repository outside `skills/`, `agents/` and `scripts/`, so none was discarded.

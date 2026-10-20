@@ -1,3 +1,10 @@
+---
+id: decision-argument/missingmass.io/shopsystem/shopsystem-bdd/2026-09-29-capability-spec-design
+kind: decision-argument
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-09-29
+---
+
 # Capability Spec Design
 
 Date: 2026-09-29

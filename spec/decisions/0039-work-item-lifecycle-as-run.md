@@ -4,7 +4,8 @@ summary: "work run moves work-items drafted → researched → planned → ready
 date: 2026-10-19
 status: proposed
 supersedes: design-decision/suite-record-holds
-source: "initiative/i10; docs/design-model/grammar.md v3 section 5"
+source: [initiative/i10]
+by: "docs/design-model/grammar.md v3 section 5"
 ---
 
 # 0039. The work-item lifecycle as work run runs it

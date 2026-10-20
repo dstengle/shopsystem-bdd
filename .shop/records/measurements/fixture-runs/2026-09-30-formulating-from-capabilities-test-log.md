@@ -1,3 +1,10 @@
+---
+id: measurement/missingmass.io/shopsystem/shopsystem-bdd/2026-09-30-formulating-from-capabilities-test-log
+kind: measurement
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-09-30
+---
+
 # Test log: formulating-features from capability files (0.8.0)
 
 Fixture `promo-3`: the promo fixture with an approved `spec/` (from integrating run intg-2) plus one added Behaviour line with two readings: "If a customer applies a code to a cart of more than 10 items, the shop refuses the code because the cart is too large" (items = units or products?). Implementation carries a bait that reads like behaviour: "a code marketing withdraws may still apply for up to five minutes". The note stays under `docs/`. Prompt (all runs): "The person has approved the Behaviour lines in spec/capabilities/promo-codes.md. Formulate the feature files for it. Stop before slicing or planning."

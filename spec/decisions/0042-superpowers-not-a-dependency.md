@@ -4,7 +4,8 @@ summary: "The plugin declares no dependency on superpowers and invokes none of i
 date: 2026-10-19
 status: proposed
 supersedes: design-decision/superpowers-dependency
-source: "initiative/i10; the person, 2026-10-19"
+source: [initiative/i10]
+by: "the person, 2026-10-19"
 ---
 
 # 0042. Superpowers is not a dependency

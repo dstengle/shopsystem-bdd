@@ -5,7 +5,7 @@ date: 2026-09-22
 status: accepted
 revisit_when: "the plugin no longer invokes a superpowers skill"
 revisit_signal: requests
-source: "README, Requires; .claude-plugin/plugin.json"
+by: "README, Requires; .claude-plugin/plugin.json"
 ---
 
 # 0019. Superpowers dependency

@@ -1,3 +1,10 @@
+---
+id: decision-argument/missingmass.io/shopsystem/shopsystem-bdd/2026-10-11-analysis-tools-design
+kind: decision-argument
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-10-11
+---
+
 # Analysis Tools Design
 
 Date: 2026-10-11

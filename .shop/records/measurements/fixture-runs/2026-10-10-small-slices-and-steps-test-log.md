@@ -1,3 +1,10 @@
+---
+id: measurement/missingmass.io/shopsystem/shopsystem-bdd/2026-10-10-small-slices-and-steps-test-log
+kind: measurement
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-10-10
+---
+
 # Test log: small slices, steps, removed tests, scoped reviews, the scout
 
 Headless runs: cwd the fixture, `claude -p --model opus --plugin-dir <plugin> --output-format stream-json --verbose --dangerously-skip-permissions`, superpowers from the installed marketplace. Baselines ran against this repository at `34279e8` (0.10.0), extracted to the scratchpad; green runs against the working copy. The slicing green run dispatched `shopsystem-bdd:code-scout`, which exists only in the working copy, so the working copy is what ran.
