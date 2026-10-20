@@ -30,13 +30,18 @@ class Refused(Exception):
 
 def context_path(root):
     """The <owner>/<product>/<context name> of spec/index.md's bounded-context id."""
-    data, _ = frontmatter((Path(root) / "spec" / "index.md").read_text())
+    index = Path(root) / "spec" / "index.md"
+    if not index.is_file():
+        raise Refused("spec/index.md, which names the context, is missing")
+    data, _ = frontmatter(index.read_text())
     return data["id"].split("/", 1)[1]
 
 
 def add(root, initiative, name, part_of, under, accepts):
     """Write .shop/work/<initiative>/<name>.md as a drafted work-item (r1)."""
     path = Path(root) / WORK / initiative / (name + ".md")
+    if not path.parent.is_dir():
+        raise Refused("the initiative %s does not exist (no %s)" % (initiative, path.parent.relative_to(root)))
     if path.exists():
         raise Refused("%s already exists; work add leaves it as it was" % path.relative_to(root))
     text = ("---\nid: work-item/%s/%s\nkind: work-item\npart_of: %s\nstatus: drafted\nunder: %s\naccepts: [%s]\n---\n\n# %s\n"
@@ -71,6 +76,8 @@ def move(root, initiative, name, status, by):
     together, the log line last. A file whose status is not the last one log.jsonl gives it is refused (r6).
     """
     path = Path(root) / WORK / initiative / (name + ".md")
+    if not path.is_file():
+        raise Refused("%s does not exist; there is no work-item %s to move" % (path.relative_to(root), name))
     text = path.read_text()
     before = frontmatter(text)[0].get("status")
     logged = last_logged(path.parent / "log.jsonl", name)

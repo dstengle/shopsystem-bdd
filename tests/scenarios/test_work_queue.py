@@ -37,7 +37,7 @@ def initiative(repo, ident):
 
 
 def snapshot(repo):
-    return {str(p.relative_to(repo)): p.read_text() for p in (repo / ".shop").rglob("*") if p.is_file()}
+    return {str(p.relative_to(repo)): p.read_text() for p in repo.rglob("*") if p.is_file()}
 
 
 def fields(path):
@@ -77,6 +77,17 @@ def one_line(repo, name, before, after):
 def last_for(repo, name, after):
     write(repo, ".shop/work/i1/log.jsonl", log_line(name, "drafted", "researched") + log_line(name, "researched", after)
           + log_line("w9", "planned", "ready"))
+
+
+@given(parsers.parse("a repository with spec/index.md and no initiative {ident}"))
+def no_initiative(repo, ident):
+    write(repo, "spec/index.md", INDEX)
+
+
+@given(parsers.parse("an initiative {ident} under .shop/work/ and no spec/index.md"))
+def no_index(repo, ident):
+    initiative(repo, ident)
+    (repo / "spec/index.md").unlink()
 
 
 # --- When -----------------------------------------------------------------------------------------------------
@@ -179,3 +190,21 @@ def both_as_they_were(repo, context, first, second):
     for rel in (first, second):
         assert (repo / rel).read_text() == context["before"][rel], rel
     assert snapshot(repo) == context["before"]
+
+
+@then(parsers.parse("work says in one line that {reason}"))
+def says_in_one_line(context, reason):
+    err = context["done"].stderr
+    assert "Traceback" not in err and len(err.splitlines()) == 1 and reason in err, err
+
+
+@then("nothing under the repository has changed")
+def nothing_changed(repo, context):
+    assert snapshot(repo) == context["before"]
+
+
+@then(parsers.re(r"the move is refused, naming (?P<rel>[^,]+)$"))
+def refused_naming(context, rel):
+    refusal = context["refused"]
+    assert refusal is not None, "the move was made"
+    assert rel in str(refusal), str(refusal)

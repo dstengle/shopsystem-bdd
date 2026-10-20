@@ -52,3 +52,25 @@ Feature: Work queue
     When the script moves w1 to claimed
     Then the move is refused, naming .shop/work/i1/w1.md, ready and planned
     And .shop/work/i1/w1.md and .shop/work/i1/log.jsonl are as they were
+
+  @r7
+  Scenario Outline: a command that cannot be done exits non-zero, says why in one line and changes nothing
+    Pins that a missing file stops work with its reason, never a traceback, and leaves the files as they were.
+    Given <state>
+    When the agent runs `work add i1 w1 --part-of capability-proposal/p1 --under thing --accepts thing#r1`
+    Then work says in one line that <reason>
+    And it exits non-zero
+    And nothing under the repository has changed
+
+    Examples:
+      | state                                                   | reason                                             |
+      | a repository with spec/index.md and no initiative i1    | the initiative i1 does not exist                   |
+      | an initiative i1 under .shop/work/ and no spec/index.md | spec/index.md, which names the context, is missing |
+
+  @r7
+  Scenario: a move of a work-item that does not exist is refused, saying why, and changes nothing
+    Pins that a move the library cannot make is refused with its reason rather than failing on a missing file.
+    Given an initiative i1 under .shop/work/ with no work-item w1
+    When the script moves w1 to researched
+    Then the move is refused, naming .shop/work/i1/w1.md
+    And nothing under the repository has changed
