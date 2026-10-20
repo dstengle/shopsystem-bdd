@@ -1,5 +1,6 @@
 """Unit tests of scripts/model. The scenarios of features/design-model-check.feature are bound in
-tests/scenarios/test_design_model_check.py; a test here that shares a scenario's subject checks what its steps do not."""
+tests/scenarios/test_design_model_check.py. A test here that shares a scenario's subject usually checks what its steps do
+not; test_r5 and test_r20 repeat their scenarios and stay until a later cleanup removes them."""
 
 import json
 import pathlib

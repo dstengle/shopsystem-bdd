@@ -451,7 +451,7 @@ class BindingsScenarioTest(Workspace, unittest.TestCase):
     """Unit tests of `features` on test-module bindings."""
 
     def test_rebind_with_file_takes_a_new_title_that_several_feature_files_have(self):
-        """rebind --file follows only its own file when both files have the new title"""
+        # rebind --file follows only its own file when both files have the new title
         self.write("features/cart.feature", feature(block("Apply a code")))
         self.write("features/old.feature", feature(block("Apply a code")))
         modules = {"tests/test_cart.py": binding("Apply a code", "cart.feature"),
