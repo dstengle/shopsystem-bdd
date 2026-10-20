@@ -98,6 +98,48 @@ def with_id(text, ident):
     return "---\nid: %s\n---\n" % ident + text
 
 
+def load_model():
+    """scripts/model, read by path: migrate reads frontmatter the way model does."""
+    import importlib.machinery
+    import importlib.util
+    path = str(Path(__file__).resolve().with_name("model"))
+    loader = importlib.machinery.SourceFileLoader("model_by_path", path)
+    module = importlib.util.module_from_spec(importlib.util.spec_from_loader("model_by_path", loader))
+    loader.exec_module(module)
+    return module
+
+
+BULLET_ID = re.compile(r"^- \[r(\d+)\]")
+
+
+def number_behaviour(text, retired):
+    """`text` with each Behaviour bullet that has no `[r<n>]` numbered, from one above the highest id ever used."""
+    lines = text.split("\n")
+    inside, bullets = False, []
+    for i, line in enumerate(lines):
+        if line.startswith("## "):
+            inside = line[3:].strip().lower() == "behaviour"
+        elif inside and line.startswith("- "):
+            bullets.append(i)
+    used = [int(m.group(1)) for i in bullets for m in [BULLET_ID.match(lines[i])] if m]
+    highest = max(used + retired, default=0)
+    for i in bullets:
+        if not BULLET_ID.match(lines[i]):
+            highest += 1
+            lines[i] = "- [r%d] %s" % (highest, lines[i][2:])
+    return "\n".join(lines)
+
+
+def plan_capabilities(plan):
+    model = load_model()
+    for rel in tracked(plan.root):
+        if rel.startswith("spec/capabilities/") and rel.endswith(".md"):
+            text = plan.read(rel)
+            data, _ = model.frontmatter(text)
+            retired = [int(str(r).lstrip("r")) for r in model.as_list(data.get("retired"))]
+            plan.texts[rel] = number_behaviour(text, retired)
+
+
 def plan_index(plan):
     if "spec/index.md" in tracked(plan.root):
         plan.texts["spec/index.md"] = with_id(plan.read("spec/index.md"), "bounded-context/" + plan.context)
@@ -133,6 +175,7 @@ def cmd_run(args):
     plan_moves(plan)
     plan_ledger(plan)
     plan_index(plan)
+    plan_capabilities(plan)
     write(plan)
     return 0
 

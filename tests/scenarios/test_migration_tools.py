@@ -162,3 +162,29 @@ def _(old):
 def _(old, rel, ident):
     data, _ = front(old, rel)
     assert data.get("id") == ident
+
+
+def capability(old, ident=None, retired="[]", lines=("- [r1] **When** a, `thing` shall a.",)):
+    head = "id: %s\n" % ident if ident else ""
+    old.write("spec/capabilities/thing.md", "---\n%stitle: thing\nnarrator: a client\ngroup: service\nrests_on: []\nretired: %s\n---\n\n"
+              "# thing\n\n## Purpose\nSomething.\n\n## Behaviour\n%s\n\n## Not yet\n- None.\n" % (head, retired, "\n".join(lines)))
+
+
+@given("a repository on the old system with a capability spec/capabilities/thing.md whose retired: lists r4")
+def _(old, context):
+    context["retired"] = "[r4]"
+
+
+@given("whose Behaviour lines are, in order, one with [r1], one with no id, one with [r3] and one with no id")
+def _(old, context):
+    capability(old, ident="capability/%s/thing" % CONTEXT, retired=context["retired"],
+               lines=("- [r1] **When** a, `thing` shall a.", "- **When** b, `thing` shall b.",
+                      "- [r3] **When** c, `thing` shall c.", "- **When** d, `thing` shall d."))
+    old.commit()
+
+
+@then("the Behaviour lines of spec/capabilities/thing.md are, in order, [r1], [r5], [r3] and [r6]")
+def _(old):
+    _, body = front(old, "spec/capabilities/thing.md")
+    lines = [l for l in load_model().section(body, "Behaviour") if l.startswith("- ")]
+    assert [l.split()[1] for l in lines] == ["[r1]", "[r5]", "[r3]", "[r6]"], lines
