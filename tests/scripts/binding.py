@@ -1,5 +1,9 @@
 """A scenario's step definition is the test whose docstring is its title
-(decision/plugin-scenarios-run-as-unittest)."""
+(decision/plugin-scenarios-run-as-unittest).
+
+Only tests/scripts/test_measure.py binds its scenarios (features/batch-measurement.feature) this way now;
+every other script capability's scenarios run under pytest-bdd. Initiative i12 moves batch-measurement to
+pytest-bdd and removes this module."""
 
 import re
 
