@@ -3,15 +3,16 @@
 
   migrate run --context <owner/product/context>
 
-Every change is computed first (moves, new texts), checked, and only then written. Moves are `git mv`; nothing is
-committed.
+Every change is computed first (moves, new texts, removals), checked, and only then written. Moves are `git mv`;
+nothing is committed.
 """
 import argparse
+import re
 import subprocess
 import sys
 from pathlib import Path
 
-# top-level directory of the old system -> where it lands
+# directory of the old system -> where it lands
 DIRECTORY_MOVES = (
     ("decisions/", "spec/decisions/"),
     ("work/", ".shop/work/"),
@@ -19,6 +20,21 @@ DIRECTORY_MOVES = (
     ("docs/superpowers/specs/", ".shop/records/archive/design-notes/"),
     ("records/", ".shop/records/"),
 )
+LEDGER = "spec/decisions.md"
+ENTRY = re.compile(r"^## decision/(?P<number>\d+)-(?P<slug>[\w-]+)\s*$")
+
+
+class Plan:
+    """What a run will do: files moved, texts written (new files), files removed."""
+
+    def __init__(self, root, context):
+        self.root, self.context = root, context
+        self.moves = {}
+        self.texts = {}
+        self.removes = []
+
+    def read(self, rel):
+        return (self.root / rel).read_text()
 
 
 def tracked(root):
@@ -33,29 +49,74 @@ def destination(path):
     return None
 
 
-def plan_moves(root):
-    moves = {}
-    for path in tracked(root):
+def plan_moves(plan):
+    for path in tracked(plan.root):
         target = destination(path)
         if target is not None:
-            moves[path] = target
-    return moves
+            plan.moves[path] = target
 
 
-def write(root, moves):
-    for old, new in moves.items():
+def ledger_entries(text):
+    """(number, slug, first paragraph, fields) for each `## decision/<nnnn>-<slug>` entry of the ledger."""
+    entries, current = [], None
+    for line in text.splitlines():
+        m = ENTRY.match(line)
+        if m:
+            current = [m.group("number"), m.group("slug"), []]
+            entries.append(current)
+        elif current is not None:
+            current[2].append(line)
+    out = []
+    for number, slug, lines in entries:
+        paragraph, fields, in_head = [], {}, True
+        for line in lines:
+            if in_head and line.strip():
+                paragraph.append(line.strip())
+                continue
+            in_head = False
+            m = re.match(r"^(\w+):\s*(.*)$", line)
+            if m:
+                fields[m.group(1)] = m.group(2).strip()
+        out.append((number, slug, " ".join(paragraph), fields))
+    return out
+
+
+def decision_text(plan, slug, summary, fields):
+    return ("---\nid: design-decision/%s/%s\nsummary: %s\ndate: %s\nstatus: accepted\nby: %s\n---\n\n# %s\n\n"
+            "## Decision\n%s\n" % (plan.context, slug, summary, fields.get("date", ""), fields.get("source", ""),
+                                  slug, summary))
+
+
+def plan_ledger(plan):
+    if LEDGER not in tracked(plan.root):
+        return
+    for number, slug, summary, fields in ledger_entries(plan.read(LEDGER)):
+        plan.texts["spec/decisions/%s-%s.md" % (number, slug)] = decision_text(plan, slug, summary, fields)
+    plan.removes.append(LEDGER)
+
+
+def write(plan):
+    root = plan.root
+    for old, new in plan.moves.items():
         (root / new).parent.mkdir(parents=True, exist_ok=True)
         subprocess.run(["git", "mv", old, new], cwd=root, capture_output=True, text=True, check=True)
-    for old in moves:
+    for old in plan.moves:
         parent = (root / old).parent
         while parent != root and parent.is_dir() and not any(parent.iterdir()):
             parent.rmdir()
             parent = parent.parent
+    for rel in plan.removes:
+        subprocess.run(["git", "rm", "-q", rel], cwd=root, capture_output=True, text=True, check=True)
+    for rel, text in plan.texts.items():
+        (root / rel).parent.mkdir(parents=True, exist_ok=True)
+        (root / rel).write_text(text)
 
 
 def cmd_run(args):
-    root = Path.cwd()
-    write(root, plan_moves(root))
+    plan = Plan(Path.cwd(), args.context)
+    plan_moves(plan)
+    plan_ledger(plan)
+    write(plan)
     return 0
 
 

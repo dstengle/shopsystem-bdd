@@ -3,6 +3,7 @@
 A Given builds a repository on the old system in `repo` and commits it (`old.before` keeps what each file held); the
 When runs `migrate run` once; the Then steps read what it left.
 """
+import pathlib
 import subprocess
 
 import pytest
@@ -103,3 +104,49 @@ def _(old):
 def _(old):
     status = old.git("status", "--porcelain").stdout.splitlines()
     assert len([l for l in status if l.startswith("R")]) == 2, status
+
+
+def load_model():
+    """scripts/model, read by path: its own reading of frontmatter."""
+    import importlib.machinery
+    import importlib.util
+    SCRIPTS = pathlib.Path(__file__).resolve().parents[2] / "scripts"
+    loader = importlib.machinery.SourceFileLoader("model_by_path", str(SCRIPTS / "model"))
+    spec = importlib.util.spec_from_loader("model_by_path", loader)
+    module = importlib.util.module_from_spec(spec)
+    loader.exec_module(module)
+    return module
+
+
+def front(old, rel):
+    data, body = load_model().frontmatter(old.read(rel))
+    return data, body
+
+
+@given("a repository on the old system whose spec/decisions.md has nothing but the entry `## decision/0007-a`")
+def _(old, context):
+    context["entry"] = "## decision/0007-a\n"
+
+
+@given('the entry is dated 2025-03-01, its source is alice, and its first paragraph is "We do a."')
+def _(old, context):
+    old.write("spec/decisions.md", context["entry"] + "We do a.\n\ndate: 2025-03-01\nsource: alice\n")
+    old.commit()
+
+
+@then("spec/decisions.md is gone")
+def _(old):
+    assert not (old.root / "spec/decisions.md").exists()
+
+
+@then('spec/decisions/0007-a.md has the summary "We do a." and a Decision of "We do a."')
+def _(old):
+    data, body = front(old, "spec/decisions/0007-a.md")
+    assert data["summary"] == "We do a."
+    assert "\n".join(load_model().section(body, "Decision")).strip() == "We do a."
+
+
+@then("its status is accepted, its date is 2025-03-01 and its by is alice")
+def _(old):
+    data, _ = front(old, "spec/decisions/0007-a.md")
+    assert (data["status"], data["date"], data["by"]) == ("accepted", "2025-03-01", "alice")
