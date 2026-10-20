@@ -32,11 +32,13 @@ BOUND = (
     'a malformed work directory or work file is a file problem',
     'a work-item accepting a requirement no scenario names is a file problem',
     'a malformed decision, record or frontmatter is a file problem',
+    'a feature file no capability is formulated as, with a title twice, or with a scenario tagged @holding, is a file problem',
+    "a decision's source is a list of ids and its by is not read",
     'file problems are each printed and fail the check',
     'the check ends with the four counts',
     'rows of a violated relation are limited, saying how many more there are',
     "a scenario names a requirement by its tag in its capability's feature file",
-    'a held scenario names no requirement',
+    'a deprecated scenario names no requirement',
     'a scenario tagged with several requirements names each of them',
     'a mention is a whole word in any case, plural allowed',
     'a code span, a double-quoted string and a tag are no mention',
@@ -198,7 +200,7 @@ def proposal_naming_term(world, context, status, field, term):
 
 # --- Given: frontmatter references (r24) -----------------------------------------------------------------------
 
-DECISION = "---\nid: %s\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n%s---\n"
+DECISION = "---\nid: %s\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n%s---\n\n## Decision\nWe do it.\n"
 
 
 @given(parsers.parse("a file whose {field} names {target}"))
@@ -231,6 +233,33 @@ def file_naming(world, context, field, target):
 
 
 # --- Given: file problems (r25, r27-r30) -----------------------------------------------------------------------
+
+@given(parsers.parse("a feature file {path} in which {titles}"))
+def feature_file_with(world, context, path, titles):
+    world.good()
+    one = feature("thing", ("@r1", "one"))
+    if titles.startswith("every scenario"):
+        text = one
+    elif titles.startswith("two scenarios are titled"):
+        second = "@deprecated" if "@deprecated" in titles else "@r1"
+        text = feature("thing", ("@r1", "Apply a code"), (second, "Apply a code"))
+    else:
+        assert titles == "a scenario with its own title is tagged @holding", titles
+        text = feature("thing", ("@r1", "one"), ("@holding", "another"))
+    world.write("features/thing.feature", one)
+    world.write(path, text)
+
+
+@given(parsers.parse("a decision whose source is {source} and whose by is {by}"))
+def decision_source(world, context, source, by):
+    world.good()
+    world.observation()
+    if not source.startswith("["):
+        source = '"%s"' % source
+    world.write("spec/decisions/0001-x.md",
+                "---\nid: %s\nsummary: S\ndate: 2026-01-01\nstatus: accepted\nsource: %s\nby: \"%s\"\n---\n\n## Decision\nWe do it.\n"
+                % (full("design-decision", "x"), source, by))
+
 
 @given(parsers.parse("a bounded context with id bounded-context/acme.com/shop/cart in which {case}"))
 def malformed_index_or_capability(world, case):
@@ -308,10 +337,12 @@ def work_item_accepting(world, context):
 @given(parsers.parse("a repository in which {case}"))
 def malformed_record(world, context, case):
     x = full("design-decision", "x")
-    decision = "---\nid: {}\nsummary: {}\ndate: 2026-01-01\nstatus: accepted\n---\n"
+    decision = "---\nid: {}\nsummary: {}\ndate: 2026-01-01\nstatus: accepted\n---\n\n## Decision\nWe do it.\n"
     world.good()
     if case == "a decision under spec/decisions/ has no id":
-        world.write("spec/decisions/0001-x.md", "---\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n")
+        world.write("spec/decisions/0001-x.md", "---\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n\n## Decision\nWe do it.\n")
+    elif case == "a decision under spec/decisions/ has no ## Decision section":
+        world.write("spec/decisions/0001-x.md", "---\nid: %s\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n\nNo section.\n" % x)
     elif case == "a record under .shop/records/ with an id has the kind banana":
         world.write(".shop/records/note.md", "---\nid: %s\nkind: banana\n---\n" % full("review-finding", "n1"))
     elif case == "a frontmatter value is written as a folded block, with >":
@@ -380,9 +411,9 @@ def capability_r2(world):
     world.write("spec/capabilities/thing.md", cap("thing", ["- [r2] Two."]))
 
 
-@given("its only scenario tagged @r2 is also tagged @holding")
-def scenario_held(world):
-    world.write("features/thing.feature", feature("thing", ("@r2 @holding", "two")))
+@given("its only scenario tagged @r2 is also tagged @deprecated")
+def scenario_deprecated(world):
+    world.write("features/thing.feature", feature("thing", ("@r2 @deprecated", "two")))
 
 
 @given("a capability thing with requirements r1 and r2")
@@ -699,6 +730,20 @@ def file_problem_named(world, context, named):
         assert not any(absent in p for p in data["problems"]), data
 
 
+@then(parsers.parse("it does not report a file problem naming {named}"))
+def no_file_problem_named(world, context, named):
+    data = found(world, context)
+    assert not _problems_naming(data, named), data
+
+
+@then(parsers.re(r"the decision's source is (?P<reported>not reported|reported) as unresolved"))
+def decisions_source_unresolved(world, context, reported):
+    data = found(world, context)
+    mine = [d for d in data["unresolved"] if d.startswith("spec/decisions/0001-x.md")]
+    assert bool(mine) == (reported == "reported"), data
+    assert not any("ghost" in d for d in data["unresolved"]) or reported == "reported", data
+
+
 @then("it reports a file problem")
 def file_problem(world, context):
     data = found(world, context)
@@ -914,7 +959,7 @@ def file_gives_id(world, file, node, ident):
     elif file == "spec/capabilities/thing.md":
         world.write(file, cap("thing", ["- [r1] One."], group="guarantees").replace("id: " + THING, "id: " + ident))
     elif file == "spec/decisions/0001-x.md":
-        world.write(file, "---\nid: %s\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n" % ident)
+        world.write(file, "---\nid: %s\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n\n## Decision\nWe do it.\n" % ident)
     elif file == ".shop/work/i1/initiative.md":
         _initiative_with(world, "id: %s" % I1, "id: " + ident)
     elif file == ".shop/work/i1/p1.md":

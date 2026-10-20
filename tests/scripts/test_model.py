@@ -314,7 +314,7 @@ class ReadingTest(ModelTest):
     def test_feature_tags_column_zero_lists_and_comments_are_read(self):
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] `thing` shall answer."]).replace(
             "rests_on: []", "rests_on:\n- x").replace("group: service", "group: service   # a comment"))
-        self.write("spec/decisions/0001-x.md", f'---\nid: {full("design-decision", "x")}\nsummary: "X."\ndate: 2026-01-01\nstatus: accepted\n---\n')
+        self.write("spec/decisions/0001-x.md", f'---\nid: {full("design-decision", "x")}\nsummary: "X."\ndate: 2026-01-01\nstatus: accepted\n---\n\n## Decision\nWe do it.\n')
         self.write("features/thing.feature", "@r1\nFeature: thing\n\n  Example: one\n    Given a\n")
         r = self.run_model("check")
         self.assertEqual(r.returncode, 0, r.stdout)

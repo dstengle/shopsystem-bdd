@@ -263,8 +263,8 @@ Feature: Design model check
       | records/          |
 
   @r26
-  Scenario Outline: a feature file no capability is formulated as, or with a title twice, is a file problem
-    Pins which feature files belong to a capability, and that titles are unique among the scenarios not held.
+  Scenario Outline: a feature file no capability is formulated as, with a title twice, or with a scenario tagged @holding, is a file problem
+    Pins which feature files belong to a capability, that titles are unique among the scenarios not deprecated, and that the tag @holding is refused.
     Given a capability thing
     And a feature file <file> in which <titles>
     When model check is run
@@ -276,7 +276,8 @@ Feature: Design model check
       | features/thing.feature     | every scenario has its own title                                           | does not report |
       | features/sub/thing.feature | every scenario has its own title                                           | reports         |
       | features/thing.feature     | two scenarios are titled "Apply a code"                                    | reports         |
-      | features/thing.feature     | two scenarios are titled "Apply a code" and one of them is tagged @holding | does not report |
+      | features/thing.feature     | two scenarios are titled "Apply a code" and one of them is tagged @deprecated | does not report |
+      | features/thing.feature     | a scenario with its own title is tagged @holding                           | reports         |
 
   @r27
   Scenario Outline: a malformed work directory or work file is a file problem
@@ -314,6 +315,7 @@ Feature: Design model check
     Examples:
       | case                                                         |
       | a decision under spec/decisions/ has no id                   |
+      | a decision under spec/decisions/ has no ## Decision section  |
       | a record under .shop/records/ with an id has the kind banana |
       | a frontmatter value is written as a folded block, with >     |
       | a frontmatter value is written as a literal block, with \|   |
@@ -455,12 +457,26 @@ Feature: Design model check
       | part_of | i1                               | reported as unresolved                                                  |
 
   @r20
-  Scenario: a held scenario names no requirement
-    Pins that a scenario tagged @holding does not count as a requirement's acceptance-scenario.
+  Scenario: a deprecated scenario names no requirement
+    Pins that a scenario tagged @deprecated does not count as a requirement's acceptance-scenario.
     Given a capability thing with requirement r2
-    And its only scenario tagged @r2 is also tagged @holding
+    And its only scenario tagged @r2 is also tagged @deprecated
     When model check is run
     Then the requirement thing#r2 is reported under v_s3
+
+  @r64
+  Scenario Outline: a decision's source is a list of ids and its by is not read
+    Pins that each id in a decision's source must name a node, and that its by, where the free text goes, is never read as a reference.
+    Given a decision whose source is <source> and whose by is <by>
+    When model check is run
+    Then the decision's source is <reported> as unresolved
+
+    Examples:
+      | source                      | by                         | reported     |
+      | [observation/obs-1]         | the person, 2026-10-19     | not reported |
+      | [observation/ghost]         | the person, 2026-10-19     | reported     |
+      | the person, 2026-10-19      | none                       | reported     |
+      | [observation/obs-1]         | observation/ghost          | not reported |
 
   @r46
   Scenario Outline: a node whose id is not in type-first form is a file problem

@@ -51,7 +51,7 @@ contract:
   - A scenario names its requirement by a tag @r<n> in the capability's own
     feature file, features/<name>.feature; its title is free. A scenario
     with no such tag names none.
-    A scenario tagged @holding is no acceptance-scenario.
+    A scenario tagged @deprecated is no acceptance-scenario; one tagged @holding is a file problem.
   - facts prints the facts it read, one a line, in clingo's syntax, under
     grammar.md's relation names. A term gives node(T, "term"),
     term_of(T, <bounded-context>), avoid(T, <word>) for each word after its
@@ -587,8 +587,10 @@ class Model:
                 self.problems.append(f"{key}: not features/<name>.feature for a capability <name>")
             seen = set()
             for title, tags, steps in scenarios(path.read_text()):
+                if "@deprecated" in tags:
+                    continue        # a deprecated scenario formulates no line (design-decision/held-scenario-formulates-no-requirement)
                 if "@holding" in tags:
-                    continue        # a held scenario formulates no line (design-decision/held-scenario-formulates-no-requirement)
+                    self.problems.append(f"{key}: scenario {title!r} is tagged @holding; the tag is @deprecated")
                 s = f"{key}:{title}"
                 if s in seen:
                     self.problems.append(f"{key}: two scenarios are titled {title!r}")
@@ -607,8 +609,10 @@ class Model:
 
     def read_decisions(self):
         for path in decision_files(self.root):
-            data, _ = frontmatter(path.read_text())
+            data, body = frontmatter(path.read_text())
             self.unread(data, path)
+            if not any(l.startswith("## ") and l[3:].strip() == "Decision" for l in body.splitlines()):
+                self.problems.append(f"{self.rel(path)}: no '## Decision' section")
             d = data.get("id")
             if not d:
                 self.problems.append(f"{self.rel(path)}: no frontmatter id")
@@ -621,6 +625,8 @@ class Model:
                 old = self.qualify(old, "design-decision")
                 self.fact("supersedes", d, old)
                 self.want(old, "design-decision", self.rel(path))
+            for s in as_list(data.get("source")):       # ids only; the free text is `by`, which is not read (r64)
+                self.want(self.qualify(s), None, self.rel(path))
             if data.get("revisit_signal"):
                 self.fact("revisit_signal", d, self.qualify(data["revisit_signal"]))   # "requests" stays as written
 
