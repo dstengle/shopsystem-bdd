@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/migrate-run
 kind: work-item
 part_of: capability-proposal/migrate-readings
-status: drafted
+status: awaiting-ruling
 wkind: capability
 under: migration-tools
 accepts: [migration-tools#r1-r11]
@@ -16,3 +16,6 @@ bound by `scenarios("migration-tools.feature")` in tests/scenarios/test_migratio
 tests/scripts/test_bound.py. `scripts/migrate run --context <owner/product/context>` does the transcription of
 design-decision/migration-in-one-pass; it reuses scripts/model's reading of frontmatter and scripts/features'
 deprecation (`features deprecate`) rather than a second reading of either. Built through `work run`.
+
+## Questions
+- code-scout gave no result file (/home/vscode/shopsystem-bdd/.shop/worktrees/migrate-run-1-research/.shop/scratch/1-research/result.json)
