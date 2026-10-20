@@ -18,13 +18,13 @@ what running it shows.
 ## Behaviour
 - [r1] **When** `migrate run --context <path>` is run, `migrate` shall move with git a top-level `decisions/` to `spec/decisions/`, `work/` to `.shop/work/`, and each `records/<x>` to `.shop/records/<x>`.
 - [r2] **When** `migrate run` finds a ledger entry `## decision/<nnnn>-<slug>` in `spec/decisions.md`, `migrate` shall replace it with `spec/decisions/<nnnn>-<slug>.md`, whose summary and Decision are the entry's first paragraph, whose status is accepted, and whose `date` and `by` are the entry's date and source.
-- [r3] **When** `migrate run` finds a `@holding` scenario, `migrate` shall deprecate it as `features deprecate` does.
+- [r3] **When** `migrate run` finds a `@holding` scenario, `migrate` shall make it a `@deprecated` scenario as `features deprecate` does, with no `@holding` tag left.
 - [r4] **When** `migrate run --context <path>` is run, `migrate` shall give `spec/index.md` the id `bounded-context/<path>`.
 - [r5] **When** `migrate run` moves a file or changes an id, `migrate` shall rewrite each repository-relative path, relative Markdown link and frontmatter id that names it in the repository's tracked text files.
 - [r6] **When** `migrate run` has run on a repository on the old system, `migrate` shall have left it so that `model check` reports no violation, unresolved reference or file problem.
 - [r7] **If** `migrate` cannot make every change it was asked to, then `migrate` shall exit non-zero, naming each change it could not make, and change no file.
 - [r8] **When** `migrate run` is run, `migrate` shall move with git `docs/superpowers/plans/` to `.shop/records/archive/plans/` and `docs/superpowers/specs/` to `.shop/records/archive/design-notes/`.
-- [r9] **When** `migrate run` gives a capability, a decision file or a moved record its id, `migrate` shall write `<kind>/<path>/<name>`, the name being the file's stem and the kind `capability`, `design-decision`, or for a moved plan, design note or test log (a file whose name ends `-test-log.md`) `initiative-archive`, `decision-argument` or `measurement`.
+- [r9] **When** `migrate run` gives a capability, a decision file or a moved record its id, `migrate` shall write `<kind>/<path>/<name>`, the name being the file's stem, without a decision file's number, and the kind `capability`, `design-decision`, or for a moved plan, design note or test log (a file whose name ends `-test-log.md`) `initiative-archive`, `decision-argument` or `measurement`.
 - [r10] **When** `migrate run` finds Behaviour lines with no id, `migrate` shall number them in Behaviour order from one above the highest id their capability has ever used.
 - [r11] **When** `migrate run` has replaced every entry of `spec/decisions.md`, `migrate` shall remove `spec/decisions.md`.
 
