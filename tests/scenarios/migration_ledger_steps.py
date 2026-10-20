@@ -1,5 +1,7 @@
 """migration-tools' ledger steps (r2, r11, and r7 for a ledger migrate cannot read): spec/decisions.md as the old
 system wrote it, and the decision files migrate leaves."""
+import re
+
 from pytest_bdd import given, parsers, then
 
 from .migration_old import CONTEXT, front, load_model
@@ -7,6 +9,7 @@ from .migration_old import CONTEXT, front, load_model
 @given("a repository on the old system whose spec/decisions.md has nothing but the entry `## decision/0007-a`")
 def _(old, context):
     context["entry"] = "## decision/0007-a\n"
+    context["ledger"] = "## decision/0007-a\n%s\ndate: 2025-03-01\nsource: alice\n"
 
 
 @given('the entry is dated 2025-03-01, its source is alice, and its first paragraph is "We do a."')
@@ -44,19 +47,26 @@ def _(old, where, heading, text):
     old.commit()
 
 
-@given(parsers.re(r"a repository on the old system whose spec/decisions.md has the entry `## decision/0007-a`, and "
-                  r"(?P<there>decisions/0007-a.md, which moves to spec/decisions/0007-a.md|a tracked spec/decisions/0007-a.md|"
-                  r"an untracked spec/decisions/0007-a.md)$"))
-def _(old, there):
-    old.write("spec/decisions.md", "## decision/0007-a\nWe do a.\n\ndate: 2025-03-01\nsource: alice\n")
-    decision = "---\nid: design-decision/%s/a\nsummary: other\nstatus: accepted\n---\nAnother a.\n" % CONTEXT
-    if there.startswith("decisions/"):
-        old.write("decisions/0007-a.md", decision)
-    elif there.startswith("a tracked"):
-        old.write("spec/decisions/0007-a.md", decision)
+@given(parsers.re(r"a repository on the old system whose spec/decisions.md has, in order, the entries (?P<entries>.+?)"
+                  r"(?:, and (?P<there>decisions/.+|a tracked .+|an untracked .+))?$"))
+def _(old, entries, there):
+    headings = re.findall(r"`([^`]+)`", entries)
+    old.write("spec/decisions.md", "\n".join("%s\nWe do %s.\n\ndate: 2025-03-01\nsource: alice\n"
+                                              % (h, re.sub(r"^## decision/(\d+-)?", "", h)) for h in headings))
+    if there:
+        path = re.search(r"(?:spec/)?decisions/\S+?\.md", there).group(0)
+        decision = "---\nid: design-decision/%s/a\nsummary: other\nstatus: accepted\n---\nAnother a.\n" % CONTEXT
+        if not there.startswith("an untracked"):
+            old.write(path, decision)
     old.commit()
-    if there.startswith("an untracked"):
-        old.untracked("spec/decisions/0007-a.md", decision)
+    if there and there.startswith("an untracked"):
+        old.untracked(path, decision)
+
+
+@then(parsers.parse("spec/decisions/ has {files}"))
+def _(old, files):
+    found = {p.name for p in (old.root / "spec/decisions").glob("*.md") if p.name != "index.md"}
+    assert found == set(re.findall(r"[\w-]+\.md", files)), found
 
 
 @then("spec/decisions.md is gone")
@@ -108,7 +118,7 @@ def _(old):
     assert (data["date"], data["by"]) == ("2025-03-01", "alice")
 
 
-@given("a repository on the old system whose spec/decisions.md starts with the title `# Decisions` and a blank line, "
+@given("a repository on the old system whose spec/decisions.md has the title `# Decisions` and a blank line, "
        "then the entry `## decision/0007-a`")
 def _(context):
     context["ledger"] = "# Decisions\n\n## decision/0007-a\n%s\ndate: 2025-03-01\nsource: alice\n"
@@ -144,3 +154,23 @@ def _(old):
 def _(old, name, status):
     data, _ = front(old, "spec/decisions/%s.md" % name)
     assert data["status"] == status, data["status"]
+
+
+@given(parsers.parse("the entry 0007-a's source is alice and its supersedes is {value}"))
+def _(old, context, value):
+    context["ledger"][1] += "supersedes: %s\n" % value
+    context["ledger"][1] = context["ledger"][1].replace("source: alice\n", "") + "source: alice\n"
+    old.write("spec/decisions.md", "\n".join(context["ledger"]))
+    old.commit()
+
+
+@then(parsers.parse("spec/decisions/0007-a.md's supersedes is {ident} alone"))
+def _(old, ident):
+    data, _ = front(old, "spec/decisions/0007-a.md")
+    assert data.get("supersedes") == ident, data.get("supersedes")
+
+
+@then(parsers.parse('its by is "{by}"'))
+def _(old, by):
+    data, _ = front(old, "spec/decisions/0007-a.md")
+    assert data["by"] == by, data["by"]
