@@ -150,6 +150,20 @@ def _(old):
     assert found == ("design-decision/%s/b" % CONTEXT, "b comes back"), found
 
 
+@then(parsers.re(r"spec/decisions/0007-a.md's supersedes is (?P<ident>design-decision/\S+)$"))
+def _(old, ident):
+    data, _ = front(old, "spec/decisions/0007-a.md")
+    assert data.get("supersedes") == ident, data.get("supersedes")
+
+
+@given(parsers.re(r"the entry 0007-a has supersedes: (?P<value>decision/\S+)$"))
+def _(old, value):
+    """The ledger an earlier Given committed gets the supersedes line on its entry 0007-a."""
+    text = old.read("spec/decisions.md").replace("## decision/0007-a\n", "## decision/0007-a\nsupersedes: %s\n" % value, 1)
+    old.write("spec/decisions.md", text)
+    old.commit()
+
+
 @then(parsers.parse("spec/decisions/{name}.md's status is {status}"))
 def _(old, name, status):
     data, _ = front(old, "spec/decisions/%s.md" % name)

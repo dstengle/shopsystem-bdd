@@ -75,10 +75,10 @@ def _(old):
     old.write("notes/n1.md", "Read [w1](../work/i1/w1.md) first.\n")
 
 
-@given("a capability spec/capabilities/thing.md whose frontmatter rests_on names decision/0007-a")
-def _(old):
+@given(parsers.parse("a capability spec/capabilities/thing.md whose frontmatter rests_on names {ref}"))
+def _(old, ref):
     capability(old, ident="capability/%s/thing" % CONTEXT)
-    text = old.read("spec/capabilities/thing.md").replace("rests_on: []", "rests_on: [decision/0007-a]")
+    text = old.read("spec/capabilities/thing.md").replace("rests_on: []", "rests_on: [%s]" % ref)
     old.write("spec/capabilities/thing.md", text)
     old.commit()
 
@@ -93,10 +93,10 @@ def _(old):
     assert "[w1](../.shop/work/i1/w1.md)" in old.read("notes/n1.md")
 
 
-@then("spec/capabilities/thing.md's rests_on names design-decision/example.org/acme/shop/a")
-def _(old):
+@then(parsers.parse("spec/capabilities/thing.md's rests_on names {ref}"))
+def _(old, ref):
     data, _ = front(old, "spec/capabilities/thing.md")
-    assert data["rests_on"] == ["design-decision/%s/a" % CONTEXT]
+    assert data["rests_on"] == [ref]
 
 
 @given('a repository on the old system whose features/thing.feature has a scenario "s1" tagged @holding')

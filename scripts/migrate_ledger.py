@@ -99,8 +99,11 @@ def plan_ledger(plan):
     if LEDGER not in tracked(plan.root):
         return
     entries = ledger_entries(plan, plan.read(LEDGER))
-    for number, slug, _, _, _ in entries:
-        plan.renamed["decision/%s-%s" % (number, slug)] = "design-decision/%s/%s" % (plan.context, slug)
+    for number, slug, _, _, heading in entries:
+        new = "design-decision/%s/%s" % (plan.context, slug)
+        plan.renamed["decision/%s-%s" % (number, slug)] = new
+        if heading == "## decision/%s" % slug:       # an entry migrate numbered is also named without its number
+            plan.renamed["decision/%s" % slug] = new
     superseding = {supersedes_of(plan, fields)[0] for _, _, _, fields, _ in entries}
     for number, slug, paragraphs, fields, heading in entries:
         path = "spec/decisions/%s-%s.md" % (number, slug)
