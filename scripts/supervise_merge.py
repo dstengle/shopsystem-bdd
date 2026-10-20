@@ -8,16 +8,19 @@ import time
 from supervise_worker import git
 from workqueue import WORK
 
-# The tests work run runs unless .shop/delivery.toml names its own: in parallel (pytest-xdist), the work-item's and the
-# suite alike (supervision's Implementation).
-TESTS = {"work_item": "python3 -m pytest -q -n auto --work-item {work_item}", "suite": "python3 -m pytest -q -n auto"}
+# The tests work run runs unless .shop/delivery.toml names its own: in parallel (`-n auto`) where the project's python3
+# has pytest-xdist, the work-item's and the suite alike (supervision's Implementation); in one process where it has not.
+TESTS = {"work_item": "python3 -m pytest -q{parallel} --work-item {work_item}", "suite": "python3 -m pytest -q{parallel}"}
 
 
 class Merge:
     """The part of supervise.Run that implements a ready work-item and merges its branch."""
 
     def tests(self):
-        return dict(TESTS, **self.delivery().get("tests", {}))
+        has = subprocess.run(["python3", "-c", "import xdist"], cwd=self.root, capture_output=True).returncode == 0
+        parallel = " -n auto" if has else ""
+        tests = {k: v.replace("{parallel}", parallel) for k, v in TESTS.items()}
+        return dict(tests, **self.delivery().get("tests", {}))
 
     def suite_record(self, tree, suite):
         """work run's own whole-suite run in `tree`, as the line `Suite: <N> passed, <M> failed at <hash> in <s> s`."""
