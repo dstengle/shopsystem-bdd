@@ -85,6 +85,15 @@ Feature: Supervision
     And log.jsonl's first move of w1 is from drafted to researched
     And the researcher's notes.md is in its run directory
 
+  @r6
+  Scenario: a file a worker adds under .shop/work/ outside its run directory is removed
+    Pins that .shop/work/ outside the worker's run directory is as it was before the worker started, new files included.
+    Given i1's work-item w1 is drafted
+    And every worker gives DONE, the researcher also writing .shop/work/i1/w9.md and .shop/work/i2/initiative.md
+    When the person runs `work run i1`
+    Then .shop/work/i1/w9.md and .shop/work/i2/ are not there
+    And w1 is green
+
   @r7
   Scenario: each move is a commit of the work-item's file, its run directory and log.jsonl on the initiative branch, and nothing else
     Pins one commit per move, and that a move's commit takes no file but its own.
@@ -127,3 +136,28 @@ Feature: Supervision
       | state                                                                        | initiative | reason                                                                                    |
       | i1's work-item w1 is drafted                                                 | i9         | the initiative i9 does not exist                                                          |
       | i1's work-item w1 is drafted, though log.jsonl's last move of w1 is to researched | i1     | .shop/work/i1/w1.md gives its status as drafted, but log.jsonl's last move of w1 is to researched |
+      | i1's work-item w1 is drafted, in a directory that is not a git repository     | i1         | not a git repository                                                                      |
+
+  @r4 @r5 @r10
+  Scenario Outline: a run's worktrees are removed when the run ends, whatever the implementer's work came to: <outcome>
+    Pins that work run leaves no worktree behind, on a merge, a question or a failure.
+    Given i1's work-item w1 is ready
+    And every worker gives DONE, the implementer <doing>
+    When the person runs `work run i1`
+    Then .shop/worktrees/w1 is not there, and git lists no worktree but the repository's own
+
+    Examples:
+      | outcome    | doing                                          |
+      | merged     | committing feature.txt                         |
+      | a question | committing feature.txt and suite-fail          |
+      | BLOCKED    | giving BLOCKED, asking "Is the old reader kept?" |
+      | a failure  | deleting its own branch                        |
+
+  @r10
+  Scenario: a git command that fails ends work run with git's reason in one line and a non-zero exit
+    Pins that a failure of git mid-run is work run's refusal, never a traceback.
+    Given i1's work-item w1 is ready
+    And every worker gives DONE, the implementer deleting its own branch
+    When the person runs `work run i1`
+    Then work says in one line that git merge --ff-only work/w1 failed
+    And it exits non-zero

@@ -11,6 +11,7 @@ import json
 import os
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 import uuid
@@ -109,6 +110,8 @@ def state(repo):
     """The repository as files (outside .git/), its commits and branches, and what git says is not committed."""
     files = {str(p.relative_to(repo)): p.read_bytes() for p in repo.rglob("*")
              if p.is_file() and ".git" not in p.relative_to(repo).parts}
+    if not (repo / ".git").exists():
+        return files, None
     return files, git(repo, "rev-parse", "HEAD"), git(repo, "branch", "-a"), git(repo, "status", "--porcelain")
 
 
@@ -137,8 +140,9 @@ def repository(repo):
 
 
 @given(parsers.re(r"i1's work-items? (?P<items>.+?)(?:, under (?P<under>\w+))?"
-                  r"(?:, though log\.jsonl's last move of (?P<lname>\w+) is to (?P<lafter>[\w-]+))?$"))
-def work_items(repo, items, under, lname, lafter):
+                  r"(?:, though log\.jsonl's last move of (?P<lname>\w+) is to (?P<lafter>[\w-]+))?"
+                  r"(?P<nogit>, in a directory that is not a git repository)?$"))
+def work_items(repo, items, under, lname, lafter, nogit):
     if " are " in items:
         names, status = items.split(" are ")
         pairs = [(n, status) for n in names.split(" and ")]
@@ -150,6 +154,8 @@ def work_items(repo, items, under, lname, lafter):
         write(repo, ".shop/work/i1/log.jsonl", json.dumps({"time": "2026-10-19T10:00:00+00:00", "work-item": lname,
                                                            "before": "drafted", "after": lafter, "by": "someone"}) + "\n")
     commit_all(repo, "work-items")
+    if nogit:
+        shutil.rmtree(repo / ".git")
 
 
 @given("every worker gives DONE")
@@ -157,10 +163,23 @@ def every_done(plan):
     plan["default"] = {"status": "DONE"}
 
 
-@given("every worker gives DONE, the implementer committing feature.txt")
-def done_committing(plan):
+@given(parsers.re(r"every worker gives DONE, the implementer (?P<doing>committing .+|giving .+|deleting its own branch)$"))
+def done_implementer(plan, doing):
     plan["default"] = {"status": "DONE"}
-    plan["bdd-implementer"] = {"commit": {"feature.txt": "the feature\n"}}
+    if doing.startswith("committing "):
+        plan["bdd-implementer"] = {"commit": {f: "\n" if f.endswith("-fail") else "the feature\n"
+                                              for f in doing[len("committing "):].split(" and ")}}
+    elif doing.startswith("giving "):
+        status, question = re.match(r'giving (\S+), asking "([^"]+)"$', doing).groups()
+        plan["bdd-implementer"] = {"status": status, "questions": [question]}
+    else:
+        plan["bdd-implementer"] = {"run": [["git", "checkout", "-q", "--detach"], ["git", "branch", "-q", "-D", "work/w1"]]}
+
+
+@given(parsers.parse("every worker gives DONE, the researcher also writing {first} and {second}"))
+def researcher_adds(plan, first, second):
+    plan["default"] = {"status": "DONE"}
+    plan["code-scout"] = {"write": {first: "added by a worker\n", second: "added by a worker\n"}}
 
 
 @given("the work-item's scenarios pass only where feature.txt is")
@@ -402,3 +421,16 @@ def no_worker(repo):
 @then("nothing in the repository has changed, its commits included")
 def nothing_changed(repo, context):
     assert state(repo) == context["before"]
+
+
+@then(parsers.parse("{first} and {second} are not there"))
+def not_there(repo, context, first, second):
+    for rel in (first, second):
+        assert not (repo / rel).exists(), (rel, context["done"].stderr)
+
+
+@then(parsers.parse("{rel} is not there, and git lists no worktree but the repository's own"))
+def no_worktree(repo, context, rel):
+    assert not (repo / rel).exists(), (rel, context["done"].stdout, context["done"].stderr)
+    trees = git(repo, "worktree", "list", "--porcelain").count("worktree ")
+    assert trees == 1, git(repo, "worktree", "list")

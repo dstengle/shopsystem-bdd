@@ -7,6 +7,7 @@ work-item's file, its run directory and log.jsonl. It takes no judgment: what is
 question.
 """
 import datetime
+import shutil
 import json
 import os
 import shlex
@@ -31,8 +32,13 @@ TESTS = {"work_item": "python3 -m pytest -q --work-item {work_item}", "suite": "
 AGENT_PREFIX = "shopsystem-bdd:"
 
 
-def git(root, *args, check=True):
-    return subprocess.run(["git", *args], cwd=root, capture_output=True, text=True, check=check)
+def git(root, *args):
+    """Run git in `root`; a git that fails is work run's refusal, with git's first line of complaint (r10)."""
+    done = subprocess.run(["git", *args], cwd=root, capture_output=True, text=True)
+    if done.returncode != 0:
+        said = (done.stderr.strip() or done.stdout.strip() or "exit %d" % done.returncode).splitlines()[0]
+        raise Refused("git %s failed: %s" % (" ".join(args), said))
+    return done
 
 
 def now():
@@ -47,6 +53,7 @@ class Run:
         self.initiative = initiative
         self.dir = self.root / WORK / initiative
         self.claude = os.environ.get("SHOPSYSTEM_WORK_CLAUDE") or "claude"
+        self.trees = []          # the worktrees this run added; removed when it ends
 
     def rel(self, path):
         return str(Path(path).relative_to(self.root))
@@ -61,6 +68,7 @@ class Run:
             raise Refused("the initiative %s does not exist (no %s)" % (self.initiative, self.rel(self.dir)))
         for name, _ in self.items():
             workqueue.agrees(self.root, self.initiative, name)
+        self.branch = git(self.root, "rev-parse", "--abbrev-ref", "HEAD").stdout.strip()
 
     def log(self, **line):
         with open(self.dir / "log.jsonl", "a") as out:
@@ -109,8 +117,23 @@ class Run:
         return path
 
     def snapshot(self, here):
-        """The files under .shop/work/ outside the worker's run directory `here`."""
-        return {p: p.read_bytes() for p in (self.root / WORK).rglob("*") if p.is_file() and here not in p.parents}
+        """.shop/work/ outside the worker's run directory `here`: its files with their content, and its directories."""
+        outside = [p for p in (self.root / WORK).rglob("*") if p != here and here not in p.parents]
+        return {p: p.read_bytes() for p in outside if p.is_file()}, {p for p in outside if p.is_dir()}
+
+    def put_back(self, here, kept):
+        """.shop/work/ outside `here` as it was before the worker started: changed and deleted files restored, files and
+        directories it added removed (r6)."""
+        files, dirs = kept
+        for path in [p for p in (self.root / WORK).rglob("*") if p != here and here not in p.parents and p not in here.parents]:
+            if path.is_dir() and path not in dirs:
+                shutil.rmtree(path, ignore_errors=True)
+            elif path.is_file() and path not in files:
+                path.unlink()
+        for path, content in files.items():
+            if not path.is_file() or path.read_bytes() != content:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(content)
 
     def worker(self, name, stage, agent, cwd):
         """Start one worker and wait for it; its result as a dict, or the reason there is none."""
@@ -122,10 +145,7 @@ class Run:
         done = subprocess.run([self.claude, "-p", str(brief), "--agent", AGENT_PREFIX + agent, "--session-id", session,
                                "--output-format", "json", "--permission-mode", "acceptEdits"],
                               cwd=cwd, capture_output=True, text=True)
-        for path, content in kept.items():          # r6: a worker's change under .shop/work/ is put back
-            if not path.is_file() or path.read_bytes() != content:
-                path.parent.mkdir(parents=True, exist_ok=True)
-                path.write_bytes(content)
+        self.put_back(here, kept)
         (here / "session.json").write_text(done.stdout)
         self.log(**{"work-item": name, "stage": stage, "agent": agent, "session": session, "event": "end"})
         result = here / "result.json"
@@ -156,9 +176,10 @@ class Run:
     def implement(self, name):
         """ready -> claimed, the implementer in its worktree, and its branch merged only on passing tests (r4)."""
         self.move(name, "ready", "claimed")
-        branch = git(self.root, "rev-parse", "--abbrev-ref", "HEAD").stdout.strip()
+        branch = self.branch
         tree = self.root / ".shop" / "worktrees" / name
         git(self.root, "worktree", "add", "-q", "-b", "work/" + name, str(tree), "HEAD")
+        self.trees.append(tree)
         data, failure = self.worker(name, "implement", "bdd-implementer", tree)
         question = self.outcome("bdd-implementer", data, failure)
         if question is None:
@@ -171,7 +192,7 @@ class Run:
                         " ".join(cmd), name, name, (done.stdout + done.stderr).strip())
                     break
         if question is None:
-            git(self.root, "merge", "-q", "--ff-only", "work/" + name)
+            git(self.root, "merge", "--ff-only", "work/" + name)
             self.move(name, "claimed", "done")
         else:
             self.move(name, "claimed", "awaiting-ruling", question)
@@ -195,11 +216,15 @@ class Run:
     def run(self):
         """Pull the work-items one worker at a time until none can move (r1); print where each stands (r9)."""
         self.check()
-        while True:
-            movable = [(n, s) for n, s in self.items() if s in MOVABLE]
-            if not movable:
-                break
-            self.step(*movable[0])
+        try:
+            while True:
+                movable = [(n, s) for n, s in self.items() if s in MOVABLE]
+                if not movable:
+                    break
+                self.step(*movable[0])
+        finally:
+            for tree in self.trees:      # on every way out, a failure's too: the run leaves no worktree
+                subprocess.run(["git", "worktree", "remove", "--force", str(tree)], cwd=self.root, capture_output=True)
         statuses = self.items()
         for name, status in statuses:
             print("%s %s" % (name, status))
