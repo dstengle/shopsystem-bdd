@@ -87,6 +87,22 @@ def decision_text(plan, slug, summary, fields):
                                   slug, summary))
 
 
+def with_id(text, ident):
+    """`text` with `id: <ident>` first in its frontmatter (one is added when it has none); unchanged if it has an id."""
+    if text.startswith("---\n"):
+        end = text.find("\n---", 4)
+        if end > 0:
+            if re.search(r"^id:", text[4:end], re.MULTILINE):
+                return text
+            return "---\nid: %s\n" % ident + text[4:]
+    return "---\nid: %s\n---\n" % ident + text
+
+
+def plan_index(plan):
+    if "spec/index.md" in tracked(plan.root):
+        plan.texts["spec/index.md"] = with_id(plan.read("spec/index.md"), "bounded-context/" + plan.context)
+
+
 def plan_ledger(plan):
     if LEDGER not in tracked(plan.root):
         return
@@ -116,6 +132,7 @@ def cmd_run(args):
     plan = Plan(Path.cwd(), args.context)
     plan_moves(plan)
     plan_ledger(plan)
+    plan_index(plan)
     write(plan)
     return 0
 

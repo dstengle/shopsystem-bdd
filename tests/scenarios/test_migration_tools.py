@@ -150,3 +150,15 @@ def _(old):
 def _(old):
     data, _ = front(old, "spec/decisions/0007-a.md")
     assert (data["status"], data["date"], data["by"]) == ("accepted", "2025-03-01", "alice")
+
+
+@given("a repository on the old system whose spec/index.md gives no id")
+def _(old):
+    old.write("spec/index.md", "# shop\n")
+    old.commit()
+
+
+@then(parsers.parse("{rel} gives the id {ident}"))
+def _(old, rel, ident):
+    data, _ = front(old, rel)
+    assert data.get("id") == ident
