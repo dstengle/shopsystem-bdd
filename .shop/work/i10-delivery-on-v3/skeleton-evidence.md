@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/skeleton-evidence
 kind: work-item
 part_of: capability-proposal/skeleton-evidence-supervision
-status: drafted
+status: green
 wkind: capability
 under: supervision
 accepts: [supervision#r11-r18]
