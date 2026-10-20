@@ -26,14 +26,26 @@ def test_modules(tests):
     return found
 
 
+_ALIASES = {}  # id(tree) -> (tree, {alias: pytest_bdd name}): each module's imports read once, not once a call
+
+
+def aliases(tree):
+    """`from pytest_bdd import <name> as <alias>` of `tree`: {alias: name}, the first import of an alias winning."""
+    if id(tree) not in _ALIASES:
+        found = {}
+        for n in ast.walk(tree):
+            if isinstance(n, ast.ImportFrom) and n.module == "pytest_bdd":
+                for a in n.names:
+                    found.setdefault(a.asname, a.name)
+        _ALIASES[id(tree)] = (tree, found)
+    return _ALIASES[id(tree)][1]
+
+
 def called_name(node, tree=None):
     """The name a call goes by; `from pytest_bdd import scenario as s` makes s(...) a call of scenario."""
     name = node.func.id if isinstance(node.func, ast.Name) else getattr(node.func, "attr", None)
-    for n in ast.walk(tree) if tree is not None else ():
-        if isinstance(n, ast.ImportFrom) and n.module == "pytest_bdd":
-            for a in n.names:
-                if a.asname == name and isinstance(node.func, ast.Name):
-                    return a.name
+    if tree is not None and isinstance(node.func, ast.Name) and name in aliases(tree):
+        return aliases(tree)[name]
     return name
 
 
@@ -74,9 +86,10 @@ def unbound_report(args, files):
     else:
         wanted = {os.path.realpath(path) for path, _ in files}
     calls = {}  # (feature file, title) -> ["<module>:<line>", ...]
+    every = scenarios_calls(args.tests)
     for path, f in files:
         real = os.path.realpath(path)
-        for module, line, named in scenarios_calls(args.tests):
+        for module, line, named in every:
             for name in named:
                 folder = os.path.realpath(os.path.join(args.dir, name))
                 if os.path.isdir(folder):
