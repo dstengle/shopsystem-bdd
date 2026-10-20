@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/ears-check
 kind: work-item
 part_of: capability-proposal/ears-design-model-check
-status: drafted
+status: green
 wkind: capability
 under: design-model-check
 accepts: [design-model-check#r5, design-model-check#r20, design-model-check#r23, design-model-check#r51, design-model-check#r103, design-model-check#r104]
