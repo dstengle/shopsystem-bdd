@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/code-research-1
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-code-research
-status: done
+status: green
 wkind: capability
 under: code-research
 accepts: [code-research#r1, code-research#r3-r6, code-research#r8-r12]

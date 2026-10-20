@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/delivery-5
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-delivery
-status: drafted
+status: green
 wkind: enabling
 under: delivery
 check: "the fixture harness's deliver-real case passes in every run: one person-approved, formulated work-item on a fixture repository taken by delivering-an-initiative and work run through every stage with real workers, ending green or awaiting-ruling"
