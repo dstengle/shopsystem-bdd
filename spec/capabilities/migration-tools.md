@@ -27,6 +27,7 @@ what running it shows.
 - [r9] **When** `migrate run` gives a capability, a decision file or a moved record its id, `migrate` shall write `<kind>/<path>/<name>`, the name being the file's stem, without a decision file's number, and the kind `capability`, `design-decision`, or for a moved plan, design note or test log (a file whose name ends `-test-log.md`) `initiative-archive`, `decision-argument` or `measurement`.
 - [r10] **When** `migrate run` finds Behaviour lines with no id, `migrate` shall number them in Behaviour order from one above the highest id their capability has ever used.
 - [r11] **When** `migrate run` has replaced every entry of `spec/decisions.md`, `migrate` shall remove `spec/decisions.md`.
+- [r12] **When** `migrate run` gives a moved record its id and the record has no `about`, `migrate` shall give it `about: bounded-context/<path>`.
 
 ## Implementation, may change
 - Python 3 with the standard library; moves are `git mv`; it does not commit. Every change is computed first,

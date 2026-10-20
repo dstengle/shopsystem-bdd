@@ -5,7 +5,7 @@ part_of: capability-proposal/migrate-readings
 status: awaiting-ruling
 wkind: capability
 under: migration-tools
-accepts: [migration-tools#r1-r11]
+accepts: [migration-tools#r1-r12]
 fileset: [scripts/migrate, tests/scenarios/test_migration_tools.py, tests/scripts/test_bound.py]
 ---
 
