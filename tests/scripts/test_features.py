@@ -387,6 +387,21 @@ class ScenarioTest(Workspace, unittest.TestCase):
                 self.assertEqual(done.returncode, 0, done.stderr)
                 self.assertEqual(done.stdout, "features/cart.feature: Apply a code (deprecated) | for: %s | %s\n" % (deprecated_for, shown))
 
+    def test_the_deprecated_list_names_each_file_that_has_the_replacements_title(self):
+        self.write("features/a.feature", feature(
+            block("Apply a code (deprecated)", "@deprecated", "    Deprecated for: Apply a voucher\n    Given a step\n"),
+            block("Apply a voucher", "@r5")))
+        self.write("features/b.feature", feature(block("Apply a voucher", "@slice-1")))
+        done = self.run_script("deprecated")
+        self.assertEqual(done.stdout, "features/a.feature: Apply a code (deprecated) | for: Apply a voucher | "
+                                      "features/a.feature @r5; features/b.feature has no @r<n> tag\n")
+
+    def test_the_deprecated_list_says_once_that_the_deprecated_for_line_is_empty(self):
+        self.write("features/cart.feature", feature(
+            block("Apply a code (deprecated)", "@deprecated", "    Deprecated for:\n    Given a step\n")))
+        done = self.run_script("deprecated")
+        self.assertEqual(done.stdout, "features/cart.feature: Apply a code (deprecated) | the Deprecated for: line is empty\n")
+
     def test_the_deprecated_list_says_when_nothing_is_deprecated(self):
         self.write("features/cart.feature", feature(block("Apply a code", "@slice-1")))
         done = self.run_script("deprecated")

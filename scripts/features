@@ -411,11 +411,17 @@ def cmd_retire(args, files):
 
 
 def cmd_deprecated(args, files):
-    titles = {sc.title: (p, f, sc) for p, f in files for sc in f.scenarios}
+    titles = {}
+    for p, f in files:
+        for sc in f.scenarios:
+            titles.setdefault(sc.title, []).append((p, f, sc))
     found = [(p, f, sc) for p, f in files for sc in f.scenarios if "deprecated" in sc.tags]
     for path, f, sc in found:
         wanted = [s[len("Deprecated for:"):].strip() for s in f.description(sc) if s.startswith("Deprecated for:")]
         target = wanted[0] if wanted else None
+        if target == "":
+            print("%s: %s | the Deprecated for: line is empty" % (path, sc.title))
+            continue
         if target is None:
             where = "no Deprecated for: line"
         elif target == "removal":
@@ -423,9 +429,14 @@ def cmd_deprecated(args, files):
         elif target not in titles:
             where = "no scenario has that title"
         else:
-            tpath, tf, ts = titles[target]
-            tags = sorted((t for t in tf.effective_tags(ts) if REQ_TAG.match(t)), key=natural)
-            where = "%s %s" % (tpath, " ".join("@" + t for t in tags)) if tags else "the replacement has no @r<n> tag"
+            shown = []
+            for tpath, tf, ts in titles[target]:
+                tags = sorted((t for t in tf.effective_tags(ts) if REQ_TAG.match(t)), key=natural)
+                shown.append("%s %s" % (tpath, " ".join("@" + t for t in tags)) if tags else (tpath, None))
+            if len(shown) == 1 and isinstance(shown[0], tuple):
+                where = "the replacement has no @r<n> tag"
+            else:
+                where = "; ".join(x if isinstance(x, str) else "%s has no @r<n> tag" % x[0] for x in shown)
         print("%s: %s | for: %s | %s" % (path, sc.title, target or "-", where))
     if not found:
         print("none deprecated")
