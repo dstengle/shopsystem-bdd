@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/supervision-1
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-supervision
-status: drafted
+status: green
 wkind: capability
 under: supervision
 accepts: [supervision#r1-r10]
