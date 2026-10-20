@@ -24,8 +24,7 @@ Every sentence of the note lands in exactly one place: a Behaviour line, a gloss
 
 ## A Behaviour line
 
-- EARS: preconditions first, at most one trigger, then the response. *(none)* for an invariant, **When** for an event, **While** for a state, **If** for a refusal or fault, **Where** for configuration.
-- Present indicative in the narrator's voice; never "shall".
+- EARS with "shall" (`docs/capability-format.md`, Writing the behaviour section): `The <system> shall ...`, `When <trigger>, the <system> shall ...`, `While <state>, ...`, `If <condition>, then ...`, `Where <feature>, ...`, or the clauses combined in the order Where, While, then When or If. The pattern follows what starts the behaviour, not the note's wording. One "shall", one response and one sentence a line; an `If` line only for the capability's purpose, a file the person could lose, or a failure seen.
 - The response is something the narrator observes: a value returned, a refusal and the reason it names, a file at a path. A refusal names its reason: *the code is refused because it has expired*. The words of a message, a status code, a field name, a table or a column are Implementation.
 - Every Behaviour line cites the note sentence that states it, in the change list you reply with; the capability file carries the line alone. A line the note does not state is not written, however obvious it seems (a refused code leaving the total unchanged; a nullable column implying "no minimum means any total"; a rounding mode from the implementation notes becoming a rule). It is a question, with the line you would write if the answer is yes.
 - A table of commands stays a table; a list of properties stays a list.

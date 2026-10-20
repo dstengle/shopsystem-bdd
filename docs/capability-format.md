@@ -52,7 +52,7 @@ retired: []
 One paragraph: what this is, and what it isn't.
 
 ## Behaviour
-EARS lines, each with its id: `- [r1] **When** ...`. This is the only section scenarios are formulated from.
+EARS lines with "shall", each with its id: `- [r1] **When** ..., the <system> shall ...`. This is the only section scenarios are formulated from.
 
 ## Implementation, may change
 Mechanism. Non-binding. Nothing here gets a scenario.
@@ -77,34 +77,44 @@ decision it explains.
 
 ## Writing the behaviour section
 
-EARS, with two adaptations.
+Every line is one EARS requirement with "shall" (design-decision/behaviour-lines-are-ears). `model check`
+reports a line that is not (`v_e1`) or has more than one "shall" or sentence (`v_e2`).
 
-**The patterns.** Preconditions first, then at most one trigger, then the
-response.
+**The patterns.** In this order of clauses; the system is named in the line.
 
-| keyword | pattern | use it for |
-|---|---|---|
-| *(none)* | ubiquitous | invariants that always hold |
-| When | event-driven | a call, a command, an input |
-| While | state-driven | something true for a period: stale, locked, unreachable |
-| If | unwanted behaviour | refusals and faults |
-| Where | optional feature | "where the schema declares…" — behaviour that depends on configuration |
+| pattern | form |
+|---|---|
+| ubiquitous | `The <system> shall <response>.` |
+| event-driven | `When <trigger>, the <system> shall <response>.` |
+| state-driven | `While <state>, the <system> shall <response>.` |
+| unwanted behaviour | `If <condition>, then the <system> shall <response>.` |
+| optional feature | `Where <feature>, the <system> shall <response>.` |
+| complex | the clauses combined: `Where`, then `While`, then one `When` or `If ... then`, then the system and its response |
 
-**Adaptation 1: no "shall".** Present indicative, in the narrator's voice.
-*When `Create` is called with a title, kb mints the id and returns it*,
-not *the system shall mint*.
+**The pattern follows what starts the behaviour.** A response to a command, an input or an event is
+event-driven, the trigger in its `When`. A refusal or a fault is unwanted behaviour, the condition in
+`If ... then`. Behaviour that lasts for a period is state-driven. Behaviour that depends on an option or
+configuration is optional. Only what holds with no trigger at all is ubiquitous.
 
-**Adaptation 2: the response is observable by the narrator.** A value
-returned, a refusal and what it names, a file at a path. If you can't
-write the response that way, the sentence is implementation and moves
-down a section. This is the rule that keeps mechanism out of behaviour.
-A refusal names its reason (*kb refuses the code because it has
-expired*); the words of a message, a status code and a field name are
-implementation.
+**One "shall", one response, one sentence.** A line with two responses is two lines. Conditions with the same
+response join in one line: `If A or B, then ...`.
 
-Tables stay tables: a table of commands or rpcs is a row of implicit
-When-lines and doesn't need rewriting. A list of properties (a canonical
-format) stays a list.
+**An `If` line earns its place** only when it is the capability's purpose (a check that reports problems),
+protects the person's files from loss or silent damage, or answers a failure that has been seen. Every other
+failure is covered by one line per script or agent: `If <system> cannot do what it was asked, then <system>
+shall exit non-zero, say why, and change nothing.` A failure seen in practice earns its own line from that
+evidence.
+
+**The response is observable by the narrator.** A value returned, a refusal and what it names, a file at a
+path. If you can't write the response that way, the sentence is implementation and moves down a section.
+A refusal names its reason; the words of a message, a status code and a field name are implementation.
+
+**Tables.** A check's rules may be a table: a sentence that names the system and says "shall" leads it, and
+each row carries an id in its first cell, `| [r3] | ... |`, and counts as a line, checked by its lead sentence.
+A list of properties (a canonical format) stays a list.
+
+**Skeletons.** A capability not yet built is specified as a walking skeleton, a handful of lines, and grows
+from what running it shows.
 
 ## Requirement ids
 
@@ -184,7 +194,7 @@ meaning, not a word match: `checking-spec-consistency` finds it, on demand.
 
 ## The feature file
 
-One feature per capability. One scenario per EARS line; a scenario
+One feature per capability. A scenario for each EARS line, naming it by its `@r<n>` tag; a scenario may name several lines, and every line is named by at least one; a scenario
 outline where the line has a Where and several configurations matter.
 Each scenario is tagged `@r<n>` with the id of the line it formulates, on the scenario's tag line; the tag is
 what binds them. The title is free; restating the line's condition is still a good title. A held scenario

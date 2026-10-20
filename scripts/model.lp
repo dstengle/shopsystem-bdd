@@ -146,7 +146,9 @@ v15a(Q)     :- node(Q, "capability-requirement"), not has_req_id(Q).
 v15b(Q1,Q2) :- req_id(Q1, C, N), req_id(Q2, C, N), Q1 < Q2.     % FIX g:157: Q1 < Q2, so one duplicate is one row
 v15c(Q)     :- req_id(Q, C, N), retired_id(C, N).
 v15d(Q, C)  :- req_id(Q, C, _), not has_req(C, Q).
-v15e(P, Q)  :- changes(P, Q), not has_any_req(Q).
+% FIX (design-model-check r6): only a drafted or approved proposal; a merged, formulated or withdrawn one may change a retired id.
+v15e(P, Q)  :- changes(P, Q), not has_any_req(Q), status(P, "drafted").
+v15e(P, Q)  :- changes(P, Q), not has_any_req(Q), status(P, "approved").
 % g:161's disjunction in a body is split into two clauses for clingo; C is bound by has_req(C, Q).
 v15f(P)     :- status(P, "formulated"), adds(P, Q),    not has_sc_q(Q), has_req(C, Q), not group(C, "guarantees").
 v15f(P)     :- status(P, "formulated"), changes(P, Q), not has_sc_q(Q), has_req(C, Q), not group(C, "guarantees").
@@ -169,9 +171,9 @@ v_b1(W) :- node(W, "work-item"), part_of(W, X), not node(X, "capability-proposal
 v_b2(Q) :- node(Q, "cross-context-request"), part_of(P, Q), not node(P, "capability-proposal").
 v_b3(T) :- node(T, "job-thread"), part_of(P, T), not node(P, "capability-proposal"), not node(P, "cross-context-request"), not node(P, "map-escalation").
 
-% scenarios: exactly one requirement each; every requirement tested unless guarantees
+% scenarios: every requirement tested unless guarantees
 v_s1(S) :- node(S, "acceptance-scenario"), not has_sc_of(S).
-v_s2(S) :- has_sc(Q1, S), has_sc(Q2, S), Q1 != Q2.
+% FIX g:180 (design-decision/a-scenario-may-name-several-requirements): v_s2 is gone; a scenario may name several.
 v_s3(Q) :- has_req(C, Q), not has_sc_q(Q), not group(C, "guarantees").
 
 % work-items: blocked_by acyclic; ready only when unblocked; claimed file sets disjoint; acceptance present
@@ -204,6 +206,15 @@ v_t2(T)       :- glossary_entry(T, N1, _), glossary_entry(T, N2, _), N1 < N2.
 % t3. no term avoids a term of its context, itself included
 v_t3(W)       :- avoid(T, W), term_of(T, Ctx), glossary_entry(T2, _, W), term_of(T2, Ctx).
 
+% ---------------------------------------------------------------- EXTENSION: EARS lines
+% Proposed against grammar.md v3 (design-model-check r103-r104; design-decision/behaviour-lines-are-ears).
+% scripts/model matches each Behaviour line (a table row by its lead sentence) and gives ears_other(Q) for a line
+% in none of EARS's patterns and ears_many(Q) for one with more than one "shall" or more than one sentence.
+label("v_e1", "a Behaviour line is not in one of EARS's patterns").
+label("v_e2", "a Behaviour line has more than one shall or more than one sentence").
+v_e1(Q) :- ears_other(Q).
+v_e2(Q) :- ears_many(Q).
+
 % ---------------------------------------------------------------- warnings g:193-204
 w_unserved_cap(C)  :- node(C, "capability"), not serves(C, _).
 w_unserved_job(J)  :- node(J, "job"), not serves(_, J), not of_job(_, J).
@@ -221,9 +232,10 @@ w_stale_intake(I)  :- status(I, "proposed"), age(I, Days), Days > 90.
 #show v11/1. #show v12a/1. #show v12b/1. #show v13/1.
 #show v15a/1. #show v15b/2. #show v15c/1. #show v15d/2. #show v15e/2. #show v15f/1.
 #show v_k1/1. #show v_k2/1. #show v_k3/1. #show v_k4/1. #show v_k5/1. #show v_k6/1.
-#show v_b1/1. #show v_b2/1. #show v_b3/1. #show v_s1/1. #show v_s2/1. #show v_s3/1.
+#show v_b1/1. #show v_b2/1. #show v_b3/1. #show v_s1/1. #show v_s3/1.
 #show v_w1/1. #show v_w2/1. #show v_w3/2. #show v_w4/1. #show v_d1/1.
 #show v_t1/3. #show v_t2/1. #show v_t3/1.    % EXTENSION (proposed against grammar.md v3)
+#show v_e1/1. #show v_e2/1.                  % EXTENSION (proposed against grammar.md v3)
 #show v_d2/1.                                 % EXTENSION (proposed against grammar.md v3)
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
 #show w_many_requests/1. #show w_stale_intake/1.

@@ -125,7 +125,7 @@ class World:
 
     def good(self):
         """One capability whose one requirement has its scenario."""
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, it answers."]))
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, `thing` shall answer."]))
         self.write("features/thing.feature", feature("thing", ("@r1", "it answers")))
 
     def initiative(self, ident="i1", source="[observation/obs-1]", status="started", kind="capability-change"):

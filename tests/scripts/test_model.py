@@ -109,7 +109,7 @@ class ModelTest(unittest.TestCase):
         self.write(f"work/i1/{ident}.md", f"---\n{body}---\n")
 
     def good(self):
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, it answers."]))
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, `thing` shall answer."]))
         self.write("features/thing.feature", feature("thing", ("@r1", "it answers")))
 
     def initiative(self, ident="i1", source="[observation/obs-1]", status="started", kind="capability-change"):
@@ -151,14 +151,14 @@ class ModelTest(unittest.TestCase):
 class CheckTest(ModelTest):
     def test_r2(self):
         """violations are printed by their grammar name and fail the check"""
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, it answers."]))
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, `thing` shall answer."]))
         r = self.run_model("check")
         self.assertEqual(r.returncode, 1)
         self.assertRegex(r.stdout, r"v_s3\s+\(1\)\n\s+" + re.escape(THING + "#r1"))
 
     def test_r3(self):
         """a requirement bullet without an id is refused"""
-        self.write("spec/capabilities/thing.md", cap("thing", ["- **When** asked, it answers."], group="guarantees"))
+        self.write("spec/capabilities/thing.md", cap("thing", ["- **When** asked, `thing` shall answer."], group="guarantees"))
         r = self.run_model("check")
         self.assertIn("v15a", r.stdout)
         self.assertEqual(r.returncode, 1)
@@ -195,7 +195,7 @@ class CheckTest(ModelTest):
 
     def test_r8(self):
         """a guarantees capability needs no scenarios"""
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] It is fast."], group="guarantees"))
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] `thing` shall be fast."], group="guarantees"))
         r = self.run_model("check")
         self.assertNotIn("v_s3", r.stdout)
         self.assertEqual(r.returncode, 0, r.stdout)
@@ -298,7 +298,7 @@ class ReadingTest(ModelTest):
         self.assertRegex(r.stdout, r"v15c\s+\(1\)\n\s+" + re.escape(THING + "#r1"))
 
     def test_feature_tags_column_zero_lists_and_comments_are_read(self):
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."]).replace(
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] `thing` shall answer."]).replace(
             "rests_on: []", "rests_on:\n- x").replace("group: service", "group: service   # a comment"))
         self.write("decisions/0001-x.md", f'---\nid: {full("design-decision", "x")}\nsummary: "X."\ndate: 2026-01-01\nstatus: accepted\n---\n')
         self.write("features/thing.feature", "@r1\nFeature: thing\n\n  Example: one\n    Given a\n")
@@ -309,7 +309,7 @@ class ReadingTest(ModelTest):
         self.assertIn(f'group("{THING}", "service").', facts)
 
     def test_a_held_scenario_is_no_acceptance_scenario(self):
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], retired="[r2]"))
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] `thing` shall answer."], retired="[r2]"))
         self.write("features/thing.feature", "\n".join([
             "Feature: thing", "",
             "  @r1", "  Scenario: one", "    Given a", "",
@@ -321,7 +321,7 @@ class ReadingTest(ModelTest):
         self.assertNotIn("(held)", facts)
 
     def test_a_ledger_is_read_where_there_is_no_decisions_directory(self):
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], group="guarantees", rests_on="[x]"))
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] `thing` shall answer."], group="guarantees", rests_on="[x]"))
         self.write("spec/decisions.md", "# Decisions\n\n## design-decision/x\nX.\ndate: 2026-01-01\n")
         r = self.run_model("check")
         self.assertEqual(r.returncode, 0, r.stdout)

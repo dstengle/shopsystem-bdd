@@ -93,6 +93,7 @@ STATUSES = {
     "work-item": {"drafted", "researched", "planned", "ready", "claimed", "done", "green", "awaiting-ruling",
                   "withdrawn"},   # withdrawn: EXTENSION (r58)
 }
+SETTLED = {"merged", "formulated", "withdrawn"}     # a capability-proposal that may name a retired id (r5, r23)
 PART_KINDS = {"job-proposal", "map-proposal", "vision-proposal", "job-thread", "capability-proposal",
               "cross-context-request", "map-escalation", "work-item"}
 RECORD_KINDS = {"observation", "measurement", "review-finding", "decision-argument", "initiative-archive"}
@@ -102,6 +103,7 @@ KINDS = {"bounded-context", "capability", "design-decision", "acceptance-scenari
          "decision-argument", "initiative-archive", "job", "context-seam", "product-vision"}
 NAME = r"[a-z0-9]+(?:-[a-z0-9]+)*"
 CONTEXT_PATH = rf"{NAME}(?:\.{NAME})*/{NAME}/{NAME}"     # <owner>/<product>/<context name>; the owner may be a domain
+NOT_PROSE = re.compile(r'`[^`]*`|"[^"]*"|(?<!\w)@[\w-]+')
 ENTRY = re.compile(r"^\*\*(?P<term>[^*]+?)\*\*: (?P<rest>.+)$")    # a glossary bullet, after its "- "
 REEXEC = "SHOPSYSTEM_MODEL_REEXEC"      # set when check runs again under another interpreter (r56)
 
@@ -227,6 +229,39 @@ def bullets(lines):
     return out
 
 
+TABLE_ID = re.compile(r"^\[r\d+\]$")
+
+
+def behaviour_items(lines):
+    """(text, lead) of each requirement of a Behaviour section: a top-level '- ' bullet, its continuation lines joined,
+    or a table row whose first cell is `[r<n>]`, its other cells joined by ' | '. `lead` is the sentence that
+    introduces a table row (a bullet with no id that ends in ':', or the paragraph above the table), else None.
+    A table's header row and separator, a '###' heading and a lead sentence are no requirements."""
+    items, lead, open_bullet, paragraph = [], None, False, False
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("|"):
+            open_bullet = paragraph = False
+            cells = [c.strip() for c in stripped.strip("|").split("|")]
+            if cells and TABLE_ID.match(cells[0]):
+                items.append([cells[0] + " " + " | ".join(cells[1:]), lead])
+            elif items and items[-1][1] is None and not RID.match(items[-1][0]) and items[-1][0].endswith(":"):
+                lead = items.pop()[0]       # a bullet with no id that ends in ':' above a table leads it
+            continue
+        if line.startswith(("- ", "* ")):
+            items.append([stripped[2:].strip(), None])
+            lead, open_bullet, paragraph = items[-1][0], True, False
+        elif open_bullet and line.startswith("  ") and stripped:
+            items[-1][0] += " " + stripped
+            lead = items[-1][0]
+        elif stripped and not line.startswith(("#", " ")):
+            lead = lead + " " + stripped if paragraph else stripped
+            open_bullet, paragraph = False, True
+        elif not stripped:
+            paragraph = False
+    return [tuple(i) for i in items]
+
+
 def scenarios(text):
     """(title, tags, steps) for each Scenario or Scenario Outline of a feature file."""
     out, pending, in_doc, feature_tags, steps = [], [], None, [], None
@@ -266,6 +301,47 @@ def glossary_entry(bullet):
     if not definition.strip(" .") or not m.group("term").strip() or any(not w for w in words):
         return None
     return m.group("term").strip(), words
+
+
+CLAUSE_RANK = {"Where": 1, "While": 2, "When": 3, "If": 3}
+CLAUSE = re.compile(r"(Where|While|When|If)\b")
+
+
+def ears(line):
+    """(in a pattern, one shall and one sentence) of a Behaviour line, or of a table's lead sentence (r103, r104).
+
+    The line is matched after removing `**` and the `[r<n>]` prefix, a code span or a double-quoted string standing
+    for a word: `Where`, then `While`, then one `When` or `If ... then`, then the system and `shall` and the response.
+    """
+    if line is None:
+        return False, False
+    text = RID.sub("", line).replace("**", "")
+    text = re.sub(r'`[^`]*`|"[^"]*"', "X", text).strip().rstrip(":")
+    shalls = list(re.finditer(r"\bshall\b", text, re.IGNORECASE))
+    one = len(shalls) == 1 and len(re.findall(r"[.!?](?=\s+\S)", text)) == 0
+    if not shalls:
+        return False, one
+    rest, rank = text[: shalls[0].start()].strip(), 0
+    while True:
+        m = CLAUSE.match(rest)
+        if not m:
+            break
+        if CLAUSE_RANK[m.group(1)] <= rank:
+            return False, one
+        rank = CLAUSE_RANK[m.group(1)]
+        if m.group(1) == "If":
+            m = re.match(r"If .+?, then (\S.*)$", rest)
+            return (m is not None), one
+        nxt = re.search(r", (?=(?:Where|While|When|If)\b)", rest)
+        if nxt:
+            rest = rest[nxt.end():]
+            continue
+        cut = rest.rfind(", ")
+        if cut < 0:
+            return False, one
+        rest = rest[cut + 2:]
+        break
+    return bool(rest.strip()), one
 
 
 def mention(word):
@@ -393,6 +469,7 @@ class Model:
         """mentions(X, W) for each requirement and scenario X and each term or avoided word W it holds."""
         found = [(w, mention(w)) for w in sorted(self.words)]
         for x, text in list(self.req_text.items()) + list(self.sc_text.items()):
+            text = NOT_PROSE.sub(" ", text)        # code spans, double-quoted strings and @ tags are no mentions (r51)
             for w, pattern in found:
                 if pattern.search(text):
                     self.fact("mentions", x, w)
@@ -432,7 +509,7 @@ class Model:
                 self.problems.append(f"{self.rel(path)}: no '## Behaviour' section")
             entry = {"name": name, "reqs": {}, "group": data.get("group"), "path": path,
                      "feature": data.get("formulated_as") or f"features/{name}.feature"}
-            for i, text in enumerate(bullets(section(body, "Behaviour")), 1):
+            for i, (text, lead) in enumerate(behaviour_items(section(body, "Behaviour")), 1):
                 m = RID.match(text)
                 if m:
                     n = int(m.group(1))
@@ -447,6 +524,11 @@ class Model:
                     self.req_text[q] = text
                 self.node(q, "capability-requirement")
                 self.fact("has_req", cap, q)
+                shaped, single = ears(lead if lead is not None else text)
+                if not shaped:
+                    self.fact("ears_other", q)
+                if not single:
+                    self.fact("ears_many", q)
             self.caps[cap] = entry
 
     def read_features(self):
@@ -619,6 +701,8 @@ class Model:
                     if q in self.nodes:
                         continue
                     cap, n = q.rsplit("#r", 1)
+                    if (cap, int(n)) in self.retired and data.get("status") in SETTLED:
+                        continue                                # a merged, formulated or withdrawn proposal may name it (r5, r23)
                     if rel == "adds" and (cap, int(n)) in self.retired:
                         self.fact("req_id", q, cap, int(n))   # grammar.md's refusal table: v15c
                     elif rel != "changes":                     # changes: v15e reports it

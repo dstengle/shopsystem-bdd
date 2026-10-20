@@ -10,7 +10,7 @@ import sys
 
 from pytest_bdd import given, parsers, scenario, then, when
 
-from .conftest import CONTEXT, I1, P1, THING, cap, feature, full
+from .conftest import CONTEXT, INDEX, I1, P1, THING, cap, feature, full
 
 FEATURE = "design-model-check.feature"
 BOUND = (
@@ -32,6 +32,17 @@ BOUND = (
     'file problems are each printed and fail the check',
     'the check ends with the four counts',
     'rows of a violated relation are limited, saying how many more there are',
+    "a scenario names a requirement by its tag in its capability's feature file",
+    'a held scenario names no requirement',
+    'a scenario tagged with several requirements names each of them',
+    'a mention is a whole word in any case, plural allowed',
+    'a code span, a double-quoted string and a tag are no mention',
+    "a Behaviour line in none of EARS's patterns is v_e1",
+    'a table row is checked by its lead sentence',
+    'a Behaviour line with two shalls or two sentences is v_e2',
+    'a retired id used again is refused',
+    'a merged capability-proposal may add or remove an id its capability lists as retired',
+    'a table row with an id is a requirement, and its header, separator and lead sentence are not',
 )
 
 # HIDE_CLINGO on PYTHONPATH hides clingo from an interpreter, as the fixture harness does.
@@ -132,6 +143,14 @@ def proposal_naming(world, context, change, rid):
     world.initiative()
     world.proposal(**{change: "[thing#%s]" % rid})
     context["changed"] = rid
+
+
+@given("a merged capability-proposal that adds thing#r4 and removes thing#r4")
+def merged_proposal_on_retired(world, context):
+    world.observation()
+    world.initiative()
+    world.proposal(status="merged", adds="[thing#r4]", removes="[thing#r4]")
+    context["changed"] = "r4"
 
 
 @given(parsers.parse("a capability-proposal whose list names {reference}"))
@@ -270,7 +289,7 @@ def two_capabilities_without_behaviour(world):
 
 @given("a repository with one violation, one warning, one unresolved reference and one file problem")
 def one_of_each(world):
-    world.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], rests_on="[nope]"))
+    world.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, `thing` shall answer."], rests_on="[nope]"))
     world.write("features/stray.feature", "Feature: stray\n")
 
 
@@ -278,6 +297,92 @@ def one_of_each(world):
 def unscenarioed(world, context, rows):
     world.write("spec/capabilities/thing.md", cap("thing", ["- [r%d] Req %d." % (n, n) for n in range(1, rows + 1)]))
     context["rows"] = rows
+
+
+# --- Given: table rows and EARS lines (r3, r103, r104) --------------------------------------------------------------
+
+@given("a capability whose Behaviour has a ### heading, a lead sentence, and a table with a header row, a separator "
+       "and rows marked [r1] and [r2]")
+def capability_with_table(world):
+    world.write("spec/capabilities/thing.md", cap("thing", [
+        "### Reports", "",
+        "**If** `thing` finds a case of a row below, then `thing` shall report it.", "",
+        "| id | what is reported |", "|---|---|", "| [r1] | one |", "| [r2] | two |"]))
+
+
+@given(parsers.parse("a scenario tagged @r2"))
+def scenario_tagged_r2(world):
+    world.write("features/thing.feature", feature("thing", ("@r2", "two")))
+
+
+@given("a capability that lists r1 as retired and has a requirement [r1]")
+def capability_reusing_retired(world):
+    world.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], retired="[r1]"))
+
+
+@given(parsers.parse("a capability thing with requirement r2, {formulated}"))
+def capability_formulated_as(world, context, formulated):
+    line = "formulated_as: " + formulated.split(" ", 1)[1] if formulated.startswith("formulated_as ") else None
+    text = cap("thing", ["- [r2] Two."])
+    text = text.replace("formulated_as: features/thing.feature\n", (line + "\n") if line else "")
+    world.write("spec/capabilities/thing.md", text)
+
+
+@given(parsers.parse("a scenario in {path} with the tag @r2 {placed}"))
+def scenario_placed(world, path, placed):
+    text = feature("thing", ("@r2", "two"))
+    if placed == "on its feature":
+        text = text.replace("Feature: thing", "@r2\nFeature: thing").replace("  @r2\n  Scenario", "  Scenario")
+    world.write(path, text)
+
+
+@given("a capability thing with requirement r2")
+def capability_r2(world):
+    world.write("spec/capabilities/thing.md", cap("thing", ["- [r2] Two."]))
+
+
+@given("its only scenario tagged @r2 is also tagged @holding")
+def scenario_held(world):
+    world.write("features/thing.feature", feature("thing", ("@r2 @holding", "two")))
+
+
+@given("a capability thing with requirements r1 and r2")
+def capability_r1_r2(world):
+    world.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One.", "- [r2] Two."]))
+
+
+@given("a scenario tagged @r1 @r2")
+def scenario_tagged_both(world):
+    world.write("features/thing.feature", feature("thing", ("@r1 @r2", "both")))
+
+
+@given("a glossary term store that avoids shelf")
+def glossary_store(world):
+    world.write("spec/index.md", INDEX + "\n## Glossary\n- **store**: a place. Not: shelf.\n")
+
+
+@given('requirements that say "the Store", "the stores", "restore" and "a shelf and a store-front"')
+def requirements_saying(world):
+    lines = ["the Store", "the stores", "restore", "a shelf and a store-front"]
+    world.write("spec/capabilities/thing.md", cap("thing", ["- [r%d] %s." % (n, t) for n, t in enumerate(lines, 1)]))
+
+
+@given('a scenario whose steps say "a shelf" and another whose title says "the store"')
+def scenarios_saying(world):
+    world.write("features/thing.feature", "Feature: thing\n\n  Scenario: first\n    Given a shelf\n\n"
+                "  Scenario: the store\n    Given a thing\n")
+
+
+@given("a capability whose Behaviour has these lines")
+def capability_with_lines(world, datatable):
+    rows = datatable[1:]
+    world.write("spec/capabilities/thing.md", cap("thing", ["- [%s] %s" % (r[0], r[1]) for r in rows]))
+
+
+@given("a capability whose Behaviour has a table with rows marked [r1] and [r2], led by a sentence that names no system")
+def capability_with_unled_table(world):
+    world.write("spec/capabilities/thing.md", cap("thing", [
+        "Each row below is reported.", "", "| id | what |", "|---|---|", "| [r1] | one |", "| [r2] | two |"]))
 
 
 # --- When ------------------------------------------------------------------------------------------------------
@@ -327,6 +432,101 @@ def reports_nothing(context):
     out = context["result"].stdout
     assert "0 violations" in out
     assert "0 unresolved references, 0 file problems" in out
+
+
+@then(parsers.re(r"the output names (?P<code>v15c)"))
+def output_names_code(world, context, code):
+    assert code in [name for name, _ in found(world, context)["violations"]], found(world, context)
+
+
+@then("thing#r4 is reported neither under v15c nor as unresolved")
+def r4_not_reported(world, context):
+    data = found(world, context)
+    assert [d for d in data["unresolved"] if "thing#r4" in d] == [], data
+    assert [a for name, a in data["violations"] if name in ("v15c", "v15d") and "thing#r4" in a[0]] == [], data
+
+
+@then(parsers.re(r"the requirement thing#r2 is (?P<reported>not|still|reported) (?:reported )?under v_s3"))
+def r2_under_v_s3(world, context, reported):
+    rows = [a[0] for name, a in found(world, context)["violations"] if name == "v_s3"]
+    assert (THING + "#r2" in rows) == (reported != "not"), found(world, context)
+
+
+@then("neither thing#r1 nor thing#r2 is reported under v_s3")
+def neither_under_v_s3(world, context):
+    rows = [a[0] for name, a in found(world, context)["violations"] if name == "v_s3"]
+    assert rows == [], found(world, context)
+
+
+@then("it reports no file problem")
+def no_file_problem(world, context):
+    assert found(world, context)["problems"] == []
+
+
+def _mentions(context):
+    facts = context["result"].stdout
+    return [m.groups() for m in re.finditer(r'^mentions\("([^"]*)", "([^"]*)"\)\.$', facts, re.M)]
+
+
+@then('"the Store" and "the stores" each mention store')
+def stores_mentioned(context):
+    mentioned = _mentions(context)
+    assert (THING + "#r1", "store") in mentioned and (THING + "#r2", "store") in mentioned, mentioned
+
+
+@then('"restore" and "store-front" mention nothing')
+def restore_mentions_nothing(context):
+    # "store-front" is in the requirement that also says "a shelf", which mentions shelf (next Then): so, nothing about store
+    mentioned = _mentions(context)
+    assert not [m for m in mentioned if m[0] == THING + "#r3"], mentioned
+    assert (THING + "#r4", "store") not in mentioned, mentioned
+
+
+@then('the requirement and the scenario saying "a shelf" each mention shelf')
+def shelf_mentioned(context):
+    mentioned = _mentions(context)
+    assert (THING + "#r4", "shelf") in mentioned, mentioned
+    assert ("features/thing.feature:first", "shelf") in mentioned, mentioned
+
+
+@then("only r4 mentions shelf")
+def only_r4_mentions_shelf(context):
+    assert [m[0] for m in _mentions(context) if m[1] == "shelf"] == [THING + "#r4"], _mentions(context)
+
+
+@then("it reports no file problem and no v_s2")
+def no_file_problem_and_no_v_s2(world, context):
+    data = found(world, context)
+    assert data["problems"] == [], data
+    assert [a for name, a in data["violations"] if name == "v_s2"] == [], data
+
+
+@then("it reports no file problem and no v15a")
+def no_file_problem_and_no_v15a(world, context):
+    data = found(world, context)
+    assert data["problems"] == [], data
+    assert [a for name, a in data["violations"] if name == "v15a"] == [], data
+
+
+@then("thing#r1 is reported under v_s3 and thing#r2 is not")
+def r1_but_not_r2_under_v_s3(world, context):
+    data = found(world, context)
+    rows = [a[0] for name, a in data["violations"] if name == "v_s3"]
+    assert THING + "#r1" in rows and THING + "#r2" not in rows, data
+
+
+def _named(world, context, code):
+    return {a[0].rsplit("#", 1)[1] for name, a in found(world, context)["violations"] if name == code}
+
+
+@then(parsers.re(r"(?P<code>v_e[12]) names (?P<ids>r\d+(?:(?:, | and )r\d+)*)"))
+def names_requirements(world, context, code, ids):
+    assert _named(world, context, code) == set(re.findall(r"r\d+", ids)), found(world, context)
+
+
+@then(parsers.re(r"(?P<code>v_e[12]) does not name (?P<ids>r\d+(?:(?:, | or )r\d+)*)"))
+def does_not_name_requirements(world, context, code, ids):
+    assert not _named(world, context, code) & set(re.findall(r"r\d+", ids)), found(world, context)
 
 
 @then(parsers.re(r"(?P<subject>.+?) is reported as unresolved"))
@@ -383,7 +583,7 @@ def facts_are_clingo(context):
 def why_traces(context):
     result = context["result"]
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "%s#r1: **When** asked, it answers." % THING in result.stdout
+    assert "%s#r1: **When** asked, `thing` shall answer." % THING in result.stdout
     assert "adds by capability-proposal %s (merged, 2026-10-15)" % P1 in result.stdout
     assert "part_of initiative %s" % I1 in result.stdout
     assert "source observation %s" % full("observation", "obs-1") in result.stdout

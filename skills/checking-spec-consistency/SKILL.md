@@ -31,6 +31,7 @@ Both modes start here. Choose the drafts path `.superpowers/spec-drafts/<date>-c
 6. **Write the findings file**, `<drafts path>/findings.md`, from `model-check.txt` and the agents' findings files, in this order:
    - `## Terms`: one `### <word> / <word>` heading per term cluster, the words one thing goes by or the thing one word names, with every finding about them: the `v_t*` rows of its words, one word used for two things, two words used for one thing, a thing with no glossary entry.
    - `## Lines with two readings`: each line, quoted, with its two readings.
+   - `## Lines in the wrong pattern`: each line, quoted, with the EARS pattern it uses and the one what starts its behaviour asks for.
    - `## Other drift`: each scenario whose wording drifts from its line, and anything else.
 
    A drift finding about a word goes under that word's term cluster. Number the findings `F1`, `F2` and on, across the file. Each finding names its ids (`capability/<name>#r<n>`, `features/<name>.feature:<title>`, `term/<term>`) and quotes the words. Two agents' findings about one thing are one finding.
@@ -49,8 +50,9 @@ Steps 1 to 3 each begin by running `scripts/model check --limit 100000` and keep
 
    In a repository that keeps `work/`, the term and its line changes ride with a capability-proposal that lists `term/<term>` (integrating-a-proposal, "Terms"). The person may give another word or another definition: the proposal changes and is shown again. A `v_t2` or `v_t3` row is settled by changing the glossary entries it names, through the same gate pass. A `v_t*` row is never rejected or deferred: the proposal for its cluster settles it. A cluster whose entry is in the glossary already and whose lines need no change has no gate pass: its scenarios follow in step 2. Any other cluster the person declines is `rejected`, or `deferred` when they say later. Integrating-a-proposal's hand-off to formulation is step 2 of this skill.
 2. **Scenarios follow.** Every scenario a `v_t1` row of this step's kept run names is reworded to its line through formulating-features' small-change path ("The Small-Change Path"), with no further approval: the line and the term are approved. Where clingo is missing, they are the scenarios `grep -rniwE '<word>s?' features` finds for each word after a `Not:`, those tagged `@holding` left out. Write the reworded scenarios yourself, from the line and the glossary, and splice, hold, rebind, check and commit as that path says, the commit holding the feature files and the test files `rebind` changed. A rewording that changes only a title is rebound and goes no further. One that changes a step's text is handed to slicing-into-increments, as that path says. Tell the person which scenarios were handed to slicing.
-3. **One at a time.** First the lines with two readings, then the other drift, one finding to the person at a time, each answered before the next is asked.
+3. **One at a time.** First the lines with two readings, then the lines in the wrong pattern, then the other drift, one finding to the person at a time, each answered before the next is asked.
    - **A line with two readings.** Ask one question: the line, quoted with its id, and its two readings, each with the line it would give. The answer is integrated through integrating-a-proposal's question path: when it changes at most two lines, its small-change path, the lines written by you from the answer and shown at its gate; otherwise a `initiative-round` with the job `integrate`, the question, its readings and the person's answer in their words, whose writer gets the question brief, and on the person's yes to its gate text a `initiative-round` with the job `apply`, as that skill's "Who Does What" says. Either path ends in its gate, its commit and its hand-off to formulation.
+   - **A line in the wrong pattern.** Ask one question: the line, quoted with its id, the pattern it uses, and the line it would be in the pattern its trigger asks for. The answer goes through the same path as a line with two readings; a pattern change keeps the line's meaning, and its scenario is reworded only where its wording differs from the new line.
    - **Other drift.** Ask which side is right: the line, quoted with its id, and the scenario's words, quoted with its title. The line is right: the scenario is reworded to its line through formulating-features' small-change path, with no further approval. The scenario is right: the line changes through integrating-a-proposal's small-change path, at its gate. Neither, or not now: the finding is `deferred`.
 
    A finding the person says to leave is `rejected`. A `deferred` finding, from this step or step 1, goes to the backlog: `plan backlog "consistency <F<n>>: <one line>; ids: <its ids>"` (this plugin's `scripts/plan`), and the plan file is committed alone, `plan: backlog consistency findings`, before step 4. A repository with no living `*-slices.md` plan has no backlog: tell the person each deferred finding, and its state in the findings file says `deferred, no backlog`.
@@ -66,7 +68,13 @@ You may read those two files and spec/index.md. Nothing else: not docs/,
 not the source, not the step definitions.
 
 Judge each Behaviour line against the scenario that carries its @r<n> tag.
-A scenario tagged @holding formulates no line: leave it out. Find:
+A scenario tagged @holding formulates no line: leave it out. A scenario
+may carry several @r<n> tags: judge it against each line it names. Find:
+- wrong pattern: a line whose EARS pattern does not fit what starts its
+  behaviour (a response to a command or an event is When ..., a refusal or
+  fault is If ... then, behaviour that lasts for a period is While, one that
+  depends on configuration is Where, and only what holds with no trigger at
+  all has none);
 - drift: a scenario whose wording differs from its line: it names a thing
   by another word, adds or drops a condition, or pins an outcome the line
   does not state;
@@ -76,9 +84,9 @@ say which side is right, never pick a reading, never rewrite a line or a
 scenario.
 
 Write your findings to <DRAFTS PATH>/round-<N>/<NAME>.findings.md, and
-nowhere else, one per finding: its kind (drift | two readings); its ids
+nowhere else, one per finding: its kind (wrong pattern | drift | two readings); its ids
 (capability/<NAME>#r<n>, features/<NAME>.feature:<scenario title>); the
-words, quoted; for drift, one line saying what differs; for two readings,
+words, quoted; for wrong pattern, the pattern the line uses and the one its trigger asks for; for drift, one line saying what differs; for two readings,
 the two readings, one line each. Write "none" when you find nothing.
 Reply with the count of each kind and the findings file's path, nothing
 else. Write that same reply, last of all, to

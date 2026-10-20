@@ -587,3 +587,72 @@ Feature: Design model check
     When model check is run
     Then v_d2 names the initiative
     And once the work-item is withdrawn too, no violation names the initiative
+
+  @r3
+  Scenario: a table row with an id is a requirement, and its header, separator and lead sentence are not
+    Given a capability whose Behaviour has a ### heading, a lead sentence, and a table with a header row, a separator and rows marked [r1] and [r2]
+    And a scenario tagged @r2
+    When model check is run
+    Then it reports no file problem and no v15a
+    And thing#r1 is reported under v_s3 and thing#r2 is not
+
+  @r103
+  Scenario: a Behaviour line in none of EARS's patterns is v_e1
+    Given a capability whose Behaviour has these lines
+      | id | line                                                                                   |
+      | r1 | **When** asked, `thing` shall answer.                                                  |
+      | r2 | `thing` answers when asked.                                                            |
+      | r3 | **If** asked, `thing` shall refuse.                                                    |
+      | r4 | **When** asked, **Where** configured, `thing` shall answer.                            |
+      | r5 | **Where** configured, **While** idle, **When** asked, `thing` shall answer.            |
+      | r6 | **If** asked, then `thing` shall answer.                                               |
+    When model check is run
+    Then v_e1 names r2, r3 and r4
+    And v_e1 does not name r1, r5 or r6
+    And it exits 1
+
+  @r103
+  Scenario: a table row is checked by its lead sentence
+    Given a capability whose Behaviour has a table with rows marked [r1] and [r2], led by a sentence that names no system
+    When model check is run
+    Then v_e1 names r1 and r2
+
+  @r104
+  Scenario: a Behaviour line with two shalls or two sentences is v_e2
+    Given a capability whose Behaviour has these lines
+      | id | line                                                                         |
+      | r1 | **When** asked, `thing` shall answer.                                        |
+      | r2 | **When** asked, `thing` shall answer and `thing` shall log.                  |
+      | r3 | **When** asked, `thing` shall answer. It is quick.                           |
+      | r4 | **When** asked, `thing` shall read `a.b` and say "so. it is."                |
+    When model check is run
+    Then v_e2 names r2 and r3
+    And v_e2 does not name r1 or r4
+    And it exits 1
+
+  @r5 @r23
+  Scenario: a merged capability-proposal may add or remove an id its capability lists as retired
+    Given a capability thing with requirement r1 that lists r4 as retired
+    And a merged capability-proposal that adds thing#r4 and removes thing#r4
+    When model check is run
+    Then thing#r4 is reported neither under v15c nor as unresolved
+
+  @r20
+  Scenario: a scenario tagged with several requirements names each of them
+    Given a capability thing with requirements r1 and r2
+    And a scenario tagged @r1 @r2
+    When model check is run
+    Then neither thing#r1 nor thing#r2 is reported under v_s3
+    And it reports no file problem and no v_s2
+
+  @r51
+  Scenario: a code span, a double-quoted string and a tag are no mention
+    Given a glossary term store that avoids shelf
+    And a capability whose Behaviour has these lines
+      | id | line                                       |
+      | r1 | The `shelf` shall hold.                    |
+      | r2 | The thing shall say "a shelf".             |
+      | r3 | The thing shall name the tag @shelf.       |
+      | r4 | The thing shall hold a shelf.              |
+    When model facts is run
+    Then only r4 mentions shelf
