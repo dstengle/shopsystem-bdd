@@ -78,7 +78,7 @@ decision it explains.
 ## Writing the behaviour section
 
 Every line is one EARS requirement with "shall" (design-decision/behaviour-lines-are-ears). `model check`
-reports a line that is not (`v_e1`) or has more than one "shall" or sentence (`v_e2`).
+reports a line that is not (`v_e1` (a Behaviour line is not in one of EARS's patterns)) or has more than one "shall" or sentence (`v_e2` (a Behaviour line has more than one shall or more than one sentence)).
 
 **The patterns.** In this order of clauses; the system is named in the line.
 
@@ -302,9 +302,9 @@ in the line itself.
 ## Checking
 
 `scripts/model check` (this plugin; needs `python3 -m pip install clingo`) reads `spec/`, `features/` and
-the ledger, and reports by rule name: a line with no id (`v15a`), two lines with one id (`v15b`), a retired
-id taken again (`v15c`), a line with no scenario (`v_s3`), a scenario that names no line (`v_s1`), a line not in an EARS pattern or with more than one "shall" or sentence
-(`v_e1`, `v_e2`), a word the glossary avoids, or a glossary at odds with itself (`v_t1`, `v_t2`, `v_t3`), and
+the ledger, and reports by rule name: a line with no id (`v15a` (a requirement has no id)), two lines with one id (`v15b` (two requirements share an id)), a retired
+id taken again (`v15c` (a retired id is used again)), a line with no scenario (`v_s3` (a requirement has no scenario)), a scenario that names no line (`v_s1` (a scenario names no requirement)), a line not in an EARS pattern or with more than one "shall" or sentence
+(`v_e1`, `v_e2`), a word the glossary avoids, or a glossary at odds with itself (`v_t1` (a word the glossary avoids), `v_t2` (a term has two entries), `v_t3` (an avoided word is a term)), and
 references that name nothing. It exits 0 when everything holds. When the interpreter running it lacks
 clingo, it looks for one that has it (`$SHOPSYSTEM_MODEL_PYTHON`, each `python3` on `PATH` outside the
 active virtualenv's `bin/`, `/usr/local/bin/python3`, `/usr/bin/python3`) and runs again under the first it

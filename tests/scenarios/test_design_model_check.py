@@ -723,7 +723,7 @@ def four_counts(context):
 
 def _v_s3_rows(context):
     out = context["result"].stdout
-    m = re.search(r"^v_s3  \(%d\)\n((?:    .*\n)+)" % context["rows"], out, re.M)
+    m = re.search(r"^v_s3  a requirement has no scenario  \(%d\)\n((?:    .*\n)+)" % context["rows"], out, re.M)
     assert m, out
     return m.group(1).splitlines(), out
 

@@ -7,7 +7,7 @@ description: Use when the person asks to check the spec's consistency, its terms
 
 ## Overview
 
-A bounded context's spec should agree with itself: one word means one thing, one thing has one word, a line has one reading, and a scenario says what its line says. This skill checks that and, in fix mode, walks the person through the fixes. `model check` judges the words the glossary avoids (`v_t1`, `v_t2`, `v_t3`); a blind `shopsystem-bdd:spec-checker` agent judges meaning, one dispatch for each capability and one for the whole context.
+A bounded context's spec should agree with itself: one word means one thing, one thing has one word, a line has one reading, and a scenario says what its line says. This skill checks that and, in fix mode, walks the person through the fixes. `model check` judges the words the glossary avoids (`v_t1` (a word the glossary avoids), `v_t2` (a term has two entries), `v_t3` (an avoided word is a term)); a blind `shopsystem-bdd:spec-checker` agent judges meaning, one dispatch for each capability and one for the whole context.
 
 The skill runs when the person asks for it, never otherwise. Integration and formulation rounds do not run it, and no other skill invokes it.
 

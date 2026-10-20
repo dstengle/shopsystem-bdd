@@ -13,7 +13,7 @@ Feature: Design model check
   Scenario: violations are printed by their grammar name and fail the check
     Given a bounded context with a requirement no scenario names
     When model check is run
-    Then the output names v_s3 with the requirement's id
+    Then the output names v_s3 with its plain label and the requirement's id
     And it exits 1
 
   @r3
@@ -69,7 +69,7 @@ Feature: Design model check
   Scenario: warnings are counted and do not fail the check
     Given a bounded context the grammar accepts, with an observation no initiative cites
     When model check is run
-    Then the output gives w_uncited_obs with its count
+    Then the output gives w_uncited_obs with its plain label and its count
     And it exits 0
 
   @r12
@@ -353,6 +353,7 @@ Feature: Design model check
     Given a repository <state>
     When model check is run with --json
     Then it prints one JSON object holding the violations, warnings, unresolved references and file problems
+    And the object maps each code it prints to its plain label
     And it exits <status>
 
     Examples:
@@ -694,3 +695,18 @@ Feature: Design model check
     When model check is run
     Then v_e1 names r2
     And v_e1 does not name r1
+
+  @r65
+  Scenario: model rules prints every rule with its plain label
+    Given any repository
+    When model rules is run
+    Then it prints each rule's code and plain label, one a line, the violations first and then the warnings
+    And it exits 0
+
+  @r14
+  Scenario: the decisions index is written when there is no decision yet
+    Pins that a repository with no spec/decisions/ directory still gets its index, with no row.
+    Given a repository with no spec/decisions/
+    When model decisions is run
+    Then it prints spec/decisions/index.md as the file it wrote
+    And the index has its header and no row

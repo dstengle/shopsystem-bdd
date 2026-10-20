@@ -15,6 +15,7 @@ from binding import missing
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "model"
+LP = ROOT / "scripts" / "model.lp"
 FEATURE = ROOT / "features" / "design-model-check.feature"
 
 try:
@@ -149,7 +150,7 @@ class CheckTest(ModelTest):
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, `thing` shall answer."]))
         r = self.run_model("check")
         self.assertEqual(r.returncode, 1)
-        self.assertRegex(r.stdout, r"v_s3\s+\(1\)\n\s+" + re.escape(THING + "#r1"))
+        self.assertRegex(r.stdout, r"v_s3  a requirement has no scenario  \(1\)\n\s+" + re.escape(THING + "#r1"))
 
     def test_r3(self):
         """a requirement bullet without an id is refused"""
@@ -177,7 +178,7 @@ class CheckTest(ModelTest):
         self.initiative()
         self.proposal(changes="[thing#r9]")
         r = self.run_model("check")
-        self.assertRegex(r.stdout, r"v15e\s+\(1\)\n\s+" + re.escape(f"{P1}, {THING}#r9"))
+        self.assertRegex(r.stdout, r"v15e  a proposal changes a requirement no capability has  \(1\)\n\s+" + re.escape(f"{P1}, {THING}#r9"))
 
     def test_r7(self):
         """a proposal formulated before its requirement has a scenario is refused"""
@@ -186,7 +187,7 @@ class CheckTest(ModelTest):
         self.initiative()
         self.proposal(status="formulated", adds="[thing#r1]")
         r = self.run_model("check")
-        self.assertRegex(r.stdout, r"v15f\s+\(1\)\n\s+" + re.escape(P1))
+        self.assertRegex(r.stdout, r"v15f  a formulated proposal leaves a requirement without a scenario  \(1\)\n\s+" + re.escape(P1))
 
     def test_r8(self):
         """a guarantees capability needs no scenarios"""
@@ -202,21 +203,59 @@ class CheckTest(ModelTest):
         self.initiative()
         self.work_item(part_of="initiative/nowhere")
         r = self.run_model("check")
-        self.assertRegex(r.stdout, r"v9c\s+\(1\)\n\s+" + re.escape(W1))
+        self.assertRegex(r.stdout, r"v9c  a part reaches no initiative  \(1\)\n\s+" + re.escape(W1))
 
     def test_r11(self):
         """warnings are counted and do not fail the check"""
         self.good()
         self.observation()
         r = self.run_model("check")
-        self.assertIn("warning w_uncited_obs  (1)", r.stdout)
+        self.assertIn("warning w_uncited_obs  an observation no initiative cites  (1)", r.stdout)
         self.assertEqual(r.returncode, 0, r.stdout)
+
+
+class RulesTest(ModelTest):
+    def test_model_rules_prints_every_rule_with_its_plain_label(self):
+        """model rules prints every rule with its plain label"""
+        r = self.run_model("rules")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        rows = [line.split("  ", 1) for line in r.stdout.splitlines()]
+        self.assertTrue(all(len(row) == 2 and row[1] for row in rows), r.stdout)
+        codes = [c for c, _ in rows]
+        self.assertEqual(codes, lp_labels(), r.stdout)
+        self.assertIn(["v_s3", "a requirement has no scenario"], rows)
+        firstw = min(i for i, c in enumerate(codes) if c.startswith("w_"))
+        self.assertTrue(all(c.startswith("w_") for c in codes[firstw:]), codes)
+        self.assertTrue(all(c.startswith("v") for c in codes[:firstw]), codes)
+
+    def test_every_relation_model_lp_shows_has_one_label(self):
+        """r2, r65: a relation model.lp shows has exactly one label, and no label names a relation not shown"""
+        text = LP.read_text()
+        shown = {m for line in text.splitlines() for m in re.findall(r"#show\s+(\w+)/\d+\.", line.split("%")[0])}
+        shown -= {"label"}
+        labels = re.findall(r'^label\("([^"]+)",\s*"([^"]+)"\)\.', text, re.M)
+        names = [c for c, _ in labels]
+        self.assertEqual(sorted(set(names)), sorted(shown))
+        self.assertEqual(len(names), len(set(names)), "a code has two labels")
+
+
+def lp_labels():
+    return re.findall(r'^label\("([^"]+)",', LP.read_text(), re.M)
 
 
 class DecisionsTest(ModelTest):
     def decisions(self):
         self.write("spec/decisions/0001-old.md", f'---\nid: {full("design-decision", "old")}\nsummary: "Do it the old way."\ndate: 2026-01-01\nstatus: superseded\n---\n# 1\n')
         self.write("spec/decisions/0002-new.md", f'---\nid: {full("design-decision", "new")}\nsummary: "Do it | the new way."\ndate: 2026-02-01\nstatus: accepted\nsupersedes: design-decision/old\nrevisit_when: "it hurts"\nrevisit_signal: requests\n---\n# 2\n')
+
+    def test_the_index_is_written_with_no_decision_yet(self):
+        """the decisions index is written when there is no decision yet"""
+        r = self.run_model("decisions")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("spec/decisions/index.md", r.stdout)
+        text = (self.tmp / "spec/decisions/index.md").read_text()
+        self.assertTrue(text.startswith("# "), text)
+        self.assertNotIn("](", text)
 
     def test_r15(self):
         """a stale decisions index is reported and left alone"""
@@ -270,7 +309,7 @@ class ReadingTest(ModelTest):
         self.initiative()
         self.proposal(adds="[thing#r1]")
         r = self.run_model("check")
-        self.assertRegex(r.stdout, r"v15c\s+\(1\)\n\s+" + re.escape(THING + "#r1"))
+        self.assertRegex(r.stdout, r"v15c  .+  \(1\)\n\s+" + re.escape(THING + "#r1"))
 
     def test_feature_tags_column_zero_lists_and_comments_are_read(self):
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] `thing` shall answer."]).replace(
@@ -318,7 +357,7 @@ class GrammarFixTest(ModelTest):
         self.initiative()
         self.proposal(adds="[thing#r1, other#r1]", argues="[thing, other]")
         r = self.run_model("check")
-        self.assertRegex(r.stdout, r"v_k6\s+\(1\)\n\s+" + re.escape(P1))
+        self.assertRegex(r.stdout, r"v_k6  .+  \(1\)\n\s+" + re.escape(P1))
 
     def test_another_kind_keeps_one_first_part(self):
         self.good()
@@ -329,7 +368,7 @@ class GrammarFixTest(ModelTest):
         for w in ("thing-w1", "thing-w2"):
             self.work_item(w)
         r = self.run_model("check")
-        self.assertRegex(r.stdout, r"v_k5\s+\(1\)\n\s+" + re.escape(I1))
+        self.assertRegex(r.stdout, r"v_k5  .+  \(1\)\n\s+" + re.escape(I1))
 
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
@@ -505,7 +544,10 @@ class OutputTest(ModelTest):
                 else:
                     self.unscenarioed(1)
                 found, r = self.check_json()
-                self.assertEqual(sorted(found), ["problems", "unresolved", "violations", "warnings"])
+                self.assertEqual(sorted(found), ["labels", "problems", "unresolved", "violations", "warnings"])
+                codes = {name for name, _ in found["violations"] + found["warnings"]}
+                self.assertEqual(set(found["labels"]), codes, found)
+                self.assertTrue(all(isinstance(v, str) and v for v in found["labels"].values()), found)
                 self.assertEqual(r.returncode, status)
                 self.assertEqual(bool(found["violations"]), status == 1)
 
@@ -537,7 +579,7 @@ class OutputTest(ModelTest):
         self.initiative()
         self.proposal(adds="[thing#r1, other#r1]", argues="[thing, other]")
         r = self.run_model("check")
-        self.assertRegex(r.stdout, r"v_k6\s+\(1\)\n\s+" + re.escape(P1))
+        self.assertRegex(r.stdout, r"v_k6  .+  \(1\)\n\s+" + re.escape(P1))
 
 
 
@@ -622,7 +664,7 @@ class GlossaryCheckTest(ModelTest):
         self.assertFalse([a for a in self.violated(found, "v_t1") if "as it was" in a[0]], found)
         self.assertEqual(r.returncode, 1)
         text = self.run_model("check").stdout
-        self.assertIn("v_t1  (2)", text)
+        self.assertIn("v_t1  a word the glossary avoids  (2)", text)
 
     def test_a_restore_is_no_store(self):
         self.write("spec/index.md", index("- **depot**: where things are kept. Not: store."))
@@ -692,7 +734,7 @@ def moved_titles():
 class BindingTest(unittest.TestCase):
     def test_every_scenario_has_its_test(self):
         gone = set(moved_titles())
-        self.assertEqual([t for t in missing(FEATURE, CheckTest, DecisionsTest,
+        self.assertEqual([t for t in missing(FEATURE, CheckTest, RulesTest, DecisionsTest,
                                              ReadingTest, GrammarFixTest, TypeFirstTest, FilesReadTest, OutputTest,
                                              HeldAndLedgerTest, GlossaryFactsTest,
                                              GlossaryCheckTest, WithdrawnTest) if t not in gone], [])

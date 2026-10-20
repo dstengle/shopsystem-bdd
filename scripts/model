@@ -49,7 +49,8 @@ contract:
     A reference is written <capability>#r<n>. In a
     list, <capability>#r<a>-r<b> stands for each id from a to b.
   - A scenario names its requirement by a tag @r<n> in the capability's own
-    feature file, features/<name>.feature; its title is free. A scenario with no such tag names none.
+    feature file, features/<name>.feature; its title is free. A scenario
+    with no such tag names none.
     A scenario tagged @holding is no acceptance-scenario.
   - facts prints the facts it read, one a line, in clingo's syntax, under
     grammar.md's relation names. A term gives node(T, "term"),
@@ -60,6 +61,11 @@ contract:
     Examples tables) gives mentions(X, <word>) for each term or avoided word it holds, as a
     whole word in any case, with a plural "s" allowed. It needs nothing
     beyond the standard library.
+  - Every rule of model.lp has one plain label, label("<code>", "<label>"),
+    written beside it. check prints `<code>  <label>  (<count>)` above each
+    non-empty v_ relation's rows; `rules` prints every `<code>  <label>`,
+    the v_ rules then the w_ rules, and exits 0; check --json adds "labels",
+    {code: label} for the codes it prints.
   - check solves the facts with model.lp (beside this script) and prints every
     non-empty v_ relation, then the w_ relations with their counts, then the
     references that name nothing and the file problems (a missing id, a
@@ -795,10 +801,12 @@ class Model:
 
 # ---------------------------------------------------------------- commands
 
-def solve(model):
+def solve(model=None):
+    """The shown relations of model.lp over a model's facts (none when model is None), as (relations, labels):
+    the relations sorted, the labels as {code: label} apart from them."""
     import clingo
     ctl = clingo.Control(["--warn=none"])
-    ctl.add("base", [], LP.read_text() + "\n" + model.asp())
+    ctl.add("base", [], LP.read_text() + "\n" + (model.asp() if model else ""))
     ctl.ground([("base", [])])
     atoms = []
     ctl.solve(on_model=lambda m: atoms.extend(m.symbols(shown=True)))
@@ -807,7 +815,15 @@ def solve(model):
         args = [x.string if x.type == clingo.SymbolType.String else
                 x.number if x.type == clingo.SymbolType.Number else str(x) for x in a.arguments]
         out.append((a.name, args))
-    return sorted(out, key=lambda t: (t[0], [str(x) for x in t[1]]))
+    labels = {args[0]: args[1] for name, args in out if name == "label"}
+    out = [t for t in out if t[0] != "label"]
+    return sorted(out, key=lambda t: (t[0], [str(x) for x in t[1]])), labels
+
+
+def rule_order(labels):
+    """The codes in the order model.lp gives their labels, which puts the violations before the warnings."""
+    text = LP.read_text()
+    return sorted(labels, key=lambda code: text.index(f'label("{code}",'))
 
 
 def cmd_facts(args):
@@ -853,6 +869,11 @@ def run_again_with_clingo():
 
 
 def cmd_check(args):
+    return needing_clingo("check", lambda: check(args))
+
+
+def needing_clingo(command, run):
+    """Run a command that solves with model.lp; without clingo it runs again under an interpreter that has it (r55)."""
     try:
         import clingo  # noqa: F401
     except ImportError:
@@ -860,23 +881,41 @@ def cmd_check(args):
             why = f"it ran again under {sys.executable}, which also failed to import clingo"
         else:
             why = "no interpreter it tried has it: " + ", ".join(run_again_with_clingo())
-        print(f"check needs the clingo package, which this interpreter lacks; {why}.\n"
+        print(f"{command} needs the clingo package, which this interpreter lacks; {why}.\n"
               f"  install: {sys.executable} -m pip install clingo\n"
               "  without it: `model facts` prints the facts for any Datalog or ASP engine.")
         return 2
+    return run()
+
+
+def cmd_rules(args):
+    return needing_clingo("rules", lambda: rules())
+
+
+def rules():
+    """Every rule's code and plain label, one a line, the violations first and then the warnings (r65)."""
+    labels = solve()[1]
+    for code in rule_order(labels):
+        print(f"{code}  {labels[code]}")
+    return 0
+
+
+def check(args):
     model = Model(args.root).read()
-    found = solve(model)
+    found, labels = solve(model)
     violations = [f for f in found if f[0].startswith("v")]
     warnings = [f for f in found if f[0].startswith("w_")]
     if args.json:
+        printed = sorted({name for name, _ in violations + warnings}, key=rule_order(labels).index)
         print(json.dumps({"violations": violations, "warnings": warnings,
-                          "unresolved": model.dangling, "problems": model.problems}, indent=1))
+                          "unresolved": model.dangling, "problems": model.problems,
+                          "labels": {code: labels[code] for code in printed}}, indent=1))
     else:
         by = {}
         for name, a in violations:
             by.setdefault(name, []).append(a)
         for name in sorted(by):
-            print(f"{name}  ({len(by[name])})")
+            print(f"{name}  {labels[name]}  ({len(by[name])})")
             for a in by[name][: args.limit]:
                 print("    " + ", ".join(str(x) for x in a))
             if len(by[name]) > args.limit:
@@ -885,7 +924,7 @@ def cmd_check(args):
         for name, _ in warnings:
             counts[name] = counts.get(name, 0) + 1
         for name in sorted(counts):
-            print(f"warning {name}  ({counts[name]})")
+            print(f"warning {name}  {labels[name]}  ({counts[name]})")
         for d in model.dangling:
             print(f"unresolved: {d}")
         for p in model.problems:
@@ -928,6 +967,7 @@ def cmd_decisions(args):
             return 1
         print("spec/decisions/index.md is current")
         return 0
+    target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(text)
     print(f"wrote {target.relative_to(args.root) if not os.path.isabs(args.root) else target}")
     return 0
@@ -971,6 +1011,7 @@ def main(argv=None):
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--root", default=".")
     sub = ap.add_subparsers(dest="cmd", required=True)
+    sub.add_parser("rules", help="print every rule's code and plain label, the violations first")
     sub.add_parser("facts", help="print the facts read from the repository")
     c = sub.add_parser("check", help="solve the facts against model.lp and report")
     c.add_argument("--json", action="store_true")
@@ -980,7 +1021,7 @@ def main(argv=None):
     w = sub.add_parser("why", help="trace a requirement to its initiative's sources")
     w.add_argument("ref")
     args = ap.parse_args(argv)
-    return {"facts": cmd_facts, "check": cmd_check, "decisions": cmd_decisions, "why": cmd_why}[args.cmd](args)
+    return {"facts": cmd_facts, "check": cmd_check, "rules": cmd_rules, "decisions": cmd_decisions, "why": cmd_why}[args.cmd](args)
 
 
 if __name__ == "__main__":

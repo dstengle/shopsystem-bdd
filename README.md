@@ -206,7 +206,7 @@ Python 3, in `scripts/`. They take the dependencies they need (design-decision/p
 
 ## One spec per context; the gate is on Behaviour lines
 
-From 0.8.0 a bounded context has one spec: `spec/index.md`, the decision ledger `spec/decisions.md`, and `spec/capabilities/<name>.md`, each capability formulated as `features/<name>.feature`. The format is `docs/capability-format.md`.
+From 0.8.0 a bounded context has one spec: `spec/index.md`, the decisions in `spec/decisions/` with a generated `index.md` (until 0.21.0 one ledger, `spec/decisions.md`), and `spec/capabilities/<name>.md`, each capability formulated as `features/<name>.feature`. The format is `docs/capability-format.md`.
 
 - A brainstorming note is a proposal. `integrating-a-proposal` has the `capability-writer` agent (blind to the code; it reads `spec/`, `features/` and `docs/`, and writes only drafts under `.superpowers/spec-drafts/`) merge it into `spec/`, and stops at the one human gate: the added, changed and removed Behaviour lines and the questions the note left open. It never starts a second spec.
 - `formulating-features` writes one scenario per approved line and needs no second approval. A line with two readings gets no scenario; its question goes to the person and the answer back through integration. This replaces 0.6.0's settled/deciding sort.
