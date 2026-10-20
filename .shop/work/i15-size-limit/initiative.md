@@ -4,13 +4,13 @@ title: Files within the size limit
 summary: A mechanical size check over every tracked Python file, tests included, with a 300-line limit, and this repository's files split to it.
 kind: capability-change
 owner-level: shopsystem-bdd
-status: proposed
-priority: 4
+status: started
+priority: 1
 source: [observation/2026-10-20-files-too-large]
 date: 2026-10-20
 ---
 
-Next release, with i12 (the person, 2026-10-20). Large code files slow agents down.
+Pulled into this release (the person, 2026-10-20: "Every edit to those large files is expensive"). Large code files slow agents down.
 
 Covers:
 - analysis-tools gains `tools size` (lines to formulate, as proposed to the person):

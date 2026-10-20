@@ -1,0 +1,14 @@
+---
+id: work-item/missingmass.io/shopsystem/shopsystem-bdd/split-model
+kind: work-item
+part_of: capability-proposal/size-analysis-tools
+status: drafted
+wkind: enabling
+for: work-item/size-check
+check: "python3 -m pytest -q passes with the same tests as before, and each named file and every file split from it is under 300 lines"
+fileset: [scripts/model, scripts/model_*.py, tests/scripts/test_model.py, tests/scenarios/test_design_model_check.py, tests/scenarios/*design_model_check*.py]
+---
+
+# split-model
+
+Split, with no change of behaviour: scripts/model (1035), tests/scenarios/test_design_model_check.py (1490), tests/scripts/test_model.py (524)
