@@ -161,22 +161,16 @@ def _(old):
     assert [l.split()[1] for l in lines] == ["[r1]", "[r5]", "[r3]", "[r6]"], lines
 
 
-@given("a repository on the old system with docs/superpowers/plans/p1.md and docs/superpowers/specs/s1.md with no about, "
-       "and docs/superpowers/plans/p2.md about capability/example.org/acme/shop/thing")
+@given("a repository on the old system with docs/superpowers/plans/p1.md, docs/superpowers/specs/s1.md and "
+       "records/logs/run1-test-log.md, none with an about")
 def _(old):
     old.write("docs/superpowers/plans/p1.md", "A plan.\n")
     old.write("docs/superpowers/specs/s1.md", "---\ntitle: s1\n---\nA design note.\n")
-    old.write("docs/superpowers/plans/p2.md", "---\nabout: capability/%s/thing\n---\nAnother plan.\n" % CONTEXT)
+    old.write("records/logs/run1-test-log.md", "A test log.\n")
     old.commit()
 
 
-@then(parsers.parse("{first} and {second} are about {ref}"))
-def _(old, first, second, ref):
-    found = [front(old, rel)[0].get("about") for rel in (first, second)]
-    assert found == [ref, ref], found
-
-
-@then(parsers.parse("{rel} is about {ref}"))
-def _(old, rel, ref):
-    found = front(old, rel)[0].get("about")
-    assert found == ref, found
+@then(parsers.parse("{first}, {second} and {third} are each about {ref}"))
+def _(old, first, second, third, ref):
+    found = [front(old, rel)[0].get("about") for rel in (first, second, third)]
+    assert found == [ref] * 3, found

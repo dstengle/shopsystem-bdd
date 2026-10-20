@@ -64,7 +64,7 @@ def _(old):
     assert not (old.root / "spec/decisions.md").exists()
 
 
-@then('spec/decisions/0007-a.md has the summary "We do a." and a Decision of "We do a."')
+@then('spec/decisions/0007-a.md has the summary "We do a." and its Decision has "We do a."')
 def _(old):
     data, body = front(old, "spec/decisions/0007-a.md")
     assert data["summary"] == "We do a."
@@ -89,17 +89,34 @@ def _(old):
     old.commit()
 
 
-@then('spec/decisions/0007-a.md has the summary "We do a." and a Decision of "We do a." and then "Because b."')
+@then('spec/decisions/0007-a.md has the summary "We do a."')
 def _(old):
-    data, body = front(old, "spec/decisions/0007-a.md")
+    data, _ = front(old, "spec/decisions/0007-a.md")
+    assert data["summary"] == "We do a."
+
+
+@then('its Decision has "We do a." and then "Because b."')
+def _(old):
+    _, body = front(old, "spec/decisions/0007-a.md")
     decision = "\n".join(load_model().section(body, "Decision")).strip()
-    assert (data["summary"], decision) == ("We do a.", "We do a.\n\nBecause b."), (data["summary"], decision)
+    assert decision == "We do a.\n\nBecause b.", decision
+
+
+@then("its date is 2025-03-01 and its by is alice")
+def _(old):
+    data, _ = front(old, "spec/decisions/0007-a.md")
+    assert (data["date"], data["by"]) == ("2025-03-01", "alice")
 
 
 @given("a repository on the old system whose spec/decisions.md starts with the title `# Decisions` and a blank line, "
        "then the entry `## decision/0007-a`")
-def _(old):
-    old.write("spec/decisions.md", "# Decisions\n\n## decision/0007-a\nWe do a.\n\ndate: 2025-03-01\nsource: alice\n")
+def _(context):
+    context["ledger"] = "# Decisions\n\n## decision/0007-a\n%s\ndate: 2025-03-01\nsource: alice\n"
+
+
+@given('the entry\'s first paragraph is "We do a."')
+def _(old, context):
+    old.write("spec/decisions.md", context["ledger"] % "We do a.\n")
     old.commit()
 
 

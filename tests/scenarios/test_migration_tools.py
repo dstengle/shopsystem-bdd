@@ -44,6 +44,24 @@ def _(old, new, was):
     assert old.read(new) == old.before[was].decode()
 
 
+@then("records/img/a.png is gone")
+def _(old):
+    assert not (old.root / "records/img/a.png").exists()
+
+
+@then(parsers.re(r"(?P<new>\S+) has the content (?P<was>\S+) had, apart from (?:the id r9 gives it|any id r9 and about r12 give it)$"))
+def _(old, new, was):
+    """What r9 and r12 give is frontmatter lines at the top: take off the `id:`, `kind:` and `about:` lines they
+    added, and a frontmatter of their own when the file had none."""
+    text, before = old.read(new), old.before[was].decode()
+    if text != before:
+        assert text.startswith("---\n"), text
+        head, _, rest = text[4:].partition("---\n")
+        added = [l for l in head.splitlines() if l.split(":")[0] not in ("id", "kind", "about")]
+        kept = ("---\n" + "\n".join(added) + "\n---\n" if added else "") + rest
+        assert kept == before, (text, before)
+
+
 @then("decisions/, work/ and records/ are gone")
 def _(old):
     for gone in ("decisions", "work", "records"):
