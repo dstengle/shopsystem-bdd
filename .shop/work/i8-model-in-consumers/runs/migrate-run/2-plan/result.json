@@ -1,0 +1,11 @@
+{
+  "status": "DONE",
+  "summary": "Plan for migrate-run (migration-tools#r1-r11; 10 scenarios, r11 rides on r2's). All are red because scripts/migrate, the scenario test module and the test_bound entry are missing.\nFile set unchanged: scripts/migrate (new), tests/scenarios/test_migration_tools.py (new), tests/scripts/test_bound.py.\nDecisions: every change is computed and checked before any write, and all failures are named with exit 1 (r7); moves go file by file with git mv to avoid nesting (r1, r8); @holding is handled by features deprecate --for-removal on a temporary copy, then the @holding tag is dropped (r3, migration-in-one-pass), and the r3 Then compares against the copy minus @holding; ledger entries are read in the archived old form, written as decision files, and the index is written via model's renderer (r2, r9, r11); ids are written only where missing, moved records get kind too (r9, r6, references-are-ids); refs are rewritten in tracked text files (r5); numbering starts above max(live, retired) (r10); spec/index.md id (r4); the r6 fixture supplies initiative.md, and migrate writes no initiative.\nTests broken: none.\nOpen cases left for the implementer to name: no initiative.md in a work dir, a record's about, the ledger's extra fields, old-form ids, the index.md variants, untracked files, a bad --context.",
+  "plan": "/tmp/work-run-i8-model-in-consumers-mdv1kcjz/migrate-run-2-plan/.shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/migrate",
+    "tests/scenarios/test_migration_tools.py",
+    "tests/scripts/test_bound.py"
+  ],
+  "questions": []
+}
