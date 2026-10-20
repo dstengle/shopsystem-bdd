@@ -24,7 +24,11 @@ def main(argv=None):
     a.add_argument("--under", required=True)
     a.add_argument("--accepts", required=True, action="append")
     args = ap.parse_args(argv)
-    return {"add": cmd_add}[args.cmd](args)
+    try:
+        return {"add": cmd_add}[args.cmd](args)
+    except workqueue.Refused as refused:
+        print("work: %s" % refused, file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":

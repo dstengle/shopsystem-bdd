@@ -34,6 +34,8 @@ def context_path(root):
 def add(root, initiative, name, part_of, under, accepts):
     """Write .shop/work/<initiative>/<name>.md as a drafted work-item (r1)."""
     path = Path(root) / WORK / initiative / (name + ".md")
+    if path.exists():
+        raise Refused("%s already exists; work add leaves it as it was" % path.relative_to(root))
     text = ("---\nid: work-item/%s/%s\nkind: work-item\npart_of: %s\nstatus: drafted\nunder: %s\naccepts: [%s]\n---\n\n# %s\n"
             % (context_path(root), name, part_of, under, ", ".join(accepts), name))
     path.write_text(text)

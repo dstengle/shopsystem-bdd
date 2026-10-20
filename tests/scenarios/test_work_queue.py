@@ -47,6 +47,17 @@ def no_w1(repo):
     initiative(repo, "i1")
 
 
+@given(parsers.re(r"an initiative (?P<ident>i\d+) under \.shop/work/ whose work-items? (?P<items>.+?)"
+                  r"(?: and whose capability-proposal (?P<proposal>\w+) is (?P<pstatus>\w+))?$"))
+def with_items(repo, ident, items, proposal, pstatus):
+    initiative(repo, ident)
+    for pair in items.replace(" and ", ", ").split(", "):
+        name, status = pair.split(" is ")
+        write(repo, ".shop/work/%s/%s.md" % (ident, name), item_text(name, status, ident))
+    if proposal:
+        write(repo, ".shop/work/%s/%s.md" % (ident, proposal), item_text(proposal, pstatus, ident, "capability-proposal"))
+
+
 # --- When -----------------------------------------------------------------------------------------------------
 
 @when(parsers.parse("the agent runs `work {args}`"))
@@ -67,3 +78,21 @@ def drafted(repo, initiative, name, name2):
 def given_fields(repo, part_of, under, accepts):
     data = fields(repo / ".shop/work/i1/w1.md")
     assert (data.get("part_of"), data.get("under"), data.get("accepts")) == (part_of, under, "[%s]" % accepts), data
+
+
+@then(parsers.parse(".shop/work/{initiative}/{name}.md is as it was"))
+def as_it_was(repo, context, initiative, name):
+    rel = ".shop/work/%s/%s.md" % (initiative, name)
+    assert (repo / rel).read_text() == context["before"][rel]
+    assert snapshot(repo) == context["before"]
+
+
+@then("work says the work-item already exists")
+def says_exists(context):
+    err = context["done"].stderr
+    assert "already exists" in err and "Traceback" not in err, err
+
+
+@then("it exits non-zero")
+def exits_non_zero(context):
+    assert context["done"].returncode != 0, context["done"]
