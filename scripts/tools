@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Find, install and use a project's analysis tools, in the project's own environment."""
 import argparse
-import ast
-import json
 import os
-import re
-import subprocess
 import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import tools_check  # noqa: E402
+import tools_env  # noqa: E402
+import tools_map  # noqa: E402
+import tools_refs  # noqa: E402
 
 CONTRACT = """\
 contract:
@@ -50,290 +52,11 @@ contract:
 exit status: 0 success, 1 something is missing, refused or reported, 2 bad usage.
 """
 
-# name, pip package, what it is for, what the workflow does without it
-TOOLS = (
-    ("coverage", "coverage", "which tests execute a function, and which code no test executes",
-     "the scout searches for the tests a decision breaks, and a guard may rest on no test"),
-    ("pytest-cov", "pytest-cov", "the coverage map made with a context for each test",
-     "there is no map: the same as coverage missing"),
-    ("jedi", "jedi", "exact references to a name, through imports and aliases",
-     "where a change lands is counted by text search, and the count is a floor"),
-    ("ast-grep", "ast-grep-cli", "search by the shape of code: a call that relies on a default, a broad except",
-     "the consequence sweep searches by text and misses what text cannot say"),
-    ("ruff", "ruff", "lint, line length, unused imports", "reviewers read for them"),
-    ("vulture", "vulture", "code with no caller left", "reviewers find it by reading, after a removal"),
-    ("import-linter", "import-linter", "the module map's import rules as checked contracts",
-     "reviewers read the imports against CLAUDE.md"),
-    ("hypothesis", "hypothesis", "the project's invariants as property tests", "invariants are probed by hand in review"),
-)
-MAP = os.path.join(".shop", "scratch", "tools", "coverage")
-VERSIONS = ("import json, sys\nfrom importlib import metadata\nout = {}\n"
-            "for name in sys.argv[1:]:\n    try:\n        out[name] = metadata.version(name)\n"
-            "    except metadata.PackageNotFoundError:\n        out[name] = None\n"
-            "out['virtualenv'] = sys.prefix != sys.base_prefix\nprint(json.dumps(out))\n")
-
-
-class Refused(Exception):
-    pass
-
-
-def interpreter(args):
-    if args.python:
-        return args.python, "--python"
-    candidates = [".venv/bin/python", "venv/bin/python"]
-    if os.environ.get("VIRTUAL_ENV"):
-        candidates.append(os.path.join(os.environ["VIRTUAL_ENV"], "bin", "python"))
-    for path in candidates:
-        if os.path.isfile(path):
-            return os.path.abspath(path), "the project's virtualenv"
-    return sys.executable, "no virtualenv found: the interpreter running this script"
-
-
-def is_python_project():
-    marks = ("pyproject.toml", "setup.py", "setup.cfg", "pytest.ini", "requirements.txt", "tox.ini")
-    if any(os.path.isfile(mark) for mark in marks):
-        return True
-    return any(name.endswith(".py") for _, _, names in os.walk(".") for name in names)
-
-
-def versions(python):
-    done = subprocess.run([python, "-c", VERSIONS] + [package for _, package, _, _ in TOOLS],
-                          capture_output=True, text=True)
-    if done.returncode:
-        raise Refused("%s does not run: %s" % (python, done.stderr.strip()[-300:]))
-    return json.loads(done.stdout)
-
-
-def probed(args):
-    if not is_python_project():
-        raise Refused("no analysis tools are known for this project's language (looked for Python): "
-                      "agents search by text, and say so")
-    python, why = interpreter(args)
-    return python, why, versions(python)
-
-
-def cmd_probe(args):
-    python, why, found = probed(args)
-    missing = [name for name, package, _, _ in TOOLS if not found[package]]
-    if args.log:
-        print("Probe: tools -> " + ", ".join(
-            "%s %s" % (name, found[package] or "missing") for name, package, _, _ in TOOLS))
-    else:
-        for name, package, what, _ in TOOLS:
-            print("%s %s" % (name, found[package]) if found[package] else "%s missing: %s" % (name, what))
-        print("python: %s (%s)" % (python, why))
-    return 1 if missing else 0
-
-
-def cmd_install(args):
-    python, why, found = probed(args)
-    missing = [tool for tool in TOOLS if not found[tool[1]]]
-    if not missing:
-        print("every tool is present")
-        return 0
-    failed = {}
-    if not found["virtualenv"]:
-        failed = {tool[0]: ("%s is not a virtualenv (%s): nothing is installed into it" % (python, why), "")
-                  for tool in missing}
-    else:
-        for name, package, _, _ in missing:
-            command = [python, "-m", "pip", "install", package]
-            done = subprocess.run(command, capture_output=True, text=True)
-            if done.returncode:
-                failed[name] = (" ".join(command), "\n".join(done.stderr.strip().splitlines()[-4:]))
-            else:
-                print("%s installed" % name)
-    for name, _, what, without in missing:
-        if name in failed:
-            command, error = failed[name]
-            print("%s is missing.\n  It is for: %s.\n  Without it: %s.\n  Tried: %s\n  %s"
-                  % (name, what, without, command, error.replace("\n", "\n  ")))
-    return 1 if failed else 0
-
 
 def under(python, argv):
     """Run this script again under the project's interpreter, where the tools are."""
     if os.path.realpath(python) != os.path.realpath(sys.executable):
         os.execv(python, [python, os.path.abspath(__file__)] + argv)
-
-
-def head():
-    done = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True)
-    return done.stdout.strip() or "no commit"
-
-
-def cmd_map(args):
-    python, _ = interpreter(args)
-    os.makedirs(os.path.dirname(MAP), exist_ok=True)
-    for name in os.listdir(os.path.dirname(MAP)):
-        if name.startswith("coverage"):
-            os.remove(os.path.join(os.path.dirname(MAP), name))
-    env = dict(os.environ, COVERAGE_FILE=os.path.abspath(MAP))
-    command = [python, "-m", "pytest", "-q", "-p", "no:cacheprovider", "--cov=.", "--cov-context=test",
-               "--cov-report="] + args.pytest
-    done = subprocess.run(command, env=env, capture_output=True, text=True)
-    lines = done.stdout.strip().splitlines()
-    if not os.path.isfile(MAP):
-        raise Refused("no map was made by: %s\n%s" % (" ".join(command), "\n".join((lines + done.stderr.splitlines())[-6:])))
-    with open(MAP + ".at", "w") as handle:
-        handle.write(head() + "\n")
-    print("%s\nmap: %s, at %s" % (lines[-1] if lines else "", MAP, head()))
-    return 0
-
-
-def read_map():
-    try:
-        import coverage
-    except ImportError:
-        raise Refused("coverage is missing from %s: tools install" % sys.executable)
-    if not os.path.isfile(MAP):
-        raise Refused("no map: make one with tools map")
-    data = coverage.CoverageData(basename=os.path.abspath(MAP))
-    data.read()
-    with open(MAP + ".at") as handle:
-        return data, handle.read().strip()
-
-
-def functions(path):
-    """Every function and method in a file: (dotted name, first line, last line)."""
-    with open(path, encoding="utf-8") as handle:
-        tree = ast.parse(handle.read(), path)
-    found = []
-
-    def walk(node, prefix):
-        for child in ast.iter_child_nodes(node):
-            if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-                name = prefix + child.name
-                if not isinstance(child, ast.ClassDef):
-                    body = child.body[0].lineno if child.body else child.lineno
-                    found.append((name, child.lineno, child.end_lineno, body))
-                walk(child, name + ".")
-    walk(tree, "")
-    return found
-
-
-def executed(data, path):
-    """{line: the tests that executed it} for one file."""
-    by_line = data.contexts_by_lineno(os.path.abspath(path))
-    return {line: {c.split("|")[0] for c in contexts if c} for line, contexts in by_line.items()}
-
-
-def cmd_tests_of(args):
-    under(interpreter(args)[0], sys.argv[1:])
-    data, at = read_map()
-    path, _, name = args.target.partition(":")
-    if not os.path.isfile(path):
-        raise Refused("%s is not a file" % path)
-    lines = executed(data, path)
-    if name:
-        span = re.match(r"^(\d+)(?:-(\d+))?$", name)
-        if span:
-            spans = [(int(span.group(1)), int(span.group(2) or span.group(1)))]
-        else:
-            spans = [(first, last) for found, _, last, first in functions(path) if found == name or found.endswith("." + name)]
-        if not spans:
-            raise Refused("%s has no function named %s" % (path, name))
-        lines = {line: tests for line, tests in lines.items() if any(a <= line <= b for a, b in spans)}
-    tests = sorted(set().union(*lines.values())) if lines else []
-    ran = len({c.split("|")[0] for c in data.measured_contexts() if c})
-    if args.by_file:
-        files = {}
-        for test in tests:
-            files[test.split("::")[0]] = files.get(test.split("::")[0], 0) + 1
-        for name_, count in sorted(files.items()):
-            print("%s %d" % (name_, count))
-    else:
-        for test in tests:
-            print(test)
-    print("%d of the %d tests in the map executed %s (map made at %s)" % (len(tests), ran, args.target, at))
-    return 0 if tests else 1
-
-
-def cmd_untested(args):
-    under(interpreter(args)[0], sys.argv[1:])
-    data, at = read_map()
-    count = 0
-    for path in args.files:
-        lines = executed(data, path)
-        for name, line, last, first in functions(path):
-            if not any(lines.get(n) for n in range(first, last + 1)):
-                count += 1
-                print("%s:%d %s" % (path, line, name))
-    print("%d function%s no test executed, in the map made at %s" % (count, "" if count == 1 else "s", at))
-    return 0
-
-
-def is_test(path):
-    parts = path.replace(os.sep, "/").split("/")
-    return "tests" in parts[:-1] or "test" in parts[:-1] or parts[-1].startswith("test_") or bool(re.search(r"_test\.\w+$", parts[-1]))
-
-
-def cmd_refs(args):
-    under(interpreter(args)[0], sys.argv[1:])
-    try:
-        import jedi
-    except ImportError:
-        raise Refused("jedi is missing from %s: tools install" % sys.executable)
-    root = os.path.abspath(".")
-    # a package under src/ installed for development is found by an import hook jedi cannot follow
-    project = jedi.Project(root, added_sys_path=[path for path in (root, os.path.join(root, "src")) if os.path.isdir(path)])
-    last = args.name.split(".")[-1]
-    defined = [d for d in project.search(last, all_scopes=True)
-               if d.name == last and d.module_path and (d.full_name or "").endswith(args.name)
-               and d.type in ("function", "class", "statement", "module", "instance")]
-    if not defined:
-        raise Refused("nothing in the project is defined as %s" % args.name)
-    places, definitions = set(), set()
-    for one in defined:
-        definitions.add((str(one.module_path), one.line))
-        script = jedi.Script(path=str(one.module_path), project=project)
-        for ref in script.get_references(one.line, one.column):
-            if not ref.module_path or not str(ref.module_path).startswith(root + os.sep):
-                continue
-            places.add((os.path.relpath(str(ref.module_path), root), ref.line))
-            # 'import add as put': the uses of put are uses of add, and are under another name
-            alias = re.search(r"\b%s\s+as\s+(\w+)" % re.escape(last), ref.get_line_code() or "")
-            if alias:
-                there = jedi.Script(path=str(ref.module_path), project=project)
-                for use in there.get_references(ref.line, alias.start(1), scope="file"):
-                    places.add((os.path.relpath(str(ref.module_path), root), use.line))
-    places -= {(os.path.relpath(path, root), line) for path, line in definitions}
-    for path, line in sorted(places):
-        print("%s:%d" % (path, line))
-    files = {path for path, _ in places}
-    tests = {path for path in files if is_test(path)}
-    print("%d reference%s to %s, in %d production and %d test files; defined at %s" % (
-        len(places), "" if len(places) == 1 else "s", args.name, len(files - tests), len(tests),
-        ", ".join("%s:%d" % (os.path.relpath(path, root), line) for path, line in sorted(definitions))))
-    return 0
-
-
-def cmd_check(args):
-    python, why, found = probed(args)
-    paths = args.paths
-    if args.base:
-        done = subprocess.run(["git", "diff", "--name-only", "--diff-filter=d", args.base, "--", "*.py"],
-                              capture_output=True, text=True)
-        if done.returncode:
-            raise Refused(done.stderr.strip())
-        paths = done.stdout.split()
-    reported = False
-    contracts = os.path.isfile(".importlinter") or (
-        os.path.isfile("pyproject.toml") and "[tool.importlinter" in open("pyproject.toml", encoding="utf-8").read())
-    runs = (("ruff", "ruff", [python, "-m", "ruff", "check", "--output-format=concise"] + paths, bool(paths)),
-            ("vulture", "vulture", [python, "-m", "vulture", "--min-confidence", "80"] + paths, bool(paths)),
-            ("import-linter", "import-linter", [os.path.join(os.path.dirname(python), "lint-imports")], contracts))
-    for name, package, command, applies in runs:
-        print("== %s ==" % name)
-        if not found[package]:
-            print("missing: %s" % next(tool[3] for tool in TOOLS if tool[0] == name))
-        elif not applies:
-            print("nothing to check" if name != "import-linter" else "the project states no import contracts")
-        else:
-            done = subprocess.run(command, capture_output=True, text=True)
-            print((done.stdout + done.stderr).strip() or "clean")
-            reported = reported or done.returncode != 0
-    return 1 if reported else 0
 
 
 def main():
@@ -343,29 +66,31 @@ def main():
     sub = parser.add_subparsers(dest="command", required=True)
     probe = sub.add_parser("probe")
     probe.add_argument("--log", action="store_true")
-    probe.set_defaults(run=cmd_probe)
-    sub.add_parser("install").set_defaults(run=cmd_install)
+    probe.set_defaults(run=tools_env.cmd_probe)
+    sub.add_parser("install").set_defaults(run=tools_env.cmd_install)
     made = sub.add_parser("map")
     made.add_argument("pytest", nargs="*")
-    made.set_defaults(run=cmd_map)
+    made.set_defaults(run=tools_map.cmd_map)
     tests_of = sub.add_parser("tests-of")
     tests_of.add_argument("target")
     tests_of.add_argument("--by-file", action="store_true")
-    tests_of.set_defaults(run=cmd_tests_of)
+    tests_of.set_defaults(run=tools_map.cmd_tests_of, under=True)
     untested = sub.add_parser("untested")
     untested.add_argument("files", nargs="+")
-    untested.set_defaults(run=cmd_untested)
+    untested.set_defaults(run=tools_map.cmd_untested, under=True)
     refs = sub.add_parser("refs")
     refs.add_argument("name")
-    refs.set_defaults(run=cmd_refs)
+    refs.set_defaults(run=tools_refs.cmd_refs, under=True)
     check = sub.add_parser("check")
     check.add_argument("paths", nargs="*")
     check.add_argument("--base")
-    check.set_defaults(run=cmd_check)
+    check.set_defaults(run=tools_check.cmd_check)
     args = parser.parse_args()
     try:
+        if getattr(args, "under", False):
+            under(tools_env.interpreter(args)[0], sys.argv[1:])
         return args.run(args)
-    except Refused as why:
+    except tools_env.Refused as why:
         sys.stderr.write("tools: %s\n" % why)
         return 1
 
