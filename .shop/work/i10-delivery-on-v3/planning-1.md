@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/planning-1
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-planning
-status: drafted
+status: done
 wkind: capability
 under: planning
 accepts: [planning#r1-r8]

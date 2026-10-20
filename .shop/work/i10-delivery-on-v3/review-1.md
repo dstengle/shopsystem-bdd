@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/review-1
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-review
-status: drafted
+status: done
 wkind: capability
 under: review
 accepts: [review#r1-r5, review#r10, review#r12-r13]

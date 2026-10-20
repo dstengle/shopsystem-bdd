@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/red-green-1
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-red-green
-status: drafted
+status: done
 wkind: capability
 under: red-green
 accepts: [red-green#r1-r2, red-green#r6, red-green#r9-r11, red-green#r15-r16, red-green#r18]
