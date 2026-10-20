@@ -127,7 +127,7 @@ Deferred, each with the measurement that would decide it: resuming an implemente
 
 0.14.0 keeps the suite passing between slices, and keeps behaviour tested until a slice changes it. Design: `.shop/records/archive/design-notes/2026-10-11-green-suite-design.md`.
 
-- **A scenario that passes today is deprecated, not removed.** When a line is re-worded or removed, formulation keeps the old scenario in the feature file, tagged `@deprecated` with " (deprecated)" on its title, its steps unchanged, so it still passes. Slicing gives it a slice that retires it, the task lists it under `Retires:`, and the implementer removes it with `features retire` in the commit that turns its replacement green (`formulating-features`, `slicing-into-increments`, `bdd-red-green`).
+- **A scenario that passes today is deprecated, not removed.** When a line is re-worded or removed, formulation keeps the old scenario in the feature file, tagged `@deprecated` with " (deprecated)" on its title (until 0.21.0 `@holding` and " (held)"), its steps unchanged, so it still passes. Slicing gives it a slice that retires it, the task lists it under `Retires:`, and the implementer removes it with `features retire` in the commit that turns its replacement green (`formulating-features`, `slicing-into-increments`, `bdd-red-green`).
 - **A changed title never stops a module collecting.** `features bindings` reports every `scenario(…, "<title>")` call that names no scenario; `features rebind` rewrites the title in those calls. Formulation runs both before it commits.
 
 ## Analysis tools, a consequence sweep and invariants (0.15.0)
