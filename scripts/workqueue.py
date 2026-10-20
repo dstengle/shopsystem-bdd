@@ -2,8 +2,10 @@
 
 Standard library only. Frontmatter is read with scripts/model's own reader, so the two never disagree on a file.
 """
+import datetime
 import importlib.machinery
 import importlib.util
+import json
 import re
 from pathlib import Path
 
@@ -52,9 +54,18 @@ def items(root):
 
 
 def move(root, initiative, name, status, by):
-    """Move a work-item to `status`, as `by`: work run's way through the lifecycle (r4)."""
+    """Move a work-item to `status`, as `by`: work run's way through the lifecycle.
+
+    The file gets the new status (r4), then log.jsonl the move's line (r5): a move and its file are written
+    together, the log line last.
+    """
     path = Path(root) / WORK / initiative / (name + ".md")
     text = path.read_text()
+    before = frontmatter(text)[0].get("status")
     end = text.find("\n---", 4)
     head = re.sub(r"(?m)^status:.*$", "status: " + status, text[:end], count=1)
     path.write_text(head + text[end:])
+    line = {"time": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "work-item": name,
+            "before": before, "after": status, "by": by}
+    with open(path.parent / "log.jsonl", "a") as log:
+        log.write(json.dumps(line) + "\n")

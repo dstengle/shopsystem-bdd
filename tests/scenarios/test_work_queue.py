@@ -4,7 +4,9 @@ A Given writes the initiatives and work-items a scenario names under `repo`/.sho
 makes one move through the library, as `work run` does) and keeps the files as they were (`context["before"]`); the
 Then steps read what it printed and what it left.
 """
+import datetime
 import importlib
+import json
 import shlex
 import sys
 
@@ -60,6 +62,16 @@ def with_items(repo, ident, items, proposal, pstatus):
         write(repo, ".shop/work/%s/%s.md" % (ident, name), item_text(name, status, ident))
     if proposal:
         write(repo, ".shop/work/%s/%s.md" % (ident, proposal), item_text(proposal, pstatus, ident, "capability-proposal"))
+
+
+def log_line(name, before, after):
+    return json.dumps({"time": "2026-10-19T10:00:00+00:00", "work-item": name, "before": before, "after": after,
+                       "by": "someone"}) + "\n"
+
+
+@given(parsers.parse(".shop/work/i1/log.jsonl has one line, moving {name} from {before} to {after}"))
+def one_line(repo, name, before, after):
+    write(repo, ".shop/work/i1/log.jsonl", log_line(name, before, after))
 
 
 # --- When -----------------------------------------------------------------------------------------------------
@@ -134,3 +146,17 @@ def nothing_about(context, name):
 @then(parsers.parse(".shop/work/{initiative}/{name}.md gives {name2}'s status as {status}"))
 def status_is(repo, initiative, name, name2, status):
     assert fields(repo / ".shop/work/{}/{}.md".format(initiative, name)).get("status") == status
+
+
+@then(".shop/work/i1/log.jsonl has two lines, the first as it was")
+def two_lines(repo, context):
+    lines = (repo / ".shop/work/i1/log.jsonl").read_text().splitlines(keepends=True)
+    assert len(lines) == 2 and lines[0] == context["before"][".shop/work/i1/log.jsonl"], lines
+
+
+@then(parsers.parse("its last line gives the time, {name}, {before} before, {after} after, and the script as who moved it"))
+def last_line(repo, name, before, after):
+    last = json.loads((repo / ".shop/work/i1/log.jsonl").read_text().splitlines()[-1])
+    when = datetime.datetime.fromisoformat(last.pop("time"))
+    assert abs(datetime.datetime.now(datetime.timezone.utc) - when) < datetime.timedelta(minutes=1), when
+    assert last == {"work-item": name, "before": before, "after": after, "by": MOVER}, last
