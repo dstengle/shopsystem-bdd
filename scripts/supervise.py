@@ -34,6 +34,8 @@ MOVABLE = ("drafted", "researched", "planned", "ready", "done")
 TESTS = {"work_item": "python3 -m pytest -q --work-item {work_item}", "suite": "python3 -m pytest -q"}
 AGENT_PREFIX = "shopsystem-bdd:"
 SCRIPTS = Path(__file__).resolve().parent
+# The worker's agents are this plugin's: claude is given the plugin root, so an installed copy of another version
+# (whose agents may be older or missing) is not the one --agent finds.
 # Each stage's tools, the narrowest its agent needs; .shop/delivery.toml's [allowed_tools] replaces a stage's list.
 READER = ["Read", "Glob", "Grep", "Write", "Bash(python3 *)", "Bash(git status*)", "Bash(git diff*)", "Bash(git log*)",
           "Bash(git show*)"]
@@ -206,7 +208,8 @@ class Run:
         self.log(**{"work-item": name, "stage": stage, "agent": agent, "session": session, "event": "start"})
         kept = self.snapshot()
         done = subprocess.run([self.claude, "-p", "Read the brief file %s and do what it says." % brief,
-                               "--agent", AGENT_PREFIX + agent, "--session-id", session, "--output-format", "json",
+                               "--agent", AGENT_PREFIX + agent, "--plugin-dir", str(SCRIPTS.parent),
+                               "--session-id", session, "--output-format", "json",
                                "--permission-mode", "acceptEdits", "--allowedTools", ",".join(self.tools(stage))],
                               cwd=tree, capture_output=True, text=True)
         self.put_back(kept)
