@@ -60,28 +60,33 @@ class Merge:
             data, failure = self.worker(name, "implement", "bdd-implementer", tree, "work/" + name,
                                         [("Suite record", record)])
             question = self.outcome("bdd-implementer", data, failure)
-            if question is None:
-                done = subprocess.run(["git", "rebase", "-q", self.branch], cwd=tree, capture_output=True, text=True)
-                if done.returncode != 0:
-                    question = "`git rebase %s` failed on %s's branch work/%s:\n%s" % (
-                        self.branch, name, name, (done.stdout + done.stderr).strip())
-            if question is None:
-                changed = self.under_work(tree, name)
-                if changed:
-                    question = ("bdd-implementer's branch work/%s changed %s under .shop/work/, which only work run "
-                                "writes; work run put it back on the branch and did not merge it" % (name, ", ".join(changed)))
-            if question is None:
-                for cmd in (shlex.split(tests["work_item"].format(work_item=name)), shlex.split(tests["suite"])):
-                    done = subprocess.run(cmd, cwd=tree, capture_output=True, text=True)
-                    if done.returncode != 0:
-                        question = "`%s` failed on %s's branch work/%s:\n%s" % (
-                            " ".join(cmd), name, name, (done.stdout + done.stderr).strip())
-                        break
-            if question is not None:
-                self.move(name, "claimed", "awaiting-ruling", question)
-                return
-            git(self.root, "merge", "--ff-only", "work/" + name)
-            self.move(name, "claimed", "done")
+            with self.lock:     # one merge at a time, each branch rebased on the one merged before it (r20)
+                if question is None:
+                    question = self.merge(name, tree, tests)
+                if question is not None:
+                    self.move(name, "claimed", "awaiting-ruling", question)
+                    return
         finally:
             self.remove(tree)
-        git(self.root, "branch", "-q", "-d", "work/" + name)     # merged, so no longer needed; once its worktree is gone (r18)
+        with self.lock:
+            git(self.root, "branch", "-q", "-d", "work/" + name)     # merged, so no longer needed; once its worktree is gone (r18)
+
+    def merge(self, name, tree, tests):
+        """The branch rebased on the initiative branch, put back under .shop/work/, tested and merged (r4, r6); None,
+        else the question it gives the person instead of the merge."""
+        done = subprocess.run(["git", "rebase", "-q", self.branch], cwd=tree, capture_output=True, text=True)
+        if done.returncode != 0:
+            return "`git rebase %s` failed on %s's branch work/%s:\n%s" % (
+                self.branch, name, name, (done.stdout + done.stderr).strip())
+        changed = self.under_work(tree, name)
+        if changed:
+            return ("bdd-implementer's branch work/%s changed %s under .shop/work/, which only work run "
+                    "writes; work run put it back on the branch and did not merge it" % (name, ", ".join(changed)))
+        for cmd in (shlex.split(tests["work_item"].format(work_item=name)), shlex.split(tests["suite"])):
+            done = subprocess.run(cmd, cwd=tree, capture_output=True, text=True)
+            if done.returncode != 0:
+                return "`%s` failed on %s's branch work/%s:\n%s" % (
+                    " ".join(cmd), name, name, (done.stdout + done.stderr).strip())
+        git(self.root, "merge", "--ff-only", "work/" + name)
+        self.move(name, "claimed", "done")
+        return None

@@ -46,7 +46,7 @@ def run_work(repo, plan, context, args):
 
 @then(parsers.parse("{names} are green"))
 def all_green(repo, context, names):
-    for name in names.split(" and "):
+    for name in names.replace(", ", " and ").split(" and "):
         assert fields(repo / (".shop/work/i1/%s.md" % name))["status"] == "green", (name, context["done"].stdout, context["done"].stderr)
 
 
@@ -221,3 +221,10 @@ def report_copied(repo, context, run_dir):
 @then(parsers.parse("git lists no branch {branch}"))
 def no_branch(repo, context, branch):
     assert git(repo, "branch", "--list", branch).strip() == "", (git(repo, "branch"), context["done"].stderr)
+
+
+@then("the initiative branch has both implementers' commits, one after the other, with no merge commit")
+def merged_in_line(repo, context):
+    subjects = git(repo, "log", "main", "--format=%s").splitlines()
+    assert len([s for s in subjects if s.startswith("bdd-implementer:")]) == 2, (subjects, context["done"].stderr)
+    assert git(repo, "log", "--merges", "--format=%s", "main") == "", git(repo, "log", "--graph", "--oneline", "main")

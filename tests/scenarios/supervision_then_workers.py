@@ -196,3 +196,39 @@ def brief_scenarios(repo, title, feature, other):
 def max_turns(repo, turns):
     argv = researcher(repo)["argv"]
     assert option(argv, "--max-turns") == str(turns), argv
+
+
+def implementer_spans(repo):
+    """Each implementer's work-item, and the places of its start and its end in the stand-in's record."""
+    events = calls(repo)
+    spans = {}
+    for i, c in enumerate(events):
+        if c["event"] == "start" and c["agent"] == "shopsystem-bdd:bdd-implementer":
+            end = next(j for j, e in enumerate(events) if e["event"] == "end" and e["session"] == c["session"])
+            spans[work_item_of(c)] = (i, end)
+    return spans
+
+
+def most_at_once(spans):
+    """The most implementers running at one time."""
+    return max(len([1 for s, e in spans.values() if s <= i < e]) for i, _ in spans.values())
+
+
+@then(parsers.parse("the implementers of {first} and {second} ran at the same time"))
+def ran_together(repo, context, first, second):
+    spans = implementer_spans(repo)
+    assert first in spans and second in spans, (spans, context["done"].stderr)
+    (s1, e1), (s2, e2) = spans[first], spans[second]
+    assert s1 < e2 and s2 < e1, spans
+
+
+@then("no implementer was started before the one before it had ended")
+def implementers_one_at_a_time(repo, context):
+    spans = implementer_spans(repo)
+    assert len(spans) >= 2 and most_at_once(spans) == 1, (spans, context["done"].stderr)
+
+
+@then("two implementers ran at the same time, and never three")
+def two_at_most(repo, context):
+    spans = implementer_spans(repo)
+    assert len(spans) >= 3 and most_at_once(spans) == 2, (spans, context["done"].stderr)

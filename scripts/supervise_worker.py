@@ -50,7 +50,9 @@ def now():
 
 
 class Workers:
-    """The part of supervise.Run that starts workers and reads what they leave."""
+    """The part of supervise.Run that starts workers and reads what they leave. Two implementers may run at once
+    (r20), so what changes the main checkout or the run's list of worktrees holds `self.lock`; the worker itself does
+    not."""
 
     def delivery(self):
         path = self.root / ".shop" / "delivery.toml"
@@ -83,21 +85,23 @@ class Workers:
 
     def worktree(self, name, label, branch=None):
         """A worktree of the initiative branch's head for one worker: on `branch`, else detached."""
-        tree = self.trees_dir() / label
-        if branch:
-            git(self.root, "worktree", "add", "-q", "-b", branch, str(tree), "HEAD")
-        else:
-            git(self.root, "worktree", "add", "-q", "--detach", str(tree), "HEAD")
-        self.trees.append(tree)
+        with self.lock:
+            tree = self.trees_dir() / label
+            if branch:
+                git(self.root, "worktree", "add", "-q", "-b", branch, str(tree), "HEAD")
+            else:
+                git(self.root, "worktree", "add", "-q", "--detach", str(tree), "HEAD")
+            self.trees.append(tree)
         scratch = tree / ".shop" / "scratch"
         scratch.mkdir(parents=True, exist_ok=True)
         (scratch / ".gitignore").write_text("*\n")     # the scratch directory ignores itself, whatever the repository does
         return tree
 
     def remove(self, tree):
-        if tree in self.trees:
-            self.trees.remove(tree)
-            subprocess.run(["git", "worktree", "remove", "--force", str(tree)], cwd=self.root, capture_output=True)
+        with self.lock:
+            if tree in self.trees:
+                self.trees.remove(tree)
+                subprocess.run(["git", "worktree", "remove", "--force", str(tree)], cwd=self.root, capture_output=True)
 
     def worker(self, name, stage, agent, tree, branch=None, extra=()):
         """Start one worker in `tree` and wait for it; its result as a dict, or the reason there is none.
@@ -107,21 +111,23 @@ class Workers:
         What a worker changes under .shop/work/ is put back where the worker changed it (r6): a detached worktree's
         changes go with the worktree, a branch's are put back by `under_work`. The main checkout's working tree is not
         the worker's, so nothing there is put back: a change made there while the worker runs is someone else's."""
-        label, kept_at = self.run_dir(name, stage)
-        here = tree / ".shop" / "scratch" / label
-        here.mkdir(parents=True)
-        brief = self.brief(name, stage, agent, here, tree, branch, extra)
-        session = str(uuid.uuid4())
-        self.log(**{"work-item": name, "stage": stage, "agent": agent, "session": session, "event": "start"})
+        with self.lock:
+            label, kept_at = self.run_dir(name, stage)
+            here = tree / ".shop" / "scratch" / label
+            here.mkdir(parents=True)
+            brief = self.brief(name, stage, agent, here, tree, branch, extra)
+            session = str(uuid.uuid4())
+            self.log(**{"work-item": name, "stage": stage, "agent": agent, "session": session, "event": "start"})
         done = subprocess.run([self.claude, "-p", "Read the brief file %s and do what it says." % brief,
                                "--agent", AGENT_PREFIX + agent, "--plugin-dir", str(SCRIPTS.parent),
                                "--session-id", session, "--output-format", "json",
                                "--permission-mode", "acceptEdits", "--allowedTools", ",".join(self.tools(stage, agent)),
                                *(["--max-turns", str(MAX_TURNS[stage])] if stage in MAX_TURNS else [])],
                               cwd=tree, capture_output=True, text=True)
-        shutil.copytree(here, kept_at)
-        (kept_at / "session.json").write_text(done.stdout)
-        self.log(**{"work-item": name, "stage": stage, "agent": agent, "session": session, "event": "end"})
+        with self.lock:
+            shutil.copytree(here, kept_at)
+            (kept_at / "session.json").write_text(done.stdout)
+            self.log(**{"work-item": name, "stage": stage, "agent": agent, "session": session, "event": "end"})
         result = kept_at / "result.json"
         if not result.is_file():
             return None, "%s gave no result file (%s)" % (agent, here / "result.json")

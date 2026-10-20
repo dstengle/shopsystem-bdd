@@ -10,6 +10,7 @@ judgment: what is not DONE goes to the person as a question.
 import json
 import os
 import shutil
+import threading
 from pathlib import Path
 
 import workqueue
@@ -40,6 +41,7 @@ class Run(Workers, Briefs, Merge):
         self.claude = os.environ.get("SHOPSYSTEM_WORK_CLAUDE") or "claude"
         self.trees = []          # the worktrees this run added; removed when it ends
         self.outside = None      # where the worktrees go when the repository is inside the plugin's own directory
+        self.lock = threading.RLock()     # held for each change to the main checkout while two implementers run (r20)
 
     def rel(self, path):
         return str(Path(path).relative_to(self.root))
@@ -57,7 +59,8 @@ class Run(Workers, Briefs, Merge):
         self.branch = git(self.root, "rev-parse", "--abbrev-ref", "HEAD").stdout.strip()
 
     def log(self, **line):
-        workqueue.append(self.dir / "log.jsonl", (json.dumps(dict(time=now(), **line)) + "\n").encode())
+        with self.lock:
+            workqueue.append(self.dir / "log.jsonl", (json.dumps(dict(time=now(), **line)) + "\n").encode())
 
     def commit(self, name, before, after):
         """A move's commit on the initiative branch: the work-item's file, its run directories and log.jsonl (r7)."""
@@ -67,10 +70,11 @@ class Run(Workers, Briefs, Merge):
         git(self.root, "commit", "-q", "-m", "work: %s %s -> %s" % (name, before, after), "--", *rels)
 
     def move(self, name, before, after, question=None):
-        workqueue.move(self.root, self.initiative, name, after, by=BY)
-        if question:
-            self.ask(name, question)
-        self.commit(name, before, after)
+        with self.lock:
+            workqueue.move(self.root, self.initiative, name, after, by=BY)
+            if question:
+                self.ask(name, question)
+            self.commit(name, before, after)
 
     def ask(self, name, question):
         """Write `question` as the last bullet of the work-item's `## Questions` section, before any section after it;
@@ -103,6 +107,38 @@ class Run(Workers, Briefs, Merge):
             question = self.outcome(agent, data, failure)
             self.move(name, status, after if question is None else "awaiting-ruling", question)
 
+    def pair(self, ready):
+        """Two of the `ready` work-items whose file sets do not overlap, the first such in their order (r20); else
+        none. A work-item without a file set is in no pair."""
+        files = {}
+        for name in ready:
+            data, _ = workqueue.frontmatter((self.dir / (name + ".md")).read_text())
+            if data.get("fileset"):
+                files[name] = set(data["fileset"])
+        for i, first in enumerate(files):
+            for second in list(files)[i + 1:]:
+                if not files[first] & files[second]:
+                    return first, second
+        return None
+
+    def together(self, names):
+        """Implement the work-items at the same time, each in a thread of its own; their merges take the lock in turn.
+        A refusal in either is raised once both have ended."""
+        failed = []
+
+        def implement(name):
+            try:
+                self.implement(name)
+            except Refused as refused:    # carried to the run's own thread, which ends with it (r10)
+                failed.append(refused)
+        threads = [threading.Thread(target=implement, args=(name,)) for name in names]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        if failed:
+            raise failed[0]
+
     def questions(self, name):
         """The lines of the work-item's `## Questions` section: its open questions."""
         text = (self.dir / (name + ".md")).read_text()
@@ -118,7 +154,11 @@ class Run(Workers, Briefs, Merge):
                 movable = [(n, s) for n, s in self.items() if s in MOVABLE]
                 if not movable:
                     break
-                self.step(*movable[0])
+                pair = self.pair([n for n, s in movable if s == "ready"])
+                if pair:
+                    self.together(pair)
+                else:
+                    self.step(*movable[0])
         finally:
             for tree in list(self.trees):      # on every way out, a failure's too: the run leaves no worktree
                 self.remove(tree)

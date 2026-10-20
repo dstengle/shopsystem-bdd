@@ -212,3 +212,11 @@ def items_with_file_sets(repo, items):
 def thing_feature(repo, first, tag1, second, tag2):
     write(repo, "features/thing.feature", feature("thing", (tag1, first), (tag2, second)))
     commit_all(repo, "the thing's scenarios")
+
+
+@given(parsers.re(r"every worker gives DONE, each implementer committing a file named for its work-item"
+                  r"(?P<meet> once two implementers have started)?$"))
+def implementers_commit_own(plan, meet):
+    """Each implementer commits <its work-item>.txt; with `meet`, only once two implementers have been started."""
+    plan["default"] = {"status": "DONE"}
+    plan["bdd-implementer"] = dict({"commit": {"{work_item}.txt": "the feature\n"}}, **({"meet": 2} if meet else {}))

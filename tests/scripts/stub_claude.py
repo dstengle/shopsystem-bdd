@@ -15,7 +15,10 @@ The script is the JSON file $STUB_CLAUDE_PLAN: an object whose keys are agents w
              outside it is refused unless --allowedTools has a bare Write;
   notes      {file name: text}, written in the result file's directory (the worker's run directory);
   commit     {path: text, or null to delete it}, written relative to the working directory and committed there
-             (by `git add -A -- <paths>` and `git commit -q -m ...`, each a Bash command);
+             (by `git add -A -- <paths>` and `git commit -q -m ...`, each a Bash command); `{work_item}` in a path is
+             the name of the work-item the brief names;
+  meet       a number n: before anything else, wait until $STUB_CLAUDE_CALLS has the starts of n workers of this
+             agent, this one's included (up to a minute, so a worker nobody joins still ends);
   skills     a list of skills to load (`shopsystem-bdd:bdd-red-green`), first;
   run        a list of Bash commands (argument lists), run in the working directory, last;
   names      {result field: path}, a file the result names (`report`), given in the result by its absolute path, the
@@ -37,6 +40,7 @@ import re
 import shlex
 import subprocess
 import sys
+import time
 
 VALUED = ("--agent", "--plugin-dir", "--session-id", "--output-format", "--permission-mode", "--allowedTools", "--allowed-tools",
           "--max-turns")
@@ -90,6 +94,17 @@ def plugin_refuses(argv, path):
     return False
 
 
+def meet(agent, n):
+    """Wait until the record has the starts of `n` workers of `agent`: a signal, polled, never a fixed sleep."""
+    deadline = time.monotonic() + 60
+    while time.monotonic() < deadline:
+        with open(os.environ["STUB_CLAUDE_CALLS"]) as calls:
+            started = [json.loads(line) for line in calls if line.endswith("\n")]     # a line still being written waits
+        if len([c for c in started if c["event"] == "start" and c["agent"] == agent]) >= n:
+            return
+        time.sleep(0.05)
+
+
 def record(entry):
     with open(os.environ["STUB_CLAUDE_CALLS"], "a") as out:
         out.write(json.dumps(entry) + "\n")
@@ -106,6 +121,12 @@ def main(argv):
     short = agent.split(":", 1)[-1]
     step = dict(plan.get("default", {}), **plan.get(short, {}))
     result = pathlib.Path(next(line.split(":", 1)[1].strip() for line in brief.splitlines() if line.startswith("Result file:")))
+    work_item = pathlib.Path(next(line.split(":", 1)[1].strip() for line in brief.splitlines()
+                                  if line.startswith("Work-item:"))).stem
+    if step.get("meet"):
+        meet(agent, step["meet"])
+    if step.get("commit"):
+        step["commit"] = {rel.replace("{work_item}", work_item): text for rel, text in step["commit"].items()}
     if step.get("elsewhere"):
         other = pathlib.Path(step["elsewhere"]["root"])
         for rel, text in step["elsewhere"]["commit"].items():
