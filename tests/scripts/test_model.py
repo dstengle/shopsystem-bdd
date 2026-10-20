@@ -455,6 +455,15 @@ class GlossaryFactsTest(ModelTest):
 class GlossaryCheckTest(ModelTest):
     """r49, r52-r54: the glossary checked."""
 
+    def test_a_term_in_a_proposal_list_is_read_as_the_glossary_writes_its_id(self):
+        self.good()
+        self.write("spec/index.md", index("- **store**: a place."))
+        self.observation()
+        self.initiative()
+        self.proposal(adds="[term/Store]")
+        r = self.run_model("check")
+        self.assertNotIn("which the glossary does not have", r.stdout)
+
     def test_a_good_glossary_passes(self):
         self.write("spec/index.md", index("- **slice**: a unit of work, e.g. a scenario. Not: chunk.",
                                           "- **batch**: the slices one session plans."))

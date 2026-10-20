@@ -723,7 +723,8 @@ class Model:
             for rel in ("adds", "changes", "removes"):
                 for ref in expand(as_list(data.get(rel))):
                     if str(ref).strip().startswith("term/"):     # a glossary term, not a requirement (r66)
-                        t = self.qualify(ref)
+                        head, _, name = str(ref).strip().rpartition("/")
+                        t = self.qualify(f"{head}/{name.lower()}")      # r48: a term's id is lowercased
                         if self.nodes.get(t) != "term" and not (rel == "removes" and data.get("status") in ("merged", "formulated")):
                             self.dangling.append(f"{where}: {rel} {t}, which the glossary does not have")
                         continue
