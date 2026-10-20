@@ -8,6 +8,7 @@ nothing is committed.
 """
 import argparse
 import re
+import posixpath
 import subprocess
 import sys
 from pathlib import Path
@@ -32,6 +33,7 @@ class Plan:
         self.moves = {}
         self.texts = {}
         self.removes = []
+        self.renamed = {}       # an old id -> its new id
 
     def read(self, rel):
         return (self.root / rel).read_text()
@@ -177,7 +179,52 @@ def plan_ledger(plan):
         return
     for number, slug, summary, fields in ledger_entries(plan.read(LEDGER)):
         plan.texts["spec/decisions/%s-%s.md" % (number, slug)] = decision_text(plan, slug, summary, fields)
+        plan.renamed["decision/%s-%s" % (number, slug)] = "design-decision/%s/%s" % (plan.context, slug)
     plan.removes.append(LEDGER)
+
+
+LINK = re.compile(r"(\]\()([^)\s#]+)((?:#[^)\s]*)?\))")
+
+
+def rewrite_text(plan, old_path, new_path, text):
+    """`text`, the file at `old_path` that will be at `new_path`, with each reference to what moved or was renamed
+    made to name its new place: a link (relative to the file), a repository path, an id in the frontmatter."""
+    def link(m):
+        target = m.group(2)
+        if re.match(r"^([a-z][a-z0-9+.-]*:|/)", target):
+            return m.group(0)
+        resolved = posixpath.normpath(posixpath.join(posixpath.dirname(old_path), target))
+        if resolved not in plan.moves:
+            return m.group(0)
+        relative = posixpath.relpath(plan.moves[resolved], posixpath.dirname(new_path) or ".")
+        return m.group(1) + relative + m.group(3)
+    text = LINK.sub(link, text)
+    if plan.moves:
+        paths = "|".join(re.escape(p) for p in sorted(plan.moves, key=len, reverse=True))
+        text = re.sub(r"(?<![\w./-])(%s)(?![\w/-])" % paths, lambda m: plan.moves[m.group(1)], text)
+    if text.startswith("---\n") and plan.renamed:
+        end = text.find("\n---", 4)
+        head = text[:end] if end > 0 else ""
+        ids = "|".join(re.escape(i) for i in plan.renamed)
+        if head:
+            head = re.sub(r"(?<![\w./-])(%s)(?![\w-])" % ids, lambda m: plan.renamed[m.group(1)], head)
+            text = head + text[end:]
+    return text
+
+
+def plan_references(plan):
+    """Rewrite what names a moved file or a renamed id, in every tracked text file."""
+    for old in tracked(plan.root):
+        if old in plan.removes:
+            continue
+        final = plan.moves.get(old, old)
+        try:
+            text = plan.texts.get(final) if final in plan.texts else plan.read(old)
+        except UnicodeDecodeError:
+            continue
+        rewritten = rewrite_text(plan, old, final, text)
+        if rewritten != text:
+            plan.texts[final] = rewritten
 
 
 def write(plan):
@@ -204,6 +251,7 @@ def cmd_run(args):
     plan_index(plan)
     plan_capabilities(plan)
     plan_ids(plan)
+    plan_references(plan)
     write(plan)
     return 0
 

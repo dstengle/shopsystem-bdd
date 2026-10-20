@@ -202,6 +202,45 @@ def _(old):
     old.commit()
 
 
+@given("a repository on the old system with work/i1/w1.md")
+def _(old):
+    old.write("work/i1/w1.md", "Work one.\n")
+
+
+@given("a tracked README.md that names work/i1/w1.md")
+def _(old):
+    old.write("README.md", "See work/i1/w1.md for the work.\n")
+
+
+@given("a tracked notes/n1.md with the Markdown link `[w1](../work/i1/w1.md)`")
+def _(old):
+    old.write("notes/n1.md", "Read [w1](../work/i1/w1.md) first.\n")
+
+
+@given("a capability spec/capabilities/thing.md whose frontmatter rests_on names decision/0007-a")
+def _(old):
+    capability(old, ident="capability/%s/thing" % CONTEXT)
+    text = old.read("spec/capabilities/thing.md").replace("rests_on: []", "rests_on: [decision/0007-a]")
+    old.write("spec/capabilities/thing.md", text)
+    old.commit()
+
+
+@then("README.md names .shop/work/i1/w1.md where it named work/i1/w1.md")
+def _(old):
+    assert old.read("README.md") == old.before["README.md"].decode().replace("work/i1/w1.md", ".shop/work/i1/w1.md")
+
+
+@then("notes/n1.md has the link `[w1](../.shop/work/i1/w1.md)`")
+def _(old):
+    assert "[w1](../.shop/work/i1/w1.md)" in old.read("notes/n1.md")
+
+
+@then("spec/capabilities/thing.md's rests_on names design-decision/example.org/acme/shop/a")
+def _(old):
+    data, _ = front(old, "spec/capabilities/thing.md")
+    assert data["rests_on"] == ["design-decision/%s/a" % CONTEXT]
+
+
 @then("the Behaviour lines of spec/capabilities/thing.md are, in order, [r1], [r5], [r3] and [r6]")
 def _(old):
     _, body = front(old, "spec/capabilities/thing.md")
