@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/ears-formulation
 kind: capability-proposal
 part_of: initiative/i13
-status: approved
+status: merged
 date: 2026-10-19
 argues: [formulation]
 adds: [formulation#r22]

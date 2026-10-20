@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/ears-batch-measurement
 kind: capability-proposal
 part_of: initiative/i13
-status: approved
+status: merged
 date: 2026-10-19
 argues: [batch-measurement]
 adds: []

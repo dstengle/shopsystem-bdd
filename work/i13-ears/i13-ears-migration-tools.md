@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/ears-migration-tools
 kind: capability-proposal
 part_of: initiative/i13
-status: approved
+status: merged
 date: 2026-10-19
 argues: [migration-tools]
 adds: []
