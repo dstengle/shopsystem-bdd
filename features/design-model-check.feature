@@ -177,6 +177,7 @@ Feature: Design model check
       | thing#line2              |
       | thing#r3-r1              |
       | design-decision/thing#r1 |
+      | thing#behaviour/r2       |
 
   @r23
   Scenario Outline: a proposal adding or removing a requirement no capability has is unresolved, unless it adds a retired id
@@ -192,6 +193,24 @@ Feature: Design model check
       | removes | r9 | reported as unresolved                    |
       | adds    | r4 | reported under v15c and not as unresolved |
       | removes | r4 | reported as unresolved                    |
+
+  @r66
+  Scenario Outline: a proposal's list naming a term the glossary lacks is unresolved, unless a merged proposal removes it
+    Pins that term/<term> in a proposal's list is read against the glossary, and that a settled proposal may remove a term already gone.
+    Given a glossary with the term store
+    And a <status> capability-proposal whose <list> names term/<term>
+    When model check is run
+    Then term/<term> is <reported>
+
+    Examples:
+      | status    | list    | term  | reported                   |
+      | drafted   | adds    | store | not reported as unresolved |
+      | drafted   | changes | store | not reported as unresolved |
+      | drafted   | adds    | shelf | reported as unresolved     |
+      | drafted   | removes | shelf | reported as unresolved     |
+      | merged    | removes | shelf | not reported as unresolved |
+      | formulated | removes | shelf | not reported as unresolved |
+      | merged    | adds    | shelf | reported as unresolved     |
 
   @r24
   Scenario Outline: a frontmatter reference to nothing, or to the wrong kind, is unresolved

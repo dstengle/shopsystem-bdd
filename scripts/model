@@ -710,6 +710,11 @@ class Model:
             self.proposals[p] = data
             for rel in ("adds", "changes", "removes"):
                 for ref in expand(as_list(data.get(rel))):
+                    if str(ref).strip().startswith("term/"):     # a glossary term, not a requirement (r66)
+                        t = self.qualify(ref)
+                        if self.nodes.get(t) != "term" and not (rel == "removes" and data.get("status") in ("merged", "formulated")):
+                            self.dangling.append(f"{where}: {rel} {t}, which the glossary does not have")
+                        continue
                     q = self.resolve_req(ref, where)
                     if not q:
                         continue

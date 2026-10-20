@@ -25,6 +25,7 @@ BOUND = (
     "a reference written name#r<n> is that capability's requirement",
     'a reference in neither requirement form, or a reversed range, is unresolved',
     'a proposal adding or removing a requirement no capability has is unresolved, unless it adds a retired id',
+    "a proposal's list naming a term the glossary lacks is unresolved, unless a merged proposal removes it",
     'a frontmatter reference to nothing, or to the wrong kind, is unresolved',
     'a malformed index or capability file is a file problem',
     'a path of the old layout is a file problem naming scripts/migrate',
@@ -179,6 +180,20 @@ def proposal_listing(world, context, reference):
     world.initiative()
     world.proposal(adds="[%s]" % reference)
     context["listed"] = reference
+
+
+@given("a glossary with the term store")
+def glossary_with_store(world):
+    world.good()
+    world.write("spec/index.md", INDEX + "\n## Glossary\n- **store**: a place.\n")
+
+
+@given(parsers.re(r"a (?P<status>\w+) capability-proposal whose (?P<field>adds|changes|removes) names term/(?P<term>\w+)"))
+def proposal_naming_term(world, context, status, field, term):
+    world.observation()
+    world.initiative()
+    world.proposal(status=status, **{field: "[term/%s]" % term})
+    context["term"] = term
 
 
 # --- Given: frontmatter references (r24) -----------------------------------------------------------------------
@@ -578,6 +593,9 @@ def reported_unresolved(world, context, subject):
         assert len([d for d in data["unresolved"] if "ghost" in d]) == 1, data
     elif "written" in context:  # r43, r24
         _written_unresolved(world, context, subject)
+    elif "term" in context:  # r66
+        assert subject == "term/" + context["term"]
+        assert _term_unresolved(world, context), found(world, context)
     elif "listed" in context:  # r22
         ref = context["listed"]
         assert subject == ref
@@ -590,6 +608,17 @@ def reported_unresolved(world, context, subject):
         unresolved = [d for d in data["unresolved"] if "%s#%s" % (THING, rid) in d]
         v15c = [a for name, a in data["violations"] if name == "v15c" and a == ["%s#%s" % (THING, rid)]]
         assert (len(unresolved), v15c) == (1, []), data
+
+
+def _term_unresolved(world, context):
+    """The unresolved entries naming the term the Given's proposal lists."""
+    return [d for d in found(world, context)["unresolved"] if context["term"] in d and "p1.md" in d]
+
+
+@then(parsers.re(r"(?P<subject>term/\w+) is not reported as unresolved"))
+def term_not_reported_unresolved(world, context, subject):
+    assert subject == "term/" + context["term"]
+    assert not _term_unresolved(world, context), found(world, context)
 
 
 @then(parsers.re(r"(?P<subject>.+?) is reported under v15c and not as unresolved"))
