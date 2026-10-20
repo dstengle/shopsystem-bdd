@@ -4,6 +4,7 @@ A Given builds a repository on the old system in `repo` and commits it (`old.bef
 When runs `migrate run` once; the Then steps read what it left.
 """
 import pathlib
+import shutil
 import subprocess
 
 import pytest
@@ -239,6 +240,37 @@ def _(old):
 def _(old):
     data, _ = front(old, "spec/capabilities/thing.md")
     assert data["rests_on"] == ["design-decision/%s/a" % CONTEXT]
+
+
+@given('a repository on the old system whose features/thing.feature has a scenario "s1" tagged @holding')
+def _(old):
+    old.write("features/thing.feature", "Feature: thing\n  Narrator: a client\n\n  @holding\n  Scenario: s1\n    Given a thing\n    Then it is so\n")
+
+
+@given('a test that names "s1" by title')
+def _(old):
+    old.write("tests/test_thing.py", 'from pytest_bdd import scenario\n\n\n@scenario("thing.feature", "s1")\ndef test_s1():\n    pass\n')
+    old.commit()
+
+
+@given('a copy of that repository on which `features deprecate` has been run for "s1"')
+def _(old, context, run):
+    copy = old.root.parent / (old.root.name + "-copy")
+    shutil.copytree(old.root, copy)
+    done = run("features", "deprecate", "s1", "--for-removal", cwd=copy)
+    assert done.returncode == 0, done.stdout + done.stderr
+    context["copy"] = copy
+
+
+@then("features/thing.feature and the test are as they are in the copy")
+def _(old, context):
+    copy = context["copy"]
+    held = (copy / "features/thing.feature").read_text()
+    assert "@holding" in held
+    expected = held.replace(" @holding", "").replace("@holding ", "").replace("@holding\n", "")
+    assert "@holding" not in expected
+    assert old.read("features/thing.feature") == expected
+    assert old.read("tests/test_thing.py") == (copy / "tests/test_thing.py").read_text()
 
 
 @then("the Behaviour lines of spec/capabilities/thing.md are, in order, [r1], [r5], [r3] and [r6]")

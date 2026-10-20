@@ -11,6 +11,7 @@ import re
 import posixpath
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 # directory of the old system -> where it lands
@@ -33,6 +34,7 @@ class Plan:
         self.moves = {}
         self.texts = {}
         self.removes = []
+        self.failures = []      # each change that cannot be made
         self.renamed = {}       # an old id -> its new id
 
     def read(self, rel):
@@ -169,6 +171,40 @@ def plan_capabilities(plan):
             plan.texts[rel] = text
 
 
+def drop_holding(text):
+    out = []
+    for line in text.split("\n"):
+        if line.strip().startswith("@") and "@holding" in line.split():
+            indent = line[:len(line) - len(line.lstrip())]
+            line = indent + " ".join(t for t in line.split() if t != "@holding")
+        out.append(line)
+    return "\n".join(out)
+
+
+def plan_holding(plan):
+    """Deprecate each @holding scenario as `features deprecate` does (on a copy outside the repository), then drop
+    its @holding tag."""
+    model = load_model()
+    features_script = str(Path(__file__).resolve().with_name("features"))
+    for rel in tracked(plan.root):
+        if not (rel.startswith("features/") and rel.endswith(".feature")):
+            continue
+        text = plan.read(rel)
+        held = [title for title, tags, _ in model.scenarios(text) if "@holding" in tags]
+        if not held:
+            continue
+        with tempfile.TemporaryDirectory() as scratch:
+            copy = Path(scratch) / rel
+            copy.parent.mkdir(parents=True)
+            copy.write_text(text)
+            for title in held:
+                done = subprocess.run([sys.executable, features_script, "deprecate", title, "--for-removal", "--file", rel],
+                                      cwd=scratch, capture_output=True, text=True)
+                if done.returncode != 0:
+                    plan.failures.append("could not deprecate %r in %s: %s" % (title, rel, (done.stdout + done.stderr).strip()))
+            plan.texts[rel] = drop_holding(copy.read_text())
+
+
 def plan_index(plan):
     if "spec/index.md" in tracked(plan.root):
         plan.texts["spec/index.md"] = with_id(plan.read("spec/index.md"), "bounded-context/" + plan.context)
@@ -248,6 +284,7 @@ def cmd_run(args):
     plan = Plan(Path.cwd(), args.context)
     plan_moves(plan)
     plan_ledger(plan)
+    plan_holding(plan)
     plan_index(plan)
     plan_capabilities(plan)
     plan_ids(plan)
