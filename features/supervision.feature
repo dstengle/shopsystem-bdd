@@ -214,6 +214,17 @@ Feature: Supervision
     When the person runs `work run i1`
     Then each of w1's four workers was started with --plugin-dir the directory that holds work run's own scripts
 
+  @r11
+  Scenario: when the repository is inside the plugin's own directory, the workers' worktrees are outside it, and gone when the run ends
+    Pins that work run delivering this plugin's own work gives workers writable worktrees: claude refuses every write under a --plugin-dir, so none may lie under the plugin's directory.
+    Given i1's work-item w1 is drafted
+    And the repository is the plugin: it holds work run's own scripts and agents
+    And every worker gives DONE, the implementer writing report.md at the top of its worktree and naming it as its report
+    When the person runs `work run i1`
+    Then each of w1's four workers ran in a worktree outside the plugin's directory
+    And w1 is green
+    And .shop/worktrees/w1 is not there, and git lists no worktree but the repository's own
+
   @r12
   Scenario Outline: a worker whose agent lists skills may load each of them, and no other worker may: the <who> loading <skill>, <tools>
     Pins that a `claude -p --agent` worker, whose agent's skills are not preloaded, can load them itself, whatever list .shop/delivery.toml gives its stage.

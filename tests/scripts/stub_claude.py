@@ -20,6 +20,8 @@ The script is the JSON file $STUB_CLAUDE_PLAN: an object whose keys are agents w
   run        a list of Bash commands (argument lists), run in the working directory, last;
   names      {result field: path}, a file the result names (`report`), given in the result by its absolute path, the
              path taken relative to the working directory.
+As the real claude does, it refuses to write any file (a `write` path, the result file) under its --plugin-dir, as a
+sensitive file: the write is recorded as refused (`Write`) and nothing is written.
 Each start and end, and each Bash command, skill load or write outside the working directory run or refused (its `tool`,
 `Bash`, `Skill` or `Write`), is appended to $STUB_CLAUDE_CALLS, one JSON object a line, so
 a scenario can read who was started, with what arguments and brief, in which directory and in what order.
@@ -75,6 +77,15 @@ def skill(argv, name):
     record({"event": "ran" if name in allowed(argv, "Skill") else "refused", "tool": "Skill", "command": name})
 
 
+def plugin_refuses(argv, path):
+    """True, recorded as refused, when `path` lies under the --plugin-dir: claude writes nothing there."""
+    plugin = option(argv, "--plugin-dir")
+    if plugin and pathlib.Path(path).resolve().is_relative_to(pathlib.Path(plugin).resolve()):
+        record({"event": "refused", "tool": "Write", "command": str(path)})
+        return True
+    return False
+
+
 def record(entry):
     with open(os.environ["STUB_CLAUDE_CALLS"], "a") as out:
         out.write(json.dumps(entry) + "\n")
@@ -95,6 +106,8 @@ def main(argv):
         skill(argv, name)
     for rel, text in step.get("write", {}).items():
         path = pathlib.Path(rel).resolve()
+        if plugin_refuses(argv, path):
+            continue
         if not path.is_relative_to(pathlib.Path.cwd().resolve()):
             done = "Write" in (option(argv, "--allowedTools") or "").split(",")
             record({"event": "ran" if done else "refused", "tool": "Write", "command": str(path)})
@@ -115,7 +128,9 @@ def main(argv):
             bash(argv, ["git", "commit", "-q", "-m", "%s: %s" % (short, ", ".join(step["commit"]))])
     for command in step.get("run", []):
         bash(argv, command)
-    if step.get("result") == "not-json":
+    if plugin_refuses(argv, result):
+        pass
+    elif step.get("result") == "not-json":
         result.write_text("not json\n")
     elif step.get("result") != "none":
         named = {field: str(pathlib.Path(rel).resolve()) for field, rel in step.get("names", {}).items()}

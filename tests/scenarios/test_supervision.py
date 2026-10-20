@@ -9,6 +9,7 @@ the stand-in's record of its calls, log.jsonl, the files and the git history.
 """
 import json
 import os
+import pathlib
 import re
 import shlex
 import shutil
@@ -300,6 +301,14 @@ def implementer_names_report(plan):
     plan["bdd-implementer"] = {"write": {"report.md": "the implementer's report\n"}, "names": {"report": "report.md"}}
 
 
+@given("the repository is the plugin: it holds work run's own scripts and agents")
+def repository_is_plugin(repo, context):
+    for name in ("scripts", "agents"):
+        shutil.copytree(ROOT / name, repo / name, ignore=shutil.ignore_patterns("__pycache__"))
+    commit_all(repo, "the repository is the plugin")
+    context["work"] = repo / "scripts" / "work"
+
+
 @given(parsers.re(r'every worker gives DONE, the researcher asking "(?P<question>[^"]+)"$'))
 def researcher_done_asks(plan, question):
     plan["default"] = {"status": "DONE"}
@@ -316,7 +325,7 @@ def run_work(repo, plan, context, args):
                SHOPSYSTEM_WORK_CLAUDE=str(stub / "bin" / "claude"), STUB_CLAUDE_PLAN=str(stub / "plan.json"),
                STUB_CLAUDE_CALLS=str(stub / "calls.jsonl"))
     context["before"] = state(repo)
-    context["done"] = subprocess.run([sys.executable, str(SCRIPTS / "work"), *shlex.split(args)], cwd=repo, env=env,
+    context["done"] = subprocess.run([sys.executable, str(context.get("work", SCRIPTS / "work")), *shlex.split(args)], cwd=repo, env=env,
                                      capture_output=True, text=True, timeout=300)
 
 
@@ -592,6 +601,15 @@ def plugin_dir(repo):
     assert len(started) == 4, started
     for c in started:
         assert option(c["argv"], "--plugin-dir") == str(SCRIPTS.parent), c["argv"]
+
+
+@then("each of w1's four workers ran in a worktree outside the plugin's directory")
+def outside_plugin(repo):
+    started = [c for c in starts(repo) if work_item_of(c) == "w1"]
+    assert len(started) == 4, started
+    for c in started:
+        assert option(c["argv"], "--plugin-dir") == str(repo), c["argv"]
+        assert not pathlib.Path(c["cwd"]).resolve().is_relative_to(repo.resolve()), c["cwd"]
 
 
 @then(parsers.parse("the {who}'s load of the skill {skill} was {done}"))
