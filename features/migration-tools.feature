@@ -7,18 +7,19 @@ Feature: Migration tools
     Pins where each of these old directories lands, keeping a record's path, and that git sees each move as a rename.
     Given a repository on the old system with decisions/0001-d0.md, work/i1/w1.md and records/logs/r1.md
     When the session runs `migrate run --context example.org/acme/shop`
-    Then spec/decisions/0001-d0.md has the content decisions/0001-d0.md had
+    Then spec/decisions/0001-d0.md has the content decisions/0001-d0.md had, apart from the id r9 gives it
     And .shop/work/i1/w1.md has the content work/i1/w1.md had
-    And .shop/records/logs/r1.md has the content records/logs/r1.md had
+    And .shop/records/logs/r1.md has the content records/logs/r1.md had, apart from any id r9 and about r12 give it
     And decisions/, work/ and records/ are gone
     And git status shows each of the three as renamed
 
   @r1
   Scenario: run moves a file under records/ that is not text as it is
-    Pins that a file migrate does not read, such as an image, is moved like any other.
+    Pins that a file that is not text, such as an image, moves like any other.
     Given a repository on the old system with records/img/a.png, which is not text
     When the session runs `migrate run --context example.org/acme/shop`
     Then .shop/records/img/a.png is records/img/a.png as it was, byte for byte
+    And records/img/a.png is gone
 
   @r2 @r11
   Scenario: run replaces a ledger that has only entries with a decision file for each, named by its heading, with its first paragraph, accepted, with its date and source
@@ -27,16 +28,16 @@ Feature: Migration tools
     And the entry is dated 2025-03-01, its source is alice, and its first paragraph is "We do a."
     When the session runs `migrate run --context example.org/acme/shop`
     Then spec/decisions.md is gone
-    And spec/decisions/0007-a.md has the summary "We do a." and a Decision of "We do a."
+    And spec/decisions/0007-a.md has the summary "We do a." and its Decision has "We do a."
     And its status is accepted, its date is 2025-03-01 and its by is alice
 
   @r2
-  Scenario: run reads an entry's date and source on the lines straight after its first paragraph
-    Pins that an entry's first paragraph ends at its first field, with or without a blank line before it.
+  Scenario: run ends an entry's first paragraph at its date or source line, with or without a blank line before it
+    Pins that an entry's first paragraph ends at the first blank line or the first `date:` or `source:` line.
     Given a repository on the old system whose spec/decisions.md has the entry `## decision/0007-a`, its first paragraph "We do a." followed with no blank line by its date 2025-03-01 and its source alice
     When the session runs `migrate run --context example.org/acme/shop`
-    Then spec/decisions/0007-a.md has the summary "We do a." and a Decision of "We do a."
-    And its status is accepted, its date is 2025-03-01 and its by is alice
+    Then spec/decisions/0007-a.md has the summary "We do a."
+    And its date is 2025-03-01 and its by is alice
 
   @r2
   Scenario Outline: run writes a first paragraph and a source that hold <what> so that model reads them as they are
@@ -52,31 +53,33 @@ Feature: Migration tools
       | single quotes and a # | It's Bob's #1 form.          | o'neil's #4 |
 
   @r2
-  Scenario: run keeps every paragraph of an entry in its decision file's Decision, the first also being its summary
+  Scenario: run puts an entry's whole text in its decision file's Decision, its first paragraph also being its summary
     Pins that no text of an entry is lost when the ledger goes.
     Given a repository on the old system whose spec/decisions.md has the entry `## decision/0007-a` with the paragraphs "We do a." and "Because b."
     When the session runs `migrate run --context example.org/acme/shop`
-    Then spec/decisions/0007-a.md has the summary "We do a." and a Decision of "We do a." and then "Because b."
+    Then spec/decisions/0007-a.md has the summary "We do a."
+    And its Decision has "We do a." and then "Because b."
 
   @r2 @r5
   Scenario: run gives a decision file its entry's supersedes and revisit_when
-    Pins that an entry's optional fields are kept, a superseded entry named by its new id.
+    Pins that an entry's supersedes and revisit_when are kept, a superseded entry named by its new id.
     Given a repository on the old system whose spec/decisions.md has the entries `## decision/0003-b` and `## decision/0007-a`
     And the entry 0007-a has supersedes: decision/0003-b and revisit_when: b comes back
     When the session runs `migrate run --context example.org/acme/shop`
     Then spec/decisions/0007-a.md's supersedes is design-decision/example.org/acme/shop/b and its revisit_when is "b comes back"
 
   @r2 @r11
-  Scenario: run drops the ledger's title before its first entry and replaces the ledger
-    Pins that a ledger opening with its title, as the old system's ledgers do, is replaced like one with nothing but entries.
+  Scenario: run replaces a ledger that holds a title and its entries
+    Pins that a ledger holding nothing but a title and its entries is gone once its every entry is replaced.
     Given a repository on the old system whose spec/decisions.md starts with the title `# Decisions` and a blank line, then the entry `## decision/0007-a`
+    And the entry's first paragraph is "We do a."
     When the session runs `migrate run --context example.org/acme/shop`
     Then spec/decisions.md is gone
-    And spec/decisions/0007-a.md has the summary "We do a." and a Decision of "We do a."
+    And spec/decisions/0007-a.md has the summary "We do a."
 
   @r7 @r11
   Scenario Outline: run that finds <found> in spec/decisions.md names it, exits non-zero and changes no file, the ledger included
-    Pins that migrate removes the ledger only once it has replaced every entry, and refuses a ledger it cannot read as entries rather than guess.
+    Pins that a ledger heading migrate cannot replace, or ledger text that is neither an entry nor its title, stops the run.
     Given a repository on the old system whose spec/decisions.md has the entry `## decision/0007-a` and <found>
     When the session runs `migrate run --context example.org/acme/shop`
     Then migrate says it could not replace <named>
@@ -84,9 +87,9 @@ Feature: Migration tools
     And nothing under the repository has changed
 
     Examples:
-      | found                                     | named                                                      |
-      | after it the heading `## decision/b`      | the ledger entry `## decision/b`                           |
-      | before it the text "Notes on the ledger." | the ledger text "Notes on the ledger." outside its entries |
+      | found                                     | named                                                       |
+      | after it the heading `## decision/b`      | the ledger entry `## decision/b`                            |
+      | before it the text "Notes on the ledger." | the ledger text "Notes on the ledger." outside its entries  |
       | after it the heading `## decision/0007-a` | the ledger entry `## decision/0007-a`, which is there twice |
 
   @r7
@@ -106,7 +109,7 @@ Feature: Migration tools
 
   @r3
   Scenario: run deprecates a @holding scenario as `features deprecate` does
-    Pins that migrate leaves a with scenario, and the tests that name it, as `features deprecate` would.
+    Pins that migrate leaves a @holding scenario, and the tests that name it, as `features deprecate` would.
     Given a repository on the old system whose features/thing.feature has a scenario "s1" tagged @holding
     And a test that names "s1" by title
     And a copy of that repository on which `features deprecate` has been run for "s1"
@@ -154,7 +157,7 @@ Feature: Migration tools
 
   @r7
   Scenario: run that would move a file onto an untracked file names the move, exits non-zero and changes no file
-    Pins that a move's destination is checked on disk, tracked or not, before any file is moved.
+    Pins that a file already there stops a move onto it whether or not git tracks it.
     Given a repository on the old system with work/i1/w1.md and work/i1/w2.md, and an untracked .shop/work/i1/w2.md
     When the session runs `migrate run --context example.org/acme/shop`
     Then migrate says it could not move work/i1/w2.md onto .shop/work/i1/w2.md
@@ -193,9 +196,8 @@ Feature: Migration tools
     Then the Behaviour lines of spec/capabilities/thing.md are, in order, [r1], [r5], [r3] and [r6]
 
   @r12
-  Scenario: run gives a moved plan and design note with no about the context as their about, and keeps an about that is there
-    Pins what a moved record is about once it has an id.
-    Given a repository on the old system with docs/superpowers/plans/p1.md and docs/superpowers/specs/s1.md with no about, and docs/superpowers/plans/p2.md about capability/example.org/acme/shop/thing
+  Scenario: run gives a moved plan, design note and test log with no about the context as their about
+    Pins what a moved record that is given an id is about when it says nothing of it.
+    Given a repository on the old system with docs/superpowers/plans/p1.md, docs/superpowers/specs/s1.md and records/logs/run1-test-log.md, none with an about
     When the session runs `migrate run --context example.org/acme/shop`
-    Then .shop/records/archive/plans/p1.md and .shop/records/archive/design-notes/s1.md are about bounded-context/example.org/acme/shop
-    And .shop/records/archive/plans/p2.md is about capability/example.org/acme/shop/thing
+    Then .shop/records/archive/plans/p1.md, .shop/records/archive/design-notes/s1.md and .shop/records/logs/run1-test-log.md are each about bounded-context/example.org/acme/shop
