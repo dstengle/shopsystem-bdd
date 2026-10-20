@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/final-layout-analysis-tools
 kind: capability-proposal
 part_of: initiative/i11
-status: approved
+status: merged
 date: 2026-10-19
 argues: [analysis-tools]
 changes: [analysis-tools#r8, analysis-tools#r14]

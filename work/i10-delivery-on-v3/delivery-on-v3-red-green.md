@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/delivery-on-v3-red-green
 kind: capability-proposal
 part_of: initiative/i10
-status: approved
+status: merged
 date: 2026-10-19
 argues: [red-green]
 adds: [red-green#r17-r18, red-green#r37]

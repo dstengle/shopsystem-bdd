@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/final-layout-spec-integration
 kind: capability-proposal
 part_of: initiative/i11
-status: approved
+status: merged
 date: 2026-10-19
 argues: [spec-integration]
 adds: [spec-integration#r20-r22]

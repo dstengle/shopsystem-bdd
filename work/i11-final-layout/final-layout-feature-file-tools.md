@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/final-layout-feature-file-tools
 kind: capability-proposal
 part_of: initiative/i11
-status: approved
+status: merged
 date: 2026-10-19
 argues: [feature-file-tools]
 adds: [feature-file-tools#r57-r58, term/deprecated-scenario]

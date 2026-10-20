@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/delivery-on-v3-work-queue
 kind: capability-proposal
 part_of: initiative/i10
-status: approved
+status: merged
 date: 2026-10-19
 argues: [work-queue]
 adds: [work-queue#r1-r7]

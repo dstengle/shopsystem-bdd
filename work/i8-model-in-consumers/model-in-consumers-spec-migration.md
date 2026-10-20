@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/model-in-consumers-spec-migration
 kind: capability-proposal
 part_of: initiative/i8
-status: approved
+status: merged
 date: 2026-10-19
 argues: [spec-migration]
 adds: [spec-migration#r15-r23, spec-migration#r26]

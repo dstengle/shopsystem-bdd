@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/final-layout-formulation
 kind: capability-proposal
 part_of: initiative/i11
-status: approved
+status: merged
 date: 2026-10-19
 argues: [formulation]
 changes: [formulation#r1, formulation#r4, formulation#r6, formulation#r11]
