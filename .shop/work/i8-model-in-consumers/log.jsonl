@@ -6,3 +6,7 @@
 {"time": "2026-10-20T18:54:58+00:00", "work-item": "migrate-run", "before": "researched", "after": "planned", "by": "work run"}
 {"time": "2026-10-20T18:54:58+00:00", "work-item": "migrate-run", "before": "planned", "after": "ready", "by": "work run"}
 {"time": "2026-10-20T18:54:58+00:00", "work-item": "migrate-run", "before": "ready", "after": "claimed", "by": "work run"}
+{"time": "2026-10-20T18:56:54+00:00", "work-item": "migrate-run", "stage": "implement", "event": "suite", "record": "Suite: 547 passed, 0 failed at 2a56b96 in 116 s"}
+{"time": "2026-10-20T18:56:54+00:00", "work-item": "migrate-run", "stage": "implement", "agent": "bdd-implementer", "session": "a06f66fe-782d-460b-a1fb-29bab3de5112", "event": "start"}
+{"time": "2026-10-20T19:06:28+00:00", "work-item": "migrate-run", "stage": "implement", "agent": "bdd-implementer", "session": "a06f66fe-782d-460b-a1fb-29bab3de5112", "event": "end"}
+{"time": "2026-10-20T19:08:26+00:00", "work-item": "migrate-run", "before": "claimed", "after": "done", "by": "work run"}
