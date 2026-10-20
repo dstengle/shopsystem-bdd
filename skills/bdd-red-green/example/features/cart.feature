@@ -7,5 +7,5 @@ Feature: Shopping cart
     Given an empty cart
     And a product "Widget" priced 9.99
     When the customer adds 2 "Widget" to the cart
-    Then the cart holds 2 "Widget"
+    Then the cart has 2 "Widget"
     And the cart total is 19.98

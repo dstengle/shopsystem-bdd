@@ -1,6 +1,6 @@
 ---
 name: checking-spec-consistency
-description: Use when the person asks to check the spec's consistency, its terms or its glossary, or whether its lines and scenarios say the same thing, in a repository with spec/ capability files carrying [r<n>] ids. Also use when the person asks to fix what such a check found (fix mode). Run on demand only; integration and formulation rounds do not run it.
+description: Use when the person asks to check the spec's consistency, its terms or its glossary, or whether its lines and scenarios say the same thing, in a repository with spec/ capability files with [r<n>] ids. Also use when the person asks to fix what such a check found (fix mode). Run on demand only; integration and formulation rounds do not run it.
 ---
 
 # Checking Spec Consistency
@@ -13,11 +13,11 @@ The skill runs when the person asks for it, never otherwise. Integration and for
 
 The glossary's form, term ids and `v_t*` rules are in `docs/capability-format.md` in this plugin, "Glossary". Scripts: `<this skill's base directory>/../../scripts/`. `scripts/model check` takes no path or other argument: it reads all of `spec/` and `features/`. It shows the first ten rows of each rule and then `... and <n> more`, so this skill runs it as `scripts/model check --limit 100000`: `--limit` is an option, not a path, and with it every row is shown.
 
-The session reads only `spec/`, `features/`, its drafts path and the agents' replies and findings files, never the source or the step definitions. Running one scenario by name, as formulating-features does to hold it, is a run, not a reading.
+The session reads only `spec/`, `features/`, its drafts path and the agents' replies and findings files, never the source or the step definitions. Running one scenario by name, as formulating-features does to deprecate it, is a run, not a reading.
 
 **Report mode** is the default: it ends with one findings file and changes nothing else. **Fix mode** runs only when the person asks for it, on the findings of a check.
 
-A repository whose Behaviour lines carry no `[r<n>]` ids is migrated to ids first (migrating-to-capabilities, "Adding Ids").
+A repository whose Behaviour lines have no `[r<n>]` ids is migrated to ids first (migrating-to-capabilities, "Adding Ids").
 
 ## The Check
 
@@ -46,17 +46,17 @@ Steps 1 to 3 each begin by running `scripts/model check --limit 100000` and keep
 
 1. **Terms.** One term cluster at a time. Propose a glossary entry in the form `- **<term>**: <one-sentence definition>. Not: <word>, <word>.`, with its id `term/<term>`. The term is the word the glossary already has for the thing; where it has none, the word most of the lines use. `Not:` lists the cluster's other words. Where one word is used for two things, propose two entries, one for each thing: at most one of them keeps the shared word, the other thing's lines take a new word, and the shared word goes after `Not:` in the entry that does not keep it. Before showing a proposal, run `grep -rniwE '<word>s?' spec/capabilities` for each word after its `Not:`, so the proposal lists every line that uses it. With the entry, show each line that would change to apply it. Ids are kept: a changed line keeps its id. The entry and its line changes go through integrating-a-proposal, as one gate pass for the term:
    - At most two lines change: its small-change path, and the proposal is that path's gate. Write the changed lines yourself, from `spec/` alone, and show each in full with its id and what it was. The person's yes to the proposal is the gate's yes. Then apply, check and commit as that path says, the commit naming the term and each id it changes.
-   - More than two lines change: its full path. The proposal shows each line's id and the words that would change. The person's yes to it is not a gate pass: it chooses the entry the note carries, and initiative-round's gate is the term's one gate pass. Write the note `<drafts path>/fix/term-<term>.md`: the entry the person approved, with the date, and one sentence for each line change ("In `capability/<name>#r<n>`, <word> becomes <term>."). Dispatch `initiative-round` with the job `integrate` and that note, as integrating-a-proposal's "Who Does What" says; its gate text is the term's one gate pass, and the person's yes to it goes to a `initiative-round` with the job `apply`.
+   - More than two lines change: its full path. The proposal shows each line's id and the words that would change. The person's yes to it is not a gate pass: it chooses the entry the note has, and initiative-round's gate is the term's one gate pass. Write the note `<drafts path>/fix/term-<term>.md`: the entry the person approved, with the date, and one sentence for each line change ("In `capability/<name>#r<n>`, <word> becomes <term>."). Dispatch `initiative-round` with the job `integrate` and that note, as integrating-a-proposal's "Who Does What" says; its gate text is the term's one gate pass, and the person's yes to it goes to a `initiative-round` with the job `apply`.
 
    In a repository that keeps `work/`, the term and its line changes ride with a capability-proposal that lists `term/<term>` (integrating-a-proposal, "Terms"). The person may give another word or another definition: the proposal changes and is shown again. A `v_t2` or `v_t3` row is settled by changing the glossary entries it names, through the same gate pass. A `v_t*` row is never rejected or deferred: the proposal for its cluster settles it. A cluster whose entry is in the glossary already and whose lines need no change has no gate pass: its scenarios follow in step 2. Any other cluster the person declines is `rejected`, or `deferred` when they say later. Integrating-a-proposal's hand-off to formulation is step 2 of this skill.
-2. **Scenarios follow.** Every scenario a `v_t1` row of this step's kept run names is reworded to its line through formulating-features' small-change path ("The Small-Change Path"), with no further approval: the line and the term are approved. Where clingo is missing, they are the scenarios `grep -rniwE '<word>s?' features` finds for each word after a `Not:`, those tagged `@holding` left out. Write the reworded scenarios yourself, from the line and the glossary, and splice, hold, rebind, check and commit as that path says, the commit holding the feature files and the test files `rebind` changed. A rewording that changes only a title is rebound and goes no further. One that changes a step's text is handed to slicing-into-increments, as that path says. Tell the person which scenarios were handed to slicing.
+2. **Scenarios follow.** Every scenario a `v_t1` row of this step's kept run names is reworded to its line through formulating-features' small-change path ("The Small-Change Path"), with no further approval: the line and the term are approved. Where clingo is missing, they are the scenarios `grep -rniwE '<word>s?' features` finds for each word after a `Not:`, those tagged `@deprecated` left out. Write the reworded scenarios yourself, from the line and the glossary, and splice, deprecate, rebind, check and commit as that path says, the commit containing the feature files and the test files `rebind` changed. A rewording that changes only a title is rebound and goes no further. One that changes a step's text is handed to slicing-into-increments, as that path says. Tell the person which scenarios were handed to slicing.
 3. **One at a time.** First the lines with two readings, then the lines in the wrong pattern, then the other drift, one finding to the person at a time, each answered before the next is asked.
    - **A line with two readings.** Ask one question: the line, quoted with its id, and its two readings, each with the line it would give. The answer is integrated through integrating-a-proposal's question path: when it changes at most two lines, its small-change path, the lines written by you from the answer and shown at its gate; otherwise a `initiative-round` with the job `integrate`, the question, its readings and the person's answer in their words, whose writer gets the question brief, and on the person's yes to its gate text a `initiative-round` with the job `apply`, as that skill's "Who Does What" says. Either path ends in its gate, its commit and its hand-off to formulation.
    - **A line in the wrong pattern.** Ask one question: the line, quoted with its id, the pattern it uses, and the line it would be in the pattern its trigger asks for. The answer goes through the same path as a line with two readings; a pattern change keeps the line's meaning, and its scenario is reworded only where its wording differs from the new line.
    - **Other drift.** Ask which side is right: the line, quoted with its id, and the scenario's words, quoted with its title. The line is right: the scenario is reworded to its line through formulating-features' small-change path, with no further approval. The scenario is right: the line changes through integrating-a-proposal's small-change path, at its gate. Neither, or not now: the finding is `deferred`.
 
    A finding the person says to leave is `rejected`. A `deferred` finding, from this step or step 1, goes to the backlog: `plan backlog "consistency <F<n>>: <one line>; ids: <its ids>"` (this plugin's `scripts/plan`), and the plan file is committed alone, `plan: backlog consistency findings`, before step 4. A repository with no living `*-slices.md` plan has no backlog: tell the person each deferred finding, and its state in the findings file says `deferred, no backlog`.
-4. **End.** Run `scripts/model check --limit 100000`, with no other argument. Fix mode ends when every finding in the findings file is `applied`, `rejected` or `deferred` and this run reports no `v_t1`, `v_t2` or `v_t3` row. A `v_t*` row still there goes back to step 1 as a cluster of its own, and steps 2 to 4 follow it again. Where `model check` exits 2 with a message that names clingo and `pip install clingo`, clingo is missing: check each word after a `Not:` by hand (`grep -rniwE '<word>s?' spec/capabilities features`, leaving out scenarios tagged `@holding`), and say so in the reply. Any other exit 2 is a failed run: stop and report it. Reply to the person with the commits, the count of findings applied, rejected and deferred, and each scenario handed to slicing.
+4. **End.** Run `scripts/model check --limit 100000`, with no other argument. Fix mode ends when every finding in the findings file is `applied`, `rejected` or `deferred` and this run reports no `v_t1`, `v_t2` or `v_t3` row. A `v_t*` row still there goes back to step 1 as a cluster of its own, and steps 2 to 4 follow it again. Where `model check` exits 2 with a message that names clingo and `pip install clingo`, clingo is missing: check each word after a `Not:` by hand (`grep -rniwE '<word>s?' spec/capabilities features`, leaving out scenarios tagged `@deprecated`), and say so in the reply. Any other exit 2 is a failed run: stop and report it. Reply to the person with the commits, the count of findings applied, rejected and deferred, and each scenario handed to slicing.
 
 ## The Capability Brief
 
@@ -67,13 +67,13 @@ Check spec/capabilities/<NAME>.md against features/<NAME>.feature.
 You may read those two files and spec/index.md. Nothing else: not docs/,
 not the source, not the step definitions.
 
-Judge each Behaviour line against the scenario that carries its @r<n> tag.
-A scenario tagged @holding formulates no line: leave it out. A scenario
-may carry several @r<n> tags: judge it against each line it names. Find:
+Judge each Behaviour line against the scenario that has its @r<n> tag.
+A scenario tagged @deprecated formulates no line: leave it out. A scenario
+may have several @r<n> tags: judge it against each line it names. Find:
 - wrong pattern: a line whose EARS pattern does not fit what starts its
   behaviour (a response to a command or an event is When ..., a refusal or
   fault is If ... then, behaviour that lasts for a period is While, one that
-  depends on configuration is Where, and only what holds with no trigger at
+  depends on configuration is Where, and only what is true with no trigger at
   all has none);
 - drift: a scenario whose wording differs from its line: it names a thing
   by another word, adds or drops a condition, or pins an outcome the line
@@ -125,7 +125,7 @@ Write that same reply, last of all, to
 - Report mode that edited `spec/`, `features/` or the glossary, or committed anything
 - A finding without its ids
 - A term's entry and its lines approved in two gate passes, or its lines changed before the person's yes
-- A scenario reworded to a term before the terms were settled, or held for the person's approval
+- A scenario reworded to a term before the terms were settled, or kept back for the person's approval
 - Two findings asked in one question
 - A `v_t*` row marked rejected or deferred
 - `model check` given a path, or clingo called missing on an exit 2 whose message does not name it

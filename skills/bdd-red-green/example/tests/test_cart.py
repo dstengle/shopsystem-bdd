@@ -28,7 +28,7 @@ def add_to_cart(cart, catalogue, qty, name):
     cart.add(name, catalogue[name], qty)
 
 
-@then(parsers.parse('the cart holds {qty:d} "{name}"'))
+@then(parsers.parse('the cart has {qty:d} "{name}"'))
 def cart_holds(cart, qty, name):
     assert cart.quantity_of(name) == qty
 

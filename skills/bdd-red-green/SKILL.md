@@ -13,11 +13,11 @@ The `.feature` files are the contract. Code exists to satisfy them, one scenario
 
 ## The Task Is Intent, Not Code
 
-The task writing-plans hands you says which scenarios go green, why they are red today, where the change lands, and what was decided; it does not carry the code. You write the code, after the red run, from what the scenario asks. If a task does carry code, do not paste it: run the scenario red first, write your own, and say in the checkpoint that the task carried code.
+The task writing-plans hands you says which scenarios go green, why they are red today, where the change lands, and what was decided; it does not contain the code. You write the code, after the red run, from what the scenario asks. If a task does contain code, do not paste it: run the scenario red first, write your own, and say in the checkpoint that the task contained code.
 
 ## The Cycle
 
-Work through the slice's scenarios in the order the plan lists them. The slice's scenarios carry a `@slice-<n>` tag, so `python -m pytest -q -m "slice-<n>"` runs the slice. For each scenario:
+Work through the slice's scenarios in the order the plan lists them. The slice's scenarios have a `@slice-<n>` tag, so `python -m pytest -q -m "slice-<n>"` runs the slice. For each scenario:
 
 1. **Run that one scenario** (`python -m pytest -q -k "<scenario name>"`). It must fail for the right reason: an undefined step, or the Then assertion on the outcome. Any other result is a stop condition (below).
 2. **Write only the step definitions this scenario needs.** Given and When steps drive the system's real entry point. Then steps assert exactly what the line says, nothing more.
@@ -43,10 +43,10 @@ A project whose suite cannot do one of these says why in its `CLAUDE.md`.
 
 ## The Suite Record
 
-A whole-suite run is recorded once and used while it holds. After the slice's change is committed, record the run in the plan's log with the plugin's `scripts/plan log`, as its own entry after the checkpoint entry, never a line inside it: `Suite: <N> passed, <M> failed at <short hash of the commit that was run> in <seconds> s`, with `, <X> expected` after the failed count where the suite expects the scenarios of slices not yet built to fail (pytest's `xfailed`), and with `; failing: <titles>` when M is not 0, and commit the log with the checkpoint. A record holds while nothing outside `docs/superpowers/plans/` has changed since its commit: `scripts/plan show --last-suite --current` says `current` or `stale`.
+A whole-suite run is recorded once and used while it stays valid. After the slice's change is committed, record the run in the plan's log with the plugin's `scripts/plan log`, as its own entry after the checkpoint entry, never a line inside it: `Suite: <N> passed, <M> failed at <short hash of the commit that was run> in <seconds> s`, with `, <X> expected` after the failed count where the suite expects the scenarios of slices not yet built to fail (pytest's `xfailed`), and with `; failing: <titles>` when M is not 0, and commit the log with the checkpoint. A record stays valid while nothing outside `docs/superpowers/plans/` has changed since its commit: `scripts/plan show --last-suite --current` says `current` or `stale`.
 
 - A slice starts from the last record; its failing list is the scenarios already red. Where the suite expects unbuilt slices to fail, that list is empty and any failure is yours or new. Do not run the whole suite at a slice's start. Only when the plan has no record yet, run it once to make one.
-- Whoever needs the suite's result (a reviewer, slicing, the controller before a push) and finds a record that holds uses it.
+- Whoever needs the suite's result (a reviewer, slicing, the controller before a push) and finds a record that stays valid uses it.
 - Installing or upgrading a dependency without a commit makes every record stale.
 
 ## Slices Verified by a Check
@@ -64,7 +64,7 @@ No scenarios are written for a check slice, and no check is added to a capabilit
 
 This skill never edits a `.feature` file. Not to fix a typo, not to correct arithmetic, not to align wording. There is no step in the cycle that opens one for writing.
 
-One command removes a scenario, and only one kind: `features retire "<title> (held)"` takes out a scenario tagged `@holding`, the old wording of a line kept while it still passed. You run it for each scenario the task lists under `Retires:`, in the commit that turns its replacement green, and remove with it its binding and the step definitions nothing else uses. It refuses any other scenario, and so do you.
+One command removes a scenario, and only one kind: `features retire "<title> (deprecated)"` takes out a scenario tagged `@deprecated`, the old wording of a line kept while it still passed. You run it for each scenario the task lists under `Retires:`, in the commit that turns its replacement green, and remove with it its binding and the step definitions nothing else uses. It refuses any other scenario, and so do you.
 
 A scenario that is wrong is a **stop condition**, not a chore. Handling it is someone else's job: `slicing-into-increments` decides whether the contract changes, and only `formulating-features` writes features.
 
@@ -109,7 +109,7 @@ When every scenario in the slice is green, set the slice's Status with `plan sta
 - <date> Suite: <N> passed, <M> failed[, <X> expected] at <short hash of the change's commit> in <seconds> s
 ```
 
-## Rationalizations That Do Not Hold
+## Rationalizations That Fail
 
 | Excuse | Reality |
 |---|---|
@@ -125,7 +125,7 @@ When every scenario in the slice is green, set the slice's Status with `plan sta
 | "The demo is in 20 minutes" | A demo of the wrong behaviour is the outcome you're paid to prevent. |
 | "I can see from reading it that it can't pass" | Reading is not evidence. Run it. The failing assertion is what goes in the hand-back entry. |
 | "Nothing is green, so there's nothing to commit" | The hand-back entry and the honest code are the commit. Uncommitted work is lost work in a hand-off. |
-| "The decisions make that test impossible, so I removed it and said so in the concerns" | A removed test with a note is still a removed test, and the behaviour it held is gone unseen. Stop with the test and the decisions named. |
+| "The decisions make that test impossible, so I removed it and said so in the concerns" | A removed test with a note is still a removed test, and the behaviour it tested is gone unseen. Stop with the test and the decisions named. |
 | "Only the setup changed, and the expected value had to follow" | Then more than the setup changed. An expected value is what the test proves. Stop with the test named. |
 | "The task says the tests move with the change" | Moving a test is respelling it. Changing what it proves needs the test named in the task, with what it becomes. |
 | "I'll run the whole suite first to see where we start" | The last record is where you start. A start-of-slice run is one run too many. |
@@ -139,9 +139,9 @@ When every scenario in the slice is green, set the slice's Status with `plan sta
 - A `try`, `raise`, `max(0, ...)`, or default branch no scenario exercises
 - "already passes" said with relief
 - A deleted test function or parametrize case, a loosened assertion, a new skip or xfail, or a test rewritten to assert something else, on a test the task does not list and this batch did not write
-- A whole-suite run before a slice's first scenario, with a record that holds
+- A whole-suite run before a slice's first scenario, with a record that stays valid
 
-**Any of these but the last: stop, undo the edit, hand back.** The last is no hand-back: skip the run and carry on from the record.
+**Any of these but the last: stop, undo the edit, hand back.** The last is no hand-back: skip the run and go on from the record.
 
 ## pytest-bdd Notes
 
