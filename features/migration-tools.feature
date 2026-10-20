@@ -69,6 +69,15 @@ Feature: Migration tools
     And spec/decisions/0007-a.md's status is accepted
     And spec/decisions/0003-b.md's status is superseded
 
+  @r2
+  Scenario: run keeps both decisions an entry's supersedes names, each by its new id, and supersedes both
+    Pins that a supersedes naming two decisions loses neither.
+    Given a repository on the old system whose spec/decisions.md has the entries `## decision/0003-b`, `## decision/0004-c` and `## decision/0007-a`
+    And the entry 0007-a has supersedes naming decision/0003-b and decision/0004-c
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then spec/decisions/0007-a.md's supersedes names design-decision/example.org/acme/shop/b and design-decision/example.org/acme/shop/c, and nothing else
+    And spec/decisions/0003-b.md's and spec/decisions/0004-c.md's status is superseded
+
   @r17
   Scenario: run writes a qualified supersedes as the decision's id alone, the qualifier going to by beside the source
     Pins that supersedes names only a decision, and that its qualifier is kept in by after the entry's source.
@@ -176,6 +185,19 @@ Feature: Migration tools
     And spec/decisions/0007-a.md's supersedes is design-decision/example.org/acme/shop/b
     And spec/decisions/0008-b.md's status is superseded
 
+  @r5
+  Scenario Outline: run rewrites a decision file's by that names <old>, a path it moved
+    Pins that a path written in words in by follows the file it names.
+    Given a repository on the old system with <old>
+    And its spec/decisions.md has the entry `## decision/0007-a`, whose source is "alice, from <old>"
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then spec/decisions/0007-a.md's by is "alice, from <new>"
+
+    Examples:
+      | old                           | new                                                   |
+      | adrs/0001-use-x.md            | .shop/records/decision-arguments/0001-use-x.md        |
+      | docs/superpowers/specs/s1.md  | .shop/records/archive/design-notes/s1.md              |
+
   @r6
   Scenario Outline: after run on a repository with <what>, model check reports no unresolved reference or file problem
     Pins that a repository run through migrate leaves model check nothing unresolved and no file problem to report.
@@ -252,6 +274,13 @@ Feature: Migration tools
     Given a repository on the old system with a capability spec/capabilities/thing.md whose id is capability/thing
     When the session runs `migrate run --context example.org/acme/shop`
     Then spec/capabilities/thing.md gives the id capability/example.org/acme/shop/thing
+
+  @r9
+  Scenario: run gives a moved README.md no id, kind or about
+    Pins that a README.md under records is not a record and so has no frontmatter from migrate.
+    Given a repository on the old system with records/logs/README.md
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then .shop/records/logs/README.md has the content records/logs/README.md had, with no id, no kind and no about
 
   @r10
   Scenario: run numbers each Behaviour line with no id, in Behaviour order, from one above the highest id its capability has ever used
