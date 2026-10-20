@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/rule-labels
 kind: work-item
 part_of: capability-proposal/final-layout-design-model-check
-status: drafted
+status: green
 wkind: capability
 under: design-model-check
 accepts: [design-model-check#r2-r8, design-model-check#r10-r11, design-model-check#r33-r35, design-model-check#r52-r54, design-model-check#r59, design-model-check#r65]
