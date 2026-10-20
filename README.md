@@ -196,7 +196,7 @@ Fixture runs on a seeded shelf spec (a planted `volume` for `book`, a scenario a
 
 ## Scripts
 
-Python 3, in `scripts/`. They take the dependencies they need (design-decision/plugin-takes-the-dependencies-it-needs): clingo for `model check` (`python3 -m pip install clingo`), and pytest and pytest-bdd for the scenarios as they move to pytest-bdd step definitions (initiative i11). `--help` is the contract; tests: `python3 -m pytest`.
+Python 3, in `scripts/`. They take the dependencies they need (design-decision/plugin-takes-the-dependencies-it-needs): clingo for `model check` (`python3 -m pip install clingo`), pytest and pytest-bdd for the scenarios as they move to pytest-bdd step definitions (initiative i11), and pytest-xdist to run the tests in parallel (`python3 -m pip install pytest-xdist`; pytest.ini gives `-n auto`, `-n 0` runs them in one process). `--help` is the contract; tests: `python3 -m pytest`.
 
 - `scripts/features`: count, list, tag, move and verify-moved for feature files, without the test runner; deprecate, retire and deprecated for scenarios kept while they still pass; bindings and rebind for the titles test modules bind.
 - `scripts/measure`: write, show and compare a batch's facts, from the session transcripts, the plan and git.

@@ -8,7 +8,9 @@ import time
 from supervise_worker import git
 from workqueue import WORK
 
-TESTS = {"work_item": "python3 -m pytest -q --work-item {work_item}", "suite": "python3 -m pytest -q"}
+# The tests work run runs unless .shop/delivery.toml names its own: in parallel (pytest-xdist), the work-item's and the
+# suite alike (supervision's Implementation).
+TESTS = {"work_item": "python3 -m pytest -q -n auto --work-item {work_item}", "suite": "python3 -m pytest -q -n auto"}
 
 
 class Merge:
