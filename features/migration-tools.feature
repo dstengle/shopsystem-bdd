@@ -164,6 +164,18 @@ Feature: Migration tools
     And notes/n1.md has the link `[w1](../.shop/work/i1/w1.md)`
     And spec/capabilities/thing.md's rests_on names design-decision/example.org/acme/shop/a
 
+  @r5
+  Scenario: run rewrites a frontmatter id and a supersedes that name a ledger entry it numbered
+    Pins that an entry with no number, numbered by r13, is named afterwards by its new id everywhere, and is superseded as r2 says.
+    Given a repository on the old system whose spec/decisions.md has, in order, the entries `## decision/0007-a` and `## decision/b`
+    And the entry 0007-a has supersedes: decision/b
+    And a capability spec/capabilities/thing.md whose frontmatter rests_on names decision/b
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then spec/decisions/0008-b.md gives the id design-decision/example.org/acme/shop/b
+    And spec/capabilities/thing.md's rests_on names design-decision/example.org/acme/shop/b
+    And spec/decisions/0007-a.md's supersedes is design-decision/example.org/acme/shop/b
+    And spec/decisions/0008-b.md's status is superseded
+
   @r6
   Scenario Outline: after run on a repository with <what>, model check reports no unresolved reference or file problem
     Pins that a repository run through migrate leaves model check nothing unresolved and no file problem to report.
@@ -267,9 +279,9 @@ Feature: Migration tools
     And nothing under the repository has changed
 
     Examples:
-      | change                                          | named        |
-      | a tracked README.md changed since the last commit | README.md    |
-      | an untracked notes/n2.md                          | notes/n2.md  |
+      | change                                            | named       |
+      | a tracked README.md changed since the last commit | README.md   |
+      | an untracked notes/n2.md                          | notes/n2.md |
 
   @r16
   Scenario: run adds every file it wrote or moved to git and writes spec/decisions/index.md
