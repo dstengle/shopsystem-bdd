@@ -89,8 +89,9 @@ def _(old):
 
 @given("a repository on the old system with docs/superpowers/plans/p1.md and docs/superpowers/specs/s1.md")
 def _(old):
-    old.write("docs/superpowers/plans/p1.md", "A plan.\n")
-    old.write("docs/superpowers/specs/s1.md", "A design note.\n")
+    # both already carry their ids, so run leaves their content as it was (migration-tools#r9 gives an id only where none is)
+    old.write("docs/superpowers/plans/p1.md", "---\nid: initiative-archive/%s/p1\nkind: initiative-archive\n---\nA plan.\n" % CONTEXT)
+    old.write("docs/superpowers/specs/s1.md", "---\nid: decision-argument/%s/s1\nkind: decision-argument\n---\nA design note.\n" % CONTEXT)
     old.commit()
 
 
@@ -180,6 +181,24 @@ def _(old, context):
     capability(old, ident="capability/%s/thing" % CONTEXT, retired=context["retired"],
                lines=("- [r1] **When** a, `thing` shall a.", "- **When** b, `thing` shall b.",
                       "- [r3] **When** c, `thing` shall c.", "- **When** d, `thing` shall d."))
+    old.commit()
+
+
+@given("a repository on the old system with a capability spec/capabilities/thing.md with no id")
+def _(old):
+    capability(old)
+
+
+@given("its spec/decisions.md has the entry `## decision/0007-a`")
+def _(old):
+    old.write("spec/decisions.md", "## decision/0007-a\nWe do a.\n\ndate: 2025-03-01\nsource: alice\n")
+
+
+@given("it has docs/superpowers/plans/p1.md, docs/superpowers/specs/s1.md and records/logs/run1-test-log.md")
+def _(old):
+    old.write("docs/superpowers/plans/p1.md", "A plan.\n")
+    old.write("docs/superpowers/specs/s1.md", "A design note.\n")
+    old.write("records/logs/run1-test-log.md", "A test log.\n")
     old.commit()
 
 

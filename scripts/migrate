@@ -87,15 +87,41 @@ def decision_text(plan, slug, summary, fields):
                                   slug, summary))
 
 
-def with_id(text, ident):
-    """`text` with `id: <ident>` first in its frontmatter (one is added when it has none); unchanged if it has an id."""
+def with_id(text, ident, kind=None):
+    """`text` with `id: <ident>` (and `kind: <kind>`) first in its frontmatter, one is added when it has none;
+    unchanged if it has an id."""
+    given = "id: %s\n" % ident + ("kind: %s\n" % kind if kind else "")
     if text.startswith("---\n"):
         end = text.find("\n---", 4)
         if end > 0:
             if re.search(r"^id:", text[4:end], re.MULTILINE):
                 return text
-            return "---\nid: %s\n" % ident + text[4:]
-    return "---\nid: %s\n---\n" % ident + text
+            return "---\n" + given + text[4:]
+    return "---\n" + given + "---\n" + text
+
+
+def record_kind(final):
+    """The kind of a moved record that gets an id: plan, design note or test log; None for any other."""
+    if final.startswith(".shop/records/archive/plans/"):
+        return "initiative-archive"
+    if final.startswith(".shop/records/archive/design-notes/"):
+        return "decision-argument"
+    if final.endswith("-test-log.md") and final.startswith(".shop/records/"):
+        return "measurement"
+    return None
+
+
+def plan_ids(plan):
+    """Give each moved plan, design note, test log and decision file the id of its kind."""
+    stem = lambda rel: Path(rel).stem
+    for old, final in plan.moves.items():
+        text = plan.texts.get(final) or plan.read(old)
+        kind = record_kind(final)
+        if kind:
+            plan.texts[final] = with_id(text, "%s/%s/%s" % (kind, plan.context, stem(final)), kind)
+        elif final.startswith("spec/decisions/") and final.endswith(".md"):
+            name = re.sub(r"^\d+-", "", stem(final))
+            plan.texts[final] = with_id(text, "design-decision/%s/%s" % (plan.context, name))
 
 
 def load_model():
@@ -137,7 +163,8 @@ def plan_capabilities(plan):
             text = plan.read(rel)
             data, _ = model.frontmatter(text)
             retired = [int(str(r).lstrip("r")) for r in model.as_list(data.get("retired"))]
-            plan.texts[rel] = number_behaviour(text, retired)
+            text = with_id(number_behaviour(text, retired), "capability/%s/%s" % (plan.context, Path(rel).stem))
+            plan.texts[rel] = text
 
 
 def plan_index(plan):
@@ -176,6 +203,7 @@ def cmd_run(args):
     plan_ledger(plan)
     plan_index(plan)
     plan_capabilities(plan)
+    plan_ids(plan)
     write(plan)
     return 0
 
