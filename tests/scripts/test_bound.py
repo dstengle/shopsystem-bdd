@@ -10,11 +10,12 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "features"
 
 # The feature files whose scenarios tests/scenarios/ binds. batch-measurement keeps its docstring binding until
-# initiative i12; migration-tools joins the list when initiative i8 adds it.
+# initiative i12.
 BOUND_BY_PYTEST_BDD = [
     "features/analysis-tools.feature",
     "features/design-model-check.feature",
     "features/feature-file-tools.feature",
+    "features/migration-tools.feature",
     "features/supervision.feature",
     "features/work-queue.feature",
 ]

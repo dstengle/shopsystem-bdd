@@ -3,6 +3,7 @@
 A Given builds a repository on the old system in `repo` and commits it (`old.before` keeps what each file held); the
 When runs `migrate run` once; the Then steps read what it left.
 """
+import json
 import pathlib
 import re
 import shutil
@@ -315,6 +316,47 @@ def _(old):
            for p in old.root.rglob("*") if p.is_file() and ".git" not in p.relative_to(old.root).parts}
     assert now == old.before
     assert old.git("status", "--porcelain").stdout == ""
+
+
+@given("a repository on the old system with decisions/, work/, records/, docs/superpowers/plans/, docs/superpowers/specs/, "
+       "a ledger spec/decisions.md, a capability and a @holding scenario")
+def _(old):
+    old.write("spec/index.md", "# shop\n")
+    old.write("decisions/0001-d0.md", "---\nid: design-decision/%s/d0\nsummary: d\ndate: 2025-03-01\nstatus: accepted\nby: alice\n---\n\n"
+                                       "# d0\n\n## Decision\nWe do d0.\n" % CONTEXT)
+    old.write("spec/decisions.md", "## decision/0007-a\nWe do a.\n\ndate: 2025-03-01\nsource: alice\n")
+    capability(old, lines=("- **When** asked, `thing` shall answer.",))
+    text = old.read("spec/capabilities/thing.md").replace("rests_on: []", "rests_on: [decision/0007-a]")
+    old.write("spec/capabilities/thing.md", text)
+    old.write("features/thing.feature", "Feature: thing\n  Narrator: a client\n\n  @r1\n  Scenario: it answers\n    Given a thing\n"
+                                        "    Then it is so\n\n  @holding\n  Scenario: an old one\n    Given a thing\n    Then it is so\n")
+    # work/ is final-form but for its place: an initiative is not transcription (it belongs to the living plan)
+    old.write("work/i1/initiative.md", "---\nid: initiative/%s/i1\ntitle: t\nsummary: s\nkind: capability-change\nowner-level: ctx\n"
+                                       "status: started\npriority: 1\nsource: []\ndate: 2026-10-15\n---\n" % CONTEXT)
+    # each moved record says what it is about already: migrate gives an id, not an `about` (an open question of the report)
+    about = "---\nabout: bounded-context/%s\n---\n" % CONTEXT
+    old.write("records/logs/run1-test-log.md", about + "A test log.\n")
+    old.write("docs/superpowers/plans/p1.md", about + "A plan.\n")
+    old.write("docs/superpowers/specs/s1.md", about + "A design note.\n")
+    old.commit()
+
+
+@given("the session has run `migrate run --context example.org/acme/shop`")
+def _(run, old, context):
+    migrate(run, old, context)
+    assert context["done"].returncode == 0, said(context)
+
+
+@when("the session runs `model check`")
+def _(run, old, context):
+    context["checked"] = run("model", "--root", old.root, "check", "--json")
+
+
+@then("it reports no violation, no unresolved reference and no file problem")
+def _(context):
+    out = context["checked"]
+    report = json.loads(out.stdout)
+    assert (out.returncode, report["violations"], report["unresolved"], report["problems"]) == (0, [], [], []), out.stdout
 
 
 @then("the Behaviour lines of spec/capabilities/thing.md are, in order, [r1], [r5], [r3] and [r6]")
