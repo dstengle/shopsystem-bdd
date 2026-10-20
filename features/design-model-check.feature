@@ -87,13 +87,13 @@ Feature: Design model check
 
   @r14
   Scenario: the decisions index lists every decision
-    Given two decisions under decisions/, one superseding the other
+    Given two decisions under spec/decisions/, one superseding the other
     When model decisions is run
-    Then spec/decisions.md has a row for each with its summary, status and what it supersedes
+    Then spec/decisions/index.md has a row for each with its summary, status and what it supersedes, linked to its file
 
   @r15
   Scenario: a stale decisions index is reported and left alone
-    Given a spec/decisions.md that differs from what model decisions writes
+    Given a spec/decisions/index.md that differs from what model decisions writes
     When model decisions --check is run
     Then it says the file is not current, exits 1, and the file is unchanged
 
@@ -119,7 +119,7 @@ Feature: Design model check
   @r19
   Scenario Outline: model reads the repository's files under its root
     Pins which files of a repository model reads, and that the root is the current directory unless --root names one.
-    Given a repository in a directory holding <file>
+    Given a repository in a directory that has <file>
     When model facts is run <how>
     Then the facts printed <outcome> what <file> holds
 
@@ -128,28 +128,31 @@ Feature: Design model check
       | spec/index.md                      | with --root naming that directory     | include         |
       | spec/capabilities/thing.md         | with --root naming that directory     | include         |
       | features/sub/thing.feature         | with --root naming that directory     | include         |
-      | decisions/0001-one.md              | with --root naming that directory     | include         |
-      | work/i1/initiative.md              | with --root naming that directory     | include         |
-      | records/observations.md            | with --root naming that directory     | include         |
-      | records/review/f1.md with an id    | with --root naming that directory     | include         |
-      | records/review/f2.md with no id    | with --root naming that directory     | do not include  |
+      | spec/decisions/0001-one.md         | with --root naming that directory     | include         |
+      | spec/decisions/index.md            | with --root naming that directory     | do not include  |
+      | .shop/work/i1/initiative.md        | with --root naming that directory     | include         |
+      | .shop/records/observations.md      | with --root naming that directory     | include         |
+      | .shop/records/review/f1.md with an id | with --root naming that directory  | include         |
+      | .shop/records/review/f2.md with no id | with --root naming that directory  | do not include  |
+      | decisions/0001-one.md              | with --root naming that directory     | do not include  |
+      | work/i1/initiative.md              | with --root naming that directory     | do not include  |
+      | records/observations.md            | with --root naming that directory     | do not include  |
       | spec/capabilities/thing.md         | from that directory with no --root    | include         |
 
   @r20
   Scenario Outline: a scenario names a requirement by its tag in its capability's feature file
     Pins where an @r<n> tag may sit, and which feature file a capability's scenarios are read from.
-    Given a capability thing with requirement r2, <formulated as>
+    Given a capability thing with requirement r2
     And a scenario in <feature file> with the tag @r2 <placed>
     When model check is run
     Then the requirement thing#r2 is <reported> under v_s3
 
     Examples:
-      | formulated as                                  | feature file              | placed                  | reported |
-      | formulated_as features/thing.feature           | features/thing.feature    | on the scenario         | not      |
-      | formulated_as features/thing.feature           | features/thing.feature    | on its feature          | not      |
-      | giving no formulated_as                        | features/thing.feature    | on the scenario         | not      |
-      | formulated_as features/sub/thing-flow.feature  | features/sub/thing-flow.feature | on the scenario   | not      |
-      | formulated_as features/sub/thing-flow.feature  | features/other.feature    | on the scenario         | still    |
+      | feature file               | placed          | reported |
+      | features/thing.feature     | on the scenario | not      |
+      | features/thing.feature     | on its feature  | not      |
+      | features/sub/thing.feature | on the scenario | still    |
+      | features/other.feature     | on the scenario | still    |
 
   @r21
   Scenario: a reference written name#r<n> is that capability's requirement
@@ -223,48 +226,64 @@ Feature: Design model check
       | spec/capabilities/thing.md has the id capability/acme.com/shop/cart/other | spec/capabilities/thing.md |
       | spec/capabilities/thing.md has no ## Behaviour section                    | spec/capabilities/thing.md |
       | spec/capabilities/thing.md lists retired: [three]                         | spec/capabilities/thing.md |
+      | spec/capabilities/thing.md has formulated_as: features/thing.feature      | spec/capabilities/thing.md |
+
+  @r61
+  Scenario Outline: a path of the old layout is a file problem naming scripts/migrate
+    Pins that a repository not yet moved to the final layout fails the check, each old path named with the script that moves it.
+    Given a bounded context the grammar accepts, with <path> at its root
+    When model check is run
+    Then it reports a file problem naming <path> and scripts/migrate
+    And it exits 1
+
+    Examples:
+      | path              |
+      | spec/decisions.md |
+      | decisions/        |
+      | work/             |
+      | records/          |
 
   @r26
   Scenario Outline: a feature file no capability is formulated as, or with a title twice, is a file problem
     Pins which feature files belong to a capability, and that titles are unique among the scenarios not held.
-    Given a capability thing, <formulated as>
+    Given a capability thing
     And a feature file <file> in which <titles>
     When model check is run
     Then it <reports> a file problem naming <file>
 
     Examples:
-      | formulated as                                  | file                   | titles                                                                     | reports         |
-      | formulated_as features/thing.feature           | features/stray.feature | every scenario has its own title                                           | reports         |
-      | giving no formulated_as                        | features/thing.feature | every scenario has its own title                                           | does not report |
-      | formulated_as features/sub/thing-flow.feature  | features/thing.feature | every scenario has its own title                                           | reports         |
-      | formulated_as features/thing.feature           | features/thing.feature | two scenarios are titled "Apply a code"                                    | reports         |
-      | formulated_as features/thing.feature           | features/thing.feature | two scenarios are titled "Apply a code" and one of them is tagged @holding | does not report |
+      | file                       | titles                                                                     | reports         |
+      | features/stray.feature     | every scenario has its own title                                           | reports         |
+      | features/thing.feature     | every scenario has its own title                                           | does not report |
+      | features/sub/thing.feature | every scenario has its own title                                           | reports         |
+      | features/thing.feature     | two scenarios are titled "Apply a code"                                    | reports         |
+      | features/thing.feature     | two scenarios are titled "Apply a code" and one of them is tagged @holding | does not report |
 
   @r27
   Scenario Outline: a malformed work directory or work file is a file problem
     Pins the shape each initiative and part file must have, and that a missing initiative.md is charged to its directory.
-    Given a repository with a work directory work/i1 in which <case>
+    Given a repository with a work directory .shop/work/i1 in which <case>
     When model check is run
     Then it reports a file problem naming <named>
 
     Examples:
       | case                                                  | named                                     |
-      | there is no initiative.md                             | work/i1, and not work/i1/initiative.md    |
-      | initiative.md has no id                               | work/i1/initiative.md                     |
-      | the part p1.md has no id                              | work/i1/p1.md                             |
-      | the part p1.md has the kind banana                    | work/i1/p1.md                             |
-      | the part p1.md has no status                          | work/i1/p1.md                             |
-      | the part p1.md has a status not in its kind's lifecycle | work/i1/p1.md                           |
-      | initiative.md has the priority high                   | work/i1/initiative.md                     |
-      | initiative.md has a date written 16/10/2026           | work/i1/initiative.md                     |
+      | there is no initiative.md                             | .shop/work/i1, and not .shop/work/i1/initiative.md    |
+      | initiative.md has no id                               | .shop/work/i1/initiative.md                     |
+      | the part p1.md has no id                              | .shop/work/i1/p1.md                             |
+      | the part p1.md has the kind banana                    | .shop/work/i1/p1.md                             |
+      | the part p1.md has no status                          | .shop/work/i1/p1.md                             |
+      | the part p1.md has a status not in its kind's lifecycle | .shop/work/i1/p1.md                           |
+      | initiative.md has the priority high                   | .shop/work/i1/initiative.md                     |
+      | initiative.md has a date written 16/10/2026           | .shop/work/i1/initiative.md                     |
 
   @r27
   Scenario: a work-item accepting a requirement no scenario names is a file problem
     Pins that a work-item may accept only requirements a scenario already names.
     Given a capability thing with requirement r2 that no scenario names
-    And a work-item in work/i1/w1.md that accepts thing#r2
+    And a work-item in .shop/work/i1/w1.md that accepts thing#r2
     When model check is run
-    Then it reports a file problem naming work/i1/w1.md
+    Then it reports a file problem naming .shop/work/i1/w1.md
 
   @r29
   Scenario Outline: a malformed decision, record or frontmatter is a file problem
@@ -275,8 +294,8 @@ Feature: Design model check
 
     Examples:
       | case                                                         |
-      | a decision under decisions/ has no id                        |
-      | a record under records/ with an id has the kind banana       |
+      | a decision under spec/decisions/ has no id                   |
+      | a record under .shop/records/ with an id has the kind banana |
       | a frontmatter value is written as a folded block, with >     |
       | a frontmatter value is written as a literal block, with \|   |
       | a decision and an observation have the same id               |
@@ -353,7 +372,7 @@ Feature: Design model check
   @r37
   Scenario: a current decisions index passes the check
     Pins the passing outcome of the decisions index check.
-    Given a spec/decisions.md that is what model decisions writes
+    Given a spec/decisions/index.md that is what model decisions writes
     When model decisions --check is run
     Then it says the file is current
     And it exits 0
@@ -361,10 +380,10 @@ Feature: Design model check
   @r14
   Scenario: writing the decisions index names the file and leaves out decisions with no id
     Pins what writing the index reports and that only decisions with an id are indexed.
-    Given two decisions under decisions/, one of them with no id
+    Given two decisions under spec/decisions/, one of them with no id
     When model decisions is run
-    Then it prints spec/decisions.md as the file it wrote
-    And spec/decisions.md lists the decision with an id and not the one without
+    Then it prints spec/decisions/index.md as the file it wrote
+    And spec/decisions/index.md lists the decision with an id and not the one without
 
   @r105
   Scenario: why refuses an argument that is not a requirement reference
@@ -438,11 +457,11 @@ Feature: Design model check
       | spec/capabilities/thing.md | the capability              | thing                                  |
       | spec/capabilities/thing.md | the capability              | ctx/thing                              |
       | spec/capabilities/thing.md | the capability              | design-decision/ex.com/prod/ctx/thing  |
-      | decisions/0001-x.md        | the decision                | decision/x                             |
-      | work/i1/initiative.md      | the initiative              | i1                                     |
-      | work/i1/p1.md              | a work-item                 | capability-proposal/ex.com/prod/ctx/p1 |
-      | records/observations.md    | an observation, by heading, | obs-1                                  |
-      | records/f1.md              | a review-finding            | f1                                     |
+      | spec/decisions/0001-x.md      | the decision                | decision/x                             |
+      | .shop/work/i1/initiative.md   | the initiative              | i1                                     |
+      | .shop/work/i1/p1.md           | a work-item                 | capability-proposal/ex.com/prod/ctx/p1 |
+      | .shop/records/observations.md | an observation, by heading, | obs-1                                  |
+      | .shop/records/f1.md           | a review-finding            | f1                                     |
 
   @r24
   Scenario Outline: a reference in a refused form is unresolved

@@ -21,13 +21,19 @@ contract:
     term/<context path>/<term lowercased, spaces as hyphens>; a bullet of
     that section in any other form is a file problem;
     spec/capabilities/*.md, each a capability with frontmatter (id, narrator,
-    group, rests_on, formulated_as, retired) and a `## Behaviour` section;
-    features/*.feature, the containers of acceptance-scenarios;
-    decisions/*.md, one design-decision each (frontmatter id, summary, date,
-    status, supersedes, revisit_when, revisit_signal);
-    work/<initiative>/initiative.md and work/<initiative>/<part>.md;
-    records/observations.md (one `## <id>` heading an observation) and any
-    other Markdown under records/ whose frontmatter has an `id`.
+    group, rests_on, retired) and a `## Behaviour` section; a `formulated_as`
+    key is a file problem;
+    features/**/*.feature, the containers of acceptance-scenarios, a
+    capability <name>'s being features/<name>.feature; any other feature file
+    is a file problem;
+    spec/decisions/*.md but index.md, one design-decision each (frontmatter
+    id, summary, date, status, supersedes, revisit_when, revisit_signal);
+    .shop/work/<initiative>/initiative.md and .shop/work/<initiative>/<part>.md;
+    .shop/records/observations.md (one `## <id>` heading an observation) and
+    any other Markdown under .shop/records/ whose frontmatter has an `id`.
+    It reads no other layout: spec/decisions.md and a decisions/, work/ or
+    records/ directory at the root are each a file problem naming
+    scripts/migrate, which moves them.
   - Ids are type-first: a node's id is <kind>/<context path>/<name>, with
     the design model's kind name and <name> matching [a-z0-9]+(-[a-z0-9]+)*;
     an id in any other form is a file problem. A capability's id is
@@ -43,7 +49,7 @@ contract:
     A reference is written <capability>#r<n>. In a
     list, <capability>#r<a>-r<b> stands for each id from a to b.
   - A scenario names its requirement by a tag @r<n> in the capability's own
-    feature file; its title is free. A scenario with no such tag names none.
+    feature file, features/<name>.feature; its title is free. A scenario with no such tag names none.
     A scenario tagged @holding is no acceptance-scenario.
   - facts prints the facts it read, one a line, in clingo's syntax, under
     grammar.md's relation names. A term gives node(T, "term"),
@@ -69,9 +75,10 @@ contract:
     and closed (an extension proposed against grammar.md v3). v_d2 names an
     `abandoned` initiative with a part, at any depth, neither closed nor
     withdrawn; abandoning an initiative means withdrawing what is open under it.
-  - decisions writes spec/decisions.md, the generated index of decisions/,
-    and nothing else; --check writes nothing and exits 1 when the file on
-    disk is not what it would write.
+  - decisions writes spec/decisions/index.md, the generated index of
+    spec/decisions/, each row linked to its file, and nothing else; --check
+    writes nothing and exits 1 when the file on disk is not what it would
+    write.
   - why <capability>#r<n> prints the trace the model gives for a
     requirement: the requirement, each capability-proposal that adds or
     changes it, the part_of chain to its initiative, and the initiative's
@@ -100,6 +107,10 @@ NAME = r"[a-z0-9]+(?:-[a-z0-9]+)*"
 CONTEXT_PATH = rf"{NAME}(?:\.{NAME})*/{NAME}/{NAME}"     # <owner>/<product>/<context name>; the owner may be a domain
 NOT_PROSE = re.compile(r'`[^`]*`|"[^"]*"|(?<!\w)@[\w-]+')
 ENTRY = re.compile(r"^\*\*(?P<term>[^*]+?)\*\*: (?P<rest>.+)$")    # a glossary bullet, after its "- "
+DECISIONS = Path("spec") / "decisions"
+WORK = Path(".shop") / "work"
+RECORDS = Path(".shop") / "records"
+OLD_LAYOUT = ("spec/decisions.md", "decisions/", "work/", "records/")    # what scripts/migrate moves (r61)
 REEXEC = "SHOPSYSTEM_MODEL_REEXEC"      # set when check runs again under another interpreter (r56)
 
 
@@ -362,6 +373,11 @@ def mention(word):
     return re.compile(rf"(?<![\w-]){body}s?(?![\w-])", re.IGNORECASE)
 
 
+def decision_files(root):
+    """The decision files: every spec/decisions/*.md but the generated index.md (r19)."""
+    return [p for p in sorted((Path(root) / DECISIONS).glob("*.md")) if p.name != "index.md"]
+
+
 # ---------------------------------------------------------------- facts
 
 class Model:
@@ -431,6 +447,7 @@ class Model:
         return f"{cap}#r{m.group('n')}"
 
     def read(self):
+        self.read_layout()
         self.read_index()
         self.read_capabilities()
         self.read_features()
@@ -440,6 +457,13 @@ class Model:
         self.check_refs()
         self.read_mentions()
         return self
+
+    def read_layout(self):
+        """Each path of the old layout under the root is a file problem (r61)."""
+        for old in OLD_LAYOUT:
+            path = self.root / old
+            if path.is_dir() if old.endswith("/") else path.is_file():
+                self.problems.append(f"{old}: the layout has no {old}; run scripts/migrate")
 
     def read_index(self):
         path = self.root / "spec" / "index.md"
@@ -517,10 +541,13 @@ class Model:
                 else:
                     self.problems.append(f"{self.rel(path)}: retired {r!r} is not r<n>")
             self.unread(data, path)
+            if "formulated_as" in data:
+                self.problems.append(f"{self.rel(path)}: formulated_as is not read; the feature file is "
+                                     f"features/{name}.feature")
             if not any(l.startswith("## ") and l[3:].strip().lower() == "behaviour" for l in body.splitlines()):
                 self.problems.append(f"{self.rel(path)}: no '## Behaviour' section")
             entry = {"name": name, "reqs": {}, "group": data.get("group"), "path": path,
-                     "feature": data.get("formulated_as") or f"features/{name}.feature"}
+                     "feature": f"features/{name}.feature"}
             for i, (text, lead) in enumerate(behaviour_items(section(body, "Behaviour")), 1):
                 m = RID.match(text)
                 if m:
@@ -551,7 +578,7 @@ class Model:
             key = self.rel(path)
             cap = by_feature.get(key)
             if cap is None:
-                self.problems.append(f"{key}: no capability is formulated as this file")
+                self.problems.append(f"{key}: not features/<name>.feature for a capability <name>")
             seen = set()
             for title, tags, steps in scenarios(path.read_text()):
                 if "@holding" in tags:
@@ -573,10 +600,7 @@ class Model:
                         self.dangling.append(f"{key}: scenario {title!r} names {q}, which {cap} does not have")
 
     def read_decisions(self):
-        ddir = self.root / "decisions"
-        if not ddir.is_dir():
-            return
-        for path in sorted(ddir.glob("*.md")):
+        for path in decision_files(self.root):
             data, _ = frontmatter(path.read_text())
             self.unread(data, path)
             d = data.get("id")
@@ -595,7 +619,7 @@ class Model:
                 self.fact("revisit_signal", d, self.qualify(data["revisit_signal"]))   # "requests" stays as written
 
     def read_records(self):
-        obs = self.root / "records" / "observations.md"
+        obs = self.root / RECORDS / "observations.md"
         if obs.exists():
             current = None
             for line in obs.read_text().splitlines():
@@ -609,7 +633,7 @@ class Model:
                         a = self.qualify(scalar(m.group(1)))
                         self.fact("about", current, a)
                         self.want(a, None, self.rel(obs))
-        for path in sorted((self.root / "records").rglob("*.md")):
+        for path in sorted((self.root / RECORDS).rglob("*.md")):
             if path == obs:
                 continue
             data, _ = frontmatter(path.read_text())
@@ -628,7 +652,7 @@ class Model:
                 self.want(a, None, self.rel(path))
 
     def read_work(self):
-        for idir in sorted(p for p in (self.root / "work").glob("*") if p.is_dir()):
+        for idir in sorted(p for p in (self.root / WORK).glob("*") if p.is_dir()):
             ipath = idir / "initiative.md"
             if not ipath.exists():
                 self.problems.append(f"{self.rel(idir)}: no initiative.md")
@@ -870,13 +894,13 @@ def render_decisions(root):
     index = Model(root)
     index.read_index()
     rows = []
-    for path in sorted((Path(root) / "decisions").glob("*.md")):
+    for path in decision_files(root):
         data, _ = frontmatter(path.read_text())
         if not data.get("id"):
             continue
         rows.append((path.name, data))
     lines = ["# Decisions", "",
-             "Generated by `scripts/model decisions` from `decisions/`; never edited by hand.",
+             "Generated by `scripts/model decisions` from `spec/decisions/`; never edited by hand.",
              "Each decision's `## Decision` section is standing; the rest of its file is record.", "",
              "| decision | summary | status | supersedes | revisit when |",
              "|---|---|---|---|---|"]
@@ -884,20 +908,20 @@ def render_decisions(root):
         sup = ", ".join(index.qualify(s, "design-decision") for s in as_list(d.get("supersedes"))) or ""
         rev = d.get("revisit_when") or ""
         cell = lambda s: str(s).replace("|", "\\|")
-        lines.append(f"| [{d['id']}](../decisions/{name}) | {cell(d.get('summary', ''))} | "
+        lines.append(f"| [{d['id']}]({name}) | {cell(d.get('summary', ''))} | "
                      f"{d.get('status', '')} | {cell(sup)} | {cell(rev)} |")
     return "\n".join(lines) + "\n"
 
 
 def cmd_decisions(args):
     text = render_decisions(args.root)
-    target = Path(args.root) / "spec" / "decisions.md"
+    target = Path(args.root) / DECISIONS / "index.md"
     if args.check:
         current = target.read_text() if target.exists() else ""
         if current != text:
-            print("spec/decisions.md is not what `model decisions` writes: run it")
+            print("spec/decisions/index.md is not what `model decisions` writes: run it")
             return 1
-        print("spec/decisions.md is current")
+        print("spec/decisions/index.md is current")
         return 0
     target.write_text(text)
     print(f"wrote {target.relative_to(args.root) if not os.path.isabs(args.root) else target}")
@@ -946,7 +970,7 @@ def main(argv=None):
     c = sub.add_parser("check", help="solve the facts against model.lp and report")
     c.add_argument("--json", action="store_true")
     c.add_argument("--limit", type=int, default=10, help="rows shown per relation")
-    d = sub.add_parser("decisions", help="write spec/decisions.md from decisions/")
+    d = sub.add_parser("decisions", help="write spec/decisions/index.md from spec/decisions/")
     d.add_argument("--check", action="store_true")
     w = sub.add_parser("why", help="trace a requirement to its initiative's sources")
     w.add_argument("ref")

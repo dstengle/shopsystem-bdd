@@ -27,6 +27,7 @@ BOUND = (
     'a proposal adding or removing a requirement no capability has is unresolved, unless it adds a retired id',
     'a frontmatter reference to nothing, or to the wrong kind, is unresolved',
     'a malformed index or capability file is a file problem',
+    'a path of the old layout is a file problem naming scripts/migrate',
     'a malformed work directory or work file is a file problem',
     'a work-item accepting a requirement no scenario names is a file problem',
     'a malformed decision, record or frontmatter is a file problem',
@@ -191,12 +192,12 @@ def file_naming(world, context, field, target):
     world.observation()
     world.initiative()
     if target == "a decision, where a capability is needed":
-        world.write("decisions/0001-x.md", DECISION % (full("design-decision", "ghost"), ""))
+        world.write("spec/decisions/0001-x.md", DECISION % (full("design-decision", "ghost"), ""))
         world.work_item(under="design-decision/ghost")
     else:
         assert target == "an id nothing in the repository has"
         if field == "supersedes":
-            world.write("decisions/0001-x.md", DECISION % (full("design-decision", "x"), "supersedes: ghost\n"))
+            world.write("spec/decisions/0001-x.md", DECISION % (full("design-decision", "x"), "supersedes: ghost\n"))
         elif field == "source":
             world.initiative(source="[observation/ghost]")
         elif field == "part_of":
@@ -230,23 +231,35 @@ def malformed_index_or_capability(world, case):
         world.write("spec/capabilities/thing.md", capfile("capability/acme.com/shop/cart/other"))
     elif case == "spec/capabilities/thing.md has no ## Behaviour section":
         world.write("spec/capabilities/thing.md", capfile(behaviour=False))
-    else:
-        assert case == "spec/capabilities/thing.md lists retired: [three]", case
+    elif case == "spec/capabilities/thing.md lists retired: [three]":
         world.write("spec/capabilities/thing.md", capfile(retired="[three]"))
+    else:
+        assert case == "spec/capabilities/thing.md has formulated_as: features/thing.feature", case
+        world.write("spec/capabilities/thing.md",
+                    capfile().replace("retired: []\n", "retired: []\nformulated_as: features/thing.feature\n"))
+
+
+@given(parsers.parse("a bounded context the grammar accepts, with {path} at its root"))
+def old_layout_path(world, path):
+    world.good()
+    if path.endswith("/"):
+        world.write(path + "README.md", "# old\n")
+    else:
+        world.write(path, "# Decisions\n")
 
 
 def _initiative_with(world, old, new):
-    p = world.root / "work/i1/initiative.md"
+    p = world.root / ".shop/work/i1/initiative.md"
     p.write_text(p.read_text().replace(old, new))
 
 
-@given(parsers.parse("a repository with a work directory work/i1 in which {case}"))
+@given(parsers.parse("a repository with a work directory .shop/work/i1 in which {case}"))
 def malformed_work(world, case):
     def part(**changes):
         fm = {"id": full("work-item", "p1"), "kind": "work-item", "part_of": "initiative/i1", "status": "drafted",
               "under": "thing", "check": "true"}
         fm.update(changes)
-        world.write("work/i1/p1.md", "---\n" + "".join("%s: %s\n" % (k, v) for k, v in fm.items() if v is not None) + "---\n")
+        world.write(".shop/work/i1/p1.md", "---\n" + "".join("%s: %s\n" % (k, v) for k, v in fm.items() if v is not None) + "---\n")
     world.good()
     if case == "there is no initiative.md":
         part()
@@ -269,7 +282,7 @@ def malformed_work(world, case):
         _initiative_with(world, "date: 2026-10-15", "date: 16/10/2026")
 
 
-@given("a work-item in work/i1/w1.md that accepts thing#r2")
+@given("a work-item in .shop/work/i1/w1.md that accepts thing#r2")
 def work_item_accepting(world, context):
     world.observation()
     world.initiative()
@@ -282,18 +295,18 @@ def malformed_record(world, context, case):
     x = full("design-decision", "x")
     decision = "---\nid: {}\nsummary: {}\ndate: 2026-01-01\nstatus: accepted\n---\n"
     world.good()
-    if case == "a decision under decisions/ has no id":
-        world.write("decisions/0001-x.md", "---\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n")
-    elif case == "a record under records/ with an id has the kind banana":
-        world.write("records/note.md", "---\nid: %s\nkind: banana\n---\n" % full("review-finding", "n1"))
+    if case == "a decision under spec/decisions/ has no id":
+        world.write("spec/decisions/0001-x.md", "---\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n")
+    elif case == "a record under .shop/records/ with an id has the kind banana":
+        world.write(".shop/records/note.md", "---\nid: %s\nkind: banana\n---\n" % full("review-finding", "n1"))
     elif case == "a frontmatter value is written as a folded block, with >":
-        world.write("decisions/0001-x.md", decision.format(x, ">-\n  folded"))
+        world.write("spec/decisions/0001-x.md", decision.format(x, ">-\n  folded"))
     elif case == "a frontmatter value is written as a literal block, with |":
-        world.write("decisions/0001-x.md", decision.format(x, "|\n  literal"))
+        world.write("spec/decisions/0001-x.md", decision.format(x, "|\n  literal"))
     else:
         assert case == "a decision and an observation have the same id", case
-        world.write("decisions/0001-x.md", decision.format(x, "S"))
-        world.write("records/observations.md", "# Observations\n\n## %s\nabout: %s\n" % (x, CONTEXT))
+        world.write("spec/decisions/0001-x.md", decision.format(x, "S"))
+        world.write(".shop/records/observations.md", "# Observations\n\n## %s\nabout: %s\n" % (x, CONTEXT))
         context["same_id"] = x
 
 
@@ -337,14 +350,6 @@ def scenario_tagged_r2(world):
 @given("a capability that lists r1 as retired and has a requirement [r1]")
 def capability_reusing_retired(world):
     world.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], retired="[r1]"))
-
-
-@given(parsers.parse("a capability thing with requirement r2, {formulated}"))
-def capability_formulated_as(world, context, formulated):
-    line = "formulated_as: " + formulated.split(" ", 1)[1] if formulated.startswith("formulated_as ") else None
-    text = cap("thing", ["- [r2] Two."])
-    text = text.replace("formulated_as: features/thing.feature\n", (line + "\n") if line else "")
-    world.write("spec/capabilities/thing.md", text)
 
 
 @given(parsers.parse("a scenario in {path} with the tag @r2 {placed}"))
@@ -645,13 +650,17 @@ def why_by_name(context):
 
 
 def _problems_naming(data, named):
-    """The file problems that begin with the path `named` as a whole word (`work/i1:`, not `work/i1/p1.md:`)."""
+    """The file problems that begin with the path `named` as a whole word (`.shop/work/i1:`, not `.shop/work/i1/p1.md:`)."""
     return [p for p in data["problems"] if re.match(re.escape(named) + r"[: ]", p)]
 
 
 @then(parsers.parse("it reports a file problem naming {named}"))
 def file_problem_named(world, context, named):
     data = found(world, context)
+    if named.endswith(" and scripts/migrate"):  # r61: an old layout's path, named with the script that moves it
+        path = named[: -len(" and scripts/migrate")]
+        assert _problems_naming(data, path) == ["%s: the layout has no %s; run scripts/migrate" % (path, path)], data
+        return
     named, _, absent = named.partition(", and not ")
     count = len(_problems_naming(data, named))
     if "mentions" in context:  # r28: and the requirement the work-item accepts
@@ -705,23 +714,23 @@ def rows_more(context, more):
 # === decisions index and why (r14, r16, r17, r105) =====================================================================
 
 def _decisions(world):
-    """decisions/ with an old decision and a new one superseding it."""
-    world.write("decisions/0001-old.md", '---\nid: %s\nsummary: "Do it the old way."\ndate: 2026-01-01\nstatus: superseded\n---\n# 1\n'
+    """spec/decisions/ with an old decision and a new one superseding it."""
+    world.write("spec/decisions/0001-old.md", '---\nid: %s\nsummary: "Do it the old way."\ndate: 2026-01-01\nstatus: superseded\n---\n# 1\n'
                 % full("design-decision", "old"))
-    world.write("decisions/0002-new.md", '---\nid: %s\nsummary: "Do it | the new way."\ndate: 2026-02-01\nstatus: accepted\n'
+    world.write("spec/decisions/0002-new.md", '---\nid: %s\nsummary: "Do it | the new way."\ndate: 2026-02-01\nstatus: accepted\n'
                 'supersedes: design-decision/old\nrevisit_when: "it hurts"\nrevisit_signal: requests\n---\n# 2\n'
                 % full("design-decision", "new"))
 
 
-@given("two decisions under decisions/, one superseding the other")
+@given("two decisions under spec/decisions/, one superseding the other")
 def two_decisions(world):
     _decisions(world)
 
 
-@given("two decisions under decisions/, one of them with no id")
+@given("two decisions under spec/decisions/, one of them with no id")
 def two_decisions_one_anonymous(world):
     _decisions(world)
-    world.write("decisions/0003-anon.md", "---\nsummary: Nameless.\nstatus: accepted\n---\n")
+    world.write("spec/decisions/0003-anon.md", "---\nsummary: Nameless.\nstatus: accepted\n---\n")
 
 
 @when("model decisions is run")
@@ -730,26 +739,26 @@ def model_decisions(run, context):
 
 
 def _index_text(repo):
-    return (repo / "spec" / "decisions.md").read_text()
+    return (repo / "spec" / "decisions" / "index.md").read_text()
 
 
-@then("spec/decisions.md has a row for each with its summary, status and what it supersedes")
+@then("spec/decisions/index.md has a row for each with its summary, status and what it supersedes, linked to its file")
 def decisions_rows(repo, context):
     result = context["result"]
     assert result.returncode == 0, result.stderr
     text = _index_text(repo)
     old, new = full("design-decision", "old"), full("design-decision", "new")
-    assert "| [%s](../decisions/0001-old.md) | Do it the old way. | superseded |  |  |" % old in text, text
-    assert "| [%s](../decisions/0002-new.md) | Do it \\| the new way. | accepted | %s | it hurts |" % (new, old) in text, text
+    assert "| [%s](0001-old.md) | Do it the old way. | superseded |  |  |" % old in text, text
+    assert "| [%s](0002-new.md) | Do it \\| the new way. | accepted | %s | it hurts |" % (new, old) in text, text
 
 
-@then("it prints spec/decisions.md as the file it wrote")
+@then("it prints spec/decisions/index.md as the file it wrote")
 def decisions_file_named(context):
     result = context["result"]
-    assert result.stdout.strip() == "wrote spec/decisions.md", result.stdout + result.stderr
+    assert result.stdout.strip() == "wrote spec/decisions/index.md", result.stdout + result.stderr
 
 
-@then("spec/decisions.md lists the decision with an id and not the one without")
+@then("spec/decisions/index.md lists the decision with an id and not the one without")
 def decisions_only_with_id(repo):
     text = _index_text(repo)
     assert "[%s]" % full("design-decision", "new") in text, text
@@ -827,8 +836,8 @@ def context_path(world, path):
 def context_with_decision_and_observation(world, context, ident):
     assert ident == CONTEXT
     _id_form_files(world)
-    world.write("decisions/0001-x.md", DECISION % (full("design-decision", "x"), ""))
-    world.write("records/observations.md", "# Observations\n\n## %s\nabout: %s\n\n## %s\nabout: %s\n"
+    world.write("spec/decisions/0001-x.md", DECISION % (full("design-decision", "x"), ""))
+    world.write(".shop/records/observations.md", "# Observations\n\n## %s\nabout: %s\n\n## %s\nabout: %s\n"
                 % (OBS1, CONTEXT, full("observation", "x"), CONTEXT))
     context["refused"] = True
 
@@ -838,7 +847,7 @@ def file_whose_field_is_written(world, context, file, field, written):
     if file == "a capability-proposal":
         world.proposal(**({field: "[%s]" % written} if field != "part_of" else {}))
         if field == "part_of":
-            p = world.root / "work/i1/p1.md"
+            p = world.root / ".shop/work/i1/p1.md"
             p.write_text(p.read_text().replace("part_of: initiative/i1", "part_of: " + written))
     elif file == "a capability":
         assert field == "rests_on"
@@ -857,7 +866,7 @@ def _written_unresolved(world, context, subject):
         assert len([d for d in data["unresolved"] if subject in d]) == 1, data
         assert data["problems"] == [], data
     else:  # r43
-        assert [d for d in data["unresolved"] if " %s " % subject in d] == ["work/i1/p1.md: %s names nothing in this repository" % subject], data
+        assert [d for d in data["unresolved"] if " %s " % subject in d] == [".shop/work/i1/p1.md: %s names nothing in this repository" % subject], data
 
 
 @then(parsers.re(r"(?P<written>\S+) is read as (?P<read>\S+) and not reported as unresolved"))
@@ -875,16 +884,16 @@ def file_gives_id(world, file, node, ident):
         world.write(file, "---\nid: %s\n---\n" % ident)
     elif file == "spec/capabilities/thing.md":
         world.write(file, cap("thing", ["- [r1] One."], group="guarantees").replace("id: " + THING, "id: " + ident))
-    elif file == "decisions/0001-x.md":
+    elif file == "spec/decisions/0001-x.md":
         world.write(file, "---\nid: %s\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n" % ident)
-    elif file == "work/i1/initiative.md":
+    elif file == ".shop/work/i1/initiative.md":
         _initiative_with(world, "id: %s" % I1, "id: " + ident)
-    elif file == "work/i1/p1.md":
+    elif file == ".shop/work/i1/p1.md":
         world.work_item("p1", id=ident)
-    elif file == "records/observations.md":
+    elif file == ".shop/records/observations.md":
         world.write(file, "# Observations\n\n## %s\nabout: %s\n" % (ident, CONTEXT))
     else:
-        assert file == "records/f1.md", file
+        assert file == ".shop/records/f1.md", file
         world.write(file, "---\nid: %s\nkind: review-finding\n---\n" % ident)
 
 

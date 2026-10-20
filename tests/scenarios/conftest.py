@@ -42,8 +42,8 @@ def pytest_configure(config):
 
 
 # --- the repositories design-model-check's scenarios build ---------------------------------------------------
-# Paths are the ones `model` reads today (spec/, features/, decisions/, work/, records/); final-layout-read moves
-# the decision, work and record paths, and the builders below are where they change.
+# Paths are the final layout's (spec/, spec/decisions/, features/, .shop/work/, .shop/records/), the only one
+# `model` reads.
 
 PATH = "ex.com/prod/ctx"
 CONTEXT = "bounded-context/" + PATH
@@ -72,7 +72,6 @@ def cap(name, reqs, group="service", retired="[]", rests_on="[]"):
         narrator: a client
         group: %s
         rests_on: %s
-        formulated_as: features/%s.feature
         retired: %s
         ---
 
@@ -82,7 +81,7 @@ def cap(name, reqs, group="service", retired="[]", rests_on="[]"):
         Something.
 
         ## Behaviour
-        """ % (PATH, name, name, group, rests_on, name, retired, name)) + lines + "\n\n## Not yet\n- None.\n"
+        """ % (PATH, name, name, group, rests_on, retired, name)) + lines + "\n\n## Not yet\n- None.\n"
 
 
 def feature(name, *scenarios):
@@ -121,7 +120,7 @@ class World:
               "under": "thing", "check": "true"}
         fm.update(fields)
         body = "".join("%s: %s\n" % (k, v) for k, v in fm.items() if v is not None)
-        self.write("work/i1/%s.md" % ident, "---\n%s---\n" % body)
+        self.write(".shop/work/i1/%s.md" % ident, "---\n%s---\n" % body)
 
     def good(self):
         """One capability whose one requirement has its scenario."""
@@ -129,7 +128,7 @@ class World:
         self.write("features/thing.feature", feature("thing", ("@r1", "it answers")))
 
     def initiative(self, ident="i1", source="[observation/obs-1]", status="started", kind="capability-change"):
-        self.write("work/%s/initiative.md" % ident, textwrap.dedent("""\
+        self.write(".shop/work/%s/initiative.md" % ident, textwrap.dedent("""\
             ---
             id: %s
             title: t
@@ -145,7 +144,7 @@ class World:
 
     def proposal(self, ident="p1", status="drafted", adds="[]", changes="[]", initiative="i1", argues="[thing]",
                  removes="[]", date="2026-10-15"):
-        self.write("work/%s/%s.md" % (initiative, ident), textwrap.dedent("""\
+        self.write(".shop/work/%s/%s.md" % (initiative, ident), textwrap.dedent("""\
             ---
             id: %s
             kind: capability-proposal
@@ -160,7 +159,7 @@ class World:
             """ % (full("capability-proposal", ident), initiative, status, argues, adds, changes, removes, date)))
 
     def observation(self, ident="obs-1"):
-        self.write("records/observations.md", "# Observations\n\n## %s\nabout: %s\nby: someone\ndate: 2026-10-15\n\nSeen.\n"
+        self.write(".shop/records/observations.md", "# Observations\n\n## %s\nabout: %s\nby: someone\ndate: 2026-10-15\n\nSeen.\n"
                    % (full("observation", ident), CONTEXT))
 
 
