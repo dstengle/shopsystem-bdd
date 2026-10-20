@@ -10,6 +10,8 @@ DIRECTORY_MOVES = (
     ("work/", ".shop/work/"),
     ("docs/superpowers/plans/", ".shop/records/archive/plans/"),
     ("docs/superpowers/specs/", ".shop/records/archive/design-notes/"),
+    ("docs/superpowers/requests/", ".shop/records/archive/requests/"),
+    ("adrs/", ".shop/records/decision-arguments/"),
     ("records/", ".shop/records/"),
 )
 
@@ -68,9 +70,9 @@ def record_kind(final):
     """The kind of a moved record that gets an id: a Markdown plan, design note or test log; None for any other."""
     if not final.endswith(".md"):
         return None
-    if final.startswith(".shop/records/archive/plans/"):
+    if final.startswith((".shop/records/archive/plans/", ".shop/records/archive/requests/")):
         return "initiative-archive"
-    if final.startswith(".shop/records/archive/design-notes/"):
+    if final.startswith((".shop/records/archive/design-notes/", ".shop/records/decision-arguments/")):
         return "decision-argument"
     if final.endswith("-test-log.md") and final.startswith(".shop/records/"):
         return "measurement"
@@ -136,3 +138,19 @@ def write(plan):
     for rel, text in plan.texts.items():
         (root / rel).parent.mkdir(parents=True, exist_ok=True)
         (root / rel).write_text(text)
+        subprocess.run(["git", "add", "--", rel], cwd=root, capture_output=True, text=True, check=True)
+
+
+def write_decisions_index(plan):
+    """spec/decisions/index.md as `model decisions` writes it from the decision files now on disk, added to git."""
+    target = plan.root / "spec/decisions/index.md"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(load_model().render_decisions(plan.root))
+    subprocess.run(["git", "add", "--", "spec/decisions/index.md"], cwd=plan.root, capture_output=True, text=True, check=True)
+
+
+def uncommitted(root):
+    """Each path git status shows as changed or untracked (an ignored file is not shown)."""
+    out = subprocess.run(["git", "status", "--porcelain", "--untracked-files=all"], cwd=root, capture_output=True,
+                         text=True, check=True).stdout
+    return [line[3:] for line in out.splitlines()]

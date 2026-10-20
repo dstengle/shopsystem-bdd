@@ -8,7 +8,7 @@ import re
 from pytest_bdd import given, parsers, scenarios, then, when
 
 from .migration_ledger_steps import *  # noqa: F401,F403  the steps are fixtures pytest-bdd finds by their names here
-from .migration_old import CONTEXT, front, migrate, said
+from .migration_old import CONTEXT, body, front, migrate, said
 from .migration_spec_steps import *  # noqa: F401,F403
 
 scenarios("migration-tools.feature")
@@ -75,10 +75,18 @@ def _(old):
     assert len(renamed) == 3, status
 
 
-@given("a repository on the old system with docs/superpowers/plans/p1.md and docs/superpowers/specs/s1.md")
+@given("a repository on the old system with docs/superpowers/plans/p1.md, docs/superpowers/specs/s1.md and "
+       "docs/superpowers/requests/q1.md")
 def _(old):
-    old.write("docs/superpowers/plans/p1.md", "A plan.\n")
-    old.write("docs/superpowers/specs/s1.md", "---\ntitle: s1\n---\nA design note.\n")
+    old.write("docs/superpowers/plans/p1.md", body("p1"))
+    old.write("docs/superpowers/specs/s1.md", "---\ntitle: s1\n---\n" + body("s1"))
+    old.write("docs/superpowers/requests/q1.md", body("q1"))
+    old.commit()
+
+
+@given("a repository on the old system with adrs/0001-use-x.md")
+def _(old):
+    old.write("adrs/0001-use-x.md", body("x"))
     old.commit()
 
 
@@ -95,16 +103,60 @@ def _(old, new, was):
     assert kept == old.before[was].decode()
 
 
-@then("docs/superpowers/plans/ and docs/superpowers/specs/ are gone")
+@then("docs/superpowers/plans/, docs/superpowers/specs/ and docs/superpowers/requests/ are gone")
 def _(old):
-    assert not (old.root / "docs/superpowers/plans").exists()
-    assert not (old.root / "docs/superpowers/specs").exists()
+    for gone in ("plans", "specs", "requests"):
+        assert not (old.root / "docs/superpowers" / gone).exists(), gone
 
 
-@then("git status shows each of the two as renamed")
+@then("adrs/ is gone")
+def _(old):
+    assert not (old.root / "adrs").exists()
+
+
+@then("git status shows it as renamed")
 def _(old):
     status = old.git("status", "--porcelain").stdout.splitlines()
-    assert len([l for l in status if l.startswith("R")]) == 2, status
+    assert len([l for l in status if l.startswith("R")]) == 1, status
+
+
+@given("a tracked README.md changed since the last commit")
+def _(old):
+    old.write("README.md", "As committed.\n")
+    old.commit()
+    old.untracked("README.md", "Changed since.\n")
+
+
+@given("an untracked notes/n2.md")
+def _(old):
+    old.commit()
+    old.untracked("notes/n2.md", "Not tracked.\n")
+
+
+@then(parsers.parse("migrate refuses, naming {named}"))
+def _(context, named):
+    assert "uncommitted" in said(context) and named in said(context), said(context)
+
+
+@given("its spec/decisions.md has nothing but the entry `## decision/0007-a`")
+def _(old):
+    old.write("spec/decisions.md", "## decision/0007-a\nWe do a.\n\ndate: 2025-03-01\nsource: alice\n")
+    old.commit()
+
+
+@then("git status shows .shop/work/i1/w1.md, spec/decisions/0007-a.md and spec/decisions/index.md as staged, and no "
+      "file as untracked or changed but not staged")
+def _(old):
+    status = old.git("status", "--porcelain").stdout.splitlines()
+    assert all(l[0] in "ARMD" and l[1] == " " for l in status), status
+    for rel in (".shop/work/i1/w1.md", "spec/decisions/0007-a.md", "spec/decisions/index.md"):
+        assert any(l[3:].endswith(rel) for l in status), (rel, status)
+
+
+@then("`model decisions --check` says spec/decisions/index.md is current")
+def _(run, old):
+    done = run("model", "--root", old.root, "decisions", "--check")
+    assert (done.returncode, done.stdout.strip()) == (0, "spec/decisions/index.md is current"), done.stdout + done.stderr
 
 
 @given("a repository on the old system with work/i1/w1.md, and .shop/work/i1/w1.md already exists")

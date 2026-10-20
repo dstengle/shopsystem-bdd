@@ -37,8 +37,13 @@ def plan_capabilities(plan):
             text = plan.read(rel)
             data, _ = model.frontmatter(text)
             retired = [int(str(r).lstrip("r")) for r in model.as_list(data.get("retired"))]
-            text = with_id(number_behaviour(text, retired), "capability/%s/%s" % (plan.context, Path(rel).stem))
-            plan.texts[rel] = text
+            full = "capability/%s/%s" % (plan.context, Path(rel).stem)
+            short = "capability/%s" % Path(rel).stem
+            if data.get("id") == short:         # the short form becomes the full one, and references follow (r9, r5)
+                text = re.sub(r"^id:.*$", "id: " + full, text, count=1, flags=re.MULTILINE)
+                plan.renamed[short] = full
+            text = re.sub(r"^formulated_as:.*\n", "", text, count=1, flags=re.MULTILINE)      # model reads no formulated_as (r6)
+            plan.texts[rel] = with_id(number_behaviour(text, retired), full)
 
 
 def drop_holding(text):

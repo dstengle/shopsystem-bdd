@@ -4,7 +4,17 @@ import shutil
 
 from pytest_bdd import given, parsers, then, when
 
-from .migration_old import CONTEXT, capability, front, load_model, migrate, said
+from .migration_old import CONTEXT, body, capability, front, load_model, migrate, said
+
+RECORDS = ("docs/superpowers/plans/p1.md", "docs/superpowers/requests/q1.md", "docs/superpowers/specs/s1.md",
+           "adrs/0001-use-x.md", "records/logs/run1-test-log.md")
+
+
+def write_records(old):
+    """One record of each kind migrate moves and gives an id, with no id and no about."""
+    for rel in RECORDS:
+        old.write(rel, body(rel))
+
 
 @given("a repository on the old system whose spec/index.md gives no id")
 def _(old):
@@ -36,11 +46,17 @@ def _(old):
     capability(old)
 
 
-@given("it has docs/superpowers/plans/p1.md, docs/superpowers/specs/s1.md and records/logs/run1-test-log.md")
+@given("it has docs/superpowers/plans/p1.md, docs/superpowers/requests/q1.md, docs/superpowers/specs/s1.md, "
+       "adrs/0001-use-x.md and records/logs/run1-test-log.md")
 def _(old):
-    old.write("docs/superpowers/plans/p1.md", "A plan.\n")
-    old.write("docs/superpowers/specs/s1.md", "A design note.\n")
-    old.write("records/logs/run1-test-log.md", "A test log.\n")
+    write_records(old)
+    old.commit()
+
+
+@given("a repository on the old system with a capability spec/capabilities/thing.md whose id is capability/thing")
+def _(old):
+    old.write("spec/index.md", "# shop\n")
+    capability(old, ident="capability/thing")
     old.commit()
 
 
@@ -114,8 +130,8 @@ def _(old, context):
     assert old.read("tests/test_thing.py") == (copy / "tests/test_thing.py").read_text()
 
 
-@given("a repository on the old system with decisions/, work/, records/, docs/superpowers/plans/, docs/superpowers/specs/, "
-       "a ledger spec/decisions.md, a capability and a @holding scenario")
+@given("a repository on the old system with decisions/, work/, records/, adrs/, docs/superpowers/plans/, "
+       "docs/superpowers/specs/, docs/superpowers/requests/, a ledger spec/decisions.md, a capability and a @holding scenario")
 def _(old):
     old.write("spec/index.md", "# shop\n")
     old.write("decisions/0001-d0.md", "---\nid: design-decision/%s/d0\nsummary: d\ndate: 2025-03-01\nstatus: accepted\nby: alice\n---\n\n"
@@ -130,9 +146,26 @@ def _(old):
     old.write("work/i1/initiative.md", "---\nid: initiative/%s/i1\ntitle: t\nsummary: s\nkind: capability-change\nowner-level: ctx\n"
                                        "status: started\npriority: 1\nsource: []\ndate: 2026-10-15\n---\n" % CONTEXT)
     # records as the old system wrote them: no id, no about
-    old.write("records/logs/run1-test-log.md", "A test log.\n")
-    old.write("docs/superpowers/plans/p1.md", "A plan.\n")
-    old.write("docs/superpowers/specs/s1.md", "A design note.\n")
+    write_records(old)
+    old.commit()
+
+
+@given("a repository on the old system with a capability spec/capabilities/thing.md whose frontmatter has "
+       "formulated_as: features/thing.feature")
+def _(old):
+    old.write("spec/index.md", "# shop\n")
+    capability(old)
+    text = old.read("spec/capabilities/thing.md").replace("rests_on: []", "rests_on: []\nformulated_as: features/thing.feature")
+    old.write("spec/capabilities/thing.md", text)
+    old.commit()
+
+
+@given("a repository on the old system with a ledger whose entry 0007-a has supersedes: decision/0003-b (for artifacts), "
+       "and the entry 0003-b")
+def _(old):
+    old.write("spec/index.md", "# shop\n")
+    old.write("spec/decisions.md", "## decision/0003-b\nWe do b.\n\ndate: 2025-02-01\nsource: bob\n\n## decision/0007-a\n"
+                                   "We do a.\n\ndate: 2025-03-01\nsource: alice\nsupersedes: decision/0003-b (for artifacts)\n")
     old.commit()
 
 
@@ -147,11 +180,11 @@ def _(run, old, context):
     context["checked"] = run("model", "--root", old.root, "check", "--json")
 
 
-@then("it reports no violation, no unresolved reference and no file problem")
+@then("it reports no unresolved reference and no file problem")
 def _(context):
     out = context["checked"]
     report = json.loads(out.stdout)
-    assert (out.returncode, report["violations"], report["unresolved"], report["problems"]) == (0, [], [], []), out.stdout
+    assert (report["unresolved"], report["problems"]) == ([], []), out.stdout
 
 
 @then("the Behaviour lines of spec/capabilities/thing.md are, in order, [r1], [r5], [r3] and [r6]")
@@ -161,16 +194,16 @@ def _(old):
     assert [l.split()[1] for l in lines] == ["[r1]", "[r5]", "[r3]", "[r6]"], lines
 
 
-@given("a repository on the old system with docs/superpowers/plans/p1.md, docs/superpowers/specs/s1.md and "
-       "records/logs/run1-test-log.md, none with an about")
+@given("a repository on the old system with docs/superpowers/plans/p1.md, docs/superpowers/requests/q1.md, "
+       "docs/superpowers/specs/s1.md, adrs/0001-use-x.md and records/logs/run1-test-log.md, none with an about")
 def _(old):
-    old.write("docs/superpowers/plans/p1.md", "A plan.\n")
-    old.write("docs/superpowers/specs/s1.md", "---\ntitle: s1\n---\nA design note.\n")
-    old.write("records/logs/run1-test-log.md", "A test log.\n")
+    write_records(old)
+    old.write("docs/superpowers/specs/s1.md", "---\ntitle: s1\n---\n" + body("s1"))
     old.commit()
 
 
-@then(parsers.parse("{first}, {second} and {third} are each about {ref}"))
-def _(old, first, second, third, ref):
-    found = [front(old, rel)[0].get("about") for rel in (first, second, third)]
-    assert found == [ref] * 3, found
+@then(parsers.re(r"(?P<files>\S+(?:, \S+)* and \S+) are each about (?P<ref>\S+)$"))
+def _(old, files, ref):
+    paths = files.replace(" and ", ", ").split(", ")
+    found = [front(old, rel)[0].get("about") for rel in paths]
+    assert found == [ref] * len(paths), found

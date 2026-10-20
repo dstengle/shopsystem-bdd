@@ -30,6 +30,10 @@ class OnlyMarkdownGetsAKind(unittest.TestCase):
         self.assertEqual(layout.record_kind(".shop/records/archive/design-notes/a.md"), "decision-argument")
         self.assertEqual(layout.record_kind(".shop/records/a-test-log.md"), "measurement")
 
+    def test_an_adr_and_a_request_have_the_kind_of_their_place(self):
+        self.assertEqual(layout.record_kind(".shop/records/decision-arguments/0001-x.md"), "decision-argument")
+        self.assertEqual(layout.record_kind(".shop/records/archive/requests/q1.md"), "initiative-archive")
+
     def test_plan_ids_does_not_read_or_write_a_moved_image(self):
         final = ".shop/records/archive/design-notes/shape.png"
         plan = FakePlan({"docs/superpowers/specs/shape.png": final}, {"docs/superpowers/specs/shape.png": b"\x89PNG\xff"})

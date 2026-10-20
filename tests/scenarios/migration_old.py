@@ -74,3 +74,8 @@ def capability(old, ident=None, retired="[]", lines=("- [r1] **When** a, `thing`
 def said(context):
     done = context["done"]
     return done.stdout + done.stderr
+
+
+def body(name):
+    """A record's body, long enough that git still sees a rename after migrate adds an id, a kind and an about."""
+    return "".join("%s, line %d of a body that git compares to find the rename.\n" % (name, i) for i in range(1, 7))

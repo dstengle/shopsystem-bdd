@@ -10,13 +10,15 @@ import argparse
 import sys
 from pathlib import Path
 
-from migrate_layout import Plan, check_moves, plan_ids, plan_moves, write
+from migrate_layout import Plan, check_moves, plan_ids, plan_moves, uncommitted, write, write_decisions_index
 from migrate_ledger import plan_ledger
 from migrate_spec import plan_capabilities, plan_holding, plan_index, plan_references
 
 
 def cmd_run(args):
     plan = Plan(Path.cwd(), args.context)
+    for path in uncommitted(plan.root):
+        plan.failures.append("could not start from a tree with an uncommitted change: %s" % path)
     plan_moves(plan)
     plan_ledger(plan)
     plan_holding(plan)
@@ -31,6 +33,7 @@ def cmd_run(args):
             print("  " + failure, file=sys.stderr)
         return 1
     write(plan)
+    write_decisions_index(plan)
     return 0
 
 
