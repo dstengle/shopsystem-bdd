@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/migrate-kb
 kind: work-item
 part_of: capability-proposal/migrate-readings
-status: done
+status: awaiting-ruling
 wkind: capability
 under: migration-tools
 accepts: [migration-tools#r1-r17]
@@ -17,3 +17,6 @@ r14 (adrs/), and the trial's defects against existing lines: a dirty tree refuse
 traceback (r7); a capability id in the short form rewritten to the full form (r9); `formulated_as` removed, new
 decision files added to git and spec/decisions/index.md written (r6); a `supersedes` value with a qualifier keeps
 only the id, its qualifier going to `by` (r2). Every module stays under 300 lines.
+
+## Questions
+- Important, scripts/migrate_ledger.py:101-102: an unnumbered entry's old id `decision/<slug>` is not added to plan.renamed, so references and supersedes naming it stay unresolved (model check: 'decision/b is not a design-decision in this repository') and the superseded entry keeps status accepted (r2, r5, r6)
