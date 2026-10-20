@@ -16,7 +16,7 @@ Your prompt names your brief file. Read it first. It gives:
 - `Run directory:` where you write. The plan is `plan.md` there.
 - `Result file:` the JSON file you write last.
 
-Read those, the design-decisions the capability `rests_on` (under `spec/decisions/`, by id) and the accepted scenarios in `features/` (their tag lines carry the accepted ids, `@r<n>`). Read a file of the researcher's file set, or a test its notes name, only where a decision or a broken test cannot be stated from the notes.
+You start in your worktree, the directory you were started in: read every path there, and never change directory. Read those, the design-decisions the capability `rests_on` (under `spec/decisions/`, by id) and the accepted scenarios in `features/` (their tag lines carry the accepted ids, `@r<n>`). Read a file of the researcher's file set, or a test its notes name, only where a decision or a broken test cannot be stated from the notes.
 
 ## What you may write
 

@@ -30,7 +30,7 @@ Nothing else, by any tool: no edit, no commit, no `checkout`, `stash`, `reset` o
 
 ## Tools before search
 
-The plugin's scripts directory is the brief's `Scripts:` line if it has one; else `scripts/` of this repository when it holds `scripts/tools` (the plugin's own repository); else there is none, and you search by text and say so at the top of your notes. `python3 <scripts>/tools --help` is the analysis tools' contract.
+The plugin's scripts directory is the brief's `Scripts:` line if it has one, run by that absolute path (`python3 <Scripts>/tools ...`), the only way your shell runs them; else `scripts/` of this repository when it holds `scripts/tools` (the plugin's own repository); else there is none, and you search by text and say so at the top of your notes. `python3 <scripts>/tools --help` is the analysis tools' contract.
 
 - **What uses a name:** `tools refs <dotted name>`, which follows imports and aliases a text search does not.
 - **Which tests execute a function:** `tools tests-of <file>:<function> --by-file`, or `<file>:<line>-<line>` for one branch.
@@ -42,7 +42,7 @@ Use them first wherever the thing is a name. Search by text for what is not a na
 
 What the system does today is found by running it, not by reading it.
 
-- A probe drives the system through its real entry point, as `CLAUDE.md` says to run it, and records what came back.
+- A probe drives the system through its real entry point, as `CLAUDE.md` says to run it, and records what came back. It is a test file in your scratch directory (`probe_<what>.py`, its `test_` functions printing what came back), run with `python3 -m pytest -q -s <its path>`: your shell runs no other Python.
 - Every probe works in your scratch directory: its store, its files, its working directory. Point whatever the system uses to find its data there before the first command. A probe never reads or writes the checkout's own data.
 - You may run the accepted scenarios, one by one by their tests' node ids (`python3 -m pytest -q "<node id>"`; `python3 -m pytest -q --collect-only` lists them; `-k` takes a name or an expression, not a title, and refuses a title with spaces), and any test whose execution you need to see. Do not run the whole suite.
 - Each probe goes in the notes as its command, what came back (trimmed to what matters) and `run`. What you concluded from reading, without running, is marked `read`. Never mark `run` what you did not run.
@@ -67,7 +67,7 @@ Leave a part out only by writing "none", with what you searched.
 
 ## Work in few turns
 
-Every turn resends everything you have read. Decide your searches before you run any; run those that do not depend on each other as several calls in one turn. You are started in your worktree: run every command from there, never behind `cd`. Nobody approves a command under `work run`, so one it does not allow is refused: your shell runs `python3 ...`, `git status`, `git diff`, `git log`, `git show` and read-only commands (`ls`, `cat`, `wc`, `grep`), and refuses anything else (`mkdir`, `cp`, `git -C`, `git ls-files`), a command behind an environment assignment, and one with a variable or `$?` in it. Read files with Read, search with Grep (`files_with_matches` or `count` for which files, `content` only where you need the lines) and Glob, and write probe files with Write. Read a file whole only when a search cannot answer.
+Every turn resends everything you have read. Decide your searches before you run any; run those that do not depend on each other as several calls in one turn. You start in your worktree, the brief's `Worktree:`: run every command from there, as it is, and never change directory (no `cd`, no `git -C`). Nobody approves a command under `work run`, so one it does not allow is refused: your shell runs `python3 -m pytest ...`, the plugin's scripts by their path (`python3 <Scripts>/tools ...`), `git status`, `git diff`, `git log`, `git show` and read-only commands (`ls`, `cat`, `wc`, `grep`), and refuses anything else (any other `python3`, `mkdir`, `cp`, `git ls-files`), a command behind an environment assignment, and one with a variable or `$?` in it. Read files with Read, search with Grep (`files_with_matches` or `count` for which files, `content` only where you need the lines) and Glob, and write probe files with Write. Read a file whole only when a search cannot answer.
 
 ## The result
 

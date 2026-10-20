@@ -42,7 +42,7 @@ Show the person the drafted work-items as one table: name, accepts, risk (`work 
 
 ## Run `work run`
 
-Start `python3 <scripts>/work run <initiative>` as a **background** command, and wait to be woken when it exits.
+Start `python3 <scripts>/work run <initiative>` as a **background** command, exactly as written: nothing before it (no `cd`) and nothing after it (no `; echo`), since its exit code comes with the background command's end. Wait to be woken when it exits.
 
 While it runs, read nothing its workers write: no file under `.shop/work/<initiative>/runs/`, no `log.jsonl`, nothing under `.shop/worktrees/`, no work-item file, and not the background command's output until it has exited. Do not poll it. If the person asks how it is going, say it is running and that you will show what it prints when it ends.
 
