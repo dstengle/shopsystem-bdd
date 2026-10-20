@@ -42,9 +42,9 @@ def fields(path):
 
 # --- Given ----------------------------------------------------------------------------------------------------
 
-@given("an initiative i1 under .shop/work/ with no work-item w1")
-def no_w1(repo):
-    initiative(repo, "i1")
+@given(parsers.parse("an initiative {ident} under .shop/work/ with no work-item {name}"))
+def no_item(repo, ident, name):
+    initiative(repo, ident)
 
 
 @given(parsers.re(r"an initiative (?P<ident>i\d+) under \.shop/work/ whose work-items? (?P<items>.+?)"
@@ -96,3 +96,18 @@ def says_exists(context):
 @then("it exits non-zero")
 def exits_non_zero(context):
     assert context["done"].returncode != 0, context["done"]
+
+
+@then(parsers.parse("work prints {pairs}"))
+def prints_statuses(context, pairs):
+    out = context["done"].stdout.splitlines()
+    assert context["done"].returncode == 0, context["done"]
+    for pair in pairs.replace(" and ", ", ").split(", "):
+        name, status = pair.split(" with ")
+        words = [line.replace("/", " ").split() for line in out]
+        assert [w for w in words if name in w and status in w], (name, status, out)
+
+
+@then(parsers.parse("it prints nothing about {name}"))
+def nothing_about(context, name):
+    assert name not in context["done"].stdout, context["done"].stdout

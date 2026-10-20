@@ -13,6 +13,12 @@ def cmd_add(args):
     return 0
 
 
+def cmd_show(args):
+    for initiative, name, status in workqueue.items(args.root):
+        print("%s/%s %s" % (initiative, name, status))
+    return 0
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="work", description=__doc__)
     ap.add_argument("--root", default=".", help="the repository (default: the current directory)")
@@ -23,9 +29,10 @@ def main(argv=None):
     a.add_argument("--part-of", required=True)
     a.add_argument("--under", required=True)
     a.add_argument("--accepts", required=True, action="append")
+    sub.add_parser("show", help="each work-item of every initiative, with its status")
     args = ap.parse_args(argv)
     try:
-        return {"add": cmd_add}[args.cmd](args)
+        return {"add": cmd_add, "show": cmd_show}[args.cmd](args)
     except workqueue.Refused as refused:
         print("work: %s" % refused, file=sys.stderr)
         return 1

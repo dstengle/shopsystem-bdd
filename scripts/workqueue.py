@@ -40,3 +40,11 @@ def add(root, initiative, name, part_of, under, accepts):
             % (context_path(root), name, part_of, under, ", ".join(accepts), name))
     path.write_text(text)
     return path
+
+
+def items(root):
+    """Each work-item of every initiative under .shop/work/: (initiative, name, status), in path order (r3)."""
+    for path in sorted((Path(root) / WORK).glob("*/*.md")):
+        data, _ = frontmatter(path.read_text())
+        if data.get("kind") == "work-item":
+            yield path.parent.name, path.stem, data.get("status")
