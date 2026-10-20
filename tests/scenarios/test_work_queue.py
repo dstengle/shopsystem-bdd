@@ -4,12 +4,16 @@ A Given writes the initiatives and work-items a scenario names under `repo`/.sho
 makes one move through the library, as `work run` does) and keeps the files as they were (`context["before"]`); the
 Then steps read what it printed and what it left.
 """
+import importlib
 import shlex
+import sys
 
 import pytest
 from pytest_bdd import given, parsers, scenarios, then, when
 
-from .conftest import INDEX, full
+from .conftest import INDEX, SCRIPTS, full
+
+MOVER = "supervision"     # the script that moves work-items in these scenarios
 
 scenarios("work-queue.feature")
 
@@ -66,6 +70,20 @@ def run_work(repo, run, context, args):
     context["done"] = run("work", *shlex.split(args))
 
 
+@when(parsers.parse("the script moves {name} to {status}"))
+def move(repo, context, name, status):
+    """A move as `work run` makes it: through the library, in-process."""
+    if str(SCRIPTS) not in sys.path:
+        sys.path.insert(0, str(SCRIPTS))
+    workqueue = importlib.import_module("workqueue")
+    context["before"] = snapshot(repo)
+    try:
+        workqueue.move(repo, "i1", name, status, by=MOVER)
+        context["refused"] = None
+    except workqueue.Refused as refused:
+        context["refused"] = refused
+
+
 # --- Then -----------------------------------------------------------------------------------------------------
 
 @then(parsers.parse(".shop/work/{initiative}/{name}.md is a drafted work-item {name2}"))
@@ -111,3 +129,8 @@ def prints_statuses(context, pairs):
 @then(parsers.parse("it prints nothing about {name}"))
 def nothing_about(context, name):
     assert name not in context["done"].stdout, context["done"].stdout
+
+
+@then(parsers.parse(".shop/work/{initiative}/{name}.md gives {name2}'s status as {status}"))
+def status_is(repo, initiative, name, name2, status):
+    assert fields(repo / ".shop/work/{}/{}.md".format(initiative, name)).get("status") == status

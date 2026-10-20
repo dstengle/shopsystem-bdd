@@ -4,6 +4,7 @@ Standard library only. Frontmatter is read with scripts/model's own reader, so t
 """
 import importlib.machinery
 import importlib.util
+import re
 from pathlib import Path
 
 WORK = Path(".shop") / "work"
@@ -48,3 +49,12 @@ def items(root):
         data, _ = frontmatter(path.read_text())
         if data.get("kind") == "work-item":
             yield path.parent.name, path.stem, data.get("status")
+
+
+def move(root, initiative, name, status, by):
+    """Move a work-item to `status`, as `by`: work run's way through the lifecycle (r4)."""
+    path = Path(root) / WORK / initiative / (name + ".md")
+    text = path.read_text()
+    end = text.find("\n---", 4)
+    head = re.sub(r"(?m)^status:.*$", "status: " + status, text[:end], count=1)
+    path.write_text(head + text[end:])
