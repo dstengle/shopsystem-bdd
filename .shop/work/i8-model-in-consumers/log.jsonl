@@ -10,3 +10,6 @@
 {"time": "2026-10-20T18:56:54+00:00", "work-item": "migrate-run", "stage": "implement", "agent": "bdd-implementer", "session": "a06f66fe-782d-460b-a1fb-29bab3de5112", "event": "start"}
 {"time": "2026-10-20T19:06:28+00:00", "work-item": "migrate-run", "stage": "implement", "agent": "bdd-implementer", "session": "a06f66fe-782d-460b-a1fb-29bab3de5112", "event": "end"}
 {"time": "2026-10-20T19:08:26+00:00", "work-item": "migrate-run", "before": "claimed", "after": "done", "by": "work run"}
+{"time": "2026-10-20T19:40:52+00:00", "work-item": "migrate-run", "stage": "review", "agent": "bdd-task-reviewer", "session": "2fe419df-64bd-4c1a-91da-0f3dccdca85c", "event": "start"}
+{"time": "2026-10-20T19:45:59+00:00", "work-item": "migrate-run", "stage": "review", "agent": "bdd-task-reviewer", "session": "2fe419df-64bd-4c1a-91da-0f3dccdca85c", "event": "end"}
+{"time": "2026-10-20T19:45:59+00:00", "work-item": "migrate-run", "before": "done", "after": "awaiting-ruling", "by": "work run"}
