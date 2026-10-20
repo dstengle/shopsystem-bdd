@@ -14,6 +14,7 @@ import re
 import shlex
 import shutil
 import subprocess
+import tempfile
 import time
 import tomllib
 import uuid
@@ -76,6 +77,7 @@ class Run:
         self.dir = self.root / WORK / initiative
         self.claude = os.environ.get("SHOPSYSTEM_WORK_CLAUDE") or "claude"
         self.trees = []          # the worktrees this run added; removed when it ends
+        self.outside = None      # where the worktrees go when the repository is inside the plugin's own directory
 
     def rel(self, path):
         return str(Path(path).relative_to(self.root))
@@ -205,9 +207,20 @@ class Run:
         skills = workqueue.frontmatter(definition.read_text())[0].get("skills") if definition.is_file() else None
         return tools + ["Skill(%s)" % s for s in skills or [] if "Skill(%s)" % s not in tools]
 
+    def trees_dir(self):
+        """`.shop/worktrees/`, unless the repository is inside the plugin's own directory (this plugin delivering its own
+        work): claude refuses every write under a `--plugin-dir` as a sensitive file, so there the worktrees go in a
+        temporary directory outside it, removed when the run ends."""
+        plugin = SCRIPTS.parent.resolve()
+        if self.root != plugin and plugin not in self.root.parents:
+            return self.root / ".shop" / "worktrees"
+        if self.outside is None:
+            self.outside = Path(tempfile.mkdtemp(prefix="work-run-%s-" % self.initiative))
+        return self.outside
+
     def worktree(self, name, label, branch=None):
         """A worktree of the initiative branch's head for one worker: on `branch`, else detached."""
-        tree = self.root / ".shop" / "worktrees" / label
+        tree = self.trees_dir() / label
         if branch:
             git(self.root, "worktree", "add", "-q", "-b", branch, str(tree), "HEAD")
         else:
@@ -387,6 +400,8 @@ class Run:
         finally:
             for tree in list(self.trees):      # on every way out, a failure's too: the run leaves no worktree
                 self.remove(tree)
+            if self.outside is not None:
+                shutil.rmtree(self.outside, ignore_errors=True)
         statuses = self.items()
         for name, status in statuses:
             print("%s %s" % (name, status))
