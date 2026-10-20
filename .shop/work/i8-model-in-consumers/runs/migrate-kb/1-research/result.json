@@ -1,0 +1,16 @@
+{
+  "status": "DONE",
+  "summary": "migrate-kb: migration-tools r1-r17, 38 scenarios. Red today: 22 failed, 16 passed (run).\n22 red: 13 undefined steps in the feature wording, 1 test-side KeyError, the rest code gaps: no requests/adrs moves (r8, r14), no numbering of unnumbered ledger entries (r13), no superseded status or qualifier split (r2, r17), no formulated_as removal (r6), no dirty-tree refusal (r15), no git add or decisions index (r16), short capability id kept (r9).\nDefects (probes): dirty tree proceeds; retired [rx] crashes with a traceback; --context shop accepted; qualified supersedes written raw and unresolved in model check.\nConflicts for the plan: C1 untracked-file scenarios vs r15 (dirty refusal); C2 r6 rows 2-4 need spec/index.md, which no Given creates and r4 does not create.\nWork-item labels differ from spec (r7/r15, r6/r16, r2/r17); spec used.\nNo CLAUDE.md; limit taken as 300 from the work-item. scripts/model (1035) and scripts/features (657) are over it and on the path.\nNo tools map: tests-of and untested unavailable; test lists are by search.",
+  "fileset": [
+    "scripts/migrate",
+    "scripts/migrate_layout.py",
+    "scripts/migrate_ledger.py",
+    "scripts/migrate_spec.py",
+    "tests/scenarios/test_migration_tools.py",
+    "tests/scenarios/migration_ledger_steps.py",
+    "tests/scenarios/migration_spec_steps.py",
+    "tests/scenarios/migration_old.py",
+    "tests/scripts/test_migrate_layout.py"
+  ],
+  "questions": []
+}
