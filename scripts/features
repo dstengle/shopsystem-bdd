@@ -60,6 +60,13 @@ contract:
     path>, rebind rewrites only the bindings whose feature argument names that
     file, both paths resolved (the argument against --dir); without it, every
     binding of the old title.
+  - bindings also reads scenarios(<path>, ...) calls: each path names a
+    feature file by base name, or a directory (resolved against --dir) whose
+    feature files it binds. With --unbound [<feature file>...] it then lists,
+    for the named files (default every file under --dir), each scenario no
+    call binds as '<feature path>: <title> | bound by no test', and each bound
+    by several calls as '<feature path>: <title> | bound by <module>:<line>,
+    ...'; exit 1 when any. A Scenario Outline is one scenario, by title.
 
 exit status: 0 success, 1 a check failed or an edit was refused, 2 bad usage.
 An edit that would leave its file invalid is refused and the file left as it was.
@@ -425,8 +432,8 @@ def cmd_deprecated(args, files):
     return 0
 
 
-def binding_calls(tests):
-    """Every scenario(<feature>, "<title>") call under tests: (path, source bytes, feature or None, title node)."""
+def test_modules(tests):
+    """Every *.py under tests, parsed: (path, source bytes, tree, the module's top-level string assignments)."""
     found = []
     for root, _, names in sorted(os.walk(tests)):
         for name in sorted(names):
@@ -439,20 +446,83 @@ def binding_calls(tests):
                 tree = ast.parse(source, path)
             except SyntaxError as why:
                 raise Refused("%s does not parse: %s" % (path, why))
-            names_ = {t.id: n.value.value for n in tree.body if isinstance(n, ast.Assign)
-                      and isinstance(n.value, ast.Constant) and isinstance(n.value.value, str)
-                      for t in n.targets if isinstance(t, ast.Name)}
-            for node in ast.walk(tree):
-                if not isinstance(node, ast.Call) or len(node.args) < 2:
-                    continue
-                called = node.func.id if isinstance(node.func, ast.Name) else getattr(node.func, "attr", None)
-                title = node.args[1]
-                if called != "scenario" or not isinstance(title, ast.Constant) or not isinstance(title.value, str):
-                    continue
-                first = node.args[0]
-                feature = first.value if isinstance(first, ast.Constant) else names_.get(getattr(first, "id", None))
-                found.append((path, source, feature if isinstance(feature, str) else None, title))
+            strings = {t.id: n.value.value for n in tree.body if isinstance(n, ast.Assign)
+                       and isinstance(n.value, ast.Constant) and isinstance(n.value.value, str)
+                       for t in n.targets if isinstance(t, ast.Name)}
+            found.append((path, source, tree, strings))
     return found
+
+
+def called_name(node):
+    return node.func.id if isinstance(node.func, ast.Name) else getattr(node.func, "attr", None)
+
+
+def binding_calls(tests):
+    """Every scenario(<feature>, "<title>") call under tests: (path, source bytes, feature or None, title node)."""
+    found = []
+    for path, source, tree, names_ in test_modules(tests):
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call) or len(node.args) < 2:
+                continue
+            title = node.args[1]
+            if called_name(node) != "scenario" or not isinstance(title, ast.Constant) or not isinstance(title.value, str):
+                continue
+            first = node.args[0]
+            feature = first.value if isinstance(first, ast.Constant) else names_.get(getattr(first, "id", None))
+            found.append((path, source, feature if isinstance(feature, str) else None, title))
+    return found
+
+
+def scenarios_calls(tests):
+    """Every scenarios(<path>, ...) call under tests: (path, line, the feature files or directories it names)."""
+    found = []
+    for path, _, tree, names_ in test_modules(tests):
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call) and called_name(node) == "scenarios":
+                named = [a.value if isinstance(a, ast.Constant) else names_.get(getattr(a, "id", None)) for a in node.args]
+                found.append((path, node.lineno, [n for n in named if isinstance(n, str)]))
+    return found
+
+
+def unbound_report(args, files):
+    """Lines for each scenario of the files named after --unbound that no call binds, or several calls bind."""
+    if args.unbound:
+        wanted = {os.path.realpath(p) for p in args.unbound}
+        for p in args.unbound:
+            if not any(os.path.realpath(path) == os.path.realpath(p) for path, _ in files):
+                raise Refused("%s is not a feature file under %s" % (p, args.dir))
+    else:
+        wanted = {os.path.realpath(path) for path, _ in files}
+    calls = {}  # (feature file, title) -> ["<module>:<line>", ...]
+    for path, f in files:
+        real = os.path.realpath(path)
+        for module, line, named in scenarios_calls(args.tests):
+            for name in named:
+                folder = os.path.realpath(os.path.join(args.dir, name))
+                if os.path.isdir(folder):
+                    hit = real.startswith(folder + os.sep)
+                else:
+                    hit = os.path.basename(name) == os.path.basename(path)
+                if hit:
+                    for title in {sc.title for sc in f.scenarios}:
+                        calls.setdefault((real, title), []).append("%s:%d" % (module, line))
+    for module, _, feature, title in binding_calls(args.tests):
+        for path, f in files:
+            if (feature is None or os.path.basename(feature) == os.path.basename(path)) \
+                    and any(sc.title == title.value for sc in f.scenarios):
+                calls.setdefault((os.path.realpath(path), title.value), []).append("%s:%d" % (module, title.lineno))
+    out = []
+    for path, f in files:
+        real = os.path.realpath(path)
+        if real not in wanted:
+            continue
+        for title in dict.fromkeys(sc.title for sc in f.scenarios):
+            where = calls.get((real, title), [])
+            if not where:
+                out.append("%s: %s | bound by no test" % (path, title))
+            elif len(where) > 1:
+                out.append("%s: %s | bound by %s" % (path, title, ", ".join(sorted(where))))
+    return out
 
 
 def cmd_bindings(args, files):
@@ -466,10 +536,12 @@ def cmd_bindings(args, files):
         if not have or (feature and os.path.basename(feature) not in have):
             lost += 1
             print('%s:%d: no scenario titled "%s" in %s' % (path, title.lineno, title.value, feature or "any feature file"))
-    if lost:
-        return 1
-    print("every binding names a scenario")
-    return 0
+    if not lost:
+        print("every binding names a scenario")
+    unbound = unbound_report(args, files) if args.unbound is not None else []
+    for line in unbound:
+        print(line)
+    return 1 if lost or unbound else 0
 
 
 def cmd_rebind(args, files):
@@ -551,6 +623,9 @@ def main():
             one.add_argument("new")
             one.add_argument("--file", help="rewrite only the bindings whose feature argument names this feature file")
         one.add_argument("--tests", default="tests")
+        if name == "bindings":
+            one.add_argument("--unbound", nargs="*", metavar="FEATURE",
+                             help="also list each scenario (of these feature files, default all) bound by no call or by several")
         one.set_defaults(run=run)
     args = parser.parse_args()
     try:

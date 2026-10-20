@@ -1,5 +1,5 @@
 """features/feature-file-tools.feature, bound to scripts/features: the scenarios of requirements r1-r7, r10-r18,
-r25-r29, r36-r38, r41, r42, r46 and r51-r56. (The slice, hold, retire and plugin ones are bound by the
+r25-r29, r36-r38, r41, r42, r46, r51-r58. (The slice, hold, retire and plugin ones are bound by the
 work-items that follow, or retired with the commands they test.)
 
 A Given writes the feature files, test modules and trees a scenario names into `repo`; the When runs `features`
@@ -54,6 +54,10 @@ BOUND = (
     'retiring a scenario that is not deprecated is refused',
     'deprecating a scenario prints its file and new title',
     'the deprecated list flags a deprecated scenario it cannot place',
+    'a scenarios() call binds every scenario of the feature files it names',
+    '--unbound reports a scenario that no call binds',
+    '--unbound reports a scenario bound twice with each call',
+    '--unbound looks only at the feature files it names',
 )
 
 
@@ -487,6 +491,32 @@ def tests_binding_two(repo, context):
                           "tests/test_path.py": binding("Apply a code", "../features/cart.feature")}
     for name, text in context["modules"].items():
         write(repo, name, text)
+
+
+@given(parsers.parse('{path} has the scenarios "{one}" and "{two}"'))
+def file_has_two(repo, context, path, one, two):
+    store(repo, context, path, scenario_text(one), scenario_text(two))
+
+
+@given(parsers.parse("a test module tests/test_cart.py calling {call}"))
+def module_calling(repo, call):
+    write(repo, "tests/test_cart.py", "from pytest_bdd import scenarios\n\n%s\n" % call)
+
+
+@given('test modules tests/test_a.py and tests/test_b.py binding "Apply a code" at lines 12 and 5')
+def modules_binding_twice(repo):
+    write(repo, "tests/test_a.py", binding("Apply a code", line=12))
+    write(repo, "tests/test_b.py", binding("Apply a code", line=5))
+
+
+@given(parsers.parse('a test module tests/test_c.py binding "{title}" in cart.feature'))
+def module_c_binding(repo, title):
+    write(repo, "tests/test_c.py", binding(title))
+
+
+@given(parsers.parse('a test module tests/test_cart.py binding "{title}" in cart.feature'))
+def module_binding_title(repo, title):
+    write(repo, "tests/test_cart.py", binding(title))
 
 
 # --- When -------------------------------------------------------------------------------------------------------
@@ -977,3 +1007,14 @@ def cart_bindings_follow(repo, context):
 @then("the binding to features/old.feature is unchanged")
 def old_binding_unchanged(repo, context):
     assert (repo / "tests/test_old.py").read_text() == context["modules"]["tests/test_old.py"]
+
+
+@then('it reports features/cart.feature, the title "Apply a code" and that no test binds it')
+def reports_unbound(context):
+    assert "features/cart.feature: Apply a code | bound by no test" in context["result"].stdout.splitlines()
+
+
+@then('it reports features/cart.feature, the title "Apply a code" and the calls tests/test_a.py:12 and tests/test_b.py:5')
+def reports_bound_twice(context):
+    line = "features/cart.feature: Apply a code | bound by tests/test_a.py:12, tests/test_b.py:5"
+    assert line in context["result"].stdout.splitlines(), context["result"].stdout

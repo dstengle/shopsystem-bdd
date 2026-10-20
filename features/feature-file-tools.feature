@@ -261,6 +261,50 @@ Feature: Feature file tools
     Then it says that every binding names a scenario
     And it exits 0
 
+  @r57
+  Scenario Outline: a scenarios() call binds every scenario of the feature files it names
+    A call that names a feature file binds each of its scenarios, and one that names a directory binds those of every feature file under it.
+    Given <feature file> has the scenarios "Apply a code" and "Empty cart"
+    And a test module tests/test_cart.py calling <call>
+    When the agent runs features bindings --unbound
+    Then it says that every binding names a scenario
+    And it exits 0
+
+    Examples:
+      | feature file              | call                      |
+      | features/cart.feature     | scenarios("cart.feature") |
+      | features/sub/cart.feature | scenarios("sub")          |
+
+  @r58
+  Scenario: --unbound reports a scenario that no call binds
+    Without a binding the scenario never runs, so its file and title are reported after the usual report.
+    Given features/cart.feature has the scenarios "Apply a code" and "Empty cart"
+    And a test module tests/test_cart.py binding "Empty cart" in cart.feature
+    When the agent runs features bindings --unbound
+    Then it reports features/cart.feature, the title "Apply a code" and that no test binds it
+    And it exits 1
+
+  @r58
+  Scenario: --unbound reports a scenario bound twice with each call
+    A scenario bound by more than one call is reported with the module and line of every call.
+    Given features/cart.feature has the scenarios "Apply a code" and "Empty cart"
+    And test modules tests/test_a.py and tests/test_b.py binding "Apply a code" at lines 12 and 5
+    And a test module tests/test_c.py binding "Empty cart" in cart.feature
+    When the agent runs features bindings --unbound
+    Then it reports features/cart.feature, the title "Apply a code" and the calls tests/test_a.py:12 and tests/test_b.py:5
+    And it exits 1
+
+  @r58
+  Scenario: --unbound looks only at the feature files it names
+    A scenario in a file that is not named is not reported, bound or not.
+    Given features/cart.feature has the scenarios "Apply a code" and "Empty cart"
+    And features/old.feature has the scenarios "Old rule" and "Older rule"
+    And a test module tests/test_cart.py binding "Apply a code" in cart.feature
+    And a test module tests/test_c.py binding "Empty cart" in cart.feature
+    When the agent runs features bindings --unbound features/cart.feature
+    Then it says that every binding names a scenario
+    And it exits 0
+
   @r46
   Scenario: a test module that does not parse is refused
     Bindings cannot be read from a module that does not parse, and the module is named.
