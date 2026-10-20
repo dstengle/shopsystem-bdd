@@ -38,8 +38,18 @@ class Old:
     def commit(self):
         self.git("add", "-A")
         self.git("commit", "-q", "-m", "old system")
+        self.keep()
+
+    def keep(self):
+        """Remember each file as it is, and what git status says (nothing, after a commit)."""
         self.before = {p.relative_to(self.root).as_posix(): p.read_bytes()
                        for p in self.root.rglob("*") if p.is_file() and ".git" not in p.relative_to(self.root).parts}
+        self.status = self.git("status", "--porcelain").stdout
+
+    def untracked(self, rel, text):
+        """A file written after the commit and never added."""
+        self.write(rel, text)
+        self.keep()
 
     def read(self, rel):
         return (self.root / rel).read_text()
@@ -92,10 +102,22 @@ def _(old):
 
 @given("a repository on the old system with docs/superpowers/plans/p1.md and docs/superpowers/specs/s1.md")
 def _(old):
-    # both already carry their ids, so run leaves their content as it was (migration-tools#r9 gives an id only where none is)
-    old.write("docs/superpowers/plans/p1.md", "---\nid: initiative-archive/%s/p1\nkind: initiative-archive\n---\nA plan.\n" % CONTEXT)
-    old.write("docs/superpowers/specs/s1.md", "---\nid: decision-argument/%s/s1\nkind: decision-argument\n---\nA design note.\n" % CONTEXT)
+    old.write("docs/superpowers/plans/p1.md", "A plan.\n")
+    old.write("docs/superpowers/specs/s1.md", "---\ntitle: s1\n---\nA design note.\n")
     old.commit()
+
+
+@then(parsers.parse("{new} has the content {was} had, apart from the id r9 gives it"))
+def _(old, new, was):
+    """The id r9 gives a moved record is its frontmatter's `id:` and `kind:` lines, in a frontmatter of their own when
+    the file had none."""
+    text = old.read(new)
+    data, _ = front(old, new)
+    given = "id: %s\nkind: %s\n" % (data["id"], data["kind"])
+    assert text.startswith("---\n" + given)
+    rest = text[len("---\n" + given):]
+    kept = rest[len("---\n"):] if rest.startswith("---\n") else "---\n" + rest
+    assert kept == old.before[was].decode()
 
 
 @then("docs/superpowers/plans/ and docs/superpowers/specs/ are gone")
@@ -136,6 +158,50 @@ def _(old, context):
 def _(old, context):
     old.write("spec/decisions.md", context["entry"] + "We do a.\n\ndate: 2025-03-01\nsource: alice\n")
     old.commit()
+
+
+@given("a repository on the old system whose spec/decisions.md has the entry `## decision/0007-a`, its first paragraph "
+       '"We do a." followed with no blank line by its date 2025-03-01 and its source alice')
+def _(old):
+    old.write("spec/decisions.md", "## decision/0007-a\nWe do a.\ndate: 2025-03-01\nsource: alice\n")
+    old.commit()
+
+
+@given(parsers.re(r"a repository on the old system whose spec/decisions.md has the entry `## decision/0007-a`, its first "
+                  r"paragraph (?P<paragraph>(?:(?! followed with no blank line).)+) and its source (?P<source>.+)$"))
+def _(old, paragraph, source):
+    old.write("spec/decisions.md", "## decision/0007-a\n%s\n\ndate: 2025-03-01\nsource: %s\n" % (paragraph, source))
+    old.commit()
+
+
+@then(parsers.re(r"model reads spec/decisions/0007-a.md's summary as (?P<paragraph>.+) and its by as (?P<source>.+)$"))
+def _(old, paragraph, source):
+    data, _ = front(old, "spec/decisions/0007-a.md")
+    assert (data["summary"], data["by"]) == (paragraph, source)
+
+
+@given(parsers.re(r"a repository on the old system whose spec/decisions.md has the entry `## decision/0007-a` and "
+                  r"(?P<where>after|before) it (?:the heading `(?P<heading>[^`]+)`|the text \"(?P<text>[^\"]+)\")$"))
+def _(old, where, heading, text):
+    entry = "## decision/0007-a\nWe do a.\n\ndate: 2025-03-01\nsource: alice\n"
+    other = heading + "\nWe do b.\n\ndate: 2025-03-02\nsource: bob\n" if heading else text + "\n"
+    old.write("spec/decisions.md", entry + "\n" + other if where == "after" else other + "\n" + entry)
+    old.commit()
+
+
+@given(parsers.re(r"a repository on the old system whose spec/decisions.md has the entry `## decision/0007-a`, and "
+                  r"(?P<there>decisions/0007-a.md, which moves to spec/decisions/0007-a.md|a tracked spec/decisions/0007-a.md|"
+                  r"an untracked spec/decisions/0007-a.md)$"))
+def _(old, there):
+    old.write("spec/decisions.md", "## decision/0007-a\nWe do a.\n\ndate: 2025-03-01\nsource: alice\n")
+    decision = "---\nid: design-decision/%s/a\nsummary: other\nstatus: accepted\n---\nAnother a.\n" % CONTEXT
+    if there.startswith("decisions/"):
+        old.write("decisions/0007-a.md", decision)
+    elif there.startswith("a tracked"):
+        old.write("spec/decisions/0007-a.md", decision)
+    old.commit()
+    if there.startswith("an untracked"):
+        old.untracked("spec/decisions/0007-a.md", decision)
 
 
 @then("spec/decisions.md is gone")
@@ -281,6 +347,14 @@ def _(old):
     old.write(".shop/work/i1/w1.md", "Work already in place.\n")
 
 
+@given("a repository on the old system with work/i1/w1.md and work/i1/w2.md, and an untracked .shop/work/i1/w2.md")
+def _(old):
+    old.write("work/i1/w1.md", "Work one.\n")
+    old.write("work/i1/w2.md", "Work two.\n")
+    old.commit()
+    old.untracked(".shop/work/i1/w2.md", "Not tracked.\n")
+
+
 @given("it has records/archive/plans/p1.md and docs/superpowers/plans/p1.md, which both move to .shop/records/archive/plans/p1.md")
 def _(old):
     old.write("records/archive/plans/p1.md", "A plan in records.\n")
@@ -293,9 +367,9 @@ def said(context):
     return done.stdout + done.stderr
 
 
-@then("migrate says it could not move work/i1/w1.md onto .shop/work/i1/w1.md")
-def _(context):
-    assert "could not move work/i1/w1.md onto .shop/work/i1/w1.md" in said(context)
+@then(parsers.parse("migrate says it could not {change}"))
+def _(context, change):
+    assert "could not %s" % change in said(context), said(context)
 
 
 @then("it says it could not move both records/archive/plans/p1.md and docs/superpowers/plans/p1.md to .shop/records/archive/plans/p1.md")
@@ -315,7 +389,7 @@ def _(old):
     now = {p.relative_to(old.root).as_posix(): p.read_bytes()
            for p in old.root.rglob("*") if p.is_file() and ".git" not in p.relative_to(old.root).parts}
     assert now == old.before
-    assert old.git("status", "--porcelain").stdout == ""
+    assert old.git("status", "--porcelain").stdout == old.status
 
 
 @given("a repository on the old system with decisions/, work/, records/, docs/superpowers/plans/, docs/superpowers/specs/, "

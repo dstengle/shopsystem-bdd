@@ -24,6 +24,7 @@ DIRECTORY_MOVES = (
 )
 LEDGER = "spec/decisions.md"
 ENTRY = re.compile(r"^## decision/(?P<number>\d+)-(?P<slug>[\w-]+)\s*$")
+FIELD = re.compile(r"^(date|source|supersedes|revisit_when):\s*(.*)$")     # an entry's fields, as the ledger's form gives them
 
 
 class Plan:
@@ -36,6 +37,7 @@ class Plan:
         self.removes = []
         self.failures = []      # each change that cannot be made
         self.renamed = {}       # an old id -> its new id
+        self.created = {}       # a new file -> what it is written for
 
     def read(self, rel):
         return (self.root / rel).read_text()
@@ -60,35 +62,56 @@ def plan_moves(plan):
             plan.moves[path] = target
 
 
-def ledger_entries(text):
-    """(number, slug, first paragraph, fields) for each `## decision/<nnnn>-<slug>` entry of the ledger."""
-    entries, current = [], None
+def ledger_entries(plan, text):
+    """(number, slug, first paragraph, fields) for each `## decision/<nnnn>-<slug>` entry of the ledger. Each `## `
+    heading begins an entry; one in another form, and text before the first, is a change migrate cannot make."""
+    entries, current, outside = [], None, []
     for line in text.splitlines():
-        m = ENTRY.match(line)
-        if m:
-            current = [m.group("number"), m.group("slug"), []]
-            entries.append(current)
+        if line.startswith("## "):
+            m = ENTRY.match(line)
+            current = [m.group("number"), m.group("slug"), []] if m else [None, None, []]
+            if m:
+                entries.append(current)
+            else:
+                plan.failures.append("could not replace the ledger entry `%s` of %s: its heading is not "
+                                     "`## decision/<nnnn>-<slug>`" % (line.strip(), LEDGER))
         elif current is not None:
             current[2].append(line)
+        elif line.strip():
+            outside.append(line.strip())
+    if outside:
+        plan.failures.append('could not replace the ledger text "%s" outside its entries in %s' % (" ".join(outside), LEDGER))
     out = []
     for number, slug, lines in entries:
         paragraph, fields, in_head = [], {}, True
         for line in lines:
-            if in_head and line.strip():
+            m = FIELD.match(line)
+            if in_head and line.strip() and not m:
                 paragraph.append(line.strip())
                 continue
             in_head = False
-            m = re.match(r"^(\w+):\s*(.*)$", line)
             if m:
                 fields[m.group(1)] = m.group(2).strip()
         out.append((number, slug, " ".join(paragraph), fields))
     return out
 
 
+def quoted(plan, key, value):
+    """`value` in quotes that model's frontmatter reader takes off again, giving `value` as it is (it reads no escapes,
+    so the quote is the one that does); None when neither quote does."""
+    model = load_model()
+    for quote in '"\'':
+        text = "%s%s%s" % (quote, value, quote)
+        if model.frontmatter("---\n%s: %s\n---\n" % (key, text))[0].get(key) == value:
+            return text
+    plan.failures.append("could not write %s: %s so that model reads it as it is" % (key, value))
+    return None
+
+
 def decision_text(plan, slug, summary, fields):
     return ("---\nid: design-decision/%s/%s\nsummary: %s\ndate: %s\nstatus: accepted\nby: %s\n---\n\n# %s\n\n"
-            "## Decision\n%s\n" % (plan.context, slug, summary, fields.get("date", ""), fields.get("source", ""),
-                                  slug, summary))
+            "## Decision\n%s\n" % (plan.context, slug, quoted(plan, "summary", summary), fields.get("date", ""),
+                                  quoted(plan, "by", fields.get("source", "")), slug, summary))
 
 
 def with_id(text, ident, kind=None):
@@ -213,8 +236,10 @@ def plan_index(plan):
 def plan_ledger(plan):
     if LEDGER not in tracked(plan.root):
         return
-    for number, slug, summary, fields in ledger_entries(plan.read(LEDGER)):
-        plan.texts["spec/decisions/%s-%s.md" % (number, slug)] = decision_text(plan, slug, summary, fields)
+    for number, slug, summary, fields in ledger_entries(plan, plan.read(LEDGER)):
+        path = "spec/decisions/%s-%s.md" % (number, slug)
+        plan.created[path] = "the ledger entry `## decision/%s-%s`" % (number, slug)
+        plan.texts[path] = decision_text(plan, slug, summary, fields)
         plan.renamed["decision/%s-%s" % (number, slug)] = "design-decision/%s/%s" % (plan.context, slug)
     plan.removes.append(LEDGER)
 
@@ -264,7 +289,8 @@ def plan_references(plan):
 
 
 def check_moves(plan):
-    """Name each move that cannot be made: onto a file that exists, or two sources to one destination."""
+    """Name each move that cannot be made: onto a file that exists, tracked or not, or two sources to one destination;
+    and each new file that cannot be written: where a file is, or where a file moves."""
     present = set(tracked(plan.root)) - set(plan.moves)
     by_destination = {}
     for old, new in plan.moves.items():
@@ -272,8 +298,13 @@ def check_moves(plan):
     for new, sources in by_destination.items():
         if len(sources) > 1:
             plan.failures.append("could not move both %s to %s" % (" and ".join(sources), new))
-        elif new in present:
+        elif new in present or (new not in plan.moves and (plan.root / new).exists()):
             plan.failures.append("could not move %s onto %s" % (sources[0], new))
+    for new, purpose in plan.created.items():
+        if new in by_destination:
+            plan.failures.append("could not write %s for %s: %s moves there" % (new, purpose, " and ".join(by_destination[new])))
+        elif new in present or (new not in plan.moves and (plan.root / new).exists()):
+            plan.failures.append("could not write %s for %s: a file is there" % (new, purpose))
 
 
 def write(plan):
