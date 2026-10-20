@@ -67,7 +67,7 @@ Leave a part out only by writing "none", with what you searched.
 
 ## Work in few turns
 
-Every turn resends everything you have read. Decide your searches before you run any; run those that do not depend on each other as several calls in one turn. `work run` lets your shell run only `python3 ...` and `git status`, `git diff`, `git log` and `git show`, each as a command of its own: a command joined to another (`&&`, `;`, a pipe), one behind `cd` or an environment assignment, and `echo`, `cat`, `ls`, `mkdir` or `cp` are refused. Read files with Read, search with Grep (`files_with_matches` or `count` for which files, `content` only where you need the lines) and Glob, and write probe files with Write. Read a file whole only when a search cannot answer.
+Every turn resends everything you have read. Decide your searches before you run any; run those that do not depend on each other as several calls in one turn. You are started in your worktree: run every command from there, never behind `cd`. Nobody approves a command under `work run`, so one it does not allow is refused: your shell runs `python3 ...`, `git status`, `git diff`, `git log`, `git show` and read-only commands (`ls`, `cat`, `wc`, `grep`), and refuses anything else (`mkdir`, `cp`, `git -C`, `git ls-files`), a command behind an environment assignment, and one with a variable or `$?` in it. Read files with Read, search with Grep (`files_with_matches` or `count` for which files, `content` only where you need the lines) and Glob, and write probe files with Write. Read a file whole only when a search cannot answer.
 
 ## The result
 
