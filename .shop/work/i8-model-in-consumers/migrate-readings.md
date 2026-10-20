@@ -5,7 +5,7 @@ part_of: initiative/i8
 status: merged
 date: 2026-10-20
 argues: [migration-tools]
-adds: [migration-tools#r8-r14]
+adds: [migration-tools#r8-r17]
 changes: [migration-tools#r1-r6, migration-tools#r8-r11]
 ---
 

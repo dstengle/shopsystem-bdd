@@ -30,6 +30,9 @@ what running it shows.
 - [r12] **When** `migrate run` gives a moved record its id and the record has no `about`, `migrate` shall give it `about: bounded-context/<path>`.
 - [r13] **When** `migrate run` finds a ledger entry `## decision/<slug>` with no number, `migrate` shall number it in ledger order from one above the ledger's highest entry number.
 - [r14] **When** `migrate run` is run, `migrate` shall move with git a top-level `adrs/` to `.shop/records/decision-arguments/`.
+- [r15] **If** the repository has uncommitted changes, then `migrate run` shall refuse, naming them, and change no file.
+- [r16] **When** `migrate run` has made its changes, `migrate` shall add every file it wrote or moved to git and write `spec/decisions/index.md`.
+- [r17] **When** a ledger entry's `supersedes` names a decision with a qualifier, `migrate` shall write the decision's id alone in `supersedes` and the qualifier in `by`.
 
 ## Implementation, may change
 - Python 3 with the standard library; moves are `git mv`; it does not commit. Every change is computed first,
