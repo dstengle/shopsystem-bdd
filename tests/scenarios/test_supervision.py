@@ -337,6 +337,9 @@ def started_as(repo):
         assert option(argv, "--agent") == c["agent"], argv
         # the agent is this plugin's: the plugin is loaded from work run's own directory, not an installed copy
         assert option(argv, "--plugin-dir") == str(SCRIPTS.parent), argv
+        if c["agent"] == "shopsystem-bdd:bdd-implementer":
+            # its skill is not preloaded under --agent: it may load bdd-red-green, and nothing else, with Skill
+            assert "Skill(shopsystem-bdd:bdd-red-green)" in option(argv, "--allowedTools").split(","), argv
         uuid.UUID(option(argv, "--session-id"))
     sessions = [option(c["argv"], "--session-id") for c in started]
     assert len(set(sessions)) == len(sessions) == 4, sessions

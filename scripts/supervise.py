@@ -36,14 +36,15 @@ AGENT_PREFIX = "shopsystem-bdd:"
 SCRIPTS = Path(__file__).resolve().parent
 # The worker's agents are this plugin's: claude is given the plugin root, so an installed copy of another version
 # (whose agents may be older or missing) is not the one --agent finds.
-# Each stage's tools, the narrowest its agent needs; .shop/delivery.toml's [allowed_tools] replaces a stage's list.
+# Each stage's tools, the narrowest its agent needs (the implementer loads bdd-red-green itself: a `claude -p --agent`
+# session does not preload an agent's `skills:`); .shop/delivery.toml's [allowed_tools] replaces a stage's list.
 READER = ["Read", "Glob", "Grep", "Write", "Bash(python3 *)", "Bash(git status*)", "Bash(git diff*)", "Bash(git log*)",
           "Bash(git show*)"]
 TOOLS = {
     "research": READER,
     "plan": ["Read", "Glob", "Grep", "Write"],
     "implement": ["Edit", "Write", "Read", "Glob", "Grep", "Bash(python3 *)", "Bash(git add *)", "Bash(git commit *)",
-                  "Bash(git status*)", "Bash(git diff*)"],
+                  "Bash(git status*)", "Bash(git diff*)", "Skill(shopsystem-bdd:bdd-red-green)"],
     "review": READER,
 }
 
