@@ -84,3 +84,22 @@ def _(old):
     status = old.git("status", "--porcelain").stdout.splitlines()
     renamed = [l for l in status if l.startswith("R")]
     assert len(renamed) == 3, status
+
+
+@given("a repository on the old system with docs/superpowers/plans/p1.md and docs/superpowers/specs/s1.md")
+def _(old):
+    old.write("docs/superpowers/plans/p1.md", "A plan.\n")
+    old.write("docs/superpowers/specs/s1.md", "A design note.\n")
+    old.commit()
+
+
+@then("docs/superpowers/plans/ and docs/superpowers/specs/ are gone")
+def _(old):
+    assert not (old.root / "docs/superpowers/plans").exists()
+    assert not (old.root / "docs/superpowers/specs").exists()
+
+
+@then("git status shows each of the two as renamed")
+def _(old):
+    status = old.git("status", "--porcelain").stdout.splitlines()
+    assert len([l for l in status if l.startswith("R")]) == 2, status
