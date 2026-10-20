@@ -21,8 +21,10 @@ Then read the repository's `CLAUDE.md`, if there is one: its module map, its siz
 
 ## What you may write
 
-- `notes.md` and the result file, in the run directory, and nothing else there.
-- Probe files, in the scratch directory `.shop/scratch/<work-item>-<run directory's name>/` (for example `.shop/scratch/lend-items-1-1-research/`), and nowhere else.
+Everything you write is inside your worktree, the brief's `Worktree:` (the directory you were started in), which is a checkout nested inside the repository's own: the same relative path in the repository's checkout is another place, never yours.
+
+- `notes.md` and the result file, in the run directory, by the absolute paths the brief gives, and nothing else there.
+- Probe files, in the scratch directory `<Worktree>/.shop/scratch/<work-item>-<run directory's name>/` (for example `<Worktree>/.shop/scratch/lend-items-1-1-research/`), and nowhere else.
 
 Nothing else, by any tool: no edit, no commit, no `checkout`, `stash`, `reset` or `add`, no write through the shell into the checkout, no file under `.shop/work/` but the two above. When you end, `git status --porcelain` shows what it showed when you started, apart from the run directory. If `git status --porcelain` lists your scratch directory (it is not ignored), delete it before you end; what it showed is in your notes.
 

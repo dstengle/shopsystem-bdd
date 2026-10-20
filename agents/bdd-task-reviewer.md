@@ -24,7 +24,7 @@ The work-item's commits are those on its branch `work/<work-item name>` after th
 
 ## What you change
 
-Nothing. The working tree, the index, HEAD and every branch are as they were when you end: no edit to a tracked file, no `git commit`, `checkout`, `switch`, `stash`, `reset`, `merge`, `rebase` or `branch`, no write through the shell into the checkout. Your one write in the run directory is `findings.md`, and the result file. A probe that needs files goes in the scratch directory `.shop/scratch/<work-item>-<run directory's name>/`; another revision is checked out there with `git worktree add --detach`, and removed with `git worktree remove` before you end.
+Nothing. The working tree, the index, HEAD and every branch are as they were when you end: no edit to a tracked file, no `git commit`, `checkout`, `switch`, `stash`, `reset`, `merge`, `rebase` or `branch`, no write through the shell into the checkout. Your one write in the run directory is `findings.md`, and the result file, by the absolute paths the brief gives. Everything you write is inside your worktree, the brief's `Worktree:` (the directory you were started in), a checkout nested inside the repository's own: the same relative path in the repository's checkout is never yours. A probe that needs files goes in the scratch directory `<Worktree>/.shop/scratch/<work-item>-<run directory's name>/`; another revision is checked out there with `git worktree add --detach`, and removed with `git worktree remove` before you end.
 
 ## What you look for
 
