@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/work-queue-1
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-work-queue
-status: drafted
+status: green
 wkind: capability
 under: work-queue
 accepts: [work-queue#r1-r7]
