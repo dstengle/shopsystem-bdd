@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/bindings-unbound
 kind: work-item
 part_of: capability-proposal/final-layout-feature-file-tools
-status: drafted
+status: green
 wkind: capability
 under: feature-file-tools
 accepts: [feature-file-tools#r57-r58]
