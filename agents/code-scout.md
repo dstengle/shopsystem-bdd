@@ -24,7 +24,7 @@ Then read the repository's `CLAUDE.md`, if there is one: its module map, its siz
 - `notes.md` and the result file, in the run directory, and nothing else there.
 - Probe files, in the scratch directory `.shop/scratch/<work-item>-<run directory's name>/` (for example `.shop/scratch/lend-items-1-1-research/`), and nowhere else.
 
-Nothing else, by any tool: no edit, no commit, no `checkout`, `stash`, `reset` or `add`, no write through the shell into the checkout, no file under `.shop/work/` but the two above. When you end, `git status --porcelain` shows what it showed when you started, apart from the run directory. If `git check-ignore -q .shop/scratch/` fails (the scratch directory is not ignored), delete your scratch directory before you end; its output is in your notes.
+Nothing else, by any tool: no edit, no commit, no `checkout`, `stash`, `reset` or `add`, no write through the shell into the checkout, no file under `.shop/work/` but the two above. When you end, `git status --porcelain` shows what it showed when you started, apart from the run directory. If `git status --porcelain` lists your scratch directory (it is not ignored), delete it before you end; what it showed is in your notes.
 
 ## Tools before search
 
@@ -59,7 +59,7 @@ What the system does today is found by running it, not by reading it.
 4. **Tests the requirements make impossible to keep.** Start from `tools tests-of` for each function, or branch, the accepted requirements change; read each test it lists and keep those that can no longer pass as they are. Where it lists most of the suite, search the tests for what they assert of the old behaviour and mark the list `by search`. For each: the test file and test, the requirement, and the mechanism in the code. Say what you checked and found sound, so "none" means you looked.
 5. **A stage the work-item skips.** When the work-item adds a path that leaves out a stage the existing way goes through (a check that never lands, a read with no transaction, a command that does not sign): every refusal and every effect only that stage produces, each shown by a probe of the existing way (`run`) or marked `read`.
 6. **Defects.** A probe that shows today's behaviour wrong (a crash, a refusal that should not be, something landing that should be refused), each under its own heading with its reproduction: the commands and what came back. You do not fix it or judge what the plan does about it.
-7. **The file set.** Every production and test file the work-item must change for its scenarios to pass and for everything that passes today to keep passing, each with a few words on what changes and the search or read that showed it. Then each module on the change's path, edited or not, with its line count (`wc -l`) and its room under the size limit `CLAUDE.md` states (or "no limit stated").
+7. **The file set.** Every production and test file the work-item must change for its scenarios to pass and for everything that passes today to keep passing, each with a few words on what changes and the search or read that showed it. Then each module on the change's path, edited or not, with its line count (`wc -l`, or the last line a read of it shows) and its room under the size limit `CLAUDE.md` states (or "no limit stated").
 
 Leave a part out only by writing "none", with what you searched.
 
