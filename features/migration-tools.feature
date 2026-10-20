@@ -60,14 +60,14 @@ Feature: Migration tools
     And its Decision has "We do a." and then "Because b."
 
   @r2
-  Scenario: run gives a decision file its entry's supersedes and revisit_when, and the entry it supersedes the status superseded
-    Pins that an entry's supersedes and revisit_when are kept, the superseded entry named by its new id and no longer accepted.
+  Scenario: run gives a decision file its entry's supersedes and revisit_when, and the entry it supersedes the status `superseded`
+    Pins that an entry's supersedes and revisit_when are kept, the `superseded` entry named by its new id and no longer accepted.
     Given a repository on the old system whose spec/decisions.md has the entries `## decision/0003-b` and `## decision/0007-a`
     And the entry 0007-a has supersedes: decision/0003-b and revisit_when: b comes back
     When the session runs `migrate run --context example.org/acme/shop`
     Then spec/decisions/0007-a.md's supersedes is design-decision/example.org/acme/shop/b and its revisit_when is "b comes back"
     And spec/decisions/0007-a.md's status is accepted
-    And spec/decisions/0003-b.md's status is superseded
+    And spec/decisions/0003-b.md's status is `superseded`
 
   @r2
   Scenario: run keeps both decisions an entry's supersedes names, each by its new id, and supersedes both
@@ -76,7 +76,7 @@ Feature: Migration tools
     And the entry 0007-a has supersedes naming decision/0003-b and decision/0004-c
     When the session runs `migrate run --context example.org/acme/shop`
     Then spec/decisions/0007-a.md's supersedes names design-decision/example.org/acme/shop/b and design-decision/example.org/acme/shop/c, and nothing else
-    And spec/decisions/0003-b.md's and spec/decisions/0004-c.md's status is superseded
+    And spec/decisions/0003-b.md's and spec/decisions/0004-c.md's status is `superseded`
 
   @r17
   Scenario: run writes a qualified supersedes as the decision's id alone, the qualifier going to by beside the source
@@ -175,7 +175,7 @@ Feature: Migration tools
 
   @r5
   Scenario: run rewrites a frontmatter id and a supersedes that name a ledger entry it numbered
-    Pins that an entry with no number, numbered by r13, is named afterwards by its new id everywhere, and is superseded as r2 says.
+    Pins that an entry with no number, numbered by r13, is named afterwards by its new id everywhere, and is `superseded` as r2 says.
     Given a repository on the old system whose spec/decisions.md has, in order, the entries `## decision/0007-a` and `## decision/b`
     And the entry 0007-a has supersedes: decision/b
     And a capability spec/capabilities/thing.md whose frontmatter rests_on names decision/b
@@ -183,7 +183,7 @@ Feature: Migration tools
     Then spec/decisions/0008-b.md gives the id design-decision/example.org/acme/shop/b
     And spec/capabilities/thing.md's rests_on names design-decision/example.org/acme/shop/b
     And spec/decisions/0007-a.md's supersedes is design-decision/example.org/acme/shop/b
-    And spec/decisions/0008-b.md's status is superseded
+    And spec/decisions/0008-b.md's status is `superseded`
 
   @r5
   Scenario Outline: run rewrites a decision file's by that names <old>, a path it moved

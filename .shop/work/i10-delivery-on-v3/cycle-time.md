@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/cycle-time
 kind: work-item
 part_of: capability-proposal/cycle-time-supervision
-status: drafted
+status: green
 wkind: capability
 under: supervision
 accepts: [supervision#r19-r20]
