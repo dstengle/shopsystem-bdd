@@ -220,3 +220,9 @@ def implementers_commit_own(plan, meet):
     """Each implementer commits <its work-item>.txt; with `meet`, only once two implementers have been started."""
     plan["default"] = {"status": "DONE"}
     plan["bdd-implementer"] = dict({"commit": {"{work_item}.txt": "the feature\n"}}, **({"meet": 2} if meet else {}))
+
+
+@given(parsers.parse("the repository has {rel} committed"))
+def has_committed(repo, rel):
+    write(repo, rel, "tracked\n")
+    commit_all(repo, "add %s" % rel)

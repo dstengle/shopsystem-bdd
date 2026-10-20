@@ -7,6 +7,7 @@ its worktree's git-ignored .shop/scratch/, and makes the move itself through wor
 of the work-item's file, its run directory (the worker's scratch run directory, copied) and log.jsonl. It takes no
 judgment: what is not DONE goes to the person as a question.
 """
+import fnmatch
 import json
 import os
 import shutil
@@ -109,12 +110,14 @@ class Run(Workers, Briefs, Merge):
 
     def pair(self, ready):
         """Two of the `ready` work-items whose file sets do not overlap, the first such in their order (r20); else
-        none. A work-item without a file set is in no pair."""
+        none. A work-item without a file set is in no pair. A glob or a directory in a file set claims each tracked file
+        it holds, so two implementers never edit one file."""
+        tracked = git(self.root, "ls-files").stdout.splitlines()
         files = {}
         for name in ready:
             data, _ = workqueue.frontmatter((self.dir / (name + ".md")).read_text())
             if data.get("fileset"):
-                files[name] = set(data["fileset"])
+                files[name] = {f for entry in data["fileset"] for f in claimed(entry, tracked)}
         for i, first in enumerate(files):
             for second in list(files)[i + 1:]:
                 if not files[first] & files[second]:
@@ -173,6 +176,13 @@ class Run(Workers, Briefs, Merge):
         if all(s in ("green", "withdrawn") for _, s in statuses):
             return 0
         return 3 if any(s == "awaiting-ruling" for _, s in statuses) else 1
+
+
+def claimed(entry, tracked):
+    """What one file set entry claims: itself, and each of the `tracked` files it matches as a glob or holds as a
+    directory."""
+    under = entry.rstrip("/") + "/"
+    return {entry} | {f for f in tracked if fnmatch.fnmatchcase(f, entry) or f.startswith(under)}
 
 
 def run(root, initiative):

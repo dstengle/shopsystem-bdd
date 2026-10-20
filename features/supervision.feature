@@ -349,13 +349,20 @@ Feature: Supervision
     And w1 and w2 are green
 
   @r20
-  Scenario: two ready work-items whose file sets overlap are implemented one after the other
-    Pins that work-items claiming a file in common never run side by side.
-    Given i1's work-items w1 is ready, its file set shared.txt and w1.txt, and w2 is ready, its file set shared.txt and w2.txt
+  Scenario Outline: two ready work-items whose file sets overlap are implemented one after the other: <how>
+    Pins that two implementers never edit one file: a glob or a directory in a file set claims each tracked file it holds.
+    Given the repository has lib/thing_a.py committed
+    And i1's work-items w1 is ready, its file set <first>, and w2 is ready, its file set <second>
     And every worker gives DONE, each implementer committing a file named for its work-item
     When the person runs `work run i1`
     Then no implementer was started before the one before it had ended
     And w1 and w2 are green
+
+    Examples:
+      | how             | first                  | second                 |
+      | a file in both  | shared.txt and w1.txt  | shared.txt and w2.txt  |
+      | a glob          | lib/thing*.py          | lib/thing_a.py         |
+      | a directory     | lib/                   | lib/thing_a.py         |
 
   @r20
   Scenario: of three ready work-items whose file sets do not overlap, no more than two are implemented at the same time
