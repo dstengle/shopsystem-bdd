@@ -322,17 +322,17 @@ class ReadingTest(ModelTest):
         self.assertIn(f'rests_on("{THING}", "{full("design-decision", "x")}").', facts)
         self.assertIn(f'group("{THING}", "service").', facts)
 
-    def test_a_held_scenario_is_no_acceptance_scenario(self):
+    def test_a_deprecated_scenario_is_no_acceptance_scenario(self):
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] `thing` shall answer."], retired="[r2]"))
         self.write("features/thing.feature", "\n".join([
             "Feature: thing", "",
             "  @r1", "  Scenario: one", "    Given a", "",
-            "  @r1 @deprecated", "  Scenario: one as it was (held)", "    Given a", "",
-            "  @r2 @deprecated", "  Scenario: two as it was (held)", "    Given a", ""]))
+            "  @r1 @deprecated", "  Scenario: one as it was (deprecated)", "    Given a", "",
+            "  @r2 @deprecated", "  Scenario: two as it was (deprecated)", "    Given a", ""]))
         r = self.run_model("check")
         self.assertEqual(r.returncode, 0, r.stdout)
         facts = self.run_model("facts").stdout
-        self.assertNotIn("(held)", facts)
+        self.assertNotIn("(deprecated)", facts)
 
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
@@ -585,7 +585,7 @@ class OutputTest(ModelTest):
 
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
-class HeldAndLedgerTest(ModelTest):
+class DeprecatedAndLedgerTest(ModelTest):
     """r44."""
 
     def test_r44(self):
@@ -597,7 +597,7 @@ class HeldAndLedgerTest(ModelTest):
 
 
 def index(*glossary):
-    """spec/index.md with a ## Glossary section holding these bullets."""
+    """spec/index.md with a ## Glossary section with these bullets."""
     return INDEX + "\n## Glossary\n\n" + "\n".join(glossary) + "\n\n## Where things live\n\n- Here.\n"
 
 
@@ -736,7 +736,7 @@ class BindingTest(unittest.TestCase):
         gone = set(moved_titles())
         self.assertEqual([t for t in missing(FEATURE, CheckTest, RulesTest, DecisionsTest,
                                              ReadingTest, GrammarFixTest, TypeFirstTest, FilesReadTest, OutputTest,
-                                             HeldAndLedgerTest, GlossaryFactsTest,
+                                             DeprecatedAndLedgerTest, GlossaryFactsTest,
                                              GlossaryCheckTest, WithdrawnTest) if t not in gone], [])
 
 

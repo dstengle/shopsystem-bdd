@@ -399,9 +399,9 @@ class ScenarioTest(Workspace, unittest.TestCase):
 
     def test_retiring_a_deprecated_scenario_removes_its_block(self):
         """retiring a deprecated scenario removes its block"""
-        held = scenario("Apply a code (deprecated)", "@deprecated", "    Deprecated for: removal\n    Given a step\n")
+        deprecated = scenario("Apply a code (deprecated)", "@deprecated", "    Deprecated for: removal\n    Given a step\n")
         rest = [scenario("Empty cart"), scenario("Checkout")]
-        path = self.write("features/cart.feature", feature(rest[0], held, rest[1]))
+        path = self.write("features/cart.feature", feature(rest[0], deprecated, rest[1]))
         done = self.run_script("retire", "Apply a code (deprecated)")
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertEqual(path.read_text(), feature(*rest))
@@ -411,7 +411,7 @@ class ScenarioTest(Workspace, unittest.TestCase):
         self.write("features/cart.feature", feature(scenario("Apply a code", "@slice-1")))
         self.assertIn("not tagged @deprecated", self.refused("retire", "Apply a code"))
 
-    def test_moving_a_title_that_no_file_or_several_files_hold_is_refused(self):
+    def test_moving_a_title_that_no_file_or_several_files_have_is_refused(self):
         """moving a title that no file or several files have is refused"""
         for holders, says, named in (([], "no scenario titled 'Apply a code'", []),
                                      (["cart", "old"], "several", ["features/cart.feature", "features/old.feature"])):
@@ -454,8 +454,8 @@ def binding(title, feature_name="cart.feature", line=12):
 class BindingsScenarioTest(Workspace, unittest.TestCase):
     """The feature-file-tools scenarios about test-module bindings."""
 
-    def test_rebind_with_file_takes_a_new_title_that_several_feature_files_hold(self):
-        """rebind --file follows only its own file when both files hold the new title"""
+    def test_rebind_with_file_takes_a_new_title_that_several_feature_files_have(self):
+        """rebind --file follows only its own file when both files have the new title"""
         self.write("features/cart.feature", feature(scenario("Apply a code")))
         self.write("features/old.feature", feature(scenario("Apply a code")))
         modules = {"tests/test_cart.py": binding("Apply a code", "cart.feature"),
