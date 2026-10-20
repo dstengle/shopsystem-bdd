@@ -1,0 +1,10 @@
+{
+  "status": "DONE",
+  "summary": "migrate-run (accepts migration-tools#r1-r11; 10 scenarios, r11 rides on r2's). All 10 red at their first Given: scripts/migrate and tests/scenarios/test_migration_tools.py do not exist. Probes (scratch repos, worktree scripts) show: features deprecate on @holding keeps @holding, so model check rejects it (r3 conflict, reading A/B in notes). Old-layout repos give the layout problems model names; r6 needs initiative.md per .shop/work dir and kind: on moved records, which no requirement writes. r10 no-id Behaviour lines are violation v15a until numbered. git mv is per file, not atomic; a directory moved onto an existing one nests. Old-path readers: plan find_file (r8), measure defaults (r8). Tests impossible to keep: none (by search). Changed files: scripts/migrate (new), tests/scenarios/test_migration_tools.py (new), tests/scripts/test_bound.py. No CLAUDE.md in the worktree: no size limit stated. Notes: .shop/scratch/1-research/notes.md.",
+  "fileset": [
+    "scripts/migrate",
+    "tests/scenarios/test_migration_tools.py",
+    "tests/scripts/test_bound.py"
+  ],
+  "questions": []
+}
