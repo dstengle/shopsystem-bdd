@@ -167,3 +167,10 @@ class World:
 def world(repo):
     """The builder and runner for the repository in `repo`."""
     return World(repo)
+
+
+@pytest.fixture
+def old(repo):
+    """migration-tools' repository on the old system (tests/scenarios/migration_old.py)."""
+    from .migration_old import Old
+    return Old(repo)
