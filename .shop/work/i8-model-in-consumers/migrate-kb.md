@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/migrate-kb
 kind: work-item
 part_of: capability-proposal/migrate-readings
-status: planned
+status: ready
 wkind: capability
 under: migration-tools
 accepts: [migration-tools#r1-r17]
