@@ -1,5 +1,4 @@
 import pathlib
-import re
 import shutil
 import subprocess
 import sys
@@ -311,7 +310,7 @@ def feature(*scenarios, tags="", background=""):
     return head + background + "\n".join(scenarios)
 
 
-def scenario(title, tags="", body="    Given a step\n", kind="Scenario"):
+def block(title, tags="", body="    Given a step\n", kind="Scenario"):
     return "%s  %s: %s\n%s" % ("  %s\n" % tags if tags else "", kind, title, body)
 
 
@@ -351,12 +350,11 @@ class Workspace:
 
 
 class ScenarioTest(Workspace, unittest.TestCase):
-    """The feature-file-tools scenarios that run `features` on feature files."""
+    """Unit tests of `features` on feature files. The scenarios are bound in tests/scenarios/test_feature_file_tools.py."""
 
     def test_deprecating_a_scenario_marks_it_deprecated_and_records_what_for(self):
-        """deprecating a scenario marks it deprecated and records what for"""
-        plain = scenario("Apply a code", body="    When a code is applied\n    Then the total drops\n")
-        voucher = scenario("Apply a voucher")
+        plain = block("Apply a code", body="    When a code is applied\n    Then the total drops\n")
+        voucher = block("Apply a voucher")
         for replacement, option, deprecated_for in (
                 (True, ("--for", "Apply a voucher"), "Apply a voucher"),
                 (False, ("--for", "Apply a voucher"), "Apply a voucher"),
@@ -371,74 +369,52 @@ class ScenarioTest(Workspace, unittest.TestCase):
                     "  @deprecated\n  Scenario: Apply a code (deprecated)\n    Deprecated for: %s\n" % deprecated_for))
 
     def test_deprecating_a_scenario_already_deprecated_is_refused(self):
-        """deprecating a scenario already deprecated is refused"""
-        self.write("features/cart.feature", feature(scenario(
+        self.write("features/cart.feature", feature(block(
             "Apply a code (deprecated)", "@deprecated", "    Deprecated for: removal\n    Given a step\n")))
         reason = self.refused("deprecate", "Apply a code (deprecated)", "--for", "Apply a voucher")
         self.assertIn("already deprecated", reason)
 
     def test_the_deprecated_list_shows_each_deprecated_scenario_and_what_will_retire_it(self):
-        """the deprecated list shows each deprecated scenario and what will retire it"""
-        voucher = scenario("Apply a voucher", "@r3")
+        voucher = block("Apply a voucher", "@r3")
         for deprecated_for, others, shown in (
                 ("Apply a voucher", [voucher], "features/cart.feature @r3"),
                 ("Apply a voucher", [], "no scenario has that title"),
                 ("removal", [], "deprecated for removal")):
             with self.subTest(deprecated_for):
                 self.write("features/cart.feature", feature(
-                    scenario("Apply a code (deprecated)", "@deprecated", "    Deprecated for: %s\n    Given a step\n" % deprecated_for), *others))
+                    block("Apply a code (deprecated)", "@deprecated", "    Deprecated for: %s\n    Given a step\n" % deprecated_for), *others))
                 done = self.run_script("deprecated")
                 self.assertEqual(done.returncode, 0, done.stderr)
                 self.assertEqual(done.stdout, "features/cart.feature: Apply a code (deprecated) | for: %s | %s\n" % (deprecated_for, shown))
 
     def test_the_deprecated_list_says_when_nothing_is_deprecated(self):
-        """the deprecated list says when nothing is deprecated"""
-        self.write("features/cart.feature", feature(scenario("Apply a code", "@slice-1")))
+        self.write("features/cart.feature", feature(block("Apply a code", "@slice-1")))
         done = self.run_script("deprecated")
         self.assertEqual((done.returncode, done.stdout), (0, "none deprecated\n"))
 
     def test_retiring_a_deprecated_scenario_removes_its_block(self):
-        """retiring a deprecated scenario removes its block"""
-        deprecated = scenario("Apply a code (deprecated)", "@deprecated", "    Deprecated for: removal\n    Given a step\n")
-        rest = [scenario("Empty cart"), scenario("Checkout")]
+        deprecated = block("Apply a code (deprecated)", "@deprecated", "    Deprecated for: removal\n    Given a step\n")
+        rest = [block("Empty cart"), block("Checkout")]
         path = self.write("features/cart.feature", feature(rest[0], deprecated, rest[1]))
         done = self.run_script("retire", "Apply a code (deprecated)")
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertEqual(path.read_text(), feature(*rest))
 
     def test_retiring_a_scenario_that_is_not_deprecated_is_refused(self):
-        """retiring a scenario that is not deprecated is refused"""
-        self.write("features/cart.feature", feature(scenario("Apply a code", "@slice-1")))
+        self.write("features/cart.feature", feature(block("Apply a code", "@slice-1")))
         self.assertIn("not tagged @deprecated", self.refused("retire", "Apply a code"))
 
-    def test_moving_a_title_that_no_file_or_several_files_have_is_refused(self):
-        """moving a title that no file or several files have is refused"""
-        for holders, says, named in (([], "no scenario titled 'Apply a code'", []),
-                                     (["cart", "old"], "several", ["features/cart.feature", "features/old.feature"])):
-            with self.subTest(holders):
-                self.fresh()
-                self.write("features/codes.feature", feature(scenario("Empty cart")))
-                for name in holders:
-                    self.write("features/%s.feature" % name, feature(scenario("Apply a code")))
-                reason = self.refused("move", "Apply a code", "--to", "features/codes.feature")
-                self.assertIn(says, reason)
-                self.assertEqual(re.findall(r"features/\w+\.feature", reason), named)
-                if named:
-                    self.assertIn(", ".join(named), reason)
-
     def test_deprecating_a_scenario_prints_its_file_and_new_title(self):
-        """deprecating a scenario prints its file and new title"""
-        self.write("features/cart.feature", feature(scenario("Apply a code")))
+        self.write("features/cart.feature", feature(block("Apply a code")))
         done = self.run_script("deprecate", "Apply a code", "--for-removal")
         self.assertEqual((done.returncode, done.stdout), (0, "features/cart.feature: Apply a code (deprecated)\n"), done.stderr)
 
     def test_the_deprecated_list_flags_a_deprecated_scenario_it_cannot_place(self):
-        """the deprecated list flags a deprecated scenario it cannot place"""
         for body, others, said in (
                 ("    Given a step\n", [], "no Deprecated for: line"),
-                ("    Deprecated for: Apply a voucher\n    Given a step\n", [scenario("Apply a voucher")], "the replacement has no @r<n> tag")):
+                ("    Deprecated for: Apply a voucher\n    Given a step\n", [block("Apply a voucher")], "the replacement has no @r<n> tag")):
             with self.subTest(said):
-                self.write("features/cart.feature", feature(scenario("Apply a code (deprecated)", "@deprecated", body), *others))
+                self.write("features/cart.feature", feature(block("Apply a code (deprecated)", "@deprecated", body), *others))
                 done = self.run_script("deprecated")
                 self.assertEqual(done.returncode, 0, done.stderr)
                 lines = [x for x in done.stdout.splitlines() if "Apply a code (deprecated)" in x]
@@ -452,12 +428,12 @@ def binding(title, feature_name="cart.feature", line=12):
 
 
 class BindingsScenarioTest(Workspace, unittest.TestCase):
-    """The feature-file-tools scenarios about test-module bindings."""
+    """Unit tests of `features` on test-module bindings."""
 
     def test_rebind_with_file_takes_a_new_title_that_several_feature_files_have(self):
         """rebind --file follows only its own file when both files have the new title"""
-        self.write("features/cart.feature", feature(scenario("Apply a code")))
-        self.write("features/old.feature", feature(scenario("Apply a code")))
+        self.write("features/cart.feature", feature(block("Apply a code")))
+        self.write("features/old.feature", feature(block("Apply a code")))
         modules = {"tests/test_cart.py": binding("Apply a code", "cart.feature"),
                    "tests/test_old.py": binding("Apply a code", "old.feature")}
         for name, text in modules.items():

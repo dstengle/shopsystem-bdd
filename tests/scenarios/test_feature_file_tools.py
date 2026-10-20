@@ -1,6 +1,4 @@
-"""features/feature-file-tools.feature, bound to scripts/features: the scenarios of requirements r1-r7, r10-r18,
-r25-r29, r36-r38, r41, r42, r46, r51-r58. (The slice, deprecate, retire and plugin ones are bound by the
-work-items that follow, or retired with the commands they test.)
+"""features/feature-file-tools.feature, bound to scripts/features: every scenario of the file, by `scenarios()`.
 
 A Given writes the feature files, test modules and trees a scenario names into `repo`; the When runs `features`
 once and keeps the files as they were (`context["before"]`); the Then steps read what it printed and what it left.
@@ -9,72 +7,9 @@ import re
 import shlex
 
 import pytest
-from pytest_bdd import given, parsers, scenario, then, when
+from pytest_bdd import given, parsers, scenarios, then, when
 
-FEATURE = "feature-file-tools.feature"
-BOUND = (
-    'every feature file under the directory is read, and docstring text is not',
-    'a feature file with a Rule block is refused',
-    'an edit is refused only when it would leave a Rule: block outside a docstring',
-    'counting by tag counts outline rows, inherited tags and untagged scenarios',
-    "listing by tag includes the feature's and the Examples' tags",
-    'listing by title finds every scenario whose title contains the text',
-    'listing that matches nothing prints nothing and fails',
-    'retagging a title that is not in exactly one file is refused',
-    'retagging with a tag that is not a requirement tag is bad usage',
-    'moving a scenario takes its block to the end of the destination',
-    'moving with the Background inlined puts its steps first',
-    'moving with feature tags kept adds the missing ones on a tag line of their own',
-    'moving to a destination that does not exist is refused',
-    'two trees alike scenario by scenario pass the move check',
-    'a scenario that changed in the move is named with what changed',
-    'a title that appears twice in either tree is a duplicate',
-    'a binding that names no scenario is reported',
-    'bindings that all name a scenario pass',
-    'a test module that does not parse is refused',
-    'rebinding rewrites each binding of the old title and counts them',
-    'rebinding to a title no scenario has is refused',
-    'moving a scenario to its own file is refused',
-    'a title in only one tree is missing or added',
-    'a tag is found with or without its leading @',
-    'rebinding to a title several feature files have is refused',
-    'rebinding a title written over several lines is refused',
-    'a refusal says why on stderr and fails',
-    "tagging with a requirement id adds it to the scenario's requirement tags",
-    '--file works in that file only, whatever other files have the title',
-    '--file naming a file that does not have the title is refused',
-    '--file naming a file that has the title twice is refused',
-    '--file naming a file outside --dir is refused',
-    'rebind --file rewrites only the bindings whose feature names that file',
-    'deprecating a scenario marks it deprecated and records what for',
-    'deprecating a scenario already deprecated is refused',
-    'the deprecated list shows each deprecated scenario and what will retire it',
-    'the deprecated list says when nothing is deprecated',
-    'retiring a deprecated scenario removes its block',
-    'retiring a scenario that is not deprecated is refused',
-    'deprecating a scenario prints its file and new title',
-    'the deprecated list flags a deprecated scenario it cannot place',
-    'a scenarios() call binds every scenario of the feature files it names',
-    '--unbound reports a scenario that no call binds',
-    '--unbound reports a scenario bound twice with each call',
-    '--unbound looks only at the feature files it names',
-)
-
-
-def _test_name(title):
-    """The test's name, from its scenario's title (a scenario may name several requirements, so not from a tag)."""
-    return "test_" + re.sub(r"\W+", "_", title).strip("_").lower()
-
-
-def _bind(title):
-    def test():
-        pass
-    test.__name__ = _test_name(title)
-    return scenario(FEATURE, title)(test)
-
-
-for _title in BOUND:
-    globals()[_test_name(_title)] = _bind(_title)
+scenarios("feature-file-tools.feature")
 
 
 # --- the files a scenario writes ----------------------------------------------------------------------------
@@ -435,6 +370,15 @@ def module_line_12(repo):
 @given('no feature file has the title "Apply a code"')
 def no_file_has_title(repo):
     write(repo, "features/cart.feature", feature_text(scenario_text("Empty cart")))
+    write(repo, "features/codes.feature", feature_text(scenario_text("Checkout")))  # a destination a move may name
+
+
+@given('features/cart.feature and features/old.feature both have the title "Apply a code"')
+def both_have_title(repo, context):
+    write(repo, "features/codes.feature", feature_text(scenario_text("Empty cart")))
+    for path in ("features/cart.feature", "features/old.feature"):
+        write(repo, path, feature_text(scenario_text("Apply a code")))
+    context["exact_files"] = True
 
 
 @given('only features/codes.feature has the title "Apply a code"')
@@ -622,6 +566,18 @@ def edit_made(run, repo, context):
     if context["result_wanted"].startswith("two"):
         listed = run("features", "list", "--title", "Apply a code")
         assert listed.stdout == "features/cart.feature: Apply a code\n" * 2
+
+
+@then("the command is rejected because no file has the title")
+def rejected_no_file_has_title(context):
+    assert "no scenario titled 'Apply a code'" in rejected(context)
+
+
+@then("the command is rejected because several files have the title")
+def rejected_several_have_title(context):
+    reason = rejected(context)
+    assert "several" in reason
+    assert "features/cart.feature, features/old.feature" in reason
 
 
 @then("the command is rejected because the title is not in exactly one file")
