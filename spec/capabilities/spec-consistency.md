@@ -4,7 +4,6 @@ title: Spec consistency
 narrator: the person keeping a spec
 group: service
 rests_on: [design-decision/glossary-terms-are-standing, design-decision/consistency-check-on-demand, design-decision/spec-writers-blind-to-code]
-formulated_as: features/spec-consistency.feature
 retired: []
 ---
 

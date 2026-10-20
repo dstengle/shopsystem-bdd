@@ -4,7 +4,6 @@ title: Delivery
 narrator: the person delivering an initiative
 group: service
 rests_on: [design-decision/a-script-supervises-delivery, design-decision/gate-on-behaviour-lines, design-decision/formulation-needs-no-second-approval, design-decision/spec-writers-blind-to-code, design-decision/review-of-work-items]
-formulated_as: features/delivery.feature
 retired: []
 ---
 

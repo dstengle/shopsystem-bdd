@@ -4,7 +4,6 @@ title: Code research
 narrator: the supervisor that started the researcher
 group: service
 rests_on: [design-decision/scout-on-haiku-at-low-effort, design-decision/worker-results-are-files, design-decision/the-file-set-is-the-claim]
-formulated_as: features/code-research.feature
 retired: [r2, r7]
 ---
 

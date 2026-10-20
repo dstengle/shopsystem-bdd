@@ -11,12 +11,12 @@ Agents: `capability-writer`, `feature-formulator`, `initiative-round`, `code-sco
 `bdd-implementer`, `bdd-task-reviewer`, `bdd-branch-reviewer`,
 `architecture-reviewer`, `spec-checker`.
 Format: `docs/capability-format.md`.
-Spec: `spec/index.md` and `spec/capabilities/`, with decisions under `decisions/`
-(index: `spec/decisions.md`), work under `work/`, and history and evidence under
-`records/` — the layout of the design model in `docs/design-model/` (version 3).
+Spec: `spec/index.md` and `spec/capabilities/`, with decisions under `spec/decisions/`
+(index: `spec/decisions/index.md`, written by `scripts/model decisions`), work under `.shop/work/`, and history
+and evidence under `.shop/records/` — the layout of the design model in `docs/design-model/` (version 3).
 Check it with `python3 scripts/model check`.
-Earlier design notes: `records/archive/design-notes/`. Test logs:
-`records/measurements/fixture-runs/`.
+Earlier design notes: `.shop/records/archive/design-notes/`. Test logs:
+`.shop/records/measurements/fixture-runs/`.
 
 ## Requires
 
@@ -87,7 +87,7 @@ working copy instead.
 
 ## Small slices, steps and fresh agents (0.11.0)
 
-0.11.0 measures a slice's size before the work and holds it during the work. On shopsystem-kb one slice passed every test of slicing and then ran as one implementer over 72 files and 426k tokens; its review had to be split, and it removed the tests that covered a regression two of the plan's decisions caused together. Design: `records/archive/design-notes/2026-10-10-small-slices-and-steps-design.md`.
+0.11.0 measures a slice's size before the work and holds it during the work. On shopsystem-kb one slice passed every test of slicing and then ran as one implementer over 72 files and 426k tokens; its review had to be split, and it removed the tests that covered a regression two of the plan's decisions caused together. Design: `.shop/records/archive/design-notes/2026-10-10-small-slices-and-steps-design.md`.
 
 - **Small, a fourth test.** A slice lands in at most 8 production and 4 test modules, counting the migration it forces. Each slice carries `Lands: <p> production, <t> test`. For a slice that changes a form existing code depends on, the count is a probe, logged; `plan` refuses a slice over the budget (`slicing-into-increments`).
 - **Expand, migrate, contract.** A breaking change is cut as the new form beside the old, callers moved a group to a slice behind a test seam, the capability slices, then the old form removed, each with the suite and a search for its check (`slicing-into-increments`).
@@ -101,7 +101,7 @@ These rules reach a controller through the plan: the hand-off has writing-plans 
 
 ## Measuring a batch (0.12.0)
 
-0.12.0 changes no rule. It makes a batch measurable, so that a change to the workflow is tried on a real batch and kept or dropped by what the numbers show. Design: `records/archive/design-notes/2026-10-11-measuring-a-batch-design.md`.
+0.12.0 changes no rule. It makes a batch measurable, so that a change to the workflow is tried on a real batch and kept or dropped by what the numbers show. Design: `.shop/records/archive/design-notes/2026-10-11-measuring-a-batch-design.md`.
 
 - **`scripts/measure batch <archive file>`** reads the session transcripts Claude Code keeps for the repository and its worktrees, the archive `plan archive` wrote, the batch plan and git, and writes one facts file under `docs/superpowers/measurements/`. No agent runs. For every dispatch: role, model, slice, kind, time, requests, tokens (output, new input, cache read), the context it started with and its peak, how it closed, and the files its commits touched. For the batch: tasks planned against tasks run, hand-backs, reviews that came back clean, `Lands:` against files touched, and the share of time spent closing. The controller session is a role of its own.
 - **`measure show`** prints a facts file as tables; **`measure compare <a> <b>`** sets two batches side by side.
@@ -113,7 +113,7 @@ The transcripts are Claude Code's own files and not a published format: `measure
 
 ## Rules adjusted (0.13.0)
 
-0.13.0 adjusts the rules of 0.11.0 that the kb baseline shows costing more than they return. Each change names the number in a batch's facts that should move. Design: `records/archive/design-notes/2026-10-11-rules-adjusted-design.md`.
+0.13.0 adjusts the rules of 0.11.0 that the kb baseline shows costing more than they return. Each change names the number in a batch's facts that should move. Design: `.shop/records/archive/design-notes/2026-10-11-rules-adjusted-design.md`.
 
 - **Two allowances for unlisted tests.** An implementer may change a test's setup, with no assertion, expected value or parametrize case touched, and may rewrite a test this batch wrote (first committed after the task's `Batch base:`) that pinned an interim state. It lists each in its report, and both reviewers check each row against the diff. Changing what any other test asserts is still `BLOCKED` (`bdd-implementer`, `bdd-red-green`, both reviewers). Watch: hand-backs a batch.
 - **Steps where an order must be seen.** A task has Steps only when a contract field, a stored layout, a port or a seam must be green alone first. Otherwise it is one dispatch, whatever its file count (`slicing-into-increments`). Watch: dispatches per slice.
@@ -125,14 +125,14 @@ Held, each with the measurement that would decide it: resuming an implementer in
 
 ## A green suite (0.14.0)
 
-0.14.0 keeps the suite passing between slices, and keeps behaviour tested until a slice changes it. Design: `records/archive/design-notes/2026-10-11-green-suite-design.md`.
+0.14.0 keeps the suite passing between slices, and keeps behaviour tested until a slice changes it. Design: `.shop/records/archive/design-notes/2026-10-11-green-suite-design.md`.
 
 - **A scenario that passes today is held, not removed.** When a line is re-worded or removed, formulation keeps the old scenario in the feature file, tagged `@holding` with " (held)" on its title, its steps unchanged, so it still passes. Slicing gives it a slice that retires it, the task lists it under `Retires:`, and the implementer removes it with `features retire` in the commit that turns its replacement green (`formulating-features`, `slicing-into-increments`, `bdd-red-green`).
 - **A changed title never stops a module collecting.** `features bindings` reports every `scenario(…, "<title>")` call that names no scenario; `features rebind` rewrites the title in those calls. Formulation runs both before it commits.
 
 ## Analysis tools, a consequence sweep and invariants (0.15.0)
 
-0.15.0 gives the workflow tools in place of text search and hand probes. Design: `records/archive/design-notes/2026-10-11-analysis-tools-design.md`.
+0.15.0 gives the workflow tools in place of text search and hand probes. Design: `.shop/records/archive/design-notes/2026-10-11-analysis-tools-design.md`.
 
 - **`scripts/tools`.** `probe` looks for the project's analysis tools in its own virtualenv (for Python: coverage, pytest-cov, jedi, ast-grep, ruff, vulture, import-linter, hypothesis); `install` installs what is missing there and edits no dependency file; anything still missing is told to the person in plain words, with what the workflow does without it, and logged in the plan. `map` runs the suite once under coverage with a context per test; `tests-of <file>:<function>` and `untested` answer from it; `refs <name>` gives exact references; `check` runs the lint, dead-code and import-contract tools for the reviewers.
 - **The scout uses them before it searches,** and its notes say of each count whether it came from `refs`, `tests-of` or a search. "Tests the decisions break" starts from the tests that execute the changed code, where that is a list short enough to read; on kb, code on every call's path is executed by two thirds of the suite, and there the scout says so and searches.
@@ -142,7 +142,7 @@ Held, each with the measurement that would decide it: resuming an implementer in
 
 ## Research that runs the system (0.16.0)
 
-0.16.0 has the plan written from what the system does today, found by running it. Design: `records/archive/design-notes/2026-10-11-research-probes-design.md`.
+0.16.0 has the plan written from what the system does today, found by running it. Design: `.shop/records/archive/design-notes/2026-10-11-research-probes-design.md`.
 
 - **The scout probes.** Task research drives the system through its real entry point, in a scratch directory and never on the checkout's data: the Givens and Whens of the slice's scenarios against today's code, and the nearest cases they do not state. Each probe is recorded with its command and what came back, marked `run`; what was only concluded from the code is marked `read`. A defect a probe finds is reported and triaged like a review's finding.
 - **A path that leaves a stage out.** When a slice adds a way through the system that skips a stage, the research lists every refusal and effect that stage alone produces, and the task's decisions say what the new path does about each.
@@ -180,7 +180,7 @@ model's kind names (`capability/missingmass.io/shopsystem/shopsystem-bdd/spec-mi
 `<kind>/<name>` and, where the field fixes the kind, `<name>` are read. Adding Ids also rewrites `decision/` to `design-decision/`.
 `scripts/model check` checks ids and coverage where clingo is installed. A repository already on capability
 files is migrated with migrating-to-capabilities' "Adding ids". The release's fixture runs (15 B, 4 A) are recorded in the test log:
-`records/measurements/fixture-runs/2026-10-16-requirement-ids-test-log.md`.
+`.shop/records/measurements/fixture-runs/2026-10-16-requirement-ids-test-log.md`.
 
 ## A ubiquitous language (0.20.0)
 
@@ -192,7 +192,7 @@ A context's words are now checked, not only its lines. The glossary entries in `
 
 An existing `## Glossary` whose bullets are in another form gives a file problem per bullet: rewrite them to the form (this repository's own already fit).
 
-Fixture runs on a seeded shelf spec (a planted `volume` for `book`, a scenario answering with titles where its line says the number, a line with no bound): report mode 3/3 and fix mode 3/3, $0.29 a report run and $0.42 to $0.54 a fix run. A report-mode run on a clone of shopsystem-kb found 77 findings for $3.28, among them the trial's three known issues. The runs, the scorer fix and what is not tested are in `records/measurements/fixture-runs/2026-10-17-ubiquitous-language-test-log.md`.
+Fixture runs on a seeded shelf spec (a planted `volume` for `book`, a scenario answering with titles where its line says the number, a line with no bound): report mode 3/3 and fix mode 3/3, $0.29 a report run and $0.42 to $0.54 a fix run. A report-mode run on a clone of shopsystem-kb found 77 findings for $3.28, among them the trial's three known issues. The runs, the scorer fix and what is not tested are in `.shop/records/measurements/fixture-runs/2026-10-17-ubiquitous-language-test-log.md`.
 
 ## Scripts
 

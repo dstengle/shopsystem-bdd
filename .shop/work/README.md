@@ -1,7 +1,7 @@
 # Work
 
 The intake backlog and the work-breakdowns of this bounded context (design model v3, sections 3 and 8).
-Each directory is one initiative: `initiative.md`, the root, with its priority and sources; every other
+Each directory under `.shop/work/` is one initiative: `initiative.md`, the root, with its priority and sources; every other
 file is a part, with exactly one `part_of`. Only an initiative is ranked. Forms:
 design-decision/work-file-forms. Check: `python3 scripts/model check`.
 

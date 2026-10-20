@@ -255,4 +255,7 @@ work/        <initiative-id>/initiative.md  <initiative-id>/<part-id>.md
 records/     observations.md  measurements/  review-findings/  archive/
 ```
 
+In the plugin's repositories (2026-10-19, design-decision/final-layout): decisions under `spec/decisions/`,
+work and records under `.shop/`.
+
 Files first. The corpus when a trace can no longer be assembled from them.

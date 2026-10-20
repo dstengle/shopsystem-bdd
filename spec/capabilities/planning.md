@@ -4,7 +4,6 @@ title: Planning
 narrator: the supervisor that started the planner
 group: service
 rests_on: [design-decision/plans-carry-intent-not-code, design-decision/plans-list-the-tests-they-break, design-decision/worker-results-are-files, design-decision/the-file-set-is-the-claim]
-formulated_as: features/planning.feature
 retired: []
 ---
 

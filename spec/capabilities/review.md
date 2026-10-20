@@ -4,7 +4,6 @@ title: Review
 narrator: the supervisor closing a work-item or an initiative
 group: service
 rests_on: [design-decision/review-of-work-items, design-decision/the-v3-agents, design-decision/worker-results-are-files]
-formulated_as: features/review.feature
 retired: []
 ---
 

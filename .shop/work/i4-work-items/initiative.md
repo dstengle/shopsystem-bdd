@@ -11,7 +11,7 @@ date: 2026-10-15
 ---
 
 Run by hand first: one session pulls items one at a time, to learn whether an item is self-contained
-enough that a fresh agent needs nothing else. `scripts/plan` becomes a `work` script over `work/`.
+enough that a fresh agent needs nothing else. `scripts/plan` becomes a `work` script over `.shop/work/`.
 
 The workflow capabilities get their first scenarios here, as fixture sessions
 (design-decision/workflow-scenarios-run-as-fixture-sessions), against the behaviour this initiative brings

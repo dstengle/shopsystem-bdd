@@ -4,7 +4,6 @@ title: Work queue
 narrator: a person, agent or script reading or moving work-items
 group: service
 rests_on: [design-decision/work-file-forms, design-decision/work-item-lifecycle-as-run, design-decision/the-file-set-is-the-claim, design-decision/plugin-takes-the-dependencies-it-needs]
-formulated_as: features/work-queue.feature
 retired: []
 ---
 

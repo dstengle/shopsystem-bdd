@@ -10,7 +10,7 @@ source: [observation/2026-10-15-design-model-v3]
 date: 2026-10-17
 ---
 
-Design: docs/superpowers/specs/2026-10-17-type-first-ids-and-ubiquitous-language-design.md, Part 2.
+Design: .shop/records/archive/design-notes/2026-10-17-type-first-ids-and-ubiquitous-language-design.md, Part 2.
 
 Reaches: `spec/index.md`'s Glossary; design-model-check (glossary entries as terms, `v_t1` to `v_t3`, the clingo
 search), feature-file-tools (`--file`), spec-integration (a term rides with its capability-proposal and the

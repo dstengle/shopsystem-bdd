@@ -4,7 +4,6 @@ title: Role boundaries
 narrator: the person running the workflow
 group: guarantees
 rests_on: [design-decision/the-v3-agents, design-decision/spec-writers-blind-to-code]
-formulated_as: features/role-boundaries.feature
 retired: []
 ---
 
