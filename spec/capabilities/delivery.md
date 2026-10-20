@@ -23,6 +23,7 @@ files, never the code, and reads what `work run` ends with, never what its worke
 - [r5] **While** `work run` runs, `delivering-an-initiative` shall read nothing its workers write.
 - [r6] **When** `work run` exits, `delivering-an-initiative` shall show the person each work-item's status and each open question, as `work run` printed them.
 - [r7] **If** `delivering-an-initiative` cannot do what it was asked, then `delivering-an-initiative` shall stop, saying why, and change nothing.
+- [r8] **When** `delivering-an-initiative` finds every requirement of the initiative accepted by a work-item, `delivering-an-initiative` shall start `work run` without drafting a work-item.
 
 ## Implementation, may change
 - `skills/delivering-an-initiative/SKILL.md`. It shows the drafted work-items as one table (name, accepts, risk);

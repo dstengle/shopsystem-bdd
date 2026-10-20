@@ -5,7 +5,7 @@ part_of: capability-proposal/model-in-consumers-migration-tools
 status: drafted
 wkind: capability
 under: migration-tools
-accepts: [migration-tools#r1, migration-tools#r4-r5, migration-tools#r7]
+accepts: [migration-tools#r1, migration-tools#r4-r5, migration-tools#r7-r10]
 blocked_by: [work-item/final-layout-read, work-item/deprecated-and-sources]
 fileset: [scripts/migrate, tests/scenarios/test_migration_tools.py, tests/scenarios/conftest.py]
 ---

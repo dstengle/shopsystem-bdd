@@ -16,13 +16,16 @@ decides nothing that needs judgment. A walking skeleton (design-decision/behavio
 what running it shows.
 
 ## Behaviour
-- [r1] **When** `migrate run --context <id>` is run, `migrate` shall move with git the old directories to the final layout: the decisions to `spec/decisions/`, `work/` to `.shop/work/`, and `records/` and `docs/superpowers/` to `.shop/records/`.
-- [r2] **When** `migrate run` is run, `migrate` shall replace the ledger `spec/decisions.md` with one decision file for each of its entries under `spec/decisions/`.
-- [r3] **When** `migrate run` is run, `migrate` shall make each `@holding` scenario a `@deprecated` one, rebinding the tests that name it by title.
-- [r4] **When** `migrate run` is run, `migrate` shall give `spec/index.md` the context's id, each Behaviour line without one an `[r<n>]`, and each capability, decision file and moved record its id on the final layout.
-- [r5] **When** `migrate run` moves a file or changes an id, `migrate` shall rewrite each reference to it in the repository's tracked text files.
+- [r1] **When** `migrate run --context <path>` is run, `migrate` shall move with git a top-level `decisions/` to `spec/decisions/`, `work/` to `.shop/work/`, and each `records/<x>` to `.shop/records/<x>`.
+- [r2] **When** `migrate run` finds a ledger entry `## decision/<nnnn>-<slug>` in `spec/decisions.md`, `migrate` shall replace it with `spec/decisions/<nnnn>-<slug>.md`, whose summary and Decision are the entry's first paragraph, whose status is accepted, and whose `date` and `by` are the entry's date and source.
+- [r3] **When** `migrate run` finds a `@holding` scenario, `migrate` shall deprecate it as `features deprecate` does.
+- [r4] **When** `migrate run --context <path>` is run, `migrate` shall give `spec/index.md` the id `bounded-context/<path>`.
+- [r5] **When** `migrate run` moves a file or changes an id, `migrate` shall rewrite each repository-relative path, relative Markdown link and frontmatter id that names it in the repository's tracked text files.
 - [r6] **When** `migrate run` has run on a repository on the old system, `migrate` shall have left it so that `model check` reports no violation, unresolved reference or file problem.
 - [r7] **If** `migrate` cannot make every change it was asked to, then `migrate` shall exit non-zero, naming each change it could not make, and change no file.
+- [r8] **When** `migrate run` is run, `migrate` shall move with git `docs/superpowers/plans/` to `.shop/records/archive/plans/` and `docs/superpowers/specs/` to `.shop/records/archive/design-notes/`.
+- [r9] **When** `migrate run` gives a capability, a decision file or a moved record its id, `migrate` shall write the type-first id of its kind: `capability/<path>/<name>`, `design-decision/<path>/<slug>`, or an `initiative-archive`, `decision-argument` or `measurement` id for a plan, a design note or a test log.
+- [r10] **When** `migrate run` finds a Behaviour line with no id, `migrate` shall number it from one above the highest id its capability has ever used.
 
 ## Implementation, may change
 - Python 3 with the standard library; moves are `git mv`; it does not commit. Every change is computed first,

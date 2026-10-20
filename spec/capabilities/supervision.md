@@ -26,6 +26,14 @@ from what running it shows.
 - [r8] **When** a worker starts or ends, `work run` shall append a line to `log.jsonl` with the time, the work-item, the stage, the agent and the session id.
 - [r9] **When** no work-item can move, `work run` shall exit, printing each work-item's status and each open question.
 - [r10] **If** `work run` cannot do what it was asked, then `work run` shall exit non-zero, say why, and change nothing.
+- [r11] **When** `work run` starts a worker, `work run` shall give the worker this plugin's own directory as its plugin.
+- [r12] **When** `work run` starts a worker whose agent lists skills, `work run` shall allow the worker to load each of those skills.
+- [r13] `work run` shall give no worker a bare Write or Edit tool.
+- [r14] `work run` shall allow a worker's Bash only `python3 -m pytest`, the plugin's scripts by path, and the git commands its stage needs.
+- [r15] **When** `work run` removes a worker's worktree, `work run` shall first copy each file the worker's result names into the run directory.
+- [r16] **When** a researcher's result gives `DONE` with questions, `work run` shall put those questions into the planner's brief.
+- [r17] **When** `work run` writes a worker's brief, `work run` shall tell the worker that it starts in its worktree and never changes directory.
+- [r18] **When** `work run` merges a work-item's branch, `work run` shall delete that branch.
 
 ## Implementation, may change
 - A worker is `claude -p "<brief path>" --agent shopsystem-bdd:<agent> --session-id <uuid> --output-format json
