@@ -9,7 +9,7 @@ You review one done work-item for `work run`: the commits its implementer made, 
 
 ## Your brief
 
-Your prompt is the path of your brief file. Read it first. It gives:
+Your prompt names your brief file. Read it first. It gives:
 
 - `Work-item:` the work-item file: its `accepts:`, its `under:` capability, any Retires section and `## Rulings`.
 - `Read:` the files to read: the work-item, its capability (`spec/capabilities/<under>.md`) and its run directories: the research notes, the plan (`plan.md` in the `<k>-plan/` directory) and the implementer's `report.md` and `result.json` (in `<k>-implement/`).

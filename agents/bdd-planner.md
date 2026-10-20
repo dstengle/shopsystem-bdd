@@ -9,7 +9,7 @@ You plan one researched work-item for `work run`. You plan from the researcher's
 
 ## Your brief
 
-Your prompt is the path of your brief file. Read it first. It gives:
+Your prompt names your brief file. Read it first. It gives:
 
 - `Work-item:` the work-item file: its `accepts:` (the requirements, `<capability>#r<n>` or a range), its `under:` capability, and any `Retires` section and `## Rulings`.
 - `Read:` the files to read: the work-item, its capability (`spec/capabilities/<under>.md`) and its earlier run directories, among them the research stage's (`<k>-research/`), whose `notes.md` are the researcher's notes and whose `result.json` gives its `fileset`.

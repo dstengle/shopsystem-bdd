@@ -22,8 +22,25 @@ Feature: Supervision
     Given i1's work-item w1 is drafted, under thing
     And every worker gives DONE
     When the person runs `work run i1`
-    Then each worker was started as `claude -p <its brief file>` with --agent shopsystem-bdd:<its stage's agent> and a session id no other worker had
+    Then each worker was started as `claude -p` with a prompt naming its brief file, --agent shopsystem-bdd:<its stage's agent> and a session id no other worker had
     And each brief file names .shop/work/i1/w1.md and spec/capabilities/thing.md to read, and a result file in the brief's own directory
+    And each worker ran in a worktree of its own, never in the repository's own checkout, and its brief and result file are under .shop/scratch/ there
+    And the implementer's brief also names the plugin's scripts directory, the initiative's base commit, its worktree and its branch work/w1, and the suite record work run made there
+
+  @r2
+  Scenario Outline: a worker is given its stage's tools and no others, the list .shop/delivery.toml gives for the stage where it gives one
+    Pins that no worker runs with every permission: a Bash command outside its stage's list is refused.
+    Given i1's work-item w1 is drafted
+    And <tools>
+    And every worker gives DONE, the researcher running `git commit -q --allow-empty -m meddle`
+    When the person runs `work run i1`
+    Then the researcher was given --allowedTools <list>
+    And its `git commit -q --allow-empty -m meddle` was <done>
+
+    Examples:
+      | tools                                                                   | list                                                                                                   | done    |
+      | .shop/delivery.toml names no tools                                      | Read,Glob,Grep,Write,Bash(python3 *),Bash(git status*),Bash(git diff*),Bash(git log*),Bash(git show*) | refused |
+      | .shop/delivery.toml gives the research stage Read and Bash(git commit *) | Read,Bash(git commit *)                                                                               | run     |
 
   @r3
   Scenario: a worker's DONE moves the work-item to its next status
@@ -74,6 +91,17 @@ Feature: Supervision
       | gives BLOCKED, asking "Is the old reader kept?"          | Is the old reader kept?          |
       | writes no result file                                    | code-scout gave no result file   |
       | writes a result file that is not JSON                    | is not a JSON object             |
+      | gives QUESTION, its questions the string "Why so?"       | Why so?                          |
+      | gives QUESTION, its questions the number 7               | not a list of questions          |
+
+  @r5
+  Scenario: a question goes into the work-item's Questions section, before a section that follows it
+    Pins where the question is written, so that what follows the Questions section is never read as a question.
+    Given i1's work-item w1 is drafted, its file with a Questions section of "Old question?" and then a Rulings section with "Old ruling."
+    And the researcher gives QUESTION, asking "Which module owns the log?"
+    When the person runs `work run i1`
+    Then w1's Questions section holds "Old question?" and then "Which module owns the log?", and its Rulings section only "Old ruling."
+    And work run prints the question "Which module owns the log?" and not "Old ruling."
 
   @r6
   Scenario: a worker's change to a file under .shop/work/ outside its run directory is put back
@@ -93,6 +121,22 @@ Feature: Supervision
     When the person runs `work run i1`
     Then .shop/work/i1/w9.md and .shop/work/i2/ are not there
     And w1 is green
+
+  @r6
+  Scenario Outline: an implementer's commit <change> under .shop/work/ is put back on its branch, the branch is not merged, and the work-item goes to awaiting-ruling naming the file
+    Pins that a worker's commit cannot write a status or any other file under .shop/work/ onto the initiative branch.
+    Given i1's work-item w1 is ready
+    And every worker gives DONE, the implementer committing feature.txt and <change>
+    When the person runs `work run i1`
+    Then the initiative branch does not have the implementer's commit
+    And the branch work/w1 changes nothing under .shop/work/
+    And w1 is awaiting-ruling, its question saying <path>
+
+    Examples:
+      | change                                          | path                         |
+      | setting .shop/work/i1/w1.md's status to green   | .shop/work/i1/w1.md          |
+      | deleting .shop/work/i1/initiative.md            | .shop/work/i1/initiative.md  |
+      | adding .shop/work/i1/w9.md                      | .shop/work/i1/w9.md          |
 
   @r7
   Scenario: each move is a commit of the work-item's file, its run directory and log.jsonl on the initiative branch, and nothing else

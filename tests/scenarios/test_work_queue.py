@@ -5,10 +5,13 @@ makes one move through the library, as `work run` does) and keeps the files as t
 Then steps read what it printed and what it left.
 """
 import datetime
+import errno
 import importlib
 import json
+import os
 import shlex
 import sys
+import types
 
 from pytest_bdd import given, parsers, scenarios, then, when
 
@@ -127,9 +130,16 @@ def log_not_json(repo):
 
 
 @given(".shop/work/i1/log.jsonl cannot be written")
-def log_read_only(repo):
-    log = write(repo, ".shop/work/i1/log.jsonl", "")
-    log.chmod(0o444)
+def log_cannot_be_written(repo, monkeypatch):
+    """The disk fills as the move's line is written: half the line goes in, then ENOSPC. As root as well as not."""
+    write(repo, ".shop/work/i1/log.jsonl", "")
+    workqueue = importlib.import_module("workqueue") if str(SCRIPTS) in sys.path else (
+        sys.path.insert(0, str(SCRIPTS)) or importlib.import_module("workqueue"))
+
+    def full(fd, data):
+        os.write(fd, data[: len(data) // 2])
+        raise OSError(errno.ENOSPC, os.strerror(errno.ENOSPC))
+    monkeypatch.setattr(workqueue, "os", types.SimpleNamespace(**dict(vars(os), write=full)), raising=False)
 
 
 # --- When -----------------------------------------------------------------------------------------------------

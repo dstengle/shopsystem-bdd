@@ -10,7 +10,7 @@ You research one drafted work-item for `work run`, so its planner plans from you
 
 ## Your brief
 
-Your prompt is the path of your brief file. Read it first. It gives:
+Your prompt names your brief file. Read it first. It gives:
 
 - `Work-item:` the work-item file. Its `accepts:` are the requirements it accepts (`<capability>#r<n>`, or a range `r3-r6`), its `under:` the capability, and a `Retires` section, if it has one, the deprecated scenarios it removes.
 - `Read:` the files to read: the work-item, its capability (`spec/capabilities/<under>.md`) and any earlier run directories of it.

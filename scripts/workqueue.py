@@ -6,6 +6,7 @@ import datetime
 import importlib.machinery
 import importlib.util
 import json
+import os
 import re
 from pathlib import Path
 
@@ -116,12 +117,27 @@ def move(root, initiative, name, status, by):
     log = path.parent / "log.jsonl"
     path.write_text(head + text[end:])
     try:
-        with open(log, "a") as out:
-            out.write(json.dumps(line) + "\n")
+        append(log, (json.dumps(line) + "\n").encode())
     except OSError as error:
         path.write_text(text)
         raise Refused("%s cannot be written (%s); %s is left as it was"
                       % (log.relative_to(root), error.strerror, path.relative_to(root))) from None
+
+
+def append(log, data):
+    """Append `data` to `log` whole or not at all: a write that fails part-way is cut back to the size before it."""
+    fd = os.open(log, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o644)
+    try:
+        size = os.fstat(fd).st_size
+        try:
+            written = 0
+            while written < len(data):
+                written += os.write(fd, data[written:])
+        except OSError:
+            os.ftruncate(fd, size)
+            raise
+    finally:
+        os.close(fd)
 
 
 def agrees(root, initiative, name):

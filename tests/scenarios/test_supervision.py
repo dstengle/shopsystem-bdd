@@ -28,7 +28,7 @@ which = "scenarios" if "--work-item" in sys.argv else "suite"
 if os.path.exists(which + "-fail"):
     print("FAILED: %s-fail is here, so the %s fails" % (which, which))
     sys.exit(1)
-print("passed")
+print("1 passed in 0.01s")
 """
 NEEDS_FEATURE = """import os, sys
 if "--work-item" in sys.argv and not os.path.exists("feature.txt"):
@@ -75,9 +75,11 @@ def fields(path):
     return dict(line.split(": ", 1) for line in head.splitlines() if ": " in line)
 
 
-def calls(repo):
+def calls(repo, events=("start", "end")):
+    """The stand-in's record: its starts and ends, or with `events` the Bash commands it ran or refused."""
     path = repo.parent / "stub" / "calls.jsonl"
-    return [json.loads(line) for line in path.read_text().splitlines()] if path.exists() else []
+    lines = [json.loads(line) for line in path.read_text().splitlines()] if path.exists() else []
+    return [c for c in lines if c["event"] in events]
 
 
 def starts(repo):
@@ -139,7 +141,7 @@ def repository(repo):
     return {}
 
 
-@given(parsers.re(r"i1's work-items? (?P<items>.+?)(?:, under (?P<under>\w+))?"
+@given(parsers.re(r"i1's work-items? (?P<items>[\w -]+?)(?:, under (?P<under>\w+))?"
                   r"(?:, though log\.jsonl's last move of (?P<lname>\w+) is to (?P<lafter>[\w-]+))?"
                   r"(?P<nogit>, in a directory that is not a git repository)?$"))
 def work_items(repo, items, under, lname, lafter, nogit):
@@ -163,17 +165,67 @@ def every_done(plan):
     plan["default"] = {"status": "DONE"}
 
 
+def committed(what):
+    """What the implementer commits, for one part of "committing feature.txt and ...": {path: text, or None to delete}."""
+    m = re.match(r"setting (\S+?)'s status to (\S+)$", what)
+    if m:
+        name = os.path.basename(m.group(1))[:-3]
+        return {m.group(1): item_text(name, m.group(2))}
+    if what.startswith("deleting "):
+        return {what[len("deleting "):]: None}
+    if what.startswith("adding "):
+        return {what[len("adding "):]: "added by a worker\n"}
+    return {what: "\n" if what.endswith("-fail") else "the feature\n"}
+
+
 @given(parsers.re(r"every worker gives DONE, the implementer (?P<doing>committing .+|giving .+|deleting its own branch)$"))
-def done_implementer(plan, doing):
+def done_implementer(repo, plan, doing):
+    """The implementer's commit, its result, or (with its stage's tools widened in .shop/delivery.toml to let it) the
+    deletion of its own branch, which makes work run's merge fail."""
     plan["default"] = {"status": "DONE"}
     if doing.startswith("committing "):
-        plan["bdd-implementer"] = {"commit": {f: "\n" if f.endswith("-fail") else "the feature\n"
-                                              for f in doing[len("committing "):].split(" and ")}}
+        commit = {}
+        for what in doing[len("committing "):].split(" and "):
+            commit.update(committed(what))
+        plan["bdd-implementer"] = {"commit": commit}
     elif doing.startswith("giving "):
         status, question = re.match(r'giving (\S+), asking "([^"]+)"$', doing).groups()
         plan["bdd-implementer"] = {"status": status, "questions": [question]}
     else:
         plan["bdd-implementer"] = {"run": [["git", "checkout", "-q", "--detach"], ["git", "branch", "-q", "-D", "work/w1"]]}
+        with open(repo / ".shop/delivery.toml", "a") as out:
+            out.write('\n[allowed_tools]\nimplement = ["Read", "Write", "Bash(git checkout *)", "Bash(git branch *)"]\n')
+        commit_all(repo, "the implementer may delete its branch")
+
+
+@given(parsers.parse("every worker gives DONE, the researcher running `{command}`"))
+def researcher_runs(plan, command):
+    plan["default"] = {"status": "DONE"}
+    plan["code-scout"] = {"run": [shlex.split(command)]}
+
+
+@given(".shop/delivery.toml names no tools")
+def no_tools(repo):
+    assert "allowed_tools" not in (repo / ".shop/delivery.toml").read_text()
+
+
+@given(parsers.parse(".shop/delivery.toml gives the {stage} stage {first} and {second}"))
+def stage_tools(repo, stage, first, second):
+    with open(repo / ".shop/delivery.toml", "a") as out:
+        out.write('\n[allowed_tools]\n%s = ["%s", "%s"]\n' % (stage, first, second))
+    commit_all(repo, "the %s stage's tools" % stage)
+
+
+@given(parsers.re(r'the researcher gives (?P<status>[A-Z_-]+), its questions the (?:string "(?P<text>[^"]+)"|number (?P<number>\d+))$'))
+def researcher_odd_questions(plan, status, text, number):
+    plan["code-scout"] = {"status": status, "questions": text if text is not None else int(number)}
+
+
+@given(parsers.re(r"i1's work-item (?P<name>\w+) is (?P<status>[\w-]+), its file with a Questions section of "
+                  r'"(?P<question>[^"]+)" and then a Rulings section with "(?P<ruling>[^"]+)"$'))
+def item_with_sections(repo, name, status, question, ruling):
+    write(repo, ".shop/work/i1/%s.md" % name, item_text(name, status) + "\n## Questions\n- %s\n\n## Rulings\n- %s\n" % (question, ruling))
+    commit_all(repo, "a work-item with questions and rulings")
 
 
 @given(parsers.parse("every worker gives DONE, the researcher also writing {first} and {second}"))
@@ -274,14 +326,14 @@ def exits_non_zero(context):
     assert context["done"].returncode != 0, context["done"]
 
 
-@then("each worker was started as `claude -p <its brief file>` with --agent shopsystem-bdd:<its stage's agent> and a "
-      "session id no other worker had")
+@then("each worker was started as `claude -p` with a prompt naming its brief file, --agent shopsystem-bdd:<its stage's "
+      "agent> and a session id no other worker had")
 def started_as(repo):
     started = starts(repo)
     assert [c["agent"] for c in started] == ["shopsystem-bdd:" + a for a in AGENTS], started
     for c in started:
         argv = c["argv"]
-        assert argv[0] == "-p" and os.path.isfile(argv[1]), argv
+        assert argv[0] == "-p" and c["brief_path"] in argv[1] and c["brief_path"].endswith("brief.md"), argv
         assert option(argv, "--agent") == c["agent"], argv
         uuid.UUID(option(argv, "--session-id"))
     sessions = [option(c["argv"], "--session-id") for c in started]
@@ -292,7 +344,7 @@ def started_as(repo):
       "brief's own directory")
 def brief_names(repo):
     for c in starts(repo):
-        brief, path = c["brief"], c["argv"][1]
+        brief, path = c["brief"], c["brief_path"]
         assert ".shop/work/i1/w1.md" in brief and "spec/capabilities/thing.md" in brief, brief
         result = re.search(r"^Result file: (.+)$", brief, re.M).group(1).strip()
         assert os.path.dirname(result) == os.path.dirname(path), (result, path)
@@ -434,3 +486,66 @@ def no_worktree(repo, context, rel):
     assert not (repo / rel).exists(), (rel, context["done"].stdout, context["done"].stderr)
     trees = git(repo, "worktree", "list", "--porcelain").count("worktree ")
     assert trees == 1, git(repo, "worktree", "list")
+
+
+@then("each worker ran in a worktree of its own, never in the repository's own checkout, and its brief and result file "
+      "are under .shop/scratch/ there")
+def own_worktrees(repo):
+    started = starts(repo)
+    places = [c["cwd"] for c in started]
+    assert len(set(places)) == len(places) == 4, places
+    for c in started:
+        assert os.path.dirname(c["cwd"]) == str(repo / ".shop/worktrees"), c["cwd"]
+        result = re.search(r"^Result file: (.+)$", c["brief"], re.M).group(1).strip()
+        for path in (c["brief_path"], result):
+            assert path.startswith(os.path.join(c["cwd"], ".shop/scratch") + os.sep), (path, c["cwd"])
+
+
+@then("the implementer's brief also names the plugin's scripts directory, the initiative's base commit, its worktree and "
+      "its branch work/w1, and the suite record work run made there")
+def implementer_brief(repo):
+    c = [c for c in starts(repo) if c["agent"] == "shopsystem-bdd:bdd-implementer"][0]
+    lines = dict(line.split(": ", 1) for line in c["brief"].splitlines() if re.match(r"^[A-Z][\w ]*: ", line))
+    base = git(repo, "log", "--diff-filter=A", "--format=%H", "--", ".shop/work/i1/initiative.md").strip()
+    assert lines.get("Scripts") == str(SCRIPTS), lines
+    assert lines.get("Base") == base, (lines, base)
+    assert (lines.get("Worktree"), lines.get("Branch")) == (c["cwd"], "work/w1"), lines
+    assert re.match(r"Suite: 1 passed, 0 failed at [0-9a-f]{7,} in [\d.]+ s$", lines.get("Suite record", "")), lines
+
+
+@then(parsers.parse("the researcher was given --allowedTools {tools}"))
+def given_tools(repo, tools):
+    c = [c for c in starts(repo) if c["agent"] == "shopsystem-bdd:code-scout"][0]
+    assert option(c["argv"], "--allowedTools") == tools, c["argv"]
+
+
+@then(parsers.parse("its `{command}` was {done}"))
+def command_was(repo, command, done):
+    events = [(c["event"], c["command"]) for c in calls(repo, ("ran", "refused"))]
+    assert events == [({"run": "ran", "refused": "refused"}[done], command)], events
+
+
+@then("the branch work/w1 changes nothing under .shop/work/")
+def branch_put_back(repo):
+    assert git(repo, "branch", "--list", "work/w1").strip(), git(repo, "branch")
+    assert git(repo, "diff", "--name-only", "main...work/w1", "--", ".shop/work/") == "", git(repo, "log", "--stat", "main..work/w1")
+
+
+def section(text, heading):
+    return text.split("\n## %s\n" % heading, 1)[1].split("\n## ", 1)[0] if "\n## %s\n" % heading in text else ""
+
+
+@then(parsers.re(r'(?P<name>\w+)\'s Questions section holds "(?P<old>[^"]+)" and then "(?P<new>[^"]+)", and its Rulings '
+                 r'section only "(?P<ruling>[^"]+)"$'))
+def sections(repo, context, name, old, new, ruling):
+    text = (repo / (".shop/work/i1/%s.md" % name)).read_text()
+    asked = [l for l in section(text, "Questions").splitlines() if l.strip()]
+    ruled = [l for l in section(text, "Rulings").splitlines() if l.strip()]
+    assert len(asked) == 2 and old in asked[0] and new in asked[1], (text, context["done"].stderr)
+    assert ruled == ["- " + ruling], text
+
+
+@then(parsers.re(r'work run prints the question "(?P<question>[^"]+)" and not "(?P<other>[^"]+)"$'))
+def prints_question_only(context, question, other):
+    out = context["done"].stdout
+    assert question in out and other not in out, out
