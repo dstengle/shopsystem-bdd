@@ -21,3 +21,7 @@
 {"time": "2026-10-20T22:54:42+00:00", "work-item": "migrate-kb", "before": "researched", "after": "planned", "by": "work run"}
 {"time": "2026-10-20T22:54:42+00:00", "work-item": "migrate-kb", "before": "planned", "after": "ready", "by": "work run"}
 {"time": "2026-10-20T23:08:02+00:00", "work-item": "migrate-kb", "before": "ready", "after": "claimed", "by": "work run"}
+{"time": "2026-10-20T23:10:02+00:00", "work-item": "migrate-kb", "stage": "implement", "event": "suite", "record": "Suite: 591 passed, 1 failed at f483cfe in 120 s; failing: tests/scenarios/test_migration_tools.py::test_run_rewrites_a_frontmatter_id_and_a_supersedes_that_name_a_ledger_entry_it_numbered"}
+{"time": "2026-10-20T23:10:02+00:00", "work-item": "migrate-kb", "stage": "implement", "agent": "bdd-implementer", "session": "71a03e53-f9ea-47b8-8541-a3f29856fe9b", "event": "start"}
+{"time": "2026-10-20T23:13:17+00:00", "work-item": "migrate-kb", "stage": "implement", "agent": "bdd-implementer", "session": "71a03e53-f9ea-47b8-8541-a3f29856fe9b", "event": "end"}
+{"time": "2026-10-20T23:15:20+00:00", "work-item": "migrate-kb", "before": "claimed", "after": "done", "by": "work run"}
