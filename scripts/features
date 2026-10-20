@@ -464,8 +464,15 @@ def test_modules(tests):
     return found
 
 
-def called_name(node):
-    return node.func.id if isinstance(node.func, ast.Name) else getattr(node.func, "attr", None)
+def called_name(node, tree=None):
+    """The name a call goes by; `from pytest_bdd import scenario as s` makes s(...) a call of scenario."""
+    name = node.func.id if isinstance(node.func, ast.Name) else getattr(node.func, "attr", None)
+    for n in ast.walk(tree) if tree is not None else ():
+        if isinstance(n, ast.ImportFrom) and n.module == "pytest_bdd":
+            for a in n.names:
+                if a.asname == name and isinstance(node.func, ast.Name):
+                    return a.name
+    return name
 
 
 def binding_calls(tests):
@@ -476,7 +483,7 @@ def binding_calls(tests):
             if not isinstance(node, ast.Call) or len(node.args) < 2:
                 continue
             title = node.args[1]
-            if called_name(node) != "scenario" or not isinstance(title, ast.Constant) or not isinstance(title.value, str):
+            if called_name(node, tree) != "scenario" or not isinstance(title, ast.Constant) or not isinstance(title.value, str):
                 continue
             first = node.args[0]
             feature = first.value if isinstance(first, ast.Constant) else names_.get(getattr(first, "id", None))
@@ -489,7 +496,7 @@ def scenarios_calls(tests):
     found = []
     for path, _, tree, names_ in test_modules(tests):
         for node in ast.walk(tree):
-            if isinstance(node, ast.Call) and called_name(node) == "scenarios":
+            if isinstance(node, ast.Call) and called_name(node, tree) == "scenarios":
                 named = [a.value if isinstance(a, ast.Constant) else names_.get(getattr(a, "id", None)) for a in node.args]
                 found.append((path, node.lineno, [n for n in named if isinstance(n, str)]))
     return found

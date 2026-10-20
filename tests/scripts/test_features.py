@@ -282,6 +282,11 @@ class DeprecatingTest(unittest.TestCase):
         self.assertEqual(done.returncode, 1)
         self.assertEqual(done.stdout, 'tests/test_shelf.py:7: no scenario titled "A book is added" in shelf.feature\n')
 
+    def test_unbound_counts_a_scenario_imported_under_another_name(self):
+        self.bound.write_text('from pytest_bdd import scenario as s\n\n\n@s("shelf.feature", "A book is added")\ndef test_x():\n    pass\n')
+        done = self.run_script("bindings", "--tests", "tests", "--unbound")
+        self.assertNotIn("A book is added | bound by no test", done.stdout)
+
     def test_bindings_checks_the_feature_a_binding_names(self):
         (self.tmp / "features" / "other.feature").write_text("Feature: Other\n\n  Scenario: Elsewhere\n    When x\n")
         self.bound.write_text('from pytest_bdd import scenario\n\n\n@scenario("shelf.feature", "Elsewhere")\ndef test_x():\n    pass\n')
