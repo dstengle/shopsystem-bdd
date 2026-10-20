@@ -92,3 +92,10 @@ by: the person
 date: 2026-10-19
 
 The Behaviour lines are not in EARS syntax. Beyond the documented adaptations (no "shall", present indicative), lines combine responses with ";", run to two sentences, or describe a form with no system as subject. The person wants EARS syntax, with "shall", ahead of everything else, and the strict form taken back to the design model in shopsystem-knowledge after the migration release.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-20-files-too-large
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+by: the person
+date: 2026-10-20
+
+Several Python scripts and test modules are much too large (scripts/model 1035 lines, tests/scenarios/test_design_model_check.py 1490), and large code files slow agents down. The size limit lives only as prose in a consuming repository's CLAUDE.md, this repository has none, and "module" lets extension-less scripts and test modules slip through. The person: the limit is 300 lines for code and tests alike; the split is next release.
