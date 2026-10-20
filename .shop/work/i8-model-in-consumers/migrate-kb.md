@@ -5,7 +5,7 @@ part_of: capability-proposal/migrate-readings
 status: drafted
 wkind: capability
 under: migration-tools
-accepts: [migration-tools#r2, migration-tools#r6-r9, migration-tools#r13-r17]
+accepts: [migration-tools#r1-r17]
 fileset: [scripts/migrate, scripts/migrate_layout.py, scripts/migrate_ledger.py, scripts/migrate_spec.py, tests/scenarios/test_migration_tools.py, tests/scenarios/migration_ledger_steps.py, tests/scenarios/migration_spec_steps.py, tests/scenarios/migration_old.py]
 ---
 
