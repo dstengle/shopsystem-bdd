@@ -1,0 +1,103 @@
+# formulated from spec/capabilities/migration-tools.md
+Feature: Migration tools
+  Narrator: a person or session migrating a repository to the final layout
+
+  @r1
+  Scenario: run moves decisions/ to spec/decisions/, work/ to .shop/work/ and each records/<x> to .shop/records/<x>, with git
+    Pins where each of these old directories lands, keeping a record's path, and that git sees each move as a rename.
+    Given a repository on the old system with decisions/0001-d0.md, work/i1/w1.md and records/logs/r1.md
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then spec/decisions/0001-d0.md holds what decisions/0001-d0.md held
+    And .shop/work/i1/w1.md holds what work/i1/w1.md held
+    And .shop/records/logs/r1.md holds what records/logs/r1.md held
+    And decisions/, work/ and records/ are gone
+    And git status shows each of the three as renamed
+
+  @r2 @r11
+  Scenario: run replaces a ledger that holds only entries with a decision file for each, named by its heading, holding its first paragraph, accepted, with its date and source
+    Pins the file a ledger entry becomes, where each of its fields comes from, and that a ledger of nothing but entries is gone.
+    Given a repository on the old system whose spec/decisions.md holds nothing but the entry `## decision/0007-a`
+    And the entry is dated 2025-03-01, its source is alice, and its first paragraph is "We do a."
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then spec/decisions.md is gone
+    And spec/decisions/0007-a.md has the summary "We do a." and a Decision of "We do a."
+    And its status is accepted, its date is 2025-03-01 and its by is alice
+
+  @r3
+  Scenario: run deprecates a @holding scenario as `features deprecate` does
+    Pins that migrate leaves a holding scenario, and the tests that name it, as `features deprecate` would.
+    Given a repository on the old system whose features/thing.feature has a scenario "s1" tagged @holding
+    And a test that names "s1" by title
+    And a copy of that repository on which `features deprecate` has been run for "s1"
+    When the session runs `migrate run --context example.org/acme/shop` on the repository
+    Then features/thing.feature and the test are as they are in the copy
+
+  @r4
+  Scenario: run gives spec/index.md the id bounded-context/<path>
+    Pins that the path given to --context is the one the context's id carries.
+    Given a repository on the old system whose spec/index.md gives no id
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then spec/index.md gives the id bounded-context/example.org/acme/shop
+
+  @r5
+  Scenario: run rewrites a repository-relative path, a relative Markdown link and a frontmatter id that name what it moved or renamed
+    Pins each of the three kinds of reference run rewrites in a tracked text file.
+    Given a repository on the old system with work/i1/w1.md
+    And a tracked README.md that names work/i1/w1.md
+    And a tracked notes/n1.md with the Markdown link `[w1](../work/i1/w1.md)`
+    And its spec/decisions.md has the entry `## decision/0007-a`
+    And a capability spec/capabilities/thing.md whose frontmatter rests_on names decision/0007-a
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then README.md names .shop/work/i1/w1.md where it named work/i1/w1.md
+    And notes/n1.md has the link `[w1](../.shop/work/i1/w1.md)`
+    And spec/capabilities/thing.md's rests_on names design-decision/example.org/acme/shop/a
+
+  @r6
+  Scenario: after run, model check reports no violation, unresolved reference or file problem
+    Pins that a repository run through migrate passes model check.
+    Given a repository on the old system with decisions/, work/, records/, docs/superpowers/plans/, docs/superpowers/specs/, a ledger spec/decisions.md, a capability and a @holding scenario
+    And the session has run `migrate run --context example.org/acme/shop`
+    When the session runs `model check`
+    Then it reports no violation, no unresolved reference and no file problem
+
+  @r7
+  Scenario: run that cannot make two of its changes names both, exits non-zero and changes no file
+    Pins that run is all or nothing, and names each change it could not make rather than the first.
+    Given a repository on the old system with work/i1/w1.md, and .shop/work/i1/w1.md already exists
+    And it has records/archive/plans/p1.md and docs/superpowers/plans/p1.md, which both move to .shop/records/archive/plans/p1.md
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then migrate says it could not move work/i1/w1.md onto .shop/work/i1/w1.md
+    And it says it could not move both records/archive/plans/p1.md and docs/superpowers/plans/p1.md to .shop/records/archive/plans/p1.md
+    And it exits non-zero
+    And nothing under the repository has changed
+
+  @r8
+  Scenario: run moves docs/superpowers/plans/ and docs/superpowers/specs/ under .shop/records/archive/, with git
+    Pins where plans and design notes land, and that git sees each move as a rename.
+    Given a repository on the old system with docs/superpowers/plans/p1.md and docs/superpowers/specs/s1.md
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then .shop/records/archive/plans/p1.md holds what docs/superpowers/plans/p1.md held
+    And .shop/records/archive/design-notes/s1.md holds what docs/superpowers/specs/s1.md held
+    And docs/superpowers/plans/ and docs/superpowers/specs/ are gone
+    And git status shows each of the two as renamed
+
+  @r9
+  Scenario: run gives a capability, a decision file, a plan, a design note and a test log the type-first id of its kind
+    Pins the id each kind gets, as <kind>/<context path>/<name>, the name being the file's stem.
+    Given a repository on the old system with a capability spec/capabilities/thing.md with no id
+    And its spec/decisions.md has the entry `## decision/0007-a`
+    And it has docs/superpowers/plans/p1.md, docs/superpowers/specs/s1.md and records/logs/run1-test-log.md
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then spec/capabilities/thing.md gives the id capability/example.org/acme/shop/thing
+    And spec/decisions/0007-a.md gives the id design-decision/example.org/acme/shop/a
+    And .shop/records/archive/plans/p1.md gives the id initiative-archive/example.org/acme/shop/p1
+    And .shop/records/archive/design-notes/s1.md gives the id decision-argument/example.org/acme/shop/s1
+    And .shop/records/logs/run1-test-log.md gives the id measurement/example.org/acme/shop/run1-test-log
+
+  @r10
+  Scenario: run numbers each Behaviour line with no id, in Behaviour order, from one above the highest id its capability has ever used
+    Pins that a new number reuses neither a live nor a retired id, and that new numbers follow the lines' order.
+    Given a repository on the old system with a capability spec/capabilities/thing.md whose retired: lists r4
+    And whose Behaviour lines are, in order, one with [r1], one with no id, one with [r3] and one with no id
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then the Behaviour lines of spec/capabilities/thing.md are, in order, [r1], [r5], [r3] and [r6]

@@ -24,8 +24,9 @@ what running it shows.
 - [r6] **When** `migrate run` has run on a repository on the old system, `migrate` shall have left it so that `model check` reports no violation, unresolved reference or file problem.
 - [r7] **If** `migrate` cannot make every change it was asked to, then `migrate` shall exit non-zero, naming each change it could not make, and change no file.
 - [r8] **When** `migrate run` is run, `migrate` shall move with git `docs/superpowers/plans/` to `.shop/records/archive/plans/` and `docs/superpowers/specs/` to `.shop/records/archive/design-notes/`.
-- [r9] **When** `migrate run` gives a capability, a decision file or a moved record its id, `migrate` shall write the type-first id of its kind: `capability/<path>/<name>`, `design-decision/<path>/<slug>`, or an `initiative-archive`, `decision-argument` or `measurement` id for a plan, a design note or a test log.
-- [r10] **When** `migrate run` finds a Behaviour line with no id, `migrate` shall number it from one above the highest id its capability has ever used.
+- [r9] **When** `migrate run` gives a capability, a decision file or a moved record its id, `migrate` shall write `<kind>/<path>/<name>`, the name being the file's stem and the kind `capability`, `design-decision`, or for a moved plan, design note or test log (a file whose name ends `-test-log.md`) `initiative-archive`, `decision-argument` or `measurement`.
+- [r10] **When** `migrate run` finds Behaviour lines with no id, `migrate` shall number them in Behaviour order from one above the highest id their capability has ever used.
+- [r11] **When** `migrate run` has replaced every entry of `spec/decisions.md`, `migrate` shall remove `spec/decisions.md`.
 
 ## Implementation, may change
 - Python 3 with the standard library; moves are `git mv`; it does not commit. Every change is computed first,

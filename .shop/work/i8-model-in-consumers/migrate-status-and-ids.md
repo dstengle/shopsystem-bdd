@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/migrate-status-and-ids
 kind: work-item
 part_of: capability-proposal/model-in-consumers-migration-tools
-status: drafted
+status: withdrawn
 wkind: capability
 under: migration-tools
 accepts: [migration-tools#r1, migration-tools#r4-r5, migration-tools#r7-r10]
@@ -33,3 +33,5 @@ red for migrate-decisions.
 
 Takes what migrate-status-and-ids and migrate-layout had of the skeleton (initiative/i13, 2026-10-19); `migrate
 status` leaves it, with the rest in the initiative's "Ideas to test once the skeleton runs".
+
+Withdrawn 2026-10-20: folded into work-item/migrate-run (one work-item, so one feature file's scenarios belong to one item while it is red).

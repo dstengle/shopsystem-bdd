@@ -2,10 +2,10 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/migrate-decisions
 kind: work-item
 part_of: capability-proposal/model-in-consumers-migration-tools
-status: drafted
+status: withdrawn
 wkind: capability
 under: migration-tools
-accepts: [migration-tools#r2-r3, migration-tools#r6]
+accepts: [migration-tools#r2-r3, migration-tools#r6, migration-tools#r11]
 blocked_by: [work-item/migrate-status-and-ids]
 fileset: [scripts/migrate, tests/scenarios/test_migration_tools.py]
 ---
@@ -24,3 +24,5 @@ Goes green: r2, r3 and r6.
   unresolved reference or file problem.
 
 Takes what migrate-decisions and migrate-deprecated had of the skeleton (initiative/i13, 2026-10-19).
+
+Withdrawn 2026-10-20: folded into work-item/migrate-run (one work-item, so one feature file's scenarios belong to one item while it is red).
