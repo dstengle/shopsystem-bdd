@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/deprecate-commands
 kind: work-item
 part_of: capability-proposal/final-layout-feature-file-tools
-status: drafted
+status: green
 wkind: capability
 under: feature-file-tools
 accepts: [feature-file-tools#r19, feature-file-tools#r21, feature-file-tools#r23-r24, feature-file-tools#r35, feature-file-tools#r46]
