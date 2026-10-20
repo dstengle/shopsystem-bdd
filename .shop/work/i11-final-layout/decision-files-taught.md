@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/decision-files-taught
 kind: work-item
 part_of: capability-proposal/final-layout-spec-integration
-status: drafted
+status: green
 wkind: capability
 under: spec-integration
 check: "the T-integrate fixture case with a note that makes one decision, run 3 times with claude -p against the plugin's working copy: each run writes spec/decisions/<next n>-<slug>.md with a summary and a Decision section only, its source ids and by, spec/decisions/index.md current (model decisions --check exits 0) in the spec commit, and no file under .superpowers/ or docs/superpowers/; results in .shop/records/measurements/fixture-runs/"
