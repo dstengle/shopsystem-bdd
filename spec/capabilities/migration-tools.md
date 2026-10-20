@@ -17,7 +17,7 @@ what running it shows.
 
 ## Behaviour
 - [r1] **When** `migrate run --context <path>` is run, `migrate` shall move with git a top-level `decisions/` to `spec/decisions/`, `work/` to `.shop/work/`, and each `records/<x>` to `.shop/records/<x>`.
-- [r2] **When** `migrate run` finds a ledger entry `## decision/<nnnn>-<slug>` in `spec/decisions.md`, `migrate` shall replace it with `spec/decisions/<nnnn>-<slug>.md`, whose summary is the entry's first paragraph, whose Decision is the entry's whole text, whose status is superseded when another entry supersedes it and accepted otherwise, and whose `date`, `by`, `supersedes` and `revisit_when` are the entry's.
+- [r2] **When** `migrate run` finds a ledger entry `## decision/<nnnn>-<slug>` in `spec/decisions.md`, `migrate` shall replace it with `spec/decisions/<nnnn>-<slug>.md`, whose summary is the entry's first paragraph, whose Decision is the entry's whole text, whose status is `superseded` when another entry supersedes it and `accepted` otherwise, and whose `date`, `by`, `supersedes` and `revisit_when` are the entry's.
 - [r3] **When** `migrate run` finds a `@holding` scenario, `migrate` shall make it a `@deprecated` scenario as `features deprecate` does, with no `@holding` tag left.
 - [r4] **When** `migrate run --context <path>` is run, `migrate` shall give `spec/index.md` the id `bounded-context/<path>`.
 - [r5] **When** `migrate run` moves a file or changes an id, `migrate` shall rewrite each repository-relative path, relative Markdown link and frontmatter id that names it in the repository's tracked text files.
