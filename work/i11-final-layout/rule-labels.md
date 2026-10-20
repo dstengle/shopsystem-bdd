@@ -5,7 +5,7 @@ part_of: capability-proposal/final-layout-design-model-check
 status: drafted
 wkind: capability
 under: design-model-check
-accepts: [design-model-check#r2-r8, design-model-check#r10, design-model-check#r11, design-model-check#r33-r35, design-model-check#r52-r54, design-model-check#r59, design-model-check#r65]
+accepts: [design-model-check#r2-r8, design-model-check#r10-r11, design-model-check#r33-r35, design-model-check#r52-r54, design-model-check#r59, design-model-check#r65]
 blocked_by: [work-item/design-model-check-scenarios-2]
 fileset: [scripts/model.lp, scripts/model, tests/scenarios/test_design_model_check.py, tests/scripts/test_model.py, docs/capability-format.md, skills/]
 ---

@@ -5,26 +5,27 @@ part_of: capability-proposal/delivery-on-v3-delivery
 status: drafted
 wkind: enabling
 under: delivery
-check: "python3 -m pytest -m fixture tests/workflow/test_end_to_end.py passes in every run: the lending initiative delivered by delivering-an-initiative with real workers to every work-item green"
+check: "the fixture harness's deliver-real case passes in every run: one person-approved, formulated work-item on a fixture repository taken by delivering-an-initiative and work run through every stage with real workers, ending green or awaiting-ruling"
 for: work-item/delivery-1
-blocked_by: [work-item/delivery-4]
+blocked_by: [work-item/delivery-1, work-item/code-research-1, work-item/planning-1, work-item/red-green-1, work-item/review-1]
 risk: none
 ---
 
 # delivery-5
 
 ## Observable
-One initiative goes from formulated proposals to every work-item green with real workers, on the shelf fixture.
+The walking skeleton runs: one formulated work-item goes from drafted to green, or to `awaiting-ruling` with its
+question, with real workers, on the shelf fixture.
 
 ## Unknown
-The cost and time of one real delivery (it is i12's baseline material; the run's `log.jsonl` is kept with the
-measurement record).
+The cost and time of one real delivery (i12's baseline material; the run's `log.jsonl` is kept with the measurement
+record).
 
 ## What the check covers
-Case deliver-real: as delivery-1's deliver case, with `claude` itself. Checks: every work-item green; the lend-items
-and keep-items scenarios pass at the head; `log.jsonl` has a start and an end line for each stage of each item with a
-session id and cost; at least one review-finding record (the branch review's); no file under `.shop/work/` changed
-by a worker; the session read no worker output (its transcript). `--fixture-record` keeps the figures.
+Case deliver-real: as delivery-1's deliver case with one formulated work-item, and `claude` itself. Checks: the
+work-item green or `awaiting-ruling` with a question; at green, its scenarios pass at the initiative branch's head;
+`log.jsonl` has a start and an end line for each stage with a session id; no file under `.shop/work/` changed by a
+worker; the session read no worker output (its transcript). Run from the fixture harness outside this repository.
 
 ## Files, roughly
-New `tests/workflow/test_end_to_end.py`, `tests/workflow/checks/delivery.py`, fixtures.
+The fixture case deliver-real.

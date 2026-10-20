@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/role-boundaries-1
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-role-boundaries
-status: drafted
+status: withdrawn
 wkind: guarantee
 under: role-boundaries
 check: "python3 -m pytest -q tests/scripts/test_agents.py passes: each line of role-boundaries#r1-r6 checked against agents/*.md"
@@ -25,3 +25,5 @@ Bash for the planner).
 
 ## Files, roughly
 New `tests/scripts/test_agents.py`.
+
+Withdrawn 2026-10-19: deferred until the skeleton runs (initiative notes)

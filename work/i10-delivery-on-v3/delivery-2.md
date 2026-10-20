@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/delivery-2
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-delivery
-status: drafted
+status: withdrawn
 wkind: capability
 under: delivery
 accepts: [delivery#r13, delivery#r14, delivery#r16, delivery#r17]
@@ -32,3 +32,5 @@ Bound as fixture scenarios (design-decision/fixture-scenarios-under-pytest-bdd):
 
 ## Files, roughly
 `skills/delivering-an-initiative/SKILL.md`, `tests/workflow/test_delivery.py`, `tests/workflow/checks/delivery.py`, fixtures.
+
+Withdrawn 2026-10-19: deferred until the skeleton runs (initiative notes)

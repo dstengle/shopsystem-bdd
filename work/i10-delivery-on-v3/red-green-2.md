@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/red-green-2
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-red-green
-status: drafted
+status: withdrawn
 wkind: capability
 under: red-green
 accepts: [red-green#r3-r5, red-green#r7, red-green#r12-r14, red-green#r17]
@@ -35,3 +35,5 @@ Bound as fixture scenarios (design-decision/fixture-scenarios-under-pytest-bdd):
 ## Files, roughly
 `tests/workflow/test_red_green.py`, `tests/workflow/checks/red_green.py`, fixtures; `skills/bdd-red-green/SKILL.md`
 only where a run shows a stop is not followed.
+
+Withdrawn 2026-10-19: deferred until the skeleton runs (initiative notes)

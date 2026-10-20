@@ -2,10 +2,10 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/design-model-check-scenarios-1
 kind: work-item
 part_of: capability-proposal/final-layout-design-model-check
-status: drafted
+status: green
 wkind: capability
 under: design-model-check
-accepts: [design-model-check#r1, design-model-check#r9, design-model-check#r12, design-model-check#r13, design-model-check#r16-r18, design-model-check#r21-r25, design-model-check#r27-r32]
+accepts: [design-model-check#r1-r2, design-model-check#r9, design-model-check#r12-r13, design-model-check#r16-r18, design-model-check#r21-r25, design-model-check#r27, design-model-check#r29]
 blocked_by: [work-item/pytest-bdd-suite]
 fileset: [tests/scenarios/test_design_model_check.py, tests/scripts/test_model.py]
 ---
@@ -23,3 +23,5 @@ design-model-check-scenarios-2, final-layout-read, rule-labels and deprecated-an
   (`spec/decisions/`, `.shop/work/`, `.shop/records/`), and leave the current paths where a scenario names
   them (final-layout-read changes those).
 - `BindingTest` stays in `test_model.py` until design-model-check-scenarios-2 removes it.
+
+Accepts re-synced 2026-10-19 to the EARS lines (initiative/i13): design-model-check#r28 -> r27; design-model-check#r30 -> r2; design-model-check#r31 -> r2; design-model-check#r32 -> r2.

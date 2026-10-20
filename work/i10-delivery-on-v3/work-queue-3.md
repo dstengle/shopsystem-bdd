@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/work-queue-3
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-work-queue
-status: drafted
+status: withdrawn
 wkind: capability
 under: work-queue
 accepts: [work-queue#r13-r15]
@@ -26,3 +26,5 @@ the work-item, so supervision-1 only fills it.
 
 ## Files, roughly
 `scripts/workqueue.py`, `scripts/work`, step definitions.
+
+Withdrawn 2026-10-19: deferred until the skeleton runs (initiative notes)

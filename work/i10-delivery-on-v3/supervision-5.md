@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/supervision-5
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-supervision
-status: drafted
+status: withdrawn
 wkind: capability
 under: supervision
 accepts: [supervision#r21-r26, supervision#r33]
@@ -30,3 +30,5 @@ re-review, and the closing message.
 
 ## Notes
 Driven with `$SHOPSYSTEM_WORK_CLAUDE` pointing at `tests/scripts/stub_claude.py` (from supervision-1), so no model runs.
+
+Withdrawn 2026-10-19: deferred until the skeleton runs (initiative notes)

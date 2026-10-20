@@ -5,7 +5,7 @@ part_of: capability-proposal/final-layout-feature-file-tools
 status: drafted
 wkind: capability
 under: feature-file-tools
-accepts: [feature-file-tools#r19-r24, feature-file-tools#r35, feature-file-tools#r39, feature-file-tools#r40]
+accepts: [feature-file-tools#r19, feature-file-tools#r21, feature-file-tools#r23-r24, feature-file-tools#r35, feature-file-tools#r46]
 blocked_by: [work-item/feature-file-tools-scenarios]
 fileset: [scripts/features, tests/scenarios/test_feature_file_tools.py, tests/scripts/test_features.py]
 ---
@@ -22,3 +22,5 @@ Goes green: the deprecate, deprecated and retire scenarios.
   removed, not kept as aliases. The contract text in `--help` follows.
 - `for: None` (observation/2026-10-16-release-0-19-0-defects) goes with it: r40 says so on the line.
 - Unit tests in `test_features.py` that call `hold`/`holding` are renamed with the commands.
+
+Accepts re-synced 2026-10-19 to the EARS lines (initiative/i13): feature-file-tools#r20 -> r46; feature-file-tools#r22 -> r21; feature-file-tools#r39 -> r19; feature-file-tools#r40 -> r21.

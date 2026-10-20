@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/delivery-4
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-delivery
-status: drafted
+status: withdrawn
 wkind: enabling
 under: delivery
 check: "! grep -q dependencies .claude-plugin/plugin.json && ! grep -rn 'superpowers' README.md .claude-plugin skills agents scripts/work scripts/supervise.py scripts/model scripts/features scripts/tools --exclude-dir=analyzing-a-batch"
@@ -31,3 +31,5 @@ not landed, this item is blocked on it.
 
 ## Files, roughly
 `.claude-plugin/plugin.json`, `README.md`.
+
+Withdrawn 2026-10-19: deferred until the skeleton runs (initiative notes)

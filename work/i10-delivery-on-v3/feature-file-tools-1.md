@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/feature-file-tools-1
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-feature-file-tools
-status: drafted
+status: withdrawn
 wkind: capability
 under: feature-file-tools
 accepts: [feature-file-tools#r11, feature-file-tools#r21, feature-file-tools#r40]
@@ -26,3 +26,5 @@ feature-file-tools#r11, r21, r40. Removed with their tests and scenarios: `featu
 ## Files, roughly
 `scripts/features`, delete `scripts/slice_expectations.py`, `tests/scripts/test_features.py` (the plugin and slice
 tests go), the feature-file-tools step definitions.
+
+Withdrawn 2026-10-19: deferred until the skeleton runs (initiative notes)

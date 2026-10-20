@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/migrate-layout
 kind: work-item
 part_of: capability-proposal/model-in-consumers-migration-tools
-status: drafted
+status: withdrawn
 wkind: capability
 under: migration-tools
 accepts: [migration-tools#r17-r21]
@@ -25,3 +25,5 @@ Goes green: r17-r21.
   binary files and `.shop/records/`), longest path first; list each changed file that is not `.md`, with
   line numbers.
 - r21: `.gitignore`.
+
+Withdrawn 2026-10-19: folded into work-item/migrate-status-and-ids, the skeleton (initiative notes)

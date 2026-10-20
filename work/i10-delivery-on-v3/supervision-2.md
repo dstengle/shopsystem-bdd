@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/supervision-2
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-supervision
-status: drafted
+status: withdrawn
 wkind: capability
 under: supervision
 accepts: [supervision#r8-r15, supervision#r28]
@@ -32,3 +32,5 @@ worktree as its script says.
 
 ## Notes
 Driven with `$SHOPSYSTEM_WORK_CLAUDE` pointing at `tests/scripts/stub_claude.py` (from supervision-1), so no model runs.
+
+Withdrawn 2026-10-19: folded into work-item/supervision-1, the skeleton (initiative notes)

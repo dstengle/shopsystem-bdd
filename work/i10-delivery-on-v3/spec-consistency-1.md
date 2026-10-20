@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/spec-consistency-1
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-spec-consistency
-status: drafted
+status: withdrawn
 wkind: capability
 under: spec-consistency
 accepts: [spec-consistency#r1-r11]
@@ -29,3 +29,5 @@ Bound as fixture scenarios (design-decision/fixture-scenarios-under-pytest-bdd):
 
 ## Files, roughly
 `tests/workflow/test_spec_consistency.py`, `tests/workflow/checks/spec_consistency.py`.
+
+Withdrawn 2026-10-19: deferred until the skeleton runs (initiative notes)

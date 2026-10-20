@@ -5,32 +5,34 @@ part_of: capability-proposal/delivery-on-v3-supervision
 status: drafted
 wkind: capability
 under: supervision
-accepts: [supervision#r2-r7, supervision#r27, supervision#r34, supervision#r35]
-blocked_by: [work-item/work-queue-2, work-item/work-queue-3]
+accepts: [supervision#r1-r10]
+blocked_by: [work-item/work-queue-1]
 risk: data
 ---
 
 # supervision-1
 
 ## Observable
-`work step <item>` runs a drafted item's researcher or a researched item's planner as a fresh worker, reads its
-result file, and moves the item, retries, or puts it to awaiting-ruling, with every start and end logged.
+`work run <initiative>` pulls each work-item through research, plan, implementation and review, one fresh
+`claude -p` worker at a time, moving it on `DONE`, merging an implementer's branch only when the tests pass, and
+putting it to `awaiting-ruling` otherwise; it exits with the statuses and the open questions.
 
 ## Unknown
-What `claude -p --agent shopsystem-bdd:<agent> --output-format json` gives for a plugin agent's session (session id,
-cost, usage), and whether `--agent` loads the agent's `skills:` and `effort:` (a probe against the installed claude,
-recorded in the notes).
+What `claude -p --agent shopsystem-bdd:<agent> --output-format json` gives for a plugin agent's session (session id),
+and whether `--agent` loads the agent's `skills:` and `effort:` (a probe against the installed claude, recorded in
+the notes).
 
 ## What goes green
-supervision#r2-r7, r27, r34, r35: the brief file, the run directory `runs/<item>/<k>-<stage>/`, the result's form per
-stage (design-decision/worker-results-are-files), a failed stage and its one retry, the restore of a work file a
-worker changed, writing the file set, notes, plan and depends_on into the item, QUESTION to awaiting-ruling, the
-log lines with the session's figures, and the two printed lines.
+supervision#r1-r10, the walking skeleton: the stage-by-stage pull, the brief file, the outcome only from the result
+file, the merge only when the work-item's scenarios and the suite pass, any other result to `awaiting-ruling` with
+its question, a worker's change under `.shop/work/` put back, one commit per move, the start and end lines with the
+session id, the exit with statuses and questions, and the general line. Driven with `$SHOPSYSTEM_WORK_CLAUDE`
+pointing at a stand-in `claude`, so no model runs.
 
 ## Files, roughly
-`scripts/work` (`step`), new `scripts/supervise.py` (stages, briefs, result schemas, the worker process), new
-`tests/scripts/stub_claude.py` (a stand-in `claude` that reads its brief and writes the result a script tells it to,
-with a `session.json` like claude's), step definitions for `features/supervision.feature`.
+`scripts/work` (`run`), new `scripts/supervise.py`, new `tests/scripts/stub_claude.py` (a stand-in `claude` that
+reads its brief and writes the result a script tells it to), step definitions for `features/supervision.feature`.
 
 ## Notes
-Driven with `$SHOPSYSTEM_WORK_CLAUDE` pointing at `tests/scripts/stub_claude.py` (from supervision-1), so no model runs.
+Takes what supervision-1, -2 and -3 had of the skeleton (initiative/i13, 2026-10-19); the rest of the drafted
+supervision is in the initiative's "Ideas to test once the skeleton runs".

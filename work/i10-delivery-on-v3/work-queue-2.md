@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/work-queue-2
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-work-queue
-status: drafted
+status: withdrawn
 wkind: capability
 under: work-queue
 accepts: [work-queue#r9-r12, work-queue#r16]
@@ -24,3 +24,5 @@ work-queue#r9-r12, r16.
 
 ## Files, roughly
 `scripts/workqueue.py` (guards), `scripts/work` (claim, withdraw), their step definitions.
+
+Withdrawn 2026-10-19: deferred until the skeleton runs (initiative notes)

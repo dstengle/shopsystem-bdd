@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/formulation-2
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-formulation
-status: drafted
+status: withdrawn
 wkind: capability
 under: formulation
 accepts: [formulation#r1-r14]
@@ -33,3 +33,5 @@ Bound as fixture scenarios (design-decision/fixture-scenarios-under-pytest-bdd):
 
 ## Files, roughly
 `tests/workflow/test_formulation.py`, `tests/workflow/checks/formulation.py`, `tests/workflow/fixtures/shelf.py`.
+
+Withdrawn 2026-10-19: deferred until the skeleton runs (initiative notes)

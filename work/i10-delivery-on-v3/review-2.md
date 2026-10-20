@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/review-2
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-review
-status: drafted
+status: withdrawn
 wkind: capability
 under: review
 accepts: [review#r6, review#r7, review#r9, review#r11, review#r14]
@@ -35,3 +35,5 @@ Bound as fixture scenarios (design-decision/fixture-scenarios-under-pytest-bdd):
 ## Files, roughly
 `agents/bdd-branch-reviewer.md`, `agents/architecture-reviewer.md`, `tests/workflow/test_review.py`,
 `tests/workflow/checks/review.py`, fixtures.
+
+Withdrawn 2026-10-19: deferred until the skeleton runs (initiative notes)

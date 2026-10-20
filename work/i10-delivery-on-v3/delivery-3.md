@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/delivery-3
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-delivery
-status: drafted
+status: withdrawn
 wkind: enabling
 under: delivery
 check: "test ! -e scripts/plan && test ! -e skills/slicing-into-increments && ! grep -rniE 'slic(e|es|ed|ing)|writing-plans|subagent-driven|executing-plans|scripts/plan|plan (log|show|status|archive|add-slice)|\blanes?\b|batch plan' skills agents --exclude-dir=analyzing-a-batch, and python3 -m pytest -q passes"
@@ -29,3 +29,5 @@ slices. `skills/analyzing-a-batch/` and `scripts/measure` are i12's and are left
 
 ## Files, roughly
 The files above (about 12).
+
+Withdrawn 2026-10-19: deferred until the skeleton runs (initiative notes)

@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/design-model-check-2
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-design-model-check
-status: drafted
+status: withdrawn
 wkind: capability
 under: design-model-check
 accepts: [design-model-check#r6, design-model-check#r22-r24, design-model-check#r43, design-model-check#r67]
@@ -31,3 +31,5 @@ write as `#behaviour/r<n>` is rewritten (a search first; none is expected).
 
 ## Notes
 Needs this repository's scenarios bound as pytest-bdd step definitions and the `.shop/` layout, both from initiative i11; the coordinator links i11's work-item into `blocked_by`.
+
+Withdrawn 2026-10-19: deferred until the skeleton runs (initiative notes)

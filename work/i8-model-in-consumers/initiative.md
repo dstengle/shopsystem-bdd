@@ -85,3 +85,27 @@ lines" goes: the plan becomes work-items).
 
 model-in-consumers-migration-tools (a new capability), model-in-consumers-spec-migration. Decisions 0049,
 0050.
+
+Since 2026-10-19 (walking skeleton, initiative/i13): migrate-status-and-ids → migrate-decisions → kb-trial, the
+skeleton's proof (`migrate run` alone on a clone). The other work-items are withdrawn until the skeleton has run.
+
+## Ideas to test once the skeleton runs
+
+Cut from the drafted lines when they became walking skeletons (design-decision/behaviour-lines-are-ears, the
+person, 2026-10-19): notes, not requirements, each to be tested once the skeleton has run and earning a line
+from what that shows.
+
+- migration-tools: Only files under `--root`.
+- migration-tools: `migrate status`: what is left of the old system, exit 1 or 0.
+- migration-tools: Refusals: not a git working tree, no or malformed `--context`, a context differing from `spec/index.md` (covered by the general line).
+- migration-tools: `--dry-run` and the per-step printed changes.
+- migration-tools: Nothing to migrate on a repository on the final layout.
+- migration-tools: `retired: []` added; `formulated_as` removed when it names its own feature file, refused otherwise.
+- migration-tools: A rewritten reference changes nothing else; record frontmatter kept.
+- migration-tools: Moved paths in non-Markdown files listed with the line.
+- migration-tools: `.gitignore`'s `.superpowers/` to `.shop/scratch/`.
+- migration-tools: Ledger entries with unknown property lines or no `date:` refused.
+- migration-tools: A decision's `source` split into record ids, node ids and `by`.
+- migration-tools: Retitling `(held)` to `(deprecated)` and `Held for:` to `Deprecated for:`; unparsable modules or multi-line titles refused.
+- migration-tools: `migrate plan`: the living plan's open slices to work-items under `migrated-plan`, enabling slices to checks, backlog and log entries to observations, `--plan`, `--drop`, `--leave`, refusals for in-progress slices, unknown titles, untagged scenarios, an existing `migrated-plan`.
+- migration-tools: Bad usage exit 2.

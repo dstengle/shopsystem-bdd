@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/formulation-1
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-formulation
-status: drafted
+status: withdrawn
 wkind: enabling
 under: formulation
 check: "python3 -m pytest -q collects no test marked fixture; python3 -m pytest -m fixture tests/workflow/test_harness.py --fixture-runs 1 passes, scoring the seven cases moved from the scratch harness as score.py scored them"
@@ -39,3 +39,5 @@ New `tests/workflow/` (conftest.py, harness.py, fixtures/shelf.py, checks/*.py, 
 
 ## Notes
 Needs this repository's scenarios bound as pytest-bdd step definitions and the `.shop/` layout, both from initiative i11; the coordinator links i11's work-item into `blocked_by`.
+
+Withdrawn 2026-10-19: deferred until the skeleton runs (initiative notes)

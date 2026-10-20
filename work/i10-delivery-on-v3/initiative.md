@@ -116,3 +116,76 @@ work-queue-1..4 → supervision-1..5 → the agents and skills with their fixtur
 planning-1, red-green-1..2, review-1..2, delivery-1..2) → the removals (feature-file-tools-1, delivery-3, delivery-4)
 → delivery-5. The harness (formulation-1) and the spec side's fixture scenarios run beside them. Every binding item
 waits for i11's pytest-bdd conversion of this repository's suite.
+
+Since 2026-10-19 (walking skeletons, initiative/i13): work-queue-1 → supervision-1 → code-research-1, planning-1,
+red-green-1, review-1, delivery-1 → delivery-5, the skeleton's proof from the fixture harness outside this
+repository. The other work-items are withdrawn until the skeleton has run.
+
+## Ideas to test once the skeleton runs
+
+Cut from the drafted lines when they became walking skeletons (design-decision/behaviour-lines-are-ears, the
+person, 2026-10-19): notes, not requirements, each to be tested once the skeleton has run and earning a line
+from what that shows.
+
+- supervision: A failed stage gets one more fresh worker before it becomes a question.
+- supervision: A worker that touches `.shop/work/` also fails its stage and is logged by file.
+- supervision: A researcher's `DONE` with an empty file set fails the stage; the file set and notes' path go into the work-item.
+- supervision: The planner's plan path, final file set and dependencies go into the work-item; a `QUESTION` goes through `planned` to `awaiting-ruling`.
+- supervision: The queue's guard decides when `planned` becomes `ready`; claiming happens when an implementer's place is free.
+- supervision: Several implementers at once, as many as `delivery.toml` allows, 2 by default.
+- supervision: Commits outside the file set, rebase conflicts and failing tests each stop the merge with their own question.
+- supervision: `PARTIAL` continues on the same worktree up to three times, then a question.
+- supervision: `BLOCKED`, `HAND-BACK` and `NEEDS_CONTEXT` keep the worktree and branch and release the claim.
+- supervision: A refused `work claim` sends the work-item back to `ready`, waiting for the other claim, then continuing its branch.
+- supervision: Work-items not blocked by an `awaiting-ruling` one go on.
+- supervision: Separate exit codes for green, a question, a budget and anything else.
+- supervision: Time and spending limits per role, ending the worker and failing its stage.
+- supervision: A run budget: no new worker, wait for the running ones, say what was spent.
+- supervision: Task review only for risk `contract`, `concurrency` or `data`; green once accepted scenarios pass at the branch head.
+- supervision: Fix-now findings become fix work-items with `fixes:` and `findings:`, holding the original back from green.
+- supervision: Every review's findings as a review-finding record; observations appended to `observations.md`.
+- supervision: A branch review from the initiative's base when all are done, turning done items green.
+- supervision: Scoped re-review of a fix: severe findings get another fix, the rest observations.
+- supervision: A worker's end logged with result, exit, duration, cost and tokens; suite records logged and given to the implementer.
+- supervision: Refuse a second `work run`, the default branch, a dirty working tree.
+- supervision: Interruption ends and logs the workers; the next run continues each claimed work-item.
+- supervision: Say the initiative's work-items are done without touching the initiative's status.
+- supervision: `work step <work-item>` runs one stage alone.
+- supervision: One printed line per worker start and end, nothing a worker wrote.
+- work-queue: `work` reads every work-item by `kind` and every scenario under `features/`; standard library only (kept as implementation).
+- work-queue: `work add` with `--check`, the Observable, Unknown and Risk sections, printing the id.
+- work-queue: `work add` refusing an unknown initiative, `--part-of`, `--blocked-by`, risk, or an accepted requirement with no scenario.
+- work-queue: `work show` grouped by initiative with capability, what it waits on and file-set size; `--status` filter.
+- work-queue: `work next`: the moves that can be made now, changing nothing.
+- work-queue: Guards: blockers green, no overlap with a claimed file set, one of two overlapping ready items claimed.
+- work-queue: `work claim` adding paths to a claimed item's file set, refusing a path another holds.
+- work-queue: `work questions` and `work rule`, moving an item back to `planned` once every question is answered.
+- work-queue: `work withdraw`, refused for claimed or green items.
+- work-queue: `work log <work-item>`.
+- work-queue: Refusals on stderr exit 1, bad usage exit 2 (covered by the general line).
+- work-queue: `work plugin` and `work_expectations.py`: unclaimed accepted scenarios as strict expected failures, `--work-item` runs, header and summary lines.
+- delivery: Name each capability-proposal left out, with its status.
+- delivery: Exactly one work-item accepts each requirement; all requirements of one scenario in the same work-item.
+- delivery: Deprecated scenarios listed under Retires in the work-item that replaces or removes them.
+- delivery: One capability or a check per work-item; one observable sentence; one unknown or none.
+- delivery: Risk `contract`, `concurrency`, `data` or `none`, a named risk only for an item reviewed alone.
+- delivery: `blocked_by` only where scenarios need another's work.
+- delivery: Guarantees capabilities get a check against the bound.
+- delivery: A requirement with two readings gets no work-item and goes to the person through integration.
+- delivery: One table of the drafted work-items (kept as implementation).
+- delivery: Stop on a dirty working tree or the default branch (covered by the general line).
+- delivery: Wait for `work run`; ask nothing but its questions.
+- delivery: Record answers with `work rule` in the person's words and run again.
+- delivery: On all green, name the proposals and say closing the initiative is the owner's.
+- delivery: On a budget, say what was spent, ask about raising it, change nothing meanwhile.
+- delivery: A question that a scenario is wrong goes through formulation or integration before `work rule`.
+- planning: Why each accepted scenario is red today, unverified where the notes only `read` it.
+- planning: Tests the decisions break: every test the notes name, and what was checked when the list is empty.
+- planning: Step definitions and fixtures to reuse, verify commands with scenario counts, deprecated scenarios retired.
+- planning: A broken test whose fate a client would see is a question.
+- planning: The final file set is the researcher's plus each file the plan adds, named.
+- planning: Probe defects: wrong answers or lost data fixed here, the rest observations.
+- planning: Skipped-stage refusals and effects addressed in the decisions.
+- planning: A randomized test that a dry run and a real run agree, written if missing.
+- planning: Reading only the work-item, notes, `spec/`, `features/`, `CLAUDE.md` and the file set.
+- planning: Summary under fifteen lines.

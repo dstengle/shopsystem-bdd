@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/migrate-deprecated
 kind: work-item
 part_of: capability-proposal/model-in-consumers-migration-tools
-status: drafted
+status: withdrawn
 wkind: capability
 under: migration-tools
 accepts: [migration-tools#r27-r29]
@@ -18,3 +18,5 @@ Goes green: r27-r29.
   `@holding`, their title line and `Held for:` line; edit those lines only.
 - Bindings: `scripts/features`' `binding_calls` finds `scenario(<feature>, "<title>")` calls; rewrite the
   title constant in place as `features rebind` does, refusing a title written over several lines (r29).
+
+Withdrawn 2026-10-19: folded into work-item/migrate-decisions, the skeleton (initiative notes)

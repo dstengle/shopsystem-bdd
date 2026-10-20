@@ -5,7 +5,7 @@ part_of: capability-proposal/final-layout-design-model-check
 status: drafted
 wkind: capability
 under: design-model-check
-accepts: [design-model-check#r26, design-model-check#r44, design-model-check#r51, design-model-check#r62, design-model-check#r63, design-model-check#r64]
+accepts: [design-model-check#r20, design-model-check#r26, design-model-check#r29, design-model-check#r51, design-model-check#r64]
 blocked_by: [work-item/final-layout-read]
 fileset: [scripts/model, tests/scenarios/test_design_model_check.py, spec/decisions/, .shop/records/]
 ---
@@ -37,3 +37,5 @@ This repository (a migration):
   release, a commit, README sections, `docs/design-model/…`, other repositories' decisions) goes to `by`,
   parts joined with "; ". Thirty-six files; `model check` must report no unresolved source.
 - `spec/decisions/index.md` regenerated.
+
+Accepts re-synced 2026-10-19 to the EARS lines (initiative/i13): design-model-check#r44 -> r20; design-model-check#r62 -> r26; design-model-check#r63 -> r29.

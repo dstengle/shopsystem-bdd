@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/pytest-bdd-suite
 kind: work-item
 part_of: capability-proposal/final-layout-analysis-tools
-status: drafted
+status: green
 wkind: enabling
 for: work-item/analysis-tools-scenarios
 check: "python3 -m pytest -q from the root passes and collects every test python3 -m unittest discover -s tests/scripts runs, the same count; python3 -m pytest --collect-only -q tests/scenarios exits 0"

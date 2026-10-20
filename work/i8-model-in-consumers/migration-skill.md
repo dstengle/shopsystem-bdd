@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/migration-skill
 kind: work-item
 part_of: capability-proposal/model-in-consumers-spec-migration
-status: drafted
+status: withdrawn
 wkind: capability
 under: spec-migration
 check: "T-migrate-final, the fixture case of initiative i8's 'How it is shown working', run 3 times with claude -p --plugin-dir the working copy, the gate answered by the harness: each run ends with migrate status exit 0, model check exit 0, the suite's summary and passing titles equal to the baseline's, features verify-moved clean before tagging, the mechanical move and the gate's changes as two commits, the expected work-items (2) and observations (backlog and log entries less those left out), and nothing under docs/superpowers/ or .superpowers/; 3 of 3, recorded in .shop/records/measurements/fixture-runs/"
@@ -55,3 +55,5 @@ an enabling slice before it, a blocked capability slice, two backlog entries and
 gate's answers in the harness: context `bounded-context/missingmass.io/demo/shelf`, the glossary bullet's
 form, drop the blocked slice, leave out one backlog entry. Every line has a scenario, so `model check` exits
 0.
+
+Withdrawn 2026-10-19: deferred until the skeleton runs (initiative notes)

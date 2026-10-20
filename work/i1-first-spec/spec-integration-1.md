@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/spec-integration-1
 kind: work-item
 part_of: capability-proposal/first-spec-spec-integration
-status: drafted
+status: withdrawn
 wkind: capability
 under: spec-integration
 accepts: [spec-integration#r1-r7, spec-integration#r10]
@@ -35,3 +35,5 @@ Bound as fixture scenarios (design-decision/fixture-scenarios-under-pytest-bdd):
 
 ## Files, roughly
 `tests/workflow/test_spec_integration.py`, `tests/workflow/checks/spec_integration.py`, `tests/workflow/fixtures/shelf.py`.
+
+Withdrawn 2026-10-19: deferred until the skeleton runs (initiative notes)

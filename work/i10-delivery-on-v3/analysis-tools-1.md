@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools-1
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-analysis-tools
-status: drafted
+status: withdrawn
 wkind: capability
 under: analysis-tools
 accepts: [analysis-tools#r4]
@@ -23,3 +23,5 @@ analysis-tools#r4: the output is as it is; the `--help` text says the line is fo
 
 ## Files, roughly
 `scripts/tools` (help text), its step definitions.
+
+Withdrawn 2026-10-19: deferred until the skeleton runs (initiative notes)

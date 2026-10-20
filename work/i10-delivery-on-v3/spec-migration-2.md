@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/spec-migration-2
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-spec-migration
-status: drafted
+status: withdrawn
 wkind: capability
 under: spec-migration
 accepts: [spec-migration#r9-r14]
@@ -28,3 +28,5 @@ Bound as fixture scenarios (design-decision/fixture-scenarios-under-pytest-bdd):
 
 ## Files, roughly
 `tests/workflow/test_spec_migration.py`, `tests/workflow/checks/spec_migration.py`, `tests/workflow/fixtures/shelf.py`.
+
+Withdrawn 2026-10-19: deferred until the skeleton runs (initiative notes)

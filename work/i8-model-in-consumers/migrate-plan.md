@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/migrate-plan
 kind: work-item
 part_of: capability-proposal/model-in-consumers-migration-tools
-status: drafted
+status: withdrawn
 wkind: capability
 under: migration-tools
 accepts: [migration-tools#r30-r44]
@@ -26,3 +26,5 @@ Goes green: r30-r44 (design-decision/living-plan-to-work-items).
 - `--dry-run` (r43) prints `slice <n>: work-item | observation | drop` and `observation <name>: <first 80
   characters>` lines.
 - A scenario test runs `model check` on the result (r42).
+
+Withdrawn 2026-10-19: deferred until the skeleton runs (initiative notes)

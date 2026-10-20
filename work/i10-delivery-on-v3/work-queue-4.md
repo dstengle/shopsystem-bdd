@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/work-queue-4
 kind: work-item
 part_of: capability-proposal/delivery-on-v3-work-queue
-status: drafted
+status: withdrawn
 wkind: capability
 under: work-queue
 accepts: [work-queue#r19-r24]
@@ -27,3 +27,5 @@ scenarios are expected failures here too.
 
 ## Files, roughly
 New `scripts/work_expectations.py`; `scripts/work` (plugin command); `tests/conftest.py`; step definitions.
+
+Withdrawn 2026-10-19: deferred until the skeleton runs (initiative notes)
