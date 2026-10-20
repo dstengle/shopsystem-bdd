@@ -32,6 +32,8 @@ TOOLS = {
                   "Bash(git diff*)"],
     "review": READER,
 }
+# A stage's limit of turns: the researcher's is 25 (r19).
+MAX_TURNS = {"research": 25}
 
 
 def git(root, *args):
@@ -114,7 +116,8 @@ class Workers:
         done = subprocess.run([self.claude, "-p", "Read the brief file %s and do what it says." % brief,
                                "--agent", AGENT_PREFIX + agent, "--plugin-dir", str(SCRIPTS.parent),
                                "--session-id", session, "--output-format", "json",
-                               "--permission-mode", "acceptEdits", "--allowedTools", ",".join(self.tools(stage, agent))],
+                               "--permission-mode", "acceptEdits", "--allowedTools", ",".join(self.tools(stage, agent)),
+                               *(["--max-turns", str(MAX_TURNS[stage])] if stage in MAX_TURNS else [])],
                               cwd=tree, capture_output=True, text=True)
         shutil.copytree(here, kept_at)
         (kept_at / "session.json").write_text(done.stdout)

@@ -326,3 +326,42 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the initiative branch has the implementer's commit of feature.txt
     And git lists no branch work/w1
+
+  @r19
+  Scenario: a researcher is given the work-item's file set and accepted scenarios, and a limit of 25 turns
+    Pins that the researcher starts from what the work-item claims and accepts, rather than searching the repository for it, and ends within a bounded number of turns.
+    Given i1's work-item w1 is drafted, its file set scripts/thing.py and tests/test_thing.py
+    And features/thing.feature has the scenario "it answers", tagged @r1, and the scenario "it waits", tagged @r2
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then the researcher's brief gives scripts/thing.py and tests/test_thing.py as the work-item's file set
+    And the researcher's brief names the accepted scenario "it answers" of features/thing.feature, and not "it waits"
+    And the researcher was started with --max-turns 25
+
+  @r20
+  Scenario: two ready work-items whose file sets do not overlap are implemented at the same time, and merged one at a time
+    Pins that disjoint work runs side by side, while the initiative branch takes one branch at a time, each on top of the one before.
+    Given i1's work-items w1 is ready, its file set w1.txt, and w2 is ready, its file set w2.txt
+    And every worker gives DONE, each implementer committing a file named for its work-item once two implementers have started
+    When the person runs `work run i1`
+    Then the implementers of w1 and w2 ran at the same time
+    And the initiative branch has both implementers' commits, one after the other, with no merge commit
+    And w1 and w2 are green
+
+  @r20
+  Scenario: two ready work-items whose file sets overlap are implemented one after the other
+    Pins that work-items claiming a file in common never run side by side.
+    Given i1's work-items w1 is ready, its file set shared.txt and w1.txt, and w2 is ready, its file set shared.txt and w2.txt
+    And every worker gives DONE, each implementer committing a file named for its work-item
+    When the person runs `work run i1`
+    Then no implementer was started before the one before it had ended
+    And w1 and w2 are green
+
+  @r20
+  Scenario: of three ready work-items whose file sets do not overlap, no more than two are implemented at the same time
+    Pins the limit of two side by side.
+    Given i1's work-items w1 is ready, its file set w1.txt, w2 is ready, its file set w2.txt, and w3 is ready, its file set w3.txt
+    And every worker gives DONE, each implementer committing a file named for its work-item once two implementers have started
+    When the person runs `work run i1`
+    Then two implementers ran at the same time, and never three
+    And w1, w2 and w3 are green

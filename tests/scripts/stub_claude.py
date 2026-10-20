@@ -38,7 +38,8 @@ import shlex
 import subprocess
 import sys
 
-VALUED = ("--agent", "--plugin-dir", "--session-id", "--output-format", "--permission-mode", "--allowedTools", "--allowed-tools")
+VALUED = ("--agent", "--plugin-dir", "--session-id", "--output-format", "--permission-mode", "--allowedTools", "--allowed-tools",
+          "--max-turns")
 
 
 def option(argv, name):

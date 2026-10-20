@@ -169,3 +169,30 @@ def brief_says_no_cd(repo):
     for c in started:
         said = [l for l in c["brief"].splitlines() if c["cwd"] in l and "never change directory" in l]
         assert said, c["brief"]
+
+
+def researcher(repo):
+    started = [c for c in starts(repo) if c["agent"] == "shopsystem-bdd:code-scout"]
+    assert len(started) == 1, started
+    return started[0]
+
+
+@then(parsers.parse("the researcher's brief gives {first} and {second} as the work-item's file set"))
+def brief_file_set(repo, context, first, second):
+    brief = researcher(repo)["brief"]
+    given = re.search(r"^File set: (.+)$", brief, re.M)
+    assert given and given.group(1).split(", ") == [first, second], (brief, context["done"].stderr)
+
+
+@then(parsers.re(r'the researcher\'s brief names the accepted scenario "(?P<title>[^"]+)" of (?P<feature>\S+), and not '
+                 r'"(?P<other>[^"]+)"$'))
+def brief_scenarios(repo, title, feature, other):
+    brief = researcher(repo)["brief"]
+    assert re.search(r"^Accepted scenarios:\n(?:- .+\n)*- %s: %s$" % (re.escape(feature), re.escape(title)), brief, re.M), brief
+    assert other not in brief, brief
+
+
+@then(parsers.parse("the researcher was started with --max-turns {turns:d}"))
+def max_turns(repo, turns):
+    argv = researcher(repo)["argv"]
+    assert option(argv, "--max-turns") == str(turns), argv

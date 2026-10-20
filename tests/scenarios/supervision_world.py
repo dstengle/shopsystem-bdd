@@ -52,9 +52,11 @@ def commit_all(repo, message):
     git(repo, "commit", "-q", "--allow-empty", "-m", message)
 
 
-def item_text(name, status, under="thing"):
-    return "---\nid: %s\nkind: work-item\npart_of: capability-proposal/p1\nstatus: %s\nunder: %s\naccepts: [%s#r1]\n---\n\n# %s\n" % (
-        full("work-item", name), status, under, under, name)
+def item_text(name, status, under="thing", fileset=None):
+    """A work-item's file; with `fileset` (a list of paths), its `fileset:` too."""
+    files = "fileset: [%s]\n" % ", ".join(fileset) if fileset else ""
+    return "---\nid: %s\nkind: work-item\npart_of: capability-proposal/p1\nstatus: %s\nunder: %s\naccepts: [%s#r1]\n%s---\n\n# %s\n" % (
+        full("work-item", name), status, under, under, files, name)
 
 
 def fields(path):

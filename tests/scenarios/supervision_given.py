@@ -8,7 +8,7 @@ import sys
 
 from pytest_bdd import given, parsers
 
-from .conftest import INDEX, ROOT, cap, full
+from .conftest import INDEX, ROOT, cap, feature, full
 from .supervision_world import DELIVERY, NEEDS_FEATURE, ROLES, STUB, TESTS_PY, commit_all, committed, git, item_text, scripts_in, write
 
 
@@ -195,3 +195,20 @@ def repository_is_plugin(repo, context):
 def researcher_done_asks(plan, question):
     plan["default"] = {"status": "DONE"}
     plan["code-scout"] = {"questions": [question]}
+
+
+@given(parsers.re(r"i1's work-items? (?P<items>\w+ is [\w-]+, its file set .+)$"))
+def items_with_file_sets(repo, items):
+    """Work-items each with its file set: "w1 is ready, its file set a.txt and b.txt, and w2 is ready, ..."."""
+    found = re.findall(r"(\w+) is ([\w-]+), its file set (.+?)(?=,? (?:and )?\w+ is |$)", items)
+    assert found, items
+    for name, status, files in found:
+        write(repo, ".shop/work/i1/%s.md" % name, item_text(name, status, fileset=files.replace(", ", " and ").split(" and ")))
+    commit_all(repo, "work-items with file sets")
+
+
+@given(parsers.re(r'features/thing\.feature has the scenario "(?P<first>[^"]+)", tagged (?P<tag1>@r\d+), and the scenario '
+                  r'"(?P<second>[^"]+)", tagged (?P<tag2>@r\d+)$'))
+def thing_feature(repo, first, tag1, second, tag2):
+    write(repo, "features/thing.feature", feature("thing", (tag1, first), (tag2, second)))
+    commit_all(repo, "the thing's scenarios")

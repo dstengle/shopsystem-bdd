@@ -1,6 +1,7 @@
 """`work run`'s briefs (capability supervision): the one file a worker is given, naming the work-item, the files to
 read, where it works and where it writes its result. Standard library only; a part of supervise.Run."""
 import json
+import re
 
 import workqueue
 from supervise_worker import SCRIPTS, git
@@ -31,6 +32,8 @@ class Briefs:
             lines.append("Base: %s" % base)
         lines += ["Worktree: %s" % tree, "Branch: %s" % (branch or "none (a detached checkout)")]
         lines += ["%s: %s" % kv for kv in extra]
+        if stage == "research":
+            lines += self.research_lines(data)
         if stage == "plan":
             lines += self.research_questions(name)
         path = here / "brief.md"
@@ -54,3 +57,38 @@ class Briefs:
         asked = data["questions"] if isinstance(data["questions"], list) else [data["questions"]]
         return ["Questions the researcher gave with its DONE, for you to settle or ask:"] + [
             "- %s" % (q if isinstance(q, str) else json.dumps(q)) for q in asked]
+
+    def research_lines(self, data):
+        """The researcher's start (r19): the work-item's file set, and the scenarios it accepts, by feature file and
+        title, so the researcher reads them rather than searching for them."""
+        lines = []
+        if data.get("fileset"):
+            lines.append("File set: %s" % ", ".join(data["fileset"]))
+        accepted = accepted_scenarios(self.root, data.get("accepts") or [])
+        if accepted:
+            lines += ["Accepted scenarios:"] + ["- %s: %s" % pair for pair in accepted]
+        return lines
+
+
+def accepted_scenarios(root, accepts):
+    """(feature file, title) of each scenario tagged with a requirement in `accepts` (`<capability>#r<n>`, or a range
+    `#r<n>-r<m>`), from features/<capability>.feature where there is one."""
+    wanted = {}
+    for one in accepts:
+        cap, _, reqs = str(one).rpartition("/")[2].partition("#")
+        lo, _, hi = reqs.lstrip("r").partition("-r")
+        wanted.setdefault(cap, set()).update("@r%d" % n for n in range(int(lo), int(hi or lo) + 1))
+    found = []
+    for cap, tags in wanted.items():
+        rel = "features/%s.feature" % cap
+        path = root / rel
+        held = set()
+        for line in path.read_text().splitlines() if path.is_file() else []:
+            line = line.strip()
+            if line.startswith("@"):
+                held |= set(line.split())
+            elif re.match(r"Scenario( Outline)?:", line):
+                if held & tags:
+                    found.append((rel, line.split(":", 1)[1].strip()))
+                held = set()
+    return found
