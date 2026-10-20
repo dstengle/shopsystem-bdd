@@ -47,7 +47,7 @@ The `feature-formulator` agent pins `model: opus`, so formulation runs on
 Opus whatever the session runs on; verified by the subagent turns in a
 Sonnet session. A skill's own turns run on the session's model: a `model:`
 field in SKILL.md did not change a session's model when the skill was
-invoked by the model rather than by a slash command, so the skills carry
+invoked by the model rather than by a slash command, so the skills set
 none. Launch a headless formulation, slicing, or planning session with
 `--model opus` and an execution session with `--model sonnet`;
 subagent-driven-development puts implementers on Sonnet and reviewers on
@@ -68,7 +68,7 @@ working copy instead.
 0.9.0 makes the workflow's cost follow the size and risk of a change. Measured on shopsystem-kb, about half of a batch's agent time went to running the full pipeline around one-line changes, re-reviewing small tasks, and a two-minute suite run many times a slice.
 
 - **A small-change path.** At most two Behaviour lines in existing capabilities, no contract change, nothing unknown: the controller writes the lines and their scenarios itself, from the spec alone. The gate on the lines stays. Anything larger takes the full path (`integrating-a-proposal`, `formulating-features`).
-- **Review by risk.** Each planned task carries `Review:` and `Model:` lines. Concurrency, the published contract, data integrity and moving stored data get a per-task review on Opus; everything else, refactors and small slices included, is reviewed once at the batch's end and implemented on Sonnet (`slicing-into-increments`).
+- **Review by risk.** Each planned task has `Review:` and `Model:` lines. Concurrency, the published contract, data integrity and moving stored data get a per-task review on Opus; everything else, refactors and small slices included, is reviewed once at the batch's end and implemented on Sonnet (`slicing-into-increments`).
 - **Findings triaged.** Correctness and data loss are fixed now; hardening goes to the plan's backlog with its reproduction, and is cut only when the person asks or it bites; polish is fixed when cheap (`slicing-into-increments`, both reviewers).
 - **A line every call must keep is one scenario per reason,** with one representative call; a table-driven test checks every call goes through the boundary (`formulating-features`).
 - **The architecture review folds into the branch review,** which now checks shape against `CLAUDE.md` and coupling every batch. `architecture-reviewer` runs only on request.
@@ -80,20 +80,20 @@ working copy instead.
 0.10.0 removes the repeated work a 0.9.0 session showed: a suite run about 34 times at 100-206 s each, a dependency read instead of probed, splits and defects bounced between agents, and a controller context of half a million tokens.
 
 - **The suite fast first.** Slicing records the suite's wall time in its `Suite:` log line and checks whether it runs in parallel and drives commands in-process. A suite over 60 s that fails either property, with no reason in `CLAUDE.md`, gets an enabling slice cut first in the batch (`slicing-into-increments`). The branch reviewer reports the wall time beside its summary.
-- **A suite record per commit.** `Suite: <N> passed, <M> failed at <hash> in <seconds> s` holds while nothing outside `docs/superpowers/plans/` differs between its commit, `HEAD` and the working tree. Whoever finds a record that holds uses it instead of running again. The implementer drops the run at the start and runs the whole suite once, before the slice's last commit; the branch reviewer runs it once at the batch's head. Plans carry no run protocol (`bdd-red-green`, `bdd-implementer`, both reviewers).
-- **Probes at the pin.** A slice whose Needs names something a dependency provides carries a probe, a command run against the installed version, with its result in the plan's log. A failing probe marks the slice `blocked: awaiting <dependency>` and logs the request. Reading the dependency's spec is not a probe, and a capability file is read whole, never by range (`slicing-into-increments`).
+- **A suite record per commit.** `Suite: <N> passed, <M> failed at <hash> in <seconds> s` stays valid while nothing outside `docs/superpowers/plans/` differs between its commit, `HEAD` and the working tree. Whoever finds a record that stays valid uses it instead of running again. The implementer drops the run at the start and runs the whole suite once, before the slice's last commit; the branch reviewer runs it once at the batch's head. Plans contain no run protocol (`bdd-red-green`, `bdd-implementer`, both reviewers).
+- **Probes at the pin.** A slice whose Needs names something a dependency provides has a probe, a command run against the installed version, with its result in the plan's log. A failing probe marks the slice `blocked: awaiting <dependency>` and logs the request. Reading the dependency's spec is not a probe, and a capability file is read whole, never by range (`slicing-into-increments`).
 - **Rule-decided splits and behaviour defects.** When a module would cross a size limit and the repository's rules say where the code goes, the implementer splits it and records that in the checkpoint; it hands back only when no rule decides. Behaviour that contradicts a Behaviour line or a capability's Purpose is Important, covered by a scenario or not, never Minor (`bdd-implementer`, both reviewers).
-- **Drafts to files, and a fresh session.** `capability-writer` and `feature-formulator` write drafts under `.superpowers/spec-drafts/<run>/round-<n>/`, one directory per dispatch, applied in order, and reply with the change list and paths. The controller checks every file written is under that path before the gate. Slicing recommends executing the plan in a new session that reads the plan file, not the one that integrated, formulated and sliced.
+- **Drafts to files, and a fresh session.** `capability-writer` and `feature-formulator` write drafts under `.shop/scratch/drafts/<run>/round-<n>/`, one directory per dispatch, applied in order, and reply with the change list and paths. The controller checks every file written is under that path before the gate. Slicing recommends executing the plan in a new session that reads the plan file, not the one that integrated, formulated and sliced.
 
 ## Small slices, steps and fresh agents (0.11.0)
 
-0.11.0 measures a slice's size before the work and holds it during the work. On shopsystem-kb one slice passed every test of slicing and then ran as one implementer over 72 files and 426k tokens; its review had to be split, and it removed the tests that covered a regression two of the plan's decisions caused together. Design: `.shop/records/archive/design-notes/2026-10-10-small-slices-and-steps-design.md`.
+0.11.0 measures a slice's size before the work and keeps it to that size during the work. On shopsystem-kb one slice passed every test of slicing and then ran as one implementer over 72 files and 426k tokens; its review had to be split, and it removed the tests that covered a regression two of the plan's decisions caused together. Design: `.shop/records/archive/design-notes/2026-10-10-small-slices-and-steps-design.md`.
 
-- **Small, a fourth test.** A slice lands in at most 8 production and 4 test modules, counting the migration it forces. Each slice carries `Lands: <p> production, <t> test`. For a slice that changes a form existing code depends on, the count is a probe, logged; `plan` refuses a slice over the budget (`slicing-into-increments`).
+- **Small, a fourth test.** A slice lands in at most 8 production and 4 test modules, counting the migration it forces. Each slice has `Lands: <p> production, <t> test`. For a slice that changes a form existing code depends on, the count is a probe, logged; `plan` refuses a slice over the budget (`slicing-into-increments`).
 - **Expand, migrate, contract.** A breaking change is cut as the new form beside the old, callers moved a group to a slice behind a test seam, the capability slices, then the old form removed, each with the suite and a search for its check (`slicing-into-increments`).
-- **A scout reads; the planner plans.** `code-scout`, on Haiku, runs the Lands probe and each task's research and writes notes to `.superpowers/scout/`. The planning session reads the notes, not the source.
+- **A scout reads; the planner plans.** `code-scout`, on Haiku, runs the Lands probe and each task's research and writes notes to `.shop/scratch/scout/`. The planning session reads the notes, not the source.
 - **Tests the decisions break.** Each task lists the existing tests its decisions make impossible to keep and what the plan decides for each. An implementer may change what a test asserts only when it is listed; any other test it would have to remove, loosen, skip or rewrite is a stop, `BLOCKED` with the test named (`bdd-implementer`, `bdd-red-green`). Both reviewers list every removed or weakened test, and one no task lists is Important.
-- **Steps.** (0.13.0: only where an order must be seen.) A task over about 5 files is written as ordered Steps, each with its own check and files, each run by a fresh implementer from the task's one report file. A step ends with the whole suite run once. One dispatch touches at most 15 files: before any edit an implementer writes a `Dispatch budget` at the head of its report, naming the files it will touch and the files it leaves, and when files are left it stops at a green commit and replies `PARTIAL`; a fresh implementer continues from the report (0.11.1: the written budget held in 13 of 14 runs, where a rule to count and stop held in one of five).
+- **Steps.** (0.13.0: only where an order must be seen.) A task over about 5 files is written as ordered Steps, each with its own check and files, each run by a fresh implementer from the task's one report file. A step ends with the whole suite run once. One dispatch touches at most 15 files: before any edit an implementer writes a `Dispatch budget` at the head of its report, naming the files it will touch and the files it leaves, and when files are left it stops at a green commit and replies `PARTIAL`; a fresh implementer continues from the report (0.11.1: the written budget was kept in 13 of 14 runs, where a rule to count and stop was kept in one of five).
 - **Fresh agents, a thin controller.** Review findings go to a file and then to a fresh implementer; no agent is resumed. The controller passes paths and reads short replies, not diffs, reports or source. A large diff is reviewed by area, in parallel.
 - **Lanes.** Tasks the planner marks `Lane:` (disjoint files, neither needing the other) may run at once, each lane in its own worktree, branch and virtualenv. The controller merges one at a time, runs the suite after each merge and writes the plan's checkpoints itself, from each lane's reply.
 
@@ -121,13 +121,13 @@ The transcripts are Claude Code's own files and not a published format: `measure
 - **Steps-only slices.** The scout marks each scenario `steps only` or `behaviour`; a task that is all steps runs on Sonnet with a batch-end review. Sizes are probed one batch ahead, not for the whole release. Lanes are marked where file lists are disjoint, never planned for.
 - **The controller** writes one line a slice and stops at a batch's close, so the next batch starts in a new session. Watch: the controller's cache read and peak context.
 
-Held, each with the measurement that would decide it: resuming an implementer in place of a fresh one, narrower triggers for `Review: per-task`, a budget by kind of change, and one research scout a batch.
+Deferred, each with the measurement that would decide it: resuming an implementer in place of a fresh one, narrower triggers for `Review: per-task`, a budget by kind of change, and one research scout a batch.
 
 ## A green suite (0.14.0)
 
 0.14.0 keeps the suite passing between slices, and keeps behaviour tested until a slice changes it. Design: `.shop/records/archive/design-notes/2026-10-11-green-suite-design.md`.
 
-- **A scenario that passes today is held, not removed.** When a line is re-worded or removed, formulation keeps the old scenario in the feature file, tagged `@holding` with " (held)" on its title, its steps unchanged, so it still passes. Slicing gives it a slice that retires it, the task lists it under `Retires:`, and the implementer removes it with `features retire` in the commit that turns its replacement green (`formulating-features`, `slicing-into-increments`, `bdd-red-green`).
+- **A scenario that passes today is deprecated, not removed.** When a line is re-worded or removed, formulation keeps the old scenario in the feature file, tagged `@deprecated` with " (deprecated)" on its title, its steps unchanged, so it still passes. Slicing gives it a slice that retires it, the task lists it under `Retires:`, and the implementer removes it with `features retire` in the commit that turns its replacement green (`formulating-features`, `slicing-into-increments`, `bdd-red-green`).
 - **A changed title never stops a module collecting.** `features bindings` reports every `scenario(…, "<title>")` call that names no scenario; `features rebind` rewrites the title in those calls. Formulation runs both before it commits.
 
 ## Analysis tools, a consequence sweep and invariants (0.15.0)
@@ -138,7 +138,7 @@ Held, each with the measurement that would decide it: resuming an implementer in
 - **The scout uses them before it searches,** and its notes say of each count whether it came from `refs`, `tests-of` or a search. "Tests the decisions break" starts from the tests that execute the changed code, where that is a list short enough to read; on kb, code on every call's path is executed by two thirds of the suite, and there the scout says so and searches.
 - **A consequence sweep.** Before a batch's slices are final, each decision that replaces something the code assumes is traced by a scout: every place that still embodies the old assumption, with the tests that execute it. Slicing gives every row a slice, a question for the spec, or a deferral logged with its price.
 - **A guard names its test.** A task says "a test that breaks is a stop" only by naming the passing test that executes the behaviour; where none does, the task writes it first.
-- **Invariants.** A project lists under `## Invariants` in its `CLAUDE.md` what must hold after any change, each with its test; slicing cuts the missing ones as an early enabling slice. A reviewer's probe that finds a defect is handed on as a test to keep, and one that checks such a property is proposed as an invariant.
+- **Invariants.** A project lists under `## Invariants` in its `CLAUDE.md` what must be true after any change, each with its test; slicing cuts the missing ones as an early enabling slice. A reviewer's probe that finds a defect is handed on as a test to keep, and one that checks such a property is proposed as an invariant.
 
 ## Research that runs the system (0.16.0)
 
@@ -161,18 +161,18 @@ Not changed: the implementer and the reviewers. A steps-only task on Sonnet reas
 
 ## A controller for each spec round (0.18.0)
 
-In shopsystem-knowledge's batch 19 the session that integrated and formulated a note read 30M tokens from cache, eleven times what its writers and formulators read together. It held the brainstorm (181k of context before integration began), and every writer and formulator that finished cost it another turn at that size: 53 turns for three formulation rounds.
+In shopsystem-knowledge's batch 19 the session that integrated and formulated a note read 30M tokens from cache, eleven times what its writers and formulators read together. It had the brainstorm in its context (181k before integration began), and every writer and formulator that finished cost it another turn at that size: 53 turns for three formulation rounds.
 
-- **`spec-round`** (since renamed `initiative-round`), a new agent, runs one round and ends with it: an integration round (it dispatches the `capability-writer` and checks the change list), the applying of approved drafts, or a formulation round (it dispatches the `feature-formulator`s, checks coverage, holds, splices and commits). It waits for its agents by a reply file each writes last.
+- **`spec-round`** (since renamed `initiative-round`), a new agent, runs one round and ends with it: an integration round (it dispatches the `capability-writer` and checks the change list), the applying of approved drafts, or a formulation round (it dispatches the `feature-formulator`s, checks coverage, deprecates, splices and commits). It waits for its agents by a reply file each writes last.
 - **The session the person talks to keeps the gate and nothing else.** `integrating-a-proposal` and `formulating-features` each begin with who does what: that session dispatches a fresh `initiative-round` for each round, shows the person the lines and questions that come back, and passes their answers to the next round. It opens no draft and dispatches no writer.
 - **A new session for a note that was brainstormed here** is recommended before integration starts.
 - **`measure`** attributes a dispatch whose description starts `spec` and gives the three spec agents the kind `spec`, so the 22 unattributed dispatches of batch 19 would have been counted.
 
-With a controller holding 270k: formulating six capabilities read 1.8M tokens from cache in all against 5.4M, and integrating a note 0.8M against 1.6M. The round costs about 6k more output tokens each time, and in a session that holds little it saves nothing.
+With a controller at 270k of context: formulating six capabilities read 1.8M tokens from cache in all against 5.4M, and integrating a note 0.8M against 1.6M. The round costs about 6k more output tokens each time, and in a session with little in its context it saves nothing.
 
 ## Requirement ids (0.19.0)
 
-Every Behaviour line carries a stable id, `[r<n>]`, and every scenario names its line by the tag `@r<n>`
+Every Behaviour line has a stable id, `[r<n>]`, and every scenario names its line by the tag `@r<n>`
 (design model v3). A new line takes the next free id, a changed line keeps its id, a removed line's id is
 retired in the capability's frontmatter and never reused. The gate shows ids and the spec commit names them.
 Ids are type-first, following shopsystem-knowledge's IRIs: `<kind>/<owner>/<product>/<context>/<name>`, with the design
@@ -184,11 +184,11 @@ files is migrated with migrating-to-capabilities' "Adding ids". The release's fi
 
 ## A ubiquitous language (0.20.0)
 
-A context's words are now checked, not only its lines. The glossary entries in `spec/index.md` are terms (`term/<name>`), each with the words it avoids (`Not:`), and `scripts/model check` reports a line or scenario that uses an avoided word (`v_t1`), a term with two entries (`v_t2`) and a term that avoids a term of its own glossary (`v_t3`).
+A context's words are now checked, not only its lines. The glossary entries in `spec/index.md` are terms (`term/<name>`), each with the words it avoids (`Not:`), and `scripts/model check` reports a line or scenario that uses an avoided word (`v_t1` (a word the glossary avoids)), a term with two entries (`v_t2` (a term has two entries)) and a term that avoids a term of its own glossary (`v_t3` (an avoided word is a term)).
 
 - **`checking-spec-consistency`** and the **`spec-checker`** agent judge a spec against itself, blind to the code: one capability's lines against its scenarios, and every line against the glossary. Report mode writes findings and changes nothing; fix mode takes the person's answers, changes the spec and its scenarios, and commits each with the ids and terms it names. The integration and formulation skills teach the glossary terms.
-- **`model` finds clingo behind a virtualenv**: run from a virtualenv without clingo, `check` tries the other `python3` interpreters on the PATH (and `SHOPSYSTEM_MODEL_PYTHON`), and says what it tried when none holds clingo.
-- **`features` takes `--file`**: `tag`, `hold`, `retire`, `move` and `rebind` can be limited to one feature file, so a title that appears in two files is no longer tagged by hand.
+- **`model` finds clingo behind a virtualenv**: run from a virtualenv without clingo, `check` tries the other `python3` interpreters on the PATH (and `SHOPSYSTEM_MODEL_PYTHON`), and says what it tried when none has clingo.
+- **`features` takes `--file`**: `tag`, `deprecate`, `retire`, `move` and `rebind` can be limited to one feature file, so a title that appears in two files is no longer tagged by hand.
 
 An existing `## Glossary` whose bullets are in another form gives a file problem per bullet: rewrite them to the form (this repository's own already fit).
 
@@ -198,7 +198,7 @@ Fixture runs on a seeded shelf spec (a planted `volume` for `book`, a scenario a
 
 Python 3, in `scripts/`. They take the dependencies they need (design-decision/plugin-takes-the-dependencies-it-needs): clingo for `model check` (`python3 -m pip install clingo`), and pytest and pytest-bdd for the scenarios as they move to pytest-bdd step definitions (initiative i11). `--help` is the contract; tests: `python3 -m pytest`.
 
-- `scripts/features`: count, list, tag, move and verify-moved for feature files, without the test runner; hold, retire and holding for scenarios kept while they still pass; bindings and rebind for the titles test modules bind.
+- `scripts/features`: count, list, tag, move and verify-moved for feature files, without the test runner; deprecate, retire and deprecated for scenarios kept while they still pass; bindings and rebind for the titles test modules bind.
 - `scripts/measure`: write, show and compare a batch's facts, from the session transcripts, the plan and git.
 - `scripts/tools`: probe and install the project's analysis tools, and use them through one interface: `map`, `tests-of`, `untested`, `refs`, `check`.
 - `scripts/model`: read a bounded context's spec, feature files, decisions, work and records as the facts of the design model's grammar (`facts`), check them against `scripts/model.lp` with clingo (`check`), write the decisions index (`decisions`), and trace a requirement to why it exists (`why`). Only `check` needs a package: `python3 -m pip install clingo`.
@@ -208,32 +208,32 @@ Python 3, in `scripts/`. They take the dependencies they need (design-decision/p
 
 From 0.8.0 a bounded context has one spec: `spec/index.md`, the decisions in `spec/decisions/` with a generated `index.md` (until 0.21.0 one ledger, `spec/decisions.md`), and `spec/capabilities/<name>.md`, each capability formulated as `features/<name>.feature`. The format is `docs/capability-format.md`.
 
-- A brainstorming note is a proposal. `integrating-a-proposal` has the `capability-writer` agent (blind to the code; it reads `spec/`, `features/` and `docs/`, and writes only drafts under `.superpowers/spec-drafts/`) merge it into `spec/`, and stops at the one human gate: the added, changed and removed Behaviour lines and the questions the note left open. It never starts a second spec.
+- A brainstorming note is a proposal. `integrating-a-proposal` has the `capability-writer` agent (blind to the code; it reads `spec/`, `features/` and `docs/`, and writes only drafts under `.shop/scratch/drafts/`) merge it into `spec/`, and stops at the one human gate: the added, changed and removed Behaviour lines and the questions the note left open. It never starts a second spec.
 - `formulating-features` writes one scenario per approved line and needs no second approval. A line with two readings gets no scenario; its question goes to the person and the answer back through integration. This replaces 0.6.0's settled/deciding sort.
-- Slicing cuts stack slices from the bounds in `spec/index.md`; its `QUESTION FOR THE SPEC:` lines end in a capability line or a ledger entry.
+- Slicing cuts stack slices from the bounds in `spec/index.md`; its `QUESTION FOR THE SPEC:` lines end in a capability line or a decision.
 - `migrating-to-capabilities` moves a repository with notes and approved features onto `spec/`: capabilities grouped by behaviour, not by the old files; scenarios moved verbatim; test bindings follow the step definitions, which are never edited; the suite, the passing tests and every slice-tag count equal before and after. On a copy of shopsystem-kb: 171 scenarios from 16 features into 20 capabilities, 265 passed before and after, all 89 slice-tag counts equal.
 
 A consuming repository's `CLAUDE.md` can say: "Brainstorming reads `spec/` first. Its note proposes changes to `spec/`, which integrating-a-proposal merges; it never starts a second spec."
 
-## Plans carry no code; approval is for decisions
+## Plans contain no code; approval is for decisions
 
-From 0.6.0 the planner plans and the implementer implements. `slicing-into-increments` hands writing-plans a constraint: no code blocks, file contents or diffs in the plan; each task says which scenarios go green, why they are red today, where the change lands by the project's `CLAUDE.md`, what the spec left open and how it was decided, which steps and fixtures to reuse, and the verification commands with counts taken from the tags. Nothing is built in a scratch copy first and no plan is replayed. Under `bdd-red-green` the implementer writes the code after the red run; a task that carries code is not pasted.
+From 0.6.0 the planner plans and the implementer implements. `slicing-into-increments` hands writing-plans a constraint: no code blocks, file contents or diffs in the plan; each task says which scenarios go green, why they are red today, where the change lands by the project's `CLAUDE.md`, what the spec left open and how it was decided, which steps and fixtures to reuse, and the verification commands with counts taken from the tags. Nothing is built in a scratch copy first and no plan is replayed. Under `bdd-red-green` the implementer writes the code after the red run; a task that contains code is not pasted.
 
-When execution runs under `superpowers:subagent-driven-development`, the controller dispatches by the plan's Global Constraints (from 0.11.0 they carry the execution rules: by step, paths in and short replies out, fresh fix rounds, lanes). Implementers work from intent under `bdd-red-green` and hand back on its stop conditions; "cannot verify" fails a review rather than passing it; main is pushed when the batch is green and reviewed.
+When execution runs under `superpowers:subagent-driven-development`, the controller dispatches by the plan's Global Constraints (from 0.11.0 they contain the execution rules: by step, paths in and short replies out, fresh fix rounds, lanes). Implementers work from intent under `bdd-red-green` and hand back on its stop conditions; "cannot verify" fails a review rather than passing it; main is pushed when the batch is green and reviewed.
 
 0.6.0's settled/deciding sort of scenarios is replaced in 0.8.0 by the gate on Behaviour lines (above). The principle stands: the person approves decisions, not transcription.
 
-## Agents: rules held by tools, not by asking
+## Agents: rules enforced by tools, not by asking
 
 From 0.7.0 the plugin gives each role in the workflow an agent whose tools are exactly the role's. A controller running `superpowers:subagent-driven-development` dispatches these types instead of `general-purpose`.
 
 | agent | tools | model | for |
 |---|---|---|---|
-| `shopsystem-bdd:capability-writer` | Read, Glob, Grep, Write | opus | integrating a note into `spec/`, and a repository's first `spec/`, blind to the code; writes only under `.superpowers/spec-drafts/` |
-| `shopsystem-bdd:feature-formulator` | Read, Glob, Grep, Write | opus | writing feature files from the spec, blind to the code; writes only under `.superpowers/spec-drafts/` |
+| `shopsystem-bdd:capability-writer` | Read, Glob, Grep, Write | opus | integrating a note into `spec/`, and a repository's first `spec/`, blind to the code; writes only under `.shop/scratch/drafts/` |
+| `shopsystem-bdd:feature-formulator` | Read, Glob, Grep, Write | opus | writing feature files from the spec, blind to the code; writes only under `.shop/scratch/drafts/` |
 | `shopsystem-bdd:initiative-round` | Read, Glob, Grep, Bash, Write, Edit, Agent | sonnet | one round of spec work for the session that keeps the gate: an integration round, the applying of approved drafts, or a formulation round; dispatches only the two agents above |
 | `shopsystem-bdd:spec-checker` | Read, Glob, Grep, Write | sonnet | judging a spec against itself, blind to the code: one capability's lines against its scenarios, or every line against the glossary; dispatched by `checking-spec-consistency`; writes only its findings file |
-| `shopsystem-bdd:code-scout` | Read, Glob, Grep, Bash, Write | haiku | the Lands probe at slicing and a task's research at planning; writes only its notes under `.superpowers/scout/` |
+| `shopsystem-bdd:code-scout` | Read, Glob, Grep, Bash, Write | haiku | the Lands probe at slicing and a task's research at planning; writes only its notes under `.shop/scratch/scout/` |
 | `shopsystem-bdd:bdd-implementer` | Read, Edit, Write, Glob, Grep, Bash | sonnet | one task of a no-code plan, one step of it, or one fix round, `bdd-red-green` preloaded |
 | `shopsystem-bdd:bdd-task-reviewer` | Read, Glob, Grep, Bash, Write | opus | a task's review, whole or one area of it, and the scoped re-review of a fix round; writes only its findings file |
 | `shopsystem-bdd:bdd-branch-reviewer` | Read, Glob, Grep, Bash, Write | opus | the whole-branch review at the end of a batch, or one area of it, shape and coupling included; writes only its findings file |
@@ -247,7 +247,7 @@ What the tools make structural:
 What stays a request:
 - **Bash is still available.** Reviewers need it to run the suite, so "no commit, no push, no tag" is still asked, not enforced.
 - **Write is not limited to one path.** The task reviewer, the scout and the spec agents are asked to write only their one file. Bash could already write files, so Write gives the reviewer and the scout no power they lacked.
-- **Command restrictions don't carry over from a plugin.** A plugin agent's `hooks` and `permissionMode` are ignored, and a tool entry with a specifier such as `Bash(git push *)` removes Bash altogether.
+- **Command restrictions don't pass over from a plugin.** A plugin agent's `hooks` and `permissionMode` are ignored, and a tool entry with a specifier such as `Bash(git push *)` removes Bash altogether.
 - **The fuller guarantee needs repository settings.** It is `permissions.deny` in the repository's `.claude/settings.json`, which binds the controller too, so the controller's own push must then run where those rules do not apply.
 
 `model` is a default: a dispatch that names a model overrides it, as the controller does for the final review on the most capable model.

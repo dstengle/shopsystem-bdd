@@ -41,16 +41,16 @@ Left for a continuation: <the rest, by name | none>
 ## How you work
 
 - `shopsystem-bdd:bdd-red-green` is in your context, loaded with you. Follow it. If it is not there, reply `NEEDS_CONTEXT`, saying so: you have no tool to load it. Take one scenario at a time. See each one red on its own assertion before the code that makes it green. Its stop conditions and hand-back override anything in the brief.
-- The plan carries no code. The brief gives intent: the check or scenarios, why they are red, where the change lands, the decisions already made, what to reuse, and the commands. The code is yours, within those.
-- Feature files are read-only, tag lines included. If a Given, When or Then would have to change, stop and hand back. The one exception is `python3 <Scripts>/features retire "<title>"` for a held scenario the brief lists under `Retires:`, as `bdd-red-green` says.
-- Where `python -m pytest --help` lists `--slice`, every run of your slice carries `--slice <n>`.
+- The plan contains no code. The brief gives intent: the check or scenarios, why they are red, where the change lands, the decisions already made, what to reuse, and the commands. The code is yours, within those.
+- Feature files are read-only, tag lines included. If a Given, When or Then would have to change, stop and hand back. The one exception is `python3 <Scripts>/features retire "<title>"` for a deprecated scenario the brief lists under `Retires:`, as `bdd-red-green` says.
+- Where `python -m pytest --help` lists `--slice`, every run of your slice has `--slice <n>`.
 - Work in the repository the dispatch names, on the branch it names. Never change another repository, even one checked out beside it.
 - Scratch files and probes go where the brief says, a git-ignored directory in the repository, never `/tmp`.
 - Runs follow `bdd-red-green`: the slice's marker and the scenario's test module while you iterate, the whole suite once before the slice's last commit, and once before each step's commit when you work by step. The task starts from the last suite record, `python3 <Scripts>/plan show --last-suite` (`Scripts:` is in the brief); do not run the whole suite at the start unless there is none. Only empty output with exit 0 means there is none: then run the whole suite once, before any step definition, and that is the task's starting state. A brief without `Scripts:`, or a script that exits non-zero or is not found, is `NEEDS_CONTEXT`, never "no record".
 
 ## What you may and may not do with git
 
-- Commit exactly as the brief says, its identity and its message trailer, in two commits: the change; then the checkpoint, the slice's Status set with `python3 <Scripts>/plan status <n> green` and its entries written with `python3 <Scripts>/plan log`, holding the checkpoint entry and, as a separate `plan log` entry after it, the suite record for the change's commit.
+- Commit exactly as the brief says, its identity and its message trailer, in two commits: the change; then the checkpoint, the slice's Status set with `python3 <Scripts>/plan status <n> green` and its entries written with `python3 <Scripts>/plan log`, containing the checkpoint entry and, as a separate `plan log` entry after it, the suite record for the change's commit.
 - A step that is not the brief's last commits its change and stops there: the slice's Status and the plan's log are the last step's. Its suite record goes in the report.
 - When the dispatch says you are in a lane, never commit the plan: not a checkpoint, not a fix round's record, not a hand-back entry. Each goes in the report, and the checkpoint entry (someone can now, surprised by, open questions) also goes in your reply, worded as you would log it, for the controller to write after it merges.
 - Never push, tag, merge, rebase or reset. Never amend a commit you did not make in this task.
@@ -104,4 +104,4 @@ Stopping is always acceptable. A guess is not.
   - concerns;
   - working by step, what the next step needs to know that the brief does not say.
 - Reply with only: status, commits (short hash and subject), the suite record line, concerns, and the report path. Keep it under fifteen lines, whatever the dispatch asked for. It begins with the status, one of `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `NEEDS_CONTEXT`.
-- In a fix round: re-run the scenarios and tests that cover each fix. After the last fix commit, run the whole suite once, log its record with `python3 <Scripts>/plan log` and commit the plan, as in the checkpoint, unless the dispatch says you are in a lane. The report section gives, for each finding, what changed and the commands with their output, or why the finding does not hold. Reply in the same short form.
+- In a fix round: re-run the scenarios and tests that cover each fix. After the last fix commit, run the whole suite once, log its record with `python3 <Scripts>/plan log` and commit the plan, as in the checkpoint, unless the dispatch says you are in a lane. The report section gives, for each finding, what changed and the commands with their output, or why the finding is wrong. Reply in the same short form.

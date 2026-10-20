@@ -26,7 +26,7 @@ Every sentence of the note lands in exactly one place: a Behaviour line, a gloss
 
 - EARS with "shall" (`docs/capability-format.md`, Writing the behaviour section): `The <system> shall ...`, `When <trigger>, the <system> shall ...`, `While <state>, ...`, `If <condition>, then ...`, `Where <feature>, ...`, or the clauses combined in the order Where, While, then When or If. The pattern follows what starts the behaviour, not the note's wording. One "shall", one response and one sentence a line; an `If` line only for the capability's purpose, a file the person could lose, or a failure seen.
 - The response is something the narrator observes: a value returned, a refusal and the reason it names, a file at a path. A refusal names its reason: *the code is refused because it has expired*. The words of a message, a status code, a field name, a table or a column are Implementation.
-- Every Behaviour line cites the note sentence that states it, in the change list you reply with; the capability file carries the line alone. A line the note does not state is not written, however obvious it seems (a refused code leaving the total unchanged; a nullable column implying "no minimum means any total"; a rounding mode from the implementation notes becoming a rule). It is a question, with the line you would write if the answer is yes.
+- Every Behaviour line cites the note sentence that states it, in the change list you reply with; the capability file has the line alone. A line the note does not state is not written, however obvious it seems (a refused code leaving the total unchanged; a nullable column implying "no minimum means any total"; a rounding mode from the implementation notes becoming a rule). It is a question, with the line you would write if the answer is yes.
 - A table of commands stays a table; a list of properties stays a list.
 - Use the glossary's terms for what they name, and never a word an entry lists after `Not:`.
 
@@ -58,7 +58,7 @@ Write `## Context` and `## Alternatives` only where the note weighed two options
 
 ## index.md
 
-Frontmatter `id: bounded-context/<context path>`, the context path being `<owner domain>/<product>/<context name>`, the context's id (`docs/capability-format.md`, Requirement ids), and `title`; then Purpose, constraints carried (with any bound stated as a bound), composition (the capabilities in reading order), order of building, testing, and the Glossary (below). Update it when capabilities are added or removed. When `spec/` does not exist yet and the brief does not give the owner's domain, product and context name, ask for them as a question at the gate, with the id you would write; draft `index.md` and every capability's `id` with that id meanwhile, and an answer that differs comes back as a round that drafts them again.
+Frontmatter `id: bounded-context/<context path>`, the context path being `<owner domain>/<product>/<context name>`, the context's id (`docs/capability-format.md`, Requirement ids), and `title`; then Purpose, Constraints (with any bound stated as a bound), composition (the capabilities in reading order), order of building, testing, and the Glossary (below). Update it when capabilities are added or removed. When `spec/` does not exist yet and the brief does not give the owner's domain, product and context name, ask for them as a question at the gate, with the id you would write; draft `index.md` and every capability's `id` with that id meanwhile, and an answer that differs comes back as a round that drafts them again.
 
 ## The glossary
 
@@ -72,7 +72,7 @@ A term is a bullet of `spec/index.md`'s `## Glossary`, written exactly `- **<ter
 4. Questions: each condition the note does not state, one line, with the capability it concerns and the line you would write for each answer. Two readings of one sentence are a question too.
 5. Cut sentences: each note sentence that fits no section, quoted.
 
-Your reply holds the change list, questions and cut sentences (items 2, 4 and 5) and the paths of the drafts. No file content. When the brief names a reply file, write the same reply to it, after every draft and as the last thing you do: whoever dispatched you waits for that file. Its parts, in this order and nothing else: the drafts' paths, one per line; the change list; the questions; the cut sentences.
+Your reply contains the change list, questions and cut sentences (items 2, 4 and 5) and the paths of the drafts. No file content. When the brief names a reply file, write the same reply to it, after every draft and as the last thing you do: whoever dispatched you waits for that file. Its parts, in this order and nothing else: the drafts' paths, one per line; the change list; the questions; the cut sentences.
 
 ## Migration mode
 

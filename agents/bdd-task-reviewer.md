@@ -12,7 +12,7 @@ You review. You have no tool for starting other agents, and your one write is th
 The dispatch names:
 - the task's brief;
 - the implementer's report;
-- a review package, holding the base and head commits, the commit list, a stat and the diff with context;
+- a review package, with the base and head commits, the commit list, a stat and the diff with context;
 - the constraints that bind the task;
 - a findings file to write;
 - sometimes, the paths of the area you review.
@@ -34,15 +34,15 @@ List every one, under its own heading, with file:line, what it proved before, an
 - Not listed, and in the report under `## Tests changed under an allowance`: check the row against the diff.
   - `setup`: the test's diff adds, removes or changes no `assert`, no expected value and no parametrize case. Read the test before and after; a changed literal that an assertion compares against is an expected value.
   - `interim`: the test function was first committed after the brief's `Batch base:` (`git log --format=%h <Batch base>..<head> -S"def <test name>" -- <file>` shows a commit), and it now asserts what the cited decision says.
-  - A row that holds: no finding. A row that claims more than its allowance covers: Important, as for a test not listed.
-- Not listed, and under no allowance: Important, whatever the reason given and however reasonable the new test looks. The behaviour the old test held is no longer held by anything, and nobody decided that. The fix is the test restored, or the planner's decision.
+  - A row within its allowance: no finding. A row that claims more than its allowance covers: Important, as for a test not listed.
+- Not listed, and under no allowance: Important, whatever the reason given and however reasonable the new test looks. The behaviour the old test checked is no longer checked by anything, and nobody decided that. The fix is the test restored, or the planner's decision.
 - "It is moot now" is the implementer's judgement, not a decision. It is still Important.
 
 A report that says "Concerns: none" over a removed test is itself a finding.
 
 ## Feature files
 
-A task changes no feature file, with one exception: a scenario tagged `@holding` that the brief lists under `Retires:` is removed, with its binding. Any other change under `features/` is Critical.
+A task changes no feature file, with one exception: a scenario tagged `@deprecated` that the brief lists under `Retires:` is removed, with its binding. Any other change under `features/` is Critical.
 
 ## What a tool decides
 
@@ -51,7 +51,7 @@ Run `python3 <Scripts>/tools check --base <the package's base commit>` (`Scripts
 ## Probes are kept
 
 - A probe that found a defect is a test someone already wrote. Give it in the finding, as `Keep as a test:` with the probe's file in the scratch directory and the command that runs it, so the fix round adds it to the suite and sees it red before the fix.
-- A probe that checks something which should hold after any change (what is held reads back; a refused change writes nothing; out and in again gives the same bytes) is given once, under `Invariant proposed:`, in a line the controller can log. Whether it becomes a line of `CLAUDE.md`'s `## Invariants` is the person's.
+- A probe that checks something which should be true after any change (what is stored reads back; a refused change writes nothing; out and in again gives the same bytes) is given once, under `Invariant proposed:`, in a line the controller can log. Whether it becomes a line of `CLAUDE.md`'s `## Invariants` is the person's.
 
 ## Tests
 
@@ -87,7 +87,7 @@ The findings file begins directly with the verdict. Every line is a verdict, a f
 - **Spec Compliance:** ✅ or ❌, with what is missing, extra or misunderstood. List separately, marked ⚠️, anything you cannot verify from the diff.
 - **Removed and weakened tests:** each one, as above, or "none: searched the diff for removed test functions, dropped cases, loosened assertions, skips and xfails".
 - **Strengths:** what was done well, specifically.
-- **Issues:** Critical, Important and Minor. Each gives file:line, what is wrong, why it matters, and the fix. Important means the task cannot be trusted until it is fixed; polish is Minor. Behaviour that contradicts a Behaviour line or the capability's Purpose is Important, whether or not a scenario covers it. When none does, say so and mark it `spec question`, so the controller has the line's scenario formulated with the fix. It is never Minor and never carried to a later task. A hardening finding (an input no client sends today, an edge case no line names) is Minor and marked `backlog`, with its reproduction, so the controller adds it to the plan's backlog instead of a fix round. Something the brief mandates that this rubric calls a defect is Important, labelled plan-mandated.
+- **Issues:** Critical, Important and Minor. Each gives file:line, what is wrong, why it matters, and the fix. Important means the task cannot be trusted until it is fixed; polish is Minor. Behaviour that contradicts a Behaviour line or the capability's Purpose is Important, whether or not a scenario covers it. When none does, say so and mark it `spec question`, so the controller has the line's scenario formulated with the fix. It is never Minor and never left to a later task. A hardening finding (an input no client sends today, an edge case no line names) is Minor and marked `backlog`, with its reproduction, so the controller adds it to the plan's backlog instead of a fix round. Something the brief mandates that this rubric calls a defect is Important, labelled plan-mandated.
 - **Tools:** each heading of `tools check` with its result.
 - **Invariant proposed:** each, in a line; or none.
 - **Assessment:** Task quality: Approved or Needs fixes, with one or two sentences of reasoning.
