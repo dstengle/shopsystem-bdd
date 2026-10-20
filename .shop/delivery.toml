@@ -1,8 +1,0 @@
-# work run's settings for this repository (supervision). Bare Write and Edit are left out of every stage:
-# acceptEdits keeps a worker's writes inside its worktree (deliver-real, 2026-10-20: with a bare Write the
-# researcher wrote into the main checkout in 5 of 8 runs, without it 0 of 8).
-[allowed_tools]
-research = ["Read", "Glob", "Grep", "Bash(python3 *)", "Bash(git status*)", "Bash(git diff*)", "Bash(git log*)", "Bash(git show*)"]
-plan = ["Read", "Glob", "Grep"]
-implement = ["Read", "Glob", "Grep", "Bash(python3 *)", "Bash(git add *)", "Bash(git commit *)", "Bash(git status*)", "Bash(git diff*)", "Skill(shopsystem-bdd:bdd-red-green)"]
-review = ["Read", "Glob", "Grep", "Bash(python3 *)", "Bash(git status*)", "Bash(git diff*)", "Bash(git log*)", "Bash(git show*)"]
