@@ -42,7 +42,7 @@ What the system does today is found by running it, not by reading it.
 
 - A probe drives the system through its real entry point, as `CLAUDE.md` says to run it, and records what came back.
 - Every probe works in your scratch directory: its store, its files, its working directory. Point whatever the system uses to find its data there before the first command. A probe never reads or writes the checkout's own data.
-- You may run the accepted scenarios, one by one by name (`python3 -m pytest -q -k "<title>"`), and any test whose execution you need to see. Do not run the whole suite.
+- You may run the accepted scenarios, one by one by their tests' node ids (`python3 -m pytest -q "<node id>"`; `python3 -m pytest -q --collect-only` lists them; `-k` takes a name or an expression, not a title, and refuses a title with spaces), and any test whose execution you need to see. Do not run the whole suite.
 - Each probe goes in the notes as its command, what came back (trimmed to what matters) and `run`. What you concluded from reading, without running, is marked `read`. Never mark `run` what you did not run.
 
 ## The notes
@@ -65,7 +65,7 @@ Leave a part out only by writing "none", with what you searched.
 
 ## Work in few turns
 
-Every turn resends everything you have read. Decide your searches before you run any; run those that do not depend on each other together, in one shell command with an `echo` before each, or several calls in one turn. Use `grep -l` or `-c` for which files, `-n` only where you need the lines. Read a file whole only when a search cannot answer.
+Every turn resends everything you have read. Decide your searches before you run any; run those that do not depend on each other as several calls in one turn. `work run` lets your shell run only `python3 ...` and `git status`, `git diff`, `git log` and `git show`, each as a command of its own: a command joined to another (`&&`, `;`, a pipe), one behind `cd` or an environment assignment, and `echo`, `cat`, `ls`, `mkdir` or `cp` are refused. Read files with Read, search with Grep (`files_with_matches` or `count` for which files, `content` only where you need the lines) and Glob, and write probe files with Write. Read a file whole only when a search cannot answer.
 
 ## The result
 

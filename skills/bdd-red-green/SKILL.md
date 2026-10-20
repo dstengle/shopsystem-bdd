@@ -21,7 +21,7 @@ The work-item's plan (`plan.md` in its plan run directory) says which scenarios 
 
 Work through the work-item's scenarios in the order the plan lists them. Where `python3 -m pytest --help` lists `--work-item`, `python3 -m pytest -q --work-item <name>` runs the work-item's scenarios; otherwise run them by title. For each scenario:
 
-1. **Run that one scenario** (`python3 -m pytest -q -k "<scenario title>"`). It must fail for the right reason: an undefined step, or the Then assertion on the outcome. Any other result is a stop condition (below).
+1. **Run that one scenario** by its test's node id (`python3 -m pytest -q "<node id>"`; `python3 -m pytest -q --collect-only` lists them). `-k` takes a name or an expression, not a title: a title with spaces is refused as a wrong expression. It must fail for the right reason: an undefined step, or the Then assertion on the outcome. Any other result is a stop condition (below).
 2. **Write only the step definitions this scenario needs.** Given and When steps drive the system's real entry point. Then steps assert exactly what the line says, nothing more.
 3. **Write the least production code that turns this scenario green.** Hard-coded values are fine inside a work-item.
 4. **Run the work-item's scenarios** and the test module the scenario lives in. Everything previously green there stays green.
