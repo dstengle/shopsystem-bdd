@@ -17,17 +17,19 @@ what running it shows.
 
 ## Behaviour
 - [r1] **When** `migrate run --context <path>` is run, `migrate` shall move with git a top-level `decisions/` to `spec/decisions/`, `work/` to `.shop/work/`, and each `records/<x>` to `.shop/records/<x>`.
-- [r2] **When** `migrate run` finds a ledger entry `## decision/<nnnn>-<slug>` in `spec/decisions.md`, `migrate` shall replace it with `spec/decisions/<nnnn>-<slug>.md`, whose summary is the entry's first paragraph, whose Decision is the entry's whole text, whose status is accepted, and whose `date`, `by`, `supersedes` and `revisit_when` are the entry's.
+- [r2] **When** `migrate run` finds a ledger entry `## decision/<nnnn>-<slug>` in `spec/decisions.md`, `migrate` shall replace it with `spec/decisions/<nnnn>-<slug>.md`, whose summary is the entry's first paragraph, whose Decision is the entry's whole text, whose status is superseded when another entry supersedes it and accepted otherwise, and whose `date`, `by`, `supersedes` and `revisit_when` are the entry's.
 - [r3] **When** `migrate run` finds a `@holding` scenario, `migrate` shall make it a `@deprecated` scenario as `features deprecate` does, with no `@holding` tag left.
 - [r4] **When** `migrate run --context <path>` is run, `migrate` shall give `spec/index.md` the id `bounded-context/<path>`.
 - [r5] **When** `migrate run` moves a file or changes an id, `migrate` shall rewrite each repository-relative path, relative Markdown link and frontmatter id that names it in the repository's tracked text files.
-- [r6] **When** `migrate run` has run on a repository on the old system, `migrate` shall have left it so that `model check` reports no violation, unresolved reference or file problem.
+- [r6] **When** `migrate run` has run on a repository on the old system, `migrate` shall have left it so that `model check` reports no unresolved reference or file problem.
 - [r7] **If** `migrate` cannot make every change it was asked to, then `migrate` shall exit non-zero, naming each change it could not make, and change no file.
-- [r8] **When** `migrate run` is run, `migrate` shall move with git `docs/superpowers/plans/` to `.shop/records/archive/plans/` and `docs/superpowers/specs/` to `.shop/records/archive/design-notes/`.
-- [r9] **When** `migrate run` gives a capability, a decision file or a moved record its id, `migrate` shall write `<kind>/<path>/<name>`, the name being the file's stem, without a decision file's number, and the kind `capability`, `design-decision`, or for a moved plan, design note or test log (a file whose name ends `-test-log.md`) `initiative-archive`, `decision-argument` or `measurement`.
+- [r8] **When** `migrate run` is run, `migrate` shall move with git `docs/superpowers/plans/` to `.shop/records/archive/plans/`, `docs/superpowers/specs/` to `.shop/records/archive/design-notes/` and `docs/superpowers/requests/` to `.shop/records/archive/requests/`.
+- [r9] **When** `migrate run` gives a capability, a decision file or a moved record its id, `migrate` shall write `<kind>/<path>/<name>`, the name being the file's stem, without a decision file's number, and the kind `capability`, `design-decision`, or for a moved plan or request `initiative-archive`, for a moved design note or ADR `decision-argument`, and for a moved test log (a file whose name ends `-test-log.md`) `measurement`.
 - [r10] **When** `migrate run` finds Behaviour lines with no id, `migrate` shall number them in Behaviour order from one above the highest id their capability has ever used.
 - [r11] **When** `migrate run` has replaced every entry of `spec/decisions.md` and the ledger holds nothing but its entries and a title, `migrate` shall remove `spec/decisions.md`.
 - [r12] **When** `migrate run` gives a moved record its id and the record has no `about`, `migrate` shall give it `about: bounded-context/<path>`.
+- [r13] **When** `migrate run` finds a ledger entry `## decision/<slug>` with no number, `migrate` shall number it in ledger order from one above the ledger's highest entry number.
+- [r14] **When** `migrate run` is run, `migrate` shall move with git a top-level `adrs/` to `.shop/records/decision-arguments/`.
 
 ## Implementation, may change
 - Python 3 with the standard library; moves are `git mv`; it does not commit. Every change is computed first,
