@@ -36,15 +36,20 @@ AGENT_PREFIX = "shopsystem-bdd:"
 SCRIPTS = Path(__file__).resolve().parent
 # The worker's agents are this plugin's: claude is given the plugin root, so an installed copy of another version
 # (whose agents may be older or missing) is not the one --agent finds.
-# Each stage's tools, the narrowest its agent needs (the implementer loads bdd-red-green itself: a `claude -p --agent`
-# session does not preload an agent's `skills:`); .shop/delivery.toml's [allowed_tools] replaces a stage's list.
-READER = ["Read", "Glob", "Grep", "Write", "Bash(python3 *)", "Bash(git status*)", "Bash(git diff*)", "Bash(git log*)",
-          "Bash(git show*)"]
+# Each stage's tools, the narrowest its agent needs; .shop/delivery.toml's [allowed_tools] replaces a stage's list. No
+# list gives a bare Write or Edit, the delivery.toml's either: a worker's writes are left to acceptEdits, which keeps
+# them in the worktree it is started in (r13; the bare Write let a researcher write into the main checkout). A
+# `claude -p --agent` session does not preload an agent's `skills:`, so each is added as `Skill(<skill>)` to whatever
+# list the stage has, and the worker loads it itself.
+# A worker's Bash runs pytest, the plugin's scripts by their path and the git commands its stage needs, and no other
+# Python (r14).
+PYTHON = ["Bash(python3 -m pytest*)", "Bash(python3 %s/*)" % SCRIPTS]
+READER = ["Read", "Glob", "Grep", *PYTHON, "Bash(git status*)", "Bash(git diff*)", "Bash(git log*)", "Bash(git show*)"]
 TOOLS = {
     "research": READER,
-    "plan": ["Read", "Glob", "Grep", "Write"],
-    "implement": ["Edit", "Write", "Read", "Glob", "Grep", "Bash(python3 *)", "Bash(git add *)", "Bash(git commit *)",
-                  "Bash(git status*)", "Bash(git diff*)", "Skill(shopsystem-bdd:bdd-red-green)"],
+    "plan": ["Read", "Glob", "Grep"],
+    "implement": ["Read", "Glob", "Grep", *PYTHON, "Bash(git add *)", "Bash(git commit *)", "Bash(git status*)",
+                  "Bash(git diff*)"],
     "review": READER,
 }
 
@@ -145,12 +150,29 @@ class Run:
             lines.append("Base: %s" % base)
         lines += ["Worktree: %s" % tree, "Branch: %s" % (branch or "none (a detached checkout)")]
         lines += ["%s: %s" % kv for kv in extra]
+        if stage == "plan":
+            lines += self.research_questions(name)
         path = here / "brief.md"
         path.write_text("# %s of %s\n\n%s\n\nRead (paths in your worktree):\n%s\nRun directory: %s\nResult file: %s\n\n"
+                        "You start in your worktree, %s: run every command from there, as it is, and never change "
+                        "directory (no `cd`, no `git -C`); a command that does is refused.\n\n"
                         "Write your notes, plan, report or findings in the run directory and, last, the result file: "
                         "JSON with `status`, `summary` (under fifteen lines) and `questions` (a list of strings).\n"
-                        % (stage, name, "\n".join(lines), "".join("- %s\n" % r for r in read), here, here / "result.json"))
+                        % (stage, name, "\n".join(lines), "".join("- %s\n" % r for r in read), here, here / "result.json",
+                           tree))
         return path
+
+    def research_questions(self, name):
+        """The questions the work-item's last research run gave with its DONE, as brief lines for the planner (r16)."""
+        runs = self.dir / "runs" / name
+        done = sorted((p for p in runs.glob("*-research") if p.is_dir() and p.name.split("-")[0].isdigit()),
+                      key=lambda p: int(p.name.split("-")[0])) if runs.is_dir() else []
+        data = json.loads((done[-1] / "result.json").read_text()) if done else {}
+        if data.get("status") != "DONE" or not data.get("questions"):
+            return []
+        asked = data["questions"] if isinstance(data["questions"], list) else [data["questions"]]
+        return ["Questions the researcher gave with its DONE, for you to settle or ask:"] + [
+            "- %s" % (q if isinstance(q, str) else json.dumps(q)) for q in asked]
 
     def snapshot(self):
         """.shop/work/ of the main checkout: its files with their content, and its directories."""
@@ -175,8 +197,13 @@ class Run:
         path = self.root / ".shop" / "delivery.toml"
         return tomllib.loads(path.read_text()) if path.is_file() else {}
 
-    def tools(self, stage):
-        return list(self.delivery().get("allowed_tools", {}).get(stage, TOOLS[stage]))
+    def tools(self, stage, agent):
+        """The stage's list, less a bare Write or Edit (r13), with `Skill(<skill>)` for each skill the agent's definition
+        lists (r12)."""
+        tools = [t for t in self.delivery().get("allowed_tools", {}).get(stage, TOOLS[stage]) if t not in ("Write", "Edit")]
+        definition = SCRIPTS.parent / "agents" / (agent + ".md")
+        skills = workqueue.frontmatter(definition.read_text())[0].get("skills") if definition.is_file() else None
+        return tools + ["Skill(%s)" % s for s in skills or [] if "Skill(%s)" % s not in tools]
 
     def worktree(self, name, label, branch=None):
         """A worktree of the initiative branch's head for one worker: on `branch`, else detached."""
@@ -211,7 +238,7 @@ class Run:
         done = subprocess.run([self.claude, "-p", "Read the brief file %s and do what it says." % brief,
                                "--agent", AGENT_PREFIX + agent, "--plugin-dir", str(SCRIPTS.parent),
                                "--session-id", session, "--output-format", "json",
-                               "--permission-mode", "acceptEdits", "--allowedTools", ",".join(self.tools(stage))],
+                               "--permission-mode", "acceptEdits", "--allowedTools", ",".join(self.tools(stage, agent))],
                               cwd=tree, capture_output=True, text=True)
         self.put_back(kept)
         shutil.copytree(here, kept_at)
@@ -226,6 +253,7 @@ class Run:
             data = None
         if not isinstance(data, dict):
             return None, "%s's result file %s is not a JSON object" % (agent, self.rel(result))
+        self.keep_named(data, tree, here, kept_at)
         questions = data.get("questions")
         if isinstance(questions, str):
             data["questions"] = [questions]
@@ -233,6 +261,17 @@ class Run:
             return None, "%s's result file %s gives its questions as %s, not a list of questions" % (
                 agent, self.rel(result), json.dumps(questions))
         return data, None
+
+    def keep_named(self, data, tree, here, kept_at):
+        """Copy into the run directory each file of the worktree the result names outside the worker's run directory,
+        before the worktree is removed (r15): a field's value that is the path of such a file, absolute or relative to
+        the worktree."""
+        for field, value in data.items():
+            if field in ("status", "summary") or not isinstance(value, str) or not value.strip():
+                continue
+            path = (tree / value).resolve()
+            if path.is_file() and path.is_relative_to(tree.resolve()) and not path.is_relative_to(here.resolve()):
+                shutil.copy2(path, kept_at / path.name)
 
     def outcome(self, agent, data, failure):
         """None for DONE, else the question it puts to the person (r5)."""
@@ -276,7 +315,8 @@ class Run:
         return changed
 
     def implement(self, name):
-        """ready -> claimed, the implementer in its worktree, and its branch merged only on passing tests (r4)."""
+        """ready -> claimed, the implementer in its worktree, and its branch merged only on passing tests (r4), then
+        deleted (r18)."""
         self.move(name, "ready", "claimed")
         tests = self.tests()
         tree = self.worktree(name, name, "work/" + name)
@@ -303,13 +343,14 @@ class Run:
                         question = "`%s` failed on %s's branch work/%s:\n%s" % (
                             " ".join(cmd), name, name, (done.stdout + done.stderr).strip())
                         break
-            if question is None:
-                git(self.root, "merge", "--ff-only", "work/" + name)
-                self.move(name, "claimed", "done")
-            else:
+            if question is not None:
                 self.move(name, "claimed", "awaiting-ruling", question)
+                return
+            git(self.root, "merge", "--ff-only", "work/" + name)
+            self.move(name, "claimed", "done")
         finally:
             self.remove(tree)
+        git(self.root, "branch", "-q", "-d", "work/" + name)     # merged, so no longer needed; once its worktree is gone (r18)
 
     def step(self, name, status):
         if status == "planned":

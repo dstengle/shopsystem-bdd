@@ -23,6 +23,7 @@ from .conftest import INDEX, ROOT, SCRIPTS, cap, full
 
 STUB = ROOT / "tests" / "scripts" / "stub_claude.py"
 AGENTS = ["code-scout", "bdd-planner", "bdd-implementer", "bdd-task-reviewer"]
+ROLES = dict(zip(["researcher", "planner", "implementer", "reviewer"], AGENTS))
 TESTS_PY = """import os, sys
 which = "scenarios" if "--work-item" in sys.argv else "suite"
 if os.path.exists(which + "-fail"):
@@ -198,10 +199,15 @@ def done_implementer(repo, plan, doing):
         commit_all(repo, "the implementer may delete its branch")
 
 
-@given(parsers.parse("every worker gives DONE, the researcher running `{command}`"))
-def researcher_runs(plan, command):
+def scripts_in(text):
+    """`text` with `{scripts}` read as the directory of work run's own scripts."""
+    return text.replace("{scripts}", str(SCRIPTS))
+
+
+@given(parsers.parse("every worker gives DONE, the {who} running `{command}`"))
+def worker_runs(plan, who, command):
     plan["default"] = {"status": "DONE"}
-    plan["code-scout"] = {"run": [shlex.split(command)]}
+    plan[ROLES[who]] = {"run": [shlex.split(scripts_in(command))]}
 
 
 @given(".shop/delivery.toml names no tools")
@@ -274,6 +280,30 @@ def researcher_meddles(repo, plan, context):
 @given("README.md has a change that is not committed")
 def readme_changed(repo):
     write(repo, "README.md", "# repo\n\nA change not committed.\n")
+
+
+@given(parsers.parse("every worker gives DONE, the {who} loading the skill {skill}"))
+def loads_skill(plan, who, skill):
+    plan["default"] = {"status": "DONE"}
+    plan[ROLES[who]] = {"skills": [skill]}
+
+
+@given("every worker gives DONE, the researcher also writing notes.md into the repository's own checkout")
+def researcher_writes_outside(repo, plan):
+    plan["default"] = {"status": "DONE"}
+    plan["code-scout"] = {"write": {str(repo / "notes.md"): "written outside the worktree\n"}}
+
+
+@given("every worker gives DONE, the implementer writing report.md at the top of its worktree and naming it as its report")
+def implementer_names_report(plan):
+    plan["default"] = {"status": "DONE"}
+    plan["bdd-implementer"] = {"write": {"report.md": "the implementer's report\n"}, "names": {"report": "report.md"}}
+
+
+@given(parsers.re(r'every worker gives DONE, the researcher asking "(?P<question>[^"]+)"$'))
+def researcher_done_asks(plan, question):
+    plan["default"] = {"status": "DONE"}
+    plan["code-scout"] = {"questions": [question]}
 
 
 # --- When -----------------------------------------------------------------------------------------------------
@@ -521,13 +551,13 @@ def implementer_brief(repo):
 @then(parsers.parse("the researcher was given --allowedTools {tools}"))
 def given_tools(repo, tools):
     c = [c for c in starts(repo) if c["agent"] == "shopsystem-bdd:code-scout"][0]
-    assert option(c["argv"], "--allowedTools") == tools, c["argv"]
+    assert option(c["argv"], "--allowedTools") == scripts_in(tools), c["argv"]
 
 
 @then(parsers.parse("its `{command}` was {done}"))
 def command_was(repo, command, done):
-    events = [(c["event"], c["command"]) for c in calls(repo, ("ran", "refused"))]
-    assert events == [({"run": "ran", "refused": "refused"}[done], command)], events
+    events = [(c["event"], c["command"]) for c in calls(repo, ("ran", "refused")) if c["tool"] == "Bash"]
+    assert events == [({"run": "ran", "refused": "refused"}[done], scripts_in(command))], events
 
 
 @then("the branch work/w1 changes nothing under .shop/work/")
@@ -554,3 +584,61 @@ def sections(repo, context, name, old, new, ruling):
 def prints_question_only(context, question, other):
     out = context["done"].stdout
     assert question in out and other not in out, out
+
+
+@then("each of w1's four workers was started with --plugin-dir the directory that holds work run's own scripts")
+def plugin_dir(repo):
+    started = [c for c in starts(repo) if work_item_of(c) == "w1"]
+    assert len(started) == 4, started
+    for c in started:
+        assert option(c["argv"], "--plugin-dir") == str(SCRIPTS.parent), c["argv"]
+
+
+@then(parsers.parse("the {who}'s load of the skill {skill} was {done}"))
+def skill_was(repo, context, who, skill, done):
+    loads = [c["event"] for c in calls(repo, ("ran", "refused")) if c["tool"] == "Skill" and c["command"] == skill]
+    assert loads == [{"run": "ran", "refused": "refused"}[done]], (loads, context["done"].stderr)
+
+
+@then("no worker was given a bare Write or Edit in its --allowedTools")
+def no_bare_write(repo):
+    started = starts(repo)
+    assert started, started
+    for c in started:
+        tools = option(c["argv"], "--allowedTools").split(",")
+        assert "Write" not in tools and "Edit" not in tools, (c["agent"], tools)
+
+
+@then("the researcher's write into the repository's own checkout was refused, and no notes.md is there")
+def write_refused(repo):
+    writes = [(c["event"], c["command"]) for c in calls(repo, ("ran", "refused")) if c["tool"] == "Write"]
+    assert writes == [("refused", str((repo / "notes.md").resolve()))], writes
+    assert not (repo / "notes.md").exists()
+
+
+@then(parsers.parse("{run_dir} has report.md, as the implementer wrote it"))
+def report_copied(repo, context, run_dir):
+    report = repo / run_dir / "report.md"
+    assert report.is_file() and report.read_text() == "the implementer's report\n", (
+        sorted(str(p.relative_to(repo)) for p in (repo / run_dir).rglob("*")), context["done"].stderr)
+
+
+@then(parsers.re(r'the planner\'s brief has the researcher\'s question "(?P<question>[^"]+)"$'))
+def planner_brief_question(repo, context, question):
+    briefs = [c["brief"] for c in starts(repo) if c["agent"] == "shopsystem-bdd:bdd-planner"]
+    assert len(briefs) == 1 and question in briefs[0], (briefs, context["done"].stderr)
+
+
+@then("each of w1's four briefs says that the worker starts in its worktree, the directory it was started in, and never "
+      "changes directory")
+def brief_says_no_cd(repo):
+    started = [c for c in starts(repo) if work_item_of(c) == "w1"]
+    assert len(started) == 4, started
+    for c in started:
+        said = [l for l in c["brief"].splitlines() if c["cwd"] in l and "never change directory" in l]
+        assert said, c["brief"]
+
+
+@then(parsers.parse("git lists no branch {branch}"))
+def no_branch(repo, context, branch):
+    assert git(repo, "branch", "--list", branch).strip() == "", (git(repo, "branch"), context["done"].stderr)

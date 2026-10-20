@@ -2,19 +2,26 @@
 """A stand-in `claude` for supervision's scenarios: it takes `claude -p <prompt> --agent <agent> --session-id <uuid>
 --allowedTools <list> ...`, reads the brief file its prompt names and does what a script tells it to, as a worker would;
 no model runs. Like the real claude under -p, it runs a Bash command only when --allowedTools lets it
-(`Bash(<pattern>)`, `*` matching anything), and refuses any other.
+(`Bash(<pattern>)`, `*` matching anything), and refuses any other; it loads a skill only when the list has
+`Skill(<skill>)`; and, as under --permission-mode acceptEdits, it writes a file outside its working directory only
+when the list has a bare `Write`.
 
 The script is the JSON file $STUB_CLAUDE_PLAN: an object whose keys are agents without the plugin's prefix
 (`code-scout`), or "default", each an object of:
   status     the result file's status (default "DONE"); with `result` "none" no result file is written, with
              "not-json" one that is not JSON;
   questions  the result file's questions;
-  write      {path: text}, written relative to the worker's working directory (as a worker that edits files);
+  write      {path: text}, written relative to the worker's working directory (as a worker that edits files); a path
+             outside it is refused unless --allowedTools has a bare Write;
   notes      {file name: text}, written in the result file's directory (the worker's run directory);
   commit     {path: text, or null to delete it}, written relative to the working directory and committed there
              (by `git add -A -- <paths>` and `git commit -q -m ...`, each a Bash command);
-  run        a list of Bash commands (argument lists), run in the working directory, last.
-Each start and end, and each Bash command run or refused, is appended to $STUB_CLAUDE_CALLS, one JSON object a line, so
+  skills     a list of skills to load (`shopsystem-bdd:bdd-red-green`), first;
+  run        a list of Bash commands (argument lists), run in the working directory, last;
+  names      {result field: path}, a file the result names (`report`), given in the result by its absolute path, the
+             path taken relative to the working directory.
+Each start and end, and each Bash command, skill load or write outside the working directory run or refused (its `tool`,
+`Bash`, `Skill` or `Write`), is appended to $STUB_CLAUDE_CALLS, one JSON object a line, so
 a scenario can read who was started, with what arguments and brief, in which directory and in what order.
 """
 import fnmatch
@@ -46,16 +53,26 @@ def prompt(argv):
     return " ".join(rest)
 
 
+def allowed(argv, tool):
+    """The patterns --allowedTools gives `tool`: `Bash(git status*)` gives Bash `git status*`."""
+    tools = (option(argv, "--allowedTools") or "").split(",")
+    return [t[len(tool) + 1:-1] for t in tools if t.startswith(tool + "(") and t.endswith(")")]
+
+
 def bash(argv, command):
     """Run `command` if --allowedTools allows it as Bash; record that it ran or was refused."""
     line = shlex.join(command)
-    allowed = [t[5:-1] for t in (option(argv, "--allowedTools") or "").split(",") if t.startswith("Bash(") and t.endswith(")")]
-    if any(fnmatch.fnmatchcase(line, pattern) for pattern in allowed):
+    if any(fnmatch.fnmatchcase(line, pattern) for pattern in allowed(argv, "Bash")):
         subprocess.run(command, check=True, capture_output=True)
-        record({"event": "ran", "command": line})
+        record({"event": "ran", "tool": "Bash", "command": line})
         return True
-    record({"event": "refused", "command": line})
+    record({"event": "refused", "tool": "Bash", "command": line})
     return False
+
+
+def skill(argv, name):
+    """Load the skill `name` if --allowedTools has `Skill(<name>)`; record that it was loaded (ran) or refused."""
+    record({"event": "ran" if name in allowed(argv, "Skill") else "refused", "tool": "Skill", "command": name})
 
 
 def record(entry):
@@ -74,9 +91,17 @@ def main(argv):
     short = agent.split(":", 1)[-1]
     step = dict(plan.get("default", {}), **plan.get(short, {}))
     result = pathlib.Path(next(line.split(":", 1)[1].strip() for line in brief.splitlines() if line.startswith("Result file:")))
+    for name in step.get("skills", []):
+        skill(argv, name)
     for rel, text in step.get("write", {}).items():
-        pathlib.Path(rel).parent.mkdir(parents=True, exist_ok=True)
-        pathlib.Path(rel).write_text(text)
+        path = pathlib.Path(rel).resolve()
+        if not path.is_relative_to(pathlib.Path.cwd().resolve()):
+            done = "Write" in (option(argv, "--allowedTools") or "").split(",")
+            record({"event": "ran" if done else "refused", "tool": "Write", "command": str(path)})
+            if not done:
+                continue
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
     for name, text in step.get("notes", {}).items():
         (result.parent / name).write_text(text)
     if step.get("commit"):
@@ -93,8 +118,9 @@ def main(argv):
     if step.get("result") == "not-json":
         result.write_text("not json\n")
     elif step.get("result") != "none":
-        result.write_text(json.dumps({"status": step.get("status", "DONE"), "summary": "the stand-in's %s" % short,
-                                      "questions": step.get("questions", [])}))
+        named = {field: str(pathlib.Path(rel).resolve()) for field, rel in step.get("names", {}).items()}
+        result.write_text(json.dumps(dict({"status": step.get("status", "DONE"), "summary": "the stand-in's %s" % short,
+                                           "questions": step.get("questions", [])}, **named)))
     print(json.dumps({"type": "result", "subtype": "success", "is_error": False, "session_id": session,
                       "num_turns": 1, "total_cost_usd": 0, "result": "stand-in"}))
     record({"event": "end", "agent": agent, "session": session})

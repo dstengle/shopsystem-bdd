@@ -29,7 +29,7 @@ Feature: Supervision
 
   @r2
   Scenario Outline: a worker is given its stage's tools and no others, the list .shop/delivery.toml gives for the stage where it gives one
-    Pins that no worker runs with every permission: a Bash command outside its stage's list is refused.
+    Pins that no worker runs with every permission: a Bash command outside its stage's list is refused. `{scripts}` stands for the directory of work run's own scripts.
     Given i1's work-item w1 is drafted
     And <tools>
     And every worker gives DONE, the researcher running `git commit -q --allow-empty -m meddle`
@@ -38,9 +38,9 @@ Feature: Supervision
     And its `git commit -q --allow-empty -m meddle` was <done>
 
     Examples:
-      | tools                                                                   | list                                                                                                   | done    |
-      | .shop/delivery.toml names no tools                                      | Read,Glob,Grep,Write,Bash(python3 *),Bash(git status*),Bash(git diff*),Bash(git log*),Bash(git show*) | refused |
-      | .shop/delivery.toml gives the research stage Read and Bash(git commit *) | Read,Bash(git commit *)                                                                               | run     |
+      | tools                                                                    | list                                                                                                                               | done    |
+      | .shop/delivery.toml names no tools                                       | Read,Glob,Grep,Bash(python3 -m pytest*),Bash(python3 {scripts}/*),Bash(git status*),Bash(git diff*),Bash(git log*),Bash(git show*) | refused |
+      | .shop/delivery.toml gives the research stage Read and Bash(git commit *) | Read,Bash(git commit *)                                                                                                            | run     |
 
   @r3
   Scenario: a worker's DONE moves the work-item to its next status
@@ -205,3 +205,96 @@ Feature: Supervision
     When the person runs `work run i1`
     Then work says in one line that git merge --ff-only work/w1 failed
     And it exits non-zero
+
+  @r11
+  Scenario: each worker is given this plugin's own directory as its plugin
+    Pins that the agents a worker runs are this plugin's, not those of another copy of it installed on the machine.
+    Given i1's work-item w1 is drafted
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then each of w1's four workers was started with --plugin-dir the directory that holds work run's own scripts
+
+  @r12
+  Scenario Outline: a worker whose agent lists skills may load each of them, and no other worker may: the <who> loading <skill>, <tools>
+    Pins that a `claude -p --agent` worker, whose agent's skills are not preloaded, can load them itself, whatever list .shop/delivery.toml gives its stage.
+    Given i1's work-item w1 is drafted
+    And <tools>
+    And every worker gives DONE, the <who> loading the skill <skill>
+    When the person runs `work run i1`
+    Then the <who>'s load of the skill <skill> was <done>
+
+    Examples:
+      | who         | skill                        | tools                                                                       | done    |
+      | implementer | shopsystem-bdd:bdd-red-green | .shop/delivery.toml names no tools                                          | run     |
+      | implementer | shopsystem-bdd:bdd-red-green | .shop/delivery.toml gives the implement stage Read and Bash(git commit *)   | run     |
+      | researcher  | shopsystem-bdd:bdd-red-green | .shop/delivery.toml names no tools                                          | refused |
+
+  @r13
+  Scenario Outline: no worker is given a bare Write or Edit tool, so a write outside its worktree is refused: <tools>
+    Pins that a worker's writes stay in the worktree it was started in, where acceptEdits allows them, even when .shop/delivery.toml lists a bare Write.
+    Given i1's work-item w1 is drafted
+    And <tools>
+    And every worker gives DONE, the researcher also writing notes.md into the repository's own checkout
+    When the person runs `work run i1`
+    Then no worker was given a bare Write or Edit in its --allowedTools
+    And the researcher's write into the repository's own checkout was refused, and no notes.md is there
+
+    Examples:
+      | tools                                                         |
+      | .shop/delivery.toml names no tools                            |
+      | .shop/delivery.toml gives the research stage Read and Write   |
+
+  @r14
+  Scenario Outline: a worker's Bash runs only python3 -m pytest, the plugin's scripts by path and its stage's git commands: the <who>'s `<command>` is <done>
+    Pins that no worker runs any Python it likes: `{scripts}` stands for the directory of work run's own scripts.
+    Given i1's work-item w1 is drafted
+    And every worker gives DONE, the <who> running `<command>`
+    When the person runs `work run i1`
+    Then its `<command>` was <done>
+
+    Examples:
+      | who         | command                              | done    |
+      | researcher  | python3 -m pytest --version          | run     |
+      | researcher  | python3 {scripts}/features --help    | run     |
+      | researcher  | python3 -c pass                      | refused |
+      | planner     | git status                           | refused |
+      | implementer | python3 -m pytest --version          | run     |
+      | implementer | python3 -c pass                      | refused |
+      | implementer | git log -1                           | refused |
+      | reviewer    | git log -1                           | run     |
+      | reviewer    | python3 -c pass                      | refused |
+
+  @r15
+  Scenario: a file the worker's result names is copied into the run directory before its worktree is removed
+    Pins that what a worker's result points to is still there for the person and the next worker once its worktree is gone.
+    Given i1's work-item w1 is ready
+    And every worker gives DONE, the implementer writing report.md at the top of its worktree and naming it as its report
+    When the person runs `work run i1`
+    Then .shop/work/i1/runs/w1/1-implement/ has report.md, as the implementer wrote it
+    And .shop/worktrees/w1 is not there, and git lists no worktree but the repository's own
+
+  @r16
+  Scenario: a researcher's DONE with questions puts those questions into the planner's brief
+    Pins that what the researcher asked reaches the planner, rather than being asked again.
+    Given i1's work-item w1 is drafted
+    And every worker gives DONE, the researcher asking "Is a title given twice one book or two?"
+    When the person runs `work run i1`
+    Then the planner's brief has the researcher's question "Is a title given twice one book or two?"
+    And w1 is green
+
+  @r17
+  Scenario: each worker's brief tells it that it starts in its worktree and never changes directory
+    Pins that no worker spends its turns on a `cd` that nobody approves under work run.
+    Given i1's work-item w1 is drafted
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then each of w1's four briefs says that the worker starts in its worktree, the directory it was started in, and never changes directory
+
+  @r18
+  Scenario: the work-item's branch is deleted when work run merges it
+    Pins that a merged work-item leaves no branch of its own behind.
+    Given i1's work-item w1 is ready
+    And every worker gives DONE, the implementer committing feature.txt
+    When the person runs `work run i1`
+    Then the initiative branch has the implementer's commit of feature.txt
+    And git lists no branch work/w1
