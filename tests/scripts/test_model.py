@@ -327,8 +327,8 @@ class ReadingTest(ModelTest):
         self.write("features/thing.feature", "\n".join([
             "Feature: thing", "",
             "  @r1", "  Scenario: one", "    Given a", "",
-            "  @r1 @holding", "  Scenario: one as it was (held)", "    Given a", "",
-            "  @r2 @holding", "  Scenario: two as it was (held)", "    Given a", ""]))
+            "  @r1 @deprecated", "  Scenario: one as it was (held)", "    Given a", "",
+            "  @r2 @deprecated", "  Scenario: two as it was (held)", "    Given a", ""]))
         r = self.run_model("check")
         self.assertEqual(r.returncode, 0, r.stdout)
         facts = self.run_model("facts").stdout
@@ -516,7 +516,7 @@ class FilesReadTest(ModelTest):
             ("features/thing.feature", one, False),
             ("features/sub/thing.feature", one, True),
             ("features/thing.feature", feature("thing", ("@r1", "Apply a code"), ("@r1", "Apply a code")), True),
-            ("features/thing.feature", feature("thing", ("@r1", "Apply a code"), ("@r1 @holding", "Apply a code")), False),
+            ("features/thing.feature", feature("thing", ("@r1", "Apply a code"), ("@r1 @deprecated", "Apply a code")), False),
         ]
         for path, text, reports in rows:
             with self.subTest(path=path, reports=reports):
@@ -591,7 +591,7 @@ class HeldAndLedgerTest(ModelTest):
     def test_r44(self):
         """a held scenario names no requirement"""
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r2] Two."]))
-        self.write("features/thing.feature", "Feature: thing\n\n  @r2 @holding\n  Scenario: two as it was\n    Given a\n")
+        self.write("features/thing.feature", "Feature: thing\n\n  @r2 @deprecated\n  Scenario: two as it was\n    Given a\n")
         found, _ = self.check_json()
         self.assertEqual(self.violated(found, "v_s3"), [[THING + "#r2"]], found)
 
@@ -656,7 +656,7 @@ class GlossaryCheckTest(ModelTest):
         self.write("spec/index.md", index("- **slice**: a unit of work. Not: chunk."))
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, it plans each chunk.", "- [r2] It plans a slice."]))
         self.write("features/thing.feature", feature("thing", ("@r1", "it plans"), ("@r2", "chunks are planned"),
-                                                     ("@r2 @holding", "a chunk as it was")))
+                                                     ("@r2 @deprecated", "a chunk as it was")))
         found, r = self.check_json()
         self.assertEqual(sorted(self.violated(found, "v_t1")), sorted([
             [THING + "#r1", "chunk", term("slice")],
