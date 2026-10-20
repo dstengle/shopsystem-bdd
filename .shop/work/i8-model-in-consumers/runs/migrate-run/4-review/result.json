@@ -1,0 +1,10 @@
+{"status": "DONE_WITH_CONCERNS",
+ "summary": "migrate-run: 10 commits (c8eb7d6..bf3a278), the same ones result.json lists, all in the fileset. No features/ change and no test removed or weakened. tools check: 13 ruff style findings in tests, vulture clean, no import contracts.\nProbes show five Important fix-now problems in scripts/migrate:\n- The ledger split merges or drops entries that are not in the <nnnn>-<slug> form, and deletes the ledger anyway with exit 0 (against r11).\n- A new decision file overwrites a moved or existing one.\n- A git mv refused at write time leaves a partial move (against r7).\n- r6 is green only because the fixture's records carry about:, so a real old-system repository fails model check v10b.\n- An unquoted summary is misread.\nAlso: a broken link from a moved file (observation), a binary file crashes the run (observation), and migrate is not executable.",
+ "findings": "/tmp/work-run-i8-model-in-consumers-mdv1kcjz/migrate-run-4-review/.shop/scratch/4-review/findings.md",
+ "questions": [
+  "Important, scripts/migrate:63-85,213-219: a ledger heading that is not in the <nnnn>-<slug> form is merged into the entry before it or lost, and spec/decisions.md is removed with exit 0 (r11 says to remove it only once every entry is replaced)",
+  "Important, scripts/migrate:217,122,291: a ledger entry's new decision file overwrites a decision file moved from decisions/ or already tracked at that path, and its content is lost",
+  "Important, scripts/migrate:266-283: an untracked file at a move's destination passes the check, then git mv fails during the writes and leaves earlier moves staged with a traceback (r7: change no file)",
+  "Important, tests/scenarios/test_migration_tools.py:336-340: r6 is green only because the fixture's old records already carry about:. migrate writes none, so model check reports v10b on a real old-system repository (the person decides: migrate writes about, or r6 is narrowed)",
+  "Important, scripts/migrate:88-91: summary and by are written unquoted, so model reads a first paragraph with ' #' or a leading '[' wrongly (r2)"
+ ]}
