@@ -65,7 +65,9 @@ def with_id(text, ident, kind=None, about=None):
 
 
 def record_kind(final):
-    """The kind of a moved record that gets an id: plan, design note or test log; None for any other."""
+    """The kind of a moved record that gets an id: a Markdown plan, design note or test log; None for any other."""
+    if not final.endswith(".md"):
+        return None
     if final.startswith(".shop/records/archive/plans/"):
         return "initiative-archive"
     if final.startswith(".shop/records/archive/design-notes/"):
