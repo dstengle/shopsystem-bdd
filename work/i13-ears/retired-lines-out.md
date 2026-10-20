@@ -1,0 +1,26 @@
+---
+id: work-item/missingmass.io/shopsystem/shopsystem-bdd/retired-lines-out
+kind: work-item
+part_of: capability-proposal/ears-feature-file-tools
+status: drafted
+wkind: guarantee
+under: feature-file-tools
+check: "python3 scripts/model check reports no unresolved reference from a feature file, and python3 -m pytest -q passes"
+fileset: [scripts/features, scripts/slice_expectations.py, scripts/model, scripts/model.lp, features/feature-file-tools.feature, features/design-model-check.feature, tests/scripts/test_features.py, tests/scripts/test_model.py, tests/scenarios/test_feature_file_tools.py, tests/scenarios/test_design_model_check.py, skills/migrating-to-capabilities/SKILL.md, skills/bdd-red-green/SKILL.md, README.md]
+---
+
+# The code of retired lines goes, with its scenarios
+
+The approved spec (i13, with i10's removal of slicing and decision 0036) retires lines whose code and
+scenarios are still here; `model check` reports their 18 scenarios as naming no line. Remove the behaviour,
+its tests and its scenarios together, so the code says only what the spec says:
+
+- feature-file-tools: slice tags in `features tag` (r8, r9: `tag` takes only `r<n>`), `features plugin`
+  (r30, r43-r45) and `scripts/slice_expectations.py` (r31-r34, r47-r50); `holding`/`deprecated` reports no
+  slice tag. Check each retired id against spec/capabilities/feature-file-tools.md's `retired:` first.
+- design-model-check: the `#behaviour/r<n>` form (r42, decision 0036: now unresolved, as the approved table
+  says) and reading a decision ledger heading as decisions (r45).
+- Skills and README text that teaches what goes (e.g. `--slice`, the slice expectations plugin, `features
+  plugin`): drop those sentences only where they describe the removed behaviour; the wider rewrite of the
+  delivery skills is i10's.
+- A consuming repository still using the slice plugin is i8's to migrate (note it in your report).
