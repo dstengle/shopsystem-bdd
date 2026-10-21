@@ -11,26 +11,26 @@ retired: [r28, r30, r31, r32, r38, r39, r40, r41, r42, r44, r45, r47, r50, r56, 
 
 ## Purpose
 `scripts/model` reads a bounded context's files — spec, feature files, decisions, work and records, in the
-final layout and no other — as the facts of `docs/design-model/grammar.md`, and reports what the grammar
+final layout and no other — as the facts of `docs/design-model/grammar.md`, and prints what the grammar
 refuses, each rule by its code and its plain label. It also writes the generated decisions index, lists the
 rules, and traces a requirement to why it exists. It does not edit the spec, the work or the records, and it
-checks one bounded context: product-level artifacts are read only where the files contain them.
+verifies one bounded context: product-level artifacts are read only where the files contain them.
 
 ## Behaviour
 
-### Checking
+### `model check`
 - [r1] **When** `model check` finds no violation, unresolved reference or file problem, `model check` shall say so and exit 0.
 - [r2] **If** `model check` finds a violation, an unresolved reference or a file problem, then `model check` shall print each, a violated relation by its grammar.md code and plain label with its rows, and exit 1.
-- [r11] **When** `model check` finds warnings, `model check` shall print each warning relation with its plain label and its count, leaving the exit status as the other findings set it.
-- [r33] **Where** `--json` is given, `model check` shall print its violations, warnings, unresolved references and file problems as one JSON object, each code mapped to its plain label, with the same exit status.
-- [r36] **When** `model check` decides whether an initiative may be done, `model check` shall count a `formulated` capability-proposal, and any `withdrawn` part, as closed.
-- [r55] **If** `import clingo` fails, then `model check` shall run again, once, under the first interpreter that has clingo of `$SHOPSYSTEM_MODEL_PYTHON`, each `python3` on `PATH` outside the active virtualenv's `bin/`, `/usr/local/bin/python3` and `/usr/bin/python3`, in that order.
+- [r11] **When** `model check` finds warnings, `model check` shall print each warning relation with its plain label and its count, leaving the exit code as the other findings set it.
+- [r33] **Where** `--json` is given, `model check` shall print its violations, warnings, unresolved references and file problems as one JSON object, each code mapped to its plain label, with the same exit code.
+- [r36] **When** `model check` decides whether an initiative may be `done`, `model check` shall count a `formulated` capability-proposal, and any `withdrawn` part, as closed.
+- [r55] **If** `import clingo` fails, then `model check` shall try again, once, under the first interpreter that has clingo of `$SHOPSYSTEM_MODEL_PYTHON`, each `python3` on `PATH` outside the active virtualenv's `bin/`, `/usr/local/bin/python3` and `/usr/bin/python3`, in that order.
 - [r12] **If** no interpreter has clingo, then `model check` shall exit 2, naming each interpreter it tried and the command that installs clingo.
 
-**If** `model check` finds a case of a row below, then `model check` shall report it under the row's code; a file
+**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file
 problem names the file.
 
-| id | code | what is reported |
+| id | code | what is printed |
 |---|---|---|
 | [r3] | v15a | a requirement bullet in a capability's Behaviour has no `[r<n>]` |
 | [r4] | v15b | two requirements of one capability have the same id |
@@ -105,4 +105,4 @@ problem names the file.
 - `model decisions` links each row to `<file name>`, relative to `spec/decisions/index.md`.
 
 ## Not yet
-- Product-level artifacts (jobs, the context-map, seams, pins) read from a product repository — trigger: a second bounded context is checked together with this one.
+- Product-level artifacts (jobs, the context-map, seams, pins) read from a product repository — trigger: a second bounded context is verified together with this one.

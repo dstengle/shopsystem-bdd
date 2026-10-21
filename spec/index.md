@@ -5,7 +5,7 @@ title: shopsystem-bdd
 
 # shopsystem-bdd
 
-**State.** Plugin 0.21.0: the final layout (design-decision/final-layout), delivery by work-items and `work run`,
+**Where it stands.** Plugin 0.21.0: the final layout (design-decision/final-layout), delivery by work-items and `work run`,
 and `scripts/migrate`; slicing, `scripts/plan` and the superpowers dependency are removed
 (design-decision/superpowers-not-a-dependency). Requirements have ids from the start (design model v3). The gate of
 2026-10-21 (observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-21-release-gate) approved every capability's
@@ -20,7 +20,7 @@ A Claude Code plugin that runs a behaviour-driven workflow in a consuming reposi
 capability files per bounded context, Gherkin feature files paired with them as the contract, work-items
 taken through their stages by `work run`, implementation red-green, review, and measurement of
 what a batch cost. One human gate,
-on the spec's Behaviour lines and glossary entries. It is not a test runner, not a project manager, and keeps no state of its
+on the spec's Behaviour lines and glossary entries. It is not a test runner, not a project manager, and keeps nothing of its
 own outside the consuming repository's files.
 
 ## Constraints

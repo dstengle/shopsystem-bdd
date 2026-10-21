@@ -28,7 +28,7 @@ guesses when its inputs are not what it knows.
 - [r38] **If** `measure` cannot do what it was asked, then `measure` shall exit non-zero, say why on stderr, and change nothing.
 
 ### What the facts hold
-- [r9] `measure batch` shall count a subagent transcript as a dispatch when it starts inside the batch, and not when it starts outside it.
+- [r9] `measure batch` shall count the transcript of a session another session started with its Agent tool as a dispatch when it starts inside the batch, and not when it starts outside it.
 - [r10] `measure batch` shall count a request's usage once, however many transcript rows it appears in, reporting its reasoning tokens as "of which" its output tokens and never adding them to that figure.
 - [r11] **When** a session dispatched inside the batch, `measure batch` shall count that session's own requests inside the batch as the controller's.
 - [r12] `measure batch` shall attribute a dispatch to a slice or batch work by its description, failing that by the task or slice its prompt names, and otherwise count it as unattributed.
@@ -37,7 +37,7 @@ guesses when its inputs are not what it knows.
 - [r15] `measure batch` shall give each slice it holds (the archive file's and every other slice a dispatch is attributed to, or for the open batch only those) its Lands line from the archive file or the living plan, with the numbers of production and test files it says it will land, beside the numbers of production, test and other files its dispatches touched.
 - [r16] `measure batch` shall give the tasks the batch plan had when it was added and the tasks it had at the batch's end, the plan's hand-back entries and its suite record.
 - [r29] **If** no dispatch names a ledger and no `--tasks` is given, or the batch plan is in no commit, then `measure batch` shall leave tasks uncounted, with a note in the facts saying why.
-- [r31] `measure batch` shall give each dispatch the closing status its reply states, counting replies that close BLOCKED, PARTIAL or NEEDS_CONTEXT as not done.
+- [r31] `measure batch` shall give each dispatch the closing status its reply gives, counting replies that close BLOCKED, PARTIAL or NEEDS_CONTEXT as not done.
 - [r32] `measure batch` shall record the plugin and harness versions the transcripts name, and the batch's window as times and, where known, commits.
 - [r33] **Where** the batch starts at a commit, `measure batch` shall give the files and lines changed from it to the batch's end commit, or to HEAD when the end is not a commit.
 - [r34] `measure batch` shall count the dispatches given more than one prompt as resumed; give the share of building time from the first branch review on, building time being the dispatches' own durations summed, not wall-clock time, with a scout's dispatches left out of both; and give the mean and summed starting context of the dispatches.
@@ -49,8 +49,8 @@ guesses when its inputs are not what it knows.
 
 ## Implementation, may change
 - Sessions are read from `~/.claude/projects` (or `--projects`), in the directory named after each worktree of
-  the repository; `--sessions` names directories outright. Subagents are the `subagents/*.jsonl` beside a
-  session, with a `.meta.json` carrying `agentType` and description.
+  the repository; `--sessions` names directories outright. Dispatches are the `subagents/*.jsonl` beside a
+  session, with a `.meta.json` giving `agentType` and description.
 - Tokens are output, new input (input and cache writes) and cache read; context is the whole input of one
   request; a dispatch's effort is the setting most of its requests ran at.
 - Description attribution recognises 'slice <n>', 'step <k>', 'task <n>', 'batch' and 'slices', and a leading

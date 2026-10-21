@@ -11,8 +11,8 @@ retired: [r5, r9, r18]
 
 ## Purpose
 Merges an approved brainstorming note, or a question's answer, into the bounded context's one spec,
-and stops at the one human gate: the Behaviour lines. It is `integrating-a-proposal`, run by the session
-the person talks to, with each round handed to a fresh `initiative-round` that dispatches the
+and stops at the one human gate: the Behaviour lines. It is `integrating-a-proposal`, used by the session
+the person talks to, each round a fresh dispatch of `initiative-round`, which dispatches the
 `capability-writer`. It is not formulation and not planning; it writes nothing a client can run.
 
 ## Behaviour
@@ -29,7 +29,7 @@ the person talks to, with each round handed to a fresh `initiative-round` that d
 - [r12] **When** a line is added to a capability, `integrating-a-proposal` shall give it the id one above every id the capability has used or retired, wherever the line sits in the section.
 - [r13] **When** a line is changed, `integrating-a-proposal` shall keep its id.
 - [r14] **When** a line is removed, `integrating-a-proposal` shall add its id to the capability's `retired` list.
-- [r16] **Where** `model check` can run, **if** applying the approved drafts makes it report a new problem other than an added line with no scenario yet, a removed line's scenario that now names no line, or a scenario that uses a word the new glossary entry avoids, then `integrating-a-proposal` shall not commit them.
+- [r16] **Where** `model check` is available, **if** applying the approved drafts makes it print a new problem other than an added line with no scenario yet, a removed line's scenario that now names no line, or a scenario that uses a word the new glossary entry avoids, then `integrating-a-proposal` shall not commit them.
 - [r17] **Where** a repository keeps `.shop/work/`, **when** a glossary term is changed, `integrating-a-proposal` shall put the change with the capability-proposal that needs it, listing the term in its `adds`, `changes` or `removes`.
 - [r19] **Where** a repository has no `.shop/work/`, **when** a glossary change is drafted, `integrating-a-proposal` shall put it through the gate like a Behaviour line.
 - [r20] **When** a change makes a decision, `integrating-a-proposal` shall show it to the person as one file `spec/decisions/<nnnn>-<slug>.md`, `nnnn` one above the highest number in `spec/decisions/`.
@@ -38,12 +38,12 @@ the person talks to, with each round handed to a fresh `initiative-round` that d
 - [r33] **If** `integrating-a-proposal` cannot do what it was asked, then `integrating-a-proposal` shall stop, saying why, and change nothing under `spec/`.
 
 ## Implementation, may change
-- The session dispatches `initiative-round` with the job `integrate` or `apply`, the note's path, a drafts path
+- The session dispatches `initiative-round` with an input giving the job `integrate` or `apply`, the note's path, a drafts path
   `.shop/scratch/drafts/<date>-<note>/` and the round number; the round dispatches `capability-writer`,
   which writes only under `<drafts>/round-<n>/` and replies with the change list, questions, cut sentences
   and paths, last of all to a reply file.
-- The round checks `git status --porcelain` against the state before dispatch and sends back an agent that
-  wrote outside its drafts path; it checks the change list in both directions.
+- The round compares `git status --porcelain` with the porcelain before dispatch and sends back a dispatch that
+  wrote outside its drafts path; it verifies the change list in both directions.
 - The writer drafts a decision as a whole file under `<drafts>/round-<n>/spec/decisions/`; applying it copies the
   file and runs `model decisions`.
 - The format the writer follows is `docs/capability-format.md`. A decision has a one-sentence summary and a

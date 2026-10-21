@@ -11,8 +11,8 @@ retired: [r3, r6, r8, r9, r10, r11, r15, r18, r20, r22, r27, r30, r31, r32, r33,
 
 ## Purpose
 `scripts/features` reads and edits Gherkin feature files without the test runner: it counts and lists
-scenarios by tag or title, adds a requirement tag to a scenario, moves a scenario between files and verifies the
-move, deprecates and retires scenarios kept while they still pass, checks that every scenario has exactly one
+scenarios by tag or title, adds a requirement tag to a scenario, takes a scenario from one file to another and verifies
+it arrived unchanged, deprecates and retires scenarios kept while they still pass, verifies that every scenario has exactly one
 test binding it and rewrites the titles test modules bind. It is not a Gherkin runner and does not run any
 test; it edits only the feature files, test modules and directory it is pointed at.
 
@@ -30,21 +30,21 @@ test; it edits only the feature files, test modules and directory it is pointed 
 
 ### Editing
 - [r51] **When** `features tag <title> r<n>` is run, `features` shall add `@r<n>` to the scenario's requirement tags and leave its other tags, its other `@r<m>` tags included, and every other line unchanged.
-- [r12] **When** `features move <title> --to <file>` is run, `features` shall move the scenario's block unchanged from its file to the end of the destination file.
-- [r13] **Where** `--inline-background` is given, **when** `features move` is run, `features` shall put the source Background's steps before the moved scenario's first step.
-- [r14] **Where** `--keep-feature-tags` is given, **when** `features move` is run, `features` shall put the source's feature tags that the destination's feature tags lack on a tag line of their own immediately above the moved scenario's `Scenario:` line, after any tag line the scenario already has, joined to none.
+- [r12] **When** `features move <title> --to <file>` is run, `features` shall take the scenario's block unchanged from its file to the end of the destination file.
+- [r13] **Where** `--inline-background` is given, **when** `features move` is run, `features` shall put the source Background's steps before the relocated scenario's first step.
+- [r14] **Where** `--keep-feature-tags` is given, **when** `features move` is run, `features` shall put the source's feature tags that the destination's feature tags lack on a tag line of their own immediately above the relocated scenario's `Scenario:` line, after any tag line the scenario already has, joined to none.
 - [r19] **When** `features deprecate <title>` is run with `--for <new title>` or `--for-removal`, `features` shall give the scenario the tag `@deprecated`, " (deprecated)" at the end of its title and a description line `Deprecated for: <new title>` or `Deprecated for: removal`, whether or not the replacement exists yet, and change nothing else in it.
 - [r21] **When** `features deprecated` is run, `features` shall list each deprecated scenario with what it is deprecated for and, for a replacement, the file and `@r<n>` tag of the scenario with that title, saying on its line when it has no `Deprecated for:` line, no scenario has the replacement's title, or the replacement has no `@r<n>` tag.
 - [r23] **When** `features retire <title>` is run on a scenario tagged `@deprecated`, `features` shall remove that scenario's block and leave the rest of the file as it was.
 - [r24] **If** `features retire` is given a scenario not tagged `@deprecated`, then `features` shall refuse because it is not deprecated, and leave the file as it was.
 
-### Checking moves and bindings
+### Verifying `features move` and bindings
 - [r16] **When** `features verify-moved --from <dir>` finds every scenario in the two trees alike by title in its effective tags, description, and Background and own steps, `features` shall print how many scenarios match and exit 0.
 - [r17] **If** `features verify-moved` finds a scenario whose effective tags, description or steps differ between the two trees, a title used by more than one scenario in either tree, or a title in one tree and not the other, then `features verify-moved` shall name each, as changed (with what changed), duplicate, missing or added, and exit 1.
 - [r57] `features bindings` shall read a `scenarios(<path>, ...)` call under `--tests` as binding every scenario of each feature file it names, and of every feature file under a directory it names.
-- [r25] **If** `features bindings` finds a `scenario(<feature>, "<title>")` call under `--tests` (default `tests`) whose title no feature file has, or not the feature it names, then `features` shall report the module, line, title and feature of each, and exit 1.
+- [r25] **If** `features bindings` finds a `scenario(<feature>, "<title>")` call under `--tests` (default `tests`) whose title no feature file has, or not the feature it names, then `features` shall print the module, line, title and feature of each, and exit 1.
 - [r26] **When** `features bindings` finds every binding names a scenario, `features` shall say so and exit 0.
-- [r58] **Where** `--unbound` is given, **if** a scenario in the feature files named after `--unbound` (with none named, every feature file under `--dir`) is bound by no `scenario(...)` or `scenarios(...)` call, or by more than one, then `features bindings` shall report its file and title, with the module and line of each call, and exit 1.
+- [r58] **Where** `--unbound` is given, **if** a scenario in the feature files named after `--unbound` (with none named, every feature file under `--dir`) is bound by no `scenario(...)` or `scenarios(...)` call, or by more than one, then `features bindings` shall print its file and title, with the module and line of each call, and exit 1.
 - [r28] **When** `features rebind <old> <new>` is run, `features` shall rewrite `<old>` to `<new>` in each binding call that names it and change nothing else in the module.
 - [r56] **Where** `--file <feature path>` is given, **when** `features rebind` is run, `features` shall rewrite only the bindings whose feature argument names that file, the feature argument resolved against `--dir`.
 - [r29] **If** the new title given to `features rebind` is no scenario's or several feature files', or a binding call names the old title in a string written over several lines, then `features` shall refuse and change no test module.
@@ -53,7 +53,7 @@ test; it edits only the feature files, test modules and directory it is pointed 
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three
   backticks. A scenario's block is its tag lines, its `Scenario:` line and everything up to the next
   scenario's tag lines; `move` drops the block's trailing blank lines.
-- An edit's result is checked for nothing but a `Rule:` block outside a docstring.
+- An edit's output is verified for nothing but a `Rule:` block outside a docstring.
 - `tag` adds the `@r<n>` tag to the scenario's last tag line; `deprecate` adds to the last
   tag line; a new tag line takes the scenario's indentation. Background steps inlined by `move` take the
   scenario's step indentation; kept feature tags take the `Scenario:` line's.
@@ -74,7 +74,7 @@ test; it edits only the feature files, test modules and directory it is pointed 
   `<path>: <title> | for: <what> | <replacement's path> @r<n>` or `none deprecated`; `bindings` prints
   `<path>:<line>: no scenario titled "<title>" in <feature>`, and with `--unbound`
   `<feature path>: <title> | bound by no test` or `<feature path>: <title> | bound by <module>:<line>, <module>:<line>`.
-- Exit status: 0 success, 1 a check failed or an edit was refused, 2 bad usage.
+- Exit code: 0 success, 1 a verification failed or an edit was refused, 2 bad usage.
 
 ## Not yet
 - `Rule:` blocks are refused rather than parsed — trigger: a feature file needs a `Rule:`.
