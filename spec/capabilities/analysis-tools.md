@@ -1,7 +1,7 @@
 ---
 id: capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools
 title: Analysis tools
-narrator: an agent researching or reviewing a project's code
+narrator: a session researching or reviewing a project's code
 group: service
 rests_on: [design-decision/plugin-takes-the-dependencies-it-needs]
 retired: [r2, r12, r15, r18, r19, r20, r21, r22, r23, r24, r25, r26, r27, r28, r29, r30, r31, r32, r33, r34, r35]

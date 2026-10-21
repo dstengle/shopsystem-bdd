@@ -7,20 +7,20 @@ title: shopsystem-bdd
 
 **State.** Plugin 0.21.0: the final layout (design-decision/final-layout), delivery by work-items and `work run`,
 and `scripts/migrate`; slicing, `scripts/plan` and the superpowers dependency are removed
-(design-decision/superpowers-not-a-dependency). Every approved Behaviour line describes what the plugin does; requirements have
-ids from the start (design model v3). Drafted and not yet approved, all awaiting the gate: i1's ten open
-proposals (three withdrawn 2026-10-19 with the slicing, slice-plan-tool and batch-analysis capabilities), i2's, i3's five, i9's (the ubiquitous language), the migration release's i10, i11 and i8 (drafted
-2026-10-19, whose lines the capability files already show). What is approved and unbuilt lives under `Not yet`.
-Check with `python3 scripts/model check`; the decisions index, `spec/decisions/index.md`, is written by `python3 scripts/model decisions`;
+(design-decision/superpowers-not-a-dependency). Requirements have ids from the start (design model v3). The gate of
+2026-10-21 (observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-21-release-gate) approved every capability's
+Behaviour lines, i10's, i11's and i8's among them: every Behaviour line is approved, and one the plugin does not do yet
+has a drafted work-item. `Not yet` holds what no gate has approved.
+Verify with `python3 scripts/model check`; the decisions index, `spec/decisions/index.md`, is written by `python3 scripts/model decisions`;
 `python3 scripts/model rules` lists every rule with its label.
 
 ## Purpose
 
 A Claude Code plugin that runs a behaviour-driven workflow in a consuming repository: one spec of
 capability files per bounded context, Gherkin feature files paired with them as the contract, work-items
-pulled through their stages by a script supervisor, implementation red-green, review, and measurement of
+taken through their stages by `work run`, implementation red-green, review, and measurement of
 what a batch cost. One human gate,
-on the spec's Behaviour lines. It is not a test runner, not a project manager, and keeps no state of its
+on the spec's Behaviour lines and glossary entries. It is not a test runner, not a project manager, and keeps no state of its
 own outside the consuming repository's files.
 
 ## Constraints
@@ -43,16 +43,16 @@ The spec side, with the person:
 | `spec-migration` | the person migrating a repository onto spec/ | service |
 | `spec-consistency` | the person keeping a spec | service |
 
-The build side, started by the supervisor:
+The build side, started by `work run`:
 
 | capability | narrator | group |
 |---|---|---|
 | `delivery` | the person delivering an initiative | service |
-| `code-research` | the supervisor that started the researcher | service |
-| `planning` | the supervisor that started the planner | service |
-| `red-green` | the supervisor that started the implementer | service |
-| `review` | the supervisor closing a work-item or an initiative | service |
-| `role-boundaries` | the person running the workflow | guarantees |
+| `code-research` | the script `work run`, which started the researcher | service |
+| `planning` | the script `work run`, which started the planner | service |
+| `red-green` | the script `work run`, which started the implementer | service |
+| `review` | the script `work run`, closing a work-item or an initiative | service |
+| `role-boundaries` | the person using the workflow | guarantees |
 
 Measurement:
 
@@ -64,11 +64,11 @@ Tools the skills and agents run:
 
 | capability | narrator | group |
 |---|---|---|
-| `feature-file-tools` | an agent or session editing feature files | service |
-| `analysis-tools` | an agent researching or reviewing a project's code | service |
-| `design-model-check` | a person or agent checking a repository against the design model | service |
-| `work-queue` | a person, agent or script reading or moving work-items | service |
-| `supervision` | the person who started work run | service |
+| `feature-file-tools` | a session editing feature files | service |
+| `analysis-tools` | a session researching or reviewing a project's code | service |
+| `design-model-check` | a person or session verifying a repository against the design model | service |
+| `work-queue` | a person, session or script reading work-items or writing their transitions | service |
+| `supervision` | the person who started `work run` | service |
 | `migration-tools` | a person or session migrating a repository to the final layout | service |
 
 ## Testing
@@ -79,31 +79,54 @@ Tools the skills and agents run:
   Unit tests that bind no scenario are `unittest` tests under `tests/scripts/`. `batch-measurement` keeps its
   docstring binding until initiative i12.
 - Workflow capabilities (agents and skills): their scenarios run as fixture sessions, `claude -p` against
-  fixture repositories, under pytest-bdd with the `fixture` marker, outside the default run
-  (design-decision/fixture-scenarios-under-pytest-bdd); runs are recorded under
+  fixture repositories, under pytest-bdd with the `fixture` marker, outside the suite
+  (design-decision/fixture-scenarios-under-pytest-bdd); fixture sessions are written under
   `.shop/records/measurements/fixture-runs/`, and batches measured with `scripts/measure`. Until a line's
   scenario is written, `model check` reports it under v_s3.
-- `role-boundaries` is guarantees: checked against `agents/*.md`, not by scenarios.
+- `role-boundaries` is guarantees: verified against `agents/*.md`, not by scenarios.
 
 ## Glossary
 
-- **batch**: the slices one session plans and one controller executes, archived and measured together.
-- **claim**: the file set a claimed work-item has to itself: no other claimed work-item's file set shares a path with it.
-- **controller**: the session that dispatches implementers and reviewers for a batch.
-- **deprecated scenario**: a scenario kept in the suite, tagged `@deprecated`, after its line is changed or removed, until its replacement is green; it formulates no requirement. Not: held, holding, superseded.
+- **agent**: a definition under `agents/` (its name, model, tools and skills) that a worker or a dispatch is started as. Not: persona.
+- **batch**: (old system, until i12) the slices one session plans and one controller executes, archived and measured together.
+- **brief**: the input data `work run` writes for one worker in its stage directory, naming the work-item, the files to read, the worktree and where the result goes. Not: task file.
+- **check**: a command a work-item names in place of scenarios, whose exit code 0 shows its work complete. Not: criterion.
+- **claim**: the tracked files a `claimed` work-item holds: those its file set covers and any added with `work claim`; no two claims share a file. Not: lock, reservation.
+- **controller**: (old system, until i12) the session that dispatches implementers and reviewers for a batch.
+- **delivery**: one invocation of `work run` on an initiative, from its start until it exits.
+- **deprecated scenario**: a scenario kept in its feature file, tagged `@deprecated`, after its line is changed or removed, until its replacement passes; it formulates no requirement. Not: held, holding, superseded.
+- **dispatch**: a session another session starts with its Agent tool, and the transcript it leaves. Not: subagent.
 - **fact**: one statement `model facts` gives clingo about the repository's files.
-- **file set**: the paths a work-item's work changes, found by its researcher and made final by its planner.
-- **hand-back**: an implementer's stop on an observed condition, logged with its evidence.
+- **file set**: the paths, globs or directories a work-item says its work changes: drafted with it, revised by its researcher and fixed by its planner. Not: fileset, scope.
+- **gate**: the person's approval of Behaviour lines and glossary entries before they are committed to `spec/`, with the questions they raise. Not: sign-off.
+- **hand-back**: an implementer's stop with the outcome `HAND-BACK`, giving the condition and its evidence word for word. Not: handback.
+- **initiative branch**: the branch `work run` commits each transition on and merges each work-item branch into; its base is the commit it started from. Not: integration branch.
+- **input**: what a session is started with: input data, such as a brief, or an input prompt, the text filled from a template.
+- **outcome**: the one word a worker's result gives: `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `HAND-BACK`, `QUESTION` or `NEEDS_CONTEXT`. Not: verdict.
+- **record**: a file under `.shop/records/` whose frontmatter id has a record kind. Not: log entry.
+- **report**: the implementer's file in its stage directory, beside its result, naming the files it touched, the tests whose setup it changed and its open questions. Not: write-up.
 - **requirement**: one Behaviour line of a capability, named `#r<n>`. Not: behaviour requirement, capability requirement, carry, carries, carried, carrying.
-- **ruling**: the person's answer to a work-item's question, recorded in the work-item in their words.
-- **slice**: a unit of work with an observable done (scenarios or a check); to become a work-item (i4).
-- **suite record**: a whole-suite result logged once and used while nothing it depends on has changed.
-- **work-item**: the unit of delivery under a capability-proposal, done when the scenarios it accepts or its check pass, moved through its stages by `work run`.
+- **result**: the file `result.json` a worker writes in its stage directory, giving its outcome, its summary and the files it names. Not: return.
+- **review**: a reviewer's reading of commits against the plan, the spec and the repository's rules, written as graded findings: a work-item review, a branch review or an architecture review. Not: audit.
+- **round**: one dispatch of `initiative-round` for one job, numbered under its drafts path. Not: iteration.
+- **ruling**: the person's answer to a work-item's question, written in the work-item in their words.
+- **run**: to execute a command, script, test, scenario or probe until it exits.
+- **scenario**: a Gherkin scenario in `features/<capability>.feature`, passing when the one test that binds it passes. Not: test case.
+- **session**: one Claude Code conversation with its own id and transcript: the person's, a worker, a dispatch or a fixture session. Not: conversation, chat.
+- **stage**: one of research, plan, implementation and review, done by one worker and started by `work run` from the work-item's status. Not: phase.
+- **stage directory**: the directory `runs/<work-item>/<k>-<stage>/` that holds one stage's brief, result, report and session. Not: run directory.
+- **status**: a node's place in its kind's lifecycle (a work-item's, a capability-proposal's, a decision's), written in its frontmatter; a work-item's are `drafted`, `researched`, `planned`, `ready`, `claimed`, `done`, `green`, `awaiting-ruling` and `withdrawn`. Not: state.
+- **suite**: every test `python3 -m pytest` runs from the root by default, fixture scenarios excluded. Not: fast suite.
+- **suite record**: (old system, until i12) a whole-suite pass or failure logged once and used while nothing it depends on has changed.
+- **template**: standing text in a skill or an agent definition that a session fills with input to start another session. Not: boilerplate.
+- **transition**: one change of a work-item's status, written by `work` and logged in `log.jsonl`. Not: move.
+- **work-item**: the unit of delivery under a capability-proposal, complete when the scenarios it accepts or its check pass, taken through its stages by `work run`.
+- **worker**: a session `work run` starts with `claude -p` for one stage of one work-item, as that stage's agent. Not: job.
 
 ## Where things live
 
 `spec/` (this index, `capabilities/`, `decisions/` with its generated `index.md`), `features/`, `.shop/work/`,
 `.shop/records/` (observations, measurements, review-findings, decision-arguments, archive), `.shop/delivery.toml`
-(the supervisor's settings), `.shop/scratch/` and `.shop/worktrees/` (drafts, notes and the implementers'
+(`work run`'s settings), `.shop/scratch/` and `.shop/worktrees/` (drafts, notes and the implementers'
 worktrees, ignored by git), `docs/design-model/` (the model), `docs/capability-format.md` (the format
 the plugin teaches consuming repositories).

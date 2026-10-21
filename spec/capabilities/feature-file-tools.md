@@ -1,7 +1,7 @@
 ---
 id: capability/missingmass.io/shopsystem/shopsystem-bdd/feature-file-tools
 title: Feature file tools
-narrator: an agent or session editing feature files
+narrator: a session editing feature files
 group: service
 rests_on: [design-decision/plugin-takes-the-dependencies-it-needs, design-decision/held-scenarios, design-decision/plugin-scenarios-run-as-pytest-bdd]
 retired: [r3, r6, r8, r9, r10, r11, r15, r18, r20, r22, r27, r30, r31, r32, r33, r34, r36, r37, r38, r39, r40, r41, r42, r43, r44, r45, r47, r48, r49, r50, r53, r54, r55, r59]

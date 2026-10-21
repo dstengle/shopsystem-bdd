@@ -1,7 +1,7 @@
 ---
 id: capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue
 title: Work queue
-narrator: a person, agent or script reading or moving work-items
+narrator: a person, session or script reading work-items or writing their transitions
 group: service
 rests_on: [design-decision/work-file-forms, design-decision/work-item-lifecycle-as-run, design-decision/the-file-set-is-the-claim, design-decision/plugin-takes-the-dependencies-it-needs]
 retired: []

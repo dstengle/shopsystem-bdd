@@ -1,7 +1,7 @@
 ---
 id: capability/missingmass.io/shopsystem/shopsystem-bdd/supervision
 title: Supervision
-narrator: the person who started work run
+narrator: the person who started `work run`
 group: service
 rests_on: [design-decision/a-script-supervises-delivery, design-decision/worker-results-are-files, design-decision/work-item-lifecycle-as-run, design-decision/review-of-work-items, design-decision/the-file-set-is-the-claim, design-decision/the-v3-agents]
 retired: []

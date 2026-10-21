@@ -1,7 +1,7 @@
 ---
 id: capability/missingmass.io/shopsystem/shopsystem-bdd/design-model-check
 title: Design model check
-narrator: a person or agent checking a repository against the design model
+narrator: a person or session verifying a repository against the design model
 group: service
 rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-may-name-several-requirements, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items]
 retired: [r28, r30, r31, r32, r38, r39, r40, r41, r42, r44, r45, r47, r50, r56, r57, r58, r60, r62, r63, r67]
