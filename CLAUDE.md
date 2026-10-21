@@ -1,0 +1,24 @@
+# CLAUDE.md
+
+## Size limit
+
+Code and test files, every tracked Python file, stay at 300 lines or fewer. `python3 scripts/tools size --limit 300` prints each one over it with its line count and exits 1 when there is any. A change does not push a file over the limit; a file that is over it already is split by the work that names it.
+
+## Module map
+
+| Module | Concern |
+|---|---|
+| `scripts/tools` | the `tools` command: its contract and argument parsing |
+| `scripts/tools_env.py` | the project's interpreter, `probe` and `install` |
+| `scripts/tools_map.py` | the coverage map: `map`, `tests-of`, `untested` |
+| `scripts/tools_refs.py` | `refs` |
+| `scripts/tools_check.py` | `check`: ruff, vulture, import-linter |
+| `scripts/tools_size.py` | `size`: tracked Python files over a line limit |
+| `scripts/features*.py` | the `features` command: Gherkin reading, editing, bindings, reports |
+| `scripts/model*.py` | the `model` command: parsing, facts, checks, work, reports |
+| `scripts/supervise*.py` | `work run`: briefs, workers, merging |
+| `scripts/migrate*.py` | the `migrate` command |
+| `tests/scenarios/` | step definitions, one `<capability>_*_steps.py` module a concern |
+| `tests/scripts/` | tests of the scripts that no scenario drives |
+
+A new concern gets a new module and a row here.

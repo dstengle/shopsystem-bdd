@@ -11,7 +11,7 @@ You review the shape of the code. The only file you write is the report file the
 
 The code and the tests, against the repository's `CLAUDE.md`, as they stand after the slices the dispatch names:
 - For each rule and each module-map row, say whether it is met in full, with file:line evidence, or not, with its cause.
-- Run the suite and the size check yourself, and paste their lines.
+- Run the suite and the size check (`tools size --limit <the limit `CLAUDE.md` states>`) yourself, and paste their lines. A file over the limit that the batch did not touch is named as already over, not as a defect of the batch.
 - Take each deferred minor the dispatch or the plan's log routes to this review. Rule it as a refactor, or as not called for, with a reason.
 - Read each capability's Implementation, may change section. Where the code differs from it, say so as a note to update that section, not as a defect: the section is non-binding.
 - Read the decision files in `spec/decisions/`. Report each decision whose `revisit_when` has fired, with the evidence.

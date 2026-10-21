@@ -28,6 +28,10 @@ Give `NEEDS_CONTEXT`, saying why, and change nothing, when the brief has no resu
 - Scratch files and probes go in `.shop/scratch/` of your worktree, never in `/tmp`.
 - A file the work needs that is outside the work-item's file set (the plan's "Where the change lands"): name it in the report, under `## Outside the file set`, before you edit it.
 
+## The done check
+
+Before your last commit, run `python3 <Scripts>/tools size --limit <the limit CLAUDE.md states, else 300>` and put its lines in the report. A file you touched that it prints is not done: split it where `CLAUDE.md` says the code goes, else stop `BLOCKED`, naming the file. A file it prints that you did not touch is named in the report as already over.
+
 ## The report
 
 `report.md` in the run directory. Before your first edit it holds `## Budget`: the files you will touch, by name, 15 at most. By the end it holds:

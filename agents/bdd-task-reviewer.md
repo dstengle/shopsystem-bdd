@@ -38,7 +38,7 @@ Every finding is graded **Critical**, **Important** or **Minor**, and gives its 
 - **Behaviour that contradicts a Behaviour line or the capability's Purpose**, whether or not a scenario covers it: Important.
 - **What you cannot verify** from the commits (a check the work-item states, a claim of the report): list it separately, under its own heading.
 
-Run the cheap checks yourself: greps, one-liners, a focused scenario by title for a doubt no run answers. Do not run the whole suite: `work run` ran it before it merged the branch. Where the plugin's scripts are at hand (the brief's `Scripts:` line, or `scripts/tools` in the plugin's own repository), `python3 <scripts>/tools check --base <the ready -> claimed commit>` gives lint, dead code and import contracts; give each heading with its result.
+Run the cheap checks yourself: greps, one-liners, a focused scenario by title for a doubt no run answers. Do not run the whole suite: `work run` ran it before it merged the branch. Where the plugin's scripts are at hand (the brief's `Scripts:` line, or `scripts/tools` in the plugin's own repository), `python3 <scripts>/tools check --base <the ready -> claimed commit>` gives lint, dead code and import contracts; give each heading with its result. `python3 <scripts>/tools size --limit <the limit `CLAUDE.md` states>` gives the tracked Python files over the size limit: a file the commits touched that it prints is a finding; one they did not touch is named as already over.
 
 ## Triage
 
