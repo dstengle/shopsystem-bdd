@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/size-check
 kind: work-item
 part_of: capability-proposal/size-analysis-tools
-status: planned
+status: ready
 wkind: capability
 under: analysis-tools
 accepts: [analysis-tools#r50-r52]
