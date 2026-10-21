@@ -1,0 +1,13 @@
+{
+  "status": "DONE",
+  "summary": "Plan for migrate-kb-2 (migration-tools#r1-r17): 6 red tests of 43 go green.\nCode: migrate_ledger.py reads a supersedes naming several decisions (split at 'and' between decision refs), marks each superseded, writes one target as a scalar and several as a list (r2, r17); a qualifier goes to by only when there is one.\nmigrate_spec.py: plan_references also rewrites the decision texts plan_ledger creates, so by and body paths follow moved files (r5, r16, r6).\nTests: the status step strips backticks and gets a two-file form; the three-entry, 'supersedes naming X and Y', source-with-quotes, docs/superpowers/specs/s1.md and records/logs/README.md Givens and the README Then are added.\nNo existing test breaks: the scalar supersedes Thens stay valid.\nDropped from the researcher's set as unchanged: scripts/migrate, migrate_layout.py, migration_old.py, test_migrate_layout.py.\nOpen: qualified multi-target by, other separators, D3 dangling supersedes, model check on a supersedes list.",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/migrate_ledger.py",
+    "scripts/migrate_spec.py",
+    "tests/scenarios/migration_ledger_steps.py",
+    "tests/scenarios/test_migration_tools.py",
+    "tests/scenarios/migration_spec_steps.py"
+  ],
+  "questions": []
+}
