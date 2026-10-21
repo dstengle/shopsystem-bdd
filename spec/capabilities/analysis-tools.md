@@ -35,12 +35,12 @@ file; it reports what the tools found and names a tool that is missing rather th
 - [r13] **When** `tools untested <file>...` is run, `tools` shall print each function in the files that no test in the last map executed, how many they are and the commit the map was made at, and exit 0 however many there are.
 - [r14] **When** `tools refs <name>` is run on a name the project defines, `tools` shall print every reference to it as `path:line`, including uses through an import or an alias and counting no definition as a reference, then one summary line with the number of references, the number of production files and, apart, of test files that contain them, and where the name is defined.
 - [r16] **When** `tools check` is run, `tools` shall run ruff and vulture over the paths given, or in their place the Python files changed since `--base` and not deleted, and, where the project has import contracts, import-linter over the project, each under its own heading, and exit 1 when any reports.
-- [r50] **When** `tools size` is run, `tools` shall print each tracked Python file over the size limit, with its line count.
+- [r50] **When** `tools size` is run, `tools` shall print each tracked Python file over the size limit in the working tree, a Python file being one with a `.py` extension or a `python` shebang, tests included, with its line count.
 - [r51] **If** any tracked Python file is over the size limit, then `tools size` shall exit 1.
-- [r52] **Where** the repository's `CLAUDE.md` gives no size limit, `tools size` shall use 300 lines.
+- [r52] **Where** `tools size --limit <n>` is given, `tools size` shall use `<n>` lines as the size limit, and 300 lines otherwise.
 
 ## Implementation, may change
-- A Python file is one with a `.py` extension or a `python` shebang, a test or step module included.
+- A reviewer passes the repository's own limit from its `CLAUDE.md` as `--limit`.
 - The tools probed are coverage, pytest-cov, jedi, ast-grep, ruff, vulture, import-linter and hypothesis.
 - A Python project is one with `pyproject.toml`, `setup.py`, `setup.cfg`, `pytest.ini`, `requirements.txt`,
   `tox.ini` or any `.py` file under the current directory. In any other, `probe`, `install` and `check` say in
