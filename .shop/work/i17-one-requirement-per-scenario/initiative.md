@@ -10,8 +10,8 @@ source: [observation/2026-10-21-one-requirement-per-scenario]
 date: 2026-10-21
 ---
 
-For 0.21.1 (the person, 2026-10-21: one requirement per scenario, steps shared in code; lines say exits
-successfully or with an error; awaiting a ruling is an error; do it as 0.21.1 now). Decisions
+For 0.22.0 (rolled in from 0.21.1, not cut; the person, 2026-10-21: one requirement per scenario, steps shared in code; lines say exits
+successfully or with an error; awaiting a ruling is an error; first planned as 0.21.1). Decisions
 design-decision/a-scenario-names-one-requirement (0054, superseding 0052) and
 design-decision/exits-are-successful-or-errors (0055).
 
