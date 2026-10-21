@@ -38,9 +38,9 @@ Feature: Supervision
     And its `git commit -q --allow-empty -m meddle` was <done>
 
     Examples:
-      | tools                                                                    | list                                                                                                                               | done    |
-      | .shop/delivery.toml names no tools                                       | Read,Glob,Grep,Bash(python3 -m pytest*),Bash(python3 {scripts}/*),Bash(git status*),Bash(git diff*),Bash(git log*),Bash(git show*) | refused |
-      | .shop/delivery.toml gives the research stage Read and Bash(git commit *) | Read,Bash(git commit *)                                                                                                            | run     |
+      | tools                                                                    | list                                                                                                                                                                                                        | done    |
+      | .shop/delivery.toml names no tools                                       | Read,Glob,Grep,Bash(python3 -m pytest*),Bash(python3 {scripts}/features *),Bash(python3 {scripts}/model *),Bash(python3 {scripts}/tools *),Bash(git status*),Bash(git diff*),Bash(git log*),Bash(git show*) | refused |
+      | .shop/delivery.toml gives the research stage Read and Bash(git commit *) | Read,Bash(git commit *)                                                                                                                                                                                     | run     |
 
   @r3
   Scenario: a worker's DONE moves the work-item to its next status
@@ -75,6 +75,16 @@ Feature: Supervision
       | tests                     | command                           |
       | the work-item's scenarios | python3 tests.py --work-item w1   |
       | the whole suite           | python3 tests.py                  |
+
+  @r4
+  Scenario: an implementer's DONE whose scenarios pass only on a file it left uncommitted is not merged
+    Pins that the tests run on the branch, which is what the merge takes: a file the implementer wrote and did not commit is not there.
+    Given i1's work-item w1 is ready
+    And every worker gives DONE, the implementer writing feature.txt and not committing it
+    And the work-item's scenarios pass only where feature.txt is
+    When the person runs `work run i1`
+    Then the initiative branch does not have the implementer's commit
+    And w1 is awaiting-ruling, its question naming `python3 tests.py --work-item w1` and what it printed
 
   @r5
   Scenario Outline: a researcher that <gives> puts the work-item to awaiting-ruling with <question> as its question
@@ -198,6 +208,7 @@ Feature: Supervision
       | i1's work-item w1 is drafted                                                 | i9         | the initiative i9 does not exist                                                          |
       | i1's work-item w1 is drafted, though log.jsonl's last move of w1 is to researched | i1     | .shop/work/i1/w1.md gives its status as drafted, but log.jsonl's last move of w1 is to researched |
       | i1's work-item w1 is drafted, in a directory that is not a git repository     | i1         | not a git repository                                                                      |
+      | i1's work-item w1 is drafted, its checkout's HEAD detached                    | i1         | HEAD is detached                                                                          |
 
   @r4 @r5 @r10
   Scenario Outline: a run's worktrees are removed when the run ends, whatever the implementer's work came to: <outcome>
@@ -221,6 +232,15 @@ Feature: Supervision
     And every worker gives DONE, the implementer deleting its own branch
     When the person runs `work run i1`
     Then work says in one line that git merge --ff-only work/w1 failed
+    And it exits non-zero
+
+  @r5 @r10
+  Scenario: a failure of git after the work-item was claimed puts it to awaiting-ruling with the failure as its question
+    Pins that no work-item is left claimed, which nothing moves on from, when its implementation fails part-way.
+    Given i1's work-item w1 is ready
+    And every worker gives DONE, the implementer deleting its own branch
+    When the person runs `work run i1`
+    Then w1 is awaiting-ruling, its question saying git merge --ff-only work/w1 failed
     And it exits non-zero
 
   @r11
@@ -285,10 +305,12 @@ Feature: Supervision
       | researcher  | python3 -m pytest --version          | run     |
       | researcher  | python3 {scripts}/features --help    | run     |
       | researcher  | python3 -c pass                      | refused |
+      | researcher  | python3 {scripts}/work --help        | refused |
       | planner     | git status                           | refused |
       | implementer | python3 -m pytest --version          | run     |
       | implementer | python3 -c pass                      | refused |
       | implementer | git log -1                           | refused |
+      | implementer | python3 {scripts}/work show          | refused |
       | reviewer    | git log -1                           | run     |
       | reviewer    | python3 -c pass                      | refused |
 

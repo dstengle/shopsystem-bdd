@@ -36,8 +36,9 @@ def repository(repo):
 
 @given(parsers.re(r"i1's work-items? (?P<items>[\w -]+?)(?:, under (?P<under>\w+))?"
                   r"(?:, though log\.jsonl's last move of (?P<lname>\w+) is to (?P<lafter>[\w-]+))?"
-                  r"(?P<nogit>, in a directory that is not a git repository)?$"))
-def work_items(repo, items, under, lname, lafter, nogit):
+                  r"(?P<nogit>, in a directory that is not a git repository)?"
+                  r"(?P<detached>, its checkout's HEAD detached)?$"))
+def work_items(repo, items, under, lname, lafter, nogit, detached):
     if " are " in items:
         names, status = items.split(" are ")
         pairs = [(n, status) for n in names.split(" and ")]
@@ -51,6 +52,8 @@ def work_items(repo, items, under, lname, lafter, nogit):
     commit_all(repo, "work-items")
     if nogit:
         shutil.rmtree(repo / ".git")
+    if detached:
+        git(repo, "checkout", "-q", "--detach")
 
 
 @given("every worker gives DONE")
@@ -175,6 +178,12 @@ def loads_skill(plan, who, skill):
 def researcher_writes_outside(repo, plan):
     plan["default"] = {"status": "DONE"}
     plan["code-scout"] = {"write": {str(repo / "notes.md"): "written outside the worktree\n"}}
+
+
+@given("every worker gives DONE, the implementer writing feature.txt and not committing it")
+def implementer_leaves_uncommitted(plan):
+    plan["default"] = {"status": "DONE"}
+    plan["bdd-implementer"] = {"write": {"feature.txt": "the feature\n"}}
 
 
 @given("every worker gives DONE, the implementer writing report.md at the top of its worktree and naming it as its report")

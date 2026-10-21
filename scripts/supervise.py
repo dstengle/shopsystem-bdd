@@ -58,6 +58,8 @@ class Run(Workers, Briefs, Merge):
         for name, _ in self.items():
             workqueue.agrees(self.root, self.initiative, name)
         self.branch = git(self.root, "rev-parse", "--abbrev-ref", "HEAD").stdout.strip()
+        if self.branch == "HEAD":     # detached: no initiative branch to merge onto, rebase on or put back from (r4, r6)
+            raise Refused("HEAD is detached; check out the initiative branch work run is to deliver onto")
 
     def log(self, **line):
         with self.lock:
@@ -132,8 +134,8 @@ class Run(Workers, Briefs, Merge):
         def implement(name):
             try:
                 self.implement(name)
-            except Refused as refused:    # carried to the run's own thread, which ends with it (r10)
-                failed.append(refused)
+            except Exception as error:    # carried to the run's own thread, which ends with it (r10)
+                failed.append(error)
         threads = [threading.Thread(target=implement, args=(name,)) for name in names]
         for thread in threads:
             thread.start()

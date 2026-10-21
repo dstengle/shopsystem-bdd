@@ -26,8 +26,9 @@ The script is the JSON file $STUB_CLAUDE_PLAN: an object whose keys are agents w
   elsewhere  {"root": a directory, "commit": {path: text}}: while this worker runs, another session (not the worker,
              so no tool of its own and nothing recorded) writes these files relative to that directory and commits
              them there, first.
-As the real claude does, it refuses to write any file (a `write` path, the result file) under its --plugin-dir, as a
-sensitive file: the write is recorded as refused (`Write`) and nothing is written.
+It refuses an --agent the --plugin-dir has no agents/<agent>.md for. As the real claude does, it refuses to write any
+file (a `write` path, the result file) under its --plugin-dir, as a sensitive file: the write is recorded as refused
+(`Write`) and nothing is written.
 Each start and end, and each Bash command, skill load or write outside the working directory run or refused (its `tool`,
 `Bash`, `Skill` or `Write`), is appended to $STUB_CLAUDE_CALLS, one JSON object a line, so
 a scenario can read who was started, with what arguments and brief, in which directory and in what order.
@@ -115,6 +116,10 @@ def main(argv):
     brief = brief_path.read_text()
     agent = option(argv, "--agent")
     session = option(argv, "--session-id")
+    plugin = option(argv, "--plugin-dir")
+    if plugin and not (pathlib.Path(plugin) / "agents" / (agent.split(":", 1)[-1] + ".md")).is_file():
+        print("stand-in claude: no agent %s in --plugin-dir %s" % (agent, plugin), file=sys.stderr)
+        return 1
     record({"event": "start", "argv": argv, "cwd": os.getcwd(), "brief": brief, "brief_path": str(brief_path),
             "agent": agent, "session": session})
     plan = json.loads(pathlib.Path(os.environ["STUB_CLAUDE_PLAN"]).read_text())
