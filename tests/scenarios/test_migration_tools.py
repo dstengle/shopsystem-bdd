@@ -96,9 +96,9 @@ def _(old):
     old.commit()
 
 
-@given("a repository on the old system with records/logs/README.md")
-def _(old):
-    old.write("records/logs/README.md", body("readme"))
+@given(parsers.re(r"a repository on the old system with (?P<path>\S*README\.md)$"))
+def _(old, path):
+    old.write(path, body("readme"))
     old.commit()
 
 

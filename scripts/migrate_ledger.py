@@ -76,11 +76,12 @@ def supersedes_of(plan, fields):
     and other text after a reference is its qualifier (r2, r17)."""
     words, targets = fields.get("supersedes", "").split(), []
     for i, word in enumerate(words):
+        word = word.rstrip(",;") if REFERENCE.fullmatch(word.rstrip(",;")) else word
         if REFERENCE.fullmatch(word):
             targets.append((plan.renamed.get(word, word), []))
         elif targets and not (word == "and" and i + 1 < len(words) and REFERENCE.fullmatch(words[i + 1])):
             targets[-1][1].append(word)
-    return [(target, " ".join(rest) or None) for target, rest in targets]
+    return [(target, " ".join(rest).rstrip(",;") or None) for target, rest in targets]
 
 
 def decision_text(plan, slug, paragraphs, fields, superseded=False):

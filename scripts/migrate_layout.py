@@ -68,7 +68,7 @@ def with_id(text, ident, kind=None, about=None):
 
 def record_kind(final):
     """The kind of a moved record that gets an id: a Markdown plan, design note or test log; None for any other."""
-    if not final.endswith(".md"):
+    if not final.endswith(".md") or Path(final).name == "README.md":      # a README is not a record (r9)
         return None
     if final.startswith((".shop/records/archive/plans/", ".shop/records/archive/requests/")):
         return "initiative-archive"

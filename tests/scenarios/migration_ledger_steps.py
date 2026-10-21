@@ -171,11 +171,11 @@ def _(old, context, first, second):
     old.commit()
 
 
-@then(parsers.re(r"spec/decisions/0007-a.md's supersedes names (?P<first>design-decision/\S+) and "
-                 r"(?P<second>design-decision/[^\s,]+), and nothing else$"))
-def _(old, first, second):
+@then(parsers.re(r"spec/decisions/0007-a.md's supersedes names (?P<ids>design-decision/\S+( and design-decision/\S+)?)"
+                 r"(, and nothing else)?$"))
+def _(old, ids):
     data, _ = front(old, "spec/decisions/0007-a.md")
-    assert load_model().as_list(data.get("supersedes")) == [first, second], data.get("supersedes")
+    assert load_model().as_list(data.get("supersedes")) == ids.split(" and "), data.get("supersedes")
 
 
 @then(parsers.re(r"spec/decisions/0007-a.md's supersedes is (?P<ident>design-decision/\S+)$"))
@@ -207,8 +207,9 @@ def _(old, name, status):
 
 @given(parsers.parse("the entry 0007-a's source is alice and its supersedes is {value}"))
 def _(old, context, value):
-    context["ledger"][1] += "supersedes: %s\n" % value
-    context["ledger"][1] = context["ledger"][1].replace("source: alice\n", "") + "source: alice\n"
+    i = next(i for i, entry in enumerate(context["ledger"]) if entry.startswith("## decision/0007-a"))
+    context["ledger"][i] += "supersedes: %s\n" % value
+    context["ledger"][i] = context["ledger"][i].replace("source: alice\n", "") + "source: alice\n"
     old.write("spec/decisions.md", "\n".join(context["ledger"]))
     old.commit()
 
@@ -220,7 +221,7 @@ def _(old, ident):
 
 
 @then(parsers.parse('spec/decisions/0007-a.md\'s by is "{by}"'))
-@then(parsers.parse('its by is "{by}"'))
+@then(parsers.re(r'its by is (exactly )?"(?P<by>[^"]+)"$'))
 def _(old, by):
     data, _ = front(old, "spec/decisions/0007-a.md")
     assert data["by"] == by, data["by"]

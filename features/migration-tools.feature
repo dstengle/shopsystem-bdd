@@ -79,13 +79,18 @@ Feature: Migration tools
     And spec/decisions/0003-b.md's and spec/decisions/0004-c.md's status is `superseded`
 
   @r17
-  Scenario: run writes a qualified supersedes as the decision's id alone, the qualifier going to by beside the source
-    Pins that supersedes names only a decision, and that its qualifier is kept in by after the entry's source.
-    Given a repository on the old system whose spec/decisions.md has the entries `## decision/0003-b` and `## decision/0007-a`
-    And the entry 0007-a's source is alice and its supersedes is decision/0003-b (for artifacts)
+  Scenario Outline: run writes a qualified supersedes as the decisions' ids alone, the qualifier going to by after the source, <case>
+    Pins that supersedes names only decisions, and that by is exactly the entry's source then `; supersedes <id> <qualifier>`, with no stray punctuation.
+    Given a repository on the old system whose spec/decisions.md has the entries `## decision/0003-b`, `## decision/0004-c` and `## decision/0007-a`
+    And the entry 0007-a's source is alice and its supersedes is <supersedes>
     When the session runs `migrate run --context example.org/acme/shop`
-    Then spec/decisions/0007-a.md's supersedes is design-decision/example.org/acme/shop/b alone
-    And its by is "alice; supersedes design-decision/example.org/acme/shop/b (for artifacts)"
+    Then spec/decisions/0007-a.md's supersedes names <ids>, and nothing else
+    And its by is exactly "alice; supersedes design-decision/example.org/acme/shop/b (for artifacts)"
+
+    Examples:
+      | case                                | supersedes                                       | ids                                                                                    |
+      | one decision                        | decision/0003-b (for artifacts)                  | design-decision/example.org/acme/shop/b                                                |
+      | two decisions, the first qualified  | decision/0003-b (for artifacts), decision/0004-c | design-decision/example.org/acme/shop/b and design-decision/example.org/acme/shop/c    |
 
   @r11
   Scenario Outline: run removes a ledger that holds nothing but <what> once it has replaced every entry
@@ -194,9 +199,9 @@ Feature: Migration tools
     Then spec/decisions/0007-a.md's by is "alice, from <new>"
 
     Examples:
-      | old                           | new                                                   |
-      | adrs/0001-use-x.md            | .shop/records/decision-arguments/0001-use-x.md        |
-      | docs/superpowers/specs/s1.md  | .shop/records/archive/design-notes/s1.md              |
+      | old                          | new                                            |
+      | adrs/0001-use-x.md           | .shop/records/decision-arguments/0001-use-x.md |
+      | docs/superpowers/specs/s1.md | .shop/records/archive/design-notes/s1.md       |
 
   @r6
   Scenario Outline: after run on a repository with <what>, model check reports no unresolved reference or file problem
@@ -276,11 +281,16 @@ Feature: Migration tools
     Then spec/capabilities/thing.md gives the id capability/example.org/acme/shop/thing
 
   @r9
-  Scenario: run gives a moved README.md no id, kind or about
-    Pins that a README.md under records is not a record and so has no frontmatter from migrate.
-    Given a repository on the old system with records/logs/README.md
+  Scenario Outline: run gives a README.md it moves to <new> no id, kind or about
+    Pins that a README.md is not a record wherever it lands under .shop/records/, and so has no frontmatter from migrate.
+    Given a repository on the old system with <old>
     When the session runs `migrate run --context example.org/acme/shop`
-    Then .shop/records/logs/README.md has the content records/logs/README.md had, with no id, no kind and no about
+    Then <new> has the content <old> had, with no id, no kind and no about
+
+    Examples:
+      | old                   | new                                        |
+      | records/logs/README.md | .shop/records/logs/README.md               |
+      | adrs/README.md         | .shop/records/decision-arguments/README.md |
 
   @r10
   Scenario: run numbers each Behaviour line with no id, in Behaviour order, from one above the highest id its capability has ever used
