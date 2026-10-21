@@ -294,3 +294,25 @@ reverse one: **should a directory's README that is moved with it get an id at al
 
 Clone `/home/vscode/.claude/jobs/3dae44af/tmp/kb-trial-2/` (migrated, uncommitted). Outputs in `…/tmp/kb-trial-2-out/`:
 migrate.out (empty), status.txt, check.out, pytest.txt, rerun.out.
+
+## Trial 3: `migrate run` on a fresh clone after the by, supersedes and README fixes
+
+Plugin branch release-0.21.0 at 8efb031 (migrate fixes 38c6496, 225b787, c023c75), fresh clone of shopsystem-kb in
+`…/tmp/kb-trial-3/` at main 2eed357, the same commit as trials 1 and 2. Nothing was edited or committed in the clone.
+
+**Outcome: exit 0, no output, 1.45 s (timed on a second fresh clone). r6 still fails by the same one file problem.**
+
+- **model check --limit 100000**: exit 1, 1103 violations, 21 warnings, 0 unresolved, 1 file problem. v_e1 371,
+  v_s1 361, v_s3 371 are the session's judgment work. The file problem is unchanged from trial 2:
+  `.shop/records/decision-arguments/README.md: id 'decision-argument/missingmass.io/shopsystem/kb/README' is not
+  decision-argument/missingmass.io/shopsystem/kb/<name>`. **Still wrong**: that README still gets an id
+  (frontmatter `id: decision-argument/…/README`), despite the README steps in 38c6496.
+- **Suite** (kb-trial's venv, `PYTHONPATH=src`): 1603 passed, same count as trial 2 (265 s on this run).
+- **git status**: 98 R, 155 A, 25 M, 1 D, nothing unstaged; 279 files, +3265 -1555, same as trial 2.
+  `adrs/0009` is still R050.
+- **Defect 2, `by` paths: fixed.** No decision file has a `by` naming `docs/superpowers/(specs|requests)` or
+  `adrs/<n>` (0 of 154, was 105). 0001 now has `by: ".shop/records/decision-arguments/0001-yaml-1-2-git-canonical.md"`.
+- **Defect 3, two-id supersedes: fixed.** 0100-batch-rpcs-prefixed has `supersedes: [design-decision/…/sets-one-kind-at-a-time,
+  design-decision/…/references-inside-a-set]` and both qualifiers in `by`. Nit: `by` has a stray `,;` after the
+  first qualifier (`(its rpc names),; supersedes …`).
+- Outputs in `…/tmp/kb-trial-3-out/`.
