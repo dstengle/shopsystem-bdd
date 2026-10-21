@@ -113,3 +113,10 @@ Left as they are for the next release (the final review of 0.21.0, `.shop/scratc
 - M20: `work add` writes `--accepts` and `--part-of` values containing `,`, `]` or `#` unquoted into flow YAML (`scripts/workqueue.py`); the global `--root`, and the id derived from spec/index.md, have no line.
 - M2: `migrate run` overwrites a tracked spec/decisions/index.md without a word.
 - M3: migrate's refusals that no line states: ledger prose outside entries, a heading not in `## decision/…` form, a duplicate entry, a value `quoted()` cannot write, two sources to one destination; links to the removed spec/decisions.md are left dangling.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-21-release-gate
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+by: the person
+date: 2026-10-21
+
+The person approved every card of the 0.21.0 release gate (https://claude.ai/artifact/DnuBKmGFec57xuQ2X7NzgN): release (merge to main, tag `v0.21.0`, push); the four choice cards, each with its recommended option A: pytest-python (accept it inside the worker's own worktree, guarded by supervision r21 and r28), delivery-toml (`[allowed_tools]` is the person's override, r30, with r29 for `[tests]`), skill-tool (role-boundaries r4 changed: the implementer has the Skill tool) and r20-fileset (the planner's final set written at `planned`, r31); lines (all seventeen); decisions (0037-0050 and 0053 accepted, 0039 amended); readings (all confirmed). The unbuilt lines are drafted work-items for after the release.
