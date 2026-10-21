@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/fixture-scenarios-under-pytest-bdd
 summary: "A workflow capability's scenarios are pytest-bdd scenarios tagged @fixture, deselected from the unit suite, whose When runs a fixture case headless three times and whose Then passes only when every run passes."
 date: 2026-10-19
-status: proposed
+status: accepted
 revisit_when: "a fixture scenario's verdict changes between two suite runs on one plugin tree"
 revisit_signal: requests
 source: [design-decision/workflow-scenarios-run-as-fixture-sessions]

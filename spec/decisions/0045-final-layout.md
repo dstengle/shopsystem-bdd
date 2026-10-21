@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/final-layout
 summary: "A bounded context's files are spec/ (index.md, capabilities/, decisions/ with a generated index.md), features/ beside the code, and .shop/ for its work and records, with .shop/scratch/ for what is never committed; scripts/model reads that layout and no other."
 date: 2026-10-19
-status: proposed
+status: accepted
 supersedes: [plugin-adopts-the-design-model]
 source: [observation/2026-10-19-final-state-only]
 by: "the person, 2026-10-19"

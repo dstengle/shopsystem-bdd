@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/review-of-work-items
 summary: "A done work-item with a named risk (contract, concurrency, data) gets a task review of its commits; every other is reviewed once by the initiative's branch review; findings to fix now become fix work-items, the rest observations, and every review is a review-finding record."
 date: 2026-10-19
-status: proposed
+status: accepted
 supersedes: design-decision/review-by-risk
 revisit_when: "more than half of a measured initiative's task reviews find nothing to fix now"
 revisit_signal: requests

@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/living-plan-to-work-items
 summary: "A living plan's open slices become work-items under one capability-change initiative, migrated-plan, with one formulated capability-proposal per capability; its backlog and open log entries become observations; the plan itself becomes a record."
 date: 2026-10-19
-status: proposed
+status: accepted
 source: [observation/2026-10-19-final-state-only]
 by: "the person, 2026-10-19"
 ---

@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/worker-results-are-files
 summary: "A worker is a fresh session given one brief file, and its outcome is a JSON result file of its stage's form that work run reads; work run never parses a worker's prose and never resumes a worker."
 date: 2026-10-19
-status: proposed
+status: accepted
 supersedes: design-decision/fresh-agents-short-replies
 source: [initiative/i10, design-decision/fresh-agents-short-replies, measurement/2026-10-12-spec-round-test-log]
 by: "(reply files)"

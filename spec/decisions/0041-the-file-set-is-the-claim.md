@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-file-set-is-the-claim
 summary: "A work-item's file set, found by its researcher and finalised by its planner, is its claim: implementers whose sets are disjoint work at once, each in its own worktree; no count of modules is refused, and a dispatch still touches at most 15 files."
 date: 2026-10-19
-status: proposed
+status: accepted
 supersedes: design-decision/slice-budget-refused-by-plan
 source: [initiative/i10, measurement/kb-batches-32-35]
 by: "docs/design-model/design-model.md v3 section 3, the work-item; (Lands exceeded in 15 of 23 slices)"

@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/light-decisions
 summary: "A decision file is light: frontmatter (id, summary, date, status, supersedes, revisit_when, source, by) and a Decision section; Context and Alternatives are written only where options were weighed."
 date: 2026-10-19
-status: proposed
+status: accepted
 source: [observation/2026-10-19-final-state-only]
 by: "the person, 2026-10-19"
 ---

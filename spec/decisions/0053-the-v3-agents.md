@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-v3-agents
 summary: "The plugin's agents on design model v3, each with exactly its role's tools and its model in its definition: bdd-planner joins them, the supervisor starts the delivery workers, and only initiative-round can start an agent."
 date: 2026-10-19
-status: proposed
+status: accepted
 supersedes: [design-decision/rules-held-by-agent-tools, design-decision/model-pinned-in-agent-definitions]
 source: [initiative/i10]
 by: "the coordinator, 2026-10-19, on the i10 drafter's question 6 (ledger, ruling Q6); the person approves at the gate"
@@ -23,7 +23,7 @@ default for every start of it; `work run` passes `--model` only where `.shop/del
 | `initiative-round` | runs a spec round (integrate, formulate) | Read, Glob, Grep, Bash, Write, Edit, Agent | Sonnet |
 | `code-scout` | researcher of a `drafted` work-item | Read, Glob, Grep, Bash, Write | Haiku, low effort |
 | `bdd-planner` | planner of a `researched` work-item | Read, Glob, Grep, Write | Opus |
-| `bdd-implementer` | implementer of a `claimed` work-item | Read, Edit, Write, Glob, Grep, Bash; `skills:` its own, `bdd-red-green` among them; no Skill | Sonnet |
+| `bdd-implementer` | implementer of a `claimed` work-item | Read, Edit, Write, Glob, Grep, Bash, Skill; `skills:` its own, `bdd-red-green` among them, the only skills `work run` allows | Sonnet |
 | `bdd-task-reviewer` | reviewer of a done work-item | Read, Glob, Grep, Bash, Write | Opus |
 | `bdd-branch-reviewer` | reviewer of an initiative's branch | Read, Glob, Grep, Bash, Write | Opus |
 | `architecture-reviewer` | architecture review, when the person asks | Read, Glob, Grep, Bash, Write | Opus |

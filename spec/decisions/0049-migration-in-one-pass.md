@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/migration-in-one-pass
 summary: "A consuming repository moves from the old system to the final layout in one migration, with one gate: scripts/migrate makes every mechanical change and is the only code that knows the old layout; the session does what needs judgment."
 date: 2026-10-19
-status: proposed
+status: accepted
 supersedes: [model-reads-a-ledger]
 source: [observation/2026-10-19-final-state-only, review-finding/2026-10-13-kb-and-bdd-assessment]
 by: "the person, 2026-10-19"

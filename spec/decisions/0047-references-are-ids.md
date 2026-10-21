@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/references-are-ids
 summary: "Frontmatter names other files by id, never by path: a capability's feature file is features/<its name>.feature and formulated_as is not written; a decision's source lists ids, and where else it came from, in words, is its by."
 date: 2026-10-19
-status: proposed
+status: accepted
 source: [observation/2026-10-19-final-state-only]
 by: "the person, 2026-10-19"
 ---

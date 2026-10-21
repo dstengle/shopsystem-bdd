@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/work-item-lifecycle-as-run
 summary: "work run moves work-items drafted → researched → planned → ready → claimed → done → green, with awaiting-ruling for every question to the person, and runs the suite itself before an item is done; a stopped or refused implementer releases its claim."
 date: 2026-10-19
-status: proposed
+status: accepted
 supersedes: design-decision/suite-record-holds
 source: [initiative/i10]
 by: "docs/design-model/grammar.md v3 section 5"
@@ -17,6 +17,7 @@ Transitions and their guards:
 | from → to | made by | guard |
 |---|---|---|
 | drafted → researched | researcher's result | DONE, a non-empty file set, the notes file present |
+| drafted → awaiting-ruling | researcher's result | any result but DONE, or no result file (EXTENSION) |
 | researched → planned | planner's result | DONE, the plan file present, a final file set |
 | planned → awaiting-ruling | planner's result | QUESTION, each question with its readings |
 | planned → ready | work | every `blocked_by` green; no claimed item's file set shares a path |
@@ -25,6 +26,7 @@ Transitions and their guards:
 | claimed → ready | work, on a refused `work claim` | the holder is claimed (EXTENSION: release) |
 | claimed → awaiting-ruling | implementer's result | BLOCKED, HAND-BACK, NEEDS_CONTEXT, a fourth PARTIAL, a second failed stage, a conflict (EXTENSION) |
 | awaiting-ruling → planned | the person, `work rule` | every open question answered |
+| done → awaiting-ruling | reviewer's result | any result but DONE, or no result file (EXTENSION) |
 | done → green | review | no finding to fix now, every fix work-item for it green, its scenarios pass at the head |
 | any but claimed, green → withdrawn | the person, `work withdraw` | — |
 
@@ -34,5 +36,7 @@ in each implementer's brief; implementers do not log suite records.
 
 ## Consequences
 
-Two transitions are extensions against grammar.md v3, which has awaiting-ruling only from planned: a claimed item
-goes back to ready or to awaiting-ruling, so that a claim is never kept by a stopped worker.
+Four transitions are extensions against grammar.md v3, which has awaiting-ruling only from planned: a claimed item
+goes back to ready or to awaiting-ruling, so that a claim is never kept by a stopped worker, and a drafted or a done
+item goes to awaiting-ruling when its researcher or reviewer does not give DONE, as `work run` makes them (amended at
+the 0.21.0 release gate, the person, 2026-10-21).

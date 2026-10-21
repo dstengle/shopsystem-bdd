@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/a-script-supervises-delivery
 summary: "scripts/work run pulls an initiative's work-items through their stages, starting a fresh claude -p worker for each stage, and is the only writer of a work-item's status; no language-model session controls delivery."
 date: 2026-10-19
-status: proposed
+status: accepted
 supersedes: design-decision/one-batch-one-session
 source: [initiative/i10, review-finding/2026-10-13-kb-and-bdd-assessment, measurement/kb-batches-32-35]
 by: "sections 3 and 4"

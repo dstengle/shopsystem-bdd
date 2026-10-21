@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/plans-list-the-tests-they-break
 summary: "A work-item's plan lists every existing test its decisions make impossible to keep and what becomes of each; any other test an implementer would weaken is BLOCKED, with two reported allowances measured from the initiative's base."
 date: 2026-10-19
-status: proposed
+status: accepted
 supersedes: design-decision/tests-the-decisions-break
 source: [initiative/i10, design-decision/tests-the-decisions-break]
 ---
