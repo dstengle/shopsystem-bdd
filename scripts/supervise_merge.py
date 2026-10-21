@@ -5,12 +5,17 @@ import shlex
 import subprocess
 import time
 
-from supervise_worker import git
+import workqueue
+from supervise_worker import git, with_scripts
 from workqueue import WORK
 
 # The tests work run runs unless .shop/delivery.toml names its own: in parallel (`-n auto`) where the project's python3
 # has pytest-xdist, the work-item's and the suite alike (supervision's Implementation); in one process where it has not.
-TESTS = {"work_item": "python3 -m pytest -q{parallel} --work-item {work_item}", "suite": "python3 -m pytest -q{parallel}"}
+# `--work-item` is the plugin's own pytest plugin, scripts/work_items.py, loaded by `-p` from the scripts directory
+# work run puts on PYTHONPATH, so a repository delivered by work run needs no conftest of its own for it.
+TESTS = {"work_item": "python3 -m pytest -q{parallel} -p work_items --work-item {work_item}",
+         "suite": "python3 -m pytest -q{parallel}"}
+
 
 
 class Merge:
@@ -25,7 +30,7 @@ class Merge:
     def suite_record(self, tree, suite):
         """work run's own whole-suite run in `tree`, as the line `Suite: <N> passed, <M> failed at <hash> in <s> s`."""
         began = time.monotonic()
-        done = subprocess.run(shlex.split(suite), cwd=tree, capture_output=True, text=True)
+        done = subprocess.run(shlex.split(suite), cwd=tree, capture_output=True, text=True, env=with_scripts())
         seconds = time.monotonic() - began
         out = done.stdout + done.stderr
         summary = out.strip().splitlines()[-1] if out.strip() else ""
@@ -53,8 +58,28 @@ class Merge:
 
     def implement(self, name):
         """ready -> claimed, the implementer in its worktree, and its branch merged only on passing tests (r4), then
-        deleted (r18)."""
+        deleted (r18). A failure once it is claimed puts it to awaiting-ruling with the failure as its question (r5),
+        and is still work run's own (r10)."""
         self.move(name, "ready", "claimed")
+        try:
+            self.claimed(name)
+        except Exception as error:
+            self.failed_claimed(name, error)
+            raise
+
+    def failed_claimed(self, name, error):
+        """`name` to awaiting-ruling, asking about `error`, while it is still claimed; a failure of that move leaves the
+        first failure the one work run ends with."""
+        said = str(error) if isinstance(error, workqueue.Refused) else "%s: %s" % (type(error).__name__, error)
+        with self.lock:
+            try:
+                if workqueue.agrees(self.root, self.initiative, name) == "claimed":
+                    self.move(name, "claimed", "awaiting-ruling",
+                              "work run failed on %s once it was claimed: %s" % (name, said))
+            except Exception:
+                pass
+
+    def claimed(self, name):
         tests = self.tests()
         tree = self.worktree(name, name, "work/" + name)
         record = self.suite_record(tree, tests["suite"])
@@ -76,7 +101,9 @@ class Merge:
 
     def merge(self, name, tree, tests):
         """The branch rebased on the initiative branch, put back under .shop/work/, tested and merged (r4, r6); None,
-        else the question it gives the person instead of the merge."""
+        else the question it gives the person instead of the merge. What the worker left uncommitted is cleaned away
+        first (its run directory in .shop/scratch/ aside): the tests run on the branch, which is what the merge takes."""
+        git(tree, "clean", "-q", "-f", "-d", "-x", "-e", ".shop/scratch")
         done = subprocess.run(["git", "rebase", "-q", self.branch], cwd=tree, capture_output=True, text=True)
         if done.returncode != 0:
             return "`git rebase %s` failed on %s's branch work/%s:\n%s" % (
@@ -86,7 +113,7 @@ class Merge:
             return ("bdd-implementer's branch work/%s changed %s under .shop/work/, which only work run "
                     "writes; work run put it back on the branch and did not merge it" % (name, ", ".join(changed)))
         for cmd in (shlex.split(tests["work_item"].format(work_item=name)), shlex.split(tests["suite"])):
-            done = subprocess.run(cmd, cwd=tree, capture_output=True, text=True)
+            done = subprocess.run(cmd, cwd=tree, capture_output=True, text=True, env=with_scripts())
             if done.returncode != 0:
                 return "`%s` failed on %s's branch work/%s:\n%s" % (
                     " ".join(cmd), name, name, (done.stdout + done.stderr).strip())

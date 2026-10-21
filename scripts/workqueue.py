@@ -11,6 +11,8 @@ import re
 from pathlib import Path
 
 WORK = Path(".shop") / "work"
+# The statuses of the work-item lifecycle (design-decision/work-item-lifecycle-as-run); a move to any other is refused.
+STATUSES = ("drafted", "researched", "planned", "ready", "claimed", "done", "green", "awaiting-ruling", "withdrawn")
 
 
 def _load_model():
@@ -108,6 +110,8 @@ def move(root, initiative, name, status, by):
     is not the last one log.jsonl gives it is refused (r6), and so is a file with no status.
     """
     path = Path(root) / WORK / initiative / (name + ".md")
+    if status not in STATUSES:
+        raise Refused("%s is no status of the work-item lifecycle; %s is not moved" % (status, name))
     before = agrees(root, initiative, name)
     text = read(path, root)
     end = text.find("\n---", 4)

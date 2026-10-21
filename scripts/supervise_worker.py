@@ -2,6 +2,7 @@
 `claude -p` session itself, and what its result file says. Standard library only; a part of supervise.Run."""
 import datetime
 import json
+import os
 import shutil
 import subprocess
 import tempfile
@@ -22,8 +23,10 @@ SCRIPTS = Path(__file__).resolve().parent
 # `claude -p --agent` session does not preload an agent's `skills:`, so each is added as `Skill(<skill>)` to whatever
 # list the stage has, and the worker loads it itself.
 # A worker's Bash runs pytest, the plugin's scripts by their path and the git commands its stage needs, and no other
-# Python (r14).
-PYTHON = ["Bash(python3 -m pytest*)", "Bash(python3 %s/*)" % SCRIPTS]
+# Python (r14). The scripts are the ones a stage's agent and skills run, each by name: never `work`, with which a worker
+# could move statuses as work run does, nor any other of the plugin's scripts.
+STAGE_SCRIPTS = ("features", "model", "tools")
+PYTHON = ["Bash(python3 -m pytest*)", *("Bash(python3 %s/%s *)" % (SCRIPTS, s) for s in STAGE_SCRIPTS)]
 READER = ["Read", "Glob", "Grep", *PYTHON, "Bash(git status*)", "Bash(git diff*)", "Bash(git log*)", "Bash(git show*)"]
 TOOLS = {
     "research": READER,
@@ -43,6 +46,17 @@ def git(root, *args):
         said = (done.stderr.strip() or done.stdout.strip() or "exit %d" % done.returncode).splitlines()[0]
         raise Refused("git %s failed: %s" % (" ".join(args), said))
     return done
+
+
+def with_scripts(plugin=False):
+    """The environment with the plugin's scripts directory last on PYTHONPATH, so `-p work_items` finds the plugin's
+    `--work-item` and a module of the project's own named as one of the scripts still comes first; with `plugin`, that
+    pytest plugin loaded by every pytest run too (PYTEST_PLUGINS), as for a worker that runs `--work-item` itself."""
+    env = dict(os.environ)
+    env["PYTHONPATH"] = os.pathsep.join(p for p in (env.get("PYTHONPATH"), str(SCRIPTS)) if p)
+    if plugin:
+        env["PYTEST_PLUGINS"] = ",".join(p for p in (env.get("PYTEST_PLUGINS"), "work_items") if p)
+    return env
 
 
 def now():
@@ -123,7 +137,7 @@ class Workers:
                                "--session-id", session, "--output-format", "json",
                                "--permission-mode", "acceptEdits", "--allowedTools", ",".join(self.tools(stage, agent)),
                                *(["--max-turns", str(MAX_TURNS[stage])] if stage in MAX_TURNS else [])],
-                              cwd=tree, capture_output=True, text=True)
+                              cwd=tree, capture_output=True, text=True, env=with_scripts(plugin=True))
         with self.lock:
             shutil.copytree(here, kept_at)
             (kept_at / "session.json").write_text(done.stdout)
@@ -155,7 +169,10 @@ class Workers:
                 continue
             path = (tree / value).resolve()
             if path.is_file() and path.is_relative_to(tree.resolve()) and not path.is_relative_to(here.resolve()):
-                shutil.copy2(path, kept_at / path.name)
+                to = kept_at / path.name
+                if to.exists():     # never over the run's own record (brief.md, result.json, session.json) or notes
+                    to = kept_at / ("named-" + path.name)
+                shutil.copy2(path, to)
 
     def outcome(self, agent, data, failure):
         """None for DONE, else the question it puts to the person (r5)."""
