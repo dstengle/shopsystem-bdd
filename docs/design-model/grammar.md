@@ -71,11 +71,11 @@ Attributes read from frontmatter:
 | `resolution(Q, Rq)` | cross-context-request → capability-requirement | 0..1 | part | upstream |
 | `argues(P, A)` | *-proposal → capability \| job \| bounded-context \| context-seam \| product-vision | 1..n | part | hand |
 | `adds(P, Q)`, `changes(P, Q)`, `removes(P, Q)` | capability-proposal → capability-requirement | 0..n each | part | hand |
-| `under(W, C)` | work-item → capability | 0..1 | part | slicer |
-| `for(W, W2)` | work-item → work-item | 0..1 | part | slicer |
-| `accepts(W, S)` | work-item → acceptance-scenario | 0..n | part | slicer |
-| `check(W, Cmd)` | work-item → symbol | 0..1 | part | slicer |
-| `blocked_by(W, W2)` | work-item → work-item | 0..n | part | slicer |
+| `under(W, C)` | work-item → capability | 0..1 | part | drafter |
+| `for(W, W2)` | work-item → work-item | 0..1 | part | drafter |
+| `accepts(W, S)` | work-item → acceptance-scenario | 0..n | part | drafter |
+| `check(W, Cmd)` | work-item → symbol | 0..1 | part | drafter |
+| `blocked_by(W, W2)` | work-item → work-item | 0..n | part | drafter |
 | `wi_depends(W, D)` | work-item → capability | 0..n | part | planner |
 | `about(Rec, A)` | record → standing | exactly 1 | record | hand |
 

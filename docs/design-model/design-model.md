@@ -116,7 +116,7 @@ runs through parts, never through standing artifacts.
 | id | drafted | `<capability>/<n>`; its acceptance-scenarios tagged with that id in the test runner's marker spelling |
 | `part_of` | drafted | the capability-proposal (or, for a `defect`, the initiative) |
 | kind | drafted | *capability* (acceptance: scenarios), *guarantee* (a check against a bound), *enabling* (a check; `for:` the work-item it enables) |
-| acceptance, observable, unknown, `blocked_by`, risk | drafted | by the slicer, from the approved capability-requirements |
+| acceptance, observable, unknown, `blocked_by`, risk | drafted | by the drafter, from the approved capability-requirements |
 | why red today, file set, reuse, tests the decisions may break | researched | by the scout; probes marked run/read |
 | decisions inlined, broken tests resolved, file set final, `depends_on` | planned | by the planner; a question → `awaiting-ruling` |
 | report, suite record, commits | done | by the implementer |
