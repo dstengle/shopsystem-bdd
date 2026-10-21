@@ -5,7 +5,7 @@ title: shopsystem-bdd
 
 # shopsystem-bdd
 
-**State.** Plugin 0.20.0. Every approved Behaviour line describes what the plugin does; requirements have
+**State.** Plugin 0.21.0. Every approved Behaviour line describes what the plugin does; requirements have
 ids from the start (design model v3). Drafted and not yet approved, all awaiting the gate: i1's ten open
 proposals (three withdrawn 2026-10-19 with the slicing, slice-plan-tool and batch-analysis capabilities), i2's, i3's five, i9's (the ubiquitous language), the migration release's i10, i11 and i8 (drafted
 2026-10-19, whose lines the capability files already show), and the script capabilities' lines reworded to the code during formulation
