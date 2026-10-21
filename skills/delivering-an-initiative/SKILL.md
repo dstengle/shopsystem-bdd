@@ -28,7 +28,7 @@ Stop, saying why, and change nothing, when any of these holds:
 
 ## Drafting
 
-1. **The requirements.** For each `formulated` capability-proposal of the initiative: the requirement ids in its `adds:` and its `changes:` (`<capability>#r<n>`, or a range such as `delivery#r1-r7`). Leave out those a work-item of the initiative already accepts (its `accepts:`) unless that work-item is `withdrawn`.
+1. **The requirements.** For each `formulated` capability-proposal of the initiative: the requirement ids in its `adds:` and its `changes:` (`<capability>#r<n>`, or a range such as `delivery#r1-r7`). Leave out those a work-item of the initiative already accepts (its `accepts:`) unless that work-item is `withdrawn`. When none is left, every requirement is accepted already: draft nothing, commit nothing, and go straight to "Run `work run`".
 2. **The work-items.** One for each proposal and capability: it accepts every requirement of that proposal on that capability. Its name is `<capability>-<n>`, `<n>` one more than the highest of that capability's work-items in the initiative (1 when there is none).
 3. **Draft each** with `python3 <scripts>/work add <initiative> <name> --part-of capability-proposal/<the proposal's file name without .md> --under <capability> --accepts <id>`, one `--accepts` for each requirement id.
 
@@ -38,7 +38,7 @@ Show the person the drafted work-items as one table: name, accepts, risk (`work 
 
 ## Commit them, alone
 
-`git add` the drafted work-item files, and commit with a pathspec that names only them, so nothing else goes into the commit: `git commit -m "work: draft <initiative>: <names>" -- <the files>`.
+Only when this session drafted work-items. `git add` the drafted work-item files, and commit with a pathspec that names only them, so nothing else goes into the commit: `git commit -m "work: draft <initiative>: <names>" -- <the files>`.
 
 ## Run `work run`
 
@@ -57,5 +57,6 @@ Do not explain, summarise or answer the questions yourself, and do not read the 
 - Opening a source file, a test or a script's code "to see what the work-item needs"
 - Reading a run directory, `log.jsonl` or a worktree while `work run` is running, or after it, to explain its result
 - A commit that holds anything but the drafted work-items
+- An empty commit, or a work-item drafted again, when every requirement is accepted already
 - Starting `work run` with uncommitted changes in the checkout
 - Rewording `work run`'s printout instead of showing it
