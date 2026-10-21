@@ -127,3 +127,6 @@ def plan_references(plan):
         rewritten = rewrite_text(plan, old, final, text)
         if rewritten != text:
             plan.texts[final] = rewritten
+    for path in plan.created:       # a file migrate wrote is tracked once the run has added it (r16): its references too
+        if path in plan.texts:
+            plan.texts[path] = rewrite_text(plan, path, path, plan.texts[path])

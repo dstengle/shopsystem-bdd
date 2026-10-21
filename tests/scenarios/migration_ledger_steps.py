@@ -150,6 +150,34 @@ def _(old):
     assert found == ("design-decision/%s/b" % CONTEXT, "b comes back"), found
 
 
+@given(parsers.re(r'its spec/decisions.md has the entry `## decision/0007-a`, whose source is "(?P<source>[^"]+)"$'))
+def _(old, source):
+    old.write("spec/decisions.md", "## decision/0007-a\nWe do a.\n\ndate: 2025-03-01\nsource: %s\n" % source)
+    old.commit()
+
+
+@given("a repository on the old system whose spec/decisions.md has the entries `## decision/0003-b`, "
+       "`## decision/0004-c` and `## decision/0007-a`")
+def _(context):
+    context["ledger"] = ["## decision/0003-b\nWe do b.\n\ndate: 2025-02-01\nsource: bob\n",
+                         "## decision/0004-c\nWe do c.\n\ndate: 2025-02-02\nsource: bob\n",
+                         "## decision/0007-a\nWe do a.\n\ndate: 2025-03-01\nsource: alice\n"]
+
+
+@given(parsers.re(r"the entry 0007-a has supersedes naming (?P<first>decision/\S+) and (?P<second>decision/\S+)$"))
+def _(old, context, first, second):
+    context["ledger"][2] += "supersedes: %s and %s\n" % (first, second)
+    old.write("spec/decisions.md", "\n".join(context["ledger"]))
+    old.commit()
+
+
+@then(parsers.re(r"spec/decisions/0007-a.md's supersedes names (?P<first>design-decision/\S+) and "
+                 r"(?P<second>design-decision/[^\s,]+), and nothing else$"))
+def _(old, first, second):
+    data, _ = front(old, "spec/decisions/0007-a.md")
+    assert load_model().as_list(data.get("supersedes")) == [first, second], data.get("supersedes")
+
+
 @then(parsers.re(r"spec/decisions/0007-a.md's supersedes is (?P<ident>design-decision/\S+)$"))
 def _(old, ident):
     data, _ = front(old, "spec/decisions/0007-a.md")
@@ -191,6 +219,7 @@ def _(old, ident):
     assert data.get("supersedes") == ident, data.get("supersedes")
 
 
+@then(parsers.parse('spec/decisions/0007-a.md\'s by is "{by}"'))
 @then(parsers.parse('its by is "{by}"'))
 def _(old, by):
     data, _ = front(old, "spec/decisions/0007-a.md")

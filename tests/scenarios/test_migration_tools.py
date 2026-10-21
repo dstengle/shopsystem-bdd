@@ -84,6 +84,12 @@ def _(old):
     old.commit()
 
 
+@given("a repository on the old system with docs/superpowers/specs/s1.md")
+def _(old):
+    old.write("docs/superpowers/specs/s1.md", "---\ntitle: s1\n---\n" + body("s1"))
+    old.commit()
+
+
 @given("a repository on the old system with adrs/0001-use-x.md")
 def _(old):
     old.write("adrs/0001-use-x.md", body("x"))
