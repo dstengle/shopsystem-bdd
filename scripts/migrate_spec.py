@@ -7,7 +7,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from migrate_layout import load_model, tracked, with_id
+from migrate_layout import load_model, reid, tracked
 
 BULLET_ID = re.compile(r"^- \[r(\d+)\]")
 
@@ -38,12 +38,8 @@ def plan_capabilities(plan):
             data, _ = model.frontmatter(text)
             retired = [int(str(r).lstrip("r")) for r in model.as_list(data.get("retired"))]
             full = "capability/%s/%s" % (plan.context, Path(rel).stem)
-            short = "capability/%s" % Path(rel).stem
-            if data.get("id") == short:         # the short form becomes the full one, and references follow (r9, r5)
-                text = re.sub(r"^id:.*$", "id: " + full, text, count=1, flags=re.MULTILINE)
-                plan.renamed[short] = full
             text = re.sub(r"^formulated_as:.*\n", "", text, count=1, flags=re.MULTILINE)      # model reads no formulated_as (r6)
-            plan.texts[rel] = with_id(number_behaviour(text, retired), full)
+            plan.texts[rel] = reid(plan, number_behaviour(text, retired), full)     # an id in another form follows (r9, r5)
 
 
 def drop_holding(text):
@@ -82,7 +78,7 @@ def plan_holding(plan):
 
 def plan_index(plan):
     if "spec/index.md" in tracked(plan.root):
-        plan.texts["spec/index.md"] = with_id(plan.read("spec/index.md"), "bounded-context/" + plan.context)
+        plan.texts["spec/index.md"] = reid(plan, plan.read("spec/index.md"), "bounded-context/" + plan.context)
 
 
 LINK = re.compile(r"(\]\()([^)\s#]+)((?:#[^)\s]*)?\))")
@@ -117,12 +113,16 @@ def rewrite_text(plan, old_path, new_path, text):
 def plan_references(plan):
     """Rewrite what names a moved file or a renamed id, in every tracked text file."""
     for old in tracked(plan.root):
-        if old in plan.removes:
+        if old in plan.removes or plan.linked(old):     # a symbolic link is not the repository's text: never followed
             continue
         final = plan.moves.get(old, old)
         try:
             text = plan.texts.get(final) if final in plan.texts else plan.read(old)
         except UnicodeDecodeError:
+            raw = (plan.root / old).read_bytes()
+            named = [path for path in plan.moves if path.encode() in raw]
+            if named:
+                plan.failures.append("could not rewrite %s in %s: it is not UTF-8 text" % (", ".join(named), old))
             continue
         rewritten = rewrite_text(plan, old, final, text)
         if rewritten != text:
