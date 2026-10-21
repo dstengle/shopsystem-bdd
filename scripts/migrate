@@ -3,22 +3,36 @@
 
   migrate run --context <owner/product/context>
 
-Every change is computed first (moves, new texts, removals), checked, and only then written. Moves are `git mv`;
-nothing is committed.
+It works on the top level of the git repository it is run in. Every change is computed first (moves, new texts,
+removals), checked, and only then written; a write that fails part way puts the repository back at its commit. A
+symbolic link is never read or written through. Moves are `git mv`; nothing is committed.
 """
 import argparse
 import sys
 from pathlib import Path
 
-from migrate_layout import Plan, check_moves, plan_ids, plan_moves, uncommitted, write, write_decisions_index
+from migrate_layout import Plan, plan_ids, plan_moves
 from migrate_ledger import plan_ledger
 from migrate_spec import plan_capabilities, plan_holding, plan_index, plan_references
+from migrate_write import Failed, check_moves, top_level, uncommitted, write
+
+
+def refuse(failures):
+    print("migrate changed nothing; it could not make these changes:", file=sys.stderr)
+    for failure in failures:
+        print("  " + failure, file=sys.stderr)
+    return 1
 
 
 def cmd_run(args):
-    plan = Plan(Path.cwd(), args.context)
-    for path in uncommitted(plan.root):
-        plan.failures.append("could not start from a tree with an uncommitted change: %s" % path)
+    root = top_level(Path.cwd())        # the repository's top level, wherever in it migrate is run (r1)
+    if root is None:
+        return refuse(["could not find a git repository at %s" % Path.cwd()])
+    plan = Plan(root, args.context)
+    changed = uncommitted(plan.root)
+    plan.failures += ["could not start from a tree with an uncommitted change: %s" % path for path in changed]
+    if any(not (root / path).exists() and not (root / path).is_symlink() for path in changed):
+        return refuse(plan.failures)        # a tracked file that is gone cannot be read to plan the rest (r15)
     plan_moves(plan)
     plan_ledger(plan)
     plan_holding(plan)
@@ -28,12 +42,11 @@ def cmd_run(args):
     plan_references(plan)
     check_moves(plan)
     if plan.failures:
-        print("migrate changed nothing; it could not make these changes:", file=sys.stderr)
-        for failure in plan.failures:
-            print("  " + failure, file=sys.stderr)
-        return 1
-    write(plan)
-    write_decisions_index(plan)
+        return refuse(plan.failures)
+    try:
+        write(plan)
+    except Failed as failed:
+        return refuse(["could not make every change, and put the repository back as it was: %s" % failed])
     return 0
 
 

@@ -291,6 +291,7 @@ Feature: Migration tools
       | old                   | new                                        |
       | records/logs/README.md | .shop/records/logs/README.md               |
       | adrs/README.md         | .shop/records/decision-arguments/README.md |
+      | decisions/README.md    | spec/decisions/README.md                   |
 
   @r10
   Scenario: run numbers each Behaviour line with no id, in Behaviour order, from one above the highest id its capability has ever used
@@ -321,6 +322,7 @@ Feature: Migration tools
       | change                                            | named       |
       | a tracked README.md changed since the last commit | README.md   |
       | an untracked notes/n2.md                          | notes/n2.md |
+      | a tracked README.md deleted since the last commit | README.md   |
 
   @r16
   Scenario: run adds every file it wrote or moved to git and writes spec/decisions/index.md
@@ -330,3 +332,71 @@ Feature: Migration tools
     When the session runs `migrate run --context example.org/acme/shop`
     Then git status shows .shop/work/i1/w1.md, spec/decisions/0007-a.md and spec/decisions/index.md as staged, and no file as untracked or changed but not staged
     And `model decisions --check` says spec/decisions/index.md is current
+
+  @r1
+  Scenario: run from a subdirectory moves the repository's top-level directories
+    Pins that the top level r1 names is the repository's, wherever in it the session runs migrate.
+    Given a repository on the old system with work/i1/w1.md and a tracked notes/n1.md
+    When the session runs `migrate run --context example.org/acme/shop` from notes/
+    Then .shop/work/i1/w1.md has the content work/i1/w1.md had
+    And notes/.shop does not exist
+
+  @r4 @r5
+  Scenario: run gives spec/index.md whose id is bounded-context/shop the id bounded-context/<path>, and rewrites what names the old id
+    Pins that a context id in another form is replaced, not kept, and that a frontmatter id naming it follows.
+    Given a repository on the old system whose spec/index.md gives the id bounded-context/shop
+    And a tracked notes/n1.md whose frontmatter about names bounded-context/shop
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then spec/index.md gives the id bounded-context/example.org/acme/shop
+    And notes/n1.md's about names bounded-context/example.org/acme/shop
+
+  @r9 @r5
+  Scenario: run gives a decision file whose id is decision/<nnnn>-<name> the type-first id, and rewrites what names the old id
+    Pins that a moved decision file's id in another form is replaced, not kept, and that a frontmatter id naming it follows.
+    Given a repository on the old system with decisions/0001-x.md whose id is decision/0001-x
+    And a capability spec/capabilities/thing.md whose frontmatter rests_on names decision/0001-x
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then spec/decisions/0001-x.md gives the id design-decision/example.org/acme/shop/x
+    And spec/capabilities/thing.md's rests_on names design-decision/example.org/acme/shop/x
+
+  @r5
+  Scenario: run rewrites nothing through a tracked symbolic link, and leaves the file outside the repository it points to as it was
+    Pins that a tracked symbolic link is not one of the repository's text files: the file it points to, outside the repository, is not migrate's to change.
+    Given a repository on the old system with work/i1/w1.md
+    And a tracked linked.md, a symbolic link to a file outside the repository that names work/i1/w1.md
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then the file outside the repository is as it was
+    And linked.md is the same symbolic link
+    And .shop/work/i1/w1.md has the content work/i1/w1.md had
+
+  @r5
+  Scenario: run keeps the CRLF line endings of a file in which it rewrites a path
+    Pins that a rewrite changes the path it names and nothing else, line endings included.
+    Given a repository on the old system with work/i1/w1.md
+    And a tracked notes/n1.md with CRLF line endings that names work/i1/w1.md
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then notes/n1.md is as it was, byte for byte, with .shop/work/i1/w1.md for work/i1/w1.md
+
+  @r7
+  Scenario Outline: run that would <what> names it, exits non-zero and changes no file
+    Pins that migrate checks every change before it makes one: none goes through a symbolic link, over a file git does not hold, or under a file.
+    Given a repository on the old system with work/i1/w1.md and <there>
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then migrate says it could not <named>
+    And it exits non-zero
+    And nothing under the repository has changed
+
+    Examples:
+      | what                                             | there                                                                                  | named                                                                    |
+      | give a plan that is a symbolic link its id       | docs/superpowers/plans/p1.md, a tracked symbolic link to a file outside the repository | change docs/superpowers/plans/p1.md: it is a symbolic link               |
+      | write spec/decisions/index.md over an ignored file | an ignored spec/decisions/index.md                                                   | write spec/decisions/index.md                                            |
+      | move a file under an ignored file                | an ignored file .shop                                                                  | move work/i1/w1.md to .shop/work/i1/w1.md: .shop is not a directory      |
+
+  @r7
+  Scenario: run outside a git repository says so, exits non-zero and changes no file
+    Pins that migrate, which moves with git, names the repository it could not find rather than failing part way.
+    Given a directory that is not a git repository, with work/i1/w1.md
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then migrate says it could not find a git repository
+    And it exits non-zero
+    And nothing under the repository has changed
