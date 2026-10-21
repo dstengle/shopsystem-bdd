@@ -38,8 +38,8 @@ features/
 The pairing is by name, hyphenated on both sides. The capability `identity` (`capabilities/identity.md`)
 is formulated in `features/identity.feature`: the feature file is `features/<name>.feature`, always, and
 no field of the capability names it. The feature says so in its header. Nothing else links them.
-`scripts/model` reads this layout and no other; an earlier layout is reported as file problems, and
-`scripts/migrate` moves it.
+`scripts/model` reads this layout and no other; an earlier layout is printed as file problems, and
+`scripts/migrate` relocates it with git.
 
 ## The capability file
 
@@ -84,7 +84,7 @@ decision it explains.
 ## Writing the behaviour section
 
 Every line is one EARS requirement with "shall" (design-decision/behaviour-lines-are-ears). `model check`
-reports a line that is not (`v_e1` (a Behaviour line is not in one of EARS's patterns)) or has more than one "shall" or sentence (`v_e2` (a Behaviour line has more than one "shall" or more than one sentence)).
+prints a line that is not (`v_e1` (a Behaviour line is not in one of EARS's patterns)) or has more than one "shall" or sentence (`v_e2` (a Behaviour line has more than one "shall" or more than one sentence)).
 
 **The patterns.** In this order of clauses; the system is named in the line.
 
@@ -105,18 +105,18 @@ configuration is optional. Only what is true with no trigger at all is ubiquitou
 **One "shall", one response, one sentence.** A line with two responses is two lines. Conditions with the same
 response join in one line: `If A or B, then ...`.
 
-**An `If` line earns its place** only when it is the capability's purpose (a check that reports problems),
+**An `If` line earns its place** only when it is the capability's purpose (a verifier that prints problems),
 protects the person's files from loss or silent damage, or answers a failure that has been seen. Every other
 failure is covered by one line per script or agent: `If <system> cannot do what it was asked, then <system>
 shall exit non-zero, say why, and change nothing.` A failure seen in practice earns its own line from that
 evidence.
 
 **The response is observable by the narrator.** A value returned, a refusal and what it names, a file at a
-path. If you can't write the response that way, the sentence is implementation and moves down a section.
+path. If you can't write the response that way, the sentence is implementation and goes down a section.
 A refusal names its reason; the words of a message, a status code, a field name and minor refusals are implementation.
 
-**Tables.** A check's rules may be a table: a sentence that names the system and says "shall" leads it, and
-each row has an id in its first cell, `| [r3] | ... |`, and counts as a line, checked by its lead sentence.
+**Tables.** A verifier's rules may be a table: a sentence that names the system and says "shall" leads it, and
+each row has an id in its first cell, `| [r3] | ... |`, and counts as a line, judged by its lead sentence.
 A list of properties (a canonical format) stays a list.
 
 **Skeletons.** A capability not yet built is specified as a walking skeleton, a handful of lines, and grows
@@ -143,7 +143,7 @@ bounded context is `bounded-context/<context path>`, and it is `spec/index.md`'s
 A reference may be shorter. `<kind>/<name>` names a node of the same context, as `design-decision/primary-model`.
 A field that fixes the kind (`rests_on`, `supersedes`, `argues`, `under`, `depends_on`, a decision's `source`) and the capability part
 of a `#r<n>` reference may write the bare `<name>`. Any other field, `about:` for one, needs `<kind>/<name>`.
-A frontmatter field that names another file names it by its id, never by a path. `<context name>/<name>`, `decision/<name>` and `obs/<name>` are not ids; `model check` reports them as
+A frontmatter field that names another file names it by its id, never by a path. `<context name>/<name>`, `decision/<name>` and `obs/<name>` are not ids; `model check` prints them as
 unresolved.
 
 A requirement `capability/<context path>/<name>#r<n>` is short for the part `capability/<context path>/<name>#behaviour/r<n>`.
@@ -187,7 +187,7 @@ that needs it, which lists the term in `adds`, `changes` or `removes` (`adds: [t
 
 `model check` reads every Behaviour line and every scenario not deprecated for the terms and the avoided words,
 matched as whole words, whatever their case, with a plural "s" allowed. A scenario's mentions come from its title and its steps, not its Background, description, docstrings or tables: "restore" is no mention of "store".
-It reports:
+It prints:
 
 | rule | what it found |
 |---|---|
@@ -317,27 +317,27 @@ The only delete rule is `refuse`.
   `scripts/model decisions --check` exits 0 when it is current. Commit it in the same commit as the
   decision.
 
-## Checking
+## Verifying
 
-`scripts/model check` (this plugin; needs `python3 -m pip install clingo`) reads the final layout (`spec/`, `features/` and `.shop/`, decisions included) and reports each rule by its name and
+`scripts/model check` (this plugin; needs `python3 -m pip install clingo`) reads the final layout (`spec/`, `features/` and `.shop/`, decisions included) and prints each rule by its name and
 its label: a line with no id (`v15a` (a requirement has no id)), two lines with one id (`v15b` (two requirements share an id)), a retired
 id taken again (`v15c` (a retired id is used again)), a line with no scenario (`v_s3` (a requirement has no scenario)), a scenario that names no line (`v_s1` (a scenario names no requirement)), a line not in an EARS pattern or with more than one "shall" or sentence
 (`v_e1` (a Behaviour line is not in one of EARS's patterns), `v_e2` (a Behaviour line has more than one "shall" or more than one sentence)), a word the glossary avoids, or a glossary at odds with itself (`v_t1` (a word the glossary avoids), `v_t2` (a term has two entries), `v_t3` (an avoided word is a term)), and
 references that name nothing. It exits 0 when it finds nothing. When the interpreter running it lacks
 clingo, it looks for one that has it (`$SHOPSYSTEM_MODEL_PYTHON`, each `python3` on `PATH` outside the
-active virtualenv's `bin/`, `/usr/local/bin/python3`, `/usr/bin/python3`) and runs again under the first it
+active virtualenv's `bin/`, `/usr/local/bin/python3`, `/usr/bin/python3`) and re-executes itself under the first it
 finds. When none has it, it exits 2 with a message that names clingo, `pip install clingo` and each
-interpreter it tried; the coverage check is then done by hand.
+interpreter it tried; coverage is then verified by hand.
 
 ## Doing it
 
 1. Read the note and list its capabilities: clusters of behaviour with one
    narrator. Ten give or take is normal for a component.
-2. One file per capability. Move the note's sentences into the four
+2. One file per capability. Put the note's sentences into the four
    sections; cut what fits none.
 3. Rewrite Behaviour as EARS lines. Each line you can't give an observable
-   response to moves to Implementation. Each condition the note never
-   stated becomes either a line or a question — write the questions down.
+   response to goes to Implementation. Each condition the note never
+   gave becomes either a line or a question — write the questions down.
    Number the lines `[r1]` on in each capability.
 4. Write `spec/index.md`: frontmatter `id: bounded-context/<context path>`, the context path
    being `<owner domain>/<product>/<context name>` (ask the person when you do

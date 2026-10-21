@@ -7,7 +7,7 @@ description: Use when the person asks to deliver, build or implement an initiati
 
 ## Overview
 
-You turn an initiative's formulated capability-proposals into drafted work-items and have `work run` deliver them. `work run` is a script: it starts a fresh worker for each stage of each work-item (research, plan, implementation, review), reads only their result files, writes every status itself and ends printing where each work-item stands. Your part is before and after it: draft, commit, start it, and show the person what it printed.
+You turn an initiative's formulated capability-proposals into drafted work-items and have `work run` deliver them. `work run` is a script: it starts a fresh worker for each stage of each work-item (research, plan, implementation, review), reads only their result files, writes every transition itself and ends printing where each work-item stands. Your part is before and after it: draft, commit, start it, and show the person what it printed.
 
 You draft from the spec and the feature files, never the code, and you never read what the workers write.
 
@@ -48,14 +48,14 @@ While it runs, read nothing its workers write: no file under `.shop/work/<initia
 
 ## When it exits
 
-Show the person what `work run` printed, as it printed it, in one code block: each work-item with its status, and under a work-item that is `awaiting-ruling`, its open questions, indented. Then say in one line what its exit code means: 0, every work-item green; 3, a question awaits the person; anything else, it stopped (its `work: <why>` line, shown as it is).
+Show the person what `work run` printed, as it printed it, in one code block: each work-item with its status, and under a work-item that is `awaiting-ruling`, its open questions, indented. Then say in one line what its exit code means: 0, every work-item `green`; 3, a question awaits the person; anything else, it stopped (its `work: <why>` line, shown as it is).
 
-Do not explain, summarise or answer the questions yourself, and do not read the work-items or the runs to say more. What happens next is the person's.
+Do not explain, summarise or answer the questions yourself, and do not read the work-items or the stage directories to say more. What happens next is the person's.
 
 ## Red Flags
 
 - Opening a source file, a test or a script's code "to see what the work-item needs"
-- Reading a run directory, `log.jsonl` or a worktree while `work run` is running, or after it, to explain its result
+- Reading a stage directory, `log.jsonl` or a worktree while `work run` is running, or after it, to explain what it printed
 - A commit that holds anything but the drafted work-items
 - An empty commit, or a work-item drafted again, when every requirement is accepted already
 - Starting `work run` with uncommitted changes in the checkout
