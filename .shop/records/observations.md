@@ -120,3 +120,10 @@ by: the person
 date: 2026-10-21
 
 The person approved every card of the 0.21.0 release gate (https://claude.ai/artifact/DnuBKmGFec57xuQ2X7NzgN): release (merge to main, tag `v0.21.0`, push); the four choice cards, each with its recommended option A: pytest-python (accept it inside the worker's own worktree, guarded by supervision r21 and r28), delivery-toml (`[allowed_tools]` is the person's override, r30, with r29 for `[tests]`), skill-tool (role-boundaries r4 changed: the implementer has the Skill tool) and r20-fileset (the planner's final set written at `planned`, r31); lines (all seventeen); decisions (0037-0050 and 0053 accepted, 0039 amended); readings (all confirmed). The unbuilt lines are drafted work-items for after the release.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-21-session-keeps-the-gate
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+by: the person
+date: 2026-10-21
+
+In the migration release the coordinating session kept its context small by handing integration, gate assembly, applying verdicts, trials and analysis to agents that replied in a few lines and left the rest in files, with one ledger as the recovery map. Several of those were general-purpose agents because the plugin had no role for the work, or the installed plugin lacked the branch's agents. The person wants the practice kept, through the plugin's own roles, in the next release.
