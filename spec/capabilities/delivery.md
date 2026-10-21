@@ -33,3 +33,4 @@ files, never the code, and reads what `work run` ends with, never what its worke
 - Rules for cutting work-items (one unknown, one capability, risk, `blocked_by`, Retires, checks for guarantees),
   questions on a requirement with two readings, recording rulings and running again, budgets, formulation
   questions (see skeleton-notes.md).
+- `delivering-an-initiative` accepting `merged` capability-proposals as well as `formulated` ones (i8 run 1).

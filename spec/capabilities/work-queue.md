@@ -31,5 +31,6 @@ moves them through their lifecycle, logging every move. It is the only writer of
 - A move the lifecycle does not allow from the work-item's status is refused under r7.
 
 ## Not yet
-- `next`, `claim`, `questions`, `rule`, `withdraw`, `log` and `plugin` (`work_expectations.py`), `--check`
+- `next`, `claim`, `questions`, `withdraw`, `log` and `plugin` (`work_expectations.py`), `--check`
   work-items, the guards between work-items, `show --status` (see skeleton-notes.md).
+- `work rule`, which records the person's ruling in an `awaiting-ruling` work-item and moves it on (i8 run 1).

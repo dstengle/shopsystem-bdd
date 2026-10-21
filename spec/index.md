@@ -7,11 +7,10 @@ title: shopsystem-bdd
 
 **State.** Plugin 0.21.0: the final layout (design-decision/final-layout), delivery by work-items and `work run`,
 and `scripts/migrate`; slicing, `scripts/plan` and the superpowers dependency are removed
-(design-decision/superpowers-not-a-dependency, proposed). Every approved Behaviour line describes what the plugin does; requirements have
+(design-decision/superpowers-not-a-dependency). Every approved Behaviour line describes what the plugin does; requirements have
 ids from the start (design model v3). Drafted and not yet approved, all awaiting the gate: i1's ten open
 proposals (three withdrawn 2026-10-19 with the slicing, slice-plan-tool and batch-analysis capabilities), i2's, i3's five, i9's (the ubiquitous language), the migration release's i10, i11 and i8 (drafted
-2026-10-19, whose lines the capability files already show), and the script capabilities' lines reworded to the code during formulation
-(listed for the gate in the release's test log). What is approved and unbuilt lives under `Not yet`.
+2026-10-19, whose lines the capability files already show). What is approved and unbuilt lives under `Not yet`.
 Check with `python3 scripts/model check`; the decisions index, `spec/decisions/index.md`, is written by `python3 scripts/model decisions`;
 `python3 scripts/model rules` lists every rule with its label.
 
@@ -96,7 +95,7 @@ Tools the skills and agents run:
 - **file set**: the paths a work-item's work changes, found by its researcher and made final by its planner.
 - **hand-back**: an implementer's stop on an observed condition, logged with its evidence.
 - **requirement**: one Behaviour line of a capability, named `#r<n>`. Not: behaviour requirement, capability requirement, carry, carries, carried, carrying.
-- **ruling**: the person's answer to a work-item's question, recorded with `work rule` in their words.
+- **ruling**: the person's answer to a work-item's question, recorded in the work-item in their words.
 - **slice**: a unit of work with an observable done (scenarios or a check); to become a work-item (i4).
 - **suite record**: a whole-suite result logged once and used while nothing it depends on has changed.
 - **work-item**: the unit of delivery under a capability-proposal, done when the scenarios it accepts or its check pass, moved through its stages by `work run`.

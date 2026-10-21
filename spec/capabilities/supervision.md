@@ -50,12 +50,13 @@ from what running it shows.
 
 ## Implementation, may change
 - Tests run in parallel with pytest-xdist (`-n auto`), for the work-item's tests and the suite alike (design-decision/plugin-takes-the-dependencies-it-needs).
-- A worker is `claude -p "<brief path>" --agent shopsystem-bdd:<agent> --session-id <uuid> --output-format json
-  --permission-mode acceptEdits`; the executable is `$SHOPSYSTEM_WORK_CLAUDE`, else `claude` (the plugin's tests
+- A worker is `claude -p "Read the brief file <brief path> and do what it says." --agent shopsystem-bdd:<agent>
+  --session-id <uuid> --output-format json --permission-mode acceptEdits`; the executable is `$SHOPSYSTEM_WORK_CLAUDE`, else `claude` (the plugin's tests
   set a stub).
 - Run directory `.shop/work/<initiative>/runs/<work-item>/<k>-<stage>/`: `brief.md`, `result.json`, `session.json`
   and the worker's notes, plan, report or findings. The implementer works in `.shop/worktrees/<work-item>/`, a
   branch from the initiative branch's head, rebased before the tests.
+- A result's `questions` given as one string is read as one question.
 - `planned` moves to `ready` and `ready` to `claimed` with no guard beyond the lifecycle's.
 - Commit message `work: <work-item> <before> -> <after>`. Exit 0 every work-item green, 3 a question, 1 otherwise.
 - The tests: `python3 -m pytest -q -p work_items --work-item <name>` (the plugin's `scripts/work_items.py` on `PYTHONPATH`) and `python3 -m pytest -q`, `-n auto` where pytest-xdist is there; `.shop/delivery.toml`'s `[tests]` replaces them.
@@ -64,3 +65,7 @@ from what running it shows.
 - Retries, continuations after `PARTIAL`, refused claims, the guards between
   work-items, fix work-items and re-reviews, time and spending limits and budgets, the lock,
   interruption, `work step`, and the full log of each session's cost (see skeleton-notes.md).
+- `work run` honouring a work-item's `blocked_by` (i8 run 1).
+- A researcher's findings kept when it hands back, for the next run (i8 run 1).
+- A fix work-item that sends new scenario rows to the blind feature-formulator, so that a fix round keeps
+  formulation's blindness (i8 run 3).

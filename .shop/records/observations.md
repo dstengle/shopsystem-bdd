@@ -99,3 +99,17 @@ by: the person
 date: 2026-10-20
 
 Several Python scripts and test modules are much too large (scripts/model 1035 lines, tests/scenarios/test_design_model_check.py 1490), and large code files slow agents down. The size limit lives only as prose in a consuming repository's CLAUDE.md, this repository has none, and "module" lets extension-less scripts and test modules slip through. The person: the limit is 300 lines for code and tests alike; the split is next release.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-21-left-for-next-release
+about: capability/supervision
+about: capability/work-queue
+about: capability/migration-tools
+by: the person, at the 0.21.0 release gate, on the final review's findings
+date: 2026-10-21
+
+Left as they are for the next release (the final review of 0.21.0, `.shop/scratch/run/final-review.md`):
+- S7: code-scout.md, bdd-implementer.md and bdd-task-reviewer.md say `ls`, `cat`, `wc` and `grep` are allowed, but no `--allowedTools` entry gives them and the stub refuses them; probe the real CLI once to learn which is wrong.
+- M18: the stub matches the whole command with fnmatch (`tests/scripts/stub_claude.py`), so `*` matches `;`, `&&` and `|`, unlike the real CLI; it never checks that `--agent` resolves in `--plugin-dir`, and ignores `--max-turns`.
+- M20: `work add` writes `--accepts` and `--part-of` values containing `,`, `]` or `#` unquoted into flow YAML (`scripts/workqueue.py`); the global `--root`, and the id derived from spec/index.md, have no line.
+- M2: `migrate run` overwrites a tracked spec/decisions/index.md without a word.
+- M3: migrate's refusals that no line states: ledger prose outside entries, a heading not in `## decision/…` form, a duplicate entry, a value `quoted()` cannot write, two sources to one destination; links to the removed spec/decisions.md are left dangling.
