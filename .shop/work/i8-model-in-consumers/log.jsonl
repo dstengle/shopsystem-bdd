@@ -35,3 +35,4 @@
 {"time": "2026-10-21T00:04:31+00:00", "work-item": "migrate-kb-2", "stage": "plan", "agent": "bdd-planner", "session": "c5670f0b-9914-4234-bdef-d497def33a54", "event": "end"}
 {"time": "2026-10-21T00:04:31+00:00", "work-item": "migrate-kb-2", "before": "researched", "after": "planned", "by": "work run"}
 {"time": "2026-10-21T00:04:31+00:00", "work-item": "migrate-kb-2", "before": "planned", "after": "ready", "by": "work run"}
+{"time": "2026-10-21T00:04:31+00:00", "work-item": "migrate-kb-2", "before": "ready", "after": "claimed", "by": "work run"}
