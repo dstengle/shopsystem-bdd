@@ -90,6 +90,19 @@ def _(old):
     old.commit()
 
 
+@given("a repository on the old system with records/logs/README.md")
+def _(old):
+    old.write("records/logs/README.md", body("readme"))
+    old.commit()
+
+
+@then(parsers.parse("{new} has the content {was} had, with no id, no kind and no about"))
+def _(old, new, was):
+    text = old.read(new)
+    assert text == old.before[was].decode()
+    assert not text.startswith("---\n"), text
+
+
 @then(parsers.parse("{new} has the content {was} had, apart from the id r9 and the about r12 give it"))
 def _(old, new, was):
     """The id r9 gives a moved record is its frontmatter's `id:` and `kind:` lines, and the about r12 gives it its
