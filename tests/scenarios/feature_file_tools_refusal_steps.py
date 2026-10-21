@@ -145,3 +145,8 @@ def rejected_outside(run, repo, context):
         for command in (("tag", "Apply a code", "r7"), ("deprecate", "Apply a code", "--for-removal"), ("retire", "Apply a code"),
                         ("move", "Apply a code", "--to", "features/codes.feature")):
             assert "outside" in refused(run, repo, *command, "--file", path)
+
+
+@then("the command is rejected because a title is one line")
+def rejected_two_line_title(context):
+    assert "one line" in rejected(context)

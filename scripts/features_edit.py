@@ -84,6 +84,8 @@ def cmd_move(args, files):
 
 def cmd_deprecate(args, files):
     path, f, sc = locate(files, args.title, args)
+    if not args.removal and any(c in args.deprecated_for for c in "\r\n"):
+        raise Refused("the new title must be one line: %r" % args.deprecated_for)
     if "deprecated" in sc.tags:
         raise Refused("%r is already deprecated" % args.title)
     lines = list(f.lines)

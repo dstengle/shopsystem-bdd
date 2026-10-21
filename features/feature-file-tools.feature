@@ -392,6 +392,14 @@ Feature: Feature file tools
     When the agent runs features deprecate "Apply a code" --for-removal
     Then it prints features/cart.feature and "Apply a code (deprecated)"
 
+  @r19 @r46
+  Scenario: deprecating for a new title written over two lines is refused
+    A title is one line: a line break in --for would add a line to the scenario besides its Deprecated for: line.
+    Given a feature file features/cart.feature with a scenario "Apply a code"
+    When the agent deprecates "Apply a code" for a new title written over two lines
+    Then the command is rejected because a title is one line
+    And no file is changed
+
   @r21
   Scenario Outline: the deprecated list flags a deprecated scenario it cannot place
     A deprecated scenario with nothing to say what it is deprecated for, or whose replacement has no requirement tag, is flagged on its own line.
