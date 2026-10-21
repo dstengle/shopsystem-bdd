@@ -1,0 +1,14 @@
+---
+id: work-item/missingmass.io/shopsystem/shopsystem-bdd/holding-renamed-and-rebound
+kind: work-item
+part_of: capability-proposal/release-gate-migration-tools
+status: drafted
+wkind: capability
+under: migration-tools
+accepts: [migration-tools#r3]
+fileset: [scripts/migrate, scripts/migrate_spec.py, features/migration-tools.feature, tests/scenarios/test_migration_tools.py, tests/scenarios/migration_*.py]
+---
+
+# A held scenario migrated to deprecated, renamed and rebound
+
+Goes green: migration-tools r3 as changed: " (deprecated)" for " (held)" on the title, `Deprecated for:` for `Held for:`, each test naming it by title rebound, no `@holding` left. Today it gives "held one (held) (deprecated)" and the test loses its binding; migrating-to-capabilities does this by hand until then. For after the 0.21.0 release.
