@@ -127,3 +127,10 @@ by: the person
 date: 2026-10-21
 
 In the migration release the coordinating session kept its context small by handing integration, gate assembly, applying verdicts, trials and analysis to agents that replied in a few lines and left the rest in files, with one ledger as the recovery map. Several of those were general-purpose agents because the plugin had no role for the work, or the installed plugin lacked the branch's agents. The person wants the practice kept, through the plugin's own roles, in the next release.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-21-one-requirement-per-scenario
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+by: the person
+date: 2026-10-21
+
+A supervision scenario tagged `@r1 @r9` took r1's title, never checked r9's own response, and asserted "it exits 0", which no line said (the code came from the Implementation section; the feature file was written by its implementer, not formulated blind). The person: map a scenario to a single requirement, sharing steps in code where useful; a line says a command exits successfully or with an error, never a Unix code; waiting on a ruling is exiting with an error. Done as 0.21.1.
