@@ -3,7 +3,7 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/supervision
 title: Supervision
 narrator: the person who started `work run`
 group: service
-rests_on: [design-decision/a-script-supervises-delivery, design-decision/worker-results-are-files, design-decision/work-item-lifecycle-as-run, design-decision/review-of-work-items, design-decision/the-file-set-is-the-claim, design-decision/the-v3-agents]
+rests_on: [design-decision/a-script-supervises-delivery, design-decision/worker-results-are-files, design-decision/work-item-lifecycle-as-run, design-decision/review-of-work-items, design-decision/the-file-set-is-the-claim, design-decision/the-v3-agents, design-decision/exits-are-successful-or-errors]
 retired: []
 ---
 
@@ -24,8 +24,9 @@ from what using it shows.
 - [r6] **If** a worker changes a file under `.shop/work/` outside its stage directory, then `work run` shall put the file back as it was.
 - [r7] **When** `work run` makes a work-item's transition, `work run` shall commit the work-item's file, its stage directories and `log.jsonl` on the initiative branch, and nothing else.
 - [r8] **When** a worker starts or ends, `work run` shall append a line to `log.jsonl` with the time, the work-item, the stage, the agent and the session id.
-- [r9] **When** no work-item can make a transition, `work run` shall exit, printing each work-item's status and each open question.
-- [r10] **If** `work run` cannot do what it was asked, then `work run` shall exit non-zero, say why, and change nothing.
+- [r9] **When** no work-item can make a transition and every work-item is `green` or `withdrawn`, `work run` shall exit successfully, printing each work-item's status.
+- [r32] **When** no work-item can make a transition and a work-item is `awaiting-ruling`, `work run` shall exit with an error, printing each work-item's status and each open question.
+- [r10] **If** `work run` cannot do what it was asked, then `work run` shall exit with an error, say why, and change nothing.
 - [r11] **When** `work run` starts a worker, `work run` shall give the worker this plugin's own directory as its plugin.
 - [r12] **When** `work run` starts a worker whose agent lists skills, `work run` shall allow the worker to load each of those skills.
 - [r13] `work run` shall give no worker a bare Write or Edit tool.
@@ -61,7 +62,7 @@ from what using it shows.
   scenarios and the suite run.
 - A result's `questions` given as one string is read as one question.
 - The transitions from `planned` to `ready` and from `ready` to `claimed` have no guard beyond the lifecycle's.
-- Commit message `work: <work-item> <before> -> <after>`. Exit code 0 every work-item `green`, 3 a question, 1 otherwise.
+- Commit message `work: <work-item> <before> -> <after>`. Exit code 0 every work-item `green` or `withdrawn`, 3 awaiting a ruling, 1 otherwise.
 - The commands for the work-item's scenarios and the suite: `python3 -m pytest -q -p work_items --work-item <name>` (the plugin's `scripts/work_items.py` on `PYTHONPATH`) and `python3 -m pytest -q`, `-n auto` where pytest-xdist is there; `.shop/delivery.toml`'s `[tests]` replaces them.
 
 ## Not yet

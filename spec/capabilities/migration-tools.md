@@ -22,7 +22,7 @@ what running it shows.
 - [r4] **When** `migrate run --context <path>` is run, `migrate` shall give `spec/index.md` the id `bounded-context/<path>`.
 - [r5] **When** `migrate run` relocates a file or changes an id, `migrate` shall rewrite each repository-relative path, relative Markdown link and frontmatter id that names it in the repository's tracked text files.
 - [r6] **When** `migrate run` has run on a repository on the old system, `migrate` shall have left it so that `model check` prints no unresolved reference or file problem.
-- [r7] **If** `migrate` cannot make every change it was asked to, then `migrate` shall exit non-zero, naming each change it could not make, and change no file.
+- [r7] **If** `migrate` cannot make every change it was asked to, then `migrate` shall exit with an error, naming each change it could not make, and change no file.
 - [r8] **When** `migrate run` is run, `migrate` shall relocate with git `docs/superpowers/plans/` to `.shop/records/archive/plans/`, `docs/superpowers/specs/` to `.shop/records/archive/design-notes/` and `docs/superpowers/requests/` to `.shop/records/archive/requests/`.
 - [r9] **When** `migrate run` gives a capability, a decision file or a relocated record its id, `migrate` shall write `<kind>/<path>/<name>`, the name being the file's stem, without a decision file's number, and the kind `capability`, `design-decision`, or for a relocated plan or request `initiative-archive`, for a relocated design note or ADR `decision-argument`, and for a relocated test log (a file whose name ends `-test-log.md`) `measurement`.
 - [r10] **When** `migrate run` finds Behaviour lines with no id, `migrate` shall number them in Behaviour order from one above the highest id their capability has ever used.

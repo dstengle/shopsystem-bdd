@@ -3,7 +3,7 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/design-model-check
 title: Design model check
 narrator: a person or session verifying a repository against the design model
 group: service
-rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-may-name-several-requirements, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items]
+rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/exits-are-successful-or-errors, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items]
 retired: [r28, r30, r31, r32, r38, r39, r40, r41, r42, r44, r45, r47, r50, r56, r57, r58, r60, r62, r63, r67]
 ---
 
@@ -19,13 +19,13 @@ verifies one bounded context: product-level artifacts are read only where the fi
 ## Behaviour
 
 ### `model check`
-- [r1] **When** `model check` finds no violation, unresolved reference or file problem, `model check` shall say so and exit 0.
-- [r2] **If** `model check` finds a violation, an unresolved reference or a file problem, then `model check` shall print each, a violated relation by its grammar.md code and plain label with its rows, and exit 1.
-- [r11] **When** `model check` finds warnings, `model check` shall print each warning relation with its plain label and its count, leaving the exit code as the other findings set it.
-- [r33] **Where** `--json` is given, `model check` shall print its violations, warnings, unresolved references and file problems as one JSON object, each code mapped to its plain label, with the same exit code.
+- [r1] **When** `model check` finds no violation, unresolved reference or file problem, `model check` shall say so and exit successfully.
+- [r2] **If** `model check` finds a violation, an unresolved reference or a file problem, then `model check` shall print each, a violated relation by its grammar.md code and plain label with its rows, and exit with an error.
+- [r11] **When** `model check` finds warnings, `model check` shall print each warning relation with its plain label and its count, with no effect on whether it exits successfully.
+- [r33] **Where** `--json` is given, `model check` shall print its violations, warnings, unresolved references and file problems as one JSON object, each code mapped to its plain label, exiting as it would without `--json`.
 - [r36] **When** `model check` decides whether an initiative may be `done`, `model check` shall count a `formulated` capability-proposal, and any `withdrawn` part, as closed.
 - [r55] **If** `import clingo` fails, then `model check` shall try again, once, under the first interpreter that has clingo of `$SHOPSYSTEM_MODEL_PYTHON`, each `python3` on `PATH` outside the active virtualenv's `bin/`, `/usr/local/bin/python3` and `/usr/bin/python3`, in that order.
-- [r12] **If** no interpreter has clingo, then `model check` shall exit 2, naming each interpreter it tried and the command that installs clingo.
+- [r12] **If** no interpreter has clingo, then `model check` shall exit with an error, naming each interpreter it tried and the command that installs clingo.
 
 **If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file
 problem names the file.
@@ -38,6 +38,7 @@ problem names the file.
 | [r6] | v15e | a `drafted` or `approved` capability-proposal changes a requirement no capability has |
 | [r7] | v15f | a `formulated` capability-proposal adds or changes a requirement with no scenario, of a capability that is not guarantees |
 | [r8] | v_s3 | a requirement of a capability that is not guarantees has no scenario naming it |
+| [r107] | v_s2 | a scenario not tagged `@deprecated` has more than one `@r<n>` tag, its own and its feature's together |
 | [r10] | v9a, v9c | a part has no `part_of` (v9a), or its `part_of` chain reaches no initiative (v9c) |
 | [r34] | v_k5 | an initiative that is not a capability-change has more than one part directly under it (a capability-change may have several capability-proposals) |
 | [r35] | v_k6 | a capability-proposal argues more than one capability |
@@ -63,7 +64,7 @@ problem names the file.
 
 ### Reading
 - [r19] `model` shall read, under `--root` (default the current directory), only `spec/index.md`, `spec/capabilities/*.md`, every `*.feature` under `features/`, every `spec/decisions/*.md` but `index.md` and `README.md`, `.shop/work/<initiative>/*.md`, `.shop/records/observations.md` and any other Markdown under `.shop/records/` whose frontmatter has an `id`.
-- [r20] `model` shall read each `@r<n>` tag of a scenario not tagged `@deprecated` in `features/<capability name>.feature`, its own or its feature's, as a requirement of that capability the scenario names.
+- [r20] `model` shall read the `@r<n>` tag of a scenario not tagged `@deprecated` in `features/<capability name>.feature`, its own or its feature's, as the one requirement of that capability the scenario names.
 - [r21] `model` shall read a reference written `<name>#r<n>` or `capability/<name>#r<n>` as a requirement of the capability `capability/<context path>/<name>` in the bounded context, the field fixing the kind where it is written `<name>`.
 - [r18] `model` shall read `<capability>#r<a>-r<b>` in a proposal's or work-item's list as every id from a to b.
 - [r43] `model` shall read a node written `<kind>/<context path>/<name>`, or `<kind>/<name>`, as that node, and a bare `<name>` as one only in a field that fixes the kind (`rests_on`, `supersedes`, `argues`, `under`, `depends_on`) or the capability part of a `#r<n>` reference, the context path being `<owner>/<product>/<context name>` and the bounded context `bounded-context/<context path>`.
@@ -74,12 +75,12 @@ problem names the file.
 ### Other commands
 - [r13] **When** `model facts` is run, `model facts` shall print the facts read, one a line in clingo's syntax, using only the standard library.
 - [r14] **When** `model decisions` is run, `model decisions` shall write `spec/decisions/index.md` listing every decision in `spec/decisions/` that has an `id`, with its summary, status, what it supersedes and when to revisit it, each linked to its file.
-- [r15] **If** `model decisions --check` finds `spec/decisions/index.md` is not what `model decisions` would write, then `model decisions` shall say so and exit 1, writing nothing.
-- [r37] **When** `model decisions --check` finds `spec/decisions/index.md` is what `model decisions` would write, `model decisions` shall say the file is current and exit 0.
+- [r15] **If** `model decisions --check` finds `spec/decisions/index.md` is not what `model decisions` would write, then `model decisions` shall say so and exit with an error, writing nothing.
+- [r37] **When** `model decisions --check` finds `spec/decisions/index.md` is what `model decisions` would write, `model decisions` shall say the file is current and exit successfully.
 - [r16] **When** `model why <capability>#r<n>` is run, `model why` shall print the requirement's text (or that no capability has it), each capability-proposal that adds, changes or removes it in date order with its status and date, the `part_of` chain to its initiative and the initiative's sources.
-- [r17] **If** no capability-proposal adds or changes the requirement, then `model why` shall say so and exit 1.
-- [r65] **When** `model rules` is run, `model rules` shall print each rule's code and plain label, one a line, the violations first and then the warnings, and exit 0.
-- [r105] **If** `model` cannot do what it was asked, then `model` shall exit non-zero, say why, and change nothing.
+- [r17] **If** no capability-proposal adds or changes the requirement, then `model why` shall say so and exit with an error.
+- [r65] **When** `model rules` is run, `model rules` shall print each rule's code and plain label, one a line, the violations first and then the warnings, and exit successfully.
+- [r105] **If** `model` cannot do what it was asked, then `model` shall exit with an error, say why, and change nothing.
 
 ## Implementation, may change
 - `scripts/model.lp` is grammar.md v3 sections 1, 3 and 4 in clingo, with FIX notes where grammar.md does not
@@ -93,6 +94,8 @@ problem names the file.
   problems. `--limit <n>` (default 10) prints at most n rows of each violated relation and how many more there are.
 - A file problem for `@holding` names the scenario's title too. `model decisions` prints the file it wrote.
   `model why` given an argument that is not a requirement reference exits 2.
+- Exit code: 0 success; 1 a violation, unresolved reference or file problem found, a decisions index that is not
+  current, or a requirement no capability-proposal adds or changes; 2 no interpreter has clingo, or bad usage.
 - `model facts` prints, for each glossary entry, a `node` fact of kind `term`, a `term_of` fact naming the
   bounded context and an `avoid` fact for each word after its `Not:`, and a `mentions` fact for each mention r51
   reads.

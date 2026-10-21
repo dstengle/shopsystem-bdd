@@ -108,8 +108,13 @@ response join in one line: `If A or B, then ...`.
 **An `If` line earns its place** only when it is the capability's purpose (a verifier that prints problems),
 protects the person's files from loss or silent damage, or answers a failure that has been seen. Every other
 failure is covered by one line per script or agent: `If <system> cannot do what it was asked, then <system>
-shall exit non-zero, say why, and change nothing.` A failure seen in practice earns its own line from that
+shall exit with an error, say why, and change nothing.` A failure seen in practice earns its own line from that
 evidence.
+
+**Exits in words.** A line says a command exits successfully or exits with an error, never an exit code
+(design-decision/exits-are-successful-or-errors). Where a command has several error codes, they are listed in
+its Implementation section and checked by unit tests. A command that stops because it waits on the person (a
+work-item awaiting a ruling) exits with an error.
 
 **The response is observable by the narrator.** A value returned, a refusal and what it names, a file at a
 path. If you can't write the response that way, the sentence is implementation and goes down a section.
@@ -200,10 +205,13 @@ meaning, not a word match: `checking-spec-consistency` finds it, on demand.
 
 ## The feature file
 
-One feature per capability. A scenario for each EARS line, naming it by its `@r<n>` tag; a scenario may name several lines, and every line is named by at least one; a scenario
+One feature per capability. One scenario per EARS line, or a scenario
 outline where the line has a Where and several configurations matter.
-Each scenario is tagged `@r<n>` with the id of the line it formulates, on the scenario's tag line; the tag is
-what binds them. The title is free; restating the line's condition is still a good title. A deprecated scenario
+A scenario names exactly one line (design-decision/a-scenario-names-one-requirement): it is tagged `@r<n>` with
+the id of the line it formulates, on the scenario's tag line, and shows that line's response; the tag is
+what binds them. Two lines that need the same setup or check get a scenario each, and the scenarios share
+step definitions in code; that sharing never puts two lines in one scenario. A Then line says a command exits
+successfully or exits with an error, never an exit code. The title is free; restating the line's condition is still a good title. A deprecated scenario
 (tagged `@deprecated`) keeps the tag it had and formulates no line.
 
 ```gherkin

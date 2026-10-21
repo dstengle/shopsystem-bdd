@@ -25,7 +25,7 @@ guesses when its inputs are not what it knows.
 - [r4] **Where** no `--out` is given, `measure batch` shall write the facts to `docs/superpowers/measurements/<name>.json`, the name being the archive file's without `.md`, or the open batch's.
 - [r6] **If** a transcript's shape is not known, or no dispatch is found inside the batch, then `measure batch` shall refuse, naming the file and what was missing, or the window it searched, and write no facts file.
 - [r7] **If** the facts file exists and `--replace` is not given, then `measure batch` shall refuse, leaving the file as it was.
-- [r38] **If** `measure` cannot do what it was asked, then `measure` shall exit non-zero, say why on stderr, and change nothing.
+- [r38] **If** `measure` cannot do what it was asked, then `measure` shall exit with an error, say why on stderr, and change nothing.
 
 ### What the facts hold
 - [r9] `measure batch` shall count the transcript of a session another session started with its Agent tool as a dispatch when it starts inside the batch, and not when it starts outside it.
