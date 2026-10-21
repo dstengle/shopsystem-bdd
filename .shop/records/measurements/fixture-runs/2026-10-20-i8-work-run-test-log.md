@@ -205,3 +205,12 @@ round (Not yet), so nothing in work run or a worker definition is at fault.
 {"time": "2026-10-20T19:11:45+00:00", "work-item": "migrate-run", "stage": "review", "agent": "bdd-task-reviewer", "session": "4190b973-23e3-495f-a19c-19390c98515b", "event": "end"}
 {"time": "2026-10-20T19:11:45+00:00", "work-item": "migrate-run", "before": "done", "after": "awaiting-ruling", "by": "work run"}
 ```
+
+## Run 7: migrate-kb-2, after the cycle-time changes (2026-10-20/21)
+
+Green on its first pass, 23:59:45-00:08:46Z (9 min 01 s), exit 0. Workers: research 193 s, 34 turns, $0.07;
+plan 90 s, 11 turns, $0.43; implement 96 s, 41 turns, $0.44; review 141 s, 17 turns, $0.60. Against run 2
+(25 min 40 s, $3.25): research 345 s/44 turns, plan 186 s, implement 221 s, review 131 s. The suite went from about
+120 s to 6 s (pytest-xdist; `features bindings`' quadratic walk fixed), so work run's checks before a merge now cost
+seconds. The changes measured: supervision r19 (researcher's brief and 25 turns), red-green r1 (implementer runs its
+own scenarios), parallel tests; r20 (two items at once) was not exercised (one item).
