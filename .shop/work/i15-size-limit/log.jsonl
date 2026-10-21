@@ -10,3 +10,6 @@
 {"time": "2026-10-21T00:16:28+00:00", "work-item": "size-check", "stage": "implement", "agent": "bdd-implementer", "session": "e5c58ea1-f852-4ba8-9a46-5a28dfd82bdc", "event": "start"}
 {"time": "2026-10-21T00:18:36+00:00", "work-item": "size-check", "stage": "implement", "agent": "bdd-implementer", "session": "e5c58ea1-f852-4ba8-9a46-5a28dfd82bdc", "event": "end"}
 {"time": "2026-10-21T00:18:44+00:00", "work-item": "size-check", "before": "claimed", "after": "done", "by": "work run"}
+{"time": "2026-10-21T00:18:44+00:00", "work-item": "size-check", "stage": "review", "agent": "bdd-task-reviewer", "session": "8e5e6b91-acfc-4b1a-a615-4b251d63ac7f", "event": "start"}
+{"time": "2026-10-21T00:20:16+00:00", "work-item": "size-check", "stage": "review", "agent": "bdd-task-reviewer", "session": "8e5e6b91-acfc-4b1a-a615-4b251d63ac7f", "event": "end"}
+{"time": "2026-10-21T00:20:16+00:00", "work-item": "size-check", "before": "done", "after": "green", "by": "work run"}
