@@ -67,13 +67,20 @@ def quoted(plan, key, value):
     return None
 
 
+REFERENCE = re.compile(r"decision/\S+")
+
+
 def supersedes_of(plan, fields):
-    """(the id of the decision an entry supersedes, its qualifier as written) or (None, None): the reference ends at
-    the first whitespace, the rest is the qualifier (r17)."""
-    parts = fields.get("supersedes", "").split(None, 1)
-    if not parts:
-        return None, None
-    return plan.renamed.get(parts[0], parts[0]), (parts[1] if len(parts) > 1 else None)
+    """[(the id of a decision an entry supersedes, its qualifier as written or None)], one for each reference the
+    supersedes names: a reference ends at the first whitespace; "and" before another reference separates the two,
+    and other text after a reference is its qualifier (r2, r17)."""
+    words, targets = fields.get("supersedes", "").split(), []
+    for i, word in enumerate(words):
+        if REFERENCE.fullmatch(word):
+            targets.append((plan.renamed.get(word, word), []))
+        elif targets and not (word == "and" and i + 1 < len(words) and REFERENCE.fullmatch(words[i + 1])):
+            targets[-1][1].append(word)
+    return [(target, " ".join(rest) or None) for target, rest in targets]
 
 
 def decision_text(plan, slug, paragraphs, fields, superseded=False):
@@ -83,11 +90,13 @@ def decision_text(plan, slug, paragraphs, fields, superseded=False):
     summary = " ".join(line.strip() for line in paragraphs[0]) if paragraphs else ""
     decision = "\n\n".join("\n".join(p) for p in paragraphs)
     extra, by = "", fields.get("source", "")
-    target, qualifier = supersedes_of(plan, fields)
-    if target:
-        extra += "supersedes: %s\n" % target
-        if qualifier:
-            by += "; supersedes %s %s" % (target, qualifier)
+    targets = supersedes_of(plan, fields)
+    if targets:
+        ids = [target for target, _ in targets]
+        extra += "supersedes: %s\n" % (ids[0] if len(ids) == 1 else "[%s]" % ", ".join(ids))
+        for target, qualifier in targets:
+            if qualifier:
+                by += "; supersedes %s %s" % (target, qualifier)
     if fields.get("revisit_when"):
         extra += "revisit_when: %s\n" % quoted(plan, "revisit_when", fields["revisit_when"])
     return ("---\nid: design-decision/%s/%s\nsummary: %s\ndate: %s\nstatus: %s\nby: %s\n%s---\n\n# %s\n\n"
@@ -104,7 +113,7 @@ def plan_ledger(plan):
         plan.renamed["decision/%s-%s" % (number, slug)] = new
         if heading == "## decision/%s" % slug:       # an entry migrate numbered is also named without its number
             plan.renamed["decision/%s" % slug] = new
-    superseding = {supersedes_of(plan, fields)[0] for _, _, _, fields, _ in entries}
+    superseding = {target for _, _, _, fields, _ in entries for target, _ in supersedes_of(plan, fields)}
     for number, slug, paragraphs, fields, heading in entries:
         path = "spec/decisions/%s-%s.md" % (number, slug)
         plan.created[path] = "the ledger entry `%s`" % heading
