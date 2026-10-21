@@ -47,7 +47,7 @@ from what running it shows.
   branch from the initiative branch's head, rebased before the tests.
 - `planned` moves to `ready` and `ready` to `claimed` with no guard beyond the lifecycle's.
 - Commit message `work: <work-item> <before> -> <after>`. Exit 0 every work-item green, 3 a question, 1 otherwise.
-- The tests: `python3 -m pytest -q --work-item <name>` and `python3 -m pytest -q`, from `.shop/delivery.toml`.
+- The tests: `python3 -m pytest -q -p work_items --work-item <name>` (the plugin's `scripts/work_items.py` on `PYTHONPATH`) and `python3 -m pytest -q`, `-n auto` where pytest-xdist is there; `.shop/delivery.toml`'s `[tests]` replaces them.
 
 ## Not yet
 - Retries, continuations after `PARTIAL`, refused claims, the guards between
