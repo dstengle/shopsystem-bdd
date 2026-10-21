@@ -221,13 +221,13 @@ def block_follows(repo, context):
     assert (repo / "features/cart.feature").read_text() == context["destination"] + "\n" + block
 
 
-@then(parsers.re(r'the moved "(?P<title>[^"]+)" has the steps "(?P<first>[^"]+)" then "(?P<second>[^"]+)"'))
+@then(parsers.re(r'the relocated "(?P<title>[^"]+)" has the steps "(?P<first>[^"]+)" then "(?P<second>[^"]+)"'))
 def moved_has_steps(repo, context, title, first, second):
     assert context["result"].returncode == 0, context["result"].stderr
     assert "  Scenario: %s\n    %s\n    %s\n" % (title, first, second) in (repo / "features/cart.feature").read_text()
 
 
-@then(parsers.re(r'the moved "(?P<title>[^"]+)" has the tag lines (?P<lines>"[^"]+"(?: then "[^"]+")*), the last directly above its Scenario: line'))
+@then(parsers.re(r'the relocated "(?P<title>[^"]+)" has the tag lines (?P<lines>"[^"]+"(?: then "[^"]+")*), the last directly above its Scenario: line'))
 def moved_has_tag_lines(repo, context, title, lines):
     assert context["result"].returncode == 0, context["result"].stderr
     wanted = "".join("  %s\n" % t for t in titles_in(lines))

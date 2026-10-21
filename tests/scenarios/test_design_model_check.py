@@ -21,7 +21,7 @@ scenarios("design-model-check.feature")
 
 # --- When ------------------------------------------------------------------------------------------------------
 
-@when("model check is run")
+@when("`model check` is run")
 def model_check(world, context):
     if "env" in context:  # r12: the interpreter that cannot import clingo, and no other on the PATH
         context["result"] = world.model("check", env=context["env"], timeout=60)
@@ -29,23 +29,23 @@ def model_check(world, context):
         context["result"] = world.model("check")
 
 
-@when("model check is run without --json")
+@when("`model check` is run without --json")
 def model_check_plain(world, context):
     context["result"] = world.model("check")
 
 
-@when(parsers.re(r"model check is run (?P<limit>with --limit \d+|with no --limit)"))
+@when(parsers.re(r"`model check` is run (?P<limit>with --limit \d+|with no --limit)"))
 def model_check_limited(world, context, limit):
     args = [] if limit == "with no --limit" else ["--limit", limit.rsplit(" ", 1)[1]]
     context["result"] = world.model("check", *args)
 
 
-@when("model facts is run")
+@when("`model facts` is run")
 def model_facts(world, context):
     context["result"] = world.model("facts", python=[sys.executable, "-I", "-S"])
 
 
-@when(parsers.parse("model why is run for {ref}"))
+@when(parsers.parse("`model why` is run for {ref}"))
 def model_why(world, context, ref):
     if ref in ("that requirement", "it"):
         ref = context["ref"]

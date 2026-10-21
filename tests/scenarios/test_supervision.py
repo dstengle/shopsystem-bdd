@@ -65,7 +65,7 @@ def exits_non_zero(context):
     assert context["done"].returncode != 0, context["done"]
 
 
-@then(parsers.parse("log.jsonl moves {name} from {first} to {rest}, in that order"))
+@then(parsers.parse("log.jsonl gives {name}'s transitions from {first} to {rest}, in that order"))
 def moves_in_order(repo, context, name, first, rest):
     statuses = [first] + rest.replace(" and ", ", ").split(", ")
     assert moves(repo, name) == list(zip(statuses, statuses[1:])), (moves(repo, name), context["done"].stderr)
@@ -111,18 +111,18 @@ def elsewhere_kept(repo, context):
     assert git(repo, "status", "--porcelain", "--", ".shop/work") == ""
 
 
-@then(parsers.parse("log.jsonl's first move of {name} is from {before} to {after}"))
+@then(parsers.parse("log.jsonl's first transition of {name} is from {before} to {after}"))
 def first_move(repo, name, before, after):
     assert moves(repo, name)[:1] == [(before, after)], moves(repo, name)
 
 
-@then("the researcher's notes.md is in its run directory")
+@then("the researcher's notes.md is in its stage directory")
 def notes_kept(repo):
     found = list((repo / ".shop/work/i1/runs/w1").glob("*-research/notes.md"))
     assert len(found) == 1 and found[0].read_text() == "what the researcher found\n", found
 
 
-@then("the initiative branch has one commit for each move log.jsonl gives, `work: w1 drafted -> researched` first and "
+@then("the initiative branch has one commit for each transition log.jsonl gives, `work: w1 drafted -> researched` first and "
       "`work: w1 done -> green` last")
 def one_commit_per_move(repo, context):
     subjects = [s for s in git(repo, "log", "--reverse", "main", "--format=%s").splitlines() if s.startswith("work: ")]
@@ -149,7 +149,7 @@ def readme_not_committed(repo):
     assert git(repo, "show", "main:README.md") == "# repo\n"
 
 
-@then(parsers.re(r'work run prints (?P<name>\w+) with (?P<status>[\w-]+) and the question "(?P<question>[^"]+)", '
+@then(parsers.re(r'`work run` prints (?P<name>\w+) with (?P<status>[\w-]+) and the question "(?P<question>[^"]+)", '
                  r'and (?P<name2>\w+) with (?P<status2>[\w-]+)$'))
 def prints_end(context, name, status, question, name2, status2):
     out = context["done"].stdout.splitlines()
@@ -158,7 +158,7 @@ def prints_end(context, name, status, question, name2, status2):
     assert [l for l in out if question in l], out
 
 
-@then(parsers.re(r"work run prints (?P<name>\w+) with (?P<status>[\w-]+), and (?P<name2>\w+) with (?P<status2>[\w-]+)$"))
+@then(parsers.re(r"`work run` prints (?P<name>\w+) with (?P<status>[\w-]+), and (?P<name2>\w+) with (?P<status2>[\w-]+)$"))
 def prints_statuses(context, name, status, name2, status2):
     out = context["done"].stdout.splitlines()
     for n, s in ((name, status), (name2, status2)):
@@ -205,7 +205,7 @@ def sections(repo, context, name, old, new, ruling):
     assert ruled == ["- " + ruling], text
 
 
-@then(parsers.re(r'work run prints the question "(?P<question>[^"]+)" and not "(?P<other>[^"]+)"$'))
+@then(parsers.re(r'`work run` prints the question "(?P<question>[^"]+)" and not "(?P<other>[^"]+)"$'))
 def prints_question_only(context, question, other):
     out = context["done"].stdout
     assert question in out and other not in out, out

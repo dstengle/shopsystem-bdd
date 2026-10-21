@@ -336,7 +336,7 @@ class MeasureTest(unittest.TestCase):
         self.assertFalse((self.repo / "docs/superpowers/measurements").exists())
 
     def test_a_subagent_transcript_is_a_dispatch_only_when_it_starts_inside_the_batch(self):
-        """a subagent transcript is a dispatch only when it starts inside the batch"""
+        """a transcript an Agent tool started is a dispatch only when it starts inside the batch"""
         for when, start, counted in (("inside", at(9, 50), True), ("before", at(7, 10), False), ("after", at(13), False)):
             with self.subTest(when=when):
                 self.agent("x" + when, "bdd-implementer", "straggler " + when, start, plus(start, 9))

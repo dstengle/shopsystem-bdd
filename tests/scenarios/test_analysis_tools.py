@@ -20,7 +20,7 @@ scenarios("analysis-tools.feature")
 
 # --- the agent runs tools ---
 
-@when(parsers.parse("the agent runs `tools {args}`"))
+@when(parsers.parse("the session runs `tools {args}`"))
 def agent_runs(run, repo, context, outside, args):
     for label, commit_ in context.get("commits", {}).items():
         args = args.replace(label, commit_)

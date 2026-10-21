@@ -30,7 +30,7 @@ def two_decisions_one_anonymous(world):
     world.write("spec/decisions/0003-anon.md", "---\nsummary: Nameless.\nstatus: accepted\n---\n")
 
 
-@when("model decisions is run")
+@when("`model decisions` is run")
 def model_decisions(run, context):
     context["result"] = run("model", "--root", ".", "decisions")  # from the repository's directory, as the index names its file
 
@@ -112,6 +112,7 @@ def why_lists_in_order(context, listed):
 
 @given(parsers.parse("a capability-change initiative with status {status}"))
 def initiative_with_status(world, status):
+    status = status.strip("`")      # a status is written as code: `done`
     world.good()
     world.observation()
     world.initiative(status=status)
@@ -139,20 +140,20 @@ def no_violation_names_initiative(world, context):
 HAND_WRITTEN = "# Decisions\n\nhand-written\n"
 
 
-@given("a spec/decisions/index.md that differs from what model decisions writes")
+@given("a spec/decisions/index.md that differs from what `model decisions` writes")
 def stale_index(world):
     _decisions(world)
     world.write("spec/decisions/index.md", HAND_WRITTEN)
 
 
-@given("a spec/decisions/index.md that is what model decisions writes")
+@given("a spec/decisions/index.md that is what `model decisions` writes")
 def current_index(world):
     _decisions(world)
     written = world.model("decisions")
     assert written.returncode == 0, written.stdout + written.stderr
 
 
-@when("model decisions --check is run")
+@when("`model decisions --check` is run")
 def model_decisions_check(world, context):
     context["result"] = world.model("decisions", "--check")
 
@@ -187,7 +188,7 @@ def any_repository(world):
     pass  # the World's spec/index.md is enough: the rules are model.lp's, not the repository's
 
 
-@when("model rules is run")
+@when("`model rules` is run")
 def model_rules(world, context):
     context["result"] = world.model("rules")
 

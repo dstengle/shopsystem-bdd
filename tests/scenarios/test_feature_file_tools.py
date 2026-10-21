@@ -39,18 +39,18 @@ def invoke(run, repo, context, argv):
     context["result"] = run("features", *argv)
 
 
-@when(parsers.re(r"the agent runs features (?P<args>.+?)(?: without --(?:dir|tests|file))?"))
+@when(parsers.re(r"the session runs `features (?P<args>.+?)`(?: without --(?:dir|tests|file))?"))
 def agent_runs(run, repo, context, args):
     invoke(run, repo, context, shlex.split(args))
 
 
-@when("the agent runs that edit")
+@when("the session runs that edit")
 def agent_runs_edit(run, repo, context):
     invoke(run, repo, context, context["edit"])
 
 
 
-@when('the agent deprecates "Apply a code" for a new title written over two lines')
+@when('the session deprecates "Apply a code" for a new title written over two lines')
 def agent_deprecates_two_lines(run, repo, context):
     invoke(run, repo, context, ["deprecate", "Apply a code", "--for", "Apply a voucher\n  Scenario: Injected"])
 

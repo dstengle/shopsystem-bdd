@@ -193,7 +193,7 @@ def _(old):
     old.untracked(".shop/work/i1/w2.md", "Not tracked.\n")
 
 
-@given("it has records/archive/plans/p1.md and docs/superpowers/plans/p1.md, which both move to .shop/records/archive/plans/p1.md")
+@given("it has records/archive/plans/p1.md and docs/superpowers/plans/p1.md, which would both be relocated to .shop/records/archive/plans/p1.md")
 def _(old):
     old.write("records/archive/plans/p1.md", "A plan in records.\n")
     old.write("docs/superpowers/plans/p1.md", "A plan in docs.\n")
@@ -202,10 +202,10 @@ def _(old):
 
 @then(parsers.parse("migrate says it could not {change}"))
 def _(context, change):
-    assert "could not %s" % change in said(context), said(context)
+    assert "could not %s" % change.strip("`") in said(context), said(context)
 
 
-@then("it says it could not move both records/archive/plans/p1.md and docs/superpowers/plans/p1.md to .shop/records/archive/plans/p1.md")
+@then("it says it could not `move both records/archive/plans/p1.md and docs/superpowers/plans/p1.md to .shop/records/archive/plans/p1.md`")
 def _(context):
     found = re.findall(r"could not move both (\S+) and (\S+) to (\S+)", said(context))
     assert [(set(pair), to) for *pair, to in found] == [({"records/archive/plans/p1.md", "docs/superpowers/plans/p1.md"},

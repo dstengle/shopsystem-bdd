@@ -59,7 +59,7 @@ def file_whose_field_is_written(world, context, file, field, written):
     context["written"], context["field"] = written, field
 
 
-@then(parsers.re(r"(?P<written>\S+) is read as (?P<read>\S+) and not reported as unresolved"))
+@then(parsers.re(r"(?P<written>\S+) is read as (?P<read>\S+) and not printed as unresolved"))
 def written_read_as(world, context, written, read):
     data = found(world, context)
     assert written == context["written"]
@@ -121,7 +121,7 @@ def repository_with_file(world, context, file):
     context["marker"] = marker
 
 
-@when(parsers.re(r"model facts is run (?P<how>with --root naming that directory|from that directory with no --root)"))
+@when(parsers.re(r"`model facts` is run (?P<how>with --root naming that directory|from that directory with no --root)"))
 def model_facts_how(world, repo, context, how):
     if how.startswith("with --root"):
         context["result"] = world.model("facts")
@@ -149,7 +149,7 @@ def repository_unscenarioed(world, context):
     context["violating"] = True
 
 
-@when("model check is run with --json")
+@when("`model check` is run with --json")
 def model_check_json(world, context):
     context["found"], context["result"] = world.check_json()
 
@@ -193,11 +193,11 @@ def change_with_two_proposals(world):
     world.proposal("p2", adds="[other#r1]", argues="[other]")
 
 
-@then(parsers.re(r"the initiative is (?P<reported>reported|not reported) under v_k5"))
+@then(parsers.re(r"the initiative is (?P<reported>printed|not printed) under v_k5"))
 def initiative_under_v_k5(world, context, reported):
     data = found(world, context)
     rows = [a for name, a in data["violations"] if name == "v_k5"]
-    assert rows == ([[I1]] if reported == "reported" else []), data
+    assert rows == ([[I1]] if reported == "printed" else []), data
 
 
 @given("capabilities thing and other")

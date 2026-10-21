@@ -145,7 +145,7 @@ def _problems_naming(data, named):
     return [p for p in data["problems"] if re.match(re.escape(named) + r"[: ]", p)]
 
 
-@then(parsers.parse("it reports a file problem naming {named}"))
+@then(parsers.parse("it prints a file problem naming {named}"))
 def file_problem_named(world, context, named):
     data = found(world, context)
     if named.endswith(" and scripts/migrate"):  # r61: an old layout's path, named with the script that moves it
@@ -161,21 +161,21 @@ def file_problem_named(world, context, named):
         assert not any(absent in p for p in data["problems"]), data
 
 
-@then(parsers.parse("it does not report a file problem naming {named}"))
+@then(parsers.parse("it does not print a file problem naming {named}"))
 def no_file_problem_named(world, context, named):
     data = found(world, context)
     assert not _problems_naming(data, named), data
 
 
-@then(parsers.re(r"the decision's source is (?P<reported>not reported|reported) as unresolved"))
+@then(parsers.re(r"the decision's source is (?P<reported>not printed|printed) as unresolved"))
 def decisions_source_unresolved(world, context, reported):
     data = found(world, context)
     mine = [d for d in data["unresolved"] if d.startswith("spec/decisions/0001-x.md")]
-    assert bool(mine) == (reported == "reported"), data
-    assert not any("ghost" in d for d in data["unresolved"]) or reported == "reported", data
+    assert bool(mine) == (reported == "printed"), data
+    assert not any("ghost" in d for d in data["unresolved"]) or reported == "printed", data
 
 
-@then("it reports a file problem")
+@then("it prints a file problem")
 def file_problem(world, context):
     data = found(world, context)
     if "same_id" in context:  # a type-first id names its kind, so the observation's heading is also not an observation id (r46)

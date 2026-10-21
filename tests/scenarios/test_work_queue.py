@@ -72,12 +72,12 @@ def log_line(name, before, after):
                        "by": "someone"}) + "\n"
 
 
-@given(parsers.parse(".shop/work/i1/log.jsonl has one line, moving {name} from {before} to {after}"))
+@given(parsers.parse(".shop/work/i1/log.jsonl has one line, {name}'s transition from {before} to {after}"))
 def one_line(repo, name, before, after):
     write(repo, ".shop/work/i1/log.jsonl", log_line(name, before, after))
 
 
-@given(parsers.parse(".shop/work/i1/log.jsonl's last line for {name} moves it to {after}"))
+@given(parsers.parse(".shop/work/i1/log.jsonl's last line for {name} is its transition to {after}"))
 def last_for(repo, name, after):
     write(repo, ".shop/work/i1/log.jsonl", log_line(name, "drafted", "researched") + log_line(name, "researched", after)
           + log_line("w9", "planned", "ready"))
@@ -144,13 +144,13 @@ def log_cannot_be_written(repo, monkeypatch):
 
 # --- When -----------------------------------------------------------------------------------------------------
 
-@when(parsers.parse("the agent runs `work {args}`"))
+@when(parsers.parse("the session runs `work {args}`"))
 def run_work(repo, run, context, args):
     context["before"] = snapshot(repo)
     context["done"] = run("work", *shlex.split(args))
 
 
-@when(parsers.parse("the agent runs `work {args}` with a newline and `{extra}` in the {option} value"))
+@when(parsers.parse("the session runs `work {args}` with a newline and `{extra}` in the {option} value"))
 def run_work_newline(repo, run, context, args, extra, option):
     argv = shlex.split(args)
     at = argv.index(option) + 1
@@ -159,7 +159,7 @@ def run_work_newline(repo, run, context, args, extra, option):
     context["done"] = run("work", *argv)
 
 
-@when(parsers.parse("the script moves {name} to {status}"))
+@when(parsers.parse("the script makes {name}'s transition to {status}"))
 def move(repo, context, name, status):
     """A move as `work run` makes it: through the library, in-process."""
     if str(SCRIPTS) not in sys.path:
@@ -231,7 +231,7 @@ def two_lines(repo, context):
     assert len(lines) == 2 and lines[0] == context["before"][".shop/work/i1/log.jsonl"], lines
 
 
-@then(parsers.parse("its last line gives the time, {name}, {before} before, {after} after, and the script as who moved it"))
+@then(parsers.parse("its last line gives the time, {name}, {before} before, {after} after, and the script as who made the transition"))
 def last_line(repo, name, before, after):
     last = json.loads((repo / ".shop/work/i1/log.jsonl").read_text().splitlines()[-1])
     when = datetime.datetime.fromisoformat(last.pop("time"))
@@ -239,7 +239,7 @@ def last_line(repo, name, before, after):
     assert last == {"work-item": name, "before": before, "after": after, "by": MOVER}, last
 
 
-@then(parsers.parse("the move is refused, naming {rel}, {mine} and {logged}"))
+@then(parsers.parse("the transition is refused, naming {rel}, {mine} and {logged}"))
 def refused(context, rel, mine, logged):
     refusal = context["refused"]
     assert refusal is not None, "the move was made"
@@ -264,7 +264,7 @@ def nothing_changed(repo, context):
     assert snapshot(repo) == context["before"]
 
 
-@then(parsers.re(r"the move is refused, naming (?P<rel>[^,]+)$"))
+@then(parsers.re(r"the transition is refused, naming (?P<rel>[^,]+)$"))
 def refused_naming(context, rel):
     refusal = context["refused"]
     assert refusal is not None, "the move was made"

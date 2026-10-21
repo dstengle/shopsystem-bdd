@@ -31,7 +31,7 @@ def refusal_names(repo, context, names):
         assert "tests/test_broken.py does not parse" in reason
 
 
-@then("the edit is rejected because features could not read the result, and every file is as it was")
+@then("the edit is rejected because features could not read the edited file, and every file is as it was")
 def edit_rejected(repo, context):
     assert "Rule:" in rejected(context)
     assert "features/cart.feature" in rejected(context)  # r2: naming the file

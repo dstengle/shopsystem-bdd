@@ -240,7 +240,7 @@ def says_installed(context, tool):
 
 
 # r21
-@then("the command is refused because the interpreter does not run")
+@then("the command is refused because the interpreter does not start")
 def refused_not_running(context):
     assert context["result"].returncode == 1
 

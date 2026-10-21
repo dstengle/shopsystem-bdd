@@ -180,7 +180,7 @@ def _(run, old, context):
     context["checked"] = run("model", "--root", old.root, "check", "--json")
 
 
-@then("it reports no unresolved reference and no file problem")
+@then("it prints no unresolved reference and no file problem")
 def _(context):
     out = context["checked"]
     report = json.loads(out.stdout)

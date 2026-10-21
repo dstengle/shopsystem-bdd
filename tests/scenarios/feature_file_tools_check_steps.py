@@ -27,7 +27,7 @@ def names_missing_or_added(context, named):
 
 # --- Then: bindings ---------------------------------------------------------------------------------------------
 
-@then('it reports tests/test_cart.py, line 12, the title "Apply a code" and the feature cart.feature')
+@then('it prints tests/test_cart.py, line 12, the title "Apply a code" and the feature cart.feature')
 def reports_binding(context):
     assert context["result"].stdout == 'tests/test_cart.py:12: no scenario titled "Apply a code" in cart.feature\n'
 
@@ -72,12 +72,12 @@ def old_binding_unchanged(repo, context):
     assert (repo / "tests/test_old.py").read_text() == context["modules"]["tests/test_old.py"]
 
 
-@then('it reports features/cart.feature, the title "Apply a code" and that no test binds it')
+@then('it prints features/cart.feature, the title "Apply a code" and that no test binds it')
 def reports_unbound(context):
     assert "features/cart.feature: Apply a code | bound by no test" in context["result"].stdout.splitlines()
 
 
-@then('it reports features/cart.feature, the title "Apply a code" and the calls tests/test_a.py:12 and tests/test_b.py:5')
+@then('it prints features/cart.feature, the title "Apply a code" and the calls tests/test_a.py:12 and tests/test_b.py:5')
 def reports_bound_twice(context):
     line = "features/cart.feature: Apply a code | bound by tests/test_a.py:12, tests/test_b.py:5"
     assert line in context["result"].stdout.splitlines(), context["result"].stdout

@@ -1,130 +1,130 @@
 # formulated from spec/capabilities/design-model-check.md
 Feature: Design model check
-  Narrator: a person or agent checking a repository against the design model
+  Narrator: a person or session verifying a repository against the design model
 
   @r1
   Scenario: a repository the grammar accepts passes
     Given a bounded context with one capability whose requirement r1 has a scenario tagged @r1
-    When model check is run
-    Then it reports 0 violations, 0 unresolved references and 0 file problems
+    When `model check` is run
+    Then it prints 0 violations, 0 unresolved references and 0 file problems
     And it exits 0
 
   @r2
-  Scenario: violations are printed by their grammar name and fail the check
+  Scenario: violations are printed by their grammar name and make `model check` exit 1
     Given a bounded context with a requirement no scenario names
-    When model check is run
+    When `model check` is run
     Then the output names v_s3 with its plain label and the requirement's id
     And it exits 1
 
   @r3
   Scenario: a requirement bullet without an id is refused
     Given a capability whose Behaviour has a bullet with no [r<n>]
-    When model check is run
+    When `model check` is run
     Then the output names v15a
 
   @r4
   Scenario: two requirements with one id are refused
     Given a capability whose Behaviour has two bullets marked [r1]
-    When model check is run
+    When `model check` is run
     Then the output names v15b
 
   @r5
   Scenario: a retired id used again is refused
     Given a capability that lists r1 as retired and has a requirement [r1]
-    When model check is run
+    When `model check` is run
     Then the output names v15c
 
   @r6
   Scenario: a proposal changing a requirement no capability has is refused
     Given a capability-proposal that changes r9 of a capability with no r9
-    When model check is run
+    When `model check` is run
     Then the output names v15e with the proposal and the requirement
 
   @r7
   Scenario: a proposal formulated before its requirement has a scenario is refused
     Given a capability-proposal with status formulated that adds a requirement no scenario names
-    When model check is run
+    When `model check` is run
     Then the output names v15f with the proposal
 
   @r8
   Scenario: a guarantees capability needs no scenarios
     Given a capability in the guarantees group whose requirements no scenario names
-    When model check is run
+    When `model check` is run
     Then the output does not name v_s3
 
   @r9
-  Scenario: references that name nothing are reported
+  Scenario: references that name nothing are printed
     Given a scenario tagged @r7 in a capability with no r7, and a capability resting on a decision that does not exist
-    When model check is run
-    Then each is reported as unresolved
+    When `model check` is run
+    Then each is printed as unresolved
     And it exits 1
 
   @r10
   Scenario: a part that reaches no initiative is refused
     Given a work-item whose part_of names nothing
-    When model check is run
+    When `model check` is run
     Then the output names v9c with the work-item
 
   @r11
-  Scenario: warnings are counted and do not fail the check
+  Scenario: warnings are counted and do not change the exit code
     Given a bounded context the grammar accepts, with an observation no initiative cites
-    When model check is run
+    When `model check` is run
     Then the output gives w_uncited_obs with its plain label and its count
     And it exits 0
 
   @r12
-  Scenario: without clingo the check says how to install it
+  Scenario: without clingo `model check` says how to install it
     Given an interpreter without the clingo package
-    When model check is run
+    When `model check` is run
     Then it names clingo and the pip command that installs it
     And it exits 2
 
   @r13
   Scenario: facts are printed in clingo's syntax
     Given a bounded context with one capability
-    When model facts is run
+    When `model facts` is run
     Then each line is one fact, such as a node fact for the capability
 
   @r14
   Scenario: the decisions index lists every decision
     Given two decisions under spec/decisions/, one superseding the other
-    When model decisions is run
+    When `model decisions` is run
     Then spec/decisions/index.md has a row for each with its summary, status and what it supersedes, linked to its file
 
   @r15
-  Scenario: a stale decisions index is reported and left alone
-    Given a spec/decisions/index.md that differs from what model decisions writes
-    When model decisions --check is run
+  Scenario: a stale decisions index is printed as not current and left alone
+    Given a spec/decisions/index.md that differs from what `model decisions` writes
+    When `model decisions --check` is run
     Then it says the file is not current, exits 1, and the file is unchanged
 
   @r16
   Scenario: why traces a requirement to its initiative's sources
     Given an initiative citing an observation, with a capability-proposal that adds r1
-    When model why is run for that requirement
+    When `model why` is run for that requirement
     Then it prints the requirement, the proposal, the initiative and the observation
 
   @r17
   Scenario: why with no proposal says so
     Given a requirement no capability-proposal adds or changes
-    When model why is run for it
+    When `model why` is run for it
     Then it says no capability-proposal adds or changes it
     And it exits 1
 
   @r18
   Scenario: a range of ids stands for each id in it
     Given a capability-proposal that adds thing#r1-r3
-    When model why is run for thing#r2
+    When `model why` is run for thing#r2
     Then it prints the proposal as adding it
 
   @r19
   Scenario Outline: model reads the repository's files under its root
     Pins which files of a repository model reads, and that the root is the current directory unless --root names one.
     Given a repository in a directory that has <file>
-    When model facts is run <how>
-    Then the facts printed <outcome> what <file> contains
+    When `model facts` is run <how>
+    Then the facts printed <facts> what <file> contains
 
     Examples:
-      | file                               | how                                   | outcome         |
+      | file                               | how                                   | facts           |
       | spec/index.md                      | with --root naming that directory     | include         |
       | spec/capabilities/thing.md         | with --root naming that directory     | include         |
       | features/sub/thing.feature         | with --root naming that directory     | include         |
@@ -144,11 +144,11 @@ Feature: Design model check
     Pins where an @r<n> tag may sit, and which feature file a capability's scenarios are read from.
     Given a capability thing with requirement r2
     And a scenario in <feature file> with the tag @r2 <placed>
-    When model check is run
-    Then the requirement thing#r2 is <reported> under v_s3
+    When `model check` is run
+    Then the requirement thing#r2 is <printed> under v_s3
 
     Examples:
-      | feature file               | placed          | reported |
+      | feature file               | placed          | printed |
       | features/thing.feature     | on the scenario | not      |
       | features/thing.feature     | on its feature  | not      |
       | features/sub/thing.feature | on the scenario | still    |
@@ -159,7 +159,7 @@ Feature: Design model check
     Pins that the part before # is the capability's name in this bounded context and the part after it the requirement's id.
     Given a bounded context with id bounded-context/ex.com/prod/ctx and a capability thing with requirement r2
     And a capability-proposal that adds thing#r2
-    When model why is run for capability/thing#r2
+    When `model why` is run for capability/thing#r2
     Then it prints capability/ex.com/prod/ctx/thing#r2 with its text and the proposal as adding it
 
   @r22
@@ -167,8 +167,8 @@ Feature: Design model check
     Pins the forms a requirement reference in a list may take.
     Given a capability thing with requirements r1 to r3
     And a capability-proposal whose list names <reference>
-    When model check is run
-    Then <reference> is reported as unresolved
+    When `model check` is run
+    Then <reference> is printed as unresolved
 
     Examples:
       | reference                |
@@ -184,40 +184,40 @@ Feature: Design model check
     Pins that an absent requirement is an unresolved reference whether added or removed, and that adding a retired id is a v15c instead.
     Given a capability thing with requirement r1 that lists r4 as retired
     And a capability-proposal that <change> thing#<id>
-    When model check is run
-    Then thing#<id> is <reported>
+    When `model check` is run
+    Then thing#<id> is <printed>
 
     Examples:
-      | change  | id | reported                                  |
-      | adds    | r9 | reported as unresolved                    |
-      | removes | r9 | reported as unresolved                    |
-      | adds    | r4 | reported under v15c and not as unresolved |
-      | removes | r4 | reported as unresolved                    |
+      | change  | id | printed                                  |
+      | adds    | r9 | printed as unresolved                    |
+      | removes | r9 | printed as unresolved                    |
+      | adds    | r4 | printed under v15c and not as unresolved |
+      | removes | r4 | printed as unresolved                    |
 
   @r66
   Scenario Outline: a proposal's list naming a term the glossary lacks is unresolved, unless a merged proposal removes it
     Pins that term/<term> in a proposal's list is read against the glossary, and that a settled proposal may remove a term already gone.
     Given a glossary with the term store
     And a <status> capability-proposal whose <list> names term/<term>
-    When model check is run
-    Then term/<term> is <reported>
+    When `model check` is run
+    Then term/<term> is <printed>
 
     Examples:
-      | status    | list    | term  | reported                   |
-      | drafted   | adds    | store | not reported as unresolved |
-      | drafted   | changes | store | not reported as unresolved |
-      | drafted   | adds    | shelf | reported as unresolved     |
-      | drafted   | removes | shelf | reported as unresolved     |
-      | merged    | removes | shelf | not reported as unresolved |
-      | formulated | removes | shelf | not reported as unresolved |
-      | merged    | adds    | shelf | reported as unresolved     |
+      | status    | list    | term  | printed                   |
+      | drafted   | adds    | store | not printed as unresolved |
+      | drafted   | changes | store | not printed as unresolved |
+      | drafted   | adds    | shelf | printed as unresolved     |
+      | drafted   | removes | shelf | printed as unresolved     |
+      | merged    | removes | shelf | not printed as unresolved |
+      | formulated | removes | shelf | not printed as unresolved |
+      | merged    | adds    | shelf | printed as unresolved     |
 
   @r24
   Scenario Outline: a frontmatter reference to nothing, or to the wrong kind, is unresolved
     Pins that each named frontmatter reference must reach a node, and that supersedes, under, for, blocked_by and depends_on must reach a node of the kind they need.
     Given a file whose <field> names <target>
-    When model check is run
-    Then that <field> is reported as unresolved
+    When `model check` is run
+    Then that <field> is printed as unresolved
 
     Examples:
       | field      | target                                   |
@@ -235,8 +235,8 @@ Feature: Design model check
   Scenario Outline: a malformed index or capability file is a file problem
     Pins the shape spec/index.md and each capability file must have to be read.
     Given a bounded context with id bounded-context/acme.com/shop/cart in which <case>
-    When model check is run
-    Then it reports a file problem naming <file>
+    When `model check` is run
+    Then it prints a file problem naming <file>
 
     Examples:
       | case                                                                      | file                       |
@@ -249,10 +249,10 @@ Feature: Design model check
 
   @r61
   Scenario Outline: a path of the old layout is a file problem naming scripts/migrate
-    Pins that a repository not yet moved to the final layout fails the check, each old path named with the script that moves it.
+    Pins that `model check` refuses a repository not yet relocated to the final layout, each old path named with the script that relocates it.
     Given a bounded context the grammar accepts, with <path> at its root
-    When model check is run
-    Then it reports a file problem naming <path> and scripts/migrate
+    When `model check` is run
+    Then it prints a file problem naming <path> and scripts/migrate
     And it exits 1
 
     Examples:
@@ -267,25 +267,25 @@ Feature: Design model check
     Pins which feature files belong to a capability, that titles are unique among the scenarios not deprecated, and that the tag @holding is refused.
     Given a capability thing
     And a feature file <file> in which <titles>
-    When model check is run
-    Then it <reports> a file problem naming <file>
+    When `model check` is run
+    Then it <prints> a file problem naming <file>
 
     Examples:
-      | file                       | titles                                                                     | reports         |
-      | features/stray.feature     | every scenario has its own title                                           | reports         |
-      | features/thing.feature     | every scenario has its own title                                           | does not report |
-      | features/sub/thing.feature | every scenario has its own title                                           | reports         |
-      | features/thing.feature     | two scenarios are titled "Apply a code"                                    | reports         |
-      | features/thing.feature     | two scenarios are titled "Apply a code" and one of them is tagged @deprecated | does not report |
-      | features/thing.feature     | a scenario with its own title is tagged @holding                           | reports         |
-      | features/thing.feature     | a scenario is tagged @deprecated and @holding                              | reports         |
+      | file                       | titles                                                                     | prints          |
+      | features/stray.feature     | every scenario has its own title                                           | prints          |
+      | features/thing.feature     | every scenario has its own title                                           | does not print  |
+      | features/sub/thing.feature | every scenario has its own title                                           | prints          |
+      | features/thing.feature     | two scenarios are titled "Apply a code"                                    | prints          |
+      | features/thing.feature     | two scenarios are titled "Apply a code" and one of them is tagged @deprecated | does not print  |
+      | features/thing.feature     | a scenario with its own title is tagged @holding                           | prints          |
+      | features/thing.feature     | a scenario is tagged @deprecated and @holding                              | prints          |
 
   @r27
   Scenario Outline: a malformed work directory or work file is a file problem
     Pins the shape each initiative and part file must have, and that a missing initiative.md is charged to its directory.
     Given a repository with a work directory .shop/work/i1 in which <case>
-    When model check is run
-    Then it reports a file problem naming <named>
+    When `model check` is run
+    Then it prints a file problem naming <named>
 
     Examples:
       | case                                                  | named                                     |
@@ -303,15 +303,15 @@ Feature: Design model check
     Pins that a work-item may accept only requirements a scenario already names.
     Given a capability thing with requirement r2 that no scenario names
     And a work-item in .shop/work/i1/w1.md that accepts thing#r2
-    When model check is run
-    Then it reports a file problem naming .shop/work/i1/w1.md
+    When `model check` is run
+    Then it prints a file problem naming .shop/work/i1/w1.md
 
   @r29
   Scenario Outline: a malformed decision, record or frontmatter is a file problem
-    Pins the frontmatter faults in decisions, records and shared ids that model check refuses.
+    Pins the frontmatter faults in decisions, records and shared ids that `model check` refuses.
     Given a repository in which <case>
-    When model check is run
-    Then it reports a file problem
+    When `model check` is run
+    Then it prints a file problem
 
     Examples:
       | case                                                         |
@@ -323,25 +323,25 @@ Feature: Design model check
       | a decision and an observation have the same id               |
 
   @r2
-  Scenario: file problems are each printed and fail the check
-    Pins that every file problem is shown and that any one of them fails the check.
+  Scenario: file problems are each printed and make `model check` exit 1
+    Pins that every file problem is shown and that any one of them makes `model check` exit 1.
     Given a repository with two capabilities that each have no ## Behaviour section
-    When model check is run
+    When `model check` is run
     Then it prints a file problem for each of the two capabilities
     And it exits 1
 
   @r2
-  Scenario: the check ends with the four counts
-    Pins the summary every plain-text check ends with.
+  Scenario: `model check` ends with the four counts
+    Pins the summary the plain-text output ends with.
     Given a repository with one violation, one warning, one unresolved reference and one file problem
-    When model check is run without --json
+    When `model check` is run without --json
     Then it prints the four counts, each 1
 
   @r2
   Scenario Outline: rows of a violated relation are limited, saying how many more there are
     Pins the row limit per violated relation, given or by default.
     Given a repository with <rows> requirements no scenario names
-    When model check is run <limit>
+    When `model check` is run <limit>
     Then it prints <shown> rows under v_s3
     And it says there are <more> more
 
@@ -351,68 +351,68 @@ Feature: Design model check
       | 12   | with no --limit | 10    | 2    |
 
   @r33
-  Scenario Outline: with --json the check's findings are one JSON object
-    Pins the machine-readable output and that it does not change the exit status.
-    Given a repository <state>
-    When model check is run with --json
+  Scenario Outline: with --json `model check`'s findings are one JSON object
+    Pins the machine-readable output and that it does not change the exit code.
+    Given a repository <repository>
+    When `model check` is run with --json
     Then it prints one JSON object with the violations, warnings, unresolved references and file problems
     And the object maps each code it prints to its plain label
-    And it exits <status>
+    And it exits <code>
 
     Examples:
-      | state                                  | status |
-      | the grammar accepts                    | 0      |
-      | with a requirement no scenario names   | 1      |
+      | repository                             | code |
+      | the grammar accepts                    | 0    |
+      | with a requirement no scenario names   | 1    |
 
   @r34
   Scenario Outline: only a capability-change initiative may have several parts directly
     Pins that an initiative has one part directly, except a capability-change with capability-proposals.
     Given <initiative> with <parts> directly under it
-    When model check is run
-    Then the initiative is <reported> under v_k5
+    When `model check` is run
+    Then the initiative is <printed> under v_k5
 
     Examples:
-      | initiative                                   | parts                    | reported |
-      | an initiative that is not a capability-change | two parts                | reported |
-      | a capability-change initiative               | two capability-proposals | not reported |
+      | initiative                                   | parts                    | printed |
+      | an initiative that is not a capability-change | two parts                | printed |
+      | a capability-change initiative               | two capability-proposals | not printed |
 
   @r35
   Scenario: a proposal arguing two capabilities is refused
     Pins that a capability-proposal argues one capability.
     Given capabilities thing and other
     And a capability-proposal that argues both thing and other
-    When model check is run
+    When `model check` is run
     Then the output names v_k6 with the proposal
 
   @r36
-  Scenario: an initiative may be done when its proposal is formulated
-    Pins that formulated is a closed status for a capability-proposal under a done initiative.
-    Given a capability-change initiative with status done
+  Scenario: an initiative may be `done` when its proposal is formulated
+    Pins that formulated is a closed status for a capability-proposal under a `done` initiative.
+    Given a capability-change initiative with status `done`
     And under it a capability-proposal with status formulated, whose requirements scenarios name
-    When model check is run
+    When `model check` is run
     Then no violation names the initiative
 
   @r37
-  Scenario: a current decisions index passes the check
-    Pins the passing outcome of the decisions index check.
-    Given a spec/decisions/index.md that is what model decisions writes
-    When model decisions --check is run
+  Scenario: a current decisions index passes `model decisions --check`
+    Pins what `model decisions --check` says of a current index.
+    Given a spec/decisions/index.md that is what `model decisions` writes
+    When `model decisions --check` is run
     Then it says the file is current
     And it exits 0
 
   @r14
   Scenario: writing the decisions index names the file and leaves out decisions with no id
-    Pins what writing the index reports and that only decisions with an id are indexed.
+    Pins what writing the index prints and that only decisions with an id are indexed.
     Given two decisions under spec/decisions/, one of them with no id
-    When model decisions is run
+    When `model decisions` is run
     Then it prints spec/decisions/index.md as the file it wrote
     And spec/decisions/index.md lists the decision with an id and not the one without
 
   @r105
   Scenario: why refuses an argument that is not a requirement reference
-    Pins that model why takes only a requirement reference.
+    Pins that `model why` takes only a requirement reference.
     Given a capability thing
-    When model why is run for thing
+    When `model why` is run for thing
     Then it is refused because thing is not a requirement reference
     And it exits 2
 
@@ -421,7 +421,7 @@ Feature: Design model check
     Pins that a missing requirement does not hide the proposals that name it.
     Given a capability thing with no requirement r9
     And a capability-proposal that changes thing#r9
-    When model why is run for thing#r9
+    When `model why` is run for thing#r9
     Then it says no capability has thing#r9 where the requirement's text would be
     And it lists the proposal
 
@@ -430,12 +430,12 @@ Feature: Design model check
     Pins that removing proposals are listed too, in date order with status and date, but only one that adds or changes the requirement makes why succeed.
     Given a capability thing with requirement r2
     And <proposals>
-    When model why is run for thing#r2
+    When `model why` is run for thing#r2
     Then it lists <listed>, in that order, each with its status and date
-    And it exits <status>
+    And it exits <code>
 
     Examples:
-      | proposals                                                                                                   | listed      | status |
+      | proposals                                                                                                   | listed      | code   |
       | a capability-proposal p1 dated 2026-10-01 that removes thing#r2 and a capability-proposal p2 dated 2026-09-01 that adds thing#r2    | p2 then p1  | 0      |
       | a capability-proposal p1 dated 2026-10-01 that removes thing#r2 and a capability-proposal p2 dated 2026-09-01 that changes thing#r2 | p2 then p1  | 0      |
       | a capability-proposal p1 dated 2026-10-01 that removes thing#r2 and a capability-proposal p2 dated 2026-09-01 that removes thing#r2 | p2 then p1  | 1      |
@@ -446,46 +446,46 @@ Feature: Design model check
     Pins that the kind-and-name short form is read in any field, and the bare name only in a field that fixes the kind.
     Given a bounded context with id bounded-context/ex.com/prod/ctx, a capability thing and an initiative i1
     And a capability-proposal whose <field> is written <written>
-    When model check is run
-    Then <written> is <outcome>
+    When `model check` is run
+    Then <written> is <reading>
 
     Examples:
-      | field   | written                          | outcome                                                                 |
-      | argues  | thing                            | read as capability/ex.com/prod/ctx/thing and not reported as unresolved |
-      | argues  | capability/thing                 | read as capability/ex.com/prod/ctx/thing and not reported as unresolved |
-      | argues  | capability/ex.com/prod/ctx/thing | read as capability/ex.com/prod/ctx/thing and not reported as unresolved |
-      | part_of | initiative/i1                    | read as initiative/ex.com/prod/ctx/i1 and not reported as unresolved    |
-      | part_of | i1                               | reported as unresolved                                                  |
+      | field   | written                          | reading                                                                 |
+      | argues  | thing                            | read as capability/ex.com/prod/ctx/thing and not printed as unresolved |
+      | argues  | capability/thing                 | read as capability/ex.com/prod/ctx/thing and not printed as unresolved |
+      | argues  | capability/ex.com/prod/ctx/thing | read as capability/ex.com/prod/ctx/thing and not printed as unresolved |
+      | part_of | initiative/i1                    | read as initiative/ex.com/prod/ctx/i1 and not printed as unresolved    |
+      | part_of | i1                               | printed as unresolved                                                  |
 
   @r20
   Scenario: a deprecated scenario names no requirement
     Pins that a scenario tagged @deprecated does not count as a requirement's acceptance-scenario.
     Given a capability thing with requirement r2
     And its only scenario tagged @r2 is also tagged @deprecated
-    When model check is run
-    Then the requirement thing#r2 is reported under v_s3
+    When `model check` is run
+    Then the requirement thing#r2 is printed under v_s3
 
   @r64
   Scenario Outline: a decision's source is a list of ids and its by is not read
     Pins that each id in a decision's source must name a node, and that its by, where the free text goes, is never read as a reference.
     Given a decision whose source is <source> and whose by is <by>
-    When model check is run
-    Then the decision's source is <reported> as unresolved
+    When `model check` is run
+    Then the decision's source is <printed> as unresolved
 
     Examples:
-      | source                      | by                         | reported     |
-      | [observation/obs-1]         | the person, 2026-10-19     | not reported |
-      | [observation/ghost]         | the person, 2026-10-19     | reported     |
-      | the person, 2026-10-19      | none                       | reported     |
-      | [observation/obs-1]         | observation/ghost          | not reported |
+      | source                      | by                         | printed     |
+      | [observation/obs-1]         | the person, 2026-10-19     | not printed |
+      | [observation/ghost]         | the person, 2026-10-19     | printed     |
+      | the person, 2026-10-19      | none                       | printed     |
+      | [observation/obs-1]         | observation/ghost          | not printed |
 
   @r46
   Scenario Outline: a node whose id is not in type-first form is a file problem
     Pins that every id a file gives is its own kind, the context path and a name, and that the bounded context's is bounded-context and the context path.
     Given a bounded context whose context path is ex.com/prod/ctx
     And <file> gives <node> the id <id>
-    When model check is run
-    Then it reports a file problem naming <file>
+    When `model check` is run
+    Then it prints a file problem naming <file>
 
     Examples:
       | file                       | node                        | id                                     |
@@ -505,8 +505,8 @@ Feature: Design model check
     Pins that the context-name form and the old decision/ and obs/ prefixes name nothing, even where a node of that name exists.
     Given a bounded context with id bounded-context/ex.com/prod/ctx, a capability thing with requirement r1, a decision x and an observation x
     And <file> whose <field> is written <reference>
-    When model check is run
-    Then <reference> is reported as unresolved
+    When `model check` is run
+    Then <reference> is printed as unresolved
 
     Examples:
       | file                  | field    | reference    |
@@ -519,15 +519,15 @@ Feature: Design model check
   Scenario: a glossary bullet is a term of the bounded context
     Pins that a definition containing a period, as in "e.g. a", is one definition, split from its avoided words only at ". Not:".
     Given a bounded context whose glossary has the bullet "- **Suite record**: a whole-suite result, e.g. a green run, logged once. Not: test record, run."
-    When model facts is run
+    When `model facts` is run
     Then it prints the term term/ex.com/prod/ctx/suite-record
     And its avoided words are "test record" and "run", and nothing else
 
   @r49
   Scenario Outline: a glossary bullet not in the entry form is a file problem
     Given a bounded context whose glossary has the bullet <bullet>
-    When model check is run
-    Then it reports one file problem naming spec/index.md
+    When `model check` is run
+    Then it prints one file problem naming spec/index.md
     And it exits 1
 
     Examples:
@@ -542,7 +542,7 @@ Feature: Design model check
   @r48
   Scenario: facts give each term its kind, its context and its avoided words
     Given a bounded context whose glossary defines batch, avoiding sprint and lot, and slice, avoiding nothing
-    When model facts is run
+    When `model facts` is run
     Then each term has a node fact of kind term and a term_of fact naming the bounded context
     And batch has an avoid fact for sprint and one for lot
     And slice has no avoid fact
@@ -552,7 +552,7 @@ Feature: Design model check
     Given a glossary term store that avoids shelf
     And requirements that say "the Store", "the stores", "restore" and "a shelf and a store-front"
     And a scenario whose steps say "a shelf" and another whose title says "the store"
-    When model facts is run
+    When `model facts` is run
     Then "the Store" and "the stores" each mention store
     And "restore" and "store-front" mention nothing
     And the requirement and the scenario saying "a shelf" each mention shelf
@@ -561,7 +561,7 @@ Feature: Design model check
   Scenario: a requirement or scenario using an avoided word is v_t1
     Given a glossary term slice that avoids chunk
     And a requirement that says "chunk", a scenario titled "chunks are planned" and a deprecated scenario titled "a chunk as it was"
-    When model check is run
+    When `model check` is run
     Then v_t1 names the requirement, chunk and the term slice
     And v_t1 names the scenario, chunk and the term slice
     And v_t1 does not name the deprecated scenario
@@ -570,41 +570,41 @@ Feature: Design model check
   @r53
   Scenario: two entries for one term are v_t2
     Given a glossary with an entry for slice and another for Slice
-    When model check is run
+    When `model check` is run
     Then v_t2 names term/ex.com/prod/ctx/slice
     And it exits 1
 
   @r54
   Scenario: an avoided word that is a term is v_t3
     Given a glossary where slice avoids batch, batch is a term, and hand-back avoids Hand-back
-    When model check is run
+    When `model check` is run
     Then v_t3 names batch and hand-back
     And it exits 1
 
   @r55
-  Scenario: without clingo the check runs again under the first interpreter that has it
+  Scenario: without clingo `model check` tries again under the first interpreter that has it
     Pins the order of the search and that the active virtualenv's bin/ is skipped.
     Given an interpreter that cannot import clingo
     And on PATH, in order, a virtualenv's python3 that has clingo, a python3 without it and two python3s with it
-    When model check is run
-    Then it asks the one without clingo, then the first with it, and runs again under that one
+    When `model check` is run
+    Then it asks the one without clingo, then the first with it, and tries again under that one
     And it never asks the virtualenv's python3 or the second with clingo
     And it exits 0
-    But when $SHOPSYSTEM_MODEL_PYTHON names a python3 with clingo, it runs again under that one
+    But when $SHOPSYSTEM_MODEL_PYTHON names a python3 with clingo, it tries again under that one
 
   @r55
-  Scenario: the check runs again only once
+  Scenario: `model check` tries again only once
     Given an interpreter that cannot import clingo
-    And a python3 on PATH that says it has clingo but runs the check without it
-    When model check is run
-    Then the check runs again under that python3 once
+    And a python3 on PATH that says it has clingo but runs `model check` without it
+    When `model check` is run
+    Then `model check` tries again under that python3 once
     And it exits 2
 
   @r12
-  Scenario: with no interpreter that has clingo the check names each one it tried
+  Scenario: with no interpreter that has clingo `model check` names each one it tried
     Given an interpreter that cannot import clingo
     And no python3 that can, whether PATH has none or $SHOPSYSTEM_MODEL_PYTHON and PATH name ones without it
-    When model check is run
+    When `model check` is run
     Then it names clingo and pip install clingo
     And it names each interpreter it tried, /usr/local/bin/python3 and /usr/bin/python3 among them
     And it exits 2
@@ -612,17 +612,17 @@ Feature: Design model check
   @r36
   Scenario: a withdrawn part is closed
     Pins that withdrawn is a status of a capability-proposal and a work-item, and that it closes the part.
-    Given a capability-change initiative with status done
+    Given a capability-change initiative with status `done`
     And under it a capability-proposal with status withdrawn, and under that a work-item with status withdrawn
-    When model check is run
-    Then it reports no file problem
+    When `model check` is run
+    Then it prints no file problem
     And no violation names the initiative
 
   @r59
   Scenario: an abandoned initiative with an open part is v_d2
     Given an abandoned capability-change initiative
     And under it a capability-proposal with status withdrawn, and under that a work-item with status drafted
-    When model check is run
+    When `model check` is run
     Then v_d2 names the initiative
     And once the work-item is withdrawn too, no violation names the initiative
 
@@ -630,9 +630,9 @@ Feature: Design model check
   Scenario: a table row with an id is a requirement, and its header, separator and lead sentence are not
     Given a capability whose Behaviour has a ### heading, a lead sentence, and a table with a header row, a separator and rows marked [r1] and [r2]
     And a scenario tagged @r2
-    When model check is run
-    Then it reports no file problem and no v15a
-    And thing#r1 is reported under v_s3 and thing#r2 is not
+    When `model check` is run
+    Then it prints no file problem and no v15a
+    And thing#r1 is printed under v_s3 and thing#r2 is not
 
   @r103
   Scenario: a Behaviour line in none of EARS's patterns is v_e1
@@ -647,16 +647,16 @@ Feature: Design model check
       | r7 | **If** asked, then **When** idle, `thing` shall answer.                                |
       | r8 | when asked, `thing` shall answer.                                                      |
       | r9 | Sometimes `thing` shall answer.                                                        |
-    When model check is run
+    When `model check` is run
     Then v_e1 names r2, r3, r4, r7, r8 and r9
     And v_e1 does not name r1, r5 or r6
     And v_e2 does not name r2
     And it exits 1
 
   @r103
-  Scenario: a table row is checked by its lead sentence
+  Scenario: a table row is judged by its lead sentence
     Given a capability whose Behaviour has a table with rows marked [r1] and [r2], led by a sentence that names no system
-    When model check is run
+    When `model check` is run
     Then v_e1 names r1 and r2
 
   @r104
@@ -668,7 +668,7 @@ Feature: Design model check
       | r3 | **When** asked, `thing` shall answer. It is quick.                           |
       | r4 | **When** asked, `thing` shall read `a.b` and say "so. it is."                |
       | r5 | **When** asked, `thing` shall answer, e.g. with a value.                     |
-    When model check is run
+    When `model check` is run
     Then v_e2 names r2 and r3
     And v_e2 does not name r1, r4 or r5
     And it exits 1
@@ -677,16 +677,16 @@ Feature: Design model check
   Scenario: a merged capability-proposal may add or remove an id its capability lists as retired
     Given a capability thing with requirement r1 that lists r4 as retired
     And a merged capability-proposal that adds thing#r4 and removes thing#r4
-    When model check is run
-    Then thing#r4 is reported neither under v15c nor as unresolved
+    When `model check` is run
+    Then thing#r4 is printed neither under v15c nor as unresolved
 
   @r20
   Scenario: a scenario tagged with several requirements names each of them
     Given a capability thing with requirements r1 and r2
     And a scenario tagged @r1 @r2
-    When model check is run
-    Then neither thing#r1 nor thing#r2 is reported under v_s3
-    And it reports no file problem and no v_s2
+    When `model check` is run
+    Then neither thing#r1 nor thing#r2 is printed under v_s3
+    And it prints no file problem and no v_s2
 
   @r51
   Scenario: a code span, a double-quoted string and a tag are no mention
@@ -697,26 +697,26 @@ Feature: Design model check
       | r2 | The thing shall say "a shelf".             |
       | r3 | The thing shall name the tag @shelf.       |
       | r4 | The thing shall keep a shelf.              |
-    When model facts is run
+    When `model facts` is run
     Then only r4 mentions shelf
 
   @r3
   Scenario: a table row whose id lost its brackets is a line with no id
     Given a capability whose Behaviour has a table whose row is marked r1 without brackets
-    When model check is run
+    When `model check` is run
     Then the output names v15a
 
   @r103
   Scenario: a table is led only by the sentence just before it
     Given a capability whose Behaviour has a table led by a good sentence, a ### heading, and a second table with a row marked [r2] and no lead
-    When model check is run
+    When `model check` is run
     Then v_e1 names r2
     And v_e1 does not name r1
 
   @r65
-  Scenario: model rules prints every rule with its plain label
+  Scenario: `model rules` prints every rule with its plain label
     Given any repository
-    When model rules is run
+    When `model rules` is run
     Then it prints each rule's code and plain label, one a line, the violations first and then the warnings
     And it exits 0
 
@@ -724,6 +724,6 @@ Feature: Design model check
   Scenario: the decisions index is written when there is no decision yet
     Pins that a repository with no spec/decisions/ directory still gets its index, with no row.
     Given a repository with no spec/decisions/
-    When model decisions is run
+    When `model decisions` is run
     Then it prints spec/decisions/index.md as the file it wrote
     And the index has its header and no row

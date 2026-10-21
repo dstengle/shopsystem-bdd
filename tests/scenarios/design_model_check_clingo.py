@@ -70,7 +70,7 @@ def path_of_four(world, context):
     context["env"] = _search_env(world, ["venv/bin", "lacks", "bin", "later"], VIRTUAL_ENV=str(world.root / "venv"))
 
 
-@given("a python3 on PATH that says it has clingo but runs the check without it")
+@given("a python3 on PATH that says it has clingo but runs `model check` without it")
 def path_of_liar(world, context):
     _fake_python(world, "bin", "probe-only")
     context["env"] = _search_env(world, ["bin"])
@@ -86,7 +86,7 @@ def no_python_with_clingo(world, context):
                          _search_env(world, ["lacks"], SHOPSYSTEM_MODEL_PYTHON=str(nowhere)))]
 
 
-@then("it asks the one without clingo, then the first with it, and runs again under that one")
+@then("it asks the one without clingo, then the first with it, and tries again under that one")
 def asks_in_order(world, context):
     out = context["result"].stdout
     assert "0 violations" in out, out
@@ -98,7 +98,7 @@ def never_asks(world):
     assert not [c for c in _calls(world) if c.startswith(("venv/bin:", "later:"))], _calls(world)
 
 
-@then("when $SHOPSYSTEM_MODEL_PYTHON names a python3 with clingo, it runs again under that one")
+@then("when $SHOPSYSTEM_MODEL_PYTHON names a python3 with clingo, it tries again under that one")
 def explicit_python(world, context):
     _fake_python(world, "chosen")
     (world.root / "calls.log").unlink(missing_ok=True)
@@ -109,7 +109,7 @@ def explicit_python(world, context):
     assert _calls(world) == ["chosen: " + PROBE, "chosen: %s --root %s check" % (SCRIPTS / "model", world.root)], _calls(world)
 
 
-@then("the check runs again under that python3 once")
+@then("`model check` tries again under that python3 once")
 def runs_again_once(world, context):
     assert "clingo" in context["result"].stdout
     assert len(_check_calls(world)) == 1, _calls(world)

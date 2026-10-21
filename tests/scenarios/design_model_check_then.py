@@ -23,7 +23,7 @@ def exits(context, code):
     assert "Traceback" not in result.stderr
 
 
-@then("it reports 0 violations, 0 unresolved references and 0 file problems")
+@then("it prints 0 violations, 0 unresolved references and 0 file problems")
 def reports_nothing(context):
     out = context["result"].stdout
     assert "0 violations" in out
@@ -36,26 +36,26 @@ def output_names_code(world, context, code):
     assert code in [name for name, _ in found(world, context)["violations"]], found(world, context)
 
 
-@then("thing#r4 is reported neither under v15c nor as unresolved")
+@then("thing#r4 is printed neither under v15c nor as unresolved")
 def r4_not_reported(world, context):
     data = found(world, context)
     assert [d for d in data["unresolved"] if "thing#r4" in d] == [], data
     assert [a for name, a in data["violations"] if name in ("v15c", "v15d") and "thing#r4" in a[0]] == [], data
 
 
-@then(parsers.re(r"the requirement thing#r2 is (?P<reported>not|still|reported) (?:reported )?under v_s3"))
+@then(parsers.re(r"the requirement thing#r2 is (?P<reported>not|still|printed) (?:printed )?under v_s3"))
 def r2_under_v_s3(world, context, reported):
     rows = [a[0] for name, a in found(world, context)["violations"] if name == "v_s3"]
     assert (THING + "#r2" in rows) == (reported != "not"), found(world, context)
 
 
-@then("neither thing#r1 nor thing#r2 is reported under v_s3")
+@then("neither thing#r1 nor thing#r2 is printed under v_s3")
 def neither_under_v_s3(world, context):
     rows = [a[0] for name, a in found(world, context)["violations"] if name == "v_s3"]
     assert rows == [], found(world, context)
 
 
-@then("it reports no file problem")
+@then("it prints no file problem")
 def no_file_problem(world, context):
     assert found(world, context)["problems"] == []
 
@@ -91,21 +91,21 @@ def only_r4_mentions_shelf(context):
     assert [m[0] for m in _mentions(context) if m[1] == "shelf"] == [THING + "#r4"], _mentions(context)
 
 
-@then("it reports no file problem and no v_s2")
+@then("it prints no file problem and no v_s2")
 def no_file_problem_and_no_v_s2(world, context):
     data = found(world, context)
     assert data["problems"] == [], data
     assert [a for name, a in data["violations"] if name == "v_s2"] == [], data
 
 
-@then("it reports no file problem and no v15a")
+@then("it prints no file problem and no v15a")
 def no_file_problem_and_no_v15a(world, context):
     data = found(world, context)
     assert data["problems"] == [], data
     assert [a for name, a in data["violations"] if name == "v15a"] == [], data
 
 
-@then("thing#r1 is reported under v_s3 and thing#r2 is not")
+@then("thing#r1 is printed under v_s3 and thing#r2 is not")
 def r1_but_not_r2_under_v_s3(world, context):
     data = found(world, context)
     rows = [a[0] for name, a in data["violations"] if name == "v_s3"]
@@ -126,7 +126,7 @@ def does_not_name_requirements(world, context, code, ids):
     assert not _named(world, context, code) & set(re.findall(r"r\d+", ids)), found(world, context)
 
 
-@then(parsers.re(r"(?P<subject>.+?) is reported as unresolved"))
+@then(parsers.re(r"(?P<subject>.+?) is printed as unresolved"))
 def reported_unresolved(world, context, subject):
     out = context["result"].stdout
     if subject == "each":  # r9
@@ -159,13 +159,13 @@ def _term_unresolved(world, context):
     return [d for d in found(world, context)["unresolved"] if context["term"] in d and "p1.md" in d]
 
 
-@then(parsers.re(r"(?P<subject>term/\w+) is not reported as unresolved"))
+@then(parsers.re(r"(?P<subject>term/\w+) is not printed as unresolved"))
 def term_not_reported_unresolved(world, context, subject):
     assert subject == "term/" + context["term"]
     assert not _term_unresolved(world, context), found(world, context)
 
 
-@then(parsers.re(r"(?P<subject>.+?) is reported under v15c and not as unresolved"))
+@then(parsers.re(r"(?P<subject>.+?) is printed under v15c and not as unresolved"))
 def reported_v15c(world, context, subject):
     data = found(world, context)
     rid = context["changed"]
@@ -248,7 +248,7 @@ def rows_more(context, more):
 
 
 def _written_unresolved(world, context, subject):
-    """`<subject> is reported as unresolved`, for r24's refused forms and r43's bare part_of."""
+    """`<subject> is printed as unresolved`, for r24's refused forms and r43's bare part_of."""
     data = found(world, context)
     assert subject == context["written"]
     if context.get("refused"):  # r24: once, and no file problem

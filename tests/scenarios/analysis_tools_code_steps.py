@@ -50,7 +50,7 @@ def with_contracts(repo, context):
     interpreter(context)
 
 
-@given(parsers.parse("{tool} reports a finding and the other tools report nothing"))
+@given(parsers.parse("{tool} prints a finding and the other tools print nothing"))
 def reports(context, tool):
     interpreter(context)[tool] = "%s found something" % tool
     context["reporting"] = tool
@@ -83,7 +83,7 @@ def unchanged_since(repo, context, label):
     context["commits"][label] = git(repo, "rev-parse", "--short", "HEAD")
 
 
-@given("a Python project that states no import contracts")
+@given("a Python project that declares no import contracts")
 def no_contracts(repo, context):
     a_python_project(repo, context)
     interpreter(context)["import-linter"] = "would fail"
@@ -169,7 +169,7 @@ def checked(context):
     return [call for call in calls(context["python"]) if call[:2] in (["python", "ruff"], ["python", "vulture"])]
 
 
-@then("tools checks src/cart.py")
+@then("tools examines src/cart.py")
 def checks_cart(context):
     assert context["result"].returncode == 0, context["result"].stderr
     assert len(checked(context)) == 2
@@ -177,7 +177,7 @@ def checks_cart(context):
         assert [a for a in call[2:] if "." in a and not a.startswith("-")] == ["src/cart.py"]
 
 
-@then("it does not check README.md, src/old.py or src/report.py")
+@then("it does not examine README.md, src/old.py or src/report.py")
 def does_not_check(context):
     for call in checked(context):
         assert not {"README.md", "src/old.py", "src/report.py"} & set(call)
@@ -200,7 +200,7 @@ def prints_git_error(context):
 
 
 # r33
-@then("under the ruff heading and under the vulture heading tools says there is nothing to check")
+@then("under the ruff heading and under the vulture heading tools says `nothing to check`")
 def nothing_to_check(context):
     assert under_heading(context["result"].stdout, "ruff") == "nothing to check"
     assert under_heading(context["result"].stdout, "vulture") == "nothing to check"
@@ -213,7 +213,7 @@ def neither_fails(context):
 
 
 # r34
-@then("under the import-linter heading tools says the project states no import contracts")
+@then("under the import-linter heading tools says `the project states no import contracts`")
 def says_no_contracts(context):
     assert under_heading(context["result"].stdout, "import-linter") == "the project states no import contracts"
     assert context["result"].returncode == 0

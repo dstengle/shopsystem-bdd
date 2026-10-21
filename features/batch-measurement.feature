@@ -76,10 +76,10 @@ Feature: Batch measurement
     And nothing is written
 
   @r9
-  Scenario Outline: a subagent transcript is a dispatch only when it starts inside the batch
-    Whether a subagent belongs to the batch is decided by when it started.
+  Scenario Outline: a transcript an Agent tool started is a dispatch only when it starts inside the batch
+    Whether such a transcript belongs to the batch is decided by when it started.
     Given a batch running from commit A to commit B
-    And a subagent transcript that starts <when> the batch
+    And a transcript an Agent tool started that starts <when> the batch
     When the session runs measure batch for the batch
     Then the transcript <counted> as a dispatch
 
@@ -102,7 +102,7 @@ Feature: Batch measurement
   @r11
   Scenario: a dispatching session's own requests are the controller's
     The session that dispatched inside the batch has its own requests there counted to the controller.
-    Given a session that dispatched a subagent inside the batch
+    Given a session that started a dispatch inside the batch
     And made requests of its own inside the batch
     When the session runs measure batch for the batch
     Then the facts count that session's requests inside the batch as the controller's
@@ -123,9 +123,9 @@ Feature: Batch measurement
 
   @r13
   Scenario: a reviewer's findings are counted as it wrote them
-    Critical and Important findings are its lines so marked, and Minor is the count it states.
+    Critical and Important findings are its lines so marked, and Minor is the count it gives.
     Given a reviewer's reply with 2 lines beginning Critical and 1 line beginning Important
-    And the reply states a count of 4 Minor
+    And the reply gives a count of 4 Minor
     When the session runs measure batch for the batch
     Then the facts count the reviewer's findings as 2 Critical, 1 Important and 4 Minor
 
@@ -310,7 +310,7 @@ Feature: Batch measurement
 
   @r31
   Scenario Outline: a reply closing <status> is counted as not done
-    The closing status a reply states is kept, and the stuck ones are counted as not done.
+    The closing status a reply gives is kept, and the stuck ones are counted as not done.
     Given a dispatch whose reply closes with status <status>
     When the session runs measure batch for the batch
     Then the facts give the dispatch the closing status <status>

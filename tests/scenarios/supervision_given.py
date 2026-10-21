@@ -35,7 +35,7 @@ def repository(repo):
 
 
 @given(parsers.re(r"i1's work-items? (?P<items>[\w -]+?)(?:, under (?P<under>\w+))?"
-                  r"(?:, though log\.jsonl's last move of (?P<lname>\w+) is to (?P<lafter>[\w-]+))?"
+                  r"(?:, though log\.jsonl's last transition of (?P<lname>\w+) is to (?P<lafter>[\w-]+))?"
                   r"(?P<nogit>, in a directory that is not a git repository)?"
                   r"(?P<detached>, its checkout's HEAD detached)?$"))
 def work_items(repo, items, under, lname, lafter, nogit, detached):
@@ -134,18 +134,18 @@ def researcher_asks(plan, status, question):
     plan["code-scout"] = {"status": status, "questions": [question]}
 
 
-@given("the researcher writes no result file")
+@given("the researcher writes no result")
 def researcher_no_result(plan):
     plan["code-scout"] = {"result": "none"}
 
 
-@given("the researcher writes a result file that is not JSON")
+@given("the researcher writes a result that is not JSON")
 def researcher_not_json(plan):
     plan["code-scout"] = {"result": "not-json"}
 
 
 @given("every worker gives DONE, the researcher also setting w1's status to green, changing "
-       ".shop/work/i1/initiative.md and writing notes.md in its run directory")
+       ".shop/work/i1/initiative.md and writing notes.md in its stage directory")
 def researcher_meddles(repo, plan, context):
     plan["default"] = {"status": "DONE"}
     context["initiative.md"] = (repo / ".shop/work/i1/initiative.md").read_text()
@@ -154,7 +154,7 @@ def researcher_meddles(repo, plan, context):
                           "notes": {"notes.md": "what the researcher found\n"}}
 
 
-@given("every worker gives DONE, and while the researcher runs another session commits .shop/work/i2/initiative.md and a "
+@given("every worker gives DONE, and while the researcher works another session commits .shop/work/i2/initiative.md and a "
        "change to .shop/work/i1/initiative.md in the repository's own checkout")
 def another_session_commits(repo, plan, context):
     plan["default"] = {"status": "DONE"}
@@ -192,7 +192,7 @@ def implementer_names_report(plan):
     plan["bdd-implementer"] = {"write": {"report.md": "the implementer's report\n"}, "names": {"report": "report.md"}}
 
 
-@given("the repository is the plugin: it holds work run's own scripts and agents")
+@given("the repository is the plugin: it holds `work run`'s own scripts and agents")
 def repository_is_plugin(repo, context):
     for name in ("scripts", "agents"):
         shutil.copytree(ROOT / name, repo / name, ignore=shutil.ignore_patterns("__pycache__"))

@@ -51,7 +51,7 @@ def avoided_words(context):
         'avoid("%s", "test record").' % _term("suite-record"), 'avoid("%s", "run").' % _term("suite-record")]
 
 
-@then("it reports one file problem naming spec/index.md")
+@then("it prints one file problem naming spec/index.md")
 def one_file_problem_in_index(world, context):
     data = found(world, context)
     assert len(data["problems"]) == 1, data

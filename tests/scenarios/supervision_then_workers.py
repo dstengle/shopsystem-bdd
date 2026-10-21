@@ -24,7 +24,7 @@ def one_at_a_time(repo):
     assert events and events == [e for s in [c["session"] for c in starts(repo)] for e in (("start", s), ("end", s))], events
 
 
-@then("each worker was started as `claude -p` with a prompt naming its brief file, --agent shopsystem-bdd:<its stage's "
+@then("each worker was started as `claude -p` with an input prompt naming its brief, --agent shopsystem-bdd:<its stage's "
       "agent> and a session id no other worker had")
 def started_as(repo):
     started = starts(repo)
@@ -43,7 +43,7 @@ def started_as(repo):
     assert len(set(sessions)) == len(sessions) == 4, sessions
 
 
-@then("each brief file names .shop/work/i1/w1.md and spec/capabilities/thing.md to read, and a result file in the "
+@then("each brief names .shop/work/i1/w1.md and spec/capabilities/thing.md to read, and a result path in the "
       "brief's own directory")
 def brief_names(repo):
     for c in starts(repo):
@@ -79,7 +79,7 @@ def no_worker(repo):
     assert calls(repo) == [], calls(repo)
 
 
-@then("each worker ran in a worktree of its own, never in the repository's own checkout, and its brief and result file "
+@then("each worker worked in a worktree of its own, never in the repository's own checkout, and its brief and result "
       "are under .shop/scratch/ there")
 def own_worktrees(repo):
     started = starts(repo)
@@ -92,8 +92,8 @@ def own_worktrees(repo):
             assert path.startswith(os.path.join(c["cwd"], ".shop/scratch") + os.sep), (path, c["cwd"])
 
 
-@then("the implementer's brief also names the plugin's scripts directory, the initiative's base commit, its worktree and "
-      "its branch work/w1, and the suite record work run made there")
+@then("the implementer's brief also names the plugin's scripts directory, the initiative branch's base, its worktree and "
+      "its branch work/w1, and how the whole suite `work run` ran there ended")
 def implementer_brief(repo):
     c = [c for c in starts(repo) if c["agent"] == "shopsystem-bdd:bdd-implementer"][0]
     lines = dict(line.split(": ", 1) for line in c["brief"].splitlines() if re.match(r"^[A-Z][\w ]*: ", line))
@@ -116,7 +116,7 @@ def command_was(repo, command, done):
     assert events == [({"run": "ran", "refused": "refused"}[done], scripts_in(command))], events
 
 
-@then("each of w1's four workers was started with --plugin-dir the directory that holds work run's own scripts")
+@then("each of w1's four workers was started with --plugin-dir the directory that holds `work run`'s own scripts")
 def plugin_dir(repo):
     started = [c for c in starts(repo) if work_item_of(c) == "w1"]
     assert len(started) == 4, started
@@ -124,7 +124,7 @@ def plugin_dir(repo):
         assert option(c["argv"], "--plugin-dir") == str(SCRIPTS.parent), c["argv"]
 
 
-@then("each of w1's four workers ran in a worktree outside the plugin's directory")
+@then("each of w1's four workers worked in a worktree outside the plugin's directory")
 def outside_plugin(repo):
     started = [c for c in starts(repo) if work_item_of(c) == "w1"]
     assert len(started) == 4, started
@@ -214,7 +214,7 @@ def most_at_once(spans):
     return max(len([1 for s, e in spans.values() if s <= i < e]) for i, _ in spans.values())
 
 
-@then(parsers.parse("the implementers of {first} and {second} ran at the same time"))
+@then(parsers.parse("the implementers of {first} and {second} worked at the same time"))
 def ran_together(repo, context, first, second):
     spans = implementer_spans(repo)
     assert first in spans and second in spans, (spans, context["done"].stderr)
@@ -228,7 +228,7 @@ def implementers_one_at_a_time(repo, context):
     assert len(spans) >= 2 and most_at_once(spans) == 1, (spans, context["done"].stderr)
 
 
-@then("two implementers ran at the same time, and never three")
+@then("two implementers worked at the same time, and never three")
 def two_at_most(repo, context):
     spans = implementer_spans(repo)
     assert len(spans) >= 3 and most_at_once(spans) == 2, (spans, context["done"].stderr)
