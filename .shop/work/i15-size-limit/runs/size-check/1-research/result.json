@@ -1,0 +1,21 @@
+{
+  "status": "DONE",
+  "summary": "Research for size-check (analysis-tools r50-r52, `tools size`); notes in .shop/scratch/1-research/notes.md.\nAll three accepted scenarios (four test ids) are red at their first Given: `a Python project in git` has no step definition; the size Thens and `it tracks ...` steps are undefined too.\n`scripts/tools` has no `size` subcommand: probe P1 shows `tools size` and `tools size --limit 250` refused by argparse, rc 2 (invalid choice).\nNo CLAUDE.md exists in the checkout or its history, so the limit is only the r52 default (300); the agent prompts and skills that assume a CLAUDE.md limit are listed in notes part 3.\nNo existing test asserts the command list, so no test is impossible to keep (by search; tests-of not run, no map).\n`size` would skip probed(): the Python-project gate and the interpreter-runs check (probes P2, P3, run).\nDefect D1: `check --base` splits changed paths on whitespace (tools_check.py:16); `src/my cart.py` is checked as `src/my` and `cart.py`.\nFile set: scripts/tools, new scripts/tools_size.py, tests/scenarios/test_analysis_tools.py, new analysis_tools_size_steps.py, analysis_tools_project.py (put() commits untracked files too).\nTracked Python files over 300 lines today: tests/scripts/test_plan.py 766, test_measure.py 700, scripts/measure 644, scripts/plan 423; `tools size` on this repo would fail.\nOpen questions: CLAUDE.md absence, and size's behaviour for non-Python projects, no git, deleted tracked files and bad --limit values.",
+  "fileset": [
+    "scripts/tools",
+    "scripts/tools_size.py",
+    "scripts/tools_env.py",
+    "tests/scenarios/test_analysis_tools.py",
+    "tests/scenarios/analysis_tools_size_steps.py",
+    "tests/scenarios/analysis_tools_project.py",
+    "agents/architecture-reviewer.md",
+    "agents/bdd-branch-reviewer.md",
+    "agents/bdd-task-reviewer.md",
+    "agents/bdd-implementer.md",
+    "agents/code-scout.md"
+  ],
+  "questions": [
+    "CLAUDE.md does not exist in the checkout or its git history, yet the work-item's file set and the agent prompts assume it states a size limit. Should the plan create CLAUDE.md with the module map and the limit, or leave the r52 default of 300 as the only limit?",
+    "r50-r52 do not say what `tools size` does in a non-Python project, outside git, with a tracked file deleted in the working tree, or with --limit 0, a negative or a non-number. Which should the plan pick?"
+  ]
+}

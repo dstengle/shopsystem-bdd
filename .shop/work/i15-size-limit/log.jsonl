@@ -1,0 +1,3 @@
+{"time": "2026-10-21T00:11:15+00:00", "work-item": "size-check", "stage": "research", "agent": "code-scout", "session": "b9554f18-5c8a-4719-bf9e-e02000fbfe05", "event": "start"}
+{"time": "2026-10-21T00:15:09+00:00", "work-item": "size-check", "stage": "research", "agent": "code-scout", "session": "b9554f18-5c8a-4719-bf9e-e02000fbfe05", "event": "end"}
+{"time": "2026-10-21T00:15:09+00:00", "work-item": "size-check", "before": "drafted", "after": "researched", "by": "work run"}
