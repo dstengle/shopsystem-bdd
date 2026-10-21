@@ -1,0 +1,19 @@
+{
+  "status": "DONE",
+  "summary": "Plan for size-check (analysis-tools r50-r52, `tools size`) is in plan.md.\nThe scenarios are red because `a Python project in git`, the tracks, untracked and prints steps are undefined, and `tools` has no `size` subcommand (rc 2).\nThe change: a size subcommand with --limit (default 300) in scripts/tools plus its contract line; a new scripts/tools_size.py; a new analysis_tools_size_steps.py, imported by test_analysis_tools.py.\nD1: create CLAUDE.md with the module map and the 300 limit. The work-item settles this.\nD2: size skips probed(), so a project with no Python file prints nothing and exits 0 (r50/r51).\nD3: outside git, size refuses (r49). D4: a non-integer --limit exits 2.\nD5: paths come from git NUL-separated, avoiding the whitespace split in check --base.\nThe agent prompts are edited to run `tools size --limit <CLAUDE.md limit>`. tools_env.py is dropped from the file set.\nNo existing test breaks.\nOpen cases: a deleted tracked file, --limit 0 or negative, and the four files over 300 in this repo today.",
+  "plan": "/tmp/work-run-i15-size-limit-l6t3hnm6/size-check-2-plan/.shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/tools",
+    "scripts/tools_size.py",
+    "tests/scenarios/test_analysis_tools.py",
+    "tests/scenarios/analysis_tools_size_steps.py",
+    "tests/scenarios/analysis_tools_project.py",
+    "CLAUDE.md",
+    "agents/architecture-reviewer.md",
+    "agents/bdd-branch-reviewer.md",
+    "agents/bdd-task-reviewer.md",
+    "agents/bdd-implementer.md",
+    "agents/code-scout.md"
+  ],
+  "questions": []
+}
