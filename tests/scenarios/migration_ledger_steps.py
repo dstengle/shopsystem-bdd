@@ -164,7 +164,14 @@ def _(old, value):
     old.commit()
 
 
-@then(parsers.parse("spec/decisions/{name}.md's status is {status}"))
+@then(parsers.re(r"spec/decisions/(?P<first>[\w-]+)\.md's and spec/decisions/(?P<second>[\w-]+)\.md's status is `?(?P<status>\w+)`?$"))
+def _(old, first, second, status):
+    for name in (first, second):
+        data, _ = front(old, "spec/decisions/%s.md" % name)
+        assert data["status"] == status, (name, data["status"])
+
+
+@then(parsers.re(r"spec/decisions/(?P<name>[\w-]+)\.md's status is `?(?P<status>\w+)`?$"))
 def _(old, name, status):
     data, _ = front(old, "spec/decisions/%s.md" % name)
     assert data["status"] == status, data["status"]
