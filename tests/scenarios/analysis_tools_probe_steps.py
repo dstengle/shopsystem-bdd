@@ -1,6 +1,7 @@
 """analysis-tools' steps for finding the interpreter and probing and installing the tools (r1-r7, r18-r22)."""
 import pathlib
 import re
+import subprocess
 import sys
 
 import pytest
@@ -60,6 +61,15 @@ def venv_missing(repo, context, tools):
 def no_venv_missing(repo, context, tools):
     a_python_project(repo, context)
     missing_tools(context, tools, venv=False)
+
+
+@given("a Python project whose .venv is a virtualenv made from the interpreter running the script, without jedi")
+def venv_from_running(repo, context):
+    """A real virtualenv: its bin/python is a symlink to the running interpreter, but its packages are its own."""
+    a_python_project(repo, context)
+    subprocess.run([sys.executable, "-m", "venv", "--without-pip", str(repo / ".venv")], check=True)
+    context["discover"] = True
+    context["refused_by"] = str(repo / ".venv" / "bin" / "python")
 
 
 @given(parsers.parse("a Python project whose interpreter is missing {tools}"))

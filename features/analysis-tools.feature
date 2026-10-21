@@ -298,6 +298,14 @@ Feature: Analysis tools
     Then the command is refused because jedi is missing from the interpreter
     And it says to run `tools install`
 
+  @r1 @r17
+  Scenario: a .venv whose python links to the running interpreter is still the one used
+    Pins that tools runs under the project's virtualenv, and so reads its packages, even when its python is a link to the interpreter running the script.
+    Given a Python project whose .venv is a virtualenv made from the interpreter running the script, without jedi
+    When the agent runs `tools refs total`
+    Then the command is refused because jedi is missing from the interpreter
+    And it says to run `tools install`
+
   @r49
   Scenario: tests-of on a file that does not exist is refused
     Pins that an absent file is named, not treated as untested.

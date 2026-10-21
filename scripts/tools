@@ -59,8 +59,12 @@ exit status: 0 success, 1 something is missing, refused or reported, 2 bad usage
 
 
 def under(python, argv):
-    """Run this script again under the project's interpreter, where the tools are."""
-    if os.path.realpath(python) != os.path.realpath(sys.executable):
+    """Run this script again under the project's interpreter, where the tools are.
+
+    Paths are compared as given, not resolved: a virtualenv's python is a link to its base interpreter, but it
+    reads its own packages. The marker stops a second re-run when the interpreter reports another path."""
+    if os.path.abspath(python) != os.path.abspath(sys.executable) and os.environ.get("TOOLS_UNDER") != python:
+        os.environ["TOOLS_UNDER"] = python
         os.execv(python, [python, os.path.abspath(__file__)] + argv)
 
 

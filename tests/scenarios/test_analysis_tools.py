@@ -51,7 +51,7 @@ def exits(run, repo, context, outside, code):
 @then(parsers.parse("the command is refused because {tool} is missing from the interpreter"))
 def refused_missing_tool(context, tool):
     assert context["result"].returncode == 1
-    assert context["result"].stderr == "tools: %s is missing from %s: tools install\n" % (tool, context["python"])
+    assert context["result"].stderr == "tools: %s is missing from %s: tools install\n" % (tool, context.get("refused_by") or context["python"])
 
 
 @then("it says to run `tools install`")
