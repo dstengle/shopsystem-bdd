@@ -9,6 +9,7 @@ import tools_check  # noqa: E402
 import tools_env  # noqa: E402
 import tools_map  # noqa: E402
 import tools_refs  # noqa: E402
+import tools_size  # noqa: E402
 
 CONTRACT = """\
 contract:
@@ -48,6 +49,10 @@ contract:
     import-linter, over the paths given or the Python files changed since
     --base, each under its own heading. A tool that is missing is named
     under its heading, not skipped in silence. Exit 1 when any reports.
+  - size prints each tracked Python file (a .py name or a python shebang) of
+    more than --limit lines (300 without it) as '<path> <lines>', counted as
+    the working tree has them, tests included. Exit 1 when any is printed. It
+    needs no interpreter and no tools, only git.
 
 exit status: 0 success, 1 something is missing, refused or reported, 2 bad usage.
 """
@@ -85,6 +90,9 @@ def main():
     check.add_argument("paths", nargs="*")
     check.add_argument("--base")
     check.set_defaults(run=tools_check.cmd_check)
+    size = sub.add_parser("size")
+    size.add_argument("--limit", type=int, default=tools_size.DEFAULT_LIMIT)
+    size.set_defaults(run=tools_size.cmd_size)
     args = parser.parse_args()
     try:
         if getattr(args, "under", False):
