@@ -18,8 +18,11 @@ def indent_of(line):
 def write_checked(edits):
     """edits: {path: lines}. Validate every file parses, then write."""
     texts = {p: "\n".join(lines) for p, lines in edits.items()}
-    for text in texts.values():
-        Feature(text)
+    for path, text in texts.items():
+        try:
+            Feature(text)
+        except Refused as why:
+            raise Refused("%s: the edit would leave it unreadable: %s" % (os.path.relpath(path), why))
     for path, text in texts.items():
         with open(path, "w") as handle:
             handle.write(text)

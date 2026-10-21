@@ -17,11 +17,13 @@ def head():
 
 def cmd_map(args):
     python, _ = interpreter(args)
-    os.makedirs(os.path.dirname(MAP), exist_ok=True)
-    for name in os.listdir(os.path.dirname(MAP)):
-        if name.startswith("coverage"):
-            os.remove(os.path.join(os.path.dirname(MAP), name))
-    env = dict(os.environ, COVERAGE_FILE=os.path.abspath(MAP))
+    here = os.path.dirname(MAP)
+    os.makedirs(here, exist_ok=True)
+    made = MAP + ".new"  # the last map stays until this run has made one (r49: a refusal changes nothing)
+    for name in os.listdir(here):
+        if name.startswith("coverage.new"):
+            os.remove(os.path.join(here, name))
+    env = dict(os.environ, COVERAGE_FILE=os.path.abspath(made))
     # In one process, so each test's coverage context is exact: `-n 0` where the interpreter has pytest-xdist (a
     # `-p no:xdist` would leave a pytest.ini's `-n auto` an unknown option), nothing where it has not.
     serial = ["-n", "0"] if subprocess.run([python, "-c", "import xdist"], capture_output=True).returncode == 0 else []
@@ -29,8 +31,12 @@ def cmd_map(args):
                "--cov-report="] + args.pytest
     done = subprocess.run(command, env=env, capture_output=True, text=True)
     lines = done.stdout.strip().splitlines()
-    if not os.path.isfile(MAP):
+    if not os.path.isfile(made):
         raise Refused("no map was made by: %s\n%s" % (" ".join(command), "\n".join((lines + done.stderr.splitlines())[-6:])))
+    for name in os.listdir(here):
+        if name.startswith("coverage") and not name.startswith("coverage.new"):
+            os.remove(os.path.join(here, name))
+    os.replace(made, MAP)
     with open(MAP + ".at", "w") as handle:
         handle.write(head() + "\n")
     print("%s\nmap: %s, at %s" % (lines[-1] if lines else "", MAP, head()))
@@ -106,6 +112,9 @@ def cmd_tests_of(args):
 
 def cmd_untested(args):
     data, at = read_map()
+    for path in args.files:
+        if not os.path.isfile(path):
+            raise Refused("%s is not a file" % path)
     count = 0
     for path in args.files:
         lines = executed(data, path)

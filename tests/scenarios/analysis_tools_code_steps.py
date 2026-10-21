@@ -228,3 +228,9 @@ def linter_not_run(context):
 @then("under the ruff heading tools says it is clean")
 def ruff_clean(context):
     assert under_heading(context["result"].stdout, "ruff") == "clean"
+
+
+# r49
+@then("it says nothing in the project is defined as nowhere")
+def says_nothing_defined(context):
+    assert context["result"].stderr == "tools: nothing in the project is defined as nowhere\n"

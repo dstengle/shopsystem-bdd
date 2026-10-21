@@ -124,6 +124,24 @@ def leaves_no_map(repo, context):
     interpreter(context).update(pytest="noop", pytest_out="collected nothing at all")
 
 
+@given(parsers.parse("a Python project with a map made at commit {label}"))
+def map_files_at(repo, context, label):
+    a_python_project(repo, context)
+    put(repo, {MAP: "the map's data", MAP + ".at": label + "\n"})
+    context["map_files"] = {MAP: "the map's data", MAP + ".at": label + "\n"}
+
+
+@given("running the suite under coverage now leaves no map")
+def now_leaves_no_map(context):
+    interpreter(context).update(pytest="noop", pytest_out="collected nothing at all")
+
+
+@then(parsers.parse("the map made at commit {label} is as it was"))
+def map_kept(repo, context, label):
+    assert {path: (repo / path).read_text() for path in context["map_files"]} == context["map_files"]
+    assert sorted(p.name for p in (repo / MAP).parent.iterdir()) == ["coverage", "coverage.at"]
+
+
 @given(parsers.parse("a map made at commit {label} in which no test executed {count:d} functions in src/cart.py"))
 def map_with_lost(run, repo, context, label, count):
     real()

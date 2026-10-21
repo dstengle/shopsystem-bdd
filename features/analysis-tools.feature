@@ -39,7 +39,7 @@ Feature: Analysis tools
     And it exits 1
 
   @r4
-  Scenario: probe with --log prints the one line to give plan log
+  Scenario: probe with --log prints the one line for a researcher's notes
     Pins that the log form is a single Probe line and nothing else.
     Given a Python project
     When the agent runs `tools probe --log`
@@ -154,6 +154,7 @@ Feature: Analysis tools
     Given a Python project in which nothing is defined as `nowhere`
     When the agent runs `tools refs nowhere`
     Then it exits 1
+    And it says nothing in the project is defined as nowhere
 
   @r16
   Scenario Outline: check runs each tool under its own heading and fails when any reports
@@ -255,6 +256,15 @@ Feature: Analysis tools
     Then the command is refused because no map was made
     And it names the command it ran and the end of its output
 
+  @r49
+  Scenario: map that makes no map keeps the map made before
+    Pins that a refused map changes nothing: the last map and its commit stay.
+    Given a Python project with a map made at commit abc1234
+    And running the suite under coverage now leaves no map
+    When the agent runs `tools map`
+    Then it exits 1
+    And the map made at commit abc1234 is as it was
+
   @r13
   Scenario Outline: untested prints each function with its place, the count and the commit
     Pins untested's report and that finding untested functions is not a failure.
@@ -312,6 +322,15 @@ Feature: Analysis tools
     Given a map has been made
     And the project has no file src/gone.py
     When the agent runs `tools tests-of src/gone.py`
+    Then the command is refused
+    And it names src/gone.py
+
+  @r49
+  Scenario: untested on a file that does not exist is refused
+    Pins that an absent file is named, not read as a file with no functions.
+    Given a map has been made
+    And the project has no file src/gone.py
+    When the agent runs `tools untested src/gone.py`
     Then the command is refused
     And it names src/gone.py
 

@@ -19,8 +19,8 @@ contract:
     said. Only Python projects are known: any other gets one line saying so
     and exit 1, and agents then search by text and say that they did.
   - probe prints one line a tool, '<tool> <version>' or '<tool> missing: <what
-    it is for>', and the interpreter. --log prints the one line to give plan
-    log: 'Probe: tools -> ...'. Exit 1 when any is missing.
+    it is for>', and the interpreter. --log prints the one line for a
+    researcher's notes: 'Probe: tools -> ...'. Exit 1 when any is missing.
   - install runs '<interpreter> -m pip install <package>' for each missing
     tool and nothing else: it edits no dependency file. It refuses an
     interpreter that is not a virtualenv. For each tool still missing it
