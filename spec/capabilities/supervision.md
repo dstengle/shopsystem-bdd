@@ -29,13 +29,24 @@ from what running it shows.
 - [r11] **When** `work run` starts a worker, `work run` shall give the worker this plugin's own directory as its plugin.
 - [r12] **When** `work run` starts a worker whose agent lists skills, `work run` shall allow the worker to load each of those skills.
 - [r13] `work run` shall give no worker a bare Write or Edit tool.
-- [r14] `work run` shall allow a worker's Bash only `python3 -m pytest`, the plugin's scripts by path, and the git commands its stage needs.
+- [r14] `work run` shall allow a worker's Bash only `python3 -m pytest`, the plugin's scripts its stage runs, by path, and the git commands its stage needs.
 - [r15] **When** `work run` removes a worker's worktree, `work run` shall first copy each file the worker's result names into the run directory.
 - [r16] **When** a researcher's result gives `DONE` with questions, `work run` shall put those questions into the planner's brief.
 - [r17] **When** `work run` writes a worker's brief, `work run` shall tell the worker that it starts in its worktree and never changes directory.
 - [r18] **When** `work run` merges a work-item's branch, `work run` shall delete that branch.
 - [r19] **When** `work run` starts a researcher, `work run` shall give it the work-item's file set and accepted scenarios and a limit of 25 turns.
 - [r20] **While** two ready work-items have file sets that do not overlap, `work run` shall run them at the same time, two at most, merging one at a time.
+- [r21] **If** `work run` is started by a worker of another `work run`, then `work run` shall refuse, saying so.
+- [r22] `work run` shall give every pytest run it starts, and every worker's, the plugin's option `--work-item <name>`, which selects the scenarios the work-item accepts.
+- [r23] **Where** the repository is inside the plugin's own directory, `work run` shall make each worker's worktree in a temporary directory outside it.
+- [r24] **When** `work run` starts an implementer, `work run` shall first run the whole suite in the implementer's worktree and put its result in the brief.
+- [r25] **When** `work run` writes a worker's brief, `work run` shall name in it the plugin's scripts directory, the initiative's base commit, the worker's worktree and its branch.
+- [r26] **When** `work run` moves a work-item to `awaiting-ruling`, `work run` shall keep the work-item's branch.
+- [r27] **When** every work-item of the initiative is `green` or `withdrawn`, `work run` shall start a `claude -p` session of `bdd-branch-reviewer` over the initiative branch from its base, given one brief file.
+- [r28] **If** the main checkout's `.shop/work/` differs from its last commit when a worker ends, then `work run` shall put it back and move the work-item to `awaiting-ruling`, naming each file.
+- [r29] **Where** `.shop/delivery.toml` gives `[tests]`, `work run` shall run those commands in place of its own tests.
+- [r30] **Where** `.shop/delivery.toml` gives a stage's `[allowed_tools]`, `work run` shall give that stage's worker that list in place of its own, less any bare Write or Edit.
+- [r31] **When** a planner's result gives `DONE` with a `fileset`, `work run` shall write that file set into the work-item as `fileset:` as it moves it to `planned`.
 
 ## Implementation, may change
 - Tests run in parallel with pytest-xdist (`-n auto`), for the work-item's tests and the suite alike (design-decision/plugin-takes-the-dependencies-it-needs).
@@ -51,5 +62,5 @@ from what running it shows.
 
 ## Not yet
 - Retries, continuations after `PARTIAL`, refused claims, the guards between
-  work-items, fix work-items and re-reviews, the branch review, time and spending limits and budgets, the lock,
+  work-items, fix work-items and re-reviews, time and spending limits and budgets, the lock,
   interruption, `work step`, and the full log of each session's cost (see skeleton-notes.md).

@@ -21,7 +21,7 @@ test; it edits only the feature files, test modules and directory it is pointed 
 - [r52] **Where** `--file <path>` is given, the `features` script shall look for the scenario's title in that file only, whatever the command.
 - [r46] **If** `features` cannot do what it was asked, then `features` shall exit non-zero, say why on stderr, and change nothing.
 - [r2] **If** a feature file contains a `Rule:` block outside a docstring, or an edit would leave one, then `features` shall refuse, naming the file, and leave every file as it was.
-- [r35] **If** the title given to `features tag`, `move`, `deprecate` or `retire` is in no file, is in several without `--file`, is not exactly once in the file `--file` names, or `--file` names a file outside `--dir`, then `features` shall refuse, naming each file that has the title, and change no file.
+- [r35] **If** the title given to `features tag`, `move`, `deprecate` or `retire` is in no file, is in several without `--file`, is not exactly once in the file `--file` names, or `--file` or `--to` names a file outside `--dir`, then `features` shall refuse, naming each file that has the title, and change no file.
 
 ### Reading
 - [r4] **When** `features count --by-tag` is run, `features` shall print the number of scenarios with each tag and a total of every scenario, those with no tag included, counting a Scenario Outline once per Examples row and giving each scenario its feature's tags and its Examples table's tags.

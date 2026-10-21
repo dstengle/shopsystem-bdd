@@ -47,6 +47,7 @@ problem names the file.
 | [r54] | v_t3 | a word one term lists after `Not:` is another term of the context, or the term itself |
 | [r103] | v_e1 | a Behaviour line is in none of EARS's patterns, combines their clauses in an order other than Where, While, then When or If, or has an If clause with no then |
 | [r104] | v_e2 | a Behaviour line has more than one "shall" or more than one sentence |
+| [r106] | v_w4 | a work-item that is not `withdrawn` has no `accepts` and no `check` |
 | [r9] | unresolved | a scenario names a requirement its capability does not have, or a capability rests on a decision that does not exist |
 | [r22] | unresolved | a list names a reference that is not `<capability>#r<n>` (`#behaviour/r<n>` included), with the capability written `capability/<context path>/<name>`, `capability/<name>` or `<name>`, or a range `#r<a>-r<b>` with a greater than b |
 | [r23] | unresolved | a capability-proposal adds or removes an id its capability neither has nor lists as retired, or removes a retired id while not `merged`, `formulated` or `withdrawn`; a proposal that is may name a retired id in `adds`, `changes` or `removes`, one it removes read as that requirement |
@@ -55,13 +56,13 @@ problem names the file.
 | [r25] | file problem | `spec/index.md` is missing or has no `id`; a capability's `id` is not `capability/<context path>/<file name>`, it has no `## Behaviour` section, its `retired` lists an entry that is neither `r<n>` nor a number, or its frontmatter has `formulated_as` |
 | [r46] | file problem | a node's `id` is not `<kind>/<context path>/<name>` with its own kind, or `spec/index.md`'s is not `bounded-context/<context path>` |
 | [r26] | file problem | a feature file is not `features/<name>.feature` for a capability `<name>`, two of its scenarios not tagged `@deprecated` share a title, or a scenario is tagged `@holding` |
-| [r27] | file problem | a work directory has no `initiative.md` (the directory named, not the file), an initiative or part has no `id`, a part's kind is not a part kind, a status is missing or not in its kind's lifecycle, an initiative's priority is not a number or its date not `YYYY-MM-DD`, or a work-item accepts a requirement no scenario names yet |
+| [r27] | file problem | a work directory has no `initiative.md` (the directory named, not the file), an initiative or part has no `id`, a part's kind is not a part kind, a status is missing or not in its kind's lifecycle, an initiative's priority is not a number or its date not `YYYY-MM-DD`, or a work-item that is not `withdrawn` accepts a requirement no scenario names yet |
 | [r29] | file problem | a decision has no `id` or no `## Decision` section, a record with an `id` has a kind that is not a record kind, a frontmatter value is written as a folded or literal block, or one id names nodes of two kinds |
 | [r49] | file problem | a bullet in `spec/index.md`'s `## Glossary` is not of the form r48 gives |
 | [r61] | file problem | the repository has `spec/decisions.md`, or a `decisions/`, `work/` or `records/` directory at its root, each named with `scripts/migrate` |
 
 ### Reading
-- [r19] `model` shall read, under `--root` (default the current directory), only `spec/index.md`, `spec/capabilities/*.md`, every `*.feature` under `features/`, every `spec/decisions/*.md` but `index.md`, `.shop/work/<initiative>/*.md`, `.shop/records/observations.md` and any other Markdown under `.shop/records/` whose frontmatter has an `id`.
+- [r19] `model` shall read, under `--root` (default the current directory), only `spec/index.md`, `spec/capabilities/*.md`, every `*.feature` under `features/`, every `spec/decisions/*.md` but `index.md` and `README.md`, `.shop/work/<initiative>/*.md`, `.shop/records/observations.md` and any other Markdown under `.shop/records/` whose frontmatter has an `id`.
 - [r20] `model` shall read each `@r<n>` tag of a scenario not tagged `@deprecated` in `features/<capability name>.feature`, its own or its feature's, as a requirement of that capability the scenario names.
 - [r21] `model` shall read a reference written `<name>#r<n>` or `capability/<name>#r<n>` as a requirement of the capability `capability/<context path>/<name>` in the bounded context, the field fixing the kind where it is written `<name>`.
 - [r18] `model` shall read `<capability>#r<a>-r<b>` in a proposal's or work-item's list as every id from a to b.

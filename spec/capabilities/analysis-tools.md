@@ -18,7 +18,7 @@ file; it reports what the tools found and names a tool that is missing rather th
 ## Behaviour
 - [r1] **When** `tools` needs an interpreter, `tools` shall use the first of these, in this order: the one `--python` gives, used as given; `.venv/bin/python` under the current directory, if that file exists; `venv/bin/python` under the current directory, if that file exists; `$VIRTUAL_ENV/bin/python`, if that file exists, wherever `$VIRTUAL_ENV` points; and else the interpreter running the script.
 - [r49] **If** `tools` cannot do what it was asked, then `tools` shall exit non-zero, say why, and change nothing.
-- [r17] **If** a tool that `tools check`, `tools tests-of`, `tools untested` or `tools refs` needs is missing, then `tools` shall name it as missing rather than skip it.
+- [r17] **If** a tool that `tools check`, `tools tests-of`, `tools untested` or `tools refs` needs is missing, then `tools` shall name it as missing rather than skip it, and exit 1.
 
 ### Tools
 - [r3] **When** `tools probe` is run, `tools` shall print each tool with its version, or as missing with what it is for, then the interpreter's path and whether it came from `--python`, the project's virtualenv or neither, and exit 1 when any tool is missing.

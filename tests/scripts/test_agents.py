@@ -55,15 +55,14 @@ class RoleBoundaries(unittest.TestCase):
     def test_r4_implementer_skills_include_red_green(self):
         self.assertIn("shopsystem-bdd:bdd-red-green", self.named("bdd-implementer")["skills"])
 
-    @unittest.expectedFailure
-    def test_r4_implementer_has_no_skill_tool(self):
-        # agents/bdd-implementer.md has had the Skill tool since 3ab836c (delivery-5: supervision r12 needs it).
-        # r4 says it has none; the line waits on the person's ruling, and this check flips when it is made.
-        self.assertNotIn("Skill", self.named("bdd-implementer")["tools"])
+    def test_r4_implementer_has_the_skill_tool(self):
+        # A `claude -p --agent` session does not preload `skills:`; the implementer loads them with Skill (3ab836c).
+        self.assertIn("Skill", self.named("bdd-implementer")["tools"])
 
     def test_r5_each_agent_names_its_model(self):
         expected = dict.fromkeys(SPEC_WRITERS + ("bdd-planner",) + REVIEWERS, "opus")
-        expected.update({"bdd-implementer": "sonnet", "initiative-round": "sonnet", "code-scout": "haiku"})
+        expected.update({"bdd-implementer": "sonnet", "initiative-round": "sonnet", "spec-checker": "sonnet",
+                         "code-scout": "haiku"})
         for name, model in expected.items():
             with self.subTest(agent=name):
                 self.assertEqual(self.named(name).get("model"), model)

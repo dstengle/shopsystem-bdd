@@ -4,7 +4,7 @@ title: Red-green
 narrator: the supervisor that started the implementer
 group: service
 rests_on: [design-decision/feature-files-read-only-in-red-green, design-decision/plans-list-the-tests-they-break, design-decision/worker-results-are-files, design-decision/the-file-set-is-the-claim, design-decision/work-item-lifecycle-as-run]
-retired: [r4, r8, r12, r13, r14, r19]
+retired: [r4, r8, r12, r13, r14, r19, r37]
 ---
 
 # Red-green
@@ -27,15 +27,14 @@ a scenario should have said, and it never moves a work-item: `work run` reads it
 - [r11] **When** the plan contains code, the implementer shall not paste it.
 - [r15] **If** the implementer cannot do what its brief asks, then the implementer shall stop with the result `NEEDS_CONTEXT`, saying why.
 - [r16] The implementer shall end every run with a result whose status is one of `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `HAND-BACK`, `NEEDS_CONTEXT`.
-- [r17] **When** the work needs a file outside the work-item's file set, the implementer shall claim it with `work claim` before editing it.
-- [r37] **If** the implementer's claim of a file is refused, then the implementer shall stop `BLOCKED` at a green commit, naming the file and the work-item whose claim has it.
+- [r17] **When** the work needs a file outside the work-item's file set, the implementer shall name the file in its report under `## Outside the file set` before editing it.
 - [r18] The implementer shall work only in the worktree and on the branch its brief names, pushing, merging, rebasing and resetting nothing.
 
 ## Implementation, may change
 - The cycle: run one scenario red, write the step definitions it needs, the least code, run the work-item's
   scenarios (`--work-item <name>` where `work_expectations.py` is registered) and the scenario's module, refactor,
   commit, with `--work-item`; the whole suite is `work run`'s, run once before it merges (supervision r4).
-- The implementer has no Skill tool; `bdd-red-green` is loaded through its `skills` field. Sonnet by default.
+- The implementer loads `bdd-red-green`, listed in its `skills` field, with the Skill tool (role-boundaries r4). Sonnet by default.
 - A continuation reads the report first and takes the next part it names; a fix work-item reads its findings and
   fixes those and nothing else.
 - A `HAND-BACK` result says which scenarios are green and which are red. When a work-item's scenarios are green,
@@ -45,4 +44,4 @@ a scenario should have said, and it never moves a work-item: `work run` reads it
   not in the implementer's context.
 
 ## Not yet
-- None.
+- Claiming a file outside the work-item's file set with `work claim`, and stopping `BLOCKED` at a green commit, naming the file and the work-item whose claim has it, when the claim is refused (was r37; a refused claim cannot happen while there is no `work claim`).
