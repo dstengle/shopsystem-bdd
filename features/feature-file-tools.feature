@@ -80,7 +80,7 @@ Feature: Feature file tools
   Scenario Outline: retagging a title that is not in exactly one file is refused
     The title must pick out one file; otherwise nothing is changed and every file that has it is named.
     Given the title "Apply a code" is in <files with it>
-    When the agent runs features tag "Apply a code" slice-2
+    When the agent runs features tag "Apply a code" r7
     Then the command is rejected because the title is not in exactly one file
     And the refusal names <files named>
     And no file is changed
