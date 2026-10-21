@@ -121,7 +121,7 @@ Tools the skills and agents run:
 - **template**: standing text in a skill or an agent definition that a session fills with input to start another session. Not: boilerplate.
 - **transition**: one change of a work-item's status, written by `work` and logged in `log.jsonl`. Not: move.
 - **work-item**: the unit of delivery under a capability-proposal, complete when the scenarios it accepts or its check pass, taken through its stages by `work run`.
-- **worker**: a session `work run` starts with `claude -p` for one stage of one work-item, as that stage's agent. Not: job.
+- **worker**: a session `work run` starts with `claude -p` for one stage of one work-item, as that stage's agent.
 
 ## Where things live
 
