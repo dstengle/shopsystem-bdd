@@ -79,4 +79,6 @@ guesses when its inputs are not what it knows.
 - Exit status: 0 success, 1 refused, 2 bad usage.
 
 ## Not yet
-None.
+- Measuring on the final layout: the lines above still name the living plan, `docs/superpowers/plans/archive` and
+  `docs/superpowers/measurements/`, and `scripts/measure` follows them, so on a migrated repository its defaults
+  find nothing. Initiative i12 (initiative/i12, proposed) measures an initiative's delivery under `.shop/` instead.

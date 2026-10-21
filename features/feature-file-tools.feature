@@ -80,7 +80,7 @@ Feature: Feature file tools
   Scenario Outline: retagging a title that is not in exactly one file is refused
     The title must pick out one file; otherwise nothing is changed and every file that has it is named.
     Given the title "Apply a code" is in <files with it>
-    When the agent runs features tag "Apply a code" slice-2
+    When the agent runs features tag "Apply a code" r7
     Then the command is rejected because the title is not in exactly one file
     And the refusal names <files named>
     And no file is changed
@@ -391,6 +391,14 @@ Feature: Feature file tools
     Given a feature file features/cart.feature with a scenario "Apply a code"
     When the agent runs features deprecate "Apply a code" --for-removal
     Then it prints features/cart.feature and "Apply a code (deprecated)"
+
+  @r19 @r46
+  Scenario: deprecating for a new title written over two lines is refused
+    A title is one line: a line break in --for would add a line to the scenario besides its Deprecated for: line.
+    Given a feature file features/cart.feature with a scenario "Apply a code"
+    When the agent deprecates "Apply a code" for a new title written over two lines
+    Then the command is rejected because a title is one line
+    And no file is changed
 
   @r21
   Scenario Outline: the deprecated list flags a deprecated scenario it cannot place

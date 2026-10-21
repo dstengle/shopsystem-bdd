@@ -11,7 +11,7 @@ by: "0.14.0"
 
 ## Decision
 
-Formulation runs the old scenario alone before replacing it; if it passes, `features deprecate` gives it `@deprecated`, " (deprecated)" on its title and a `Deprecated for:` line, and the scenario stays in the suite. The task that turns its replacement green lists it under `Retires:` and removes it with `features retire`.
+Formulation runs the old scenario alone before replacing it; if it passes, `features deprecate` gives it `@deprecated`, " (deprecated)" on its title and a `Deprecated for:` line, and the scenario stays in the suite. The work-item that turns its replacement green lists it under `Retires:` and removes it with `features retire`.
 
 ## Context
 

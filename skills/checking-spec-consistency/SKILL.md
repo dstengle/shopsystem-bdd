@@ -23,11 +23,11 @@ A repository whose Behaviour lines have no `[r<n>]` ids is migrated to ids first
 
 Both modes start here. Choose the drafts path `.shop/scratch/drafts/<date>-consistency/`; the check is `round-1/`.
 
-1. **State the count.** Count the capability files under `spec/capabilities/`. Before anything else, tell the person: "This check runs `model check`, then dispatches <n + 1> spec-checkers: one for each of the <n> capabilities and one for the whole context." Then note `git status --porcelain`.
-2. **Run `scripts/model check --limit 100000`**, with no other argument, and keep its output as `<drafts path>/round-1/model-check.txt`. Its `v_t1`, `v_t2` and `v_t3` rows are findings; rows of any other rule are not this check's findings. Exit 2 with a message that names clingo and `pip install clingo` means clingo is missing: the findings file says that `v_t*` was not checked, and the check goes on. Any other exit 2 is a failed run: stop and report it.
+1. **Run `scripts/model check --limit 100000`** before anything else, with no other argument, and keep its output as `<drafts path>/round-1/model-check.txt`. Its `v_t1`, `v_t2` and `v_t3` rows are findings; rows of any other rule are not this check's findings. Exit 2 with a message that names clingo and `pip install clingo` means clingo is missing: the findings file says that `v_t*` was not checked, and the check goes on. Any other exit 2 is a failed run: stop and report it.
+2. **State the count.** Count the capability files under `spec/capabilities/`. Before dispatching anything, tell the person: "This check has run `model check`, and now dispatches <n + 1> spec-checkers: one for each of the <n> capabilities and one for the whole context." Then note `git status --porcelain`.
 3. **Dispatch** the spec-checkers, all in one message so they run together: the capability brief once for each capability, the context brief once. Describe each `consistency: check <capability>`, and the context's `consistency: check whole context`. Give them no other paths.
 4. **Wait for your agents.** Their finishing is not certain to wake you, and a turn ended while one runs leaves the check unfinished. After dispatching, wait in one shell command for every reply file to exist, looking every few seconds, for up to nine minutes; run it again if it times out with agents still working. Do nothing else meanwhile, and do not end your turn. An agent with no reply file after two waits is dispatched again, once; after that, the check stops and names it.
-5. **Check the porcelain.** `git status --porcelain` matches the porcelain noted in step 1, but for entries under the drafts path: an agent that wrote outside it goes back with those files removed.
+5. **Check the porcelain.** `git status --porcelain` matches the porcelain noted in step 2, but for entries under the drafts path: an agent that wrote outside it goes back with those files removed.
 6. **Write the findings file**, `<drafts path>/findings.md`, from `model-check.txt` and the agents' findings files, in this order:
    - `## Terms`: one `### <word> / <word>` heading per term cluster, the words one thing goes by or the thing one word names, with every finding about them: the `v_t*` rows of its words, one word used for two things, two words used for one thing, a thing with no glossary entry.
    - `## Lines with two readings`: each line, quoted, with its two readings.
@@ -36,7 +36,7 @@ Both modes start here. Choose the drafts path `.shop/scratch/drafts/<date>-consi
 
    A drift finding about a word goes under that word's term cluster. Number the findings `F1`, `F2` and on, across the file. Each finding names its ids (`capability/<name>#r<n>`, `features/<name>.feature:<title>`, `term/<term>`) and quotes the words. Two agents' findings about one thing are one finding.
 
-**Report mode ends here.** Reply to the person with the findings file's path and the count in each group. Nothing outside the drafts path changes and nothing is committed. If `.gitignore` lacks `.shop/scratch/`, say so and leave it.
+**Report mode ends here.** Remove `<drafts path>/round-1/`, so the findings file is the one file the check leaves. Reply to the person with the findings file's path and the count in each group. Nothing outside the drafts path changes and nothing is committed. If `.gitignore` lacks `.shop/scratch/`, say so and leave it.
 
 ## Fix Mode
 

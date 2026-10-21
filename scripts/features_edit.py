@@ -18,8 +18,11 @@ def indent_of(line):
 def write_checked(edits):
     """edits: {path: lines}. Validate every file parses, then write."""
     texts = {p: "\n".join(lines) for p, lines in edits.items()}
-    for text in texts.values():
-        Feature(text)
+    for path, text in texts.items():
+        try:
+            Feature(text)
+        except Refused as why:
+            raise Refused("%s: the edit would leave it unreadable: %s" % (os.path.relpath(path), why))
     for path, text in texts.items():
         with open(path, "w") as handle:
             handle.write(text)
@@ -81,6 +84,8 @@ def cmd_move(args, files):
 
 def cmd_deprecate(args, files):
     path, f, sc = locate(files, args.title, args)
+    if not args.removal and any(c in args.deprecated_for for c in "\r\n"):
+        raise Refused("the new title must be one line: %r" % args.deprecated_for)
     if "deprecated" in sc.tags:
         raise Refused("%r is already deprecated" % args.title)
     lines = list(f.lines)

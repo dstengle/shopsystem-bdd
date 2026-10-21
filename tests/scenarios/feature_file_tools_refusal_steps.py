@@ -34,6 +34,7 @@ def refusal_names(repo, context, names):
 @then("the edit is rejected because features could not read the result, and every file is as it was")
 def edit_rejected(repo, context):
     assert "Rule:" in rejected(context)
+    assert "features/cart.feature" in rejected(context)  # r2: naming the file
     assert snapshot(repo) == context["before"]
 
 
@@ -144,3 +145,8 @@ def rejected_outside(run, repo, context):
         for command in (("tag", "Apply a code", "r7"), ("deprecate", "Apply a code", "--for-removal"), ("retire", "Apply a code"),
                         ("move", "Apply a code", "--to", "features/codes.feature")):
             assert "outside" in refused(run, repo, *command, "--file", path)
+
+
+@then("the command is rejected because a title is one line")
+def rejected_two_line_title(context):
+    assert "one line" in rejected(context)

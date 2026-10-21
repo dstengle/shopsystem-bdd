@@ -38,8 +38,8 @@ fixed now becomes a fix work-item, and the rest an observation.
 - [r28] **If** a reviewer cannot do what its brief asks, then the reviewer shall hand back, saying why, and change nothing.
 
 ## Implementation, may change
-- Opus; a work-item's commits over 8 production or 4 test files are reviewed by area, one reviewer each, in parallel.
-- Probes go in the scratch directory the brief names; another revision is checked out as a worktree there.
+- Opus; `work run` starts one `bdd-task-reviewer` for a work-item, however many files its commits touch.
+- Probes go in the scratch directory the brief names; another revision is read with `git show`, not checked out.
 - `tools check` runs the lint, dead-code and import-contract tools.
 - A finding gives its file and line, what is wrong, why it matters and the fix.
 

@@ -49,6 +49,11 @@ def agent_runs_edit(run, repo, context):
     invoke(run, repo, context, context["edit"])
 
 
+
+@when('the agent deprecates "Apply a code" for a new title written over two lines')
+def agent_deprecates_two_lines(run, repo, context):
+    invoke(run, repo, context, ["deprecate", "Apply a code", "--for", "Apply a voucher\n  Scenario: Injected"])
+
 # --- Then: what a listing printed -------------------------------------------------------------------------------
 
 @then(parsers.re(r'the output lists (?P<path>\S+) with "(?P<title>[^"]+)"'))

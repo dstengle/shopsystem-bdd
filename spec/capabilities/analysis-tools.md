@@ -58,8 +58,8 @@ file; it reports what the tools found and names a tool that is missing rather th
   off that path; a test that ran and failed counts.
 - Refusals under r49 include: an interpreter that does not run (named, with the end of its error); `tests-of` or
   `untested` with no map (saying to run `tools map`); `map` that makes no map (naming the command and the end of
-  its output); `tests-of` on a file that does not exist; `refs` on a name nothing in the project defines; `check`
-  with a `--base` git cannot compare (git's error).
+  its output, and keeping the last map); `tests-of` or `untested` on a file that does not exist; `refs` on a
+  name nothing in the project defines; `check` with a `--base` git cannot compare (git's error).
 - `untested` prints each function as `<path>:<line> <name>`.
 - When the interpreter is not the one running the script, the script re-runs itself under it.
 - `refs` on a name the project defines exits 0 however many references there are.
