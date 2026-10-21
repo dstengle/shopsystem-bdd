@@ -1,0 +1,16 @@
+{
+  "status": "DONE",
+  "summary": "migrate-kb-2 research, notes in .shop/scratch/1-research/notes.md.\nRun of tests/scenarios/test_migration_tools.py (the accepted scenarios): 43 collected, 37 pass, 6 fail.\nFailures: 3 undefined Givens (docs specs s1 path, three-entry keeps-both with its supersedes Given, records/logs/README.md) and 2 test-side status steps that keep backticks (`superseded`), so they cannot pass as written.\nThe keeps-both Then also cannot pass as written: its status step captures 0003-b.md's and spec/decisions/0004-c as a name.\nCode defects, by probe on scratch repos: D1 a supersedes naming two decisions keeps only the first (second lands in by, stays accepted); D2 by and body paths of a ledger-made decision file are not rewritten (adrs/, docs/superpowers/specs/); D3 supersedes naming no entry is written silently, exit 0.\nThe moved README already gets no id (probe): that scenario fails only at its missing step.\nCode changes sit in migrate_ledger.py (supersedes_of, decision_text, plan_ledger) and migrate_spec.py (plan_references, so decision texts get the rewrite). Test changes: the step files and test_migration_tools.py.\ntools tests-of and untested had no map; the test lists are by search. All modules are under 300 lines.\nGit status clean; probes and notes are under the git-ignored .shop/scratch/.",
+  "fileset": [
+    "scripts/migrate",
+    "scripts/migrate_layout.py",
+    "scripts/migrate_ledger.py",
+    "scripts/migrate_spec.py",
+    "tests/scenarios/test_migration_tools.py",
+    "tests/scenarios/migration_ledger_steps.py",
+    "tests/scenarios/migration_spec_steps.py",
+    "tests/scenarios/migration_old.py",
+    "tests/scripts/test_migrate_layout.py"
+  ],
+  "questions": []
+}
