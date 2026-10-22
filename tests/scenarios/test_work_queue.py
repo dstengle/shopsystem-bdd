@@ -17,6 +17,7 @@ import types
 from pytest_bdd import given, parsers, scenarios, then, when
 
 from .conftest import INDEX, SCRIPTS, full
+from .work_queue_add_steps import *  # noqa: F401,F403  r1, r12
 from .work_queue_git_steps import *  # noqa: F401,F403  the steps are fixtures pytest-bdd finds by their names here
 from .work_queue_git_steps import init
 from .work_queue_withdraw_steps import *  # noqa: F401,F403  r10, r11
@@ -65,7 +66,7 @@ def no_item(repo, ident, name):
                   r"(?: and whose capability-proposal (?P<proposal>\w+) is (?P<pstatus>\w+))?$"))
 def with_items(repo, ident, items, proposal, pstatus):
     initiative(repo, ident)
-    for pair in items.replace(" and ", ", ").split(", "):
+    for pair in items.replace(" and whose work-item ", ", ").replace(" and ", ", ").split(", "):
         name, status = pair.split(" is ")
         write(repo, ".shop/work/%s/%s.md" % (ident, name), item_text(name, status, ident))
     if proposal:
@@ -193,23 +194,16 @@ def move(repo, context, name, status):
 
 # --- Then -----------------------------------------------------------------------------------------------------
 
-@then(parsers.parse(".shop/work/{initiative}/{name}.md is a drafted work-item {name2}"))
+@then(parsers.re(r"\.shop/work/(?P<initiative>[^/]+)/(?P<name>[^/]+)\.md is a drafted work-item (?P<name2>(?!whose)\S+)$"))
 def drafted(repo, initiative, name, name2):
     data = fields(repo / ".shop/work/{}/{}.md".format(initiative, name))
     assert (data.get("id"), data.get("kind"), data.get("status")) == (full("work-item", name2), "work-item", "drafted"), data
 
 
 @then(parsers.parse("its part_of is {part_of}, its under is {under} and its accepts is {accepts}"))
-def given_fields(repo, part_of, under, accepts):
-    data = fields(repo / ".shop/work/i1/w1.md")
+def given_fields(repo, context, part_of, under, accepts):
+    data = fields(repo / ".shop/work/i1/{}.md".format(context.get("printed", "w1")))
     assert (data.get("part_of"), data.get("under"), data.get("accepts")) == (part_of, under, "[%s]" % accepts), data
-
-
-@then(parsers.parse(".shop/work/{initiative}/{name}.md is as it was"))
-def as_it_was(repo, context, initiative, name):
-    rel = ".shop/work/%s/%s.md" % (initiative, name)
-    assert (repo / rel).read_text() == context["before"][rel]
-    assert snapshot(repo) == context["before"]
 
 
 @then("it exits with an error")
@@ -217,7 +211,7 @@ def exits_with_error(context):
     assert context["done"].returncode != 0, context["done"]
 
 
-@then(parsers.re(r"work prints (?P<pairs>(?!one JSON object).+)"))
+@then(parsers.re(r"work prints (?P<pairs>(?!one JSON object)\S+ with .+)"))
 def prints_statuses(context, pairs):
     out = context["done"].stdout.splitlines()
     assert context["done"].returncode == 0, context["done"]

@@ -29,8 +29,8 @@ Stop, saying why, and change nothing, when any of these holds:
 ## Drafting
 
 1. **The requirements.** For each `formulated` capability-proposal of the initiative: the requirement ids in its `adds:` and its `changes:` (`<capability>#r<n>`, or a range such as `delivery#r1-r7`). Leave out those a work-item of the initiative already accepts (its `accepts:`) unless that work-item is `withdrawn`. When none is left, every requirement is accepted already: draft nothing, commit nothing, and go straight to "Run `work run`".
-2. **The work-items.** One for each proposal and capability: it accepts every requirement of that proposal on that capability. Its name is `<capability>-<n>`, `<n>` one more than the highest of that capability's work-items in the initiative (1 when there is none).
-3. **Draft each** with `python3 <scripts>/work add <initiative> <name> --part-of capability-proposal/<the proposal's file name without .md> --under <capability> --accepts <id>`, one `--accepts` for each requirement id.
+2. **The work-items.** One for each proposal and capability: it accepts every requirement of that proposal on that capability. Its title says what it delivers; `work add` numbers it and prints its id `w<n>`: take that id as its name, never one you choose.
+3. **Draft each** with `python3 <scripts>/work add <initiative> <title> --part-of capability-proposal/<the proposal's file name without .md> --under <capability> --accepts <id>`, one `--accepts` for each requirement id. It prints the work-item's id: keep it.
 
 If a `work add` refuses, delete the work-item files this session drafted, so nothing is changed, and stop, giving the person its message.
 

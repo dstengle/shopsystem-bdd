@@ -31,14 +31,6 @@ Feature: Work queue
     And .shop/work/i1/w5.md is a drafted work-item whose id is w5
     And no other work-item's file has changed
 
-  @r2 @deprecated
-  Scenario: add when the work-item's file already exists leaves the file as it was (deprecated)
-    Deprecated for: removal
-    Pins that add never overwrites a work-item.
-    Given an initiative i1 under .shop/work/ whose work-item w1 is ready
-    When the session runs `work add i1 w1 --part-of capability-proposal/p1 --under thing --accepts thing#r1`
-    Then .shop/work/i1/w1.md is as it was
-
   @r3
   Scenario: show prints each work-item of every initiative with its status
     Pins that show reads every initiative under .shop/work/, and only their work-items.
@@ -81,16 +73,6 @@ Feature: Work queue
     When the script makes w1's transition to claimed
     Then the transition is refused, naming .shop/work/i1/w1.md, ready and planned
     And .shop/work/i1/w1.md and .shop/work/i1/log.jsonl are as they were
-
-  @r7 @deprecated
-  Scenario: add when the work-item's file already exists is refused, saying so, with an error (deprecated)
-    Deprecated for: removal
-    Pins that add on a work-item that exists is a request work cannot do, not a success.
-    Given an initiative i1 under .shop/work/ whose work-item w1 is ready
-    When the session runs `work add i1 w1 --part-of capability-proposal/p1 --under thing --accepts thing#r1`
-    Then work says that the work-item w1 already exists
-    And it exits with an error
-    And nothing under the repository has changed
 
   @r7
   Scenario Outline: a command that cannot be done exits with an error, says why and changes nothing

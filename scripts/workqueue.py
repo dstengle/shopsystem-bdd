@@ -59,23 +59,32 @@ def entry(word, what):
         raise Refused("the %s %s is not a %s" % (what, word, "file name" if what == "name" else "name"))
 
 
-def add(root, initiative, name, part_of, under, accepts):
-    """Write .shop/work/<initiative>/<name>.md as a drafted work-item (r1)."""
+def highest(root):
+    """The highest <n> among the work-items under .shop/work/ whose file is named w<n>.md; 0 when there is none (r12)."""
+    numbers = [int(name[1:]) for _, name, _ in items(root) if re.fullmatch(r"w\d+", name)]
+    return max(numbers, default=0)
+
+
+def add(root, initiative, title, part_of, under, accepts):
+    """Write .shop/work/<initiative>/w<n>.md as a drafted work-item titled `title`, <n> one above the highest; return w<n> (r1, r12)."""
     entry(initiative, "initiative")
-    entry(name, "name")
+    entry(title, "name")
     for option, value in (("--part-of", part_of), ("--under", under)) + tuple(("--accepts", a) for a in accepts):
         if "\n" in value or "\r" in value:
             raise Refused("the value of %s has a newline in it; a work-item's field is one line" % option)
-    path = Path(root) / WORK / initiative / (name + ".md")
-    if not path.parent.is_dir():
-        raise Refused("the initiative %s does not exist (no %s)" % (initiative, path.parent.relative_to(root)))
+    directory = Path(root) / WORK / initiative
+    if not directory.is_dir():
+        raise Refused("the initiative %s does not exist (no %s)" % (initiative, directory.relative_to(root)))
+    context = context_path(root)
+    name = "w%d" % (highest(root) + 1)
+    path = directory / (name + ".md")
     if path.exists():
         raise Refused("the work-item %s already exists (%s); work add leaves it as it was" % (name, path.relative_to(root)))
     text = ("---\nid: work-item/%s/%s\nkind: work-item\npart_of: %s\nstatus: drafted\nunder: %s\naccepts: [%s]\n---\n\n# %s\n"
-            % (context_path(root), name, part_of, under, ", ".join(accepts), name))
+            % (context, name, part_of, under, ", ".join(accepts), title))
     rel = str(path.relative_to(root))
     committed(root, [rel], "work add: %s/%s drafted" % (initiative, name), lambda: path.write_text(text))
-    return path
+    return name
 
 
 def items(root):

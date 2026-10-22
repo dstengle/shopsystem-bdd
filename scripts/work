@@ -12,7 +12,7 @@ import workqueue  # noqa: E402
 
 
 def cmd_add(args):
-    workqueue.add(args.root, args.initiative, args.name, args.part_of, args.under, args.accepts)
+    print(workqueue.add(args.root, args.initiative, args.name, args.part_of, args.under, args.accepts))
     return 0
 
 
