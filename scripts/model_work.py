@@ -177,7 +177,7 @@ class WorkReading:
                 found = [args[1] for name, args in self.facts if name == "has_sc" and args[0] == q]
                 for s in found:
                     self.fact("accepts", p, s)
-                if not found:
+                if not found and data.get("status") != "withdrawn":    # r27: a withdrawn one is closed (r36)
                     self.problems.append(f"{where}: accepts {q}, which no scenario names yet")
             for b in as_list(data.get("blocked_by")):
                 b = self.qualify(b)

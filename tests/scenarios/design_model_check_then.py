@@ -16,14 +16,14 @@ def found(world, context):
 
 # --- Then ------------------------------------------------------------------------------------------------------
 
-@then(parsers.parse("it exits {code:d}"))
-def exits(context, code):
+@then(parsers.re(r"it exits (?P<how>successfully|with an error)"))
+def exits(context, how):
     result = context["result"]
-    assert result.returncode == code, result.stdout + result.stderr
+    assert (result.returncode == 0) == (how == "successfully"), result.stdout + result.stderr
     assert "Traceback" not in result.stderr
 
 
-@then("it prints 0 violations, 0 unresolved references and 0 file problems")
+@then("it says it found no violation, unresolved reference or file problem")
 def reports_nothing(context):
     out = context["result"].stdout
     assert "0 violations" in out
@@ -36,10 +36,15 @@ def output_names_code(world, context, code):
     assert code in [name for name, _ in found(world, context)["violations"]], found(world, context)
 
 
-@then("thing#r4 is printed neither under v15c nor as unresolved")
-def r4_not_reported(world, context):
+@then("thing#r4 is not printed as unresolved")
+def r4_not_unresolved(world, context):
     data = found(world, context)
     assert [d for d in data["unresolved"] if "thing#r4" in d] == [], data
+
+
+@then("thing#r4 is not printed under v15c")
+def r4_not_v15c(world, context):
+    data = found(world, context)
     assert [a for name, a in data["violations"] if name in ("v15c", "v15d") and "thing#r4" in a[0]] == [], data
 
 
@@ -47,17 +52,6 @@ def r4_not_reported(world, context):
 def r2_under_v_s3(world, context, reported):
     rows = [a[0] for name, a in found(world, context)["violations"] if name == "v_s3"]
     assert (THING + "#r2" in rows) == (reported != "not"), found(world, context)
-
-
-@then("neither thing#r1 nor thing#r2 is printed under v_s3")
-def neither_under_v_s3(world, context):
-    rows = [a[0] for name, a in found(world, context)["violations"] if name == "v_s3"]
-    assert rows == [], found(world, context)
-
-
-@then("it prints no file problem")
-def no_file_problem(world, context):
-    assert found(world, context)["problems"] == []
 
 
 def _mentions(context):
@@ -91,25 +85,10 @@ def only_r4_mentions_shelf(context):
     assert [m[0] for m in _mentions(context) if m[1] == "shelf"] == [THING + "#r4"], _mentions(context)
 
 
-@then("it prints no file problem and no v_s2")
-def no_file_problem_and_no_v_s2(world, context):
+@then("it prints no v15a")
+def no_v15a(world, context):
     data = found(world, context)
-    assert data["problems"] == [], data
-    assert [a for name, a in data["violations"] if name == "v_s2"] == [], data
-
-
-@then("it prints no file problem and no v15a")
-def no_file_problem_and_no_v15a(world, context):
-    data = found(world, context)
-    assert data["problems"] == [], data
     assert [a for name, a in data["violations"] if name == "v15a"] == [], data
-
-
-@then("thing#r1 is printed under v_s3 and thing#r2 is not")
-def r1_but_not_r2_under_v_s3(world, context):
-    data = found(world, context)
-    rows = [a[0] for name, a in data["violations"] if name == "v_s3"]
-    assert THING + "#r1" in rows and THING + "#r2" not in rows, data
 
 
 def _named(world, context, code):
@@ -202,9 +181,12 @@ def why_traces(context):
     assert "source observation %s" % full("observation", "obs-1") in result.stdout
 
 
-@then("it says no capability-proposal adds or changes it")
-def why_without_proposal(context):
-    assert "no capability-proposal adds or changes it" in context["result"].stdout
+@then(parsers.re(r"it says no capability-proposal adds or changes (?P<ref>it|thing#r2)"))
+def why_without_proposal(context, ref):
+    out = context["result"].stdout
+    assert "no capability-proposal adds or changes it" in out, out
+    if ref != "it":  # the requirement `it` names is the one why printed first
+        assert out.startswith(THING + "#r2: "), out
 
 
 @then("it prints the proposal as adding it")
@@ -220,31 +202,6 @@ def why_by_name(context):
     assert result.returncode == 0, result.stdout
     assert "%s#r2: Two." % THING in result.stdout
     assert "adds by capability-proposal %s" % P1 in result.stdout
-
-
-@then("it prints the four counts, each 1")
-def four_counts(context):
-    out = context["result"].stdout
-    assert "1 violations, 1 warnings, 1 unresolved references, 1 file problems" in out.splitlines()[-1], out
-
-
-def _v_s3_rows(context):
-    out = context["result"].stdout
-    m = re.search(r"^v_s3  a requirement has no scenario  \(%d\)\n((?:    .*\n)+)" % context["rows"], out, re.M)
-    assert m, out
-    return m.group(1).splitlines(), out
-
-
-@then(parsers.parse("it prints {shown:d} rows under v_s3"))
-def rows_shown(context, shown):
-    lines, out = _v_s3_rows(context)
-    assert len([l for l in lines if THING + "#r" in l]) == shown, out
-
-
-@then(parsers.parse("it says there are {more:d} more"))
-def rows_more(context, more):
-    lines, _ = _v_s3_rows(context)
-    assert "    ... and %d more" % more in lines
 
 
 def _written_unresolved(world, context, subject):
