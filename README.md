@@ -71,19 +71,27 @@ Each worker runs with `--permission-mode acceptEdits`, the plugin's directory as
 Bash only for `python3 -m pytest`, the plugin's scripts by path and the git commands the stage needs. Nothing runs
 with permissions bypassed.
 
-The tests it runs are `python3 -m pytest -q --work-item <name>` for the work-item and `python3 -m pytest -q` for the
-suite. `--work-item` is a pytest option that selects the scenarios tagged with a requirement the work-item accepts;
-a repository whose pytest has none names its own commands in `.shop/delivery.toml`:
+The tests it runs load the plugin's own pytest plugin, `scripts/work_items.py` (`-p work_items`, the scripts
+directory on `PYTHONPATH`): `--work-item <name>` for the work-item's scenarios, and `--whole-suite` for the suite
+before a merge, where a failing scenario counts as expected while another work-item that is neither `green` nor
+`withdrawn` accepts its requirement. Where pytest-xdist is installed, `-n auto` is added. A repository can name its
+own commands in `.shop/delivery.toml` (`[tests]`, with `{work_item}` replaced by the name; its `suite` command needs
+`--whole-suite` for expected red to work). `[allowed_tools]`, a list for a stage, replaces that stage's list
+(`research`, `plan`, `implement`, `review`); a bare Write or Edit in it is still dropped. Git-ignore `.shop/scratch/`
+and `.shop/worktrees/`.
 
-```
-[tests]
-work_item = "python3 -m pytest -q"
-suite = "python3 -m pytest -q"
-```
+Before you run it:
 
-`{work_item}` in `work_item` is replaced by the work-item's name. `[allowed_tools]`, a list for a stage, replaces
-that stage's list (`research`, `plan`, `implement`, `review`); a bare Write or Edit in it is
-still dropped. Git-ignore `.shop/scratch/` and `.shop/worktrees/`.
+- The initiative branch needs a remote it can push to. `work run` checks the push before every worker starts and
+  pushes after every commit it makes.
+- Run `work run` with the same credentials as your `git push` (for example inside the credential wrapper you push
+  with). Without them its push check fails and the work-item goes to `failed`.
+- Commit `.shop/work/` first: `work run` refuses to start over uncommitted changes there.
+
+A fault (a refused push, a git failure, a worker changing `.shop/work/`, a worker ending in an error or at its turn
+limit, or with no readable result) moves the work-item to `failed` and the run exits with an error naming it. Fix the
+cause, then `work retry <work-item>` brings it back to where its stage started. Workers write their result first, as
+`PARTIAL`, and keep it current.
 
 ## Scripts
 
@@ -120,6 +128,27 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 
 Only `initiative-round` has the Agent tool. A plugin agent's `hooks` and `permissionMode` are ignored, so a role's
 limits are its tools; under `work run` they are also its `--allowedTools`.
+
+## 0.22.0: one requirement per scenario, faults, and the lessons of a blind formulation
+
+- **One requirement per scenario** (decision 0054): a scenario names exactly one `@r<n>`; `model check` reports a
+  scenario naming more (v_s2); `features tag` replaces the requirement tag. Steps are shared in code.
+- **Exits in words** (decision 0055): a line and its scenario say a command exits successfully or with an error;
+  exit codes live in a capability's Implementation section.
+- **Faults** (decision 0056): `failed`, `work retry`, a push check before every worker and a push after every commit,
+  worktrees removed on exit, a session ending in an error or at its turn limit is a fault, results start as
+  `PARTIAL`, and expected red before a merge. `work add` and `work retry` commit what they change.
+- **Small work-items**: `delivering-an-initiative` gives a work-item at most five requirements.
+- **The spec's language**: a glossary in which each term has one meaning (run, delivery, stage directory, status,
+  outcome, result, brief, input, template, transition, failed, ...), and five lessons in `docs/capability-format.md`
+  that the spec-checker and the reviewers check (spec-consistency r22-r27, review r29-r30).
+- **Records**: formulators' questions, reviews, run reports and gate verdicts kept under `.shop/records/`; bulky
+  data (slim transcript exports) in a separate records repository, scanned by gitleaks before every push.
+
+Upgrading a consuming repository from 0.21.0: give its initiative branches a pushable remote and run `work run` with
+your push credentials; split any scenario that names two requirements (`model check` lists them under v_s2); reword
+scenario steps that name exit codes as "exits successfully" or "exits with an error"; commit `.shop/work/` before each
+`work run`.
 
 ## 0.21.0: the final layout and delivery by `work run`
 

@@ -5,7 +5,7 @@ title: shopsystem-bdd
 
 # shopsystem-bdd
 
-**Where it stands.** Plugin 0.21.0: the final layout (design-decision/final-layout), delivery by work-items and `work run`,
+**Where it stands.** Plugin 0.22.0: the final layout (design-decision/final-layout), delivery by work-items and `work run`,
 and `scripts/migrate`; slicing, `scripts/plan` and the superpowers dependency are removed
 (design-decision/superpowers-not-a-dependency). Requirements have ids from the start (design model v3). The gate of
 2026-10-21 (observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-21-release-gate) approved every capability's
@@ -96,7 +96,7 @@ Tools the skills and agents run:
 - **delivery**: one invocation of `work run` on an initiative, from its start until it exits.
 - **deprecated scenario**: a scenario kept in its feature file, tagged `@deprecated`, after its line is changed or removed, until its replacement passes; it formulates no requirement. Not: held, holding, superseded.
 - **dispatch**: a session another session starts with its Agent tool, and the transcript it leaves. Not: subagent.
-- **failed**: a work-item's status when a fault outside its work (a push, git, or a worker breaking a rule) stopped a stage from starting or finishing; its committed work is kept and pushed, and `work retry` returns it once the fault is remedied. Not: aborted.
+- **failed**: a work-item's status when a fault outside its work (a push, git, a worker breaking a rule, or a worker's session ending in an error, at its turn limit or without a readable result) stopped a stage from starting or finishing; its committed work is kept and pushed, and `work retry` returns it once the fault is remedied. Not: aborted.
 - **fact**: one statement `model facts` gives clingo about the repository's files.
 - **file set**: the paths, globs or directories a work-item says its work changes: drafted with it, revised by its researcher and fixed by its planner. Not: fileset, scope.
 - **gate**: the person's approval of Behaviour lines and glossary entries before they are committed to `spec/`, with the questions they raise. Not: sign-off.

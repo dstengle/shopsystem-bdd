@@ -148,3 +148,16 @@ by: the person
 date: 2026-10-22
 
 No more time on migration code (the person): shopsystem-knowledge is the only repository left to migrate, and anything `migrate` does not do there the migrating agent fixes by hand. migration-tools keeps its feature file from before the 0.22.0 reformulation, so two of its scenarios still name two requirements (v_s2) and some of its steps name exit codes; they stay so unless migration-tools is worked on again.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-22-deferred-from-0-22-0
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+by: the person ("I want a release"), recorded by the coordinator
+date: 2026-10-22
+
+The 0.22.0 final review's Critical finding (C1) was fixed for the release; its Important findings were deferred to
+0.23.0, with the lines drafted for them (in .shop/records/review-findings once archived; ledger-0.22.0):
+`work withdraw` (a way into `withdrawn`); which line wins when a worker's result and a fault both apply (r47); r4
+naming r43; work-queue r8's "before the stage that failed started"; r45 covering a non-zero exit; the branch review's
+result kept and logged (r48) and not rerun on an unmoved branch (r49); log lines and other code no line asks for moved
+into Implementation or given lines; undefined words ("the tests", "the repository's remote", "fault"). r43 masking a
+regression while another open work-item accepts the requirement is the approved trade-off and stays.
