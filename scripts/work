@@ -12,7 +12,7 @@ import workqueue  # noqa: E402
 
 
 def cmd_add(args):
-    print(workqueue.add(args.root, args.initiative, args.name, args.part_of, args.under, args.accepts))
+    print(workqueue.add(args.root, args.initiative, args.title, args.part_of, args.under, args.accepts))
     return 0
 
 
@@ -46,7 +46,7 @@ def main(argv=None):
     sub = ap.add_subparsers(dest="cmd", required=True)
     a = sub.add_parser("add", help="draft a work-item")
     a.add_argument("initiative")
-    a.add_argument("name")
+    a.add_argument("title")
     a.add_argument("--part-of", required=True)
     a.add_argument("--under", required=True)
     a.add_argument("--accepts", required=True, action="append")
