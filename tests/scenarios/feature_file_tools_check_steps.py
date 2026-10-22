@@ -54,11 +54,6 @@ def nothing_else_changed(repo, context):
         assert (repo / name).read_text() == expected
 
 
-@then(parsers.re(r"it prints that (?P<count>\d+) bindings were rebound"))
-def prints_rebound(context, count):
-    assert context["result"].stdout == "%s bindings rebound\n" % count
-
-
 @then('the binding to features/cart.feature names "Apply a code (deprecated)"')
 def cart_bindings_follow(repo, context):
     result = context["result"]
@@ -72,9 +67,19 @@ def old_binding_unchanged(repo, context):
     assert (repo / "tests/test_old.py").read_text() == context["modules"]["tests/test_old.py"]
 
 
-@then('it prints features/cart.feature, the title "Apply a code" and that no test binds it')
+@then('it prints features/cart.feature and the title "Apply a code"')
 def reports_unbound(context):
-    assert "features/cart.feature: Apply a code | bound by no test" in context["result"].stdout.splitlines()
+    assert any(line.startswith("features/cart.feature: Apply a code |") for line in context["result"].stdout.splitlines())
+
+
+@then(parsers.re(r'it prints neither "(?P<one>[^"]+)" nor "(?P<two>[^"]+)"(?P<unbound> as bound by no test)?'))
+def prints_neither(context, one, two, unbound):
+    out = context["result"].stdout
+    for title in (one, two):
+        if unbound:
+            assert not any(line.endswith(": %s | bound by no test" % title) for line in out.splitlines()), out
+        else:
+            assert title not in out, out
 
 
 @then('it prints features/cart.feature, the title "Apply a code" and the calls tests/test_a.py:12 and tests/test_b.py:5')

@@ -80,10 +80,17 @@ def nothing_printed(context):
     assert context["result"].stdout == ""
 
 
-@then(parsers.parse("it exits {code:d}"))
-def exits(context, code):
+@then("it exits successfully")
+def exits_successfully(context):
     result = context["result"]
-    assert result.returncode == code, result
+    assert result.returncode == 0, result
+    assert "Traceback" not in result.stderr
+
+
+@then("it exits with an error")
+def exits_with_error(context):
+    result = context["result"]
+    assert result.returncode == 1, result
     assert "Traceback" not in result.stderr
 
 

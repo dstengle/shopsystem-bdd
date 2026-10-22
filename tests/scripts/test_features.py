@@ -109,10 +109,10 @@ class FeaturesTest(unittest.TestCase):
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertEqual(self.cart.read_text(), CART.replace("  @slice-1\n", "  @slice-1 @r4\n"))
 
-    def test_tag_adds_a_requirement_tag_and_keeps_the_others(self):
+    def test_tag_replaces_the_requirement_tag_and_keeps_the_others(self):
         self.run_script("tag", "Adding a product", "r4")
         self.run_script("tag", "Adding a product", "r7")
-        self.assertEqual(self.cart.read_text(), CART.replace("  @slice-1\n", "  @slice-1 @r4 @r7\n"))
+        self.assertEqual(self.cart.read_text(), CART.replace("  @slice-1\n", "  @slice-1 @r7\n"))
 
     def test_tag_rejects_a_three_part_slice(self):
         self.assertEqual(self.run_script("tag", "Adding a product", "slice-1.2.3").returncode, 2)
