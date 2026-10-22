@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"S2 green: upgrade step resolves names across initiatives, rewrites for:, refuses ambiguous names and move collisions. Unit tests added. Not run: migrate upgrade on a clone of this repo.","commits":["36ad963 migrate upgrade: references from another initiative and for: follow the rename"],"report":".shop/scratch/3-implement/report.md","questions":[]}
