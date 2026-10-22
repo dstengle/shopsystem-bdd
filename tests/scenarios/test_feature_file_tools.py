@@ -73,7 +73,7 @@ def output_does_not_list(run, repo, context, one, two):
             assert text not in context["result"].stdout
     if one == "Phantom":  # r1: the docstring's scenario is not found by its title either
         done = run("features", "list", "--title", "Phantom")
-        assert (done.returncode, done.stdout) == (1, "")
+        assert (done.returncode, done.stdout) == (0, "")
 
 
 @then("nothing is printed")

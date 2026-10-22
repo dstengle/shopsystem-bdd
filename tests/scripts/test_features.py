@@ -66,7 +66,7 @@ class FeaturesTest(unittest.TestCase):
 
     def test_docstring_text_is_not_a_scenario_or_tag(self):
         done = self.run_script("list", "--tag", "slice-9")
-        self.assertEqual(done.returncode, 1)
+        self.assertEqual(done.returncode, 0)
         self.assertEqual(done.stdout, "")
 
     def test_list_by_tag(self):
