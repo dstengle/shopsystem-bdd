@@ -7,7 +7,7 @@ that has .shop/work/; its `accepts: [<capability>#r<n>, <capability>#r<n>-r<m>, 
 scenario is pytest-bdd's, its capability the stem of its feature file and its requirements its `@r<n>` tags.
 
 With `--whole-suite` too, every test runs (the whole suite before the work-item's merge), and a scenario whose
-requirements only work-items not yet green, other than the work-item, accept is expected to fail: an xfail
+requirement a work-item other than the work-item, neither green nor withdrawn, accepts is expected to fail: an xfail
 (supervision r43). Standard library and pytest only.
 """
 import pathlib
@@ -73,16 +73,18 @@ def scenario_of(item):
 
 
 def expect_red(config, items, name):
-    """Mark as xfail each scenario whose requirements only work-items not yet green, other than `name`, accept."""
+    """Mark as xfail each scenario whose requirement a work-item other than `name`, neither green nor withdrawn,
+    accepts."""
     by = acceptors(config.invocation_params.dir)
     for item in items:
         found = scenario_of(item)
         if found is None:
             continue
         who = set().union(*[by.get((found[0], tag), set()) for tag in found[1]])
-        if who and all(other != name and status != "green" for other, status in who):
-            item.add_marker(pytest.mark.xfail(reason="expected: accepted only by %s, not yet green"
-                                              % ", ".join(sorted(o for o, _ in who)), strict=False))
+        open_ = sorted(other for other, status in who if other != name and status not in ("green", "withdrawn"))
+        if open_:
+            item.add_marker(pytest.mark.xfail(reason="expected: accepted by %s, neither green nor withdrawn"
+                                              % ", ".join(open_), strict=False))
 
 
 def pytest_collection_modifyitems(config, items):

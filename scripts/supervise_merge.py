@@ -15,7 +15,7 @@ from workqueue import WORK
 # `--work-item` is the plugin's own pytest plugin, scripts/work_items.py, loaded by `-p` from the scripts directory
 # work run puts on PYTHONPATH, so a repository delivered by work run needs no conftest of its own for it.
 # The whole suite is given --work-item too (r22), with --whole-suite, which keeps every test (r4) and counts as expected
-# the failures of other work-items' requirements not yet green (r43); -rfEx names those in the summary.
+# the failures of requirements another work-item, neither green nor withdrawn, accepts (r43); -rfEx names those in the summary.
 TESTS = {"work_item": "python3 -m pytest -q{parallel} -p work_items --work-item {work_item}",
          "suite": "python3 -m pytest -q{parallel} -rfEx -p work_items --work-item {work_item} --whole-suite"}
 

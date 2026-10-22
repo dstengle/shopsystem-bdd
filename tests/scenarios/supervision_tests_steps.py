@@ -87,12 +87,12 @@ def waits():
 """
 
 
-@given(parsers.parse("i1's work-item w1 is ready, accepting thing#r1, and w2 is drafted and w3 is green"))
-def three_items(repo):
-    for name, status in (("w1", "ready"), ("w2", "drafted"), ("w3", "green")):
+@given(parsers.parse("i1's work-item w1 is ready, accepting thing#r1, w2 is drafted, w3 is green and w4 is withdrawn"))
+def four_items(repo):
+    for name, status in (("w1", "ready"), ("w2", "drafted"), ("w3", "green"), ("w4", "withdrawn")):
         text = item_text(name, status).replace("accepts: [thing#r1]", "accepts: [%s]" % ("thing#r1" if name == "w1" else "thing#r3"))
         write(repo, ".shop/work/i1/%s.md" % name, text)
-    commit_all(repo, "three work-items")
+    commit_all(repo, "four work-items")
 
 
 @given('features/thing.feature has the scenario "it waits", tagged @r2, which fails')
