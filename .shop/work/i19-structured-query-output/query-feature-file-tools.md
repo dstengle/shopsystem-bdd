@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/query-feature-file-tools
 kind: capability-proposal
 part_of: initiative/i19
-status: merged
+status: formulated
 date: 2026-10-22
 argues: [feature-file-tools]
 adds: [feature-file-tools#r60-r62]

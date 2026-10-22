@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/deferred-work-queue
 kind: capability-proposal
 part_of: initiative/i18
-status: merged
+status: formulated
 date: 2026-10-22
 argues: [work-queue]
 adds: [work-queue#r10]
