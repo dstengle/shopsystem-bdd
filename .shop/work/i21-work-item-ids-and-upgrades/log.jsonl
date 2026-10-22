@@ -29,3 +29,4 @@
 {"time": "2026-10-22T22:42:53+00:00", "work-item": "migration-tools-1", "stage": "plan", "agent": "bdd-planner", "session": "6a519b6f-3d5f-4bb3-8861-afb6dbde6269", "event": "end"}
 {"time": "2026-10-22T22:42:53+00:00", "work-item": "migration-tools-1", "before": "researched", "after": "planned", "by": "work run"}
 {"time": "2026-10-22T22:42:55+00:00", "work-item": "migration-tools-1", "before": "planned", "after": "ready", "by": "work run"}
+{"time": "2026-10-22T22:42:56+00:00", "work-item": "migration-tools-1", "before": "ready", "after": "claimed", "by": "work run"}
