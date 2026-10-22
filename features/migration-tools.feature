@@ -479,6 +479,20 @@ Feature: Migration tools
     And the work-item that was .shop/work/i2/b.md is w2
     And the work-item that was .shop/work/i10/a.md is w3
 
+  @r26
+  Scenario: the upgrade step "work-items named by ids" renames a work-item's file and stage directories and rewrites its name where its initiative names it
+    Pins what the step changes for one work-item and what it leaves: its file, id, heading, runs, log lines and the references of its initiative's work-items, and no free text in records.
+    Given a repository on the final layout whose .shop/plugin-version is 0.23.1
+    And .shop/work/i1/size-check.md, a work-item with the heading "# size-check", a directory .shop/work/i1/runs/size-check/ and a line of .shop/work/i1/log.jsonl for size-check
+    And .shop/work/i1/docs.md, a work-item with no heading, whose depends_on names size-check
+    And .shop/records/observations.md, which names size-check in its text
+    When the session runs `migrate upgrade`
+    Then .shop/work/i1/size-check.md is now .shop/work/i1/w2.md, its id work-item/<context path>/w2 and its heading "# size-check"
+    And .shop/work/i1/docs.md is now .shop/work/i1/w1.md, its heading "# docs" and its depends_on naming w2
+    And .shop/work/i1/runs/size-check/ is now .shop/work/i1/runs/w2/
+    And the line of .shop/work/i1/log.jsonl names w2
+    And .shop/records/observations.md still names size-check
+
   @r27
   Scenario: `migrate upgrade` with no pending upgrade step says so, exits successfully and changes nothing
     Pins that an upgrade of a repository already on the plugin's version is harmless.
