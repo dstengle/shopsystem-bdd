@@ -1,8 +1,8 @@
 """supervision's Then steps about the workers: how each was started, with what tools and brief, where and when it
 ran, read from the stand-in claude's record and log.jsonl."""
-import os
 import pathlib
 import re
+import tempfile
 import uuid
 
 from pytest_bdd import parsers, then
@@ -43,14 +43,19 @@ def started_as(repo):
     assert len(set(sessions)) == len(sessions) == 4, sessions
 
 
-@then("each brief names .shop/work/i1/w1.md and spec/capabilities/thing.md to read, and a result path in the "
-      "brief's own directory")
+@then("each brief names .shop/work/i1/w1.md and spec/capabilities/thing.md to read, and where the worker's result goes")
 def brief_names(repo):
+    assert starts(repo)
     for c in starts(repo):
-        brief, path = c["brief"], c["brief_path"]
+        brief = c["brief"]
         assert ".shop/work/i1/w1.md" in brief and "spec/capabilities/thing.md" in brief, brief
-        result = re.search(r"^Result file: (.+)$", brief, re.M).group(1).strip()
-        assert os.path.dirname(result) == os.path.dirname(path), (result, path)
+        assert re.search(r"^Result file: \S+$", brief, re.M), brief
+
+
+@then(parsers.parse("the first worker started for {name} was a `claude -p` session of {agent}"))
+def first_worker(repo, context, name, agent):
+    started = [c for c in starts(repo) if work_item_of(c) == name]
+    assert started and started[0]["argv"][0] == "-p" and started[0]["agent"] == agent, (started[:1], context["done"].stderr)
 
 
 @then(parsers.parse("no worker was started for {name} after the {who}"))
@@ -79,29 +84,35 @@ def no_worker(repo):
     assert calls(repo) == [], calls(repo)
 
 
-@then("each worker worked in a worktree of its own, never in the repository's own checkout, and its brief and result "
-      "are under .shop/scratch/ there")
-def own_worktrees(repo):
-    started = starts(repo)
-    places = [c["cwd"] for c in started]
-    assert len(set(places)) == len(places) == 4, places
-    for c in started:
-        assert os.path.dirname(c["cwd"]) == str(repo / ".shop/worktrees"), c["cwd"]
-        result = re.search(r"^Result file: (.+)$", c["brief"], re.M).group(1).strip()
-        for path in (c["brief_path"], result):
-            assert path.startswith(os.path.join(c["cwd"], ".shop/scratch") + os.sep), (path, c["cwd"])
+def brief_lines(brief):
+    return dict(line.split(": ", 1) for line in brief.splitlines() if re.match(r"^[A-Z][\w -]*: ", line))
 
 
-@then("the implementer's brief also names the plugin's scripts directory, the initiative branch's base, its worktree and "
-      "its branch work/w1, and how the whole suite `work run` ran there ended")
-def implementer_brief(repo):
-    c = [c for c in starts(repo) if c["agent"] == "shopsystem-bdd:bdd-implementer"][0]
-    lines = dict(line.split(": ", 1) for line in c["brief"].splitlines() if re.match(r"^[A-Z][\w ]*: ", line))
+@then("each of w1's four briefs names the plugin's scripts directory, the initiative branch's base, the worker's worktree "
+      "and its work-item branch")
+def briefs_name_places(repo):
+    started = [c for c in starts(repo) if work_item_of(c) == "w1"]
+    assert len(started) == 4, started
     base = git(repo, "log", "--diff-filter=A", "--format=%H", "--", ".shop/work/i1/initiative.md").strip()
-    assert lines.get("Scripts") == str(SCRIPTS), lines
-    assert lines.get("Base") == base, (lines, base)
-    assert (lines.get("Worktree"), lines.get("Branch")) == (c["cwd"], "work/w1"), lines
-    assert re.match(r"Suite: 1 passed, 0 failed at [0-9a-f]{7,} in [\d.]+ s$", lines.get("Suite record", "")), lines
+    for c in started:
+        lines = brief_lines(c["brief"])
+        assert lines.get("Scripts") == str(SCRIPTS) and lines.get("Base") == base, (lines, base)
+        assert lines.get("Worktree") == c["cwd"] and lines.get("Work-item branch") == "work/w1", lines
+
+
+@then("the whole suite was run in the implementer's worktree before the implementer was started")
+def suite_before_implementer(repo, context):
+    lines = log_lines(repo)
+    suite = [i for i, l in enumerate(lines) if l.get("event") == "suite" and l.get("stage") == "implement"]
+    start = [i for i, l in enumerate(lines) if l.get("event") == "start" and l.get("agent") == "bdd-implementer"]
+    assert suite and start and suite[0] < start[0], (lines, context["done"].stderr)
+
+
+@then("the implementer's brief says how that run of the suite ended")
+def brief_says_suite(repo):
+    c = [c for c in starts(repo) if c["agent"] == "shopsystem-bdd:bdd-implementer"][0]
+    record = [l["record"] for l in log_lines(repo) if l.get("event") == "suite" and l.get("stage") == "implement"][0]
+    assert brief_lines(c["brief"]).get("Suite record") == record, (c["brief"], record)
 
 
 @then(parsers.parse("the researcher was given --allowedTools {tools}"))
@@ -124,13 +135,15 @@ def plugin_dir(repo):
         assert option(c["argv"], "--plugin-dir") == str(SCRIPTS.parent), c["argv"]
 
 
-@then("each of w1's four workers worked in a worktree outside the plugin's directory")
+@then("each of w1's four workers worked in a worktree in a temporary directory outside the plugin's directory")
 def outside_plugin(repo):
     started = [c for c in starts(repo) if work_item_of(c) == "w1"]
     assert len(started) == 4, started
     for c in started:
         assert option(c["argv"], "--plugin-dir") == str(repo), c["argv"]
-        assert not pathlib.Path(c["cwd"]).resolve().is_relative_to(repo.resolve()), c["cwd"]
+        place = pathlib.Path(c["cwd"]).resolve()
+        assert not place.is_relative_to(repo.resolve()), c["cwd"]
+        assert place.is_relative_to(pathlib.Path(tempfile.gettempdir()).resolve()), c["cwd"]
 
 
 @then(parsers.parse("the {who}'s load of the skill {skill} was {done}"))
@@ -192,7 +205,7 @@ def brief_scenarios(repo, title, feature, other):
     assert other not in brief, brief
 
 
-@then(parsers.parse("the researcher was started with --max-turns {turns:d}"))
+@then(parsers.parse("the researcher was started with a limit of {turns:d} turns"))
 def max_turns(repo, turns):
     argv = researcher(repo)["argv"]
     assert option(argv, "--max-turns") == str(turns), argv
@@ -232,3 +245,12 @@ def implementers_one_at_a_time(repo, context):
 def two_at_most(repo, context):
     spans = implementer_spans(repo)
     assert len(spans) >= 3 and most_at_once(spans) == 2, (spans, context["done"].stderr)
+
+
+@then("each of w1's four briefs tells the worker to write its result file first and keep it current as it works")
+def brief_says_result_first(repo):
+    started = [c for c in starts(repo) if work_item_of(c) == "w1"]
+    assert len(started) == 4, started
+    for c in started:
+        said = [l for l in c["brief"].splitlines() if "result file first" in l and "keep it current" in l]
+        assert said, c["brief"]

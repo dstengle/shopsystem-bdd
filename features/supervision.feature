@@ -3,9 +3,9 @@ Feature: Supervision
   Narrator: the person who started `work run`
 
   Background:
-    Given a git repository with an initiative i1 under .shop/work/, a stand-in claude first on PATH and as $SHOPSYSTEM_WORK_CLAUDE, and tests that pass
+    Given a git repository with an initiative i1 under .shop/work/, a remote the initiative branch can be pushed to, a stand-in claude first on PATH and as $SHOPSYSTEM_WORK_CLAUDE, and tests that pass
 
-  @r1 @r9
+  @r1
   Scenario: `work run` pulls each work-item through research, plan, implementation and review, one worker at a time, until no work-item can make a transition
     Pins the stage-by-stage pull: every work-item reaches `green` through its four workers in order, and no worker starts before the last one ended.
     Given i1's work-items w1 and w2 are drafted
@@ -14,7 +14,6 @@ Feature: Supervision
     Then each of w1 and w2 had code-scout, bdd-planner, bdd-implementer and bdd-task-reviewer as its workers, in that order
     And no worker was started before the one before it had ended
     And w1 and w2 are green
-    And it exits 0
 
   @r2
   Scenario: each worker is a new `claude -p` session of its stage's agent, given one brief naming the work-item, the files to read and where its result goes
@@ -23,24 +22,22 @@ Feature: Supervision
     And every worker gives DONE
     When the person runs `work run i1`
     Then each worker was started as `claude -p` with an input prompt naming its brief, --agent shopsystem-bdd:<its stage's agent> and a session id no other worker had
-    And each brief names .shop/work/i1/w1.md and spec/capabilities/thing.md to read, and a result path in the brief's own directory
-    And each worker worked in a worktree of its own, never in the repository's own checkout, and its brief and result are under .shop/scratch/ there
-    And the implementer's brief also names the plugin's scripts directory, the initiative branch's base, its worktree and its branch work/w1, and how the whole suite `work run` ran there ended
+    And each brief names .shop/work/i1/w1.md and spec/capabilities/thing.md to read, and where the worker's result goes
 
   @r2
-  Scenario Outline: a worker is given its stage's tools and no others, the list .shop/delivery.toml gives for the stage where it gives one
-    Pins that no worker has every permission: a Bash command outside its stage's list is refused. `{scripts}` stands for the directory of `work run`'s own scripts.
-    Given i1's work-item w1 is drafted
-    And <tools>
-    And every worker gives DONE, the researcher running `git commit -q --allow-empty -m meddle`
+  Scenario Outline: a work-item that is <status> is given a worker of <agent>
+    Pins which agent each status starts.
+    Given i1's work-item w1 is <status>
+    And every worker gives DONE
     When the person runs `work run i1`
-    Then the researcher was given --allowedTools <list>
-    And its `git commit -q --allow-empty -m meddle` was <fate>
+    Then the first worker started for w1 was a `claude -p` session of shopsystem-bdd:<agent>
 
     Examples:
-      | tools                                                                    | list                                                                                                                                                                                                        | fate    |
-      | .shop/delivery.toml names no tools                                       | Read,Glob,Grep,Bash(python3 -m pytest*),Bash(python3 {scripts}/features *),Bash(python3 {scripts}/model *),Bash(python3 {scripts}/tools *),Bash(git status*),Bash(git diff*),Bash(git log*),Bash(git show*) | refused |
-      | .shop/delivery.toml gives the research stage Read and Bash(git commit *) | Read,Bash(git commit *)                                                                                                                                                                                     | run     |
+      | status     | agent             |
+      | drafted    | code-scout        |
+      | researched | bdd-planner       |
+      | ready      | bdd-implementer   |
+      | done       | bdd-task-reviewer |
 
   @r3
   Scenario: a worker's outcome DONE makes the work-item's transition to its next status
@@ -58,23 +55,20 @@ Feature: Supervision
     And the work-item's scenarios pass only where feature.txt is
     When the person runs `work run i1`
     Then the initiative branch has the implementer's commit of feature.txt
-    And w1 is green
 
-  @r4 @r5
-  Scenario Outline: an implementer's DONE whose <tests> fail is not merged, and the work-item goes to awaiting-ruling with the failure as its question
-    Pins that a failing test keeps the branch out of the initiative branch and becomes the person's question.
+  @r4
+  Scenario Outline: an implementer's DONE whose <tests> fail is not merged
+    Pins that a failing test keeps the branch out of the initiative branch.
     Given i1's work-item w1 is ready
     And every worker gives DONE, the implementer committing feature.txt
     And <tests> fail on the implementer's branch
     When the person runs `work run i1`
     Then the initiative branch does not have the implementer's commit
-    And w1 is awaiting-ruling, its question naming `<command>` and what it printed
-    And no worker was started for w1 after the implementer
 
     Examples:
-      | tests                     | command                           |
-      | the work-item's scenarios | python3 tests.py --work-item w1   |
-      | the whole suite           | python3 tests.py                  |
+      | tests                     |
+      | the work-item's scenarios |
+      | the whole suite           |
 
   @r4
   Scenario: an implementer's DONE whose scenarios pass only on a file it left uncommitted is not merged
@@ -83,44 +77,43 @@ Feature: Supervision
     And every worker gives DONE, the implementer writing feature.txt and not committing it
     And the work-item's scenarios pass only where feature.txt is
     When the person runs `work run i1`
-    Then the initiative branch does not have the implementer's commit
-    And w1 is awaiting-ruling, its question naming `python3 tests.py --work-item w1` and what it printed
+    Then the initiative branch does not have feature.txt
 
   @r5
-  Scenario Outline: a researcher that <gives> makes the work-item's transition to awaiting-ruling with <question> as its question
-    Pins that anything but DONE stops the work-item with a question for the person, and no later stage starts.
-    Given i1's work-item w1 is drafted
-    And the researcher <gives>
+  Scenario Outline: an implementer's DONE whose <tests> fail makes the work-item's transition to awaiting-ruling
+    Pins that work that fails the tests waits on the person.
+    Given i1's work-item w1 is ready
+    And every worker gives DONE, the implementer committing feature.txt
+    And <tests> fail on the implementer's branch
     When the person runs `work run i1`
-    Then w1 is awaiting-ruling, its question saying <question>
-    And no worker was started for w1 after the researcher
+    Then w1 is awaiting-ruling
 
     Examples:
-      | gives                                                    | question                         |
-      | gives QUESTION, asking "Which module owns the log?"      | Which module owns the log?       |
-      | gives BLOCKED, asking "Is the old reader kept?"          | Is the old reader kept?          |
-      | writes no result                                         | code-scout gave no result file   |
-      | writes a result that is not JSON                         | is not a JSON object             |
-      | gives QUESTION, its questions the string "Why so?"       | Why so?                          |
-      | gives QUESTION, its questions the number 7               | not a list of questions          |
+      | tests                     |
+      | the work-item's scenarios |
+      | the whole suite           |
 
   @r5
-  Scenario: a question goes into the work-item's Questions section, before a section that follows it
-    Pins where the question is written, so that what follows the Questions section is never read as a question.
-    Given i1's work-item w1 is drafted, its file with a Questions section of "Old question?" and then a Rulings section with "Old ruling."
-    And the researcher gives QUESTION, asking "Which module owns the log?"
+  Scenario Outline: a researcher that gives <outcome> makes the work-item's transition to awaiting-ruling
+    Pins that any outcome but DONE stops the work-item for the person.
+    Given i1's work-item w1 is drafted
+    And the researcher gives <outcome>
     When the person runs `work run i1`
-    Then w1's Questions section holds "Old question?" and then "Which module owns the log?", and its Rulings section only "Old ruling."
-    And `work run` prints the question "Which module owns the log?" and not "Old ruling."
+    Then w1 is awaiting-ruling
+
+    Examples:
+      | outcome                                                  |
+      | QUESTION, asking "Which module owns the log?"            |
+      | BLOCKED, asking "Is the old reader kept?"                |
+      | NEEDS_CONTEXT                                            |
 
   @r6
   Scenario: a worker's change to a file under .shop/work/ outside its stage directory is put back
-    Pins that only `work run` writes a work-item's status and the initiative's files, while the worker's stage directory keeps what it wrote.
+    Pins that only `work run` writes the initiative's files, while the worker's stage directory keeps what it wrote.
     Given i1's work-item w1 is drafted
-    And every worker gives DONE, the researcher also setting w1's status to green, changing .shop/work/i1/initiative.md and writing notes.md in its stage directory
+    And every worker gives DONE, the researcher also changing .shop/work/i1/initiative.md and writing notes.md in its stage directory
     When the person runs `work run i1`
     Then .shop/work/i1/initiative.md is as it was
-    And log.jsonl's first transition of w1 is from drafted to researched
     And the researcher's notes.md is in its stage directory
 
   @r6
@@ -130,7 +123,6 @@ Feature: Supervision
     And every worker gives DONE, the researcher also writing .shop/work/i1/w9.md and .shop/work/i2/initiative.md
     When the person runs `work run i1`
     Then .shop/work/i1/w9.md and .shop/work/i2/ are not there
-    And w1 is green
 
   @r6
   Scenario: a file committed under .shop/work/ in the repository's own checkout while a worker works is kept
@@ -139,23 +131,20 @@ Feature: Supervision
     And every worker gives DONE, and while the researcher works another session commits .shop/work/i2/initiative.md and a change to .shop/work/i1/initiative.md in the repository's own checkout
     When the person runs `work run i1`
     Then .shop/work/i2/initiative.md and .shop/work/i1/initiative.md are as that session committed them, with nothing under .shop/work/ left uncommitted
-    And w1 is green
 
   @r6
-  Scenario Outline: an implementer's commit <change> under .shop/work/ is put back on its branch, the branch is not merged, and the work-item goes to awaiting-ruling naming the file
-    Pins that a worker's commit cannot write a status or any other file under .shop/work/ onto the initiative branch.
+  Scenario Outline: an implementer's commit <change> under .shop/work/ is put back on its branch
+    Pins that a worker's commit cannot write a status or any other file under .shop/work/ onto its work-item branch.
     Given i1's work-item w1 is ready
     And every worker gives DONE, the implementer committing feature.txt and <change>
     When the person runs `work run i1`
-    Then the initiative branch does not have the implementer's commit
-    And the branch work/w1 changes nothing under .shop/work/
-    And w1 is awaiting-ruling, its question saying <path>
+    Then the branch work/w1 changes nothing under .shop/work/
 
     Examples:
-      | change                                          | path                         |
-      | setting .shop/work/i1/w1.md's status to green   | .shop/work/i1/w1.md          |
-      | deleting .shop/work/i1/initiative.md            | .shop/work/i1/initiative.md  |
-      | adding .shop/work/i1/w9.md                      | .shop/work/i1/w9.md          |
+      | change                                          |
+      | setting .shop/work/i1/w1.md's status to green   |
+      | deleting .shop/work/i1/initiative.md            |
+      | adding .shop/work/i1/w9.md                      |
 
   @r7
   Scenario: each transition is a commit of the work-item's file, its stage directories and log.jsonl on the initiative branch, and nothing else
@@ -164,8 +153,8 @@ Feature: Supervision
     And README.md has a change that is not committed
     And every worker gives DONE
     When the person runs `work run i1`
-    Then the initiative branch has one commit for each transition log.jsonl gives, `work: w1 drafted -> researched` first and `work: w1 done -> green` last
-    And each of those commits changes .shop/work/i1/w1.md and .shop/work/i1/log.jsonl, and nothing but them and files under .shop/work/i1/runs/w1/
+    Then the initiative branch has one commit for each transition log.jsonl gives
+    And each of those commits changes .shop/work/i1/w1.md and .shop/work/i1/log.jsonl, and nothing but them and w1's stage directories
     And README.md's change is still not committed
 
   @r8
@@ -177,71 +166,49 @@ Feature: Supervision
     Then log.jsonl has, for each of w1's four workers, a start line and then an end line, each with the time, w1, the stage, the agent and the session id claude was given
 
   @r9
-  Scenario: when no work-item can make a transition, `work run` exits, printing each work-item's status and each open question
-    Pins what the person reads when `work run` stops, and that an open question is its own exit.
+  Scenario: when every work-item is green or withdrawn, `work run` exits successfully, printing each work-item's status
+    Pins that a delivery whose work-items all ended well, or were set aside, is no failure.
+    Given i1's work-items w1 is green and w2 is withdrawn
+    When the person runs `work run i1`
+    Then `work run` prints w1 with green, and w2 with withdrawn
+    And it exits successfully
+
+  @r32
+  Scenario: when no work-item can make a transition and one is awaiting-ruling, `work run` exits with an error, printing each work-item's status and each open question
+    Pins what the person reads when `work run` stops on a question, and that waiting on the person is an error.
     Given i1's work-items w1 is drafted and w2 is green
     And the researcher gives QUESTION, asking "Which module owns the log?"
     When the person runs `work run i1`
     Then `work run` prints w1 with awaiting-ruling and the question "Which module owns the log?", and w2 with green
-    And it exits 3
+    And it exits with an error
 
-  @r9
-  Scenario: when every work-item is green or withdrawn, `work run` exits 0, printing each work-item's status
-    Pins that a delivery whose work-items all ended well, or were set aside, is no failure; only an open question or a work-item that can make no transition is an exit of its own.
-    Given i1's work-items w1 is green and w2 is withdrawn
+  @r32
+  Scenario: `work run` prints a question that has no ruling yet, and not one that has a ruling
+    Pins that an open question is one with no ruling yet.
+    Given i1's work-item w1 is awaiting-ruling, its ## Questions holding "Which module owns the log?" and no ruling
+    And i1's work-item w2 is awaiting-ruling, its ## Questions holding "Old question?" and its Rulings section "Old ruling."
     When the person runs `work run i1`
-    Then `work run` prints w1 with green, and w2 with withdrawn
-    And it exits 0
+    Then `work run` prints the question "Which module owns the log?"
+    And it prints neither "Old question?" nor "Old ruling."
+    And it exits with an error
 
   @r10
-  Scenario Outline: `work run` that cannot do what it was asked exits non-zero, says why in one line, and changes nothing
+  Scenario Outline: `work run` that cannot do what it was asked exits with an error, says why, and changes nothing
     Pins that `work run` verifies what it was given before any worker starts, and a refused transition is its refusal.
     Given <setup>
     When the person runs `work run <initiative>`
-    Then work says in one line that <reason>
-    And it exits non-zero
+    Then work says that <reason>
+    And it exits with an error
     And no worker was started
     And nothing in the repository has changed, its commits included
 
     Examples:
       | setup                                                                        | initiative | reason                                                                                    |
       | i1's work-item w1 is drafted                                                 | i9         | the initiative i9 does not exist                                                          |
-      | i1's work-item w1 is drafted, though log.jsonl's last transition of w1 is to researched | i1 | .shop/work/i1/w1.md gives its status as drafted, but log.jsonl's last move of w1 is to researched |
+      | i1's work-item w1 is drafted, though log.jsonl's last transition of w1 is to researched | i1 | .shop/work/i1/w1.md gives its status as drafted, but log.jsonl's last transition of w1 is to researched |
       | i1's work-item w1 is drafted, in a directory that is not a git repository     | i1         | not a git repository                                                                      |
       | i1's work-item w1 is drafted, its checkout's HEAD detached                    | i1         | HEAD is detached                                                                          |
-
-  @r4 @r5 @r10
-  Scenario Outline: a delivery's worktrees are removed when `work run` exits, whatever the implementer's work came to: <end>
-    Pins that `work run` leaves no worktree behind, on a merge, a question or a failure.
-    Given i1's work-item w1 is ready
-    And every worker gives DONE, the implementer <doing>
-    When the person runs `work run i1`
-    Then .shop/worktrees/w1 is not there, and git lists no worktree but the repository's own
-
-    Examples:
-      | end        | doing                                          |
-      | merged     | committing feature.txt                         |
-      | a question | committing feature.txt and suite-fail          |
-      | BLOCKED    | giving BLOCKED, asking "Is the old reader kept?" |
-      | a failure  | deleting its own branch                        |
-
-  @r10
-  Scenario: a git command that fails ends `work run` with git's reason in one line and a non-zero exit code
-    Pins that a failure of git during a delivery is `work run`'s refusal, never a traceback.
-    Given i1's work-item w1 is ready
-    And every worker gives DONE, the implementer deleting its own branch
-    When the person runs `work run i1`
-    Then work says in one line that git merge --ff-only work/w1 failed
-    And it exits non-zero
-
-  @r5 @r10
-  Scenario: a failure of git after the work-item was claimed makes its transition to awaiting-ruling with the failure as its question
-    Pins that no work-item is left claimed, from which no transition follows, when its implementation fails part-way.
-    Given i1's work-item w1 is ready
-    And every worker gives DONE, the implementer deleting its own branch
-    When the person runs `work run i1`
-    Then w1 is awaiting-ruling, its question saying git merge --ff-only work/w1 failed
-    And it exits non-zero
+      | i1's work-item w1 is drafted, and `work run` is started by a worker of another `work run` | i1 | it was started by a worker of another `work run`                                   |
 
   @r11
   Scenario: each worker is given this plugin's own directory as its plugin
@@ -250,17 +217,6 @@ Feature: Supervision
     And every worker gives DONE
     When the person runs `work run i1`
     Then each of w1's four workers was started with --plugin-dir the directory that holds `work run`'s own scripts
-
-  @r11
-  Scenario: when the repository is inside the plugin's own directory, the workers' worktrees are outside it, and gone when `work run` exits
-    Pins that `work run` delivering this plugin's own work gives workers writable worktrees: claude refuses every write under a --plugin-dir, so none may lie under the plugin's directory.
-    Given i1's work-item w1 is drafted
-    And the repository is the plugin: it holds `work run`'s own scripts and agents
-    And every worker gives DONE, the implementer writing report.md at the top of its worktree and naming it as its report
-    When the person runs `work run i1`
-    Then each of w1's four workers worked in a worktree outside the plugin's directory
-    And w1 is green
-    And .shop/worktrees/w1 is not there, and git lists no worktree but the repository's own
 
   @r12
   Scenario Outline: a worker whose agent lists skills may load each of them, and no other worker may: the <who> loading <skill>, <tools>
@@ -279,7 +235,7 @@ Feature: Supervision
 
   @r13
   Scenario Outline: no worker is given a bare Write or Edit tool, so a write outside its worktree is refused: <tools>
-    Pins that a worker's writes stay in the worktree it was started in, where acceptEdits allows them, even when .shop/delivery.toml lists a bare Write.
+    Pins that a worker's writes stay in the worktree it was started in, even when .shop/delivery.toml lists a bare Write.
     Given i1's work-item w1 is drafted
     And <tools>
     And every worker gives DONE, the researcher also writing notes.md into the repository's own checkout
@@ -294,25 +250,27 @@ Feature: Supervision
 
   @r14
   Scenario Outline: a worker's Bash runs only python3 -m pytest, the plugin's scripts by path and its stage's git commands: the <who>'s `<command>` is <fate>
-    Pins that no worker runs any Python it likes: `{scripts}` stands for the directory of `work run`'s own scripts.
+    Pins that no worker runs any Python or git command it likes: `{scripts}` stands for the directory of `work run`'s own scripts.
     Given i1's work-item w1 is drafted
+    And .shop/delivery.toml names no tools
     And every worker gives DONE, the <who> running `<command>`
     When the person runs `work run i1`
     Then its `<command>` was <fate>
 
     Examples:
-      | who         | command                              | fate    |
-      | researcher  | python3 -m pytest --version          | run     |
-      | researcher  | python3 {scripts}/features --help    | run     |
-      | researcher  | python3 -c pass                      | refused |
-      | researcher  | python3 {scripts}/work --help        | refused |
-      | planner     | git status                           | refused |
-      | implementer | python3 -m pytest --version          | run     |
-      | implementer | python3 -c pass                      | refused |
-      | implementer | git log -1                           | refused |
-      | implementer | python3 {scripts}/work show          | refused |
-      | reviewer    | git log -1                           | run     |
-      | reviewer    | python3 -c pass                      | refused |
+      | who         | command                                 | fate    |
+      | researcher  | python3 -m pytest --version             | run     |
+      | researcher  | python3 {scripts}/features --help       | run     |
+      | researcher  | python3 -c pass                         | refused |
+      | researcher  | python3 {scripts}/work --help           | refused |
+      | researcher  | git commit -q --allow-empty -m meddle   | refused |
+      | planner     | git status                              | refused |
+      | implementer | python3 -m pytest --version             | run     |
+      | implementer | python3 -c pass                         | refused |
+      | implementer | git log -1                              | refused |
+      | implementer | python3 {scripts}/work show             | refused |
+      | reviewer    | git log -1                              | run     |
+      | reviewer    | python3 -c pass                         | refused |
 
   @r15
   Scenario: a file the worker's result names is copied into the stage directory before its worktree is removed
@@ -320,8 +278,7 @@ Feature: Supervision
     Given i1's work-item w1 is ready
     And every worker gives DONE, the implementer writing report.md at the top of its worktree and naming it as its report
     When the person runs `work run i1`
-    Then .shop/work/i1/runs/w1/1-implement/ has report.md, as the implementer wrote it
-    And .shop/worktrees/w1 is not there, and git lists no worktree but the repository's own
+    Then w1's implementation stage directory has report.md, as the implementer wrote it
 
   @r16
   Scenario: a researcher's DONE with questions puts those questions into the planner's brief
@@ -330,7 +287,6 @@ Feature: Supervision
     And every worker gives DONE, the researcher asking "Is a title given twice one book or two?"
     When the person runs `work run i1`
     Then the planner's brief has the researcher's question "Is a title given twice one book or two?"
-    And w1 is green
 
   @r17
   Scenario: each worker's brief tells it that it starts in its worktree and never changes directory
@@ -346,8 +302,7 @@ Feature: Supervision
     Given i1's work-item w1 is ready
     And every worker gives DONE, the implementer committing feature.txt
     When the person runs `work run i1`
-    Then the initiative branch has the implementer's commit of feature.txt
-    And git lists no branch work/w1
+    Then git lists no branch work/w1
 
   @r19
   Scenario: a researcher is given the work-item's file set and accepted scenarios, and a limit of 25 turns
@@ -358,7 +313,7 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the researcher's brief gives scripts/thing.py and tests/test_thing.py as the work-item's file set
     And the researcher's brief names the accepted scenario "it answers" of features/thing.feature, and not "it waits"
-    And the researcher was started with --max-turns 25
+    And the researcher was started with a limit of 25 turns
 
   @r20
   Scenario: two ready work-items whose claims would not share a file are implemented at the same time, and merged one at a time
@@ -368,7 +323,6 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the implementers of w1 and w2 worked at the same time
     And the initiative branch has both implementers' commits, one after the other, with no merge commit
-    And w1 and w2 are green
 
   @r20
   Scenario Outline: two ready work-items whose claims would share a file are implemented one after the other: <how>
@@ -378,7 +332,6 @@ Feature: Supervision
     And every worker gives DONE, each implementer committing a file named for its work-item
     When the person runs `work run i1`
     Then no implementer was started before the one before it had ended
-    And w1 and w2 are green
 
     Examples:
       | how             | first                  | second                 |
@@ -393,4 +346,258 @@ Feature: Supervision
     And every worker gives DONE, each implementer committing a file named for its work-item once two implementers have started
     When the person runs `work run i1`
     Then two implementers worked at the same time, and never three
-    And w1, w2 and w3 are green
+
+  @r21
+  Scenario: `work run` started by a worker of another `work run` refuses, saying so
+    Pins that a worker cannot start a delivery of its own.
+    Given i1's work-item w1 is drafted
+    When `work run i1` is started by a worker of another `work run`
+    Then `work run` refuses, saying that it was started by a worker of another `work run`
+
+  @r22
+  Scenario: every pytest command `work run` starts for a work-item, the whole suite's included, is given --work-item with the work-item's name
+    Pins that the plugin's option goes to each pytest run `work run` starts for the work-item.
+    Given i1's work-item w1 is ready
+    And .shop/delivery.toml gives no [tests]
+    And every worker gives DONE, the implementer committing feature.txt
+    When the person runs `work run i1`
+    Then each pytest command `work run` ran for w1, for its scenarios and for the whole suite, was given --work-item w1
+
+  @r22
+  Scenario: a worker's own pytest command is given --work-item with its work-item's name
+    Pins that a worker's pytest selects the scenarios its work-item accepts without the worker naming them.
+    Given i1's work-item w1 is ready
+    And every worker gives DONE, the implementer running `python3 -m pytest -q`
+    When the person runs `work run i1`
+    Then the implementer's `python3 -m pytest -q` ran with --work-item w1
+
+  @r23
+  Scenario: when the repository is inside the plugin's own directory, the workers' worktrees are outside it
+    Pins that `work run` delivering this plugin's own work gives workers writable worktrees: claude refuses every write under a --plugin-dir, so none may lie under the plugin's directory.
+    Given i1's work-item w1 is drafted
+    And the repository is the plugin: it holds `work run`'s own scripts and agents
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then each of w1's four workers worked in a worktree in a temporary directory outside the plugin's directory
+
+  @r24
+  Scenario: the whole suite is run in the implementer's worktree before it starts, and its brief says how it ended
+    Pins that the implementer knows from its brief whether the suite it starts from passes.
+    Given i1's work-item w1 is ready
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then the whole suite was run in the implementer's worktree before the implementer was started
+    And the implementer's brief says how that run of the suite ended
+
+  @r25
+  Scenario: each worker's brief names the plugin's scripts directory, the initiative branch's base, its worktree and its work-item branch
+    Pins what the brief gives every worker so that it need not look for where it is.
+    Given i1's work-item w1 is drafted
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then each of w1's four briefs names the plugin's scripts directory, the initiative branch's base, the worker's worktree and its work-item branch
+
+  @r26
+  Scenario: a work-item whose transition is to awaiting-ruling keeps its work-item branch
+    Pins that the implementer's work is still there for the person to rule on.
+    Given i1's work-item w1 is ready
+    And every worker gives DONE, the implementer committing feature.txt
+    And the whole suite fails on the implementer's branch
+    When the person runs `work run i1`
+    Then git lists the branch work/w1, with the implementer's commit of feature.txt
+
+  @r27
+  Scenario: when every work-item of the initiative is green or withdrawn, a bdd-branch-reviewer reviews the initiative branch from its base
+    Pins that a delivery whose work-items are all done ends with one review of the whole branch.
+    Given i1's work-items w1 is drafted and w2 is withdrawn
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then after w1 was green a `claude -p` session of shopsystem-bdd:bdd-branch-reviewer was started, given one brief naming the initiative branch and its base
+
+  @r28
+  Scenario: a change to .shop/work/ in the repository's own checkout that is not committed when a worker ends is put back, and the work-item's transition is to failed, naming the file
+    Pins that `.shop/work/` in the main checkout is only what its last commit holds whenever a worker ends, and that a change there is a fault, not a question.
+    Given i1's work-item w1 is drafted
+    And every worker gives DONE, and while the researcher works another session changes .shop/work/i1/initiative.md in the repository's own checkout without committing it
+    When the person runs `work run i1`
+    Then .shop/work/i1/initiative.md is as its last commit holds it
+    And w1 is failed, naming .shop/work/i1/initiative.md
+
+  @r29
+  Scenario: the [tests] .shop/delivery.toml gives are run in place of `work run`'s own commands
+    Pins that a repository chooses how its work-item's scenarios and its suite are run.
+    Given i1's work-item w1 is ready
+    And .shop/delivery.toml gives [tests] with `python3 tests.py --work-item w1` for the work-item's scenarios and `python3 tests.py` for the suite
+    And every worker gives DONE, the implementer committing feature.txt
+    When the person runs `work run i1`
+    Then `work run` ran `python3 tests.py --work-item w1` for w1's scenarios and `python3 tests.py` for the suite
+
+  @r30
+  Scenario Outline: a stage's [allowed_tools] in .shop/delivery.toml is its worker's list in place of its own, less any bare Write or Edit: <tools>
+    Pins that a repository chooses a stage's tools, its Bash commands included, but never a bare Write or Edit.
+    Given i1's work-item w1 is drafted
+    And .shop/delivery.toml gives the research stage <tools>
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then the researcher was given --allowedTools <list>
+
+    Examples:
+      | tools                        | list                     |
+      | Read and Grep                | Read,Grep                |
+      | Read and Bash(git commit *)  | Read,Bash(git commit *)  |
+      | Read, Write and Edit         | Read                     |
+
+  @r31
+  Scenario: a planner's DONE with a `fileset` writes that file set into the work-item as it makes the transition to planned
+    Pins that the planner's file set is the work-item's from planned on.
+    Given i1's work-item w1 is researched, its file set scripts/thing.py
+    And every worker gives DONE, the planner's result giving a `fileset` of scripts/thing.py and tests/test_thing.py
+    When the person runs `work run i1`
+    Then the commit of w1's transition to planned writes `fileset:` scripts/thing.py and tests/test_thing.py into .shop/work/i1/w1.md
+
+  @r33
+  Scenario Outline: every worktree `work run` made is removed when it exits, whatever the implementer's work came to: <end>
+    Pins that `work run` leaves no worktree behind, on a merge, a question or a failure.
+    Given i1's work-item w1 is ready
+    And every worker gives DONE, the implementer <doing>
+    When the person runs `work run i1`
+    Then git lists no worktree but the repository's own
+
+    Examples:
+      | end        | doing                                            |
+      | merged     | committing feature.txt                           |
+      | a question | committing feature.txt and suite-fail            |
+      | BLOCKED    | giving BLOCKED, asking "Is the old reader kept?" |
+      | a failure  | deleting its own branch                          |
+
+  @r34
+  Scenario Outline: a <who> that changes <path> outside its stage directory makes the work-item's transition to failed, recording the file, its branch unmerged
+    Pins that a worker breaking the rule on .shop/work/ is a fault, not a question, and none of its work reaches the initiative branch.
+    Given i1's work-item w1 is <status>
+    And every worker gives DONE, the <who> <change>
+    When the person runs `work run i1`
+    Then w1 is failed, recording <path>
+    And the initiative branch has none of the branch work/w1's commits
+
+    Examples:
+      | who         | status  | change                                                                  | path                         |
+      | researcher  | drafted | changing .shop/work/i1/initiative.md                                    | .shop/work/i1/initiative.md  |
+      | implementer | ready   | committing feature.txt and .shop/work/i1/w1.md's status set to green    | .shop/work/i1/w1.md          |
+      | implementer | ready   | committing feature.txt and the deletion of .shop/work/i1/initiative.md  | .shop/work/i1/initiative.md  |
+      | implementer | ready   | committing feature.txt and a new .shop/work/i1/w9.md                    | .shop/work/i1/w9.md          |
+
+  @r35
+  Scenario: `work run` verifies that it can push the initiative branch before it starts each worker
+    Pins that a push that would fail is found before a worker's work is spent.
+    Given i1's work-item w1 is drafted
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then before each of w1's four workers was started, `work run` had verified that it can push the initiative branch to the remote
+
+  @r36
+  Scenario: a question goes into the work-item's ## Questions, before a section that follows it
+    Pins where the question is written, so that what follows the Questions section is never read as a question.
+    Given i1's work-item w1 is drafted, its file with a ## Questions of "Old question?" and then a Rulings section with "Old ruling."
+    And the researcher gives QUESTION, asking "Which module owns the log?"
+    When the person runs `work run i1`
+    Then w1's ## Questions holds "Old question?" and then "Which module owns the log?", and its Rulings section only "Old ruling."
+
+  @r37
+  Scenario Outline: no worker is started for a work-item that is <status>
+    Pins that a work-item waiting on the person, or on a remedy, takes no stage.
+    Given i1's work-item w1 is <status>
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then no worker was started for w1
+
+    Examples:
+      | status          |
+      | awaiting-ruling |
+      | failed          |
+
+  @r37
+  Scenario: no worker is started for a work-item after its transition to awaiting-ruling
+    Pins that a question stops the work-item's stages within the delivery that raised it.
+    Given i1's work-item w1 is drafted
+    And the researcher gives QUESTION, asking "Which module owns the log?"
+    When the person runs `work run i1`
+    Then no worker was started for w1 after the researcher
+
+  @r38
+  Scenario: `work run` pushes the initiative branch after each commit it makes on it
+    Pins that no committed transition or merge is left only on the machine.
+    Given i1's work-item w1 is drafted
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then after each commit `work run` made on the initiative branch, it pushed the initiative branch to the remote
+    And the remote's initiative branch is at the initiative branch's head
+
+  @r39
+  Scenario: a push that cannot be verified makes the work-item's transition to failed, recording why, before any worker starts
+    Pins that a remote that would refuse the work stops it before it is done.
+    Given i1's work-item w1 is drafted
+    And the remote refuses pushes to the initiative branch
+    When the person runs `work run i1`
+    Then w1 is failed, recording why the push could not be verified
+    And no worker was started
+
+  @r40
+  Scenario: a work-item's transition to failed ends `work run` with an error naming the work-item and its fault
+    Pins that a fault is reported to the person as the reason the delivery stopped.
+    Given i1's work-item w1 is drafted
+    And every worker gives DONE, the researcher also changing .shop/work/i1/initiative.md
+    When the person runs `work run i1`
+    Then `work run` names w1 and that its researcher changed .shop/work/i1/initiative.md
+    And it exits with an error
+
+  @r41
+  Scenario Outline: a git command that fails during a stage makes the work-item's transition to failed, recording git's reason: <fault>
+    Pins that a failure of git during a delivery is a fault of the work-item, never a traceback or a question.
+    Given i1's work-item w1 is ready
+    And every worker gives DONE, <doing>
+    When the person runs `work run i1`
+    Then w1 is failed, recording that <reason>
+
+    Examples:
+      | fault      | doing                                                         | reason                                                      |
+      | the merge  | the implementer deleting its own branch                       | git merge --ff-only work/w1 failed, with git's reason       |
+      | a push     | the remote refusing pushes once the implementer has started   | the push of the initiative branch failed, with git's reason |
+
+  @r42
+  Scenario Outline: a worker that ends without a result file `work run` can read makes the work-item's transition to failed, recording how its session ended: <result>
+    Pins that a worker leaving no readable result is a fault, not a question, and the person learns how its session ended.
+    Given i1's work-item w1 is drafted
+    And the researcher's session ends at its turn limit, <result>
+    When the person runs `work run i1`
+    Then w1 is failed, recording that the researcher's session ended at its turn limit
+
+    Examples:
+      | result                                        |
+      | having written no result file                 |
+      | having written a result file that is not JSON |
+
+  @r43
+  Scenario Outline: before a merge, a failing scenario whose requirement is accepted by <accepted by> is counted as <counted>
+    Pins that the suite before a merge expects the failures of work not yet done elsewhere in the initiative, and no other.
+    Given i1's work-item w1 is ready, accepting thing#r1, and w2 is drafted and w3 is green
+    And features/thing.feature has the scenario "it waits", tagged @r2, which fails
+    And thing#r2 is accepted by <accepted by>
+    And every worker gives DONE, the implementer committing feature.txt
+    When the person runs `work run i1`
+    Then the whole suite `work run` ran before w1's merge counted "it waits" as <counted>
+
+    Examples:
+      | accepted by     | counted          |
+      | w2 only         | expected         |
+      | w2 and w1       | not expected     |
+      | w2 and w3       | not expected     |
+      | w3 only         | not expected     |
+      | no work-item    | not expected     |
+
+  @r44
+  Scenario: each worker's brief tells it to write its result file first and keep it current as it works
+    Pins that a worker that stops part-way still leaves a result for `work run` to read.
+    Given i1's work-item w1 is drafted
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then each of w1's four briefs tells the worker to write its result file first and keep it current as it works

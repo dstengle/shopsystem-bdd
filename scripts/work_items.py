@@ -13,6 +13,8 @@ import re
 
 def pytest_addoption(parser):
     parser.addoption("--work-item", default=None, help="run only the scenarios of the requirements it accepts")
+    parser.addoption("--whole-suite", action="store_true", default=False,
+                     help="with --work-item, run every test: the whole suite before the work-item's merge")
 
 
 def work_dir(start):
@@ -41,7 +43,7 @@ def accepted(name, start):
 
 def pytest_collection_modifyitems(config, items):
     name = config.getoption("--work-item")
-    if not name:
+    if not name or config.getoption("--whole-suite"):
         return
     want = accepted(name, config.invocation_params.dir)
     keep = []

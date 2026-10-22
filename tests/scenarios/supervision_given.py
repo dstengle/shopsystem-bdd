@@ -9,23 +9,25 @@ import sys
 from pytest_bdd import given, parsers
 
 from .conftest import INDEX, ROOT, cap, feature, full
-from .supervision_world import DELIVERY, NEEDS_FEATURE, ROLES, STUB, TESTS_PY, commit_all, committed, git, item_text, scripts_in, write
+from .supervision_world import CONFTEST_PY, DELIVERY, NEEDS_FEATURE, ROLES, STUB, TESTS_PY, commit_all, committed, git, item_text, remote, scripts_in, write
 
 
-@given("a git repository with an initiative i1 under .shop/work/, a stand-in claude first on PATH and as "
-       "$SHOPSYSTEM_WORK_CLAUDE, and tests that pass", target_fixture="plan")
+@given("a git repository with an initiative i1 under .shop/work/, a remote the initiative branch can be pushed to, a "
+       "stand-in claude first on PATH and as $SHOPSYSTEM_WORK_CLAUDE, and tests that pass", target_fixture="plan")
 def repository(repo):
     write(repo, "spec/index.md", INDEX)
     write(repo, "spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, `thing` shall answer."]))
     write(repo, ".shop/work/i1/initiative.md", "---\nid: %s\nkind: initiative\nstatus: started\n---\n" % full("initiative", "i1"))
     write(repo, ".shop/delivery.toml", DELIVERY)
     write(repo, "tests.py", TESTS_PY)
+    write(repo, "conftest.py", CONFTEST_PY)
     write(repo, "README.md", "# repo\n")
     git(repo, "init", "-q", "-b", "main")
     git(repo, "config", "user.name", "Someone")
     git(repo, "config", "user.email", "someone@example.com")
     git(repo, "config", "commit.gpgsign", "false")
     commit_all(repo, "the repository")
+    remote(repo)
     stub = repo.parent / "stub"
     (stub / "bin").mkdir(parents=True)
     claude = stub / "bin" / "claude"
@@ -92,10 +94,11 @@ def no_tools(repo):
     assert "allowed_tools" not in (repo / ".shop/delivery.toml").read_text()
 
 
-@given(parsers.parse(".shop/delivery.toml gives the {stage} stage {first} and {second}"))
-def stage_tools(repo, stage, first, second):
+@given(parsers.parse(".shop/delivery.toml gives the {stage} stage {tools}"))
+def stage_tools(repo, stage, tools):
+    listed = tools.replace(" and ", ", ").split(", ")
     with open(repo / ".shop/delivery.toml", "a") as out:
-        out.write('\n[allowed_tools]\n%s = ["%s", "%s"]\n' % (stage, first, second))
+        out.write('\n[allowed_tools]\n%s = [%s]\n' % (stage, ", ".join('"%s"' % t for t in listed)))
     commit_all(repo, "the %s stage's tools" % stage)
 
 
@@ -104,7 +107,7 @@ def researcher_odd_questions(plan, status, text, number):
     plan["code-scout"] = {"status": status, "questions": text if text is not None else int(number)}
 
 
-@given(parsers.re(r"i1's work-item (?P<name>\w+) is (?P<status>[\w-]+), its file with a Questions section of "
+@given(parsers.re(r"i1's work-item (?P<name>\w+) is (?P<status>[\w-]+), its file with a ## Questions of "
                   r'"(?P<question>[^"]+)" and then a Rulings section with "(?P<ruling>[^"]+)"$'))
 def item_with_sections(repo, name, status, question, ruling):
     write(repo, ".shop/work/i1/%s.md" % name, item_text(name, status) + "\n## Questions\n- %s\n\n## Rulings\n- %s\n" % (question, ruling))
@@ -123,34 +126,23 @@ def needs_feature(repo):
     commit_all(repo, "the scenarios need feature.txt")
 
 
-@given(parsers.parse("{tests} fail on the implementer's branch"))
+@given(parsers.re(r"(?P<tests>the work-item's scenarios|the whole suite) fails? on the implementer's branch$"))
 def failing_tests(plan, tests):
     marker = {"the work-item's scenarios": "scenarios-fail", "the whole suite": "suite-fail"}[tests]
     plan["bdd-implementer"]["commit"][marker] = "\n"
 
 
-@given(parsers.re(r'the researcher gives (?P<status>[A-Z_-]+), asking "(?P<question>[^"]+)"$'))
+@given(parsers.re(r'the researcher gives (?P<status>[A-Z_-]+)(?:, asking "(?P<question>[^"]+)")?$'))
 def researcher_asks(plan, status, question):
-    plan["code-scout"] = {"status": status, "questions": [question]}
+    plan["code-scout"] = {"status": status, "questions": [question] if question else []}
 
 
-@given("the researcher writes no result")
-def researcher_no_result(plan):
-    plan["code-scout"] = {"result": "none"}
-
-
-@given("the researcher writes a result that is not JSON")
-def researcher_not_json(plan):
-    plan["code-scout"] = {"result": "not-json"}
-
-
-@given("every worker gives DONE, the researcher also setting w1's status to green, changing "
-       ".shop/work/i1/initiative.md and writing notes.md in its stage directory")
+@given("every worker gives DONE, the researcher also changing .shop/work/i1/initiative.md and writing notes.md in its "
+       "stage directory")
 def researcher_meddles(repo, plan, context):
     plan["default"] = {"status": "DONE"}
     context["initiative.md"] = (repo / ".shop/work/i1/initiative.md").read_text()
-    plan["code-scout"] = {"write": {".shop/work/i1/w1.md": item_text("w1", "green"),
-                                    ".shop/work/i1/initiative.md": "changed by a worker\n"},
+    plan["code-scout"] = {"write": {".shop/work/i1/initiative.md": "changed by a worker\n"},
                           "notes": {"notes.md": "what the researcher found\n"}}
 
 

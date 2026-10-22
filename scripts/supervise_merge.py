@@ -13,24 +13,27 @@ from workqueue import WORK
 # has pytest-xdist, the work-item's and the suite alike (supervision's Implementation); in one process where it has not.
 # `--work-item` is the plugin's own pytest plugin, scripts/work_items.py, loaded by `-p` from the scripts directory
 # work run puts on PYTHONPATH, so a repository delivered by work run needs no conftest of its own for it.
+# The whole suite is given --work-item too (r22), with --whole-suite, which keeps every test (r4) and counts as expected
+# the failures of other work-items' requirements not yet green (r43); -rfEx names those in the summary.
 TESTS = {"work_item": "python3 -m pytest -q{parallel} -p work_items --work-item {work_item}",
-         "suite": "python3 -m pytest -q{parallel}"}
+         "suite": "python3 -m pytest -q{parallel} -rfEx -p work_items --work-item {work_item} --whole-suite"}
 
 
 
 class Merge:
     """The part of supervise.Run that implements a ready work-item and merges its branch."""
 
-    def tests(self):
+    def tests(self, name):
+        """The commands for `name`'s scenarios and the whole suite, as argument lists."""
         has = subprocess.run(["python3", "-c", "import xdist"], cwd=self.root, capture_output=True).returncode == 0
         parallel = " -n auto" if has else ""
-        tests = {k: v.replace("{parallel}", parallel) for k, v in TESTS.items()}
-        return dict(tests, **self.delivery().get("tests", {}))
+        tests = dict({k: v.replace("{parallel}", parallel) for k, v in TESTS.items()}, **self.delivery().get("tests", {}))
+        return {k: shlex.split(v.replace("{work_item}", name)) for k, v in tests.items()}
 
     def suite_record(self, tree, suite):
         """work run's own whole-suite run in `tree`, as the line `Suite: <N> passed, <M> failed at <hash> in <s> s`."""
         began = time.monotonic()
-        done = subprocess.run(shlex.split(suite), cwd=tree, capture_output=True, text=True, env=with_scripts())
+        done = subprocess.run(suite, cwd=tree, capture_output=True, text=True, env=with_scripts())
         seconds = time.monotonic() - began
         out = done.stdout + done.stderr
         summary = out.strip().splitlines()[-1] if out.strip() else ""
@@ -80,7 +83,7 @@ class Merge:
                 pass
 
     def claimed(self, name):
-        tests = self.tests()
+        tests = self.tests(name)
         tree = self.worktree(name, name, "work/" + name)
         record = self.suite_record(tree, tests["suite"])
         self.log(**{"work-item": name, "stage": "implement", "event": "suite", "record": record})
@@ -112,7 +115,7 @@ class Merge:
         if changed:
             return ("bdd-implementer's branch work/%s changed %s under .shop/work/, which only work run "
                     "writes; work run put it back on the branch and did not merge it" % (name, ", ".join(changed)))
-        for cmd in (shlex.split(tests["work_item"].format(work_item=name)), shlex.split(tests["suite"])):
+        for cmd in (tests["work_item"], tests["suite"]):
             done = subprocess.run(cmd, cwd=tree, capture_output=True, text=True, env=with_scripts())
             if done.returncode != 0:
                 return "`%s` failed on %s's branch work/%s:\n%s" % (

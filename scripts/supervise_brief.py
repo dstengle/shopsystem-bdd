@@ -30,7 +30,8 @@ class Briefs:
         base = self.base()
         if base:
             lines.append("Base: %s" % base)
-        lines += ["Worktree: %s" % tree, "Branch: %s" % (branch or "none (a detached checkout)")]
+        lines += ["Worktree: %s" % tree, "Branch: %s" % (branch or "none (a detached checkout)"),
+                  "Work-item branch: work/%s" % name]
         lines += ["%s: %s" % kv for kv in extra]
         if stage == "research":
             lines += self.research_lines(data)
@@ -40,8 +41,10 @@ class Briefs:
         path.write_text("# %s of %s\n\n%s\n\nRead (paths in your worktree):\n%s\nRun directory: %s\nResult file: %s\n\n"
                         "You start in your worktree, %s: run every command from there, as it is, and never change "
                         "directory (no `cd`, no `git -C`); a command that does is refused.\n\n"
-                        "Write your notes, plan, report or findings in the run directory and, last, the result file: "
-                        "JSON with `status`, `summary` (under fifteen lines) and `questions` (a list of strings).\n"
+                        "Write the result file first and keep it current as you work: JSON with `status`, `summary` "
+                        "(under fifteen lines) and `questions` (a list of strings), so that a session that stops "
+                        "part-way still leaves a result. Write your notes, plan, report or findings in the run "
+                        "directory.\n"
                         % (stage, name, "\n".join(lines), "".join("- %s\n" % r for r in read), here, here / "result.json",
                            tree))
         return path

@@ -155,6 +155,6 @@ def agrees(root, initiative, name):
         raise Refused("%s has no status in its frontmatter; it is not moved" % path.relative_to(root))
     logged = last_logged(path.parent / "log.jsonl", name, root)
     if logged is not None and logged != before:
-        raise Refused("%s gives its status as %s, but log.jsonl's last move of %s is to %s; it is not moved"
+        raise Refused("%s gives its status as %s, but log.jsonl's last transition of %s is to %s; it is not moved"
                       % (path.relative_to(root), before, name, logged))
     return before

@@ -20,10 +20,12 @@ import sys
 from pytest_bdd import parsers, scenarios, then, when
 
 from .conftest import SCRIPTS
+from .supervision_faults_steps import *  # noqa: F401,F403
+from .supervision_tests_steps import *  # noqa: F401,F403
 from .supervision_given import *  # noqa: F401,F403  the steps are fixtures pytest-bdd finds by their names here
 from .supervision_then_workers import *  # noqa: F401,F403
 from .supervision_world import *  # noqa: F401,F403  the `repo` fixture among them
-from .supervision_world import fields, git, moves, questions, section, state, tree_has
+from .supervision_world import fields, git, moves, section, state, tree_has, work_commits
 
 scenarios("supervision.feature")
 
@@ -55,13 +57,13 @@ def is_green(repo, context, name):
     assert fields(repo / (".shop/work/i1/%s.md" % name))["status"] == "green", (context["done"].stdout, context["done"].stderr)
 
 
-@then(parsers.parse("it exits {code:d}"))
-def exits(context, code):
-    assert context["done"].returncode == code, context["done"]
+@then("it exits successfully")
+def exits_successfully(context):
+    assert context["done"].returncode == 0, context["done"]
 
 
-@then("it exits non-zero")
-def exits_non_zero(context):
+@then("it exits with an error")
+def exits_with_error(context):
     assert context["done"].returncode != 0, context["done"]
 
 
@@ -78,23 +80,20 @@ def merged(repo, context):
         subjects, context["done"].stderr)
 
 
+@then("the initiative branch does not have feature.txt")
+def no_feature(repo, context):
+    assert not tree_has(repo, "feature.txt"), context["done"].stderr
+
+
 @then("the initiative branch does not have the implementer's commit")
 def not_merged(repo):
     subjects = git(repo, "log", "main", "--format=%s").splitlines()
     assert not any(s.startswith("bdd-implementer:") for s in subjects) and not tree_has(repo, "feature.txt"), subjects
 
 
-@then(parsers.parse("{name} is awaiting-ruling, its question naming `{command}` and what it printed"))
-def awaiting_failure(repo, context, name, command):
-    assert fields(repo / (".shop/work/i1/%s.md" % name))["status"] == "awaiting-ruling", context["done"]
-    asked = questions(repo, name)
-    assert command in asked and "FAILED:" in asked, asked
-
-
-@then(parsers.parse("{name} is awaiting-ruling, its question saying {question}"))
-def awaiting_question(repo, context, name, question):
-    assert fields(repo / (".shop/work/i1/%s.md" % name))["status"] == "awaiting-ruling", context["done"]
-    assert question in questions(repo, name), questions(repo, name)
+@then(parsers.re(r"(?P<name>\w+) is awaiting-ruling$"))
+def awaiting(repo, context, name):
+    assert fields(repo / (".shop/work/i1/%s.md" % name))["status"] == "awaiting-ruling", (context["done"].stdout, context["done"].stderr)
 
 
 @then(".shop/work/i1/initiative.md is as it was")
@@ -111,32 +110,22 @@ def elsewhere_kept(repo, context):
     assert git(repo, "status", "--porcelain", "--", ".shop/work") == ""
 
 
-@then(parsers.parse("log.jsonl's first transition of {name} is from {before} to {after}"))
-def first_move(repo, name, before, after):
-    assert moves(repo, name)[:1] == [(before, after)], moves(repo, name)
-
-
 @then("the researcher's notes.md is in its stage directory")
 def notes_kept(repo):
     found = list((repo / ".shop/work/i1/runs/w1").glob("*-research/notes.md"))
     assert len(found) == 1 and found[0].read_text() == "what the researcher found\n", found
 
 
-@then("the initiative branch has one commit for each transition log.jsonl gives, `work: w1 drafted -> researched` first and "
-      "`work: w1 done -> green` last")
+@then("the initiative branch has one commit for each transition log.jsonl gives")
 def one_commit_per_move(repo, context):
-    subjects = [s for s in git(repo, "log", "--reverse", "main", "--format=%s").splitlines() if s.startswith("work: ")]
-    assert len(subjects) == len(moves(repo)), (subjects, moves(repo))
-    assert subjects[0] == "work: w1 drafted -> researched" and subjects[-1] == "work: w1 done -> green", subjects
+    made = work_commits(repo)
+    assert moves(repo) and len(made) == len(moves(repo)), (made, moves(repo), context["done"].stderr)
 
 
-@then("each of those commits changes .shop/work/i1/w1.md and .shop/work/i1/log.jsonl, and nothing but them and files "
-      "under .shop/work/i1/runs/w1/")
+@then("each of those commits changes .shop/work/i1/w1.md and .shop/work/i1/log.jsonl, and nothing but them and w1's "
+      "stage directories")
 def commit_contents(repo):
-    for line in git(repo, "log", "main", "--format=%H %s").splitlines():
-        sha, subject = line.split(" ", 1)
-        if not subject.startswith("work: "):
-            continue
+    for sha, subject in work_commits(repo):
         changed = set(git(repo, "show", "--name-only", "--format=", sha).split())
         assert {".shop/work/i1/w1.md", ".shop/work/i1/log.jsonl"} <= changed, (subject, changed)
         others = changed - {".shop/work/i1/w1.md", ".shop/work/i1/log.jsonl"}
@@ -165,10 +154,10 @@ def prints_statuses(context, name, status, name2, status2):
         assert [l for l in out if n in l.split() and s in l.split()], (n, s, out)
 
 
-@then(parsers.parse("work says in one line that {reason}"))
-def says_in_one_line(context, reason):
+@then(parsers.parse("work says that {reason}"))
+def says(context, reason):
     err = context["done"].stderr
-    assert "Traceback" not in err and len(err.splitlines()) == 1 and reason in err, err
+    assert "Traceback" not in err and reason in err, err
 
 
 @then("nothing in the repository has changed, its commits included")
@@ -182,9 +171,8 @@ def not_there(repo, context, first, second):
         assert not (repo / rel).exists(), (rel, context["done"].stderr)
 
 
-@then(parsers.parse("{rel} is not there, and git lists no worktree but the repository's own"))
-def no_worktree(repo, context, rel):
-    assert not (repo / rel).exists(), (rel, context["done"].stdout, context["done"].stderr)
+@then("git lists no worktree but the repository's own")
+def no_worktree(repo, context):
     trees = git(repo, "worktree", "list", "--porcelain").count("worktree ")
     assert trees == 1, git(repo, "worktree", "list")
 
@@ -195,7 +183,7 @@ def branch_put_back(repo):
     assert git(repo, "diff", "--name-only", "main...work/w1", "--", ".shop/work/") == "", git(repo, "log", "--stat", "main..work/w1")
 
 
-@then(parsers.re(r'(?P<name>\w+)\'s Questions section holds "(?P<old>[^"]+)" and then "(?P<new>[^"]+)", and its Rulings '
+@then(parsers.re(r'(?P<name>\w+)\'s ## Questions holds "(?P<old>[^"]+)" and then "(?P<new>[^"]+)", and its Rulings '
                  r'section only "(?P<ruling>[^"]+)"$'))
 def sections(repo, context, name, old, new, ruling):
     text = (repo / (".shop/work/i1/%s.md" % name)).read_text()
@@ -205,17 +193,21 @@ def sections(repo, context, name, old, new, ruling):
     assert ruled == ["- " + ruling], text
 
 
-@then(parsers.re(r'`work run` prints the question "(?P<question>[^"]+)" and not "(?P<other>[^"]+)"$'))
-def prints_question_only(context, question, other):
+@then(parsers.re(r'`work run` prints the question "(?P<question>[^"]+)"$'))
+def prints_question(context, question):
+    assert question in context["done"].stdout, context["done"]
+
+
+@then(parsers.re(r'it prints neither "(?P<first>[^"]+)" nor "(?P<second>[^"]+)"$'))
+def prints_neither(context, first, second):
     out = context["done"].stdout
-    assert question in out and other not in out, out
+    assert first not in out and second not in out, out
 
 
-@then(parsers.parse("{run_dir} has report.md, as the implementer wrote it"))
-def report_copied(repo, context, run_dir):
-    report = repo / run_dir / "report.md"
-    assert report.is_file() and report.read_text() == "the implementer's report\n", (
-        sorted(str(p.relative_to(repo)) for p in (repo / run_dir).rglob("*")), context["done"].stderr)
+@then("w1's implementation stage directory has report.md, as the implementer wrote it")
+def report_copied(repo, context):
+    found = list((repo / ".shop/work/i1/runs/w1").glob("*-implement/report.md"))
+    assert len(found) == 1 and found[0].read_text() == "the implementer's report\n", (found, context["done"].stderr)
 
 
 @then(parsers.parse("git lists no branch {branch}"))

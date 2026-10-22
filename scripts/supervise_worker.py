@@ -48,14 +48,17 @@ def git(root, *args):
     return done
 
 
-def with_scripts(plugin=False):
+def with_scripts(plugin=False, work_item=None):
     """The environment with the plugin's scripts directory last on PYTHONPATH, so `-p work_items` finds the plugin's
     `--work-item` and a module of the project's own named as one of the scripts still comes first; with `plugin`, that
-    pytest plugin loaded by every pytest run too (PYTEST_PLUGINS), as for a worker that runs `--work-item` itself."""
+    pytest plugin loaded by every pytest run too (PYTEST_PLUGINS), and with `work_item`, `--work-item <it>` given to
+    every pytest run (PYTEST_ADDOPTS), as for a worker."""
     env = dict(os.environ)
     env["PYTHONPATH"] = os.pathsep.join(p for p in (env.get("PYTHONPATH"), str(SCRIPTS)) if p)
     if plugin:
         env["PYTEST_PLUGINS"] = ",".join(p for p in (env.get("PYTEST_PLUGINS"), "work_items") if p)
+    if work_item:      # every pytest a worker runs selects its work-item's scenarios (r22)
+        env["PYTEST_ADDOPTS"] = " ".join(p for p in (env.get("PYTEST_ADDOPTS"), "--work-item " + work_item) if p)
     return env
 
 
@@ -137,7 +140,7 @@ class Workers:
                                "--session-id", session, "--output-format", "json",
                                "--permission-mode", "acceptEdits", "--allowedTools", ",".join(self.tools(stage, agent)),
                                *(["--max-turns", str(MAX_TURNS[stage])] if stage in MAX_TURNS else [])],
-                              cwd=tree, capture_output=True, text=True, env=with_scripts(plugin=True))
+                              cwd=tree, capture_output=True, text=True, env=with_scripts(plugin=True, work_item=name))
         with self.lock:
             shutil.copytree(here, kept_at)
             (kept_at / "session.json").write_text(done.stdout)
