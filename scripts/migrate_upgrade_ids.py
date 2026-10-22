@@ -29,6 +29,8 @@ def front_kind(text):
 
 def initiatives(root):
     """The initiative directories, in the order of their number `i<n>`."""
+    if not (root / WORK).is_dir():
+        return []
     found = [(int(m.group(1)), d) for d in (root / WORK).iterdir() if d.is_dir() and (m := re.match(r"i(\d+)", d.name))]
     return [d for _, d in sorted(found, key=lambda pair: pair[0])]
 
@@ -48,7 +50,10 @@ def rewrite_item(text, old, new, ctx, names):
     def rename(match):
         return (match.group(1) or "") + names[match.group(2)]
 
-    lines = [pattern.sub(rename, l) if re.match(r"(blocked_by|depends_on):", l) else l for l in head.splitlines(True)]
+    lines, listing = [], False
+    for l in head.splitlines(True):
+        listing = bool(re.match(r"(blocked_by|depends_on):\s*$", l)) or (listing and bool(re.match(r"\s*-\s", l)))
+        lines.append(pattern.sub(rename, l) if listing or re.match(r"(blocked_by|depends_on):", l) else l)
     return "---\n" + "".join(lines) + sep + body
 
 
