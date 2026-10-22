@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/upgrades-between-plugin-releases
 summary: "A repository on the final layout records the plugin version it is on, and `migrate upgrade`, offered at a session's start and run on the person's yes, is the general means for every change a later release makes to its files."
 date: 2026-10-22
-status: proposed
+status: accepted
 source: [design-decision/work-items-named-by-ids]
 by: "the person, 2026-10-22 (\"Please create a more general purpose migration capability\"), delegating the drafting decisions to the coordinator; on the design note work-item ids and plugin upgrades (0.24.0)"
 ---

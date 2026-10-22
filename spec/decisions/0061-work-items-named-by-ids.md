@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/work-items-named-by-ids
 summary: "A work-item is named by an id `w<n>`, the bounded context's and never repeated, and every command that names a work-item names it by that id."
 date: 2026-10-22
-status: proposed
+status: accepted
 source: [observation/2026-10-22-release-gate-0-23-0, measurement/2026-10-22-research-at-the-limit]
 by: "the person, 2026-10-22, delegating the drafting decisions to the coordinator; on the design note work-item ids and plugin upgrades (0.24.0)"
 ---

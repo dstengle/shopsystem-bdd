@@ -183,3 +183,19 @@ The person asked for the `--work-item` fix approved for 0.24.0 at the 0.23.0 gat
 delegated its small-change gate to the coordinator's recommendation. Supervision r55 and r56 were written, formulated
 and delivered by a direct bdd-implementer (initiative i20); the duplicate work-item names and the other 0.24.0 items
 stay for 0.24.0.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-22-release-0-24-0
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+by: the person ("I thought we were fixing the names. Please get the work ids released"; "Please create a more general purpose migration capability ... Now skip questions and get the release done"), recorded by the coordinator
+date: 2026-10-22
+
+The person asked for the work-item ids as the next release, with a general upgrade capability offered when a newer
+plugin is installed, and delegated every gate to the coordinator. Under that delegation the coordinator approved the
+lines of i21 (64d0443, 4cf0163, the widened r26), raised the researcher's limit to 40 (supervision r19: with probes
+working, design-model-check-3's researcher still ended at 25), ruled the open questions (work-queue-5 reading A, its
+two deprecated scenarios retired; design-model-check-3's step leaving r110's problem out of other lines' counts;
+migration-tools-1's Important fixed; w2 reading A, an empty title refused), and dropped work-queue r7's outline row
+"add i1 ../../w1" (f69c120) because a title is no longer a file name (branch review 2, N1). `work rule` is still
+missing, so ruled work-items were finished by direct implementers and withdrawn from `work run`. Round trips in
+`measure` and analysis-tools' `--json` lines move to the next release. This repository was upgraded by its own
+`migrate upgrade` (9170f7a).

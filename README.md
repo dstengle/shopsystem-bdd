@@ -131,6 +131,26 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 Only `initiative-round` has the Agent tool. A plugin agent's `hooks` and `permissionMode` are ignored, so a role's
 limits are its tools; under `work run` they are also its `--allowedTools`.
 
+## 0.24.0: work-items named by ids, and upgrades between plugin releases
+
+- **Work-items are named by ids** (decision 0061): `work add <initiative> <title>` drafts `w<n>`, `<n>` one above the
+  highest of any work-item in the bounded context, writes the title as its heading and prints the id. Every command
+  that names a work-item takes the id (`work retry`, `work withdraw`, `--work-item`, `work run`'s branches and stage
+  directories). `model check` prints a work-item whose file is not `w<n>.md`, and two with one id.
+- **Upgrades between plugin releases** (decision 0062): a repository records its plugin version in
+  `.shop/plugin-version` (none means 0.23.1). `migrate status` prints the repository's version, the plugin's and each
+  pending upgrade step; `migrate upgrade` applies them, records the version and commits it all in one commit, and
+  refuses on uncommitted changes. When a session starts, the plugin's SessionStart hook offers the person the upgrade
+  when a step is pending, and asks for a plugin update when the repository is ahead of it.
+- **The first upgrade step**, "work-items named by ids": every work-item becomes `w<n>`, numbered by initiative and
+  then file name; its file and `runs/` directory are renamed, its old name kept as its heading, and its name rewritten
+  in its initiative's `log.jsonl` and in every work-item's `blocked_by`, `depends_on` and `for`.
+- **A researcher's limit is 40 turns** (supervision r19), up from 25: researchers that finished used 14 to 30.
+
+Upgrading a consuming repository from 0.23.x: update the plugin and start a session; accept the offered upgrade (or
+run `migrate upgrade` with a clean checkout). Scripts or skills that call `work add <initiative> <name>` now pass a
+title and read the printed id.
+
 ## 0.23.1: `--work-item` keeps tests that are not scenarios
 
 - **`--work-item` keeps tests that are not scenarios** (supervision r55, r56): the option `work run` gives every
