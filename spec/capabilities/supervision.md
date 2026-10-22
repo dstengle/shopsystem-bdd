@@ -20,7 +20,7 @@ from what using it shows.
 - [r2] **When** a work-item's status is `drafted`, `researched`, `ready` or `done`, `work run` shall start a new `claude -p` session of that stage's agent (`code-scout`, `bdd-planner`, `bdd-implementer`, `bdd-task-reviewer`), given one brief that names the work-item, the files to read and where its result goes.
 - [r3] **When** a worker's result gives the outcome `DONE`, `work run` shall make the work-item's transition to its next status.
 - [r4] **When** an implementer's outcome is `DONE`, `work run` shall merge its work-item branch into the initiative branch only if the work-item's scenarios and the whole suite pass on it.
-- [r5] **If** a worker gives any outcome but `DONE`, writes no result, or its work fails the work-item's scenarios or the suite, then `work run` shall make the work-item's transition to `awaiting-ruling`, with the worker's questions or the failure as its question.
+- [r5] **If** a worker gives any outcome but `DONE`, or its work fails the tests, then `work run` shall transition the work-item to `awaiting-ruling`.
 - [r6] **If** a worker changes a file under `.shop/work/` outside its stage directory, then `work run` shall put the file back as it was.
 - [r7] **When** `work run` makes a work-item's transition, `work run` shall commit the work-item's file, its stage directories and `log.jsonl` on the initiative branch, and nothing else.
 - [r8] **When** a worker starts or ends, `work run` shall append a line to `log.jsonl` with the time, the work-item, the stage, the agent and the session id.
@@ -57,6 +57,9 @@ from what using it shows.
 - [r39] **If** the verification before a worker starts fails, then `work run` shall transition the work-item to `failed`, recording the reason, before any worker starts.
 - [r40] **When** `work run` transitions a work-item to `failed`, `work run` shall exit with an error, naming the work-item and its fault.
 - [r41] **If** a git command, a push included, fails during a work-item's stage, then `work run` shall transition the work-item to `failed`, recording git's reason.
+- [r42] **If** a worker ends without a result file, then `work run` shall transition the work-item to `failed`, recording how its session ended.
+- [r43] **When** `work run` runs the whole suite before a merge, `work run` shall count as expected each failing scenario whose requirement only work-items not yet `green`, other than the one being merged, accept.
+- [r44] **When** `work run` writes a worker's brief, `work run` shall tell the worker to write its result file first and keep it current as it works.
 
 ## Implementation, may change
 - The work-item's scenarios and the suite alike run in parallel with pytest-xdist (`-n auto`) (design-decision/plugin-takes-the-dependencies-it-needs).
