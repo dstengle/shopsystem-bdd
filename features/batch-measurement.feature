@@ -2,8 +2,9 @@
 Feature: Batch measurement
   Narrator: a session measuring a closed batch
 
-  @r1
-  Scenario: an archive file's batch runs from the archive commit before it to its own
+  @r1 @deprecated
+  Scenario: an archive file's batch runs from the archive commit before it to its own (deprecated)
+    Deprecated for: removal
     A named archive file's batch starts where the previous archive file was added and ends where its own was.
     Given archive file 2026-09-01-slices.md was added by commit A
     And archive file 2026-09-15-slices.md was added by a later commit B
@@ -11,8 +12,9 @@ Feature: Batch measurement
     Then one facts file is written for the batch
     And the batch's window runs from commit A to commit B
 
-  @r2
-  Scenario: without an archive file the open batch is measured from the last archive commit to now
+  @r2 @deprecated
+  Scenario: without an archive file the open batch is measured from the last archive commit to now (deprecated)
+    Deprecated for: removal
     With no archive file, the batch is the work since the last archive, read against the living plan.
     Given the last archive file was added by commit B
     And the repository has one living plan
@@ -20,8 +22,9 @@ Feature: Batch measurement
     Then the batch's window runs from commit B to now
     And the slices are read from the living plan
 
-  @r3
-  Scenario Outline: a given --<option> replaces that end of the batch
+  @r3 @deprecated
+  Scenario Outline: a given --<option> replaces that end of the batch (deprecated)
+    Deprecated for: removal
     Either end of the batch can be set by hand, as a commit or as an ISO time.
     Given archive file 2026-09-15-slices.md whose batch runs from commit A to commit B
     When the session runs measure batch for 2026-09-15-slices.md with --<option> <value>
@@ -34,23 +37,26 @@ Feature: Batch measurement
       | to     | commit D             | end   |
       | to     | 2026-09-14T18:00:00Z | end   |
 
-  @r4
-  Scenario: without --out the facts go under measurements in the archive file's name
+  @r4 @deprecated
+  Scenario: without --out the facts go under measurements in the archive file's name (deprecated)
+    Deprecated for: removal
     The default place for an archive batch's facts follows the archive file's name.
     Given archive file 2026-09-15-slices.md with dispatches inside its batch
     When the session runs measure batch for 2026-09-15-slices.md with no --out
     Then the facts are written to docs/superpowers/measurements/2026-09-15-slices.json
 
-  @r38
-  Scenario: an archive file no commit added is refused
+  @r38 @deprecated
+  Scenario: an archive file no commit added is refused (deprecated)
+    Deprecated for: removal
     A batch cannot be bounded by an archive file git has no record of adding.
     Given a file 2026-10-01-slices.md that no commit added
     When the session runs measure batch for 2026-10-01-slices.md
     Then measure batch refuses because the archive file was not added by any commit
     And the refusal names 2026-10-01-slices.md
 
-  @r6
-  Scenario: a transcript of an unknown shape is refused and no facts are written
+  @r6 @deprecated
+  Scenario: a transcript of an unknown shape is refused and no facts are written (deprecated)
+    Deprecated for: removal
     Measure does not guess at transcripts it does not recognise.
     Given a batch with a transcript that lacks a field measure knows transcripts to have
     When the session runs measure batch for the batch
@@ -58,16 +64,18 @@ Feature: Batch measurement
     And the refusal names the transcript and what was missing
     And no facts file is written
 
-  @r7
-  Scenario: an existing facts file is not written over without --replace
+  @r7 @deprecated
+  Scenario: an existing facts file is not written over without --replace (deprecated)
+    Deprecated for: removal
     A facts file already written survives a second run unless replacing is asked for.
     Given the batch's facts file already exists
     When the session runs measure batch for the batch with no --replace
     Then measure batch refuses because the facts file exists
     And the facts file is as it was
 
-  @r6
-  Scenario: a batch with no dispatch inside it is refused
+  @r6 @deprecated
+  Scenario: a batch with no dispatch inside it is refused (deprecated)
+    Deprecated for: removal
     A batch in which nothing was dispatched has nothing to measure.
     Given a batch inside whose window no dispatch started
     When the session runs measure batch for the batch
@@ -75,8 +83,9 @@ Feature: Batch measurement
     And the refusal names the window it searched
     And nothing is written
 
-  @r9
-  Scenario Outline: a transcript an Agent tool started is a dispatch only when it starts inside the batch
+  @r9 @deprecated
+  Scenario Outline: a transcript an Agent tool started is a dispatch only when it starts inside the batch (deprecated)
+    Deprecated for: removal
     Whether such a transcript belongs to the batch is decided by when it started.
     Given a batch running from commit A to commit B
     And a transcript an Agent tool started that starts <when> the batch
@@ -89,8 +98,9 @@ Feature: Batch measurement
       | before | is not counted |
       | after  | is not counted |
 
-  @r10
-  Scenario: a request's usage is counted once, and its reasoning is part of its output
+  @r10 @deprecated
+  Scenario: a request's usage is counted once, and its reasoning is part of its output (deprecated)
+    Deprecated for: removal
     A request repeated across transcript rows is not counted again, and reasoning tokens are shown inside the output figure, not on top of it.
     Given a batch with one dispatch that made one request
     And the request's usage, 500 new input and 1200 output tokens of which 300 are reasoning, appears in three transcript rows
@@ -99,16 +109,18 @@ Feature: Batch measurement
     And the facts give its output as 1200, of which 300 reasoning
     And no output figure in the facts is 1500
 
-  @r11
-  Scenario: a dispatching session's own requests are the controller's
+  @r11 @deprecated
+  Scenario: a dispatching session's own requests are the controller's (deprecated)
+    Deprecated for: removal
     The session that dispatched inside the batch has its own requests there counted to the controller.
     Given a session that started a dispatch inside the batch
     And made requests of its own inside the batch
     When the session runs measure batch for the batch
     Then the facts count that session's requests inside the batch as the controller's
 
-  @r12
-  Scenario Outline: a dispatch is attributed by its description, then its prompt, else unattributed
+  @r12 @deprecated
+  Scenario Outline: a dispatch is attributed by its description, then its prompt, else unattributed (deprecated)
+    Deprecated for: removal
     Attribution tries the description first and the prompt second, and admits when neither tells.
     Given a dispatch whose description <description> and whose prompt <prompt>
     When the session runs measure batch for the batch
@@ -121,16 +133,18 @@ Feature: Batch measurement
       | names no slice      | names slice 3           | slice 3     |
       | names no slice      | names no task or slice  | unattributed |
 
-  @r13
-  Scenario: a reviewer's findings are counted as it wrote them
+  @r13 @deprecated
+  Scenario: a reviewer's findings are counted as it wrote them (deprecated)
+    Deprecated for: removal
     Critical and Important findings are its lines so marked, and Minor is the count it gives.
     Given a reviewer's reply with 2 lines beginning Critical and 1 line beginning Important
     And the reply gives a count of 4 Minor
     When the session runs measure batch for the batch
     Then the facts count the reviewer's findings as 2 Critical, 1 Important and 4 Minor
 
-  @r14
-  Scenario: a commit goes to the implementer running when it was made
+  @r14 @deprecated
+  Scenario: a commit goes to the implementer running when it was made (deprecated)
+    Deprecated for: removal
     Each commit is credited to the implementer at work at the time and its files are sorted into kinds.
     Given an implementer dispatch running from 10:00 to 10:30
     And a commit made at 10:15 that touched three files
@@ -138,8 +152,9 @@ Feature: Batch measurement
     Then the facts give the commit to that implementer
     And each of its three files is counted as production, test or other
 
-  @r15
-  Scenario Outline: each slice's Lands line sits beside the files its dispatches touched
+  @r15 @deprecated
+  Scenario Outline: each slice's Lands line sits beside the files its dispatches touched (deprecated)
+    Deprecated for: removal
     What a slice said it would land is set against what its dispatches actually touched.
     Given a <batch> whose <source> gives slice 1 the Lands line "2 production, 1 test"
     And slice 1's dispatches touched src/cart.py and tests/test_cart.py
@@ -151,8 +166,9 @@ Feature: Batch measurement
       | archive batch | archive file |
       | open batch    | living plan  |
 
-  @r16
-  Scenario: the facts give the plan's tasks at both ends, its hand-backs and suite record
+  @r16 @deprecated
+  Scenario: the facts give the plan's tasks at both ends, its hand-backs and suite record (deprecated)
+    Deprecated for: removal
     The batch plan's task list is taken when the plan was added and again at the batch's end.
     Given a batch plan that had 5 tasks when it was added and 7 tasks at the batch's end
     And the plan has two hand-back entries and a suite record
@@ -160,37 +176,42 @@ Feature: Batch measurement
     Then the facts give the 5 tasks it had when it was added and the 7 it had at the end
     And the facts give both hand-back entries and the suite record
 
-  @r17
-  Scenario: the facts hold no prompt, reply or tool content
+  @r17 @deprecated
+  Scenario: the facts hold no prompt, reply or tool content (deprecated)
+    Deprecated for: removal
     What the agents said and did is measured, never copied into the facts.
     Given a batch whose dispatches have prompts, replies and tool calls
     When the session runs measure batch for the batch
     Then the facts hold none of the prompts', replies' or tools' content
 
-  @r18
-  Scenario: show prints a facts file as tables
+  @r18 @deprecated
+  Scenario: show prints a facts file as tables (deprecated)
+    Deprecated for: removal
     A facts file can be read without opening the JSON.
     Given a facts file measure wrote
     When the session runs measure show for the file
     Then the facts are printed as tables
 
-  @r19
-  Scenario: compare prints two facts files side by side
+  @r19 @deprecated
+  Scenario: compare prints two facts files side by side (deprecated)
+    Deprecated for: removal
     Two batches can be read against each other.
     Given two facts files measure wrote
     When the session runs measure compare for the two files
     Then the two files' facts are printed side by side
 
-  @r38
-  Scenario: show refuses a file measure did not write as facts
+  @r38 @deprecated
+  Scenario: show refuses a file measure did not write as facts (deprecated)
+    Deprecated for: removal
     Show reads only facts files of measure's own making.
     Given a JSON file that is not a facts file measure wrote
     When the session runs measure show for the file
     Then measure refuses because the file is not a facts file measure wrote
     And the refusal names the file
 
-  @r38
-  Scenario Outline: the open batch needs --plan when the living plan cannot be found
+  @r38 @deprecated
+  Scenario Outline: the open batch needs --plan when the living plan cannot be found (deprecated)
+    Deprecated for: removal
     Without one slices plan in the repository, measure cannot read the open batch.
     Given a repository with <plans> docs/superpowers/plans/*-slices.md files
     When the session runs measure batch with no archive file and no --plan
@@ -201,8 +222,9 @@ Feature: Batch measurement
       | no    |
       | two   |
 
-  @r38
-  Scenario Outline: a batch with no archive before it needs --from
+  @r38 @deprecated
+  Scenario Outline: a batch with no archive before it needs --from (deprecated)
+    Deprecated for: removal
     When nothing marks where the batch began, measure cannot place its start.
     Given <batch> with no archive file added before the batch's end
     When the session runs measure batch for it with no --from
@@ -213,8 +235,9 @@ Feature: Batch measurement
       | the open batch of a repository                  |
       | the batch of the first archive file a commit added |
 
-  @r38
-  Scenario Outline: a --<option> that is neither a commit nor an ISO time is refused
+  @r38 @deprecated
+  Scenario Outline: a --<option> that is neither a commit nor an ISO time is refused (deprecated)
+    Deprecated for: removal
     An end of the batch must be something measure can place in time.
     Given a repository with no commit named "last-tuesday"
     When the session runs measure batch with --<option> last-tuesday
@@ -226,8 +249,9 @@ Feature: Batch measurement
       | from   |
       | to     |
 
-  @r38
-  Scenario Outline: git's failures are refused with git's error
+  @r38 @deprecated
+  Scenario Outline: git's failures are refused with git's error (deprecated)
+    Deprecated for: removal
     When git cannot answer, measure passes on what git said.
     Given <situation>
     When the session runs measure batch
@@ -239,8 +263,9 @@ Feature: Batch measurement
       | the current directory is not inside a git repository and no --repo is given |
       | a git command measure batch runs fails                      |
 
-  @r2
-  Scenario Outline: the open batch is named by --name, default open
+  @r2 @deprecated
+  Scenario Outline: the open batch is named by --name, default open (deprecated)
+    Deprecated for: removal
     The open batch's name can be chosen.
     Given an open batch with dispatches inside it
     When the session runs measure batch with no archive file and <name option>
@@ -251,8 +276,9 @@ Feature: Batch measurement
       | no --name       | open       |
       | --name trial-3  | trial-3    |
 
-  @r4
-  Scenario Outline: without --out the open batch's facts go under measurements in its name
+  @r4 @deprecated
+  Scenario Outline: without --out the open batch's facts go under measurements in its name (deprecated)
+    Deprecated for: removal
     The default place for the open batch's facts follows the open batch's name.
     Given an open batch with dispatches inside it
     When the session runs measure batch with no archive file, <name option> and no --out
@@ -263,8 +289,9 @@ Feature: Batch measurement
       | no --name       | open       |
       | --name trial-3  | trial-3    |
 
-  @r2
-  Scenario Outline: the open batch starts at the last commit that added a file under the archive directory
+  @r2 @deprecated
+  Scenario Outline: the open batch starts at the last commit that added a file under the archive directory (deprecated)
+    Deprecated for: removal
     The archive directory that marks batch boundaries defaults to the plans archive and can be changed.
     Given the last commit adding a file under <directory> is commit <commit>
     When the session runs measure batch with no archive file and <archive option>
@@ -275,8 +302,9 @@ Feature: Batch measurement
       | no --archive-dir          | docs/superpowers/plans/archive | A      |
       | --archive-dir old/plans   | old/plans                     | B      |
 
-  @r15
-  Scenario Outline: the facts hold the slices the batch planned and the slices dispatches were attributed to
+  @r15 @deprecated
+  Scenario Outline: the facts hold the slices the batch planned and the slices dispatches were attributed to (deprecated)
+    Deprecated for: removal
     An archive batch keeps all its planned slices; the open batch only those that saw work.
     Given a <batch> whose <source> holds slices 1 and 2
     And the only dispatches are attributed to slice 2 and slice 3
@@ -288,16 +316,18 @@ Feature: Batch measurement
       | archive batch | archive file | 1, 2 and 3 |
       | open batch    | living plan  | 2 and 3    |
 
-  @r14
-  Scenario: a commit made while two implementers ran is counted as ambiguous
+  @r14 @deprecated
+  Scenario: a commit made while two implementers ran is counted as ambiguous (deprecated)
+    Deprecated for: removal
     Credit for a commit is flagged as uncertain when more than one implementer could have made it.
     Given two implementer dispatches both running at 10:15
     And a commit made at 10:15
     When the session runs measure batch for the batch
     Then the facts count the commit as ambiguous
 
-  @r29
-  Scenario Outline: tasks are left uncounted with a note when the batch plan cannot be had
+  @r29 @deprecated
+  Scenario Outline: tasks are left uncounted with a note when the batch plan cannot be had (deprecated)
+    Deprecated for: removal
     Without a batch plan to read, the facts say why tasks are missing instead of counting none.
     Given <situation>
     When the session runs measure batch for the batch
@@ -309,8 +339,9 @@ Feature: Batch measurement
       | no dispatch names a ledger and no --tasks is given          |
       | the batch plan is in no commit                              |
 
-  @r31
-  Scenario Outline: a reply closing <status> is counted as not done
+  @r31 @deprecated
+  Scenario Outline: a reply closing <status> is counted as not done (deprecated)
+    Deprecated for: removal
     The closing status a reply gives is kept, and the stuck ones are counted as not done.
     Given a dispatch whose reply closes with status <status>
     When the session runs measure batch for the batch
@@ -323,8 +354,9 @@ Feature: Batch measurement
       | PARTIAL       |
       | NEEDS_CONTEXT |
 
-  @r32
-  Scenario: the facts record the versions the transcripts name and the window
+  @r32 @deprecated
+  Scenario: the facts record the versions the transcripts name and the window (deprecated)
+    Deprecated for: removal
     The facts say what plugin and harness ran, and when the batch was.
     Given archive file 2026-09-15-slices.md whose batch runs from commit A to commit B
     And its transcripts name plugin version 0.18.0 and harness version 2.1.4
@@ -332,8 +364,9 @@ Feature: Batch measurement
     Then the facts record plugin version 0.18.0 and harness version 2.1.4
     And the facts record the window as the times of commits A and B and as commits A and B
 
-  @r33
-  Scenario Outline: a batch starting at a commit gives the files and lines changed to its end
+  @r33 @deprecated
+  Scenario Outline: a batch starting at a commit gives the files and lines changed to its end (deprecated)
+    Deprecated for: removal
     The size of the change is taken from the batch's start commit to its end commit, or HEAD.
     Given a batch starting at commit A and ending <end>
     When the session runs measure batch for the batch
@@ -345,8 +378,9 @@ Feature: Batch measurement
       | at 2026-09-14T18:00:00Z   | HEAD     |
       | now                       | HEAD     |
 
-  @r34
-  Scenario: the facts count resumed dispatches, the late share of building time without scouts, and starting context
+  @r34 @deprecated
+  Scenario: the facts count resumed dispatches, the late share of building time without scouts, and starting context (deprecated)
+    Deprecated for: removal
     Building time is the dispatches' own durations added up, scouts aside, and the share after the first branch review is taken of that.
     Given a batch whose dispatches are
       | dispatch      | role          | prompts | starts               | own duration in minutes | starting context |
@@ -361,16 +395,18 @@ Feature: Batch measurement
     And the facts give 0.4 as the share of building time from the first branch review on
     And the facts give a mean starting context of 30000 and a summed starting context of 150000
 
-  @r19
-  Scenario: compare prints both files' figures with the ratio of the second to the first
+  @r19 @deprecated
+  Scenario: compare prints both files' figures with the ratio of the second to the first (deprecated)
+    Deprecated for: removal
     Compare sets each figure, in total and per slice, side by side, with how the second batch differs.
     Given facts file a for batch 2026-09-01 with 2 slices
     And facts file b for batch 2026-09-15 with 2 slices
     When the session runs measure compare for a and b
     Then each figure of both files, in total and per slice, is printed with the ratio of b's to a's
 
-  @r38
-  Scenario Outline: a file measure cannot read as its facts is refused
+  @r38 @deprecated
+  Scenario Outline: a file measure cannot read as its facts is refused (deprecated)
+    Deprecated for: removal
     Compare reads only measure's own facts files, and neither command reads a file that is not JSON.
     Given a file that <file>
     When the session runs measure <command> with the file
@@ -383,10 +419,104 @@ Feature: Batch measurement
       | show    | cannot be read as JSON                            | cannot be read as JSON                |
       | compare | cannot be read as JSON                            | cannot be read as JSON                |
 
-  @r38
-  Scenario: a refusal says why on stderr and exits with an error
+  @r38 @deprecated
+  Scenario: a refusal says why on stderr and exits with an error (deprecated)
+    Deprecated for: removal
     Every refusal is explained on stderr and ends with an error.
     Given the batch's facts file already exists
     When the session runs measure batch for the batch with no --replace
     Then measure refuses and says why on stderr
     And it exits with an error
+
+  @r39
+  Scenario: measuring an initiative writes one measurement named by today's date and the initiative
+    One run writes one measurement, in the measurements directory, under the day it ran and the initiative's name.
+    Given today is 2026-10-22
+    And the initiative i7-cart has a log.jsonl
+    When the session runs measure initiative i7-cart
+    Then one measurement is written for i7-cart
+    And it is at .shop/records/measurements/2026-10-22-i7-cart.md
+
+  @r46
+  Scenario: an initiative with no log.jsonl is refused
+    Without the log of what work run did there is nothing to measure.
+    Given the initiative i7-cart has no log.jsonl
+    When the session runs measure initiative i7-cart
+    Then measure initiative refuses because the initiative has no log.jsonl
+    And nothing is written
+
+  @r47
+  Scenario Outline: a <file kind> of a shape measure does not know is refused, naming it
+    Measure does not guess at a session it cannot read; it says which file stopped it.
+    Given the initiative i7-cart has a log.jsonl
+    And <file> is not of a shape measure knows
+    When the session runs <command>
+    Then measure refuses, naming <file>
+    And nothing is written
+
+    Examples:
+      | file kind    | file                                                  | command                                              |
+      | session.json | the session.json of work-item cart-1's research stage | measure initiative i7-cart                           |
+      | transcript   | the transcript sessions/s-9.jsonl                     | measure initiative i7-cart with --sessions sessions  |
+
+  @r48
+  Scenario: an existing measurement is not written over without --replace
+    A measurement already written survives a second run unless replacing it is asked for.
+    Given the measurement .shop/records/measurements/2026-10-22-i7-cart.md exists
+    When the session runs measure initiative i7-cart with no --replace
+    Then measure initiative refuses because the measurement exists
+    And the measurement is as it was
+
+  @r52
+  Scenario: with --replace an existing measurement is written over
+    Asking to replace lets a fresh measurement take the place of the one already there.
+    Given the measurement .shop/records/measurements/2026-10-22-i7-cart.md exists, giving 3 stages
+    And i7-cart's log.jsonl now gives 4 stages with a start and an end
+    When the session runs measure initiative i7-cart with --replace
+    Then the measurement .shop/records/measurements/2026-10-22-i7-cart.md is written over
+    And it gives 4 stages
+
+  @r50
+  Scenario: a refusal exits with an error
+    Whatever measure refuses, the session running it sees a failed command.
+    Given the initiative i7-cart has no log.jsonl
+    When the session runs measure initiative i7-cart
+    Then measure exits with an error
+
+  @r40
+  Scenario: each stage with a start and an end is given with its session's figures
+    A finished stage is measured by who ran it, in which session, for how long and at what cost.
+    Given i7-cart's log.jsonl gives work-item cart-1's research stage a start at 10:00 and an end at 10:12
+    And that stage was run as the agent researcher in the session s-1
+    And the session s-1 took 14 turns, 3000 output tokens, 2000 new input tokens and 50000 cache-read tokens, costing 0.42
+    When the session runs measure initiative i7-cart
+    Then the measurement gives the stage
+      | work-item | stage    | agent      | session | took       | turns | output tokens | new input tokens | cache-read tokens | cost |
+      | cart-1    | research | researcher | s-1     | 12 minutes | 14    | 3000          | 2000             | 50000             | 0.42 |
+
+  @r49
+  Scenario: the measurement holds no prompt, reply or tool content
+    What the sessions said and did is counted, never copied into the measurement.
+    Given work-item cart-1's research stage, whose session's reply reads "the cart rounds down"
+    And the transcript sessions/s-9.jsonl, starting and ending inside i7-cart's window, whose prompt reads "measure the cart" and whose tool call reads "grep rounding"
+    When the session runs measure initiative i7-cart with --sessions sessions
+    Then the measurement holds none of "the cart rounds down", "measure the cart" or "grep rounding"
+
+  @r44
+  Scenario: show prints a measurement's figures as tables
+    A measurement can be read without opening the record.
+    Given the measurement .shop/records/measurements/2026-10-22-i7-cart.md that measure wrote
+    When the session runs measure show for it
+    Then the measurement's figures are printed as tables
+
+  @r45
+  Scenario: compare prints two measurements' totals side by side with the ratio of the second to the first
+    Two initiatives' deliveries can be read against each other, with how the second differs from the first.
+    Given the measurement a for i6-pay, whose totals are 4 stages, 100000 output tokens and a cost of 2.00
+    And the measurement b for i7-cart, whose totals are 6 stages, 150000 output tokens and a cost of 3.00
+    When the session runs measure compare for a and b
+    Then the totals are printed side by side
+      | total         | a      | b      | ratio |
+      | stages        | 4      | 6      | 1.5   |
+      | output tokens | 100000 | 150000 | 1.5   |
+      | cost          | 2.00   | 3.00   | 1.5   |
