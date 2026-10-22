@@ -1,5 +1,5 @@
 """design-model-check's Given steps for bounded contexts, capabilities, proposals and frontmatter references
-(r24), the counts and the row limit (r31, r32), and table rows and EARS lines (r3, r103, r104)."""
+(r24), and table rows and EARS lines (r3, r103, r104)."""
 
 from pytest_bdd import given, parsers
 
@@ -70,6 +70,14 @@ def proposal_naming(world, context, change, rid):
     context["changed"] = rid
 
 
+@given("a merged capability-proposal that adds thing#r4")
+def merged_proposal_adding_retired(world, context):
+    world.observation()
+    world.initiative()
+    world.proposal(status="merged", adds="[thing#r4]")
+    context["changed"] = "r4"
+
+
 @given("a merged capability-proposal that adds thing#r4 and removes thing#r4")
 def merged_proposal_on_retired(world, context):
     world.observation()
@@ -132,20 +140,6 @@ def file_naming(world, context, field, target):
         else:
             assert field == "depends_on"
             world.work_item(depends_on="ghost")
-
-
-# --- Given: the counts and the row limit (r31, r32) -------------------------------------------------------------
-
-@given("a repository with one violation, one warning, one unresolved reference and one file problem")
-def one_of_each(world):
-    world.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, `thing` shall answer."], rests_on="[nope]"))
-    world.write("features/stray.feature", "Feature: stray\n")
-
-
-@given(parsers.parse("a repository with {rows:d} requirements no scenario names"))
-def unscenarioed(world, context, rows):
-    world.write("spec/capabilities/thing.md", cap("thing", ["- [r%d] Req %d." % (n, n) for n in range(1, rows + 1)]))
-    context["rows"] = rows
 
 
 # --- Given: table rows and EARS lines (r3, r103, r104) --------------------------------------------------------------

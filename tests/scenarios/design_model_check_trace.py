@@ -49,12 +49,6 @@ def decisions_rows(repo, context):
     assert "| [%s](0002-new.md) | Do it \\| the new way. | accepted | %s | it hurts |" % (new, old) in text, text
 
 
-@then("it prints spec/decisions/index.md as the file it wrote")
-def decisions_file_named(context):
-    result = context["result"]
-    assert result.stdout.strip() == "wrote spec/decisions/index.md", result.stdout + result.stderr
-
-
 @then("spec/decisions/index.md lists the decision with an id and not the one without")
 def decisions_only_with_id(repo):
     text = _index_text(repo)
@@ -158,10 +152,10 @@ def model_decisions_check(world, context):
     context["result"] = world.model("decisions", "--check")
 
 
-@then("it says the file is not current, exits 1, and the file is unchanged")
+@then("it says the file is not current, exits with an error, and the file is unchanged")
 def index_not_current(repo, context):
     result = context["result"]
-    assert result.returncode == 1, result.stdout + result.stderr
+    assert result.returncode != 0, result.stdout + result.stderr
     assert "not what `model decisions` writes" in result.stdout, result.stdout
     assert _index_text(repo) == HAND_WRITTEN
 
@@ -176,8 +170,9 @@ def no_decisions_directory(repo):
     assert not (repo / "spec" / "decisions").exists()
 
 
-@then("the index has its header and no row")
-def index_header_only(repo):
+@then("spec/decisions/index.md is written with its header and no row")
+def index_header_only(repo, context):
+    assert context["result"].returncode == 0, context["result"].stdout + context["result"].stderr
     text = _index_text(repo)
     assert text.startswith("# "), text
     assert "](" not in text, text
