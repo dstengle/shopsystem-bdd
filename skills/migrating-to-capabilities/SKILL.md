@@ -108,8 +108,8 @@ Format: `docs/capability-format.md`. Each one runs from the repository's top lev
    - **Retitle** only what the person retitled, and apply each retitle to the baseline too.
    - **Glossary**: each bullet the gate answered, rewritten in the person's words (r21).
    - **Living plan** (r17): each open slice kept becomes a work-item,
-     `work add <initiative> <name> --part-of <proposal or initiative id> --under <capability> --accepts <the ids
-     its scenarios are tagged with>`. Each backlog entry and each entry of its log not left out becomes an observation in
+     `work add <initiative> <title> --part-of <proposal or initiative id> --under <capability> --accepts <the ids
+     its scenarios are tagged with>`, taking the printed id as the work-item's name. Each backlog entry and each entry of its log not left out becomes an observation in
      `.shop/records/observations.md`: `## observation/<path>/<date>-<slug>`, then `about:`, `by:` and `date:`
      lines and the entry's text. A dropped slice stays only in the archived plan. (`migrate plan` will do this
      transcription once it exists; until then it is the session's, word for word from the plan.)

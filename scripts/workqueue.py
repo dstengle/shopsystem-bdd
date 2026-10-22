@@ -68,7 +68,10 @@ def highest(root):
 def add(root, initiative, title, part_of, under, accepts):
     """Write .shop/work/<initiative>/w<n>.md as a drafted work-item titled `title`, <n> one above the highest; return w<n> (r1, r12)."""
     entry(initiative, "initiative")
-    entry(title, "name")
+    if title == "":
+        raise Refused("the title is empty; a work-item needs a title for its heading")
+    if "\n" in title or "\r" in title:
+        raise Refused("the title has a newline in it; a work-item's heading is one line")
     for option, value in (("--part-of", part_of), ("--under", under)) + tuple(("--accepts", a) for a in accepts):
         if "\n" in value or "\r" in value:
             raise Refused("the value of %s has a newline in it; a work-item's field is one line" % option)
