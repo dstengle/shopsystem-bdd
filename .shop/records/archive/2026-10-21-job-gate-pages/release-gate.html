@@ -1,0 +1,242 @@
+<title>Release Gate</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Literata:opsz,wght@7..72,600&display=swap">
+<style>
+/* Layout: a gate ledger — sticky summary and index on the left, one card per proposal or decision on the right; lines read like the spec file they come from. */
+:root{
+  --bg:#f6f7f9; --panel:#ffffff; --ink:#1b2330; --muted:#5c6778; --rule:#dde2ea;
+  --accent:#2f5bd3; --accent-soft:#e7edfc;
+  --ok:#1f7a4d; --ok-soft:#e3f3ea; --warn:#9a6200; --warn-soft:#fbf0d9; --no:#b3322e; --no-soft:#f9e3e2;
+  --was:#8a5a00; --was-bg:#fff7e6;
+  --f-display:"Literata",Georgia,serif; --f-body:"Public Sans",system-ui,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12161d; --panel:#1a2029; --ink:#e6eaf1; --muted:#9aa6b8; --rule:#2c3440;
+  --accent:#8eaaff; --accent-soft:#232e4a; --ok:#6fd3a0; --ok-soft:#173326; --warn:#f0c062; --warn-soft:#3a2e14; --no:#ff8f88; --no-soft:#3d1f1e;
+  --was:#f0c062; --was-bg:#2c2513; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161d; --panel:#1a2029; --ink:#e6eaf1; --muted:#9aa6b8; --rule:#2c3440;
+  --accent:#8eaaff; --accent-soft:#232e4a; --ok:#6fd3a0; --ok-soft:#173326; --warn:#f0c062; --warn-soft:#3a2e14; --no:#ff8f88; --no-soft:#3d1f1e;
+  --was:#f0c062; --was-bg:#2c2513; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--f-body)}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:16px;padding-block:24px 64px;display:grid;grid-template-columns:270px minmax(0,1fr);gap:28px}
+@media (max-width:860px){.wrap{grid-template-columns:minmax(0,1fr)} aside{position:static!important}}
+aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);align-self:start;display:flex;flex-direction:column;gap:16px}
+h1{font:600 1.55rem/1.2 var(--f-display);margin:0;text-wrap:balance}
+.sub{color:var(--muted);font-size:.85rem}
+.tally{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.tally div{background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:8px 10px}
+.tally b{display:block;font:600 1.25rem var(--f-mono);font-variant-numeric:tabular-nums}
+.tally span{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+nav{display:flex;flex-direction:column;gap:2px;font-size:.88rem;max-height:52vh;overflow:auto}
+nav a{color:var(--ink);text-decoration:none;display:flex;justify-content:space-between;gap:8px;padding:4px 8px;border-radius:6px}
+nav a:hover,nav a:focus-visible{background:var(--accent-soft);outline:none}
+nav .grp{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:10px 8px 2px}
+.dot{width:9px;height:9px;border-radius:50%;flex:none;margin-top:6px;background:var(--rule)}
+.dot.approve{background:var(--ok)} .dot.change{background:var(--warn)} .dot.reject{background:var(--no)}
+.filters{display:flex;flex-direction:column;gap:6px;font-size:.85rem}
+.filters label{display:flex;gap:8px;align-items:center}
+.notice{border:1px solid var(--rule);background:var(--panel);border-radius:8px;padding:10px 12px;font-size:.85rem;color:var(--muted)}
+main{display:flex;flex-direction:column;gap:22px;min-width:0}
+.section-h{font:600 1.15rem var(--f-display);margin:12px 0 0;border-bottom:1px solid var(--rule);padding-bottom:6px}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;min-width:0;scroll-margin-top:16px}
+.card[data-v="approve"]{border-left:4px solid var(--ok)} .card[data-v="change"]{border-left:4px solid var(--warn)} .card[data-v="reject"]{border-left:4px solid var(--no)}
+.head{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between}
+.head h3{margin:0;font:600 1.05rem var(--f-body)}
+.meta{font:.78rem var(--f-mono);color:var(--muted);word-break:break-all}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:600 .7rem var(--f-mono);padding:2px 7px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.chip.rw{background:var(--was-bg);color:var(--was)}
+.verdict{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.verdict button{font:600 .85rem var(--f-body);padding:6px 12px;border-radius:7px;border:1px solid var(--rule);background:var(--bg);color:var(--ink);cursor:pointer}
+.verdict button:focus-visible,.flag:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.verdict button[aria-pressed="true"][data-v="approve"]{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.verdict button[aria-pressed="true"][data-v="change"]{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.verdict button[aria-pressed="true"][data-v="reject"]{background:var(--no-soft);border-color:var(--no);color:var(--no)}
+.verdict button:disabled{opacity:.5;cursor:not-allowed}
+.saved{font-size:.78rem;color:var(--muted)}
+textarea{width:100%;box-sizing:border-box;min-height:2.4em;font:inherit;font-size:.9rem;padding:8px 10px;border-radius:7px;border:1px solid var(--rule);background:var(--bg);color:var(--ink);resize:vertical}
+ol.lines{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border-top:1px solid var(--rule)}
+ol.lines li{display:grid;grid-template-columns:3.4em minmax(0,1fr) auto;gap:4px 12px;padding:8px 0;border-bottom:1px solid var(--rule)}
+.rid{font:600 .8rem var(--f-mono);color:var(--accent);padding-top:2px}
+.txt{min-width:0;overflow-wrap:anywhere}
+.txt code{font:.85em var(--f-mono)}
+.was{grid-column:2/3;font-size:.86rem;background:var(--was-bg);color:var(--was);border-radius:6px;padding:6px 9px}
+.was b{font:600 .7rem var(--f-mono);letter-spacing:.05em;text-transform:uppercase;margin-right:6px}
+.flag{font:600 .72rem var(--f-body);border:1px solid var(--rule);background:transparent;color:var(--muted);border-radius:6px;padding:3px 8px;cursor:pointer;align-self:start}
+.flag[aria-pressed="true"]{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+.lnote{grid-column:2/4}
+.decision p,.card>p{margin:0;max-width:72ch}
+.card details p,.card p.summary{white-space:pre-line}
+.answer{white-space:pre-line;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 6px 6px 0;padding:8px 11px;font-size:.9rem}
+.answer b{font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:2px}
+.answer.in-line{grid-column:2/4}
+.summary{font-weight:600}
+details summary{cursor:pointer;color:var(--muted);font-size:.85rem}
+@media (prefers-reduced-motion:no-preference){.card{transition:border-color .2s}}
+</style>
+<div class="wrap">
+<aside>
+  <div>
+    <h1>Spec Gate Review</h1>
+    <div class="sub">shopsystem-bdd · drafted proposals and proposed decisions awaiting your yes · repository at <span id="commit"></span></div>
+  </div>
+  <div class="tally">
+    <div><b id="t-pending">0</b><span>pending</span></div>
+    <div><b id="t-approve">0</b><span>approved</span></div>
+    <div><b id="t-change">0</b><span>change</span></div>
+    <div><b id="t-reject">0</b><span>rejected</span></div>
+  </div>
+  <div class="filters">
+    <label><input type="checkbox" id="f-rw"> Only lines reworded or changed</label>
+    <label><input type="checkbox" id="f-open"> Hide items with a verdict</label>
+  </div>
+  <div class="notice" id="store-note">Connecting to the review store…</div>
+  <nav id="nav" aria-label="Items"></nav>
+</aside>
+<main id="main"></main>
+</div>
+<script type="application/json" id="data">{"questions": [{"short": "release", "title": "Release 0.21.0: merge, tag, push", "summary": "The migration release: initiatives **i13** (EARS lines), **i11** (final layout), **i10** (work-items and `work run`), **i8** (`migrate run` for consumers) and **i15** (300-line size check) are done, and the final review's fix wave (2 Critical, 24 Important) is merged. Suite **572 passed** in ~7 s; `model check`'s 141 violations are **121 v_s3** (workflow lines whose fixture scenarios wait for formulation-1) and **20 v_w4** (6 green worker items, 14 withdrawn items). **Approve** = merge to main, tag `v0.21.0`, push.", "body": "deliver-real (delivery-5): v1-v3 green 3 of 3, plus x1 (session drafts) green; 5/5 checks each; 174-200 s and $0.65-0.75 a delivery\ni8 through `work run`: run 1 stopped at research ($0.09; defect fixed 015eb88); run 2 all four stages, 25 min 40 s, $3.25 of workers; run 7 (migrate-kb-2) green first pass, 9 min 01 s, $1.54\nkb migration trials: trial 1 refused (123 unnumbered entries, nothing changed); trials 2 and 3 exit 0 in ~1.4 s, kb suite 1603 passed unchanged, one file problem (README id), fixed after (238237a)\nT-integrate (decision files taught) 3 of 3; T-formulate (formulation deprecates) 3 of 3\nSuite ~120 s -> ~6 s (pytest-xdist, bindings walk fixed)"}, {"short": "glossary", "title": "One word, one meaning: the glossary", "summary": "From the term analysis (**run** had 10 senses in 143 uses; **status/result/done/green**, **check**, **session/worker/agent/dispatch** and **file set/claim** were tangled). Your direction is in: **input** is what a session starts with \u2014 input data such as a **brief**, or an input prompt filled from a standing **template**. 27 entries, checked: no duplicate term, no Not: word that is another term. Also: **slice** removed; **batch**, **controller**, **suite record** marked old-system until i12.\nApproving means: the entries go into `spec/index.md`, then about 100 lines and their scenario steps are reworded so each word has its one meaning (no behaviour changes; EARS kept and checked), and two real inconsistencies are fixed: where `brief.md` lives, and a supervision scenario's unbacked suite record. Then the merge. Ask for a change on any entry by naming it.", "body": "- **agent**: a definition under `agents/` (its name, model, tools and skills) that a worker or a dispatch is started as. Not: persona.\n- **brief**: the input data `work run` writes for one worker in its stage directory, naming the work-item, the files to read, the worktree and where the result goes. Not: task file.\n- **check**: a command a work-item names in place of scenarios, whose exit code 0 shows its work complete. Not: criterion.\n- **claim**: the tracked files a `claimed` work-item holds: those its file set covers and any added with `work claim`; no two claims share a file. Not: lock, reservation.\n- **delivery**: one invocation of `work run` on an initiative, from its start until it exits.\n- **dispatch**: a session another session starts with its Agent tool, and the transcript it leaves. Not: subagent.\n- **file set**: the paths, globs or directories a work-item says its work changes: drafted with it, revised by its researcher and fixed by its planner. Not: fileset, scope.\n- **gate**: the person's approval of Behaviour lines and glossary entries before they are committed to `spec/`, with the questions they raise. Not: sign-off.\n- **hand-back** (changed): an implementer's stop with the outcome `HAND-BACK`, giving the condition and its evidence word for word. Not: handback.\n- **initiative branch**: the branch `work run` commits each transition on and merges each work-item branch into; its base is the commit it started from. Not: integration branch.\n- **input**: what a session is started with: input data, such as a brief, or an input prompt, the text filled from a template.\n- **outcome**: the one word a worker's result gives: `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `HAND-BACK`, `QUESTION` or `NEEDS_CONTEXT`. Not: verdict.\n- **record**: a file under `.shop/records/` whose frontmatter id has a record kind. Not: log entry.\n- **report**: the implementer's file in its stage directory, beside its result, naming the files it touched, the tests whose setup it changed and its open questions. Not: write-up.\n- **result**: the file `result.json` a worker writes in its stage directory, giving its outcome, its summary and the files it names. Not: return.\n- **review**: a reviewer's reading of commits against the plan, the spec and the repository's rules, written as graded findings: a work-item review, a branch review or an architecture review. Not: audit.\n- **round**: one dispatch of `initiative-round` for one job, numbered under its drafts path. Not: iteration.\n- **run**: to execute a command, script, test, scenario or probe until it exits.\n- **scenario**: a Gherkin scenario in `features/<capability>.feature`, passing when the one test that binds it passes. Not: test case.\n- **session**: one Claude Code conversation with its own id and transcript: the person's, a worker, a dispatch or a fixture session. Not: conversation, chat.\n- **stage**: one of research, plan, implementation and review, done by one worker and started by `work run` from the work-item's status. Not: phase.\n- **stage directory**: the directory `runs/<work-item>/<k>-<stage>/` that holds one stage's brief, result, report and session. Not: run directory.\n- **status**: a node's place in its kind's lifecycle (a work-item's, a capability-proposal's, a decision's), written in its frontmatter; a work-item's are `drafted`, `researched`, `planned`, `ready`, `claimed`, `done`, `green`, `awaiting-ruling` and `withdrawn`. Not: state.\n- **suite**: every test `python3 -m pytest` runs from the root by default, fixture scenarios excluded. Not: fast suite.\n- **template**: standing text in a skill or an agent definition that a session fills with input to start another session. Not: boilerplate.\n- **transition**: one change of a work-item's status, written by `work` and logged in `log.jsonl`. Not: move.\n- **worker**: a session `work run` starts with `claude -p` for one stage of one work-item, as that stage's agent. Not: job."}, {"short": "pytest-python", "title": "Workers can run any Python through pytest", "summary": "Every stage may run `python3 -m pytest` and write files (acceptEdits), so a worker can run any Python through a conftest or probe file; r14's limit holds for commands, not for what tests run (final review S1). The fix wave closed the direct path: workers now get only `features`, `model` and `tools` by path, never `work` or `migrate`. **Recommend A**: accept it inside the worker's own worktree, guarded by the two lines below. B: an OS sandbox around workers, in a later release.", "body": "supervision r21: **If** `work run` is started by a worker of another `work run`, then `work run` shall refuse, saying so. (unbuilt)\nsupervision r28: **If** the main checkout's `.shop/work/` differs from its last commit when a worker ends, then `work run` shall put it back and move the work-item to `awaiting-ruling`, naming each file. (unbuilt)"}, {"short": "delivery-toml", "title": "May .shop/delivery.toml widen a stage's tools?", "summary": "Today `[allowed_tools]` replaces a stage's list and drops only bare `Write` and `Edit`, so `Bash`, `Bash(*)` or `Write(**)` pass (S6); neither it nor `[tests]` has a line. **Recommend A**: it is the person's own file, an override, as ruled at skeleton-evidence (ledger 120) and as the README now says. B: refuse any entry outside r14's set. r29 (`[tests]`) goes in either way.", "body": "A, supervision r30: **Where** `.shop/delivery.toml` gives a stage's `[allowed_tools]`, `work run` shall give that stage's worker that list in place of its own, less any bare Write or Edit. (built)\nB, supervision r30: **If** `.shop/delivery.toml`'s `[allowed_tools]` gives a stage an entry outside r14's set, then `work run` shall refuse, naming the entry. (unbuilt)\nboth, supervision r29: **Where** `.shop/delivery.toml` gives `[tests]`, `work run` shall run those commands in place of its own tests. (built)"}, {"short": "skill-tool", "title": "role-boundaries r4 vs the implementer's Skill tool", "summary": "r4 says the implementer has no Skill tool, but it has had one since 3ab836c: a `claude -p --agent` session does not preload `skills:`, and the first real implementer stopped `NEEDS_CONTEXT` without it (deliver-real). supervision r12 already allows each listed skill, so the spec contradicts itself. **Recommend A**: change r4; `test_agents.py`'s expected failure then becomes a check. B: keep r4, drop the Skill tool and find another way to load `bdd-red-green`.", "body": "A, role-boundaries r4 (change): The plugin's agent definitions shall give the implementer the skills listed under its `skills:`, `bdd-red-green` always among them, and the Skill tool, which `work run` allows only for those skills. (built)"}, {"short": "r20-fileset", "title": "Who writes the file set r20 runs on?", "summary": "r20 (two ready items with disjoint file sets at once) never fires in a real run: nothing writes `fileset:` into a work-item, and its scenarios pass only because their Given writes it (S4). Both the researcher's and the planner's results carry a `fileset`. **Recommend A**: the planner's final set, written as the item moves to `planned`, since that is the set the implementer works to. B: the researcher's, at `researched`. C: move r20 to Not yet.", "body": "A, supervision r31: **When** a planner's result gives `DONE` with a `fileset`, `work run` shall write that file set into the work-item as `fileset:` as it moves it to `planned`. (unbuilt)\nB, supervision r31: **When** a researcher's result gives `DONE` with a `fileset`, `work run` shall write that file set into the work-item as `fileset:` as it moves it to `researched`. (unbuilt)"}, {"short": "lines", "title": "Other proposed lines", "summary": "Each line below passed `model check` with no v_e1 or v_e2 row, in a scratch copy of its capability file. Ids are above the highest ever used, or name the line they change. **Approve all, or name the exceptions.** Lines marked unbuilt each get a work-item after the release.", "body": "supervision r14 (change): `work run` shall allow a worker's Bash only `python3 -m pytest`, the plugin's scripts its stage runs, by path, and the git commands its stage needs. Evidence: workers now get only `features`, `model` and `tools`, so a nested `work run` by path is refused (S1). (built)\nsupervision r22: `work run` shall give every pytest run it starts, and every worker's, the plugin's option `--work-item <name>`, which selects the scenarios the work-item accepts. Evidence: without it every merge in a consuming repository failed \"unrecognized arguments\"; now shipped as scripts/work_items.py (R1, ledger 114). (built)\nsupervision r23: **Where** the repository is inside the plugin's own directory, `work run` shall make each worker's worktree in a temporary directory outside it. Evidence: i8 run 1's writes were refused under `--plugin-dir`; fixed 015eb88 with scenario 8f5d556. (built)\nsupervision r24: **When** `work run` starts an implementer, `work run` shall first run the whole suite in the implementer's worktree and put its result in the brief. Evidence: i8 run 2 logged \"Suite: 547 passed, 0 failed at 2a56b96\" before the implementer; no line states it (M17). (built)\nsupervision r25: **When** `work run` writes a worker's brief, `work run` shall name in it the plugin's scripts directory, the initiative's base commit, the worker's worktree and its branch. Evidence: supervise_brief.py writes Scripts:, Base:, Worktree: and Branch:, ruled at ledger 110; no line states it (M17). (built)\nsupervision r26: **When** `work run` moves a work-item to `awaiting-ruling`, `work run` shall keep the work-item's branch. Evidence: the branch's fate was left to evidence (ledger 103), and the runs since kept it for the re-run (M17). (built)\nsupervision r27: **When** every work-item of the initiative is `green` or `withdrawn`, `work run` shall start a `claude -p` session of `bdd-branch-reviewer` over the initiative branch from its base, given one brief file. Evidence: bdd-branch-reviewer is rewritten for initiatives (I10) but no stage starts it, so decision 0040's branch review never runs. (unbuilt)\nrole-boundaries r5 (change): The plugin's agent definitions shall name each agent's model: Opus for the spec writers, the planner and the reviewers, Sonnet for the implementer, `initiative-round` and the `spec-checker`, Haiku for the scout. Evidence: spec-checker.md uses sonnet and r5 does not place it (M24). (built)\nred-green r17 (change): **When** the work needs a file outside the work-item's file set, the implementer shall name the file in its report under `## Outside the file set` before editing it. Evidence: `work claim` does not exist, and bdd-implementer.md already does this (I9). (built)\nred-green r37 (retired, to Not yet with `work claim`): a refused claim cannot happen while there is no `work claim` (I9).\ndesign-model-check r27 (row, change): ... or a work-item that is not `withdrawn` accepts a requirement no scenario names yet. Evidence: most of the 168 file problems are withdrawn items, which r36 already counts as closed (M-model-1). (unbuilt)\ndesign-model-check r106 (new row under the \"If `model check` finds a case of a row below\" line): v_w4 | a work-item that is not `withdrawn` has no `accepts` and no `check`. Evidence: 14 of the 20 v_w4 rows are withdrawn items, and no line states v_w4 today (model.lp:232). (unbuilt)\ndesign-model-check r19 (change): `model` shall read, under `--root` (default the current directory), only `spec/index.md`, `spec/capabilities/*.md`, every `*.feature` under `features/`, every `spec/decisions/*.md` but `index.md` and `README.md`, `.shop/work/<initiative>/*.md`, `.shop/records/observations.md` and any other Markdown under `.shop/records/` whose frontmatter has an `id`. Evidence: migrate leaves a README at spec/decisions/README.md, which model reports as a decision with no id and no ## Decision (I4). (unbuilt)\nanalysis-tools r17 (change): **If** a tool that `tools check`, `tools tests-of`, `tools untested` or `tools refs` needs is missing, then `tools` shall name it as missing rather than skip it, and exit 1. Evidence: `tools check` exits 0 with every tool missing (M10). (unbuilt)\nfeature-file-tools r35 (change): **If** the title given to `features tag`, `move`, `deprecate` or `retire` is in no file, is in several without `--file`, is not exactly once in the file `--file` names, or `--file` or `--to` names a file outside `--dir`, then `features` shall refuse, naming each file that has the title, and change no file. Evidence: `features move --to` writes outside `--dir` (M11). (unbuilt)\nmigration-tools r3 (change): **When** `migrate run` finds a `@holding` scenario, `migrate` shall tag it `@deprecated` with \" (deprecated)\" for \" (held)\" on its title and `Deprecated for:` for `Held for:`, rebind each test that names it by title, and leave no `@holding` tag. Evidence: today it gives \"held one (held) (deprecated)\", keeps `Held for:`, and the test loses its binding; the skill does this by hand meanwhile (I5). (unbuilt in migrate)\nspec-migration r15 (change): **When** a repository is migrated, `migrating-to-capabilities` shall leave it on the final layout: decisions one file each in `spec/decisions/` with the generated `index.md`, work and records under `.shop/`, nothing of the plugin under `docs/superpowers/` or `.superpowers/`, and `model check` reporting no file problem that names `scripts/migrate`. Evidence: `migrate status` does not exist (migration-tools Not yet), and the rewritten skill checks with `model check` (I2). (built)"}, {"short": "decisions", "title": "Decisions proposed in this release", "summary": "Fifteen decisions are still `proposed` (0051 and 0052 are already accepted). **Accept all, or name the exceptions.** Notes after a summary say what changed since the final review.", "body": "0037 a script supervises delivery: `work run` pulls work-items through their stages with fresh `claude -p` workers, and is the only status writer.\n0038 worker results are files: one brief in, one JSON result out; no prose parsed, no resume.\n0039 the work-item lifecycle as run: drafted, researched, planned, ready, claimed, done, green, plus awaiting-ruling; amend it to add drafted->awaiting-ruling and done->awaiting-ruling, which `work run` makes (M19). Claimed->awaiting-ruling on failure is now built (S5).\n0040 review of work-items: a risk-named item gets a task review and every other gets the branch review; findings become fix items or observations. The branch review is unbuilt (supervision r27).\n0041 the file set is the claim: disjoint sets run at once, each in its own worktree. Who writes the set is the r20 card.\n0042 superpowers is not a dependency: now true; plugin.json is 0.21.0 with no dependency, and slicing and `scripts/plan` are removed.\n0043 fixture scenarios under pytest-bdd: tagged `@fixture` and deselected; pytest.ini now has `-m \"not fixture\"`.\n0044 plans list the tests they break: with two allowances measured from the initiative's base.\n0045 the final layout: spec/, features/, .shop/ with .shop/scratch/; model reads only that.\n0046 light decisions: frontmatter plus a Decision section; Context and Alternatives only where options were weighed.\n0047 references are ids: no paths in frontmatter, no `formulated_as`, sources as ids with free text in `by:`. kb trial 2's README row rests on it.\n0048 plugin scenarios run as pytest-bdd: one `scenarios()` per feature, and `--unbound` fails the suite.\n0049 migration in one pass: `scripts/migrate` makes every mechanical change behind one gate; the skill now runs it.\n0050 a living plan becomes work-items and observations: unbuilt (`migrate plan` is Not yet; the skill does it by hand).\n0053 the v3 agents: exact tools and a pinned model each, bdd-planner added, only initiative-round can start an agent; tests/scripts/test_agents.py now checks it; its \"no Skill\" cell follows the r4 card."}, {"short": "readings", "title": "Readings to confirm", "summary": "These are the coordinator's readings and rulings, made while you were away. **Confirm all, or name the exceptions.**", "body": "migrate's formulation readings (ledger 115): it reads both the decisions directory and the ledger; records keep their paths; superpowers plans and specs go to the archive; a ledger entry becomes an nnnn-slug file; ids by kind, numbered above the highest ever used; references are repo paths, Markdown links and frontmatter ids; `--context` is always required.\nmigration-tools r10 refined, and r3 and r9 corrected from i8 run 1's researcher (24a6c8f); r8's Then reads \"apart from the id r9 and the about r12 give it\" (ledger 119, 121, 126).\nQ8: a ledger entry's whole text is its paragraphs, and its date, source, supersedes and revisit_when lines go to frontmatter (ledger 129).\nRatify the status moves the coordinator made for you by `git revert`, outside the supervisor (0290645, bba0277, c9f5569, e1de074 and the later reverts; ledger 121-134).\nF6 (links inside a moved file) and M3 (paths naming a moved directory) stay deferred to shopsystem-knowledge's own trial, since you stopped the migrate trials (ledger 146).\ncycle-time rulings: the Not yet entry dropped; an item with no file set never runs in parallel; overlap is judged by expanded globs and directories (ledger 142).\ndesign-model-check r105 already covers `model --root <missing>`; that it creates the tree and exits 0 is a defect to fix, not a new line (M5).\n`model rules` re-running under another interpreter, and the CONTRACT leaving out descriptions, docstrings and Examples, are Implementation detail with no line (M5).\n`features tag` with the tag already present changes nothing and exits 0, read as r51's \"add\"; `bindings --unbound` refusing a file outside `--dir` stays (ledger 90).\nCandidate lines from the runs go under Not yet, unbuilt: `work rule`, `work run` honouring `blocked_by`, delivering-an-initiative accepting merged proposals, a researcher's findings kept when it hands back, fix work-items sent to the blind formulator (ledger 121, 127).\nGlossary **ruling** reads \"the person's answer to a work-item's question, recorded in the work-item in their words\" (`work rule` is Not yet).\nThe id design-decision/held-scenarios stays, since renaming it changes ids across the records (M15).\nWork-items migration-skill, delivery-3 and delivery-4 stay `withdrawn`; the fix wave did their work, and no command moves a withdrawn item.\nbatch-measurement's Not yet entry naming i12, added by the fix wave (I14), stands.\nsupervision's Implementation text gives the worker prompt as \"Read the brief file X and do what it says.\", and a question given as a string is read as one question (M16, M17).\nNo test log lists the script capabilities' lines reworded during formulation (spec/index.md:11-12). They are `git diff main..release-0.21.0 -- spec/capabilities`, this gate covers them, and that clause goes.\nLeft as observations for the next release: S7 (the agents' text allows `ls`, `cat`, `grep`, so probe the real CLI), M18 (the stub's matching), M20 (`work add` quoting), and M2 and M3 (migrate's unstated refusals)."}], "initiatives": [], "extension": [], "proposals": [], "decisions": [], "commit": "bec63e9"}</script>
+<script>
+(function(){
+const D = JSON.parse(document.getElementById("data").textContent);
+document.getElementById("commit").textContent = D.commit;
+const ORDER = ["ears","ini","i9","i3","i1","ext"];
+const GROUP = {ears:"i13 · requirements in EARS, every capability", ini:"Initiatives, restructured", i9:"i9 a ubiquitous language", i3:"i3 requirement ids", i1:"i1 the plugin's first spec (0.18.0 as it was)", ext:"0.21.0: the migration release"};
+const NOTE = {ears:"Each card is one capability. Every line is shown with the line it came from; a split shows each new line under its old text. Approve a capability, or ask for a change (a line note says which line).", ini:"The restructure you approved: only the final state and migration. Check each one says what you meant, and the ranking.", ext:"First the release, then the glossary, then four choices that are yours, then the lists to approve together: lines, decisions, readings. Approve a card, or ask for a change and say which item.", i9:"New behaviour in 0.20.0.", i3:"New behaviour in 0.19.0; lines marked changed show what they replaced.", i2:"The model check, built ahead of the gate. Lines marked reworded were changed to say what the code does.", i1:"Describes what 0.18.0 already did. Skim; read the reworded lines closely."};
+const verdicts = {}, lineNotes = {};
+let db = null;
+const key = s => s.replace(/[^A-Za-z0-9_-]/g, "_");
+const items = [];
+D.proposals.forEach(p => items.push({type:"proposal", id:key(p.initiative+"-"+p.capability), group:p.initiative, data:p}));
+D.decisions.forEach(d => items.push({type:"decision", id:key("decision-"+d.num), group:"dec", data:d}));
+(D.initiatives||[]).forEach(n => items.push({type:"initiative", id:key("initiative-"+n.short), group:"ini", data:n}));
+(D.extension||[]).forEach(p => items.push({type:"proposal", id:key("ext-"+p.capability), group:"ext", data:p}));
+(D.questions||[]).forEach(q => items.push({type:"initiative", id:key("question-"+q.short), group:"ext", data:q}));
+function el(tag, attrs, ...kids){ const e=document.createElement(tag); for(const k in (attrs||{})){ if(k==="class") e.className=attrs[k]; else if(k==="text") e.textContent=attrs[k]; else e.setAttribute(k,attrs[k]); } kids.flat().forEach(c=>c!=null&&e.append(c)); return e; }
+function richText(s){ const span=document.createElement("span"); span.className="txt"; s.split(/(`[^`]+`|\*\*[^*]+\*\*)/).forEach(part=>{ if(/^`[^`]+`$/.test(part)) span.append(el("code",{text:part.slice(1,-1)})); else if(/^\*\*[^*]+\*\*$/.test(part)) span.append(el("strong",{text:part.slice(2,-2)})); else span.append(part); }); return span; }
+const main = document.getElementById("main"), nav = document.getElementById("nav");
+function verdictBar(it){
+  const bar = el("div",{class:"verdict"});
+  const saved = el("span",{class:"saved"});
+  [["approve","Approve"],["change","Ask for a change"],["reject","Reject"]].forEach(([v,label])=>{
+    const b = el("button",{type:"button","data-v":v,"aria-pressed":"false",text:label});
+    b.addEventListener("click", ()=> setVerdict(it, verdicts[it.id]?.verdict===v ? null : v));
+    bar.append(b);
+  });
+  bar.append(saved);
+  return {bar, saved};
+}
+function render(){
+  main.textContent=""; nav.textContent="";
+  const onlyRw = document.getElementById("f-rw").checked, hideDone = document.getElementById("f-open").checked;
+  [...ORDER,"dec"].forEach(g=>{
+    if(!items.some(i=>i.group===g)) return;
+    const its = items.filter(i=>i.group===g);
+    main.append(el("h2",{class:"section-h",text: g==="dec" ? "Decisions (proposed)" : GROUP[g]}));
+    if(g!=="dec") main.append(el("div",{class:"sub",text:NOTE[g]}));
+    nav.append(el("div",{class:"grp",text: g==="dec" ? "Decisions" : g}));
+    its.forEach(it=>{
+      const v = verdicts[it.id]?.verdict || "";
+      const label = it.type==="proposal" ? it.data.capability : it.type==="initiative" ? (it.data.status ? it.data.short+" " : "")+it.data.title : it.data.num+" "+it.data.title.replace(/^\d+\.\s*/,"");
+      const a = el("a",{href:"#"+it.id}, el("span",{text: label}), el("span",{class:"dot "+v}));
+      nav.append(a);
+      if(hideDone && v) return;
+      main.append(it.type==="proposal" ? proposalCard(it, onlyRw) : it.type==="initiative" ? initiativeCard(it) : decisionCard(it));
+    });
+  });
+  tally();
+}
+function noteBox(it){
+  const t = el("textarea",{id:"note-"+it.id,placeholder:"Note (what to change, or why)","aria-label":"Note"});
+  t.value = verdicts[it.id]?.note || "";
+  let timer; t.addEventListener("input", ()=>{ clearTimeout(timer); timer=setTimeout(()=>saveNote(it, t.value), 700); });
+  return t;
+}
+function proposalCard(it, onlyRw){
+  const p = it.data, v = verdicts[it.id]?.verdict || "";
+  const rw = p.lines.filter(l=>l.prev).length;
+  const card = el("section",{class:"card",id:it.id,"data-v":v});
+  card.append(el("div",{class:"head"},
+    el("h3",{text:p.capability}),
+    el("div",{class:"chips"}, el("span",{class:"chip",text:p.lines.length+" lines"}), rw? el("span",{class:"chip rw",text:rw+" reworded or changed"}):null)));
+  card.append(el("div",{class:"meta",text:p.key+" · "+p.file+" · status "+p.status}));
+  if(p.answer) card.append(answerBox(p.answer));
+  const {bar} = verdictBar(it); card.append(bar); card.append(noteBox(it));
+  const ol = el("ol",{class:"lines"});
+  p.lines.filter(l=>!onlyRw || l.prev).forEach(l=>{
+    const lk = key(it.id+"-r"+l.n), flagged = !!lineNotes[lk];
+    const flag = el("button",{type:"button",class:"flag","aria-pressed":String(flagged),text: flagged ? "Question noted" : "Question this line"});
+    const li = el("li",{}, el("span",{class:"rid",text:"r"+l.n}), richText(l.text), flag);
+    if(l.prev) li.append(el("div",{class:"was"}, el("b",{text: l.kind==="change" ? "replaces" : "was"}), l.prev));
+    if(l.answer) li.append(answerBox(l.answer, true));
+    if(flagged){ const t=el("textarea",{class:"lnote",id:"ln-"+lk,"aria-label":"Question on r"+l.n,placeholder:"Your question on this line"}); t.value=lineNotes[lk].note||""; let tm; t.addEventListener("input",()=>{clearTimeout(tm);tm=setTimeout(()=>saveLine(lk,it,l,t.value,true),700)}); li.append(t); }
+    flag.addEventListener("click", ()=> saveLine(lk, it, l, lineNotes[lk]?.note||"", !flagged));
+    ol.append(li);
+  });
+  card.append(ol);
+  syncBar(card, v);
+  return card;
+}
+function answerBox(text, inLine){ const d=el("div",{class:"answer"+(inLine?" in-line":"")}, el("b",{text:"Claude"})); d.append(richText(text)); return d; }
+function initiativeCard(it){
+  const n = it.data, v = verdicts[it.id]?.verdict || "";
+  const card = el("section",{class:"card",id:it.id,"data-v":v});
+  card.append(el("div",{class:"head"}, el("h3",{text:(n.status ? n.short+" · " : "")+n.title}), el("div",{class:"chips"}, n.status ? el("span",{class:"chip",text:n.status}) : null, n.priority!=null && n.status==="proposed" ? el("span",{class:"chip",text:"priority "+n.priority}) : null)));
+  if(n.key) card.append(el("div",{class:"meta",text:n.key+" · "+n.file}));
+  card.append(el("p",{class:"summary"}, richText(n.summary)));
+  if(n.body) card.append(el("details",{}, el("summary",{text:"What it covers"}), el("p",{}, richText(n.body))));
+  const {bar} = verdictBar(it); card.append(bar); card.append(noteBox(it));
+  syncBar(card, v); return card;
+}
+function decisionCard(it){
+  const d = it.data, v = verdicts[it.id]?.verdict || "";
+  const card = el("section",{class:"card decision",id:it.id,"data-v":v});
+  card.append(el("div",{class:"head"}, el("h3",{text:d.title}), el("span",{class:"chip",text:"proposed"})));
+  card.append(el("div",{class:"meta",text:d.key+" · "+d.file}));
+  card.append(el("p",{class:"summary"}, richText(d.summary)));
+  if(d.decision && d.decision!==d.summary){ const det=el("details",{}, el("summary",{text:"Decision section"}), el("p",{}, richText(d.decision))); card.append(det); }
+  const {bar} = verdictBar(it); card.append(bar); card.append(noteBox(it));
+  syncBar(card, v);
+  return card;
+}
+function syncBar(card, v){ card.querySelectorAll(".verdict button").forEach(b=>{ b.setAttribute("aria-pressed", String(b.dataset.v===v)); b.disabled = !db; }); const s=card.querySelector(".saved"); const at=verdicts[card.id]?.at; if(s) s.textContent = at ? "saved "+new Date(at).toLocaleString() : ""; }
+function tally(){
+  const c={approve:0,change:0,reject:0}; items.forEach(i=>{ const v=verdicts[i.id]?.verdict; if(v) c[v]++; });
+  document.getElementById("t-approve").textContent=c.approve; document.getElementById("t-change").textContent=c.change; document.getElementById("t-reject").textContent=c.reject;
+  document.getElementById("t-pending").textContent = items.length - c.approve - c.change - c.reject;
+}
+async function setVerdict(it, v){
+  if(!db) return;
+  const prev = verdicts[it.id] || {}; const body = {item: it.type==="proposal" ? it.data.key : it.data.key, type: it.type, verdict: v, note: prev.note||"", at: Date.now()};
+  verdicts[it.id] = body; render(); document.getElementById(it.id)?.scrollIntoView({block:"nearest"});
+  try{ await db.collection("verdicts").doc(it.id).set(body); }catch(e){ note("Could not save: "+(e.message||e.code)+". Try again."); }
+}
+async function saveNote(it, text){
+  if(!db) return;
+  const prev = verdicts[it.id] || {item: it.data.key, type: it.type, verdict: null};
+  const body = {...prev, note:text, at:Date.now()}; verdicts[it.id]=body;
+  try{ await db.collection("verdicts").doc(it.id).set(body); const c=document.getElementById(it.id); if(c) syncBar(c, body.verdict||""); }catch(e){ note("Could not save the note: "+(e.message||e.code)); }
+}
+async function saveLine(lk, it, l, text, on){
+  if(!db) return;
+  try{
+    if(on){ const body={item: it.data.key, capability: it.data.capability, line: "r"+l.n, note:text, at:Date.now()}; lineNotes[lk]=body; await db.collection("lineNotes").doc(lk).set(body); }
+    else { delete lineNotes[lk]; await db.collection("lineNotes").doc(lk).delete(); }
+    if(!on || !document.getElementById("ln-"+lk)) render();
+  }catch(e){ note("Could not save the question: "+(e.message||e.code)); }
+}
+function note(msg){ document.getElementById("store-note").textContent = msg; }
+document.getElementById("f-rw").addEventListener("change", render);
+document.getElementById("f-open").addEventListener("change", render);
+render();
+if(window.claude?.use){
+  claude.use("db").then(handle=>{
+    if(!handle){ note("Verdicts can't be saved in this view. Open the page signed in to claude.ai to record them."); return; }
+    db = handle; note("Verdicts save as you choose them; Claude reads them from here.");
+    let firstV=true, firstL=true;
+    db.collection("verdicts").onSnapshot(s=>{ s.docs.forEach(d=>{ verdicts[d.id]=d.data(); }); if(firstV || !document.activeElement || document.activeElement.tagName!=="TEXTAREA") render(); firstV=false; }, e=>note("The review store stopped answering: "+(e.message||e.code)));
+    db.collection("lineNotes").onSnapshot(s=>{ Object.keys(lineNotes).forEach(k=>delete lineNotes[k]); s.docs.forEach(d=>{ lineNotes[d.id]=d.data(); }); if(firstL || document.activeElement?.tagName!=="TEXTAREA") render(); firstL=false; });
+  });
+} else { note("Verdicts can't be saved in this view. Open the page on claude.ai to record them."); }
+})();
+</script>

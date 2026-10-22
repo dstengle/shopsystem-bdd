@@ -1,0 +1,166 @@
+<div class="wrap">
+<aside>
+  <div>
+    <h1>Spec Gate Review</h1>
+    <div class="sub">shopsystem-bdd · drafted proposals and proposed decisions awaiting your yes · repository at <span id="commit"></span></div>
+  </div>
+  <div class="tally">
+    <div><b id="t-pending">0</b><span>pending</span></div>
+    <div><b id="t-approve">0</b><span>approved</span></div>
+    <div><b id="t-change">0</b><span>change</span></div>
+    <div><b id="t-reject">0</b><span>rejected</span></div>
+  </div>
+  <div class="filters">
+    <label><input type="checkbox" id="f-rw"> Only lines reworded or changed</label>
+    <label><input type="checkbox" id="f-open"> Hide items with a verdict</label>
+  </div>
+  <div class="notice" id="store-note">Connecting to the review store…</div>
+  <nav id="nav" aria-label="Items"></nav>
+</aside>
+<main id="main"></main>
+</div>
+<script type="application/json" id="data">__DATA__</script>
+<script>
+(function(){
+const D = JSON.parse(document.getElementById("data").textContent);
+document.getElementById("commit").textContent = D.commit;
+const ORDER = ["ini","i9","i3","i1","ext"];
+const GROUP = {ini:"Initiatives, restructured", i9:"i9 a ubiquitous language", i3:"i3 requirement ids", i1:"i1 the plugin's first spec (0.18.0 as it was)", ext:"New model lines (withdrawn, abandonment)"};
+const NOTE = {ini:"The restructure you approved: only the final state and migration. Check each one says what you meant, and the ranking.", ext:"Lines added to the model check for withdrawing parts and abandoning initiatives; an extension proposed against grammar.md.", i9:"New behaviour in 0.20.0.", i3:"New behaviour in 0.19.0; lines marked changed show what they replaced.", i2:"The model check, built ahead of the gate. Lines marked reworded were changed to say what the code does.", i1:"Describes what 0.18.0 already did. Skim; read the reworded lines closely."};
+const verdicts = {}, lineNotes = {};
+let db = null;
+const key = s => s.replace(/[^A-Za-z0-9_-]/g, "_");
+const items = [];
+D.proposals.forEach(p => items.push({type:"proposal", id:key(p.initiative+"-"+p.capability), group:p.initiative, data:p}));
+D.decisions.forEach(d => items.push({type:"decision", id:key("decision-"+d.num), group:"dec", data:d}));
+(D.initiatives||[]).forEach(n => items.push({type:"initiative", id:key("initiative-"+n.short), group:"ini", data:n}));
+(D.extension||[]).forEach(p => items.push({type:"proposal", id:key("ext-"+p.capability), group:"ext", data:p}));
+(D.questions||[]).forEach(q => items.push({type:"initiative", id:key("question-"+q.short), group:"ext", data:q}));
+function el(tag, attrs, ...kids){ const e=document.createElement(tag); for(const k in (attrs||{})){ if(k==="class") e.className=attrs[k]; else if(k==="text") e.textContent=attrs[k]; else e.setAttribute(k,attrs[k]); } kids.flat().forEach(c=>c!=null&&e.append(c)); return e; }
+function richText(s){ const span=document.createElement("span"); span.className="txt"; s.split(/(`[^`]+`|\*\*[^*]+\*\*)/).forEach(part=>{ if(/^`[^`]+`$/.test(part)) span.append(el("code",{text:part.slice(1,-1)})); else if(/^\*\*[^*]+\*\*$/.test(part)) span.append(el("strong",{text:part.slice(2,-2)})); else span.append(part); }); return span; }
+const main = document.getElementById("main"), nav = document.getElementById("nav");
+function verdictBar(it){
+  const bar = el("div",{class:"verdict"});
+  const saved = el("span",{class:"saved"});
+  [["approve","Approve"],["change","Ask for a change"],["reject","Reject"]].forEach(([v,label])=>{
+    const b = el("button",{type:"button","data-v":v,"aria-pressed":"false",text:label});
+    b.addEventListener("click", ()=> setVerdict(it, verdicts[it.id]?.verdict===v ? null : v));
+    bar.append(b);
+  });
+  bar.append(saved);
+  return {bar, saved};
+}
+function render(){
+  main.textContent=""; nav.textContent="";
+  const onlyRw = document.getElementById("f-rw").checked, hideDone = document.getElementById("f-open").checked;
+  [...ORDER,"dec"].forEach(g=>{
+    if(!items.some(i=>i.group===g)) return;
+    const its = items.filter(i=>i.group===g);
+    main.append(el("h2",{class:"section-h",text: g==="dec" ? "Decisions (proposed)" : GROUP[g]}));
+    if(g!=="dec") main.append(el("div",{class:"sub",text:NOTE[g]}));
+    nav.append(el("div",{class:"grp",text: g==="dec" ? "Decisions" : g}));
+    its.forEach(it=>{
+      const v = verdicts[it.id]?.verdict || "";
+      const label = it.type==="proposal" ? it.data.capability : it.type==="initiative" ? (it.data.status ? it.data.short+" " : "")+it.data.title : it.data.num+" "+it.data.title.replace(/^\d+\.\s*/,"");
+      const a = el("a",{href:"#"+it.id}, el("span",{text: label}), el("span",{class:"dot "+v}));
+      nav.append(a);
+      if(hideDone && v) return;
+      main.append(it.type==="proposal" ? proposalCard(it, onlyRw) : it.type==="initiative" ? initiativeCard(it) : decisionCard(it));
+    });
+  });
+  tally();
+}
+function noteBox(it){
+  const t = el("textarea",{id:"note-"+it.id,placeholder:"Note (what to change, or why)","aria-label":"Note"});
+  t.value = verdicts[it.id]?.note || "";
+  let timer; t.addEventListener("input", ()=>{ clearTimeout(timer); timer=setTimeout(()=>saveNote(it, t.value), 700); });
+  return t;
+}
+function proposalCard(it, onlyRw){
+  const p = it.data, v = verdicts[it.id]?.verdict || "";
+  const rw = p.lines.filter(l=>l.prev).length;
+  const card = el("section",{class:"card",id:it.id,"data-v":v});
+  card.append(el("div",{class:"head"},
+    el("h3",{text:p.capability}),
+    el("div",{class:"chips"}, el("span",{class:"chip",text:p.lines.length+" lines"}), rw? el("span",{class:"chip rw",text:rw+" reworded or changed"}):null)));
+  card.append(el("div",{class:"meta",text:p.key+" · "+p.file+" · status "+p.status}));
+  if(p.answer) card.append(answerBox(p.answer));
+  const {bar} = verdictBar(it); card.append(bar); card.append(noteBox(it));
+  const ol = el("ol",{class:"lines"});
+  p.lines.filter(l=>!onlyRw || l.prev).forEach(l=>{
+    const lk = key(it.id+"-r"+l.n), flagged = !!lineNotes[lk];
+    const flag = el("button",{type:"button",class:"flag","aria-pressed":String(flagged),text: flagged ? "Question noted" : "Question this line"});
+    const li = el("li",{}, el("span",{class:"rid",text:"r"+l.n}), richText(l.text), flag);
+    if(l.prev) li.append(el("div",{class:"was"}, el("b",{text: l.kind==="change" ? "replaces" : "was"}), l.prev));
+    if(l.answer) li.append(answerBox(l.answer, true));
+    if(flagged){ const t=el("textarea",{class:"lnote",id:"ln-"+lk,"aria-label":"Question on r"+l.n,placeholder:"Your question on this line"}); t.value=lineNotes[lk].note||""; let tm; t.addEventListener("input",()=>{clearTimeout(tm);tm=setTimeout(()=>saveLine(lk,it,l,t.value,true),700)}); li.append(t); }
+    flag.addEventListener("click", ()=> saveLine(lk, it, l, lineNotes[lk]?.note||"", !flagged));
+    ol.append(li);
+  });
+  card.append(ol);
+  syncBar(card, v);
+  return card;
+}
+function answerBox(text, inLine){ const d=el("div",{class:"answer"+(inLine?" in-line":"")}, el("b",{text:"Claude"})); d.append(richText(text)); return d; }
+function initiativeCard(it){
+  const n = it.data, v = verdicts[it.id]?.verdict || "";
+  const card = el("section",{class:"card",id:it.id,"data-v":v});
+  card.append(el("div",{class:"head"}, el("h3",{text:(n.status ? n.short+" · " : "")+n.title}), el("div",{class:"chips"}, n.status ? el("span",{class:"chip",text:n.status}) : null, n.priority!=null && n.status==="proposed" ? el("span",{class:"chip",text:"priority "+n.priority}) : null)));
+  if(n.key) card.append(el("div",{class:"meta",text:n.key+" · "+n.file}));
+  card.append(el("p",{class:"summary"}, richText(n.summary)));
+  if(n.body) card.append(el("details",{}, el("summary",{text:"What it covers"}), el("p",{}, richText(n.body))));
+  const {bar} = verdictBar(it); card.append(bar); card.append(noteBox(it));
+  syncBar(card, v); return card;
+}
+function decisionCard(it){
+  const d = it.data, v = verdicts[it.id]?.verdict || "";
+  const card = el("section",{class:"card decision",id:it.id,"data-v":v});
+  card.append(el("div",{class:"head"}, el("h3",{text:d.title}), el("span",{class:"chip",text:"proposed"})));
+  card.append(el("div",{class:"meta",text:d.key+" · "+d.file}));
+  card.append(el("p",{class:"summary"}, richText(d.summary)));
+  if(d.decision && d.decision!==d.summary){ const det=el("details",{}, el("summary",{text:"Decision section"}), el("p",{}, richText(d.decision))); card.append(det); }
+  const {bar} = verdictBar(it); card.append(bar); card.append(noteBox(it));
+  syncBar(card, v);
+  return card;
+}
+function syncBar(card, v){ card.querySelectorAll(".verdict button").forEach(b=>{ b.setAttribute("aria-pressed", String(b.dataset.v===v)); b.disabled = !db; }); const s=card.querySelector(".saved"); const at=verdicts[card.id]?.at; if(s) s.textContent = at ? "saved "+new Date(at).toLocaleString() : ""; }
+function tally(){
+  const c={approve:0,change:0,reject:0}; items.forEach(i=>{ const v=verdicts[i.id]?.verdict; if(v) c[v]++; });
+  document.getElementById("t-approve").textContent=c.approve; document.getElementById("t-change").textContent=c.change; document.getElementById("t-reject").textContent=c.reject;
+  document.getElementById("t-pending").textContent = items.length - c.approve - c.change - c.reject;
+}
+async function setVerdict(it, v){
+  if(!db) return;
+  const prev = verdicts[it.id] || {}; const body = {item: it.type==="proposal" ? it.data.key : it.data.key, type: it.type, verdict: v, note: prev.note||"", at: Date.now()};
+  verdicts[it.id] = body; render(); document.getElementById(it.id)?.scrollIntoView({block:"nearest"});
+  try{ await db.collection("verdicts").doc(it.id).set(body); }catch(e){ note("Could not save: "+(e.message||e.code)+". Try again."); }
+}
+async function saveNote(it, text){
+  if(!db) return;
+  const prev = verdicts[it.id] || {item: it.data.key, type: it.type, verdict: null};
+  const body = {...prev, note:text, at:Date.now()}; verdicts[it.id]=body;
+  try{ await db.collection("verdicts").doc(it.id).set(body); const c=document.getElementById(it.id); if(c) syncBar(c, body.verdict||""); }catch(e){ note("Could not save the note: "+(e.message||e.code)); }
+}
+async function saveLine(lk, it, l, text, on){
+  if(!db) return;
+  try{
+    if(on){ const body={item: it.data.key, capability: it.data.capability, line: "r"+l.n, note:text, at:Date.now()}; lineNotes[lk]=body; await db.collection("lineNotes").doc(lk).set(body); }
+    else { delete lineNotes[lk]; await db.collection("lineNotes").doc(lk).delete(); }
+    if(!on || !document.getElementById("ln-"+lk)) render();
+  }catch(e){ note("Could not save the question: "+(e.message||e.code)); }
+}
+function note(msg){ document.getElementById("store-note").textContent = msg; }
+document.getElementById("f-rw").addEventListener("change", render);
+document.getElementById("f-open").addEventListener("change", render);
+render();
+if(window.claude?.use){
+  claude.use("db").then(handle=>{
+    if(!handle){ note("Verdicts can't be saved in this view. Open the page signed in to claude.ai to record them."); return; }
+    db = handle; note("Verdicts save as you choose them; Claude reads them from here.");
+    let firstV=true, firstL=true;
+    db.collection("verdicts").onSnapshot(s=>{ s.docs.forEach(d=>{ verdicts[d.id]=d.data(); }); if(firstV || !document.activeElement || document.activeElement.tagName!=="TEXTAREA") render(); firstV=false; }, e=>note("The review store stopped answering: "+(e.message||e.code)));
+    db.collection("lineNotes").onSnapshot(s=>{ Object.keys(lineNotes).forEach(k=>delete lineNotes[k]); s.docs.forEach(d=>{ lineNotes[d.id]=d.data(); }); if(firstL || document.activeElement?.tagName!=="TEXTAREA") render(); firstL=false; });
+  });
+} else { note("Verdicts can't be saved in this view. Open the page on claude.ai to record them."); }
+})();
+</script>

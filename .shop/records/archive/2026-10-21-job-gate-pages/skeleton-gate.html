@@ -1,0 +1,242 @@
+<title>Skeleton Gate</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Literata:opsz,wght@7..72,600&display=swap">
+<style>
+/* Layout: a gate ledger — sticky summary and index on the left, one card per proposal or decision on the right; lines read like the spec file they come from. */
+:root{
+  --bg:#f6f7f9; --panel:#ffffff; --ink:#1b2330; --muted:#5c6778; --rule:#dde2ea;
+  --accent:#2f5bd3; --accent-soft:#e7edfc;
+  --ok:#1f7a4d; --ok-soft:#e3f3ea; --warn:#9a6200; --warn-soft:#fbf0d9; --no:#b3322e; --no-soft:#f9e3e2;
+  --was:#8a5a00; --was-bg:#fff7e6;
+  --f-display:"Literata",Georgia,serif; --f-body:"Public Sans",system-ui,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12161d; --panel:#1a2029; --ink:#e6eaf1; --muted:#9aa6b8; --rule:#2c3440;
+  --accent:#8eaaff; --accent-soft:#232e4a; --ok:#6fd3a0; --ok-soft:#173326; --warn:#f0c062; --warn-soft:#3a2e14; --no:#ff8f88; --no-soft:#3d1f1e;
+  --was:#f0c062; --was-bg:#2c2513; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161d; --panel:#1a2029; --ink:#e6eaf1; --muted:#9aa6b8; --rule:#2c3440;
+  --accent:#8eaaff; --accent-soft:#232e4a; --ok:#6fd3a0; --ok-soft:#173326; --warn:#f0c062; --warn-soft:#3a2e14; --no:#ff8f88; --no-soft:#3d1f1e;
+  --was:#f0c062; --was-bg:#2c2513; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--f-body)}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:16px;padding-block:24px 64px;display:grid;grid-template-columns:270px minmax(0,1fr);gap:28px}
+@media (max-width:860px){.wrap{grid-template-columns:minmax(0,1fr)} aside{position:static!important}}
+aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);align-self:start;display:flex;flex-direction:column;gap:16px}
+h1{font:600 1.55rem/1.2 var(--f-display);margin:0;text-wrap:balance}
+.sub{color:var(--muted);font-size:.85rem}
+.tally{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.tally div{background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:8px 10px}
+.tally b{display:block;font:600 1.25rem var(--f-mono);font-variant-numeric:tabular-nums}
+.tally span{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+nav{display:flex;flex-direction:column;gap:2px;font-size:.88rem;max-height:52vh;overflow:auto}
+nav a{color:var(--ink);text-decoration:none;display:flex;justify-content:space-between;gap:8px;padding:4px 8px;border-radius:6px}
+nav a:hover,nav a:focus-visible{background:var(--accent-soft);outline:none}
+nav .grp{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:10px 8px 2px}
+.dot{width:9px;height:9px;border-radius:50%;flex:none;margin-top:6px;background:var(--rule)}
+.dot.approve{background:var(--ok)} .dot.change{background:var(--warn)} .dot.reject{background:var(--no)}
+.filters{display:flex;flex-direction:column;gap:6px;font-size:.85rem}
+.filters label{display:flex;gap:8px;align-items:center}
+.notice{border:1px solid var(--rule);background:var(--panel);border-radius:8px;padding:10px 12px;font-size:.85rem;color:var(--muted)}
+main{display:flex;flex-direction:column;gap:22px;min-width:0}
+.section-h{font:600 1.15rem var(--f-display);margin:12px 0 0;border-bottom:1px solid var(--rule);padding-bottom:6px}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;min-width:0;scroll-margin-top:16px}
+.card[data-v="approve"]{border-left:4px solid var(--ok)} .card[data-v="change"]{border-left:4px solid var(--warn)} .card[data-v="reject"]{border-left:4px solid var(--no)}
+.head{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between}
+.head h3{margin:0;font:600 1.05rem var(--f-body)}
+.meta{font:.78rem var(--f-mono);color:var(--muted);word-break:break-all}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:600 .7rem var(--f-mono);padding:2px 7px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.chip.rw{background:var(--was-bg);color:var(--was)}
+.verdict{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.verdict button{font:600 .85rem var(--f-body);padding:6px 12px;border-radius:7px;border:1px solid var(--rule);background:var(--bg);color:var(--ink);cursor:pointer}
+.verdict button:focus-visible,.flag:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.verdict button[aria-pressed="true"][data-v="approve"]{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.verdict button[aria-pressed="true"][data-v="change"]{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.verdict button[aria-pressed="true"][data-v="reject"]{background:var(--no-soft);border-color:var(--no);color:var(--no)}
+.verdict button:disabled{opacity:.5;cursor:not-allowed}
+.saved{font-size:.78rem;color:var(--muted)}
+textarea{width:100%;box-sizing:border-box;min-height:2.4em;font:inherit;font-size:.9rem;padding:8px 10px;border-radius:7px;border:1px solid var(--rule);background:var(--bg);color:var(--ink);resize:vertical}
+ol.lines{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border-top:1px solid var(--rule)}
+ol.lines li{display:grid;grid-template-columns:3.4em minmax(0,1fr) auto;gap:4px 12px;padding:8px 0;border-bottom:1px solid var(--rule)}
+.rid{font:600 .8rem var(--f-mono);color:var(--accent);padding-top:2px}
+.txt{min-width:0;overflow-wrap:anywhere}
+.txt code{font:.85em var(--f-mono)}
+.was{grid-column:2/3;font-size:.86rem;background:var(--was-bg);color:var(--was);border-radius:6px;padding:6px 9px}
+.was b{font:600 .7rem var(--f-mono);letter-spacing:.05em;text-transform:uppercase;margin-right:6px}
+.flag{font:600 .72rem var(--f-body);border:1px solid var(--rule);background:transparent;color:var(--muted);border-radius:6px;padding:3px 8px;cursor:pointer;align-self:start}
+.flag[aria-pressed="true"]{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+.lnote{grid-column:2/4}
+.decision p,.card>p{margin:0;max-width:72ch}
+.card details p,.card p.summary{white-space:pre-line}
+.answer{white-space:pre-line;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 6px 6px 0;padding:8px 11px;font-size:.9rem}
+.answer b{font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:2px}
+.answer.in-line{grid-column:2/4}
+.summary{font-weight:600}
+details summary{cursor:pointer;color:var(--muted);font-size:.85rem}
+@media (prefers-reduced-motion:no-preference){.card{transition:border-color .2s}}
+</style>
+<div class="wrap">
+<aside>
+  <div>
+    <h1>Spec Gate Review</h1>
+    <div class="sub">shopsystem-bdd · drafted proposals and proposed decisions awaiting your yes · repository at <span id="commit"></span></div>
+  </div>
+  <div class="tally">
+    <div><b id="t-pending">0</b><span>pending</span></div>
+    <div><b id="t-approve">0</b><span>approved</span></div>
+    <div><b id="t-change">0</b><span>change</span></div>
+    <div><b id="t-reject">0</b><span>rejected</span></div>
+  </div>
+  <div class="filters">
+    <label><input type="checkbox" id="f-rw"> Only lines reworded or changed</label>
+    <label><input type="checkbox" id="f-open"> Hide items with a verdict</label>
+  </div>
+  <div class="notice" id="store-note">Connecting to the review store…</div>
+  <nav id="nav" aria-label="Items"></nav>
+</aside>
+<main id="main"></main>
+</div>
+<script type="application/json" id="data">{"questions": [{"short": "result", "title": "The skeleton held: 3 of 3 real deliveries", "summary": "`work run` took one formulated work-item on a fixture repository from drafted to green through research, plan, implement and review, with real `claude -p` workers, in all 3 runs (and a 4th where the session drafted the work-item itself). **$0.65\u20130.75 and about 3 minutes a delivery**; opus planning and review are about 60% of the cost. Every check held each time: scenarios green at the branch head, a start and end log line per stage, no worker touched `.shop/work/`, the session read no worker output. What broke was only where `work run` meets the real CLI, fixed in 4 commits, and each failed attempt still ended cleanly in awaiting-ruling with a question.\nTest log: `.shop/records/measurements/fixture-runs/2026-10-20-deliver-real-test-log.md`.\nApprove to accept the skeleton as proven.", "body": ""}, {"short": "lines", "title": "New lines, from what the runs showed", "summary": "Each comes from something seen in the runs, not imagined. Approve to add them to supervision and delivery; ask for a change on any.", "body": "1. `work run` starts each worker with its own plugin (`--plugin-dir`), not whatever version is installed. (Without it the workers found the old 0.18.0.)\n2. A worker's agent skills reach it only by the worker loading them, so its stage allows `Skill(<that skill>)`. (`--agent` does not preload them.)\n3. A worker writes only inside its worktree: no stage's tool list holds a bare Write or Edit, and acceptEdits keeps writes there. (With a bare Write, the researcher wrote into the main checkout in 5 of 8 runs; without it, 0 of 8.)\n4. The paths a worker's result names are copied with the run directory before its worktree is removed.\n5. Questions a researcher returns with DONE go into the planner's brief, so they are not asked twice.\n6. The workers are told they start in their worktree and never `cd`. (Every implementer and reviewer lost 1\u20133 turns to a refused `cd`.)\n7. A work-item's `work/<item>` branch is deleted when it is merged; it is kept while the item awaits a ruling.\n8. Where every requirement is already accepted by a work-item, delivering-an-initiative drafts nothing and starts `work run`."}, {"short": "python", "title": "Workers may run any Python", "summary": "Researcher, implementer and reviewers are allowed `Bash(python3 *)`, which lets a worker run any Python script, and so write anywhere the account can. Options: keep it (simple; workers are your own agents on your own branch), or narrow it to `python3 -m pytest*` plus the plugin's scripts by path. I'd narrow it: the runs only ever needed pytest and the plugin's scripts. Approve to narrow, or ask for a change to keep it.", "body": ""}, {"short": "haiku", "title": "Haiku for research", "summary": "The researcher runs on Haiku. It is cheap, and it was the stage that wrote outside its worktree until line 3 above stopped it; with that line it behaved in every run. I'd keep Haiku. Approve to keep, or ask for a change to Sonnet (about +$0.05 a delivery).", "body": ""}, {"short": "migrate", "title": "migration-tools: what its skeleton lines leave open", "summary": "The blind formulator found that i8's 7 lines leave several things to guess. I answered from the approved decisions (final-layout, references-are-ids, migration-in-one-pass), but the formulator is right that the answers belong in the lines, not only in my readings. Approve to write these into migration-tools' lines (the scenarios follow); ask for a change on any.", "body": "1. r1 also moves a top-level `decisions/` folder to `spec/decisions/`; `records/<x>` keeps its path under `.shop/records/`; `docs/superpowers/plans/` and `specs/` go to `.shop/records/archive/plans/` and `archive/design-notes/`.\n2. r2: each ledger entry `## decision/<nnnn>-<slug>` (kb's form) becomes `spec/decisions/<nnnn>-<slug>.md`: its first paragraph is the summary and the Decision, status accepted, and its `date` and `source` lines become `date` and `by`.\n3. r3: a `@holding` scenario is deprecated exactly as `features deprecate` does it (tag, title, `Deprecated for:` line, the tests that name it).\n4. r4: ids are type-first: `bounded-context/<path>` for spec/index.md from `--context <owner/product/context>`, `capability/<path>/<name>`, `design-decision/<path>/<slug>`; a moved plan is an `initiative-archive`, a design note a `decision-argument`, a test log a `measurement`. Unnumbered lines are numbered from one above the highest id the capability ever used.\n5. r5: a reference is a repository-relative path, a Markdown link relative to its file, or a frontmatter id; nothing else is rewritten.\n6. `--context` is required on every run; everything else unforeseen falls under r7 (refuse, name it, change nothing)."}], "initiatives": [], "extension": [], "proposals": [], "decisions": [], "commit": "3fb11a9"}</script>
+<script>
+(function(){
+const D = JSON.parse(document.getElementById("data").textContent);
+document.getElementById("commit").textContent = D.commit;
+const ORDER = ["ears","ini","i9","i3","i1","ext"];
+const GROUP = {ears:"i13 · requirements in EARS, every capability", ini:"Initiatives, restructured", i9:"i9 a ubiquitous language", i3:"i3 requirement ids", i1:"i1 the plugin's first spec (0.18.0 as it was)", ext:"i10 walking skeleton: the proof run"};
+const NOTE = {ears:"Each card is one capability. Every line is shown with the line it came from; a split shows each new line under its old text. Approve a capability, or ask for a change (a line note says which line).", ini:"The restructure you approved: only the final state and migration. Check each one says what you meant, and the ranking.", ext:"Five cards: the result; the new lines the runs called for; two choices that are yours; and what i8's lines leave open.", i9:"New behaviour in 0.20.0.", i3:"New behaviour in 0.19.0; lines marked changed show what they replaced.", i2:"The model check, built ahead of the gate. Lines marked reworded were changed to say what the code does.", i1:"Describes what 0.18.0 already did. Skim; read the reworded lines closely."};
+const verdicts = {}, lineNotes = {};
+let db = null;
+const key = s => s.replace(/[^A-Za-z0-9_-]/g, "_");
+const items = [];
+D.proposals.forEach(p => items.push({type:"proposal", id:key(p.initiative+"-"+p.capability), group:p.initiative, data:p}));
+D.decisions.forEach(d => items.push({type:"decision", id:key("decision-"+d.num), group:"dec", data:d}));
+(D.initiatives||[]).forEach(n => items.push({type:"initiative", id:key("initiative-"+n.short), group:"ini", data:n}));
+(D.extension||[]).forEach(p => items.push({type:"proposal", id:key("ext-"+p.capability), group:"ext", data:p}));
+(D.questions||[]).forEach(q => items.push({type:"initiative", id:key("question-"+q.short), group:"ext", data:q}));
+function el(tag, attrs, ...kids){ const e=document.createElement(tag); for(const k in (attrs||{})){ if(k==="class") e.className=attrs[k]; else if(k==="text") e.textContent=attrs[k]; else e.setAttribute(k,attrs[k]); } kids.flat().forEach(c=>c!=null&&e.append(c)); return e; }
+function richText(s){ const span=document.createElement("span"); span.className="txt"; s.split(/(`[^`]+`|\*\*[^*]+\*\*)/).forEach(part=>{ if(/^`[^`]+`$/.test(part)) span.append(el("code",{text:part.slice(1,-1)})); else if(/^\*\*[^*]+\*\*$/.test(part)) span.append(el("strong",{text:part.slice(2,-2)})); else span.append(part); }); return span; }
+const main = document.getElementById("main"), nav = document.getElementById("nav");
+function verdictBar(it){
+  const bar = el("div",{class:"verdict"});
+  const saved = el("span",{class:"saved"});
+  [["approve","Approve"],["change","Ask for a change"],["reject","Reject"]].forEach(([v,label])=>{
+    const b = el("button",{type:"button","data-v":v,"aria-pressed":"false",text:label});
+    b.addEventListener("click", ()=> setVerdict(it, verdicts[it.id]?.verdict===v ? null : v));
+    bar.append(b);
+  });
+  bar.append(saved);
+  return {bar, saved};
+}
+function render(){
+  main.textContent=""; nav.textContent="";
+  const onlyRw = document.getElementById("f-rw").checked, hideDone = document.getElementById("f-open").checked;
+  [...ORDER,"dec"].forEach(g=>{
+    if(!items.some(i=>i.group===g)) return;
+    const its = items.filter(i=>i.group===g);
+    main.append(el("h2",{class:"section-h",text: g==="dec" ? "Decisions (proposed)" : GROUP[g]}));
+    if(g!=="dec") main.append(el("div",{class:"sub",text:NOTE[g]}));
+    nav.append(el("div",{class:"grp",text: g==="dec" ? "Decisions" : g}));
+    its.forEach(it=>{
+      const v = verdicts[it.id]?.verdict || "";
+      const label = it.type==="proposal" ? it.data.capability : it.type==="initiative" ? (it.data.status ? it.data.short+" " : "")+it.data.title : it.data.num+" "+it.data.title.replace(/^\d+\.\s*/,"");
+      const a = el("a",{href:"#"+it.id}, el("span",{text: label}), el("span",{class:"dot "+v}));
+      nav.append(a);
+      if(hideDone && v) return;
+      main.append(it.type==="proposal" ? proposalCard(it, onlyRw) : it.type==="initiative" ? initiativeCard(it) : decisionCard(it));
+    });
+  });
+  tally();
+}
+function noteBox(it){
+  const t = el("textarea",{id:"note-"+it.id,placeholder:"Note (what to change, or why)","aria-label":"Note"});
+  t.value = verdicts[it.id]?.note || "";
+  let timer; t.addEventListener("input", ()=>{ clearTimeout(timer); timer=setTimeout(()=>saveNote(it, t.value), 700); });
+  return t;
+}
+function proposalCard(it, onlyRw){
+  const p = it.data, v = verdicts[it.id]?.verdict || "";
+  const rw = p.lines.filter(l=>l.prev).length;
+  const card = el("section",{class:"card",id:it.id,"data-v":v});
+  card.append(el("div",{class:"head"},
+    el("h3",{text:p.capability}),
+    el("div",{class:"chips"}, el("span",{class:"chip",text:p.lines.length+" lines"}), rw? el("span",{class:"chip rw",text:rw+" reworded or changed"}):null)));
+  card.append(el("div",{class:"meta",text:p.key+" · "+p.file+" · status "+p.status}));
+  if(p.answer) card.append(answerBox(p.answer));
+  const {bar} = verdictBar(it); card.append(bar); card.append(noteBox(it));
+  const ol = el("ol",{class:"lines"});
+  p.lines.filter(l=>!onlyRw || l.prev).forEach(l=>{
+    const lk = key(it.id+"-r"+l.n), flagged = !!lineNotes[lk];
+    const flag = el("button",{type:"button",class:"flag","aria-pressed":String(flagged),text: flagged ? "Question noted" : "Question this line"});
+    const li = el("li",{}, el("span",{class:"rid",text:"r"+l.n}), richText(l.text), flag);
+    if(l.prev) li.append(el("div",{class:"was"}, el("b",{text: l.kind==="change" ? "replaces" : "was"}), l.prev));
+    if(l.answer) li.append(answerBox(l.answer, true));
+    if(flagged){ const t=el("textarea",{class:"lnote",id:"ln-"+lk,"aria-label":"Question on r"+l.n,placeholder:"Your question on this line"}); t.value=lineNotes[lk].note||""; let tm; t.addEventListener("input",()=>{clearTimeout(tm);tm=setTimeout(()=>saveLine(lk,it,l,t.value,true),700)}); li.append(t); }
+    flag.addEventListener("click", ()=> saveLine(lk, it, l, lineNotes[lk]?.note||"", !flagged));
+    ol.append(li);
+  });
+  card.append(ol);
+  syncBar(card, v);
+  return card;
+}
+function answerBox(text, inLine){ const d=el("div",{class:"answer"+(inLine?" in-line":"")}, el("b",{text:"Claude"})); d.append(richText(text)); return d; }
+function initiativeCard(it){
+  const n = it.data, v = verdicts[it.id]?.verdict || "";
+  const card = el("section",{class:"card",id:it.id,"data-v":v});
+  card.append(el("div",{class:"head"}, el("h3",{text:(n.status ? n.short+" · " : "")+n.title}), el("div",{class:"chips"}, n.status ? el("span",{class:"chip",text:n.status}) : null, n.priority!=null && n.status==="proposed" ? el("span",{class:"chip",text:"priority "+n.priority}) : null)));
+  if(n.key) card.append(el("div",{class:"meta",text:n.key+" · "+n.file}));
+  card.append(el("p",{class:"summary"}, richText(n.summary)));
+  if(n.body) card.append(el("details",{}, el("summary",{text:"What it covers"}), el("p",{}, richText(n.body))));
+  const {bar} = verdictBar(it); card.append(bar); card.append(noteBox(it));
+  syncBar(card, v); return card;
+}
+function decisionCard(it){
+  const d = it.data, v = verdicts[it.id]?.verdict || "";
+  const card = el("section",{class:"card decision",id:it.id,"data-v":v});
+  card.append(el("div",{class:"head"}, el("h3",{text:d.title}), el("span",{class:"chip",text:"proposed"})));
+  card.append(el("div",{class:"meta",text:d.key+" · "+d.file}));
+  card.append(el("p",{class:"summary"}, richText(d.summary)));
+  if(d.decision && d.decision!==d.summary){ const det=el("details",{}, el("summary",{text:"Decision section"}), el("p",{}, richText(d.decision))); card.append(det); }
+  const {bar} = verdictBar(it); card.append(bar); card.append(noteBox(it));
+  syncBar(card, v);
+  return card;
+}
+function syncBar(card, v){ card.querySelectorAll(".verdict button").forEach(b=>{ b.setAttribute("aria-pressed", String(b.dataset.v===v)); b.disabled = !db; }); const s=card.querySelector(".saved"); const at=verdicts[card.id]?.at; if(s) s.textContent = at ? "saved "+new Date(at).toLocaleString() : ""; }
+function tally(){
+  const c={approve:0,change:0,reject:0}; items.forEach(i=>{ const v=verdicts[i.id]?.verdict; if(v) c[v]++; });
+  document.getElementById("t-approve").textContent=c.approve; document.getElementById("t-change").textContent=c.change; document.getElementById("t-reject").textContent=c.reject;
+  document.getElementById("t-pending").textContent = items.length - c.approve - c.change - c.reject;
+}
+async function setVerdict(it, v){
+  if(!db) return;
+  const prev = verdicts[it.id] || {}; const body = {item: it.type==="proposal" ? it.data.key : it.data.key, type: it.type, verdict: v, note: prev.note||"", at: Date.now()};
+  verdicts[it.id] = body; render(); document.getElementById(it.id)?.scrollIntoView({block:"nearest"});
+  try{ await db.collection("verdicts").doc(it.id).set(body); }catch(e){ note("Could not save: "+(e.message||e.code)+". Try again."); }
+}
+async function saveNote(it, text){
+  if(!db) return;
+  const prev = verdicts[it.id] || {item: it.data.key, type: it.type, verdict: null};
+  const body = {...prev, note:text, at:Date.now()}; verdicts[it.id]=body;
+  try{ await db.collection("verdicts").doc(it.id).set(body); const c=document.getElementById(it.id); if(c) syncBar(c, body.verdict||""); }catch(e){ note("Could not save the note: "+(e.message||e.code)); }
+}
+async function saveLine(lk, it, l, text, on){
+  if(!db) return;
+  try{
+    if(on){ const body={item: it.data.key, capability: it.data.capability, line: "r"+l.n, note:text, at:Date.now()}; lineNotes[lk]=body; await db.collection("lineNotes").doc(lk).set(body); }
+    else { delete lineNotes[lk]; await db.collection("lineNotes").doc(lk).delete(); }
+    if(!on || !document.getElementById("ln-"+lk)) render();
+  }catch(e){ note("Could not save the question: "+(e.message||e.code)); }
+}
+function note(msg){ document.getElementById("store-note").textContent = msg; }
+document.getElementById("f-rw").addEventListener("change", render);
+document.getElementById("f-open").addEventListener("change", render);
+render();
+if(window.claude?.use){
+  claude.use("db").then(handle=>{
+    if(!handle){ note("Verdicts can't be saved in this view. Open the page signed in to claude.ai to record them."); return; }
+    db = handle; note("Verdicts save as you choose them; Claude reads them from here.");
+    let firstV=true, firstL=true;
+    db.collection("verdicts").onSnapshot(s=>{ s.docs.forEach(d=>{ verdicts[d.id]=d.data(); }); if(firstV || !document.activeElement || document.activeElement.tagName!=="TEXTAREA") render(); firstV=false; }, e=>note("The review store stopped answering: "+(e.message||e.code)));
+    db.collection("lineNotes").onSnapshot(s=>{ Object.keys(lineNotes).forEach(k=>delete lineNotes[k]); s.docs.forEach(d=>{ lineNotes[d.id]=d.data(); }); if(firstL || document.activeElement?.tagName!=="TEXTAREA") render(); firstL=false; });
+  });
+} else { note("Verdicts can't be saved in this view. Open the page on claude.ai to record them."); }
+})();
+</script>
