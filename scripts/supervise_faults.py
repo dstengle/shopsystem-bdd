@@ -94,6 +94,16 @@ class Faults:
         return sorted(set(changed))
 
 
+def cut_short(stdout):
+    """True when a `claude -p --output-format json` session ended in an error or at its turn limit (r45): its output's
+    `is_error`, or a subtype of `error_...` (`error_max_turns`)."""
+    try:
+        data = json.loads(stdout)
+    except ValueError:
+        return False
+    return isinstance(data, dict) and (data.get("is_error") is True or str(data.get("subtype")).startswith("error_"))
+
+
 def session_end(stdout, code):
     """How a `claude -p --output-format json` session ended, in words, from what it printed and its exit code (r42)."""
     try:

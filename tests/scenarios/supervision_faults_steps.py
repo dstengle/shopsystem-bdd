@@ -48,15 +48,26 @@ def remote_refuses_later(repo, plan):
     plan["bdd-implementer"] = {"touch": [str(remote_dir(repo) / "refuse")]}
 
 
-@given(parsers.re(r"the researcher's session ends at its turn limit, having written (?P<result>no result file|a result "
-                  r"file that is not JSON)$"))
-def researcher_turn_limit(plan, result):
-    plan["code-scout"] = {"result": "none" if result.startswith("no ") else "not-json", "subtype": "error_max_turns",
-                          "num_turns": 25}
+@given(parsers.re(r"the researcher's session ends with no error and before its turn limit, having written "
+                  r"(?P<result>no result file|a result file that is not JSON)$"))
+def researcher_no_result(plan, result):
+    plan["code-scout"] = {"result": "none" if result.startswith("no ") else "not-json", "subtype": "success",
+                          "num_turns": 12}
+
+
+ENDINGS = {"in an error": {"subtype": "error_during_execution", "num_turns": 7},
+           "at its turn limit": {"subtype": "error_max_turns", "num_turns": 25}}
+
+
+@given(parsers.re(r"the researcher's session ends (?P<ending>in an error|at its turn limit), its result file giving DONE$"))
+def researcher_cut_short(plan, ending):
+    plan["code-scout"] = dict(ENDINGS[ending], status="DONE")
 
 
 FAULT_WORDS = {
-    "that the researcher's session ended at its turn limit": ["researcher", "turn limit"],
+    "how the researcher's session ended": ["researcher", "its session ended as a success (success, 12 turns"],
+    "that the researcher's session ended in an error": ["researcher", "session ended on an error"],
+    "that the researcher's session ended at its turn limit": ["researcher", "session ended at its turn limit"],
     "that git merge --ff-only work/w1 failed, with git's reason": ["git merge --ff-only work/w1 failed: "],
     "that the push of the initiative branch failed, with git's reason": [
         "the push of the initiative branch", "the remote refuses pushes to this branch"],

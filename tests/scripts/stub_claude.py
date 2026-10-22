@@ -11,7 +11,8 @@ The script is the JSON file $STUB_CLAUDE_PLAN: an object whose keys are agents w
   status     the result file's status (default "DONE"); with `result` "none" no result file is written, with
              "not-json" one that is not JSON;
   subtype    how the session ends, as claude's JSON output gives it (default "success"; "error_max_turns" at its
-             turn limit), with `num_turns` its turns (default 1);
+             turn limit, "error_during_execution" in an error; any but "success" with `is_error` true), with
+             `num_turns` its turns (default 1);
   fields     {field: value}, more fields of the result file (a planner's `fileset`);
   touch      a list of paths, files created first, wherever they are (no tool of the worker's: the world changing
              while it works, as a remote that starts refusing pushes);
