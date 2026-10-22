@@ -54,12 +54,6 @@ def r2_under_v_s3(world, context, reported):
     assert (THING + "#r2" in rows) == (reported != "not"), found(world, context)
 
 
-@then("neither thing#r1 nor thing#r2 is printed under v_s3")
-def neither_under_v_s3(world, context):
-    rows = [a[0] for name, a in found(world, context)["violations"] if name == "v_s3"]
-    assert rows == [], found(world, context)
-
-
 def _mentions(context):
     facts = context["result"].stdout
     return [m.groups() for m in re.finditer(r'^mentions\("([^"]*)", "([^"]*)"\)\.$', facts, re.M)]
@@ -89,13 +83,6 @@ def shelf_mentioned(context):
 @then("only r4 mentions shelf")
 def only_r4_mentions_shelf(context):
     assert [m[0] for m in _mentions(context) if m[1] == "shelf"] == [THING + "#r4"], _mentions(context)
-
-
-@then("it prints no file problem and no v_s2")
-def no_file_problem_and_no_v_s2(world, context):
-    data = found(world, context)
-    assert data["problems"] == [], data
-    assert [a for name, a in data["violations"] if name == "v_s2"] == [], data
 
 
 @then("it prints no v15a")

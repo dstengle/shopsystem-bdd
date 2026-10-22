@@ -186,11 +186,6 @@ def capability_r1_r2(world):
     world.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One.", "- [r2] Two."]))
 
 
-@given("a scenario tagged @r1 @r2")
-def scenario_tagged_both(world):
-    world.write("features/thing.feature", feature("thing", ("@r1 @r2", "both")))
-
-
 @given("a glossary term store that avoids shelf")
 def glossary_store(world):
     world.write("spec/index.md", INDEX + "\n## Glossary\n- **store**: a place. Not: shelf.\n")

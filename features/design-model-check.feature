@@ -669,15 +669,6 @@ Feature: Design model check
     When `model check` is run
     Then thing#r4 is not printed as unresolved
 
-  @r20 @deprecated
-  Scenario: a scenario tagged with several requirements names each of them (deprecated)
-    Deprecated for: a scenario with more than one requirement tag, its own and its feature's together, is v_s2
-    Given a capability thing with requirements r1 and r2
-    And a scenario tagged @r1 @r2
-    When `model check` is run
-    Then neither thing#r1 nor thing#r2 is printed under v_s3
-    And it prints no file problem and no v_s2
-
   @r107
   Scenario Outline: a scenario with more than one requirement tag, its own and its feature's together, is v_s2
     Pins that a scenario names one requirement, wherever its tags sit, and that a deprecated scenario names none.

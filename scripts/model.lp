@@ -216,7 +216,9 @@ v_b3(T) :- node(T, "job-thread"), part_of(P, T), not node(P, "capability-proposa
 % scenarios: every requirement tested unless guarantees
 label("v_s1", "a scenario names no requirement").
 v_s1(S) :- node(S, "acceptance-scenario"), not has_sc_of(S).
-% FIX g:180 (design-decision/a-scenario-may-name-several-requirements): v_s2 is gone; a scenario may name several.
+% design-decision/a-scenario-names-one-requirement: a deprecated scenario has no has_sc (model facts skips it).
+label("v_s2", "a scenario names more than one requirement").
+v_s2(S) :- has_sc(Q1, S), has_sc(Q2, S), Q1 != Q2.
 label("v_s3", "a requirement has no scenario").
 v_s3(Q) :- has_req(C, Q), not has_sc_q(Q), not group(C, "guarantees").
 
@@ -292,7 +294,7 @@ w_stale_intake(I)  :- status(I, "proposed"), age(I, Days), Days > 90.
 #show v11/1. #show v12a/1. #show v12b/1. #show v13/1.
 #show v15a/1. #show v15b/2. #show v15c/1. #show v15d/2. #show v15e/2. #show v15f/1.
 #show v_k1/1. #show v_k2/1. #show v_k3/1. #show v_k4/1. #show v_k5/1. #show v_k6/1.
-#show v_b1/1. #show v_b2/1. #show v_b3/1. #show v_s1/1. #show v_s3/1.
+#show v_b1/1. #show v_b2/1. #show v_b3/1. #show v_s1/1. #show v_s2/1. #show v_s3/1.
 #show v_w1/1. #show v_w2/1. #show v_w3/2. #show v_w4/1. #show v_d1/1.
 #show v_t1/3. #show v_t2/1. #show v_t3/1.    % EXTENSION (proposed against grammar.md v3)
 #show v_e1/1. #show v_e2/1.                  % EXTENSION (proposed against grammar.md v3)
