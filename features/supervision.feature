@@ -626,3 +626,14 @@ Feature: Supervision
       | ending              |
       | in an error         |
       | at its turn limit   |
+
+  @r46
+  Scenario: `work run` started while .shop/work/ in the repository's own checkout has uncommitted changes exits with an error, naming them, and changes nothing
+    Pins that `work run` never starts a worker over a change to .shop/work/ that it would put back when the worker ends.
+    Given i1's work-item w1 is drafted
+    And in the repository's own checkout .shop/work/i1/w1.md is changed and .shop/work/i1/w2.md is added, neither committed
+    When the person runs `work run i1`
+    Then work's error names .shop/work/i1/w1.md and .shop/work/i1/w2.md
+    And it exits with an error
+    And no worker was started
+    And nothing in the repository has changed, its commits included

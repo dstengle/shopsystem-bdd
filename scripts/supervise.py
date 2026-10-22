@@ -67,6 +67,11 @@ class Run(Workers, Briefs, Merge, Faults):
         self.branch = git(self.root, "rev-parse", "--abbrev-ref", "HEAD").stdout.strip()
         if self.branch == "HEAD":     # detached: no initiative branch to merge onto, rebase on or put back from (r4, r6)
             raise Refused("HEAD is detached; check out the initiative branch work run is to deliver onto")
+        status = git(self.root, "--no-optional-locks", "status", "--porcelain", "--untracked-files=all", "--", str(WORK))
+        loose = sorted(line[3:] for line in status.stdout.splitlines())
+        if loose:     # what a worker's end would put back (r28): committed first, or it is lost (r46)
+            raise Refused("%s under %s %s not committed; commit %s before work run starts"
+                          % (", ".join(loose), WORK, "is" if len(loose) == 1 else "are", "it" if len(loose) == 1 else "them"))
 
     def log(self, **line):
         with self.lock:

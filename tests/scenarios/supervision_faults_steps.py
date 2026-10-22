@@ -140,3 +140,17 @@ def names_both(context):
     out = context["done"].stdout + err
     assert "Traceback" not in err, err
     assert "could not verify" in out and "the push of the failure failed" in out, out
+
+
+@given(parsers.parse("in the repository's own checkout {changed} is changed and {added} is added, neither committed"))
+def uncommitted_at_start(repo, changed, added):
+    """A change and a new work-item under .shop/work/ that no commit holds, both still work-items `work run` can read."""
+    with open(repo / changed, "a") as out:
+        out.write("\nA line no commit holds.\n")
+    write(repo, added, item_text(added.rsplit("/", 1)[-1][:-3], "drafted"))
+
+
+@then(parsers.parse("work's error names {first} and {second}"))
+def error_names(context, first, second):
+    err = context["done"].stderr
+    assert "Traceback" not in err and first in err and second in err, err
