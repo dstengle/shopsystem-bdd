@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/branch-review-started
 kind: work-item
 part_of: capability-proposal/release-gate-supervision
-status: drafted
+status: green
 wkind: capability
 under: supervision
 accepts: [supervision#r27]

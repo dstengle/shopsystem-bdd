@@ -6,7 +6,7 @@ status: drafted
 wkind: capability
 under: migration-tools
 accepts: [migration-tools#r3]
-fileset: [scripts/migrate, scripts/migrate_spec.py, features/migration-tools.feature, tests/scenarios/test_migration_tools.py, tests/scenarios/migration_*.py]
+fileset: [scripts/migrate, scripts/migrate_*.py, tests/scenarios/*migration*.py, tests/scenarios/test_migration_tools.py]
 ---
 
 # A held scenario migrated to deprecated, renamed and rebound
