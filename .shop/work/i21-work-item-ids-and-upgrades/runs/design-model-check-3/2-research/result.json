@@ -1,0 +1,5 @@
+{
+  "status": "DONE",
+  "summary": "Research of design-model-check-3 (r110: work-item file named w<n>.md, one id per work-item) complete. Notes in 2-research/notes.md.\nRed today: all four Outline rows fail at the Given, malformed_record in tests/scenarios/design_model_check_problems.py:130 (no branch for the case strings). The 'does not print' Then form has no step (read, not run).\nToday's behaviour (probe run): model check prints no file problem for a work-item file named fix-login.md with id w3, nor for two work-items with one id across initiatives (model facts prints the node twice), nor for w4.md with id w3.\nCode gap: scripts/model_work.py read_part reads only frontmatter; scripts/model_facts.py node() reports only kind clashes.\nFile set: model_work.py (room 100), model_facts.py (room 35), tests/scenarios/design_model_check_problems.py (room 22), conftest.py World.work_item (one initiative), a bare 'does not print' Then step.\nNo test by search is made impossible to keep. tests-of has no map (tools map runs the whole suite), so every test list is by search.",
+  "questions": []
+}

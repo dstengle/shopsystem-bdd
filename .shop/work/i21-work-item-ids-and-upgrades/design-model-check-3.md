@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/design-model-check-3
 kind: work-item
 part_of: capability-proposal/ids-model-check
-status: drafted
+status: researched
 under: design-model-check
 accepts: [design-model-check#r110]
 ---
