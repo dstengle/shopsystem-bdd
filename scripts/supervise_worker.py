@@ -36,8 +36,8 @@ TOOLS = {
                   "Bash(git diff*)"],
     "review": READER,
 }
-# A stage's limit of turns: the researcher's is 25 (r19).
-MAX_TURNS = {"research": 25}
+# A stage's limit of turns: the researcher's is 40 (r19).
+MAX_TURNS = {"research": 40}
 ROLE = {"code-scout": "researcher", "bdd-planner": "planner", "bdd-implementer": "implementer",
         "bdd-task-reviewer": "reviewer", "bdd-branch-reviewer": "branch reviewer"}
 # Set in each worker's environment: a `work run` that finds it was started by a worker (r21).
