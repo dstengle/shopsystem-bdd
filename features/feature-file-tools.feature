@@ -67,15 +67,6 @@ Feature: Feature file tools
     And the output lists features/cart.feature with "Code expired"
     And the output does not list "Empty cart"
 
-  @r7 @deprecated
-  Scenario: listing that matches nothing prints nothing and fails (deprecated)
-    Deprecated for: listing that matches nothing prints nothing and succeeds
-    An empty list is not a success.
-    Given a feature file features/cart.feature with no scenario tagged @slice-9
-    When the session runs `features list --tag slice-9`
-    Then nothing is printed
-    And it exits with an error
-
   @r7
   Scenario: listing that matches nothing prints nothing and succeeds
     A list with no match has still answered, so it prints nothing and does not fail.

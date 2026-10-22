@@ -13,6 +13,7 @@ from .feature_file_tools_check_steps import *  # noqa: F401,F403  the steps are 
 from .feature_file_tools_edit_steps import *  # noqa: F401,F403
 from .feature_file_tools_files import snapshot
 from .feature_file_tools_given_steps import *  # noqa: F401,F403
+from .feature_file_tools_json_steps import *  # noqa: F401,F403
 from .feature_file_tools_refusal_steps import *  # noqa: F401,F403
 from .feature_file_tools_tree_steps import *  # noqa: F401,F403
 
@@ -72,7 +73,7 @@ def output_does_not_list(run, repo, context, one, two):
             assert text not in context["result"].stdout
     if one == "Phantom":  # r1: the docstring's scenario is not found by its title either
         done = run("features", "list", "--title", "Phantom")
-        assert (done.returncode, done.stdout) == (1, "")
+        assert (done.returncode, done.stdout) == (0, "")
 
 
 @then("nothing is printed")

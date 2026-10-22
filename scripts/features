@@ -92,6 +92,7 @@ def main():
     group = lst.add_mutually_exclusive_group(required=True)
     group.add_argument("--tag")
     group.add_argument("--title")
+    lst.add_argument("--json", action="store_true", help="print the matching scenarios as one JSON object")
     lst.set_defaults(run=cmd_list)
     tag = sub.add_parser("tag")
     tag.add_argument("title")
@@ -119,7 +120,9 @@ def main():
     retire.add_argument("title")
     retire.add_argument("--file", help=FILE_HELP)
     retire.set_defaults(run=cmd_retire)
-    sub.add_parser("deprecated").set_defaults(run=cmd_deprecated)
+    dep = sub.add_parser("deprecated")
+    dep.add_argument("--json", action="store_true", help="print each deprecated scenario as one JSON object")
+    dep.set_defaults(run=cmd_deprecated)
     for name, run in (("bindings", cmd_bindings), ("rebind", cmd_rebind)):
         one = sub.add_parser(name)
         if name == "rebind":
@@ -130,6 +133,8 @@ def main():
         if name == "bindings":
             one.add_argument("--unbound", nargs="*", metavar="FEATURE",
                              help="also list each scenario (of these feature files, default all) bound by no call or by several")
+        if name == "bindings":
+            one.add_argument("--json", action="store_true", help="print the wrong and unbound bindings as one JSON object")
         one.set_defaults(run=run)
     args = parser.parse_args()
     try:
