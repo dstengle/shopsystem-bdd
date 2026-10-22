@@ -115,12 +115,12 @@ class World:
         r = self.model("check", "--json", *args)
         return json.loads(r.stdout), r
 
-    def work_item(self, ident="w1", **fields):
-        fm = {"id": full("work-item", ident), "kind": "work-item", "part_of": "initiative/i1", "status": "drafted",
-              "under": "thing", "check": "true"}
+    def work_item(self, ident="w1", initiative="i1", name=None, **fields):
+        fm = {"id": full("work-item", ident), "kind": "work-item", "part_of": "initiative/" + initiative,
+              "status": "drafted", "under": "thing", "check": "true"}
         fm.update(fields)
         body = "".join("%s: %s\n" % (k, v) for k, v in fm.items() if v is not None)
-        self.write(".shop/work/i1/%s.md" % ident, "---\n%s---\n" % body)
+        self.write(".shop/work/%s/%s.md" % (initiative, name or ident), "---\n%s---\n" % body)
 
     def good(self):
         """One capability whose one requirement has its scenario."""

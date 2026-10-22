@@ -79,7 +79,17 @@ class WorkReading:
                 self.fact("about", data["id"], a)
                 self.want(a, None, self.rel(path))
 
+    def check_work_item_name(self, path, where, held):
+        """r110: a work-item's id is the w<n> of its file name, and no two work-items hold one."""
+        if not re.fullmatch(r"w\d+", path.stem):
+            self.problems.append(f"{where}: a work-item's file is named w<n>.md")
+        elif path.stem in held:
+            self.problems.append(f"{where}: the work-item id {path.stem} is already held by {held[path.stem]}")
+        else:
+            held[path.stem] = where
+
     def read_work(self):
+        held = {}
         for idir in sorted(p for p in (self.root / WORK).glob("*") if p.is_dir()):
             ipath = idir / "initiative.md"
             if not ipath.exists():
@@ -112,9 +122,9 @@ class WorkReading:
                     self.problems.append(f"{self.rel(ipath)}: date {data['date']!r} is not YYYY-MM-DD")
             for ppath in sorted(idir.glob("*.md")):
                 if ppath.name != "initiative.md":
-                    self.read_part(ppath)
+                    self.read_part(ppath, held)
 
-    def read_part(self, path):
+    def read_part(self, path, held):
         data, _ = frontmatter(path.read_text())
         p, kind = data.get("id"), data.get("kind")
         where = self.rel(path)
@@ -158,6 +168,7 @@ class WorkReading:
                     elif rel != "changes":                     # changes: v15e reports it
                         self.dangling.append(f"{where}: {rel} {q}, which no capability has")
         if kind == "work-item":
+            self.check_work_item_name(path, where, held)
             if data.get("wkind"):
                 self.fact("wkind", p, data["wkind"])
             if data.get("under"):

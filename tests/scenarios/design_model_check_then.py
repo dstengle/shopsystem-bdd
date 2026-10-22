@@ -16,6 +16,12 @@ def found(world, context):
 
 # --- Then ------------------------------------------------------------------------------------------------------
 
+@then("it does not print a file problem")
+def no_file_problem(world, context):
+    data = found(world, context)
+    assert not data["problems"], data
+
+
 @then(parsers.re(r"it exits (?P<how>successfully|with an error)"))
 def exits(context, how):
     result = context["result"]

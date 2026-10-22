@@ -116,7 +116,15 @@ def malformed_record(world, context, case):
     x = full("design-decision", "x")
     decision = "---\nid: {}\nsummary: {}\ndate: 2026-01-01\nstatus: accepted\n---\n\n## Decision\nWe do it.\n"
     world.good()
-    if case == "a decision under spec/decisions/ has no id":
+    if case.startswith("a work-item in .shop/work/i1/"):
+        world.initiative()
+        if "i2/w3.md" in case or "i2/w4.md" in case:
+            world.initiative("i2")
+        names = re.findall(r"\.shop/work/(i\d)/(\S+)\.md", case)
+        ids = re.findall(r"id (w\d)", case)
+        for n, (initiative, name) in enumerate(names):
+            world.work_item(ids[min(n, len(ids) - 1)], initiative, name)
+    elif case == "a decision under spec/decisions/ has no id":
         world.write("spec/decisions/0001-x.md", "---\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n\n## Decision\nWe do it.\n")
     elif case == "a decision under spec/decisions/ has no ## Decision section":
         world.write("spec/decisions/0001-x.md", "---\nid: %s\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n\nNo section.\n" % x)
@@ -153,9 +161,11 @@ def file_problem_named(world, context, named):
         assert _problems_naming(data, path) == ["%s: the layout has no %s; run scripts/migrate" % (path, path)], data
         return
     named, _, absent = named.partition(", and not ")
-    count = len(_problems_naming(data, named))
+    # r110's problems (a work-item's file name, a held id) answer another line, not counted here
+    mine = [p for p in _problems_naming(data, named) if "a work-item's file is named w<n>.md" not in p and "is already held by" not in p]
+    count = len(mine)
     if "mentions" in context:  # r28: and the requirement the work-item accepts
-        count = len([p for p in _problems_naming(data, named) if context["mentions"] in p])
+        count = len([p for p in mine if context["mentions"] in p])
     assert count == 1, data
     if absent:
         assert not any(absent in p for p in data["problems"]), data
