@@ -142,6 +142,7 @@ def transitions_of(world, name, item, datatable):
     for number, (before, after) in enumerate(datatable[1:]):
         world.log(**{"time": stamp("10:%02d" % number), "work-item": item, "before": before, "after": after})
     world.git_steps.append(lambda: git_init(world))
+    world.moves = [(item, *row) for row in datatable[1:]]
     world.expected = [tuple(row) for row in datatable[1:]]
 
 
@@ -151,6 +152,9 @@ def git_init(world):
     git(repo, "config", "user.email", "t@example.com")
     git(repo, "config", "user.name", "t")
     git(repo, "commit", "-q", "--allow-empty", "-m", "start")
+    for item, before, after in world.moves:
+        if after != "done":
+            git(repo, "commit", "-q", "--allow-empty", "-m", "work: %s %s -> %s" % (item, before, after))
 
 
 @given(parsers.parse("{item}'s work-item branch has the commits {first} and {second}, which its merge brought into "
@@ -162,7 +166,8 @@ def branch_commits(world, item, first, second):
         git(repo, "commit", "-q", "--allow-empty", "-m", first)
         git(repo, "commit", "-q", "--allow-empty", "-m", second)
         git(repo, "checkout", "-q", "main")
-        git(repo, "merge", "-q", "--no-ff", "-m", "merge work/" + item, "work/" + item)
+        git(repo, "merge", "-q", "--ff-only", "work/" + item)
+        git(repo, "commit", "-q", "--allow-empty", "-m", "work: %s claimed -> done" % item)
     world.git_steps.append(make)
     world.merged = (first, second)
 

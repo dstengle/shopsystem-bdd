@@ -45,23 +45,24 @@ def stages_of(rows, sessions):
 
 
 def merged_commits(root, name):
-    """The commits of branch work/<name> that its merge brought into the current branch: those a merge commit
-    naming work/<name> has beyond its first parent. None of a repository with no git."""
+    """The commits `work run` merged for work-item <name>. It merges fast-forward, so they are the commits between
+    the work-item's last transition commit before its merge (the one before its `-> done`) and its `-> done`
+    transition commit, `work: ` transition commits excluded. None of a repository with no git."""
     if not (Path(root) / ".git").exists():
         return []
-    done = subprocess.run(["git", "log", "--merges", "--first-parent", "--format=%H %P%x09%s"], cwd=root,
+    done = subprocess.run(["git", "log", "--first-parent", "--reverse", "--format=%h%x09%s"], cwd=root,
                           capture_output=True, text=True)
     if done.returncode != 0:
         raise Refused("git failed: " + done.stderr.strip())
-    found = []
-    for line in done.stdout.splitlines():
-        hashes, _, subject = line.partition("\t")
-        _, first, *others = hashes.split()
-        if others and re.search(r"work/%s(?![\w-])" % re.escape(name), subject):
-            log = subprocess.run(["git", "log", "--format=%h\t%s", "%s..%s" % (first, others[0])], cwd=root,
-                                 capture_output=True, text=True)
-            found += [dict(zip(("hash", "subject"), entry.split("\t", 1))) for entry in log.stdout.splitlines()]
-    return found
+    log = [line.split("\t", 1) for line in done.stdout.splitlines()]
+    mine = re.compile(r"work: %s .*-> .*" % re.escape(name))
+    moves = [i for i, (_, subject) in enumerate(log) if mine.fullmatch(subject)]
+    ends = [i for i in moves if log[i][1].endswith("-> done")]
+    if not ends:
+        return []
+    end = ends[-1]
+    start = max([i for i in moves if i < end], default=-1)
+    return [{"hash": h, "subject": sub} for h, sub in log[start + 1:end] if not sub.startswith("work: ")]
 
 
 def work_items_of(rows, root):
