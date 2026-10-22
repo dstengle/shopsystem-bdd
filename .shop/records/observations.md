@@ -161,3 +161,15 @@ naming r43; work-queue r8's "before the stage that failed started"; r45 covering
 result kept and logged (r48) and not rerun on an unmoved branch (r49); log lines and other code no line asks for moved
 into Implementation or given lines; undefined words ("the tests", "the repository's remote", "fault"). r43 masking a
 regression while another open work-item accepts the requirement is the approved trade-off and stays.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-22-release-gate-0-23-0
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+by: the person ("Confirmed on the release gate artifact"), recorded by the coordinator
+date: 2026-10-22
+
+The person confirmed the 0.23.0 release gate (https://claude.ai/artifact/PtqctgL9gNGTLvuGZS6iNg, version 3) as
+recommended: release 0.23.0; the coordinator's readings under delegation stand; for 0.24.0, the `--work-item` option
+keeps probe files and non-scenario tests (the cause of researchers ending at their limit,
+measurement/2026-10-22-research-at-the-limit), work-items get context-scoped `w<n>` ids in place of names (the
+person: "Why wouldn't we use Ids instead of names and get all of the uniqueness we need?"), and `measure` counts round
+trips; analysis-tools' `--json` lines are held; no allow rule is added for the refused subagent writes.

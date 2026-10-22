@@ -103,8 +103,8 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 - `scripts/features`: count, list, tag, move and verify-moved for feature files without the test runner;
   deprecate, retire and deprecated for scenarios kept while they still pass; bindings and rebind for the titles
   test modules bind.
-- `scripts/work`: `add` drafts a work-item, `show` lists every work-item with its status, `run` delivers an
-  initiative.
+- `scripts/work`: `add` drafts a work-item, `show` lists every work-item with its status (`--json`), `retry`
+  returns a `failed` work-item, `withdraw` withdraws one, `run` delivers an initiative.
 - `scripts/tools`: the project's analysis tools behind one interface: `probe`, `install`, `map`, `tests-of`,
   `untested`, `refs`, `check`, and `size`, the tracked Python files over a line limit.
 - `scripts/migrate`: `migrate run --context <owner/product/context>` takes a repository from the old system to
@@ -130,6 +130,34 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 
 Only `initiative-round` has the Agent tool. A plugin agent's `hooks` and `permissionMode` are ignored, so a role's
 limits are its tools; under `work run` they are also its `--allowedTools`.
+
+## 0.23.0: faults settled, query output as JSON, the session keeps the gate, measurement on v3
+
+- **Faults settled** (the 0.22.0 review's deferred findings, decision 0057): a fault decides a work-item's status
+  whatever its worker's outcome; a session that exits with an error or prints no JSON result is a fault;
+  `work withdraw <work-item>`; `work retry` returns to the status `log.jsonl` gives before `failed`; the branch
+  review's directory is kept under `.shop/work/<initiative>/runs/branch-review/<k>/`, committed, logged and pushed,
+  and not run again while only its own commit is new; a run first pushes an initiative branch that is ahead of its
+  remote; a run with a `failed` work-item exits with an error naming each fault. The glossary gains fault, remote and
+  work-item branch.
+- **Query commands answer in their output** (decision 0058, superseding 0055): `--json` prints a query's whole
+  result as one JSON object for `features list`, `deprecated` and `bindings`, `model why` and `rules`, and
+  `work show`; a query that finds nothing exits successfully (`features list`, `model why`). The `tools` query
+  commands follow in a later release.
+- **The session keeps the gate** (decision 0059): `initiative-round` gains a `gate` job and appends to the
+  initiative's ledger; `delivering-an-initiative` sends fixes through `work run` and new scenario rows to the blind
+  formulator; a new agent, `trial-runner`, runs one trial and writes a measurement record.
+- **Measurement on v3** (decision 0060): `measure initiative <initiative>` measures an initiative's deliveries from
+  `work run`'s log, the stages' sessions and git, with `--sessions` for the sessions around them; `measure show` and
+  `measure compare` read the records. The old `measure batch` is removed; `analyzing-a-batch` follows.
+- **Known**: a researcher under `work run` can end at its turn limit, because the `--work-item` option `work run`
+  gives every worker's pytest refuses the researcher's probe files
+  (`.shop/records/measurements/2026-10-22-research-at-the-limit.md`); work-item names repeat across initiatives.
+  Both are next. Until then, deliver a work-item whose researcher fails by a direct `bdd-implementer`.
+
+Upgrading a consuming repository from 0.22.0: scripts that read the exit of `features list` or `model why` on an
+empty answer now see success (read the output, or use `--json`); records written by the old `measure batch` cannot be
+read by `measure show` (measure an initiative instead); nothing else needs to change.
 
 ## 0.22.0: one requirement per scenario, faults, and the lessons of a blind formulation
 

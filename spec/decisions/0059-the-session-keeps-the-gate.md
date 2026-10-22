@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-session-keeps-the-gate
 summary: "The session the person talks to keeps the gate and decides from short replies, while rounds, a trial-runner and work run do the work in files."
 date: 2026-10-22
-status: proposed
+status: accepted
 source: [initiative/i16, observation/2026-10-21-session-keeps-the-gate, design-decision/the-v3-agents]
 by: "the person, 2026-10-22, delegating the drafting decisions to the coordinator's recommendations"
 ---

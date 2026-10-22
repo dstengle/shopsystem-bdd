@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/work-retry-reads-the-log
 summary: "`work retry` returns a `failed` work-item to the status before that `log.jsonl` gives in its transition into `failed`, so a work-item whose push failed after a transition's commit returns to the status that transition made."
 date: 2026-10-22
-status: proposed
+status: accepted
 source: [review-finding/2026-10-22-0-22-0-final-review, observation/2026-10-22-deferred-from-0-22-0, design-decision/a-failed-work-item]
 by: "the coordinator's recommendation, the person having delegated the drafting decisions to it on 2026-10-22; the design note 2026-10-22-deferred-findings-design (0.23.0, part 1)"
 ---
