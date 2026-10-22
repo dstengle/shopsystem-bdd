@@ -3,7 +3,7 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/supervision
 title: Supervision
 narrator: the person who started `work run`
 group: service
-rests_on: [design-decision/a-script-supervises-delivery, design-decision/worker-results-are-files, design-decision/work-item-lifecycle-as-run, design-decision/review-of-work-items, design-decision/the-file-set-is-the-claim, design-decision/the-v3-agents, design-decision/exits-are-successful-or-errors]
+rests_on: [design-decision/a-script-supervises-delivery, design-decision/worker-results-are-files, design-decision/work-item-lifecycle-as-run, design-decision/review-of-work-items, design-decision/the-file-set-is-the-claim, design-decision/the-v3-agents, design-decision/exits-are-successful-or-errors, design-decision/a-ruling-returns-to-the-asking-stage]
 retired: []
 ---
 
@@ -47,7 +47,9 @@ from what using it shows.
 - [r23] **Where** the repository is inside the plugin's own directory, `work run` shall make each worker's worktree in a temporary directory outside it.
 - [r24] **When** `work run` starts an implementer, `work run` shall first run the whole suite in the implementer's worktree and say in the brief how it ended.
 - [r25] **When** `work run` writes a worker's brief, `work run` shall name in it the plugin's scripts directory, the initiative branch's base, the worker's worktree and its work-item branch.
+- [r57] **When** `work run` writes the brief of a worker for a work-item that has rulings, `work run` shall write each of the work-item's rulings, with the question it answers, in it.
 - [r26] **When** `work run` makes a work-item's transition to `awaiting-ruling`, `work run` shall keep the work-item branch.
+- [r58] **When** `work run` starts an implementer for a work-item whose work-item branch it kept, `work run` shall make the implementer's worktree on that branch.
 - [r27] **When** every work-item of the initiative is `green` or `withdrawn` and the initiative branch holds a commit, other than a kept branch review's own commit, that no kept branch review has read, `work run` shall start a `claude -p` session of `bdd-branch-reviewer` over the initiative branch from its base, given one brief.
 - [r47] **When** the branch reviewer's session ends, `work run` shall copy its directory into `.shop/work/<initiative>/runs/branch-review/<k>/`.
 - [r48] **When** the branch reviewer's session ends, `work run` shall commit `.shop/work/<initiative>/runs/branch-review/<k>/` on the initiative branch.

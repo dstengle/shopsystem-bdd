@@ -3,7 +3,7 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue
 title: Work queue
 narrator: a person, session or script reading work-items or writing their transitions
 group: service
-rests_on: [design-decision/work-file-forms, design-decision/work-item-lifecycle-as-run, design-decision/the-file-set-is-the-claim, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/work-retry-reads-the-log, design-decision/query-commands-answer-in-their-output, design-decision/work-items-named-by-ids]
+rests_on: [design-decision/work-file-forms, design-decision/work-item-lifecycle-as-run, design-decision/the-file-set-is-the-claim, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/work-retry-reads-the-log, design-decision/query-commands-answer-in-their-output, design-decision/work-items-named-by-ids, design-decision/a-ruling-returns-to-the-asking-stage]
 retired: [r2]
 ---
 
@@ -26,7 +26,9 @@ writes their transitions through their lifecycle, logging every transition. It i
 - [r7] **If** `work` cannot do what it was asked, then `work` shall exit with an error, say why, and change nothing.
 - [r8] **When** `work retry <work-item>` is run on a `failed` work-item, `work` shall transition it to the status before that `log.jsonl` gives in the work-item's transition into `failed`.
 - [r10] **When** `work withdraw <work-item>` is run on a work-item that is neither `claimed` nor `green`, `work` shall transition it to `withdrawn`.
-- [r9] **When** `work add`, `work retry` or `work withdraw` changes a work-item, `work` shall commit on the current branch the work-item's file and the `log.jsonl` line the change made, if it made one.
+- [r13] **When** `work rule <work-item> <ruling>` is run on an `awaiting-ruling` work-item, `work` shall write the ruling, with the date, under the work-item's `## Rulings`.
+- [r14] **When** `work rule <work-item> <ruling>` is run on an `awaiting-ruling` work-item, `work` shall transition it to the status the stage that asked its question started from: `drafted` for a researcher's question, `researched` for a planner's, `ready` for an implementer's and `done` for a reviewer's.
+- [r9] **When** `work add`, `work retry`, `work withdraw` or `work rule` changes a work-item, `work` shall commit on the current branch the work-item's file and the `log.jsonl` line the change made, if it made one.
 
 ## Implementation, may change
 - `scripts/work` with its library `scripts/workqueue.py`, standard library only; the frontmatter subset
@@ -35,9 +37,9 @@ writes their transitions through their lifecycle, logging every transition. It i
   (design-decision/work-items-named-by-ids).
 - `log.jsonl` is one JSON object a line; a transition and the work-item's file are written together, the log line last.
 - A transition the lifecycle does not allow from the work-item's status is refused under r7.
+- `work rule` on a work-item that is not `awaiting-ruling` is a change `work` cannot make, refused under r7.
 - `work retry` and `work withdraw` print `<work-item> <status>`, the status being the one the transition made.
 
 ## Not yet
 - `next`, `claim`, `questions`, `log` and `plugin` (`work_expectations.py`), `--check`
   work-items, the guards between work-items, `show --status` (see skeleton-notes.md).
-- `work rule`, which writes the person's ruling in an `awaiting-ruling` work-item and makes its transition on (i8, delivery 1).

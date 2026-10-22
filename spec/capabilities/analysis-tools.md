@@ -3,7 +3,7 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools
 title: Analysis tools
 narrator: a session researching or reviewing a project's code
 group: service
-rests_on: [design-decision/plugin-takes-the-dependencies-it-needs]
+rests_on: [design-decision/plugin-takes-the-dependencies-it-needs, design-decision/query-commands-answer-in-their-output]
 retired: [r2, r12, r15, r18, r19, r20, r21, r22, r23, r24, r25, r26, r27, r28, r29, r30, r31, r32, r33, r34, r35]
 ---
 
@@ -29,11 +29,16 @@ file; it prints what the tools found and names a tool that is missing rather tha
 
 ### `map`, `tests-of`, `untested`, `refs`, `check`
 - [r8] **When** `tools map` is run, `tools` shall run the suite once under coverage with a context per test, passing arguments after `--` to pytest, replace any earlier map in `.shop/scratch/tools/coverage`, and exit successfully whether or not the tests passed.
+- [r56] **Where** `--json` is given, `tools map` shall print its result, the map's commit and its test count, as one JSON object.
 - [r9] **When** `tools tests-of <file>[:<function, Class.method or line range>]` is run, `tools` shall print each test that executed it in the last map, one a line, and how many of the map's tests that is, with the commit the map was made at.
 - [r10] **Where** `--by-file` is given, **when** `tools tests-of` is run, `tools` shall print a count for each test file instead of each test.
-- [r11] **If** no test in the map executed the target of `tools tests-of`, or the file has no function by that name, then `tools` shall exit with an error.
+- [r11] **When** no test in the map executed the target of `tools tests-of`, `tools` shall print that no test of the map executed it, with the commit the map was made at, and exit successfully.
+- [r53] **Where** `--json` is given, `tools tests-of` shall print its result, the tests, their count and the map's commit, as one JSON object.
+- [r57] **If** the file given to `tools tests-of` has no function by the name given, then `tools` shall exit with an error, saying the target cannot be read.
 - [r13] **When** `tools untested <file>...` is run, `tools` shall print each function in the files that no test in the last map executed, how many they are and the commit the map was made at, and exit successfully however many there are.
+- [r54] **Where** `--json` is given, `tools untested` shall print its result, the functions, their count and the map's commit, as one JSON object.
 - [r14] **When** `tools refs <name>` is run on a name the project defines, `tools` shall print every reference to it as `path:line`, including uses through an import or an alias and counting no definition as a reference, then one summary line with the number of references, the number of production files and, apart, of test files that contain them, and where the name is defined.
+- [r55] **Where** `--json` is given, `tools refs` shall print its result, the references and the summary, as one JSON object.
 - [r16] **When** `tools check` is run, `tools` shall run ruff and vulture over the paths given, or in their place the Python files changed since `--base` and not deleted, and, where the project has import contracts, import-linter over the project, each under its own heading, and exit with an error when any finds something.
 - [r50] **When** `tools size` is run, `tools` shall print each tracked Python file over the size limit in the working tree, a Python file being one with a `.py` extension or a `python` shebang, tests included, with its line count.
 - [r51] **If** any tracked Python file is over the size limit, then `tools size` shall exit with an error.
