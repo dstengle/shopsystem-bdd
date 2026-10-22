@@ -99,7 +99,7 @@ Feature: Work queue
     And nothing under the repository has changed
 
   @r7
-  Scenario Outline: add refuses a name or an initiative that is not one directory entry under .shop/work/, saying why, and changes nothing
+  Scenario Outline: add refuses an initiative that is not one directory entry under .shop/work/, saying why, and changes nothing
     Pins that add writes only inside .shop/work/<initiative>/, whatever it is given.
     Given an initiative i1 under .shop/work/ with no work-item w1
     When the session runs `work add <initiative> <name> --part-of capability-proposal/p1 --under thing --accepts thing#r1`
@@ -109,7 +109,6 @@ Feature: Work queue
 
     Examples:
       | initiative | name        | reason                                    |
-      | i1         | ../../w1    | the name ../../w1 is not a file name      |
       | ../../spec | w1          | the initiative ../../spec is not a name   |
 
   @r7

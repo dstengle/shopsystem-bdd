@@ -493,6 +493,17 @@ Feature: Migration tools
     And the line of .shop/work/i1/log.jsonl names w2
     And .shop/records/observations.md still names size-check
 
+  @r26
+  Scenario: the upgrade step "work-items named by ids" rewrites a reference from another initiative and a for: to the id of the work-item they name
+    Pins that a work-item's old name is rewritten wherever a work-item's blocked_by, depends_on or for names it, a name two initiatives hold resolving to the naming work-item's own initiative's.
+    Given a repository on the final layout whose .shop/plugin-version is 0.23.1
+    And work-items .shop/work/i1/delivery-1.md, .shop/work/i2/delivery-1.md and .shop/work/i2/size-check.md
+    And .shop/work/i3/docs.md, a work-item whose blocked_by names size-check and whose for names size-check
+    And .shop/work/i2/tests.md, a work-item whose depends_on names delivery-1
+    When the session runs `migrate upgrade`
+    Then the work-item that was .shop/work/i3/docs.md names in its blocked_by and its for the id of the work-item that was .shop/work/i2/size-check.md
+    And the work-item that was .shop/work/i2/tests.md names in its depends_on the id of the work-item that was .shop/work/i2/delivery-1.md
+
   @r27
   Scenario: `migrate upgrade` with no pending upgrade step says so, exits successfully and changes nothing
     Pins that an upgrade of a repository already on the plugin's version is harmless.
