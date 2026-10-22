@@ -1,0 +1,9 @@
+{
+  "status": "QUESTION",
+  "summary": "Plan for work-queue-5 (work-queue r1, r12) written up to one open question.\nadd numbers w<n> from the work-items under .shop/work/ (kind work-item, n from the w<n>.md name), writes w<n>.md with the title as heading, and prints the id.\nThe title keeps its one-entry check, so the r7 ../../w1 row still passes (the work-item's ruling).\nA non-UTF-8 file found while numbering is refused under r7.\nThe test steps change in test_work_queue.py; the new steps go in tests/scenarios/work_queue_add_steps.py.\nQuestion: the deprecated r2 and r7 'add when the work-item's file already exists' scenarios break under r1/r12, but the work-item has no Retires section.",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": ["scripts/workqueue.py", "scripts/work", "tests/scenarios/test_work_queue.py", "tests/scenarios/work_queue_add_steps.py"],
+  "questions": [
+    "The deprecated scenarios 'add when the work-item's file already exists leaves the file as it was (deprecated)' (@r2) and '... is refused, saying so, with an error (deprecated)' (@r7) are 'Deprecated for: removal', but work-queue-5 has no Retires section, so the implementer may not retire them, and under r1/r12 neither can pass as it is. Reading A: the work-item gains a Retires section listing both, and they are removed with features retire. The narrator who runs `work add i1 w1 ...` beside an existing w1 sees w2.md written with the heading w1, `w2` printed, and exit 0. Reading B: they stay and must pass. add refuses a title equal to an existing work-item's id, so the narrator sees 'the work-item w1 already exists', an error exit and nothing changed, while any other title is numbered as r12 says."
+  ]
+}
