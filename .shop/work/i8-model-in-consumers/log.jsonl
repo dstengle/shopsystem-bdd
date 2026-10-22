@@ -77,3 +77,4 @@
 {"time": "2026-10-22T16:57:04+00:00", "work-item": "migration-rebind-2", "stage": "plan", "agent": "bdd-planner", "session": "4259bea0-f8c7-4833-bb5f-745afd72246f", "event": "start"}
 {"time": "2026-10-22T16:58:07+00:00", "work-item": "migration-rebind-2", "stage": "plan", "agent": "bdd-planner", "session": "4259bea0-f8c7-4833-bb5f-745afd72246f", "event": "end"}
 {"time": "2026-10-22T16:58:07+00:00", "work-item": "migration-rebind-2", "before": "researched", "after": "planned", "by": "work run"}
+{"time": "2026-10-22T16:58:10+00:00", "work-item": "migration-rebind-2", "before": "planned", "after": "ready", "by": "work run"}
