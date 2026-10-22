@@ -29,8 +29,10 @@ fixed now becomes a fix work-item, and the rest an observation.
   | [r5] | behaviour that contradicts a Behaviour line or a capability's Purpose, whether or not a scenario covers it | grade it Important |
   | [r6] | a check a work-item names that the reviewer cannot verify | in a branch review, fail the review; in a work-item review, list what it cannot verify from the commits separately |
   | [r11] | in a branch review, a deprecated scenario whose replacement's work-item is `green`, a scenario removed that was not deprecated, or a binding that names no scenario | write each in its findings |
+  | [r29] | code whose observable behaviour, such as an output, a file written, a status or a refusal, no Behaviour line asks for | grade it Important |
 
 - [r12] The reviewer shall triage each finding, naming the work-item whose commits contain it, as fix now for a wrong answer, a crash where a refusal belongs or lost data, as an observation, with its reproduction, for hardening, or as drop for polish that is not cheap.
+- [r30] **When** a work-item or branch review, a re-review included, finds code whose observable behaviour no Behaviour line asks for, the reviewer shall triage it as fix now, the fix being its line written first or the code removed, whatever r8 and r12 would make it.
 - [r8] **When** the re-review of a fix work-item finds something other than data left invalid, the system's own fault on input, or a write that lands where a refusal belongs, the reviewer shall triage it as an observation.
 - [r7] **When** a branch review ends, the branch reviewer shall write in its findings the suite's wall time, the code's shape against `CLAUDE.md` and its coupling to the projects it depends on.
 - [r9] **Where** the system reviewed has a dry-run mode and a real mode of one operation, the branch reviewer shall run the randomized test that they agree.

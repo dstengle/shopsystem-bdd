@@ -127,6 +127,30 @@ A list of properties (a canonical format) stays a list.
 **Skeletons.** A capability not yet built is specified as a walking skeleton, a handful of lines, and grows
 from what running it shows.
 
+## Lines that leave nothing to infer
+
+Five lessons from 0.22.0's blind formulation, where a formulator who sees only `spec/` had to ask. Each is a
+kind of finding `checking-spec-consistency` reports; the first is also one a review reports.
+
+1. **Behaviour reaches code only through a line.** A fix work-item that adds behaviour writes its line first,
+   at the gate; a review grades code no line asks for Important. Supervision's code and scenarios said
+   `work run` says why "in one line"; r10 asks only that it say why, so the formulator could not tell whether
+   to keep the words.
+2. **Lines that touch one thing say which wins, and a line names its reach.** Supervision r28 and r34 both
+   catch a change under `.shop/work/` when a worker ends; r28 sent the work-item to `awaiting-ruling` and r34
+   to `failed` until decision 0056 said both are `failed`. r22 names its reach, "every pytest command it
+   starts, and every worker's", rather than leaving the reader to infer which runs.
+3. **One scenario shows one line's response** (design-decision/a-scenario-names-one-requirement). A refusal or
+   an exit belongs to the capability's general failure line, or to Implementation, never trailed onto another
+   line's scenario; exits are in words (design-decision/exits-are-successful-or-errors). Work-queue's
+   `@r2 @r7` scenario showed r7's exit after r2's response; it became two scenarios.
+4. **Anything with states is written as a lifecycle:** a line for each way into and out of each state. `failed`
+   came with its ways in (supervision r28, r34, r39, r41), what holds while in it (r37) and its way out
+   (work-queue r8, `work retry`); the formulator still found no line for `work retry` on a work-item that is
+   not `failed`.
+5. **A word a line depends on is a glossary term or spelled out in the line.** `failed` entered the glossary
+   with the lines that use it; "in one line" was neither, so no scenario could pin it.
+
 ## Requirement ids
 
 Every Behaviour line has an id, `[r<n>]`, written first: `- [r3] **If** ...`. The id is the line's
@@ -200,8 +224,9 @@ It prints:
 | `v_t2` (a term has two entries) | two glossary entries have one term |
 | `v_t3` (an avoided word is a term) | a word one term lists after `Not:` is another term of the context, or the term itself |
 
-A word used for two things, or two words used for one thing that no `Not:` lists yet, is a judgment of
-meaning, not a word match: `checking-spec-consistency` finds it, on demand.
+A word used for two things, or two words used for one thing that no `Not:` lists yet, or a word a line
+depends on that is neither a term nor spelled out in the line, is a judgment of meaning, not a word match:
+`checking-spec-consistency` finds it, on demand.
 
 ## The feature file
 

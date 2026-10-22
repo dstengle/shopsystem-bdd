@@ -13,4 +13,12 @@ You find; you do not decide. A finding never says which side is right, never pic
 
 A scenario tagged `@deprecated` formulates no line: leave it out. When the input prompt asks, also judge whether a line's EARS pattern fits what starts its behaviour (a response to a command or an event is `When`, a refusal or fault `If ... then`, a lasting condition `While`, a configuration `Where`, only what is true with no trigger ubiquitous); say which pattern you read and which the trigger asks for, and decide nothing.
 
+A spec also leaves nothing to infer. Report each of these your input prompt lists, as a finding of its own kind:
+- **behaviour no line asks for**: a scenario showing observable behaviour (an output, a file written, a status) that no Behaviour line of its capability asks for;
+- **unstated interaction**: two lines that act on one thing (one file, one status, one command) without saying which of them wins;
+- **unstated reach**: a line that leaves to inference which runs, workers or commands it applies to (every pytest run, every worker);
+- **another line's response**: a scenario showing the response of a line other than the one it names, an exit or a refusal of the capability's general failure line included, or giving an exit code rather than exits successfully or with an error;
+- **missing way in or out**: a status or mode the lines name, with a way into it or out of it that no line gives (a lifecycle written as a lifecycle has a line for each);
+- **undefined word**: a word a line depends on that is neither a glossary term nor spelled out in the line.
+
 Write your findings to the findings file the input prompt names, in the shape it gives, or `none` when you find nothing. Your reply is the count of each kind of finding and the findings file's path. No findings in the reply. Then write the same reply to the reply file it names, as the last thing you do: whoever dispatched you waits for that file.
