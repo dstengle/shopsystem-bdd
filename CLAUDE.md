@@ -21,6 +21,8 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/work_items.py` | the pytest plugin of `--work-item`, loaded by `work run`'s tests and this repository's conftest |
 | `scripts/measure` with `scripts/measure_*.py` | the `measure` command: `initiative` (reading `measure_read.py`, figures `measure_build.py`, the record `measure_write.py`) and `show`, `compare` (`measure_show.py`) |
 | `scripts/migrate*.py` | the `migrate` command |
+| `scripts/migrate_upgrade*.py` | `migrate status` and `migrate upgrade`: the upgrade steps between plugin releases, one module a step |
+| `hooks/hooks.json` | the plugin's SessionStart hook, running `migrate status --hook` |
 | `tests/scenarios/` | step definitions, one `<capability>_*_steps.py` module a concern |
 | `tests/scripts/` | tests of the scripts that no scenario drives |
 
