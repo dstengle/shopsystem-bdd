@@ -45,3 +45,7 @@
 {"time": "2026-10-21T00:08:46+00:00", "work-item": "migrate-kb-2", "before": "done", "after": "green", "by": "work run"}
 {"time": "2026-10-22T16:40:49+00:00", "work-item": "holding-renamed-and-rebound", "before": "drafted", "after": "failed", "by": "work run"}
 {"time": "2026-10-22T16:44:03+00:00", "work-item": "holding-renamed-and-rebound", "before": "failed", "after": "drafted", "by": "work retry"}
+{"time": "2026-10-22T16:44:12+00:00", "work-item": "holding-renamed-and-rebound", "stage": "research", "event": "push verified"}
+{"time": "2026-10-22T16:44:12+00:00", "work-item": "holding-renamed-and-rebound", "stage": "research", "agent": "code-scout", "session": "91ddc1e7-35cb-4bd4-b4ab-da666dfefb62", "event": "start"}
+{"time": "2026-10-22T16:46:15+00:00", "work-item": "holding-renamed-and-rebound", "stage": "research", "agent": "code-scout", "session": "91ddc1e7-35cb-4bd4-b4ab-da666dfefb62", "event": "end"}
+{"time": "2026-10-22T16:46:15+00:00", "work-item": "holding-renamed-and-rebound", "before": "drafted", "after": "researched", "by": "work run"}

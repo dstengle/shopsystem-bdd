@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/holding-renamed-and-rebound
 kind: work-item
 part_of: capability-proposal/release-gate-migration-tools
-status: drafted
+status: researched
 wkind: capability
 under: migration-tools
 accepts: [migration-tools#r3]
