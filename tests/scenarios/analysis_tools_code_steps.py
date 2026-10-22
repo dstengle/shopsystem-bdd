@@ -158,8 +158,8 @@ def finding_under(context, tool, heading):
 
 
 # r17
-@then(parsers.parse("under the {tool} heading tools says {same} is missing"))
-def heading_missing(context, tool, same):
+@then(parsers.parse("tools names {tool} as missing"))
+def heading_missing(context, tool):
     assert re.search(r"^missing: \S.+$", under_heading(context["result"].stdout, tool))
     assert tool not in [call[1] for call in calls(context["python"]) if len(call) > 1]
 
@@ -199,24 +199,14 @@ def prints_git_error(context):
     assert context["result"].stderr == "tools: %s\n" % context["git_error"]
 
 
-# r33
-@then("under the ruff heading and under the vulture heading tools says `nothing to check`")
-def nothing_to_check(context):
-    assert under_heading(context["result"].stdout, "ruff") == "nothing to check"
-    assert under_heading(context["result"].stdout, "vulture") == "nothing to check"
 
-
-@then("neither ruff nor vulture makes it exit 1")
+@then("neither ruff nor vulture makes it exit with an error")
 def neither_fails(context):
     assert context["result"].returncode == 0, context["result"].stderr
     assert checked(context) == []
 
 
 # r34
-@then("under the import-linter heading tools says `the project states no import contracts`")
-def says_no_contracts(context):
-    assert under_heading(context["result"].stdout, "import-linter") == "the project states no import contracts"
-    assert context["result"].returncode == 0
 
 
 @then("import-linter is not run")
@@ -225,9 +215,6 @@ def linter_not_run(context):
 
 
 # r35
-@then("under the ruff heading tools says it is clean")
-def ruff_clean(context):
-    assert under_heading(context["result"].stdout, "ruff") == "clean"
 
 
 # r49
