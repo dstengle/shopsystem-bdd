@@ -45,6 +45,7 @@ Every finding is graded **Critical**, **Important** or **Minor**, names the work
 - **A test removed or weakened**: a deleted test function, a case dropped from a parametrize list, an assertion removed or loosened, a skip or xfail added, a test rewritten to assert something else. A renamed test is still the old test. List every one, with what it proved and whether its work-item's plan lists it under "Tests the decisions break"; one the plan does not list is Important, unless a row of its implementer's `## Tests changed under an allowance` holds.
 - **The allowances the reports give**: each row verified against the commits. A `setup` row holds only if the test's diff changes no `assert`, no expected value and no parametrize case; an `interim` row only if the test was first committed after `Base` and now asserts what a decision of the plan says. A row that claims more than it holds is Important.
 - **Behaviour that contradicts a Behaviour line or a capability's Purpose**, whether or not a scenario covers it: Important.
+- **Code no line asks for**: code whose observable behaviour (an output, a file written, a status, a refusal) no Behaviour line asks for, a fix work-item's included: Important, triaged fix now whatever the triage below would make it, a re-review's included, the fix being its line written first, through integrating-a-proposal, or the code removed. Behaviour reaches code only through a line. Code that serves a line, and mechanism a capability's Implementation section gives (an exit code, a message's words), is not this finding.
 - **The feature files**: a deprecated scenario whose replacement's work-item is `green`, a scenario removed that was not deprecated, and a binding that names no scenario: name each in the findings.
 - **The code's shape against `CLAUDE.md`**: each rule and each module-map row the branch touched, met or not, with file:line; code and step definitions no scenario reaches any more. A refactor you call for is an observation with a check that would show it complete.
 - **Coupling**: where the repository depends on another project, each point where it relies on more than that project publishes, whether it would break if that project changed behind its contract, and what would make it stable.
@@ -57,7 +58,7 @@ Each finding is triaged:
 - **observation**: hardening (an input no client sends today, an edge no line names), with its reproduction: the commands and what came back;
 - **drop**: polish that is not cheap.
 
-On the re-review of a fix work-item, anything but data left invalid, the system's own fault on input, or a write that lands where a refusal belongs is an observation.
+On the re-review of a fix work-item, anything but data left invalid, the system's own fault on input, or a write that lands where a refusal belongs is an observation, but for code no line asks for, which is fix now.
 
 ## The findings file
 
