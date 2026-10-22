@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/holding-renamed-and-rebound
 kind: work-item
 part_of: capability-proposal/release-gate-migration-tools
-status: researched
+status: awaiting-ruling
 wkind: capability
 under: migration-tools
 accepts: [migration-tools#r3]
@@ -15,3 +15,6 @@ Goes green: migration-tools r3 as changed: " (deprecated)" for " (held)" on the 
 
 ## Faults
 - work run could not verify that it can push the initiative branch release-0.22.0 to origin before the research stage: fatal: could not read Username for 'https://github.com': No such device or address
+
+## Questions
+- Research notes are missing: .shop/work/i8-model-in-consumers/runs/holding-renamed-and-rebound/1-research/notes.md does not exist, although the research result says it was written. Re-run research, or recover the notes, so the plan can name the tests that break and what plan_holding does today.; Which governs r3: the accepted scenario or the changed requirement text? Reading A (the scenario as accepted, 'as `features deprecate` does'): a @holding scenario titled 'held one (held)' comes out of migrate as 'held one (held) (deprecated)', and a test that names it keeps the old title and is left unbound, the same as the copy `features deprecate` gives (feature-file-tools#r19). It already passes, so this work-item has nothing to make green. Reading B (r3 as changed): migrate's output is 'held one (deprecated)' with 'Deprecated for:' in place of 'Held for:', and each test that named 'held one (held)' is rebound to the new title and stays bound. This needs a new @r3 scenario formulated and accepted, with the old scenario deprecated and named under the work-item's Retires.
