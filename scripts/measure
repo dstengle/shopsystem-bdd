@@ -1,643 +1,85 @@
 #!/usr/bin/env python3
-"""Measure a batch from the session transcripts, the plan and git."""
+"""Measure an initiative's deliveries from what `work run` records, its sessions and git."""
 import argparse
-import collections
-import datetime
-import glob
-import json
 import os
-import re
-import subprocess
 import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import measure_build  # noqa: E402
+import measure_show  # noqa: E402
+import measure_write  # noqa: E402
+from measure_read import Refused  # noqa: E402
 
 CONTRACT = """\
 contract:
-  - batch writes one facts file for one batch. A batch runs from the commit
-    that added the archive file before it to the commit that added its own
-    (plan archive makes both). With no archive file it is the open batch: from
-    the last archive commit to now. --from and --to take a commit or an ISO
-    time and replace either end.
-  - Sessions are Claude Code's transcripts under ~/.claude/projects (or
-    --projects), in the directory of each worktree of the repository;
-    --sessions names directories outright. A subagent transcript that starts
-    inside the batch is a dispatch. A session's own requests inside the batch
-    are the controller's, when it dispatched anything there.
-  - The transcripts are not a published format. One whose shape is not known
-    is refused, naming the file and what was missing; no number is guessed. A
-    request's usage is counted once, however many rows carry it. Tokens are
-    output, new input (input and cache writes) and cache read; reasoning is
-    the part of output the model spent thinking, and is inside the output
-    figure, not beside it; context is the whole input of one request. A
-    dispatch's effort is the setting most of its requests ran at.
-  - A dispatch is attributed by its description: 'slice <n>', 'step <k>',
-    'task <n>', or 'batch' and 'slices' for work that belongs to no one slice,
-    or a leading 'spec' for the spec work before any slice exists.
-    Failing that, by the task or slice its prompt names. Its kind follows its
-    role and the words fix, re-review and probe. What neither names is counted
-    as unattributed.
-  - A commit belongs to the implementer running when it was made; with two
-    running, to the later-started one, and the facts count those as ambiguous.
-    A test file is under a tests or test directory or named test_* or
-    *_test.*; docs/, features/, spec/, .superpowers/ and Markdown are other;
-    the rest is production.
-  - Slices, their Lands: lines, hand-backs and the suite record are read from
-    the archive file (the living plan, --plan, for the open batch). Tasks are
-    counted in the batch plan the dispatches' ledger names (or --tasks), when
-    it was added and at the batch's end.
-  - Findings are counted from each reviewer's reply as it wrote it: lines that
-    begin Critical or Important, and a stated count of Minor.
-  - The facts hold counts, times, hashes, file counts, the controller's
-    descriptions and the plan's hand-back entries. They hold no prompt, reply
-    or tool content. The default file is
-    docs/superpowers/measurements/<archive file's name>.json.
-  - A facts file that exists is not written over without --replace, and a
-    batch in which no dispatch is found writes nothing: transcripts are
-    removed by the harness after some weeks and are found only on the machine
-    and under the paths the batch ran in, so the file may be all that is left.
-  - show prints a facts file as tables. compare prints two side by side.
+  - initiative <initiative> writes one measurement at
+    .shop/records/measurements/<date>-<initiative>.md, the date being the day it
+    is run. It reads .shop/work/<initiative>/log.jsonl, the session.json of each
+    stage's directory and git. A measurement that exists is not written over
+    without --replace.
+  - It gives each stage with its work-item, agent, session, time (none for a
+    stage with no end), turns, tokens (output, new input, cache read) and cost;
+    each work-item with its transitions, its awaiting-ruling and failed counts
+    and the commits its merge brought in; the totals over the stages' sessions
+    and the time from the first transition to the last.
+  - --sessions <dir> names a directory of Claude Code transcripts, raw or the
+    slim export: the measurement also gives each session that starts inside the
+    initiative's window, and each session those dispatched.
+  - It writes no prompt, reply or tool content. A file whose shape is not
+    known is refused, naming it.
+
+  - show <record> prints a measurement's stages, work-items, totals and sessions as tables.
+  - compare <a> <b> prints the two measurements' totals side by side with the
+    ratio of b to a.
 
 exit status: 0 success, 1 refused, 2 bad usage.
 """
 
-VERSION = 1
-UTC = datetime.timezone.utc
-PLUGIN = re.compile(r"shopsystem-bdd/(\d+\.\d+\.\d+)")
-LEDGER = re.compile(r"\.superpowers/sdd/([^/\s\"'`\\]+)/")
-SLICE = re.compile(r"\bslice\s+(\d+(?:\.\d+)*)", re.I)
-STEP = re.compile(r"\bsteps?\s+(\d[\d.]*(?:\s*(?:-|to)\s*\d[\d.]*)?)", re.I)
-TASK = re.compile(r"\btask\s+(\d+)", re.I)
-TASK_FILE = re.compile(r"\btask-(\d+)-(?:brief|report|findings)")
-TASK_HEAD = re.compile(r"^#{2,4} Task (\d+)\b[:.]?\s*(?:Slice (\d+(?:\.\d+)*))?", re.M)
-SLICE_HEAD = re.compile(r"^## Slice (\d+(?:\.\d+)*): (.*)$")
-LANDS = re.compile(r"^- Lands: (\d+) production, (\d+) test\s*$")
-STATUS = re.compile(r"\b(DONE_WITH_CONCERNS|NEEDS_CONTEXT|BLOCKED|PARTIAL|DONE)\b")
-VERDICT = re.compile(r"\b(Needs fixes|Approved)\b", re.I)
-MERGE = re.compile(r"ready to merge\W{0,6}(With fixes|Yes|No)\b", re.I)
-GRADE = re.compile(r"^[\s\-*#>\[\d.)]*(Critical|Important)\b")
-MINOR = re.compile(r"(\d+)\s+Minor\b|\bMinor(?: issues)?\W{1,4}(\d+)\b", re.I)
-SUMMARY = (
-    ("slices", "slices"), ("dispatches", "dispatches"), ("dispatches_per_slice", "dispatches per slice"),
-    ("tasks_planned", "tasks planned"), ("tasks_run", "tasks run"), ("hand_backs", "hand-backs"),
-    ("not_done", "replies not done"), ("output", "output tokens"), ("thinking", "of which reasoning"),
-    ("new_input", "new input tokens"),
-    ("cache_read", "cache read tokens"), ("agent_minutes", "agent minutes"), ("span_minutes", "span, minutes"),
-    ("closing_share", "share closing"), ("mean_first_context", "mean starting context"),
-    ("first_context_total", "starting context, summed"), ("reviews", "task reviews"),
-    ("reviews_clean", "task reviews clean"), ("findings_task_review", "found by task review"),
-    ("findings_branch_review", "found by branch review"), ("files_changed", "files changed"),
-    ("lines_changed", "lines changed"), ("unattributed", "unattributed dispatches"),
-)
+
+def initiative(args):
+    root = os.getcwd()
+    date = measure_write.today()
+    path = measure_write.check_unwritten(root, args.initiative, date, args.replace)
+    figures = measure_build.figures_of(args.initiative, root, args.sessions)
+    figures["date"] = date
+    measure_write.write(path, measure_write.text_of(root, args.initiative, date, figures))
+    print(os.path.relpath(path, root))
 
 
-class Refused(Exception):
-    pass
+def show(args):
+    print(measure_show.show(args.record), end="")
 
 
-def git(top, *args):
-    done = subprocess.run(("git", "-C", top) + args, capture_output=True, text=True)
-    if done.returncode:
-        raise Refused("git %s: %s" % (" ".join(args), done.stderr.strip()))
-    return done.stdout
+def compare(args):
+    print(measure_show.compare(args.a, args.b), end="")
 
 
-def when(text):
+COMMANDS = {"initiative": initiative, "show": show, "compare": compare}
+
+
+def parser():
+    top = argparse.ArgumentParser(prog="measure", description=__doc__, epilog=CONTRACT,
+                                  formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = top.add_subparsers(dest="command", required=True)
+    one = sub.add_parser("initiative", help="write an initiative's measurement")
+    one.add_argument("initiative")
+    one.add_argument("--sessions", help="a directory of Claude Code transcripts")
+    one.add_argument("--replace", action="store_true", help="write over a measurement that exists")
+    sub.add_parser("show", help="print a measurement's figures as tables").add_argument("record")
+    two = sub.add_parser("compare", help="print two measurements' totals side by side with their ratio")
+    two.add_argument("a")
+    two.add_argument("b")
+    return top
+
+
+def main(argv=None):
+    args = parser().parse_args(argv)
     try:
-        at = datetime.datetime.fromisoformat(text.strip().replace("Z", "+00:00"))
-    except ValueError:
-        raise Refused("not a time: %s" % text)
-    if at.tzinfo is None:
-        at = at.replace(tzinfo=UTC)
-    return at.astimezone(UTC)
-
-
-def iso(at):
-    return at.strftime("%Y-%m-%dT%H:%M:%SZ") if at else None
-
-
-def minutes(seconds):
-    return round(seconds / 60, 1)
-
-
-def end_of(top, text):
-    """A commit or a time, as (time, commit or None)."""
-    done = subprocess.run(("git", "-C", top, "rev-parse", "--verify", "--quiet", text + "^{commit}"),
-                          capture_output=True, text=True)
-    if done.returncode == 0:
-        commit = done.stdout.strip()
-        return when(git(top, "show", "-s", "--format=%cI", commit)), commit
-    return when(text), None
-
-
-def archives(top, directory):
-    """Every archive file's adding commit, oldest first: (time, commit, path)."""
-    out = git(top, "log", "--diff-filter=A", "--format=%x01%H%x09%cI", "--name-only", "--", directory)
-    found = []
-    for block in out.split("\x01")[1:]:
-        lines = [line for line in block.splitlines() if line.strip()]
-        commit, at = lines[0].split("\t")
-        found += [(when(at), commit, path) for path in lines[1:]]
-    return sorted(found)
-
-
-def kind_of_file(path):
-    parts = path.split("/")
-    name = parts[-1]
-    if "tests" in parts[:-1] or "test" in parts[:-1] or name.startswith("test_") or re.search(r"_test\.\w+$", name):
-        return "test"
-    if parts[0] in ("docs", "features", "spec", ".superpowers") or name.endswith(".md"):
-        return "other"
-    return "production"
-
-
-def commits(top, start, end):
-    out = git(top, "log", "--all", "--since=" + iso(start), "--until=" + iso(end),
-              "--format=%x01%H%x09%cI", "--name-only")
-    found = []
-    for block in out.split("\x01")[1:]:
-        lines = [line for line in block.splitlines() if line.strip()]
-        commit, at = lines[0].split("\t")
-        found.append({"commit": commit[:7], "at": when(at), "files": lines[1:]})
-    return sorted(found, key=lambda one: one["at"])
-
-
-def read_transcript(path, start=None, end=None):
-    """One transcript's requests, within start and end when they are given."""
-    requests = collections.OrderedDict()
-    tools, prompts, first_prompt, final = set(), 0, "", ""
-    efforts = collections.Counter()
-    times, plugins, harness = [], set(), set()
-    with open(path, encoding="utf-8") as lines:
-        for number, line in enumerate(lines, 1):
-            if not line.strip():
-                continue
-            where = "%s:%d" % (path, number)
-            try:
-                row = json.loads(line)
-            except ValueError:
-                raise Refused("transcript shape not known: %s is not JSON" % where)
-            if not isinstance(row, dict) or "type" not in row:
-                raise Refused("transcript shape not known: %s has no type" % where)
-            if row["type"] not in ("assistant", "user"):
-                continue
-            message = row.get("message")
-            if "timestamp" not in row or not isinstance(message, dict) or "content" not in message:
-                raise Refused("transcript shape not known: %s has no timestamp or message content" % where)
-            at = when(row["timestamp"])
-            if (start and at < start) or (end and at >= end):
-                continue
-            times.append(at)
-            plugins.update(PLUGIN.findall(line))
-            if row.get("version"):
-                harness.add(str(row["version"]))
-            content = message["content"]
-            blocks = content if isinstance(content, list) else [{"type": "text", "text": content}]
-            if row["type"] == "user":
-                if not any(isinstance(b, dict) and b.get("type") == "tool_result" for b in blocks):
-                    prompts += 1
-                    if prompts == 1:
-                        first_prompt = " ".join(b.get("text", "") for b in blocks if isinstance(b, dict))
-                continue
-            usage = message.get("usage")
-            if not isinstance(usage, dict) or not isinstance(usage.get("output_tokens"), int):
-                raise Refused("transcript shape not known: %s has no usage" % where)
-            key = row.get("requestId") or message.get("id") or row.get("uuid")
-            if row.get("effort"):
-                efforts[str(row["effort"])] += 1
-            thought = (usage.get("output_tokens_details") or {}).get("thinking_tokens", 0)
-            new = usage.get("input_tokens", 0) + usage.get("cache_creation_input_tokens", 0)
-            read = usage.get("cache_read_input_tokens", 0)
-            before = requests.get(key)
-            requests[key] = {"at": before["at"] if before else at, "new": new, "read": read, "model": message.get("model"),
-                             "output": max(usage["output_tokens"], before["output"] if before else 0),
-                             "thinking": max(thought, before["thinking"] if before else 0)}
-            said = "".join(b.get("text", "") for b in blocks if isinstance(b, dict) and b.get("type") == "text")
-            if said.strip():
-                final = said
-            for b in blocks:
-                if isinstance(b, dict) and b.get("type") == "tool_use":
-                    tools.add((b.get("id"), b.get("name")))
-    asked = list(requests.values())
-    return {
-        "start": min(times) if times else None, "end": max(times) if times else None,
-        "requests": len(asked), "tool_calls": len(tools), "prompts": prompts,
-        "agent_calls": sum(1 for _, name in tools if name in ("Agent", "Task")),
-        "effort": efforts.most_common(1)[0][0] if efforts else None,
-        "thinking": sum(r["thinking"] for r in asked),
-        "output": sum(r["output"] for r in asked), "new_input": sum(r["new"] for r in asked),
-        "cache_read": sum(r["read"] for r in asked),
-        "first_context": asked[0]["new"] + asked[0]["read"] if asked else 0,
-        "peak_context": max([r["new"] + r["read"] for r in asked] or [0]),
-        "model": next((r["model"] for r in reversed(asked) if r["model"]), None),
-        "first_prompt": first_prompt, "final": final, "plugins": plugins, "harness": harness,
-    }
-
-
-def attribute(role, description, prompt, task_slices):
-    """The slice, step, task and kind of one dispatch, and what named them."""
-    found = {"slice": None, "step": None, "task": None, "attributed": None}
-    for source, text in (("description", description), ("prompt", prompt[:600])):
-        one = SLICE.search(text)
-        task = TASK.search(text) or (TASK_FILE.search(prompt) if source == "prompt" else None)
-        if task and found["task"] is None:
-            found["task"] = int(task.group(1))
-        if one:
-            found["slice"] = one.group(1).rstrip(".")
-        elif found["task"] in task_slices:
-            found["slice"] = task_slices[found["task"]]
-        if found["slice"]:
-            found["attributed"] = source
-            break
-        if source == "description" and (re.search(r"\b(batch|slices)\b", text, re.I) or re.match(r"\s*spec\b", text, re.I)):
-            found["attributed"] = "description"
-            break
-    step = STEP.search(description)
-    found["step"] = step.group(1) if step else None
-    words = description.lower()
-    if role.endswith("implementer"):
-        kind = "fix" if re.search(r"\bfix", words) else "implement"
-    elif role.endswith("task-reviewer"):
-        kind = "re-review" if re.search(r"\bre-?review", words) else "review"
-    elif role.endswith("branch-reviewer"):
-        kind = "branch review"
-    elif role.endswith("scout"):
-        kind = "probe" if "probe" in words else "research"
-    elif role.split("-")[0] in ("spec", "capability", "feature"):
-        kind = "spec"
-    else:
-        kind = "other"
-    found["kind"] = kind
-    return found
-
-
-def reply_of(role, final):
-    """The closing status and the findings a reply states."""
-    head = final[:400]
-    if role.endswith("reviewer"):
-        status = MERGE.search(final) if role.endswith("branch-reviewer") else None
-        status = status or VERDICT.search(final)
-        grades = [GRADE.match(line) for line in final.splitlines()]
-        minor = MINOR.search(final)
-        return (status.group(1).capitalize() if status else None, {
-            "critical": sum(1 for g in grades if g and g.group(1) == "Critical"),
-            "important": sum(1 for g in grades if g and g.group(1) == "Important"),
-            "minor": int(minor.group(1) or minor.group(2)) if minor else None})
-    status = STATUS.search(head)
-    return (status.group(1) if status else None), None
-
-
-def read_plan(text):
-    """The slices, hand-backs and last suite record of a plan or archive."""
-    slices, hand_backs, suite, current, entry = collections.OrderedDict(), [], None, None, None
-    for line in text.splitlines():
-        head = SLICE_HEAD.match(line)
-        if head:
-            current = slices.setdefault(head.group(1), {"name": head.group(2).strip(), "lands": None})
-            continue
-        if line.startswith("## "):
-            current = None
-        lands = LANDS.match(line)
-        if lands and current is not None:
-            current["lands"] = [int(lands.group(1)), int(lands.group(2))]
-        if line.startswith("- "):
-            entry = None
-            if "HAND-BACK" in line:
-                one = SLICE.search(line)
-                entry = {"slice": one.group(1).rstrip(".") if one else None, "entry": line[2:].strip()}
-                hand_backs.append(entry)
-            elif re.match(r"- \S+ Suite: ", line):
-                suite = line[2:].strip()
-        elif entry and line.startswith("  "):
-            entry["entry"] += " " + line.strip()
-    return slices, hand_backs, suite
-
-
-def find_sessions(top, args):
-    if args.sessions:
-        return args.sessions
-    root = os.path.expanduser(args.projects)
-    paths = [line[9:] for line in git(top, "worktree", "list", "--porcelain").splitlines() if line.startswith("worktree ")]
-    found = [os.path.join(root, re.sub(r"[^A-Za-z0-9]", "-", path)) for path in paths]
-    return [path for path in found if os.path.isdir(path)]
-
-
-def tasks_of(top, path, end):
-    """Tasks in the batch plan when it was added and at the batch's end."""
-    added = git(top, "log", "--all", "--diff-filter=A", "--format=%H", "--", path).split()
-    last = git(top, "log", "--all", "--until=" + iso(end), "--format=%H", "-1", "--", path).split()
-    if not added or not last:
-        return None, {}
-    first_text, last_text = (git(top, "show", "%s:%s" % (commit, path)) for commit in (added[-1], last[0]))
-    heads = TASK_HEAD.findall(last_text)
-    return ({"plan": path, "planned": len(TASK_HEAD.findall(first_text)), "run": len(heads)},
-            {int(number): one for number, one in heads if one})
-
-
-def total(rows, key):
-    return sum(row[key] for row in rows)
-
-
-def tally(rows):
-    seconds = sum(row["seconds"] for row in rows)
-    return {"dispatches": len(rows), "output": total(rows, "output"), "thinking": total(rows, "thinking"), "new_input": total(rows, "new_input"),
-            "cache_read": total(rows, "cache_read"), "minutes": minutes(seconds),
-            "mean_first_context": round(total(rows, "first_context") / len(rows)) if rows else 0,
-            "peak_context": max([row["peak_context"] for row in rows] or [0])}
-
-
-def cmd_batch(args):
-    top = git(args.repo, "rev-parse", "--show-toplevel").strip()
-    notes = []
-    if args.archive:
-        path = os.path.relpath(os.path.abspath(args.archive), top)
-        made = archives(top, os.path.dirname(path) or ".")
-        mine = [one for one in made if one[2] == path]
-        if not mine:
-            raise Refused("%s was not added by any commit: is it the archive file plan archive wrote?" % path)
-        end, end_commit = mine[0][0], mine[0][1]
-        before = [one for one in made if one[0] < end]
-        name = os.path.splitext(os.path.basename(path))[0]
-        plan_file = os.path.join(top, path)
-    else:
-        made = archives(top, args.archive_dir)
-        before, end, end_commit, name = made, datetime.datetime.now(UTC), None, args.name
-        plans = [args.plan] if args.plan else glob.glob(os.path.join(top, "docs/superpowers/plans/*-slices.md"))
-        if len(plans) != 1:
-            raise Refused("the open batch needs the living plan: name it with --plan")
-        plan_file = plans[0]
-    start, start_commit = (before[-1][0], before[-1][1]) if before else (None, None)
-    if args.start:
-        start, start_commit = end_of(top, args.start)
-    if args.end:
-        end, end_commit = end_of(top, args.end)
-    if start is None:
-        raise Refused("no archive before this one: give the batch's start with --from")
-    with open(plan_file, encoding="utf-8") as handle:
-        planned, hand_backs, suite = read_plan(handle.read())
-
-    raw, sessions, plugins, harness = [], [], set(), set()
-    for directory in find_sessions(top, args):
-        for path in sorted(glob.glob(os.path.join(directory, "*.jsonl"))):
-            if os.path.getmtime(path) < start.timestamp():
-                continue
-            main = read_transcript(path, start, end)
-            agents = sorted(glob.glob(os.path.join(path[:-6], "subagents", "*.meta.json")))
-            mine = []
-            for meta_path in agents:
-                with open(meta_path, encoding="utf-8") as handle:
-                    meta = json.load(handle)
-                if not isinstance(meta, dict) or "agentType" not in meta:
-                    raise Refused("transcript shape not known: %s has no agentType" % meta_path)
-                one = read_transcript(meta_path[:-len(".meta.json")] + ".jsonl")
-                if one["start"] is None or not start <= one["start"] < end:
-                    continue
-                one["meta"] = meta
-                mine.append(one)
-            if not mine and not main["agent_calls"]:
-                continue
-            raw += mine
-            for one in mine + [main]:
-                plugins |= one["plugins"]
-                harness |= one["harness"]
-            sessions.append({"session": os.path.basename(path)[:8], "requests": main["requests"],
-                             "dispatched": len(mine), "output": main["output"], "thinking": main["thinking"], "new_input": main["new_input"],
-                             "cache_read": main["cache_read"], "peak_context": main["peak_context"],
-                             "start": iso(main["start"]), "end": iso(main["end"])})
-    out = args.out or os.path.join(top, "docs/superpowers/measurements", name + ".json")
-    if os.path.exists(out) and not args.replace:
-        raise Refused("%s exists: read it with show, or write it again with --replace" % os.path.relpath(out))
-    if not raw:
-        raise Refused("no dispatch found between %s and %s in %s: the sessions are named with --sessions, "
-                      "and a batch nobody dispatched in has nothing to measure"
-                      % (iso(start), iso(end), ", ".join(find_sessions(top, args)) or "no session directory"))
-
-    ledgers = collections.Counter(m for one in raw for m in LEDGER.findall(one["first_prompt"]))
-    tasks_path = args.tasks or (ledgers and "docs/superpowers/plans/%s.md" % ledgers.most_common(1)[0][0])
-    tasks, task_slices = tasks_of(top, tasks_path, end) if tasks_path else (None, {})
-    if tasks is None:
-        notes.append("%s: tasks planned and run are not counted" % (
-            "batch plan %s is in no commit" % tasks_path if tasks_path else "no dispatch names a ledger, and no --tasks"))
-
-    dispatches = []
-    for one in sorted(raw, key=lambda one: one["start"]):
-        role = one["meta"]["agentType"].split(":")[-1]
-        description = one["meta"].get("description") or ""
-        row = {"role": role, "model": one["model"] or one["meta"].get("model"), "effort": one["effort"],
-               "description": description}
-        row.update(attribute(role, description, one["first_prompt"], task_slices))
-        status, findings = reply_of(role, one["final"])
-        row.update({"start": iso(one["start"]), "end": iso(one["end"]),
-                    "seconds": round((one["end"] - one["start"]).total_seconds()),
-                    "requests": one["requests"], "tool_calls": one["tool_calls"], "prompts": one["prompts"],
-                    "output": one["output"], "thinking": one["thinking"], "new_input": one["new_input"],
-                    "cache_read": one["cache_read"], "first_context": one["first_context"], "peak_context": one["peak_context"],
-                    "status": status, "findings": findings, "commits": [], "files": []})
-        row["_at"] = (one["start"], one["end"])
-        dispatches.append(row)
-
-    ambiguous = 0
-    for commit in commits(top, start, end):
-        running = [d for d in dispatches if d["role"].endswith("implementer") and d["_at"][0] <= commit["at"] <= d["_at"][1]]
-        if not running:
-            continue
-        ambiguous += len(running) > 1
-        running[-1]["commits"].append(commit["commit"])
-        running[-1]["files"] = sorted(set(running[-1]["files"]) | set(commit["files"]))
-
-    def touched(files):
-        kinds = collections.Counter(kind_of_file(path) for path in files)
-        return [kinds["production"], kinds["test"], kinds["other"]]
-
-    slices = collections.OrderedDict()
-    for number, plan in planned.items():
-        slices[number] = {"name": plan["name"], "lands": plan["lands"]}
-    for d in dispatches:
-        if d["slice"] and d["slice"] not in slices:
-            slices[d["slice"]] = {"name": None, "lands": None}
-    if not args.archive:
-        # the living plan holds every slice still to come; the open batch is the ones worked on
-        worked_on = {d["slice"] for d in dispatches}
-        slices = collections.OrderedDict((n, one) for n, one in slices.items() if n in worked_on)
-    for number, one in slices.items():
-        rows = [d for d in dispatches if d["slice"] == number]
-        one.update(tally(rows))
-        one["by_role"] = {role: len([d for d in rows if d["role"] == role]) for role in sorted({d["role"] for d in rows})}
-        files = set().union(*[d["files"] for d in rows if d["role"].endswith("implementer")] or [set()])
-        one["touched"] = touched(files)
-        one["start"] = min([d["start"] for d in rows] or [None], key=lambda at: at or "")
-        one["end"] = max([d["end"] for d in rows] or [None], key=lambda at: at or "")
-
-    roles = collections.OrderedDict()
-    for role in sorted({d["role"] for d in dispatches}):
-        roles[role] = tally([d for d in dispatches if d["role"] == role])
-    controllers = [s for s in sessions if s["dispatched"]]
-    roles["controller"] = {"dispatches": 0, "requests": total(controllers, "requests"),
-                           "output": total(controllers, "output"), "thinking": total(controllers, "thinking"),
-                           "new_input": total(controllers, "new_input"),
-                           "cache_read": total(controllers, "cache_read"), "minutes": None, "mean_first_context": None,
-                           "peak_context": max([s["peak_context"] for s in controllers] or [0])}
-
-    built = [d for d in dispatches if d["kind"] not in ("research", "probe")]
-    branch = [d["_at"][0] for d in dispatches if d["kind"] == "branch review"]
-    closing = sum(d["seconds"] for d in built if branch and d["_at"][0] >= min(branch))
-    reviews = [d for d in dispatches if d["kind"] == "review"]
-    graded = lambda rows: sum(d["findings"]["critical"] + d["findings"]["important"] for d in rows if d["findings"])
-    diff = None
-    if start_commit:
-        stat = git(top, "diff", "--shortstat", start_commit, end_commit or "HEAD")
-        numbers = [int(n) for n in re.findall(r"(\d+) (?:file|insertion|deletion)", stat)] + [0, 0, 0]
-        diff = {"files": numbers[0], "lines": sum(numbers[1:3])}
-    worked = [number for number, one in slices.items() if one["dispatches"]]
-    summary = {
-        "slices": len(planned) if args.archive else len(worked), "dispatches": len(dispatches),
-        "dispatches_per_slice": round(len([d for d in dispatches if d["slice"]]) / len(worked), 1) if worked else None,
-        "tasks_planned": tasks and tasks["planned"], "tasks_run": tasks and tasks["run"],
-        "hand_backs": len(hand_backs),
-        "not_done": len([d for d in dispatches if d["status"] in ("BLOCKED", "PARTIAL", "NEEDS_CONTEXT")]),
-        "output": total(dispatches, "output") + roles["controller"]["output"],
-        "thinking": total(dispatches, "thinking") + roles["controller"]["thinking"],
-        "new_input": total(dispatches, "new_input") + roles["controller"]["new_input"],
-        "cache_read": total(dispatches, "cache_read") + roles["controller"]["cache_read"],
-        "agent_minutes": minutes(total(dispatches, "seconds")),
-        "span_minutes": minutes((max(d["_at"][1] for d in dispatches) - min(d["_at"][0] for d in dispatches)).total_seconds()) if dispatches else None,
-        "closing_share": round(closing / total(built, "seconds"), 2) if built and total(built, "seconds") else None,
-        "mean_first_context": round(total(dispatches, "first_context") / len(dispatches)) if dispatches else None,
-        "first_context_total": total(dispatches, "first_context"),
-        "reviews": len(reviews),
-        "reviews_clean": len([d for d in reviews if d["findings"] and not d["findings"]["critical"] + d["findings"]["important"]]),
-        "findings_task_review": graded(reviews),
-        "findings_branch_review": graded([d for d in dispatches if d["kind"] == "branch review"]),
-        "files_changed": diff and diff["files"], "lines_changed": diff and diff["lines"],
-        "unattributed": len([d for d in dispatches if not d["attributed"]]), "ambiguous_commits": ambiguous,
-        "resumed": len([d for d in dispatches if d["prompts"] > 1]),
-    }
-    for d in dispatches:
-        del d["_at"]
-        d["touched"] = touched(d.pop("files"))
-    facts = collections.OrderedDict((
-        ("measure", VERSION), ("repository", os.path.basename(top)), ("batch", name),
-        ("window", {"from": iso(start), "to": iso(end), "from_commit": start_commit and start_commit[:7],
-                    "to_commit": end_commit and end_commit[:7]}),
-        ("plugin_versions", sorted(plugins)), ("harness_versions", sorted(harness)), ("suite", suite),
-        ("summary", summary), ("roles", roles), ("slices", slices), ("tasks", tasks), ("hand_backs", hand_backs),
-        ("sessions", sessions), ("dispatches", dispatches), ("notes", notes)))
-    os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
-    with open(out, "w", encoding="utf-8") as handle:
-        json.dump(facts, handle, indent=1)
-        handle.write("\n")
-    print("%s: %d dispatches, %d slices, %s to %s" % (os.path.relpath(out), len(dispatches), summary["slices"], iso(start), iso(end)))
-    for note in notes:
-        sys.stderr.write("measure: %s\n" % note)
-    return 0
-
-
-def load(path):
-    try:
-        with open(path, encoding="utf-8") as handle:
-            facts = json.load(handle)
-    except (OSError, ValueError) as why:
-        raise Refused("%s: %s" % (path, why))
-    if not isinstance(facts, dict) or facts.get("measure") != VERSION:
-        raise Refused("%s is not a facts file this script wrote (measure %d)" % (path, VERSION))
-    return facts
-
-
-def cell(value):
-    if value is None:
-        return "-"
-    if isinstance(value, float):
-        return "%.2f" % value if value < 1 else "%.1f" % value
-    if isinstance(value, int):
-        return "{:,}".format(value)
-    return str(value)
-
-
-def table(head, rows):
-    rows = [[cell(value) for value in row] for row in rows]
-    widths = [max(len(row[i]) for row in [head] + rows) for i in range(len(head))]
-    for row in [head, ["-" * width for width in widths]] + rows:
-        print("| " + " | ".join(text.ljust(width) if i == 0 else text.rjust(width)
-                                for i, (text, width) in enumerate(zip(row, widths))) + " |")
-    print()
-
-
-def cmd_show(args):
-    facts = load(args.file)
-    window = facts["window"]
-    print("%s, batch %s, %s to %s" % (facts["repository"], facts["batch"], window["from"], window["to"]))
-    print("plugin %s; harness %s" % (", ".join(facts["plugin_versions"]) or "unknown",
-                                     ", ".join(facts["harness_versions"]) or "unknown"))
-    if facts.get("suite"):
-        print(facts["suite"])
-    print()
-    table(["batch", "value"], [[label, facts["summary"].get(key)] for key, label in SUMMARY])
-    efforts = {}
-    for d in facts["dispatches"]:
-        efforts.setdefault(d["role"], set()).add(d.get("effort") or "-")
-    table(["role", "dispatches", "effort", "output", "reasoning", "new input", "cache read", "minutes", "mean start", "peak"],
-          [[role, one["dispatches"] or None, ", ".join(sorted(efforts.get(role, []))) or None, one["output"],
-            one.get("thinking"), one["new_input"], one["cache_read"], one["minutes"],
-            one["mean_first_context"], one["peak_context"]] for role, one in facts["roles"].items()])
-    table(["slice", "dispatches", "output", "new input", "cache read", "minutes", "lands", "touched"],
-          [[number, one["dispatches"], one["output"], one["new_input"], one["cache_read"], one["minutes"],
-            one["lands"] and "%d, %d" % tuple(one["lands"]), "%d, %d" % tuple(one["touched"][:2])]
-           for number, one in facts["slices"].items()])
-    table(["not done or not attributed", "role", "kind", "slice", "status"],
-          [[d["description"], d["role"], d["kind"], d["slice"], d["status"]] for d in facts["dispatches"]
-           if not d["attributed"] or d["status"] in ("BLOCKED", "PARTIAL", "NEEDS_CONTEXT")] or [["none", "", "", "", ""]])
-    for one in facts["hand_backs"]:
-        print("hand-back: %s" % one["entry"])
-    for note in facts["notes"]:
-        print("note: %s" % note)
-    return 0
-
-
-def cmd_compare(args):
-    a, b = load(args.a), load(args.b)
-    rows = []
-    for key, label in SUMMARY:
-        x, y = a["summary"].get(key), b["summary"].get(key)
-        rows.append([label, x, y, round(y / x, 2) if x and y is not None else None])
-    for key, label in (("output", "output per slice"), ("new_input", "new input per slice"),
-                       ("cache_read", "cache read per slice"), ("agent_minutes", "agent minutes per slice")):
-        per = [round(f["summary"][key] / f["summary"]["slices"], None if key != "agent_minutes" else 1)
-               if f["summary"]["slices"] else None for f in (a, b)]
-        rows.append([label, per[0], per[1], round(per[1] / per[0], 2) if per[0] and per[1] is not None else None])
-    name = lambda f: "%s (%s)" % (f["batch"], ", ".join(f["plugin_versions"]) or "unknown")
-    table(["batch", name(a), name(b), "b / a"], rows)
-    return 0
-
-
-def main():
-    parser = argparse.ArgumentParser(prog="measure", description=__doc__, epilog=CONTRACT,
-                                     formatter_class=argparse.RawDescriptionHelpFormatter)
-    sub = parser.add_subparsers(dest="command", required=True)
-    batch = sub.add_parser("batch")
-    batch.add_argument("archive", nargs="?")
-    batch.add_argument("--repo", default=".")
-    batch.add_argument("--from", dest="start")
-    batch.add_argument("--to", dest="end")
-    batch.add_argument("--projects", default="~/.claude/projects")
-    batch.add_argument("--sessions", action="append")
-    batch.add_argument("--plan")
-    batch.add_argument("--tasks")
-    batch.add_argument("--archive-dir", default="docs/superpowers/plans/archive")
-    batch.add_argument("--name", default="open")
-    batch.add_argument("--out")
-    batch.add_argument("--replace", action="store_true")
-    batch.set_defaults(run=cmd_batch)
-    show = sub.add_parser("show")
-    show.add_argument("file")
-    show.set_defaults(run=cmd_show)
-    compare = sub.add_parser("compare")
-    compare.add_argument("a")
-    compare.add_argument("b")
-    compare.set_defaults(run=cmd_compare)
-    args = parser.parse_args()
-    try:
-        return args.run(args)
+        COMMANDS[args.command](args)
     except Refused as why:
-        sys.stderr.write("measure: %s\n" % why)
+        print("measure: " + str(why), file=sys.stderr)
         return 1
+    return 0
 
 
 if __name__ == "__main__":
