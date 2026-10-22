@@ -8,3 +8,5 @@ accepts: [migration-tools#r15, migration-tools#r18-r20, migration-tools#r22-r28]
 ---
 
 # migration-tools-1
+
+Notes from the coordinator: r15 is checked before r27 (an upgrade with uncommitted changes refuses). The upgrade steps live in the plugin's scripts; the SessionStart hook is the plugin's `hooks/hooks.json`, running `migrate status` from `${CLAUDE_PLUGIN_ROOT}/scripts`. After this work-item the skill delivering-an-initiative must say `work add <initiative> <title>`.
