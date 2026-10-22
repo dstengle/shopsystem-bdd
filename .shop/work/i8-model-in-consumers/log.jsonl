@@ -53,3 +53,7 @@
 {"time": "2026-10-22T16:46:17+00:00", "work-item": "holding-renamed-and-rebound", "stage": "plan", "agent": "bdd-planner", "session": "8dc513e7-6152-4faa-9d9b-8fa9a6dab1fd", "event": "start"}
 {"time": "2026-10-22T16:47:02+00:00", "work-item": "holding-renamed-and-rebound", "stage": "plan", "agent": "bdd-planner", "session": "8dc513e7-6152-4faa-9d9b-8fa9a6dab1fd", "event": "end"}
 {"time": "2026-10-22T16:47:02+00:00", "work-item": "holding-renamed-and-rebound", "before": "researched", "after": "awaiting-ruling", "by": "work run"}
+{"time": "2026-10-22T16:47:04+00:00", "work-item": "migration-rebind-1", "stage": "research", "event": "push verified"}
+{"time": "2026-10-22T16:47:04+00:00", "work-item": "migration-rebind-1", "stage": "research", "agent": "code-scout", "session": "d21f0988-a65d-4935-979c-9f4a5d33081e", "event": "start"}
+{"time": "2026-10-22T16:49:41+00:00", "work-item": "migration-rebind-1", "stage": "research", "agent": "code-scout", "session": "d21f0988-a65d-4935-979c-9f4a5d33081e", "event": "end"}
+{"time": "2026-10-22T16:49:41+00:00", "work-item": "migration-rebind-1", "before": "drafted", "after": "researched", "by": "work run"}
