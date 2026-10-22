@@ -4,7 +4,7 @@ title: Batch measurement on design model v3
 summary: scripts/measure measures one initiative's delivery (its work-items, their commits and the dispatches that built them) and writes a measurement record under .shop/records/measurements/, with no superpowers paths.
 kind: capability-change
 owner-level: shopsystem-bdd
-status: started
+status: done
 priority: 4
 source: [observation/2026-10-19-final-state-only]
 date: 2026-10-19
