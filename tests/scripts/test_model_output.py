@@ -63,7 +63,7 @@ class OtherCommandsTest(ModelTest):
 
     def test_exit_codes_of_why(self):
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."]))
-        self.assertEqual(self.run_model("why", "thing#r1").returncode, 1, "no proposal adds or changes it")
+        self.assertEqual(self.run_model("why", "thing#r1").returncode, 0, "no proposal adds or changes it is an answer")
         self.assertEqual(self.run_model("why", "thing").returncode, 2, "not a requirement reference")
 
     def test_bad_usage_exits_2(self):
