@@ -3,3 +3,4 @@
 {"time": "2026-10-22T22:29:01+00:00", "work-item": "design-model-check-3", "stage": "research", "agent": "code-scout", "session": "613c2ca0-7145-402b-a27e-083728d10e8d", "event": "end"}
 {"time": "2026-10-22T22:29:01+00:00", "work-item": "design-model-check-3", "before": "drafted", "after": "failed", "by": "work run"}
 {"time": "2026-10-22T22:30:58+00:00", "work-item": "supervision-6", "before": "drafted", "after": "withdrawn", "by": "work withdraw"}
+{"time": "2026-10-22T22:30:58+00:00", "work-item": "design-model-check-3", "before": "failed", "after": "drafted", "by": "work retry"}
