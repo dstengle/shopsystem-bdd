@@ -1,0 +1,5 @@
+{
+  "status": "DONE",
+  "summary": "Research for work-queue-5 (work-queue r1, r12) is done; notes in .shop/scratch/1-research/notes.md.\nAll three accepted scenarios run: the r1 deprecated one passes; the r1 title one and the r12 one are red (undefined Given/Then steps; add writes the typed name, prints nothing, no numbering).\nProbes in .shop/scratch/work-queue-5-1-research/ (probe_add.py, probe_numbering.py) ran scripts/work against scratch stores.\nConflict: deprecated r2 and r7 (add on an existing w1) break under r12 numbering; both readings in notes part 4 and questions 1.\nNo tools map here: tests-of and untested unavailable, so lists are by search.\nFile set: scripts/work, scripts/workqueue.py; tests/scenarios/test_work_queue.py (room 17) and a new tests/scenarios/work_queue_add_steps.py.\nNo file over 300 lines; git status clean apart from the ignored scratch.",
+  "questions": []
+}

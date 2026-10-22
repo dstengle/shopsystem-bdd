@@ -40,3 +40,7 @@
 {"time": "2026-10-22T22:46:53+00:00", "work-item": "migration-tools-1", "stage": "review", "agent": "bdd-task-reviewer", "session": "da28646c-f82c-445e-8859-de56f94417bd", "event": "start"}
 {"time": "2026-10-22T22:50:05+00:00", "work-item": "migration-tools-1", "stage": "review", "agent": "bdd-task-reviewer", "session": "da28646c-f82c-445e-8859-de56f94417bd", "event": "end"}
 {"time": "2026-10-22T22:50:05+00:00", "work-item": "migration-tools-1", "before": "done", "after": "awaiting-ruling", "by": "work run"}
+{"time": "2026-10-22T22:50:07+00:00", "work-item": "work-queue-5", "stage": "research", "event": "push verified"}
+{"time": "2026-10-22T22:50:07+00:00", "work-item": "work-queue-5", "stage": "research", "agent": "code-scout", "session": "8438a46e-9d86-4289-a5fe-d0297d0ff9e7", "event": "start"}
+{"time": "2026-10-22T22:53:35+00:00", "work-item": "work-queue-5", "stage": "research", "agent": "code-scout", "session": "8438a46e-9d86-4289-a5fe-d0297d0ff9e7", "event": "end"}
+{"time": "2026-10-22T22:53:35+00:00", "work-item": "work-queue-5", "before": "drafted", "after": "researched", "by": "work run"}
