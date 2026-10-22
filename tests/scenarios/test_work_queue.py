@@ -17,6 +17,8 @@ import types
 from pytest_bdd import given, parsers, scenarios, then, when
 
 from .conftest import INDEX, SCRIPTS, full
+from .work_queue_git_steps import *  # noqa: F401,F403  the steps are fixtures pytest-bdd finds by their names here
+from .work_queue_git_steps import init
 
 MOVER = "supervision"     # the script that moves work-items in these scenarios
 
@@ -36,6 +38,7 @@ def write(repo, rel, text):
 
 
 def initiative(repo, ident):
+    init(repo)     # `work add` and `work retry` commit what they change (r9)
     write(repo, "spec/index.md", INDEX)
     write(repo, ".shop/work/%s/initiative.md" % ident, "---\nid: %s\nkind: initiative\nstatus: started\n---\n" % full("initiative", ident))
 

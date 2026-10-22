@@ -8,6 +8,7 @@ import importlib.util
 import json
 import os
 import re
+import subprocess
 from pathlib import Path
 
 WORK = Path(".shop") / "work"
@@ -72,7 +73,8 @@ def add(root, initiative, name, part_of, under, accepts):
         raise Refused("the work-item %s already exists (%s); work add leaves it as it was" % (name, path.relative_to(root)))
     text = ("---\nid: work-item/%s/%s\nkind: work-item\npart_of: %s\nstatus: drafted\nunder: %s\naccepts: [%s]\n---\n\n# %s\n"
             % (context_path(root), name, part_of, under, ", ".join(accepts), name))
-    path.write_text(text)
+    rel = str(path.relative_to(root))
+    committed(root, [rel], "work add: %s/%s drafted" % (initiative, name), lambda: path.write_text(text))
     return path
 
 
@@ -178,8 +180,37 @@ def retry(root, name):
     before = moves[at]["before"]
     if before == "claimed":
         before = next((line["before"] for line in reversed(moves[:at]) if line["after"] == "claimed"), "ready")
-    move(root, initiative, name, before, by="work retry")
+    rels = [str(p.relative_to(root)) for p in (found[0], found[0].parent / "log.jsonl")]
+    committed(root, rels, "work retry: %s failed -> %s" % (name, before),
+              lambda: move(root, initiative, name, before, by="work retry"))
     return before
+
+
+def git(root, *args):
+    """Run git in `root`; a git that fails is refused, with git's first line of complaint."""
+    done = subprocess.run(["git", *args], cwd=root, capture_output=True, text=True)
+    if done.returncode != 0:
+        said = (done.stderr.strip() or done.stdout.strip() or "exit %d" % done.returncode).splitlines()[0]
+        raise Refused("git %s failed: %s" % (args[0], said))
+    return done.stdout
+
+
+def committed(root, rels, message, write):
+    """Make the change `write` makes to the files `rels` (relative to `root`), then commit them, and only them, on the
+    current branch (r9). A repository git cannot commit in is refused before anything is written, and a commit that
+    fails puts the files back as they were (r7)."""
+    git(root, "rev-parse", "--is-inside-work-tree")
+    paths = [Path(root) / rel for rel in rels]
+    before = [p.read_bytes() if p.exists() else None for p in paths]
+    write()
+    try:
+        git(root, "add", "--", *rels)
+        git(root, "commit", "-q", "-m", message, "--", *rels)
+    except Refused:
+        for path, data in zip(paths, before):
+            path.unlink(missing_ok=True) if data is None else path.write_bytes(data)
+        subprocess.run(["git", "reset", "-q", "--", *rels], cwd=root, capture_output=True)
+        raise
 
 
 def logged(log, root):

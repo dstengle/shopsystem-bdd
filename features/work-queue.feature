@@ -157,3 +157,17 @@ Feature: Work queue
       | researched | to researched, then from researched to failed          | researched |
       | claimed    | to ready, then from ready to claimed, then to failed   | ready      |
       | done       | to done, then from done to failed                      | done       |
+
+  @r9
+  Scenario Outline: `work <command>` commits the change it makes to a work-item on the current branch
+    Pins that what `work add` and `work retry` write is in the branch's history when they end, so nothing that puts .shop/work/ back to its last commit undoes it.
+    Given <given>
+    And the repository is a git repository on the branch main, everything in it committed
+    When the session runs `work <args>`
+    Then main has a new last commit, which holds .shop/work/i1/w1.md as work left it
+    And nothing under .shop/work/ differs from main's last commit
+
+    Examples:
+      | command | given                                                                              | args                                                                         |
+      | add     | an initiative i1 under .shop/work/ with no work-item w1                            | add i1 w1 --part-of capability-proposal/p1 --under thing --accepts thing#r1  |
+      | retry   | an initiative i1 under .shop/work/ with a work-item w1 that failed in its implementation stage | retry w1                                                     |
