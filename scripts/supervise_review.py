@@ -27,10 +27,10 @@ class Reviews:
         shas = git(self.root, "rev-list", "HEAD", *["^" + r for r in ([base] if base else []) + heads]).stdout.split()
         kept = self.rel(self.review_dir()) + "/"
         log = self.rel(self.dir / "log.jsonl")
-        return [sha for sha in shas
-                if not all(p.startswith(kept) or p == log
-                           for p in git(self.root, "diff-tree", "--root", "--no-commit-id", "--name-only", "-r",
-                                        sha).stdout.split())]
+        def own(sha):     # a merge commit's diff-tree is empty: it is no review's own commit
+            paths = git(self.root, "diff-tree", "--root", "--no-commit-id", "--name-only", "-r", sha).stdout.split()
+            return bool(paths) and all(p.startswith(kept) or p == log for p in paths)
+        return [sha for sha in shas if not own(sha)]
 
     def branch_review(self):
         """A `bdd-branch-reviewer` session over the initiative branch from its base, in a detached worktree of its own,

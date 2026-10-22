@@ -13,7 +13,7 @@ The target and the plugin's scripts. Nothing else: no spec, no earlier record, n
 
 ## What you may change
 
-Nothing in the repository you were started in, but the one measurement record you write. Run the trial on the target as your input prompt says, not here. Scratch files go in `.shop/scratch/`, which git ignores.
+Nothing in the repository you were started in, but the one measurement record you write. Run the trial on the target as your input prompt says, not here. Scratch files go in a temporary directory of your own outside the repository, never in it.
 
 ## The record
 
@@ -23,7 +23,7 @@ Write one file under `.shop/records/measurements/`, named `<date>-<name>.md`. It
 ---
 id: measurement/<context path>/<date>-<name>
 kind: measurement
-about: <what you ran, on which target>
+about: bounded-context/<context path>
 date: <date>
 ---
 ```
