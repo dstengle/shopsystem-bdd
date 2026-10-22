@@ -71,4 +71,7 @@ class Reviews:
         git(self.root, "add", "--", *rels)
         git(self.root, "commit", "-q", "-m", "branch review %d of %s" % (k, self.initiative), "--", *rels)
         self.unlogged = []
-        self.push()
+        reason = self.git_push()
+        if reason:      # the review stays committed locally; the next run pushes it first (r54)
+            raise Refused("the branch review is committed, but it cannot push the initiative branch to the "
+                          "remote %s: %s" % (self.remote(), reason))

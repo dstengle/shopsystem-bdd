@@ -27,6 +27,7 @@ The script is the JSON file $STUB_CLAUDE_PLAN: an object whose keys are agents w
              the name of the work-item the brief names;
   meet       a number n: before anything else, wait until $STUB_CLAUDE_CALLS has the starts of n workers of this
              agent, this one's included (up to a minute, so a worker nobody joins still ends);
+  watch      a list of files: the worker's start is followed by a `seen` record of what each holds then;
   skills     a list of skills to load (`shopsystem-bdd:bdd-red-green`), first;
   run        a list of Bash commands (argument lists), run in the working directory, last;
   names      {result field: path}, a file the result names (`report`), given in the result by its absolute path, the
@@ -136,6 +137,9 @@ def main(argv):
     result = pathlib.Path(next(line.split(":", 1)[1].strip() for line in brief.splitlines() if line.startswith("Result file:")))
     work_item = pathlib.Path(next((line.split(":", 1)[1].strip() for line in brief.splitlines()
                                    if line.startswith("Work-item:")), "none")).stem
+    if step.get("watch"):     # what these files hold as the worker starts, in its start record
+        record({"event": "seen", "agent": agent, "seen": {w: (pathlib.Path(w).read_text() if pathlib.Path(w).exists()
+                                                             else "") for w in step["watch"]}})
     for path in step.get("touch", []):
         pathlib.Path(path).touch()
     if step.get("meet"):
