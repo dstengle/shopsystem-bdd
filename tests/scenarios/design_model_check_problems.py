@@ -116,7 +116,15 @@ def malformed_record(world, context, case):
     x = full("design-decision", "x")
     decision = "---\nid: {}\nsummary: {}\ndate: 2026-01-01\nstatus: accepted\n---\n\n## Decision\nWe do it.\n"
     world.good()
-    if case == "a decision under spec/decisions/ has no id":
+    if case.startswith("a work-item in .shop/work/i1/"):
+        world.initiative()
+        if "i2/w3.md" in case or "i2/w4.md" in case:
+            world.initiative("i2")
+        names = re.findall(r"\.shop/work/(i\d)/(\S+)\.md", case)
+        ids = re.findall(r"id (w\d)", case)
+        for n, (initiative, name) in enumerate(names):
+            world.work_item(ids[min(n, len(ids) - 1)], initiative, name)
+    elif case == "a decision under spec/decisions/ has no id":
         world.write("spec/decisions/0001-x.md", "---\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n\n## Decision\nWe do it.\n")
     elif case == "a decision under spec/decisions/ has no ## Decision section":
         world.write("spec/decisions/0001-x.md", "---\nid: %s\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n---\n\nNo section.\n" % x)
