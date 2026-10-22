@@ -42,6 +42,8 @@ from what using it shows.
 - [r20] **While** two ready work-items have claims that would not share a file, `work run` shall have both implemented at the same time, two at most, merging one at a time.
 - [r21] **If** `work run` is started by a worker of another `work run`, then `work run` shall refuse, saying so.
 - [r22] `work run` shall give every pytest command it starts, and every worker's, the plugin's option `--work-item <name>`, which selects the scenarios the work-item accepts.
+- [r55] **When** a pytest command given `--work-item <name>` collects a test that is not a scenario, the option shall keep that test.
+- [r56] **If** a pytest command given `--work-item <name>` collects scenarios and none that the work-item accepts, then the option shall refuse, saying so.
 - [r23] **Where** the repository is inside the plugin's own directory, `work run` shall make each worker's worktree in a temporary directory outside it.
 - [r24] **When** `work run` starts an implementer, `work run` shall first run the whole suite in the implementer's worktree and say in the brief how it ended.
 - [r25] **When** `work run` writes a worker's brief, `work run` shall name in it the plugin's scripts directory, the initiative branch's base, the worker's worktree and its work-item branch.
