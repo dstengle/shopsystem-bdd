@@ -49,5 +49,31 @@ class UpgradeRecordsTheVersion(unittest.TestCase):
         self.assertIn("  - work-item/w1\n", (root / ".shop/work/i1-x/w2.md").read_text())
 
 
+class UpgradeFollowsReferences(unittest.TestCase):
+    def test_a_for_written_as_a_block_list_and_a_name_held_only_by_another_initiative_follow_the_rename(self):
+        root = repository({"spec/index.md": INDEX, ".shop/work/i1-x/a.md": item("a"),
+                           ".shop/work/i2-y/b.md": item("b", "for:\n  - a\nblocked_by: [a]\n")})
+        done = upgrade(root)
+        self.assertEqual(done.returncode, 0, done.stderr)
+        text = (root / ".shop/work/i2-y/w2.md").read_text()
+        self.assertIn("  - w1\n", text)
+        self.assertIn("blocked_by: [w1]\n", text)
+
+    def test_a_name_held_by_two_other_initiatives_is_refused_and_nothing_changes(self):
+        root = repository({"spec/index.md": INDEX, ".shop/work/i1-x/a.md": item("a"), ".shop/work/i2-y/a.md": item("a"),
+                           ".shop/work/i3-z/c.md": item("c", "blocked_by: [a]\n")})
+        done = upgrade(root)
+        self.assertNotEqual(done.returncode, 0)
+        self.assertIn("i1-x", done.stderr)
+        self.assertIn("i2-y", done.stderr)
+        self.assertTrue((root / ".shop/work/i1-x/a.md").is_file())
+        self.assertFalse((root / ".shop/plugin-version").exists())
+
+    def test_a_name_that_names_no_work_item_is_left_alone(self):
+        root = repository({"spec/index.md": INDEX, ".shop/work/i1-x/a.md": item("a", "for: nothing\n")})
+        self.assertEqual(upgrade(root).returncode, 0)
+        self.assertIn("for: nothing\n", (root / ".shop/work/i1-x/w1.md").read_text())
+
+
 if __name__ == "__main__":
     unittest.main()

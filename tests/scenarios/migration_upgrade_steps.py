@@ -72,10 +72,22 @@ def _(old):
     old.commit()
 
 
-@given("work-items .shop/work/i10/a.md, .shop/work/i2/b.md and .shop/work/i2/a.md")
-def _(old):
-    for rel in (".shop/work/i10/a.md", ".shop/work/i2/b.md", ".shop/work/i2/a.md"):
+@given(parsers.re(r"work-items (?P<rels>\.shop/work/\S+\.md(?:, \.shop/work/\S+\.md)*(?: and \.shop/work/\S+\.md)?)$"))
+def _(old, rels):
+    for rel in re.findall(r"\.shop/work/\S+?\.md", rels):
         item(old, rel)
+    old.commit()
+
+
+@given(parsers.re(r"(?P<rel>\.shop/work/\S+\.md), a work-item whose blocked_by names (?P<name>\S+) and whose for names (?P=name)$"))
+def _(old, rel, name):
+    item(old, rel, extra="blocked_by: [%s]\nfor: %s\n" % (name, name))
+    old.commit()
+
+
+@given(parsers.re(r"(?P<rel>\.shop/work/\S+\.md), a work-item whose depends_on names (?P<name>\S+)$"))
+def _(old, rel, name):
+    item(old, rel, extra="depends_on: [%s]\n" % name)
     old.commit()
 
 
@@ -155,6 +167,36 @@ def _(old, context, rel, name):
     now = old.root / directory / (name + ".md")
     assert now.is_file() and not (old.root / rel).exists(), old.git("status", "--porcelain").stdout
     assert "id: work-item/%s/%s\n" % (CONTEXT, name) in now.read_text()
+
+
+def renamed(old, rel):
+    """The text and new name of the work-item that was `rel`: the file of its directory whose heading is its old name."""
+    path = pathlib.PurePosixPath(rel)
+    for found in sorted((old.root / path.parent).glob("*.md")):
+        if "\n# %s\n" % path.stem in found.read_text():
+            return found.read_text(), found.stem
+    raise AssertionError("no work-item that was %s in %s" % (rel, old.git("status", "--porcelain").stdout))
+
+
+def names_in(text, field, new):
+    head = text.split("\n---", 1)[0]
+    match = re.search(r"^%s:(.*(?:\n\s+-.*)*)" % field, head, re.M)
+    assert match, text
+    assert re.search(r"(?<![\w-])%s(?![\w-])" % re.escape(new), match.group(1)), (field, text)
+
+
+@then(parsers.parse("the work-item that was {rel} names in its blocked_by and its for the id of the work-item that was {other}"))
+def _(old, context, rel, other):
+    assert context["done"].returncode == 0, said(context)
+    new = renamed(old, other)[1]
+    text = renamed(old, rel)[0]
+    names_in(text, "blocked_by", new)
+    names_in(text, "for", new)
+
+
+@then(parsers.parse("the work-item that was {rel} names in its depends_on the id of the work-item that was {other}"))
+def _(old, context, rel, other):
+    names_in(renamed(old, rel)[0], "depends_on", renamed(old, other)[1])
 
 
 @then(".shop/plugin-version holds the plugin's version")

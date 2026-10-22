@@ -14,6 +14,7 @@ class Changes:
     def __init__(self):
         self.moves = []
         self.texts = {}
+        self.failures = []
 
 
 def context_path(root):
@@ -39,21 +40,29 @@ def work_items(directory):
     return [p for p in sorted(directory.glob("*.md")) if front_kind(p.read_text()) == "work-item"]
 
 
-def rewrite_item(text, old, new, ctx, names):
-    """The item's text with its id `new`, a heading, and the work-item names its blocked_by and depends_on hold renamed."""
+def rewrite_item(text, old, new, ctx, resolve, where):
+    """The item's text with its id `new`, a heading, and the work-item names its blocked_by, depends_on and for hold
+    renamed; `resolve(name, where)` gives the id a name now has, or None to leave it."""
     text = re.sub(r"^id:.*$", "id: work-item/%s/%s" % (ctx, new), text, count=1, flags=re.M)
     head, sep, body = text[4:].partition("\n---\n")
     if not re.search(r"^# ", body, re.M):
         body = "\n# %s\n%s" % (old, body)
-    pattern = re.compile(r"(?<![\w/-])(work-item/(?:%s/)?)?(%s)(?![\w-])" % (re.escape(ctx), "|".join(map(re.escape, sorted(names, key=len, reverse=True)))))
+    pattern = re.compile(r"(?<![\w/-])(work-item/(?:%s/)?)?([\w-]+)(?![\w-])" % re.escape(ctx))
 
     def rename(match):
-        return (match.group(1) or "") + names[match.group(2)]
+        found = resolve(match.group(2), where)
+        return match.group(0) if found is None else (match.group(1) or "") + found
 
+    fields = r"(blocked_by|depends_on|for):"
     lines, listing = [], False
     for l in head.splitlines(True):
-        listing = bool(re.match(r"(blocked_by|depends_on):\s*$", l)) or (listing and bool(re.match(r"\s*-\s", l)))
-        lines.append(pattern.sub(rename, l) if listing or re.match(r"(blocked_by|depends_on):", l) else l)
+        listing = bool(re.match(fields + r"\s*$", l)) or (listing and bool(re.match(r"\s*-\s", l)))
+        if re.match(fields, l):
+            key, rest = l.split(":", 1)
+            l = key + ":" + pattern.sub(rename, rest)
+        elif listing:
+            l = pattern.sub(rename, l)
+        lines.append(l)
     return "---\n" + "".join(lines) + sep + body
 
 
@@ -69,19 +78,36 @@ def rewrite_log(text, names):
     return "".join(out)
 
 
+def resolver(held, own, field, failures):
+    """A name's new id: the referring initiative's own, else the one initiative holding it; one several hold is refused."""
+    def resolve(name, where):
+        if name in own:
+            return own[name]
+        elsewhere = held.get(name, {})
+        if len(elsewhere) > 1:
+            failures.append("could not rename the %s %s of %s: initiatives %s all hold it"
+                            % (field, name, where, " and ".join(sorted(elsewhere))))
+        return next(iter(elsewhere.values())) if len(elsewhere) == 1 else None
+    return resolve
+
+
 def plan(root):
     ctx, changes, number = context_path(root), Changes(), 0
+    numbered, held = [], {}
     for directory in initiatives(root):
         items, names = work_items(directory), {}
         for path in items:
             number += 1
             names[path.stem] = "w%d" % number
-        if not names:
-            continue
+            held.setdefault(path.stem, {})[directory.name] = names[path.stem]
+        if names:
+            numbered.append((directory, items, names))
+    for directory, items, names in numbered:
         rel = directory.relative_to(root).as_posix()
         for path in items:
             new = names[path.stem]
-            text = rewrite_item(path.read_text(), path.stem, new, ctx, names)
+            resolve = resolver(held, names, "reference", changes.failures)
+            text = rewrite_item(path.read_text(), path.stem, new, ctx, resolve, "%s/%s.md" % (rel, path.stem))
             if new != path.stem:
                 changes.moves.append(("%s/%s.md" % (rel, path.stem), "%s/%s.md" % (rel, new)))
             changes.texts["%s/%s.md" % (rel, new)] = text

@@ -4,10 +4,11 @@ in one commit or none of it."""
 import json
 import subprocess
 import sys
+import types
 from pathlib import Path
 
 import migrate_upgrade_ids
-from migrate_write import git, top_level, uncommitted
+from migrate_write import check_moves, git, top_level, uncommitted
 
 SCRIPTS = Path(__file__).resolve().parent
 VERSION_FILE = ".shop/plugin-version"
@@ -77,6 +78,18 @@ def apply(root, changes):
         git(root, "add", "-f", "--", rel)
 
 
+def move_failures(root, changes):
+    """What migrate run's check of moves names for a step's changes: a rename onto a file, two onto one."""
+    checked = types.SimpleNamespace(root=root, moves=dict(changes.moves), texts=changes.texts, created={}, failures=[])
+    # two sources to one destination cannot sit in a dict: count them first
+    seen = {}
+    for old, new in changes.moves:
+        seen.setdefault(new, []).append(old)
+    checked.failures += ["could not move both %s to %s" % (" and ".join(s), n) for n, s in seen.items() if len(s) > 1]
+    check_moves(checked)
+    return list(dict.fromkeys(checked.failures))
+
+
 def upgrade(root):
     changed = uncommitted(root)
     if changed:
@@ -88,9 +101,14 @@ def upgrade(root):
         print("no upgrade step is pending")
         return 0
     before = repository_version(root)
+    plans = [step[3].plan(root) for step in steps]
+    refused = [failure for changes in plans for failure in changes.failures + move_failures(root, changes)]
+    if refused:
+        print("migrate changed nothing; it could not make every change:\n" + "\n".join(refused), file=sys.stderr)
+        return 1
     try:
-        for step in steps:
-            apply(root, step[3].plan(root))
+        for changes in plans:
+            apply(root, changes)
         (root / VERSION_FILE).write_text(plugin_version() + "\n")
         git(root, "add", "-f", "--", VERSION_FILE)
         git(root, "commit", "-q", "-m", "migrate upgrade: %s to %s\n\n%s" % (
