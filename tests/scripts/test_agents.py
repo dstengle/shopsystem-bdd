@@ -61,7 +61,7 @@ class RoleBoundaries(unittest.TestCase):
 
     def test_r5_each_agent_names_its_model(self):
         expected = dict.fromkeys(SPEC_WRITERS + ("bdd-planner",) + REVIEWERS, "opus")
-        expected.update({"bdd-implementer": "sonnet", "initiative-round": "sonnet", "spec-checker": "sonnet",
+        expected.update({"bdd-implementer": "sonnet", "initiative-round": "sonnet", "spec-checker": "sonnet", "trial-runner": "sonnet",
                          "code-scout": "haiku"})
         for name, model in expected.items():
             with self.subTest(agent=name):
