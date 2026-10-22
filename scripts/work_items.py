@@ -1,6 +1,8 @@
-"""The plugin's pytest plugin: `--work-item <name>` runs only the scenarios tagged with a requirement the work-item
-accepts. `work run` loads it with `-p work_items`, the scripts directory on PYTHONPATH, so a repository it delivers needs
-nothing of its own for the option; this repository's conftest.py loads it the same way.
+"""The plugin's pytest plugin: `--work-item <name>` runs the scenarios tagged with a requirement the work-item
+accepts, deselects the other scenarios and keeps every test that is not a scenario (a probe, a script's test). It
+refuses, saying so, a run that collects scenarios and none the work-item accepts. `work run` loads it with
+`-p work_items`, the scripts directory on PYTHONPATH, so a repository it delivers needs nothing of its own for the
+option; this repository's conftest.py loads it the same way.
 
 A work-item is .shop/work/<initiative>/<name>.md, found in the nearest directory at or above where pytest was started
 that has .shop/work/; its `accepts: [<capability>#r<n>, <capability>#r<n>-r<m>, ...]` names the requirements. A
@@ -95,12 +97,13 @@ def pytest_collection_modifyitems(config, items):
         expect_red(config, items, name)
         return
     want = accepted(name, config.invocation_params.dir)
-    keep = []
+    keep, scenarios = [], 0
     for item in items:
         found = scenario_of(item)
-        if found and any((found[0], tag) in want for tag in found[1]):
+        scenarios += found is not None
+        if found is None or any((found[0], tag) in want for tag in found[1]):
             keep.append(item)
-    if not keep:
-        raise SystemExit("--work-item %s: no scenario carries a requirement it accepts" % name)
+    if scenarios and len(keep) == len(items) - scenarios:
+        raise SystemExit("--work-item %s: %s accepts none of the scenarios it collected" % (name, name))
     config.hook.pytest_deselected(items=[i for i in items if i not in keep])
     items[:] = keep

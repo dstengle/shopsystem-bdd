@@ -129,3 +129,35 @@ def counted_as(repo, context, counted):
     expected = records[0].partition("; expected: ")[2]
     assert ("test_it_waits" in expected, "test_it_waits" in failing) == (
         (True, False) if counted == "expected" else (False, True)), records[0]
+
+
+PROBE = 'def test_probe():\n    open("probe.ran", "w").write("ran")\n'
+
+
+@given("i1's work-item w1 is ready, accepting other#r1")
+def ready_accepting_other(repo):
+    write(repo, ".shop/work/i1/w1.md", item_text("w1", "ready").replace("accepts: [thing#r1]", "accepts: [other#r1]"))
+    commit_all(repo, "w1 accepts other#r1")
+
+
+@given("the repository holds test_probe.py, a test that is not a scenario, which writes probe.ran when it runs")
+def probe_file(repo):
+    write(repo, "test_probe.py", PROBE)
+    commit_all(repo, "a probe")
+
+
+def pytest_ran(repo, command):
+    return [c for c in calls(repo, ("ran",)) if c["command"] == command]
+
+
+@then("the researcher's `python3 -m pytest -q test_probe.py` ran test_probe.py's test")
+def probe_ran(repo, context):
+    ran = pytest_ran(repo, "python3 -m pytest -q test_probe.py")
+    assert len(ran) == 1 and ran[0]["code"] == 0 and "1 passed" in ran[0]["output"], (ran, context["done"].stderr)
+
+
+@then("the implementer's `python3 -m pytest -q` was refused, saying that w1 accepts none of the scenarios it collected")
+def pytest_refused(repo, context):
+    ran = pytest_ran(repo, "python3 -m pytest -q")
+    assert len(ran) == 1 and ran[0]["code"] != 0, (ran, context["done"].stderr)
+    assert "w1 accepts none of the scenarios it collected" in ran[0]["output"], ran[0]["output"]

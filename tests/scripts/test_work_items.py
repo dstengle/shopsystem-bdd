@@ -63,9 +63,23 @@ def test_a_work_item_that_is_not_there_is_refused(tmp_path):
     assert done.returncode != 0 and "no such work-item" in done.stdout + done.stderr, done.stdout + done.stderr
 
 
-def test_a_work_item_no_scenario_carries_is_refused(tmp_path):
+def test_a_work_item_none_of_whose_scenarios_are_collected_is_refused(tmp_path):
     done = pytest(consumer(tmp_path, "other#r1"), "--work-item", "w1")
-    assert done.returncode != 0 and "no scenario carries" in done.stdout + done.stderr, done.stdout + done.stderr
+    assert done.returncode != 0 and "w1 accepts none of the scenarios it collected" in done.stdout + done.stderr, done.stdout + done.stderr
+
+
+def test_a_test_that_is_not_a_scenario_is_kept(tmp_path):
+    repo = consumer(tmp_path, "other#r1")
+    (repo / "test_probe.py").write_text("def test_probe():\n    pass\n")
+    done = pytest(repo, "--work-item", "w1", "test_probe.py")
+    assert done.returncode == 0 and "1 passed" in done.stdout, done.stdout + done.stderr
+
+
+def test_a_non_scenario_does_not_save_a_run_whose_scenarios_are_all_unaccepted(tmp_path):
+    repo = consumer(tmp_path, "other#r1")
+    (repo / "test_probe.py").write_text("def test_probe():\n    pass\n")
+    done = pytest(repo, "--work-item", "w1")
+    assert done.returncode != 0 and "accepts none of the scenarios" in done.stdout + done.stderr, done.stdout + done.stderr
 
 
 def test_a_move_to_a_status_outside_the_lifecycle_is_refused(tmp_path):
