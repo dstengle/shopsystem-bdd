@@ -18,8 +18,10 @@ The session the person talks to keeps the gate and hands everything else to `sho
 **If the person is talking to you:**
 
 1. Choose the drafts path. Dispatch `initiative-round` with the job `integrate`, the note's path, the drafts path, round 1 and `Scripts:`. Describe the dispatch `spec <note's name>: integrate round 1`. It does steps 1 and 2 below and replies with the gate's text.
-2. Step 3, the gate, is yours: show the person that text as it came, and wait. Their answers go to a new `initiative-round`, job `integrate`, round 2, in their own words.
-3. On their yes, dispatch `initiative-round` with the job `apply`, the rounds, and the approval in their words with its date. It does step 4.
+2. Step 3, the gate, is yours. Dispatch `initiative-round` with the job `gate`, naming the rounds' drafts and any reports to show. It writes the gate's cards under `<drafts path>/gate/`, one for each decision the person is asked for, its recommendation marked and the lines in full, and replies with that path. Publish the gate page from those files, and wait. While it is published, read only the person's answers, none of the rounds' drafts. Their answers go to a new `initiative-round`, job `integrate`, round 2, in their own words.
+3. On their yes, dispatch `initiative-round` with the job `apply`, the rounds, and the file of their answers or their approval in their words with its date. It does step 4.
+
+Ask each dispatch to reply in a few lines and leave the rest in files. Read a file a dispatch wrote only to decide what to do next.
 4. Step 5: invoke formulating-features.
 
 You do not dispatch the `capability-writer`, open a draft, verify a change list or apply a draft yourself. If the gate's text is not enough to show the person, ask the round for what is missing; do not go and read it.

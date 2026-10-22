@@ -6,7 +6,7 @@ lines, and delivery by work-items that a script, `work run`, pulls through resea
 Skills: `integrating-a-proposal`, `formulating-features`, `delivering-an-initiative`, `bdd-red-green`,
 `checking-spec-consistency`, `migrating-to-capabilities`, `analyzing-a-batch`.
 Agents: `capability-writer`, `feature-formulator`, `initiative-round`, `spec-checker`, `code-scout`, `bdd-planner`,
-`bdd-implementer`, `bdd-task-reviewer`, `bdd-branch-reviewer`, `architecture-reviewer`.
+`bdd-implementer`, `bdd-task-reviewer`, `bdd-branch-reviewer`, `architecture-reviewer`, `trial-runner`.
 Format: `docs/capability-format.md`. The design model it keeps: `docs/design-model/` (version 3).
 This repository's own spec: `spec/index.md`; check it with `python3 scripts/model check`.
 
@@ -125,6 +125,7 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 | `bdd-task-reviewer` | Read, Glob, Grep, Bash, Write | opus | a done work-item's review for `work run`; changes nothing |
 | `bdd-branch-reviewer` | Read, Glob, Grep, Bash, Write | opus | an initiative's branch review, from its base, over every work-item; changes nothing |
 | `architecture-reviewer` | Read, Glob, Grep, Bash, Write | opus | an architecture review when the person asks for one |
+| `trial-runner` | Read, Glob, Grep, Bash, Write | sonnet | one trial of a plugin tool or `work run` on a target; writes only one measurement record |
 
 Only `initiative-round` has the Agent tool. A plugin agent's `hooks` and `permissionMode` are ignored, so a role's
 limits are its tools; under `work run` they are also its `--allowedTools`.

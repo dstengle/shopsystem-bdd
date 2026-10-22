@@ -52,6 +52,14 @@ Show the person what `work run` printed, as it printed it, in one code block: ea
 
 Do not explain, summarise or answer the questions yourself, and do not read the work-items or the stage directories to say more. What happens next is the person's.
 
+## Fixes, rulings and the ledger
+
+- A fix to code that a review or a trial finds is drafted as a work-item for `work run` to deliver. You change no code yourself.
+- A fix that needs a new scenario, or a new row of a scenario's examples, goes to the `feature-formulator` through a `formulate` round of `initiative-round`, never to the implementer.
+- Ask each dispatch to reply in a few lines and leave the rest in files. Read a file a dispatch wrote only to decide what to do next.
+- Each ruling the person gives is one line appended to the initiative's ledger, `.shop/scratch/run/ledger-<initiative>.md`.
+- When `work run` exits with every work-item of the initiative `green` or `withdrawn`, move the ledger to `.shop/records/archive/`.
+
 ## Red Flags
 
 - Opening a source file, a test or a script's code "to see what the work-item needs"
