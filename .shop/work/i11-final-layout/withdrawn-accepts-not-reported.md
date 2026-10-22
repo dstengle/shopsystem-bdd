@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/withdrawn-accepts-not-reported
 kind: work-item
 part_of: capability-proposal/release-gate-design-model-check
-status: drafted
+status: green
 wkind: capability
 under: design-model-check
 accepts: [design-model-check#r27]

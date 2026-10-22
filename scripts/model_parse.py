@@ -267,5 +267,5 @@ def mention(word):
 
 
 def decision_files(root):
-    """The decision files: every spec/decisions/*.md but the generated index.md (r19)."""
-    return [p for p in sorted((Path(root) / DECISIONS).glob("*.md")) if p.name != "index.md"]
+    """The decision files: every spec/decisions/*.md but the generated index.md and a README.md (r19)."""
+    return [p for p in sorted((Path(root) / DECISIONS).glob("*.md")) if p.name not in ("index.md", "README.md")]
