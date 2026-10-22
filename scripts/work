@@ -2,6 +2,7 @@
 """Keep the work-queue of a bounded context in .shop/work/: draft work-items and show them (capability work-queue),
 return a failed work-item (`work retry`), and run an initiative's work-items through their stages (`work run`, capability supervision)."""
 import argparse
+import json
 import os
 import sys
 
@@ -15,7 +16,16 @@ def cmd_add(args):
     return 0
 
 
+def cmd_withdraw(args):
+    print("%s %s" % (args.name, workqueue.withdraw(args.root, args.name)))
+    return 0
+
+
 def cmd_show(args):
+    if args.json:
+        print(json.dumps({"work-items": [{"work-item": n, "initiative": i, "status": s}
+                                         for i, n, s in workqueue.items(args.root)]}))
+        return 0
     for initiative, name, status in workqueue.items(args.root):
         print("%s/%s %s" % (initiative, name, status))
     return 0
@@ -40,14 +50,18 @@ def main(argv=None):
     a.add_argument("--part-of", required=True)
     a.add_argument("--under", required=True)
     a.add_argument("--accepts", required=True, action="append")
-    sub.add_parser("show", help="each work-item of every initiative, with its status")
+    s = sub.add_parser("show", help="each work-item of every initiative, with its status")
+    s.add_argument("--json", action="store_true", help="print one JSON object instead of lines")
+    w = sub.add_parser("withdraw", help="move a work-item that is neither claimed nor green to withdrawn")
+    w.add_argument("name")
     r = sub.add_parser("run", help="take an initiative's work-items through their stages, one claude -p worker at a time")
     r.add_argument("initiative")
     t = sub.add_parser("retry", help="return a failed work-item to the status it had before its failed stage")
     t.add_argument("name")
     args = ap.parse_args(argv)
     try:
-        return {"add": cmd_add, "show": cmd_show, "run": cmd_run, "retry": cmd_retry}[args.cmd](args)
+        return {"add": cmd_add, "show": cmd_show, "run": cmd_run, "retry": cmd_retry,
+                "withdraw": cmd_withdraw}[args.cmd](args)
     except workqueue.Refused as refused:
         print("work: %s" % refused, file=sys.stderr)
         return 1

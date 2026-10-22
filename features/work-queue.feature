@@ -152,22 +152,6 @@ Feature: Work queue
       | has a line that is not JSON  | line 2 of .shop/work/i1/log.jsonl  |
       | cannot be written            | .shop/work/i1/log.jsonl            |
 
-  @r8 @deprecated
-  Scenario Outline: retry gives a failed work-item back the status it had before the failed stage: failed from <from> (deprecated)
-    Deprecated for: retry on a failed work-item transitions it to the status before its transition into failed
-    Pins that `work retry` takes a work-item back to where its failed stage started, once the fault is remedied.
-    Given an initiative i1 under .shop/work/ whose work-item w1 is failed
-    And .shop/work/i1/log.jsonl gives w1's last transitions as <transitions>
-    When the session runs `work retry w1`
-    Then .shop/work/i1/w1.md gives w1's status as <status>
-
-    Examples:
-      | from       | transitions                                           | status     |
-      | drafted    | to drafted, then from drafted to failed                | drafted    |
-      | researched | to researched, then from researched to failed          | researched |
-      | claimed    | to ready, then from ready to claimed, then to failed   | ready      |
-      | done       | to done, then from done to failed                      | done       |
-
   @r8
   Scenario: retry on a failed work-item transitions it to the status before its transition into failed
     Pins that retry, once the fault is remedied, returns the work-item to the status it had when it failed, not to one before it.
@@ -184,21 +168,6 @@ Feature: Work queue
     When the session runs `work withdraw w1`
     Then .shop/work/i1/w1.md gives w1's status as withdrawn
     And .shop/work/i1/log.jsonl's last line is w1's transition from ready to withdrawn
-
-  @r9 @deprecated
-  Scenario Outline: `work <command>` commits the change it makes to a work-item on the current branch (deprecated)
-    Deprecated for: `work <command>` commits the change it makes to a work-item on the current branch
-    Pins that what `work add` and `work retry` write is in the branch's history when they end, so nothing that puts .shop/work/ back to its last commit undoes it.
-    Given <given>
-    And the repository is a git repository on the branch main, everything in it committed
-    When the session runs `work <args>`
-    Then main has a new last commit, which holds .shop/work/i1/w1.md as work left it
-    And nothing under .shop/work/ differs from main's last commit
-
-    Examples:
-      | command | given                                                                              | args                                                                         |
-      | add     | an initiative i1 under .shop/work/ with no work-item w1                            | add i1 w1 --part-of capability-proposal/p1 --under thing --accepts thing#r1  |
-      | retry   | an initiative i1 under .shop/work/ with a work-item w1 that failed in its implementation stage | retry w1                                                     |
 
   @r9
   Scenario Outline: `work <command>` commits the change it makes to a work-item on the current branch

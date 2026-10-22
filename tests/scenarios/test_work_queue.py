@@ -19,6 +19,7 @@ from pytest_bdd import given, parsers, scenarios, then, when
 from .conftest import INDEX, SCRIPTS, full
 from .work_queue_git_steps import *  # noqa: F401,F403  the steps are fixtures pytest-bdd finds by their names here
 from .work_queue_git_steps import init
+from .work_queue_withdraw_steps import *  # noqa: F401,F403  r10, r11
 
 MOVER = "supervision"     # the script that moves work-items in these scenarios
 
@@ -60,7 +61,7 @@ def no_item(repo, ident, name):
     initiative(repo, ident)
 
 
-@given(parsers.re(r"an initiative (?P<ident>i\d+) under \.shop/work/ whose work-items? (?P<items>.+?)"
+@given(parsers.re(r"an initiative (?P<ident>i\d+) under \.shop/work/ whose work-items? (?P<items>(?:(?!, its last).)+?)"
                   r"(?: and whose capability-proposal (?P<proposal>\w+) is (?P<pstatus>\w+))?$"))
 def with_items(repo, ident, items, proposal, pstatus):
     initiative(repo, ident)
@@ -216,7 +217,7 @@ def exits_with_error(context):
     assert context["done"].returncode != 0, context["done"]
 
 
-@then(parsers.parse("work prints {pairs}"))
+@then(parsers.re(r"work prints (?P<pairs>(?!one JSON object).+)"))
 def prints_statuses(context, pairs):
     out = context["done"].stdout.splitlines()
     assert context["done"].returncode == 0, context["done"]
