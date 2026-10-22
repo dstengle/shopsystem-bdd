@@ -577,9 +577,9 @@ Feature: Supervision
   Scenario Outline: a worker that ends without a result file `work run` can read makes the work-item's transition to failed, recording how its session ended: <result>
     Pins that a worker leaving no readable result is a fault, not a question, and the person learns how its session ended.
     Given i1's work-item w1 is drafted
-    And the researcher's session ends at its turn limit, <result>
+    And the researcher's session ends with no error and before its turn limit, <result>
     When the person runs `work run i1`
-    Then w1 is failed, recording that the researcher's session ended at its turn limit
+    Then w1 is failed, recording how the researcher's session ended
 
     Examples:
       | result                                        |
@@ -588,8 +588,8 @@ Feature: Supervision
 
   @r43
   Scenario Outline: before a merge, a failing scenario whose requirement is accepted by <accepted by> is counted as <counted>
-    Pins that the suite before a merge expects the failures of work not yet done elsewhere in the initiative, and no other.
-    Given i1's work-item w1 is ready, accepting thing#r1, and w2 is drafted and w3 is green
+    Pins that the suite before a merge expects the failures of work not yet done by another work-item of the initiative, and no other.
+    Given i1's work-item w1 is ready, accepting thing#r1, w2 is drafted, w3 is green and w4 is withdrawn
     And features/thing.feature has the scenario "it waits", tagged @r2, which fails
     And thing#r2 is accepted by <accepted by>
     And every worker gives DONE, the implementer committing feature.txt
@@ -599,15 +599,30 @@ Feature: Supervision
     Examples:
       | accepted by     | counted          |
       | w2 only         | expected         |
-      | w2 and w1       | not expected     |
-      | w2 and w3       | not expected     |
+      | w2 and w1       | expected         |
+      | w2 and w3       | expected         |
       | w3 only         | not expected     |
+      | w4 only         | not expected     |
+      | w1 only         | not expected     |
       | no work-item    | not expected     |
 
   @r44
-  Scenario: each worker's brief tells it to write its result file first and keep it current as it works
-    Pins that a worker that stops part-way still leaves a result for `work run` to read.
+  Scenario: each worker's brief tells it to write its result file first with the outcome PARTIAL, and keep it current as it works
+    Pins that a worker that stops part-way still leaves a result for `work run` to read, and one that does not claim the work done.
     Given i1's work-item w1 is drafted
     And every worker gives DONE
     When the person runs `work run i1`
-    Then each of w1's four briefs tells the worker to write its result file first and keep it current as it works
+    Then each of w1's four briefs tells the worker to write its result file first, with the outcome PARTIAL, and keep it current as it works
+
+  @r45
+  Scenario Outline: a worker whose session ends <ending> makes the work-item's transition to failed, whatever its result says
+    Pins that a session cut short is a fault even when its result file claims the work done.
+    Given i1's work-item w1 is drafted
+    And the researcher's session ends <ending>, its result file giving DONE
+    When the person runs `work run i1`
+    Then w1 is failed, recording that the researcher's session ended <ending>
+
+    Examples:
+      | ending              |
+      | in an error         |
+      | at its turn limit   |
