@@ -70,7 +70,7 @@ Tools the skills and agents run:
 | `design-model-check` | a person or session verifying a repository against the design model | service |
 | `work-queue` | a person, session or script reading work-items or writing their transitions | service |
 | `supervision` | the person who started `work run` | service |
-| `migration-tools` | a person or session migrating a repository to the final layout | service |
+| `migration-tools` | a person or session migrating a repository to the final layout or upgrading it between plugin releases | service |
 
 ## Testing
 
@@ -105,6 +105,7 @@ Tools the skills and agents run:
 - **ledger**: the file `.shop/scratch/run/ledger-<initiative>.md` of one initiative, one line an event, archived under `.shop/records/archive/` when the initiative's work ends.
 - **measurement**: a record under `.shop/records/measurements/` that `measure` writes for one initiative's deliveries, or that a trial writes. Not: facts file.
 - **outcome**: the one word a worker's result gives: `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `HAND-BACK`, `QUESTION` or `NEEDS_CONTEXT`. Not: verdict.
+- **plugin version**: the plugin release a repository on the final layout is on, recorded as one line in `.shop/plugin-version`.
 - **record**: a file under `.shop/records/` whose frontmatter id has a record kind. Not: log entry.
 - **remote**: the remote `work run` pushes the initiative branch to: the branch's upstream remote, else `origin`.
 - **report**: the implementer's file in its stage directory, beside its result, naming the files it touched, the tests whose setup it changed and its open questions. Not: write-up.
@@ -123,7 +124,9 @@ Tools the skills and agents run:
 - **template**: standing text in a skill or an agent definition that a session fills with input to start another session. Not: boilerplate.
 - **transition**: one change of a work-item's status, written by `work` and logged in `log.jsonl`. Not: move.
 - **trial**: one run by the `trial-runner` of a plugin tool or `work run` on a real target or a fixture repository, measuring what its input names.
-- **work-item**: the unit of delivery under a capability-proposal, complete when the scenarios it accepts or its check pass, taken through its stages by `work run`.
+- **upgrade**: what `migrate upgrade` does to a repository on the final layout to take it from one plugin release to the next: it applies the pending upgrade steps.
+- **upgrade step**: one change to a repository's files that the plugin holds with the version that introduced it and a one-line description, pending for a repository when its version is above the repository's plugin version and at or below the plugin's.
+- **work-item**: the unit of delivery under a capability-proposal, named by its id `w<n>`, complete when the scenarios it accepts or its check pass, taken through its stages by `work run`.
 - **work-item branch**: the branch an implementer commits a work-item's work on, from the initiative branch's head, merged into the initiative branch and deleted when it is merged.
 - **worker**: a session `work run` starts with `claude -p` for one stage of one work-item, as that stage's agent; the branch reviewer, owning no work-item, is not one.
 
@@ -131,6 +134,6 @@ Tools the skills and agents run:
 
 `spec/` (this index, `capabilities/`, `decisions/` with its generated `index.md`), `features/`, `.shop/work/`,
 `.shop/records/` (observations, measurements, review-findings, decision-arguments, archive), `.shop/delivery.toml`
-(`work run`'s settings), `.shop/scratch/` and `.shop/worktrees/` (drafts, notes and the implementers'
-worktrees, ignored by git), `docs/design-model/` (the model), `docs/capability-format.md` (the format
-the plugin teaches consuming repositories).
+(`work run`'s settings), `.shop/plugin-version` (the repository's plugin version), `.shop/scratch/` and
+`.shop/worktrees/` (drafts, notes and the implementers' worktrees, ignored by git), `docs/design-model/` (the model),
+`docs/capability-format.md` (the format the plugin teaches consuming repositories).
