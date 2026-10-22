@@ -305,6 +305,20 @@ Feature: Design model check
     When `model check` is run
     Then it prints a file problem naming .shop/work/i1/w1.md
 
+  @r110
+  Scenario Outline: a work-item not named w<n>.md, or two work-items with one id, is a file problem
+    Pins that a work-item's file is named by its id and that no id is held by two work-items, in one initiative or across them.
+    Given a repository in which <case>
+    When `model check` is run
+    Then it <prints> a file problem
+
+    Examples:
+      | case                                                                                              | prints         |
+      | a work-item in .shop/work/i1/fix-login.md has the id w3                                           | prints         |
+      | a work-item in .shop/work/i1/w3.md has the id w3                                                  | does not print |
+      | a work-item in .shop/work/i1/w3.md and a work-item in .shop/work/i2/w3.md each have the id w3     | prints         |
+      | a work-item in .shop/work/i1/w3.md has the id w3 and one in .shop/work/i2/w4.md has the id w4     | does not print |
+
   @r29
   Scenario Outline: a malformed decision, record or frontmatter is a file problem
     Pins the frontmatter faults in decisions, records and shared ids that `model check` refuses.

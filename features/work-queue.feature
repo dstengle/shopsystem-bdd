@@ -2,16 +2,38 @@
 Feature: Work queue
   Narrator: a person, session or script reading work-items or writing their transitions
 
-  @r1
-  Scenario: add with --part-of, --under and --accepts writes a drafted work-item with the fields given
+  @r1 @deprecated
+  Scenario: add with --part-of, --under and --accepts writes a drafted work-item with the fields given (deprecated)
+    Deprecated for: add with a title, --part-of, --under and --accepts writes a drafted work-item named by its id and prints the id
     Pins where add writes the work-item and that it holds what the command was given, as drafted.
     Given an initiative i1 under .shop/work/ with no work-item w1
     When the session runs `work add i1 w1 --part-of capability-proposal/p1 --under thing --accepts thing#r1`
     Then .shop/work/i1/w1.md is a drafted work-item w1
     And its part_of is capability-proposal/p1, its under is thing and its accepts is thing#r1
 
-  @r2
-  Scenario: add when the work-item's file already exists leaves the file as it was
+  @r1
+  Scenario: add with a title, --part-of, --under and --accepts writes a drafted work-item named by its id and prints the id
+    Pins that add names the work-item's file by the id it gives it, holds the title and the fields given, and tells the caller that id.
+    Given an initiative i1 under .shop/work/
+    When the session runs `work add i1 "Show the queue" --part-of capability-proposal/p1 --under thing --accepts thing#r1`
+    Then work prints one id w<n>, and nothing else
+    And .shop/work/i1/w<n>.md is a drafted work-item whose id is that w<n>
+    And its part_of is capability-proposal/p1, its under is thing and its accepts is thing#r1
+    And its `# ` heading is Show the queue
+
+  @r12
+  Scenario: add numbers the new work-item one above the highest work-item under .shop/work/, in any initiative and any status
+    Pins that ids are numbered across the whole queue, so a work-item in another initiative, or one withdrawn, is never given its id again.
+    Given an initiative i1 under .shop/work/ whose work-item w1 is drafted
+    And an initiative i2 under .shop/work/ whose work-item w2 is green and whose work-item w4 is withdrawn
+    When the session runs `work add i1 "Show the queue" --part-of capability-proposal/p1 --under thing --accepts thing#r1`
+    Then work prints w5
+    And .shop/work/i1/w5.md is a drafted work-item whose id is w5
+    And no other work-item's file has changed
+
+  @r2 @deprecated
+  Scenario: add when the work-item's file already exists leaves the file as it was (deprecated)
+    Deprecated for: removal
     Pins that add never overwrites a work-item.
     Given an initiative i1 under .shop/work/ whose work-item w1 is ready
     When the session runs `work add i1 w1 --part-of capability-proposal/p1 --under thing --accepts thing#r1`
@@ -60,8 +82,9 @@ Feature: Work queue
     Then the transition is refused, naming .shop/work/i1/w1.md, ready and planned
     And .shop/work/i1/w1.md and .shop/work/i1/log.jsonl are as they were
 
-  @r7
-  Scenario: add when the work-item's file already exists is refused, saying so, with an error
+  @r7 @deprecated
+  Scenario: add when the work-item's file already exists is refused, saying so, with an error (deprecated)
+    Deprecated for: removal
     Pins that add on a work-item that exists is a request work cannot do, not a success.
     Given an initiative i1 under .shop/work/ whose work-item w1 is ready
     When the session runs `work add i1 w1 --part-of capability-proposal/p1 --under thing --accepts thing#r1`

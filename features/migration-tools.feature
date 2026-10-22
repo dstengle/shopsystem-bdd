@@ -1,6 +1,6 @@
 # formulated from spec/capabilities/migration-tools.md
 Feature: Migration tools
-  Narrator: a person or session migrating a repository to the final layout
+  Narrator: a person or session migrating a repository to the final layout or upgrading it between plugin releases
 
   @r1
   Scenario: `migrate run` relocates decisions/ to spec/decisions/, work/ to .shop/work/ and each records/<x> to .shop/records/<x>, with git
@@ -308,8 +308,9 @@ Feature: Migration tools
     When the session runs `migrate run --context example.org/acme/shop`
     Then .shop/records/archive/plans/p1.md, .shop/records/archive/requests/q1.md, .shop/records/archive/design-notes/s1.md, .shop/records/decision-arguments/0001-use-x.md and .shop/records/logs/run1-test-log.md are each about bounded-context/example.org/acme/shop
 
-  @r15
-  Scenario Outline: `migrate run` on a repository with <change> refuses, naming it, exits non-zero and changes no file
+  @r15 @deprecated
+  Scenario Outline: `migrate run` on a repository with <change> refuses, naming it, exits non-zero and changes no file (deprecated)
+    Deprecated for: `<command>` on a repository with <change> refuses, naming it, exits with an error and changes no file
     Pins that migrate starts only from a working tree with nothing uncommitted, untracked files included.
     Given a repository on the old system with work/i1/w1.md
     And <change>
@@ -323,6 +324,25 @@ Feature: Migration tools
       | a tracked README.md changed since the last commit | README.md   |
       | an untracked notes/n2.md                          | notes/n2.md |
       | a tracked README.md deleted since the last commit | README.md   |
+
+  @r15
+  Scenario Outline: `<command>` on a repository with <change> refuses, naming it, exits with an error and changes no file
+    Pins that both commands start only from a working tree with nothing uncommitted, untracked files included.
+    Given <repository>
+    And <change>
+    When the session runs `<command>`
+    Then migrate refuses, naming <named>
+    And it exits with an error
+    And nothing under the repository has changed
+
+    Examples:
+      | command                                     | repository                                                                                  | change                                            | named       |
+      | migrate run --context example.org/acme/shop | a repository on the old system with work/i1/w1.md                                           | a tracked README.md changed since the last commit | README.md   |
+      | migrate run --context example.org/acme/shop | a repository on the old system with work/i1/w1.md                                           | an untracked notes/n2.md                          | notes/n2.md |
+      | migrate run --context example.org/acme/shop | a repository on the old system with work/i1/w1.md                                           | a tracked README.md deleted since the last commit | README.md   |
+      | migrate upgrade                             | a repository on the final layout whose plugin version is 0.23.1, with a work-item .shop/work/i1/a.md | a tracked README.md changed since the last commit | README.md   |
+      | migrate upgrade                             | a repository on the final layout whose plugin version is 0.23.1, with a work-item .shop/work/i1/a.md | an untracked notes/n2.md                          | notes/n2.md |
+      | migrate upgrade                             | a repository on the final layout whose plugin version is 0.23.1, with a work-item .shop/work/i1/a.md | a tracked README.md deleted since the last commit | README.md   |
 
   @r16
   Scenario: `migrate run` adds every file it wrote or relocated to git and writes spec/decisions/index.md
@@ -400,3 +420,77 @@ Feature: Migration tools
     Then migrate says it could not find a git repository
     And it exits non-zero
     And nothing under the repository has changed
+
+  @r18
+  Scenario: `migrate status` prints the repository's plugin version, the plugin's version and each pending upgrade step with its version and description
+    Pins what a person or the SessionStart hook learns from `migrate status` about where a repository stands.
+    Given a repository on the final layout whose .shop/plugin-version is 0.23.1
+    When the session runs `migrate status`
+    Then migrate prints 0.23.1 as the repository's plugin version and the plugin's version as the plugin's
+    And it prints the pending upgrade step 0.24.0 "work-items named by ids"
+    And it exits successfully
+
+  @r19
+  Scenario: a repository with .shop/ and no .shop/plugin-version is taken to be on 0.23.1
+    Pins the plugin version of a repository from before plugin versions were recorded.
+    Given a repository with .shop/ and no .shop/plugin-version
+    When the session runs `migrate status`
+    Then migrate prints 0.23.1 as the repository's plugin version
+
+  @r20
+  Scenario: `migrate upgrade` applies the pending upgrade step, records the plugin's version and commits it all in one commit naming the step
+    Pins that an upgrade leaves the repository on the plugin's version, with the step's changes and the version in one commit and nothing uncommitted.
+    Given a repository on the final layout whose .shop/plugin-version is 0.23.1, with a work-item .shop/work/i1/a.md
+    When the session runs `migrate upgrade`
+    Then the work-item that was .shop/work/i1/a.md is w1
+    And .shop/plugin-version holds the plugin's version
+    And git log has one commit more than before, and it names the upgrade step "work-items named by ids"
+    And git status shows nothing uncommitted
+
+  @r22
+  Scenario: a session starting in a repository with a pending upgrade step is told to offer the upgrade and run it only on the person's yes
+    Pins that the person is offered the upgrade at a session's start, and that the session does not upgrade without their yes.
+    Given a repository with .shop/ whose .shop/plugin-version is 0.23.1
+    When the person starts a session in it
+    Then the plugin's SessionStart hook tells the session to offer the person the upgrade from 0.23.1 to the plugin's version, naming the upgrade step "work-items named by ids"
+    And it tells the session to run `migrate upgrade` only on the person's yes
+
+  @r23
+  Scenario: a session starting in a repository on a plugin version above the plugin's is told to tell the person to update the plugin
+    Pins that a plugin older than the repository is pointed out to the person.
+    Given a repository with .shop/ whose .shop/plugin-version is 99.0.0
+    When the person starts a session in it
+    Then the plugin's SessionStart hook tells the session to tell the person to update the plugin
+
+  @r24
+  Scenario: a session starting in a repository on the plugin's version is told nothing
+    Pins that a repository that needs nothing adds nothing to a session's start.
+    Given a repository with .shop/ whose .shop/plugin-version is the plugin's version
+    When the person starts a session in it
+    Then the plugin's SessionStart hook tells the session nothing
+
+  @r25
+  Scenario: the upgrade step "work-items named by ids" numbers every work-item from 1, by its initiative's number and then its file name
+    Pins that work-item ids are numbered across the bounded context, initiatives by number, not text, and a work-item's place within its initiative by file name.
+    Given a repository on the final layout whose .shop/plugin-version is 0.23.1
+    And work-items .shop/work/i10/a.md, .shop/work/i2/b.md and .shop/work/i2/a.md
+    When the session runs `migrate upgrade`
+    Then the work-item that was .shop/work/i2/a.md is w1
+    And the work-item that was .shop/work/i2/b.md is w2
+    And the work-item that was .shop/work/i10/a.md is w3
+
+  @r27
+  Scenario: `migrate upgrade` with no pending upgrade step says so, exits successfully and changes nothing
+    Pins that an upgrade of a repository already on the plugin's version is harmless.
+    Given a repository on the final layout whose .shop/plugin-version is the plugin's version
+    When the session runs `migrate upgrade`
+    Then migrate says no upgrade step is pending
+    And it exits successfully
+    And nothing under the repository has changed
+
+  @r28
+  Scenario: a session starting in a repository without .shop/ is told nothing
+    Pins that the hook says nothing of upgrades where the final layout is not in use.
+    Given a repository without .shop/
+    When the person starts a session in it
+    Then the plugin's SessionStart hook tells the session nothing
