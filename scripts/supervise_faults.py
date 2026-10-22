@@ -102,12 +102,12 @@ def cut_short(stdout, code=0):
         data = json.loads(stdout)
     except ValueError:
         data = None
+    if isinstance(data, dict) and (data.get("is_error") is True or str(data.get("subtype")).startswith("error_")):
+        return session_end(stdout, code)[4:]     # how it ended is told first: the real CLI exits 1 at its turn limit
     if code != 0:
         return "session exited with an error (exit code %d)" % code
     if not isinstance(data, dict):
         return "session left output that holds no JSON result"
-    if data.get("is_error") is True or str(data.get("subtype")).startswith("error_"):
-        return session_end(stdout, code)[4:]
     return None
 
 

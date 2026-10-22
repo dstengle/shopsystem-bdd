@@ -13,7 +13,7 @@ The script is the JSON file $STUB_CLAUDE_PLAN: an object whose keys are agents w
   subtype    how the session ends, as claude's JSON output gives it (default "success"; "error_max_turns" at its
              turn limit, "error_during_execution" in an error; any but "success" with `is_error` true), with
              `num_turns` its turns (default 1; 26 at the turn limit, as the real CLI gives for a cap of 25);
-  exit       the exit code of the session (default 0);
+  exit       the exit code of the session (default 0, or 1 when `subtype` is not "success", as the real CLI exits);
   stdout     the text the session prints, in place of its JSON result (`subtype` and `num_turns` then unused);
   fields     {field: value}, more fields of the result file (a planner's `fileset`);
   touch      a list of paths, files created first, wherever they are (no tool of the worker's: the world changing
@@ -194,7 +194,7 @@ def main(argv):
                           "num_turns": step.get("num_turns", 26 if subtype == "error_max_turns" else 1),
                           "total_cost_usd": 0, "result": "stand-in"}))
     record({"event": "end", "agent": agent, "session": session})
-    return step.get("exit", 0)
+    return step.get("exit", 0 if subtype == "success" else 1)
 
 
 if __name__ == "__main__":
