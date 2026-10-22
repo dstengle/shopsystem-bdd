@@ -206,13 +206,6 @@ def given_fields(repo, context, part_of, under, accepts):
     assert (data.get("part_of"), data.get("under"), data.get("accepts")) == (part_of, under, "[%s]" % accepts), data
 
 
-@then(parsers.parse(".shop/work/{initiative}/{name}.md is as it was"))
-def as_it_was(repo, context, initiative, name):
-    rel = ".shop/work/%s/%s.md" % (initiative, name)
-    assert (repo / rel).read_text() == context["before"][rel]
-    assert snapshot(repo) == context["before"]
-
-
 @then("it exits with an error")
 def exits_with_error(context):
     assert context["done"].returncode != 0, context["done"]
