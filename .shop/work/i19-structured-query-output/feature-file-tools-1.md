@@ -11,3 +11,5 @@ accepts: [feature-file-tools#r7, feature-file-tools#r60, feature-file-tools#r61,
 
 ## Faults
 - its researcher's session ended at its turn limit (error_max_turns, 26 turns, exit code 1); work run takes no outcome from it, whatever its result file says
+
+Delivered by a direct bdd-implementer, merged in 6232343 (0.23.0): its researcher hit the 25-turn limit under `work run`. Withdrawn from `work run` for that reason, its requirements built.
