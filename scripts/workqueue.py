@@ -164,12 +164,8 @@ def agrees(root, initiative, name):
 
 
 def retry(root, name):
-    """Move the failed work-item `name` back to the status it had before its failed stage (r8): the status its
-    transition to failed came from, or, from claimed, the status its claim came from (an implementation stage starts at
-    ready)."""
-    found = sorted((Path(root) / WORK).glob("*/%s.md" % name)) if "/" not in name else []
-    if len(found) != 1:
-        raise Refused("there is %s work-item %s under %s" % ("no" if not found else "more than one", name, WORK))
+    """Move the failed work-item `name` back to the status log.jsonl gives before its last transition into failed (r8)."""
+    found = [find(root, name)]
     initiative = found[0].parent.name
     if agrees(root, initiative, name) != "failed":
         raise Refused("%s is not failed; work retry returns only a failed work-item" % name)
@@ -178,12 +174,33 @@ def retry(root, name):
     if at is None:
         raise Refused("log.jsonl gives no transition of %s to failed; work retry has no status to return it to" % name)
     before = moves[at]["before"]
-    if before == "claimed":
-        before = next((line["before"] for line in reversed(moves[:at]) if line["after"] == "claimed"), "ready")
-    rels = [str(p.relative_to(root)) for p in (found[0], found[0].parent / "log.jsonl")]
-    committed(root, rels, "work retry: %s failed -> %s" % (name, before),
+    committed(root, rels_of(root, found[0]), "work retry: %s failed -> %s" % (name, before),
               lambda: move(root, initiative, name, before, by="work retry"))
     return before
+
+
+def rels_of(root, path):
+    """The work-item file `path` and its initiative's log.jsonl, relative to `root`."""
+    return [str(p.relative_to(root)) for p in (path, path.parent / "log.jsonl")]
+
+
+def find(root, name):
+    """The one file of work-item `name` under .shop/work/; else refused."""
+    found = sorted((Path(root) / WORK).glob("*/%s.md" % name)) if "/" not in name else []
+    if len(found) != 1:
+        raise Refused("there is %s work-item %s under %s" % ("no" if not found else "more than one", name, WORK))
+    return found[0]
+
+
+def withdraw(root, name):
+    """Move the work-item `name`, when it is neither claimed nor green, to withdrawn (r10)."""
+    path = find(root, name)
+    status = agrees(root, path.parent.name, name)
+    if status in ("claimed", "green"):
+        raise Refused("%s is %s; work withdraw leaves a claimed or green work-item as it is" % (name, status))
+    committed(root, rels_of(root, path), "work withdraw: %s %s -> withdrawn" % (name, status),
+              lambda: move(root, path.parent.name, name, "withdrawn", by="work withdraw"))
+    return "withdrawn"
 
 
 def git(root, *args):

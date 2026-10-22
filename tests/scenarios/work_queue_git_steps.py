@@ -27,7 +27,7 @@ def init(repo):
 
 @given(parsers.parse("an initiative {ident} under .shop/work/ with a work-item {name} that failed in its implementation stage"))
 def failed_implementing(repo, ident, name):
-    """A work-item claimed from ready whose implementation stage failed: `work retry` returns it to ready."""
+    """A work-item claimed from ready whose implementation stage failed: `work retry` returns it to claimed."""
     from .test_work_queue import initiative, log_line, write
     initiative(repo, ident)
     write(repo, ".shop/work/%s/%s.md" % (ident, name), "---\nid: %s\nkind: work-item\npart_of: initiative/%s\nstatus: failed\n"
