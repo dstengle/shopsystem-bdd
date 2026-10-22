@@ -6,6 +6,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import measure_build  # noqa: E402
+import measure_show  # noqa: E402
 import measure_write  # noqa: E402
 from measure_read import Refused  # noqa: E402
 
@@ -27,6 +28,10 @@ contract:
   - It writes no prompt, reply or tool content. A file whose shape is not
     known is refused, naming it.
 
+  - show <record> prints a measurement's stages, work-items, totals and sessions as tables.
+  - compare <a> <b> prints the two measurements' totals side by side with the
+    ratio of b to a.
+
 exit status: 0 success, 1 refused, 2 bad usage.
 """
 
@@ -41,7 +46,15 @@ def initiative(args):
     print(os.path.relpath(path, root))
 
 
-COMMANDS = {"initiative": initiative}
+def show(args):
+    print(measure_show.show(args.record), end="")
+
+
+def compare(args):
+    print(measure_show.compare(args.a, args.b), end="")
+
+
+COMMANDS = {"initiative": initiative, "show": show, "compare": compare}
 
 
 def parser():
@@ -52,6 +65,10 @@ def parser():
     one.add_argument("initiative")
     one.add_argument("--sessions", help="a directory of Claude Code transcripts")
     one.add_argument("--replace", action="store_true", help="write over a measurement that exists")
+    sub.add_parser("show", help="print a measurement's figures as tables").add_argument("record")
+    two = sub.add_parser("compare", help="print two measurements' totals side by side with their ratio")
+    two.add_argument("a")
+    two.add_argument("b")
     return top
 
 

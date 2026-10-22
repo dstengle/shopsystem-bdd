@@ -54,6 +54,8 @@ class World:
         self.before = None
         self.expected = []          # the transitions a Given gave, as (from, to)
         self.moves = []             # (work-item, from, to) of the transitions a Given gave
+        self.shown = None           # the measurement `measure show` is run on
+        self.named = {}             # measurement name -> its path, for `measure compare`
         self.merged = ()            # the commits a work-item's merge brought in
         self.code = None
         self.err = ""
