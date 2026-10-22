@@ -14,3 +14,5 @@ Notes from the coordinator: r15 is checked before r27 (an upgrade with uncommitt
 
 ## Questions
 - Important, scripts/migrate_upgrade_ids.py:33: initiatives() calls iterdir on a missing .shop/work, so `migrate upgrade` refuses (exit 1) on a repository with .shop/ and no .shop/work/ and never records the version (r20, r25); fix: return [] when the directory is absent.
+
+Ruled by the coordinator under the person's delegation (2026-10-22) and finished by a direct bdd-implementer, merged in ec98ce6 (0.24.0): `work rule` is not yet there. Withdrawn from `work run` for that reason, its requirements built.

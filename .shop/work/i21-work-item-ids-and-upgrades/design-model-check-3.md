@@ -209,3 +209,5 @@ Readings settled by the coordinator under the person's delegation (formulation r
   XFAIL tests/scenarios/test_work_queue.py::test_add_with_a_title_partof_under_and_accepts_writes_a_drafted_workitem_named_by_its_id_and_prints_the_id - expected: accepted by work-queue-5, neither green nor withdrawn
   XFAIL tests/scenarios/test_work_queue.py::test_add_numbers_the_new_workitem_one_above_the_highest_workitem_under_shopwork_in_any_initiative_and_any_status - expected: accepted by work-queue-5, neither green nor withdrawn
   3 failed, 613 passed, 1 skipped, 18 xfailed, 17 xpassed, 270 warnings, 52 subtests passed in 12.97s
+
+Ruled by the coordinator under the person's delegation (2026-10-22) and finished by a direct bdd-implementer, merged in 7b4a237 (0.24.0): `work rule` is not yet there. Withdrawn from `work run` for that reason, its requirements built.
