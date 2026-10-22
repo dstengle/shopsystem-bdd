@@ -3,7 +3,7 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/delivery
 title: Delivery
 narrator: the person delivering an initiative
 group: service
-rests_on: [design-decision/a-script-supervises-delivery, design-decision/gate-on-behaviour-lines, design-decision/formulation-needs-no-second-approval, design-decision/spec-writers-blind-to-code, design-decision/review-of-work-items]
+rests_on: [design-decision/a-script-supervises-delivery, design-decision/gate-on-behaviour-lines, design-decision/formulation-needs-no-second-approval, design-decision/spec-writers-blind-to-code, design-decision/review-of-work-items, design-decision/the-session-keeps-the-gate]
 retired: []
 ---
 
@@ -25,6 +25,13 @@ files, never the code, and reads what `work run` ends with, never what its worke
 - [r7] **If** `delivering-an-initiative` cannot do what it was asked, then `delivering-an-initiative` shall stop, saying why, and change nothing.
 - [r8] **When** `delivering-an-initiative` finds every requirement of the initiative accepted by a work-item, `delivering-an-initiative` shall start `work run` without drafting a work-item.
 - [r9] **When** `delivering-an-initiative` drafts work-items, `delivering-an-initiative` shall give each work-item at most five requirements to accept.
+- [r10] **When** a review or a trial finds a fix to code, `delivering-an-initiative` shall draft the fix as a work-item for `work run` to deliver.
+- [r11] `delivering-an-initiative` shall change no code itself.
+- [r12] **When** a fix needs a new scenario or a new row of a scenario's examples, `delivering-an-initiative` shall send it to the `feature-formulator` through a `formulate` round of `initiative-round`, never to the implementer.
+- [r13] **When** `delivering-an-initiative` dispatches an agent, `delivering-an-initiative` shall ask it to reply in a few lines and leave the rest in files.
+- [r14] **When** a dispatch `delivering-an-initiative` started has replied, `delivering-an-initiative` shall read a file the dispatch wrote only to decide what to do next.
+- [r15] **When** the person gives a ruling, `delivering-an-initiative` shall append one line naming it to the initiative's ledger `.shop/scratch/run/ledger-<initiative>.md`.
+- [r16] **When** `work run` exits with every work-item of the initiative `green` or `withdrawn`, `delivering-an-initiative` shall archive the initiative's ledger under `.shop/records/archive/`.
 
 ## Implementation, may change
 - `skills/delivering-an-initiative/SKILL.md`. It shows the drafted work-items as one table (name, accepts, risk);

@@ -94,5 +94,3 @@ from what using it shows.
   interruption, `work step`, and the full log of each session's cost (see skeleton-notes.md).
 - `work run` honouring a work-item's `blocked_by` (i8, delivery 1).
 - A researcher's findings kept when it stops, for the next delivery (i8, delivery 1).
-- A fix work-item that sends new scenario rows to the blind feature-formulator, so that a fix keeps
-  formulation's blindness (i8, delivery 3).

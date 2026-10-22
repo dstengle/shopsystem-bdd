@@ -59,6 +59,7 @@ Measurement:
 | capability | narrator | group |
 |---|---|---|
 | `batch-measurement` | a session measuring a closed batch | service |
+| `trials` | the session that started a trial | service |
 
 Tools the skills and agents run:
 

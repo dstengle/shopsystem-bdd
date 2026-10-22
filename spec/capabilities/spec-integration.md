@@ -3,7 +3,7 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration
 title: Spec integration
 narrator: the person at the gate
 group: service
-rests_on: [design-decision/one-spec-per-context, design-decision/gate-on-behaviour-lines, design-decision/spec-writers-blind-to-code, design-decision/controller-per-spec-round, design-decision/light-decisions, design-decision/references-are-ids]
+rests_on: [design-decision/one-spec-per-context, design-decision/gate-on-behaviour-lines, design-decision/spec-writers-blind-to-code, design-decision/controller-per-spec-round, design-decision/light-decisions, design-decision/references-are-ids, design-decision/the-session-keeps-the-gate]
 retired: [r5, r9, r18]
 ---
 
@@ -35,13 +35,24 @@ the person talks to, each round a fresh dispatch of `initiative-round`, which di
 - [r20] **When** a change makes a decision, `integrating-a-proposal` shall show it to the person as one file `spec/decisions/<nnnn>-<slug>.md`, `nnnn` one above the highest number in `spec/decisions/`.
 - [r21] **When** a drafted decision names what it came from, `integrating-a-proposal` shall list by id in its `source` only records, initiatives and decisions, writing the person, a date, a delegation or anything outside the repository in its `by`.
 - [r22] **When** the approved drafts are committed with a decision, `integrating-a-proposal` shall commit in the same commit the `spec/decisions/index.md` that `model decisions` writes.
+- [r34] **When** the rounds' drafts are ready to show the person, `integrating-a-proposal` shall dispatch `initiative-round` with the job `gate`, naming the rounds' drafts and any reports to show.
+- [r35] **When** `initiative-round` runs the job `gate`, `initiative-round` shall write under `<drafts path>/gate/` one card for each decision the person is asked to make, each card marking the coordinator's recommendation and giving the lines it concerns in full.
+- [r36] **When** the job `gate` has written its cards, `initiative-round` shall reply with the path of `<drafts path>/gate/`.
+- [r37] **When** the job `gate` replies, `integrating-a-proposal` shall publish the gate page from the files under `<drafts path>/gate/`.
+- [r38] **While** the gate page is published, `integrating-a-proposal` shall read only the person's answers, none of the rounds' drafts.
+- [r39] **When** `initiative-round` runs the job `apply` with the file of the person's answers, or with the person's approval in their words, `initiative-round` shall apply exactly the drafts the person approved.
+- [r40] **When** `initiative-round` finishes a round, `initiative-round` shall append one line to the initiative's ledger `.shop/scratch/run/ledger-<initiative>.md`, naming the job, the round, and what the round ended with or the answers it applied.
+- [r41] **When** `integrating-a-proposal` dispatches an agent, `integrating-a-proposal` shall ask it to reply in a few lines and leave the rest in files.
+- [r42] **When** a dispatch `integrating-a-proposal` started has replied, `integrating-a-proposal` shall read a file the dispatch wrote only to decide what to do next.
 - [r33] **If** `integrating-a-proposal` cannot do what it was asked, then `integrating-a-proposal` shall stop, saying why, and change nothing under `spec/`.
 
 ## Implementation, may change
-- The session dispatches `initiative-round` with an input giving the job `integrate` or `apply`, the note's path, a drafts path
+- The session dispatches `initiative-round` with an input giving the job `integrate`, `gate` or `apply`, the note's path, a drafts path
   `.shop/scratch/drafts/<date>-<note>/` and the round number; the round dispatches `capability-writer`,
   which writes only under `<drafts>/round-<n>/` and replies with the change list, questions, cut sentences
   and paths, last of all to a reply file.
+- The job `gate` is given the rounds' drafts and any reports to show; the job `apply` is given the file of the
+  person's answers or their approval in their words.
 - The round compares `git status --porcelain` with the porcelain before dispatch and sends back a dispatch that
   wrote outside its drafts path; it verifies the change list in both directions.
 - The writer drafts a decision as a whole file under `<drafts>/round-<n>/spec/decisions/`; applying it copies the
