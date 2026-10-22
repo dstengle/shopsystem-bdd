@@ -27,6 +27,8 @@ from what using it shows.
 - [r9] **When** no work-item can make a transition and every work-item is `green` or `withdrawn`, `work run` shall exit successfully, printing each work-item's status.
 - [r32] **When** no work-item can make a transition and a work-item is `awaiting-ruling`, `work run` shall exit with an error, printing each work-item's status and each open question.
 - [r52] **When** no work-item can make a transition and a work-item is `failed`, `work run` shall exit with an error, printing each work-item's status and each fault.
+- [r53] **If** the push after the branch review's commit fails, then `work run` shall exit with an error, saying why.
+- [r54] **When** `work run` starts and the initiative branch has commits its remote does not have, `work run` shall first push the initiative branch to the remote.
 - [r10] **If** `work run` cannot start the delivery it was asked for, then `work run` shall exit with an error, say why, and change nothing.
 - [r11] **When** `work run` starts a worker, `work run` shall give the worker this plugin's own directory as its plugin.
 - [r12] **When** `work run` starts a worker whose agent lists skills, `work run` shall allow the worker to load each of those skills.
