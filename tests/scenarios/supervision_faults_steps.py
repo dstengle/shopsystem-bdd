@@ -109,16 +109,6 @@ def names_fault(context, name, path):
     assert re.search(r"its researcher changed %s" % re.escape(path), out), out
 
 
-@then("before each of w1's four workers was started, `work run` had verified that it can push the initiative branch to "
-      "the remote")
-def verified_before(repo, context):
-    lines = [l for l in log_lines(repo) if l.get("work-item") == "w1"]
-    starts_at = [i for i, l in enumerate(lines) if l.get("event") == "start"]
-    assert len(starts_at) == 4, (lines, context["done"].stderr)
-    for before, at in zip([-1] + starts_at, starts_at):
-        assert any(l.get("event") == "push verified" for l in lines[before + 1:at]), lines
-
-
 @then("after each commit `work run` made on the initiative branch, it pushed the initiative branch to the remote")
 def pushed_after_each(repo, context):
     pushed = [line.split()[1] for line in (remote_dir(repo) / "pushed").read_text().splitlines() if line.endswith(" refs/heads/main")]

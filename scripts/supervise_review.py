@@ -1,0 +1,74 @@
+"""`work run`'s branch review (capability supervision): when it is due, the `bdd-branch-reviewer` session over the
+initiative branch, and the keeping of its directory in the initiative. Standard library only; a part of supervise.Run."""
+import shutil
+import uuid
+
+from supervise_worker import SCRIPTS, git
+from workqueue import Refused
+
+AGENT = "bdd-branch-reviewer"
+STAGE = "branch-review"
+
+
+class Reviews:
+    """The part of supervise.Run that reviews the initiative branch once its work-items are done."""
+
+    def review_dir(self):
+        return self.dir / "runs" / STAGE
+
+    def unread(self):
+        """The commits on the initiative branch from its base that no kept branch review has read (r27, r50): not
+        reachable from the `Head:` of any kept review's brief, and not a kept review's own commit, which holds only its
+        directory and log.jsonl."""
+        heads = []
+        for brief in sorted(self.review_dir().glob("*/brief.md")):
+            heads += [line.split(":", 1)[1].strip() for line in brief.read_text().splitlines() if line.startswith("Head:")]
+        base = self.base()
+        shas = git(self.root, "rev-list", "HEAD", *["^" + r for r in ([base] if base else []) + heads]).stdout.split()
+        kept = self.rel(self.review_dir()) + "/"
+        log = self.rel(self.dir / "log.jsonl")
+        return [sha for sha in shas
+                if not all(p.startswith(kept) or p == log
+                           for p in git(self.root, "diff-tree", "--root", "--no-commit-id", "--name-only", "-r",
+                                        sha).stdout.split())]
+
+    def branch_review(self):
+        """A `bdd-branch-reviewer` session over the initiative branch from its base, in a detached worktree of its own,
+        given one brief (r27); the push of the branch verified first (r35, r51). Its directory is kept and committed
+        when its session ends (r47, r48)."""
+        if not self.unread():
+            return
+        reason = self.git_push("--dry-run")
+        if reason:
+            raise Refused("work run could not verify that it can push the initiative branch %s before the branch "
+                          "review: it cannot push the initiative branch to the remote %s: %s"
+                          % (self.branch, self.remote(), reason))
+        self.log(stage=STAGE, event="push verified")
+        k = len([p for p in self.review_dir().iterdir() if p.is_dir()]) + 1 if self.review_dir().is_dir() else 1
+        tree = self.worktree(None, STAGE)
+        here = tree / ".shop" / "scratch" / STAGE
+        here.mkdir(parents=True)
+        path = here / "brief.md"
+        path.write_text("# branch review of %s\n\nInitiative: %s\nAgent: %s\nScripts: %s\n"
+                        "Initiative branch: %s\nBase: %s\nHead: %s\nWorktree: %s\nRun directory: %s\nResult file: %s\n\n"
+                        "Review the initiative branch from its base. You start in your worktree: run every command "
+                        "from there and never change directory. Write the result file first, with the outcome "
+                        "`PARTIAL`, and keep it current as you work: JSON with `status`, `summary` and "
+                        "`questions`.\n"
+                        % (self.initiative, self.rel(self.dir), AGENT, SCRIPTS, self.branch, self.base(),
+                           git(self.root, "rev-parse", "HEAD").stdout.strip(), tree, here, here / "result.json"))
+        session = str(uuid.uuid4())
+        self.log(stage=STAGE, agent=AGENT, session=session, event="start")
+        try:
+            done = self.session("review", AGENT, path, session, tree, None)
+            kept = self.review_dir() / str(k)
+            shutil.copytree(here, kept)
+            (kept / "session.json").write_text(done.stdout)
+        finally:
+            self.remove(tree)
+        self.log(stage=STAGE, agent=AGENT, session=session, event="end")
+        rels = [self.rel(kept), self.rel(self.dir / "log.jsonl")]
+        git(self.root, "add", "--", *rels)
+        git(self.root, "commit", "-q", "-m", "branch review %d of %s" % (k, self.initiative), "--", *rels)
+        self.unlogged = []
+        self.push()

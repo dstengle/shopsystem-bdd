@@ -36,7 +36,7 @@ def repository(repo):
     return {}
 
 
-@given(parsers.re(r"i1's work-items? (?P<items>[\w -]+?)(?:, under (?P<under>\w+))?"
+@given(parsers.re(r"i1's work-items? (?!.*(?:a kept branch review|was added after))(?P<items>[\w -]+?)(?:, under (?P<under>\w+))?"
                   r"(?:, though log\.jsonl's last transition of (?P<lname>\w+) is to (?P<lafter>[\w-]+))?"
                   r"(?P<nogit>, in a directory that is not a git repository)?"
                   r"(?P<detached>, its checkout's HEAD detached)?"

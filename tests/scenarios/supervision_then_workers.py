@@ -260,9 +260,9 @@ def brief_says_result_first(repo):
         assert said, c["brief"]
 
 
-@then("after w1 was green a `claude -p` session of shopsystem-bdd:bdd-branch-reviewer was started, given one brief naming "
-      "the initiative branch and its base")
-def branch_reviewer(repo, context):
+@then(parsers.parse("after {name} was green a `claude -p` session of shopsystem-bdd:bdd-branch-reviewer was started, "
+                    "given one brief naming the initiative branch and its base"))
+def branch_reviewer(repo, context, name):
     events = calls(repo)
     green = [i for i, c in enumerate(events) if c["event"] == "end" and c["agent"] == "shopsystem-bdd:bdd-task-reviewer"]
     review = [i for i, c in enumerate(events) if c["event"] == "start" and c["agent"] == "shopsystem-bdd:bdd-branch-reviewer"]
