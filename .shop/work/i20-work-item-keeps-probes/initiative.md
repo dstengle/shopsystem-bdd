@@ -4,7 +4,7 @@ title: --work-item keeps tests that are not scenarios
 summary: the plugin's --work-item option keeps a worker's probe files and non-scenario tests, and refuses only a run whose scenarios its work-item accepts none of.
 kind: capability-change
 owner-level: shopsystem-bdd
-status: started
+status: done
 priority: 1
 source: [measurement/2026-10-22-research-at-the-limit, observation/2026-10-22-point-release-0-23-1]
 date: 2026-10-22

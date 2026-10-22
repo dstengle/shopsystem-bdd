@@ -4,7 +4,7 @@ title: Structured output for query commands
 summary: A query command answers in its output, an empty answer exits successfully, and --json prints its whole result as one JSON object.
 kind: capability-change
 owner-level: shopsystem-bdd
-status: started
+status: done
 priority: 1
 source: [observation/2026-10-22-deferred-from-0-22-0]
 date: 2026-10-22
