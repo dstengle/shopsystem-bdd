@@ -14,7 +14,7 @@ Your input prompt names your brief file. Read it first. It gives:
 - `Work-item:` the work-item file: its `accepts:` (the requirements, `<capability>#r<n>` or a range), its `under:` capability, and any `Retires` section and `## Rulings`.
 - `Read:` the files to read: the work-item, its capability (`spec/capabilities/<under>.md`) and its earlier stage directories, among them the research stage's (`<k>-research/`), whose `notes.md` are the researcher's notes and whose `result.json` gives its `fileset`.
 - `Run directory:` your stage directory, where you write. The plan is `plan.md` there.
-- `Result file:` the JSON file you write last.
+- `Result file:` the JSON file you write first and keep current.
 
 You start in your worktree, the directory you were started in: read every path there, and never change directory. Read those, the design-decisions the capability `rests_on` (under `spec/decisions/`, by id) and the accepted scenarios in `features/` (their tag lines carry the accepted ids, `@r<n>`). Read a file of the researcher's file set, or a test its notes name, only where a decision or a broken test cannot be given from the notes.
 
@@ -40,7 +40,7 @@ When a decision would change what the capability's narrator observes (what the c
 
 ## The result
 
-Write it last, as one JSON object:
+Write the result file first, as soon as you have read your brief, and keep it current as you work: each time your outcome or what you have done changes, rewrite it whole. A session that stops part-way, at its turn limit or on an error, then still leaves a result; one that leaves no result file `work run` can read makes the work-item `failed`. It is one JSON object:
 
 - `status`, the outcome: `DONE`, `QUESTION` or `NEEDS_CONTEXT`;
 - `summary`: under fifteen lines;

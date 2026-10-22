@@ -14,7 +14,7 @@ Your input prompt names your brief file. Read it first. It gives:
 - `Work-item:` the work-item file: its `accepts:`, its `under:` capability, any Retires section and `## Rulings`.
 - `Read:` the files to read: the work-item, its capability (`spec/capabilities/<under>.md`) and its stage directories: the research notes, the plan (`plan.md` in the `<k>-plan/` directory) and the implementer's `report.md` and `result.json` (in `<k>-implement/`).
 - `Run directory:` your stage directory, where you write. Your findings are `findings.md` there.
-- `Result file:` the JSON file you write last.
+- `Result file:` the JSON file you write first and keep current.
 
 Read those, the repository's `CLAUDE.md` if there is one, and the design-decisions the capability `rests_on` (under `spec/decisions/`, by id). They are binding.
 
@@ -55,7 +55,7 @@ Each finding names the work-item whose commits contain it, and is triaged:
 
 ## The result
 
-Write it last, as one JSON object:
+Write the result file first, as soon as you have read your brief, and keep it current as you work: each time your outcome or what you have done changes, rewrite it whole. A session that stops part-way, at its turn limit or on an error, then still leaves a result; one that leaves no result file `work run` can read makes the work-item `failed`. It is one JSON object:
 
 - `status`, the outcome: `DONE` when no finding is triaged fix now and none is Critical; `DONE_WITH_CONCERNS` when one is, so the work-item goes to the person; `NEEDS_CONTEXT` when you cannot review;
 - `summary`: under fifteen lines;

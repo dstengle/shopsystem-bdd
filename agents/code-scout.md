@@ -17,11 +17,11 @@ Your input prompt names your brief file. Read it first. It gives:
 - `File set:` the files the work-item's file set covers (its `fileset:`), where it has one: start your reading there.
 - `Accepted scenarios:` the scenarios the work-item accepts, one a line as `<feature file>: <title>`: the ones in `features/` whose tag lines carry an accepted requirement's id (`@r<n>` in the capability's feature file). Read them there; do not search for others.
 - `Run directory:` your stage directory, where you write. Your notes are `notes.md` there.
-- `Result file:` the JSON file you write last.
+- `Result file:` the JSON file you write first and keep current.
 
 Then read the repository's `CLAUDE.md`, if there is one: its module map, its size limit and how the system is run. Where the brief has no `Accepted scenarios:`, find them with a search.
 
-`work run` gives you 25 turns (`--max-turns 25`): read the file set and the accepted scenarios, run what you must, and write the notes and the result well before the last turn. A session that ends without a result file is a question to the person, not your notes.
+`work run` gives you 25 turns (`--max-turns 25`): read the file set and the accepted scenarios, run what you must, and write the notes well before the last turn, the result file first and kept current. A session that ends without a result file `work run` can read makes the work-item `failed`.
 
 ## What you may write
 
@@ -75,7 +75,7 @@ Every turn resends everything you have read. Decide your searches before you run
 
 ## The result
 
-Write it last, as one JSON object:
+Write the result file first, as soon as you have read your brief, and keep it current as you work: each time your outcome or what you have done changes, rewrite it whole. A session that stops part-way, at its turn limit or on an error, then still leaves a result; one that leaves no result file `work run` can read makes the work-item `failed`. It is one JSON object:
 
 - `status`, the outcome: `DONE`, or `NEEDS_CONTEXT`;
 - `summary`: under fifteen lines;

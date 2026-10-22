@@ -49,7 +49,7 @@ Before your last commit, run `python3 <Scripts>/tools size --limit <the limit CL
 
 ## The result
 
-Write it last, as one JSON object:
+Write the result file first, as soon as you have read your brief, and keep it current as you work: each time your outcome or what you have done changes, rewrite it whole. A session that stops part-way, at its turn limit or on an error, then still leaves a result; one that leaves no result file `work run` can read makes the work-item `failed`. It is one JSON object:
 
 - `status`, the outcome: one of `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `HAND-BACK`, `NEEDS_CONTEXT`. Give `DONE_WITH_CONCERNS` only for a concern the person must see before the branch is merged: `work run` merges only `DONE`;
 - `summary`: under fifteen lines;
