@@ -21,7 +21,7 @@ Your input prompt names your brief file. Read it first. It gives:
 
 Then read the repository's `CLAUDE.md`, if there is one: its module map, its size limit and how the system is run. Where the brief has no `Accepted scenarios:`, find them with a search.
 
-`work run` gives you 25 turns (`--max-turns 25`): read the file set and the accepted scenarios, run what you must, and write the notes well before the last turn, the result file first and kept current. A session that ends without a result file `work run` can read makes the work-item `failed`.
+`work run` gives you 25 turns (`--max-turns 25`): read the file set and the accepted scenarios, run what you must, and write the notes well before the last turn, the result file first, with the outcome `PARTIAL`, and kept current. A session that ends at its turn limit, or without a result file `work run` can read, makes the work-item `failed`.
 
 ## What you may write
 
@@ -75,7 +75,7 @@ Every turn resends everything you have read. Decide your searches before you run
 
 ## The result
 
-Write the result file first, as soon as you have read your brief, and keep it current as you work: each time your outcome or what you have done changes, rewrite it whole. A session that stops part-way, at its turn limit or on an error, then still leaves a result; one that leaves no result file `work run` can read makes the work-item `failed`. It is one JSON object:
+Write the result file first, with the outcome `PARTIAL`, as soon as you have read your brief, and keep it current as you work: each time your outcome or what you have done changes, rewrite it whole, and give your final outcome only when the work is done. A session that stops part-way then still leaves a result, and one that does not claim the work done. A session that ends on an error or at its turn limit makes the work-item `failed`, whatever its result says, and so does one that leaves no result file `work run` can read. It is one JSON object:
 
 - `status`, the outcome: `DONE`, or `NEEDS_CONTEXT`;
 - `summary`: under fifteen lines;

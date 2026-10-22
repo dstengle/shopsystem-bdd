@@ -249,12 +249,14 @@ def two_at_most(repo, context):
     assert len(spans) >= 3 and most_at_once(spans) == 2, (spans, context["done"].stderr)
 
 
-@then("each of w1's four briefs tells the worker to write its result file first and keep it current as it works")
+@then("each of w1's four briefs tells the worker to write its result file first, with the outcome PARTIAL, and keep it "
+      "current as it works")
 def brief_says_result_first(repo):
     started = [c for c in starts(repo) if work_item_of(c) == "w1"]
     assert len(started) == 4, started
     for c in started:
-        said = [l for l in c["brief"].splitlines() if "result file first" in l and "keep it current" in l]
+        said = [l for l in c["brief"].splitlines()
+                if re.search(r"result file first, with the outcome `?PARTIAL`?,", l) and "keep it current" in l]
         assert said, c["brief"]
 
 

@@ -43,10 +43,10 @@ class Briefs:
         path.write_text("# %s of %s\n\n%s\n\nRead (paths in your worktree):\n%s\nRun directory: %s\nResult file: %s\n\n"
                         "You start in your worktree, %s: run every command from there, as it is, and never change "
                         "directory (no `cd`, no `git -C`); a command that does is refused.\n\n"
-                        "Write the result file first and keep it current as you work: JSON with `status`, `summary` "
-                        "(under fifteen lines) and `questions` (a list of strings), so that a session that stops "
-                        "part-way still leaves a result. Write your notes, plan, report or findings in the run "
-                        "directory.\n"
+                        "Write the result file first, with the outcome `PARTIAL`, and keep it current as you work: "
+                        "JSON with `status`, `summary` (under fifteen lines) and `questions` (a list of strings), so "
+                        "that a session that stops part-way still leaves a result, and one that does not claim the "
+                        "work done. Write your notes, plan, report or findings in the run directory.\n"
                         % (stage, name, "\n".join(lines), "".join("- %s\n" % r for r in read), here, here / "result.json",
                            tree))
         return path
@@ -66,8 +66,9 @@ class Briefs:
             path.write_text("# branch review of %s\n\nInitiative: %s\nAgent: bdd-branch-reviewer\nScripts: %s\n"
                             "Initiative branch: %s\nBase: %s\nWorktree: %s\nRun directory: %s\nResult file: %s\n\n"
                             "Review the initiative branch from its base. You start in your worktree: run every command "
-                            "from there and never change directory. Write the result file first and keep it current as "
-                            "you work: JSON with `status`, `summary` and `questions`.\n"
+                            "from there and never change directory. Write the result file first, with the outcome "
+                            "`PARTIAL`, and keep it current as you work: JSON with `status`, `summary` and "
+                            "`questions`.\n"
                             % (self.initiative, self.rel(self.dir), SCRIPTS, self.branch, self.base(), tree, here,
                                here / "result.json"))
             self.session("review", "bdd-branch-reviewer", path, str(uuid.uuid4()), tree, None)

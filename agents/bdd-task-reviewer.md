@@ -55,7 +55,7 @@ Each finding names the work-item whose commits contain it, and is triaged:
 
 ## The result
 
-Write the result file first, as soon as you have read your brief, and keep it current as you work: each time your outcome or what you have done changes, rewrite it whole. A session that stops part-way, at its turn limit or on an error, then still leaves a result; one that leaves no result file `work run` can read makes the work-item `failed`. It is one JSON object:
+Write the result file first, with the outcome `PARTIAL`, as soon as you have read your brief, and keep it current as you work: each time your outcome or what you have done changes, rewrite it whole, and give your final outcome only when the work is done. A session that stops part-way then still leaves a result, and one that does not claim the work done. A session that ends on an error or at its turn limit makes the work-item `failed`, whatever its result says, and so does one that leaves no result file `work run` can read. It is one JSON object:
 
 - `status`, the outcome: `DONE` when no finding is triaged fix now and none is Critical; `DONE_WITH_CONCERNS` when one is, so the work-item goes to the person; `NEEDS_CONTEXT` when you cannot review;
 - `summary`: under fifteen lines;

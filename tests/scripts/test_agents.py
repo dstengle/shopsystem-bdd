@@ -76,13 +76,13 @@ if __name__ == "__main__":
 
 
 class ResultFirst(unittest.TestCase):
-    """supervision r44: the brief tells each worker to write its result file first and keep it current; the four
-    stages' agents say the same, and none says to write it last."""
+    """supervision r44: the brief tells each worker to write its result file first, with the outcome PARTIAL, and keep
+    it current; the four stages' agents say the same, and none says to write it last."""
 
     def test_each_stage_agent_writes_its_result_first(self):
         for name in ("code-scout", "bdd-planner", "bdd-implementer", "bdd-task-reviewer"):
             text = (AGENTS / (name + ".md")).read_text()
-            self.assertIn("result file first", text, name)
+            self.assertIn("result file first, with the outcome `PARTIAL`,", text, name)
             self.assertIn("keep it current", text, name)
             self.assertNotIn("write last", text, name)
             self.assertNotIn("Write it last", text, name)
