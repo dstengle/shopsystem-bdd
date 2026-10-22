@@ -16,8 +16,9 @@ from pathlib import Path
 
 import workqueue
 from supervise_brief import Briefs
+from supervise_faults import Fault, Faults, fault_of
 from supervise_merge import Merge
-from supervise_worker import Workers, git, now
+from supervise_worker import ROLE, WORKER, GitFailed, Workers, git, now
 from workqueue import WORK, Refused
 
 BY = "work run"
@@ -31,9 +32,9 @@ STAGES = {
 MOVABLE = ("drafted", "researched", "planned", "ready", "done")
 
 
-class Run(Workers, Briefs, Merge):
+class Run(Workers, Briefs, Merge, Faults):
     """One `work run` of one initiative in the repository at `root`: the workers' part is supervise_worker's, the briefs'
-    supervise_brief's, the implementation stage's and its merge supervise_merge's."""
+    supervise_brief's, the implementation stage's and its merge supervise_merge's, the faults' supervise_faults'."""
 
     def __init__(self, root, initiative):
         self.root = Path(root).resolve()
@@ -43,6 +44,9 @@ class Run(Workers, Briefs, Merge):
         self.trees = []          # the worktrees this run added; removed when it ends
         self.outside = None      # where the worktrees go when the repository is inside the plugin's own directory
         self.lock = threading.RLock()     # held for each change to the main checkout while two implementers run (r20)
+        self.faults = []         # (work-item, fault) of each work-item this run moved to failed (r40)
+        self.own = set()         # the run directories work run copied into the main checkout and has not committed
+        self.unlogged = []       # the lines work run appended to log.jsonl since it last committed it
 
     def rel(self, path):
         return str(Path(path).relative_to(self.root))
@@ -52,6 +56,9 @@ class Run(Workers, Briefs, Merge):
 
     def check(self):
         """What work run was given, before anything changes (r10): the initiative, and each work-item's file and log."""
+        if os.environ.get(WORKER):
+            raise Refused("it was started by a worker of another `work run` (of %s); a worker starts no delivery"
+                          % os.environ[WORKER])
         workqueue.entry(self.initiative, "initiative")
         if not self.dir.is_dir():
             raise Refused("the initiative %s does not exist (no %s)" % (self.initiative, self.rel(self.dir)))
@@ -63,35 +70,53 @@ class Run(Workers, Briefs, Merge):
 
     def log(self, **line):
         with self.lock:
-            workqueue.append(self.dir / "log.jsonl", (json.dumps(dict(time=now(), **line)) + "\n").encode())
+            text = json.dumps(dict(time=now(), **line)) + "\n"
+            workqueue.append(self.dir / "log.jsonl", text.encode())
+            self.unlogged.append(text)
 
-    def commit(self, name, before, after):
-        """A move's commit on the initiative branch: the work-item's file, its run directories and log.jsonl (r7)."""
+    def commit(self, name, before, after, push=True):
+        """A move's commit on the initiative branch: the work-item's file, its run directories and log.jsonl (r7); then
+        the push of the initiative branch (r38)."""
         paths = [p for p in (self.dir / (name + ".md"), self.dir / "runs" / name, self.dir / "log.jsonl") if p.exists()]
         rels = [self.rel(p) for p in paths]
         git(self.root, "add", "--", *rels)
         git(self.root, "commit", "-q", "-m", "work: %s %s -> %s" % (name, before, after), "--", *rels)
+        self.unlogged = []
+        self.own = {d for d in self.own if not d.startswith(self.rel(self.dir / "runs" / name) + "/")}
+        if push:
+            self.push()
 
-    def move(self, name, before, after, question=None):
+    def move(self, name, before, after, question=None, fileset=None):
         with self.lock:
             workqueue.move(self.root, self.initiative, name, after, by=BY)
             if question:
-                self.ask(name, question)
+                self.section(name, "Questions", question)
+            if fileset:
+                self.write_fileset(name, fileset)
             self.commit(name, before, after)
 
-    def ask(self, name, question):
-        """Write `question` as the last bullet of the work-item's `## Questions` section, before any section after it;
+    def section(self, name, heading, text):
+        """Write `text` as the last bullet of the work-item's `## <heading>` section, before any section after it (r36);
         its continuation lines are indented, so none of them starts a heading."""
         path = self.dir / (name + ".md")
-        text = path.read_text()
-        bullet = "- %s\n" % question.strip().replace("\n", "\n  ")
-        if "\n## Questions\n" not in text:
-            path.write_text(text.rstrip("\n") + "\n\n## Questions\n" + bullet)
+        old = path.read_text()
+        bullet = "- %s\n" % text.strip().replace("\n", "\n  ")
+        mark = "\n## %s\n" % heading
+        if mark not in old:
+            path.write_text(old.rstrip("\n") + "\n" + mark + bullet)
             return
-        head, rest = text.split("\n## Questions\n", 1)
-        section, sep, after = rest.partition("\n## ")
-        section = section.rstrip("\n") + "\n" if section.strip() else ""
-        path.write_text(head + "\n## Questions\n" + section + bullet + ("\n## " + after if sep else ""))
+        head, rest = old.split(mark, 1)
+        held, sep, after = rest.partition("\n## ")
+        held = held.rstrip("\n") + "\n" if held.strip() else ""
+        path.write_text(head + mark + held + bullet + ("\n## " + after if sep else ""))
+
+    def write_fileset(self, name, files):
+        """The planner's file set as the work-item's `fileset:` (r31), in place of the one it had."""
+        path = self.dir / (name + ".md")
+        text = path.read_text()
+        end = text.find("\n---", 4)
+        head = "\n".join(l for l in text[:end].split("\n") if not l.startswith("fileset:"))
+        path.write_text(head + "\nfileset: [%s]" % ", ".join(files) + text[end:])
 
 
     def step(self, name, status):
@@ -100,15 +125,29 @@ class Run(Workers, Briefs, Merge):
         elif status == "ready":
             self.implement(name)
         else:
-            stage, agent, after = STAGES[status]
-            label, _ = self.run_dir(name, stage)
-            tree = self.worktree(name, "%s-%s" % (name, label))
             try:
-                data, failure = self.worker(name, stage, agent, tree)
-            finally:
-                self.remove(tree)
-            question = self.outcome(agent, data, failure)
-            self.move(name, status, after if question is None else "awaiting-ruling", question)
+                self.stage(name, status)
+            except (Fault, GitFailed) as fault:
+                self.fail(name, fault_of(fault))
+
+    def stage(self, name, status):
+        """A worker of the stage `status` starts, in a detached worktree; its outcome makes the transition (r3, r5)."""
+        stage, agent, after = STAGES[status]
+        label, _ = self.run_dir(name, stage)
+        tree = self.worktree(name, "%s-%s" % (name, label))
+        try:
+            start = git(tree, "rev-parse", "HEAD").stdout.strip()
+            data, failure = self.worker(name, stage, agent, tree)
+            changed = self.tree_changes(tree, start)
+        finally:
+            self.remove(tree)     # what the worker changed under .shop/work/ goes with it (r6)
+        if changed:
+            raise Fault("its %s changed %s under .shop/work/, outside its stage directory; work run put %s back"
+                        % (ROLE[agent], ", ".join(changed), "it" if len(changed) == 1 else "them"))
+        question = self.outcome(agent, data, failure)
+        fileset = data.get("fileset") if question is None and agent == "bdd-planner" else None
+        self.move(name, status, after if question is None else "awaiting-ruling", question,
+                  fileset=fileset if isinstance(fileset, list) and fileset else None)
 
     def pair(self, ready):
         """Two of the `ready` work-items whose file sets do not overlap, the first such in their order (r20); else
@@ -144,12 +183,23 @@ class Run(Workers, Briefs, Merge):
         if failed:
             raise failed[0]
 
-    def questions(self, name):
-        """The lines of the work-item's `## Questions` section: its open questions."""
+    def held(self, name, heading):
+        """The bullets of the work-item's `## <heading>` section, each with its continuation lines."""
         text = (self.dir / (name + ".md")).read_text()
-        if "\n## Questions\n" not in text:
+        if "\n## %s\n" % heading not in text:
             return []
-        return [l for l in text.split("\n## Questions\n", 1)[1].split("\n## ", 1)[0].splitlines() if l.strip()]
+        bullets = []
+        for line in text.split("\n## %s\n" % heading, 1)[1].split("\n## ", 1)[0].splitlines():
+            if line.startswith("- "):
+                bullets.append([line])
+            elif line.strip() and bullets:
+                bullets[-1].append(line)
+        return bullets
+
+    def questions(self, name):
+        """The lines of the work-item's open questions: those of its `## Questions` past the ones `## Rulings` rules on,
+        the n-th ruling answering the n-th question (r32)."""
+        return [l for bullet in self.held(name, "Questions")[len(self.held(name, "Rulings")):] for l in bullet]
 
     def run(self):
         """Pull the work-items one worker at a time until none can move (r1); print where each stands (r9)."""
@@ -164,6 +214,8 @@ class Run(Workers, Briefs, Merge):
                     self.together(pair)
                 else:
                     self.step(*movable[0])
+                if self.faults:     # a work-item failed: the run ends with it (r40)
+                    break
         finally:
             for tree in list(self.trees):      # on every way out, a failure's too: the run leaves no worktree
                 self.remove(tree)
@@ -175,9 +227,12 @@ class Run(Workers, Briefs, Merge):
             if status == "awaiting-ruling":
                 for line in self.questions(name):
                     print("  %s" % line)
+            for failed, fault in self.faults:
+                if failed == name:
+                    print("  - %s" % fault)
         if all(s in ("green", "withdrawn") for _, s in statuses):
             return 0
-        return 3 if any(s == "awaiting-ruling" for _, s in statuses) else 1
+        return 3 if any(s == "awaiting-ruling" for _, s in statuses) and not self.faults else 1
 
 
 def claimed(entry, tracked):

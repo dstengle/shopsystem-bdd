@@ -144,14 +144,16 @@ def state(repo):
 
 def committed(what):
     """What the implementer commits, for one part of "committing feature.txt and ...": {path: text, or None to delete}."""
-    m = re.match(r"setting (\S+?)'s status to (\S+)$", what)
+    m = re.match(r"setting (\S+?)'s status to (\S+)$", what) or re.match(r"(\S+?)'s status set to (\S+)$", what)
     if m:
         name = os.path.basename(m.group(1))[:-3]
         return {m.group(1): item_text(name, m.group(2))}
-    if what.startswith("deleting "):
-        return {what[len("deleting "):]: None}
-    if what.startswith("adding "):
-        return {what[len("adding "):]: "added by a worker\n"}
+    for word in ("deleting ", "the deletion of "):
+        if what.startswith(word):
+            return {what[len(word):]: None}
+    for word in ("adding ", "a new "):
+        if what.startswith(word):
+            return {what[len(word):]: "added by a worker\n"}
     return {what: "\n" if what.endswith("-fail") else "the feature\n"}
 
 

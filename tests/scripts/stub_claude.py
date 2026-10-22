@@ -10,6 +10,11 @@ The script is the JSON file $STUB_CLAUDE_PLAN: an object whose keys are agents w
 (`code-scout`), or "default", each an object of:
   status     the result file's status (default "DONE"); with `result` "none" no result file is written, with
              "not-json" one that is not JSON;
+  subtype    how the session ends, as claude's JSON output gives it (default "success"; "error_max_turns" at its
+             turn limit), with `num_turns` its turns (default 1);
+  fields     {field: value}, more fields of the result file (a planner's `fileset`);
+  touch      a list of paths, files created first, wherever they are (no tool of the worker's: the world changing
+             while it works, as a remote that starts refusing pushes);
   questions  the result file's questions;
   write      {path: text}, written relative to the worker's working directory (as a worker that edits files); a path
              outside it is refused unless --allowedTools has a bare Write;
@@ -23,9 +28,9 @@ The script is the JSON file $STUB_CLAUDE_PLAN: an object whose keys are agents w
   run        a list of Bash commands (argument lists), run in the working directory, last;
   names      {result field: path}, a file the result names (`report`), given in the result by its absolute path, the
              path taken relative to the working directory;
-  elsewhere  {"root": a directory, "commit": {path: text}}: while this worker runs, another session (not the worker,
-             so no tool of its own and nothing recorded) writes these files relative to that directory and commits
-             them there, first.
+  elsewhere  {"root": a directory, "commit": {path: text}} or {"root": ..., "write": {path: text}}: while this worker
+             runs, another session (not the worker, so no tool of its own and nothing recorded) writes these files
+             relative to that directory, first, and commits them there unless given as `write`.
 It refuses an --agent the --plugin-dir has no agents/<agent>.md for. As the real claude does, it refuses to write any
 file (a `write` path, the result file) under its --plugin-dir, as a sensitive file: the write is recorded as refused
 (`Write`) and nothing is written.
@@ -74,7 +79,7 @@ def bash(argv, command):
     """Run `command` if --allowedTools allows it as Bash; record that it ran or was refused."""
     line = shlex.join(command)
     if any(fnmatch.fnmatchcase(line, pattern) for pattern in allowed(argv, "Bash")):
-        subprocess.run(command, check=True, capture_output=True)
+        subprocess.run(command, capture_output=True)
         record({"event": "ran", "tool": "Bash", "command": line})
         return True
     record({"event": "refused", "tool": "Bash", "command": line})
@@ -126,19 +131,24 @@ def main(argv):
     short = agent.split(":", 1)[-1]
     step = dict(plan.get("default", {}), **plan.get(short, {}))
     result = pathlib.Path(next(line.split(":", 1)[1].strip() for line in brief.splitlines() if line.startswith("Result file:")))
-    work_item = pathlib.Path(next(line.split(":", 1)[1].strip() for line in brief.splitlines()
-                                  if line.startswith("Work-item:"))).stem
+    work_item = pathlib.Path(next((line.split(":", 1)[1].strip() for line in brief.splitlines()
+                                   if line.startswith("Work-item:")), "none")).stem
+    for path in step.get("touch", []):
+        pathlib.Path(path).touch()
     if step.get("meet"):
         meet(agent, step["meet"])
     if step.get("commit"):
         step["commit"] = {rel.replace("{work_item}", work_item): text for rel, text in step["commit"].items()}
     if step.get("elsewhere"):
         other = pathlib.Path(step["elsewhere"]["root"])
-        for rel, text in step["elsewhere"]["commit"].items():
+        files = step["elsewhere"].get("commit") or step["elsewhere"]["write"]
+        for rel, text in files.items():
             (other / rel).parent.mkdir(parents=True, exist_ok=True)
             (other / rel).write_text(text)
-        subprocess.run(["git", "add", "--", *step["elsewhere"]["commit"]], cwd=other, check=True, capture_output=True)
-        subprocess.run(["git", "commit", "-q", "-m", "another session's commit"], cwd=other, check=True, capture_output=True)
+        if "commit" in step["elsewhere"]:
+            subprocess.run(["git", "add", "--", *files], cwd=other, check=True, capture_output=True)
+            subprocess.run(["git", "commit", "-q", "-m", "another session's commit"], cwd=other, check=True,
+                           capture_output=True)
     for name in step.get("skills", []):
         skill(argv, name)
     for rel, text in step.get("write", {}).items():
@@ -172,9 +182,10 @@ def main(argv):
     elif step.get("result") != "none":
         named = {field: str(pathlib.Path(rel).resolve()) for field, rel in step.get("names", {}).items()}
         result.write_text(json.dumps(dict({"status": step.get("status", "DONE"), "summary": "the stand-in's %s" % short,
-                                           "questions": step.get("questions", [])}, **named)))
-    print(json.dumps({"type": "result", "subtype": "success", "is_error": False, "session_id": session,
-                      "num_turns": 1, "total_cost_usd": 0, "result": "stand-in"}))
+                                           "questions": step.get("questions", [])}, **named, **step.get("fields", {}))))
+    subtype = step.get("subtype", "success")
+    print(json.dumps({"type": "result", "subtype": subtype, "is_error": subtype != "success", "session_id": session,
+                      "num_turns": step.get("num_turns", 1), "total_cost_usd": 0, "result": "stand-in"}))
     record({"event": "end", "agent": agent, "session": session})
     return 0
 

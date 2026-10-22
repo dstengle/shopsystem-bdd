@@ -6,7 +6,8 @@ import subprocess
 import time
 
 import workqueue
-from supervise_worker import git, with_scripts
+from supervise_faults import Fault, fault_of
+from supervise_worker import GitFailed, git, with_scripts
 from workqueue import WORK
 
 # The tests work run runs unless .shop/delivery.toml names its own: in parallel (`-n auto`) where the project's python3
@@ -31,7 +32,8 @@ class Merge:
         return {k: shlex.split(v.replace("{work_item}", name)) for k, v in tests.items()}
 
     def suite_record(self, tree, suite):
-        """work run's own whole-suite run in `tree`, as the line `Suite: <N> passed, <M> failed at <hash> in <s> s`."""
+        """work run's own whole-suite run in `tree`, as the line `Suite: <N> passed, <M> failed at <hash> in <s> s`, with
+        the failing and the expected (r43) named; and the run itself."""
         began = time.monotonic()
         done = subprocess.run(suite, cwd=tree, capture_output=True, text=True, env=with_scripts())
         seconds = time.monotonic() - began
@@ -41,10 +43,13 @@ class Merge:
         def count(word):
             found = re.search(r"(\d+) %s\b" % word, summary)
             return int(found.group(1)) if found else 0
-        failing = [l.split(" ", 1)[1].split(" - ")[0] for l in out.splitlines() if l.startswith("FAILED ")]
+        def named(word):
+            return [l.split(" ", 1)[1].split(" - ")[0] for l in out.splitlines() if l.startswith(word + " ")]
+        failing, expected = named("FAILED"), named("XFAIL")
         head = git(tree, "rev-parse", "--short", "HEAD").stdout.strip()
         line = "Suite: %d passed, %d failed at %s in %.0f s" % (count("passed"), count("failed"), head, seconds)
-        return line + ("; failing: %s" % ", ".join(failing) if failing else "")
+        line += "; failing: %s" % ", ".join(failing) if failing else ""
+        return line + ("; expected: %s" % ", ".join(expected) if expected else ""), done
 
     def under_work(self, tree, name):
         """The branch's changes under .shop/work/ since the initiative branch, put back on the branch by a commit there
@@ -61,11 +66,13 @@ class Merge:
 
     def implement(self, name):
         """ready -> claimed, the implementer in its worktree, and its branch merged only on passing tests (r4), then
-        deleted (r18). A failure once it is claimed puts it to awaiting-ruling with the failure as its question (r5),
-        and is still work run's own (r10)."""
-        self.move(name, "ready", "claimed")
+        deleted (r18). A fault once it is claimed, a git command's failure among them, moves it to failed (r41); any
+        other failure puts it to awaiting-ruling with the failure as its question, and is still work run's own (r10)."""
         try:
+            self.move(name, "ready", "claimed")
             self.claimed(name)
+        except (Fault, GitFailed) as fault:
+            self.fail(name, fault_of(fault))
         except Exception as error:
             self.failed_claimed(name, error)
             raise
@@ -85,7 +92,7 @@ class Merge:
     def claimed(self, name):
         tests = self.tests(name)
         tree = self.worktree(name, name, "work/" + name)
-        record = self.suite_record(tree, tests["suite"])
+        record, _ = self.suite_record(tree, tests["suite"])
         self.log(**{"work-item": name, "stage": "implement", "event": "suite", "record": record})
         try:
             data, failure = self.worker(name, "implement", "bdd-implementer", tree, "work/" + name,
@@ -107,19 +114,18 @@ class Merge:
         else the question it gives the person instead of the merge. What the worker left uncommitted is cleaned away
         first (its run directory in .shop/scratch/ aside): the tests run on the branch, which is what the merge takes."""
         git(tree, "clean", "-q", "-f", "-d", "-x", "-e", ".shop/scratch")
-        done = subprocess.run(["git", "rebase", "-q", self.branch], cwd=tree, capture_output=True, text=True)
-        if done.returncode != 0:
-            return "`git rebase %s` failed on %s's branch work/%s:\n%s" % (
-                self.branch, name, name, (done.stdout + done.stderr).strip())
+        git(tree, "rebase", "-q", self.branch)
         changed = self.under_work(tree, name)
         if changed:
-            return ("bdd-implementer's branch work/%s changed %s under .shop/work/, which only work run "
-                    "writes; work run put it back on the branch and did not merge it" % (name, ", ".join(changed)))
-        for cmd in (tests["work_item"], tests["suite"]):
-            done = subprocess.run(cmd, cwd=tree, capture_output=True, text=True, env=with_scripts())
+            raise Fault("its implementer's branch work/%s changed %s under .shop/work/, outside its stage directory; "
+                        "work run put it back on the branch and did not merge it" % (name, ", ".join(changed)))
+        record, suite = self.suite_record(tree, tests["suite"])     # its expected red counted (r43)
+        self.log(**{"work-item": name, "stage": "merge", "event": "suite", "record": record})
+        scenarios = subprocess.run(tests["work_item"], cwd=tree, capture_output=True, text=True, env=with_scripts())
+        for done in (scenarios, suite):
             if done.returncode != 0:
                 return "`%s` failed on %s's branch work/%s:\n%s" % (
-                    " ".join(cmd), name, name, (done.stdout + done.stderr).strip())
+                    " ".join(done.args), name, name, (done.stdout + done.stderr).strip())
         git(self.root, "merge", "--ff-only", "work/" + name)
         self.move(name, "claimed", "done")
         return None

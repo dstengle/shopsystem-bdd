@@ -11,6 +11,7 @@ import uuid
 from pathlib import Path
 
 import workqueue
+from supervise_faults import Fault, session_end
 from workqueue import Refused
 
 AGENT_PREFIX = "shopsystem-bdd:"
@@ -37,14 +38,22 @@ TOOLS = {
 }
 # A stage's limit of turns: the researcher's is 25 (r19).
 MAX_TURNS = {"research": 25}
+ROLE = {"code-scout": "researcher", "bdd-planner": "planner", "bdd-implementer": "implementer",
+        "bdd-task-reviewer": "reviewer", "bdd-branch-reviewer": "branch reviewer"}
+# Set in each worker's environment: a `work run` that finds it was started by a worker (r21).
+WORKER = "SHOPSYSTEM_WORK_RUN_WORKER"
+
+
+class GitFailed(Refused):
+    """A git command that failed: work run's refusal before any stage (r10), the work-item's fault during one (r41)."""
 
 
 def git(root, *args):
-    """Run git in `root`; a git that fails is work run's refusal, with git's first line of complaint (r10)."""
+    """Run git in `root`; a git that fails raises GitFailed, with git's first line of complaint."""
     done = subprocess.run(["git", *args], cwd=root, capture_output=True, text=True)
     if done.returncode != 0:
         said = (done.stderr.strip() or done.stdout.strip() or "exit %d" % done.returncode).splitlines()[0]
-        raise Refused("git %s failed: %s" % (" ".join(args), said))
+        raise GitFailed("git %s failed: %s" % (" ".join(args), said))
     return done
 
 
@@ -59,6 +68,7 @@ def with_scripts(plugin=False, work_item=None):
         env["PYTEST_PLUGINS"] = ",".join(p for p in (env.get("PYTEST_PLUGINS"), "work_items") if p)
     if work_item:      # every pytest a worker runs selects its work-item's scenarios (r22)
         env["PYTEST_ADDOPTS"] = " ".join(p for p in (env.get("PYTEST_ADDOPTS"), "--work-item " + work_item) if p)
+        env[WORKER] = work_item      # a `work run` started from here refuses (r21)
     return env
 
 
@@ -128,6 +138,7 @@ class Workers:
         What a worker changes under .shop/work/ is put back where the worker changed it (r6): a detached worktree's
         changes go with the worktree, a branch's are put back by `under_work`. The main checkout's working tree is not
         the worker's, so nothing there is put back: a change made there while the worker runs is someone else's."""
+        self.verify_push(name, stage)
         with self.lock:
             label, kept_at = self.run_dir(name, stage)
             here = tree / ".shop" / "scratch" / label
@@ -142,18 +153,22 @@ class Workers:
                                *(["--max-turns", str(MAX_TURNS[stage])] if stage in MAX_TURNS else [])],
                               cwd=tree, capture_output=True, text=True, env=with_scripts(plugin=True, work_item=name))
         with self.lock:
+            changed = self.checkout_changes()
             shutil.copytree(here, kept_at)
+            self.own.add(self.rel(kept_at))
             (kept_at / "session.json").write_text(done.stdout)
             self.log(**{"work-item": name, "stage": stage, "agent": agent, "session": session, "event": "end"})
+        if changed:
+            raise Fault("while its %s worked, %s changed in the repository's own checkout and not committed; work run "
+                        "put %s back" % (ROLE[agent], ", ".join(changed), "it" if len(changed) == 1 else "them"))
         result = kept_at / "result.json"
-        if not result.is_file():
-            return None, "%s gave no result file (%s)" % (agent, here / "result.json")
         try:
-            data = json.loads(result.read_text())
+            data = json.loads(result.read_text()) if result.is_file() else None
         except ValueError:
             data = None
         if not isinstance(data, dict):
-            return None, "%s's result file %s is not a JSON object" % (agent, self.rel(result))
+            raise Fault("its %s wrote %s; %s" % (ROLE[agent], "a result file that is not JSON" if result.is_file()
+                                                  else "no result file", session_end(done.stdout, done.returncode)))
         self.keep_named(data, tree, here, kept_at)
         questions = data.get("questions")
         if isinstance(questions, str):
