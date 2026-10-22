@@ -7,7 +7,7 @@ description: Use when the person asks to check the spec's consistency, its terms
 
 ## Overview
 
-A bounded context's spec should agree with itself: one word means one thing, one thing has one word, a line has one reading, and a scenario says what its line says. This skill checks that and, in fix mode, walks the person through the fixes. `model check` judges the words the glossary avoids (`v_t1` (a word the glossary avoids), `v_t2` (a term has two entries), `v_t3` (an avoided word is a term)); a blind `shopsystem-bdd:spec-checker` agent judges meaning, one dispatch for each capability and one for the whole context.
+A bounded context's spec should agree with itself: one word means one thing, one thing has one word, a line has one reading, the lines leave nothing to infer (docs/capability-format.md, "Lines that leave nothing to infer"), and a scenario says what its line says. This skill checks that and, in fix mode, walks the person through the fixes. `model check` judges the words the glossary avoids (`v_t1` (a word the glossary avoids), `v_t2` (a term has two entries), `v_t3` (an avoided word is a term)); a blind `shopsystem-bdd:spec-checker` agent judges meaning, one dispatch for each capability and one for the whole context.
 
 The skill runs when the person asks for it, never otherwise. Integration and formulation rounds do not run it, and no other skill invokes it.
 
@@ -32,7 +32,12 @@ Both modes start here. Choose the drafts path `.shop/scratch/drafts/<date>-consi
    - `## Terms`: one `### <word> / <word>` heading per term cluster, the words one thing goes by or the thing one word names, with every finding about them: the `v_t*` rows of its words, one word used for two things, two words used for one thing, a thing with no glossary entry.
    - `## Lines with two readings`: each line, quoted, with its two readings.
    - `## Lines in the wrong pattern`: each line, quoted, with the EARS pattern it uses and the one what starts its behaviour asks for.
+   - `## Lines left to infer`: two lines that act on one thing without saying which wins, a line that leaves to inference which runs, workers or commands it applies to, and a status or mode with a way into or out of it that no line gives, each with its lines quoted.
+   - `## Behaviour no line asks for`: each scenario, quoted, with the behaviour it shows.
+   - `## Scenarios showing another line's response`: each scenario, quoted, with the line whose response it shows, or the exit code it gives.
    - `## Other drift`: each scenario whose wording drifts from its line, and anything else.
+
+   An undefined word, one a line depends on that is neither a term nor spelled out in the line, goes under its term cluster.
 
    A drift finding about a word goes under that word's term cluster. Number the findings `F1`, `F2` and on, across the file. Each finding names its ids (`capability/<name>#r<n>`, `features/<name>.feature:<title>`, `term/<term>`) and quotes the words. Two dispatches' findings about one thing are one finding.
 
@@ -50,9 +55,12 @@ Steps 1 to 3 each begin by running `scripts/model check --limit 100000` and keep
 
    In a repository that keeps `.shop/work/`, the term and its line changes ride with a capability-proposal that lists `term/<term>` (integrating-a-proposal, "Terms"). The person may give another word or another definition: the proposal changes and is shown again. A `v_t2` or `v_t3` row is settled by changing the glossary entries it names, through the same gate pass. A `v_t*` row is never rejected or deferred: the proposal for its cluster settles it. A cluster whose entry is in the glossary already and whose lines need no change has no gate pass: its scenarios follow in step 2. Any other cluster the person declines is `rejected`, or `deferred` when they say later. Integrating-a-proposal's hand-off to formulation is step 2 of this skill.
 2. **Scenarios follow.** Every scenario a `v_t1` row of this step's kept run names is reworded to its line through formulating-features' small-change path ("The Small-Change Path"), with no further approval: the line and the term are approved. Where clingo is missing, they are the scenarios `grep -rniwE '<word>s?' features` finds for each word after a `Not:`, those tagged `@deprecated` left out. Write the reworded scenarios yourself, from the line and the glossary, and splice, deprecate, rebind, verify and commit as that path says, the commit containing the feature files and the test files `rebind` changed. A rewording that changes only a title is rebound and goes no further. One that changes a step's text is a changed scenario, as that path says, for a work-item to turn green. Tell the person which scenarios changed their steps.
-3. **One at a time.** First the lines with two readings, then the lines in the wrong pattern, then the other drift, one finding to the person at a time, each answered before the next is asked.
+3. **One at a time.** First the lines with two readings, then the lines in the wrong pattern, then the lines left to infer, then behaviour no line asks for, then the scenarios showing another line's response, then the other drift, one finding to the person at a time, each answered before the next is asked.
    - **A line with two readings.** Ask one question: the line, quoted with its id, and its two readings, each with the line it would give. The answer is integrated through integrating-a-proposal's question path: when it changes at most two lines, its small-change path, the lines written by you from the answer and shown at its gate; otherwise a `initiative-round` with the job `integrate`, the question, its readings and the person's answer in their words, whose writer gets the question template, and on the person's yes to its gate text a `initiative-round` with the job `apply`, as that skill's "Who Does What" says. Either path ends in its gate, its commit and its hand-off to formulation.
    - **A line in the wrong pattern.** Ask one question: the line, quoted with its id, the pattern it uses, and the line it would be in the pattern its trigger asks for. The answer goes through the same path as a line with two readings; a pattern change keeps the line's meaning, and its scenario is reworded only where its wording differs from the new line.
+   - **A line left to infer.** Ask one question: the lines, quoted with their ids, and what they leave open (which wins, which runs, workers or commands a line applies to, or the way into or out of the status), with the line or lines each answer would give. The answer goes through the same path as a line with two readings.
+   - **Behaviour no line asks for.** Ask whether a line should ask for it: the scenario, quoted with its title, and the behaviour. Yes: the line is written first, through the same path as a line with two readings. No: the scenario is reworded to its line through formulating-features' small-change path, with no further approval.
+   - **A scenario showing another line's response.** The scenario is reworded to show its own line's response alone, exits in words, through formulating-features' small-change path, with no further approval; where the other line has no scenario, it gets one in the same pass.
    - **Other drift.** Ask which side is right: the line, quoted with its id, and the scenario's words, quoted with its title. The line is right: the scenario is reworded to its line through formulating-features' small-change path, with no further approval. The scenario is right: the line changes through integrating-a-proposal's small-change path, at its gate. Neither, or not now: the finding is `deferred`.
 
    A finding the person says to leave is `rejected`. A `deferred` finding, from this step or step 1, is recorded as an observation: appended to `.shop/records/observations.md` in the form of the entries there (`## observation/<context id>/<date>-consistency-<F<n>>`, then `about:` the capability, `by: the person`, `date:`, and the finding in one paragraph with its ids), and that file is committed alone, `observation: consistency findings`, before step 4. Its settlement in the findings file says `deferred, observation <its id>`.
@@ -69,7 +77,7 @@ not the source, not the step definitions.
 
 Judge each Behaviour line against the scenario that has its @r<n> tag.
 A scenario tagged @deprecated formulates no line: leave it out. A scenario
-may have several @r<n> tags: judge it against each line it names. Find:
+names one line. Find:
 - wrong pattern: a line whose EARS pattern does not fit what starts its
   behaviour (a response to a command or an event is When ..., a refusal or
   fault is If ... then, behaviour that lasts for a period is While, one that
@@ -78,16 +86,29 @@ may have several @r<n> tags: judge it against each line it names. Find:
 - drift: a scenario whose wording differs from its line: it names a thing
   by another word, adds or drops a condition, or pins what the line
   does not give;
-- two readings: a line that admits two readings.
+- two readings: a line that admits two readings;
+- behaviour no line asks for: a scenario showing observable behaviour (an
+  output, a file written, a status) that no Behaviour line here asks for;
+- unstated interaction: two lines here that act on one thing (one file,
+  one status, one command) without saying which of them wins;
+- unstated reach: a line that leaves to inference which runs, workers or
+  commands it applies to (every pytest run, every worker);
+- another line's response: a scenario with several @r<n> tags, or showing
+  the response of a line other than its own, an exit or a refusal of the
+  general failure line included, or giving an exit code rather than
+  exits successfully or with an error.
 Use spec/index.md's Glossary for what its terms mean. Decide nothing: never
 say which side is right, never pick a reading, never rewrite a line or a
 scenario.
 
 Write your findings to <DRAFTS PATH>/round-<N>/<NAME>.findings.md, and
-nowhere else, one per finding: its kind (wrong pattern | drift | two readings); its ids
+nowhere else, one per finding: its kind (wrong pattern | drift | two
+readings | behaviour no line asks for | unstated interaction | unstated
+reach | another line's response); its ids
 (capability/<NAME>#r<n>, features/<NAME>.feature:<scenario title>); the
 words, quoted; for wrong pattern, the pattern the line uses and the one its trigger asks for; for drift, one line saying what differs; for two readings,
-the two readings, one line each. Write "none" when you find nothing.
+the two readings, one line each; for the others, one line saying what is
+shown, or left open. Write "none" when you find nothing.
 Reply with the count of each kind and the findings file's path, nothing
 else. Write that same reply, last of all, to
 <DRAFTS PATH>/round-<N>/<NAME>.reply.md.
@@ -104,15 +125,25 @@ Read every Behaviour line and spec/index.md's Glossary. Find:
 - one word for two things: a word the lines use for two different things;
 - two words for one thing: two words the lines use for the same thing;
 - a missing term: a thing several lines name that the Glossary has no
-  entry for.
+  entry for;
+- an undefined word: a word a line depends on that is neither a Glossary
+  term nor spelled out in the line;
+- unstated interaction: two lines, in one capability or two, that act on
+  one thing (one file, one status, one command) without saying which wins;
+- unstated reach: a line that leaves to inference which runs, workers or
+  commands it applies to (every pytest run, every worker);
+- missing way in or out: a status or mode the lines name, with a way into
+  it or out of it that no line gives, in any capability.
 Decide nothing: never choose which word is the term, never rewrite a line or
 an entry.
 
 Write your findings to <DRAFTS PATH>/round-<N>/whole-context.findings.md,
 and nowhere else, one per finding: its kind (one word for two things | two
-words for one thing | missing term); the words; each line that uses them,
+words for one thing | missing term | undefined word | unstated interaction
+| unstated reach | missing way in or out); the words; each line that uses them,
 by its id (capability/<name>#r<n>) and quoted; any glossary entry they
-concern, by its id (term/<term>). Write "none" when you find nothing. Reply
+concern, by its id (term/<term>); for the last three, one line saying what
+is left open. Write "none" when you find nothing. Reply
 with the count of each kind and the findings file's path, nothing else.
 Write that same reply, last of all, to
 <DRAFTS PATH>/round-<N>/whole-context.reply.md.
