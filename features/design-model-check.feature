@@ -748,6 +748,15 @@ Feature: Design model check
     Then v_e1 names r2
     And v_e1 does not name r1
 
+  @r108
+  Scenario: `model why --json` prints the requirement's text and its proposals as one JSON object
+    Pins that why's answer can be read by a program, each proposal with its status and date.
+    Given a capability thing with requirement r2
+    And a capability-proposal p1 dated 2026-09-01 that adds thing#r2
+    When `model why --json` is run for thing#r2
+    Then it prints one JSON object
+    And the object gives the requirement's text and p1 with its status and date
+
   @r65
   Scenario: `model rules` prints every rule with its plain label
     Given any repository

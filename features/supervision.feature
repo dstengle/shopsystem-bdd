@@ -425,13 +425,23 @@ Feature: Supervision
     When the person runs `work run i1`
     Then git lists the branch work/w1, with the implementer's commit of feature.txt
 
-  @r27
-  Scenario: when every work-item of the initiative is green or withdrawn, a bdd-branch-reviewer reviews the initiative branch from its base
+  @r27 @deprecated
+  Scenario: when every work-item of the initiative is green or withdrawn, a bdd-branch-reviewer reviews the initiative branch from its base (deprecated)
+    Deprecated for: when every work-item is green or withdrawn and a commit since the kept branch review is unread, a bdd-branch-reviewer reviews the initiative branch from its base
     Pins that a delivery whose work-items are all done ends with one review of the whole branch.
     Given i1's work-items w1 is drafted and w2 is withdrawn
     And every worker gives DONE
     When the person runs `work run i1`
     Then after w1 was green a `claude -p` session of shopsystem-bdd:bdd-branch-reviewer was started, given one brief naming the initiative branch and its base
+
+  @r27
+  Scenario: when every work-item is green or withdrawn and a commit since the kept branch review is unread, a bdd-branch-reviewer reviews the initiative branch from its base
+    Pins that a commit no kept branch review has read, made after one was kept, brings a new review of the whole branch once its work-items are done.
+    Given i1's work-item w1 is green and a kept branch review has read every commit on the initiative branch
+    And i1's work-item w2 was added after that review and is drafted
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then after w2 was green a `claude -p` session of shopsystem-bdd:bdd-branch-reviewer was started, given one brief naming the initiative branch and its base
 
   @r47
   Scenario: the branch reviewer's directory is copied under .shop/work/i1/runs/branch-review/ when its session ends
@@ -457,6 +467,14 @@ Feature: Supervision
     And every worker gives DONE, and the branch reviewer ends
     When the person runs `work run i1`
     Then log.jsonl has, for the branch reviewer, a start line and then an end line, each with the time, the stage branch-review, the agent bdd-branch-reviewer and the session id claude was given
+
+  @r50
+  Scenario: while a kept branch review has read every commit on the initiative branch but its own, no branch review is started
+    Pins that the commit a branch review is kept in does not by itself bring another review.
+    Given i1's work-items w1 is green and w2 is withdrawn
+    And a kept branch review has read every commit on the initiative branch, and its own commit is the initiative branch's last
+    When the person runs `work run i1`
+    Then no session of bdd-branch-reviewer was started
 
   @r51
   Scenario: a push that cannot be verified before the branch review ends `work run` with an error, saying why, and no branch review is started
