@@ -2,11 +2,11 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/migration-rebind-1
 kind: work-item
 part_of: capability-proposal/one-requirement-migration-tools
-status: researched
+status: planned
 wkind: capability
 under: migration-tools
 accepts: [migration-tools#r1, migration-tools#r2, migration-tools#r4, migration-tools#r5]
-fileset: [scripts/migrate, scripts/migrate_*.py, tests/scenarios/*migration*.py, tests/scenarios/test_migration_tools.py]
+fileset: [tests/scenarios/migration_safety_steps.py]
 ---
 
 # migration-tools r1-r5: the reformulated scenarios bound
