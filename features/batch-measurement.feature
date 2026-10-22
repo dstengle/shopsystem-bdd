@@ -494,6 +494,74 @@ Feature: Batch measurement
       | work-item | stage    | agent      | session | took       | turns | output tokens | new input tokens | cache-read tokens | cost |
       | cart-1    | research | researcher | s-1     | 12 minutes | 14    | 3000          | 2000             | 50000             | 0.42 |
 
+  @r51
+  Scenario: a stage with a start and no end is given with its session's figures but not how long it took
+    A stage that never ended is still measured, with everything a finished stage gives except its time.
+    Given i7-cart's log.jsonl gives work-item cart-1's plan stage a start at 10:20 and no end
+    And that stage was run as the agent planner in the session s-2
+    And the session s-2 took 6 turns, 1000 output tokens, 500 new input tokens and 20000 cache-read tokens, costing 0.18
+    When the session runs measure initiative i7-cart
+    Then the measurement gives the stage
+      | work-item | stage | agent   | session | turns | output tokens | new input tokens | cache-read tokens | cost |
+      | cart-1    | plan  | planner | s-2     | 6     | 1000          | 500              | 20000             | 0.18 |
+    And the measurement gives no time for how long the stage took
+
+  @r41
+  Scenario: each work-item is given with its transitions, its awaiting-ruling and failed counts and the commits its merge brought in
+    A work-item's path through its statuses is counted, and only the commits its own merge brought into the initiative branch are its.
+    Given i7-cart's log.jsonl gives work-item cart-1 the transitions
+      | from            | to              |
+      | drafted         | researched      |
+      | researched      | failed          |
+      | failed          | researched      |
+      | researched      | awaiting-ruling |
+      | awaiting-ruling | planned         |
+      | planned         | ready           |
+      | ready           | claimed         |
+      | claimed         | done            |
+      | done            | green           |
+    And cart-1's work-item branch has the commits c-1 and c-2, which its merge brought into the initiative branch
+    And the commit c-3 was made on the initiative branch itself
+    When the session runs measure initiative i7-cart
+    Then the measurement gives cart-1 those 9 transitions
+    And it gives cart-1 1 time to awaiting-ruling and 1 time to failed
+    And it gives cart-1 the commits c-1 and c-2
+    And it does not give cart-1 the commit c-3
+
+  @r42
+  Scenario: the totals are over the stages' sessions, an unended stage included, and span the first transition to the last
+    The initiative's totals add up its stages' sessions, count a stage that never ended, leave out sessions only --sessions found, and run from the first transition to the last.
+    Given i7-cart's log.jsonl gives its first transition at 09:55 and its last at 11:40
+    And it gives work-item cart-1's research stage a start and an end, run in the session s-1
+    And it gives work-item cart-1's plan stage a start and no end, run in the session s-2
+    And the stages' sessions took
+      | session | output tokens | new input tokens | cache-read tokens | cost |
+      | s-1     | 3000          | 2000             | 50000             | 0.42 |
+      | s-2     | 1000          | 500              | 20000             | 0.18 |
+    And the transcript sessions/s-9.jsonl starts inside i7-cart's window with 9000 output tokens, 4000 new input tokens and 80000 cache-read tokens
+    When the session runs measure initiative i7-cart with --sessions sessions
+    Then the measurement gives the totals
+      | stages | sessions | output tokens | new input tokens | cache-read tokens | cost | time              |
+      | 2      | 2        | 4000          | 2500             | 70000             | 0.60 | 1 hour 45 minutes |
+
+  @r43
+  Scenario: --sessions gives the sessions that start inside the window and every session they dispatched
+    A session belongs to the initiative by when it started, and what it dispatched comes with it whenever that ran.
+    Given i7-cart's log.jsonl gives its first transition at 09:55 and its last at 11:40
+    And the directory sessions holds the transcripts
+      | session | starts | ends  | dispatched by | output tokens | new input tokens | cache-read tokens |
+      | s-8     | 09:30  | 10:10 |               | 700           | 300              | 9000              |
+      | s-9     | 11:00  | 12:30 |               | 9000          | 4000             | 80000             |
+      | s-11    | 12:00  | 12:20 | s-9           | 2500          | 1500             | 30000             |
+      | s-10    | 11:50  | 12:10 |               | 400           | 200              | 6000              |
+    When the session runs measure initiative i7-cart with --sessions sessions
+    Then the measurement gives the sessions
+      | session | output tokens | new input tokens | cache-read tokens |
+      | s-9     | 9000          | 4000             | 80000             |
+      | s-11    | 2500          | 1500             | 30000             |
+    And it gives neither s-8 nor s-10
+
+
   @r49
   Scenario: the measurement holds no prompt, reply or tool content
     What the sessions said and did is counted, never copied into the measurement.
