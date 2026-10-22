@@ -48,6 +48,9 @@ def cmd_tag(args, files):
 def cmd_move(args, files):
     path, f, sc = locate(files, args.title, args)
     dest = args.to
+    root = os.path.realpath(args.dir)
+    if os.path.commonpath([root, os.path.realpath(dest)]) != root:  # r35
+        raise Refused("%s is outside %s: %r stays in %s" % (dest, args.dir, args.title, path))
     if not os.path.isfile(dest):
         raise Refused("%s does not exist" % dest)
     if os.path.abspath(dest) == os.path.abspath(path):

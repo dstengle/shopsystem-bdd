@@ -187,6 +187,11 @@ def feature_outside(repo, context):
     write(repo, "features/codes.feature", feature_text(scenario_text("Voucher")))
 
 
+@given("a feature file elsewhere/other.feature outside the features directory")
+def destination_outside(repo, context):
+    write(repo, "elsewhere/other.feature", feature_text(scenario_text("Checkout")))
+
+
 @given('a feature file with a scenario "Apply a voucher"')
 def a_feature_with_voucher(repo, context):
     store(repo, context, "features/cart.feature", scenario_text("Apply a voucher"))

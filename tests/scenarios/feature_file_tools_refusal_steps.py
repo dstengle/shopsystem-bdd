@@ -144,6 +144,12 @@ def rejected_outside(run, repo, context):
             assert "outside" in refused(run, repo, *command, "--file", path)
 
 
+@then("the command is rejected because the destination is outside --dir")
+def rejected_destination_outside(context):
+    reason = rejected(context)
+    assert "elsewhere/other.feature is outside" in reason, reason
+
+
 @then("the command is rejected because a title is one line")
 def rejected_two_line_title(context):
     assert "one line" in rejected(context)

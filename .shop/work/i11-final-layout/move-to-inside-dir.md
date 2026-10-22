@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/move-to-inside-dir
 kind: work-item
 part_of: capability-proposal/release-gate-feature-file-tools
-status: drafted
+status: green
 wkind: capability
 under: feature-file-tools
 accepts: [feature-file-tools#r35]
