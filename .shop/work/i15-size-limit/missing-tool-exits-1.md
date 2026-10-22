@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/missing-tool-exits-1
 kind: work-item
 part_of: capability-proposal/release-gate-analysis-tools
-status: drafted
+status: green
 wkind: capability
 under: analysis-tools
 accepts: [analysis-tools#r17]

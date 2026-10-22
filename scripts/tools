@@ -48,7 +48,8 @@ contract:
   - check runs ruff, vulture and, where the project has contracts for it,
     import-linter, over the paths given or the Python files changed since
     --base, each under its own heading. A tool that is missing is named
-    under its heading, not skipped in silence. Exit 1 when any reports.
+    under its heading, not skipped in silence. Exit 1 when any reports or is
+    missing.
   - size prints each tracked Python file (a .py name or a python shebang) of
     more than --limit lines (300 without it) as '<path> <lines>', counted as
     the working tree has them, tests included. Exit 1 when any is printed. It
