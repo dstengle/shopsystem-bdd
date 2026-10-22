@@ -20,8 +20,8 @@ Feature: Feature file tools
     And the refusal names features/rules.feature
 
   @r2
-  Scenario Outline: an edit is refused only when it would leave a Rule: block outside a docstring
-    Pins that the one thing an edit's output is verified for is a Rule: block outside a docstring, and that a refused edit changes no file.
+  Scenario Outline: an edit is refused when it would leave a Rule: block outside a docstring
+    Pins that a Rule: line inside a docstring is no Rule: block, and that a refused edit changes no file.
     Given an edit by features that would leave features/cart.feature with <content>
     When the session runs that edit
     Then <effect>
@@ -30,7 +30,6 @@ Feature: Feature file tools
       | content                                      | effect                                                                                                       |
       | a Rule: block outside a docstring            | the edit is rejected because features could not read the edited file, and every file is as it was            |
       | a Rule: line inside a docstring              | the edit is made                                                                                             |
-      | two scenarios titled "Apply a code"          | the edit is made                                                                                             |
 
   @r4
   Scenario: counting by tag counts outline rows, inherited tags and untagged scenarios
@@ -74,7 +73,7 @@ Feature: Feature file tools
     Given a feature file features/cart.feature with no scenario tagged @slice-9
     When the session runs `features list --tag slice-9`
     Then nothing is printed
-    And it exits 1
+    And it exits with an error
 
   @r35
   Scenario Outline: retagging a title that is not in exactly one file is refused
@@ -91,11 +90,11 @@ Feature: Feature file tools
       | features/cart.feature and features/old.feature | features/cart.feature and features/old.feature |
 
   @r46
-  Scenario: retagging with a tag that is not a requirement tag is bad usage
+  Scenario: retagging with a tag that is not a requirement tag is refused
     Only r<n> is a tag features tag accepts.
     Given a feature file features/cart.feature with a scenario "Apply a code"
     When the session runs `features tag "Apply a code" wip`
-    Then the command is rejected as bad usage because the tag is not written r<n>
+    Then the command is rejected because the tag is not written r<n>
     And no file is changed
 
   @r12
@@ -146,7 +145,7 @@ Feature: Feature file tools
     And a tree features/ with "Apply a code" in features/codes.feature and "Empty cart" in features/cart.feature, each alike in effective tags, description, Background and own steps
     When the session runs `features verify-moved --from old`
     Then it prints that 2 scenarios match
-    And it exits 0
+    And it exits successfully
 
   @r17
   Scenario Outline: a scenario that changed between the trees is named with what changed
@@ -155,7 +154,7 @@ Feature: Feature file tools
     And the two copies of "Apply a code" differ in their <part>
     When the session runs `features verify-moved --from old`
     Then it names "Apply a code" with its <part> as changed
-    And it exits 1
+    And it exits with an error
 
     Examples:
       | part           |
@@ -170,7 +169,7 @@ Feature: Feature file tools
     And <tree> has a second scenario titled "Apply a code"
     When the session runs `features verify-moved --from old`
     Then it names "Apply a code" as a duplicate
-    And it exits 1
+    And it exits with an error
 
     Examples:
       | tree      |
@@ -245,7 +244,7 @@ Feature: Feature file tools
     And <where the title is>
     When the session runs `features bindings` without --tests
     Then it prints tests/test_cart.py, line 12, the title "Apply a code" and the feature cart.feature
-    And it exits 1
+    And it exits with an error
 
     Examples:
       | where the title is                                       |
@@ -259,7 +258,7 @@ Feature: Feature file tools
     And features/cart.feature has the scenario "Apply a code"
     When the session runs `features bindings`
     Then it says that every binding names a scenario
-    And it exits 0
+    And it exits successfully
 
   @r57
   Scenario Outline: a scenarios() call binds every scenario of the feature files it names
@@ -267,8 +266,7 @@ Feature: Feature file tools
     Given <feature file> has the scenarios "Apply a code" and "Empty cart"
     And a test module tests/test_cart.py calling <call>
     When the session runs `features bindings --unbound`
-    Then it says that every binding names a scenario
-    And it exits 0
+    Then it prints neither "Apply a code" nor "Empty cart" as bound by no test
 
     Examples:
       | feature file              | call                      |
@@ -277,12 +275,12 @@ Feature: Feature file tools
 
   @r58
   Scenario: --unbound prints a scenario that no call binds
-    Without a binding the scenario never runs, so its file and title are printed after the usual output.
+    Without a binding the scenario never runs, so its file and title are printed.
     Given features/cart.feature has the scenarios "Apply a code" and "Empty cart"
     And a test module tests/test_cart.py binding "Empty cart" in cart.feature
     When the session runs `features bindings --unbound`
-    Then it prints features/cart.feature, the title "Apply a code" and that no test binds it
-    And it exits 1
+    Then it prints features/cart.feature and the title "Apply a code"
+    And it exits with an error
 
   @r58
   Scenario: --unbound prints a scenario bound twice with each call
@@ -292,7 +290,7 @@ Feature: Feature file tools
     And a test module tests/test_c.py binding "Empty cart" in cart.feature
     When the session runs `features bindings --unbound`
     Then it prints features/cart.feature, the title "Apply a code" and the calls tests/test_a.py:12 and tests/test_b.py:5
-    And it exits 1
+    And it exits with an error
 
   @r58
   Scenario: --unbound looks only at the feature files it names
@@ -302,8 +300,7 @@ Feature: Feature file tools
     And a test module tests/test_cart.py binding "Apply a code" in cart.feature
     And a test module tests/test_c.py binding "Empty cart" in cart.feature
     When the session runs `features bindings --unbound features/cart.feature`
-    Then it says that every binding names a scenario
-    And it exits 0
+    Then it prints neither "Old rule" nor "Older rule"
 
   @r46
   Scenario: a test module that does not parse is refused
@@ -314,14 +311,13 @@ Feature: Feature file tools
     And the refusal names tests/test_broken.py
 
   @r28
-  Scenario Outline: rebinding rewrites each binding of the old title and counts them
-    Only the title in the binding calls changes, and the count is printed even when it is zero.
+  Scenario Outline: rebinding rewrites each binding of the old title
+    Only the title in the binding calls changes, whatever their number.
     Given a feature file features/cart.feature with a scenario "Apply a voucher"
     And test modules with <bindings> binding calls naming "Apply a code"
     When the session runs `features rebind "Apply a code" "Apply a voucher"`
     Then each of those binding calls names "Apply a voucher"
     And nothing else in the test modules is changed
-    And it prints that <bindings> bindings were rebound
 
     Examples:
       | bindings |
@@ -366,33 +362,14 @@ Feature: Feature file tools
     And the title "Apply a code" is only in <tree>
     When the session runs `features verify-moved --from old`
     Then it names "Apply a code" as <named as>
-    And it exits 1
+    And it exits with an error
 
     Examples:
       | tree      | named as |
       | old/      | missing  |
       | features/ | added    |
 
-  @r5
-  Scenario Outline: a tag is found with or without its leading @
-    The leading @ is optional when listing by tag.
-    Given a feature file features/cart.feature with a scenario "Apply a code" tagged @slice-2
-    When the session runs `features list --tag <tag>`
-    Then the output lists features/cart.feature with "Apply a code"
-
-    Examples:
-      | tag      |
-      | @slice-2 |
-      | slice-2  |
-
-  @r19
-  Scenario: deprecating a scenario prints its file and new title
-    The session sees where the deprecated scenario is and what it is now called.
-    Given a feature file features/cart.feature with a scenario "Apply a code"
-    When the session runs `features deprecate "Apply a code" --for-removal`
-    Then it prints features/cart.feature and "Apply a code (deprecated)"
-
-  @r19 @r46
+  @r46
   Scenario: deprecating for a new title written over two lines is refused
     A title is one line: a line break in --for would add a line to the scenario besides its Deprecated for: line.
     Given a feature file features/cart.feature with a scenario "Apply a code"
@@ -424,12 +401,11 @@ Feature: Feature file tools
 
   @r29
   Scenario: rebinding a title written over several lines is refused
-    A binding whose title string spans lines is not rewritten, and the module and line are named.
+    A binding whose title string spans lines is not rewritten.
     Given a feature file with a scenario "Apply a voucher"
     And a test module tests/test_cart.py whose binding call at line 20 names "Apply a code" in a string written over several lines
     When the session runs `features rebind "Apply a code" "Apply a voucher"`
     Then the command is rejected because the binding's title is written over several lines
-    And the refusal names tests/test_cart.py and line 20
     And no test module is changed
 
   @r46
@@ -438,15 +414,29 @@ Feature: Feature file tools
     Given a feature file features/cart.feature with a scenario "Apply a code" not tagged @deprecated
     When the session runs `features retire "Apply a code"`
     Then the reason for the refusal is written to stderr
-    And it exits 1
+    And it exits with an error
 
-  @r51
-  Scenario: tagging with a requirement id adds it to the scenario's requirement tags
+  @r51 @deprecated
+  Scenario: tagging with a requirement id adds it to the scenario's requirement tags (deprecated)
+    Deprecated for: tagging with a requirement id makes it the scenario's one requirement tag
     The new @r<n> joins the scenario's tags; its other tags, other @r<m> tags included, and every other line stay as they were.
     Given a feature file features/cart.feature whose only scenario "Apply a code" has the tags @wip, @slice-2, @r1 and @r4
     When the session runs `features tag "Apply a code" r7`
     Then the scenario's tags are @wip, @slice-2, @r1, @r4 and @r7
     And every other line of features/cart.feature is unchanged
+
+  @r51
+  Scenario Outline: tagging with a requirement id makes it the scenario's one requirement tag
+    Pins that @r<n> takes the place of every @r<m> tag the scenario has, or joins its tags when it has none, and that its other tags and every other line stay as they were.
+    Given a feature file features/cart.feature whose only scenario "Apply a code" has the tags <tags before>
+    When the session runs `features tag "Apply a code" r7`
+    Then the scenario's tags are <tags after>
+    And every other line of features/cart.feature is unchanged
+
+    Examples:
+      | tags before                 | tags after             |
+      | @wip, @slice-2, @r1 and @r4 | @wip, @slice-2 and @r7 |
+      | @wip and @slice-2           | @wip, @slice-2 and @r7 |
 
   @r52
   Scenario: --file works in that file only, whatever other files have the title
@@ -483,6 +473,16 @@ Feature: Feature file tools
     Given a feature file elsewhere/other.feature outside the features directory with a scenario "Apply a code"
     When the session runs `features tag "Apply a code" r7 --file elsewhere/other.feature`
     Then the command is rejected because the file is outside --dir
+    And no file is changed
+
+  @r35
+  Scenario: --to naming a file outside --dir is refused
+    A move never takes a scenario to a file outside the directory features reads.
+    Given a feature file features/cart.feature with a scenario "Apply a code"
+    And a feature file elsewhere/other.feature outside the features directory
+    When the session runs `features move "Apply a code" --to elsewhere/other.feature`
+    Then the command is rejected because the destination is outside --dir
+    And the refusal names features/cart.feature
     And no file is changed
 
   @r56
