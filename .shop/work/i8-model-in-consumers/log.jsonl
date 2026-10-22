@@ -89,3 +89,7 @@
 {"time": "2026-10-22T16:59:23+00:00", "work-item": "migration-rebind-3", "stage": "research", "agent": "code-scout", "session": "0b1e642a-2284-4100-9614-48f5f01e2665", "event": "start"}
 {"time": "2026-10-22T17:01:27+00:00", "work-item": "migration-rebind-3", "stage": "research", "agent": "code-scout", "session": "0b1e642a-2284-4100-9614-48f5f01e2665", "event": "end"}
 {"time": "2026-10-22T17:01:27+00:00", "work-item": "migration-rebind-3", "before": "drafted", "after": "awaiting-ruling", "by": "work run"}
+{"time": "2026-10-22T17:01:31+00:00", "work-item": "migration-rebind-4", "stage": "research", "event": "push verified"}
+{"time": "2026-10-22T17:01:31+00:00", "work-item": "migration-rebind-4", "stage": "research", "agent": "code-scout", "session": "e66b81db-7488-45c4-8285-6c90c374ce63", "event": "start"}
+{"time": "2026-10-22T17:04:38+00:00", "work-item": "migration-rebind-4", "stage": "research", "agent": "code-scout", "session": "e66b81db-7488-45c4-8285-6c90c374ce63", "event": "end"}
+{"time": "2026-10-22T17:04:38+00:00", "work-item": "migration-rebind-4", "before": "drafted", "after": "researched", "by": "work run"}
