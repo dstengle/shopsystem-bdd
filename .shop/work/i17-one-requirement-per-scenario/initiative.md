@@ -24,4 +24,6 @@ Covers:
   with an error when a work-item is `awaiting-ruling`;
 - the teaching (docs/capability-format.md, feature-formulator, capability-writer, formulating-features);
 - the scenarios that name several requirements, and the scenarios of the reworded lines, reformulated one
-  requirement each (another pass); the code of v_s2 and of `features tag` (the drafted work-items).
+  requirement each (another pass); the code of v_s2 and of `features tag`, built by the rebinds of i8's run
+  (the first work-items for them were reverted: 3534c2e, 292302f);
+- the fault design (decision 0056): capability-proposal a-failed-work-item.
