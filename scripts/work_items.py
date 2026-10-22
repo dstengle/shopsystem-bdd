@@ -5,10 +5,15 @@ nothing of its own for the option; this repository's conftest.py loads it the sa
 A work-item is .shop/work/<initiative>/<name>.md, found in the nearest directory at or above where pytest was started
 that has .shop/work/; its `accepts: [<capability>#r<n>, <capability>#r<n>-r<m>, ...]` names the requirements. A
 scenario is pytest-bdd's, its capability the stem of its feature file and its requirements its `@r<n>` tags.
-Standard library and pytest only.
+
+With `--whole-suite` too, every test runs (the whole suite before the work-item's merge), and a scenario whose
+requirements only work-items not yet green, other than the work-item, accept is expected to fail: an xfail
+(supervision r43). Standard library and pytest only.
 """
 import pathlib
 import re
+
+import pytest
 
 
 def pytest_addoption(parser):
@@ -25,34 +30,73 @@ def work_dir(start):
     return None
 
 
+def requirements(text):
+    """The (capability, requirement) pairs a work-item's text `accepts`."""
+    found = re.search(r"(?m)^accepts: \[(.*)\]$", text)
+    ids = set()
+    for one in found.group(1).split(",") if found else []:
+        cap, _, rs = one.strip().strip("'\"").partition("#")
+        lo, _, hi = rs.lstrip("r").partition("-r")
+        if lo.isdigit() and (hi or lo).isdigit():
+            ids.update((cap, "r%d" % n) for n in range(int(lo), int(hi or lo) + 1))
+    return ids
+
+
 def accepted(name, start):
     """The (capability, requirement) pairs work-item `name` accepts; a work-item that is not there is refused."""
     work = work_dir(pathlib.Path(start).resolve())
     for path in sorted(work.glob("*/%s.md" % name)) if work else []:
-        found = re.search(r"(?m)^accepts: \[(.*)\]$", path.read_text())
-        if found:
-            ids = set()
-            for one in found.group(1).split(","):
-                cap, _, rs = one.strip().strip("'\"").partition("#")
-                lo, _, hi = rs.lstrip("r").partition("-r")
-                for n in range(int(lo), int(hi or lo) + 1):
-                    ids.add((cap, "r%d" % n))
-            return ids
+        if re.search(r"(?m)^accepts: \[(.*)\]$", path.read_text()):
+            return requirements(path.read_text())
     raise SystemExit("--work-item %s: no such work-item under .shop/work/" % name)
+
+
+def acceptors(start):
+    """{(capability, requirement): {(work-item, status), ...}} of every work-item under .shop/work/."""
+    work = work_dir(pathlib.Path(start).resolve())
+    found = {}
+    for path in sorted(work.glob("*/*.md")) if work else []:
+        text = path.read_text()
+        if re.search(r"(?m)^kind: work-item$", text):
+            status = re.search(r"(?m)^status: (\S+)$", text)
+            for req in requirements(text):
+                found.setdefault(req, set()).add((path.stem, status.group(1) if status else None))
+    return found
+
+
+def scenario_of(item):
+    """The pytest-bdd scenario `item` runs, as (capability, its requirement tags); None for any other test."""
+    scenario = getattr(getattr(item, "function", None), "__scenario__", None)
+    if scenario is None:
+        return None
+    return pathlib.Path(scenario.feature.filename).stem, scenario.tags
+
+
+def expect_red(config, items, name):
+    """Mark as xfail each scenario whose requirements only work-items not yet green, other than `name`, accept."""
+    by = acceptors(config.invocation_params.dir)
+    for item in items:
+        found = scenario_of(item)
+        if found is None:
+            continue
+        who = set().union(*[by.get((found[0], tag), set()) for tag in found[1]])
+        if who and all(other != name and status != "green" for other, status in who):
+            item.add_marker(pytest.mark.xfail(reason="expected: accepted only by %s, not yet green"
+                                              % ", ".join(sorted(o for o, _ in who)), strict=False))
 
 
 def pytest_collection_modifyitems(config, items):
     name = config.getoption("--work-item")
-    if not name or config.getoption("--whole-suite"):
+    if not name:
+        return
+    if config.getoption("--whole-suite"):
+        expect_red(config, items, name)
         return
     want = accepted(name, config.invocation_params.dir)
     keep = []
     for item in items:
-        scenario = getattr(getattr(item, "function", None), "__scenario__", None)
-        if scenario is None:
-            continue
-        cap = pathlib.Path(scenario.feature.filename).stem
-        if any((cap, tag) in want for tag in scenario.tags):
+        found = scenario_of(item)
+        if found and any((found[0], tag) in want for tag in found[1]):
             keep.append(item)
     if not keep:
         raise SystemExit("--work-item %s: no scenario carries a requirement it accepts" % name)

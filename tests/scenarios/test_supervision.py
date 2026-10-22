@@ -38,7 +38,8 @@ def run_work(repo, plan, context, args):
     (stub / "plan.json").write_text(json.dumps(plan))
     env = dict(os.environ, PATH="%s%s%s" % (stub / "bin", os.pathsep, os.environ.get("PATH", "")),
                SHOPSYSTEM_WORK_CLAUDE=str(stub / "bin" / "claude"), STUB_CLAUDE_PLAN=str(stub / "plan.json"),
-               STUB_CLAUDE_CALLS=str(stub / "calls.jsonl"), **context.get("env", {}))
+               STUB_CLAUDE_CALLS=str(stub / "calls.jsonl"), PYTEST_XDIST_AUTO_NUM_WORKERS="2",
+               **context.get("env", {}))     # `-n auto` in a scenario's own small suite: two processes, not one a CPU
     context["before"] = state(repo)
     context["done"] = subprocess.run([sys.executable, str(context.get("work", SCRIPTS / "work")), *shlex.split(args)], cwd=repo, env=env,
                                      capture_output=True, text=True, timeout=300)
