@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/migration-rebind-4
 kind: work-item
 part_of: capability-proposal/one-requirement-migration-tools
-status: ready
+status: claimed
 wkind: capability
 under: migration-tools
 accepts: [migration-tools#r14, migration-tools#r15, migration-tools#r16, migration-tools#r17]

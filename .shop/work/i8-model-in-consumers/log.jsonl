@@ -98,3 +98,4 @@
 {"time": "2026-10-22T17:05:29+00:00", "work-item": "migration-rebind-4", "stage": "plan", "agent": "bdd-planner", "session": "196fb2df-578b-4903-bef8-62198fc7fac7", "event": "end"}
 {"time": "2026-10-22T17:05:29+00:00", "work-item": "migration-rebind-4", "before": "researched", "after": "planned", "by": "work run"}
 {"time": "2026-10-22T17:05:32+00:00", "work-item": "migration-rebind-4", "before": "planned", "after": "ready", "by": "work run"}
+{"time": "2026-10-22T17:05:34+00:00", "work-item": "migration-rebind-4", "before": "ready", "after": "claimed", "by": "work run"}
