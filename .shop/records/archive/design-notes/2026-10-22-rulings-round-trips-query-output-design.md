@@ -46,3 +46,17 @@ in .shop/scratch/drafts/2026-10-22-structured-query-output/round-2/gate.md and t
 - r53 to r56 added: where `--json` is given, `tools tests-of` (the tests, their count and the map's commit),
   `tools untested` (the functions, their count and the map's commit), `tools refs` (the references and the
   summary) and `tools map` (the map's commit and its test count) print their result as one JSON object.
+
+## Answers, not rulings (the person, 2026-10-22)
+
+The person: "rule is a dangerous term to use. We need either an alternative or a hyphenated compound to disambiguate
+it", and, offered `work give-ruling`, `work answer`, or a rename throughout, chose "Rename to 'answer' throughout".
+"Rule" is already `model check`'s word (`model rules`, its rules' codes).
+
+- The glossary's **ruling** becomes **answer**: the person's answer to a work-item's question, written in the
+  work-item in their words. Its `Not:` lists ruling and rule.
+- The status `awaiting-ruling` becomes `awaiting-answer`, in every line, decision row still in force, and file form.
+- The command is `work answer <work-item> <answer>`; it writes under the work-item's `## Answers`.
+- Every line that says ruling, rulings, ruled or awaiting-ruling says answer, answers, answered or awaiting-answer.
+- An upgrade step, for the plugin version after 0.24.0, renames the status `awaiting-ruling` to `awaiting-answer` in
+  every work-item's file and every `log.jsonl` line, and a work-item's `## Rulings` to `## Answers`.
