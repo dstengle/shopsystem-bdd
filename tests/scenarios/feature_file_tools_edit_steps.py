@@ -202,11 +202,6 @@ def file_as_it_was(repo, context, path):
     assert (repo / path).read_text() == context["before"][path]
 
 
-@then(parsers.re(r'it prints (?P<path>\S+) and "(?P<title>[^"]+)"'))
-def prints_path_and_title(context, path, title):
-    assert context["result"].stdout == "%s: %s\n" % (path, title)
-
-
 # --- Then: moving -----------------------------------------------------------------------------------------------
 
 @then('features/old.feature has "Empty cart" and not "Apply a code"')

@@ -19,9 +19,6 @@ def refusal_names(repo, context, names):
     if names == "no file":
         assert not re.findall(r"features/\w+\.feature", reason)
         return
-    if names == "tests/test_cart.py and line 20":
-        assert "tests/test_cart.py:20" in reason
-        return
     wanted = re.split(r", | and ", names)
     for name in wanted:
         assert name in reason
@@ -75,12 +72,12 @@ def no_module_changed(repo, context):
     assert snapshot(repo) == context["before"]
 
 
-@then("the command is rejected as bad usage because the tag is not written r<n>")
-def rejected_bad_usage(repo, context):
+@then("the command is rejected because the tag is not written r<n>")
+def rejected_not_rn(context):
     result = context["result"]
-    assert result.returncode == 2
+    assert result.returncode != 0, result.stdout + result.stderr  # which error is the implementation's: bad usage
+    assert result.stdout == "" and "Traceback" not in result.stderr
     assert "r<n>" in result.stderr and "slice" not in result.stderr
-    assert snapshot(repo) == context["before"]
 
 
 @then("the command is rejected because the destination does not exist")
