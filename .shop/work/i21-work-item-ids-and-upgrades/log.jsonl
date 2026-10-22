@@ -48,3 +48,4 @@
 {"time": "2026-10-22T22:53:36+00:00", "work-item": "work-queue-5", "stage": "plan", "agent": "bdd-planner", "session": "90f32329-4662-40d5-b67f-f6efc7972ec2", "event": "start"}
 {"time": "2026-10-22T22:55:43+00:00", "work-item": "work-queue-5", "stage": "plan", "agent": "bdd-planner", "session": "90f32329-4662-40d5-b67f-f6efc7972ec2", "event": "end"}
 {"time": "2026-10-22T22:55:43+00:00", "work-item": "work-queue-5", "before": "researched", "after": "awaiting-ruling", "by": "work run"}
+{"time": "2026-10-22T22:59:49+00:00", "work-item": "design-model-check-3", "before": "awaiting-ruling", "after": "withdrawn", "by": "work withdraw"}
