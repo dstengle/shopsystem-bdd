@@ -3,7 +3,7 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/design-model-check
 title: Design model check
 narrator: a person or session verifying a repository against the design model
 group: service
-rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/exits-are-successful-or-errors, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items]
+rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/query-commands-answer-in-their-output, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items]
 retired: [r28, r30, r31, r32, r38, r39, r40, r41, r42, r44, r45, r47, r50, r56, r57, r58, r60, r62, r63, r67]
 ---
 
@@ -78,8 +78,10 @@ problem names the file.
 - [r15] **If** `model decisions --check` finds `spec/decisions/index.md` is not what `model decisions` would write, then `model decisions` shall say so and exit with an error, writing nothing.
 - [r37] **When** `model decisions --check` finds `spec/decisions/index.md` is what `model decisions` would write, `model decisions` shall say the file is current and exit successfully.
 - [r16] **When** `model why <capability>#r<n>` is run, `model why` shall print the requirement's text (or that no capability has it), each capability-proposal that adds, changes or removes it in date order with its status and date, the `part_of` chain to its initiative and the initiative's sources.
-- [r17] **If** no capability-proposal adds or changes the requirement, then `model why` shall say so and exit with an error.
+- [r17] **When** no capability-proposal adds or changes the requirement given to `model why`, `model why` shall say so and exit successfully.
+- [r108] **Where** `--json` is given, `model why` shall print its result, the requirement's text and the capability-proposals that trace it, as one JSON object.
 - [r65] **When** `model rules` is run, `model rules` shall print each rule's code and plain label, one a line, the violations first and then the warnings, and exit successfully.
+- [r109] **Where** `--json` is given, `model rules` shall print its result, each rule's code, plain label and kind, as one JSON object.
 - [r105] **If** `model` cannot do what it was asked, then `model` shall exit with an error, say why, and change nothing.
 
 ## Implementation, may change
@@ -94,8 +96,8 @@ problem names the file.
   problems. `--limit <n>` (default 10) prints at most n rows of each violated relation and how many more there are.
 - A file problem for `@holding` names the scenario's title too. `model decisions` prints the file it wrote.
   `model why` given an argument that is not a requirement reference exits 2.
-- Exit code: 0 success; 1 a violation, unresolved reference or file problem found, a decisions index that is not
-  current, or a requirement no capability-proposal adds or changes; 2 no interpreter has clingo, or bad usage.
+- Exit code: 0 success; 1 a violation, unresolved reference or file problem found, or a decisions index that is
+  not current; 2 no interpreter has clingo, or bad usage.
 - `model facts` prints, for each glossary entry, a `node` fact of kind `term`, a `term_of` fact naming the
   bounded context and an `avoid` fact for each word after its `Not:`, and a `mentions` fact for each mention r51
   reads.

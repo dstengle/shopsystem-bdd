@@ -3,7 +3,7 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/feature-file-tools
 title: Feature file tools
 narrator: a session editing feature files
 group: service
-rests_on: [design-decision/plugin-takes-the-dependencies-it-needs, design-decision/held-scenarios, design-decision/plugin-scenarios-run-as-pytest-bdd]
+rests_on: [design-decision/plugin-takes-the-dependencies-it-needs, design-decision/held-scenarios, design-decision/plugin-scenarios-run-as-pytest-bdd, design-decision/query-commands-answer-in-their-output]
 retired: [r3, r6, r8, r9, r10, r11, r15, r18, r20, r22, r27, r30, r31, r32, r33, r34, r36, r37, r38, r39, r40, r41, r42, r43, r44, r45, r47, r48, r49, r50, r53, r54, r55, r59]
 ---
 
@@ -26,7 +26,8 @@ test; it edits only the feature files, test modules and directory it is pointed 
 ### Reading
 - [r4] **When** `features count --by-tag` is run, `features` shall print the number of scenarios with each tag and a total of every scenario, those with no tag included, counting a Scenario Outline once per Examples row and giving each scenario its feature's tags and its Examples table's tags.
 - [r5] **When** `features list --tag <tag>` or `--title <text>` is run, `features` shall print the file and title of each scenario whose tags, its feature's and its Examples' included, include that tag, or whose title contains the text.
-- [r7] **When** `features list` matches no scenario, `features` shall print nothing and exit with an error.
+- [r7] **When** `features list` matches no scenario, `features` shall print nothing and exit successfully.
+- [r60] **Where** `--json` is given, `features list` shall print its result, the scenarios with the file and title of each, as one JSON object.
 
 ### Editing
 - [r51] **When** `features tag <title> r<n>` is run, `features` shall make `@r<n>` the scenario's one requirement tag, in place of any `@r<m>` tag it has, and leave its other tags and every other line unchanged.
@@ -35,6 +36,7 @@ test; it edits only the feature files, test modules and directory it is pointed 
 - [r14] **Where** `--keep-feature-tags` is given, **when** `features move` is run, `features` shall put the source's feature tags that the destination's feature tags lack on a tag line of their own immediately above the relocated scenario's `Scenario:` line, after any tag line the scenario already has, joined to none.
 - [r19] **When** `features deprecate <title>` is run with `--for <new title>` or `--for-removal`, `features` shall give the scenario the tag `@deprecated`, " (deprecated)" at the end of its title and a description line `Deprecated for: <new title>` or `Deprecated for: removal`, whether or not the replacement exists yet, and change nothing else in it.
 - [r21] **When** `features deprecated` is run, `features` shall list each deprecated scenario with what it is deprecated for and, for a replacement, the file and `@r<n>` tag of the scenario with that title, saying on its line when it has no `Deprecated for:` line, no scenario has the replacement's title, or the replacement has no `@r<n>` tag.
+- [r61] **Where** `--json` is given, `features deprecated` shall print its result, each deprecated scenario with what it is deprecated for and its replacement, as one JSON object.
 - [r23] **When** `features retire <title>` is run on a scenario tagged `@deprecated`, `features` shall remove that scenario's block and leave the rest of the file as it was.
 - [r24] **If** `features retire` is given a scenario not tagged `@deprecated`, then `features` shall refuse because it is not deprecated, and leave the file as it was.
 
@@ -45,6 +47,7 @@ test; it edits only the feature files, test modules and directory it is pointed 
 - [r25] **If** `features bindings` finds a `scenario(<feature>, "<title>")` call under `--tests` (default `tests`) whose title no feature file has, or not the feature it names, then `features` shall print the module, line, title and feature of each, and exit with an error.
 - [r26] **When** `features bindings` finds every binding names a scenario, `features` shall say so and exit successfully.
 - [r58] **Where** `--unbound` is given, **if** a scenario in the feature files named after `--unbound` (with none named, every feature file under `--dir`) is bound by no `scenario(...)` or `scenarios(...)` call, or by more than one, then `features bindings` shall print its file and title, with the module and line of each call, and exit with an error.
+- [r62] **Where** `--json` is given, `features bindings` shall print its result, the bindings it found wrong or, with `--unbound`, the scenarios bound by no test or by more than one, as one JSON object.
 - [r28] **When** `features rebind <old> <new>` is run, `features` shall rewrite `<old>` to `<new>` in each binding call that names it and change nothing else in the module.
 - [r56] **Where** `--file <feature path>` is given, **when** `features rebind` is run, `features` shall rewrite only the bindings whose feature argument names that file, the feature argument resolved against `--dir`.
 - [r29] **If** the new title given to `features rebind` is no scenario's or several feature files', or a binding call names the old title in a string written over several lines, then `features` shall refuse and change no test module.
