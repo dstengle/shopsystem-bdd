@@ -211,6 +211,24 @@ Feature: Supervision
     Then `work run` prints w1 with failed and the fault "git merge --ff-only work/w1 failed", and w2 with green
     And it exits with an error
 
+  @r53
+  Scenario: a push that fails after the branch review's commit ends `work run` with an error, saying why
+    Pins that a branch review kept only on the machine is an error the person is told of, even when every work-item ended well.
+    Given i1's work-items w1 is green and w2 is withdrawn
+    And the remote refuses pushes to the initiative branch once the branch reviewer has started
+    When the person runs `work run i1`
+    Then work says that it cannot push the initiative branch to the remote
+    And it exits with an error
+
+  @r54
+  Scenario: when `work run` starts and the initiative branch has commits the remote does not have, it pushes the initiative branch before anything else
+    Pins that work committed before the delivery, and never pushed, reaches the remote before any worker starts.
+    Given i1's work-item w1 is drafted
+    And the initiative branch has a commit of notes.txt that the remote does not have
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then before the researcher was started, the remote's initiative branch had the commit of notes.txt
+
   @r10
   Scenario Outline: `work run` that cannot do what it was asked exits with an error, says why, and changes nothing
     Pins that `work run` verifies what it was given before any worker starts, and a refused transition is its refusal.
@@ -424,15 +442,6 @@ Feature: Supervision
     And the whole suite fails on the implementer's branch
     When the person runs `work run i1`
     Then git lists the branch work/w1, with the implementer's commit of feature.txt
-
-  @r27 @deprecated
-  Scenario: when every work-item of the initiative is green or withdrawn, a bdd-branch-reviewer reviews the initiative branch from its base (deprecated)
-    Deprecated for: when every work-item is green or withdrawn and a commit since the kept branch review is unread, a bdd-branch-reviewer reviews the initiative branch from its base
-    Pins that a delivery whose work-items are all done ends with one review of the whole branch.
-    Given i1's work-items w1 is drafted and w2 is withdrawn
-    And every worker gives DONE
-    When the person runs `work run i1`
-    Then after w1 was green a `claude -p` session of shopsystem-bdd:bdd-branch-reviewer was started, given one brief naming the initiative branch and its base
 
   @r27
   Scenario: when every work-item is green or withdrawn and a commit since the kept branch review is unread, a bdd-branch-reviewer reviews the initiative branch from its base
