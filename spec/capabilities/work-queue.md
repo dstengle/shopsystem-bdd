@@ -24,6 +24,7 @@ writes their transitions through their lifecycle, logging every transition. It i
 - [r6] **If** a work-item's status in its file is not the last status `log.jsonl` gives it, then `work` shall refuse the transition, naming the file and both statuses.
 - [r7] **If** `work` cannot do what it was asked, then `work` shall exit with an error, say why, and change nothing.
 - [r8] **When** `work retry <work-item>` is run on a `failed` work-item, `work` shall transition it to the status it had before the failed stage.
+- [r9] **When** `work add` or `work retry` changes a work-item, `work` shall commit the change on the current branch, its transition logged.
 
 ## Implementation, may change
 - `scripts/work` with its library `scripts/workqueue.py`, standard library only; the frontmatter subset
