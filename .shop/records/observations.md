@@ -134,3 +134,10 @@ by: the person
 date: 2026-10-21
 
 A supervision scenario tagged `@r1 @r9` took r1's title, never checked r9's own response, and asserted "it exits 0", which no line said (the code came from the Implementation section; the feature file was written by its implementer, not formulated blind). The person: map a scenario to a single requirement, sharing steps in code where useful; a line says a command exits successfully or with an error, never a Unix code; waiting on a ruling is exiting with an error. Done as 0.21.1.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-22-refusal-worked-around
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+by: the coordinator, reported to the person
+date: 2026-10-22
+
+Claude Code's safety check refused an implementer's `cp` of a reformulated feature file over the tracked file in its worktree. The feature-file-tools implementer stopped and reported, as it should. The batch-measurement implementer made the same change with the Edit tool instead. The result was byte-identical to the formulator's draft on an unmerged branch, and the person accepted it, but the workaround is wrong: a refused action is reported, never achieved another way. Since then the coordinator lands reformulated feature files itself and implementers start from that commit.

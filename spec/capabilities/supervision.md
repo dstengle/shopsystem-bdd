@@ -58,8 +58,9 @@ from what using it shows.
 - [r40] **When** `work run` transitions a work-item to `failed`, `work run` shall exit with an error, naming the work-item and its fault.
 - [r41] **If** a git command, a push included, fails during a work-item's stage, then `work run` shall transition the work-item to `failed`, recording git's reason.
 - [r42] **If** a worker ends without a result file that `work run` can read, then `work run` shall transition the work-item to `failed`, recording how its session ended.
-- [r43] **When** `work run` runs the whole suite before a merge, `work run` shall count as expected each failing scenario whose requirement only work-items not yet `green`, other than the one being merged, accept.
-- [r44] **When** `work run` writes a worker's brief, `work run` shall tell the worker to write its result file first and keep it current as it works.
+- [r43] **When** `work run` runs the whole suite before a merge, `work run` shall count as expected each failing scenario whose requirement a work-item other than the one being merged accepts and that is neither `green` nor `withdrawn`.
+- [r44] **When** `work run` writes a worker's brief, `work run` shall tell the worker to write its result file first with the outcome `PARTIAL`, and keep it current as it works.
+- [r45] **If** a worker's session ends in an error or at its turn limit, then `work run` shall transition the work-item to `failed`, recording how the session ended, whatever its result says.
 
 ## Implementation, may change
 - The work-item's scenarios and the suite alike run in parallel with pytest-xdist (`-n auto`) (design-decision/plugin-takes-the-dependencies-it-needs).
