@@ -102,14 +102,6 @@ Feature: Design model check
     When `model why` is run for that requirement
     Then it prints the requirement, the proposal, the initiative and the observation
 
-  @r17 @deprecated
-  Scenario: why with no proposal says so (deprecated)
-    Deprecated for: why with no proposal says so and succeeds
-    Given a requirement no capability-proposal adds or changes
-    When `model why` is run for it
-    Then it says no capability-proposal adds or changes it
-    And it exits with an error
-
   @r17
   Scenario: why with no proposal says so and succeeds
     Pins that a requirement nothing has added or changed is an answer, not a failure.
@@ -425,21 +417,6 @@ Feature: Design model check
       | a capability-proposal p1 dated 2026-10-01 that removes thing#r2 and a capability-proposal p2 dated 2026-09-01 that changes thing#r2 | p2 then p1  |
       | a capability-proposal p1 dated 2026-10-01 that removes thing#r2 and a capability-proposal p2 dated 2026-09-01 that removes thing#r2 | p2 then p1  |
       | only a capability-proposal p1 dated 2026-10-01 that removes thing#r2                                        | p1          |
-
-  @r17 @deprecated
-  Scenario Outline: why fails when the only proposals naming the requirement remove it (deprecated)
-    Deprecated for: why says so and succeeds when the only proposals naming the requirement remove it
-    Pins that a proposal that removes the requirement is no proposal that adds or changes it.
-    Given a capability thing with requirement r2
-    And <proposals>
-    When `model why` is run for thing#r2
-    Then it says no capability-proposal adds or changes thing#r2
-    And it exits with an error
-
-    Examples:
-      | proposals                                                                                                   |
-      | a capability-proposal p1 dated 2026-10-01 that removes thing#r2 and a capability-proposal p2 dated 2026-09-01 that removes thing#r2 |
-      | only a capability-proposal p1 dated 2026-10-01 that removes thing#r2                                        |
 
   @r17
   Scenario Outline: why says so and succeeds when the only proposals naming the requirement remove it

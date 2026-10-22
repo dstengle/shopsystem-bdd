@@ -204,3 +204,41 @@ def rules_printed(context):
     firstw = min(i for i, c in enumerate(codes) if c.startswith("w_"))
     assert all(c.startswith("w_") for c in codes[firstw:]), codes
     assert all(c.startswith("v") for c in codes[:firstw]), codes
+
+
+# === the answers as JSON (r108, r109) ====================================================================================
+
+@when(parsers.parse("`model why --json` is run for {ref}"))
+def model_why_json(world, context, ref):
+    context["result"] = world.model("why", "--json", ref)
+
+
+@when("`model rules --json` is run")
+def model_rules_json(world, context):
+    context["result"] = world.model("rules", "--json")
+
+
+@then("it prints one JSON object")
+def prints_one_json_object(context):
+    import json
+    result = context["result"]
+    assert result.returncode == 0, result.stdout + result.stderr
+    context["json"] = json.loads(result.stdout)
+    assert isinstance(context["json"], dict), result.stdout
+
+
+@then("the object gives the requirement's text and p1 with its status and date")
+def why_json_gives(context):
+    obj = context["json"]
+    assert obj["text"] == "Two.", obj
+    mine = [p for p in obj["proposals"] if p["id"] == P1]
+    assert len(mine) == 1, obj
+    assert mine[0]["status"] == "drafted" and mine[0]["date"] == "2026-09-01", obj
+
+
+@then("the object gives each rule that `model rules` prints with its code, its plain label and its kind, violation or warning")
+def rules_json_gives(world, context):
+    plain = world.model("rules").stdout.splitlines()
+    rows = [(r["code"], r["label"], r["kind"]) for r in context["json"]["rules"]]
+    assert [f"{c}  {l}" for c, l, _ in rows] == plain, rows
+    assert all(k == ("warning" if c.startswith("w_") else "violation") for c, _, k in rows), rows

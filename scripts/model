@@ -92,8 +92,11 @@ contract:
   - why <capability>#r<n> prints the trace the model gives for a
     requirement: the requirement, each capability-proposal that adds or
     changes it, the part_of chain to its initiative, and the initiative's
-    sources. It exits 1 when no proposal adds or changes the id, and 2 when
-    the argument is not a requirement reference.
+    sources. When no proposal adds or changes the id it says so and exits 0;
+    it exits 2 when the argument is not a requirement reference. why --json
+    prints one object: "requirement", "text" and "proposals", each with its
+    "id", "relation", "status" and "date". rules --json prints one object,
+    "rules", each {"code", "label", "kind": "violation" or "warning"}.
 """
 
 
@@ -107,7 +110,7 @@ def cmd_check(args):
 
 
 def cmd_rules(args):
-    return needing_clingo("rules", lambda: rules())
+    return needing_clingo("rules", lambda: rules(args.json))
 
 
 def main(argv=None):
@@ -115,7 +118,8 @@ def main(argv=None):
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--root", default=".")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("rules", help="print every rule's code and plain label, the violations first")
+    r = sub.add_parser("rules", help="print every rule's code and plain label, the violations first")
+    r.add_argument("--json", action="store_true")
     sub.add_parser("facts", help="print the facts read from the repository")
     c = sub.add_parser("check", help="solve the facts against model.lp and report")
     c.add_argument("--json", action="store_true")
@@ -124,6 +128,7 @@ def main(argv=None):
     d.add_argument("--check", action="store_true")
     w = sub.add_parser("why", help="trace a requirement to its initiative's sources")
     w.add_argument("ref")
+    w.add_argument("--json", action="store_true")
     args = ap.parse_args(argv)
     return {"facts": cmd_facts, "check": cmd_check, "rules": cmd_rules, "decisions": cmd_decisions, "why": cmd_why}[args.cmd](args)
 

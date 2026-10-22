@@ -1,6 +1,7 @@
 """decisions and why of scripts/model: the generated index of spec/decisions/, and a requirement's trace to its
 initiative's sources."""
 
+import json
 import os
 from pathlib import Path
 
@@ -54,13 +55,20 @@ def cmd_why(args):
         print("\n".join(model.dangling))
         return 2
     text = model.req_text.get(q)
-    print(f"{q}: {text}" if text is not None else f"{q}: no capability has this requirement now")
-    found = False
+    traced = []
     for p, data in sorted(model.proposals.items(), key=lambda t: str(t[1].get("date", ""))):
         rels = [rel for rel in ("adds", "changes", "removes")
                 if q in [model.resolve_req(r, p) for r in expand(as_list(data.get(rel)))]]
-        if not rels:
-            continue
+        if rels:
+            traced.append((p, data, rels))
+    if getattr(args, "json", False):
+        print(json.dumps({"requirement": q, "text": text, "proposals": [
+            {"id": p, "relation": rels, "status": data.get("status"), "date": str(data["date"]) if data.get("date") else None}
+            for p, data, rels in traced]}, indent=1))
+        return 0
+    print(f"{q}: {text}" if text is not None else f"{q}: no capability has this requirement now")
+    found = False
+    for p, data, rels in traced:
         found = found or bool(set(rels) & {"adds", "changes"})
         print(f"  {'/'.join(rels)} by capability-proposal {p} ({data.get('status')}, {data.get('date', 'undated')})")
         chain, cur, seen = [], model.parents.get(p), set()
@@ -76,5 +84,4 @@ def cmd_why(args):
                     print(f"      source {model.nodes.get(s, '?')} {s}")
     if not found:
         print("  no capability-proposal adds or changes it")
-        return 1
     return 0

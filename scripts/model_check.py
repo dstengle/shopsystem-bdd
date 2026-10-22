@@ -92,9 +92,14 @@ def needing_clingo(command, run):
     return run()
 
 
-def rules():
-    """Every rule's code and plain label, one a line, the violations first and then the warnings (r65)."""
+def rules(as_json=False):
+    """Every rule's code and plain label, one a line, the violations first and then the warnings (r65);
+    as one JSON object with each rule's kind when asked (r109)."""
     labels = solve()[1]
+    if as_json:
+        print(json.dumps({"rules": [{"code": c, "label": labels[c], "kind": "warning" if c.startswith("w_") else "violation"}
+                                    for c in rule_order(labels)]}, indent=1))
+        return 0
     for code in rule_order(labels):
         print(f"{code}  {labels[code]}")
     return 0
