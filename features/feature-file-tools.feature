@@ -67,13 +67,33 @@ Feature: Feature file tools
     And the output lists features/cart.feature with "Code expired"
     And the output does not list "Empty cart"
 
-  @r7
-  Scenario: listing that matches nothing prints nothing and fails
+  @r7 @deprecated
+  Scenario: listing that matches nothing prints nothing and fails (deprecated)
+    Deprecated for: listing that matches nothing prints nothing and succeeds
     An empty list is not a success.
     Given a feature file features/cart.feature with no scenario tagged @slice-9
     When the session runs `features list --tag slice-9`
     Then nothing is printed
     And it exits with an error
+
+  @r7
+  Scenario: listing that matches nothing prints nothing and succeeds
+    A list with no match has still answered, so it prints nothing and does not fail.
+    Given a feature file features/cart.feature with no scenario tagged @slice-9
+    When the session runs `features list --tag slice-9`
+    Then nothing is printed
+    And it exits successfully
+
+  @r60
+  Scenario: listing with --json prints the matching scenarios as one JSON object
+    Pins that the whole list, each scenario with its file and title, is printed as a single JSON object.
+    Given a feature file features/cart.feature with scenarios "Apply a code" and "Empty cart" tagged @checkout
+    And a feature file features/stock.feature with a scenario "Restock" tagged @checkout
+    And a feature file features/misc.feature with a scenario "Untagged" with no tags
+    When the session runs `features list --tag checkout --json`
+    Then the output is one JSON object
+    And it gives features/cart.feature with "Apply a code", features/cart.feature with "Empty cart" and features/stock.feature with "Restock"
+    And it gives no other scenario
 
   @r35
   Scenario Outline: retagging a title that is not in exactly one file is refused
@@ -302,6 +322,20 @@ Feature: Feature file tools
     When the session runs `features bindings --unbound features/cart.feature`
     Then it prints neither "Old rule" nor "Older rule"
 
+  @r62
+  Scenario Outline: bindings with --json prints what it found wrong as one JSON object
+    Pins that the wrong bindings, or with --unbound the scenarios bound by no test or by more than one, are printed as a single JSON object.
+    Given features/cart.feature has the scenarios "Apply a code", "Empty cart" and "Checkout"
+    And <bindings>
+    When the session runs `features bindings <options>`
+    Then the output is one JSON object
+    And it gives <found>
+
+    Examples:
+      | bindings                                                                                                                                                       | options          | found                                                                                                                              |
+      | a test module tests/test_cart.py whose line 12 binds the title "Apply a voucher" in the feature cart.feature                                                   | --json           | the binding at tests/test_cart.py line 12 of "Apply a voucher" in cart.feature                                                     |
+      | test modules tests/test_a.py and tests/test_b.py binding "Empty cart" in cart.feature at lines 12 and 5, and tests/test_c.py binding "Checkout" in cart.feature | --json --unbound | "Apply a code" in features/cart.feature as bound by no test, and "Empty cart" as bound by tests/test_a.py:12 and tests/test_b.py:5 |
+
   @r46
   Scenario: a test module that does not parse is refused
     Bindings cannot be read from a module that does not parse, and the module is named.
@@ -389,6 +423,17 @@ Feature: Feature file tools
       | condition                                                                      | said                                      |
       | the scenario has no Deprecated for: line                                       | that it has no Deprecated for: line       |
       | it is deprecated for "Apply a voucher", and "Apply a voucher" has no @r<n> tag | that the replacement has no @r<n> tag     |
+
+  @r61
+  Scenario: the deprecated list with --json prints each deprecated scenario as one JSON object
+    Pins that every deprecated scenario, with what it is deprecated for and its replacement, is in a single JSON object.
+    Given a feature file features/cart.feature with a deprecated scenario "Apply a code (deprecated)" deprecated for "Apply a voucher"
+    And a scenario "Apply a voucher" tagged @r3 in features/codes.feature
+    And a deprecated scenario "Empty cart (deprecated)" in features/cart.feature deprecated for removal
+    When the session runs `features deprecated --json`
+    Then the output is one JSON object
+    And it gives "Apply a code (deprecated)" deprecated for "Apply a voucher", with its replacement in features/codes.feature tagged @r3
+    And it gives "Empty cart (deprecated)" deprecated for removal
 
   @r29
   Scenario: rebinding to a title several feature files have is refused

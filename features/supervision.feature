@@ -79,6 +79,16 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the initiative branch does not have feature.txt
 
+  @r4
+  Scenario: an implementer's DONE whose whole suite fails only on a scenario r43 counts as expected is merged
+    Pins that a failure of work another work-item of the initiative has still to do does not keep the work-item branch out of the initiative branch.
+    Given i1's work-item w1 is ready, accepting thing#r1, and w2 is awaiting-ruling, accepting thing#r2
+    And features/thing.feature has the scenario "it waits", tagged @r2, which fails
+    And every worker gives DONE, the implementer committing feature.txt
+    And the work-item's scenarios pass only where feature.txt is
+    When the person runs `work run i1`
+    Then the initiative branch has the implementer's commit of feature.txt
+
   @r5
   Scenario Outline: an implementer's DONE whose <tests> fail makes the work-item's transition to awaiting-ruling
     Pins that work that fails the tests waits on the person.
@@ -190,6 +200,15 @@ Feature: Supervision
     When the person runs `work run i1`
     Then `work run` prints the question "Which module owns the log?"
     And it prints neither "Old question?" nor "Old ruling."
+    And it exits with an error
+
+  @r52
+  Scenario: when no work-item can make a transition and one is failed, `work run` exits with an error, printing each work-item's status and each fault
+    Pins what the person reads when `work run` stops on a fault already recorded, and that a failed work-item is an error.
+    Given i1's work-item w1 is failed, its fault recorded as "git merge --ff-only work/w1 failed"
+    And i1's work-item w2 is green
+    When the person runs `work run i1`
+    Then `work run` prints w1 with failed and the fault "git merge --ff-only work/w1 failed", and w2 with green
     And it exits with an error
 
   @r10
@@ -414,6 +433,41 @@ Feature: Supervision
     When the person runs `work run i1`
     Then after w1 was green a `claude -p` session of shopsystem-bdd:bdd-branch-reviewer was started, given one brief naming the initiative branch and its base
 
+  @r47
+  Scenario: the branch reviewer's directory is copied under .shop/work/i1/runs/branch-review/ when its session ends
+    Pins that the branch reviewer's brief and findings are kept in the initiative once its session is over.
+    Given i1's work-item w1 is drafted
+    And every worker gives DONE, and the branch reviewer writes findings.md beside its brief
+    When the person runs `work run i1`
+    Then a directory under .shop/work/i1/runs/branch-review/ holds the branch reviewer's brief and its findings.md, as it wrote them
+
+  @r48
+  Scenario: the branch reviewer's directory under .shop/work/i1/runs/branch-review/ is committed on the initiative branch
+    Pins that the branch review is part of the initiative branch's history, not a file left uncommitted in the checkout.
+    Given i1's work-item w1 is drafted
+    And every worker gives DONE, and the branch reviewer writes findings.md beside its brief
+    When the person runs `work run i1`
+    Then the initiative branch has a commit of the branch reviewer's directory under .shop/work/i1/runs/branch-review/, its findings.md included
+    And nothing under .shop/work/i1/runs/branch-review/ is left uncommitted
+
+  @r49
+  Scenario: the branch reviewer's start and end are lines in log.jsonl with the time, the stage branch-review, the agent and the session id
+    Pins what `work run` writes of the branch reviewer, the session id being the one claude was given.
+    Given i1's work-item w1 is drafted
+    And every worker gives DONE, and the branch reviewer ends
+    When the person runs `work run i1`
+    Then log.jsonl has, for the branch reviewer, a start line and then an end line, each with the time, the stage branch-review, the agent bdd-branch-reviewer and the session id claude was given
+
+  @r51
+  Scenario: a push that cannot be verified before the branch review ends `work run` with an error, saying why, and no branch review is started
+    Pins that a branch review is never spent on a branch whose review could not be pushed.
+    Given i1's work-items w1 is green and w2 is withdrawn
+    And the remote refuses pushes to the initiative branch
+    When the person runs `work run i1`
+    Then work says that it cannot push the initiative branch to the remote
+    And it exits with an error
+    And no session of bdd-branch-reviewer was started
+
   @r28
   Scenario: a change to .shop/work/ in the repository's own checkout that is not committed when a worker ends is put back, and the work-item's transition is to failed, naming the file
     Pins that `.shop/work/` in the main checkout is only what its last commit holds whenever a worker ends, and that a change there is a fault, not a question.
@@ -487,12 +541,12 @@ Feature: Supervision
       | implementer | ready   | committing feature.txt and a new .shop/work/i1/w9.md                    | .shop/work/i1/w9.md          |
 
   @r35
-  Scenario: `work run` verifies that it can push the initiative branch before it starts each worker
-    Pins that a push that would fail is found before a worker's work is spent.
+  Scenario: `work run` verifies that it can push the initiative branch before it starts each worker and the branch reviewer
+    Pins that a push that would fail is found before a worker's or the branch reviewer's work is spent.
     Given i1's work-item w1 is drafted
-    And every worker gives DONE
+    And every worker gives DONE, and the branch reviewer ends
     When the person runs `work run i1`
-    Then before each of w1's four workers was started, `work run` had verified that it can push the initiative branch to the remote
+    Then before each of w1's four workers was started, and before the branch reviewer was started, `work run` had verified that it can push the initiative branch to the remote
 
   @r36
   Scenario: a question goes into the work-item's ## Questions, before a section that follows it
@@ -551,14 +605,13 @@ Feature: Supervision
     And it exits with an error
 
   @r40
-  Scenario: a push that fails while a failure is being recorded leaves the transition to failed committed and ends `work run` with an error naming both
-    Pins that a remote refusing every push ends the run with a message, never a traceback.
+  Scenario: a work-item's transition to failed for a push that cannot be verified ends `work run` with an error naming the work-item and its fault
+    Pins that the person learns the work-item and its fault even when the remote refuses every push, that of the failure included.
     Given i1's work-item w1 is drafted
     And the remote refuses pushes to the initiative branch
     When the person runs `work run i1`
-    Then w1 is failed, recording why the push could not be verified
+    Then `work run` names w1 and that it cannot push the initiative branch to the remote
     And it exits with an error
-    And `work run` names w1, that the push could not be verified, and that the push of the failure failed, with no traceback
 
   @r41
   Scenario Outline: a git command that fails during a stage makes the work-item's transition to failed, recording git's reason: <fault>
@@ -615,17 +668,19 @@ Feature: Supervision
     Then each of w1's four briefs tells the worker to write its result file first, with the outcome PARTIAL, and keep it current as it works
 
   @r45
-  Scenario Outline: a worker whose session ends <ending> makes the work-item's transition to failed, whatever its result says
-    Pins that a session cut short is a fault even when its result file claims the work done.
+  Scenario Outline: a worker whose session <ending> makes the work-item's transition to failed, whatever its result says
+    Pins that a session cut short is a fault even when its result file claims the work done, and the person learns how it ended.
     Given i1's work-item w1 is drafted
-    And the researcher's session ends <ending>, its result file giving DONE
+    And the researcher's result file gives DONE, its session <ending>
     When the person runs `work run i1`
-    Then w1 is failed, recording that the researcher's session ended <ending>
+    Then w1 is failed, recording that the researcher's session <ended>
 
     Examples:
-      | ending              |
-      | in an error         |
-      | at its turn limit   |
+      | ending                                    | ended                                 |
+      | ending in an error                        | ended in an error                     |
+      | ending at its turn limit                  | ended at its turn limit               |
+      | exiting with an error                     | exited with an error                  |
+      | leaving output that holds no JSON result  | left output that holds no JSON result |
 
   @r46
   Scenario: `work run` started while .shop/work/ in the repository's own checkout has uncommitted changes exits with an error, naming them, and changes nothing

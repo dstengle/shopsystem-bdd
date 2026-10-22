@@ -26,6 +26,15 @@ Feature: Work queue
     Then work prints w1 with drafted, w2 with ready and w3 with claimed
     And it prints nothing about p1
 
+  @r11
+  Scenario: show with --json prints each work-item with its initiative and status as one JSON object
+    Pins that show's result, read by a script, is one JSON object giving every work-item's initiative and status.
+    Given an initiative i1 under .shop/work/ whose work-items w1 is drafted and w2 is ready
+    And an initiative i2 under .shop/work/ whose work-item w3 is claimed
+    When the session runs `work show --json`
+    Then work prints one JSON object and nothing else
+    And it gives w1 in i1 with drafted, w2 in i1 with ready and w3 in i2 with claimed
+
   @r4
   Scenario: a transition writes the new status into the work-item's file
     Pins that the work-item's file holds its status after a transition.
@@ -143,8 +152,9 @@ Feature: Work queue
       | has a line that is not JSON  | line 2 of .shop/work/i1/log.jsonl  |
       | cannot be written            | .shop/work/i1/log.jsonl            |
 
-  @r8
-  Scenario Outline: retry gives a failed work-item back the status it had before the failed stage: failed from <from>
+  @r8 @deprecated
+  Scenario Outline: retry gives a failed work-item back the status it had before the failed stage: failed from <from> (deprecated)
+    Deprecated for: retry on a failed work-item transitions it to the status before its transition into failed
     Pins that `work retry` takes a work-item back to where its failed stage started, once the fault is remedied.
     Given an initiative i1 under .shop/work/ whose work-item w1 is failed
     And .shop/work/i1/log.jsonl gives w1's last transitions as <transitions>
@@ -157,6 +167,23 @@ Feature: Work queue
       | researched | to researched, then from researched to failed          | researched |
       | claimed    | to ready, then from ready to claimed, then to failed   | ready      |
       | done       | to done, then from done to failed                      | done       |
+
+  @r8
+  Scenario: retry on a failed work-item transitions it to the status before its transition into failed
+    Pins that retry, once the fault is remedied, returns the work-item to the status it had when it failed, not to one before it.
+    Given an initiative i1 under .shop/work/ whose work-item w1 is failed
+    And .shop/work/i1/log.jsonl gives w1's last transitions as from ready to claimed, then from claimed to failed
+    When the session runs `work retry w1`
+    Then .shop/work/i1/w1.md gives w1's status as claimed
+
+  @r10
+  Scenario: withdraw on a work-item that is neither claimed nor green transitions it to withdrawn
+    Pins that withdraw takes a work-item out of the queue by a transition, written in its file and logged.
+    Given an initiative i1 under .shop/work/ whose work-item w1 is ready
+    And .shop/work/i1/log.jsonl's last line for w1 is its transition to ready
+    When the session runs `work withdraw w1`
+    Then .shop/work/i1/w1.md gives w1's status as withdrawn
+    And .shop/work/i1/log.jsonl's last line is w1's transition from ready to withdrawn
 
   @r9
   Scenario Outline: `work <command>` commits the change it makes to a work-item on the current branch
