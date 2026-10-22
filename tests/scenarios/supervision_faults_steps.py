@@ -115,7 +115,7 @@ def remote_at_head(repo):
     assert git(remote_dir(repo), "rev-parse", "main") == git(repo, "rev-parse", "main")
 
 
-@given(parsers.re(r"i1's work-item (?P<name>\w+) is awaiting-ruling, its ## Questions holding \"(?P<question>[^\"]+)\" and "
+@given(parsers.re(r"i1's work-item (?P<name>\w+) is awaiting-ruling, its ## Questions section with \"(?P<question>[^\"]+)\" and "
                   r"(?:no ruling|its Rulings section \"(?P<ruling>[^\"]+)\")$"))
 def awaiting_with_questions(repo, name, question, ruling):
     text = item_text(name, "awaiting-ruling") + "\n## Questions\n- %s\n" % question

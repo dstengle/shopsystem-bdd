@@ -185,8 +185,8 @@ Feature: Supervision
   @r32
   Scenario: `work run` prints a question that has no ruling yet, and not one that has a ruling
     Pins that an open question is one with no ruling yet.
-    Given i1's work-item w1 is awaiting-ruling, its ## Questions holding "Which module owns the log?" and no ruling
-    And i1's work-item w2 is awaiting-ruling, its ## Questions holding "Old question?" and its Rulings section "Old ruling."
+    Given i1's work-item w1 is awaiting-ruling, its ## Questions section with "Which module owns the log?" and no ruling
+    And i1's work-item w2 is awaiting-ruling, its ## Questions section with "Old question?" and its Rulings section "Old ruling."
     When the person runs `work run i1`
     Then `work run` prints the question "Which module owns the log?"
     And it prints neither "Old question?" nor "Old ruling."

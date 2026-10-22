@@ -75,7 +75,8 @@ from what using it shows.
 - A result's `questions` given as one string is read as one question.
 - The transitions from `planned` to `ready` and from `ready` to `claimed` have no guard beyond the lifecycle's.
 - Commit message `work: <work-item> <before> -> <after>`. Exit code 0 every work-item `green` or `withdrawn`, 3 awaiting a ruling, 1 otherwise.
-- The commands for the work-item's scenarios and the suite: `python3 -m pytest -q -p work_items --work-item <name>` (the plugin's `scripts/work_items.py` on `PYTHONPATH`) and `python3 -m pytest -q`, `-n auto` where pytest-xdist is there; `.shop/delivery.toml`'s `[tests]` replaces them.
+- The commands for the work-item's scenarios and the suite: `python3 -m pytest -q -p work_items --work-item <name>` (the plugin's `scripts/work_items.py` on `PYTHONPATH`) and `python3 -m pytest -q -rfEx -p work_items --work-item <name> --whole-suite`, `-n auto` where pytest-xdist is there; `.shop/delivery.toml`'s `[tests]` replaces them. `--whole-suite` keeps every test and marks as xfail each scenario r43 counts as expected; a worker's pytest gets `--work-item <name>` through `PYTEST_ADDOPTS`.
+- The push is verified by `git push --dry-run` to the initiative branch's upstream remote, else `origin`; a repository `work run` delivers has that remote. A fault is recorded under the work-item's `## Faults`. The n-th bullet of `## Rulings` answers the n-th of `## Questions`.
 
 ## Not yet
 - Retries, continuations after `PARTIAL`, refused claims, the guards between
