@@ -5,7 +5,7 @@ part_of: initiative/i18
 status: formulated
 date: 2026-10-22
 argues: [supervision]
-adds: [supervision#r47-r52, term/fault, term/remote, term/work-item-branch]
+adds: [supervision#r47-r54, term/fault, term/remote, term/work-item-branch]
 changes: [supervision#r3, supervision#r4, supervision#r5, supervision#r10, supervision#r27, supervision#r35, supervision#r38, supervision#r45, term/failed, term/worker]
 ---
 
