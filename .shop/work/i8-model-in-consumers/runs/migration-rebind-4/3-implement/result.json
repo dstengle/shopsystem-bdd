@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Added two missing Then steps (r16 index, r17 by qualifier); work-item scenarios 7 passed; no production change.","commits":["a44d3c8 Bind migration-tools r16 index step and r17 by-qualifier step"],"report":"/tmp/work-run-i8-model-in-consumers-dgjhnmfd/migration-rebind-4/.shop/scratch/3-implement/report.md","questions":[]}
