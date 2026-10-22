@@ -11,3 +11,7 @@
 {"time": "2026-10-22T20:02:39+00:00", "work-item": "feature-file-tools-1", "stage": "research", "agent": "code-scout", "session": "908eae89-6158-4be3-bae6-78e567b48a1c", "event": "start"}
 {"time": "2026-10-22T20:04:05+00:00", "work-item": "feature-file-tools-1", "stage": "research", "agent": "code-scout", "session": "908eae89-6158-4be3-bae6-78e567b48a1c", "event": "end"}
 {"time": "2026-10-22T20:04:05+00:00", "work-item": "feature-file-tools-1", "before": "drafted", "after": "failed", "by": "work run"}
+{"time": "2026-10-22T20:04:27+00:00", "work-item": "work-queue-1", "stage": "research", "event": "push verified"}
+{"time": "2026-10-22T20:04:27+00:00", "work-item": "work-queue-1", "stage": "research", "agent": "code-scout", "session": "cfa57641-a8b1-4579-8df5-dcc09f6481b5", "event": "start"}
+{"time": "2026-10-22T20:06:22+00:00", "work-item": "work-queue-1", "stage": "research", "agent": "code-scout", "session": "cfa57641-a8b1-4579-8df5-dcc09f6481b5", "event": "end"}
+{"time": "2026-10-22T20:06:22+00:00", "work-item": "work-queue-1", "before": "drafted", "after": "failed", "by": "work run"}
