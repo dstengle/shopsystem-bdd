@@ -96,8 +96,9 @@ Tools the skills and agents run:
 - **delivery**: one invocation of `work run` on an initiative, from its start until it exits.
 - **deprecated scenario**: a scenario kept in its feature file, tagged `@deprecated`, after its line is changed or removed, until its replacement passes; it formulates no requirement. Not: held, holding, superseded.
 - **dispatch**: a session another session starts with its Agent tool, and the transcript it leaves. Not: subagent.
-- **failed**: a work-item's status when a fault outside its work (a push, git, a worker breaking a rule, or a worker's session ending in an error, at its turn limit or without a readable result) stopped a stage from starting or finishing; its committed work is kept and pushed, and `work retry` returns it once the fault is remedied. Not: aborted.
+- **failed**: a work-item's status when a fault stopped a stage from starting or finishing; its committed work is kept, and pushed when the remote takes it, and `work retry` returns it once the fault is remedied. Not: aborted.
 - **fact**: one statement `model facts` gives clingo about the repository's files.
+- **fault**: a failure outside a worker's work that stops a stage: a push or git command failing, a worker changing a file under `.shop/work/` outside its stage directory, or a worker's session ending in an error, at its turn limit or without a result `work run` can read.
 - **file set**: the paths, globs or directories a work-item says its work changes: drafted with it, revised by its researcher and fixed by its planner. Not: fileset, scope.
 - **gate**: the person's approval of Behaviour lines and glossary entries before they are committed to `spec/`, with the questions they raise. Not: sign-off.
 - **hand-back**: an implementer's stop with the outcome `HAND-BACK`, giving the condition and its evidence word for word. Not: handback.
@@ -105,6 +106,7 @@ Tools the skills and agents run:
 - **input**: what a session is started with: input data, such as a brief, or an input prompt, the text filled from a template.
 - **outcome**: the one word a worker's result gives: `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `HAND-BACK`, `QUESTION` or `NEEDS_CONTEXT`. Not: verdict.
 - **record**: a file under `.shop/records/` whose frontmatter id has a record kind. Not: log entry.
+- **remote**: the remote `work run` pushes the initiative branch to: the branch's upstream remote, else `origin`.
 - **report**: the implementer's file in its stage directory, beside its result, naming the files it touched, the tests whose setup it changed and its open questions. Not: write-up.
 - **requirement**: one Behaviour line of a capability, named `#r<n>`. Not: behaviour requirement, capability requirement, carry, carries, carried, carrying.
 - **result**: the file `result.json` a worker writes in its stage directory, giving its outcome, its summary and the files it names. Not: return.
@@ -122,7 +124,8 @@ Tools the skills and agents run:
 - **template**: standing text in a skill or an agent definition that a session fills with input to start another session. Not: boilerplate.
 - **transition**: one change of a work-item's status, written by `work` and logged in `log.jsonl`. Not: move.
 - **work-item**: the unit of delivery under a capability-proposal, complete when the scenarios it accepts or its check pass, taken through its stages by `work run`.
-- **worker**: a session `work run` starts with `claude -p` for one stage of one work-item, as that stage's agent.
+- **work-item branch**: the branch an implementer commits a work-item's work on, from the initiative branch's head, merged into the initiative branch and deleted when it is merged.
+- **worker**: a session `work run` starts with `claude -p` for one stage of one work-item, as that stage's agent; the branch reviewer, owning no work-item, is not one.
 
 ## Where things live
 
