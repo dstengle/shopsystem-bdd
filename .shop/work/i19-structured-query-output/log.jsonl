@@ -17,3 +17,4 @@
 {"time": "2026-10-22T20:06:22+00:00", "work-item": "w83", "before": "drafted", "after": "failed", "by": "work run"}
 {"time": "2026-10-22T20:10:17+00:00", "work-item": "w81", "before": "failed", "after": "withdrawn", "by": "work withdraw"}
 {"time": "2026-10-22T23:46:14+00:00", "work-item": "w82", "before": "failed", "after": "withdrawn", "by": "work withdraw"}
+{"time": "2026-10-22T23:46:14+00:00", "work-item": "w83", "before": "failed", "after": "withdrawn", "by": "work withdraw"}
