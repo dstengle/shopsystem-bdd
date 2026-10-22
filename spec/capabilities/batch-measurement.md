@@ -47,6 +47,15 @@ no prompt, reply or tool content, and refuses rather than guesses when its input
 - `--sessions` reads Claude Code's raw transcripts or the slim export of dstengle/shopsystem-records; the sessions
   it finds are those that did the spec work around the delivery: the coordinator, its rounds and its direct
   dispatches.
+- r51: a stage with a start and no end is given with everything r40 gives, its session's figures included where its
+  `session.json` is there, except how long it took.
+- r41: the commits merged for a work-item are the commits of its work-item branch that its merge brought into the
+  initiative branch.
+- r42: the totals are over the stages' sessions only, with or without `--sessions`, and a stage with a start and no
+  end counts in them.
+- r43: a session is inside the initiative's window when it starts inside it.
+- r43: each session it dispatched is each session dispatched by a session found inside the window, wherever its
+  dispatches fall in time.
 
 ## Not yet
 - Figures beyond what `work run` already records: the skeleton grows from the measurements of 0.21.0's, 0.22.0's
