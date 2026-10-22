@@ -38,7 +38,7 @@ from what using it shows.
 - [r16] **When** a researcher's result gives the outcome `DONE` with questions, `work run` shall put those questions into the planner's brief.
 - [r17] **When** `work run` writes a worker's brief, `work run` shall tell the worker that it starts in its worktree and never changes directory.
 - [r18] **When** `work run` merges a work-item branch, `work run` shall delete that branch.
-- [r19] **When** `work run` starts a researcher, `work run` shall give it the work-item's file set and accepted scenarios and a limit of 25 turns.
+- [r19] **When** `work run` starts a researcher, `work run` shall give it the work-item's file set and accepted scenarios and a limit of 40 turns.
 - [r20] **While** two ready work-items have claims that would not share a file, `work run` shall have both implemented at the same time, two at most, merging one at a time.
 - [r21] **If** `work run` is started by a worker of another `work run`, then `work run` shall refuse, saying so.
 - [r22] `work run` shall give every pytest command it starts, and every worker's, the plugin's option `--work-item <name>`, which selects the scenarios the work-item accepts.
