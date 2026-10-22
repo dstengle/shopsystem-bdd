@@ -1,0 +1,60 @@
+Tue Oct 20 23:56:32 2026    features-bindings-before-fix.prof
+
+         1478138746 function calls (1478138342 primitive calls) in 180.244 seconds
+
+   Ordered by: cumulative time
+   List reduced from 441 to 25 due to restriction <25>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     15/1    0.000    0.000  180.244  180.244 {built-in method builtins.exec}
+        1    0.000    0.000  180.244  180.244 <frozen runpy>:262(run_path)
+        1    0.000    0.000  180.243  180.243 <frozen runpy>:91(_run_module_code)
+        1    0.000    0.000  180.243  180.243 <frozen runpy>:65(_run_code)
+        1    0.000    0.000  180.243  180.243 scripts/features:1(<module>)
+        1    0.000    0.000  180.239  180.239 scripts/features:82(main)
+        1    0.001    0.001  180.224  180.224 scripts/features_bindings.py:108(cmd_bindings)
+    37757   15.667    0.000  178.797    0.005 scripts/features_bindings.py:29(called_name)
+        1    0.001    0.001  169.227  169.227 scripts/features_bindings.py:67(unbound_report)
+109356956   25.476    0.000  159.512    0.000 /usr/local/lib/python3.11/ast.py:380(walk)
+        7    0.138    0.020  157.923   22.560 scripts/features_bindings.py:56(scenarios_calls)
+109318803   16.526    0.000  130.611    0.000 {method 'extend' of 'collections.deque' objects}
+218599453   61.664    0.000  114.085    0.000 /usr/local/lib/python3.11/ast.py:267(iter_child_nodes)
+295829592   30.394    0.000   39.199    0.000 /usr/local/lib/python3.11/ast.py:255(iter_fields)
+        2    0.042    0.021   22.296   11.148 scripts/features_bindings.py:40(binding_calls)
+448996919   17.689    0.000   17.689    0.000 {built-in method builtins.isinstance}
+186533124    8.807    0.000    8.807    0.000 {built-in method builtins.getattr}
+109318803    3.406    0.000    3.406    0.000 {method 'popleft' of 'collections.deque' objects}
+        9    0.001    0.000    0.393    0.044 scripts/features_bindings.py:8(test_modules)
+      397    0.382    0.001    0.382    0.001 {built-in method builtins.compile}
+      396    0.000    0.000    0.382    0.001 /usr/local/lib/python3.11/ast.py:33(parse)
+    38154    0.015    0.000    0.020    0.000 <frozen importlib._bootstrap>:1207(_handle_fromlist)
+     18/8    0.000    0.000    0.008    0.001 <frozen importlib._bootstrap>:1165(_find_and_load)
+     18/8    0.000    0.000    0.008    0.001 <frozen importlib._bootstrap>:1120(_find_and_load_unlocked)
+     18/8    0.000    0.000    0.007    0.001 <frozen importlib._bootstrap>:666(_load_unlocked)
+
+
+Tue Oct 20 23:56:32 2026    features-bindings-before-fix.prof
+
+         1478138746 function calls (1478138342 primitive calls) in 180.244 seconds
+
+   Ordered by: internal time
+   List reduced from 441 to 15 due to restriction <15>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+218599453   61.664    0.000  114.085    0.000 /usr/local/lib/python3.11/ast.py:267(iter_child_nodes)
+295829592   30.394    0.000   39.199    0.000 /usr/local/lib/python3.11/ast.py:255(iter_fields)
+109356956   25.476    0.000  159.512    0.000 /usr/local/lib/python3.11/ast.py:380(walk)
+448996919   17.689    0.000   17.689    0.000 {built-in method builtins.isinstance}
+109318803   16.526    0.000  130.611    0.000 {method 'extend' of 'collections.deque' objects}
+    37757   15.667    0.000  178.797    0.005 scripts/features_bindings.py:29(called_name)
+186533124    8.807    0.000    8.807    0.000 {built-in method builtins.getattr}
+109318803    3.406    0.000    3.406    0.000 {method 'popleft' of 'collections.deque' objects}
+      397    0.382    0.001    0.382    0.001 {built-in method builtins.compile}
+        7    0.138    0.020  157.923   22.560 scripts/features_bindings.py:56(scenarios_calls)
+        2    0.042    0.021   22.296   11.148 scripts/features_bindings.py:40(binding_calls)
+    38154    0.015    0.000    0.020    0.000 <frozen importlib._bootstrap>:1207(_handle_fromlist)
+        7    0.004    0.001    0.007    0.001 scripts/features_gherkin.py:43(_parse)
+    38287    0.004    0.000    0.004    0.000 {built-in method builtins.hasattr}
+      403    0.003    0.000    0.003    0.000 {built-in method io.open}
+
+
