@@ -146,9 +146,9 @@ def only_scenario_with_tag_line(repo, context, path, title, tags):
     store(repo, context, path, scenario_text(title, tags))
 
 
-@given(parsers.parse('a feature file {path} whose only scenario "{title}" has the tags @wip, @slice-2, @r1 and @r4'))
-def only_scenario_with_tags(repo, context, path, title):
-    store(repo, context, path, scenario_text(title, "@wip @slice-2 @r1 @r4"))
+@given(parsers.re(r'a feature file (?P<path>\S+) whose only scenario "(?P<title>[^"]+)" has the tags (?P<tags>@\S+(?:, @\S+)* and @\S+)'))
+def only_scenario_with_tags(repo, context, path, title, tags):
+    store(repo, context, path, scenario_text(title, " ".join(re.findall(r"@[\w.-]+", tags))))
 
 
 def two_files(repo, context):

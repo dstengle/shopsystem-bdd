@@ -32,13 +32,24 @@ def cmd_tag(args, files):
     path, f, sc = locate(files, args.title, args)
     if not REQ_TAG.match(args.tag):
         sys.exit(usage_error("tag must look like r<n>"))
-    if "@" + args.tag in (w for i in sc.tag_lines for w in f.lines[i].split()):
-        return 0
     lines = list(f.lines)
-    if sc.tag_lines:
+    placed = False
+    for i in sc.tag_lines:  # r51: the first @r<m> becomes @r<n>, any other @r<m> goes
+        words = lines[i].split()
+        kept = []
+        for word in words:
+            if word.startswith("@") and REQ_TAG.match(word[1:]):
+                if placed:
+                    continue
+                word, placed = "@" + args.tag, True
+            kept.append(word)
+        if kept != words:
+            lines[i] = indent_of(lines[i]) + " ".join(kept) if kept else None
+    lines = [line for line in lines if line is not None]
+    if not placed and sc.tag_lines:
         last = sc.tag_lines[-1]
         lines[last] = lines[last].rstrip() + " @" + args.tag
-    else:
+    elif not placed:
         text = lines[sc.line]
         lines[sc.line] = indent_of(text) + "@" + args.tag + "\n" + text
     write_checked({path: lines})

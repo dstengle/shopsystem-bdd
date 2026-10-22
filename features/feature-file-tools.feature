@@ -416,15 +416,6 @@ Feature: Feature file tools
     Then the reason for the refusal is written to stderr
     And it exits with an error
 
-  @r51 @deprecated
-  Scenario: tagging with a requirement id adds it to the scenario's requirement tags (deprecated)
-    Deprecated for: tagging with a requirement id makes it the scenario's one requirement tag
-    The new @r<n> joins the scenario's tags; its other tags, other @r<m> tags included, and every other line stay as they were.
-    Given a feature file features/cart.feature whose only scenario "Apply a code" has the tags @wip, @slice-2, @r1 and @r4
-    When the session runs `features tag "Apply a code" r7`
-    Then the scenario's tags are @wip, @slice-2, @r1, @r4 and @r7
-    And every other line of features/cart.feature is unchanged
-
   @r51
   Scenario Outline: tagging with a requirement id makes it the scenario's one requirement tag
     Pins that @r<n> takes the place of every @r<m> tag the scenario has, or joins its tags when it has none, and that its other tags and every other line stay as they were.

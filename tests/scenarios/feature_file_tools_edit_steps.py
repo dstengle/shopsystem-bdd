@@ -27,7 +27,7 @@ def other_lines_unchanged(repo, context, path):
 @then('the scenario "Apply a code" in features/cart.feature is tagged @r7')
 def tagged_r7(repo, context):
     assert context["result"].returncode == 0, context["result"].stderr
-    assert tag_line_of((repo / "features/cart.feature").read_text(), "Apply a code") == "  @slice-1 @r1 @r7"
+    assert tag_line_of((repo / "features/cart.feature").read_text(), "Apply a code") == "  @slice-1 @r7"  # r51: @r7 in place of @r1
 
 
 @then("features/old.feature is unchanged")
@@ -35,12 +35,12 @@ def old_unchanged(run, repo, context):
     cart_text, old_text = context["two_files"]
     old, cart = repo / "features/old.feature", repo / "features/cart.feature"
     assert old.read_text() == old_text
-    tagged_cart = cart_text.replace("@slice-1 @r1", "@slice-1 @r1 @r7")
+    tagged_cart = cart_text.replace("@slice-1 @r1", "@slice-1 @r7")  # r51
     # --file names the other file as well: the same title, tagged there, leaves the first alone
     done = run("features", "tag", "Apply a code", "r7", "--file", "features/old.feature")
     assert done.returncode == 0, done.stderr
     assert cart.read_text() == tagged_cart
-    assert old.read_text() == old_text.replace("@slice-2 @r1", "@slice-2 @r1 @r7")
+    assert old.read_text() == old_text.replace("@slice-2 @r1", "@slice-2 @r7")
     # deprecate, retire and move take --file the same way
     old.write_text(old_text)
     done = run("features", "deprecate", "Apply a code", "--for-removal", "--file", "features/old.feature")
