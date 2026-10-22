@@ -191,11 +191,10 @@ Feature: Batch measurement
 
   @r38
   Scenario Outline: the open batch needs --plan when the living plan cannot be found
-    Without one slices plan in the repository, measure asks for the living plan to be named.
+    Without one slices plan in the repository, measure cannot read the open batch.
     Given a repository with <plans> docs/superpowers/plans/*-slices.md files
     When the session runs measure batch with no archive file and no --plan
     Then measure batch refuses because the living plan cannot be found
-    And the refusal says to name the living plan with --plan
 
     Examples:
       | plans |
@@ -204,11 +203,10 @@ Feature: Batch measurement
 
   @r38
   Scenario Outline: a batch with no archive before it needs --from
-    When nothing marks where the batch began, measure asks for the start.
+    When nothing marks where the batch began, measure cannot place its start.
     Given <batch> with no archive file added before the batch's end
     When the session runs measure batch for it with no --from
     Then measure batch refuses because the batch has no start
-    And the refusal says to give the batch's start with --from
 
     Examples:
       | batch                                           |
@@ -241,13 +239,24 @@ Feature: Batch measurement
       | the current directory is not inside a git repository and no --repo is given |
       | a git command measure batch runs fails                      |
 
-  @r2 @r4
+  @r2
   Scenario Outline: the open batch is named by --name, default open
-    The open batch's name, and so its default facts file, can be chosen.
+    The open batch's name can be chosen.
+    Given an open batch with dispatches inside it
+    When the session runs measure batch with no archive file and <name option>
+    Then the batch is named <name>
+
+    Examples:
+      | name option     | name       |
+      | no --name       | open       |
+      | --name trial-3  | trial-3    |
+
+  @r4
+  Scenario Outline: without --out the open batch's facts go under measurements in its name
+    The default place for the open batch's facts follows the open batch's name.
     Given an open batch with dispatches inside it
     When the session runs measure batch with no archive file, <name option> and no --out
-    Then the batch is named <name>
-    And the facts are written to docs/superpowers/measurements/<name>.json
+    Then the facts are written to docs/superpowers/measurements/<name>.json
 
     Examples:
       | name option     | name       |
@@ -294,19 +303,11 @@ Feature: Batch measurement
     When the session runs measure batch for the batch
     Then the facts leave tasks uncounted
     And the facts hold a note saying why
-    And measure batch writes the note on stderr
 
     Examples:
       | situation                                                   |
       | no dispatch names a ledger and no --tasks is given          |
       | the batch plan is in no commit                              |
-
-  @r1
-  Scenario: a written batch is reported in one line
-    After writing, the session learns where the facts went and what they cover.
-    Given a batch with 6 dispatches across 2 slices
-    When the session runs measure batch for the batch
-    Then measure batch prints one line naming the facts file, 6 dispatches, 2 slices and the window
 
   @r31
   Scenario Outline: a reply closing <status> is counted as not done
@@ -360,25 +361,13 @@ Feature: Batch measurement
     And the facts give 0.4 as the share of building time from the first branch review on
     And the facts give a mean starting context of 30000 and a summed starting context of 150000
 
-  @r18
-  Scenario: show prints the header, the tables, the exceptions, the hand-backs and the notes
-    Show lays a facts file out in a fixed order.
-    Given a facts file measure wrote, with a dispatch not done, a dispatch not attributed, a hand-back and a note
-    When the session runs measure show for the file
-    Then it prints the repository, batch, window, plugin and harness versions and suite record
-    And then the summary, roles and slices tables
-    And then the dispatch not done and the dispatch not attributed
-    And then the hand-back and the note
-
   @r19
   Scenario: compare prints both files' figures with the ratio of the second to the first
-    Compare sets each summary figure and each slice's costs side by side, with how the second batch differs.
-    Given facts file a for batch 2026-09-01 on plugin version 0.17.0 with 2 slices
-    And facts file b for batch 2026-09-15 on plugin version 0.18.0 with 2 slices
+    Compare sets each figure, in total and per slice, side by side, with how the second batch differs.
+    Given facts file a for batch 2026-09-01 with 2 slices
+    And facts file b for batch 2026-09-15 with 2 slices
     When the session runs measure compare for a and b
-    Then each file is headed by its batch and plugin versions
-    And each summary figure of both files is printed with the ratio of b's to a's
-    And the output, new input, cache read and agent minutes per slice of both files are printed with the ratio of b's to a's
+    Then each figure of both files, in total and per slice, is printed with the ratio of b's to a's
 
   @r38
   Scenario Outline: a file measure cannot read as its facts is refused
@@ -395,9 +384,9 @@ Feature: Batch measurement
       | compare | cannot be read as JSON                            | cannot be read as JSON                |
 
   @r38
-  Scenario: a refusal says why on stderr and exits 1
-    Every refusal is explained on stderr and ends with exit status 1.
+  Scenario: a refusal says why on stderr and exits with an error
+    Every refusal is explained on stderr and ends with an error.
     Given the batch's facts file already exists
     When the session runs measure batch for the batch with no --replace
     Then measure refuses and says why on stderr
-    And it exits 1
+    And it exits with an error

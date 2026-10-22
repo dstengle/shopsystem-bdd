@@ -515,6 +515,16 @@ class MeasureTest(unittest.TestCase):
                 written = self.repo / "docs/superpowers/measurements" / (name + ".json")
                 self.assertEqual(json.loads(written.read_text())["batch"], name)
 
+    def test_without_out_the_open_batch_facts_go_under_measurements_in_its_name(self):
+        """without --out the open batch's facts go under measurements in its name"""
+        (self.repo / "docs/superpowers/plans/shelf-slices.md").write_text(ARCHIVE % 3)
+        self.agent("a9", "bdd-implementer", "slice 8: implement", at(12, 30), at(12, 40))
+        for option, name in (([], "open"), (["--name", "trial-3"], "trial-3")):
+            with self.subTest(name=name):
+                done = self.run_script("batch", "--projects", str(self.projects), *option)
+                self.assertEqual(done.returncode, 0, done.stderr)
+                self.assertTrue((self.repo / "docs/superpowers/measurements" / (name + ".json")).exists())
+
     def test_the_open_batch_starts_at_the_last_commit_that_added_a_file_under_the_archive_directory(self):
         """the open batch starts at the last commit that added a file under the archive directory"""
         self.commit(at(9, 50), {"old/plans/p.md": "x\n"})
@@ -680,7 +690,7 @@ class MeasureTest(unittest.TestCase):
                 self.assertNotEqual("is not a facts file" in done.stderr, name == "broken.json")
 
     def test_a_refusal_says_why_on_stderr_and_exits_1(self):
-        """a refusal says why on stderr and exits 1"""
+        """a refusal says why on stderr and exits with an error"""
         self.measure()
         done = self.measure(ok=False)
         self.assertEqual(done.returncode, 1)
