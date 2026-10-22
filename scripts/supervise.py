@@ -18,6 +18,7 @@ import workqueue
 from supervise_brief import Briefs
 from supervise_faults import Fault, Faults, fault_of
 from supervise_merge import Merge
+from supervise_review import Reviews
 from supervise_worker import ROLE, WORKER, GitFailed, Workers, git, now
 from workqueue import WORK, Refused
 
@@ -32,9 +33,10 @@ STAGES = {
 MOVABLE = ("drafted", "researched", "planned", "ready", "done")
 
 
-class Run(Workers, Briefs, Merge, Faults):
+class Run(Workers, Briefs, Merge, Faults, Reviews):
     """One `work run` of one initiative in the repository at `root`: the workers' part is supervise_worker's, the briefs'
-    supervise_brief's, the implementation stage's and its merge supervise_merge's, the faults' supervise_faults'."""
+    supervise_brief's, the implementation stage's and its merge supervise_merge's, the faults' supervise_faults', the
+    branch review's supervise_review's."""
 
     def __init__(self, root, initiative):
         self.root = Path(root).resolve()
@@ -221,25 +223,32 @@ class Run(Workers, Briefs, Merge, Faults):
                     self.step(*movable[0])
                 if self.faults:     # a work-item failed: the run ends with it (r40)
                     break
+            if all(s in ("green", "withdrawn") for _, s in self.items()):
+                self.branch_review()     # inside the try: its worktree goes with the run's (r33)
         finally:
             for tree in list(self.trees):      # on every way out, a failure's too: the run leaves no worktree
                 self.remove(tree)
             if self.outside is not None:
                 shutil.rmtree(self.outside, ignore_errors=True)
         statuses = self.items()
-        if all(s in ("green", "withdrawn") for _, s in statuses):
-            self.branch_review()
         for name, status in statuses:
             print("%s %s" % (name, status))
             if status == "awaiting-ruling":
                 for line in self.questions(name):
                     print("  %s" % line)
-            for failed, fault in self.faults:
-                if failed == name:
+            if status == "failed":
+                for fault in self.faulted(name):
                     print("  - %s" % fault)
         if all(s in ("green", "withdrawn") for _, s in statuses):
             return 0
-        return 3 if any(s == "awaiting-ruling" for _, s in statuses) and not self.faults else 1
+        return 3 if any(s == "awaiting-ruling" for _, s in statuses) and not any(s == "failed" for _, s in statuses) else 1
+
+    def faulted(self, name):
+        """The faults of a failed work-item: those its `## Faults` records, the ones this run met as it told them (with a
+        failed push of the failure named), r40 and r52."""
+        mine = [fault for failed, fault in self.faults if failed == name]
+        recorded = [" ".join(b[0][2:].split() + [l.strip() for l in b[1:]]) for b in self.held(name, "Faults")]
+        return [r for r in recorded if not any(m.startswith(r) for m in mine)] + mine
 
 
 def claimed(entry, tracked):

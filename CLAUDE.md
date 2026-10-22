@@ -16,7 +16,8 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/tools_size.py` | `size`: tracked Python files over a line limit |
 | `scripts/features*.py` | the `features` command: Gherkin reading, editing, bindings, reports |
 | `scripts/model*.py` | the `model` command: parsing, facts, checks, work, reports |
-| `scripts/supervise*.py` | `work run`: briefs, workers, merging |
+| `scripts/work` with `scripts/workqueue.py` | the `work` command: the work-item queue, its statuses and log |
+| `scripts/supervise*.py` | `work run`: briefs, workers, merging, faults, the branch review |
 | `scripts/work_items.py` | the pytest plugin of `--work-item`, loaded by `work run`'s tests and this repository's conftest |
 | `scripts/migrate*.py` | the `migrate` command |
 | `tests/scenarios/` | step definitions, one `<capability>_*_steps.py` module a concern |

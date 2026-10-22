@@ -157,9 +157,9 @@ class Workers:
         if changed:
             raise Fault("while its %s worked, %s changed in the repository's own checkout and not committed; work run "
                         "put %s back" % (ROLE[agent], ", ".join(changed), "it" if len(changed) == 1 else "them"))
-        if cut_short(done.stdout):     # its result, whatever it says, is no outcome (r45)
-            raise Fault("its %s's %s; work run takes no outcome from it, whatever its result file says" % (
-                ROLE[agent], session_end(done.stdout, done.returncode)[4:]))
+        cut = cut_short(done.stdout, done.returncode)
+        if cut:     # its result, whatever it says, is no outcome (r45)
+            raise Fault("its %s's %s; work run takes no outcome from it, whatever its result file says" % (ROLE[agent], cut))
         result = kept_at / "result.json"
         try:
             data = json.loads(result.read_text()) if result.is_file() else None

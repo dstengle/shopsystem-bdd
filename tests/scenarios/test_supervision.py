@@ -21,6 +21,7 @@ from pytest_bdd import parsers, scenarios, then, when
 
 from .conftest import SCRIPTS
 from .supervision_faults_steps import *  # noqa: F401,F403
+from .supervision_review_steps import *  # noqa: F401,F403
 from .supervision_tests_steps import *  # noqa: F401,F403
 from .supervision_given import *  # noqa: F401,F403  the steps are fixtures pytest-bdd finds by their names here
 from .supervision_then_workers import *  # noqa: F401,F403

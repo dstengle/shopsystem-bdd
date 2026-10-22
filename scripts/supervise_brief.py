@@ -2,11 +2,9 @@
 read, where it works and where it writes its result. Standard library only; a part of supervise.Run."""
 import json
 import re
-import uuid
 
 import workqueue
 from supervise_worker import SCRIPTS, git
-from workqueue import Refused
 
 
 class Briefs:
@@ -50,30 +48,6 @@ class Briefs:
                         % (stage, name, "\n".join(lines), "".join("- %s\n" % r for r in read), here, here / "result.json",
                            tree))
         return path
-
-    def branch_review(self):
-        """A `bdd-branch-reviewer` session over the initiative branch from its base, given one brief (r27), in a detached
-        worktree of its own; the push of the branch verified first (r35)."""
-        reason = self.git_push("--dry-run")
-        if reason:
-            raise Refused("work run could not verify that it can push the initiative branch %s before the branch "
-                          "review: %s" % (self.branch, reason))
-        tree = self.worktree(None, "branch-review")
-        try:
-            here = tree / ".shop" / "scratch" / "branch-review"
-            here.mkdir(parents=True)
-            path = here / "brief.md"
-            path.write_text("# branch review of %s\n\nInitiative: %s\nAgent: bdd-branch-reviewer\nScripts: %s\n"
-                            "Initiative branch: %s\nBase: %s\nWorktree: %s\nRun directory: %s\nResult file: %s\n\n"
-                            "Review the initiative branch from its base. You start in your worktree: run every command "
-                            "from there and never change directory. Write the result file first, with the outcome "
-                            "`PARTIAL`, and keep it current as you work: JSON with `status`, `summary` and "
-                            "`questions`.\n"
-                            % (self.initiative, self.rel(self.dir), SCRIPTS, self.branch, self.base(), tree, here,
-                               here / "result.json"))
-            self.session("review", "bdd-branch-reviewer", path, str(uuid.uuid4()), tree, None)
-        finally:
-            self.remove(tree)
 
     def research_questions(self, name):
         """The questions the work-item's last research run gave with its DONE, as brief lines for the planner (r16)."""
