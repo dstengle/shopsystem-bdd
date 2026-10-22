@@ -83,8 +83,9 @@ def bash(argv, command):
     """Run `command` if --allowedTools allows it as Bash; record that it ran or was refused."""
     line = shlex.join(command)
     if any(fnmatch.fnmatchcase(line, pattern) for pattern in allowed(argv, "Bash")):
-        subprocess.run(command, capture_output=True, check=True)
-        record({"event": "ran", "tool": "Bash", "command": line})
+        done = subprocess.run(command, capture_output=True, text=True, check=command[0] == "git")
+        record({"event": "ran", "tool": "Bash", "command": line, "code": done.returncode,
+                "output": done.stdout + done.stderr})
         return True
     record({"event": "refused", "tool": "Bash", "command": line})
     return False
