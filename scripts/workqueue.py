@@ -196,6 +196,8 @@ def withdraw(root, name):
     """Move the work-item `name`, when it is neither claimed nor green, to withdrawn (r10)."""
     path = find(root, name)
     status = agrees(root, path.parent.name, name)
+    if status == "withdrawn":
+        raise Refused("%s is already withdrawn; there is nothing to transition" % name)
     if status in ("claimed", "green"):
         raise Refused("%s is %s; work withdraw leaves a claimed or green work-item as it is" % (name, status))
     committed(root, rels_of(root, path), "work withdraw: %s %s -> withdrawn" % (name, status),
