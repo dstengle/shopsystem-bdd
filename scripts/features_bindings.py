@@ -1,5 +1,6 @@
 """scripts/features' reading of the tests that bind scenarios: bindings (with --unbound) and rebind."""
 import ast
+import json
 import os
 
 from features_gherkin import Refused, locate
@@ -77,7 +78,7 @@ def scenarios_calls(tests):
 
 
 def unbound_report(args, files):
-    """Lines for each scenario of the files named after --unbound that no call binds, or several calls bind."""
+    """(feature path, title, the calls binding it) for each scenario of the files named after --unbound that no call binds, or several calls bind."""
     if args.unbound:
         wanted = {os.path.realpath(p) for p in args.unbound}
         for p in args.unbound:
@@ -111,11 +112,13 @@ def unbound_report(args, files):
             continue
         for title in dict.fromkeys(sc.title for sc in f.scenarios):
             where = calls.get((real, title), [])
-            if not where:
-                out.append("%s: %s | bound by no test" % (path, title))
-            elif len(where) > 1:
-                out.append("%s: %s | bound by %s" % (path, title, ", ".join(sorted(where))))
+            if len(where) != 1:
+                out.append((path, title, sorted(where)))
     return out
+
+
+def unbound_line(path, title, where):
+    return "%s: %s | bound by %s" % (path, title, ", ".join(where) if where else "no test")
 
 
 def cmd_bindings(args, files):
@@ -123,17 +126,21 @@ def cmd_bindings(args, files):
     for path, f in files:
         for sc in f.scenarios:
             titles.setdefault(sc.title, set()).add(os.path.basename(path))
-    lost = 0
+    lost = []
     for path, _, feature, title in binding_calls(args.tests):
         have = titles.get(title.value, set())
         if not have or (feature and os.path.basename(feature) not in have):
-            lost += 1
-            print('%s:%d: no scenario titled "%s" in %s' % (path, title.lineno, title.value, feature or "any feature file"))
+            lost.append({"file": path, "line": title.lineno, "title": title.value, "feature": feature})
+    unbound = unbound_report(args, files) if args.unbound is not None else []
+    if args.json:
+        print(json.dumps({"wrong": lost, "unbound": [{"file": p, "title": t, "bound_by": w} for p, t, w in unbound]}))
+        return 1 if lost or unbound else 0
+    for one in lost:
+        print('%s:%d: no scenario titled "%s" in %s' % (one["file"], one["line"], one["title"], one["feature"] or "any feature file"))
     if not lost:
         print("every binding names a scenario")
-    unbound = unbound_report(args, files) if args.unbound is not None else []
-    for line in unbound:
-        print(line)
+    for one in unbound:
+        print(unbound_line(*one))
     return 1 if lost or unbound else 0
 
 

@@ -137,7 +137,7 @@ def tests_binding_two(repo, context):
         write(repo, name, text)
 
 
-@given(parsers.parse('{path} has the scenarios "{one}" and "{two}"'))
+@given(parsers.re(r'(?P<path>\S+) has the scenarios "(?P<one>[^"]+)" and "(?P<two>[^"]+)"'))
 def file_has_two(repo, context, path, one, two):
     store(repo, context, path, scenario_text(one), scenario_text(two))
 
