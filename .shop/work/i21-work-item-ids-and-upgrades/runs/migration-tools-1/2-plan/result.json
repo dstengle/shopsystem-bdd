@@ -1,0 +1,17 @@
+{
+  "status": "DONE",
+  "summary": "Plan for migration-tools-1 (r15, r18-r20, r22-r28) written to plan.md.\nQ1 settled (D1): plugin.json becomes 0.24.0. Otherwise r18 (0.24.0 step pending on a 0.23.1 repository) contradicts r27 (nothing pending on the plugin's version); upgrades-between-plugin-releases gives each step the version that introduced it.\nQ2 (D8): the delivering-an-initiative wording is out of scope. It is no accepted requirement here, and work add still takes a name (defect D1). Route it to the work-queue work-item.\nNew: scripts/migrate_upgrade.py (versions, steps, status, hook text, one all-or-none commit), scripts/migrate_upgrade_ids.py (the 0.24.0 step), hooks/hooks.json, and the step module tests/scenarios/migration_upgrade_steps.py.\nThe hook runs `migrate status` in a hook mode that prints exactly what the session is told; the scenarios run the real hooks.json command.\nWork-items are numbered by i<n> number, then file name, renamed in two phases. log.jsonl work-item fields and blocked_by/depends_on are rewritten within the initiative.\nNo existing test is broken (no test names a version or plugin.json; run is unchanged).",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/migrate",
+    "scripts/migrate_upgrade.py",
+    "scripts/migrate_upgrade_ids.py",
+    "scripts/migrate_write.py",
+    "hooks/hooks.json",
+    ".claude-plugin/plugin.json",
+    "CLAUDE.md",
+    "tests/scenarios/migration_upgrade_steps.py",
+    "tests/scenarios/test_migration_tools.py"
+  ],
+  "questions": []
+}
