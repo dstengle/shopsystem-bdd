@@ -109,7 +109,7 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
   `untested`, `refs`, `check`, and `size`, the tracked Python files over a line limit.
 - `scripts/migrate`: `migrate run --context <owner/product/context>` takes a repository from the old system to
   this layout in one run.
-- `scripts/measure`: write, show and compare a batch's facts from the session transcripts and git.
+- `scripts/measure`: write an initiative's measurement from `work run`'s log, its sessions and git (`measure initiative`).
 
 ## Agents: rules enforced by tools
 

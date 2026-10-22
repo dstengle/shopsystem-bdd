@@ -9,10 +9,10 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "features"
 
-# The feature files whose scenarios tests/scenarios/ binds. batch-measurement keeps its docstring binding until
-# initiative i12.
+# The feature files whose scenarios tests/scenarios/ binds.
 BOUND_BY_PYTEST_BDD = [
     "features/analysis-tools.feature",
+    "features/batch-measurement.feature",
     "features/design-model-check.feature",
     "features/feature-file-tools.feature",
     "features/migration-tools.feature",
