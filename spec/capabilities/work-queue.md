@@ -23,6 +23,7 @@ writes their transitions through their lifecycle, logging every transition. It i
 - [r5] **When** `work` makes a work-item's transition, `work` shall append a line to `.shop/work/<initiative>/log.jsonl` with the time, the work-item, the status before and after, and who made the transition.
 - [r6] **If** a work-item's status in its file is not the last status `log.jsonl` gives it, then `work` shall refuse the transition, naming the file and both statuses.
 - [r7] **If** `work` cannot do what it was asked, then `work` shall exit with an error, say why, and change nothing.
+- [r8] **When** `work retry <work-item>` is run on a `failed` work-item, `work` shall transition it to the status it had before the failed stage.
 
 ## Implementation, may change
 - `scripts/work` with its library `scripts/workqueue.py`, standard library only; the frontmatter subset

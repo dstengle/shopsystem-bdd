@@ -48,6 +48,15 @@ from what using it shows.
 - [r29] **Where** `.shop/delivery.toml` gives `[tests]`, `work run` shall run those commands in place of its own commands for the work-item's scenarios and the suite.
 - [r30] **Where** `.shop/delivery.toml` gives a stage's `[allowed_tools]`, `work run` shall give that stage's worker that list in place of its own, less any bare Write or Edit.
 - [r31] **When** a planner's result gives the outcome `DONE` with a `fileset`, `work run` shall write that file set into the work-item as `fileset:` as it makes the work-item's transition to `planned`.
+- [r33] **When** `work run` exits, `work run` shall remove every worktree it made.
+- [r34] **If** a worker changes a file under `.shop/work/` outside its stage directory, then `work run` shall transition the work-item to `failed`, recording the files, its branch unmerged.
+- [r35] **When** `work run` is about to start a worker, `work run` shall first verify that it can push the initiative branch to the repository's remote.
+- [r36] **When** `work run` transitions a work-item to `awaiting-ruling`, `work run` shall write its question under the work-item's `## Questions`.
+- [r37] **While** a work-item is `awaiting-ruling` or `failed`, `work run` shall start no worker for it.
+- [r38] **When** `work run` commits on the initiative branch, `work run` shall push the initiative branch to the repository's remote.
+- [r39] **If** the verification before a worker starts fails, then `work run` shall transition the work-item to `failed`, recording the reason, before any worker starts.
+- [r40] **When** `work run` transitions a work-item to `failed`, `work run` shall exit with an error, naming the work-item and its fault.
+- [r41] **If** a git command, a push included, fails during a work-item's stage, then `work run` shall transition the work-item to `failed`, recording git's reason.
 
 ## Implementation, may change
 - The work-item's scenarios and the suite alike run in parallel with pytest-xdist (`-n auto`) (design-decision/plugin-takes-the-dependencies-it-needs).

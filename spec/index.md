@@ -96,6 +96,7 @@ Tools the skills and agents run:
 - **delivery**: one invocation of `work run` on an initiative, from its start until it exits.
 - **deprecated scenario**: a scenario kept in its feature file, tagged `@deprecated`, after its line is changed or removed, until its replacement passes; it formulates no requirement. Not: held, holding, superseded.
 - **dispatch**: a session another session starts with its Agent tool, and the transcript it leaves. Not: subagent.
+- **failed**: a work-item's status when a fault outside its work (a push, git, or a worker breaking a rule) stopped a stage from starting or finishing; its committed work is kept and pushed, and `work retry` returns it once the fault is remedied. Not: aborted.
 - **fact**: one statement `model facts` gives clingo about the repository's files.
 - **file set**: the paths, globs or directories a work-item says its work changes: drafted with it, revised by its researcher and fixed by its planner. Not: fileset, scope.
 - **gate**: the person's approval of Behaviour lines and glossary entries before they are committed to `spec/`, with the questions they raise. Not: sign-off.
@@ -115,7 +116,7 @@ Tools the skills and agents run:
 - **session**: one Claude Code conversation with its own id and transcript: the person's, a worker, a dispatch or a fixture session. Not: conversation, chat.
 - **stage**: one of research, plan, implementation and review, done by one worker and started by `work run` from the work-item's status. Not: phase.
 - **stage directory**: the directory `runs/<work-item>/<k>-<stage>/` that holds one stage's brief, result, report and session. Not: run directory.
-- **status**: a node's place in its kind's lifecycle (a work-item's, a capability-proposal's, a decision's), written in its frontmatter; a work-item's are `drafted`, `researched`, `planned`, `ready`, `claimed`, `done`, `green`, `awaiting-ruling` and `withdrawn`. Not: state.
+- **status**: a node's place in its kind's lifecycle (a work-item's, a capability-proposal's, a decision's), written in its frontmatter; a work-item's are `drafted`, `researched`, `planned`, `ready`, `claimed`, `done`, `green`, `awaiting-ruling`, `failed` and `withdrawn`. Not: state.
 - **suite**: every test `python3 -m pytest` runs from the root by default, fixture scenarios excluded. Not: fast suite.
 - **suite record**: (old system, until i12) a whole-suite pass or failure logged once and used while nothing it depends on has changed.
 - **template**: standing text in a skill or an agent definition that a session fills with input to start another session. Not: boilerplate.
