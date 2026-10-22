@@ -37,6 +37,8 @@ def pytest_configure(config):
             out.write(json.dumps({"event": "pytest", "args": list(config.invocation_params.args), "cwd": os.getcwd(),
                                   "work_item": getattr(config.option, "work_item", None)}) + "\\n")
 """
+# The environment a worker of another `work run` starts a program in.
+BY_WORKER = {"SHOPSYSTEM_WORK_RUN_WORKER": "w0"}
 DELIVERY = '[tests]\nwork_item = "python3 tests.py --work-item {work_item}"\nsuite = "python3 tests.py"\n'
 
 

@@ -9,7 +9,7 @@ import sys
 from pytest_bdd import given, parsers
 
 from .conftest import INDEX, ROOT, cap, feature, full
-from .supervision_world import CONFTEST_PY, DELIVERY, NEEDS_FEATURE, ROLES, STUB, TESTS_PY, commit_all, committed, git, item_text, remote, scripts_in, write
+from .supervision_world import BY_WORKER, CONFTEST_PY, DELIVERY, NEEDS_FEATURE, ROLES, STUB, TESTS_PY, commit_all, committed, git, item_text, remote, scripts_in, write
 
 
 @given("a git repository with an initiative i1 under .shop/work/, a remote the initiative branch can be pushed to, a "
@@ -39,8 +39,9 @@ def repository(repo):
 @given(parsers.re(r"i1's work-items? (?P<items>[\w -]+?)(?:, under (?P<under>\w+))?"
                   r"(?:, though log\.jsonl's last transition of (?P<lname>\w+) is to (?P<lafter>[\w-]+))?"
                   r"(?P<nogit>, in a directory that is not a git repository)?"
-                  r"(?P<detached>, its checkout's HEAD detached)?$"))
-def work_items(repo, items, under, lname, lafter, nogit, detached):
+                  r"(?P<detached>, its checkout's HEAD detached)?"
+                  r"(?P<worker>, and `work run` is started by a worker of another `work run`)?$"))
+def work_items(repo, context, items, under, lname, lafter, nogit, detached, worker):
     if " are " in items:
         names, status = items.split(" are ")
         pairs = [(n, status) for n in names.split(" and ")]
@@ -56,6 +57,8 @@ def work_items(repo, items, under, lname, lafter, nogit, detached):
         shutil.rmtree(repo / ".git")
     if detached:
         git(repo, "checkout", "-q", "--detach")
+    if worker:
+        context["env"] = BY_WORKER
 
 
 @given("every worker gives DONE")

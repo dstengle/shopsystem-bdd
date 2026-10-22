@@ -25,7 +25,7 @@ from .supervision_tests_steps import *  # noqa: F401,F403
 from .supervision_given import *  # noqa: F401,F403  the steps are fixtures pytest-bdd finds by their names here
 from .supervision_then_workers import *  # noqa: F401,F403
 from .supervision_world import *  # noqa: F401,F403  the `repo` fixture among them
-from .supervision_world import fields, git, moves, section, state, tree_has, work_commits
+from .supervision_world import BY_WORKER, fields, git, moves, section, state, tree_has, work_commits
 
 scenarios("supervision.feature")
 
@@ -38,10 +38,22 @@ def run_work(repo, plan, context, args):
     (stub / "plan.json").write_text(json.dumps(plan))
     env = dict(os.environ, PATH="%s%s%s" % (stub / "bin", os.pathsep, os.environ.get("PATH", "")),
                SHOPSYSTEM_WORK_CLAUDE=str(stub / "bin" / "claude"), STUB_CLAUDE_PLAN=str(stub / "plan.json"),
-               STUB_CLAUDE_CALLS=str(stub / "calls.jsonl"))
+               STUB_CLAUDE_CALLS=str(stub / "calls.jsonl"), **context.get("env", {}))
     context["before"] = state(repo)
     context["done"] = subprocess.run([sys.executable, str(context.get("work", SCRIPTS / "work")), *shlex.split(args)], cwd=repo, env=env,
                                      capture_output=True, text=True, timeout=300)
+
+
+@when("`work run i1` is started by a worker of another `work run`")
+def run_by_worker(repo, plan, context):
+    context["env"] = BY_WORKER
+    run_work(repo, plan, context, "run i1")
+
+
+@then("`work run` refuses, saying that it was started by a worker of another `work run`")
+def refuses_worker(context):
+    done = context["done"]
+    assert done.returncode != 0 and "it was started by a worker of another `work run`" in done.stderr, done
 
 
 # --- Then -----------------------------------------------------------------------------------------------------
