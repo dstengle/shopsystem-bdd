@@ -232,7 +232,8 @@ v_w2(W)      :- status(W, "ready"), blocked_by(W, B), not status(B, "green").
 label("v_w3", "two claimed work-items claim one file").
 v_w3(W1, W2) :- status(W1, "claimed"), status(W2, "claimed"), W1 < W2, fileset(W1, P), fileset(W2, P).
 label("v_w4", "a work-item has no acceptance and no check").
-v_w4(W)      :- node(W, "work-item"), not has_accepts(W), not has_check(W).
+% EXTENSION (design-model-check r106): a withdrawn work-item needs neither.
+v_w4(W)      :- node(W, "work-item"), not status(W, "withdrawn"), not has_accepts(W), not has_check(W).
 
 % initiative done only when every part is closed
 label("v_d1", "a done initiative has a part open").
