@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/ears-role-boundaries
 kind: capability-proposal
 part_of: initiative/i13
-status: merged
+status: formulated
 date: 2026-10-19
 argues: [role-boundaries]
 adds: []

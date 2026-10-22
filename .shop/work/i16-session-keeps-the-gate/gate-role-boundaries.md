@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/gate-role-boundaries
 kind: capability-proposal
 part_of: initiative/i16
-status: merged
+status: formulated
 date: 2026-10-22
 argues: [role-boundaries]
 changes: [role-boundaries#r5]

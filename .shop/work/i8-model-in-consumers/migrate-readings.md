@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/migrate-readings
 kind: capability-proposal
 part_of: initiative/i8
-status: merged
+status: formulated
 date: 2026-10-20
 argues: [migration-tools]
 adds: [migration-tools#r8-r17]

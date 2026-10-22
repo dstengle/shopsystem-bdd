@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/cycle-time-supervision
 kind: capability-proposal
 part_of: initiative/i10
-status: merged
+status: formulated
 date: 2026-10-20
 argues: [supervision]
 adds: [supervision#r19-r20]

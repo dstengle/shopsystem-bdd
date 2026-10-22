@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/uncommitted-work-run
 kind: capability-proposal
 part_of: initiative/i17
-status: merged
+status: formulated
 date: 2026-10-22
 argues: [supervision]
 adds: [supervision#r46]

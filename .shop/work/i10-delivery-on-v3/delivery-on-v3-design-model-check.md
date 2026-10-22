@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/delivery-on-v3-design-model-check
 kind: capability-proposal
 part_of: initiative/i10
-status: merged
+status: formulated
 date: 2026-10-19
 argues: [design-model-check]
 adds: []

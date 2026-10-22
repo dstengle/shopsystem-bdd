@@ -4,7 +4,7 @@ title: Files within the size limit
 summary: A mechanical size check over every tracked Python file, tests included, with a 300-line limit, and this repository's files split to it.
 kind: capability-change
 owner-level: shopsystem-bdd
-status: started
+status: done
 priority: 1
 source: [observation/2026-10-20-files-too-large]
 date: 2026-10-20

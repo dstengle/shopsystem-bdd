@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/one-requirement-analysis-tools
 kind: capability-proposal
 part_of: initiative/i17
-status: merged
+status: formulated
 date: 2026-10-21
 argues: [analysis-tools]
 adds: []

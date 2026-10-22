@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/one-requirement-design-model-check
 kind: capability-proposal
 part_of: initiative/i17
-status: merged
+status: formulated
 date: 2026-10-21
 argues: [design-model-check]
 adds: [design-model-check#r107]

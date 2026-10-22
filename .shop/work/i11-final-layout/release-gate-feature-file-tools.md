@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/release-gate-feature-file-tools
 kind: capability-proposal
 part_of: initiative/i11
-status: merged
+status: formulated
 date: 2026-10-21
 argues: [feature-file-tools]
 changes: [feature-file-tools#r35]

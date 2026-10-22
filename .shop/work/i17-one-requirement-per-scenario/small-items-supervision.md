@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/small-items-supervision
 kind: capability-proposal
 part_of: initiative/i17
-status: merged
+status: formulated
 date: 2026-10-22
 argues: [supervision]
 adds: [supervision#r42-r45]

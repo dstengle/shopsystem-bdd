@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/final-layout-batch-measurement
 kind: capability-proposal
 part_of: initiative/i11
-status: merged
+status: formulated
 date: 2026-10-19
 argues: [batch-measurement]
 changes: [batch-measurement#r10, batch-measurement#r16]

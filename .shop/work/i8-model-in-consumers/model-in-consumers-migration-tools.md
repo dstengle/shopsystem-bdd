@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/model-in-consumers-migration-tools
 kind: capability-proposal
 part_of: initiative/i8
-status: merged
+status: formulated
 date: 2026-10-19
 argues: [migration-tools]
 adds: [migration-tools#r1-r7]

@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/ears-design-model-check
 kind: capability-proposal
 part_of: initiative/i13
-status: merged
+status: formulated
 date: 2026-10-19
 argues: [design-model-check]
 adds: [design-model-check#r103-r105]

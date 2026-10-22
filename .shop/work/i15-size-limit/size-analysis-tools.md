@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/size-analysis-tools
 kind: capability-proposal
 part_of: initiative/i15
-status: merged
+status: formulated
 date: 2026-10-20
 argues: [analysis-tools]
 adds: [analysis-tools#r50-r52]

@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/first-spec-role-boundaries
 kind: capability-proposal
 part_of: initiative/i1
-status: merged
+status: formulated
 date: 2026-10-15
 argues: [role-boundaries]
 adds: [role-boundaries#r1-r5]

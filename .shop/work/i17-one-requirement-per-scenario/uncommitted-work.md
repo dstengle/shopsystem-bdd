@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/uncommitted-work
 kind: capability-proposal
 part_of: initiative/i17
-status: merged
+status: formulated
 date: 2026-10-22
 argues: [work-queue]
 adds: [work-queue#r9]

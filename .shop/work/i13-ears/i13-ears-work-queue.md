@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/ears-work-queue
 kind: capability-proposal
 part_of: initiative/i13
-status: merged
+status: formulated
 date: 2026-10-19
 argues: [work-queue]
 adds: []
