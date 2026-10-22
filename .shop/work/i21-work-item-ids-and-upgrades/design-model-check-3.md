@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/design-model-check-3
 kind: work-item
 part_of: capability-proposal/ids-model-check
-status: planned
+status: ready
 under: design-model-check
 accepts: [design-model-check#r110]
 fileset: [scripts/model_work.py, tests/scenarios/design_model_check_problems.py, tests/scenarios/conftest.py, tests/scenarios/design_model_check_then.py]
