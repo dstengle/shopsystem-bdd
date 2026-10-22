@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/migration-rebind-2
 kind: work-item
 part_of: capability-proposal/one-requirement-migration-tools
-status: awaiting-ruling
+status: withdrawn
 wkind: capability
 under: migration-tools
 accepts: [migration-tools#r6, migration-tools#r7, migration-tools#r8, migration-tools#r9]
@@ -99,3 +99,5 @@ for 0.22.0 (one requirement per scenario, exits in words), their step definition
   FAILED tests/scenarios/test_migration_tools.py::test_migrate_run_adds_every_file_it_wrote_or_relocated_to_git_and_writes_specdecisionsindexmd
   FAILED tests/scenarios/test_migration_tools.py::test_migrate_run_gives_specindexmd_whose_id_is_boundedcontextshop_the_id_boundedcontextpath
   4 failed, 599 passed, 1 skipped, 16 xpassed, 202 warnings, 83 subtests passed in 11.98s
+
+Withdrawn 2026-10-22 by the person: no more time on migration code; shopsystem-knowledge is the only repository left to migrate, and what `migrate` does not do there the migrating agent fixes by hand.

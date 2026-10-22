@@ -79,13 +79,13 @@ Feature: Migration tools
     And spec/decisions/0003-b.md's and spec/decisions/0004-c.md's status is `superseded`
 
   @r17
-  Scenario Outline: `migrate run` writes a qualified supersedes as the decisions' ids alone, the qualifier going to by, <case>
-    Pins that supersedes names only decisions, and that the qualifier is kept in by.
+  Scenario Outline: `migrate run` writes a qualified supersedes as the decisions' ids alone, the qualifier going to by after the source, <case>
+    Pins that supersedes names only decisions, and that by is exactly the entry's source then `; supersedes <id> <qualifier>`, with no stray punctuation.
     Given a repository on the old system whose spec/decisions.md has the entries `## decision/0003-b`, `## decision/0004-c` and `## decision/0007-a`
     And the entry 0007-a's source is alice and its supersedes is <supersedes>
     When the session runs `migrate run --context example.org/acme/shop`
     Then spec/decisions/0007-a.md's supersedes names <ids>, and nothing else
-    And its by has the qualifier "(for artifacts)"
+    And its by is exactly "alice; supersedes design-decision/example.org/acme/shop/b (for artifacts)"
 
     Examples:
       | case                                | supersedes                                       | ids                                                                                    |
@@ -99,6 +99,7 @@ Feature: Migration tools
     And the entry's first paragraph is "We do a."
     When the session runs `migrate run --context example.org/acme/shop`
     Then spec/decisions.md is gone
+    And spec/decisions/0007-a.md has the summary "We do a."
 
     Examples:
       | what                    | ledger                                                                        |
@@ -111,19 +112,20 @@ Feature: Migration tools
     Given a repository on the old system whose spec/decisions.md has, in order, the entries <entries>
     When the session runs `migrate run --context example.org/acme/shop`
     Then spec/decisions/ has <files>
+    And spec/decisions/<b file> gives the id design-decision/example.org/acme/shop/b
 
     Examples:
-      | case                   | entries                                                                         | files                                         |
-      | among numbered entries | `## decision/0007-a`, `## decision/b`, `## decision/0003-c` and `## decision/d` | 0007-a.md, 0008-b.md, 0003-c.md and 0009-d.md |
-      | with no numbered entry | `## decision/b` and `## decision/d`                                             | 0001-b.md and 0002-d.md                       |
+      | case                   | entries                                                                         | files                                         | b file    |
+      | among numbered entries | `## decision/0007-a`, `## decision/b`, `## decision/0003-c` and `## decision/d` | 0007-a.md, 0008-b.md, 0003-c.md and 0009-d.md | 0008-b.md |
+      | with no numbered entry | `## decision/b` and `## decision/d`                                             | 0001-b.md and 0002-d.md                       | 0001-b.md |
 
   @r7
-  Scenario Outline: `migrate run` that finds <found> in spec/decisions.md names it, exits with an error and changes no file, the ledger included
+  Scenario Outline: `migrate run` that finds <found> in spec/decisions.md names it, exits non-zero and changes no file, the ledger included
     Pins that ledger text migrate cannot replace stops `migrate run`.
     Given a repository on the old system whose spec/decisions.md has the entry `## decision/0007-a` and <found>
     When the session runs `migrate run --context example.org/acme/shop`
     Then migrate says it could not replace <named>
-    And it exits with an error
+    And it exits non-zero
     And nothing under the repository has changed
 
     Examples:
@@ -132,12 +134,12 @@ Feature: Migration tools
       | after it the heading `## decision/0007-a` | the ledger entry `## decision/0007-a`, which is there twice |
 
   @r7
-  Scenario Outline: `migrate run` whose ledger entry's decision file would land on <there> names it, exits with an error and changes no file
+  Scenario Outline: `migrate run` whose ledger entry's decision file would land on <there> names it, exits non-zero and changes no file
     Pins that the decision file migrate writes for a ledger entry, numbered or numbered by migrate, never takes the place of a file that is there or relocates there.
     Given a repository on the old system whose spec/decisions.md has, in order, the entries <entries>, and <there>
     When the session runs `migrate run --context example.org/acme/shop`
     Then migrate says it could not write spec/decisions/<file> for the ledger entry <entry>
-    And it exits with an error
+    And it exits non-zero
     And nothing under the repository has changed
 
     Examples:
@@ -178,13 +180,15 @@ Feature: Migration tools
 
   @r5
   Scenario: `migrate run` rewrites a frontmatter id and a supersedes that name a ledger entry it numbered
-    Pins that an entry with no number, numbered by r13, is named afterwards by its new id everywhere.
+    Pins that an entry with no number, numbered by r13, is named afterwards by its new id everywhere, and is `superseded` as r2 says.
     Given a repository on the old system whose spec/decisions.md has, in order, the entries `## decision/0007-a` and `## decision/b`
     And the entry 0007-a has supersedes: decision/b
     And a capability spec/capabilities/thing.md whose frontmatter rests_on names decision/b
     When the session runs `migrate run --context example.org/acme/shop`
-    Then spec/capabilities/thing.md's rests_on names design-decision/example.org/acme/shop/b
+    Then spec/decisions/0008-b.md gives the id design-decision/example.org/acme/shop/b
+    And spec/capabilities/thing.md's rests_on names design-decision/example.org/acme/shop/b
     And spec/decisions/0007-a.md's supersedes is design-decision/example.org/acme/shop/b
+    And spec/decisions/0008-b.md's status is `superseded`
 
   @r5
   Scenario Outline: `migrate run` rewrites a decision file's by that names <old>, a path it relocated
@@ -215,23 +219,23 @@ Feature: Migration tools
       | a ledger whose entry 0007-a has supersedes: decision/0003-b (for artifacts), and the entry 0003-b                                                                                    |
 
   @r7
-  Scenario: `migrate run` that cannot make two of its changes names both, exits with an error and changes no file
+  Scenario: `migrate run` that cannot make two of its changes names both, exits non-zero and changes no file
     Pins that `migrate run` is all or nothing, and names each change it could not make rather than the first.
     Given a repository on the old system with work/i1/w1.md, and .shop/work/i1/w1.md already exists
     And it has records/archive/plans/p1.md and docs/superpowers/plans/p1.md, which would both be relocated to .shop/records/archive/plans/p1.md
     When the session runs `migrate run --context example.org/acme/shop`
     Then migrate says it could not `move work/i1/w1.md onto .shop/work/i1/w1.md`
     And it says it could not `move both records/archive/plans/p1.md and docs/superpowers/plans/p1.md to .shop/records/archive/plans/p1.md`
-    And it exits with an error
+    And it exits non-zero
     And nothing under the repository has changed
 
   @r7
-  Scenario: `migrate run` that would relocate a file onto an untracked file names the relocation, exits with an error and changes no file
+  Scenario: `migrate run` that would relocate a file onto an untracked file names the relocation, exits non-zero and changes no file
     Pins that a file already there stops a relocation onto it whether or not git tracks it.
     Given a repository on the old system with work/i1/w1.md and work/i1/w2.md, and an untracked .shop/work/i1/w2.md
     When the session runs `migrate run --context example.org/acme/shop`
     Then migrate says it could not `move work/i1/w2.md onto .shop/work/i1/w2.md`
-    And it exits with an error
+    And it exits non-zero
     And nothing under the repository has changed
 
   @r8
@@ -305,12 +309,13 @@ Feature: Migration tools
     Then .shop/records/archive/plans/p1.md, .shop/records/archive/requests/q1.md, .shop/records/archive/design-notes/s1.md, .shop/records/decision-arguments/0001-use-x.md and .shop/records/logs/run1-test-log.md are each about bounded-context/example.org/acme/shop
 
   @r15
-  Scenario Outline: `migrate run` on a repository with <change> refuses, naming it, and changes no file
+  Scenario Outline: `migrate run` on a repository with <change> refuses, naming it, exits non-zero and changes no file
     Pins that migrate starts only from a working tree with nothing uncommitted, untracked files included.
     Given a repository on the old system with work/i1/w1.md
     And <change>
     When the session runs `migrate run --context example.org/acme/shop`
     Then migrate refuses, naming <named>
+    And it exits non-zero
     And nothing under the repository has changed
 
     Examples:
@@ -326,7 +331,7 @@ Feature: Migration tools
     And its spec/decisions.md has nothing but the entry `## decision/0007-a`
     When the session runs `migrate run --context example.org/acme/shop`
     Then git status shows .shop/work/i1/w1.md, spec/decisions/0007-a.md and spec/decisions/index.md as staged, and no file as untracked or changed but not staged
-    And spec/decisions/index.md is what `model decisions` would write
+    And `model decisions --check` says spec/decisions/index.md is current
 
   @r1
   Scenario: `migrate run` from a subdirectory relocates the repository's top-level directories
@@ -336,35 +341,23 @@ Feature: Migration tools
     Then .shop/work/i1/w1.md has the content work/i1/w1.md had
     And notes/.shop does not exist
 
-  @r4
-  Scenario: `migrate run` gives spec/index.md whose id is bounded-context/shop the id bounded-context/<path>
-    Pins that a context id in another form is replaced, not kept.
-    Given a repository on the old system whose spec/index.md gives the id bounded-context/shop
-    When the session runs `migrate run --context example.org/acme/shop`
-    Then spec/index.md gives the id bounded-context/example.org/acme/shop
-
-  @r5
-  Scenario: `migrate run` rewrites a frontmatter id that names the context id it changed
-    Pins that a frontmatter id naming the old context id follows the new one.
+  @r4 @r5
+  Scenario: `migrate run` gives spec/index.md whose id is bounded-context/shop the id bounded-context/<path>, and rewrites what names the old id
+    Pins that a context id in another form is replaced, not kept, and that a frontmatter id naming it follows.
     Given a repository on the old system whose spec/index.md gives the id bounded-context/shop
     And a tracked notes/n1.md whose frontmatter about names bounded-context/shop
     When the session runs `migrate run --context example.org/acme/shop`
-    Then notes/n1.md's about names bounded-context/example.org/acme/shop
+    Then spec/index.md gives the id bounded-context/example.org/acme/shop
+    And notes/n1.md's about names bounded-context/example.org/acme/shop
 
-  @r9
-  Scenario: `migrate run` gives a decision file whose id is decision/<nnnn>-<name> the type-first id
-    Pins that a moved decision file's id in another form is replaced, not kept.
-    Given a repository on the old system with decisions/0001-x.md whose id is decision/0001-x
-    When the session runs `migrate run --context example.org/acme/shop`
-    Then spec/decisions/0001-x.md gives the id design-decision/example.org/acme/shop/x
-
-  @r5
-  Scenario: `migrate run` rewrites a frontmatter id that names a decision file's old id
-    Pins that a frontmatter id naming a moved decision file's old id follows its new one.
+  @r9 @r5
+  Scenario: `migrate run` gives a decision file whose id is decision/<nnnn>-<name> the type-first id, and rewrites what names the old id
+    Pins that a moved decision file's id in another form is replaced, not kept, and that a frontmatter id naming it follows.
     Given a repository on the old system with decisions/0001-x.md whose id is decision/0001-x
     And a capability spec/capabilities/thing.md whose frontmatter rests_on names decision/0001-x
     When the session runs `migrate run --context example.org/acme/shop`
-    Then spec/capabilities/thing.md's rests_on names design-decision/example.org/acme/shop/x
+    Then spec/decisions/0001-x.md gives the id design-decision/example.org/acme/shop/x
+    And spec/capabilities/thing.md's rests_on names design-decision/example.org/acme/shop/x
 
   @r5
   Scenario: `migrate run` rewrites nothing through a tracked symbolic link, and leaves the file outside the repository it points to as it was
@@ -374,6 +367,7 @@ Feature: Migration tools
     When the session runs `migrate run --context example.org/acme/shop`
     Then the file outside the repository is as it was
     And linked.md is the same symbolic link
+    And .shop/work/i1/w1.md has the content work/i1/w1.md had
 
   @r5
   Scenario: `migrate run` keeps the CRLF line endings of a file in which it rewrites a path
@@ -384,12 +378,12 @@ Feature: Migration tools
     Then notes/n1.md is as it was, byte for byte, with .shop/work/i1/w1.md for work/i1/w1.md
 
   @r7
-  Scenario Outline: `migrate run` that would <what> names it, exits with an error and changes no file
+  Scenario Outline: `migrate run` that would <what> names it, exits non-zero and changes no file
     Pins that migrate checks every change before it makes one: none goes through a symbolic link, over a file git does not hold, or under a file.
     Given a repository on the old system with work/i1/w1.md and <there>
     When the session runs `migrate run --context example.org/acme/shop`
     Then migrate says it could not <named>
-    And it exits with an error
+    And it exits non-zero
     And nothing under the repository has changed
 
     Examples:
@@ -399,10 +393,10 @@ Feature: Migration tools
       | move a file under an ignored file                | an ignored file .shop                                                                  | move work/i1/w1.md to .shop/work/i1/w1.md: .shop is not a directory      |
 
   @r7
-  Scenario: `migrate run` outside a git repository says so, exits with an error and changes no file
+  Scenario: `migrate run` outside a git repository says so, exits non-zero and changes no file
     Pins that migrate, which relocates with git, names the repository it could not find rather than failing part way.
     Given a directory that is not a git repository, with work/i1/w1.md
     When the session runs `migrate run --context example.org/acme/shop`
     Then migrate says it could not find a git repository
-    And it exits with an error
+    And it exits non-zero
     And nothing under the repository has changed

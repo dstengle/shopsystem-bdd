@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/migration-rebind-3
 kind: work-item
 part_of: capability-proposal/one-requirement-migration-tools
-status: awaiting-ruling
+status: withdrawn
 wkind: capability
 under: migration-tools
 accepts: [migration-tools#r10, migration-tools#r11, migration-tools#r12, migration-tools#r13]
@@ -16,3 +16,5 @@ for 0.22.0 (one requirement per scenario, exits in words), their step definition
 
 ## Questions
 - Research incomplete at time of writing.
+
+Withdrawn 2026-10-22 by the person: no more time on migration code; shopsystem-knowledge is the only repository left to migrate, and what `migrate` does not do there the migrating agent fixes by hand.

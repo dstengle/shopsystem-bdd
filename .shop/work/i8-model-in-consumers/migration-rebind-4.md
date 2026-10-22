@@ -2,7 +2,7 @@
 id: work-item/missingmass.io/shopsystem/shopsystem-bdd/migration-rebind-4
 kind: work-item
 part_of: capability-proposal/one-requirement-migration-tools
-status: awaiting-ruling
+status: withdrawn
 wkind: capability
 under: migration-tools
 accepts: [migration-tools#r14, migration-tools#r15, migration-tools#r16, migration-tools#r17]
@@ -210,3 +210,5 @@ for 0.22.0 (one requirement per scenario, exits in words), their step definition
   FAILED tests/scenarios/test_migration_tools.py::test_migrate_run_that_would_what_names_it_exits_with_an_error_and_changes_no_file[write spec/decisions/index.md over an ignored file-an ignored spec/decisions/index.md-write spec/decisions/index.md]
   FAILED tests/scenarios/test_migration_tools.py::test_migrate_run_that_would_what_names_it_exits_with_an_error_and_changes_no_file[move a file under an ignored file-an ignored file .shop-move work/i1/w1.md to .shop/work/i1/w1.md: .shop is not a directory]
   14 failed, 589 passed, 1 skipped, 16 xpassed, 202 warnings, 83 subtests passed in 11.78s
+
+Withdrawn 2026-10-22 by the person: no more time on migration code; shopsystem-knowledge is the only repository left to migrate, and what `migrate` does not do there the migrating agent fixes by hand.

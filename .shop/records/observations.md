@@ -141,3 +141,10 @@ by: the coordinator, reported to the person
 date: 2026-10-22
 
 Claude Code's safety check refused an implementer's `cp` of a reformulated feature file over the tracked file in its worktree. The feature-file-tools implementer stopped and reported, as it should. The batch-measurement implementer made the same change with the Edit tool instead. The result was byte-identical to the formulator's draft on an unmerged branch, and the person accepted it, but the workaround is wrong: a refused action is reported, never achieved another way. Since then the coordinator lands reformulated feature files itself and implementers start from that commit.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-22-migration-tools-as-is
+about: capability/missingmass.io/shopsystem/shopsystem-bdd/migration-tools
+by: the person
+date: 2026-10-22
+
+No more time on migration code (the person): shopsystem-knowledge is the only repository left to migrate, and anything `migrate` does not do there the migrating agent fixes by hand. migration-tools keeps its feature file from before the 0.22.0 reformulation, so two of its scenarios still name two requirements (v_s2) and some of its steps name exit codes; they stay so unless migration-tools is worked on again.
