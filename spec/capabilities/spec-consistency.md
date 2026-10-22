@@ -11,7 +11,7 @@ retired: []
 
 ## Purpose
 Verifies a bounded context's spec against itself: that one word means one thing, that one thing has one word,
-that a line has one reading and that a scenario says what its line says. It is `checking-spec-consistency`,
+that a line has one reading, that the lines leave nothing to infer and that a scenario says what its line says. It is `checking-spec-consistency`,
 used on demand by the session the person talks to, with a blind `spec-checker` dispatch for each judgment of
 meaning. It reads nothing but `spec/` and `features/`, and integration and formulation do not use it.
 
@@ -28,14 +28,28 @@ meaning. It reads nothing but `spec/` and `features/`, and integration and formu
 - [r10] **When** every finding is applied, rejected or written as an observation, `checking-spec-consistency` shall end fix mode with `model check` printing no `v_t1`, `v_t2` or `v_t3` row.
 - [r11] `checking-spec-consistency` shall start only when the person asks for it, never during an integration or a formulation.
 - [r21] **If** `checking-spec-consistency` cannot do what it was asked, then `checking-spec-consistency` shall stop, saying why, and change nothing.
+- **When** a `spec-checker` finds one of the following in what it reads, the `spec-checker` shall write it as a finding, naming its ids:
+
+  | id | found |
+  |---|---|
+  | [r22] | a scenario that shows observable behaviour, such as an output, a file written or a status, that no Behaviour line of its capability asks for |
+  | [r23] | two lines that act on one thing, such as one file, one status or one command, without saying which of them wins |
+  | [r24] | a line that leaves to inference which runs, workers or commands it applies to |
+  | [r25] | a scenario that shows the response of a line other than the one it names, an exit or a refusal of the capability's general failure line included, or that gives an exit code |
+  | [r26] | a status or a mode that the lines name, with a way into it or out of it that no line gives |
+  | [r27] | a word a line depends on that is neither a glossary term nor spelled out in the line |
+
 
 ## Implementation, may change
 - The skill is `skills/checking-spec-consistency/SKILL.md`; the agent is `agents/spec-checker.md`
   (tools Read, Glob, Grep, Write; model sonnet).
-- One dispatch for each capability judges its lines against its scenarios; one for the context judges every
-  Behaviour line and the glossary, with no scenarios.
+- One dispatch for each capability judges its lines against its scenarios (r22, r23, r24 and r25 within the
+  capability); one for the context judges every Behaviour line and the glossary, with no scenarios (r23 and r24
+  across capabilities, r26 and r27).
 - A `spec-checker` writes its findings to a file under the drafts path and replies with a short summary. The
-  findings file is grouped by term cluster, then lines with two readings, then other drift.
+  findings file is grouped by term cluster (r27 among them), then lines with two readings, lines in the wrong
+  pattern, lines left to infer (r23, r24, r26), behaviour no line asks for (r22), scenarios showing another
+  line's response (r25), then other drift.
 
 ## Not yet
 - The pass is used during integration and formulation — trigger: a measured initiative shows drift the on-demand pass would have caught.
