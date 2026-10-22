@@ -39,6 +39,7 @@ def consumer(tmp_path, accepts):
 def pytest(repo, *args):
     env = dict(os.environ, PYTHONPATH=str(SCRIPTS))
     env.pop("PYTEST_PLUGINS", None)
+    env.pop("PYTEST_ADDOPTS", None)
     return subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "-p", "work_items", *args],
                           cwd=repo, env=env, capture_output=True, text=True)
 
