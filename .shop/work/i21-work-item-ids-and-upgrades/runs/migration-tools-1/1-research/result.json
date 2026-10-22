@@ -1,0 +1,8 @@
+{
+  "status": "DONE",
+  "summary": "Research on migration-tools-1 (r15, r18-r20, r22-r28) done; notes.md written in the stage directory.\n19 accepted scenario tests run: 16 red (undefined steps: no `migrate status`/`upgrade`, no plugin-version reader, no SessionStart hook; r15 old-system rows miss the Then 'it exits with an error'), 3 deprecated r15 rows pass.\nProbes (scratch dir, run): migrate status/upgrade exit 2 (invalid choice); migrate run on a clean final-layout repo exits 0 and stages spec/decisions/index.md.\nNo hooks/ directory exists; plugin.json is 0.23.1, so no 0.24.0 step is pending for any repository.\nDefect D1: work add writes name-based files and ids, not w<n> (spec work-queue r1, r12); not accepted here.\nNo coverage map: test lists are by search.\nFile set: scripts/migrate, new scripts/migrate_upgrade.py, new hooks/hooks.json, plugin.json, CLAUDE.md row, new step module and an import in test_migration_tools.py.\nCheckout git status clean at end.",
+  "questions": [
+    "Q1: r18 and r22 need a pending 0.24.0 step on a 0.23.1 repository, but .claude-plugin/plugin.json says 0.23.1. Bump the plugin to 0.24.0 in this work-item, or keep 0.23.1 (then no step is pending)? Both readings are in notes.md part 7/Questions.",
+    "Q2: The coordinator note asks for delivering-an-initiative to say `work add <initiative> <title>`; not an accepted requirement, and work add currently takes <name> and writes name-based ids (defect D1). Left to the planner."
+  ]
+}
