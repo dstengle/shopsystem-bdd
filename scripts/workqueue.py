@@ -69,7 +69,7 @@ def add(root, initiative, name, part_of, under, accepts):
     if not path.parent.is_dir():
         raise Refused("the initiative %s does not exist (no %s)" % (initiative, path.parent.relative_to(root)))
     if path.exists():
-        raise Refused("%s already exists; work add leaves it as it was" % path.relative_to(root))
+        raise Refused("the work-item %s already exists (%s); work add leaves it as it was" % (name, path.relative_to(root)))
     text = ("---\nid: work-item/%s/%s\nkind: work-item\npart_of: %s\nstatus: drafted\nunder: %s\naccepts: [%s]\n---\n\n# %s\n"
             % (context_path(root), name, part_of, under, ", ".join(accepts), name))
     path.write_text(text)
@@ -159,3 +159,35 @@ def agrees(root, initiative, name):
         raise Refused("%s gives its status as %s, but log.jsonl's last transition of %s is to %s; it is not moved"
                       % (path.relative_to(root), before, name, logged))
     return before
+
+
+def retry(root, name):
+    """Move the failed work-item `name` back to the status it had before its failed stage (r8): the status its
+    transition to failed came from, or, from claimed, the status its claim came from (an implementation stage starts at
+    ready)."""
+    found = sorted((Path(root) / WORK).glob("*/%s.md" % name)) if "/" not in name else []
+    if len(found) != 1:
+        raise Refused("there is %s work-item %s under %s" % ("no" if not found else "more than one", name, WORK))
+    initiative = found[0].parent.name
+    if agrees(root, initiative, name) != "failed":
+        raise Refused("%s is not failed; work retry returns only a failed work-item" % name)
+    moves = [line for line in logged(found[0].parent / "log.jsonl", root) if line.get("work-item") == name and "after" in line]
+    at = max((i for i, line in enumerate(moves) if line["after"] == "failed"), default=None)
+    if at is None:
+        raise Refused("log.jsonl gives no transition of %s to failed; work retry has no status to return it to" % name)
+    before = moves[at]["before"]
+    if before == "claimed":
+        before = next((line["before"] for line in reversed(moves[:at]) if line["after"] == "claimed"), "ready")
+    move(root, initiative, name, before, by="work retry")
+    return before
+
+
+def logged(log, root):
+    """The lines of `log` that are JSON objects."""
+    lines = []
+    for line in read(log, root).splitlines() if log.exists() else []:
+        try:
+            lines.append(json.loads(line))
+        except ValueError:
+            continue
+    return [line for line in lines if isinstance(line, dict)]

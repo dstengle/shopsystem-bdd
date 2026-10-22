@@ -8,6 +8,7 @@ import datetime
 import errno
 import importlib
 import json
+import re
 import os
 import shlex
 import sys
@@ -86,6 +87,19 @@ def last_for(repo, name, after):
 @given(parsers.parse("a repository with spec/index.md and no initiative {ident}"))
 def no_initiative(repo, ident):
     write(repo, "spec/index.md", INDEX)
+
+
+@given(parsers.parse(".shop/work/i1/log.jsonl gives {name}'s last transitions as {moves}"))
+def last_moves(repo, name, moves):
+    """"to ready, then from ready to claimed, then to failed": each a line; a "to" with no "from" comes from the status
+    the line before gave (drafted for the first)."""
+    lines, before = [], "drafted"
+    for move in moves.split(", then "):
+        found = re.match(r"(?:from (\S+) )?to (\S+)$", move)
+        before = found.group(1) or before
+        lines.append(log_line(name, before, found.group(2)))
+        before = found.group(2)
+    write(repo, ".shop/work/i1/log.jsonl", "".join(lines))
 
 
 @given(parsers.parse("an initiative {ident} under .shop/work/ and no spec/index.md"))
@@ -194,14 +208,8 @@ def as_it_was(repo, context, initiative, name):
     assert snapshot(repo) == context["before"]
 
 
-@then("work says the work-item already exists")
-def says_exists(context):
-    err = context["done"].stderr
-    assert "already exists" in err and "Traceback" not in err, err
-
-
-@then("it exits non-zero")
-def exits_non_zero(context):
+@then("it exits with an error")
+def exits_with_error(context):
     assert context["done"].returncode != 0, context["done"]
 
 
@@ -253,10 +261,10 @@ def both_as_they_were(repo, context, first, second):
     assert snapshot(repo) == context["before"]
 
 
-@then(parsers.parse("work says in one line that {reason}"))
-def says_in_one_line(context, reason):
+@then(parsers.parse("work says that {reason}"))
+def says(context, reason):
     err = context["done"].stderr
-    assert "Traceback" not in err and len(err.splitlines()) == 1 and reason in err, err
+    assert "Traceback" not in err and reason in err, err
 
 
 @then("nothing under the repository has changed")

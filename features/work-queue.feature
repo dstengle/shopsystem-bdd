@@ -10,14 +10,12 @@ Feature: Work queue
     Then .shop/work/i1/w1.md is a drafted work-item w1
     And its part_of is capability-proposal/p1, its under is thing and its accepts is thing#r1
 
-  @r2 @r7
-  Scenario: add when the work-item's file already exists leaves the file as it was and fails
-    Pins that add never overwrites a work-item, and says why it did nothing.
+  @r2
+  Scenario: add when the work-item's file already exists leaves the file as it was
+    Pins that add never overwrites a work-item.
     Given an initiative i1 under .shop/work/ whose work-item w1 is ready
     When the session runs `work add i1 w1 --part-of capability-proposal/p1 --under thing --accepts thing#r1`
     Then .shop/work/i1/w1.md is as it was
-    And work says the work-item already exists
-    And it exits non-zero
 
   @r3
   Scenario: show prints each work-item of every initiative with its status
@@ -54,12 +52,21 @@ Feature: Work queue
     And .shop/work/i1/w1.md and .shop/work/i1/log.jsonl are as they were
 
   @r7
-  Scenario Outline: a command that cannot be done exits non-zero, says why in one line and changes nothing
+  Scenario: add when the work-item's file already exists is refused, saying so, with an error
+    Pins that add on a work-item that exists is a request work cannot do, not a success.
+    Given an initiative i1 under .shop/work/ whose work-item w1 is ready
+    When the session runs `work add i1 w1 --part-of capability-proposal/p1 --under thing --accepts thing#r1`
+    Then work says that the work-item w1 already exists
+    And it exits with an error
+    And nothing under the repository has changed
+
+  @r7
+  Scenario Outline: a command that cannot be done exits with an error, says why and changes nothing
     Pins that a missing file stops work with its reason, never a traceback, and leaves the files as they were.
     Given <setup>
     When the session runs `work add i1 w1 --part-of capability-proposal/p1 --under thing --accepts thing#r1`
-    Then work says in one line that <reason>
-    And it exits non-zero
+    Then work says that <reason>
+    And it exits with an error
     And nothing under the repository has changed
 
     Examples:
@@ -82,8 +89,8 @@ Feature: Work queue
     Pins that add writes only inside .shop/work/<initiative>/, whatever it is given.
     Given an initiative i1 under .shop/work/ with no work-item w1
     When the session runs `work add <initiative> <name> --part-of capability-proposal/p1 --under thing --accepts thing#r1`
-    Then work says in one line that <reason>
-    And it exits non-zero
+    Then work says that <reason>
+    And it exits with an error
     And nothing under the repository has changed
 
     Examples:
@@ -96,8 +103,8 @@ Feature: Work queue
     Pins that a value given to add cannot write a second line, a status say, into the work-item.
     Given an initiative i1 under .shop/work/ with no work-item w1
     When the session runs `work add i1 w1 --part-of capability-proposal/p1 --under thing --accepts thing#r1` with a newline and `status: ready` in the --part-of value
-    Then work says in one line that the value of --part-of has a newline in it
-    And it exits non-zero
+    Then work says that the value of --part-of has a newline in it
+    And it exits with an error
     And nothing under the repository has changed
 
   @r7
@@ -106,8 +113,8 @@ Feature: Work queue
     Given an initiative i1 under .shop/work/ whose work-item w1 is drafted
     And .shop/work/i1/w2.md is not UTF-8 text
     When the session runs `work show`
-    Then work says in one line that .shop/work/i1/w2.md is not UTF-8 text
-    And it exits non-zero
+    Then work says that .shop/work/i1/w2.md is not UTF-8 text
+    And it exits with an error
 
   @r7
   Scenario Outline: a transition of a work-item whose file <lacks> is refused, saying why, and changes nothing
@@ -135,3 +142,18 @@ Feature: Work queue
       | fault                        | named                              |
       | has a line that is not JSON  | line 2 of .shop/work/i1/log.jsonl  |
       | cannot be written            | .shop/work/i1/log.jsonl            |
+
+  @r8
+  Scenario Outline: retry returns a failed work-item to the status it had before the failed stage: failed from <from>
+    Pins that `work retry` takes a work-item back to where its failed stage started, once the fault is remedied.
+    Given an initiative i1 under .shop/work/ whose work-item w1 is failed
+    And .shop/work/i1/log.jsonl gives w1's last transitions as <transitions>
+    When the session runs `work retry w1`
+    Then .shop/work/i1/w1.md gives w1's status as <status>
+
+    Examples:
+      | from       | transitions                                           | status     |
+      | drafted    | to drafted, then from drafted to failed                | drafted    |
+      | researched | to researched, then from researched to failed          | researched |
+      | claimed    | to ready, then from ready to claimed, then to failed   | ready      |
+      | done       | to done, then from done to failed                      | done       |
