@@ -19,7 +19,7 @@ Verify with `python3 scripts/model check`; the decisions index, `spec/decisions/
 A Claude Code plugin that runs a behaviour-driven workflow in a consuming repository: one spec of
 capability files per bounded context, Gherkin feature files paired with them as the contract, work-items
 taken through their stages by `work run`, implementation red-green, review, and measurement of
-what a batch cost. One human gate,
+what an initiative's deliveries cost. One human gate,
 on the spec's Behaviour lines and glossary entries. It is not a test runner, not a project manager, and keeps nothing of its
 own outside the consuming repository's files.
 
@@ -58,7 +58,7 @@ Measurement:
 
 | capability | narrator | group |
 |---|---|---|
-| `batch-measurement` | a session measuring a closed batch | service |
+| `batch-measurement` | a session measuring an initiative's deliveries | service |
 | `trials` | the session that started a trial | service |
 
 Tools the skills and agents run:
@@ -77,23 +77,20 @@ Tools the skills and agents run:
 - The suite: `python3 -m pytest` from the root. A script capability's scenarios run as pytest-bdd step
   definitions, one module per feature file under `tests/scenarios/`, and `features bindings --unbound`
   fails the suite when a scenario has no test or two (design-decision/plugin-scenarios-run-as-pytest-bdd).
-  Unit tests that bind no scenario are `unittest` tests under `tests/scripts/`. `batch-measurement` keeps its
-  docstring binding until initiative i12.
+  Unit tests that bind no scenario are `unittest` tests under `tests/scripts/`.
 - Workflow capabilities (agents and skills): their scenarios run as fixture sessions, `claude -p` against
   fixture repositories, under pytest-bdd with the `fixture` marker, outside the suite
   (design-decision/fixture-scenarios-under-pytest-bdd); fixture sessions are written under
-  `.shop/records/measurements/fixture-runs/`, and batches measured with `scripts/measure`. Until a line's
+  `.shop/records/measurements/fixture-runs/`, and deliveries measured with `scripts/measure`. Until a line's
   scenario is written, `model check` reports it under v_s3.
 - `role-boundaries` is guarantees: verified against `agents/*.md`, not by scenarios.
 
 ## Glossary
 
 - **agent**: a definition under `agents/` (its name, model, tools and skills) that a worker or a dispatch is started as. Not: persona.
-- **batch**: (old system, until i12) the slices one session plans and one controller executes, archived and measured together.
 - **brief**: the input data `work run` writes for one worker in its stage directory, naming the work-item, the files to read, the worktree and where the result goes. Not: task file.
 - **check**: a command a work-item names in place of scenarios, whose exit code 0 shows its work complete. Not: criterion.
 - **claim**: the tracked files a `claimed` work-item holds: those its file set covers and any added with `work claim`; no two claims share a file. Not: lock, reservation.
-- **controller**: (old system, until i12) the session that dispatches implementers and reviewers for a batch.
 - **delivery**: one invocation of `work run` on an initiative, from its start until it exits.
 - **deprecated scenario**: a scenario kept in its feature file, tagged `@deprecated`, after its line is changed or removed, until its replacement passes; it formulates no requirement. Not: held, holding, superseded.
 - **dispatch**: a session another session starts with its Agent tool, and the transcript it leaves. Not: subagent.
@@ -105,6 +102,8 @@ Tools the skills and agents run:
 - **hand-back**: an implementer's stop with the outcome `HAND-BACK`, giving the condition and its evidence word for word. Not: handback.
 - **initiative branch**: the branch `work run` commits each transition on and merges each work-item branch into; its base is the commit it started from. Not: integration branch.
 - **input**: what a session is started with: input data, such as a brief, or an input prompt, the text filled from a template.
+- **ledger**: the file `.shop/scratch/run/ledger-<initiative>.md` of one initiative, one line an event, archived under `.shop/records/archive/` when the initiative's work ends.
+- **measurement**: a record under `.shop/records/measurements/` that `measure` writes for one initiative's deliveries, or that a trial writes. Not: facts file.
 - **outcome**: the one word a worker's result gives: `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `HAND-BACK`, `QUESTION` or `NEEDS_CONTEXT`. Not: verdict.
 - **record**: a file under `.shop/records/` whose frontmatter id has a record kind. Not: log entry.
 - **remote**: the remote `work run` pushes the initiative branch to: the branch's upstream remote, else `origin`.
@@ -121,9 +120,9 @@ Tools the skills and agents run:
 - **stage directory**: the directory `runs/<work-item>/<k>-<stage>/` that holds one stage's brief, result, report and session. Not: run directory.
 - **status**: a node's place in its kind's lifecycle (a work-item's, a capability-proposal's, a decision's), written in its frontmatter; a work-item's are `drafted`, `researched`, `planned`, `ready`, `claimed`, `done`, `green`, `awaiting-ruling`, `failed` and `withdrawn`. Not: state.
 - **suite**: every test `python3 -m pytest` runs from the root by default, fixture scenarios excluded. Not: fast suite.
-- **suite record**: (old system, until i12) a whole-suite pass or failure logged once and used while nothing it depends on has changed.
 - **template**: standing text in a skill or an agent definition that a session fills with input to start another session. Not: boilerplate.
 - **transition**: one change of a work-item's status, written by `work` and logged in `log.jsonl`. Not: move.
+- **trial**: one run by the `trial-runner` of a plugin tool or `work run` on a real target or a fixture repository, measuring what its input names.
 - **work-item**: the unit of delivery under a capability-proposal, complete when the scenarios it accepts or its check pass, taken through its stages by `work run`.
 - **work-item branch**: the branch an implementer commits a work-item's work on, from the initiative branch's head, merged into the initiative branch and deleted when it is merged.
 - **worker**: a session `work run` starts with `claude -p` for one stage of one work-item, as that stage's agent; the branch reviewer, owning no work-item, is not one.
