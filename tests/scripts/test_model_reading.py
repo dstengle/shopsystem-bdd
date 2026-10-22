@@ -35,6 +35,15 @@ class ReadingTest(ModelTest):
         r = self.run_model("check")
         self.assertIn(f"{full('capability', 'nosuch')} is not a capability", r.stdout)
 
+    def test_failed_is_a_work_item_status(self):
+        """decision 0056 extends the lifecycle with `failed`."""
+        self.good()
+        self.observation()
+        self.initiative()
+        self.work_item("w1", status="failed")
+        r = self.run_model("check")
+        self.assertNotIn("status 'failed' is not one of", r.stdout)
+
     def test_adding_a_retired_id_is_v15c(self):
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r2] Two."], group="guarantees", retired="[r1]"))
         self.observation()
