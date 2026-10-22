@@ -44,11 +44,11 @@ from what using it shows.
 - [r24] **When** `work run` starts an implementer, `work run` shall first run the whole suite in the implementer's worktree and say in the brief how it ended.
 - [r25] **When** `work run` writes a worker's brief, `work run` shall name in it the plugin's scripts directory, the initiative branch's base, the worker's worktree and its work-item branch.
 - [r26] **When** `work run` makes a work-item's transition to `awaiting-ruling`, `work run` shall keep the work-item branch.
-- [r27] **When** every work-item of the initiative is `green` or `withdrawn` and the initiative branch's head is not the commit the last kept branch review read, `work run` shall start a `claude -p` session of `bdd-branch-reviewer` over the initiative branch from its base, given one brief.
+- [r27] **When** every work-item of the initiative is `green` or `withdrawn` and the initiative branch holds a commit, other than a kept branch review's own commit, that no kept branch review has read, `work run` shall start a `claude -p` session of `bdd-branch-reviewer` over the initiative branch from its base, given one brief.
 - [r47] **When** the branch reviewer's session ends, `work run` shall copy its directory into `.shop/work/<initiative>/runs/branch-review/<k>/`.
 - [r48] **When** the branch reviewer's session ends, `work run` shall commit `.shop/work/<initiative>/runs/branch-review/<k>/` on the initiative branch.
 - [r49] **When** the branch reviewer's session starts or ends, `work run` shall append a line to `log.jsonl` with the time, the stage `branch-review`, the agent and the session id.
-- [r50] **While** the initiative branch's head is the commit the last kept branch review read, `work run` shall start no branch review.
+- [r50] **While** every commit on the initiative branch other than the kept branch reviews' own commits has been read by a kept branch review, `work run` shall start no branch review.
 - [r51] **If** the push verification before the branch review fails, then `work run` shall exit with an error, saying why, and start no branch review.
 - [r28] **If** the main checkout's `.shop/work/` differs from its last commit when a worker ends, then `work run` shall put it back and transition the work-item to `failed`, naming each file.
 - [r29] **Where** `.shop/delivery.toml` gives `[tests]`, `work run` shall run those commands in place of its own commands for the work-item's scenarios and the suite.

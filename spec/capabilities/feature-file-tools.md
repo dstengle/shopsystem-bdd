@@ -26,7 +26,7 @@ test; it edits only the feature files, test modules and directory it is pointed 
 ### Reading
 - [r4] **When** `features count --by-tag` is run, `features` shall print the number of scenarios with each tag and a total of every scenario, those with no tag included, counting a Scenario Outline once per Examples row and giving each scenario its feature's tags and its Examples table's tags.
 - [r5] **When** `features list --tag <tag>` or `--title <text>` is run, `features` shall print the file and title of each scenario whose tags, its feature's and its Examples' included, include that tag, or whose title contains the text.
-- [r7] **When** `features list` matches no scenario, `features` shall print nothing and exit successfully.
+- [r7] **Where** `--json` is not given, **when** `features list` matches no scenario, `features` shall print nothing and exit successfully.
 - [r60] **Where** `--json` is given, `features list` shall print its result, the scenarios with the file and title of each, as one JSON object.
 
 ### Editing
