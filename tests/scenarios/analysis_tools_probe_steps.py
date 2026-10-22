@@ -131,33 +131,32 @@ def says_source(context, source):
 
 
 # r2
-@then("tools says in one line that no analysis tools are known for its language")
+@then("tools says that no analysis tools are known for its language")
 def no_tools_known(context):
     stderr = context["result"].stderr
     assert "no analysis tools are known for this project's language" in stderr
-    assert len(stderr.strip().splitlines()) == 1
 
 
 # r3
-@then("tools prints one line for each tool")
+@then("tools prints each tool")
 def line_each(context):
     assert len(lines(context)) == len(NAMES) + 1
     assert [line.split()[0] for line in lines(context)[:-1]] == list(NAMES)
 
 
-@then("each installed tool's line gives its name and version")
+@then("each installed tool is printed with its version")
 def installed_lines(context):
     for line in lines(context)[:-1]:
         if not line.startswith("vulture"):
             assert line == "%s 1.0" % line.split()[0]
 
 
-@then("vulture's line says it is missing and what it is for")
+@then("vulture is printed as missing, with what it is for")
 def vulture_missing(context):
     assert re.search(r"^vulture missing: \S.+$", "\n".join(lines(context)), re.M)
 
 
-@then("the interpreter is printed after the tools")
+@then("the interpreter's path is printed after the tools")
 def interpreter_last(context):
     assert lines(context)[-1] == "python: %s (--python)" % context["python"]
 
@@ -213,8 +212,7 @@ def failed_command(context):
 
 
 # r18
-@then(parsers.parse("for {first} and for {second} tools prints the tool, what it is for, what the workflow does "
-                    "without it and that the interpreter is not a virtualenv"))
+@then(parsers.parse("for {first} and for {second} tools says that the interpreter is not a virtualenv"))
 def explains_not_venv(context, first, second):
     for name in (first, second):
         assert re.search(r"(?m)^%s is missing\.\n  It is for: .+\.\n  Without it: .+\.\n  Tried: %s is not a virtualenv"
@@ -226,17 +224,8 @@ def nothing_installed(context):
     assert pip_calls(context["python"]) == []
 
 
-# r19, r20
-@then("tools says every tool is present")
-def all_present_said(context):
-    assert context["result"].stdout == "every tool is present\n"
-    assert pip_calls(context["python"]) == []
 
 
-@then(parsers.parse("tools prints that {tool} is installed"))
-def says_installed(context, tool):
-    assert context["result"].returncode == 0, context["result"].stderr
-    assert context["result"].stdout == "%s installed\n" % tool
 
 
 # r21

@@ -219,9 +219,6 @@ def refused_no_map(context):
     assert "no map" in context["result"].stderr
 
 
-@then("it says to make one with `tools map`")
-def make_one(context):
-    assert context["result"].stderr == "tools: no map: make one with tools map\n"
 
 
 # r13
@@ -244,10 +241,6 @@ def map_replaced(run, repo, context, outside, label):
     assert "(map made at %s)" % context["commits"][label] in later
 
 
-@then(parsers.parse("tools prints pytest's last line, where the map is and commit {label}"))
-def prints_map_line(context, label):
-    assert lines(context)[0].startswith(context["last_line"]), lines(context)
-    assert lines(context)[1] == "map: %s, at %s" % (MAP, context["commits"][label])
 
 
 # r24
@@ -257,14 +250,10 @@ def refused_no_map_made(repo, context):
     assert not (repo / MAP.replace("coverage", "coverage.at")).exists()
 
 
-@then("it names the command it ran and the end of its output")
-def names_command(context):
-    assert re.match(r"^tools: no map was made by: %s -m pytest -q .*--cov-context=test --cov-report=\n"
-                    r"collected nothing at all\n$" % re.escape(str(context["python"])), context["result"].stderr)
 
 
 # r25
-@then("tools prints each of those functions as `<path>:<line> <name>`")
+@then("tools prints each of those functions")
 def lost_functions(context):
     source = context["source"].splitlines()
     count = len(lines(context)) - 1

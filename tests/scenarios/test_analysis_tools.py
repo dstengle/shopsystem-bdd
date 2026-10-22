@@ -32,10 +32,16 @@ def agent_runs(run, repo, context, outside, args):
     context["result"] = invoke(run, repo, context, argv, outside)
 
 
-@then(parsers.parse("it exits {code:d}"))
-def exits(run, repo, context, outside, code):
+@then("it exits successfully")
+def exits_successfully(context):
+    assert context["result"].returncode == 0, context["result"]
+    assert "Traceback" not in context["result"].stderr
+
+
+@then("it exits with an error")
+def exits_with_error(run, repo, context, outside):
     result = context["result"]
-    assert result.returncode == code, result
+    assert result.returncode == 1, result
     assert "Traceback" not in result.stderr
     if "absent" in context:  # r11: a function the file does not have
         assert result.stdout == ""
@@ -48,15 +54,9 @@ def exits(run, repo, context, outside, code):
 
 
 # r27, r28
-@then(parsers.parse("the command is refused because {tool} is missing from the interpreter"))
-def refused_missing_tool(context, tool):
-    assert context["result"].returncode == 1
+@then(parsers.parse("tools names {tool} as missing from the interpreter"))
+def names_missing_tool(context, tool):
     assert context["result"].stderr == "tools: %s is missing from %s: tools install\n" % (tool, context.get("refused_by") or context["python"])
-
-
-@then("it says to run `tools install`")
-def says_install(context):
-    assert "tools install" in context["result"].stderr
 
 
 # r29

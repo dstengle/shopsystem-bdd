@@ -24,6 +24,7 @@ def cmd_check(args):
         print("== %s ==" % name)
         if not found[package]:
             print("missing: %s" % next(tool[3] for tool in TOOLS if tool[0] == name))
+            reported = True
         elif not applies:
             print("nothing to check" if name != "import-linter" else "the project states no import contracts")
         else:

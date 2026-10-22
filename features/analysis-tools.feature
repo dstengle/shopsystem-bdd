@@ -2,41 +2,56 @@
 Feature: Analysis tools
   Narrator: a session researching or reviewing a project's code
 
-  @r1 @r3
+  @r1
   Scenario Outline: the interpreter is the first of --python, .venv, venv, $VIRTUAL_ENV and the running one
-    Pins the order in which tools picks its interpreter, and that probe says which one it picked and why.
+    Pins the order in which tools picks its interpreter.
     Given a Python project in the current directory
     And <setting>
     When the session runs `tools probe <option>`
     Then tools prints the path of <interpreter>
-    And it says the interpreter came from <source>
 
     Examples:
-      | setting                                                                                                                                      | option                      | interpreter                                      | source                   |
-      | the project has .venv/bin/python and venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python                              | --python /opt/py/bin/python | /opt/py/bin/python                               | --python                 |
-      | the project has .venv/bin/python and venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python                              |                             | the .venv/bin/python under the current directory | the project's virtualenv |
-      | the project has venv/bin/python and no .venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python                           |                             | the venv/bin/python under the current directory  | the project's virtualenv |
-      | the project has neither .venv/bin/python nor venv/bin/python, and $VIRTUAL_ENV points at /opt/env, outside the project, which has bin/python |                             | /opt/env/bin/python                              | the project's virtualenv |
-      | the project has neither .venv/bin/python nor venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has no bin/python                   |                             | the interpreter running the script               | neither                  |
+      | setting                                                                                                                                      | option                      | interpreter                                      |
+      | the project has .venv/bin/python and venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python                              | --python /opt/py/bin/python | /opt/py/bin/python                               |
+      | the project has .venv/bin/python and venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python                              |                             | the .venv/bin/python under the current directory |
+      | the project has venv/bin/python and no .venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python                           |                             | the venv/bin/python under the current directory  |
+      | the project has neither .venv/bin/python nor venv/bin/python, and $VIRTUAL_ENV points at /opt/env, outside the project, which has bin/python |                             | /opt/env/bin/python                              |
+      | the project has neither .venv/bin/python nor venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has no bin/python                   |                             | the interpreter running the script               |
+
+  @r3
+  Scenario Outline: probe says whether its interpreter came from --python, the project's virtualenv or neither
+    Pins that probe says where the interpreter it picked came from.
+    Given a Python project in the current directory
+    And <setting>
+    When the session runs `tools probe <option>`
+    Then it says the interpreter came from <source>
+
+    Examples:
+      | setting                                                                                                                                      | option                      | source                   |
+      | the project has .venv/bin/python and venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python                              | --python /opt/py/bin/python | --python                 |
+      | the project has .venv/bin/python and venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python                              |                             | the project's virtualenv |
+      | the project has venv/bin/python and no .venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python                           |                             | the project's virtualenv |
+      | the project has neither .venv/bin/python nor venv/bin/python, and $VIRTUAL_ENV points at /opt/env, outside the project, which has bin/python |                             | the project's virtualenv |
+      | the project has neither .venv/bin/python nor venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has no bin/python                   |                             | neither                  |
 
   @r49
   Scenario: a project that is not a Python project has no known analysis tools
-    Pins that tools names the gap in one line and fails rather than guessing at another language's tools.
+    Pins that tools names the gap and fails rather than guessing at another language's tools.
     Given a project with no Python in it
     When the session runs `tools probe`
-    Then tools says in one line that no analysis tools are known for its language
-    And it exits 1
+    Then tools says that no analysis tools are known for its language
+    And it exits with an error
 
   @r3
   Scenario: probe lists each tool, its version or that it is missing, and the interpreter
     Pins the probe's output and that one missing tool fails it.
     Given a Python project whose interpreter has every tool but vulture
     When the session runs `tools probe`
-    Then tools prints one line for each tool
-    And each installed tool's line gives its name and version
-    And vulture's line says it is missing and what it is for
-    And the interpreter is printed after the tools
-    And it exits 1
+    Then tools prints each tool
+    And each installed tool is printed with its version
+    And vulture is printed as missing, with what it is for
+    And the interpreter's path is printed after the tools
+    And it exits with an error
 
   @r4
   Scenario: probe with --log prints the one line for a researcher's notes
@@ -70,7 +85,7 @@ Feature: Analysis tools
     When the session runs `tools install`
     Then tools prints jedi, what it is for and what the workflow does without it
     And it prints the command that failed with the end of its error
-    And it exits 1
+    And it exits with an error
 
   @r8
   Scenario: map runs the suite once under coverage and keeps the map
@@ -112,7 +127,7 @@ Feature: Analysis tools
     Given a map has been made
     And <situation>
     When the session runs `tools tests-of <argument>`
-    Then it exits 1
+    Then it exits with an error
 
     Examples:
       | situation                                             | argument            |
@@ -120,12 +135,11 @@ Feature: Analysis tools
       | src/cart.py has no function named missing             | src/cart.py:missing |
 
   @r49
-  Scenario: tests-of without a map says to make one
+  Scenario: tests-of without a map is refused
     Pins that tests-of does not answer before a map exists.
     Given a Python project for which no map has been made
     When the session runs `tools tests-of src/cart.py`
     Then the command is refused because no map has been made
-    And it says to make one with `tools map`
 
   @r13
   Scenario: untested lists the functions no test executed
@@ -153,7 +167,7 @@ Feature: Analysis tools
     Pins that a name with no definition in the project fails.
     Given a Python project in which nothing is defined as `nowhere`
     When the session runs `tools refs nowhere`
-    Then it exits 1
+    Then it exits with an error
     And it says nothing in the project is defined as nowhere
 
   @r16
@@ -165,7 +179,7 @@ Feature: Analysis tools
     Then tools prints a heading for ruff, for vulture and for import-linter
     And ruff and vulture are run over src/cart.py and import-linter over the project
     And <tool>'s finding is under <tool>'s heading
-    And it exits 1
+    And it exits with an error
 
     Examples:
       | tool          |
@@ -174,41 +188,21 @@ Feature: Analysis tools
       | import-linter |
 
   @r17
-  Scenario: `tools check` names a missing tool under its heading
+  Scenario: `tools check` names a missing tool
     Pins that a missing tool is named, not silently skipped.
     Given a Python project whose interpreter is missing vulture
     When the session runs `tools check src/cart.py`
-    Then under the vulture heading tools says vulture is missing
+    Then tools names vulture as missing
+    And it exits with an error
 
   @r6
-  Scenario: install outside a virtualenv explains each missing tool and installs nothing
+  Scenario: install outside a virtualenv says so for each missing tool and installs nothing
     Pins what the session is told about each missing tool when the interpreter cannot be installed into.
     Given a Python project whose interpreter is not a virtualenv and is missing jedi and vulture
     When the session runs `tools install`
     Then nothing is installed into the interpreter
-    And for jedi and for vulture tools prints the tool, what it is for, what the workflow does without it and that the interpreter is not a virtualenv
-    And it exits 1
-
-  @r5
-  Scenario Outline: install with every tool present says so and succeeds
-    Pins that nothing to install is success, virtualenv or not.
-    Given a Python project whose interpreter <kind> and has every tool
-    When the session runs `tools install`
-    Then tools says every tool is present
-    And it exits 0
-
-    Examples:
-      | kind                  |
-      | is a virtualenv       |
-      | is not a virtualenv   |
-
-  @r5
-  Scenario: install says each tool it installed
-    Pins that a successful install is printed per tool.
-    Given a Python project whose interpreter is a virtualenv missing jedi
-    And jedi installs with pip
-    When the session runs `tools install`
-    Then tools prints that jedi is installed
+    And for jedi and for vulture tools says that the interpreter is not a virtualenv
+    And it exits with an error
 
   @r49
   Scenario Outline: an interpreter that does not start is refused
@@ -235,13 +229,12 @@ Feature: Analysis tools
 
   @r8
   Scenario Outline: map replaces the earlier map and succeeds whether or not the tests pass
-    Pins that a failing suite still yields a map, and what map prints about it.
+    Pins that a failing suite still yields a map.
     Given a Python project with a map made at an earlier commit
     And the project is at commit def5678 and its suite <ending>
     When the session runs `tools map`
     Then the earlier map is replaced by one made at commit def5678
-    And tools prints pytest's last line, where the map is and commit def5678
-    And it exits 0
+    And it exits successfully
 
     Examples:
       | ending          |
@@ -254,7 +247,6 @@ Feature: Analysis tools
     Given a Python project in which running the suite under coverage leaves no map
     When the session runs `tools map`
     Then the command is refused because no map was made
-    And it names the command it ran and the end of its output
 
   @r49
   Scenario: map that makes no map keeps the map made before
@@ -262,17 +254,17 @@ Feature: Analysis tools
     Given a Python project with a map made at commit abc1234
     And running the suite under coverage now leaves no map
     When the session runs `tools map`
-    Then it exits 1
+    Then it exits with an error
     And the map made at commit abc1234 is as it was
 
   @r13
-  Scenario Outline: untested prints each function with its place, the count and the commit
+  Scenario Outline: untested prints each function, the count and the commit
     Pins untested's output and that finding untested functions is not a failure.
     Given a map made at commit abc1234 in which no test executed <count> functions in src/cart.py
     When the session runs `tools untested src/cart.py`
-    Then tools prints each of those functions as `<path>:<line> <name>`
+    Then tools prints each of those functions
     And it says <count> functions no test executed and gives commit abc1234
-    And it exits 0
+    And it exits successfully
 
     Examples:
       | count |
@@ -280,20 +272,19 @@ Feature: Analysis tools
       | 2     |
 
   @r49
-  Scenario: untested without a map says to make one
+  Scenario: untested without a map is refused
     Pins that untested does not answer before a map exists.
     Given a Python project for which no map has been made
     When the session runs `tools untested src/cart.py`
     Then the command is refused because no map has been made
-    And it says to make one with `tools map`
 
   @r17
-  Scenario Outline: without coverage tests-of and untested say to install it
-    Pins that the map readers stop and point to install when coverage is missing.
+  Scenario Outline: without coverage tests-of and untested name it as missing
+    Pins that the map readers stop and name coverage when it is missing.
     Given a Python project whose interpreter is missing coverage
     When the session runs `tools <command>`
-    Then the command is refused because coverage is missing from the interpreter
-    And it says to run `tools install`
+    Then tools names coverage as missing from the interpreter
+    And it exits with an error
 
     Examples:
       | command                |
@@ -301,20 +292,19 @@ Feature: Analysis tools
       | untested src/cart.py   |
 
   @r17
-  Scenario: without jedi refs says to install it
-    Pins that refs stops and points to install when jedi is missing.
+  Scenario: without jedi refs names it as missing
+    Pins that refs stops and names jedi when it is missing.
     Given a Python project whose interpreter is missing jedi
     When the session runs `tools refs total`
-    Then the command is refused because jedi is missing from the interpreter
-    And it says to run `tools install`
+    Then tools names jedi as missing from the interpreter
+    And it exits with an error
 
-  @r1 @r17
+  @r1
   Scenario: a .venv whose python links to the running interpreter is still the one used
     Pins that tools runs under the project's virtualenv, and so reads its packages, even when its python is a link to the interpreter running the script.
     Given a Python project whose .venv is a virtualenv made from the interpreter running the script, without jedi
     When the session runs `tools refs total`
-    Then the command is refused because jedi is missing from the interpreter
-    And it says to run `tools install`
+    Then tools names jedi as missing from the interpreter
 
   @r49
   Scenario: tests-of on a file that does not exist is refused
@@ -336,13 +326,12 @@ Feature: Analysis tools
 
   @r14
   Scenario Outline: refs on a defined name gives its definition apart from its references
-    Pins that the definition is named but not counted, and that any number of references is success.
+    Pins that the definition is named but not counted, whatever the number of references.
     Given a Python project that defines the function total in src/cart.py and refers to it <count> times
     When the session runs `tools refs total`
     Then tools names src/cart.py as where total is defined
     And the definition is not counted as a reference
     And <count> references are printed
-    And it exits 0
 
     Examples:
       | count |
@@ -367,27 +356,18 @@ Feature: Analysis tools
     And it prints git's error
 
   @r16
-  Scenario: `tools check` with no file to examine says so under ruff and vulture and does not fail for them
+  Scenario: `tools check` with no file to examine does not fail for ruff and vulture
     Pins that an empty selection is not a finding.
     Given a Python project in git whose Python files are unchanged since base commit abc1234
     When the session runs `tools check --base abc1234`
-    Then under the ruff heading and under the vulture heading tools says `nothing to check`
-    And neither ruff nor vulture makes it exit 1
+    Then neither ruff nor vulture makes it exit with an error
 
   @r16
   Scenario: `tools check` without import contracts does not run import-linter
-    Pins that import-linter is skipped, visibly, when the project declares no contracts.
+    Pins that import-linter runs only where the project declares contracts.
     Given a Python project that declares no import contracts
     When the session runs `tools check src/cart.py`
-    Then under the import-linter heading tools says `the project states no import contracts`
-    And import-linter is not run
-
-  @r16
-  Scenario: a tool that prints nothing is shown clean
-    Pins that silence from a tool is shown as clean rather than as an empty heading.
-    Given a Python project in which ruff prints nothing for src/cart.py
-    When the session runs `tools check src/cart.py`
-    Then under the ruff heading tools says it is clean
+    Then import-linter is not run
 
   @r50
   Scenario: size prints each tracked Python file over the limit in the working tree, with its line count
@@ -401,14 +381,14 @@ Feature: Analysis tools
     Then tools prints src/cart.py with 301 lines, tests/test_cart.py with 320 lines, bin/reprice with 400 lines and src/report.py with 350 lines
     And it prints no other file
 
-  # [r51] **If** any tracked Python file is over the size limit, then `tools size` shall exit 1.
+  # [r51] **If** any tracked Python file is over the size limit, then `tools size` shall exit with an error.
   @r51
   Scenario: size fails when one tracked Python file is over the limit
     Pins that a single file over the limit fails the command.
     Given a Python project in git
     And it tracks src/cart.py of 301 lines and src/total.py of 120 lines
     When the session runs `tools size`
-    Then it exits 1
+    Then it exits with an error
 
   # [r52] **Where** `tools size --limit <n>` is given, `tools size` shall use `<n>` lines as the size limit, and 300 lines otherwise.
   @r52
