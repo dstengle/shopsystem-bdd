@@ -51,3 +51,6 @@
 {"time": "2026-10-22T22:59:49+00:00", "work-item": "design-model-check-3", "before": "awaiting-ruling", "after": "withdrawn", "by": "work withdraw"}
 {"time": "2026-10-22T22:59:49+00:00", "work-item": "work-queue-5", "before": "awaiting-ruling", "after": "withdrawn", "by": "work withdraw"}
 {"time": "2026-10-22T22:59:49+00:00", "work-item": "migration-tools-1", "before": "awaiting-ruling", "after": "withdrawn", "by": "work withdraw"}
+{"time": "2026-10-22T22:59:53+00:00", "stage": "branch-review", "event": "push verified"}
+{"time": "2026-10-22T22:59:53+00:00", "stage": "branch-review", "agent": "bdd-branch-reviewer", "session": "bb5487f1-227a-4838-a4d1-4428621cc126", "event": "start"}
+{"time": "2026-10-22T23:10:07+00:00", "stage": "branch-review", "agent": "bdd-branch-reviewer", "session": "bb5487f1-227a-4838-a4d1-4428621cc126", "event": "end"}
