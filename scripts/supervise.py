@@ -222,6 +222,8 @@ class Run(Workers, Briefs, Merge, Faults):
             if self.outside is not None:
                 shutil.rmtree(self.outside, ignore_errors=True)
         statuses = self.items()
+        if all(s in ("green", "withdrawn") for _, s in statuses):
+            self.branch_review()
         for name, status in statuses:
             print("%s %s" % (name, status))
             if status == "awaiting-ruling":

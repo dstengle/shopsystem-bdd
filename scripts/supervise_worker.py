@@ -66,9 +66,9 @@ def with_scripts(plugin=False, work_item=None):
     env["PYTHONPATH"] = os.pathsep.join(p for p in (env.get("PYTHONPATH"), str(SCRIPTS)) if p)
     if plugin:
         env["PYTEST_PLUGINS"] = ",".join(p for p in (env.get("PYTEST_PLUGINS"), "work_items") if p)
+        env[WORKER] = work_item or "the branch review"      # a `work run` started from here refuses (r21)
     if work_item:      # every pytest a worker runs selects its work-item's scenarios (r22)
         env["PYTEST_ADDOPTS"] = " ".join(p for p in (env.get("PYTEST_ADDOPTS"), "--work-item " + work_item) if p)
-        env[WORKER] = work_item      # a `work run` started from here refuses (r21)
     return env
 
 
@@ -136,8 +136,9 @@ class Workers:
         The worker writes in its worktree's .shop/scratch/<k>-<stage>/; work run copies that into the main checkout's
         run directory, .shop/work/<initiative>/runs/<work-item>/<k>-<stage>/, and reads the result from there.
         What a worker changes under .shop/work/ is put back where the worker changed it (r6): a detached worktree's
-        changes go with the worktree, a branch's are put back by `under_work`. The main checkout's working tree is not
-        the worker's, so nothing there is put back: a change made there while the worker runs is someone else's."""
+        changes go with the worktree, a branch's are put back by `under_work`. A change left uncommitted there in the
+        main checkout while the worker ran is put back too, and is the work-item's fault (r28); one committed there is
+        someone else's, and kept."""
         self.verify_push(name, stage)
         with self.lock:
             label, kept_at = self.run_dir(name, stage)
@@ -146,12 +147,7 @@ class Workers:
             brief = self.brief(name, stage, agent, here, tree, branch, extra)
             session = str(uuid.uuid4())
             self.log(**{"work-item": name, "stage": stage, "agent": agent, "session": session, "event": "start"})
-        done = subprocess.run([self.claude, "-p", "Read the brief file %s and do what it says." % brief,
-                               "--agent", AGENT_PREFIX + agent, "--plugin-dir", str(SCRIPTS.parent),
-                               "--session-id", session, "--output-format", "json",
-                               "--permission-mode", "acceptEdits", "--allowedTools", ",".join(self.tools(stage, agent)),
-                               *(["--max-turns", str(MAX_TURNS[stage])] if stage in MAX_TURNS else [])],
-                              cwd=tree, capture_output=True, text=True, env=with_scripts(plugin=True, work_item=name))
+        done = self.session(stage, agent, brief, session, tree, name)
         with self.lock:
             changed = self.checkout_changes()
             shutil.copytree(here, kept_at)
@@ -177,6 +173,15 @@ class Workers:
             return None, "%s's result file %s gives its questions as %s, not a list of questions" % (
                 agent, self.rel(result), json.dumps(questions))
         return data, None
+
+    def session(self, stage, agent, brief, session, tree, work_item):
+        """One `claude -p` session of `agent` in `tree`, given its brief (r2), its plugin (r11) and its stage's tools."""
+        return subprocess.run([self.claude, "-p", "Read the brief file %s and do what it says." % brief,
+                               "--agent", AGENT_PREFIX + agent, "--plugin-dir", str(SCRIPTS.parent),
+                               "--session-id", session, "--output-format", "json",
+                               "--permission-mode", "acceptEdits", "--allowedTools", ",".join(self.tools(stage, agent)),
+                               *(["--max-turns", str(MAX_TURNS[stage])] if stage in MAX_TURNS else [])],
+                              cwd=tree, capture_output=True, text=True, env=with_scripts(plugin=True, work_item=work_item))
 
     def keep_named(self, data, tree, here, kept_at):
         """Copy into the run directory each file of the worktree the result names outside the worker's run directory,

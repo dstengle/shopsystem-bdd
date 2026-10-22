@@ -27,7 +27,7 @@ def one_at_a_time(repo):
 @then("each worker was started as `claude -p` with an input prompt naming its brief, --agent shopsystem-bdd:<its stage's "
       "agent> and a session id no other worker had")
 def started_as(repo):
-    started = starts(repo)
+    started = [c for c in starts(repo) if work_item_of(c) == "w1"]
     assert [c["agent"] for c in started] == ["shopsystem-bdd:" + a for a in AGENTS], started
     for c in started:
         argv = c["argv"]
@@ -45,8 +45,9 @@ def started_as(repo):
 
 @then("each brief names .shop/work/i1/w1.md and spec/capabilities/thing.md to read, and where the worker's result goes")
 def brief_names(repo):
-    assert starts(repo)
-    for c in starts(repo):
+    started = [c for c in starts(repo) if work_item_of(c) == "w1"]
+    assert started
+    for c in started:
         brief = c["brief"]
         assert ".shop/work/i1/w1.md" in brief and "spec/capabilities/thing.md" in brief, brief
         assert re.search(r"^Result file: \S+$", brief, re.M), brief
@@ -69,9 +70,10 @@ def none_after(repo, name, who):
       "stage, the agent and the session id claude was given")
 def worker_lines(repo):
     lines = [l for l in log_lines(repo) if "after" not in l]
-    sessions = [option(c["argv"], "--session-id") for c in starts(repo)]
+    started = [c for c in starts(repo) if work_item_of(c) == "w1"]
+    sessions = [option(c["argv"], "--session-id") for c in started]
     assert len(sessions) == 4, sessions
-    for c, session in zip(starts(repo), sessions):
+    for c, session in zip(started, sessions):
         mine = [l for l in lines if l.get("session") == session]
         assert [l.get("event") for l in mine] == ["start", "end"], (session, lines)
         for l in mine:
@@ -254,3 +256,17 @@ def brief_says_result_first(repo):
     for c in started:
         said = [l for l in c["brief"].splitlines() if "result file first" in l and "keep it current" in l]
         assert said, c["brief"]
+
+
+@then("after w1 was green a `claude -p` session of shopsystem-bdd:bdd-branch-reviewer was started, given one brief naming "
+      "the initiative branch and its base")
+def branch_reviewer(repo, context):
+    events = calls(repo)
+    green = [i for i, c in enumerate(events) if c["event"] == "end" and c["agent"] == "shopsystem-bdd:bdd-task-reviewer"]
+    review = [i for i, c in enumerate(events) if c["event"] == "start" and c["agent"] == "shopsystem-bdd:bdd-branch-reviewer"]
+    assert green and len(review) == 1 and green[-1] < review[0], (events, context["done"].stderr)
+    c = events[review[0]]
+    lines = brief_lines(c["brief"])
+    base = git(repo, "log", "--diff-filter=A", "--format=%H", "--", ".shop/work/i1/initiative.md").strip()
+    assert c["argv"][0] == "-p" and c["brief_path"] in c["argv"][1], c["argv"]
+    assert lines.get("Initiative branch") == "main" and lines.get("Base") == base, c["brief"]

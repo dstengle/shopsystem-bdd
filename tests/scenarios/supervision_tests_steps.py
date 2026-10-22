@@ -2,7 +2,7 @@
 whole suite before a merge counts as expected."""
 from pytest_bdd import given, parsers, then
 
-from .supervision_world import DELIVERY, calls, commit_all
+from .supervision_world import DELIVERY, calls, commit_all, git, work_commits
 
 
 @given(".shop/delivery.toml gives [tests] with `python3 tests.py --work-item w1` for the work-item's scenarios and "
@@ -37,3 +37,18 @@ def pytest_given_work_item(repo, context):
 def worker_pytest(repo, context):
     ran = [c for c in calls(repo, ("pytest",)) if c["args"] == ["-q"]]
     assert len(ran) == 1 and ran[0]["work_item"] == "w1", (calls(repo, ("pytest",)), context["done"].stderr)
+
+
+@given(parsers.parse("every worker gives DONE, the planner's result giving a `fileset` of {first} and {second}"))
+def planner_fileset(plan, first, second):
+    plan["default"] = {"status": "DONE"}
+    plan["bdd-planner"] = {"fields": {"fileset": [first, second]}}
+
+
+@then(parsers.parse("the commit of w1's transition to planned writes `fileset:` {first} and {second} into "
+                    ".shop/work/i1/w1.md"))
+def fileset_written(repo, context, first, second):
+    made = [sha for sha, subject in work_commits(repo) if subject == "work: w1 researched -> planned"]
+    assert len(made) == 1, (work_commits(repo), context["done"].stderr)
+    text = git(repo, "show", "%s:.shop/work/i1/w1.md" % made[0])
+    assert "\nfileset: [%s, %s]\n" % (first, second) in text, text
