@@ -1,0 +1,4 @@
+{"time": "2026-10-22T22:26:40+00:00", "work-item": "design-model-check-3", "stage": "research", "event": "push verified"}
+{"time": "2026-10-22T22:26:40+00:00", "work-item": "design-model-check-3", "stage": "research", "agent": "code-scout", "session": "613c2ca0-7145-402b-a27e-083728d10e8d", "event": "start"}
+{"time": "2026-10-22T22:29:01+00:00", "work-item": "design-model-check-3", "stage": "research", "agent": "code-scout", "session": "613c2ca0-7145-402b-a27e-083728d10e8d", "event": "end"}
+{"time": "2026-10-22T22:29:01+00:00", "work-item": "design-model-check-3", "before": "drafted", "after": "failed", "by": "work run"}
