@@ -234,12 +234,19 @@ class Run(Workers, Briefs, Merge, Faults):
             if status == "awaiting-ruling":
                 for line in self.questions(name):
                     print("  %s" % line)
-            for failed, fault in self.faults:
-                if failed == name:
+            if status == "failed":
+                for fault in self.faulted(name):
                     print("  - %s" % fault)
         if all(s in ("green", "withdrawn") for _, s in statuses):
             return 0
-        return 3 if any(s == "awaiting-ruling" for _, s in statuses) and not self.faults else 1
+        return 3 if any(s == "awaiting-ruling" for _, s in statuses) and not any(s == "failed" for _, s in statuses) else 1
+
+    def faulted(self, name):
+        """The faults of a failed work-item: those its `## Faults` records, the ones this run met as it told them (with a
+        failed push of the failure named), r40 and r52."""
+        mine = [fault for failed, fault in self.faults if failed == name]
+        recorded = [" ".join(b[0][2:].split() + [l.strip() for l in b[1:]]) for b in self.held(name, "Faults")]
+        return [r for r in recorded if not any(m.startswith(r) for m in mine)] + mine
 
 
 def claimed(entry, tracked):

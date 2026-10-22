@@ -12,7 +12,9 @@ The script is the JSON file $STUB_CLAUDE_PLAN: an object whose keys are agents w
              "not-json" one that is not JSON;
   subtype    how the session ends, as claude's JSON output gives it (default "success"; "error_max_turns" at its
              turn limit, "error_during_execution" in an error; any but "success" with `is_error` true), with
-             `num_turns` its turns (default 1);
+             `num_turns` its turns (default 1; 26 at the turn limit, as the real CLI gives for a cap of 25);
+  exit       the exit code of the session (default 0);
+  stdout     the text the session prints, in place of its JSON result (`subtype` and `num_turns` then unused);
   fields     {field: value}, more fields of the result file (a planner's `fileset`);
   touch      a list of paths, files created first, wherever they are (no tool of the worker's: the world changing
              while it works, as a remote that starts refusing pushes);
@@ -80,7 +82,7 @@ def bash(argv, command):
     """Run `command` if --allowedTools allows it as Bash; record that it ran or was refused."""
     line = shlex.join(command)
     if any(fnmatch.fnmatchcase(line, pattern) for pattern in allowed(argv, "Bash")):
-        subprocess.run(command, capture_output=True)
+        subprocess.run(command, capture_output=True, check=True)
         record({"event": "ran", "tool": "Bash", "command": line})
         return True
     record({"event": "refused", "tool": "Bash", "command": line})
@@ -185,10 +187,14 @@ def main(argv):
         result.write_text(json.dumps(dict({"status": step.get("status", "DONE"), "summary": "the stand-in's %s" % short,
                                            "questions": step.get("questions", [])}, **named, **step.get("fields", {}))))
     subtype = step.get("subtype", "success")
-    print(json.dumps({"type": "result", "subtype": subtype, "is_error": subtype != "success", "session_id": session,
-                      "num_turns": step.get("num_turns", 1), "total_cost_usd": 0, "result": "stand-in"}))
+    if "stdout" in step:
+        print(step["stdout"])
+    else:
+        print(json.dumps({"type": "result", "subtype": subtype, "is_error": subtype != "success", "session_id": session,
+                          "num_turns": step.get("num_turns", 26 if subtype == "error_max_turns" else 1),
+                          "total_cost_usd": 0, "result": "stand-in"}))
     record({"event": "end", "agent": agent, "session": session})
-    return 0
+    return step.get("exit", 0)
 
 
 if __name__ == "__main__":

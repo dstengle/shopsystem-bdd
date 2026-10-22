@@ -55,16 +55,21 @@ def researcher_no_result(plan, result):
                           "num_turns": 12}
 
 
-ENDINGS = {"in an error": {"subtype": "error_during_execution", "num_turns": 7},
-           "at its turn limit": {"subtype": "error_max_turns", "num_turns": 25}}
+ENDINGS = {"ending in an error": {"subtype": "error_during_execution", "num_turns": 7},
+           "ending at its turn limit": {"subtype": "error_max_turns", "num_turns": 26},
+           "exiting with an error": {"exit": 1},
+           "leaving output that holds no JSON result": {"stdout": "no result here, only words"}}
 
 
-@given(parsers.re(r"the researcher's session ends (?P<ending>in an error|at its turn limit), its result file giving DONE$"))
+@given(parsers.re(r"the researcher's result file gives DONE, its session (?P<ending>[A-Za-z ]+)$"))
 def researcher_cut_short(plan, ending):
     plan["code-scout"] = dict(ENDINGS[ending], status="DONE")
 
 
 FAULT_WORDS = {
+    "that the researcher's session exited with an error": ["researcher", "session exited with an error"],
+    "that the researcher's session left output that holds no JSON result": [
+        "researcher", "session left output that holds no JSON result"],
     "how the researcher's session ended": ["researcher", "its session ended as a success (success, 12 turns"],
     "that the researcher's session ended in an error": ["researcher", "session ended on an error"],
     "that the researcher's session ended at its turn limit": ["researcher", "session ended at its turn limit"],
@@ -132,6 +137,27 @@ def awaiting_with_questions(repo, name, question, ruling):
     text = item_text(name, "awaiting-ruling") + "\n## Questions\n- %s\n" % question
     write(repo, ".shop/work/i1/%s.md" % name, text + ("\n## Rulings\n- %s\n" % ruling if ruling else ""))
     commit_all(repo, "%s awaiting a ruling" % name)
+
+
+@given(parsers.re(r'i1\'s work-item (?P<name>\w+) is failed, its fault recorded as "(?P<fault>[^"]+)"$'))
+def failed_with_fault(repo, name, fault):
+    write(repo, ".shop/work/i1/%s.md" % name, item_text(name, "failed") + "\n## Faults\n- %s\n" % fault)
+    commit_all(repo, "%s failed" % name)
+
+
+@then(parsers.re(r'`work run` prints (?P<first>\w+) with (?P<s1>[\w-]+) and the fault "(?P<fault>[^"]+)", and '
+                 r'(?P<second>\w+) with (?P<s2>[\w-]+)$'))
+def prints_statuses_and_fault(context, first, s1, fault, second, s2):
+    lines = [l.strip() for l in context["done"].stdout.splitlines()]
+    assert "%s %s" % (first, s1) in lines and "%s %s" % (second, s2) in lines, context["done"].stdout
+    assert any(fault in line for line in lines[lines.index("%s %s" % (first, s1)) + 1:]), context["done"].stdout
+
+
+@then("`work run` names w1 and that it cannot push the initiative branch to the remote")
+def names_cannot_push(context):
+    out = context["done"].stdout + context["done"].stderr
+    assert [l for l in out.splitlines() if "w1" in l.split() and "failed" in l.split()], out
+    assert "could not verify that it can push the initiative branch" in out and "Traceback" not in out, out
 
 
 @then("`work run` names w1, that the push could not be verified, and that the push of the failure failed, with no traceback")

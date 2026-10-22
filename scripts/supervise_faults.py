@@ -94,14 +94,21 @@ class Faults:
         return sorted(set(changed))
 
 
-def cut_short(stdout):
-    """True when a `claude -p --output-format json` session ended in an error or at its turn limit (r45): its output's
-    `is_error`, or a subtype of `error_...` (`error_max_turns`)."""
+def cut_short(stdout, code=0):
+    """How a `claude -p --output-format json` session was cut short (r45), in words, else None: it exited with an error,
+    its output holds no JSON result, or the output's `is_error` or an `error_...` subtype says it ended in an error or
+    at its turn limit."""
     try:
         data = json.loads(stdout)
     except ValueError:
-        return False
-    return isinstance(data, dict) and (data.get("is_error") is True or str(data.get("subtype")).startswith("error_"))
+        data = None
+    if code != 0:
+        return "session exited with an error (exit code %d)" % code
+    if not isinstance(data, dict):
+        return "session left output that holds no JSON result"
+    if data.get("is_error") is True or str(data.get("subtype")).startswith("error_"):
+        return session_end(stdout, code)[4:]
+    return None
 
 
 def session_end(stdout, code):
