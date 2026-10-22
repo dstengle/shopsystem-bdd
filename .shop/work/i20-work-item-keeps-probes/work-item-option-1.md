@@ -8,3 +8,5 @@ accepts: [supervision#r55, supervision#r56]
 ---
 
 # work-item-option-1
+
+Delivered by a direct bdd-implementer, merged in a706d30 (0.23.1): `work run`'s researchers were blocked by the fault this work-item fixes. Task review DONE (findings in the coordinator's .shop/scratch/review-wio/); its one optional finding taken in 234aafe.

@@ -6,7 +6,7 @@ kind: capability-change
 owner-level: shopsystem-bdd
 status: started
 priority: 1
-source: [measurement/2026-10-22-research-at-the-limit]
+source: [measurement/2026-10-22-research-at-the-limit, observation/2026-10-22-point-release-0-23-1]
 date: 2026-10-22
 ---
 

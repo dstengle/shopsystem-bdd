@@ -131,6 +131,19 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 Only `initiative-round` has the Agent tool. A plugin agent's `hooks` and `permissionMode` are ignored, so a role's
 limits are its tools; under `work run` they are also its `--allowedTools`.
 
+## 0.23.1: `--work-item` keeps tests that are not scenarios
+
+- **`--work-item` keeps tests that are not scenarios** (supervision r55, r56): the option `work run` gives every
+  worker's pytest now keeps a probe file or a script's test it collects, deselects only the scenarios the work-item
+  does not accept, and refuses only a run that collected scenarios and none the work-item accepts. A researcher's
+  probes run again, the cause of research stages ending at their turn limit since 0.22.0
+  (`.shop/records/measurements/2026-10-22-research-at-the-limit.md`).
+- **Still known**: work-item names repeat across initiatives, and `--work-item` takes the first initiative's
+  work-item of a name; 0.24.0 gives work-items `w<n>` ids.
+
+Upgrading a consuming repository from 0.23.0: a worker's `python3 -m pytest -q` under `--work-item` now also runs the
+repository's tests that are not scenarios; nothing needs to change.
+
 ## 0.23.0: faults settled, query output as JSON, the session keeps the gate, measurement on v3
 
 - **Faults settled** (the 0.22.0 review's deferred findings, decision 0057): a fault decides a work-item's status

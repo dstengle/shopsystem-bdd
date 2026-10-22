@@ -173,3 +173,13 @@ keeps probe files and non-scenario tests (the cause of researchers ending at the
 measurement/2026-10-22-research-at-the-limit), work-items get context-scoped `w<n>` ids in place of names (the
 person: "Why wouldn't we use Ids instead of names and get all of the uniqueness we need?"), and `measure` counts round
 trips; analysis-tools' `--json` lines are held; no allow rule is added for the refused subagent writes.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-22-point-release-0-23-1
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+by: the person ("Take care of the --work-item issue as a point release"), recorded by the coordinator
+date: 2026-10-22
+
+The person asked for the `--work-item` fix approved for 0.24.0 at the 0.23.0 gate as a point release, 0.23.1, and
+delegated its small-change gate to the coordinator's recommendation. Supervision r55 and r56 were written, formulated
+and delivered by a direct bdd-implementer (initiative i20); the duplicate work-item names and the other 0.24.0 items
+stay for 0.24.0.
