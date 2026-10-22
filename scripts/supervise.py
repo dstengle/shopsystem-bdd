@@ -211,6 +211,7 @@ class Run(Workers, Briefs, Merge, Faults, Reviews):
     def run(self):
         """Pull the work-items one worker at a time until none can move (r1); print where each stands (r9)."""
         self.check()
+        self.push_unpushed()
         try:
             while True:
                 movable = [(n, s) for n, s in self.items() if s in MOVABLE]

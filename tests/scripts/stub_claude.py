@@ -13,7 +13,7 @@ The script is the JSON file $STUB_CLAUDE_PLAN: an object whose keys are agents w
   subtype    how the session ends, as claude's JSON output gives it (default "success"; "error_max_turns" at its
              turn limit, "error_during_execution" in an error; any but "success" with `is_error` true), with
              `num_turns` its turns (default 1; 26 at the turn limit, as the real CLI gives for a cap of 25);
-  exit       the exit code of the session (default 0);
+  exit       the exit code of the session (default 0, or 1 when `subtype` is not "success", as the real CLI exits);
   stdout     the text the session prints, in place of its JSON result (`subtype` and `num_turns` then unused);
   fields     {field: value}, more fields of the result file (a planner's `fileset`);
   touch      a list of paths, files created first, wherever they are (no tool of the worker's: the world changing
@@ -27,6 +27,7 @@ The script is the JSON file $STUB_CLAUDE_PLAN: an object whose keys are agents w
              the name of the work-item the brief names;
   meet       a number n: before anything else, wait until $STUB_CLAUDE_CALLS has the starts of n workers of this
              agent, this one's included (up to a minute, so a worker nobody joins still ends);
+  watch      a list of files: the worker's start is followed by a `seen` record of what each holds then;
   skills     a list of skills to load (`shopsystem-bdd:bdd-red-green`), first;
   run        a list of Bash commands (argument lists), run in the working directory, last;
   names      {result field: path}, a file the result names (`report`), given in the result by its absolute path, the
@@ -136,6 +137,9 @@ def main(argv):
     result = pathlib.Path(next(line.split(":", 1)[1].strip() for line in brief.splitlines() if line.startswith("Result file:")))
     work_item = pathlib.Path(next((line.split(":", 1)[1].strip() for line in brief.splitlines()
                                    if line.startswith("Work-item:")), "none")).stem
+    if step.get("watch"):     # what these files hold as the worker starts, in its start record
+        record({"event": "seen", "agent": agent, "seen": {w: (pathlib.Path(w).read_text() if pathlib.Path(w).exists()
+                                                             else "") for w in step["watch"]}})
     for path in step.get("touch", []):
         pathlib.Path(path).touch()
     if step.get("meet"):
@@ -194,7 +198,7 @@ def main(argv):
                           "num_turns": step.get("num_turns", 26 if subtype == "error_max_turns" else 1),
                           "total_cost_usd": 0, "result": "stand-in"}))
     record({"event": "end", "agent": agent, "session": session})
-    return step.get("exit", 0)
+    return step.get("exit", 0 if subtype == "success" else 1)
 
 
 if __name__ == "__main__":

@@ -32,6 +32,35 @@ class Faults:
         said = [l.strip() for l in (done.stderr + done.stdout).splitlines() if l.strip() and not l.startswith("hint:")]
         return "; ".join(said) or "exit %d" % done.returncode
 
+    def push_unpushed(self):
+        """Before anything else changes (r54): push the initiative branch if it has commits its remote does not have; a
+        Refused (r10) when that push fails or the branches have diverged. A remote that cannot be read is left to the
+        verification before the first worker (r35)."""
+        done = subprocess.run(["git", "ls-remote", self.remote(), "refs/heads/" + self.branch], cwd=self.root,
+                              capture_output=True, text=True)
+        if done.returncode != 0:
+            return
+        theirs = done.stdout.split()[0] if done.stdout.strip() else None
+        head = supervise_worker.git(self.root, "rev-parse", "HEAD").stdout.strip()
+        if theirs == head:
+            return
+        def ancestor(old, new):
+            return subprocess.run(["git", "merge-base", "--is-ancestor", old, new], cwd=self.root,
+                                  capture_output=True).returncode == 0
+        if theirs:
+            if subprocess.run(["git", "cat-file", "-e", theirs + "^{commit}"], cwd=self.root,
+                              capture_output=True).returncode != 0:
+                subprocess.run(["git", "fetch", "-q", self.remote(), self.branch], cwd=self.root, capture_output=True)
+            if ancestor(head, theirs):     # the remote is ahead: nothing of this branch's is missing there
+                return
+            if not ancestor(theirs, head):
+                raise Refused("it cannot push the initiative branch to the remote %s: the branches have diverged"
+                              % self.remote())
+        reason = self.git_push()
+        if reason:
+            raise Refused("it cannot push the initiative branch to the remote %s, which lacks some of its commits: %s"
+                          % (self.remote(), reason))
+
     def verify_push(self, name, stage):
         """Verify, before a worker starts, that the initiative branch can be pushed (r35); a Fault if not (r39)."""
         reason = self.git_push("--dry-run")
@@ -102,12 +131,12 @@ def cut_short(stdout, code=0):
         data = json.loads(stdout)
     except ValueError:
         data = None
+    if isinstance(data, dict) and (data.get("is_error") is True or str(data.get("subtype")).startswith("error_")):
+        return session_end(stdout, code)[4:]     # how it ended is told first: the real CLI exits 1 at its turn limit
     if code != 0:
         return "session exited with an error (exit code %d)" % code
     if not isinstance(data, dict):
         return "session left output that holds no JSON result"
-    if data.get("is_error") is True or str(data.get("subtype")).startswith("error_"):
-        return session_end(stdout, code)[4:]
     return None
 
 

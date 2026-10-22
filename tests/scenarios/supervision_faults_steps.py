@@ -4,7 +4,7 @@ import re
 
 from pytest_bdd import given, parsers, then
 
-from .supervision_world import commit_all, fields, git, item_text, log_lines, remote_dir, section, starts, tree_has, work_commits, work_item_of, write
+from .supervision_world import calls, commit_all, fields, git, item_text, remote_dir, section, starts, tree_has, work_commits, work_item_of, write
 
 
 @then(parsers.parse("git lists the branch work/w1, with the implementer's commit of feature.txt"))
@@ -36,6 +36,7 @@ def another_session_changes(repo, plan):
 @given("the remote refuses pushes to the initiative branch")
 def remote_ahead(repo):
     """The remote's initiative branch has a commit the repository does not: git refuses to push over it."""
+    git(repo, "push", "-q", "origin", "main")     # the remote has all of the branch's commits, then one more (r54)
     other = repo.parent / "other"
     git(repo.parent, "clone", "-q", "-b", "main", str(remote_dir(repo)), str(other))
     git(other, "-c", "user.name=Other", "-c", "user.email=other@example.com", "commit", "-q", "--allow-empty", "-m", "elsewhere")
@@ -150,12 +151,25 @@ def names_cannot_push(context):
     assert "could not verify that it can push the initiative branch" in out and "Traceback" not in out, out
 
 
-@then("`work run` names w1, that the push could not be verified, and that the push of the failure failed, with no traceback")
-def names_both(context):
-    err = context["done"].stderr
-    out = context["done"].stdout + err
-    assert "Traceback" not in err, err
-    assert "could not verify" in out and "the push of the failure failed" in out, out
+@given("the remote refuses pushes to the initiative branch once the branch reviewer has started")
+def remote_refuses_at_review(repo, plan):
+    plan["default"] = {"status": "DONE"}
+    plan["bdd-branch-reviewer"] = {"touch": [str(remote_dir(repo) / "refuse")]}
+
+
+@given("the initiative branch has a commit of notes.txt that the remote does not have")
+def unpushed_commit(repo, plan):
+    write(repo, "notes.txt", "notes\n")
+    commit_all(repo, "notes")
+    plan["code-scout"] = {"watch": [str(remote_dir(repo) / "pushed")]}
+
+
+@then("before the researcher was started, the remote's initiative branch had the commit of notes.txt")
+def pushed_before_researcher(repo, context):
+    sha = git(repo, "log", "-1", "--format=%H", "--", "notes.txt").strip()
+    first = calls(repo, ("seen",))[0]
+    seen = first["seen"][str(remote_dir(repo) / "pushed")]
+    assert [l for l in seen.splitlines() if l.split()[1:] == [sha, "refs/heads/main"]], (seen, context["done"].stderr)
 
 
 @given(parsers.parse("in the repository's own checkout {changed} is changed and {added} is added, neither committed"))

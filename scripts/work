@@ -56,7 +56,7 @@ def main(argv=None):
     w.add_argument("name")
     r = sub.add_parser("run", help="take an initiative's work-items through their stages, one claude -p worker at a time")
     r.add_argument("initiative")
-    t = sub.add_parser("retry", help="return a failed work-item to the status it had before its failed stage")
+    t = sub.add_parser("retry", help="return a failed work-item to the status before that log.jsonl gives in its transition into failed")
     t.add_argument("name")
     args = ap.parse_args(argv)
     try:
