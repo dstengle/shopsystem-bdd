@@ -408,6 +408,24 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the implementer's `python3 -m pytest -q` ran with --work-item w1
 
+  @r55
+  Scenario: a worker's pytest run of a test that is not a scenario runs that test
+    Pins that `--work-item` keeps what no work-item can accept, such as a researcher's probe file, instead of refusing the run.
+    Given i1's work-item w1 is drafted
+    And the repository holds test_probe.py, a test that is not a scenario, which writes probe.ran when it runs
+    And every worker gives DONE, the researcher running `python3 -m pytest -q test_probe.py`
+    When the person runs `work run i1`
+    Then the researcher's `python3 -m pytest -q test_probe.py` ran test_probe.py's test
+
+  @r56
+  Scenario: a worker's pytest run that collects scenarios, none of which its work-item accepts, is refused
+    Pins that `--work-item` still refuses a run that would show the worker none of its work-item's scenarios.
+    Given i1's work-item w1 is ready, accepting other#r1
+    And features/thing.feature has the scenario "it waits", tagged @r2, which fails
+    And every worker gives DONE, the implementer running `python3 -m pytest -q`
+    When the person runs `work run i1`
+    Then the implementer's `python3 -m pytest -q` was refused, saying that w1 accepts none of the scenarios it collected
+
   @r23
   Scenario: when the repository is inside the plugin's own directory, the workers' worktrees are outside it
     Pins that `work run` delivering this plugin's own work gives workers writable worktrees: claude refuses every write under a --plugin-dir, so none may lie under the plugin's directory.
