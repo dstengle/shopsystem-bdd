@@ -125,8 +125,10 @@ def given_tools(repo, tools):
 
 @then(parsers.parse("its `{command}` was {done}"))
 def command_was(repo, command, done):
-    events = [(c["event"], c["command"]) for c in calls(repo, ("ran", "refused")) if c["tool"] == "Bash"]
+    bash = [c for c in calls(repo, ("ran", "refused")) if c["tool"] == "Bash"]
+    events = [(c["event"], c["command"]) for c in bash]
     assert events == [({"run": "ran", "refused": "refused"}[done], scripts_in(command))], events
+    assert all(c.get("code", 0) == 0 for c in bash), bash      # a command that was run also succeeded
 
 
 @then("each of w1's four workers was started with --plugin-dir the directory that holds `work run`'s own scripts")
