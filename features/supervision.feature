@@ -550,6 +550,16 @@ Feature: Supervision
     Then `work run` names w1 and that its researcher changed .shop/work/i1/initiative.md
     And it exits with an error
 
+  @r40
+  Scenario: a push that fails while a failure is being recorded leaves the transition to failed committed and ends `work run` with an error naming both
+    Pins that a remote refusing every push ends the run with a message, never a traceback.
+    Given i1's work-item w1 is drafted
+    And the remote refuses pushes to the initiative branch
+    When the person runs `work run i1`
+    Then w1 is failed, recording why the push could not be verified
+    And it exits with an error
+    And `work run` names w1, that the push could not be verified, and that the push of the failure failed, with no traceback
+
   @r41
   Scenario Outline: a git command that fails during a stage makes the work-item's transition to failed, recording git's reason: <fault>
     Pins that a failure of git during a delivery is a fault of the work-item, never a traceback or a question.

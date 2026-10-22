@@ -48,13 +48,15 @@ class Faults:
 
     def fail(self, name, fault):
         """`name` to `failed` from whatever status it has, its fault recorded under `## Faults` and committed; the push
-        is tried, and a push that fails again is already the fault. The run ends with an error (r40)."""
+        is tried; a push that fails is named with the fault. The run ends with an error (r40)."""
         with self.lock:
             before = workqueue.agrees(self.root, self.initiative, name)
             workqueue.move(self.root, self.initiative, name, "failed", by="work run")
             self.section(name, "Faults", fault)
-            self.commit(name, before, "failed")
-            self.git_push()
+            self.commit(name, before, "failed", push=False)
+            reason = self.git_push()
+            if reason:      # the transition stays committed locally; the run ends naming the fault and the failed push
+                fault = "%s; and the push of the failure failed: %s" % (fault, reason)
             self.faults.append((name, fault))
 
     def checkout_changes(self):

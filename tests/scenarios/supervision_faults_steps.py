@@ -121,3 +121,11 @@ def awaiting_with_questions(repo, name, question, ruling):
     text = item_text(name, "awaiting-ruling") + "\n## Questions\n- %s\n" % question
     write(repo, ".shop/work/i1/%s.md" % name, text + ("\n## Rulings\n- %s\n" % ruling if ruling else ""))
     commit_all(repo, "%s awaiting a ruling" % name)
+
+
+@then("`work run` names w1, that the push could not be verified, and that the push of the failure failed, with no traceback")
+def names_both(context):
+    err = context["done"].stderr
+    out = context["done"].stdout + err
+    assert "Traceback" not in err, err
+    assert "could not verify" in out and "the push of the failure failed" in out, out
