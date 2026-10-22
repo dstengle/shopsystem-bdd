@@ -144,7 +144,7 @@ Feature: Work queue
       | cannot be written            | .shop/work/i1/log.jsonl            |
 
   @r8
-  Scenario Outline: retry returns a failed work-item to the status it had before the failed stage: failed from <from>
+  Scenario Outline: retry gives a failed work-item back the status it had before the failed stage: failed from <from>
     Pins that `work retry` takes a work-item back to where its failed stage started, once the fault is remedied.
     Given an initiative i1 under .shop/work/ whose work-item w1 is failed
     And .shop/work/i1/log.jsonl gives w1's last transitions as <transitions>
