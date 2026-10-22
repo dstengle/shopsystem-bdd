@@ -342,7 +342,7 @@ Feature: Supervision
     Then git lists no branch work/w1
 
   @r19
-  Scenario: a researcher is given the work-item's file set and accepted scenarios, and a limit of 25 turns
+  Scenario: a researcher is given the work-item's file set and accepted scenarios, and a limit of 40 turns
     Pins that the researcher starts from the work-item's file set and accepted scenarios, rather than searching the repository for it, and ends within a bounded number of turns.
     Given i1's work-item w1 is drafted, its file set scripts/thing.py and tests/test_thing.py
     And features/thing.feature has the scenario "it answers", tagged @r1, and the scenario "it waits", tagged @r2
@@ -350,7 +350,7 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the researcher's brief gives scripts/thing.py and tests/test_thing.py as the work-item's file set
     And the researcher's brief names the accepted scenario "it answers" of features/thing.feature, and not "it waits"
-    And the researcher was started with a limit of 25 turns
+    And the researcher was started with a limit of 40 turns
 
   @r20
   Scenario: two ready work-items whose claims would not share a file are implemented at the same time, and merged one at a time
