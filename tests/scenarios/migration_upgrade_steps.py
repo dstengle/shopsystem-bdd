@@ -116,7 +116,12 @@ def _(old):
 def _(run, old, context, sub):
     context["before_log"] = len(old.git("log", "--oneline").stdout.splitlines())
     who = {"GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t", "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"}
-    context["done"] = run("migrate", sub, cwd=old.root, env=dict(os.environ, **who))
+    scripts = context.get("plugin_scripts")  # a Given's copy of the plugin at another version
+    if scripts:
+        cmd = [sys.executable, str(scripts / "migrate"), sub]
+        context["done"] = subprocess.run(cmd, cwd=old.root, env=dict(os.environ, **who), capture_output=True, text=True)
+    else:
+        context["done"] = run("migrate", sub, cwd=old.root, env=dict(os.environ, **who))
 
 
 @when("the person starts a session in it")

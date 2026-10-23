@@ -1,4 +1,4 @@
-"""`migrate status` and `migrate upgrade` (migration-tools r15, r18-r20, r22-r24, r27, r28): the repository's plugin
+"""`migrate status` and `migrate upgrade` (migration-tools r15, r18-r20, r22-r24, r27-r29): the repository's plugin
 version, the plugin's, the upgrade steps between them, what a session is told at its start, and the upgrade, all of it
 in one commit or none of it."""
 import json
@@ -7,13 +7,16 @@ import sys
 import types
 from pathlib import Path
 
+import migrate_upgrade_answers
 import migrate_upgrade_ids
 from migrate_write import check_moves, git, top_level, uncommitted
 
 SCRIPTS = Path(__file__).resolve().parent
 VERSION_FILE = ".shop/plugin-version"
 UNRECORDED = "0.23.1"
-STEPS = [("0.24.0", "work-items named by ids", "give every work-item the id w<n>", migrate_upgrade_ids)]
+STEPS = [("0.24.0", "work-items named by ids", "give every work-item the id w<n>", migrate_upgrade_ids),
+         ("0.25.0", "answers, not rulings",
+          "rename awaiting-ruling to awaiting-answer and `## Rulings` to `## Answers`", migrate_upgrade_answers)]
 
 
 def number(version):
@@ -101,14 +104,19 @@ def upgrade(root):
         print("no upgrade step is pending")
         return 0
     before = repository_version(root)
-    plans = [step[3].plan(root) for step in steps]
-    refused = [failure for changes in plans for failure in changes.failures + move_failures(root, changes)]
-    if refused:
-        print("migrate changed nothing; it could not make every change:\n" + "\n".join(refused), file=sys.stderr)
-        return 1
+    refused = []
     try:
-        for changes in plans:
+        for step in steps:  # oldest first, each planned from the tree the steps before it left (r20)
+            changes = step[3].plan(root)
+            refused = changes.failures + move_failures(root, changes)
+            if refused:
+                break
             apply(root, changes)
+        if refused:
+            subprocess.run(["git", "reset", "-q", "--hard", "HEAD"], cwd=root, capture_output=True)
+            subprocess.run(["git", "clean", "-fdq"], cwd=root, capture_output=True)
+            print("migrate changed nothing; it could not make every change:\n" + "\n".join(refused), file=sys.stderr)
+            return 1
         (root / VERSION_FILE).write_text(plugin_version() + "\n")
         git(root, "add", "-f", "--", VERSION_FILE)
         git(root, "commit", "-q", "-m", "migrate upgrade: %s to %s\n\n%s" % (
