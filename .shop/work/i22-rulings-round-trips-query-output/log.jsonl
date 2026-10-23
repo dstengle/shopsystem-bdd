@@ -191,3 +191,7 @@
 {"time": "2026-10-23T12:43:21+00:00", "work-item": "w99", "stage": "implement", "agent": "bdd-implementer", "session": "a819dd17-0ccc-4d67-a3ec-cda7f3aa30b5", "event": "end"}
 {"time": "2026-10-23T12:43:34+00:00", "work-item": "w99", "stage": "merge", "event": "suite", "record": "Suite: 693 passed, 0 failed at 52141df in 13 s"}
 {"time": "2026-10-23T12:43:39+00:00", "work-item": "w99", "before": "claimed", "after": "done", "by": "work run"}
+{"time": "2026-10-23T12:43:40+00:00", "work-item": "w99", "stage": "review", "event": "push verified"}
+{"time": "2026-10-23T12:43:40+00:00", "work-item": "w99", "stage": "review", "agent": "bdd-task-reviewer", "session": "505df8cb-52d2-42d0-b453-42ff7ec77ea6", "event": "start"}
+{"time": "2026-10-23T12:45:19+00:00", "work-item": "w99", "stage": "review", "agent": "bdd-task-reviewer", "session": "505df8cb-52d2-42d0-b453-42ff7ec77ea6", "event": "end"}
+{"time": "2026-10-23T12:45:19+00:00", "work-item": "w99", "before": "done", "after": "green", "by": "work run"}
