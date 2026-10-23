@@ -1,0 +1,10 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Branch review of i22, dc9ece7..55b4057 on next: w91-w99 (w94, w96, w97, w99 through work run; w91, w92, w93, w95, w98 merged by hand).\nSuite: 699 passed, 0 failed at 55b4057 in 13.2 s (parallel, -n auto; in-process only for batch-measurement).\nChecks: w98's tools check scripts tests clean (run through the plugin's identical tools_check.py; the worktree's scripts/tools needed approval). tools check --base: ruff clean, vulture clean, import-linter has no contracts. tools size: nothing. features bindings: clean. features deprecated: 4 (r42 and r9 left by this initiative).\nCritical: w92 and w95 retired deprecated scenarios with no Retires section (w92's r26 and r37 are listed by no work-item).\nImportant, fix now: w91's work answer refuses an answer with a newline; no line asks for it.\nImportant, observation: w94's 'interim' allowance row for gives_totals does not hold (the change is plan-listed).\nMinor: deprecated r42 and r9 scenarios left after their replacements went green; commits belonging to no work-item.\nThe probes could not be run (they needed approval); the observations are read from the code. Coupling: the Claude Code transcript store, an unpinned ruff, Python 3.11.",
+  "findings": "/tmp/work-run-i22-rulings-round-trips-query-output-4g4tk4q7/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": [
+    "Critical, w92, features/supervision.feature (adf0d01): seven deprecated scenarios retired, w92.md has no ## Retires; the @r26 and @r37 ones are listed under no work-item's Retires",
+    "Critical, w95, features/analysis-tools.feature:124-136 before 583db74: deprecated @r11 outline retired, w95.md has no ## Retires",
+    "Important (fix now), w91, scripts/workqueue_answer.py:29-30: refusal of an answer holding a newline, which no Behaviour line or Implementation bullet asks for"
+  ]
+}
