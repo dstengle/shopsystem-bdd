@@ -1,0 +1,21 @@
+{
+  "status": "DONE",
+  "summary": "w94 research done; notes.md in the run directory, parts 1-7.\nAccepted: 8 scenarios of batch-measurement r41, r42, r53-r56. Run: 2 pass today (the deprecated r41 and r42), 6 fail.\nRed causes: undefined steps (r41 awaiting-answer, r53, r54, r55, r56, r42 current: 7-column table unpack), no round-trips code (measure_build, measure_read, measure_show).\nToday's code already gives stages without round trips (r55, r56 need steps only).\nDefect D1: --sessions with a missing directory exits 0 with no sessions and no message.\nOld assumption: the code counts awaiting-ruling; real logs write awaiting-ruling (workqueue STATUSES); spec says awaiting-answer.\nNo coverage map (tools tests-of: no map); test coverage by search.\nFile set: measure_read, measure_build, measure_show, measure; test steps in batch_measurement_{given,then,show,world,transcripts}.\nOpen: Claude Code store location for tests; subagent messages in round trips; keep or retire deprecated r41/r42; status rename scope.",
+  "fileset": [
+    "scripts/measure",
+    "scripts/measure_build.py",
+    "scripts/measure_read.py",
+    "scripts/measure_show.py",
+    "tests/scenarios/batch_measurement_given_steps.py",
+    "tests/scenarios/batch_measurement_then_steps.py",
+    "tests/scenarios/batch_measurement_show_steps.py",
+    "tests/scenarios/batch_measurement_world.py",
+    "tests/scenarios/batch_measurement_transcripts.py"
+  ],
+  "questions": [
+    "Where is Claude Code's own transcript store, and how does a test point measure at it? The work-item gives no path and the code has no override.",
+    "Do subagent messages count in a stage's round trips? r53 says the session's transcript; subagents write their own rows.",
+    "Keep or retire the deprecated scenarios of r41 (awaiting-ruling) and r42? The work-item has no Retires section and accepts both; the r41 deprecated one cannot pass once only awaiting-answer is counted.",
+    "Is the status rename awaiting-ruling to awaiting-answer in scope? Spec says awaiting-answer; scripts/workqueue.py and the logs say awaiting-ruling, so awaiting-answer counts read 0 on real logs."
+  ]
+}
