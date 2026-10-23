@@ -1,0 +1,22 @@
+{
+  "status": "DONE",
+  "summary": [
+    "w93 research done; notes at .shop/scratch/1-research/notes.md (seven parts).",
+    "Scenario red: undefined Given at feature line 526 (0.24.0), other r29 steps also undefined; no 0.25.0 step in scripts/migrate_upgrade.py:16.",
+    "Probes (run): at 0.24.0 upgrade says no step pending, so the scenario cannot pass until plugin.json is above 0.24.0.",
+    "Question for the plan: raise .claude-plugin/plugin.json to 0.25.0 here, or leave it and stay red (both in notes section 7).",
+    "Defect 1 (run): upgrade() plans all steps before applying; a second step writes to the pre-rename path (probe_sequence.py).",
+    "Old assumptions: workqueue.py STATUSES, model_work.py STATUSES, supervise.py questions()/Rulings, measure_build.py counts; w91 owns most.",
+    "Tests impossible to keep: none by reading; tests-of had no map, so lists are by search.",
+    "File set: migrate_upgrade.py (STEPS), new migrate_upgrade_answers.py, new steps module, test_migration_tools.py import, plugin.json (if raised).",
+    "Scratch .shop/scratch is git-ignored; git status is clean apart from the stage directory."
+  ],
+  "fileset": [
+    "scripts/migrate_upgrade.py",
+    "scripts/migrate_upgrade_answers.py",
+    "tests/scenarios/migration_upgrade_answers_steps.py",
+    "tests/scenarios/test_migration_tools.py",
+    ".claude-plugin/plugin.json"
+  ],
+  "questions": []
+}
