@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"w_unserved_cap gated on a job node in model.lp and grammar.md; steps added; fixture updated. Scenario green.","commits":["8a32a57 model check: no w_unserved_cap while the context has no job"],"report":".shop/scratch/3-implement/report.md","questions":[]}

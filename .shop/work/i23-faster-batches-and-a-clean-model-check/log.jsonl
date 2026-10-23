@@ -298,3 +298,9 @@
 {"time": "2026-10-23T23:43:28+00:00", "work-item": "w118", "before": "researched", "after": "planned", "by": "work run"}
 {"time": "2026-10-23T23:43:30+00:00", "work-item": "w118", "before": "planned", "after": "ready", "by": "work run"}
 {"time": "2026-10-23T23:43:31+00:00", "work-item": "w118", "before": "ready", "after": "claimed", "by": "work run"}
+{"time": "2026-10-23T23:43:49+00:00", "work-item": "w118", "stage": "implement", "event": "suite", "record": "Suite: 722 passed, 1 failed at 547bbe0 in 17 s; failing: tests/scenarios/test_design_model_check.py::test_a_bounded_context_with_no_job_gets_no_unservedcapability_warning"}
+{"time": "2026-10-23T23:43:49+00:00", "work-item": "w118", "stage": "implement", "event": "push verified"}
+{"time": "2026-10-23T23:43:49+00:00", "work-item": "w118", "stage": "implement", "agent": "bdd-implementer", "session": "a030e30a-cf01-46cb-a4f1-9ba57cd4360c", "event": "start"}
+{"time": "2026-10-23T23:44:41+00:00", "work-item": "w118", "stage": "implement", "agent": "bdd-implementer", "session": "a030e30a-cf01-46cb-a4f1-9ba57cd4360c", "event": "end"}
+{"time": "2026-10-23T23:44:55+00:00", "work-item": "w118", "stage": "merge", "event": "suite", "record": "Suite: 723 passed, 0 failed at 8a32a57 in 14 s"}
+{"time": "2026-10-23T23:45:00+00:00", "work-item": "w118", "before": "claimed", "after": "done", "by": "work run"}
