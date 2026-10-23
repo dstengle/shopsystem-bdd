@@ -11,6 +11,7 @@ from .migration_ledger_steps import *  # noqa: F401,F403  the steps are fixtures
 from .migration_old import CONTEXT, body, front, migrate, said
 from .migration_safety_steps import *  # noqa: F401,F403
 from .migration_spec_steps import *  # noqa: F401,F403
+from .migration_upgrade_answers_steps import *  # noqa: F401,F403
 from .migration_upgrade_steps import *  # noqa: F401,F403
 
 scenarios("migration-tools.feature")
