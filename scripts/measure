@@ -15,10 +15,13 @@ contract:
   - initiative <initiative> writes one measurement at
     .shop/records/measurements/<date>-<initiative>.md, the date being the day it
     is run. It reads .shop/work/<initiative>/log.jsonl, the session.json of each
-    stage's directory and git. A measurement that exists is not written over
-    without --replace.
+    stage's directory, git, and each stage's transcript in Claude Code's store
+    (CLAUDE_CONFIG_DIR, else ~/.claude, projects/*/<session>.jsonl). A
+    measurement that exists is not written over without --replace.
   - It gives each stage with its work-item, agent, session, time (none for a
-    stage with no end), turns, tokens (output, new input, cache read) and cost;
+    stage with no end), turns, round trips (the distinct requests of its
+    session's transcript; none when no transcript is found), tokens (output,
+    new input, cache read) and cost;
     each work-item with its transitions, its awaiting-answer and failed counts
     and the commits its merge brought in; the totals over the stages' sessions
     and the time from the first transition to the last.

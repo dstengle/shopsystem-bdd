@@ -14,6 +14,13 @@ ITEMS = ("work-item", "transitions", "awaiting_answer", "failed", "commits")
 SESSIONS = ("session", "started", "dispatched_by", "output_tokens", "new_input_tokens", "cache_read_tokens")
 
 
+def totals_of(*given):
+    """TOTALS, with the turns and round trips rows when a measurement gives them (an older one does not)."""
+    extra = (("turns", "turns"), ("round trips", "round_trips"))
+    rows = [r for r in extra if any(r[1] in g for g in given)]
+    return TOTALS[:2] + tuple(rows) + TOTALS[2:]
+
+
 def figures_of(path):
     """The figures of the measurement at `path`: the JSON block of its record."""
     where = Path(path)
@@ -49,9 +56,13 @@ def section(title, head, found):
 def show(path):
     figures = figures_of(path)
     totals = figures.get("totals", {})
-    out = [section("stages", STAGES, figures.get("stages", [])),
+    stages = figures.get("stages", [])
+    head = STAGES
+    if any("round_trips" in s for s in stages):
+        head = STAGES[:6] + ("round_trips",) + STAGES[6:]
+    out = [section("stages", head, stages),
            section("work-items", ITEMS, figures.get("work_items", [])),
-           "totals\n%s\n" % table(["total", "value"], [(name, totals.get(key)) for name, key in TOTALS])]
+           "totals\n%s\n" % table(["total", "value"], [(n, totals.get(k)) for n, k in totals_of(totals)])]
     if "sessions" in figures:
         out.append(section("sessions", SESSIONS, figures["sessions"]))
     return "\n".join(out)
@@ -66,7 +77,7 @@ def ratio(first, second):
 def compare(first, second):
     one, two = figures_of(first).get("totals", {}), figures_of(second).get("totals", {})
     rows = []
-    for name, key in TOTALS:
+    for name, key in totals_of(one, two):
         if key == "time":
             key = "time_seconds"
             shown = (one.get("time"), two.get("time"))

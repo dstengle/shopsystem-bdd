@@ -23,10 +23,61 @@ def measure_wrote(world, path):
     world.shown = path
 
 
+def wrote(world, path, stage):
+    """A measurement record at `path` holding one stage, as an earlier `measure initiative` left it."""
+    where = world.repo / path
+    where.parent.mkdir(parents=True, exist_ok=True)
+    figures = {"stages": [stage], "work_items": [], "totals": {"stages": 1, "sessions": 1}}
+    where.write_text("# Measurement\n\n```json\n%s\n```\n" % json.dumps(figures))
+    world.shown = path
+
+
+@given(parsers.parse("the measurement {path} that measure wrote, giving work-item cart-1's research stage {turns:d} "
+                     "turns and {trips:d} round trips"))
+def measure_wrote_trips(world, path, turns, trips):
+    wrote(world, path, {"work-item": "cart-1", "stage": "research", "agent": "researcher", "session": "s-1",
+                        "turns": turns, "round_trips": trips})
+
+
+@given(parsers.parse("the measurement {path} that measure wrote, giving no round trips"))
+def measure_wrote_no_trips(world, path):
+    wrote(world, path, {"work-item": "cart-1", "stage": "research", "agent": "researcher", "session": "s-1",
+                        "turns": 14})
+
+
 @when("the session runs measure show for it")
 def runs_show(world, measure_run):
-    measure_run("initiative", INITIATIVE)
+    if world.has_log:
+        measure_run("initiative", INITIATIVE)
     measure_run("show", world.shown)
+
+
+def stage_rows(out):
+    """The printed stage table: its head and its rows, each a dict by column."""
+    rows = rows_of(out)
+    head = next(r for r in rows if r[:2] == ["work-item", "stage"])
+    after = rows[rows.index(head) + 1:]
+    return head, [dict(zip(head, r)) for r in after if len(r) == len(head)]
+
+
+@then(parsers.parse("the printed stage of cart-1's research shows"))
+def printed_stage_shows(world, datatable):
+    _, stages = stage_rows(world.out)
+    (got,) = [s for s in stages if s["work-item"] == "cart-1" and s["stage"] == "research"]
+    for column, value in zip(*datatable):
+        assert got[column] == value, (column, got)
+
+
+@then("the stages are printed")
+def stages_printed(world):
+    assert world.code == 0, world.err
+    _, stages = stage_rows(world.out)
+    assert [s["work-item"] for s in stages] == ["cart-1"], world.out
+
+
+@then("no round trips are printed")
+def no_round_trips_printed(world):
+    assert "round trips" not in world.out, world.out
 
 
 def measurement(world, name, initiative, stages, output, cost):
