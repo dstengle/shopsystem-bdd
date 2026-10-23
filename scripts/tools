@@ -37,8 +37,10 @@ contract:
     count for each test file, and how many of the map's tests that is. Code
     on the path of every call is executed by most of the suite: the map
     narrows a search only for code off that path. A test that ran and failed
-    counts: the map knows what a test executed, not what it proved. Exit 1
-    when none did. untested <file>... prints each function no test executed.
+    counts: the map knows what a test executed, not what it proved. When
+    none did it says so and exits 0. untested <file>... prints each function
+    no test executed. map, tests-of, untested and refs take --json: one JSON
+    object on stdout in place of the lines.
   - refs <name> prints every reference to a function, class or name defined
     in the project, as path:line, with the count of production and test files
     (a test file is under a tests or test directory or named test_* or
@@ -80,16 +82,20 @@ def main():
     sub.add_parser("install").set_defaults(run=tools_env.cmd_install)
     made = sub.add_parser("map")
     made.add_argument("pytest", nargs="*")
+    made.add_argument("--json", action="store_true")
     made.set_defaults(run=tools_map.cmd_map)
     tests_of = sub.add_parser("tests-of")
     tests_of.add_argument("target")
     tests_of.add_argument("--by-file", action="store_true")
+    tests_of.add_argument("--json", action="store_true")
     tests_of.set_defaults(run=tools_map.cmd_tests_of, under=True)
     untested = sub.add_parser("untested")
     untested.add_argument("files", nargs="+")
+    untested.add_argument("--json", action="store_true")
     untested.set_defaults(run=tools_map.cmd_untested, under=True)
     refs = sub.add_parser("refs")
     refs.add_argument("name")
+    refs.add_argument("--json", action="store_true")
     refs.set_defaults(run=tools_refs.cmd_refs, under=True)
     check = sub.add_parser("check")
     check.add_argument("paths", nargs="*")
@@ -100,7 +106,7 @@ def main():
     size.set_defaults(run=tools_size.cmd_size)
     args = parser.parse_args()
     try:
-        if getattr(args, "under", False):
+        if getattr(args, "under", False) or (args.command == "map" and args.json):  # counting a map's tests needs coverage
             under(tools_env.interpreter(args)[0], sys.argv[1:])
         return args.run(args)
     except tools_env.Refused as why:

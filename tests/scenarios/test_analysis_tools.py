@@ -10,6 +10,7 @@ import shlex
 from pytest_bdd import parsers, scenarios, then, when
 
 from .analysis_tools_code_steps import *  # noqa: F401,F403  the steps are fixtures pytest-bdd finds by their names here
+from .analysis_tools_json_steps import *  # noqa: F401,F403
 from .analysis_tools_map_steps import *  # noqa: F401,F403
 from .analysis_tools_probe_steps import *  # noqa: F401,F403
 from .analysis_tools_size_steps import *  # noqa: F401,F403
@@ -43,14 +44,16 @@ def exits_with_error(run, repo, context, outside):
     result = context["result"]
     assert result.returncode == 1, result
     assert "Traceback" not in result.stderr
-    if "absent" in context:  # r11: a function the file does not have
+    if "absent" in context:  # r57: a function the file does not have
         assert result.stdout == ""
-        assert result.stderr == "tools: src/cart.py has no function named %s\n" % context["absent"]
         assert invoke(run, repo, context, ["tests-of", "src/cart.py:total"], outside).returncode == 0
-    if "unexecuted" in context:  # r11: a function no test executed
-        assert "0 of the 1 tests in the map executed" in result.stdout
     if context.get("defines_nothing"):  # r15
         assert result.stdout == ""
+
+
+@then("it says the target cannot be read")
+def says_target_unreadable(context):  # r57
+    assert context["result"].stderr.startswith("tools: cannot read src/cart.py:%s: " % context["absent"])
 
 
 # r27, r28

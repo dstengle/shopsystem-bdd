@@ -1,5 +1,6 @@
 """tools: the coverage map, made and read (map, tests-of, untested)."""
 import ast
+import json
 import os
 import re
 import subprocess
@@ -39,8 +40,17 @@ def cmd_map(args):
     os.replace(made, MAP)
     with open(MAP + ".at", "w") as handle:
         handle.write(head() + "\n")
+    if args.json:
+        data, at = read_map()
+        print(json.dumps({"commit": at, "tests": test_count(data)}))
+        return 0
     print("%s\nmap: %s, at %s" % (lines[-1] if lines else "", MAP, head()))
     return 0
+
+
+def test_count(data):
+    """How many tests the map knows: the distinct test contexts it measured."""
+    return len({c.split("|")[0] for c in data.measured_contexts() if c})
 
 
 def read_map():
@@ -93,10 +103,16 @@ def cmd_tests_of(args):
         else:
             spans = [(first, last) for found, _, last, first in functions(path) if found == name or found.endswith("." + name)]
         if not spans:
-            raise Refused("%s has no function named %s" % (path, name))
+            raise Refused("cannot read %s: %s has no function named %s" % (args.target, path, name))
         lines = {line: tests for line, tests in lines.items() if any(a <= line <= b for a, b in spans)}
     tests = sorted(set().union(*lines.values())) if lines else []
-    ran = len({c.split("|")[0] for c in data.measured_contexts() if c})
+    ran = test_count(data)
+    if args.json:
+        print(json.dumps({"tests": tests, "count": len(tests), "of": ran, "commit": at}))
+        return 0
+    if not tests:
+        print("no test of the map executed %s (map made at %s)" % (args.target, at))
+        return 0
     if args.by_file:
         files = {}
         for test in tests:
@@ -107,7 +123,7 @@ def cmd_tests_of(args):
         for test in tests:
             print(test)
     print("%d of the %d tests in the map executed %s (map made at %s)" % (len(tests), ran, args.target, at))
-    return 0 if tests else 1
+    return 0
 
 
 def cmd_untested(args):
@@ -115,12 +131,17 @@ def cmd_untested(args):
     for path in args.files:
         if not os.path.isfile(path):
             raise Refused("%s is not a file" % path)
-    count = 0
+    lost = []
     for path in args.files:
         lines = executed(data, path)
         for name, line, last, first in functions(path):
             if not any(lines.get(n) for n in range(first, last + 1)):
-                count += 1
-                print("%s:%d %s" % (path, line, name))
+                lost.append((path, line, name))
+    count = len(lost)
+    if args.json:
+        print(json.dumps({"functions": [{"path": p, "line": n, "name": f} for p, n, f in lost], "count": count, "commit": at}))
+        return 0
+    for path, line, name in lost:
+        print("%s:%d %s" % (path, line, name))
     print("%d function%s no test executed, in the map made at %s" % (count, "" if count == 1 else "s", at))
     return 0

@@ -121,20 +121,6 @@ Feature: Analysis tools
     Then tools prints tests/test_cart.py with 2 and tests/test_checkout.py with 1
     And it prints no test names
 
-  @r11 @deprecated
-  Scenario Outline: tests-of fails when nothing executed the target or the function does not exist (deprecated)
-    Deprecated for: tests-of says that no test of the map executed the target and exits successfully
-    Pins that an empty answer and an unknown function both fail.
-    Given a map has been made
-    And <situation>
-    When the session runs `tools tests-of <argument>`
-    Then it exits with an error
-
-    Examples:
-      | situation                                             | argument            |
-      | no test in the map executed the function unused       | src/cart.py:unused  |
-      | src/cart.py has no function named missing             | src/cart.py:missing |
-
   @r11
   Scenario: tests-of says that no test of the map executed the target and exits successfully
     Pins that an empty answer is printed with the map's commit and is not a failure.

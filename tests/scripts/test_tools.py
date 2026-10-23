@@ -62,7 +62,7 @@ class ToolsTest(unittest.TestCase):
         (self.tmp / "pytest.ini").write_text("[pytest]\ntestpaths = tests\npythonpath = .\n")
 
     def run_script(self, *args):
-        env = {k: v for k, v in os.environ.items() if k != "VIRTUAL_ENV"}
+        env = {k: v for k, v in os.environ.items() if k not in ("VIRTUAL_ENV", "PYTEST_ADDOPTS")}
         return subprocess.run([sys.executable, str(SCRIPT), "--python", sys.executable, *args], cwd=self.tmp,
                               capture_output=True, text=True, env=env)
 
@@ -100,8 +100,8 @@ class ToolsTest(unittest.TestCase):
         done = self.run_script("tests-of", "shelf/store.py:Shelf.count")
         self.assertEqual(done.stdout.splitlines()[0], "tests/test_store.py::test_the_shelf_counts")
         done = self.run_script("tests-of", "shelf/store.py:forgotten")
-        self.assertEqual(done.returncode, 1)
-        self.assertIn("0 of the 3 tests in the map executed", done.stdout)
+        self.assertEqual(done.returncode, 0)
+        self.assertIn("no test of the map executed shelf/store.py:forgotten (map made at", done.stdout)
         self.assertEqual(self.run_script("tests-of", "shelf/store.py:nothing").returncode, 1)
 
     @unittest.skipUnless(HAVE, "coverage, pytest-cov and jedi are needed")
