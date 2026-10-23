@@ -66,6 +66,24 @@ Feature: Batch measurement
       | U+2029     |
       | U+0085     |
 
+  @r59
+  Scenario Outline: a time ending in Z in <file> is read as a time in UTC
+    A time ending in Z is the same moment wherever measure runs, so it lines up with a time given with its offset and is never taken for the local time.
+    Given the session's local time zone is UTC+05:00
+    And i7-cart's log.jsonl gives its first transition at <first> and its last at <last>
+    And the directory sessions holds the transcript s-9, starting at <s-9 starts> and ending at 2026-10-22T09:00:00Z
+    When the session runs measure initiative i7-cart with --sessions sessions
+    Then measure exits successfully
+    And the measurement gives the totals
+      | time              |
+      | 1 hour 45 minutes |
+    And the measurement gives the session s-9
+
+    Examples:
+      | file         | first                     | last                      | s-9 starts                |
+      | log.jsonl    | 2026-10-22T07:55:00Z      | 2026-10-22T11:40:00+02:00 | 2026-10-22T08:30:00+00:00 |
+      | a transcript | 2026-10-22T09:55:00+02:00 | 2026-10-22T11:40:00+02:00 | 2026-10-22T08:30:00Z      |
+
   @r48
   Scenario: an existing measurement is not written over without --replace
     A measurement already written survives a second run unless replacing it is asked for.

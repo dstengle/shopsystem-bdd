@@ -294,15 +294,16 @@ Feature: Design model check
     Then it prints a file problem naming <named>
 
     Examples:
-      | case                                                  | named                                     |
-      | there is no initiative.md                             | .shop/work/i1, and not .shop/work/i1/initiative.md    |
-      | initiative.md has no id                               | .shop/work/i1/initiative.md                     |
-      | the part p1.md has no id                              | .shop/work/i1/p1.md                             |
-      | the part p1.md has the kind banana                    | .shop/work/i1/p1.md                             |
-      | the part p1.md has no status                          | .shop/work/i1/p1.md                             |
-      | the part p1.md has a status not in its kind's lifecycle | .shop/work/i1/p1.md                           |
-      | initiative.md has the priority high                   | .shop/work/i1/initiative.md                     |
-      | initiative.md has a date written 16/10/2026           | .shop/work/i1/initiative.md                     |
+      | case                                                                 | named                                              |
+      | there is no initiative.md                                            | .shop/work/i1, and not .shop/work/i1/initiative.md |
+      | initiative.md has no id                                              | .shop/work/i1/initiative.md                        |
+      | the part p1.md has no id                                             | .shop/work/i1/p1.md                                |
+      | the part p1.md has the kind banana                                   | .shop/work/i1/p1.md                                |
+      | the part p1.md has no status                                         | .shop/work/i1/p1.md                                |
+      | the part p1.md has a status not in its kind's lifecycle              | .shop/work/i1/p1.md                                |
+      | the part p1.md has the kind capability-proposal and the status built | .shop/work/i1/p1.md                                |
+      | initiative.md has the priority high                                  | .shop/work/i1/initiative.md                        |
+      | initiative.md has a date written 16/10/2026                          | .shop/work/i1/initiative.md                        |
 
   @r27
   Scenario: a work-item accepting a requirement no scenario names is a file problem
@@ -736,6 +737,14 @@ Feature: Design model check
       | withdrawn | no accepts and no check         | not printed |
       | drafted   | accepts thing#r1 and no check   | not printed |
       | drafted   | a check and no accepts          | not printed |
+
+  @r106
+  Scenario: a work-item accepting a requirement no scenario names yet, with no check, is not v_w4
+    Pins that a work-item's accepts counts toward saying how its work is shown complete, whether or not a scenario names the requirement yet.
+    Given a capability thing with requirement r2 that no scenario names
+    And a work-item w1 in .shop/work/i1/ with status drafted, accepts thing#r2 and no check
+    When `model check` is run
+    Then w1 is not printed under v_w4
 
   @r51
   Scenario: a code span, a double-quoted string and a tag are no mention

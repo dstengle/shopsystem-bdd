@@ -228,10 +228,14 @@ Feature: Work queue
     And .shop/work/i1/w1.md and .shop/work/i1/log.jsonl are as they were
 
     Examples:
-      | line break                    |
-      | a newline                     |
-      | U+2028, the line separator    |
-      | U+0085, the next-line control |
+      | line break                          |
+      | a newline                           |
+      | U+000B, the vertical tab            |
+      | U+000C, the form feed               |
+      | U+000D, the carriage return         |
+      | U+0085, the next-line control       |
+      | U+2028, the line separator          |
+      | U+2029, the paragraph separator     |
 
   @r15
   Scenario: an answer of two lines to a work-item not awaiting-answer is refused as more than one line first
