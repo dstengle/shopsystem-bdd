@@ -13,7 +13,7 @@ from pathlib import Path
 
 WORK = Path(".shop") / "work"
 # The statuses of the work-item lifecycle (design-decision/work-item-lifecycle-as-run); a move to any other is refused.
-STATUSES = ("drafted", "researched", "planned", "ready", "claimed", "done", "green", "awaiting-ruling", "withdrawn",
+STATUSES = ("drafted", "researched", "planned", "ready", "claimed", "done", "green", "awaiting-answer", "withdrawn",
             "failed")
 
 

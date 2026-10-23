@@ -9,6 +9,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import supervise  # noqa: E402
 import workqueue  # noqa: E402
+import workqueue_answer  # noqa: E402
 
 
 def cmd_add(args):
@@ -36,6 +37,11 @@ def cmd_retry(args):
     return 0
 
 
+def cmd_answer(args):
+    print("%s %s" % (args.name, workqueue_answer.answer(args.root, args.name, args.answer)))
+    return 0
+
+
 def cmd_run(args):
     return supervise.run(args.root, args.initiative)
 
@@ -58,9 +64,12 @@ def main(argv=None):
     r.add_argument("initiative")
     t = sub.add_parser("retry", help="return a failed work-item to the status before that log.jsonl gives in its transition into failed")
     t.add_argument("name")
+    n = sub.add_parser("answer", help="answer the question of an awaiting-answer work-item and return it to the stage that asked")
+    n.add_argument("name")
+    n.add_argument("answer")
     args = ap.parse_args(argv)
     try:
-        return {"add": cmd_add, "show": cmd_show, "run": cmd_run, "retry": cmd_retry,
+        return {"add": cmd_add, "show": cmd_show, "run": cmd_run, "retry": cmd_retry, "answer": cmd_answer,
                 "withdraw": cmd_withdraw}[args.cmd](args)
     except workqueue.Refused as refused:
         print("work: %s" % refused, file=sys.stderr)

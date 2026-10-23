@@ -95,11 +95,11 @@ def four_items(repo):
     commit_all(repo, "four work-items")
 
 
-@given("i1's work-item w1 is ready, accepting thing#r1, and w2 is awaiting-ruling, accepting thing#r2")
+@given("i1's work-item w1 is ready, accepting thing#r1, and w2 is awaiting-answer, accepting thing#r2")
 def two_items(repo):
     write(repo, ".shop/work/i1/w1.md", item_text("w1", "ready"))
-    write(repo, ".shop/work/i1/w2.md", item_text("w2", "awaiting-ruling").replace("thing#r1", "thing#r2"))
-    commit_all(repo, "w1 ready, w2 awaiting a ruling")
+    write(repo, ".shop/work/i1/w2.md", item_text("w2", "awaiting-answer").replace("thing#r1", "thing#r2"))
+    commit_all(repo, "w1 ready, w2 awaiting an answer")
 
 
 @given('features/thing.feature has the scenario "it waits", tagged @r2, which fails')

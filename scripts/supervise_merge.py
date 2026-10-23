@@ -68,7 +68,7 @@ class Merge:
     def implement(self, name):
         """ready -> claimed, the implementer in its worktree, and its branch merged only on passing tests (r4), then
         deleted (r18). A fault once it is claimed, a git command's failure among them, moves it to failed (r41); any
-        other failure puts it to awaiting-ruling with the failure as its question, and is still work run's own (r10)."""
+        other failure puts it to awaiting-answer with the failure as its question, and is still work run's own (r10)."""
         try:
             self.move(name, "ready", "claimed")
             self.claimed(name)
@@ -79,13 +79,13 @@ class Merge:
             raise
 
     def failed_claimed(self, name, error):
-        """`name` to awaiting-ruling, asking about `error`, while it is still claimed; a failure of that move leaves the
+        """`name` to awaiting-answer, asking about `error`, while it is still claimed; a failure of that move leaves the
         first failure the one work run ends with."""
         said = str(error) if isinstance(error, workqueue.Refused) else "%s: %s" % (type(error).__name__, error)
         with self.lock:
             try:
                 if workqueue.agrees(self.root, self.initiative, name) == "claimed":
-                    self.move(name, "claimed", "awaiting-ruling",
+                    self.move(name, "claimed", "awaiting-answer",
                               "work run failed on %s once it was claimed: %s" % (name, said))
             except Exception:
                 pass
@@ -103,7 +103,7 @@ class Merge:
                 if question is None:
                     question = self.merge(name, tree, tests)
                 if question is not None:
-                    self.move(name, "claimed", "awaiting-ruling", question)
+                    self.move(name, "claimed", "awaiting-answer", question)
                     return
         finally:
             self.remove(tree)
