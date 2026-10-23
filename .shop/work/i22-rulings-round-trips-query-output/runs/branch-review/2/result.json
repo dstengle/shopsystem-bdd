@@ -1,0 +1,6 @@
+{
+  "status": "DONE",
+  "summary": "Branch review 2 of i22, dc9ece7..5d25307 on next: w91-w100 (w94, w96, w97, w99, w100 through work run; w91, w92, w93, w95, w98 merged by hand).\nSuite: 693 passed, 0 failed at 5d25307 in 13.5 s (parallel, -n auto; in-process for batch-measurement only).\nChecks: w98's tools check scripts tests clean (plugin copy, tools_check.py identical to the worktree's); tools check --base: ruff clean, vulture clean, import-linter has no contracts; tools size: nothing; features bindings: clean; features deprecated: 2, both from before Base.\nReview 1's findings are resolved: C1 and C2 (w92 and w95 Retires), I1 (work-queue r15 with its scenario, bound by w100), I2, M1, M2 (w100), the put-back now catches every Exception.\nNo Critical finding and none to fix now. Minor observations: an empty version file is no longer tested (w100); r15's message is shadowed by the status and log refusals (w91); U+2028 and other line breaks pass the one-line check (w91); no test gives measure_read.moment a 'Z' time (w100); commits outside work-items (records).\nThe probes needed approval and were not run; those observations are read from the code.",
+  "findings": "/tmp/work-run-i22-rulings-round-trips-query-output-9fytv9rl/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": []
+}
