@@ -69,6 +69,14 @@ Feature: Analysis tools
     Then jedi and vulture are installed into the interpreter with pip
     And pyproject.toml and requirements.txt are unchanged
 
+  @r58
+  Scenario: install puts in the version of ruff the plugin pins
+    Pins that every project gets the same ruff, never whichever release pip finds newest.
+    Given a Python project whose interpreter is a virtualenv missing ruff
+    And the plugin pins one version of ruff
+    When the session runs `tools install`
+    Then ruff is installed into the interpreter at the version the plugin pins
+
   @r6
   Scenario: install refuses an interpreter that is not a virtualenv
     Pins that install never puts tools into an interpreter outside a virtualenv.

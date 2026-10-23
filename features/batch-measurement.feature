@@ -19,8 +19,9 @@ Feature: Batch measurement
     Then measure initiative refuses because the initiative has no log.jsonl
     And nothing is written
 
-  @r47
-  Scenario Outline: a <file kind> of a shape measure does not know is refused, naming it
+  @r47 @deprecated
+  Scenario Outline: a <file kind> of a shape measure does not know is refused, naming it (deprecated)
+    Deprecated for: a <file kind> of a shape measure does not know is refused, naming it
     Measure does not guess at a session it cannot read; it says which file stopped it.
     Given the initiative i7-cart has a log.jsonl
     And <file> is not of a shape measure knows
@@ -32,6 +33,38 @@ Feature: Batch measurement
       | file kind    | file                                                  | command                                              |
       | session.json | the session.json of work-item cart-1's research stage | measure initiative i7-cart                           |
       | transcript   | the transcript sessions/s-9.jsonl                     | measure initiative i7-cart with --sessions sessions  |
+
+  @r47
+  Scenario Outline: a <file kind> of a shape measure does not know is refused, naming it
+    Measure does not guess at a session it cannot read; it says which file stopped it.
+    Given the initiative i7-cart has a log.jsonl
+    And <file> is not empty and is not of a shape measure knows
+    When the session runs <command>
+    Then measure refuses, naming <file>
+    And nothing is written
+
+    Examples:
+      | file kind    | file                                                  | command                                              |
+      | session.json | the session.json of work-item cart-1's research stage | measure initiative i7-cart                           |
+      | transcript   | the transcript sessions/s-9.jsonl                     | measure initiative i7-cart with --sessions sessions  |
+
+  @r58
+  Scenario Outline: a transcript line with <line break> inside a JSON string is read as one line
+    A line break that JSON allows inside a string does not split the transcript's line, so its message is read whole and counted once.
+    Given i7-cart's log.jsonl gives work-item cart-1's research stage a start and an end, run in the session s-1
+    And the transcript of the session s-1 holds 3 assistant messages with 3 distinct request ids
+    And the text of one of those messages holds <line break> inside its JSON string
+    When the session runs measure initiative i7-cart
+    Then measure exits successfully
+    And the measurement gives the stage
+      | work-item | stage    | session | round trips |
+      | cart-1    | research | s-1     | 3           |
+
+    Examples:
+      | line break |
+      | U+2028     |
+      | U+2029     |
+      | U+0085     |
 
   @r48
   Scenario: an existing measurement is not written over without --replace
@@ -79,6 +112,19 @@ Feature: Batch measurement
       | work-item | stage | agent   | session | turns | output tokens | new input tokens | cache-read tokens | cost |
       | cart-1    | plan  | planner | s-2     | 6     | 1000          | 500              | 20000             | 0.18 |
     And the measurement gives no time for how long the stage took
+
+  @r57
+  Scenario: a stage whose session.json is empty is given without its session's figures, named as such
+    An empty session.json does not stop the measurement: the stage is still given, with nothing taken from that file, and says why its figures are missing.
+    Given i7-cart's log.jsonl gives work-item cart-1's research stage a start at 10:00 and an end at 10:12
+    And that stage was run as the agent researcher
+    And that stage's session.json is empty
+    When the session runs measure initiative i7-cart
+    Then the measurement gives the stage
+      | work-item | stage    | agent      | took       |
+      | cart-1    | research | researcher | 12 minutes |
+    And the measurement gives no turns, output tokens, new input tokens, cache-read tokens or cost for the stage
+    And the measurement names the stage as a stage whose session.json is empty
 
   @r41
   Scenario: each work-item is given with its transitions, its awaiting-answer and failed counts and the commits its merge brought in

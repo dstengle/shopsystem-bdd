@@ -71,6 +71,13 @@ Feature: Design model check
     Then the output gives w_uncited_obs with its plain label and its count
     And it exits successfully
 
+  @r111
+  Scenario: a bounded context with no job gets no unserved-capability warning
+    Pins that a capability is not warned about as serving no job when the bounded context has no job for it to serve.
+    Given a bounded context with one capability and no job
+    When `model check` is run
+    Then the output does not give w_unserved_cap
+
   @r12
   Scenario: without clingo `model check` says how to install it
     Given an interpreter without the clingo package
@@ -304,6 +311,22 @@ Feature: Design model check
     And a work-item in .shop/work/i1/w1.md that accepts thing#r2
     When `model check` is run
     Then it prints a file problem naming .shop/work/i1/w1.md
+
+  @r27
+  Scenario: a work-item accepting a requirement of a guarantees capability that no scenario names is no file problem
+    Pins that a guarantees capability's requirements, which no scenario names, may be accepted by a work-item.
+    Given a capability thing in the guarantees group with requirement r2 that no scenario names
+    And a work-item in .shop/work/i1/w1.md that accepts thing#r2
+    When `model check` is run
+    Then it prints no file problem naming .shop/work/i1/w1.md
+
+  @r27
+  Scenario: a green work-item accepting a retired id is no file problem
+    Pins that a retired id is left out of what a scenario must name for a work-item to accept it, once that work-item is green.
+    Given a capability thing whose frontmatter lists r2 as retired
+    And a work-item in .shop/work/i1/w1.md with status green that accepts thing#r2
+    When `model check` is run
+    Then it prints no file problem naming .shop/work/i1/w1.md
 
   @r110
   Scenario Outline: a work-item not named w<n>.md, or two work-items with one id, is a file problem

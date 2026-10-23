@@ -210,10 +210,33 @@ Feature: Work queue
       | an implementer     | ready      |
       | a reviewer         | done       |
 
-  @r15
-  Scenario: answer with a newline in it is refused, and nothing changes
+  @r15 @deprecated
+  Scenario: answer with a newline in it is refused, and nothing changes (deprecated)
+    Deprecated for: answer with a line break in it is refused, and nothing changes
     Pins that an answer is one line, so that each answer stays one bullet under `## Answers`.
     Given an initiative i1 under .shop/work/ whose work-item w1 is awaiting-answer
     When the session runs `work answer w1` with an answer of two lines
+    Then work exits with an error, saying that an answer is one line
+    And .shop/work/i1/w1.md and .shop/work/i1/log.jsonl are as they were
+
+  @r15
+  Scenario Outline: answer with a line break in it is refused, and nothing changes
+    Pins that an answer is one line whichever kind of line break would make it two, so that each answer stays one bullet under `## Answers`.
+    Given an initiative i1 under .shop/work/ whose work-item w1 is awaiting-answer
+    When the session runs `work answer w1` with an answer of two lines broken by <line break>
+    Then work exits with an error, saying that an answer is one line
+    And .shop/work/i1/w1.md and .shop/work/i1/log.jsonl are as they were
+
+    Examples:
+      | line break                    |
+      | a newline                     |
+      | U+2028, the line separator    |
+      | U+0085, the next-line control |
+
+  @r15
+  Scenario: an answer of two lines to a work-item not awaiting-answer is refused as more than one line first
+    Pins the person's ruling that, of several reasons to refuse an answer, the one-line refusal comes first.
+    Given an initiative i1 under .shop/work/ whose work-item w1 is ready
+    When the session runs `work answer w1` with an answer of two lines broken by a newline
     Then work exits with an error, saying that an answer is one line
     And .shop/work/i1/w1.md and .shop/work/i1/log.jsonl are as they were

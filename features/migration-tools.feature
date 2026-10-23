@@ -361,8 +361,9 @@ Feature: Migration tools
     Then .shop/work/i1/w1.md has the content work/i1/w1.md had
     And notes/.shop does not exist
 
-  @r4 @r5
-  Scenario: `migrate run` gives spec/index.md whose id is bounded-context/shop the id bounded-context/<path>, and rewrites what names the old id
+  @r4 @r5 @deprecated
+  Scenario: `migrate run` gives spec/index.md whose id is bounded-context/shop the id bounded-context/<path>, and rewrites what names the old id (deprecated)
+    Deprecated for: `migrate run` gives spec/index.md whose id is bounded-context/shop the id bounded-context/<path>
     Pins that a context id in another form is replaced, not kept, and that a frontmatter id naming it follows.
     Given a repository on the old system whose spec/index.md gives the id bounded-context/shop
     And a tracked notes/n1.md whose frontmatter about names bounded-context/shop
@@ -370,14 +371,29 @@ Feature: Migration tools
     Then spec/index.md gives the id bounded-context/example.org/acme/shop
     And notes/n1.md's about names bounded-context/example.org/acme/shop
 
-  @r9 @r5
-  Scenario: `migrate run` gives a decision file whose id is decision/<nnnn>-<name> the type-first id, and rewrites what names the old id
+  @r4
+  Scenario: `migrate run` gives spec/index.md whose id is bounded-context/shop the id bounded-context/<path>
+    Pins that a context id in another form is replaced, not kept.
+    Given a repository on the old system whose spec/index.md gives the id bounded-context/shop
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then spec/index.md gives the id bounded-context/example.org/acme/shop
+
+  @r9 @r5 @deprecated
+  Scenario: `migrate run` gives a decision file whose id is decision/<nnnn>-<name> the type-first id, and rewrites what names the old id (deprecated)
+    Deprecated for: `migrate run` gives a decision file whose id is decision/<nnnn>-<name> the type-first id
     Pins that a moved decision file's id in another form is replaced, not kept, and that a frontmatter id naming it follows.
     Given a repository on the old system with decisions/0001-x.md whose id is decision/0001-x
     And a capability spec/capabilities/thing.md whose frontmatter rests_on names decision/0001-x
     When the session runs `migrate run --context example.org/acme/shop`
     Then spec/decisions/0001-x.md gives the id design-decision/example.org/acme/shop/x
     And spec/capabilities/thing.md's rests_on names design-decision/example.org/acme/shop/x
+
+  @r9
+  Scenario: `migrate run` gives a decision file whose id is decision/<nnnn>-<name> the type-first id
+    Pins that a moved decision file's id in another form is replaced, not kept.
+    Given a repository on the old system with decisions/0001-x.md whose id is decision/0001-x
+    When the session runs `migrate run --context example.org/acme/shop`
+    Then spec/decisions/0001-x.md gives the id design-decision/example.org/acme/shop/x
 
   @r5
   Scenario: `migrate run` rewrites nothing through a tracked symbolic link, and leaves the file outside the repository it points to as it was

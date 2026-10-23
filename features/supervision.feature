@@ -5,8 +5,9 @@ Feature: Supervision
   Background:
     Given a git repository with an initiative i1 under .shop/work/, a remote the initiative branch can be pushed to, a stand-in claude first on PATH and as $SHOPSYSTEM_WORK_CLAUDE, and tests that pass
 
-  @r1
-  Scenario: `work run` pulls each work-item through research, plan, implementation and review, one worker at a time, until no work-item can make a transition
+  @r1 @deprecated
+  Scenario: `work run` pulls each work-item through research, plan, implementation and review, one worker at a time, until no work-item can make a transition (deprecated)
+    Deprecated for: `work run` pulls each work-item through research, plan, implementation and review until no work-item can make a transition
     Pins the stage-by-stage pull: every work-item reaches `green` through its four workers in order, and no worker starts before the last one ended.
     Given i1's work-items w1 and w2 are drafted
     And every worker gives DONE
@@ -14,6 +15,37 @@ Feature: Supervision
     Then each of w1 and w2 had code-scout, bdd-planner, bdd-implementer and bdd-task-reviewer as its workers, in that order
     And no worker was started before the one before it had ended
     And w1 and w2 are green
+
+  @r1
+  Scenario: `work run` pulls each work-item through research, plan, implementation and review until no work-item can make a transition
+    Pins the pull through the four stages: every work-item reaches `green` through its four workers, in the stages' order.
+    Given i1's work-items w1 and w2 are drafted
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then each of w1 and w2 had code-scout, bdd-planner, bdd-implementer and bdd-task-reviewer as its workers, in that order
+    And w1 and w2 are green
+
+  @r59
+  Scenario: when more than one work-item is drafted or researched, their research and plan stages are started at the same time
+    Pins that research and planning of different work-items do not wait on each other.
+    Given i1's work-items w1 is drafted and w2 is researched
+    And every worker gives DONE, the researcher of w1 and the planner of w2 each ending once both have started
+    When the person runs `work run i1`
+    Then the researcher of w1 and the planner of w2 worked at the same time
+
+  @r60
+  Scenario Outline: `work run` runs at most <limit> workers at the same time when .shop/delivery.toml <gives>
+    Pins the bound on workers side by side: the repository's number where it gives one, and 4 where it gives none.
+    Given i1's work-items w1, w2, w3, w4 and w5 are drafted
+    And .shop/delivery.toml <gives>
+    And every worker gives DONE, each researcher ending once <limit> workers have started
+    When the person runs `work run i1`
+    Then <limit> workers worked at the same time, and never more
+
+    Examples:
+      | gives                              | limit |
+      | gives 2 as its number of workers   | 2     |
+      | gives no number of workers         | 4     |
 
   @r2
   Scenario: each worker is a new `claude -p` session of its stage's agent, given one brief naming the work-item, the files to read and where its result goes
@@ -174,6 +206,14 @@ Feature: Supervision
     And every worker gives DONE
     When the person runs `work run i1`
     Then log.jsonl has, for each of w1's four workers, a start line and then an end line, each with the time, w1, the stage, the agent and the session id claude was given
+
+  @r62
+  Scenario: each stage's session.json records the path of the transcript of that stage's session
+    Pins that the person can find, from a stage directory, the transcript of the session that did the stage.
+    Given i1's work-item w1 is drafted
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then the session.json in each of w1's four stage directories records the path of the transcript of that stage's session
 
   @r9
   Scenario: when every work-item is green or withdrawn, `work run` exits successfully, printing each work-item's status
@@ -352,14 +392,24 @@ Feature: Supervision
     And the researcher's brief names the accepted scenario "it answers" of features/thing.feature, and not "it waits"
     And the researcher was started with a limit of 40 turns
 
-  @r20
-  Scenario: two ready work-items whose claims would not share a file are implemented at the same time, and merged one at a time
+  @r20 @deprecated
+  Scenario: two ready work-items whose claims would not share a file are implemented at the same time, and merged one at a time (deprecated)
+    Deprecated for: two ready work-items whose claims would share no file are implemented at the same time, each in its own worktree
     Pins that work-items with no file in common are implemented side by side, while the initiative branch takes one branch at a time, each on top of the one before.
     Given i1's work-items w1 is ready, its file set w1.txt, and w2 is ready, its file set w2.txt
     And every worker gives DONE, each implementer committing a file named for its work-item once two implementers have started
     When the person runs `work run i1`
     Then the implementers of w1 and w2 worked at the same time
     And the initiative branch has both implementers' commits, one after the other, with no merge commit
+
+  @r20
+  Scenario: two ready work-items whose claims would share no file are implemented at the same time, each in its own worktree
+    Pins that work-items with no file in common are implemented side by side, neither in the other's worktree.
+    Given i1's work-items w1 is ready, its file set w1.txt, and w2 is ready, its file set w2.txt
+    And every worker gives DONE, each implementer committing a file named for its work-item once two implementers have started
+    When the person runs `work run i1`
+    Then the implementers of w1 and w2 worked at the same time
+    And each of them worked in a worktree of its own
 
   @r20
   Scenario Outline: two ready work-items whose claims would share a file are implemented one after the other: <how>
@@ -376,13 +426,32 @@ Feature: Supervision
       | a glob          | lib/thing*.py          | lib/thing_a.py         |
       | a directory     | lib/                   | lib/thing_a.py         |
 
-  @r20
-  Scenario: of three ready work-items whose claims would not share a file, no more than two are implemented at the same time
+  @r20 @deprecated
+  Scenario: of three ready work-items whose claims would not share a file, no more than two are implemented at the same time (deprecated)
+    Deprecated for: of three ready work-items whose claims would share no file, no more are implemented at the same time than .shop/delivery.toml's number of workers
     Pins the limit of two side by side.
     Given i1's work-items w1 is ready, its file set w1.txt, w2 is ready, its file set w2.txt, and w3 is ready, its file set w3.txt
     And every worker gives DONE, each implementer committing a file named for its work-item once two implementers have started
     When the person runs `work run i1`
     Then two implementers worked at the same time, and never three
+
+  @r20
+  Scenario: of three ready work-items whose claims would share no file, no more are implemented at the same time than .shop/delivery.toml's number of workers
+    Pins that implementers side by side stay within the number of workers the repository gives.
+    Given i1's work-items w1 is ready, its file set w1.txt, w2 is ready, its file set w2.txt, and w3 is ready, its file set w3.txt
+    And .shop/delivery.toml gives 2 as its number of workers
+    And every worker gives DONE, each implementer committing a file named for its work-item once two implementers have started
+    When the person runs `work run i1`
+    Then two implementers worked at the same time, and never three
+
+  @r61
+  Scenario: implementers working at the same time that end with DONE have their branches merged one at a time, in the order they ended
+    Pins that the initiative branch takes one work-item branch at a time, each on top of the one before, first the one whose implementer ended first.
+    Given i1's work-items w1 is ready, its file set w1.txt, and w2 is ready, its file set w2.txt
+    And every worker gives DONE, each implementer committing a file named for its work-item once two implementers have started, w2's implementer ending before w1's
+    When the person runs `work run i1`
+    Then the implementers of w1 and w2 worked at the same time
+    And the initiative branch has w2's implementer's commit and then w1's, with no merge commit
 
   @r21
   Scenario: `work run` started by a worker of another `work run` refuses, saying so
@@ -621,6 +690,14 @@ Feature: Supervision
     And the researcher gives QUESTION, asking "Which module owns the log?"
     When the person runs `work run i1`
     Then no worker was started for w1 after the researcher
+
+  @r63
+  Scenario: no worker is started for a work-item whose blocked_by names a work-item that is not green
+    Pins that a work-item waits for the work-items it is blocked by to be green.
+    Given i1's work-items w1 is drafted, its blocked_by naming w2, and w2 is awaiting-answer
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then no worker was started for w1
 
   @r38
   Scenario: `work run` pushes the initiative branch after each commit it makes on it
