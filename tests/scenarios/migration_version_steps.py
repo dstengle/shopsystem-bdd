@@ -18,6 +18,14 @@ def _(old, context, held):
     context["held"] = held
 
 
+@given("a repository on the final layout whose .shop/plugin-version is empty")
+def _(old, context):
+    final_layout(old, "empty")
+    old.write(".shop/plugin-version", "")
+    old.commit()
+    context["held"] = ""
+
+
 @when("a session starts in the repository")
 def _(old, context):
     """Run the SessionStart command of hooks/hooks.json, as the harness does, in the repository."""
@@ -32,9 +40,9 @@ def _(context):
     assert context["done"].returncode != 0, said(context)
 
 
-@then(parsers.parse('it says that .shop/plugin-version holds "{held}", which is no version'))
-def _(context, held):
-    sentence = '.shop/plugin-version holds "%s", which is no version' % held
+@then(parsers.parse("it says that .shop/plugin-version holds no version, {statement}"))
+def _(context, statement):
+    sentence = ".shop/plugin-version holds no version, %s" % statement
     assert sentence in said(context), said(context)
 
 
@@ -45,9 +53,9 @@ def _(old, context):
     assert (old.root / ".shop/plugin-version").read_text().strip() == context["held"]
 
 
-@then(parsers.parse('the session is told to tell the person that .shop/plugin-version holds "{held}", which is no version'))
-def _(context, held):
+@then(parsers.parse("the session is told to tell the person that .shop/plugin-version holds no version, {statement}"))
+def _(context, statement):
     done = context["done"]
     assert done.returncode == 0, said(context)
-    sentence = '.shop/plugin-version holds "%s", which is no version: tell the person.' % held
+    sentence = "ell the person that .shop/plugin-version holds no version, %s" % statement
     assert sentence in done.stdout, said(context)

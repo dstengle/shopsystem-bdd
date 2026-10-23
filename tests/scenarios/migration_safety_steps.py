@@ -5,7 +5,7 @@ import shutil
 
 from pytest_bdd import given, parsers, then, when
 
-from .migration_old import front, migrate
+from .migration_old import migrate
 
 NAMES_W1 = "Notes on work/i1/w1.md.\n"
 
@@ -40,23 +40,14 @@ def _(old):
 @given(parsers.parse("a repository on the old system whose spec/index.md gives the id {ident}"))
 def _(old, ident):
     old.write("spec/index.md", "---\nid: %s\n---\n# shop\n" % ident)
-
-
-@given(parsers.parse("a tracked notes/n1.md whose frontmatter about names {ref}"))
-def _(old, ref):
-    old.write("notes/n1.md", "---\nabout: %s\n---\nNotes.\n" % ref)
     old.commit()
-
-
-@then(parsers.parse("notes/n1.md's about names {ref}"))
-def _(old, ref):
-    assert front(old, "notes/n1.md")[0].get("about") == ref
 
 
 @given("a repository on the old system with decisions/0001-x.md whose id is decision/0001-x")
 def _(old):
     old.write("decisions/0001-x.md", "---\nid: decision/0001-x\nsummary: x\ndate: 2025-03-01\nstatus: accepted\nby: alice\n"
                                       "---\n\n# x\n\n## Decision\nWe do x.\n")
+    old.commit()
 
 
 @given("a tracked linked.md, a symbolic link to a file outside the repository that names work/i1/w1.md")

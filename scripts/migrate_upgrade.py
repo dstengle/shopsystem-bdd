@@ -39,11 +39,11 @@ def no_version(root):
     if not path.is_file():
         return None
     held = path.read_text().strip()
-    return None if re.fullmatch(r"\d+(\.\d+)*", held) else ('"%s"' % held if held else "nothing")
+    return None if re.fullmatch(r"\d+(\.\d+)*", held) else ('it holds "%s"' % held if held else "it is empty")
 
 
 def refusal(held):
-    return "%s holds %s, which is no version" % (VERSION_FILE, held)
+    return "%s holds no version, and that %s" % (VERSION_FILE, held)
 
 
 def pending(root):
@@ -74,7 +74,7 @@ def session_text(root):
         return ""
     held = no_version(root)
     if held:
-        return "%s: tell the person.\n" % refusal(held)
+        return "Tell the person that %s.\n" % refusal(held)
     here, there = repository_version(root), plugin_version()
     if number(here) > number(there):
         return ("This repository is on plugin version %s, above the plugin's %s: tell the person to update the plugin.\n"
