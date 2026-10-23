@@ -199,3 +199,14 @@ migration-tools-1's Important fixed; w2 reading A, an empty title refused), and 
 missing, so ruled work-items were finished by direct implementers and withdrawn from `work run`. Round trips in
 `measure` and analysis-tools' `--json` lines move to the next release. This repository was upgraded by its own
 `migrate upgrade` (9170f7a).
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-23-hung-worker
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+by: the person ("leave that for later"), recorded by the coordinator
+date: 2026-10-23
+
+During i22's third `work run`, w97's bdd-task-reviewer started 18 minutes before the machine was suspended and never
+came back: 3 s of CPU in 10 h 50 min, its result file the placeholder it wrote in its first seconds. `work run` waits
+on a worker with no limit of time, so it waited the whole night until the coordinator killed the reviewer (exit 143,
+w97 failed, then retried). The coordinator proposed a line ending a worker silent for longer than a set time, as a
+failure of the work-item; the person deferred it: not in i22's batch.
