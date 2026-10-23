@@ -3,8 +3,16 @@ import re
 
 from pytest_bdd import given, parsers
 
-from .feature_file_tools_files import feature_text, NOTE_WITH, outline_text, RULE, scenario_text, store, titles_in, write
-
+from .feature_file_tools_files import (
+    NOTE_WITH,
+    RULE,
+    feature_text,
+    outline_text,
+    scenario_text,
+    store,
+    titles_in,
+    write,
+)
 
 # --- Given: feature files -----------------------------------------------------------------------------------
 

@@ -6,7 +6,6 @@ from pytest_bdd import given, then
 
 from .conftest import SCRIPTS
 
-
 # HIDE_CLINGO on PYTHONPATH hides clingo from an interpreter, as the fixture harness does.
 HIDE_CLINGO = 'raise ImportError("clingo is hidden for this test")\n'
 

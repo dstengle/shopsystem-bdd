@@ -16,7 +16,7 @@ def moment(text, where):
         at = datetime.datetime.fromisoformat(str(text).replace("Z", "+00:00"))
     except ValueError:
         raise Refused("%s: %r is not an ISO time" % (where, text)) from None
-    return at if at.tzinfo else at.replace(tzinfo=datetime.timezone.utc)
+    return at if at.tzinfo else at.replace(tzinfo=datetime.UTC)
 
 
 def json_rows(path):

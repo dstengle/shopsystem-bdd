@@ -1,13 +1,28 @@
 """analysis-tools' steps for the coverage map: map, tests-of and untested (r8-r13, r23-r25)."""
-import re
 import sys
 
 from pytest_bdd import given, parsers, then
 
 from .analysis_tools_probe_steps import a_python_project
-from .analysis_tools_project import (CART, CART_ALL, MAP, OTHER, TEST_CHECKOUT, TEST_DISCOUNT, TEST_ONLY_TOTAL,
-                                     TEST_TOTAL, calls, commit, interpreter, invoke, lines, mapped, put, real,
-                                     started)
+from .analysis_tools_project import (
+    CART,
+    CART_ALL,
+    MAP,
+    OTHER,
+    TEST_CHECKOUT,
+    TEST_DISCOUNT,
+    TEST_ONLY_TOTAL,
+    TEST_TOTAL,
+    calls,
+    commit,
+    interpreter,
+    invoke,
+    lines,
+    mapped,
+    put,
+    real,
+    started,
+)
 
 
 @given("a Python project with the tests test_total and test_discount")

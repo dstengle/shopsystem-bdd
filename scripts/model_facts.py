@@ -5,8 +5,18 @@ import datetime
 import re
 from pathlib import Path
 
-from model_parse import (RID, as_list, behaviour_items, bullets, ears, frontmatter, glossary_entry, mention,
-                         scenarios, section)
+from model_parse import (
+    RID,
+    as_list,
+    behaviour_items,
+    bullets,
+    ears,
+    frontmatter,
+    glossary_entry,
+    mention,
+    scenarios,
+    section,
+)
 from model_work import WorkReading
 
 REF = re.compile(r"^(?P<cap>[\w.-]+(?:/[\w.-]+)*)#r(?P<n>\d+)$")

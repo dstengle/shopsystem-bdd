@@ -2,7 +2,15 @@
 from pytest_bdd import given, parsers, then
 
 from .supervision_then_workers import brief_lines
-from .supervision_world import calls, commit_all, git, item_text, starts, work_item_of, write
+from .supervision_world import (
+    calls,
+    commit_all,
+    git,
+    item_text,
+    starts,
+    work_item_of,
+    write,
+)
 
 
 @given(parsers.re(r'i1\'s work-item (?P<name>\w+) is (?P<status>[\w-]+), its ## Questions section with "(?P<q1>[^"]+)" and '

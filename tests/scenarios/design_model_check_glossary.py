@@ -2,9 +2,8 @@
 
 from pytest_bdd import given, parsers, then
 
-from .conftest import CONTEXT, INDEX, I1, THING, cap, feature, full
+from .conftest import CONTEXT, I1, INDEX, THING, cap, feature, full
 from .design_model_check_then import found
-
 
 # === the glossary (r48, r49) ======================================================================================
 

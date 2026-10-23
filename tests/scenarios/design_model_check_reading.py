@@ -11,7 +11,6 @@ from .design_model_check_given import DECISION
 from .design_model_check_problems import _initiative_with
 from .design_model_check_then import found
 
-
 # === forms of an id and a reference (r24, r43, r46) ===============================================================
 
 def _id_form_files(world):

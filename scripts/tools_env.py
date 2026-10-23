@@ -4,7 +4,6 @@ import os
 import subprocess
 import sys
 
-
 # name, pip package, what it is for, what the workflow does without it
 TOOLS = (
     ("coverage", "coverage", "which tests execute a function, and which code no test executes",

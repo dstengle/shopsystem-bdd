@@ -4,7 +4,18 @@ ModelTest and the file builders are in test_model.py."""
 import re
 import unittest
 
-from test_model import CONTEXT, HAVE_CLINGO, I1, OBS1, P1, THING, ModelTest, cap, feature, full
+from test_model import (
+    CONTEXT,
+    HAVE_CLINGO,
+    I1,
+    OBS1,
+    P1,
+    THING,
+    ModelTest,
+    cap,
+    feature,
+    full,
+)
 
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")

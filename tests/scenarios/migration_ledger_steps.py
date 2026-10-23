@@ -6,6 +6,7 @@ from pytest_bdd import given, parsers, then
 
 from .migration_old import CONTEXT, front, load_model
 
+
 @given("a repository on the old system whose spec/decisions.md has nothing but the entry `## decision/0007-a`")
 def _(old, context):
     context["entry"] = "## decision/0007-a\n"

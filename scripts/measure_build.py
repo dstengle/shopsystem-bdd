@@ -4,7 +4,13 @@ import re
 import subprocess
 from pathlib import Path
 
-from measure_read import Refused, read_log, read_session_jsons, read_transcripts, round_trips
+from measure_read import (
+    Refused,
+    read_log,
+    read_session_jsons,
+    read_transcripts,
+    round_trips,
+)
 
 KINDS = ("output_tokens", "new_input_tokens", "cache_read_tokens")
 

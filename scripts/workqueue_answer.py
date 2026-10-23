@@ -1,6 +1,5 @@
 """`work answer`: the person's answer to a work-item's question (capability work-queue, r9, r13, r14)."""
 import datetime
-from pathlib import Path
 
 import workqueue
 from workqueue import Refused

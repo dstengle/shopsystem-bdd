@@ -7,7 +7,17 @@ import sys
 import pytest
 from pytest_bdd import given, parsers, then
 
-from .analysis_tools_project import NAMES, fake, git, interpreter, invoke, lines, missing_tools, pip_calls, started
+from .analysis_tools_project import (
+    NAMES,
+    fake,
+    git,
+    interpreter,
+    invoke,
+    lines,
+    missing_tools,
+    pip_calls,
+    started,
+)
 
 
 @pytest.fixture
@@ -153,7 +163,7 @@ def installed_lines(context):
 
 @then("vulture is printed as missing, with what it is for")
 def vulture_missing(context):
-    assert re.search(r"^vulture missing: \S.+$", "\n".join(lines(context)), re.M)
+    assert re.search(r"^vulture missing: \S.+$", "\n".join(lines(context)), re.MULTILINE)
 
 
 @then("the interpreter's path is printed after the tools")

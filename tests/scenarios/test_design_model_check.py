@@ -8,14 +8,14 @@ import sys
 
 from pytest_bdd import parsers, scenarios, when
 
-from .design_model_check_clingo import *  # noqa: F401,F403  the steps are fixtures pytest-bdd finds by their names here
-from .design_model_check_given import *  # noqa: F401,F403
-from .design_model_check_glossary import *  # noqa: F401,F403
-from .design_model_check_one_each import *  # noqa: F401,F403
-from .design_model_check_problems import *  # noqa: F401,F403
-from .design_model_check_reading import *  # noqa: F401,F403
-from .design_model_check_then import *  # noqa: F401,F403
-from .design_model_check_trace import *  # noqa: F401,F403
+from .design_model_check_clingo import *
+from .design_model_check_given import *
+from .design_model_check_glossary import *
+from .design_model_check_one_each import *
+from .design_model_check_problems import *
+from .design_model_check_reading import *
+from .design_model_check_then import *
+from .design_model_check_trace import *
 
 scenarios("design-model-check.feature")
 

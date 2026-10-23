@@ -5,7 +5,7 @@ import shutil
 
 from pytest_bdd import given, parsers, then, when
 
-from .migration_old import CONTEXT, front, migrate
+from .migration_old import front, migrate
 
 NAMES_W1 = "Notes on work/i1/w1.md.\n"
 

@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
-import migrate_layout as layout  # noqa: E402
+import migrate_layout as layout
 
 
 class FakePlan:

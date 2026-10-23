@@ -9,10 +9,10 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
-import migrate_write as writing  # noqa: E402
-from migrate_layout import Plan, plan_ids, plan_moves  # noqa: E402
-from migrate_ledger import plan_ledger  # noqa: E402
-from migrate_spec import plan_references  # noqa: E402
+import migrate_write as writing
+from migrate_layout import Plan, plan_ids, plan_moves
+from migrate_ledger import plan_ledger
+from migrate_spec import plan_references
 
 
 def repository(files):

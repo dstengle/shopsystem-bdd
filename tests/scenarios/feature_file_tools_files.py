@@ -2,7 +2,6 @@
 repository's files as they were, and the checks of a refused edit."""
 import re
 
-
 # --- the files a scenario writes ----------------------------------------------------------------------------
 
 NOTE_WITH = '    Given a note\n      """\n      %s\n      """\n'

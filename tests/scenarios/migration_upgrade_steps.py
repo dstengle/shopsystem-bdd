@@ -146,13 +146,13 @@ def _(context):
 @then(parsers.parse("migrate prints {version} as the repository's plugin version and the plugin's version as the plugin's"))
 def _(context, version):
     out = said(context)
-    assert re.search(r"repository.*%s" % re.escape(version), out, re.I), out
-    assert re.search(r"plugin.*%s" % re.escape(plugin_version()), out, re.I), out
+    assert re.search(r"repository.*%s" % re.escape(version), out, re.IGNORECASE), out
+    assert re.search(r"plugin.*%s" % re.escape(plugin_version()), out, re.IGNORECASE), out
 
 
 @then(parsers.parse("migrate prints {version} as the repository's plugin version"))
 def _(context, version):
-    assert re.search(r"repository.*%s" % re.escape(version), said(context), re.I), said(context)
+    assert re.search(r"repository.*%s" % re.escape(version), said(context), re.IGNORECASE), said(context)
 
 
 @then('it prints the pending upgrade step 0.24.0 "work-items named by ids"')
@@ -185,7 +185,7 @@ def renamed(old, rel):
 
 def names_in(text, field, new):
     head = text.split("\n---", 1)[0]
-    match = re.search(r"^%s:(.*(?:\n\s+-.*)*)" % field, head, re.M)
+    match = re.search(r"^%s:(.*(?:\n\s+-.*)*)" % field, head, re.MULTILINE)
     assert match, text
     assert re.search(r"(?<![\w-])%s(?![\w-])" % re.escape(new), match.group(1)), (field, text)
 
@@ -235,7 +235,7 @@ def _(context):
 
 @then("it tells the session to run `migrate upgrade` only on the person's yes")
 def _(context):
-    assert re.search(r"`migrate upgrade`.*only.*yes", context["done"].stdout, re.S), context["done"].stdout
+    assert re.search(r"`migrate upgrade`.*only.*yes", context["done"].stdout, re.DOTALL), context["done"].stdout
 
 
 @then("the plugin's SessionStart hook tells the session to tell the person to update the plugin")

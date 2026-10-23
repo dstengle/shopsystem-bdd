@@ -3,7 +3,6 @@ from pytest_bdd import given, parsers
 
 from .feature_file_tools_files import binding, feature_text, scenario_text, store, write
 
-
 # --- Given: trees ---------------------------------------------------------------------------------------------
 
 STEPS = "    Given a cart\n    When it is used\n"

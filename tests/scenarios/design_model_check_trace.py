@@ -7,7 +7,6 @@ from pytest_bdd import given, parsers, then, when
 from .conftest import I1, P1, SCRIPTS, THING, full
 from .design_model_check_then import found
 
-
 # === decisions index and why (r14, r16, r17, r105) =====================================================================
 
 def _decisions(world):
@@ -96,7 +95,7 @@ def dated_proposals(world, first, date, verb, second, date2, verb2):
 def why_lists_in_order(context, listed):
     out = context["result"].stdout
     seen = re.findall(r"^  [\w/]+ by capability-proposal " + re.escape(full("capability-proposal", "")) +
-                      r"(p\d) \((\w+), (\d{4}-\d\d-\d\d)\)$", out, re.M)
+                      r"(p\d) \((\w+), (\d{4}-\d\d-\d\d)\)$", out, re.MULTILINE)
     assert [p for p, _, _ in seen] == listed.split(" then "), out
     assert all(status == "drafted" for _, status, _ in seen)
     assert [d for _, _, d in seen] == sorted(d for _, _, d in seen)
@@ -190,7 +189,7 @@ def model_rules(world, context):
 
 def _lp_labels():
     """The codes model.lp labels, in its order."""
-    return re.findall(r'^label\("([^"]+)",', (SCRIPTS / "model.lp").read_text(), re.M)
+    return re.findall(r'^label\("([^"]+)",', (SCRIPTS / "model.lp").read_text(), re.MULTILINE)
 
 
 @then("it prints each rule's code and plain label, one a line, the violations first and then the warnings")
