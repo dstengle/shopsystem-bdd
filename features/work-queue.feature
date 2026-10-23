@@ -225,3 +225,11 @@ Feature: Work queue
       | a planner          | researched |
       | an implementer     | ready      |
       | a reviewer         | done       |
+
+  @r15
+  Scenario: answer with a newline in it is refused, and nothing changes
+    Pins that an answer is one line, so that each answer stays one bullet under `## Answers`.
+    Given an initiative i1 under .shop/work/ whose work-item w1 is awaiting-answer
+    When the session runs `work answer w1` with an answer of two lines
+    Then work exits with an error, saying that an answer is one line
+    And .shop/work/i1/w1.md and .shop/work/i1/log.jsonl are as they were
