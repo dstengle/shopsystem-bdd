@@ -56,12 +56,18 @@ def read(path, root):
 def entry(word, what):
     """`word` as one directory entry of .shop/work/: refused when it is a path, or . or .."""
     if word in ("", ".", "..") or "/" in word or "\\" in word:
-        raise Refused("the %s %s is not a %s" % (what, word, "file name" if what == "name" else "name"))
+        raise Refused("the %s %s is not a name" % (what, word))
 
 
 def highest(root):
-    """The highest <n> among the work-items under .shop/work/ whose file is named w<n>.md; 0 when there is none (r12)."""
-    numbers = [int(name[1:]) for _, name, _ in items(root) if re.fullmatch(r"w\d+", name)]
+    """The highest <n> of any work-item under .shop/work/, by its id's w<n> and its file's; 0 when there is none (r12)."""
+    numbers = []
+    for path in sorted((Path(root) / WORK).glob("*/*.md")):
+        data, _ = frontmatter(read(path, root))
+        if data.get("kind") == "work-item":
+            for word in (path.stem, str(data.get("id", "")).rsplit("/", 1)[-1]):
+                if re.fullmatch(r"w\d+", word):
+                    numbers.append(int(word[1:]))
     return max(numbers, default=0)
 
 
@@ -82,7 +88,8 @@ def add(root, initiative, title, part_of, under, accepts):
     name = "w%d" % (highest(root) + 1)
     path = directory / (name + ".md")
     if path.exists():
-        raise Refused("the work-item %s already exists (%s); work add leaves it as it was" % (name, path.relative_to(root)))
+        raise Refused("%s is a file that is not a work-item, and work add would number the new work-item %s; "
+                      "work add leaves it as it was" % (path.relative_to(root), name))
     text = ("---\nid: work-item/%s/%s\nkind: work-item\npart_of: %s\nstatus: drafted\nunder: %s\naccepts: [%s]\n---\n\n# %s\n"
             % (context, name, part_of, under, ", ".join(accepts), title))
     rel = str(path.relative_to(root))

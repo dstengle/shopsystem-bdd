@@ -161,8 +161,10 @@ def file_problem_named(world, context, named):
         assert _problems_naming(data, path) == ["%s: the layout has no %s; run scripts/migrate" % (path, path)], data
         return
     named, _, absent = named.partition(", and not ")
-    # r110's problems (a work-item's file name, a held id) answer another line, not counted here
-    mine = [p for p in _problems_naming(data, named) if "a work-item's file is named w<n>.md" not in p and "is already held by" not in p]
+    # r110's problems (a work-item's file name, a held id) answer another line, not counted here, unless the file is a w<n>.md
+    r110 = not re.search(r"/w\d+\.md$", named)
+    mine = [p for p in _problems_naming(data, named)
+            if not (r110 and ("a work-item's file is named w<n>.md" in p or "is already held by" in p))]
     count = len(mine)
     if "mentions" in context:  # r28: and the requirement the work-item accepts
         count = len([p for p in mine if context["mentions"] in p])
