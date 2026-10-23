@@ -1,0 +1,18 @@
+{
+  "status": "DONE",
+  "summary": "Plan of w110 written: .shop/scratch/2-plan/plan.md.\nr47 already green (kept); deprecated r47 outline removed per Retires (delivery#r17).\nr57: empty (zero-byte) session.json gives its stage, tied by stage directory, without figures and with a field naming it; whitespace-only stays refused (r47, DD 0018). Totals sessions per the work-item ruling (reading B).\nr58: json_rows splits on newline only, blank lines still skipped.\nr59: code already reads Z as UTC; steps only, time zone set and restored for the in-process run.\nmeasure show unchanged (no requirement asks for the mark).\nBroken tests: deprecated pair removed; gives_totals compares only given columns; transitions_between passes ISO times through.\nr58/r59 steps go in a new batch_measurement_reading_steps.py, imported by test_batch_measurement.py, to keep given_steps under 300 lines.",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/measure_read.py",
+    "scripts/measure_build.py",
+    "scripts/measure",
+    "tests/scenarios/batch_measurement_given_steps.py",
+    "tests/scenarios/batch_measurement_then_steps.py",
+    "tests/scenarios/batch_measurement_reading_steps.py",
+    "tests/scenarios/test_batch_measurement.py",
+    "tests/scenarios/batch_measurement_world.py",
+    "tests/scenarios/batch_measurement_transcripts.py",
+    "features/batch-measurement.feature"
+  ],
+  "questions": []
+}
