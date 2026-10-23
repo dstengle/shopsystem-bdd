@@ -1,0 +1,18 @@
+{
+  "status": "DONE",
+  "summary": "Research of w104 done; notes in .shop/scratch/1-research/notes.md (seven parts).\n1. Accepted scenarios run by node id: 5 failed, 13 passed. Red: no-job step missing; guarantees step missing; retired step missing; KeyError in FIELDS; malformed-row branch missing (test-side; code already right).\n2. Probes via scripts/model on 16 scratch repos and the pytest --work-item plugin: w_unserved_cap fires for every capability; guarantees and green-retired accepts are file problems; unnamed accept without check is v_w4.\n3. Old assumptions: accepts fact written only for named scenarios (model_work.py:184-192); w_unserved_cap (model.lp:275); brief and --work-item refusal for unnamed-only accepts.\n4. Test that cannot keep passing: tests/scripts/test_model_output.py::test_check_ends_with_the_four_counts expects 1 warning, which is w_unserved_cap. Others sound.\n5. Skipped step: an unnamed-only accept is refused by pytest --work-item (rc 3) and gets no brief scenario line.\n6. Defects D1-D5 with reproductions (w_unserved_cap, guarantees and retired file problems, v_w4, ghost-requirement message).\n7. File set: model_work.py, model.lp; tests design_model_check_given.py, design_model_check_problems.py (room 11), design_model_check_one_each.py, test_model_output.py. No tracked Python file over 300.\nNo tests-of: no coverage map exists, so test lists are by search. git status shows no change to the checkout.",
+  "fileset": [
+    "scripts/model_work.py",
+    "scripts/model.lp",
+    "tests/scenarios/design_model_check_given.py",
+    "tests/scenarios/design_model_check_problems.py",
+    "tests/scenarios/design_model_check_one_each.py",
+    "tests/scripts/test_model_output.py"
+  ],
+  "questions": [
+    "What is the accepts fact for a requirement: a scenario id as today, or a requirement id as well?",
+    "D5: should a work-item accepting a requirement no capability has be an unresolved reference, or remain a file problem with a different message?",
+    "The job guard for w_unserved_cap: this context never reads jobs, so 'no job' is always true here. Is r111 a guard on job nodes, or a fixed silence?",
+    "tests/scripts/test_model_output.py::test_check_ends_with_the_four_counts expects the warning that r111 removes: change its expected count, or its setup?"
+  ]
+}
