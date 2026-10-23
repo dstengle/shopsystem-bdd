@@ -88,6 +88,7 @@ Tools the skills and agents run:
 ## Glossary
 
 - **agent**: a definition under `agents/` (its name, model, tools and skills) that a worker or a dispatch is started as. Not: persona.
+- **answer**: the person's answer to a work-item's question, written in the work-item in their words. Not: ruling.
 - **brief**: the input data `work run` writes for one worker in its stage directory, naming the work-item, the files to read, the worktree and where the result goes. Not: task file.
 - **check**: a command a work-item names in place of scenarios, whose exit code 0 shows its work complete. Not: criterion.
 - **claim**: the tracked files a `claimed` work-item holds: those its file set covers and any added with `work claim`; no two claims share a file. Not: lock, reservation.
@@ -114,13 +115,12 @@ Tools the skills and agents run:
 - **review**: a reviewer's reading of commits against the plan, the spec and the repository's rules, written as graded findings: a work-item review, a branch review or an architecture review. Not: audit.
 - **round**: one dispatch of `initiative-round` for one job, numbered under its drafts path. Not: iteration.
 - **round trip**: one assistant message of a session's transcript with its own request id, the unit `--max-turns` limits.
-- **ruling**: the person's answer to a work-item's question, written in the work-item in their words.
 - **run**: to execute a command, script, test, scenario or probe until it exits.
 - **scenario**: a Gherkin scenario in `features/<capability>.feature`, passing when the one test that binds it passes. Not: test case.
 - **session**: one Claude Code conversation with its own id and transcript: the person's, a worker, a dispatch or a fixture session. Not: conversation, chat.
 - **stage**: one of research, plan, implementation and review, done by one worker and started by `work run` from the work-item's status. Not: phase.
 - **stage directory**: the directory `runs/<work-item>/<k>-<stage>/` that holds one stage's brief, result, report and session. Not: run directory.
-- **status**: a node's place in its kind's lifecycle (a work-item's, a capability-proposal's, a decision's), written in its frontmatter; a work-item's are `drafted`, `researched`, `planned`, `ready`, `claimed`, `done`, `green`, `awaiting-ruling`, `failed` and `withdrawn`. Not: state.
+- **status**: a node's place in its kind's lifecycle (a work-item's, a capability-proposal's, a decision's), written in its frontmatter; a work-item's are `drafted`, `researched`, `planned`, `ready`, `claimed`, `done`, `green`, `awaiting-answer`, `failed` and `withdrawn`. Not: state.
 - **suite**: every test `python3 -m pytest` runs from the root by default, fixture scenarios excluded. Not: fast suite.
 - **template**: standing text in a skill or an agent definition that a session fills with input to start another session. Not: boilerplate.
 - **transition**: one change of a work-item's status, written by `work` and logged in `log.jsonl`. Not: move.

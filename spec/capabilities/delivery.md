@@ -30,7 +30,7 @@ files, never the code, and reads what `work run` ends with, never what its worke
 - [r12] **When** a fix needs a new scenario or a new row of a scenario's examples, `delivering-an-initiative` shall send it to the `feature-formulator` through a `formulate` round of `initiative-round`, never to the implementer.
 - [r13] **When** `delivering-an-initiative` dispatches an agent, `delivering-an-initiative` shall ask it to reply in a few lines and leave the rest in files.
 - [r14] **When** a dispatch `delivering-an-initiative` started has replied, `delivering-an-initiative` shall read a file the dispatch wrote only to decide what to do next.
-- [r15] **When** the person gives a ruling, `delivering-an-initiative` shall append one line naming it to the initiative's ledger `.shop/scratch/run/ledger-<initiative>.md`.
+- [r15] **When** the person gives an answer, `delivering-an-initiative` shall append one line naming it to the initiative's ledger `.shop/scratch/run/ledger-<initiative>.md`.
 - [r16] **When** `work run` exits with every work-item of the initiative `green` or `withdrawn`, `delivering-an-initiative` shall archive the initiative's ledger under `.shop/records/archive/`.
 
 ## Implementation, may change
@@ -39,6 +39,6 @@ files, never the code, and reads what `work run` ends with, never what its worke
 
 ## Not yet
 - Rules for cutting work-items (one unknown, one capability, risk, `blocked_by`, Retires, checks for guarantees),
-  questions on a requirement with two readings, writing rulings and starting `work run` again, budgets, formulation
+  questions on a requirement with two readings, writing answers and starting `work run` again, budgets, formulation
   questions (see skeleton-notes.md).
 - `delivering-an-initiative` accepting `merged` capability-proposals as well as `formulated` ones (i8, delivery 1).

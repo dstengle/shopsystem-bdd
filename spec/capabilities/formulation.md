@@ -23,7 +23,7 @@ dispatches `feature-formulator`s. It decides nothing: a line with two readings c
 - [r6] **When** `formulating-features` commits feature files, `formulating-features` shall commit only the feature files and the test files `features rebind` changed, with `features bindings` printing that every binding names a scenario.
 - [r7] **When** an existing feature file is changed, `formulating-features` shall keep every scenario not added, changed or removed byte for byte as it was, tags included.
 - [r9] `formulating-features` shall formulate a line every call must keep as one scenario per reason the line gives, each with one representative call.
-- [r10] **When** the person rules a scenario that a work-item's implementer handed back with evidence a formulation question, `formulating-features` shall rewrite the scenario to fit its line and the evidence, or show the person a question with two readings.
+- [r10] **When** the person answers that a scenario a work-item's implementer handed back with evidence is a formulation question, `formulating-features` shall rewrite the scenario to fit its line and the evidence, or show the person a question with two readings.
 - [r11] `formulating-features` shall tag each scenario, on its tag line, with the one `@r<n>` of the one line it formulates, whatever the scenario's title.
 - [r13] **Where** `model check` is available, **when** feature files are committed, `model check` shall print no scenario that is not deprecated and names no line or more than one, and no added or changed line without a scenario.
 - [r14] **When** a scenario uses a word its context's glossary avoids, `formulating-features` shall reword the scenario to its line through the small-change path, without a further gate.

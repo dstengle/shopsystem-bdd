@@ -3,7 +3,7 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/supervision
 title: Supervision
 narrator: the person who started `work run`
 group: service
-rests_on: [design-decision/a-script-supervises-delivery, design-decision/worker-results-are-files, design-decision/work-item-lifecycle-as-run, design-decision/review-of-work-items, design-decision/the-file-set-is-the-claim, design-decision/the-v3-agents, design-decision/exits-are-successful-or-errors, design-decision/a-ruling-returns-to-the-asking-stage]
+rests_on: [design-decision/a-script-supervises-delivery, design-decision/worker-results-are-files, design-decision/work-item-lifecycle-as-run, design-decision/review-of-work-items, design-decision/the-file-set-is-the-claim, design-decision/the-v3-agents, design-decision/exits-are-successful-or-errors, design-decision/a-ruling-returns-to-the-asking-stage, design-decision/answers-not-rulings]
 retired: []
 ---
 
@@ -20,12 +20,12 @@ from what using it shows.
 - [r2] **When** a work-item's status is `drafted`, `researched`, `ready` or `done`, `work run` shall start a new `claude -p` session of that stage's agent (`code-scout`, `bdd-planner`, `bdd-implementer`, `bdd-task-reviewer`), given one brief that names the work-item, the files to read and where its result goes.
 - [r3] **When** a worker's result gives the outcome `DONE` and no fault stopped its stage, `work run` shall make the work-item's transition to its next status.
 - [r4] **When** an implementer's outcome is `DONE`, `work run` shall merge its work-item branch into the initiative branch only if the work-item's scenarios pass on it and the whole suite passes on it but for the failing scenarios r43 counts as expected.
-- [r5] **If** no fault stopped a worker's stage and the worker gives any outcome but `DONE` or its work fails the work-item's scenarios or the whole suite, then `work run` shall transition the work-item to `awaiting-ruling`.
+- [r5] **If** no fault stopped a worker's stage and the worker gives any outcome but `DONE` or its work fails the work-item's scenarios or the whole suite, then `work run` shall transition the work-item to `awaiting-answer`.
 - [r6] **If** a worker changes a file under `.shop/work/` outside its stage directory, then `work run` shall put the file back as it was.
 - [r7] **When** `work run` makes a work-item's transition, `work run` shall commit the work-item's file, its stage directories and `log.jsonl` on the initiative branch, and nothing else.
 - [r8] **When** a worker starts or ends, `work run` shall append a line to `log.jsonl` with the time, the work-item, the stage, the agent and the session id.
 - [r9] **When** no work-item can make a transition and every work-item is `green` or `withdrawn`, `work run` shall exit successfully, printing each work-item's status.
-- [r32] **When** no work-item can make a transition and a work-item is `awaiting-ruling`, `work run` shall exit with an error, printing each work-item's status and each open question.
+- [r32] **When** no work-item can make a transition and a work-item is `awaiting-answer`, `work run` shall exit with an error, printing each work-item's status and each open question.
 - [r52] **When** no work-item can make a transition and a work-item is `failed`, `work run` shall exit with an error, printing each work-item's status and each fault.
 - [r53] **If** the push after the branch review's commit fails, then `work run` shall exit with an error, saying why.
 - [r54] **When** `work run` starts and the initiative branch has commits its remote does not have, `work run` shall first push the initiative branch to the remote.
@@ -47,8 +47,8 @@ from what using it shows.
 - [r23] **Where** the repository is inside the plugin's own directory, `work run` shall make each worker's worktree in a temporary directory outside it.
 - [r24] **When** `work run` starts an implementer, `work run` shall first run the whole suite in the implementer's worktree and say in the brief how it ended.
 - [r25] **When** `work run` writes a worker's brief, `work run` shall name in it the plugin's scripts directory, the initiative branch's base, the worker's worktree and its work-item branch.
-- [r57] **When** `work run` writes the brief of a worker for a work-item that has rulings, `work run` shall write each of the work-item's rulings, with the question it answers, in it.
-- [r26] **When** `work run` makes a work-item's transition to `awaiting-ruling`, `work run` shall keep the work-item branch.
+- [r57] **When** `work run` writes the brief of a worker for a work-item that has answers, `work run` shall write each of the work-item's answers, with the question it answers, in it.
+- [r26] **When** `work run` makes a work-item's transition to `awaiting-answer`, `work run` shall keep the work-item branch.
 - [r58] **When** `work run` starts an implementer for a work-item whose work-item branch it kept, `work run` shall make the implementer's worktree on that branch.
 - [r27] **When** every work-item of the initiative is `green` or `withdrawn` and the initiative branch holds a commit, other than a kept branch review's own commit, that no kept branch review has read, `work run` shall start a `claude -p` session of `bdd-branch-reviewer` over the initiative branch from its base, given one brief.
 - [r47] **When** the branch reviewer's session ends, `work run` shall copy its directory into `.shop/work/<initiative>/runs/branch-review/<k>/`.
@@ -63,8 +63,8 @@ from what using it shows.
 - [r33] **When** `work run` exits, `work run` shall remove every worktree it made.
 - [r34] **If** a worker changes a file under `.shop/work/` outside its stage directory, then `work run` shall transition the work-item to `failed`, recording the files, its branch unmerged.
 - [r35] **When** `work run` is about to start a worker or the branch reviewer, `work run` shall first verify that it can push the initiative branch to the remote.
-- [r36] **When** `work run` transitions a work-item to `awaiting-ruling`, `work run` shall write its question under the work-item's `## Questions`.
-- [r37] **While** a work-item is `awaiting-ruling` or `failed`, `work run` shall start no worker for it.
+- [r36] **When** `work run` transitions a work-item to `awaiting-answer`, `work run` shall write its question under the work-item's `## Questions`.
+- [r37] **While** a work-item is `awaiting-answer` or `failed`, `work run` shall start no worker for it.
 - [r38] **When** `work run` commits on the initiative branch, `work run` shall push the initiative branch to the remote.
 - [r39] **If** the verification before a worker starts fails, then `work run` shall transition the work-item to `failed`, recording the reason, before any worker starts.
 - [r40] **When** `work run` transitions a work-item to `failed`, `work run` shall exit with an error, naming the work-item and its fault.
@@ -88,9 +88,9 @@ from what using it shows.
   scenarios and the suite run.
 - A result's `questions` given as one string is read as one question.
 - The transitions from `planned` to `ready` and from `ready` to `claimed` have no guard beyond the lifecycle's.
-- Commit message `work: <work-item> <before> -> <after>`. Exit code 0 every work-item `green` or `withdrawn`, 3 awaiting a ruling, 1 otherwise.
+- Commit message `work: <work-item> <before> -> <after>`. Exit code 0 every work-item `green` or `withdrawn`, 3 awaiting an answer, 1 otherwise.
 - The commands for the work-item's scenarios and the suite: `python3 -m pytest -q -p work_items --work-item <name>` (the plugin's `scripts/work_items.py` on `PYTHONPATH`) and `python3 -m pytest -q -rfEx -p work_items --work-item <name> --whole-suite`, `-n auto` where pytest-xdist is there; `.shop/delivery.toml`'s `[tests]` replaces them. `--whole-suite` keeps every test and marks as xfail each scenario r43 counts as expected; a worker's pytest gets `--work-item <name>` through `PYTEST_ADDOPTS`.
-- The push is verified by `git push --dry-run` to the initiative branch's upstream remote, else `origin`; a repository `work run` delivers has that remote. A fault is recorded under the work-item's `## Faults`. The n-th bullet of `## Rulings` answers the n-th of `## Questions`.
+- The push is verified by `git push --dry-run` to the initiative branch's upstream remote, else `origin`; a repository `work run` delivers has that remote. A fault is recorded under the work-item's `## Faults`. The n-th bullet of `## Answers` answers the n-th of `## Questions`.
 - `log.jsonl` also gets a `push verified` line for each push verification, and a `suite` line for each whole-suite run before a merge.
 - A failed commit of a fault's transition ends `work run` as r10's exit does, with an error saying why, not with a traceback.
 

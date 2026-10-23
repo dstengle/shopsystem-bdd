@@ -3,7 +3,7 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/migration-tools
 title: Migration tools
 narrator: a person or session migrating a repository to the final layout or upgrading it between plugin releases
 group: service
-rests_on: [design-decision/migration-in-one-pass, design-decision/living-plan-to-work-items, design-decision/final-layout, design-decision/references-are-ids, design-decision/capability-ids-are-context-scoped, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/upgrades-between-plugin-releases, design-decision/work-items-named-by-ids]
+rests_on: [design-decision/migration-in-one-pass, design-decision/living-plan-to-work-items, design-decision/final-layout, design-decision/references-are-ids, design-decision/capability-ids-are-context-scoped, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/upgrades-between-plugin-releases, design-decision/work-items-named-by-ids, design-decision/answers-not-rulings]
 retired: []
 ---
 
@@ -46,6 +46,7 @@ that knows the old layout, and it decides nothing that needs judgment. A walking
 - [r26] **When** the 0.24.0 upgrade step gives a work-item its id, `migrate` shall rename with git its file to `w<n>.md` and its `runs/<name>/` to `runs/w<n>/`, write its frontmatter `id` as `work-item/<context path>/w<n>`, keep its `# ` heading or, where it has none, write its old name as one, rewrite its old name to its id in its initiative's `log.jsonl` `work-item` fields and in every work-item's `blocked_by`, `depends_on` and `for` that names it, a name several initiatives hold being the naming work-item's own initiative's, and leave free text in records as it is.
 - [r27] **When** `migrate upgrade` is run on a repository with no uncommitted changes and finds no pending upgrade step, `migrate` shall say so, exit successfully and change nothing.
 - [r28] **When** a session starts in a repository without `.shop/`, the plugin's SessionStart hook shall tell the session nothing.
+- [r29] **When** `migrate upgrade` applies the upgrade step of the plugin version after 0.24.0, `migrate` shall rename the status `awaiting-ruling` to `awaiting-answer` in every work-item's file under `.shop/work/` and every `log.jsonl` line, and each work-item's `## Rulings` to `## Answers`.
 
 ## Implementation, may change
 - r17's `by`: the entry's source, then `; supersedes <id> <qualifier>`.

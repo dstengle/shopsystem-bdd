@@ -30,7 +30,7 @@ no prompt, reply or tool content, and refuses rather than guesses when its input
 - [r51] `measure initiative` shall give each stage `log.jsonl` gives a start and no end for, without how long it took.
 - [r53] `measure initiative` shall give, for each stage it gives, its session's round trips, the number of assistant messages with distinct request ids in the session's transcript.
 - [r55] **If** a stage's session has no transcript `measure` can find, **then** `measure initiative` shall give the stage without its round trips.
-- [r41] `measure initiative` shall give, for each work-item, its transitions, how many times it went to `awaiting-ruling` and to `failed`, and the commits merged into the initiative branch for it.
+- [r41] `measure initiative` shall give, for each work-item, its transitions, how many times it went to `awaiting-answer` and to `failed`, and the commits merged into the initiative branch for it.
 - [r42] `measure initiative` shall give the totals over the initiative: stages, sessions, turns, round trips, tokens of each kind, cost, and the time from the first transition to the last.
 - [r43] **Where** `--sessions <dir>` names a directory of transcripts, `measure initiative` shall also give each session found there inside the initiative's window, and each session it dispatched, with its tokens of each kind.
 - [r49] `measure` shall write no prompt, reply or tool content into the measurement.
