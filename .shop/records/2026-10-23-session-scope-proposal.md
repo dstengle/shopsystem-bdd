@@ -198,3 +198,15 @@ On narrators being common across a seam: v3 supports it more than I allowed. A j
 So the common ground across a seam is the job's narrator and the upstream's published terms, pinned at a version; the request is written in that language from the start, and the upstream owner's gate judges the lines, not their translation.
 
 No file was changed.
+
+## The agent's sixth reply, to the person's point that a request is negotiated by both sides in turn
+
+Correct, and it is the same shape the work-item already has, extended to two parties. The request is one file with sections each side owns, and a status that says whose turn it is:
+
+- The asker writes `## Lines` (the proposed lines, in EARS, in the job's narrator and the upstream's terms) and `## Answers` to the upstream's questions; it may revise or withdraw a line in its turn.
+- The upstream writes, per line, its outcome (accepted as written, rewritten with the rewrite shown, refused with the reason, or a question with its readings) and, when the lines are settled and its gate has passed, the `resolution` ids and the version that holds them.
+- The status alternates: `open` (upstream's turn: triage and the first per-line reply) → `awaiting-asker` → `awaiting-upstream` → … until every line is accepted, refused or withdrawn, then `accepted` (the upstream's initiative starts) → `delivered`, or `refused`/`withdrawn` as whole. A write out of turn, or into the other side's section, is refused by the script on that side, as `work run` refuses a worker's write outside its stage directory.
+
+Two things this adds to what I said before: the asker confirms a rewritten line still meets its need, so "all the request needs in order to answer" is agreed by both sides rather than decided by the upstream alone; and the upstream's gate still judges only its own lines, since by the time it runs the request's lines are the upstream's capability-proposal. The transport question stays as before (one file in the upstream's intake, both sides writing it in turn), and the asker still depends only on `delivered` and the pinned contract.
+
+No file was changed.
