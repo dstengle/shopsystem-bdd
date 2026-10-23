@@ -1,0 +1,5 @@
+{
+  "status": "DONE",
+  "summary": "Research of w118 (design-model-check#r111, one scenario). Scenario is red: two undefined steps (the Given 'a bounded context with one capability and no job' and the Then 'the output does not give ...'). Cause: scripts/model.lp:276 w_unserved_cap fires for every capability, since no code emits serves or job facts. Probes run in scratch: one capability gives 'warning w_unserved_cap (1)'; two give (2); no capability gives none. tests/scripts/test_model_output.py::test_check_ends_with_the_four_counts (green today, asserts '1 warnings') cannot pass as written after the change. Two readings for the plan: gate on a job fact (never emitted, r19 reads no jobs) or drop the warning for bounded-context checks; both change that test. No test map: test lists are by search. Notes: .shop/scratch/1-research/notes.md.",
+  "questions": []
+}
