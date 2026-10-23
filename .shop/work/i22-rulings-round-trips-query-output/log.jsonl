@@ -95,3 +95,4 @@
 {"time": "2026-10-23T01:21:54+00:00", "work-item": "w91", "before": "awaiting-answer", "after": "withdrawn", "by": "work withdraw"}
 {"time": "2026-10-23T01:21:54+00:00", "work-item": "w92", "before": "awaiting-answer", "after": "ready", "by": "work answer"}
 {"time": "2026-10-23T01:21:54+00:00", "work-item": "w93", "before": "awaiting-answer", "after": "ready", "by": "work answer"}
+{"time": "2026-10-23T01:21:54+00:00", "work-item": "w94", "before": "awaiting-answer", "after": "researched", "by": "work answer"}
