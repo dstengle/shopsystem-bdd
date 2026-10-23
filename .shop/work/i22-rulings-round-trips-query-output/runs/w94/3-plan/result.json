@@ -1,0 +1,18 @@
+{
+  "status": "DONE",
+  "summary": "w94 plan written (plan.md): r41, r42, r53-r56; 6 of 8 scenarios red today (undefined steps, no round-trips code).\nD1 from the person's answer (reading A): measure counts awaiting-answer only; the deprecated r41 scenario is retired with features retire (feature file added to the set). The work-item has no ## Retires section; the coordinator may record it.\nw91's status rename has landed; only measure_build, measure_show and the measure contract still say awaiting-ruling.\nStore: CLAUDE_CONFIG_DIR or ~/.claude, projects/*/<session-id>.jsonl; tests point at it through the environment.\nSubagent rows are not the stage's round trips; store transcripts get read_transcripts' refusals (r47).\nTotals sum the stages' turns and round trips only; the deprecated r42 scenario stays green with a step taking both tables.",
+  "plan": ".shop/scratch/3-plan/plan.md",
+  "fileset": [
+    "scripts/measure",
+    "scripts/measure_build.py",
+    "scripts/measure_read.py",
+    "scripts/measure_show.py",
+    "features/batch-measurement.feature",
+    "tests/scenarios/batch_measurement_given_steps.py",
+    "tests/scenarios/batch_measurement_then_steps.py",
+    "tests/scenarios/batch_measurement_show_steps.py",
+    "tests/scenarios/batch_measurement_world.py",
+    "tests/scenarios/batch_measurement_transcripts.py"
+  ],
+  "questions": []
+}
