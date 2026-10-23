@@ -63,11 +63,15 @@ def a_map_has_been_made(run, repo, context):
     mapped(run, repo, context)
 
 
-@given(parsers.parse("no test in the map executed the function {name}"))
-def nothing_executed(run, repo, context, name):
-    put(repo, {"src/cart.py": CART + "\n\ndef %s():\n    return 0\n" % name})
+@given(parsers.parse("no test in the map executed the function {name} in {path}"))
+def nothing_executed(run, repo, context, name, path):
+    real()
+    count, label = context["planned"]
+    tests = "".join("def test_%d():\n    assert total([1]) == 1\n\n\n" % n for n in range(count))
+    started(repo, {path: CART + "\n\ndef %s():\n    return 0\n" % name,
+                   "tests/test_cart.py": "from cart import total\n\n\n" + tests})
     mapped(run, repo, context)
-    context["unexecuted"] = name
+    context["commits"][label] = context["map_commit"]
 
 
 @given(parsers.parse("src/cart.py has no function named {name}"))
@@ -210,6 +214,14 @@ def by_file(context):
 def no_test_names(context):
     assert "::" not in context["result"].stdout
     assert "test_total" not in context["result"].stdout
+
+
+# r11
+@then("tools prints that no test of the map executed it")
+def prints_none_executed(context):
+    assert context["result"].returncode == 0, context["result"].stderr
+    assert lines(context) == ["no test of the map executed %s (map made at %s)" % (
+        context["args"][-1], context["map_commit"])]
 
 
 # r12, r26

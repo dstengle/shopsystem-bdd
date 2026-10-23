@@ -168,7 +168,7 @@ def invoke(run, repo, context, argv, outside=None):
     option = []
     if "python" in context or not context.get("discover"):
         option = ["--python", str(context.get("python", sys.executable))]
-    env = {k: v for k, v in os.environ.items() if k != "VIRTUAL_ENV"}
+    env = {k: v for k, v in os.environ.items() if k not in ("VIRTUAL_ENV", "PYTEST_ADDOPTS")}
     env.update(context.get("env", {}))
     return run("tools", *option, *argv, cwd=repo, env=env)
 

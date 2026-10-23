@@ -47,8 +47,6 @@ def exits_with_error(run, repo, context, outside):
         assert result.stdout == ""
         assert result.stderr == "tools: src/cart.py has no function named %s\n" % context["absent"]
         assert invoke(run, repo, context, ["tests-of", "src/cart.py:total"], outside).returncode == 0
-    if "unexecuted" in context:  # r11: a function no test executed
-        assert "0 of the 1 tests in the map executed" in result.stdout
     if context.get("defines_nothing"):  # r15
         assert result.stdout == ""
 

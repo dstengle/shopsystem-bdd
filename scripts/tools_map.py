@@ -1,5 +1,6 @@
 """tools: the coverage map, made and read (map, tests-of, untested)."""
 import ast
+import json
 import os
 import re
 import subprocess
@@ -97,6 +98,12 @@ def cmd_tests_of(args):
         lines = {line: tests for line, tests in lines.items() if any(a <= line <= b for a, b in spans)}
     tests = sorted(set().union(*lines.values())) if lines else []
     ran = len({c.split("|")[0] for c in data.measured_contexts() if c})
+    if args.json:
+        print(json.dumps({"tests": tests, "count": len(tests), "of": ran, "commit": at}))
+        return 0
+    if not tests:
+        print("no test of the map executed %s (map made at %s)" % (args.target, at))
+        return 0
     if args.by_file:
         files = {}
         for test in tests:
@@ -107,7 +114,7 @@ def cmd_tests_of(args):
         for test in tests:
             print(test)
     print("%d of the %d tests in the map executed %s (map made at %s)" % (len(tests), ran, args.target, at))
-    return 0 if tests else 1
+    return 0
 
 
 def cmd_untested(args):
