@@ -37,6 +37,7 @@ class Briefs:
             lines += self.research_lines(data)
         if stage == "plan":
             lines += self.research_questions(name)
+        lines += self.answer_lines(name)
         path = here / "brief.md"
         path.write_text("# %s of %s\n\n%s\n\nRead (paths in your worktree):\n%s\nRun directory: %s\nResult file: %s\n\n"
                         "You start in your worktree, %s: run every command from there, as it is, and never change "
@@ -48,6 +49,18 @@ class Briefs:
                         % (stage, name, "\n".join(lines), "".join("- %s\n" % r for r in read), here, here / "result.json",
                            tree))
         return path
+
+    def answer_lines(self, name):
+        """The work-item's answers as brief lines (r57), each beside the question it answers: the n-th bullet of
+        `## Answers` answers the n-th bullet of `## Questions`."""
+        pairs = list(zip(self.held(name, "Questions"), self.held(name, "Answers")))
+        if not pairs:
+            return []
+        lines = ["Answers the person gave, each with the question it answers:"]
+        for question, answer in pairs:
+            lines += ["- Question: %s" % " ".join(l.strip() for l in question)[2:],
+                      "  Answer: %s" % " ".join(l.strip() for l in answer)[2:]]
+        return lines
 
     def research_questions(self, name):
         """The questions the work-item's last research run gave with its DONE, as brief lines for the planner (r16)."""

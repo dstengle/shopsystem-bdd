@@ -114,7 +114,9 @@ class Workers:
         """A worktree of the initiative branch's head for one worker: on `branch`, else detached."""
         with self.lock:
             tree = self.trees_dir() / label
-            if branch:
+            if branch and git(self.root, "branch", "--list", branch).stdout.strip():     # a kept branch (r58): carry on from it
+                git(self.root, "worktree", "add", "-q", str(tree), branch)
+            elif branch:
                 git(self.root, "worktree", "add", "-q", "-b", branch, str(tree), "HEAD")
             else:
                 git(self.root, "worktree", "add", "-q", "--detach", str(tree), "HEAD")

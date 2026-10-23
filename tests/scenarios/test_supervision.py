@@ -20,6 +20,7 @@ import sys
 from pytest_bdd import parsers, scenarios, then, when
 
 from .conftest import SCRIPTS
+from .supervision_answers_steps import *  # noqa: F401,F403
 from .supervision_faults_steps import *  # noqa: F401,F403
 from .supervision_review_steps import *  # noqa: F401,F403
 from .supervision_tests_steps import *  # noqa: F401,F403
