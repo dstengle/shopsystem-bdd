@@ -47,6 +47,8 @@ that knows the old layout, and it decides nothing that needs judgment. A walking
 - [r27] **When** `migrate upgrade` is run on a repository with no uncommitted changes and finds no pending upgrade step, `migrate` shall say so, exit successfully and change nothing.
 - [r28] **When** a session starts in a repository without `.shop/`, the plugin's SessionStart hook shall tell the session nothing.
 - [r29] **When** `migrate upgrade` applies the upgrade step of the plugin version after 0.24.0, `migrate` shall rename the status `awaiting-ruling` to `awaiting-answer` in every work-item's file under `.shop/work/` and every `log.jsonl` line, and each work-item's `## Rulings` to `## Answers`.
+- [r30] **If** `.shop/plugin-version` holds no version, then `migrate status` and `migrate upgrade` shall exit with an error, saying that the file holds no version and naming what it holds, and change nothing.
+- [r31] **When** a session starts in a repository with `.shop/` whose `.shop/plugin-version` holds no version, the plugin's SessionStart hook shall tell the session to tell the person that the file holds no version, naming what it holds.
 
 ## Implementation, may change
 - r17's `by`: the entry's source, then `; supersedes <id> <qualifier>`.

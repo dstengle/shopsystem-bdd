@@ -531,3 +531,24 @@ Feature: Migration tools
     Then .shop/work/i1/w1.md now has the status awaiting-answer and the heading "## Answers"
     And .shop/work/i1/w2.md still has the status done and now has the heading "## Answers"
     And the line of .shop/work/i1/log.jsonl for w1 now names the status awaiting-answer
+
+  @r30
+  Scenario Outline: `migrate <command>` on a .shop/plugin-version that holds no version exits with an error, naming what it holds
+    Pins that a version file holding no version is refused, by name and content, and nothing changes.
+    Given a repository on the final layout whose .shop/plugin-version holds "next"
+    When the session runs `migrate <command>`
+    Then migrate exits with an error
+    And it says that .shop/plugin-version holds "next", which is no version
+    And no file of the repository has changed
+
+    Examples:
+      | command |
+      | status  |
+      | upgrade |
+
+  @r31
+  Scenario: a session starting in a repository whose .shop/plugin-version holds no version is told to tell the person
+    Pins that the hook names what the file holds and passes it to the person through the session.
+    Given a repository on the final layout whose .shop/plugin-version holds "next"
+    When a session starts in the repository
+    Then the session is told to tell the person that .shop/plugin-version holds "next", which is no version
