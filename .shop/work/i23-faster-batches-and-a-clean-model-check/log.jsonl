@@ -284,3 +284,7 @@
 {"time": "2026-10-23T23:38:15+00:00", "work-item": "w117", "stage": "implement", "agent": "bdd-implementer", "session": "72f571be-4639-4f33-bffa-59cda66c7963", "event": "end"}
 {"time": "2026-10-23T23:38:30+00:00", "work-item": "w117", "stage": "merge", "event": "suite", "record": "Suite: 722 passed, 0 failed at aaeea80 in 15 s; expected: tests/scenarios/test_design_model_check.py::test_a_bounded_context_with_no_job_gets_no_unservedcapability_warning"}
 {"time": "2026-10-23T23:38:36+00:00", "work-item": "w117", "before": "claimed", "after": "done", "by": "work run"}
+{"time": "2026-10-23T23:38:37+00:00", "work-item": "w117", "stage": "review", "event": "push verified"}
+{"time": "2026-10-23T23:38:37+00:00", "work-item": "w117", "stage": "review", "agent": "bdd-task-reviewer", "session": "ef880b29-31e4-4179-abb1-08fde1771745", "event": "start"}
+{"time": "2026-10-23T23:39:57+00:00", "work-item": "w117", "stage": "review", "agent": "bdd-task-reviewer", "session": "ef880b29-31e4-4179-abb1-08fde1771745", "event": "end"}
+{"time": "2026-10-23T23:39:57+00:00", "work-item": "w117", "before": "done", "after": "green", "by": "work run"}
