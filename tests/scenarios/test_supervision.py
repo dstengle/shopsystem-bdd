@@ -105,9 +105,9 @@ def not_merged(repo):
     assert not any(s.startswith("bdd-implementer:") for s in subjects) and not tree_has(repo, "feature.txt"), subjects
 
 
-@then(parsers.re(r"(?P<name>\w+) is awaiting-ruling$"))
+@then(parsers.re(r"(?P<name>\w+) is awaiting-answer$"))
 def awaiting(repo, context, name):
-    assert fields(repo / (".shop/work/i1/%s.md" % name))["status"] == "awaiting-ruling", (context["done"].stdout, context["done"].stderr)
+    assert fields(repo / (".shop/work/i1/%s.md" % name))["status"] == "awaiting-answer", (context["done"].stdout, context["done"].stderr)
 
 
 @then(".shop/work/i1/initiative.md is as it was")
@@ -197,14 +197,14 @@ def branch_put_back(repo):
     assert git(repo, "diff", "--name-only", "main...work/w1", "--", ".shop/work/") == "", git(repo, "log", "--stat", "main..work/w1")
 
 
-@then(parsers.re(r'(?P<name>\w+)\'s ## Questions holds "(?P<old>[^"]+)" and then "(?P<new>[^"]+)", and its Rulings '
-                 r'section only "(?P<ruling>[^"]+)"$'))
-def sections(repo, context, name, old, new, ruling):
+@then(parsers.re(r'(?P<name>\w+)\'s ## Questions holds "(?P<old>[^"]+)" and then "(?P<new>[^"]+)", and its Answers '
+                 r'section only "(?P<answer>[^"]+)"$'))
+def sections(repo, context, name, old, new, answer):
     text = (repo / (".shop/work/i1/%s.md" % name)).read_text()
     asked = [l for l in section(text, "Questions").splitlines() if l.strip()]
-    ruled = [l for l in section(text, "Rulings").splitlines() if l.strip()]
+    answered = [l for l in section(text, "Answers").splitlines() if l.strip()]
     assert len(asked) == 2 and old in asked[0] and new in asked[1], (text, context["done"].stderr)
-    assert ruled == ["- " + ruling], text
+    assert answered == ["- " + answer], text
 
 
 @then(parsers.re(r'`work run` prints the question "(?P<question>[^"]+)"$'))

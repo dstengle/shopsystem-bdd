@@ -153,7 +153,7 @@ class Run(Workers, Briefs, Merge, Faults, Reviews):
                         % (ROLE[agent], ", ".join(changed), "it" if len(changed) == 1 else "them"))
         question = self.outcome(agent, data, failure)
         fileset = data.get("fileset") if question is None and agent == "bdd-planner" else None
-        self.move(name, status, after if question is None else "awaiting-ruling", question,
+        self.move(name, status, after if question is None else "awaiting-answer", question,
                   fileset=fileset if isinstance(fileset, list) and fileset else None)
 
     def pair(self, ready):
@@ -204,9 +204,9 @@ class Run(Workers, Briefs, Merge, Faults, Reviews):
         return bullets
 
     def questions(self, name):
-        """The lines of the work-item's open questions: those of its `## Questions` past the ones `## Rulings` rules on,
-        the n-th ruling answering the n-th question (r32)."""
-        return [l for bullet in self.held(name, "Questions")[len(self.held(name, "Rulings")):] for l in bullet]
+        """The lines of the work-item's open questions: those of its `## Questions` past the ones `## Answers` answers,
+        the n-th answer answering the n-th question (r32)."""
+        return [l for bullet in self.held(name, "Questions")[len(self.held(name, "Answers")):] for l in bullet]
 
     def run(self):
         """Pull the work-items one worker at a time until none can move (r1); print where each stands (r9)."""
@@ -234,7 +234,7 @@ class Run(Workers, Briefs, Merge, Faults, Reviews):
         statuses = self.items()
         for name, status in statuses:
             print("%s %s" % (name, status))
-            if status == "awaiting-ruling":
+            if status == "awaiting-answer":
                 for line in self.questions(name):
                     print("  %s" % line)
             if status == "failed":
@@ -242,7 +242,7 @@ class Run(Workers, Briefs, Merge, Faults, Reviews):
                     print("  - %s" % fault)
         if all(s in ("green", "withdrawn") for _, s in statuses):
             return 0
-        return 3 if any(s == "awaiting-ruling" for _, s in statuses) and not any(s == "failed" for _, s in statuses) else 1
+        return 3 if any(s == "awaiting-answer" for _, s in statuses) and not any(s == "failed" for _, s in statuses) else 1
 
     def faulted(self, name):
         """The faults of a failed work-item: those its `## Faults` records, the ones this run met as it told them (with a

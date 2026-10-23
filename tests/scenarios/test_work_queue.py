@@ -17,6 +17,7 @@ import types
 from pytest_bdd import given, parsers, scenarios, then, when
 
 from .conftest import INDEX, SCRIPTS, full
+from .work_queue_answer_steps import *  # noqa: F401,F403  r13
 from .work_queue_add_steps import *  # noqa: F401,F403  r1, r12
 from .work_queue_git_steps import *  # noqa: F401,F403  the steps are fixtures pytest-bdd finds by their names here
 from .work_queue_git_steps import init
@@ -63,12 +64,16 @@ def no_item(repo, ident, name):
 
 
 @given(parsers.re(r"an initiative (?P<ident>i\d+) under \.shop/work/ whose work-items? (?P<items>(?:(?!, its last).)+?)"
+                  r"(?:, its question asked by (?P<asker>an? \w+))?"
                   r"(?: and whose capability-proposal (?P<proposal>\w+) is (?P<pstatus>\w+))?$"))
-def with_items(repo, ident, items, proposal, pstatus):
+def with_items(repo, ident, items, asker, proposal, pstatus):
     initiative(repo, ident)
     for pair in items.replace(" and whose work-item ", ", ").replace(" and ", ", ").split(", "):
         name, status = pair.split(" is ")
         write(repo, ".shop/work/%s/%s.md" % (ident, name), item_text(name, status, ident))
+        if status == "awaiting-answer":     # the log gives the stage that asked: the status it moved from (r14)
+            started = {"a researcher": "drafted", "a planner": "researched", "an implementer": "claimed", "a reviewer": "done"}
+            write(repo, ".shop/work/%s/log.jsonl" % ident, log_line(name, started[asker or "an implementer"], status))
     if proposal:
         write(repo, ".shop/work/%s/%s.md" % (ident, proposal), item_text(proposal, pstatus, ident, "capability-proposal"))
 

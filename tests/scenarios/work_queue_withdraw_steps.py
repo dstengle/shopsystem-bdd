@@ -25,7 +25,7 @@ def last_is(repo, name, before, after):
 
 
 @then(parsers.re(r"main has a new last commit, which holds (?P<rel>\S+) as work left it and (?P<log>\S+) with "
-                 r"(?P<name>\w+)'s transition from (?P<before>\w+)(?: to (?P<after>\w+))? as its last line$"))
+                 r"(?P<name>\w+)'s transition from (?P<before>[\w-]+)(?: to (?P<after>[\w-]+))? as its last line$"))
 def new_commit_holds_both(repo, context, rel, log, name, before, after):
     assert context["done"].returncode == 0, context["done"]
     assert git(repo, "rev-parse", "main").strip() != context["head"], git(repo, "log", "--oneline")
