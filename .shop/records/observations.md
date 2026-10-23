@@ -226,3 +226,16 @@ and i17 each keep capability-proposals at `merged`, those of agent and skill cap
 `formulated` because they have no feature files (decision 0030). A capability-proposal's file form allows no status
 after `merged` but `formulated` (`delivered` is refused as a file problem), so the model has no way to close such a
 proposal. The rows are left standing; giving the model a closing status for these proposals is work for a later batch.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-23-decision-0030-misread
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+by: the coordinator, after the model check analysis of 2026-10-23
+date: 2026-10-23
+
+The two entries above (2026-10-23-open-initiatives-closed and its v_d1 paragraph) misquote decision 0030. It does not
+say the agent and skill capabilities have no feature files: it says they get Gherkin scenarios run as headless
+`claude -p` fixture sessions, and it rejected grouping them as guarantees. spec/index.md says that until a line's
+scenario is written, `model check` reports it under v_s3. The harness of decision 0043 was never built, so those
+scenarios do not exist yet. The coordinator gave the person the misreading when recommending the ten closings; the
+person closed them on it. The closings stand until the person decides between building the scenarios (0030 kept) and
+superseding 0030 with guarantees checked by `measure`.
