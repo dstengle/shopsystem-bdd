@@ -22,7 +22,7 @@ def moment(text, where):
 def json_rows(path):
     """The JSON object of each non-blank line of `path`; a line that is not one is refused, naming file and line."""
     rows = []
-    for number, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+    for number, line in enumerate(path.read_text(encoding="utf-8", errors="replace").split("\n"), 1):
         if not line.strip():
             continue
         try:
