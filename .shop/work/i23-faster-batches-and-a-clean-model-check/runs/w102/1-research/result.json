@@ -1,0 +1,13 @@
+{
+  "status": "DONE",
+  "summary": "w102 research done; notes at .shop/scratch/1-research/notes.md, probes in .shop/scratch/w102-1-research/.\nAccepted: r47 (2 + deprecated copy), r57, r58, r59. r47 rows pass today; 6 r57/r58/r59 rows red.\nRed reasons: undefined steps (r58 line break, r59 local zone and s-9 lines, r57 empty session.json steps) and code: json_rows splitlines (r58 refuses U+2028/U+2029/U+0085 lines), read_session_json refuses empty file (r57).\nr59 Z times already read correctly on Python 3.11 (run); only steps are missing.\nDefects (run): D1 break lines refused; D2 empty session.json refuses whole run; D3 raw break in log.jsonl refused; D4 one session named by two stages double-counted; D5 missing --sessions dir silent; D6 file day is local day.\nTests: no map (tests-of unavailable), so tests listed by search. No existing test can no longer pass; gives_totals step and store_session helper must change (ensure_ascii).\nFile set: measure_read.py, measure_build.py; batch_measurement given/then/transcripts/world step modules.\nOpen questions A-E in notes: run directory of an empty session.json, round trips and totals for it, whitespace-only file, file date zone.",
+  "fileset": [
+    "scripts/measure_read.py",
+    "scripts/measure_build.py",
+    "tests/scenarios/batch_measurement_given_steps.py",
+    "tests/scenarios/batch_measurement_then_steps.py",
+    "tests/scenarios/batch_measurement_transcripts.py",
+    "tests/scenarios/batch_measurement_world.py"
+  ],
+  "questions": []
+}
