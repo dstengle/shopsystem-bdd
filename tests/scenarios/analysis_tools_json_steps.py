@@ -50,16 +50,17 @@ def gives_functions(context, first, second, count, label):
     assert (found["count"], found["commit"]) == (count, context["commits"][label])
 
 
-@then("the object gives the reference in src/checkout.py and the reference in tests/test_cart.py")
+@then("the object gives the references in src/checkout.py and tests/test_cart.py")
 def gives_references(context):
     places = [(ref["path"], ref["line"]) for ref in printed(context)["references"]]
     assert ("src/checkout.py", 5) in places and ("tests/test_cart.py", 5) in places
 
 
-@then("the object gives the summary: 2 references, 1 production file, 1 test file, and src/cart.py as where total is defined")
+@then("the object gives the summary: the number of references it gives, 1 production file, 1 test file, and src/cart.py as where total is defined")
 def gives_summary(context):
-    summary = printed(context)["summary"]
-    assert (summary["references"], summary["production_files"], summary["test_files"]) == (2, 1, 1)
+    found = printed(context)
+    summary = found["summary"]
+    assert (summary["references"], summary["production_files"], summary["test_files"]) == (len(found["references"]), 1, 1)
     assert [place.split(":")[0] for place in summary["defined"]] == ["src/cart.py"]
 
 

@@ -62,7 +62,7 @@ class ToolsTest(unittest.TestCase):
         (self.tmp / "pytest.ini").write_text("[pytest]\ntestpaths = tests\npythonpath = .\n")
 
     def run_script(self, *args):
-        env = {k: v for k, v in os.environ.items() if k != "VIRTUAL_ENV"}
+        env = {k: v for k, v in os.environ.items() if k not in ("VIRTUAL_ENV", "PYTEST_ADDOPTS")}
         return subprocess.run([sys.executable, str(SCRIPT), "--python", sys.executable, *args], cwd=self.tmp,
                               capture_output=True, text=True, env=env)
 
