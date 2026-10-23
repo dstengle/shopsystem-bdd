@@ -4,7 +4,7 @@ title: Strict EARS in the design model
 summary: The design model in shopsystem-knowledge takes design-decision/behaviour-lines-are-ears, replacing its two EARS adaptations.
 kind: capability-change
 owner-level: shopsystem-bdd
-status: proposed
+status: abandoned
 priority: 5
 source: [observation/2026-10-19-lines-not-ears]
 date: 2026-10-19

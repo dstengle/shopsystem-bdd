@@ -4,7 +4,7 @@ title: Migrate a consuming repository to design model v3
 summary: Migration tools only, that take a consuming repository from the old system to the final layout of design model v3; the plugin keeps nothing of the old system beyond them.
 kind: capability-change
 owner-level: shopsystem-bdd
-status: proposed
+status: done
 priority: 3
 source: [review-finding/2026-10-13-kb-and-bdd-assessment]
 date: 2026-10-15

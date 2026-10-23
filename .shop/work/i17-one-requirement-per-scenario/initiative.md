@@ -4,7 +4,7 @@ title: One requirement per scenario, and exits in words
 summary: A scenario names exactly one requirement and Behaviour lines say a command exits successfully or with an error, never an exit code; work run exits with an error when a work-item awaits a ruling.
 kind: capability-change
 owner-level: shopsystem-bdd
-status: started
+status: done
 priority: 1
 source: [observation/2026-10-21-one-requirement-per-scenario]
 date: 2026-10-21

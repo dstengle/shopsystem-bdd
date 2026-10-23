@@ -4,7 +4,7 @@ title: A ubiquitous language for the bounded context
 summary: A context's terms are standing glossary entries that model check judges, a skill checks a spec's consistency on demand, model finds clingo behind a virtualenv, and features takes --file.
 kind: capability-change
 owner-level: shopsystem-bdd
-status: started
+status: done
 priority: 8
 source: [observation/2026-10-15-design-model-v3]
 date: 2026-10-17

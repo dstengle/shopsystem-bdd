@@ -210,3 +210,13 @@ came back: 3 s of CPU in 10 h 50 min, its result file the placeholder it wrote i
 on a worker with no limit of time, so it waited the whole night until the coordinator killed the reviewer (exit 143,
 w97 failed, then retried). The coordinator proposed a line ending a worker silent for longer than a set time, as a
 failure of the work-item; the person deferred it: not in i22's batch.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-23-open-initiatives-closed
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+by: the person ("close all 10"), recorded by the coordinator
+date: 2026-10-23
+
+The coordinator's sweep of the open initiatives found every work-item of each green or withdrawn, and every requirement
+still without a passing scenario in the agent and skill capabilities, which have no feature files by design (decision
+0030). The person closed all ten: i1, i3, i8, i9, i10, i11, i13, i16 and i17 as done, their agent and skill lines
+delivered by the shipped agent and skill text; i14 as abandoned, its work belonging to shopsystem-knowledge.

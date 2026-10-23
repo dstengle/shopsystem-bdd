@@ -4,7 +4,7 @@ title: The plugin's first spec
 summary: Give the plugin its own spec, decisions, work and records in the design model's layout, describing what 0.18.0 does.
 kind: capability-change
 owner-level: shopsystem-bdd
-status: started
+status: done
 priority: 0
 source: [review-finding/2026-10-13-kb-and-bdd-assessment]
 date: 2026-10-15

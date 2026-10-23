@@ -4,7 +4,7 @@ title: This repository on the final layout and conventions
 summary: This repository moves to the final layout and conventions of design model v3, the ones the plugin teaches and i8 migrates consuming repositories to.
 kind: capability-change
 owner-level: shopsystem-bdd
-status: proposed
+status: done
 priority: 2
 source: [observation/2026-10-19-final-state-only]
 date: 2026-10-19

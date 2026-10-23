@@ -4,7 +4,7 @@ title: Delivery on design model v3
 summary: Work-items pulled through their stages by a script supervisor, with a claude -p worker for each stage and only the supervisor writing status.
 kind: capability-change
 owner-level: shopsystem-bdd
-status: proposed
+status: done
 priority: 1
 source: [review-finding/2026-10-13-kb-and-bdd-assessment, measurement/kb-batches-32-35]
 date: 2026-10-19

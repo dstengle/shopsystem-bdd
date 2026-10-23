@@ -4,7 +4,7 @@ title: Requirement ids in the format the plugin teaches
 summary: Consuming repositories' capabilities carry [r<n>] ids, scenarios name them by @r<n>, proposals list adds/changes/removes by id, and the gate approves lines with their ids.
 kind: capability-change
 owner-level: shopsystem-bdd
-status: started
+status: done
 priority: 1
 source: [observation/2026-10-15-design-model-v3]
 date: 2026-10-15

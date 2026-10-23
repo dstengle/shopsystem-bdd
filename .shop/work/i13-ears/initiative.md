@@ -4,7 +4,7 @@ title: Requirements in EARS
 summary: Every Behaviour line in this context is written in EARS's patterns with "shall", one response and one sentence, and model check reports a line that is not.
 kind: capability-change
 owner-level: shopsystem-bdd
-status: proposed
+status: done
 priority: 0
 source: [observation/2026-10-19-lines-not-ears]
 date: 2026-10-19

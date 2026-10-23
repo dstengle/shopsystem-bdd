@@ -4,7 +4,7 @@ title: The session keeps the gate and nothing else
 summary: The session talking to the person holds only the gate and a ledger; integrating, gate assembly, applying verdicts, code, trials and analysis go to the plugin's own roles, which reply in a few lines and leave the rest in files.
 kind: capability-change
 owner-level: shopsystem-bdd
-status: started
+status: done
 priority: 1
 source: [observation/2026-10-21-session-keeps-the-gate]
 date: 2026-10-21
