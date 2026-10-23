@@ -1,0 +1,14 @@
+{
+  "status": "QUESTION",
+  "summary": "Plan of w100 written up to one blocked part.\nr15: the scenario is red only because two steps are missing. The new When and Then go in tests/scenarios/work_queue_answer_steps.py; the code already refuses a newline.\nRulings from the work-item body are planned too:\n- the upgrade put-back catches any Exception (migrate_upgrade.py);\n- the class AVersionFileThatHoldsNoVersion is removed;\n- measure_read.py drops the Z replacement and its noqa.\nBlocked: M1 and M2 (retire the deprecated batch-measurement @r42 scenario and the work-queue @r9 outline) and I2 (gives_totals).\nThe work-item has no `## Retires` section. Without one, the implementer may not run `features retire` (decision 0006), and a reviewer would mark it Critical.\nLeft alone under 'change no other behaviour': D1, where U+2028 and form feed in an answer are accepted.",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "tests/scenarios/work_queue_answer_steps.py",
+    "scripts/migrate_upgrade.py",
+    "tests/scripts/test_migrate_upgrade.py",
+    "scripts/measure_read.py"
+  ],
+  "questions": [
+    "The work-item rules that the deprecated batch-measurement @r42 scenario and the deprecated work-queue @r9 outline are retired and listed under a `## Retires` section, and that gives_totals asserts every token column again afterwards. But the work-item has no Retires section, so this item cannot retire them. Reading A: the coordinator adds a `## Retires` section listing both scenarios. w100 then also retires them with `features retire` and makes gives_totals strict, and features/batch-measurement.feature, features/work-queue.feature and tests/scenarios/batch_measurement_then_steps.py join the file set. The person sees both deprecated scenarios gone from the suite, and the r42 totals scenario failing on any wrong token column. Reading B: w100 goes ahead without them, and a later work-item with a Retires section does M1, M2 and I2. Until then both deprecated scenarios stay in the suite and gives_totals stays lenient about token columns."
+  ]
+}
