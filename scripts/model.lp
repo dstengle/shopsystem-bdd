@@ -61,6 +61,7 @@ closed(P)             :- status(P, "withdrawn").
 has_part_of(P)  :- part_of(P, _).        has_root(P)    :- root(P, _).
 has_about(R)    :- about(R, _).          has_narrator(C) :- narrator(C, _).
 has_from(Q)     :- from_cap(Q, _).       has_cap(W)     :- cap_of_wi(W, _).
+% FIX: accepts(W, R)'s second argument is a requirement, not grammar.md's acceptance-scenario (r106).
 has_accepts(W)  :- accepts(W, _).        has_check(W)   :- check(W, _).
 has_summary(D)  :- summary(D, _).        has_req_id(Q)  :- req_id(Q, _, _).
 has_any_req(Q)  :- has_req(_, Q).        has_sc_of(S)   :- has_sc(_, S).

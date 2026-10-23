@@ -185,9 +185,8 @@ class WorkReading:
                 q = self.resolve_req(ref, where)
                 if not q:
                     continue
+                self.fact("accepts", p, q)                  # r106: from the field, whether or not a scenario names it
                 found = [args[1] for name, args in self.facts if name == "has_sc" and args[0] == q]
-                for s in found:
-                    self.fact("accepts", p, s)
                 cap, _, n = q.rpartition("#r")
                 exempt = (("group", [cap, "guarantees"]) in [(f, list(a)) for f, a in self.facts]
                           or (data.get("status") == "green" and (cap, int(n)) in self.retired))

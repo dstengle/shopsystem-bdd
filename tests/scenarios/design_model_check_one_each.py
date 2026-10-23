@@ -31,6 +31,7 @@ def capability_r1_named(world):
 
 FIELDS = {"no accepts and no check": {"check": None},
           "accepts thing#r1 and no check": {"accepts": "[thing#r1]", "check": None},
+          "accepts thing#r2 and no check": {"accepts": "[thing#r2]", "check": None},
           "a check and no accepts": {"check": "true"}}
 
 
