@@ -73,7 +73,7 @@ def work_items_of(rows, root):
             one["transitions"].append({"time": row["time"], "from": row["before"], "to": row["after"]})
     for one in items.values():
         steps = one["transitions"]
-        one["awaiting_ruling"] = sum(1 for s in steps if s["to"] == "awaiting-ruling")
+        one["awaiting_answer"] = sum(1 for s in steps if s["to"] == "awaiting-answer")
         one["failed"] = sum(1 for s in steps if s["to"] == "failed")
         one["commits"] = merged_commits(root, one["work-item"])
     return list(items.values())

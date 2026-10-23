@@ -107,10 +107,10 @@ def gives_transitions(world, item, count):
     assert got == world.expected and len(got) == count, got
 
 
-@then(parsers.parse("it gives {item} {awaiting:d} time to awaiting-ruling and {failed:d} time to failed"))
+@then(parsers.parse("it gives {item} {awaiting:d} time to awaiting-answer and {failed:d} time to failed"))
 def gives_counts(world, item, awaiting, failed):
     got = item_of(world, item)
-    assert (got["awaiting_ruling"], got["failed"]) == (awaiting, failed), got
+    assert (got["awaiting_answer"], got["failed"]) == (awaiting, failed), got
 
 
 @then(parsers.parse("it gives {item} the commits {first} and {second}"))

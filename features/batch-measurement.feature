@@ -80,29 +80,6 @@ Feature: Batch measurement
       | cart-1    | plan  | planner | s-2     | 6     | 1000          | 500              | 20000             | 0.18 |
     And the measurement gives no time for how long the stage took
 
-  @r41 @deprecated
-  Scenario: each work-item is given with its transitions, its awaiting-ruling and failed counts and the commits its merge brought in (deprecated)
-    Deprecated for: each work-item is given with its transitions, its awaiting-answer and failed counts and the commits its merge brought in
-    A work-item's path through its statuses is counted, and only the commits its own merge brought into the initiative branch are its.
-    Given i7-cart's log.jsonl gives work-item cart-1 the transitions
-      | from            | to              |
-      | drafted         | researched      |
-      | researched      | failed          |
-      | failed          | researched      |
-      | researched      | awaiting-ruling |
-      | awaiting-ruling | planned         |
-      | planned         | ready           |
-      | ready           | claimed         |
-      | claimed         | done            |
-      | done            | green           |
-    And cart-1's work-item branch has the commits c-1 and c-2, which its merge brought into the initiative branch
-    And the commit c-3 was made on the initiative branch itself
-    When the session runs measure initiative i7-cart
-    Then the measurement gives cart-1 those 9 transitions
-    And it gives cart-1 1 time to awaiting-ruling and 1 time to failed
-    And it gives cart-1 the commits c-1 and c-2
-    And it does not give cart-1 the commit c-3
-
   @r41
   Scenario: each work-item is given with its transitions, its awaiting-answer and failed counts and the commits its merge brought in
     A work-item's path through its statuses is counted, and only the commits its own merge brought into the initiative branch are its.

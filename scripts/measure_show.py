@@ -10,7 +10,7 @@ TOTALS = (("stages", "stages"), ("sessions", "sessions"), ("output tokens", "out
           ("time", "time"))
 STAGES = ("work-item", "stage", "agent", "session", "took", "turns", "output_tokens", "new_input_tokens",
           "cache_read_tokens", "cost")
-ITEMS = ("work-item", "transitions", "awaiting_ruling", "failed", "commits")
+ITEMS = ("work-item", "transitions", "awaiting_answer", "failed", "commits")
 SESSIONS = ("session", "started", "dispatched_by", "output_tokens", "new_input_tokens", "cache_read_tokens")
 
 

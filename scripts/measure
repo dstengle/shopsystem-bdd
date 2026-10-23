@@ -19,7 +19,7 @@ contract:
     without --replace.
   - It gives each stage with its work-item, agent, session, time (none for a
     stage with no end), turns, tokens (output, new input, cache read) and cost;
-    each work-item with its transitions, its awaiting-ruling and failed counts
+    each work-item with its transitions, its awaiting-answer and failed counts
     and the commits its merge brought in; the totals over the stages' sessions
     and the time from the first transition to the last.
   - --sessions <dir> names a directory of Claude Code transcripts, raw or the
