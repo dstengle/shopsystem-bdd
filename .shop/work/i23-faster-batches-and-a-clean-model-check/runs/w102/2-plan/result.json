@@ -1,0 +1,16 @@
+{
+  "status": "QUESTION",
+  "summary": "Plan for w102 is written in plan.md and is complete except for one question.\nr47 is green today and stays green. r58 is red on a missing step, plus json_rows splitting on Unicode breaks. r59 is red on steps only (Z times already read as UTC). r57 is red on missing steps, plus the empty session.json refusing the whole run.\nDecisions:\n(1) an empty session.json is matched to its stage by run-directory order (work run allocates k and logs the start under one lock);\n(2) empty means zero bytes; whitespace-only stays refused (r47, 0018);\n(3) the stage is given without turns, tokens or cost, with a marker naming the empty file;\n(4) one reader, split on \\n only, for transcripts and log.jsonl;\n(5) round trips are kept for an empty-session.json stage (r53, r55);\n(6) no production change for Z; the file date stays the local day.\nNo test function breaks: the gives_totals step and the store_session helper are adapted.\nFile set is the researcher's, unchanged.\nOpen: whether the sessions total counts a stage whose session.json is empty (r42 does not settle it).",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/measure_read.py",
+    "scripts/measure_build.py",
+    "tests/scenarios/batch_measurement_given_steps.py",
+    "tests/scenarios/batch_measurement_then_steps.py",
+    "tests/scenarios/batch_measurement_transcripts.py",
+    "tests/scenarios/batch_measurement_world.py"
+  ],
+  "questions": [
+    "batch-measurement#r42 with #r57: does the totals' `sessions` count include the session of a stage whose session.json is empty? Reading A, count it: the stage ran in a session that log.jsonl names, so `sessions` is the number of distinct sessions of the stages given. A measurement with one good stage and one empty-session.json stage gives sessions 2, while turns, tokens and cost total only the good stage. Reading B, count only sessions with figures (today's rule, which counts a session only when its session.json gave turns): the same measurement gives sessions 1, so `sessions` matches the sessions the turns, tokens and cost were summed over. Under either reading, a stage with a start and no end and no session.json is counted the same way as the empty case."
+  ]
+}
