@@ -22,6 +22,7 @@ no prompt, reply or tool content, and refuses rather than guesses when its input
 - [r46] **If** the initiative has no `log.jsonl`, **then** `measure initiative` shall refuse, writing nothing, because the initiative has no `log.jsonl`.
 - [r47] **If** a `session.json` that is not empty, or a transcript, is not of a shape `measure` knows, **then** `measure` shall refuse, writing nothing, naming that file.
 - [r58] **When** a line of a transcript holds U+2028 or another Unicode line break inside a JSON string, `measure` shall read it as one line.
+- [r59] **When** a time in `log.jsonl` or in a transcript ends in `Z`, `measure` shall read it as a time in UTC.
 - [r48] **If** the measurement exists and `--replace` is not given, **then** `measure initiative` shall refuse, writing nothing, because the measurement exists.
 - [r52] **Where** `--replace` is given, `measure initiative` shall write the measurement over the one that exists.
 - [r50] **If** `measure` refuses, **then** `measure` shall exit with an error.

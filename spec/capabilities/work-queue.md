@@ -28,7 +28,7 @@ writes their transitions through their lifecycle, logging every transition. It i
 - [r10] **When** `work withdraw <work-item>` is run on a work-item that is neither `claimed` nor `green`, `work` shall transition it to `withdrawn`.
 - [r13] **When** `work answer <work-item> <answer>` is run on an `awaiting-answer` work-item, `work` shall write the answer, with the date, under the work-item's `## Answers`.
 - [r14] **When** `work answer <work-item> <answer>` is run on an `awaiting-answer` work-item, `work` shall transition it to the status the stage that asked its question started from: `drafted` for a researcher's question, `researched` for a planner's, `ready` for an implementer's and `done` for a reviewer's.
-- [r15] **If** the answer given to `work answer` has a newline, U+2028 or another Unicode line break in it, then `work` shall exit with an error, saying that an answer is one line, and change nothing.
+- [r15] **If** the answer given to `work answer` has in it one of Unicode's mandatory line breaks, U+000A (LF), U+000B (VT), U+000C (FF), U+000D (CR), U+0085 (NEL), U+2028 or U+2029, then `work` shall exit with an error, saying that an answer is one line, and change nothing.
 - [r9] **When** `work add`, `work retry`, `work withdraw` or `work answer` changes a work-item, `work` shall commit on the current branch the work-item's file and the `log.jsonl` line the change made, if it made one.
 
 ## Implementation, may change
