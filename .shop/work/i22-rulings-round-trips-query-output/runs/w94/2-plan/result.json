@@ -1,0 +1,19 @@
+{
+  "status": "QUESTION",
+  "summary": "w94 plan written (plan.md): r41, r42, r53-r56, 8 scenarios, 6 red today from undefined steps and no round-trips code.\nFile set: the researcher's (measure, measure_read, measure_build, measure_show; batch_measurement given/then/show/world/transcripts steps).\nSettled: the store is CLAUDE_CONFIG_DIR or ~/.claude, projects/*/<session-id>.jsonl, set by tests through the environment (Implementation note r53, r55).\nSettled: subagent rows are not the stage's round trips (r53, the --max-turns unit note).\nSettled: the status rename is w91's and decision 0064's upgrade step, not w94's.\nSettled: store transcripts get read_transcripts' refusals (r47, 0018); totals sum the stages' turns and round trips only (r42); the deprecated r42 scenario stays green with a step taking both tables.\nOpen: whether measure counts awaiting-ruling transitions, which decides the deprecated r41 scenario.",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/measure",
+    "scripts/measure_build.py",
+    "scripts/measure_read.py",
+    "scripts/measure_show.py",
+    "tests/scenarios/batch_measurement_given_steps.py",
+    "tests/scenarios/batch_measurement_then_steps.py",
+    "tests/scenarios/batch_measurement_show_steps.py",
+    "tests/scenarios/batch_measurement_world.py",
+    "tests/scenarios/batch_measurement_transcripts.py"
+  ],
+  "questions": [
+    "r41 counts transitions 'to awaiting-answer', but every log written so far (this initiative's included, until w91 and decision 0064's upgrade step land) says awaiting-ruling, and the deprecated r41 scenario, which w94 accepts and does not retire, expects '1 time to awaiting-ruling'. What does measure count? Reading A, awaiting-answer only: a log with awaiting-ruling transitions gives 0 to awaiting-answer; the deprecated r41 scenario goes red and w94 needs it retired (a Retires section). Reading B, awaiting-ruling counted as the old name of awaiting-answer (0064: the status 'is' awaiting-answer): a log not yet upgraded gives its awaiting-ruling transitions in the one awaiting-answer count; the deprecated scenario is kept, its step asserting that count is 1. Reading C, both counted apart: the measurement and show give an awaiting-answer count and an awaiting-ruling count side by side; the deprecated scenario is kept as it reads."
+  ]
+}
