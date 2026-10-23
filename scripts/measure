@@ -29,7 +29,8 @@ contract:
     slim export: the measurement also gives each session that starts inside the
     initiative's window, and each session those dispatched.
   - It writes no prompt, reply or tool content. A file whose shape is not
-    known is refused, naming it.
+    known is refused, naming it. An empty session.json is not refused: its
+    stage is given without the session's figures, named as such.
 
   - show <record> prints a measurement's stages, work-items, totals and sessions as tables.
   - compare <a> <b> prints the two measurements' totals side by side with the

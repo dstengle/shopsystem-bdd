@@ -19,21 +19,6 @@ Feature: Batch measurement
     Then measure initiative refuses because the initiative has no log.jsonl
     And nothing is written
 
-  @r47 @deprecated
-  Scenario Outline: a <file kind> of a shape measure does not know is refused, naming it (deprecated)
-    Deprecated for: a <file kind> of a shape measure does not know is refused, naming it
-    Measure does not guess at a session it cannot read; it says which file stopped it.
-    Given the initiative i7-cart has a log.jsonl
-    And <file> is not of a shape measure knows
-    When the session runs <command>
-    Then measure refuses, naming <file>
-    And nothing is written
-
-    Examples:
-      | file kind    | file                                                  | command                                              |
-      | session.json | the session.json of work-item cart-1's research stage | measure initiative i7-cart                           |
-      | transcript   | the transcript sessions/s-9.jsonl                     | measure initiative i7-cart with --sessions sessions  |
-
   @r47
   Scenario Outline: a <file kind> of a shape measure does not know is refused, naming it
     Measure does not guess at a session it cannot read; it says which file stopped it.

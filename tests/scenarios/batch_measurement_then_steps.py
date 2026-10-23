@@ -153,11 +153,13 @@ def not_commit(world, item, commit):
 def gives_totals(world, datatable):
     wanted = dict(zip(*datatable))
     got = world.figures()["totals"]
-    assert str(got["stages"]) == wanted["stages"] and str(got["sessions"]) == wanted["sessions"], got
-    for column in ("turns", "round trips", "output tokens", "new input tokens", "cache-read tokens"):
-        assert str(got[NUMBERS[column]]) == wanted[column], (column, got)
-    assert "%.2f" % got["cost"] == wanted["cost"], got
-    assert got["time"] == wanted["time"], got
+    for column, value in wanted.items():
+        if column in ("stages", "sessions", "time"):
+            assert str(got[column]) == value, (column, got)
+        elif column == "cost":
+            assert "%.2f" % got["cost"] == value, got
+        else:
+            assert str(got[NUMBERS[column]]) == value, (column, got)
 
 
 @then("the measurement gives the sessions")

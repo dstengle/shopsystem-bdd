@@ -29,7 +29,9 @@ def load_measure():
 
 
 def stamp(clock):
-    """'10:00' as the day's ISO time, in UTC."""
+    """'10:00' as the day's ISO time, in UTC; a full ISO time is given as it is."""
+    if "T" in clock:
+        return clock
     return "%sT%s:00+00:00" % (DAY, clock)
 
 
