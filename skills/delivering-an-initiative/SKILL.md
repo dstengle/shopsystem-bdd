@@ -30,7 +30,9 @@ Stop, saying why, and change nothing, when any of these holds:
 
 1. **The requirements.** For each `formulated` capability-proposal of the initiative: the requirement ids in its `adds:` and its `changes:` (`<capability>#r<n>`, or a range such as `delivery#r1-r7`). Leave out those a work-item of the initiative already accepts (its `accepts:`) unless that work-item is `withdrawn`. When none is left, every requirement is accepted already: draft nothing, commit nothing, and go straight to "Run `work run`".
 2. **The work-items.** One for each proposal and capability: it accepts every requirement of that proposal on that capability. Its title says what it delivers; `work add` numbers it and prints its id `w<n>`: take that id as its name, never one you choose.
-3. **Draft each** with `python3 <scripts>/work add <initiative> <title> --part-of capability-proposal/<the proposal's file name without .md> --under <capability> --accepts <id>`, one `--accepts` for each requirement id. It prints the work-item's id: keep it.
+3. **Check before the first `work add`.** Read `features/` for each scenario tagged `@r<n>` with `<n>` among the requirements of the `formulated` proposals' `adds:` and `changes:` (those the formulation added or reworded). When one names a requirement that no planned work-item accepts, stop, naming each such scenario (feature file and title), and run no `work add`: `work add` commits as it goes, so no work-item may be drafted.
+4. **Draft each** with `python3 <scripts>/work add <initiative> <title> --part-of capability-proposal/<the proposal's file name without .md> --under <capability> --accepts <id>`, one `--accepts` for each requirement id. It prints the work-item's id: keep it.
+5. **List its Retires.** In `features/`, find each scenario tagged `@deprecated` whose own `@r<n>` tags name a requirement the work-item accepts. When there is one, append to the work-item's file a `## Retires` section: one line for each, the scenario's exact title as it stands in the file, with its ` (deprecated)` suffix, in quotes, followed by its feature file. When there is none, add no section.
 
 If a `work add` refuses, delete the work-item files this session drafted, so nothing is changed, and stop, giving the person its message.
 
@@ -38,7 +40,7 @@ Show the person the drafted work-items as one table: name, accepts, risk (`work 
 
 ## Commit them, alone
 
-Only when this session drafted work-items. `git add` the drafted work-item files, and commit with a pathspec that names only them, so nothing else goes into the commit: `git commit -m "work: draft <initiative>: <names>" -- <the files>`.
+Only when this session drafted work-items, and `work add` has committed each one already. `git add` the drafted work-item files and commit them with a pathspec that names only them, so nothing else goes into the commit: `git commit -m "work: draft <initiative>: <names>" -- <the files>`; that commit holds the Retires sections written after `work add`, and is made only when `git status --porcelain` shows a change in those files.
 
 ## Run `work run`
 
