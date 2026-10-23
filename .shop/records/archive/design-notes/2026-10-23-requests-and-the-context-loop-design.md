@@ -230,9 +230,13 @@ shopsystem-knowledge's final layout exists to receive it.
 
 "I approve", with:
 
-- **The request file is a tool abstraction.** The person: "this is a tool abstraction. The 'file' could be many things
-  and implementation will change." The requests' lines say what a request holds and who writes which part, never where
-  or in what form it is kept; where this note says "request file", read "request".
+- **The request is written through a tool.** The person: "this is a tool abstraction. The 'file' could be many things
+  and implementation will change", and "the note should say who writes what part and that they will use a tool
+  explicitly. The shape of the tool is up to the bounded context." So the requests' lines say who writes which part
+  of a request (the asker its lines and its answers; the upstream each line's outcome, its questions and the
+  resolution), and that each side writes its part only through a tool, explicitly, never by editing what the request
+  is kept in. The tool's shape (a command, a service, a file held by a script) is each bounded context's own and is not
+  part of the model; where this note says "request file", read "request, written through the tool".
 - **How a turn is sealed:** left open; the person will ask for more detail later.
 - **The delegation line:** the quote is supervision's Purpose ("It is a script and takes no judgment; what nobody may
   decide goes to the person as a question"). The person asked where it was and how it bears on delegation; still open
