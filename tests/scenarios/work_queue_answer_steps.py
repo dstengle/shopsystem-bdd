@@ -4,11 +4,17 @@ import datetime
 from pytest_bdd import parsers, then, when
 
 
-@when("the session runs `work answer w1` with an answer of two lines")
-def answer_of_two_lines(repo, run, context):
+BREAKS = {"a newline": "\n"}
+BREAKS.update({"U+%04X, the %s" % (ord(c), n): c for c, n in [
+    ("\x0b", "vertical tab"), ("\x0c", "form feed"), ("\r", "carriage return"), ("\x85", "next-line control"),
+    (" ", "line separator"), (" ", "paragraph separator")]})
+
+
+@when(parsers.parse("the session runs `work answer w1` with an answer of two lines broken by {line_break}"))
+def answer_of_two_lines(repo, run, context, line_break):
     from .test_work_queue import snapshot
     context["before"] = snapshot(repo)
-    context["done"] = run("work", "answer", "w1", "line one\nline two")
+    context["done"] = run("work", "answer", "w1", "line one" + BREAKS[line_break] + "line two")
 
 
 @then("work exits with an error, saying that an answer is one line")

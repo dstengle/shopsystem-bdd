@@ -74,6 +74,8 @@ def with_items(repo, ident, items, asker, proposal, pstatus):
         if status == "awaiting-answer":     # the log gives the stage that asked: the status it moved from (r14)
             started = {"a researcher": "drafted", "a planner": "researched", "an implementer": "claimed", "a reviewer": "done"}
             write(repo, ".shop/work/%s/log.jsonl" % ident, log_line(name, started[asker or "an implementer"], status))
+        if status == "ready" and not (repo / ".shop/work" / ident / "log.jsonl").exists():
+            write(repo, ".shop/work/%s/log.jsonl" % ident, log_line(name, "planned", status))
     if proposal:
         write(repo, ".shop/work/%s/%s.md" % (ident, proposal), item_text(proposal, pstatus, ident, "capability-proposal"))
 

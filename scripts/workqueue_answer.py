@@ -8,6 +8,9 @@ from workqueue import Refused
 # while its work-item is claimed, and started from ready.
 ASKED_FROM = {"claimed": "ready"}
 
+# Unicode's mandatory line breaks (r15): LF, VT, FF, CR, NEL, LS, PS.
+LINE_BREAKS = "\n\x0b\x0c\r\x85  "
+
 
 def asked_from(root, path, name):
     """The status the stage that asked the question of `name` started from, by log.jsonl's last move into awaiting-answer."""
@@ -21,13 +24,13 @@ def asked_from(root, path, name):
 def answer(root, name, text):
     """Write `text` with today's date under the awaiting-answer work-item `name`'s `## Answers` and return it to the
     status the stage that asked started from; return that status."""
+    if any(c in text for c in LINE_BREAKS):
+        raise Refused("the answer has a line break in it; an answer is one line")
     path = workqueue.find(root, name)
     initiative = path.parent.name
     if workqueue.agrees(root, initiative, name) != "awaiting-answer":
         raise Refused("%s is not awaiting-answer; work answer answers only an awaiting-answer work-item" % name)
     status = asked_from(root, path, name)
-    if "\n" in text or "\r" in text:
-        raise Refused("the answer has a newline in it; an answer is one line")
     line = "- %s: %s\n" % (datetime.date.today().isoformat(), text)
 
     def write():
