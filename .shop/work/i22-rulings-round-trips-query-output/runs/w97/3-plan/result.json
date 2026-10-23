@@ -1,0 +1,12 @@
+{
+  "status": "DONE",
+  "summary": "Plan of w97 written (plan.md). Both accepted scenarios (r110 outline, r12) are already green; the work fixes the defects behind them, shown red first in a new script test.\nr110 keys held ids by frontmatter id and flags an id whose w<n> is not its stem (F6/D3; r110 + 0061).\nwork add's highest counts every work-item's id n and stem n, non-work-items not at all: fix-login.md holding w7 gives w8 (D4; r12 + 0061).\nF10/D1 per the person's answer (reading A): a plain note w2.md beside w1.md makes add refuse, writing nothing, naming .shop/work/i1/w2.md as a file that is not a work-item.\nentry loses its unreachable branch (N7); the named-problem step filters r110 lines only for non-w<n>.md paths (N2).\nNon-UTF-8 notes still refuse under r7 (D2).\nNo existing test breaks (searched 'already exists'); the N2 step's users must be rerun.\nFile set: workqueue.py, model_work.py, design_model_check_problems.py, new tests/scripts/test_work_item_ids.py.",
+  "plan": ".shop/scratch/3-plan/plan.md",
+  "fileset": [
+    "scripts/workqueue.py",
+    "scripts/model_work.py",
+    "tests/scenarios/design_model_check_problems.py",
+    "tests/scripts/test_work_item_ids.py"
+  ],
+  "questions": []
+}
