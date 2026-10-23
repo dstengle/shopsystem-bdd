@@ -1,0 +1,12 @@
+{
+  "status": "DONE",
+  "summary": "w115 research done; notes.md in the run directory.\nAll 8 accepted scenario tests (r47 x2, r58 x3, r59 x2, r57 x1) pass today: nothing is red. HEAD 44aff93 already holds the r57, r58, r59 and r47-retire commits; the brief's Base 1ad628 is older.\nOpen gap: r57 keys the empty session.json by (work-item, stage name). Probe A: with a second run of the same stage that has figures, both stages are named empty and the figured run is marked too (measure_build.py stages_of).\nThe empty file has no session id, and log start rows carry no run number, so the link to the run directory is open (Q5).\nAlso found: a commit subject with U+2028 crashes measure initiative (ValueError, measure_build.py:71; not accepted).\nLowercase z and a newline-only session.json are refused; whether they should be is open (Q2, Q3).\nmeasure show does not print the empty naming (Q4).\nFile set: scripts/measure_read.py, scripts/measure_build.py; tests and feature file only if a scenario is added.\ntests-of had no map and none was made, so tests were found by search.",
+  "fileset": [
+    "scripts/measure_read.py",
+    "scripts/measure_build.py",
+    "features/batch-measurement.feature",
+    "tests/scenarios/batch_measurement_given_steps.py",
+    "tests/scenarios/batch_measurement_then_steps.py"
+  ],
+  "questions": []
+}
