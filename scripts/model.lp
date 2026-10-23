@@ -273,7 +273,7 @@ v_e2(Q) :- ears_many(Q).
 
 % ---------------------------------------------------------------- warnings g:193-204
 label("w_unserved_cap", "a capability serves no job").
-w_unserved_cap(C)  :- node(C, "capability"), not serves(C, _).
+w_unserved_cap(C)  :- node(C, "capability"), not serves(C, _), node(_, "job").
 label("w_unserved_job", "a job nothing serves").
 w_unserved_job(J)  :- node(J, "job"), not serves(_, J), not of_job(_, J).
 % FIX g:200: Soufflé has no negation of a conjunction; named as seam_used.

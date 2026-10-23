@@ -29,6 +29,12 @@ def exits(context, how):
     assert "Traceback" not in result.stderr
 
 
+@then(parsers.re(r"the output does not give (?P<code>w_\w+)"))
+def output_lacks_code(context, code):
+    out = context["result"].stdout
+    assert code not in out, out
+
+
 @then("it says it found no violation, unresolved reference or file problem")
 def reports_nothing(context):
     out = context["result"].stdout

@@ -17,6 +17,11 @@ def context_with_a_capability(world):
     world.good()
 
 
+@given("a bounded context with one capability and no job")
+def context_with_a_capability_and_no_job(world):
+    world.good()
+
+
 @given("a scenario tagged @r7 in a capability with no r7, and a capability resting on a decision that does not exist")
 def dangling_references(world):
     world.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], rests_on="[nope]"))

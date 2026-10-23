@@ -14,6 +14,7 @@ class CheckOutputTest(ModelTest):
     def test_check_ends_with_the_four_counts(self):
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, `thing` shall answer."], rests_on="[nope]"))
         self.write("features/stray.feature", "Feature: stray\n")
+        self.observation()
         r = self.run_model("check")
         self.assertEqual(r.stdout.splitlines()[-1], "1 violations, 1 warnings, 1 unresolved references, 1 file problems", r.stdout)
 

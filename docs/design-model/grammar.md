@@ -195,7 +195,7 @@ v_d1(I) :- status(I, "done"), root(P, I), !closed(P).
 Warnings:
 
 ```
-w_unserved_cap(C)   :- node(C, "capability"), !serves(C, _).
+w_unserved_cap(C)   :- node(C, "capability"), !serves(C, _), node(_, "job").
 w_unserved_job(J)   :- node(J, "job"), !serves(_, J), !of_job(_, J).
 w_seam_unused(R)    :- seam(R, Up, Down), !(in(C, Down), in(D, Up), depends_on(C, D)).
 w_uncited_obs(O)    :- node(O, "observation"), !source(_, O).
