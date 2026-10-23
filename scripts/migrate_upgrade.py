@@ -2,6 +2,7 @@
 version, the plugin's, the upgrade steps between them, what a session is told at its start, and the upgrade, all of it
 in one commit or none of it."""
 import json
+import re
 import subprocess
 import sys
 import types
@@ -32,6 +33,19 @@ def repository_version(root):
     return path.read_text().strip() if path.is_file() else UNRECORDED
 
 
+def no_version(root):
+    """What `.shop/plugin-version` holds when that is no version (dotted numbers), else None."""
+    path = root / VERSION_FILE
+    if not path.is_file():
+        return None
+    held = path.read_text().strip()
+    return None if re.fullmatch(r"\d+(\.\d+)*", held) else (repr(held) if held else "nothing")
+
+
+def refusal(held):
+    return "%s holds %s, which is no version" % (VERSION_FILE, held)
+
+
 def pending(root):
     """The steps above the repository's version and not above the plugin's, oldest first (r20)."""
     here, there = number(repository_version(root)), number(plugin_version())
@@ -43,6 +57,10 @@ def step_line(step):
 
 
 def status(root):
+    held = no_version(root)
+    if held:
+        print(refusal(held), file=sys.stderr)
+        return 1
     print("the repository's plugin version: %s" % repository_version(root))
     print("the plugin's version: %s" % plugin_version())
     for step in pending(root):
@@ -54,6 +72,9 @@ def session_text(root):
     """What a session is told at its start (r22-r24, r28): nothing unless the repository has .shop/ and is behind or ahead."""
     if not (root / ".shop").is_dir():
         return ""
+    held = no_version(root)
+    if held:
+        return "%s: tell the person.\n" % refusal(held)
     here, there = repository_version(root), plugin_version()
     if number(here) > number(there):
         return ("This repository is on plugin version %s, above the plugin's %s: tell the person to update the plugin.\n"
@@ -94,6 +115,10 @@ def move_failures(root, changes):
 
 
 def upgrade(root):
+    held = no_version(root)
+    if held:
+        print("migrate changed nothing; " + refusal(held), file=sys.stderr)
+        return 1
     changed = uncommitted(root)
     if changed:
         print("migrate changed nothing; it could not start from a tree with an uncommitted change: " + ", ".join(changed),
@@ -108,7 +133,7 @@ def upgrade(root):
     try:
         for step in steps:  # oldest first, each planned from the tree the steps before it left (r20)
             changes = step[3].plan(root)
-            refused = changes.failures + move_failures(root, changes)
+            refused = list(dict.fromkeys(changes.failures + move_failures(root, changes)))
             if refused:
                 break
             apply(root, changes)

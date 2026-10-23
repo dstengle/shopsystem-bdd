@@ -1,5 +1,7 @@
 """migrate's writing, all or none: a failure part way puts the repository back (migration-tools r7), and a file that
 is not UTF-8 but names a moved path is a change it cannot make."""
+import atexit
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -15,6 +17,7 @@ from migrate_spec import plan_references  # noqa: E402
 
 def repository(files):
     root = Path(tempfile.mkdtemp())
+    atexit.register(shutil.rmtree, root, True)
     for rel, data in files.items():
         (root / rel).parent.mkdir(parents=True, exist_ok=True)
         (root / rel).write_bytes(data)

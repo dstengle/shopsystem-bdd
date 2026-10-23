@@ -1,4 +1,6 @@
 """The upgrade step "work-items named by ids" on repositories the scenarios do not build (migration-tools r19, r25, r26)."""
+import atexit
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -10,6 +12,7 @@ SCRIPTS = Path(__file__).resolve().parents[2] / "scripts"
 
 def repository(files):
     root = Path(tempfile.mkdtemp())
+    atexit.register(shutil.rmtree, root, True)
     for rel, text in files.items():
         (root / rel).parent.mkdir(parents=True, exist_ok=True)
         (root / rel).write_text(text)
@@ -73,6 +76,50 @@ class UpgradeFollowsReferences(unittest.TestCase):
         root = repository({"spec/index.md": INDEX, ".shop/work/i1-x/a.md": item("a", "for: nothing\n")})
         self.assertEqual(upgrade(root).returncode, 0)
         self.assertIn("for: nothing\n", (root / ".shop/work/i1-x/w1.md").read_text())
+
+
+class UpgradeHardening(unittest.TestCase):
+    def test_an_ambiguous_name_is_refused_once_per_place_naming_the_field(self):
+        root = repository({"spec/index.md": INDEX, ".shop/work/i1-x/a.md": item("a"), ".shop/work/i2-y/a.md": item("a"),
+                           ".shop/work/i3-z/c.md": item("c", "blocked_by: [a]\nfor: a\n"),
+                           ".shop/work/i3-z/d.md": item("d", "depends_on: [a]\n")})
+        done = upgrade(root)
+        self.assertNotEqual(done.returncode, 0)
+        lines = [l for l in done.stderr.splitlines() if "could not rename" in l]
+        self.assertEqual(len(lines), len(set(lines)))
+        self.assertEqual(len(lines), 3)
+        self.assertNotIn("reference", done.stderr)
+        for field in ("blocked_by", "depends_on", "for"):
+            self.assertEqual(len([l for l in lines if field in l]), 1, lines)
+
+    def test_a_qualified_token_and_a_comment_are_left_alone(self):
+        root = repository({"spec/index.md": INDEX, ".shop/work/i1-x/item.md": item("item"),
+                           ".shop/work/i1-x/b.md": item("b", "for: item#r26\nblocked_by:\n  - work-item/item # item\n")})
+        done = upgrade(root)
+        self.assertEqual(done.returncode, 0, done.stderr)
+        text = (root / ".shop/work/i1-x/w1.md").read_text()
+        self.assertIn("for: item#r26\n", text)
+        self.assertIn("  - work-item/w2 # item\n", text)
+
+    def test_an_index_without_an_id_or_without_a_file_is_refused_and_nothing_changes(self):
+        for index in ({"spec/index.md": "# shop\n"}, {"README": "x\n"}):
+            with self.subTest(index=index):
+                root = repository({**index, ".shop/work/i1-x/a.md": item("a")})
+                done = upgrade(root)
+                self.assertEqual(done.returncode, 1)
+                self.assertIn("spec/index.md", done.stderr)
+                self.assertIn("bounded-context id", done.stderr)
+                self.assertNotIn("Traceback", done.stderr)
+                self.assertTrue((root / ".shop/work/i1-x/a.md").is_file())
+
+    def test_initiatives_with_one_number_are_numbered_by_name(self):
+        for first, second in (("i1-a", "i1-b"), ("i1-b", "i1-a")):
+            with self.subTest(first=first):
+                root = repository({"spec/index.md": INDEX, ".shop/work/%s/a.md" % first: item("a"),
+                                   ".shop/work/%s/b.md" % second: item("b")})
+                self.assertEqual(upgrade(root).returncode, 0)
+                self.assertTrue((root / ".shop/work/i1-a/w1.md").is_file())
+                self.assertTrue((root / ".shop/work/i1-b/w2.md").is_file())
 
 
 if __name__ == "__main__":
