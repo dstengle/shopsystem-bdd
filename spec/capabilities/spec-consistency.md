@@ -2,8 +2,8 @@
 id: capability/missingmass.io/shopsystem/shopsystem-bdd/spec-consistency
 title: Spec consistency
 narrator: the person keeping a spec
-group: service
-rests_on: [design-decision/glossary-terms-are-standing, design-decision/consistency-check-on-demand, design-decision/spec-writers-blind-to-code]
+group: guarantees
+rests_on: [design-decision/glossary-terms-are-standing, design-decision/consistency-check-on-demand, design-decision/spec-writers-blind-to-code, design-decision/workflow-capabilities-are-guarantees]
 retired: []
 ---
 

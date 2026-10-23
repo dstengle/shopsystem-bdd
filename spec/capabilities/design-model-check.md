@@ -22,6 +22,7 @@ verifies one bounded context: product-level artifacts are read only where the fi
 - [r1] **When** `model check` finds no violation, unresolved reference or file problem, `model check` shall say so and exit successfully.
 - [r2] **If** `model check` finds a violation, an unresolved reference or a file problem, then `model check` shall print each, a violated relation by its grammar.md code and plain label with its rows, and exit with an error.
 - [r11] **When** `model check` finds warnings, `model check` shall print each warning relation with its plain label and its count, with no effect on whether it exits successfully.
+- [r111] **While** the bounded context has no job, `model check` shall print no `w_unserved_cap` warning.
 - [r33] **Where** `--json` is given, `model check` shall print its violations, warnings, unresolved references and file problems as one JSON object, each code mapped to its plain label, exiting as it would without `--json`.
 - [r36] **When** `model check` decides whether an initiative may be `done`, `model check` shall count a `formulated` capability-proposal, and any `withdrawn` part, as closed.
 - [r55] **If** `import clingo` fails, then `model check` shall try again, once, under the first interpreter that has clingo of `$SHOPSYSTEM_MODEL_PYTHON`, each `python3` on `PATH` outside the active virtualenv's `bin/`, `/usr/local/bin/python3` and `/usr/bin/python3`, in that order.
@@ -58,7 +59,7 @@ problem names the file.
 | [r25] | file problem | `spec/index.md` is missing or has no `id`; a capability's `id` is not `capability/<context path>/<file name>`, it has no `## Behaviour` section, its `retired` lists an entry that is neither `r<n>` nor a number, or its frontmatter has `formulated_as` |
 | [r46] | file problem | a node's `id` is not `<kind>/<context path>/<name>` with its own kind, or `spec/index.md`'s is not `bounded-context/<context path>` |
 | [r26] | file problem | a feature file is not `features/<name>.feature` for a capability `<name>`, two of its scenarios not tagged `@deprecated` share a title, or a scenario is tagged `@holding` |
-| [r27] | file problem | a work directory has no `initiative.md` (the directory named, not the file), an initiative or part has no `id`, a part's kind is not a part kind, a status is missing or not in its kind's lifecycle, an initiative's priority is not a number or its date not `YYYY-MM-DD`, or a work-item that is not `withdrawn` accepts a requirement no scenario names yet |
+| [r27] | file problem | a work directory has no `initiative.md` (the directory named, not the file), an initiative or part has no `id`, a part's kind is not a part kind, a status is missing or not in its kind's lifecycle, an initiative's priority is not a number or its date not `YYYY-MM-DD`, or a work-item that is not `withdrawn` accepts a requirement of a capability that is not guarantees and no scenario names it yet, other than a retired id the work-item accepts while `green` |
 | [r29] | file problem | a decision has no `id` or no `## Decision` section, a record with an `id` has a kind that is not a record kind, a frontmatter value is written as a folded or literal block, or one id names nodes of two kinds |
 | [r49] | file problem | a bullet in `spec/index.md`'s `## Glossary` is not of the form r48 gives |
 | [r61] | file problem | the repository has `spec/decisions.md`, or a `decisions/`, `work/` or `records/` directory at its root, each named with `scripts/migrate` |
@@ -102,6 +103,8 @@ problem names the file.
 - `model facts` prints, for each glossary entry, a `node` fact of kind `term`, a `term_of` fact naming the
   bounded context and an `avoid` fact for each word after its `Not:`, and a `mentions` fact for each mention r51
   reads.
+- A work-item's `accepts` facts are written from its `accepts` field, whether or not a scenario names the
+  requirement (r106).
 - `withdrawn` is in the lifecycle of a capability-proposal and of a work-item.
 - Node ids: the bounded-context is spec/index.md's `id`; a requirement without an id is `<capability>#line<k>`;
   a scenario is `<feature path>:<title>`.

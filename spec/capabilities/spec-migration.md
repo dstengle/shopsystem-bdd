@@ -2,8 +2,8 @@
 id: capability/missingmass.io/shopsystem/shopsystem-bdd/spec-migration
 title: Spec migration
 narrator: the person migrating a repository onto spec/
-group: service
-rests_on: [design-decision/one-spec-per-context, design-decision/gate-on-behaviour-lines, design-decision/migration-in-one-pass, design-decision/living-plan-to-work-items, design-decision/final-layout]
+group: guarantees
+rests_on: [design-decision/one-spec-per-context, design-decision/gate-on-behaviour-lines, design-decision/migration-in-one-pass, design-decision/living-plan-to-work-items, design-decision/final-layout, design-decision/workflow-capabilities-are-guarantees]
 retired: [r3, r12, r13]
 ---
 

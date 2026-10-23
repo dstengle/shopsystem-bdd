@@ -2,8 +2,8 @@
 id: capability/missingmass.io/shopsystem/shopsystem-bdd/red-green
 title: Red-green
 narrator: the script `work run`, which started the implementer
-group: service
-rests_on: [design-decision/feature-files-read-only-in-red-green, design-decision/plans-list-the-tests-they-break, design-decision/worker-results-are-files, design-decision/the-file-set-is-the-claim, design-decision/work-item-lifecycle-as-run]
+group: guarantees
+rests_on: [design-decision/feature-files-read-only-in-red-green, design-decision/plans-list-the-tests-they-break, design-decision/worker-results-are-files, design-decision/the-file-set-is-the-claim, design-decision/work-item-lifecycle-as-run, design-decision/workflow-capabilities-are-guarantees]
 retired: [r4, r8, r12, r13, r14, r19, r37]
 ---
 

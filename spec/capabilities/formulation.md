@@ -2,8 +2,8 @@
 id: capability/missingmass.io/shopsystem/shopsystem-bdd/formulation
 title: Formulation
 narrator: the person who approved the lines
-group: service
-rests_on: [design-decision/a-scenario-names-one-requirement, design-decision/exits-are-successful-or-errors, design-decision/formulation-needs-no-second-approval, design-decision/spec-writers-blind-to-code, design-decision/held-scenarios, design-decision/controller-per-spec-round]
+group: guarantees
+rests_on: [design-decision/a-scenario-names-one-requirement, design-decision/exits-are-successful-or-errors, design-decision/formulation-needs-no-second-approval, design-decision/spec-writers-blind-to-code, design-decision/held-scenarios, design-decision/controller-per-spec-round, design-decision/workflow-capabilities-are-guarantees]
 retired: [r8, r12]
 ---
 
@@ -30,7 +30,7 @@ dispatches `feature-formulator`s. It decides nothing: a line with two readings c
 - [r22] **If** `formulating-features` cannot do what it was asked, then `formulating-features` shall stop, saying why, and commit nothing.
 
 ## Implementation, may change
-- The workflow scenarios of this capability run as fixture sessions (design-decision/fixture-scenarios-under-pytest-bdd).
+- This capability is guarantees, checked by `measure` on real batches (design-decision/workflow-capabilities-are-guarantees).
 - The session dispatches `initiative-round` with the job `formulate`; the round dispatches one `feature-formulator`
   a capability with the template in the skill as its input, verifies coverage one to one, runs each old scenario alone before
   replacing it, uses `features deprecate`, `features rebind` and `features bindings`, splices and commits.

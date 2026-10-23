@@ -2,8 +2,8 @@
 id: capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration
 title: Spec integration
 narrator: the person at the gate
-group: service
-rests_on: [design-decision/one-spec-per-context, design-decision/gate-on-behaviour-lines, design-decision/spec-writers-blind-to-code, design-decision/controller-per-spec-round, design-decision/light-decisions, design-decision/references-are-ids, design-decision/the-session-keeps-the-gate]
+group: guarantees
+rests_on: [design-decision/one-spec-per-context, design-decision/gate-on-behaviour-lines, design-decision/spec-writers-blind-to-code, design-decision/controller-per-spec-round, design-decision/light-decisions, design-decision/references-are-ids, design-decision/the-session-keeps-the-gate, design-decision/workflow-capabilities-are-guarantees]
 retired: [r5, r9, r18]
 ---
 

@@ -2,8 +2,8 @@
 id: capability/missingmass.io/shopsystem/shopsystem-bdd/trials
 title: Trials
 narrator: the session that started a trial
-group: service
-rests_on: [design-decision/the-session-keeps-the-gate, design-decision/the-v3-agents]
+group: guarantees
+rests_on: [design-decision/the-session-keeps-the-gate, design-decision/the-v3-agents, design-decision/workflow-capabilities-are-guarantees]
 retired: []
 ---
 

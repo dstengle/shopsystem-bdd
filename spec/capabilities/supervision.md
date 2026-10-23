@@ -16,7 +16,9 @@ decide goes to the person as a question. A walking skeleton (design-decision/beh
 from what using it shows.
 
 ## Behaviour
-- [r1] **When** `work run <initiative>` is started, `work run` shall pull the initiative's work-items through research, plan, implementation and review, one worker at a time, until no work-item can make a transition.
+- [r1] **When** `work run <initiative>` is started, `work run` shall pull the initiative's work-items through research, plan, implementation and review until no work-item can make a transition.
+- [r59] **When** more than one work-item of the initiative is `drafted` or `researched`, `work run` shall start the research or plan stage of each of them at the same time, within the number of workers r60 gives.
+- [r60] `work run` shall run at most as many workers at the same time as `.shop/delivery.toml`'s number of workers, and 4 where it gives none.
 - [r2] **When** a work-item's status is `drafted`, `researched`, `ready` or `done`, `work run` shall start a new `claude -p` session of that stage's agent (`code-scout`, `bdd-planner`, `bdd-implementer`, `bdd-task-reviewer`), given one brief that names the work-item, the files to read and where its result goes.
 - [r3] **When** a worker's result gives the outcome `DONE` and no fault stopped its stage, `work run` shall make the work-item's transition to its next status.
 - [r4] **When** an implementer's outcome is `DONE`, `work run` shall merge its work-item branch into the initiative branch only if the work-item's scenarios pass on it and the whole suite passes on it but for the failing scenarios r43 counts as expected.
@@ -24,6 +26,7 @@ from what using it shows.
 - [r6] **If** a worker changes a file under `.shop/work/` outside its stage directory, then `work run` shall put the file back as it was.
 - [r7] **When** `work run` makes a work-item's transition, `work run` shall commit the work-item's file, its stage directories and `log.jsonl` on the initiative branch, and nothing else.
 - [r8] **When** a worker starts or ends, `work run` shall append a line to `log.jsonl` with the time, the work-item, the stage, the agent and the session id.
+- [r62] **When** `work run` writes a stage's `session.json`, `work run` shall record in it the path of the transcript of the stage's session.
 - [r9] **When** no work-item can make a transition and every work-item is `green` or `withdrawn`, `work run` shall exit successfully, printing each work-item's status.
 - [r32] **When** no work-item can make a transition and a work-item is `awaiting-answer`, `work run` shall exit with an error, printing each work-item's status and each open question.
 - [r52] **When** no work-item can make a transition and a work-item is `failed`, `work run` shall exit with an error, printing each work-item's status and each fault.
@@ -39,7 +42,8 @@ from what using it shows.
 - [r17] **When** `work run` writes a worker's brief, `work run` shall tell the worker that it starts in its worktree and never changes directory.
 - [r18] **When** `work run` merges a work-item branch, `work run` shall delete that branch.
 - [r19] **When** `work run` starts a researcher, `work run` shall give it the work-item's file set and accepted scenarios and a limit of 40 turns.
-- [r20] **While** two ready work-items have claims that would not share a file, `work run` shall have both implemented at the same time, two at most, merging one at a time.
+- [r20] **While** ready work-items have claims that share no file, `work run` shall have them implemented at the same time, each in its own worktree, within the number of workers r60 gives.
+- [r61] **When** implementers working at the same time end with the outcome `DONE`, `work run` shall merge their work-item branches into the initiative branch one at a time, in the order the implementers ended.
 - [r21] **If** `work run` is started by a worker of another `work run`, then `work run` shall refuse, saying so.
 - [r22] `work run` shall give every pytest command it starts, and every worker's, the plugin's option `--work-item <name>`, which selects the scenarios the work-item accepts.
 - [r55] **When** a pytest command given `--work-item <name>` collects a test that is not a scenario, the option shall keep that test.
@@ -65,6 +69,7 @@ from what using it shows.
 - [r35] **When** `work run` is about to start a worker or the branch reviewer, `work run` shall first verify that it can push the initiative branch to the remote.
 - [r36] **When** `work run` transitions a work-item to `awaiting-answer`, `work run` shall write its question under the work-item's `## Questions`.
 - [r37] **While** a work-item is `awaiting-answer` or `failed`, `work run` shall start no worker for it.
+- [r63] **While** a work-item's `blocked_by` names a work-item that is not `green`, `work run` shall start no worker for it.
 - [r38] **When** `work run` commits on the initiative branch, `work run` shall push the initiative branch to the remote.
 - [r39] **If** the verification before a worker starts fails, then `work run` shall transition the work-item to `failed`, recording the reason, before any worker starts.
 - [r40] **When** `work run` transitions a work-item to `failed`, `work run` shall exit with an error, naming the work-item and its fault.
@@ -98,5 +103,4 @@ from what using it shows.
 - Retries, continuations after `PARTIAL`, refused claims, the guards between
   work-items, fix work-items and re-reviews, time and spending limits and budgets, the lock,
   interruption, `work step`, and the full log of each session's cost (see skeleton-notes.md).
-- `work run` honouring a work-item's `blocked_by` (i8, delivery 1).
 - A researcher's findings kept when it stops, for the next delivery (i8, delivery 1).

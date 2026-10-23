@@ -38,20 +38,20 @@ The spec side, with the person:
 
 | capability | narrator | group |
 |---|---|---|
-| `spec-integration` | the person at the gate | service |
-| `formulation` | the person who approved the lines | service |
-| `spec-migration` | the person migrating a repository onto spec/ | service |
-| `spec-consistency` | the person keeping a spec | service |
+| `spec-integration` | the person at the gate | guarantees |
+| `formulation` | the person who approved the lines | guarantees |
+| `spec-migration` | the person migrating a repository onto spec/ | guarantees |
+| `spec-consistency` | the person keeping a spec | guarantees |
 
 The build side, started by `work run`:
 
 | capability | narrator | group |
 |---|---|---|
-| `delivery` | the person delivering an initiative | service |
-| `code-research` | the script `work run`, which started the researcher | service |
-| `planning` | the script `work run`, which started the planner | service |
-| `red-green` | the script `work run`, which started the implementer | service |
-| `review` | the script `work run`, closing a work-item or an initiative | service |
+| `delivery` | the person delivering an initiative | guarantees |
+| `code-research` | the script `work run`, which started the researcher | guarantees |
+| `planning` | the script `work run`, which started the planner | guarantees |
+| `red-green` | the script `work run`, which started the implementer | guarantees |
+| `review` | the script `work run`, closing a work-item or an initiative | guarantees |
 | `role-boundaries` | the person using the workflow | guarantees |
 
 Measurement:
@@ -59,7 +59,7 @@ Measurement:
 | capability | narrator | group |
 |---|---|---|
 | `batch-measurement` | a session measuring an initiative's deliveries | service |
-| `trials` | the session that started a trial | service |
+| `trials` | the session that started a trial | guarantees |
 
 Tools the skills and agents run:
 
@@ -78,11 +78,10 @@ Tools the skills and agents run:
   definitions, one module per feature file under `tests/scenarios/`, and `features bindings --unbound`
   fails the suite when a scenario has no test or two (design-decision/plugin-scenarios-run-as-pytest-bdd).
   Unit tests that bind no scenario are `unittest` tests under `tests/scripts/`.
-- Workflow capabilities (agents and skills): their scenarios run as fixture sessions, `claude -p` against
-  fixture repositories, under pytest-bdd with the `fixture` marker, outside the suite
-  (design-decision/fixture-scenarios-under-pytest-bdd); fixture sessions are written under
-  `.shop/records/measurements/fixture-runs/`, and deliveries measured with `scripts/measure`. Until a line's
-  scenario is written, `model check` reports it under v_s3.
+- The workflow capabilities (agents and skills: spec-integration, spec-migration, spec-consistency, review,
+  delivery, formulation, red-green, code-research, planning, trials) are guarantees, checked by `measure` on real
+  batches, not by scenarios (design-decision/workflow-capabilities-are-guarantees); `model check`'s v_s3 and
+  design-model-check r27 leave guarantees capabilities out.
 - `role-boundaries` is guarantees: verified against `agents/*.md`, not by scenarios.
 
 ## Glossary
@@ -117,11 +116,11 @@ Tools the skills and agents run:
 - **round trip**: one assistant message of a session's transcript with its own request id, the unit `--max-turns` limits.
 - **run**: to execute a command, script, test, scenario or probe until it exits.
 - **scenario**: a Gherkin scenario in `features/<capability>.feature`, passing when the one test that binds it passes. Not: test case.
-- **session**: one Claude Code conversation with its own id and transcript: the person's, a worker, a dispatch or a fixture session. Not: conversation, chat.
+- **session**: one Claude Code conversation with its own id and transcript: the person's, a worker or a dispatch. Not: conversation, chat.
 - **stage**: one of research, plan, implementation and review, done by one worker and started by `work run` from the work-item's status. Not: phase.
 - **stage directory**: the directory `runs/<work-item>/<k>-<stage>/` that holds one stage's brief, result, report and session. Not: run directory.
 - **status**: a node's place in its kind's lifecycle (a work-item's, a capability-proposal's, a decision's), written in its frontmatter; a work-item's are `drafted`, `researched`, `planned`, `ready`, `claimed`, `done`, `green`, `awaiting-answer`, `failed` and `withdrawn`. Not: state.
-- **suite**: every test `python3 -m pytest` runs from the root by default, fixture scenarios excluded. Not: fast suite.
+- **suite**: every test `python3 -m pytest` runs from the root by default. Not: fast suite.
 - **template**: standing text in a skill or an agent definition that a session fills with input to start another session. Not: boilerplate.
 - **transition**: one change of a work-item's status, written by `work` and logged in `log.jsonl`. Not: move.
 - **trial**: one run by the `trial-runner` of a plugin tool or `work run` on a real target or a fixture repository, measuring what its input names.

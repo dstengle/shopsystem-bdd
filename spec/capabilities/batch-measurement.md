@@ -20,7 +20,8 @@ no prompt, reply or tool content, and refuses rather than guesses when its input
 ### The initiative
 - [r39] **When** `measure initiative <initiative>` is run, `measure` shall write one measurement for the initiative at `.shop/records/measurements/<date>-<initiative>.md`, the date being the day it is run.
 - [r46] **If** the initiative has no `log.jsonl`, **then** `measure initiative` shall refuse, writing nothing, because the initiative has no `log.jsonl`.
-- [r47] **If** a `session.json` or a transcript is not of a shape `measure` knows, **then** `measure` shall refuse, writing nothing, naming that file.
+- [r47] **If** a `session.json` that is not empty, or a transcript, is not of a shape `measure` knows, **then** `measure` shall refuse, writing nothing, naming that file.
+- [r58] **When** a line of a transcript holds U+2028 or another Unicode line break inside a JSON string, `measure` shall read it as one line.
 - [r48] **If** the measurement exists and `--replace` is not given, **then** `measure initiative` shall refuse, writing nothing, because the measurement exists.
 - [r52] **Where** `--replace` is given, `measure initiative` shall write the measurement over the one that exists.
 - [r50] **If** `measure` refuses, **then** `measure` shall exit with an error.
@@ -28,6 +29,7 @@ no prompt, reply or tool content, and refuses rather than guesses when its input
 ### What the measurement holds
 - [r40] `measure initiative` shall give, for each stage `log.jsonl` gives a start and an end for, the work-item, the stage, the agent, the session id, how long the stage took, and the session's turns, output tokens, new input tokens, cache-read tokens and cost.
 - [r51] `measure initiative` shall give each stage `log.jsonl` gives a start and no end for, without how long it took.
+- [r57] **If** a stage's `session.json` is empty, **then** `measure initiative` shall give the stage without its session's figures, named as a stage whose `session.json` is empty.
 - [r53] `measure initiative` shall give, for each stage it gives, its session's round trips, the number of assistant messages with distinct request ids in the session's transcript.
 - [r55] **If** a stage's session has no transcript `measure` can find, **then** `measure initiative` shall give the stage without its round trips.
 - [r41] `measure initiative` shall give, for each work-item, its transitions, how many times it went to `awaiting-answer` and to `failed`, and the commits merged into the initiative branch for it.
@@ -48,7 +50,7 @@ no prompt, reply or tool content, and refuses rather than guesses when its input
   session's turns, tokens and cost from its stage directory's `session.json`.
 - A stage's turns are its `session.json`'s `num_turns`, which is not the unit `--max-turns` limits
   (measurement/2026-10-22-research-at-the-limit); its round trips (r53) are that unit.
-- r53: a stage's session's transcript is read from Claude Code's own store by the session's id.
+- r53: a stage's session's transcript is read from the path its `session.json` records (supervision r62).
 - The initiative's window runs from the first transition `log.jsonl` gives to the last.
 - Tokens are output, new input (input and cache writes) and cache read.
 - `--sessions` reads Claude Code's raw transcripts or the slim export of dstengle/shopsystem-records; the sessions

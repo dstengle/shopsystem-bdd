@@ -2,8 +2,8 @@
 id: capability/missingmass.io/shopsystem/shopsystem-bdd/review
 title: Review
 narrator: the script `work run`, closing a work-item or an initiative
-group: service
-rests_on: [design-decision/review-of-work-items, design-decision/the-v3-agents, design-decision/worker-results-are-files]
+group: guarantees
+rests_on: [design-decision/review-of-work-items, design-decision/the-v3-agents, design-decision/worker-results-are-files, design-decision/workflow-capabilities-are-guarantees]
 retired: []
 ---
 

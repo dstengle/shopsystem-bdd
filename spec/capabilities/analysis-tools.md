@@ -24,6 +24,7 @@ file; it prints what the tools found and names a tool that is missing rather tha
 - [r3] **When** `tools probe` is run, `tools` shall print each tool with its version, or as missing with what it is for, then the interpreter's path and whether it came from `--python`, the project's virtualenv or neither, and exit with an error when any tool is missing.
 - [r4] **When** `tools probe --log` is run, `tools` shall print one line, `Probe: tools -> ...`, naming every tool with its version or `missing`, for a researcher's notes.
 - [r5] **When** `tools install` is run, `tools` shall install each missing tool into the interpreter with pip and edit no dependency file.
+- [r58] **When** `tools install` installs ruff, `tools` shall install the one version of ruff the plugin pins.
 - [r6] **If** `tools install` has a missing tool to install and the interpreter is not a virtualenv, then `tools` shall install nothing, say so for each missing tool, and exit with an error.
 - [r7] **If** a tool is still missing after `tools install`, then `tools` shall print the tool, what it is for, what the workflow does without it, and the command that failed with the end of its error, and exit with an error.
 
