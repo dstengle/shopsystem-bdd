@@ -126,8 +126,8 @@ def old_with_two_feature_tags(repo, context, path):
     store(repo, context, path, tags="@cart @checkout")
 
 
-@given(parsers.re(r'its scenario "(?P<title>[^"]+)" has (?:the tag line "(?P<tags>[^"]+)"|(?P<none>no tag line))'))
-def its_scenario_has_tag_line(repo, context, title, tags, none):
+@given(parsers.re(r'its scenario "(?P<title>[^"]+)" has (?:the tag line "(?P<tags>[^"]+)"|(?P<_none>no tag line))'))
+def its_scenario_has_tag_line(repo, context, title, tags, _none):
     store(repo, context, context["last"], scenario_text(title, tags or ""))
 
 

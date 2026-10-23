@@ -49,7 +49,7 @@ class Feature:
                 if s.startswith(delim):
                     delim = None
                 continue
-            if s.startswith('"""') or s.startswith("```"):
+            if s.startswith(('"""', "```")):
                 self.in_doc[i] = True
                 if s.find(s[:3], 3) < 0:
                     delim = s[:3]

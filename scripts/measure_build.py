@@ -17,7 +17,7 @@ KINDS = ("output_tokens", "new_input_tokens", "cache_read_tokens")
 
 def duration(seconds):
     """'1 hour 45 minutes', '12 minutes', '30 seconds'."""
-    hours, rest = divmod(int(round(seconds)), 3600)
+    hours, rest = divmod(round(seconds), 3600)
     minutes, secs = divmod(rest, 60)
     parts = []
     if hours:

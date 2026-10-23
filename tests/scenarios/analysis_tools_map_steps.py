@@ -196,7 +196,7 @@ def only_test_total(repo, run, context):
 
 
 @then(parsers.parse("the map is kept in `{path}`"))
-def map_kept(repo, path):
+def map_kept_in(repo, path):
     assert path == MAP
     assert (repo / path).is_file()
 

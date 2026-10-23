@@ -87,7 +87,7 @@ class Merge:
                 if workqueue.agrees(self.root, self.initiative, name) == "claimed":
                     self.move(name, "claimed", "awaiting-answer",
                               "work run failed on %s once it was claimed: %s" % (name, said))
-            except Exception:
+            except Exception:  # noqa: BLE001, S110 -- reporting a failure must not raise another
                 pass
 
     def claimed(self, name):

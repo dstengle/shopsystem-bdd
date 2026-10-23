@@ -121,14 +121,14 @@ def suite_before_implementer(repo, context):
 
 @then("the implementer's brief says how that run of the suite ended")
 def brief_says_suite(repo):
-    c = [c for c in starts(repo) if c["agent"] == "shopsystem-bdd:bdd-implementer"][0]
-    record = [l["record"] for l in log_lines(repo) if l.get("event") == "suite" and l.get("stage") == "implement"][0]
+    c = next(c for c in starts(repo) if c["agent"] == "shopsystem-bdd:bdd-implementer")
+    record = next(l["record"] for l in log_lines(repo) if l.get("event") == "suite" and l.get("stage") == "implement")
     assert brief_lines(c["brief"]).get("Suite record") == record, (c["brief"], record)
 
 
 @then(parsers.parse("the researcher was given --allowedTools {tools}"))
 def given_tools(repo, tools):
-    c = [c for c in starts(repo) if c["agent"] == "shopsystem-bdd:code-scout"][0]
+    c = next(c for c in starts(repo) if c["agent"] == "shopsystem-bdd:code-scout")
     assert option(c["argv"], "--allowedTools") == scripts_in(tools), c["argv"]
 
 

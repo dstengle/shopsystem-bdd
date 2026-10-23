@@ -64,7 +64,7 @@ class Run(Workers, Briefs, Merge, Faults, Reviews):
         workqueue.entry(self.initiative, "initiative")
         if not self.dir.is_dir():
             raise Refused("the initiative %s does not exist (no %s)" % (self.initiative, self.rel(self.dir)))
-        for name, _ in self.items():
+        for name, _ in self.items():  # noqa: PERF102 -- items() is a list of pairs, not a dict
             workqueue.agrees(self.root, self.initiative, name)
         self.branch = git(self.root, "rev-parse", "--abbrev-ref", "HEAD").stdout.strip()
         if self.branch == "HEAD":     # detached: no initiative branch to merge onto, rebase on or put back from (r4, r6)
@@ -180,7 +180,7 @@ class Run(Workers, Briefs, Merge, Faults, Reviews):
         def implement(name):
             try:
                 self.implement(name)
-            except Exception as error:    # carried to the run's own thread, which ends with it (r10)
+            except Exception as error:    # noqa: BLE001 -- carried to the run's own thread, which ends with it (r10)
                 failed.append(error)
         threads = [threading.Thread(target=implement, args=(name,)) for name in names]
         for thread in threads:

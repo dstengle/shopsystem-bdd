@@ -110,7 +110,7 @@ def plan_ids(plan):
     """Give each moved plan, design note, test log and decision file the id of its kind."""
     stem = lambda rel: Path(rel).stem
     for old, final in plan.moves.items():
-        text = lambda: plan.texts.get(final) or plan.read(old)     # read only a file that gets an id: a moved image is not
+        text = lambda: plan.texts.get(final) or plan.read(old)  # noqa: B023 -- called within this iteration; read only a file that gets an id: a moved image is not
         kind = record_kind(final)
         if kind:
             plan.texts[final] = with_id(text(), "%s/%s/%s" % (kind, plan.context, stem(final)), kind,

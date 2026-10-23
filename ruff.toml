@@ -55,3 +55,7 @@ ignore = [
     "UP031",   # the code formats strings with % throughout, on purpose
     "PLW1510", # subprocess.run without check: the scripts read return codes themselves
 ]
+
+[lint.per-file-ignores]
+# The stand-in claude is copied into place by the scenarios, which make it executable; the file itself is not
+"tests/scripts/stub_claude.py" = ["EXE001"]
