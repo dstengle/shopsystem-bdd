@@ -1,0 +1,15 @@
+{
+  "status": "DONE",
+  "summary": "Plan of w100, with the person's answer (Reading A) folded in.\nr15: red only because two steps are missing; the new When and Then go in work_queue_answer_steps.py. The code already refuses.\nM1/M2: `features retire` the deprecated batch-measurement @r42 scenario and work-queue @r9 outline (the Retires section); both files are bound by scenarios(), so no binding changes.\nI2: gives_totals asserts every column, with none skipped; only the live @r42 scenario uses it afterwards.\nRulings also planned:\n- the upgrade put-back catches any Exception;\n- AVersionFileThatHoldsNoVersion is removed;\n- moment drops the Z replacement and its noqa.\nOpen: transcript_inside is left unused after the retirement; empty version file no longer tested; D1 and D2 left alone.",
+  "plan": ".shop/scratch/3-plan/plan.md",
+  "fileset": [
+    "tests/scenarios/work_queue_answer_steps.py",
+    "features/batch-measurement.feature",
+    "features/work-queue.feature",
+    "tests/scenarios/batch_measurement_then_steps.py",
+    "scripts/migrate_upgrade.py",
+    "tests/scripts/test_migrate_upgrade.py",
+    "scripts/measure_read.py"
+  ],
+  "questions": []
+}
