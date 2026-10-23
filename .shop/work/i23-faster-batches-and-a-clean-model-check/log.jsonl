@@ -122,3 +122,4 @@
 {"time": "2026-10-23T22:20:41+00:00", "work-item": "w108", "before": "done", "after": "green", "by": "work run"}
 {"time": "2026-10-23T22:21:28+00:00", "work-item": "w101", "before": "awaiting-ruling", "after": "withdrawn", "by": "work withdraw"}
 {"time": "2026-10-23T22:21:28+00:00", "work-item": "w102", "before": "awaiting-ruling", "after": "withdrawn", "by": "work withdraw"}
+{"time": "2026-10-23T22:21:28+00:00", "work-item": "w103", "before": "awaiting-ruling", "after": "withdrawn", "by": "work withdraw"}
