@@ -95,6 +95,19 @@ def gives_stage_turns(world, turns):
     assert got["turns"] == turns, got
 
 
+@then("the measurement gives no turns, output tokens, new input tokens, cache-read tokens or cost for the stage")
+def gives_no_figures(world):
+    (got,) = world.figures()["stages"]
+    for key in ("turns", "output_tokens", "new_input_tokens", "cache_read_tokens", "cost"):
+        assert key not in got, got
+
+
+@then("the measurement names the stage as a stage whose session.json is empty")
+def names_empty(world):
+    (got,) = world.figures()["stages"]
+    assert got.get("session_json") == "empty", got
+
+
 @then("the measurement gives no round trips for the stage")
 def gives_no_round_trips(world):
     (got,) = world.figures()["stages"]

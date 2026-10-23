@@ -29,8 +29,9 @@ def duration(seconds):
     return " ".join(parts)
 
 
-def stages_of(rows, sessions):
-    """One entry per stage the log gives a start for, in the order started; its end where the log gives one."""
+def stages_of(rows, sessions, empty=frozenset()):
+    """One entry per stage the log gives a start for, in the order started; its end where the log gives one. A stage
+    whose session.json is empty (`empty`: its work-item and stage) is given without figures and says so."""
     stages, open_ = [], {}
     for row in rows:
         if row.get("event") == "start":
@@ -39,6 +40,8 @@ def stages_of(rows, sessions):
             figures = sessions.get(row.get("session"))
             if figures:
                 one.update({k: figures[k] for k in ("turns", *KINDS, "cost")})
+            if (one["work-item"], one["stage"]) in empty:
+                one["session_json"] = "empty"
             trips = round_trips(row.get("session"))
             if trips is not None:
                 one["round_trips"] = trips
@@ -105,7 +108,7 @@ def figures_of(initiative, root, sessions_dir=None):
     if not log.is_file():
         raise Refused("the initiative %s has no log.jsonl" % initiative)
     rows = read_log(log)
-    stages = stages_of(rows, read_session_jsons(work / "runs"))
+    stages = stages_of(rows, *read_session_jsons(work / "runs"))
     moves = [r["at"] for r in rows if "before" in r and "after" in r]
     window = (min(moves), max(moves)) if moves else (None, None)
     totals = {"stages": len(stages), "sessions": len({s["session"] for s in stages if "turns" in s})}

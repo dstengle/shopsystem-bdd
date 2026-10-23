@@ -66,12 +66,16 @@ def read_session_json(path):
 
 
 def read_session_jsons(runs):
-    """Every session.json under an initiative's runs/ directory, by session id."""
-    found = {}
+    """Every session.json under an initiative's runs/ directory: the figures by session id, and the (work-item,
+    stage) of each empty (zero-byte) one, which has no session id and gives no figures."""
+    found, empty = {}, set()
     for path in sorted(Path(runs).glob("*/*/session.json")):
+        if path.stat().st_size == 0:
+            empty.add((path.parent.parent.name, path.parent.name.split("-", 1)[-1]))
+            continue
         figures = read_session_json(path)
         found[figures["session"]] = figures
-    return found
+    return found, empty
 
 
 def assistant_rows(path):

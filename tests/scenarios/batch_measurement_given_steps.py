@@ -78,6 +78,19 @@ def stage_run_as(world, agent, session):
     world.stage_of = {**getattr(world, "stage_of", {}), session: (item, stage)}
 
 
+@given(parsers.parse("that stage was run as the agent {agent}"))
+def stage_run_as_agent(world, agent):
+    _, _, rows = world.last
+    for index in rows:
+        world.rows[index].update(agent=agent)
+
+
+@given("that stage's session.json is empty")
+def stage_session_json_empty(world):
+    item, stage, _ = world.last
+    world.sessions["empty-%s-%s" % (item, stage)] = (item, stage, "")
+
+
 @given(parsers.parse("the session {session} took {turns:d} turns, {out:d} output tokens, {new:d} new input tokens "
                      "and {read:d} cache-read tokens, costing {cost:f}"))
 def session_took(world, session, turns, out, new, read, cost):
