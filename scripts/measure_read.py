@@ -13,7 +13,7 @@ class Refused(Exception):
 def moment(text, where):
     """An ISO time as an aware datetime (a time with no offset is UTC)."""
     try:
-        at = datetime.datetime.fromisoformat(str(text).replace("Z", "+00:00"))  # noqa: FURB162 -- older Pythons refuse a Z
+        at = datetime.datetime.fromisoformat(str(text))
     except ValueError:
         raise Refused("%s: %r is not an ISO time" % (where, text)) from None
     return at if at.tzinfo else at.replace(tzinfo=datetime.UTC)

@@ -142,8 +142,7 @@ def gives_totals(world, datatable):
     got = world.figures()["totals"]
     assert str(got["stages"]) == wanted["stages"] and str(got["sessions"]) == wanted["sessions"], got
     for column in ("turns", "round trips", "output tokens", "new input tokens", "cache-read tokens"):
-        if column in wanted:
-            assert str(got[NUMBERS[column]]) == wanted[column], (column, got)
+        assert str(got[NUMBERS[column]]) == wanted[column], (column, got)
     assert "%.2f" % got["cost"] == wanted["cost"], got
     assert got["time"] == wanted["time"], got
 

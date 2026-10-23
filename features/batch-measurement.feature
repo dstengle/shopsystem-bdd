@@ -102,23 +102,6 @@ Feature: Batch measurement
     And it gives cart-1 the commits c-1 and c-2
     And it does not give cart-1 the commit c-3
 
-  @r42 @deprecated
-  Scenario: the totals are over the stages' sessions, an unended stage included, and span the first transition to the last (deprecated)
-    Deprecated for: the totals are over the stages' sessions, an unended stage included, and span the first transition to the last
-    The initiative's totals add up its stages' sessions, count a stage that never ended, leave out sessions only --sessions found, and run from the first transition to the last.
-    Given i7-cart's log.jsonl gives its first transition at 09:55 and its last at 11:40
-    And it gives work-item cart-1's research stage a start and an end, run in the session s-1
-    And it gives work-item cart-1's plan stage a start and no end, run in the session s-2
-    And the stages' sessions took
-      | session | output tokens | new input tokens | cache-read tokens | cost |
-      | s-1     | 3000          | 2000             | 50000             | 0.42 |
-      | s-2     | 1000          | 500              | 20000             | 0.18 |
-    And the transcript sessions/s-9.jsonl starts inside i7-cart's window with 9000 output tokens, 4000 new input tokens and 80000 cache-read tokens
-    When the session runs measure initiative i7-cart with --sessions sessions
-    Then the measurement gives the totals
-      | stages | sessions | output tokens | new input tokens | cache-read tokens | cost | time              |
-      | 2      | 2        | 4000          | 2500             | 70000             | 0.60 | 1 hour 45 minutes |
-
   @r42
   Scenario: the totals are over the stages' sessions, an unended stage included, and span the first transition to the last
     The initiative's totals add up its stages' sessions, turns and round trips included, count a stage that never ended, leave out sessions only --sessions found, and run from the first transition to the last.

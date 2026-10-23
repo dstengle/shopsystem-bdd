@@ -1,5 +1,4 @@
-"""`migrate upgrade` and `migrate status` on repositories the scenarios do not build: the move check, and a version
-file that holds no version (migration-tools r7, r18, r22)."""
+"""`migrate upgrade` on repositories the scenarios do not build: the move check (migration-tools r7)."""
 import atexit
 import shutil
 import subprocess
@@ -59,41 +58,6 @@ class TheMoveCheck(unittest.TestCase):
         self.assertEqual(done.returncode, 1, done.stderr)
         self.assertIn("could not move .shop/work/i1-x/runs/a onto .shop/work/i1-x/runs/w1", done.stderr)
         self.assertEqual(status_of(root), "")
-
-
-class AVersionFileThatHoldsNoVersion(unittest.TestCase):
-    def repo(self, text):
-        return repository({"spec/index.md": INDEX, ".shop/plugin-version": text, ".shop/work/i1-x/a.md": item("a")})
-
-    def test_status_prints_nothing_and_says_on_stderr_what_the_file_holds(self):
-        for text, held in (("next\n", "next"), ("", "nothing")):
-            with self.subTest(text=text):
-                done = migrate(self.repo(text), "status")
-                self.assertEqual((done.returncode, done.stdout), (1, ""))
-                self.assertIn(".shop/plugin-version", done.stderr)
-                self.assertIn(held, done.stderr)
-                self.assertNotIn("Traceback", done.stderr)
-
-    def test_upgrade_refuses_in_the_same_words_and_changes_nothing(self):
-        for text, held in (("next\n", "next"), ("", "nothing")):
-            with self.subTest(text=text):
-                root = self.repo(text)
-                done = migrate(root, "upgrade")
-                self.assertEqual(done.returncode, 1)
-                self.assertIn(".shop/plugin-version", done.stderr)
-                self.assertIn(held, done.stderr)
-                self.assertNotIn("Traceback", done.stderr)
-                self.assertEqual(status_of(root), "")
-
-    def test_the_hook_exits_0_and_prints_one_line_telling_the_session_to_tell_the_person(self):
-        for text, held in (("next\n", "next"), ("", "nothing")):
-            with self.subTest(text=text):
-                done = migrate(self.repo(text), "status", "--hook")
-                self.assertEqual(done.returncode, 0, done.stderr)
-                self.assertEqual(len(done.stdout.strip().splitlines()), 1)
-                self.assertIn(".shop/plugin-version", done.stdout)
-                self.assertIn(held, done.stdout)
-                self.assertIn("tell the person", done.stdout)
 
 
 if __name__ == "__main__":

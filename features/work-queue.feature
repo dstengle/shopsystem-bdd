@@ -173,22 +173,6 @@ Feature: Work queue
     Then .shop/work/i1/w1.md gives w1's status as withdrawn
     And .shop/work/i1/log.jsonl's last line is w1's transition from ready to withdrawn
 
-  @r9 @deprecated
-  Scenario Outline: `work <command>` commits the change it makes to a work-item on the current branch (deprecated)
-    Deprecated for: `work <command>` commits the change it makes to a work-item on the current branch
-    Pins that what `work add`, `work retry` and `work withdraw` write, the work-item's file and any log line, is in the branch's history when they end, so nothing that puts .shop/work/ back to its last commit undoes it.
-    Given <given>
-    And the repository is a git repository on the branch main, everything in it committed
-    When the session runs `work <args>`
-    Then main has a new last commit, which holds <holds>
-    And nothing under .shop/work/ differs from main's last commit
-
-    Examples:
-      | command  | given                                                                                          | args                                                                        | holds                                                                                                     |
-      | add      | an initiative i1 under .shop/work/ with no work-item w1                                        | add i1 w1 --part-of capability-proposal/p1 --under thing --accepts thing#r1 | .shop/work/i1/w1.md as work left it                                                                       |
-      | retry    | an initiative i1 under .shop/work/ with a work-item w1 that failed in its implementation stage | retry w1                                                                    | .shop/work/i1/w1.md as work left it and .shop/work/i1/log.jsonl with w1's transition from failed as its last line    |
-      | withdraw | an initiative i1 under .shop/work/ whose work-item w1 is ready, its last log.jsonl line for w1 its transition to ready | withdraw w1                                                  | .shop/work/i1/w1.md as work left it and .shop/work/i1/log.jsonl with w1's transition from ready to withdrawn as its last line |
-
   @r9
   Scenario Outline: `work <command>` commits the change it makes to a work-item on the current branch
     Pins that what `work add`, `work retry`, `work withdraw` and `work answer` write, the work-item's file and any log line, is in the branch's history when they end, so nothing that puts .shop/work/ back to its last commit undoes it.
