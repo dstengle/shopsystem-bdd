@@ -278,3 +278,9 @@
 {"time": "2026-10-23T23:36:51+00:00", "work-item": "w117", "before": "researched", "after": "planned", "by": "work run"}
 {"time": "2026-10-23T23:36:52+00:00", "work-item": "w117", "before": "planned", "after": "ready", "by": "work run"}
 {"time": "2026-10-23T23:36:53+00:00", "work-item": "w117", "before": "ready", "after": "claimed", "by": "work run"}
+{"time": "2026-10-23T23:37:10+00:00", "work-item": "w117", "stage": "implement", "event": "suite", "record": "Suite: 721 passed, 1 failed at 9971532 in 16 s; failing: tests/scenarios/test_design_model_check.py::test_a_workitem_accepting_a_requirement_no_scenario_names_yet_with_no_check_is_not_v_w4; expected: tests/scenarios/test_design_model_check.py::test_a_bounded_context_with_no_job_gets_no_unservedcapability_warning"}
+{"time": "2026-10-23T23:37:11+00:00", "work-item": "w117", "stage": "implement", "event": "push verified"}
+{"time": "2026-10-23T23:37:11+00:00", "work-item": "w117", "stage": "implement", "agent": "bdd-implementer", "session": "72f571be-4639-4f33-bffa-59cda66c7963", "event": "start"}
+{"time": "2026-10-23T23:38:15+00:00", "work-item": "w117", "stage": "implement", "agent": "bdd-implementer", "session": "72f571be-4639-4f33-bffa-59cda66c7963", "event": "end"}
+{"time": "2026-10-23T23:38:30+00:00", "work-item": "w117", "stage": "merge", "event": "suite", "record": "Suite: 722 passed, 0 failed at aaeea80 in 15 s; expected: tests/scenarios/test_design_model_check.py::test_a_bounded_context_with_no_job_gets_no_unservedcapability_warning"}
+{"time": "2026-10-23T23:38:36+00:00", "work-item": "w117", "before": "claimed", "after": "done", "by": "work run"}
