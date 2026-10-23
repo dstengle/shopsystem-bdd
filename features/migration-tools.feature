@@ -519,3 +519,15 @@ Feature: Migration tools
     Given a repository without .shop/
     When the person starts a session in it
     Then the plugin's SessionStart hook tells the session nothing
+
+  @r29
+  Scenario: the upgrade step of the plugin version after 0.24.0 renames the old status and the old heading in work-items and logs
+    Pins that the step renames the old status in every work-item's file and every log line, and the old heading in every work-item, and that it leaves a status it does not name.
+    Given a repository on the final layout whose .shop/plugin-version is 0.24.0
+    And .shop/work/i1/w1.md, a work-item with the status awaiting-ruling and a heading "## Rulings"
+    And .shop/work/i1/w2.md, a work-item with the status done and a heading "## Rulings"
+    And .shop/work/i1/log.jsonl, with a line for w1 naming the status awaiting-ruling
+    When the session runs `migrate upgrade`
+    Then .shop/work/i1/w1.md now has the status awaiting-answer and the heading "## Answers"
+    And .shop/work/i1/w2.md still has the status done and now has the heading "## Answers"
+    And the line of .shop/work/i1/log.jsonl for w1 now names the status awaiting-answer

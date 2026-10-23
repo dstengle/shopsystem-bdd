@@ -121,8 +121,9 @@ Feature: Analysis tools
     Then tools prints tests/test_cart.py with 2 and tests/test_checkout.py with 1
     And it prints no test names
 
-  @r11
-  Scenario Outline: tests-of fails when nothing executed the target or the function does not exist
+  @r11 @deprecated
+  Scenario Outline: tests-of fails when nothing executed the target or the function does not exist (deprecated)
+    Deprecated for: tests-of says that no test of the map executed the target and exits successfully
     Pins that an empty answer and an unknown function both fail.
     Given a map has been made
     And <situation>
@@ -133,6 +134,16 @@ Feature: Analysis tools
       | situation                                             | argument            |
       | no test in the map executed the function unused       | src/cart.py:unused  |
       | src/cart.py has no function named missing             | src/cart.py:missing |
+
+  @r11
+  Scenario: tests-of says that no test of the map executed the target and exits successfully
+    Pins that an empty answer is printed with the map's commit and is not a failure.
+    Given a map of 5 tests made at commit abc1234
+    And no test in the map executed the function unused in src/cart.py
+    When the session runs `tools tests-of src/cart.py:unused`
+    Then tools prints that no test of the map executed it
+    And it gives commit abc1234
+    And it exits successfully
 
   @r49
   Scenario: tests-of without a map is refused
@@ -404,3 +415,48 @@ Feature: Analysis tools
       | option      | within | over |
       | --limit 250 | 250    | 251  |
       |             | 300    | 301  |
+
+  @r53
+  Scenario: tests-of with --json prints the tests, their count and the map's commit as one JSON object
+    Pins that --json replaces the lines with one object holding the same three facts.
+    Given a map of 5 tests made at commit abc1234
+    And test_total and test_checkout executed src/cart.py and no other test did
+    When the session runs `tools tests-of --json src/cart.py`
+    Then tools prints one JSON object
+    And the object gives the tests test_total and test_checkout, their count 2 and commit abc1234
+
+  @r54
+  Scenario: untested with --json prints the functions, their count and the map's commit as one JSON object
+    Pins that --json replaces the lines with one object holding the same three facts.
+    Given a map made at commit abc1234 in which no test executed the functions refund and export in src/cart.py
+    When the session runs `tools untested --json src/cart.py`
+    Then tools prints one JSON object
+    And the object gives the functions refund and export, their count 2 and commit abc1234
+
+  @r55
+  Scenario: refs with --json prints the references and the summary as one JSON object
+    Pins that --json replaces the lines with one object holding the references and the summary.
+    Given a Python project that defines the function total in src/cart.py
+    And src/checkout.py imports total and calls it
+    And tests/test_cart.py imports total and calls it
+    When the session runs `tools refs --json total`
+    Then tools prints one JSON object
+    And the object gives the reference in src/checkout.py and the reference in tests/test_cart.py
+    And the object gives the summary: 2 references, 1 production file, 1 test file, and src/cart.py as where total is defined
+
+  @r56
+  Scenario: map with --json prints the map's commit and its test count as one JSON object
+    Pins that --json prints the result of the map as one object.
+    Given a Python project with the tests test_total and test_discount at commit def5678
+    When the session runs `tools map --json`
+    Then tools prints one JSON object
+    And the object gives commit def5678 and the test count 2
+
+  @r57
+  Scenario: tests-of fails when the file has no function by the name given
+    Pins that an unknown function is an error saying the target cannot be read, not an empty answer.
+    Given a map has been made
+    And src/cart.py has no function named missing
+    When the session runs `tools tests-of src/cart.py:missing`
+    Then it exits with an error
+    And it says the target cannot be read

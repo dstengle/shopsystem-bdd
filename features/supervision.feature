@@ -79,8 +79,9 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the initiative branch does not have feature.txt
 
-  @r4
-  Scenario: an implementer's DONE whose whole suite fails only on a scenario r43 counts as expected is merged
+  @r4 @deprecated
+  Scenario: an implementer's DONE whose whole suite fails only on a scenario r43 counts as expected is merged (deprecated)
+    Deprecated for: an implementer's DONE whose whole suite fails only on a scenario r43 counts as expected is merged
     Pins that a failure of work another work-item of the initiative has still to do does not keep the work-item branch out of the initiative branch.
     Given i1's work-item w1 is ready, accepting thing#r1, and w2 is awaiting-ruling, accepting thing#r2
     And features/thing.feature has the scenario "it waits", tagged @r2, which fails
@@ -89,8 +90,19 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the initiative branch has the implementer's commit of feature.txt
 
-  @r5
-  Scenario Outline: an implementer's DONE whose <tests> fail makes the work-item's transition to awaiting-ruling
+  @r4
+  Scenario: an implementer's DONE whose whole suite fails only on a scenario r43 counts as expected is merged
+    Pins that a failure of work another work-item of the initiative has still to do does not keep the work-item branch out of the initiative branch.
+    Given i1's work-item w1 is ready, accepting thing#r1, and w2 is awaiting-answer, accepting thing#r2
+    And features/thing.feature has the scenario "it waits", tagged @r2, which fails
+    And every worker gives DONE, the implementer committing feature.txt
+    And the work-item's scenarios pass only where feature.txt is
+    When the person runs `work run i1`
+    Then the initiative branch has the implementer's commit of feature.txt
+
+  @r5 @deprecated
+  Scenario Outline: an implementer's DONE whose <tests> fail makes the work-item's transition to awaiting-ruling (deprecated)
+    Deprecated for: an implementer's DONE whose <tests> fail makes the work-item's transition to awaiting-answer
     Pins that work that fails the tests waits on the person.
     Given i1's work-item w1 is ready
     And every worker gives DONE, the implementer committing feature.txt
@@ -104,12 +116,41 @@ Feature: Supervision
       | the whole suite           |
 
   @r5
-  Scenario Outline: a researcher that gives <outcome> makes the work-item's transition to awaiting-ruling
+  Scenario Outline: an implementer's DONE whose <tests> fail makes the work-item's transition to awaiting-answer
+    Pins that work that fails the tests waits on the person.
+    Given i1's work-item w1 is ready
+    And every worker gives DONE, the implementer committing feature.txt
+    And <tests> fail on the implementer's branch
+    When the person runs `work run i1`
+    Then w1 is awaiting-answer
+
+    Examples:
+      | tests                     |
+      | the work-item's scenarios |
+      | the whole suite           |
+
+  @r5 @deprecated
+  Scenario Outline: a researcher that gives <outcome> makes the work-item's transition to awaiting-ruling (deprecated)
+    Deprecated for: a researcher that gives <outcome> makes the work-item's transition to awaiting-answer
     Pins that any outcome but DONE stops the work-item for the person.
     Given i1's work-item w1 is drafted
     And the researcher gives <outcome>
     When the person runs `work run i1`
     Then w1 is awaiting-ruling
+
+    Examples:
+      | outcome                                                  |
+      | QUESTION, asking "Which module owns the log?"            |
+      | BLOCKED, asking "Is the old reader kept?"                |
+      | NEEDS_CONTEXT                                            |
+
+  @r5
+  Scenario Outline: a researcher that gives <outcome> makes the work-item's transition to awaiting-answer
+    Pins that any outcome but DONE stops the work-item for the person.
+    Given i1's work-item w1 is drafted
+    And the researcher gives <outcome>
+    When the person runs `work run i1`
+    Then w1 is awaiting-answer
 
     Examples:
       | outcome                                                  |
@@ -183,8 +224,9 @@ Feature: Supervision
     Then `work run` prints w1 with green, and w2 with withdrawn
     And it exits successfully
 
-  @r32
-  Scenario: when no work-item can make a transition and one is awaiting-ruling, `work run` exits with an error, printing each work-item's status and each open question
+  @r32 @deprecated
+  Scenario: when no work-item can make a transition and one is awaiting-ruling, `work run` exits with an error, printing each work-item's status and each open question (deprecated)
+    Deprecated for: when no work-item can make a transition and one is awaiting-answer, `work run` exits with an error, printing each work-item's status and each open question
     Pins what the person reads when `work run` stops on a question, and that waiting on the person is an error.
     Given i1's work-items w1 is drafted and w2 is green
     And the researcher gives QUESTION, asking "Which module owns the log?"
@@ -193,13 +235,33 @@ Feature: Supervision
     And it exits with an error
 
   @r32
-  Scenario: `work run` prints a question that has no ruling yet, and not one that has a ruling
+  Scenario: when no work-item can make a transition and one is awaiting-answer, `work run` exits with an error, printing each work-item's status and each open question
+    Pins what the person reads when `work run` stops on a question, and that waiting on the person is an error.
+    Given i1's work-items w1 is drafted and w2 is green
+    And the researcher gives QUESTION, asking "Which module owns the log?"
+    When the person runs `work run i1`
+    Then `work run` prints w1 with awaiting-answer and the question "Which module owns the log?", and w2 with green
+    And it exits with an error
+
+  @r32 @deprecated
+  Scenario: `work run` prints a question that has no ruling yet, and not one that has a ruling (deprecated)
+    Deprecated for: `work run` prints a question that has no answer yet, and not one that has an answer
     Pins that an open question is one with no ruling yet.
     Given i1's work-item w1 is awaiting-ruling, its ## Questions section with "Which module owns the log?" and no ruling
     And i1's work-item w2 is awaiting-ruling, its ## Questions section with "Old question?" and its Rulings section "Old ruling."
     When the person runs `work run i1`
     Then `work run` prints the question "Which module owns the log?"
     And it prints neither "Old question?" nor "Old ruling."
+    And it exits with an error
+
+  @r32
+  Scenario: `work run` prints a question that has no answer yet, and not one that has an answer
+    Pins that an open question is one with no answer yet.
+    Given i1's work-item w1 is awaiting-answer, its ## Questions section with "Which module owns the log?" and no answer
+    And i1's work-item w2 is awaiting-answer, its ## Questions section with "Old question?" and its Answers section "Old answer."
+    When the person runs `work run i1`
+    Then `work run` prints the question "Which module owns the log?"
+    And it prints neither "Old question?" nor "Old answer."
     And it exits with an error
 
   @r52
@@ -452,9 +514,19 @@ Feature: Supervision
     When the person runs `work run i1`
     Then each of w1's four briefs names the plugin's scripts directory, the initiative branch's base, the worker's worktree and its work-item branch
 
-  @r26
-  Scenario: a work-item whose transition is to awaiting-ruling keeps its work-item branch
+  @r26 @deprecated
+  Scenario: a work-item whose transition is to awaiting-ruling keeps its work-item branch (deprecated)
+    Deprecated for: a work-item whose transition is to awaiting-answer keeps its work-item branch
     Pins that the implementer's work is still there for the person to rule on.
+    Given i1's work-item w1 is ready
+    And every worker gives DONE, the implementer committing feature.txt
+    And the whole suite fails on the implementer's branch
+    When the person runs `work run i1`
+    Then git lists the branch work/w1, with the implementer's commit of feature.txt
+
+  @r26
+  Scenario: a work-item whose transition is to awaiting-answer keeps its work-item branch
+    Pins that the implementer's work is still there for the person to answer on.
     Given i1's work-item w1 is ready
     And every worker gives DONE, the implementer committing feature.txt
     And the whole suite fails on the implementer's branch
@@ -593,16 +665,26 @@ Feature: Supervision
     When the person runs `work run i1`
     Then before each of w1's four workers was started, and before the branch reviewer was started, `work run` had verified that it can push the initiative branch to the remote
 
-  @r36
-  Scenario: a question goes into the work-item's ## Questions, before a section that follows it
+  @r36 @deprecated
+  Scenario: a question goes into the work-item's ## Questions, before a section that follows it (deprecated)
+    Deprecated for: a question goes into the work-item's ## Questions, before a section that follows it
     Pins where the question is written, so that what follows the Questions section is never read as a question.
     Given i1's work-item w1 is drafted, its file with a ## Questions of "Old question?" and then a Rulings section with "Old ruling."
     And the researcher gives QUESTION, asking "Which module owns the log?"
     When the person runs `work run i1`
     Then w1's ## Questions holds "Old question?" and then "Which module owns the log?", and its Rulings section only "Old ruling."
 
-  @r37
-  Scenario Outline: no worker is started for a work-item that is <status>
+  @r36
+  Scenario: a question goes into the work-item's ## Questions, before a section that follows it
+    Pins where the question is written, so that what follows the Questions section is never read as a question.
+    Given i1's work-item w1 is drafted, its file with a ## Questions of "Old question?" and then an Answers section with "Old answer."
+    And the researcher gives QUESTION, asking "Which module owns the log?"
+    When the person runs `work run i1`
+    Then w1's ## Questions holds "Old question?" and then "Which module owns the log?", and its Answers section only "Old answer."
+
+  @r37 @deprecated
+  Scenario Outline: no worker is started for a work-item that is <status> (deprecated)
+    Deprecated for: no worker is started for a work-item that is <status>
     Pins that a work-item waiting on the person, or on a remedy, takes no stage.
     Given i1's work-item w1 is <status>
     And every worker gives DONE
@@ -615,7 +697,20 @@ Feature: Supervision
       | failed          |
 
   @r37
-  Scenario: no worker is started for a work-item after its transition to awaiting-ruling
+  Scenario Outline: no worker is started for a work-item that is <status>
+    Pins that a work-item waiting on the person, or on a remedy, takes no stage.
+    Given i1's work-item w1 is <status>
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then no worker was started for w1
+
+    Examples:
+      | status          |
+      | awaiting-answer |
+      | failed          |
+
+  @r37
+  Scenario: no worker is started for a work-item after its transition to awaiting-answer
     Pins that a question stops the work-item's stages within the delivery that raised it.
     Given i1's work-item w1 is drafted
     And the researcher gives QUESTION, asking "Which module owns the log?"
@@ -737,3 +832,19 @@ Feature: Supervision
     And it exits with an error
     And no worker was started
     And nothing in the repository has changed, its commits included
+
+  @r57
+  Scenario: the brief of a worker for a work-item that has answers holds each answer with the question it answers
+    Pins that a worker is told what the person answered, each answer beside its question.
+    Given i1's work-item w1 is drafted, its ## Questions section with "Which module owns the log?" and "Is the old reader kept?", and its Answers section with "The queue module." and "No."
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then each of w1's four briefs holds "Which module owns the log?" with "The queue module." and "Is the old reader kept?" with "No."
+
+  @r58
+  Scenario: an implementer started for a work-item whose work-item branch was kept works in a worktree on that branch
+    Pins that the implementer carries on from the kept branch's commits and does not start again from the base.
+    Given i1's work-item w1 is ready, and the branch work/w1 was kept with a commit of kept.txt
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then the implementer of w1 worked in a worktree on the branch work/w1, with kept.txt in it

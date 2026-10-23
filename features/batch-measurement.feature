@@ -80,8 +80,9 @@ Feature: Batch measurement
       | cart-1    | plan  | planner | s-2     | 6     | 1000          | 500              | 20000             | 0.18 |
     And the measurement gives no time for how long the stage took
 
-  @r41
-  Scenario: each work-item is given with its transitions, its awaiting-ruling and failed counts and the commits its merge brought in
+  @r41 @deprecated
+  Scenario: each work-item is given with its transitions, its awaiting-ruling and failed counts and the commits its merge brought in (deprecated)
+    Deprecated for: each work-item is given with its transitions, its awaiting-answer and failed counts and the commits its merge brought in
     A work-item's path through its statuses is counted, and only the commits its own merge brought into the initiative branch are its.
     Given i7-cart's log.jsonl gives work-item cart-1 the transitions
       | from            | to              |
@@ -102,8 +103,31 @@ Feature: Batch measurement
     And it gives cart-1 the commits c-1 and c-2
     And it does not give cart-1 the commit c-3
 
-  @r42
-  Scenario: the totals are over the stages' sessions, an unended stage included, and span the first transition to the last
+  @r41
+  Scenario: each work-item is given with its transitions, its awaiting-answer and failed counts and the commits its merge brought in
+    A work-item's path through its statuses is counted, and only the commits its own merge brought into the initiative branch are its.
+    Given i7-cart's log.jsonl gives work-item cart-1 the transitions
+      | from            | to              |
+      | drafted         | researched      |
+      | researched      | failed          |
+      | failed          | researched      |
+      | researched      | awaiting-answer |
+      | awaiting-answer | planned         |
+      | planned         | ready           |
+      | ready           | claimed         |
+      | claimed         | done            |
+      | done            | green           |
+    And cart-1's work-item branch has the commits c-1 and c-2, which its merge brought into the initiative branch
+    And the commit c-3 was made on the initiative branch itself
+    When the session runs measure initiative i7-cart
+    Then the measurement gives cart-1 those 9 transitions
+    And it gives cart-1 1 time to awaiting-answer and 1 time to failed
+    And it gives cart-1 the commits c-1 and c-2
+    And it does not give cart-1 the commit c-3
+
+  @r42 @deprecated
+  Scenario: the totals are over the stages' sessions, an unended stage included, and span the first transition to the last (deprecated)
+    Deprecated for: the totals are over the stages' sessions, an unended stage included, and span the first transition to the last
     The initiative's totals add up its stages' sessions, count a stage that never ended, leave out sessions only --sessions found, and run from the first transition to the last.
     Given i7-cart's log.jsonl gives its first transition at 09:55 and its last at 11:40
     And it gives work-item cart-1's research stage a start and an end, run in the session s-1
@@ -117,6 +141,22 @@ Feature: Batch measurement
     Then the measurement gives the totals
       | stages | sessions | output tokens | new input tokens | cache-read tokens | cost | time              |
       | 2      | 2        | 4000          | 2500             | 70000             | 0.60 | 1 hour 45 minutes |
+
+  @r42
+  Scenario: the totals are over the stages' sessions, an unended stage included, and span the first transition to the last
+    The initiative's totals add up its stages' sessions, turns and round trips included, count a stage that never ended, leave out sessions only --sessions found, and run from the first transition to the last.
+    Given i7-cart's log.jsonl gives its first transition at 09:55 and its last at 11:40
+    And it gives work-item cart-1's research stage a start and an end, run in the session s-1
+    And it gives work-item cart-1's plan stage a start and no end, run in the session s-2
+    And the stages' sessions took
+      | session | turns | round trips | output tokens | new input tokens | cache-read tokens | cost |
+      | s-1     | 14    | 31          | 3000          | 2000             | 50000             | 0.42 |
+      | s-2     | 6     | 12          | 1000          | 500              | 20000             | 0.18 |
+    And the transcript sessions/s-9.jsonl starts inside i7-cart's window with 20 turns, 45 round trips, 9000 output tokens, 4000 new input tokens and 80000 cache-read tokens
+    When the session runs measure initiative i7-cart with --sessions sessions
+    Then the measurement gives the totals
+      | stages | sessions | turns | round trips | output tokens | new input tokens | cache-read tokens | cost | time              |
+      | 2      | 2        | 20    | 43          | 4000          | 2500             | 70000             | 0.60 | 1 hour 45 minutes |
 
   @r43
   Scenario: --sessions gives the sessions that start inside the window and every session they dispatched
@@ -162,3 +202,41 @@ Feature: Batch measurement
       | stages        | 4      | 6      | 1.5   |
       | output tokens | 100000 | 150000 | 1.5   |
       | cost          | 2.00   | 3.00   | 1.5   |
+
+  @r53
+  Scenario: each stage is given with its session's round trips
+    A stage's round trips are the assistant messages with their own request ids in its session's transcript, counted apart from its turns.
+    Given i7-cart's log.jsonl gives work-item cart-1's research stage a start and an end, run in the session s-1
+    And the session s-1 took 14 turns
+    And the transcript of the session s-1 holds 40 assistant messages with 31 distinct request ids
+    When the session runs measure initiative i7-cart
+    Then the measurement gives the stage
+      | work-item | stage    | session | turns | round trips |
+      | cart-1    | research | s-1     | 14    | 31          |
+
+  @r55
+  Scenario: a stage whose session has no transcript to be found is given without its round trips
+    Without the transcript the round trips cannot be counted, and the stage is still measured.
+    Given i7-cart's log.jsonl gives work-item cart-1's research stage a start and an end, run in the session s-1
+    And the session s-1 took 14 turns
+    And no transcript of the session s-1 can be found
+    When the session runs measure initiative i7-cart
+    Then the measurement gives the stage with 14 turns
+    And the measurement gives no round trips for the stage
+
+  @r54
+  Scenario: show prints each stage's round trips beside its turns
+    A reader of the printed stages sees both counts of a session's work side by side.
+    Given the measurement .shop/records/measurements/2026-10-22-i7-cart.md that measure wrote, giving work-item cart-1's research stage 14 turns and 31 round trips
+    When the session runs measure show for it
+    Then the printed stage of cart-1's research shows
+      | turns | round trips |
+      | 14    | 31          |
+
+  @r56
+  Scenario: show prints the stages of a measurement that gives no round trips without them
+    An older measurement is still readable; show leaves out what it does not hold.
+    Given the measurement .shop/records/measurements/2026-10-22-i6-pay.md that measure wrote, giving no round trips
+    When the session runs measure show for it
+    Then the stages are printed
+    And no round trips are printed
