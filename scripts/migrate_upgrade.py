@@ -146,7 +146,7 @@ def upgrade(root):
         git(root, "add", "-f", "--", VERSION_FILE)
         git(root, "commit", "-q", "-m", "migrate upgrade: %s to %s\n\n%s" % (
             before, plugin_version(), "\n".join("upgrade step " + step_line(s) for s in steps)))
-    except Exception as error:  # any failure of a step puts every change back (r15, r20)
+    except Exception as error:  # noqa: BLE001 -- any failure of a step puts every change back (r15, r20)
         subprocess.run(["git", "reset", "-q", "--hard", "HEAD"], cwd=root, capture_output=True)
         subprocess.run(["git", "clean", "-fdq"], cwd=root, capture_output=True)
         print("migrate put the repository back as it was; it could not make every change: %s"
