@@ -217,7 +217,9 @@ def failed_command(context):
     assert re.search(r"(?m)^jedi is missing\.\n  It is for: .+\.\n  Without it: .+\.\n"
                      r"  Tried: %s -m pip install jedi\n" % re.escape(str(context["python"])), stdout)
     assert "error: no matching distribution" in stdout
-    assert "e1" not in stdout
+    lines = [line.strip() for line in stdout.splitlines()]
+    assert "e1" not in lines and "e2" not in lines
+    assert {"e3", "e4", "e5"} <= set(lines)
     assert pip_calls(context["python"]) == ["jedi"]
 
 
