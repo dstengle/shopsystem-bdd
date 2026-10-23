@@ -1,0 +1,18 @@
+{
+  "status": "DONE",
+  "summary": "Research of w97 done; notes.md written in the run directory.\nBoth accepted scenarios already pass (5 node ids run, all passed); none is red today.\nThe scenarios pass only because their fixtures make each id equal its file stem.\nProbes (run) show four cases the requirements leave open:\n D1 work add refuses naming w2.md when w2.md is a plain note beside work-item w1.md.\n D2 work add refuses on a non-UTF-8 .md note under .shop/work/<initiative>/.\n D3 model check prints no held-id problem for two work-items with one id when their stems differ, or when the id differs from the stem.\n D4 work add gives a work-item the id a work-item named fix-login.md already holds (w2).\nOld assumptions: workqueue.py highest, model_work.py check_work_item_name (held keyed by stem), design_model_check_problems.py:163-165 (drops r110 lines).\nTests run by node id only: no map, so tests-of was not used; test lists are by search.\nFile set: workqueue.py, model_work.py, design_model_check_problems.py (N2 step); others read-only.\nOpen reading: highest by file name (current) or by id (fix-login w7 gives w8, not w2).",
+  "fileset": [
+    "scripts/workqueue.py",
+    "scripts/model_work.py",
+    "scripts/model_parse.py",
+    "tests/scenarios/design_model_check_problems.py",
+    "tests/scenarios/work_queue_add_steps.py",
+    "tests/scenarios/test_design_model_check.py",
+    "tests/scenarios/design_model_check_then.py",
+    "tests/scenarios/test_work_queue.py"
+  ],
+  "questions": [
+    "Should 'one above the highest work-item' count only w<n>.md-named files (current) or every work-item's id? With fix-login.md holding id w7, the current code gives w2; the id reading gives w8.",
+    "Should a plain note named w2.md (or a non-UTF-8 .md note) beside work-items block work add? Current code refuses both (D1, D2)."
+  ]
+}
