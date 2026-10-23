@@ -6,7 +6,6 @@ from pytest_bdd import given, parsers, then
 from .conftest import CONTEXT, I1, P1, THING, cap, feature, full
 from .design_model_check_then import found
 
-
 # --- Given: file problems (r25, r27-r30) -----------------------------------------------------------------------
 
 @given(parsers.parse("a feature file {path} in which {titles}"))
@@ -200,7 +199,7 @@ def file_problem(world, context):
 def file_problems_printed(context):
     out = context["result"].stdout
     pattern = r"^file: spec/capabilities/(thing|other)\.md: no '## Behaviour' section$"
-    assert len(re.findall(pattern, out, re.M)) == 2, out
+    assert len(re.findall(pattern, out, re.MULTILINE)) == 2, out
 
 
 # === what the check prints, and the refusals (r2-r11, r33-r35) ======================================================

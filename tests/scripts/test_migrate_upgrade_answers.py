@@ -7,7 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 
-import migrate_upgrade_answers as answers  # noqa: E402
+import migrate_upgrade_answers as answers
 
 ITEM = "---\nid: work-item/x/%s\nkind: work-item\nstatus: %s\n---\n\n# %s\n\n%s\n"
 

@@ -9,7 +9,6 @@ import sys
 
 import pytest
 
-
 HAVE = all(importlib.util.find_spec(name) for name in ("coverage", "pytest_cov", "jedi", "pytest"))
 MAP = ".shop/scratch/tools/coverage"
 NAMES = ("coverage", "pytest-cov", "jedi", "ast-grep", "ruff", "vulture", "import-linter", "hypothesis")

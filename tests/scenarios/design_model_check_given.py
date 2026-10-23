@@ -5,7 +5,6 @@ from pytest_bdd import given, parsers
 
 from .conftest import CONTEXT, INDEX, cap, feature, full
 
-
 # --- Given: bounded contexts and capabilities ------------------------------------------------------------------
 
 @given("a bounded context with one capability whose requirement r1 has a scenario tagged @r1")

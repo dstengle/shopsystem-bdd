@@ -5,7 +5,6 @@ from pytest_bdd import parsers, then
 
 from .feature_file_tools_files import refused, rejected, snapshot
 
-
 # --- Then: refusals ---------------------------------------------------------------------------------------------
 
 @then("the command is rejected because the feature file has a Rule: block")

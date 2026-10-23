@@ -168,7 +168,7 @@ class RulesTest(ModelTest):
         text = LP.read_text()
         shown = {m for line in text.splitlines() for m in re.findall(r"#show\s+(\w+)/\d+\.", line.split("%")[0])}
         shown -= {"label"}
-        labels = re.findall(r'^label\("([^"]+)",\s*"((?:[^"\\]|\\.)+)"\)\.', text, re.M)
+        labels = re.findall(r'^label\("([^"]+)",\s*"((?:[^"\\]|\\.)+)"\)\.', text, re.MULTILINE)
         names = [c for c, _ in labels]
         self.assertEqual(sorted(set(names)), sorted(shown))
         self.assertEqual(len(names), len(set(names)), "a code has two labels")

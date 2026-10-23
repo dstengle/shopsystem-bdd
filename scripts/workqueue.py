@@ -138,7 +138,7 @@ def move(root, initiative, name, status, by):
     text = read(path, root)
     end = text.find("\n---", 4)
     head = re.sub(r"(?m)^status:.*$", "status: " + status, text[:end], count=1)
-    line = {"time": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "work-item": name,
+    line = {"time": datetime.datetime.now(datetime.UTC).isoformat(timespec="seconds"), "work-item": name,
             "before": before, "after": status, "by": by}
     log = path.parent / "log.jsonl"
     path.write_text(head + text[end:])

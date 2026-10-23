@@ -19,13 +19,13 @@ class Changes:
 
 def context_path(root):
     index = root / "spec/index.md"
-    match = re.search(r"^id:\s*bounded-context/(\S+)\s*$", index.read_text() if index.is_file() else "", re.M)
+    match = re.search(r"^id:\s*bounded-context/(\S+)\s*$", index.read_text() if index.is_file() else "", re.MULTILINE)
     return match.group(1) if match else None
 
 
 def front_kind(text):
     head = text.split("\n---", 1)[0] if text.startswith("---\n") else ""
-    match = re.search(r"^kind:\s*(\S+)\s*$", head, re.M)
+    match = re.search(r"^kind:\s*(\S+)\s*$", head, re.MULTILINE)
     return match.group(1) if match else None
 
 
@@ -44,9 +44,9 @@ def work_items(directory):
 def rewrite_item(text, old, new, ctx, resolve, where):
     """The item's text with its id `new`, a heading, and the work-item names its blocked_by, depends_on and for hold
     renamed; `resolve(name, where, field)` gives the id a name now has, or None to leave it."""
-    text = re.sub(r"^id:.*$", "id: work-item/%s/%s" % (ctx, new), text, count=1, flags=re.M)
+    text = re.sub(r"^id:.*$", "id: work-item/%s/%s" % (ctx, new), text, count=1, flags=re.MULTILINE)
     head, sep, body = text[4:].partition("\n---\n")
-    if not re.search(r"^# ", body, re.M):
+    if not re.search(r"^# ", body, re.MULTILINE):
         body = "\n# %s\n%s" % (old, body)
     pattern = re.compile(r"(?<![\w/-])(work-item/(?:%s/)?)?([\w-]+)(?![\w#-])" % re.escape(ctx))
 

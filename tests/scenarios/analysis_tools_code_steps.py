@@ -5,7 +5,18 @@ import subprocess
 from pytest_bdd import given, parsers, then
 
 from .analysis_tools_probe_steps import a_python_project
-from .analysis_tools_project import CART, CART_ALL, calls, git, interpreter, lines, put, real, started, under_heading
+from .analysis_tools_project import (
+    CART,
+    CART_ALL,
+    calls,
+    git,
+    interpreter,
+    lines,
+    put,
+    real,
+    started,
+    under_heading,
+)
 
 
 @given(parsers.parse("a Python project that defines the function total in src/cart.py and refers to it {count:d} times"))

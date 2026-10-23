@@ -4,7 +4,18 @@ ModelTest and the file builders are in test_model.py."""
 import re
 import unittest
 
-from test_model import CONTEXT, HAVE_CLINGO, I1, OBS1, P1, THING, ModelTest, cap, feature, full
+from test_model import (
+    CONTEXT,
+    HAVE_CLINGO,
+    I1,
+    OBS1,
+    P1,
+    THING,
+    ModelTest,
+    cap,
+    feature,
+    full,
+)
 
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
@@ -65,7 +76,7 @@ class ReadingTest(ModelTest):
 
     def test_a_deprecated_scenario_is_no_acceptance_scenario(self):
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] `thing` shall answer."], retired="[r2]"))
-        self.write("features/thing.feature", "\n".join([
+        self.write("features/thing.feature", "\n".join([  # noqa: FLY002 -- lines kept as a list, one a row
             "Feature: thing", "",
             "  @r1", "  Scenario: one", "    Given a", "",
             "  @r1 @deprecated", "  Scenario: one as it was (deprecated)", "    Given a", "",

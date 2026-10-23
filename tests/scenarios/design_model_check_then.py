@@ -62,7 +62,7 @@ def r2_under_v_s3(world, context, reported):
 
 def _mentions(context):
     facts = context["result"].stdout
-    return [m.groups() for m in re.finditer(r'^mentions\("([^"]*)", "([^"]*)"\)\.$', facts, re.M)]
+    return [m.groups() for m in re.finditer(r'^mentions\("([^"]*)", "([^"]*)"\)\.$', facts, re.MULTILINE)]
 
 
 @then('"the Store" and "the stores" each mention store')

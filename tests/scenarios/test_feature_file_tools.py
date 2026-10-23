@@ -9,13 +9,13 @@ import shlex
 import pytest
 from pytest_bdd import parsers, scenarios, then, when
 
-from .feature_file_tools_check_steps import *  # noqa: F401,F403  the steps are fixtures pytest-bdd finds by their names here
-from .feature_file_tools_edit_steps import *  # noqa: F401,F403
+from .feature_file_tools_check_steps import *
+from .feature_file_tools_edit_steps import *
 from .feature_file_tools_files import snapshot
-from .feature_file_tools_given_steps import *  # noqa: F401,F403
-from .feature_file_tools_json_steps import *  # noqa: F401,F403
-from .feature_file_tools_refusal_steps import *  # noqa: F401,F403
-from .feature_file_tools_tree_steps import *  # noqa: F401,F403
+from .feature_file_tools_given_steps import *
+from .feature_file_tools_json_steps import *
+from .feature_file_tools_refusal_steps import *
+from .feature_file_tools_tree_steps import *
 
 scenarios("feature-file-tools.feature")
 

@@ -1,7 +1,6 @@
 """feature-file-tools' Thens for verify-moved and bindings, rebind and --unbound."""
 from pytest_bdd import parsers, then
 
-
 # --- Then: the move check ---------------------------------------------------------------------------------------
 
 @then("it prints that 2 scenarios match")

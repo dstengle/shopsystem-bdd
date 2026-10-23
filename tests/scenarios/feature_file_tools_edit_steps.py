@@ -3,8 +3,16 @@ import re
 
 from pytest_bdd import given, parsers, then
 
-from .feature_file_tools_files import feature_text, refused, rejected, scenario_text, store, tag_line_of, titles_in, write
-
+from .feature_file_tools_files import (
+    feature_text,
+    refused,
+    rejected,
+    scenario_text,
+    store,
+    tag_line_of,
+    titles_in,
+    write,
+)
 
 # --- Then: retagging --------------------------------------------------------------------------------------------
 

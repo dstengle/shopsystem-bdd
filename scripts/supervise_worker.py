@@ -73,7 +73,7 @@ def with_scripts(plugin=False, work_item=None):
 
 
 def now():
-    return datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
+    return datetime.datetime.now(datetime.UTC).isoformat(timespec="seconds")
 
 
 class Workers:

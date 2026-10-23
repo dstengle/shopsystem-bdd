@@ -4,7 +4,20 @@ import re
 
 from pytest_bdd import given, parsers, then
 
-from .supervision_world import calls, commit_all, fields, git, item_text, remote_dir, section, starts, tree_has, work_commits, work_item_of, write
+from .supervision_world import (
+    calls,
+    commit_all,
+    fields,
+    git,
+    item_text,
+    remote_dir,
+    section,
+    starts,
+    tree_has,
+    work_commits,
+    work_item_of,
+    write,
+)
 
 
 @then(parsers.parse("git lists the branch work/w1, with the implementer's commit of feature.txt"))

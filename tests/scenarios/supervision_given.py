@@ -9,7 +9,22 @@ import sys
 from pytest_bdd import given, parsers
 
 from .conftest import INDEX, ROOT, cap, feature, full
-from .supervision_world import BY_WORKER, CONFTEST_PY, DELIVERY, NEEDS_FEATURE, ROLES, STUB, TESTS_PY, commit_all, committed, git, item_text, remote, scripts_in, write
+from .supervision_world import (
+    BY_WORKER,
+    CONFTEST_PY,
+    DELIVERY,
+    NEEDS_FEATURE,
+    ROLES,
+    STUB,
+    TESTS_PY,
+    commit_all,
+    committed,
+    git,
+    item_text,
+    remote,
+    scripts_in,
+    write,
+)
 
 
 @given("a git repository with an initiative i1 under .shop/work/, a remote the initiative branch can be pushed to, a "

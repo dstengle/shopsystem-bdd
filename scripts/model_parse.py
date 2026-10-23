@@ -177,7 +177,7 @@ def scenarios(text):
             if line.startswith(in_doc):
                 in_doc = None
             continue
-        if line.startswith('"""') or line.startswith("```"):
+        if line.startswith(('"""', "```")):
             in_doc = line[:3]
             continue
         if line.startswith("@"):

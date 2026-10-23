@@ -7,7 +7,7 @@ import pytest
 
 SCRIPTS = pathlib.Path(__file__).resolve().parents[2] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
-import workqueue  # noqa: E402
+import workqueue
 
 ITEM = "---\nid: work-item/x/w1\nkind: work-item\nstatus: withdrawn\n---\n\n# w1\n"
 

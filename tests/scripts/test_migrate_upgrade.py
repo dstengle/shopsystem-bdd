@@ -7,6 +7,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from typing import ClassVar
 
 SCRIPTS = Path(__file__).resolve().parents[2] / "scripts"
 INDEX = "---\nid: bounded-context/example.org/acme/shop\n---\n# shop\n"
@@ -43,7 +44,7 @@ def status_of(root):
 
 
 class TheMoveCheck(unittest.TestCase):
-    base = {"spec/index.md": INDEX, ".shop/work/i1-x/a.md": item("a"), ".shop/work/i1-x/runs/a/f": "f\n"}
+    base: ClassVar[dict] = {"spec/index.md": INDEX, ".shop/work/i1-x/a.md": item("a"), ".shop/work/i1-x/runs/a/f": "f\n"}
 
     def test_a_run_directory_moved_onto_a_tracked_one_is_refused_and_nothing_changes(self):
         root = repository({**self.base, ".shop/work/i1-x/runs/w1/y": "y\n"})

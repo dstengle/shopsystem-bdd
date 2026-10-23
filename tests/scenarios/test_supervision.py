@@ -11,6 +11,7 @@ The Given steps are supervision_given.py's, the Then steps about the workers sup
 helpers they share supervision_world.py's; the When and the Then steps about the work-items, the repository and the
 exit are here.
 """
+import itertools
 import json
 import os
 import shlex
@@ -20,14 +21,23 @@ import sys
 from pytest_bdd import parsers, scenarios, then, when
 
 from .conftest import SCRIPTS
-from .supervision_answers_steps import *  # noqa: F401,F403
-from .supervision_faults_steps import *  # noqa: F401,F403
-from .supervision_review_steps import *  # noqa: F401,F403
-from .supervision_tests_steps import *  # noqa: F401,F403
-from .supervision_given import *  # noqa: F401,F403  the steps are fixtures pytest-bdd finds by their names here
-from .supervision_then_workers import *  # noqa: F401,F403
-from .supervision_world import *  # noqa: F401,F403  the `repo` fixture among them
-from .supervision_world import BY_WORKER, fields, git, moves, section, state, tree_has, work_commits
+from .supervision_answers_steps import *
+from .supervision_faults_steps import *
+from .supervision_given import *
+from .supervision_review_steps import *
+from .supervision_tests_steps import *
+from .supervision_then_workers import *
+from .supervision_world import *
+from .supervision_world import (
+    BY_WORKER,
+    fields,
+    git,
+    moves,
+    section,
+    state,
+    tree_has,
+    work_commits,
+)
 
 scenarios("supervision.feature")
 
@@ -85,7 +95,7 @@ def exits_with_error(context):
 @then(parsers.parse("log.jsonl gives {name}'s transitions from {first} to {rest}, in that order"))
 def moves_in_order(repo, context, name, first, rest):
     statuses = [first] + rest.replace(" and ", ", ").split(", ")
-    assert moves(repo, name) == list(zip(statuses, statuses[1:])), (moves(repo, name), context["done"].stderr)
+    assert moves(repo, name) == list(itertools.pairwise(statuses)), (moves(repo, name), context["done"].stderr)
 
 
 @then("the initiative branch has the implementer's commit of feature.txt")

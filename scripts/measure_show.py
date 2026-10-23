@@ -44,7 +44,7 @@ def table(head, rows):
     """Rows of cells under a head, columns aligned and separated by ' | '."""
     rows = [[cell(c) for c in row] for row in rows]
     widths = [max([len(str(h))] + [len(r[i]) for r in rows]) for i, h in enumerate(head)]
-    line = lambda cells: " | ".join(str(c).ljust(w) for c, w in zip(cells, widths)).rstrip()  # noqa: E731
+    line = lambda cells: " | ".join(str(c).ljust(w) for c, w in zip(cells, widths)).rstrip()
     return "\n".join([line(head), "-+-".join("-" * w for w in widths)] + [line(r) for r in rows])
 
 

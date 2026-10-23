@@ -4,7 +4,7 @@ in every work-item's file and in every status field of every initiative's log, a
 import json
 import re
 
-from migrate_upgrade_ids import WORK, Changes, initiatives, work_items
+from migrate_upgrade_ids import Changes, initiatives, work_items
 
 OLD, NEW = "awaiting-ruling", "awaiting-answer"
 
@@ -12,8 +12,8 @@ OLD, NEW = "awaiting-ruling", "awaiting-answer"
 def rewrite_item(text):
     """The work-item's text with its frontmatter status and its `## Rulings` heading renamed."""
     head, sep, body = text.partition("\n---\n")
-    head = re.sub(r"^(status:[ \t]*)%s[ \t]*$" % OLD, r"\g<1>%s" % NEW, head, flags=re.M)
-    body = re.sub(r"^## Rulings[ \t]*$", "## Answers", body, flags=re.M)
+    head = re.sub(r"^(status:[ \t]*)%s[ \t]*$" % OLD, r"\g<1>%s" % NEW, head, flags=re.MULTILINE)
+    body = re.sub(r"^## Rulings[ \t]*$", "## Answers", body, flags=re.MULTILINE)
     return head + sep + body
 
 

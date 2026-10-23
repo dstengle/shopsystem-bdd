@@ -7,7 +7,6 @@ from pytest_bdd import given, parsers, then
 from .feature_file_tools_edit_steps import deprecated_scenario
 from .feature_file_tools_files import binding, scenario_text, store, titles_in, write
 
-
 # --- Given ----------------------------------------------------------------------------------------------------
 
 @given(parsers.re(r'a feature file (?P<path>\S+) with scenarios (?P<titles>"[^"]+" and "[^"]+") tagged @(?P<tag>\S+)'))

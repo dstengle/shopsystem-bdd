@@ -34,13 +34,13 @@ def _fields(path):
 @then(parsers.parse(".shop/work/{initiative}/w<n>.md is a drafted work-item whose id is that w<n>"))
 def drafted_that(repo, context, initiative):
     ident = context["printed"]
-    data = _fields(repo / ".shop/work/{}/{}.md".format(initiative, ident))
+    data = _fields(repo / f".shop/work/{initiative}/{ident}.md")
     assert (data.get("id"), data.get("kind"), data.get("status")) == (full("work-item", ident), "work-item", "drafted"), data
 
 
 @then(parsers.re(r"\.shop/work/(?P<initiative>\w+)/(?P<name>w\d+)\.md is a drafted work-item whose id is (?P=name)$"))
 def drafted_named(repo, context, initiative, name):
-    data = _fields(repo / ".shop/work/{}/{}.md".format(initiative, name))
+    data = _fields(repo / f".shop/work/{initiative}/{name}.md")
     assert (data.get("id"), data.get("kind"), data.get("status")) == (full("work-item", name), "work-item", "drafted"), data
 
 

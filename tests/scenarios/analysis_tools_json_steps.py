@@ -4,7 +4,17 @@ import json
 from pytest_bdd import given, parsers, then
 
 from .analysis_tools_probe_steps import a_python_project
-from .analysis_tools_project import CART_ALL, TEST_DISCOUNT, TEST_ONLY_TOTAL, TEST_TOTAL, commit, interpreter, mapped, put, real
+from .analysis_tools_project import (
+    CART_ALL,
+    TEST_DISCOUNT,
+    TEST_ONLY_TOTAL,
+    TEST_TOTAL,
+    commit,
+    interpreter,
+    mapped,
+    put,
+    real,
+)
 
 SOURCE = CART_ALL + "\n\ndef refund(order):\n    return -order\n\n\ndef export():\n    return 2\n"
 

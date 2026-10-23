@@ -44,13 +44,13 @@ def _(old, rel):
 @then(parsers.parse('{rel} now has the status {status} and the heading "{heading}"'))
 def _(old, context, rel, status, heading):
     text = old.read(rel)
-    assert re.search(r"^status: %s$" % re.escape(status), text, re.M) and "\n%s\n" % heading in text, said(context)
+    assert re.search(r"^status: %s$" % re.escape(status), text, re.MULTILINE) and "\n%s\n" % heading in text, said(context)
 
 
 @then(parsers.parse('{rel} still has the status {status} and now has the heading "{heading}"'))
 def _(old, rel, status, heading):
     text = old.read(rel)
-    assert re.search(r"^status: %s$" % re.escape(status), text, re.M) and "\n%s\n" % heading in text, text
+    assert re.search(r"^status: %s$" % re.escape(status), text, re.MULTILINE) and "\n%s\n" % heading in text, text
     assert "## Rulings" not in text
 
 

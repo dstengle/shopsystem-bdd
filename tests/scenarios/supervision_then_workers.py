@@ -8,7 +8,16 @@ import uuid
 from pytest_bdd import parsers, then
 
 from .conftest import SCRIPTS
-from .supervision_world import AGENTS, calls, git, log_lines, option, scripts_in, starts, work_item_of
+from .supervision_world import (
+    AGENTS,
+    calls,
+    git,
+    log_lines,
+    option,
+    scripts_in,
+    starts,
+    work_item_of,
+)
 
 
 @then(parsers.parse("each of {names} had code-scout, bdd-planner, bdd-implementer and bdd-task-reviewer as its workers, in that order"))
@@ -50,7 +59,7 @@ def brief_names(repo):
     for c in started:
         brief = c["brief"]
         assert ".shop/work/i1/w1.md" in brief and "spec/capabilities/thing.md" in brief, brief
-        assert re.search(r"^Result file: \S+$", brief, re.M), brief
+        assert re.search(r"^Result file: \S+$", brief, re.MULTILINE), brief
 
 
 @then(parsers.parse("the first worker started for {name} was a `claude -p` session of {agent}"))
@@ -112,14 +121,14 @@ def suite_before_implementer(repo, context):
 
 @then("the implementer's brief says how that run of the suite ended")
 def brief_says_suite(repo):
-    c = [c for c in starts(repo) if c["agent"] == "shopsystem-bdd:bdd-implementer"][0]
-    record = [l["record"] for l in log_lines(repo) if l.get("event") == "suite" and l.get("stage") == "implement"][0]
+    c = next(c for c in starts(repo) if c["agent"] == "shopsystem-bdd:bdd-implementer")
+    record = next(l["record"] for l in log_lines(repo) if l.get("event") == "suite" and l.get("stage") == "implement")
     assert brief_lines(c["brief"]).get("Suite record") == record, (c["brief"], record)
 
 
 @then(parsers.parse("the researcher was given --allowedTools {tools}"))
 def given_tools(repo, tools):
-    c = [c for c in starts(repo) if c["agent"] == "shopsystem-bdd:code-scout"][0]
+    c = next(c for c in starts(repo) if c["agent"] == "shopsystem-bdd:code-scout")
     assert option(c["argv"], "--allowedTools") == scripts_in(tools), c["argv"]
 
 
@@ -197,7 +206,7 @@ def researcher(repo):
 @then(parsers.parse("the researcher's brief gives {first} and {second} as the work-item's file set"))
 def brief_file_set(repo, context, first, second):
     brief = researcher(repo)["brief"]
-    given = re.search(r"^File set: (.+)$", brief, re.M)
+    given = re.search(r"^File set: (.+)$", brief, re.MULTILINE)
     assert given and given.group(1).split(", ") == [first, second], (brief, context["done"].stderr)
 
 
@@ -205,7 +214,7 @@ def brief_file_set(repo, context, first, second):
                  r'"(?P<other>[^"]+)"$'))
 def brief_scenarios(repo, title, feature, other):
     brief = researcher(repo)["brief"]
-    assert re.search(r"^Accepted scenarios:\n(?:- .+\n)*- %s: %s$" % (re.escape(feature), re.escape(title)), brief, re.M), brief
+    assert re.search(r"^Accepted scenarios:\n(?:- .+\n)*- %s: %s$" % (re.escape(feature), re.escape(title)), brief, re.MULTILINE), brief
     assert other not in brief, brief
 
 

@@ -1,12 +1,13 @@
 """tools: ruff, vulture and import-linter over the paths given or changed (check)."""
 import os
 import subprocess
+from pathlib import Path
 
 from tools_env import TOOLS, Refused, probed
 
 
 def cmd_check(args):
-    python, why, found = probed(args)
+    python, _why, found = probed(args)
     paths = args.paths
     if args.base:
         done = subprocess.run(["git", "diff", "--name-only", "--diff-filter=d", args.base, "--", "*.py"],
@@ -16,7 +17,7 @@ def cmd_check(args):
         paths = done.stdout.split()
     reported = False
     contracts = os.path.isfile(".importlinter") or (
-        os.path.isfile("pyproject.toml") and "[tool.importlinter" in open("pyproject.toml", encoding="utf-8").read())
+        os.path.isfile("pyproject.toml") and "[tool.importlinter" in Path("pyproject.toml").read_text(encoding="utf-8"))
     runs = (("ruff", "ruff", [python, "-m", "ruff", "check", "--output-format=concise"] + paths, bool(paths)),
             ("vulture", "vulture", [python, "-m", "vulture", "--min-confidence", "80"] + paths, bool(paths)),
             ("import-linter", "import-linter", [os.path.join(os.path.dirname(python), "lint-imports")], contracts))

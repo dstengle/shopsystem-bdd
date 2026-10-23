@@ -9,12 +9,12 @@ import shlex
 
 from pytest_bdd import parsers, scenarios, then, when
 
-from .analysis_tools_code_steps import *  # noqa: F401,F403  the steps are fixtures pytest-bdd finds by their names here
-from .analysis_tools_json_steps import *  # noqa: F401,F403
-from .analysis_tools_map_steps import *  # noqa: F401,F403
-from .analysis_tools_probe_steps import *  # noqa: F401,F403
-from .analysis_tools_size_steps import *  # noqa: F401,F403
+from .analysis_tools_code_steps import *
+from .analysis_tools_json_steps import *
+from .analysis_tools_map_steps import *
+from .analysis_tools_probe_steps import *
 from .analysis_tools_project import fake, invoke
+from .analysis_tools_size_steps import *
 
 scenarios("analysis-tools.feature")
 

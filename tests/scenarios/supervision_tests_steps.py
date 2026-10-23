@@ -2,7 +2,16 @@
 whole suite before a merge counts as expected."""
 from pytest_bdd import given, parsers, then
 
-from .supervision_world import DELIVERY, calls, commit_all, git, item_text, log_lines, work_commits, write
+from .supervision_world import (
+    DELIVERY,
+    calls,
+    commit_all,
+    git,
+    item_text,
+    log_lines,
+    work_commits,
+    write,
+)
 
 
 @given(".shop/delivery.toml gives [tests] with `python3 tests.py --work-item w1` for the work-item's scenarios and "

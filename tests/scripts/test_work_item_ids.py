@@ -8,7 +8,7 @@ import pytest
 
 SCRIPTS = pathlib.Path(__file__).resolve().parents[2] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
-import workqueue  # noqa: E402
+import workqueue
 
 INDEX = "---\nid: bounded-context/o/p/c\nkind: bounded-context\n---\n"
 INITIATIVE = "---\nid: initiative/o/p/c/%s\nkind: initiative\nstatus: started\n---\n"

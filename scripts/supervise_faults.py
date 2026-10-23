@@ -5,7 +5,7 @@ of supervise.Run."""
 import json
 import subprocess
 
-import supervise_worker     # its git, at call time: supervise_worker imports this module's Fault
+import supervise_worker  # its git, at call time: supervise_worker imports this module's Fault
 import workqueue
 from workqueue import WORK, Refused
 

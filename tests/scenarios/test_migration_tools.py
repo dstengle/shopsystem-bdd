@@ -7,13 +7,13 @@ import re
 
 from pytest_bdd import given, parsers, scenarios, then, when
 
-from .migration_ledger_steps import *  # noqa: F401,F403  the steps are fixtures pytest-bdd finds by their names here
+from .migration_ledger_steps import *
 from .migration_old import CONTEXT, body, front, migrate, said
-from .migration_safety_steps import *  # noqa: F401,F403
-from .migration_spec_steps import *  # noqa: F401,F403
-from .migration_upgrade_answers_steps import *  # noqa: F401,F403
-from .migration_upgrade_steps import *  # noqa: F401,F403
-from .migration_version_steps import *  # noqa: F401,F403
+from .migration_safety_steps import *
+from .migration_spec_steps import *
+from .migration_upgrade_answers_steps import *
+from .migration_upgrade_steps import *
+from .migration_version_steps import *
 
 scenarios("migration-tools.feature")
 

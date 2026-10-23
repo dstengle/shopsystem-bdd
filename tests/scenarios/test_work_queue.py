@@ -8,8 +8,8 @@ import datetime
 import errno
 import importlib
 import json
-import re
 import os
+import re
 import shlex
 import sys
 import types
@@ -17,11 +17,11 @@ import types
 from pytest_bdd import given, parsers, scenarios, then, when
 
 from .conftest import INDEX, SCRIPTS, full
-from .work_queue_answer_steps import *  # noqa: F401,F403  r13
-from .work_queue_add_steps import *  # noqa: F401,F403  r1, r12
-from .work_queue_git_steps import *  # noqa: F401,F403  the steps are fixtures pytest-bdd finds by their names here
+from .work_queue_add_steps import *
+from .work_queue_answer_steps import *
+from .work_queue_git_steps import *
 from .work_queue_git_steps import init
-from .work_queue_withdraw_steps import *  # noqa: F401,F403  r10, r11
+from .work_queue_withdraw_steps import *
 
 MOVER = "supervision"     # the script that moves work-items in these scenarios
 
@@ -201,7 +201,7 @@ def move(repo, context, name, status):
 
 @then(parsers.re(r"\.shop/work/(?P<initiative>[^/]+)/(?P<name>[^/]+)\.md is a drafted work-item (?P<name2>(?!whose)\S+)$"))
 def drafted(repo, initiative, name, name2):
-    data = fields(repo / ".shop/work/{}/{}.md".format(initiative, name))
+    data = fields(repo / f".shop/work/{initiative}/{name}.md")
     assert (data.get("id"), data.get("kind"), data.get("status")) == (full("work-item", name2), "work-item", "drafted"), data
 
 
@@ -233,7 +233,7 @@ def nothing_about(context, name):
 
 @then(parsers.parse(".shop/work/{initiative}/{name}.md gives {name2}'s status as {status}"))
 def status_is(repo, initiative, name, name2, status):
-    assert fields(repo / ".shop/work/{}/{}.md".format(initiative, name)).get("status") == status
+    assert fields(repo / f".shop/work/{initiative}/{name}.md").get("status") == status
 
 
 @then(".shop/work/i1/log.jsonl has two lines, the first as it was")
@@ -246,7 +246,7 @@ def two_lines(repo, context):
 def last_line(repo, name, before, after):
     last = json.loads((repo / ".shop/work/i1/log.jsonl").read_text().splitlines()[-1])
     when = datetime.datetime.fromisoformat(last.pop("time"))
-    assert abs(datetime.datetime.now(datetime.timezone.utc) - when) < datetime.timedelta(minutes=1), when
+    assert abs(datetime.datetime.now(datetime.UTC) - when) < datetime.timedelta(minutes=1), when
     assert last == {"work-item": name, "before": before, "after": after, "by": MOVER}, last
 
 

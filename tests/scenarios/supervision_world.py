@@ -112,7 +112,7 @@ def starts(repo):
 
 def work_item_of(call):
     """The work-item a worker's brief names; None for a brief that names none (the branch reviewer's)."""
-    found = re.search(r"^Work-item: \.shop/work/i1/(\S+)\.md$", call["brief"], re.M)
+    found = re.search(r"^Work-item: \.shop/work/i1/(\S+)\.md$", call["brief"], re.MULTILINE)
     return found.group(1) if found else None
 
 
