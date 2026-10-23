@@ -122,3 +122,47 @@ I would add one node, not a new queue:
 4. **One tree per repository is a prerequisite for removing the coordinator**: the loop I proposed reads one `.shop/work/`; your chain gives it that. Cross-seam state is only the request pair.
 
 This is a v4 of the model, or a decision superseding §3's "one tree" and the `job`/`job-path` kinds; it is the person's to make. No file was changed.
+
+## The agent's fourth reply, to the person's points (the request as the only connection; requests in EARS; a request work-item kind; source traced)
+
+Taking the three points in turn, with what v3 has and what changes.
+
+## 1. The request as the only connection into a context
+
+Not fully there in v3 as written, and it is in the chain version. v3 keeps the spec clean ("the upstream names no client", rule 7) but lets the *work* cross: a downstream's initiative owns the upstream's proposal and work-items as parts (§3: "its fulfilment — the upstream's capability-proposal and work-items — is `part_of` the request"), and a thread's `built` reads "every part under it closed", which means reading another context's work-items. With `fulfils` replacing cross-seam `part_of`, the seam's whole surface is the request: its status, its `resolution` (requirement ids in the upstream's spec, already `resolution(Q, Rq)` in grammar.md:71), and the upstream's published capability files at the pinned version. An external party reads those three and nothing under the upstream's `.shop/work/`. I would write it as a rule: nothing but a request has an edge across a seam, in either direction, and `model check` can hold it (an id in one context's files that resolves into another context's `.shop/work/` is a violation).
+
+The symmetric half matters as much: the only connection *out* of a context is the request-work-item below.
+
+## 2. Requests in EARS, negotiated line by line
+
+Agreed, and it is a change: v3's request carries `needs TEXT` (grammar.md:261), prose, with red scenarios as evidence. Written as EARS lines against the upstream's capabilities, the request is a change list in the upstream's own form (`adds`/`changes` as proposed lines, no ids yet; the upstream assigns ids at merge and the `resolution` names them). Two consequences follow:
+
+- The negotiation has two levels and both are the existing question-and-answer protocol: *does this belong to this context* (accept, refuse, or a map-escalation, unchanged from v3), and *each line* (accepted as written, rewritten into the upstream's narrator and glossary, or refused, with a question back to the asker where a line admits two readings). An accepted request becomes the upstream's capability-proposal almost verbatim, and goes through the upstream owner's gate; the asker sees per-line outcomes, never the gate.
+- The plugin can check a request before it is sent: the lines pass v_e1/v_e2 and the glossary rules against the upstream's published spec, so a malformed request is refused by a script, not by the upstream's owner.
+
+The one tension to name: a capability's narrator is the upstream's, and the downstream writes what it can observe through the seam. The rewrite step is where the upstream makes the line its narrator's; the `resolution` is what keeps the asker's line and the upstream's id tied without the upstream naming the client.
+
+"All the request needs in order to answer", as you now put it, is then exact: the initiative is done when every line of the request has a resolution (an id, or a refusal), and the scope is the lines.
+
+## 3. A request-work-item kind
+
+Right that the implementation lifecycle does not fit. v3's work-item kinds are capability, guarantee and enabling (`for:`), all ending in code and a check. A fourth kind, **request**, with its own stages:
+
+| status | done by | what it leaves |
+|---|---|---|
+| drafted | the planner's result of an implementation work-item that found its need across a seam, or the person | the need, the seam, the capabilities it reaches (`using`) |
+| researched | code-scout, reading this context's code and the upstream's *published* spec and seam, never its code | which upstream capability, what is missing against its Behaviour lines |
+| requested | capability-writer, given the upstream's spec/ and the seam, blind to both codes: writes the lines in the upstream's form; the script sends the request file and records its id | the request, `open` |
+| awaiting-answer | the upstream's questions, answered by the asker (the person, or a dispatch under delegation) | answers on the request |
+| delivered | the script, when the request's `resolution` is present | the ids; the seam pin raised to the upstream version that holds them |
+| green | the script: every implementation work-item `depends_on` it may now be ready | — |
+
+Implementation work-items name it in `depends_on`; the `planned → ready` guard (every `blocked_by` green) already holds them back. This reuses the roles that exist and adds no agent; `work run` gains the stage mapping for the kind. The architectural judgment you mention (is this a request, or in-context work, or a map-escalation) sits in the planner, who already inlines decisions, with `awaiting-answer` to the person when it is not clear.
+
+## 4. Source traced throughout
+
+Partly there. v3 rule 9: every part's `part_of` reaches an initiative, and only the initiative has `source`; so within one tree every work-item traces to origins. Across seams it relied on the one tree. In the chain, the trace from any work-item is: `part_of` → capability-proposal → initiative → `fulfils` → request → `part_of` a job-thread, or an internal request citing origins. For that to be complete, two rules are needed, both checkable: every initiative fulfils exactly one request (no free-floating initiatives, which is what i22 and i23 are today), and every request is either part of a thread or cites at least one origin. The request carries only the asker's context and request id, so the upstream's trace reaches the thread (product-level ids are global) without reaching the asker's work-items. From the downstream side, its request-work-item points at the request. Nothing else needs to carry `source`.
+
+What is not in v3 and would need adding: `fulfils` as an edge; the request's body as lines with per-line outcomes; the `request` work-item kind and its stages; the two trace rules; and the seam-only rule from point 1. The product-level thread and `resolution` stay as they are.
+
+No file was changed.
