@@ -20,6 +20,12 @@ from .analysis_tools_project import (
 )
 
 
+def ruff_pin():
+    """The pin in this repository's scripts/tools_env.py, read from the file."""
+    source = (pathlib.Path(__file__).resolve().parents[2] / "scripts" / "tools_env.py").read_text()
+    return re.search(r'^RUFF_PIN = "([^"]+)"', source, re.MULTILINE).group(1)
+
+
 @pytest.fixture
 def outside(tmp_path_factory):
     """A new empty directory outside the project."""
@@ -185,6 +191,17 @@ def installed_with_pip(context, tools):
     assert pip_calls(context["python"]) == tools.split(" and ")
 
 
+@given("the plugin pins one version of ruff")
+def plugin_pins_ruff():
+    assert re.fullmatch(r"\d+(\.\d+)*", ruff_pin())
+
+
+@then("ruff is installed into the interpreter at the version the plugin pins")
+def ruff_installed_pinned(context):
+    assert context["result"].returncode == 0, context["result"].stderr
+    assert pip_calls(context["python"]) == ["ruff==%s" % ruff_pin()]
+
+
 @then("pyproject.toml and requirements.txt are unchanged")
 def dependency_files_unchanged(repo):
     assert (repo / "pyproject.toml").read_text() == "[project]\nname = 'cart'\n"
@@ -234,9 +251,6 @@ def explains_not_venv(context, first, second):
 @then("nothing is installed into the interpreter")
 def nothing_installed(context):
     assert pip_calls(context["python"]) == []
-
-
-
 
 
 

@@ -20,6 +20,7 @@ TOOLS = (
      "reviewers read the imports against CLAUDE.md"),
     ("hypothesis", "hypothesis", "the project's invariants as property tests", "invariants are probed by hand in review"),
 )
+RUFF_PIN = "0.17.0"  # the one version of ruff `install` puts in
 VERSIONS = ("import json, sys\nfrom importlib import metadata\nout = {}\n"
             "for name in sys.argv[1:]:\n    try:\n        out[name] = metadata.version(name)\n"
             "    except metadata.PackageNotFoundError:\n        out[name] = None\n"
@@ -90,7 +91,8 @@ def cmd_install(args):
                   for tool in missing}
     else:
         for name, package, _, _ in missing:
-            command = [python, "-m", "pip", "install", package]
+            requirement = "%s==%s" % (package, RUFF_PIN) if name == "ruff" else package
+            command = [python, "-m", "pip", "install", requirement]
             done = subprocess.run(command, capture_output=True, text=True)
             if done.returncode:
                 failed[name] = (" ".join(command), "\n".join(done.stderr.strip().splitlines()[-4:]))
