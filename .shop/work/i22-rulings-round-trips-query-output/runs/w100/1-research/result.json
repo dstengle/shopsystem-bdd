@@ -1,0 +1,8 @@
+{
+  "status": "DONE",
+  "summary": "w100 research, accepted scenario: work-queue r15 'answer with a newline in it is refused, and nothing changes'.\nRed today only because two steps are undefined: the When 'the session runs `work answer w1` with an answer of two lines' (run) and the Then 'work exits with an error, saying that an answer is one line' (read).\nThe code already refuses: scripts/workqueue_answer.py:29-30 (run: rc 1, message, nothing changed, git clean).\nFile set: tests/scenarios/work_queue_answer_steps.py (new When and Then). Nothing else needs to change for the scenario.\nDefect found (run): `work answer` accepts U+2028 and form feed; the Answers reader (scripts/supervise.py:199, splitlines) makes two bullets, and the brief drops the second half.\nNo map exists: tests-of and untested unavailable; counts are by search or refs.\nTest run deselected 34 of 35 in test_work_queue.py; r13/r14 answer scenarios not run.\nThe work-item body names fixes outside its accepts (work-queue#r15 only); not researched.\nNotes: .shop/scratch/1-research/notes.md. Probes: .shop/scratch/w100-1-research/.",
+  "fileset": [
+    "tests/scenarios/work_queue_answer_steps.py"
+  ],
+  "questions": []
+}
