@@ -1,0 +1,15 @@
+{
+  "status": "DONE",
+  "summary": "Research of w111 (delivery r17, r18) finished; notes in notes.md.\nNo accepted scenario exists: no features/delivery.feature; e4ee75b formulated scenarios for other capabilities only.\nDeprecated scenarios: `features deprecated --json` gives the replacement's tags, not the deprecated scenario's own @r<n>.\n`work add` writes the title-only work-item and commits it itself; it has no --retires option.\nSKILL.md's commit step assumes work add leaves files uncommitted; no r18 stop check exists.\nNo test binds the delivering skill; no test asserts a work-item without a Retires section.\nNo map exists: tests found by search. Probes run in scratch repo; none over 300 lines.",
+  "fileset": [
+    "skills/delivering-an-initiative/SKILL.md",
+    "scripts/work",
+    "scripts/workqueue.py",
+    "scripts/features_report.py",
+    "tests/scripts/test_work_add_title.py",
+    "tests/scenarios/test_work_queue.py",
+    "tests/scenarios/work_queue_add_steps.py",
+    "features/delivery.feature"
+  ],
+  "questions": []
+}
