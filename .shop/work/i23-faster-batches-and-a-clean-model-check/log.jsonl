@@ -1,1 +1,2 @@
 {"time": "2026-10-23T21:09:38+00:00", "work-item": "w101", "before": "drafted", "after": "failed", "by": "work run"}
+{"time": "2026-10-23T21:09:58+00:00", "work-item": "w101", "before": "failed", "after": "drafted", "by": "work retry"}
