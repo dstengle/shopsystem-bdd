@@ -210,3 +210,32 @@ Correct, and it is the same shape the work-item already has, extended to two par
 Two things this adds to what I said before: the asker confirms a rewritten line still meets its need, so "all the request needs in order to answer" is agreed by both sides rather than decided by the upstream alone; and the upstream's gate still judges only its own lines, since by the time it runs the request's lines are the upstream's capability-proposal. The transport question stays as before (one file in the upstream's intake, both sides writing it in turn), and the asker still depends only on `delivered` and the pinned contract.
 
 No file was changed.
+
+## The agent's seventh reply, to the person's questions on where v4 lives and how to formulate the requests
+
+## Where v4 lives
+
+v3 is `docs/design-model/` in this repository (README.md calls `design-model.md` "the reference"). Observation 2026-10-16-model-owned-by-knowledge and decisions 0027 and 0051 say the model moves to shopsystem-knowledge, which owns the types; i14 was abandoned as "belonging to shopsystem-knowledge". That move never happened: `~/shopsystem-knowledge` has no `docs/design-model/`, its `spec/` is on the old layout (`decisions.md` ledger, `docs/superpowers/`), and its last commits are old-workflow batches. Under v4 itself the model is a product-level artifact (it defines the types every context uses), so its owner is the product level, which has no repository yet. My recommendation: write v4 where v3 is, as `docs/design-model/design-model.md` v4 with `grammar.md` and `how-we-got-here.md` updated, keep the 2026-10-16 observation standing, and make the move a request later, when a product repository or shopsystem-knowledge's final layout exists to receive it. Blocking v4 on the move would stall everything below it.
+
+## Formulating the requests
+
+Two things stand in the way and both have a plain answer. There is no request intake yet, so the first requests are written by hand in the form v4 gives, under `.shop/work/requests/`, and the first of them builds the intake. And their lines are EARS against this context's capabilities, which is the capability-writer's work, not a session's: the discussion becomes one design note (the archive's convention, `2026-10-23-requests-and-the-context-loop-design.md`), and each request is drafted from it by an `integrate` round, one request a round, each to its own gate. The asker is the person at the product level, so these are direct requests (root, no thread), each citing the origins it rests on.
+
+Six requests, in the order they should run:
+
+| | request | capabilities | source origins | the lines, in gist |
+|---|---|---|---|---|
+| R1 | Measure the sessions around a delivery | batch-measurement | i22 analysis "Not counted" | sessions *active* in the window, not only started in it; per non-stage session its round trips, tool uses by tool, dispatches, compactions; cost share by the initiative's request origin (internal, external) |
+| R2 | A session starts from the repository's state | work-queue, migration-tools | 0030-misread, session-keeps-the-gate | `work status <initiative>` from files only (statuses, questions, branch, ledger tail, next); the ledger tracked under `.shop/work/<initiative>/` and appended by `work note`; the SessionStart hook prints it; a PreCompact hook notes the compaction |
+| R3 | Requests, intake and the two-way protocol | work-queue (or a new capability `requests`), design-model-check | open-initiatives-closed, session-keeps-the-gate | the request file: `## Lines` in EARS, per-line outcomes, `## Questions`/`## Answers`, turn-taking statuses, resolution ids and version; `work request` writes it into the intake; a write out of turn or in the other side's section refused; internal requests cite origins; an observation no request cites is listed as open |
+| R4 | An initiative fulfils one request | design-model-check, work-queue | open-initiatives-closed | every initiative `fulfils` one request; done when its own work is green and every request it raised is delivered; the kinds `job` and `job-path` leave the context (v_k1, v_k2 go); the trace rules; the seam rule (only a request crosses it) |
+| R5 | The context runs without a coordinator | supervision, delivery, spec-integration, formulation | 0030-misread, i22 analysis candidates 2 and 3 | `work run` loops over every node kind: intake dispatch, gate cards as questions on the proposal, apply and formulate rounds, work-items drafted by the script, fix-now findings drafted as work-items, measure and analysis at close; delegation given in a brief; the small-change paths removed |
+| R6 | Intake at the product level | outside this context | the whole discussion | a skill that ends by writing a request; the model's move to its owner |
+
+Dependencies: R1 and R2 need no model change and give the baseline, so they run first and can go into the batch now open (i23 part 3 is already half of R1). R3 and R4 need v4 written. R5 needs R3. R6 is not this context's. Each is one `capability-change` initiative that must answer its request entirely, which is the first trial of the form you described; and i23's remaining parts, if you want the trial to be real, are rewritten as internal requests in the same form before they are delivered.
+
+The lines above are gists, not the EARS a gate would show; those are the round's output, checked by v_e1/v_e2 before you see them, per the standing rule that proposed lines are shown in checked EARS.
+
+## What is still mine to do here
+
+Nothing until you say so. If you want, the next step is the design note alone: I write it from this conversation into `.shop/records/archive/design-notes/` as a draft for your reading, change nothing else, and the rounds start from it in a fresh session. No file was changed.
