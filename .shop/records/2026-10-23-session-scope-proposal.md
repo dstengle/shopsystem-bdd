@@ -1,0 +1,47 @@
+---
+id: review-finding/missingmass.io/shopsystem/shopsystem-bdd/2026-10-23-session-scope
+kind: review-finding
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-10-23
+---
+
+# Session scope: a proposal (a Fable agent, at the person's request)
+
+The person, 2026-10-23: "It seems like these session are getting too long if they require compaction. ... conversations
+need to be compartmentalized, wrapped up and cleared much faster. There is still far too much tool use in the
+interactive session. Sessions in general need to be working with a reasonably fresh set of information." The agent's
+reply, as given:
+
+## Files read
+
+CLAUDE.md; spec/index.md; spec/capabilities/supervision.md, work-queue.md, batch-measurement.md, migration-tools.md; spec/decisions/0030, 0037, 0039, 0053, 0059, 0060, 0063, 0064; skills/delivering-an-initiative, integrating-a-proposal, formulating-features, analyzing-a-batch (SKILL.md); agents/initiative-round.md, trial-runner.md; hooks/hooks.json; .shop/records/observations.md (2026-10-21-session-keeps-the-gate, 2026-10-23-hung-worker, -open-initiatives-closed, -decision-0030-misread); .shop/records/2026-10-23-i22-analysis.md; .shop/records/README.md; .shop/records/archive/2026-10-22-0-23-0-handoff.md and ledger-i22-…md; .shop/work/i22…/initiative.md, w94.md; .shop/work/i23…/initiative.md and its design note; docs/design-model/grammar.md (record kinds); .gitignore; `work --help`; `migrate status --hook`; ~/.claude/…/memory/next-0-24-0.md.
+
+## Diagnosis
+
+Every actor in the workflow leaves its state in files that a script reads back (briefs, results, log.jsonl, stage directories, records), except the one that talks to the person. The coordinator's state lives in its context, its compaction summary and memory notes outside the repository, none of which anything verifies. So (a) a claim survived compaction as a fact and nobody re-read 0030, and (b) when `work run` had a gap, the cheapest route was the coordinator's own tools, and nothing refused it. The 0.23.0 hand-off was a 100-line prose file that re-stated the skills' rules; the ledger that 0059 made "the recovery map" is under `.shop/scratch/`, which git ignores, so it is not in the repository until an initiative ends. Note too that `measure --sessions` r43 counts a session only when it *starts* inside the window: the two-day coordinator session was excluded from i22's measurement precisely because it was too long.
+
+## Proposal, ranked
+
+**1. The hand-off is computed, not remembered: `work status <initiative>` printed at SessionStart.** (work-queue lines; hooks/hooks.json; a decision superseding 0059's ledger sentence.) `work status` prints, from files only: the initiative and its proposals' statuses, each work-item with status and open questions, the initiative branch and whether the remote has it, uncommitted changes, `model check`'s last line, the last ten ledger lines, and the one line "next: <job>" (the last ledger line that names one). The ledger moves to `.shop/work/<initiative>/ledger.md`, tracked, and `work note <initiative> <line>` appends and commits it like `log.jsonl` (the person's answers given under delegation, decisions taken, what the next session does). The SessionStart hook runs `migrate status --hook` then `work status --hook` for every initiative not `done`. Replaces: the compaction summary, memory notes as state, prose hand-off files, the coordinator reading `runs/` to learn where things stand. Measured: compactions per initiative (see 5) falls to 0; the coordinator's cache-read tokens against the stages' (0037's own 23-55% figure is the baseline form) fall; sessions per initiative rise to the number of jobs.
+
+**2. A session is one job; each coordinator skill ends with a wrap-up.** (The four skills; a light decision.) The jobs with a file-recorded exit: *gate* (integrate rounds → gate page → apply, ends at the spec commit); *formulate* (ends at the feature-file commit); *delivery* (one `work run` until it exits; on exit 3 the session shows the questions, writes the answers with `work answer`, notes the ledger and ends, the rerun is the next session's; on a branch review, ends when fix work-items are drafted); *analysis* (ends at the record's commit). The wrap-up is three lines in every skill: `work note … "next: <job>"`, nothing uncommitted (`git status --porcelain` empty), then tell the person the job is done and the next starts in a new session. A `PreCompact` hook (hooks.json) appends `compacted` to the open initiative's ledger and prints "wrap up and clear instead of compacting". Replaces: multi-day sessions, the ledger-after-the-fact. Measured: compactions = 0; each session's round trips and new-input tokens bounded (take i22's sessions table as baseline once 5 counts it).
+
+**3. Take the coordinator's hands off the files: close the routes around `work run`.** (integrating-a-proposal, formulating-features, delivering-an-initiative; supervision lines; i23's part 2.)
+- Delete both small-change paths. "The session writes its two lines itself" is the single largest source of coordinator Edit/sed/pytest work; a round is cheap (its context ends) and the 30M-token argument the skill makes against rounds-in-session applies to two lines too. `initiative-round`'s `integrate` job takes the lines or a finding as its input, not only a note.
+- No direct `claude -p` dispatch and no hand merge; a work-item `work run` cannot deliver is a question to the person, and its two i22 causes already have homes: a disallowed tool is `[allowed_tools]` in delivery.toml (r30); a change to `work run` itself is still a work-item (the worker runs the checkout's scripts, so this is a check, not new code). i22's C1, C2, I1 all came from work with no task review.
+- A branch review's fix-now findings become drafted work-items by `work run` itself (one line in supervision: when the reviewer's result lists findings to fix now, draft a work-item for them naming the findings file) and appear in its printout, so the session never opens findings.md.
+- Work-item files are written by `work` only; `work run` r46 already refuses uncommitted `.shop/work/`, which a hand edit is.
+What stays with the session: publishing the gate and reading answers; `work answer`; starting `work run` and dispatching rounds, the trial-runner and the analysis; `work note`; appending an observation in the person's words; release steps on request. Nothing else, and never pytest, merge, sed or a source file. Measured: tool uses by tool name in the coordinator's sessions (see 5): Edit/Write outside `.shop/records/` = 0, Bash pytest/merge = 0; branch-review Critical findings from unreviewed work = 0.
+
+**4. A citation is a reading, in this session.** (One sentence in each coordinator skill and printed by `work status`; a light decision.) A decision, Behaviour line or record is cited only after its file was read in the current session; a summary, a memory note or an earlier session's claim is not a citation. `work status` prints the summary line of every decision the open initiative's proposals `rest_on`, so the reading costs one command. Replaces: the 0030 misread's mechanism. Measured weakly: observations of the "misread/correction" kind per initiative; say so in the analysis rather than invent a figure.
+
+**5. Measure the coordinator, then judge 1-4 on i23's batch.** (batch-measurement lines; prerequisite, built first.) `measure initiative --sessions` gives, for each non-stage session *active* in the window (not only started in it), its round trips, tool uses by tool name, dispatches, and compactions (the transcript's compact-summary entries), and `compare` carries them. Re-measure i22 for the baseline (its coordinator is in the transcripts, just outside r43's window rule), then deliver i23 under 1-4 and compare. The decision is the person's on those two records, per the memory rule, not on this argument.
+
+## What I would not do
+
+- A turn or token budget that stops the session: the plugin cannot enforce it, turns say nothing about context, and the PreCompact hook catches the symptom directly.
+- A coordinator agent or a "session supervisor": 0037 rejected a controller that decides nothing, and the person talks to the session.
+- Prose hand-off files like 0.23.0's: they restate the skills and drift; rules live in the skills, state in `work status`.
+- Keeping memory notes as the state carrier: the rules in them that are not already in CLAUDE.md or a skill get moved there once; the rest is deleted.
+- Fixture scenarios for this: i23 part 6 decides 0030's fate; this is judged on i23's real batch.
+- A statusline: the concern is what the session holds, not what it shows.
