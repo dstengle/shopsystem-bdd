@@ -1,0 +1,15 @@
+{
+  "status": "DONE",
+  "summary": "Research of w110 done; notes.md in the run directory, parts 1-7.\nAccepted tests run: 4 pass (r47 and the retired deprecated pair), 6 fail (r57, r58 x3, r59 x2).\nRed causes: undefined steps (all 6), plus code: measure_read.read_session_json refuses empty session.json (r57); measure_read.json_rows uses splitlines, splitting on U+2028/2029/0085 (r58).\nr59: moment() already reads Z as UTC (probe); needs steps only.\nTest-step defects: gives_totals KeyError on the r59 table; transitions_between passes ISO times to stamp().\nDefects: D1 U+2028 split (run); candidates: empty --sessions transcript silently accepted; absent session.json given without note.\nFile set: measure_read.py, measure_build.py, measure (contract), batch_measurement given/then/world/transcripts steps, features/batch-measurement.feature (retire).\ntests-of unavailable (no map; map runs the whole suite), so test lists are by search.\nProbe: .shop/scratch/w110-1-research/probe_measure.py.",
+  "fileset": [
+    "scripts/measure_read.py",
+    "scripts/measure_build.py",
+    "scripts/measure",
+    "tests/scenarios/batch_measurement_given_steps.py",
+    "tests/scenarios/batch_measurement_then_steps.py",
+    "tests/scenarios/batch_measurement_world.py",
+    "tests/scenarios/batch_measurement_transcripts.py",
+    "features/batch-measurement.feature"
+  ],
+  "questions": []
+}
