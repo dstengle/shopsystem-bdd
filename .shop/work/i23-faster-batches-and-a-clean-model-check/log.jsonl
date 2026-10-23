@@ -308,3 +308,4 @@
 {"time": "2026-10-23T23:45:01+00:00", "work-item": "w118", "stage": "review", "agent": "bdd-task-reviewer", "session": "a3145135-c82b-4608-ac37-ec1a7285a32c", "event": "start"}
 {"time": "2026-10-23T23:46:09+00:00", "work-item": "w118", "stage": "review", "agent": "bdd-task-reviewer", "session": "a3145135-c82b-4608-ac37-ec1a7285a32c", "event": "end"}
 {"time": "2026-10-23T23:46:09+00:00", "work-item": "w118", "before": "done", "after": "green", "by": "work run"}
+{"time": "2026-10-23T23:48:26+00:00", "work-item": "w111", "before": "awaiting-ruling", "after": "withdrawn", "by": "work withdraw"}
