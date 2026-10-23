@@ -77,3 +77,7 @@
 {"time": "2026-10-23T01:08:16+00:00", "work-item": "w97", "stage": "plan", "agent": "bdd-planner", "session": "3ec7739c-2c47-4103-aae6-8dd190089ecb", "event": "start"}
 {"time": "2026-10-23T01:10:09+00:00", "work-item": "w97", "stage": "plan", "agent": "bdd-planner", "session": "3ec7739c-2c47-4103-aae6-8dd190089ecb", "event": "end"}
 {"time": "2026-10-23T01:10:09+00:00", "work-item": "w97", "before": "researched", "after": "awaiting-ruling", "by": "work run"}
+{"time": "2026-10-23T01:10:11+00:00", "work-item": "w98", "stage": "research", "event": "push verified"}
+{"time": "2026-10-23T01:10:11+00:00", "work-item": "w98", "stage": "research", "agent": "code-scout", "session": "60b1c6e2-9409-468d-a7d1-f446988c6a26", "event": "start"}
+{"time": "2026-10-23T01:13:14+00:00", "work-item": "w98", "stage": "research", "agent": "code-scout", "session": "60b1c6e2-9409-468d-a7d1-f446988c6a26", "event": "end"}
+{"time": "2026-10-23T01:13:14+00:00", "work-item": "w98", "before": "drafted", "after": "researched", "by": "work run"}

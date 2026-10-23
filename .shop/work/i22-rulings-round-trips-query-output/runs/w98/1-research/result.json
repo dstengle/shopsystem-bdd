@@ -1,0 +1,5 @@
+{
+  "status": "DONE",
+  "summary": "Research of w98 (analysis-tools#r16, tools check is clean) complete; notes in notes.md.\nNone of the six accepted scenarios is red: all six node ids pass today (run).\nThe work-item's real target: `tools check scripts tests` exits 1: ruff 690 findings (UP031 522 of them), vulture 1.\nNo ruff config exists in the checkout; the rules come from a config outside it (not identified).\nFix list: 91 Python files with findings, plus a new ruff config and a stub_claude.py mode fix.\nTightest files: design_model_check_problems.py at 288 lines; none over 300.\nRisk: vulture `none` in feature_file_tools_given_steps.py is a pytest-bdd keyword; it must stay a parameter.\nDefect D1: test_tools.py map tests fail in this session (--work-item w98 not under .shop/work/); cause not confirmed.\nNo tests-of map was made (refused); test coverage claims are by search.",
+  "questions": []
+}
