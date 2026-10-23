@@ -1,0 +1,20 @@
+{
+  "status": "DONE",
+  "summary": "w116 research done; notes.md in the run directory has the six parts and the file set.\nAccepted scenarios: 4. Outline malformed work: 8 of 9 rows pass, the built row is red (no step branch).\nNo-scenario file problem passes. Guarantees and green-retired no-file-problem: undefined steps, and the code refuses both.\nProbes run: built/delivered/formulated statuses; guarantees and green-retired accepts; accepts without check.\nDefects shown: D1 guarantees accept refused; D2 green retired accept refused; D3 unresolved wording; D4 accepted without check gets v_w4.\nEdits needed: scripts/model_work.py (work-item accepts branch), scripts/model.lp (lines 54-55), two test step files.\nOpen conflict: work run --work-item refuses a guarantees-only accepting work-item; both readings in notes part 3.\nNo tool map, so tests-of is unavailable; test lists are by search. Whole suite not run. Git status clean.",
+  "fileset": [
+    "scripts/model_work.py",
+    "scripts/model.lp",
+    "tests/scenarios/design_model_check_given.py",
+    "tests/scenarios/design_model_check_problems.py",
+    "scripts/model_facts.py",
+    "scripts/model_check.py",
+    "scripts/model_parse.py",
+    "scripts/model",
+    "scripts/work_items.py",
+    "scripts/supervise_brief.py",
+    "tests/scripts/test_model_withdrawn.py",
+    "tests/scripts/test_work_items.py",
+    "tests/scripts/test_model.py"
+  ],
+  "questions": []
+}
