@@ -67,6 +67,12 @@ lines are v_s3, nine closed initiatives are v_d1, and five green i10 work-items 
 - B, supersede 0030 with its rejected alternative: the ten are guarantees, checked by `measure` on real batches, as
   role-boundaries is; v_s3 and r27 leave guarantees capabilities out, and their proposals become `formulated`.
 
+**The person, 2026-10-23: "go with B".** A new decision supersedes 0030 and 0043: the ten workflow capabilities are
+guarantees, checked by `measure` on real batches, as role-boundaries is. v_s3 and design-model-check r27 leave
+guarantees capabilities out; spec/index.md's Testing section says so; the capability-proposals of the nine closed
+initiatives left at `merged` become `formulated`, so their closings stand. The fixture harness in
+/home/vscode/scratch/shopsystem-bdd is not brought into the repository.
+
 ## Not in this initiative
 
 - A time limit on a worker (observation 2026-10-23-hung-worker): the person deferred it ("leave that for later").
