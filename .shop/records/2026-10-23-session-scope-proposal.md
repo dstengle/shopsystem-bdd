@@ -45,3 +45,41 @@ What stays with the session: publishing the gate and reading answers; `work answ
 - Keeping memory notes as the state carrier: the rules in them that are not already in CLAUDE.md or a skill get moved there once; the rest is deleted.
 - Fixture scenarios for this: i23 part 6 decides 0030's fate; this is judged on i23's real batch.
 - A statusline: the concern is what the session holds, not what it shows.
+
+## The agent's second reply, to the person's follow-up on "job" and on removing the interactive session
+
+You're right that "job" is taken: design model v3 makes **job** a standing artifact (`when [situation], [narrator] wants [outcome]`, grammar.md:17, 247), and `initiative-round` already misuses the word for its modes (`integrate`, `gate`, `apply`, `formulate`). I withdraw "job" as the session's unit and would rename initiative-round's "job" too. Here is the answer to the larger question, from the model's own files.
+
+## What the model already gives you
+
+- Two typed ways work enters a bounded context from outside: a **job-thread** that `enters` the context (product → context, grammar.md:65-68) and a **cross-context-request** `from CAP across SEAM needs TEXT` (context → context, grammar.md:69-71, 261). Both are parts of an initiative; the request has a lifecycle `open → accepted | refused → delivered` decided by the upstream owner, and a `resolution` that is a requirement id. Nothing new has to be invented for "a request from outside".
+- One question-and-answer protocol, already built for work-items: `## Questions` with readings, `awaiting-answer`, `work answer`, the answer written in the person's words with its date, the node returned to the stage that asked (0063, 0064, work-queue r13-r14). The gate is the same shape by hand: `initiative-round gate` writes cards, the person answers, `apply` takes "the approval in the person's words with its date".
+
+So the context already contains no activity that needs a chat, except the one it never defined: turning what the person wants into a request.
+
+## Definitions I would propose (the person decides the words)
+
+- **question**: what a node asks of a role the scripts cannot stand in for, written in the node under `## Questions` with its readings; the node waits (`awaiting-answer`) until an answer is written. Not: query, clarification. (Only *answer* is defined today.)
+- **request**: the one way work enters a bounded context: a job-thread entering it or a cross-context-request across one of its seams, each a part of an initiative, taken in by the script and answered through questions. Not: ask, ticket, chat.
+- **interactive work**: work whose output is a request. It happens outside the context (at the product level, or by the person with an intake skill) and ends when the request file exists. After that, every exchange with a person is a question and its answer on a node.
+- **round**: keep the term; initiative-round's modes become "the round's kind" (integrate, gate, apply, formulate), never "job".
+
+With these, the "unit of a session" question disappears: a session is a worker or a dispatch (a brief in, a result out) or an intake session (prose in, a request out). None needs a transcript to survive.
+
+## Can the interactive session go? Yes, inside the context, on three conditions
+
+1. **`work run` becomes the context's loop over every node kind, not only work-items.** Each node with a transition the script can make gets a dispatch with a brief: a request `open` → intake round (capability-proposals drafted; questions back on the request); a proposal `drafted` → gate cards written as questions on the proposal; `approved` → apply and formulate rounds; `formulated` → work-items drafted by the script (delivering-an-initiative's drafting is already "from the spec alone", mechanical); work-items → stages as today; all green → branch review, then measure and the analysis dispatch, the record committed. The person's whole surface is `work answer <node> …`, `work show`/`work status`, and `work run`. The ledger, moved under `.shop/work/<initiative>/` and tracked, holds what the person decided.
+2. **Delegation becomes a brief, not a session.** "Drafting decisions delegated to the coordinator" was the misread's vector: a long-lived session answered from memory. Under the loop, a delegated answer is given by a short dispatch whose brief names the files to read and the delegation, and the answer carries `by:` naming it, logged like any other. Decisions are then cited only from files the brief named, which is how workers already work; the citation rule from my item 4 is a brief rule, not a session rule.
+3. **The product level owns intake and brainstorming.** This is where the person talks: a skill (or the product repository's session) that ends by writing a job-thread or request into the lead context's `.shop/work/`. "Why did the batch cost that", "what is left", "measure this" are requests too, answered by records; analyzing-a-batch is already a dispatch that leaves a record and replies in lines.
+
+What this costs, honestly: the gate becomes a page of questions answered by command or an answers file rather than a conversation (the i22 answers were already one-liners under delegation, so this is the practice, formalised); a person who wants to think aloud mid-delivery does it in intake, as a new request, not by steering a worker; and Claude Code still needs *a* session to run the loop, but it is a terminal running a script, not a model holding state.
+
+## What this does to the ranked proposal
+
+- Items 1 (`work status`, tracked ledger, SessionStart print) and 5 (measure the non-stage sessions, count compactions and tool uses, count sessions active in the window) stand and come first: they are cheap, they are the hand-off the loop needs anyway, and they give the baseline that judges the rest.
+- Items 2 and 3 (session wrap-up, closing the routes around `work run`) are absorbed: with no coordinator in the context there is nothing to wrap up and no hands to keep off the files. The small-change path still goes, since it is the one place a skill tells the session to write spec itself.
+- Prove before specifying: the skeleton is i23's own gate run with no coordinator, as a trial: cards written as questions on the proposals, answered with `work answer`, applied and formulated by rounds started from a script, and measured against i22's `--sessions` figures (coordinator cache-read tokens → 0; compactions → 0; the person's answer latency as the new cost to watch). If that works on a real gate, the loop and the intake skill are the next initiative; if the person finds answering by command worse than the page, that is the measurement that says so.
+
+I would not try to keep a reduced "interactive coordinator" alongside the loop: a session that may do a little will do more when a script has a gap, which is the whole history of the last two days. The gap goes to the person as a question on the node, and the script grows a line for it.
+
+No file was changed.
