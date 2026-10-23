@@ -1,0 +1,14 @@
+{
+  "status": "DONE",
+  "summary": "w93 planned: plan.md in the stage directory.\nGreen: migration-tools#r29, one scenario (feature line 524); red today because its steps are undefined, STEPS has no 0.25.0 step, and plugin.json is 0.24.0.\nDecision 1: plugin.json stays 0.24.0 (the work-item: pending only once the version is raised; decision 0062). Only STEPS gains 0.25.0.\nDecision 2: the scenario runs the real migrate from a plugin copy whose plugin.json is 0.25.0, set up by the r29 Given and used by the shared When.\nDecision 3: upgrade plans each step after the earlier ones are applied (r20, oldest first). This fixes research defect 1; a later refusal rolls back.\nDecision 4: rename the frontmatter status, the exact '## Rulings' heading in every work-item, and both before and after in log lines; free text left (r26). Only files that change are written.\nDecision 5: the step's description is 'answers, not rulings' (decision 0064).\nTests broken: none (checked the r18-r28 scenarios and test_migrate_upgrade_ids.py).\nFile set: the researcher's minus plugin.json, plus migration_upgrade_steps.py (When) and a new tests/scripts/test_migrate_upgrade_answers.py.",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/migrate_upgrade.py",
+    "scripts/migrate_upgrade_answers.py",
+    "tests/scenarios/migration_upgrade_answers_steps.py",
+    "tests/scenarios/migration_upgrade_steps.py",
+    "tests/scenarios/test_migration_tools.py",
+    "tests/scripts/test_migrate_upgrade_answers.py"
+  ],
+  "questions": []
+}
