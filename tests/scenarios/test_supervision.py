@@ -20,6 +20,7 @@ import sys
 from pytest_bdd import parsers, scenarios, then, when
 
 from .conftest import SCRIPTS
+from .supervision_answers_steps import *  # noqa: F401,F403
 from .supervision_faults_steps import *  # noqa: F401,F403
 from .supervision_review_steps import *  # noqa: F401,F403
 from .supervision_tests_steps import *  # noqa: F401,F403
@@ -37,7 +38,7 @@ scenarios("supervision.feature")
 def run_work(repo, plan, context, args):
     stub = repo.parent / "stub"
     (stub / "plan.json").write_text(json.dumps(plan))
-    env = dict(os.environ, PATH="%s%s%s" % (stub / "bin", os.pathsep, os.environ.get("PATH", "")),
+    env = dict({k: v for k, v in os.environ.items() if k != "SHOPSYSTEM_WORK_RUN_WORKER"}, PATH="%s%s%s" % (stub / "bin", os.pathsep, os.environ.get("PATH", "")),
                SHOPSYSTEM_WORK_CLAUDE=str(stub / "bin" / "claude"), STUB_CLAUDE_PLAN=str(stub / "plan.json"),
                STUB_CLAUDE_CALLS=str(stub / "calls.jsonl"), PYTEST_XDIST_AUTO_NUM_WORKERS="2",
                **context.get("env", {}))     # `-n auto` in a scenario's own small suite: two processes, not one a CPU

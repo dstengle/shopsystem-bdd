@@ -452,16 +452,6 @@ Feature: Supervision
     When the person runs `work run i1`
     Then each of w1's four briefs names the plugin's scripts directory, the initiative branch's base, the worker's worktree and its work-item branch
 
-  @r26 @deprecated
-  Scenario: a work-item whose transition is to awaiting-ruling keeps its work-item branch (deprecated)
-    Deprecated for: a work-item whose transition is to awaiting-answer keeps its work-item branch
-    Pins that the implementer's work is still there for the person to rule on.
-    Given i1's work-item w1 is ready
-    And every worker gives DONE, the implementer committing feature.txt
-    And the whole suite fails on the implementer's branch
-    When the person runs `work run i1`
-    Then git lists the branch work/w1, with the implementer's commit of feature.txt
-
   @r26
   Scenario: a work-item whose transition is to awaiting-answer keeps its work-item branch
     Pins that the implementer's work is still there for the person to answer on.
@@ -610,20 +600,6 @@ Feature: Supervision
     And the researcher gives QUESTION, asking "Which module owns the log?"
     When the person runs `work run i1`
     Then w1's ## Questions holds "Old question?" and then "Which module owns the log?", and its Answers section only "Old answer."
-
-  @r37 @deprecated
-  Scenario Outline: no worker is started for a work-item that is <status> (deprecated)
-    Deprecated for: no worker is started for a work-item that is <status>
-    Pins that a work-item waiting on the person, or on a remedy, takes no stage.
-    Given i1's work-item w1 is <status>
-    And every worker gives DONE
-    When the person runs `work run i1`
-    Then no worker was started for w1
-
-    Examples:
-      | status          |
-      | awaiting-ruling |
-      | failed          |
 
   @r37
   Scenario Outline: no worker is started for a work-item that is <status>
