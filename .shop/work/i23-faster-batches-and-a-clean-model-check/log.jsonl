@@ -4,3 +4,7 @@
 {"time": "2026-10-23T21:10:03+00:00", "work-item": "w101", "stage": "research", "agent": "code-scout", "session": "07f81431-8f28-4d2c-a7e1-776cdf2dfedd", "event": "start"}
 {"time": "2026-10-23T21:15:49+00:00", "work-item": "w101", "stage": "research", "agent": "code-scout", "session": "07f81431-8f28-4d2c-a7e1-776cdf2dfedd", "event": "end"}
 {"time": "2026-10-23T21:15:49+00:00", "work-item": "w101", "before": "drafted", "after": "researched", "by": "work run"}
+{"time": "2026-10-23T21:15:51+00:00", "work-item": "w101", "stage": "plan", "event": "push verified"}
+{"time": "2026-10-23T21:15:51+00:00", "work-item": "w101", "stage": "plan", "agent": "bdd-planner", "session": "95600e7a-45df-44a7-bc21-c64b449b358e", "event": "start"}
+{"time": "2026-10-23T21:18:32+00:00", "work-item": "w101", "stage": "plan", "agent": "bdd-planner", "session": "95600e7a-45df-44a7-bc21-c64b449b358e", "event": "end"}
+{"time": "2026-10-23T21:18:32+00:00", "work-item": "w101", "before": "researched", "after": "awaiting-ruling", "by": "work run"}
