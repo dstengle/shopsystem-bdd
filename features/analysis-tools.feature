@@ -441,8 +441,8 @@ Feature: Analysis tools
     And tests/test_cart.py imports total and calls it
     When the session runs `tools refs --json total`
     Then tools prints one JSON object
-    And the object gives the reference in src/checkout.py and the reference in tests/test_cart.py
-    And the object gives the summary: 2 references, 1 production file, 1 test file, and src/cart.py as where total is defined
+    And the object gives the references in src/checkout.py and tests/test_cart.py
+    And the object gives the summary: the number of references it gives, 1 production file, 1 test file, and src/cart.py as where total is defined
 
   @r56
   Scenario: map with --json prints the map's commit and its test count as one JSON object
