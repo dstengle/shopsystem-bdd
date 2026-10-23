@@ -220,3 +220,9 @@ The coordinator's sweep of the open initiatives found every work-item of each gr
 still without a passing scenario in the agent and skill capabilities, which have no feature files by design (decision
 0030). The person closed all ten: i1, i3, i8, i9, i10, i11, i13, i16 and i17 as done, their agent and skill lines
 delivered by the shipped agent and skill text; i14 as abandoned, its work belonging to shopsystem-knowledge.
+
+Closing them adds nine `model check` rows, v_d1 "a done initiative has a part open": i1, i3, i8, i9, i10, i11, i13, i16
+and i17 each keep capability-proposals at `merged`, those of agent and skill capabilities, which never reach
+`formulated` because they have no feature files (decision 0030). A capability-proposal's file form allows no status
+after `merged` but `formulated` (`delivered` is refused as a file problem), so the model has no way to close such a
+proposal. The rows are left standing; giving the model a closing status for these proposals is work for a later batch.
