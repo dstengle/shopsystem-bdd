@@ -1,0 +1,10 @@
+{
+  "status": "DONE",
+  "summary": "w117 research done. Accepted scenarios: 2 (r106, v_w4). Outline (4 rows) passes today. Scenario 'accepting a requirement no scenario names yet' is red: KeyError, missing FIELDS entry in tests/scenarios/design_model_check_one_each.py:32-34. Behind it: scripts/model_work.py:184-190 writes accepts facts only for scenario-named requirements, so scripts/model.lp:235 v_w4 prints (probe A, run). Defects D1 (accepting work-item without check reports v_w4) and D2 (nonexistent accepted requirement reports v_w4). Old-assumption table, skipped scenario-lookup step, and test impact in notes.md. Test lists are by search (no tools map).",
+  "fileset": [
+    "scripts/model_work.py",
+    "scripts/model.lp",
+    "tests/scenarios/design_model_check_one_each.py"
+  ],
+  "questions": []
+}
