@@ -111,10 +111,10 @@ def researcher_odd_questions(plan, status, text, number):
 
 
 @given(parsers.re(r"i1's work-item (?P<name>\w+) is (?P<status>[\w-]+), its file with a ## Questions of "
-                  r'"(?P<question>[^"]+)" and then a Rulings section with "(?P<ruling>[^"]+)"$'))
-def item_with_sections(repo, name, status, question, ruling):
-    write(repo, ".shop/work/i1/%s.md" % name, item_text(name, status) + "\n## Questions\n- %s\n\n## Rulings\n- %s\n" % (question, ruling))
-    commit_all(repo, "a work-item with questions and rulings")
+                  r'"(?P<question>[^"]+)" and then an Answers section with "(?P<answer>[^"]+)"$'))
+def item_with_sections(repo, name, status, question, answer):
+    write(repo, ".shop/work/i1/%s.md" % name, item_text(name, status) + "\n## Questions\n- %s\n\n## Answers\n- %s\n" % (question, answer))
+    commit_all(repo, "a work-item with questions and answers")
 
 
 @given(parsers.parse("every worker gives DONE, the researcher also writing {first} and {second}"))

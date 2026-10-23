@@ -122,12 +122,12 @@ def remote_at_head(repo):
     assert git(remote_dir(repo), "rev-parse", "main") == git(repo, "rev-parse", "main")
 
 
-@given(parsers.re(r"i1's work-item (?P<name>\w+) is awaiting-ruling, its ## Questions section with \"(?P<question>[^\"]+)\" and "
-                  r"(?:no ruling|its Rulings section \"(?P<ruling>[^\"]+)\")$"))
-def awaiting_with_questions(repo, name, question, ruling):
-    text = item_text(name, "awaiting-ruling") + "\n## Questions\n- %s\n" % question
-    write(repo, ".shop/work/i1/%s.md" % name, text + ("\n## Rulings\n- %s\n" % ruling if ruling else ""))
-    commit_all(repo, "%s awaiting a ruling" % name)
+@given(parsers.re(r"i1's work-item (?P<name>\w+) is awaiting-answer, its ## Questions section with \"(?P<question>[^\"]+)\" and "
+                  r"(?:no answer|its Answers section \"(?P<answer>[^\"]+)\")$"))
+def awaiting_with_questions(repo, name, question, answer):
+    text = item_text(name, "awaiting-answer") + "\n## Questions\n- %s\n" % question
+    write(repo, ".shop/work/i1/%s.md" % name, text + ("\n## Answers\n- %s\n" % answer if answer else ""))
+    commit_all(repo, "%s awaiting an answer" % name)
 
 
 @given(parsers.re(r'i1\'s work-item (?P<name>\w+) is failed, its fault recorded as "(?P<fault>[^"]+)"$'))
