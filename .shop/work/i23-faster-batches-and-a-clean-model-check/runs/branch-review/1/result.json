@@ -1,0 +1,9 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Branch review of i23 (1ad6281..1620d96): 9 green work-items (w107-w109, w113-w118); w110's commits remain, superseded by w115.\nSuite: 723 passed, 0 failed at 1620d96 in 14.53 s (parallel -n auto; steps drive the scripts as subprocesses).\nEach green work-item's --work-item run passes. tools check: ruff 1 error (I001, w113), vulture clean, no import contracts. tools size: nothing over 300. features bindings clean; features deprecated lists 2 from i21.\nNo Critical: every change under features/ in a work-item's commits removes a deprecated scenario its Retires lists. Each removed or loosened test is in its plan; the setup allowances of w108, w113 and w118 hold.\nFix now: Important w109, work run never starts a work-item blocked_by a green work-item of another initiative (supervise_pool.py:46-62); probe confirmed, and the repo uses such blockers (i10/w28 -> i11/w67).\nFix now: Minor w113, ruff I001 in work_queue_answer_steps.py:2.\nObservations: r61 merge order under lock contention (w109); skill commits c8eb828/6559731 outside work run (w111 withdrawn); unrelated records on the branch; a test_measure_runs fixture with contradictory output (w115); no randomized test of model decisions --check against write (probe of 40 cases agreed, kept in findings).",
+  "findings": "/home/vscode/shopsystem-bdd/.shop/worktrees/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": [
+    "Important, w109, scripts/supervise_pool.py:46-62: blocked() reads statuses from this initiative only, so a work-item blocked_by a green work-item of another initiative is never started (contradicts supervision r1; r63 forbids only while not green)",
+    "Minor, w113, tests/scenarios/work_queue_answer_steps.py:2: ruff I001 at the pinned 0.17.0, so tools check exits 1 on the branch"
+  ]
+}
