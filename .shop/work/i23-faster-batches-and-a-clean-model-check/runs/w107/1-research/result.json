@@ -1,0 +1,11 @@
+{
+  "status": "DONE",
+  "summary": "w107 research done; notes at .shop/scratch/1-research/notes.md.\nAccepted scenario passes alone (run); fails in the whole suite at tests/scenarios/analysis_tools_probe_steps.py:220, `assert \"e1\" not in stdout`.\nCause: the stdout 'Tried:' line carries the stand-in interpreter's tmp path, named test_a_tool_still_missing_afte<N>; N=1 gives 'e1'. Reproduced by a naming probe (run).\nNot explained: why N=1 in the whole suite (not run). Whole suite not run.\nCode behaviour for r7 is correct today (probe run). The fix is in the step's assertion, or in the tmp naming; the plan decides.\nDefect D1: install exits 0 and says 'installed' when pip exits 0 but the tool is still missing (probe run; cmd_install does not re-probe).\nMinor D2: empty pip error prints a line of two spaces.\ntests-of not used (no map; tools map would write outside scratch); searches by text.",
+  "fileset": [
+    "tests/scenarios/analysis_tools_probe_steps.py",
+    "tests/scenarios/analysis_tools_project.py",
+    "scripts/tools_env.py",
+    "scripts/tools"
+  ],
+  "questions": []
+}
