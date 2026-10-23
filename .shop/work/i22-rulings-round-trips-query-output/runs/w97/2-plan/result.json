@@ -1,0 +1,13 @@
+{
+  "status": "QUESTION",
+  "summary": "Plan of w97 written (plan.md). Both accepted scenarios (r110 outline, r12) are already green; the work fixes the defects behind them.\nDecided: r110 keys held ids by frontmatter id and flags an id whose w<n> is not its stem (F6, rests on r110 + work-items-named-by-ids).\nDecided: work add's highest counts every work-item's id n as well as its stem n, so fix-login.md holding w7 gives w8 and no id repeats (r12 + work-items-named-by-ids).\nDecided: entry loses its unreachable 'file name' branch (N7); the named-problem step filters r110 lines only for non-w<n>.md paths (N2).\nDecided: non-UTF-8 notes still refuse under r7; not in the work-item's findings.\nOpen: F10/D1, a plain note w2.md beside w1.md. r12 as written gives a refusal (reading A); the work-item's text gives w3 (reading B). Asked.\nFile set: scripts/workqueue.py, scripts/model_work.py, tests/scenarios/design_model_check_problems.py (12 lines of room).",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/workqueue.py",
+    "scripts/model_work.py",
+    "tests/scenarios/design_model_check_problems.py"
+  ],
+  "questions": [
+    "Beside work-item .shop/work/i1/w1.md sits a plain note .shop/work/i1/w2.md (no work-item frontmatter); what does `work add i1 ...` do? Reading A (work-queue#r12 and r7 as written: one above the highest work-item is w2, whose file exists): work add exits with an error, writes nothing, and the refusal names .shop/work/i1/w2.md as a file that is not a work-item, instead of today's 'the work-item w2 already exists'. Reading B (the work-item's finding N9 F10, 'number it past every w<n>.md'): work add prints w3 and writes .shop/work/i1/w3.md as a drafted work-item with id w3, one above the highest w<n>.md file rather than one above the highest work-item."
+  ]
+}
