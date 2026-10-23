@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"work answer refuses all seven Unicode mandatory line breaks, checked first. Work-item scenarios: 145 passed. Size check clean.","commits":["579290a work answer refuses every Unicode mandatory line break, and checks it first (work-queue r15)"],"report":"/home/vscode/shopsystem-bdd/.shop/worktrees/w105/.shop/scratch/3-implement/report.md","questions":[]}
