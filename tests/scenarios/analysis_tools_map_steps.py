@@ -35,7 +35,7 @@ FORMS = (("the file", "Cart().total([1])", OTHERS), ("the function", "total([1])
 def executed_target(run, repo, context, target):
     real()
     count, label = context["planned"]
-    call, extras = next((call, extras) for form, call, extras in FORMS if target.startswith(form))
+    call, extras = next((call, extras) for form, call, extras in FORMS if target.startswith(form) or form == "the file" and "/" in target)
     assert 2 + len(extras) == count
     files = {"tests/test_cart.py": "from cart import Cart, total\n\n\ndef test_total():\n    assert %s\n" % call,
              "tests/test_checkout.py": "from cart import Cart, total\n\n\ndef test_checkout():\n    assert %s\n" % call,

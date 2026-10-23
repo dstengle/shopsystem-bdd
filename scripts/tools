@@ -106,7 +106,7 @@ def main():
     size.set_defaults(run=tools_size.cmd_size)
     args = parser.parse_args()
     try:
-        if getattr(args, "under", False):
+        if getattr(args, "under", False) or (args.command == "map" and args.json):  # counting a map's tests needs coverage
             under(tools_env.interpreter(args)[0], sys.argv[1:])
         return args.run(args)
     except tools_env.Refused as why:

@@ -1,4 +1,5 @@
 """tools: references to a name, found by jedi (refs)."""
+import json
 import os
 import re
 import sys
@@ -40,10 +41,16 @@ def cmd_refs(args):
                 for use in there.get_references(ref.line, alias.start(1), scope="file"):
                     places.add((os.path.relpath(str(ref.module_path), root), use.line))
     places -= {(os.path.relpath(path, root), line) for path, line in definitions}
-    for path, line in sorted(places):
-        print("%s:%d" % (path, line))
     files = {path for path, _ in places}
     tests = {path for path in files if is_test(path)}
+    if args.json:
+        print(json.dumps({"references": [{"path": p, "line": n} for p, n in sorted(places)],
+                          "summary": {"references": len(places), "production_files": len(files - tests),
+                                      "test_files": len(tests),
+                                      "defined": ["%s:%d" % (os.path.relpath(p, root), n) for p, n in sorted(definitions)]}}))
+        return 0
+    for path, line in sorted(places):
+        print("%s:%d" % (path, line))
     print("%d reference%s to %s, in %d production and %d test files; defined at %s" % (
         len(places), "" if len(places) == 1 else "s", args.name, len(files - tests), len(tests),
         ", ".join("%s:%d" % (os.path.relpath(path, root), line) for path, line in sorted(definitions))))
