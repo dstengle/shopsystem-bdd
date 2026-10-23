@@ -225,3 +225,15 @@ shopsystem-knowledge's final layout exists to receive it.
 - Memory notes outside the repository as a state carrier.
 - A budget for internal work before two releases have measured the share.
 - Fixture scenarios for this: judged on real batches with `measure`.
+
+## Approval (the person, 2026-10-23)
+
+"I approve", with:
+
+- **The request file is a tool abstraction.** The person: "this is a tool abstraction. The 'file' could be many things
+  and implementation will change." The requests' lines say what a request holds and who writes which part, never where
+  or in what form it is kept; where this note says "request file", read "request".
+- **How a turn is sealed:** left open; the person will ask for more detail later.
+- **The delegation line:** the quote is supervision's Purpose ("It is a script and takes no judgment; what nobody may
+  decide goes to the person as a question"). The person asked where it was and how it bears on delegation; still open
+  for R5's gate.
