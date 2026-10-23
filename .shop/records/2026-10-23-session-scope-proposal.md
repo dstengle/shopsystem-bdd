@@ -83,3 +83,42 @@ What this costs, honestly: the gate becomes a page of questions answered by comm
 I would not try to keep a reduced "interactive coordinator" alongside the loop: a session that may do a little will do more when a script has a gap, which is the whole history of the last two days. The gap goes to the person as a question on the node, and the script grows a line for it.
 
 No file was changed.
+
+## The agent's third reply, to the person's chain of requests (request → initiative, no tree across seams; internal requests)
+
+Yes, it makes sense, and it is a change to design model v3 as written, not a reading of it. Let me say exactly what v3 says, where your version differs, and what I think is missing.
+
+## What v3 says today (design-model.md §3, grammar.md v_b1-v_b3, v_k1-v_k5)
+
+- The initiative is the root: "never `part_of` anything", the only node with `priority` and `source`; its tree "is its work-breakdown". Kinds `job` and `job-path` root at the product level with a job-proposal or job-thread as first part; `capability-change` and `defect` root in a context.
+- "A part may be owned by a different bounded-context than its initiative; it is still part of it." A cross-context-request's fulfilment, "the upstream's capability-proposal and work-items — is `part_of` the request" (v_b2). So one product-level initiative's tree reaches through seams into other contexts' work-items. And the upstream "sequences [inbound requests] by their initiatives' priorities", i.e. by a rank set by someone else's owner.
+
+So I was reporting v3, and v3 is what you are objecting to. Your objection is right on two counts: one tree across repositories is unworkable for scripts that read one `.shop/work/` (every guard like "every part under it closed" needs the other contexts' files), and a priority set by the downstream's owner has no standing in the upstream.
+
+## Your version, made precise
+
+Chain, not tree: **job-thread** (product) → **request** across a seam into a context → **initiative** (that context) → capability-proposals → work-items; a work-item's need across a further seam raises a request that the next context fulfils with its own initiative. The request is the only artifact that crosses a seam; `part_of` never does.
+
+- A request `fulfilled_by` at most one initiative, and an initiative fulfils exactly one request (or is internal, below). The request's `delivered` guard becomes "its initiative is `done`"; a thread's `built` becomes "every request it raised is `delivered`". Each context ranks its own initiatives; the product level ranks threads through the vision's `orders`.
+- "Satisfies the request entirely": then initiative `done` ⇔ request `delivered`, which is what makes the chain checkable from either end. An initiative cannot be a work-breakdown because its scope is fixed by the request; the breakdown is the work-items with `blocked_by`, `depends_on` and file-set claims, which is already what `work run` executes. The initiative keeps only `source`, `priority`, `status`, and the measurement at close.
+- The initiative kinds collapse: `job` and `job-path` are threads at the product level, not initiatives; a context's initiative is `capability-change` (first part a proposal, one gate) or `defect` (first part a work-item, no gate). v_k1/v_k2 go; v_k3/v_k4 stay.
+- Where the request file lives needs one answer: the asker writes it and owns its status; the upstream's intake holds a reference by id (the request's `needs` text copied into its initiative's `source`), and `work status` on both sides shows the pair. Two files that both claim the status is the failure mode to rule out.
+
+## Observations and internal work: what v3 leaves open
+
+v3 says origins "have no rank and appear in nobody's queue"; triage is "an owner starts an initiative from origins"; a review refactor is "not an initiative: an enabling work-item `for:` … or an observation if nothing needs it yet" (§3, use-case table line 224). `w_uncited_obs` (grammar.md:201) already warns on an observation nothing cites. What is missing is exactly what you name: nothing turns an uncited observation into followed-up work, nothing bounds how much of a batch such work takes, and i22/i23 show the result: "initiatives" that are triage bundles with no request behind them.
+
+I would add one node, not a new queue:
+
+- **internal request**: a request whose asker is the context itself, raised from one or more origins (observation, review-finding, measurement) that it cites, with the same lifecycle (`open → accepted | refused → delivered`) and the same fulfilment (one initiative, `capability-change` or `defect`). Accepting it is the owner's triage; refusing it closes the observation with a reason. External and internal requests sit in one ranked list per context: `.shop/work/requests/` with the ranking as a field the owner sets, printed by `work status`. The "intake backlog" v3 names in §3 becomes this file set.
+- Follow-up: an observation is *open* while no request cites it; `w_uncited_obs` becomes the list of open observations, aged. That gives the chatter a home: a bug, a review's deferred finding, a measurement that looks off each become one line in observations.md and either get a request or get refused, in writing.
+- Budget: supervision's Not yet already lists "spending limits and budgets". Per the measure-first rule I would not enforce one yet: `measure` already attributes cost per initiative, so first add the request's origin (external/internal) to the measurement and the analysis report ("share of the release's cost on internal requests"), run two releases, then set the share in `.shop/delivery.toml` and let the loop refuse to start an internal initiative above it. The number has to come from i23 and the next, not from here.
+
+## What I think you may be missing
+
+1. **A request is the typed replacement for intake chat, so its form must carry what brainstorming produced**: the need in the asker's words, the origins cited, the seam (or "internal"), and the acceptance in the asker's terms (for a thread, the entry scenario; for an internal request, the observation's repro or the figure that should move). Without the last, "satisfies the request entirely" is unjudgeable, and `delivered` is a formality.
+2. **Refusal and escalation stay**: a refused request with a thread still needing it is v3's `refused-still-needed` map-escalation; internal requests can simply be refused.
+3. **i23 as the first proof**: its six parts are at least four requests (parallel stages; drafting fixes; measure's refusals; model check's gaps; part 6 is a decision, not work). Writing them as internal request files, each with an initiative that must satisfy it entirely, is the cheap trial of the form before the loop is built, and it tells you whether "entirely" is the right constraint when a request turns out larger than one batch.
+4. **One tree per repository is a prerequisite for removing the coordinator**: the loop I proposed reads one `.shop/work/`; your chain gives it that. Cross-seam state is only the request pair.
+
+This is a v4 of the model, or a decision superseding §3's "one tree" and the `job`/`job-path` kinds; it is the person's to make. No file was changed.
