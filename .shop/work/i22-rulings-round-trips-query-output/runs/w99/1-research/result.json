@@ -1,0 +1,10 @@
+{
+  "status": "DONE",
+  "summary": "w99 (migration-tools r30, r31): both accepted scenarios red only for missing step definitions (run: StepDefinitionNotFoundError on the Given `holds \"next\"`; later steps undefined by read). The code already refuses a version file holding no version: `migrate status`, `migrate upgrade` and `--hook` in scripts/migrate_upgrade.py, probed (run) for next, empty, v0.24.0, two-line and dirty-tree cases. One divergence: the code quotes the held text with single quotes (repr, migrate_upgrade.py no_version l.42); the scenario text uses double quotes. No crash found. Existing tests/scripts/test_migrate_upgrade.py passes (run, 5 passed) and checks only substrings. No tests-of map exists, so test lists are by search. File set: scripts/migrate_upgrade.py (quoting), a new tests/scenarios step module, and one import line in tests/scenarios/test_migration_tools.py. tests/scenarios/migration_upgrade_steps.py has 26 lines of room, too few for the steps. Notes in .shop/scratch/1-research/notes.md.",
+  "fileset": [
+    "scripts/migrate_upgrade.py",
+    "tests/scenarios/migration_version_steps.py",
+    "tests/scenarios/test_migration_tools.py"
+  ],
+  "questions": []
+}
