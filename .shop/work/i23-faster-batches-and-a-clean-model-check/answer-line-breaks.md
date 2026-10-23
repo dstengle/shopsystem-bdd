@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/answer-line-breaks
 kind: capability-proposal
 part_of: initiative/i23
-status: formulated
+status: approved
 date: 2026-10-23
 argues: [work-queue]
 adds: []
@@ -14,4 +14,4 @@ removes: []
 
 Lines approved by the person 2026-10-23 on the round-1 gate (e80e3ae). Design note part 5 (N3).
 
-formulated in e4ee75b
+formulated in e4ee75b Extended 2026-10-23 (546d992) and back to approved for formulation.
