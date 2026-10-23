@@ -39,7 +39,7 @@ def no_version(root):
     if not path.is_file():
         return None
     held = path.read_text().strip()
-    return None if re.fullmatch(r"\d+(\.\d+)*", held) else (repr(held) if held else "nothing")
+    return None if re.fullmatch(r"\d+(\.\d+)*", held) else ('"%s"' % held if held else "nothing")
 
 
 def refusal(held):
