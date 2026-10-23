@@ -95,6 +95,8 @@ def malformed_work(world, case):
         part(status=None)
     elif case == "the part p1.md has a status not in its kind's lifecycle":
         part(status="loved")
+    elif case == "the part p1.md has the kind capability-proposal and the status built":
+        part(id=full("capability-proposal", "p1"), kind="capability-proposal", status="built")
     elif case == "initiative.md has the priority high":
         _initiative_with(world, "priority: 1", "priority: high")
     else:
@@ -107,6 +109,14 @@ def work_item_accepting(world, context):
     world.observation()
     world.initiative()
     world.work_item(accepts="[thing#r2]")
+    context["mentions"] = THING + "#r2"
+
+
+@given(parsers.parse("a work-item in .shop/work/i1/w1.md with status {status} that accepts thing#r2"))
+def work_item_with_status_accepting(world, context, status):
+    world.observation()
+    world.initiative()
+    world.work_item(status=status, accepts="[thing#r2]")
     context["mentions"] = THING + "#r2"
 
 
@@ -172,6 +182,7 @@ def file_problem_named(world, context, named):
         assert not any(absent in p for p in data["problems"]), data
 
 
+@then(parsers.parse("it prints no file problem naming {named}"))
 @then(parsers.parse("it does not print a file problem naming {named}"))
 def no_file_problem_named(world, context, named):
     data = found(world, context)

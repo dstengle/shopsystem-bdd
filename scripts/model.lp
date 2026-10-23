@@ -52,7 +52,6 @@ root(P, I)            :- part_of(P, P2), root(P2, I).
 % FIX g:92: v3 makes `formulated` a capability-proposal's last stage (g:221-224) but closed() stops at
 % `merged`. Read with the lifecycle: a capability-proposal is closed at `formulated`, any other part as listed.
 closed(P)             :- status(P, S), S = ("merged"; "built"; "delivered"; "ruled"; "green"; "refused"), not node(P, "capability-proposal").
-closed(P)             :- status(P, S), S = ("built"; "delivered"; "ruled"; "green"; "refused"), node(P, "capability-proposal").
 closed(P)             :- status(P, "formulated").
 % EXTENSION (proposed against grammar.md v3; design-model-check r58): a part no longer pursued is
 % `withdrawn`, and is closed.

@@ -188,7 +188,10 @@ class WorkReading:
                 found = [args[1] for name, args in self.facts if name == "has_sc" and args[0] == q]
                 for s in found:
                     self.fact("accepts", p, s)
-                if not found and data.get("status") != "withdrawn":    # r27: a withdrawn one is closed (r36)
+                cap, _, n = q.rpartition("#r")
+                exempt = (("group", [cap, "guarantees"]) in [(f, list(a)) for f, a in self.facts]
+                          or (data.get("status") == "green" and (cap, int(n)) in self.retired))
+                if not found and data.get("status") != "withdrawn" and not exempt:    # r27: a withdrawn one is closed (r36)
                     self.problems.append(f"{where}: accepts {q}, which no scenario names yet")
             for b in as_list(data.get("blocked_by")):
                 b = self.qualify(b)

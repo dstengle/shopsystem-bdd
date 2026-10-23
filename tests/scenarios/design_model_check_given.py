@@ -59,6 +59,17 @@ def capability_unnamed_r2(world):
     world.write("spec/capabilities/thing.md", cap("thing", ["- [r2] Two."]))
 
 
+@given("a capability thing in the guarantees group with requirement r2 that no scenario names")
+def guarantees_capability_unnamed_r2(world):
+    world.write("spec/capabilities/thing.md", cap("thing", ["- [r2] Two."], group="guarantees"))
+
+
+@given("a capability thing whose frontmatter lists r2 as retired")
+def capability_retired_r2(world):
+    world.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."], retired="[r2]"))
+    world.write("features/thing.feature", feature("thing", ("@r1", "one")))
+
+
 @given(parsers.re(r"a capability-proposal that (?P<change>adds|removes|changes) thing#(?P<rid>r\d+(?:-r\d+)?)"))
 def proposal_naming(world, context, change, rid):
     if not (world.root / "spec/capabilities/thing.md").exists():  # r18: the capability is the proposal's to imply
