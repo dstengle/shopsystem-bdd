@@ -47,7 +47,8 @@ class World:
         self.rows = []
         self.sessions = {}          # session id -> (work-item, stage, session.json text)
         self.transcripts = {}       # path under the repository -> text
-        self.git_steps = []         # callables run in order, in the repository, after the log is written
+        self.store = {}             # session id -> its transcript in Claude Code's store (the test's own)
+        self.git_steps = []       # callables run in order, in the repository, after the log is written
         self.last = None            # the stage the latest Given gave: (work-item, stage, indexes of its log rows)
         self.stage_of = {}          # session id -> (work-item, stage)
         self.existing = None        # a measurement a Given wrote, and its text then
@@ -94,6 +95,10 @@ class World:
         for path, text in self.transcripts.items():
             (self.repo / path).parent.mkdir(parents=True, exist_ok=True)
             (self.repo / path).write_text(text)
+        for session, text in self.store.items():
+            where = self.repo / "claude-store" / "projects" / "-work-tree" / ("%s.jsonl" % session)
+            where.parent.mkdir(parents=True, exist_ok=True)
+            where.write_text(text)
         for step in self.git_steps:
             step()
 
@@ -103,6 +108,7 @@ class World:
         import measure_write
         monkeypatch.setattr(measure_write, "today", lambda: self.today)
         monkeypatch.chdir(self.repo)
+        monkeypatch.setenv("CLAUDE_CONFIG_DIR", str(self.repo / "claude-store"))
         self.flush()
         self.code = script.main(list(args))
         seen = capsys.readouterr()

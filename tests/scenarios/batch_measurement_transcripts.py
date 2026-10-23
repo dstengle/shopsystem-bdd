@@ -18,6 +18,15 @@ def slim_session(session, parent, starts, ends, out, new, read):
     return "".join(json.dumps(r) + "\n" for r in rows)
 
 
+def store_session(session, messages, requests):
+    """Claude Code's own rows of one session in its store: `messages` assistant rows over `requests` request ids."""
+    rows = [{"type": "assistant", "timestamp": stamp("10:%02d" % (n % 60)), "sessionId": session,
+             "uuid": "u%d" % n, "requestId": "q%d" % (n % requests),
+             "message": {"role": "assistant", "model": "m", "usage": usage(5, 1, 10), "content": []}}
+            for n in range(messages)]
+    return "".join(json.dumps(r) + "\n" for r in rows)
+
+
 def raw_session(session, starts, ends, prompt, tool):
     """Claude Code's own rows of one session: a prompt, a reply that calls a tool."""
     rows = [

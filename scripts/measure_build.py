@@ -4,7 +4,7 @@ import re
 import subprocess
 from pathlib import Path
 
-from measure_read import Refused, read_log, read_session_jsons, read_transcripts
+from measure_read import Refused, read_log, read_session_jsons, read_transcripts, round_trips
 
 KINDS = ("output_tokens", "new_input_tokens", "cache_read_tokens")
 
@@ -33,6 +33,9 @@ def stages_of(rows, sessions):
             figures = sessions.get(row.get("session"))
             if figures:
                 one.update({k: figures[k] for k in ("turns", *KINDS, "cost")})
+            trips = round_trips(row.get("session"))
+            if trips is not None:
+                one["round_trips"] = trips
             stages.append(one)
             open_[(one["work-item"], one["stage"], one["session"])] = (one, row["at"])
         elif row.get("event") == "end":
@@ -100,6 +103,8 @@ def figures_of(initiative, root, sessions_dir=None):
     moves = [r["at"] for r in rows if "before" in r and "after" in r]
     window = (min(moves), max(moves)) if moves else (None, None)
     totals = {"stages": len(stages), "sessions": len({s["session"] for s in stages if "turns" in s})}
+    totals["turns"] = sum(s.get("turns", 0) for s in stages)
+    totals["round_trips"] = sum(s.get("round_trips", 0) for s in stages)
     for kind in KINDS:
         totals[kind] = sum(s.get(kind, 0) for s in stages)
     totals["cost"] = round(sum(s.get("cost", 0) for s in stages), 6)

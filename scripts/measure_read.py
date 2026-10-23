@@ -2,6 +2,7 @@
 slim export). A file of a shape not known is refused, naming it; no figure is guessed. Standard library only."""
 import datetime
 import json
+import os
 from pathlib import Path
 
 
@@ -73,6 +74,42 @@ def read_session_jsons(runs):
     return found
 
 
+def assistant_rows(path):
+    """Each assistant row of the transcript `path`, checked: (line number, row, message, usage, time, session)."""
+    for number_, row in enumerate(json_rows(path), 1):
+        if "type" not in row:
+            raise Refused("%s:%d has no type; the shape of %s is not known" % (path, number_, path.name))
+        if row["type"] != "assistant":
+            continue
+        message = row.get("message") if isinstance(row.get("message"), dict) else row
+        usage, stamp = message.get("usage"), row.get("timestamp", row.get("time"))
+        who = row.get("sessionId", row.get("session"))
+        if not (isinstance(usage, dict) and number(usage.get("output_tokens")) and who and stamp):
+            raise Refused("%s:%d has no time, session or usage; the shape of %s is not known" % (path, number_, path.name))
+        yield number_, row, message, usage, stamp, who
+
+
+def request_key(row, message, path, number_):
+    return row.get("requestId") or message.get("id") or row.get("uuid") or (path, number_)
+
+
+def store_dir():
+    """Claude Code's own store: the directory CLAUDE_CONFIG_DIR names, else .claude in the home directory."""
+    return Path(os.environ.get("CLAUDE_CONFIG_DIR") or Path.home() / ".claude")
+
+
+def round_trips(session):
+    """The distinct requests of `session`'s own rows in its transcript in Claude Code's store (any project
+    directory), or None when no transcript is found. A subagent's rows are not the session's."""
+    found = sorted((store_dir() / "projects").glob("*/%s.jsonl" % session))
+    if not found:
+        return None
+    path = found[0]
+    return len({request_key(row, message, path, number_)
+                for number_, row, message, _, _, who in assistant_rows(path)
+                if who == session and not (row.get("agentId") or row.get("agent") or row.get("isSidechain"))})
+
+
 def read_transcripts(directory):
     """The sessions in the transcripts under `directory`: per session id its start, tokens and the session that
     dispatched it. A row is Claude Code's own (timestamp, sessionId, agentId, message.usage) or the slim export's
@@ -80,17 +117,8 @@ def read_transcripts(directory):
     sessions = {}
     for path in sorted(Path(directory).rglob("*.jsonl")):
         requests = {}
-        for number_, row in enumerate(json_rows(path), 1):
-            if "type" not in row:
-                raise Refused("%s:%d has no type; the shape of %s is not known" % (path, number_, path.name))
-            if row["type"] != "assistant":
-                continue
-            message = row.get("message") if isinstance(row.get("message"), dict) else row
-            usage, stamp = message.get("usage"), row.get("timestamp", row.get("time"))
-            who = row.get("sessionId", row.get("session"))
-            if not (isinstance(usage, dict) and number(usage.get("output_tokens")) and who and stamp):
-                raise Refused("%s:%d has no time, session or usage; the shape of %s is not known" % (path, number_, path.name))
-            key = row.get("requestId") or message.get("id") or row.get("uuid") or (path, number_)
+        for number_, row, message, usage, stamp, who in assistant_rows(path):
+            key = request_key(row, message, path, number_)
             old = requests.get(key)
             requests[key] = {
                 "who": who, "agent": row.get("agentId", row.get("agent")),

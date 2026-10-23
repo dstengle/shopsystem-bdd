@@ -4,7 +4,7 @@ import json
 
 from pytest_bdd import given, parsers
 
-from .batch_measurement_transcripts import raw_session, slim_session
+from .batch_measurement_transcripts import raw_session, slim_session, store_session
 from .batch_measurement_world import git, stamp
 
 
@@ -103,17 +103,53 @@ def stage_unended(world, item, stage, session):
     world.stage_of = {**getattr(world, "stage_of", {}), session: (item, stage)}
 
 
+@given(parsers.parse("{name}'s log.jsonl gives work-item {item}'s {stage} stage a start and an end, run in the "
+                     "session {session}"))
+def log_stage_run_in(world, name, item, stage, session):
+    stage_run_in(world, item, stage, session)
+
+
+@given(parsers.parse("the session {session} took {turns:d} turns"))
+def session_took_turns(world, session, turns):
+    item, stage = world.stage_of[session]
+    world.session(session, item, stage, turns, 0, 0, 0, 0.0)
+
+
+@given(parsers.parse("the transcript of the session {session} holds {messages:d} assistant messages with "
+                     "{requests:d} distinct request ids"))
+def store_transcript(world, session, messages, requests):
+    world.store[session] = store_session(session, messages, requests)
+
+
+@given(parsers.parse("no transcript of the session {session} can be found"))
+def no_transcript(world, session):
+    assert session not in world.store
+
+
 @given("the stages' sessions took")
 def stages_sessions_took(world, datatable):
-    for session, out, new, read, cost in datatable[1:]:
-        item, stage = world.stage_of[session]
-        world.session(session, item, stage, 1, int(out), int(new), int(read), float(cost))
+    head = datatable[0]
+    for row in datatable[1:]:
+        got = dict(zip(head, row))
+        item, stage = world.stage_of[got["session"]]
+        world.session(got["session"], item, stage, int(got.get("turns", 1)), int(got["output tokens"]),
+                      int(got["new input tokens"]), int(got["cache-read tokens"]), float(got["cost"]))
+        if "round trips" in got:
+            count = int(got["round trips"])
+            world.store[got["session"]] = store_session(got["session"], count, count)
 
 
 @given(parsers.parse("the transcript {path} starts inside {name}'s window with {out:d} output tokens, "
                      "{new:d} new input tokens and {read:d} cache-read tokens"))
 def transcript_inside(world, path, name, out, new, read):
     world.transcripts[path] = slim_session("s-9", None, "11:00", "12:30", out, new, read)
+
+
+@given(parsers.parse("the transcript {path} starts inside {name}'s window with {turns:d} turns, {trips:d} round "
+                     "trips, {out:d} output tokens, {new:d} new input tokens and {read:d} cache-read tokens"))
+def transcript_inside_with_trips(world, path, name, turns, trips, out, new, read):
+    # a transcript holds no turn count; the sessions it names stay out of the totals either way
+    transcript_inside(world, path, name, out, new, read)
 
 
 @given("the directory sessions holds the transcripts")

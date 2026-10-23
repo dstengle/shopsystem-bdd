@@ -70,7 +70,7 @@ def stage_of(world, item, stage):
     return found[0]
 
 
-NUMBERS = {"turns": "turns", "output tokens": "output_tokens", "new input tokens": "new_input_tokens",
+NUMBERS = {"turns": "turns", "round trips": "round_trips","output tokens": "output_tokens", "new input tokens": "new_input_tokens",
            "cache-read tokens": "cache_read_tokens"}
 
 
@@ -87,6 +87,18 @@ def gives_stage(world, datatable):
             assert "%.2f" % got["cost"] == value, got
         else:
             assert str(got[NUMBERS[column]]) == value, (column, got)
+
+
+@then(parsers.parse("the measurement gives the stage with {turns:d} turns"))
+def gives_stage_turns(world, turns):
+    (got,) = world.figures()["stages"]
+    assert got["turns"] == turns, got
+
+
+@then("the measurement gives no round trips for the stage")
+def gives_no_round_trips(world):
+    (got,) = world.figures()["stages"]
+    assert "round_trips" not in got, got
 
 
 @then("the measurement gives no time for how long the stage took")
@@ -129,8 +141,9 @@ def gives_totals(world, datatable):
     wanted = dict(zip(*datatable))
     got = world.figures()["totals"]
     assert str(got["stages"]) == wanted["stages"] and str(got["sessions"]) == wanted["sessions"], got
-    for column in ("output tokens", "new input tokens", "cache-read tokens"):
-        assert str(got[NUMBERS[column]]) == wanted[column], (column, got)
+    for column in ("turns", "round trips", "output tokens", "new input tokens", "cache-read tokens"):
+        if column in wanted:
+            assert str(got[NUMBERS[column]]) == wanted[column], (column, got)
     assert "%.2f" % got["cost"] == wanted["cost"], got
     assert got["time"] == wanted["time"], got
 
