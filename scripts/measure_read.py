@@ -66,15 +66,24 @@ def read_session_json(path):
 
 
 def read_session_jsons(runs):
-    """Every session.json under an initiative's runs/ directory: the figures by session id, and the (work-item,
-    stage) of each empty (zero-byte) one, which has no session id and gives no figures."""
-    found, empty = {}, set()
-    for path in sorted(Path(runs).glob("*/*/session.json")):
-        if path.stat().st_size == 0:
-            empty.add((path.parent.parent.name, path.parent.name.split("-", 1)[-1]))
-            continue
-        figures = read_session_json(path)
-        found[figures["session"]] = figures
+    """Every session.json under an initiative's runs/ directory: the figures by session id, and each empty
+    (zero-byte) one, which has no session id and gives no figures, as (work-item, stage, place, count): its run
+    directory `<k>-<stage>` is the place-th (from 0, by the number k) of the count run directories of that stage.
+    A directory not named `<k>-<stage>` with a whole-number k is left out."""
+    found, empty, dirs = {}, set(), {}
+    for path in Path(runs).glob("*/*"):
+        k, _, stage = path.name.partition("-")
+        if path.is_dir() and k.isdigit() and stage:
+            dirs.setdefault((path.parent.name, stage), []).append((int(k), path))
+    for (item, stage), runs_of in dirs.items():
+        for place, (_, path) in enumerate(sorted(runs_of, key=lambda one: one[0])):
+            if not (path / "session.json").is_file():
+                continue
+            if (path / "session.json").stat().st_size == 0:
+                empty.add((item, stage, place, len(runs_of)))
+                continue
+            figures = read_session_json(path / "session.json")
+            found[figures["session"]] = figures
     return found, empty
 
 

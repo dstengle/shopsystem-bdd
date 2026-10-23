@@ -31,7 +31,17 @@ def duration(seconds):
 
 def stages_of(rows, sessions, empty=frozenset()):
     """One entry per stage the log gives a start for, in the order started; its end where the log gives one. A stage
-    whose session.json is empty (`empty`: its work-item and stage) is given without figures and says so."""
+    whose run's session.json is empty (`empty`: work-item, stage, the run's place among that stage's run
+    directories, their count) is given without figures and says so; only that run is, never another of its stage.
+    The runs of a stage are paired, in order, with its starts that have an end; when their counts differ, none is."""
+    ended = {(r.get("work-item"), r.get("stage"), r.get("session")) for r in rows if r.get("event") == "end"}
+    pairs = {}
+    for row in rows:
+        key = (row.get("work-item"), row.get("stage"), row.get("session"))
+        if row.get("event") == "start" and key in ended:
+            pairs.setdefault(key[:2], []).append(row.get("session"))
+    named_runs = {(item, stage, pairs[item, stage][place]) for item, stage, place, count in empty
+                  if len(pairs.get((item, stage), [])) == count}
     stages, open_ = [], {}
     for row in rows:
         if row.get("event") == "start":
@@ -40,7 +50,7 @@ def stages_of(rows, sessions, empty=frozenset()):
             figures = sessions.get(row.get("session"))
             if figures:
                 one.update({k: figures[k] for k in ("turns", *KINDS, "cost")})
-            if (one["work-item"], one["stage"]) in empty:
+            if (one["work-item"], one["stage"], one["session"]) in named_runs:
                 one["session_json"] = "empty"
             trips = round_trips(row.get("session"))
             if trips is not None:
