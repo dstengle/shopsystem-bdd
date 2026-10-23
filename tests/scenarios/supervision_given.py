@@ -234,11 +234,14 @@ def thing_feature(repo, first, tag1, second, tag2):
 
 
 @given(parsers.re(r"every worker gives DONE, each implementer committing a file named for its work-item"
-                  r"(?P<meet> once two implementers have started)?$"))
-def implementers_commit_own(plan, meet):
-    """Each implementer commits <its work-item>.txt; with `meet`, only once two implementers have been started."""
+                  r"(?P<meet> once two implementers have started)?(?P<order>, w2's implementer ending before w1's)?$"))
+def implementers_commit_own(repo, plan, meet, order):
+    """Each implementer commits <its work-item>.txt; with `meet`, only once two implementers have been started; with
+    `order`, w1's implementer ends only once work run's log has the end of w2's."""
     plan["default"] = {"status": "DONE"}
     plan["bdd-implementer"] = dict({"commit": {"{work_item}.txt": "the feature\n"}}, **({"meet": 2} if meet else {}))
+    if order:
+        plan["bdd-implementer"]["hold"] = {"w1": {"log": str(repo / ".shop/work/i1/log.jsonl"), "work_item": "w2"}}
 
 
 @given(parsers.parse("the repository has {rel} committed"))

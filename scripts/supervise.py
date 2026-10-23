@@ -7,7 +7,6 @@ its worktree's git-ignored .shop/scratch/, and makes the move itself through wor
 of the work-item's file, its run directory (the worker's scratch run directory, copied) and log.jsonl. It takes no
 judgment: what is not DONE goes to the person as a question.
 """
-import fnmatch
 import json
 import os
 import shutil
@@ -18,6 +17,7 @@ import workqueue
 from supervise_brief import Briefs
 from supervise_faults import Fault, Faults, fault_of
 from supervise_merge import Merge
+from supervise_pool import Pool
 from supervise_review import Reviews
 from supervise_worker import ROLE, WORKER, GitFailed, Workers, git, now
 from workqueue import WORK, Refused
@@ -33,10 +33,10 @@ STAGES = {
 MOVABLE = ("drafted", "researched", "planned", "ready", "done")
 
 
-class Run(Workers, Briefs, Merge, Faults, Reviews):
+class Run(Workers, Briefs, Merge, Faults, Reviews, Pool):
     """One `work run` of one initiative in the repository at `root`: the workers' part is supervise_worker's, the briefs'
     supervise_brief's, the implementation stage's and its merge supervise_merge's, the faults' supervise_faults', the
-    branch review's supervise_review's."""
+    branch review's supervise_review's, the pool of workers' supervise_pool's."""
 
     def __init__(self, root, initiative):
         self.root = Path(root).resolve()
@@ -49,6 +49,10 @@ class Run(Workers, Briefs, Merge, Faults, Reviews):
         self.faults = []         # (work-item, fault) of each work-item this run moved to failed (r40)
         self.own = set()         # the run directories work run copied into the main checkout and has not committed
         self.unlogged = []       # the lines work run appended to log.jsonl since it last committed it
+        self.delivered = {}      # .shop/delivery.toml, read once by check
+        self.limit = 4           # the number of workers at the same time (r60), read from it
+        self.finished = []       # the implementers that ended with a worker's end, in that order, not yet merged (r61)
+        self.turns = threading.Condition()
 
     def rel(self, path):
         return str(Path(path).relative_to(self.root))
@@ -62,6 +66,7 @@ class Run(Workers, Briefs, Merge, Faults, Reviews):
             raise Refused("it was started by a worker of another `work run` (of %s); a worker starts no delivery"
                           % os.environ[WORKER])
         workqueue.entry(self.initiative, "initiative")
+        self.read_delivery()
         if not self.dir.is_dir():
             raise Refused("the initiative %s does not exist (no %s)" % (self.initiative, self.rel(self.dir)))
         for name, _ in self.items():  # noqa: PERF102 -- items() is a list of pairs, not a dict
@@ -156,40 +161,6 @@ class Run(Workers, Briefs, Merge, Faults, Reviews):
         self.move(name, status, after if question is None else "awaiting-answer", question,
                   fileset=fileset if isinstance(fileset, list) and fileset else None)
 
-    def pair(self, ready):
-        """Two of the `ready` work-items whose file sets do not overlap, the first such in their order (r20); else
-        none. A work-item without a file set is in no pair. A glob or a directory in a file set claims each tracked file
-        it holds, so two implementers never edit one file."""
-        tracked = git(self.root, "ls-files").stdout.splitlines()
-        files = {}
-        for name in ready:
-            data, _ = workqueue.frontmatter((self.dir / (name + ".md")).read_text())
-            if data.get("fileset"):
-                files[name] = {f for entry in data["fileset"] for f in claimed(entry, tracked)}
-        for i, first in enumerate(files):
-            for second in list(files)[i + 1:]:
-                if not files[first] & files[second]:
-                    return first, second
-        return None
-
-    def together(self, names):
-        """Implement the work-items at the same time, each in a thread of its own; their merges take the lock in turn.
-        A refusal in either is raised once both have ended."""
-        failed = []
-
-        def implement(name):
-            try:
-                self.implement(name)
-            except Exception as error:    # noqa: BLE001 -- carried to the run's own thread, which ends with it (r10)
-                failed.append(error)
-        threads = [threading.Thread(target=implement, args=(name,)) for name in names]
-        for thread in threads:
-            thread.start()
-        for thread in threads:
-            thread.join()
-        if failed:
-            raise failed[0]
-
     def held(self, name, heading):
         """The bullets of the work-item's `## <heading>` section, each with its continuation lines."""
         text = (self.dir / (name + ".md")).read_text()
@@ -209,21 +180,12 @@ class Run(Workers, Briefs, Merge, Faults, Reviews):
         return [l for bullet in self.held(name, "Questions")[len(self.held(name, "Answers")):] for l in bullet]
 
     def run(self):
-        """Pull the work-items one worker at a time until none can move (r1); print where each stands (r9)."""
+        """Pull the work-items through their stages, side by side, until none can move (r1); print where each stands
+        (r9)."""
         self.check()
         self.push_unpushed()
         try:
-            while True:
-                movable = [(n, s) for n, s in self.items() if s in MOVABLE]
-                if not movable:
-                    break
-                pair = self.pair([n for n, s in movable if s == "ready"])
-                if pair:
-                    self.together(pair)
-                else:
-                    self.step(*movable[0])
-                if self.faults:     # a work-item failed: the run ends with it (r40)
-                    break
+            self.pull(MOVABLE)
             if all(s in ("green", "withdrawn") for _, s in self.items()):
                 self.branch_review()     # inside the try: its worktree goes with the run's (r33)
         finally:
@@ -250,13 +212,6 @@ class Run(Workers, Briefs, Merge, Faults, Reviews):
         mine = [fault for failed, fault in self.faults if failed == name]
         recorded = [" ".join(b[0][2:].split() + [l.strip() for l in b[1:]]) for b in self.held(name, "Faults")]
         return [r for r in recorded if not any(m.startswith(r) for m in mine)] + mine
-
-
-def claimed(entry, tracked):
-    """What one file set entry claims: itself, and each of the `tracked` files it matches as a glob or holds as a
-    directory."""
-    under = entry.rstrip("/") + "/"
-    return {entry} | {f for f in tracked if fnmatch.fnmatchcase(f, entry) or f.startswith(under)}
 
 
 def run(root, initiative):

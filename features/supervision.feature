@@ -5,17 +5,6 @@ Feature: Supervision
   Background:
     Given a git repository with an initiative i1 under .shop/work/, a remote the initiative branch can be pushed to, a stand-in claude first on PATH and as $SHOPSYSTEM_WORK_CLAUDE, and tests that pass
 
-  @r1 @deprecated
-  Scenario: `work run` pulls each work-item through research, plan, implementation and review, one worker at a time, until no work-item can make a transition (deprecated)
-    Deprecated for: `work run` pulls each work-item through research, plan, implementation and review until no work-item can make a transition
-    Pins the stage-by-stage pull: every work-item reaches `green` through its four workers in order, and no worker starts before the last one ended.
-    Given i1's work-items w1 and w2 are drafted
-    And every worker gives DONE
-    When the person runs `work run i1`
-    Then each of w1 and w2 had code-scout, bdd-planner, bdd-implementer and bdd-task-reviewer as its workers, in that order
-    And no worker was started before the one before it had ended
-    And w1 and w2 are green
-
   @r1
   Scenario: `work run` pulls each work-item through research, plan, implementation and review until no work-item can make a transition
     Pins the pull through the four stages: every work-item reaches `green` through its four workers, in the stages' order.
@@ -392,16 +381,6 @@ Feature: Supervision
     And the researcher's brief names the accepted scenario "it answers" of features/thing.feature, and not "it waits"
     And the researcher was started with a limit of 40 turns
 
-  @r20 @deprecated
-  Scenario: two ready work-items whose claims would not share a file are implemented at the same time, and merged one at a time (deprecated)
-    Deprecated for: two ready work-items whose claims would share no file are implemented at the same time, each in its own worktree
-    Pins that work-items with no file in common are implemented side by side, while the initiative branch takes one branch at a time, each on top of the one before.
-    Given i1's work-items w1 is ready, its file set w1.txt, and w2 is ready, its file set w2.txt
-    And every worker gives DONE, each implementer committing a file named for its work-item once two implementers have started
-    When the person runs `work run i1`
-    Then the implementers of w1 and w2 worked at the same time
-    And the initiative branch has both implementers' commits, one after the other, with no merge commit
-
   @r20
   Scenario: two ready work-items whose claims would share no file are implemented at the same time, each in its own worktree
     Pins that work-items with no file in common are implemented side by side, neither in the other's worktree.
@@ -425,15 +404,6 @@ Feature: Supervision
       | a file in both  | shared.txt and w1.txt  | shared.txt and w2.txt  |
       | a glob          | lib/thing*.py          | lib/thing_a.py         |
       | a directory     | lib/                   | lib/thing_a.py         |
-
-  @r20 @deprecated
-  Scenario: of three ready work-items whose claims would not share a file, no more than two are implemented at the same time (deprecated)
-    Deprecated for: of three ready work-items whose claims would share no file, no more are implemented at the same time than .shop/delivery.toml's number of workers
-    Pins the limit of two side by side.
-    Given i1's work-items w1 is ready, its file set w1.txt, w2 is ready, its file set w2.txt, and w3 is ready, its file set w3.txt
-    And every worker gives DONE, each implementer committing a file named for its work-item once two implementers have started
-    When the person runs `work run i1`
-    Then two implementers worked at the same time, and never three
 
   @r20
   Scenario: of three ready work-items whose claims would share no file, no more are implemented at the same time than .shop/delivery.toml's number of workers

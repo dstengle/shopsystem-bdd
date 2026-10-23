@@ -24,6 +24,7 @@ from .conftest import SCRIPTS
 from .supervision_answers_steps import *
 from .supervision_faults_steps import *
 from .supervision_given import *
+from .supervision_parallel_steps import *
 from .supervision_review_steps import *
 from .supervision_tests_steps import *
 from .supervision_then_workers import *
@@ -51,6 +52,7 @@ def run_work(repo, plan, context, args):
     env = dict({k: v for k, v in os.environ.items() if k != "SHOPSYSTEM_WORK_RUN_WORKER"}, PATH="%s%s%s" % (stub / "bin", os.pathsep, os.environ.get("PATH", "")),
                SHOPSYSTEM_WORK_CLAUDE=str(stub / "bin" / "claude"), STUB_CLAUDE_PLAN=str(stub / "plan.json"),
                STUB_CLAUDE_CALLS=str(stub / "calls.jsonl"), PYTEST_XDIST_AUTO_NUM_WORKERS="2",
+               CLAUDE_CONFIG_DIR=str(stub / "claude"),     # where the stand-in keeps its sessions' transcripts
                **context.get("env", {}))     # `-n auto` in a scenario's own small suite: two processes, not one a CPU
     context["before"] = state(repo)
     context["done"] = subprocess.run([sys.executable, str(context.get("work", SCRIPTS / "work")), *shlex.split(args)], cwd=repo, env=env,
@@ -238,10 +240,3 @@ def report_copied(repo, context):
 @then(parsers.parse("git lists no branch {branch}"))
 def no_branch(repo, context, branch):
     assert git(repo, "branch", "--list", branch).strip() == "", (git(repo, "branch"), context["done"].stderr)
-
-
-@then("the initiative branch has both implementers' commits, one after the other, with no merge commit")
-def merged_in_line(repo, context):
-    subjects = git(repo, "log", "main", "--format=%s").splitlines()
-    assert len([s for s in subjects if s.startswith("bdd-implementer:")]) == 2, (subjects, context["done"].stderr)
-    assert git(repo, "log", "--merges", "--format=%s", "main") == "", git(repo, "log", "--graph", "--oneline", "main")

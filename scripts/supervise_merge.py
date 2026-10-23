@@ -99,6 +99,8 @@ class Merge:
             data, failure = self.worker(name, "implement", "bdd-implementer", tree, "work/" + name,
                                         [("Suite record", record)])
             question = self.outcome("bdd-implementer", data, failure)
+            if question is None:
+                self.await_turn(name)     # in the order the implementers ended (r61)
             with self.lock:     # one merge at a time, each branch rebased on the one merged before it (r20)
                 if question is None:
                     question = self.merge(name, tree, tests)
@@ -106,6 +108,7 @@ class Merge:
                     self.move(name, "claimed", "awaiting-answer", question)
                     return
         finally:
+            self.release(name)
             self.remove(tree)
         with self.lock:
             git(self.root, "branch", "-q", "-d", "work/" + name)     # merged, so no longer needed; once its worktree is gone (r18)

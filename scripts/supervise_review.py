@@ -3,7 +3,7 @@ initiative branch, and the keeping of its directory in the initiative. Standard 
 import shutil
 import uuid
 
-from supervise_worker import SCRIPTS, git
+from supervise_worker import SCRIPTS, git, with_transcript
 from workqueue import Refused
 
 AGENT = "bdd-branch-reviewer"
@@ -63,7 +63,7 @@ class Reviews:
             done = self.session("review", AGENT, path, session, tree, None)
             kept = self.review_dir() / str(k)
             shutil.copytree(here, kept)
-            (kept / "session.json").write_text(done.stdout)
+            (kept / "session.json").write_text(with_transcript(done.stdout, session))
         finally:
             self.remove(tree)
         self.log(stage=STAGE, agent=AGENT, session=session, event="end")

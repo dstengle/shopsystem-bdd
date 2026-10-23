@@ -27,12 +27,6 @@ def four_workers(repo, context, names):
         assert agents == ["shopsystem-bdd:" + a for a in AGENTS], (name, agents, context["done"].stderr)
 
 
-@then("no worker was started before the one before it had ended")
-def one_at_a_time(repo):
-    events = [(c["event"], c["session"]) for c in calls(repo)]
-    assert events and events == [e for s in [c["session"] for c in starts(repo)] for e in (("start", s), ("end", s))], events
-
-
 @then("each worker was started as `claude -p` with an input prompt naming its brief, --agent shopsystem-bdd:<its stage's "
       "agent> and a session id no other worker had")
 def started_as(repo):

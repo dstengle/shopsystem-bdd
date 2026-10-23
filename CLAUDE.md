@@ -18,7 +18,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/model*.py` | the `model` command: parsing, facts, checks, work, reports |
 | `scripts/work` with `scripts/workqueue.py` | the `work` command: the work-item queue, its statuses and log |
 | `scripts/workqueue_answer.py` | `work answer` |
-| `scripts/supervise*.py` | `work run`: briefs, workers, merging, faults, the branch review |
+| `scripts/supervise*.py` | `work run`: briefs, workers, the pool of workers side by side (`supervise_pool.py`), merging, faults, the branch review |
 | `scripts/work_items.py` | the pytest plugin of `--work-item`, loaded by `work run`'s tests and this repository's conftest |
 | `scripts/measure` with `scripts/measure_*.py` | the `measure` command: `initiative` (reading `measure_read.py`, figures `measure_build.py`, the record `measure_write.py`) and `show`, `compare` (`measure_show.py`) |
 | `scripts/migrate*.py` | the `migrate` command |

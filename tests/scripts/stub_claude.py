@@ -27,6 +27,10 @@ The script is the JSON file $STUB_CLAUDE_PLAN: an object whose keys are agents w
              the name of the work-item the brief names;
   meet       a number n: before anything else, wait until $STUB_CLAUDE_CALLS has the starts of n workers of this
              agent, this one's included (up to a minute, so a worker nobody joins still ends);
+  meet_all   a number n: the same for the starts of n workers of any agent;
+  meet_agents a list of agents (`code-scout`): the same for the start of a worker of each;
+  hold       {work-item: {"log": a log.jsonl, "work_item": another work-item}}: the worker of that work-item ends,
+             as work run sees it, only once the log has the end of the other work-item's implementer;
   watch      a list of files: the worker's start is followed by a `seen` record of what each holds then;
   skills     a list of skills to load (`shopsystem-bdd:bdd-red-green`), first;
   run        a list of Bash commands (argument lists), run in the working directory, last;
@@ -38,6 +42,7 @@ The script is the JSON file $STUB_CLAUDE_PLAN: an object whose keys are agents w
 It refuses an --agent the --plugin-dir has no agents/<agent>.md for. As the real claude does, it refuses to write any
 file (a `write` path, the result file) under its --plugin-dir, as a sensitive file: the write is recorded as refused
 (`Write`) and nothing is written.
+It keeps a transcript of its session, `projects/stand-in/<session id>.jsonl`, in $CLAUDE_CONFIG_DIR when that is set.
 Each start and end, and each Bash command, skill load or write outside the working directory run or refused (its `tool`,
 `Bash`, `Skill` or `Write`), is appended to $STUB_CLAUDE_CALLS, one JSON object a line, so
 a scenario can read who was started, with what arguments and brief, in which directory and in what order.
@@ -105,15 +110,54 @@ def plugin_refuses(argv, path):
     return False
 
 
-def meet(agent, n):
-    """Wait until the record has the starts of `n` workers of `agent`: a signal, polled, never a fixed sleep."""
+def wait_until(done):
+    """Wait, up to a minute, until `done()` holds: a signal, polled, never a fixed sleep."""
     deadline = time.monotonic() + 60
-    while time.monotonic() < deadline:
-        with open(os.environ["STUB_CLAUDE_CALLS"]) as calls:
-            started = [json.loads(line) for line in calls if line.endswith("\n")]     # a line still being written waits
-        if len([c for c in started if c["event"] == "start" and c["agent"] == agent]) >= n:
-            return
+    while time.monotonic() < deadline and not done():
         time.sleep(0.05)
+
+
+def started_agents():
+    """The agent of each start in the record."""
+    with open(os.environ["STUB_CLAUDE_CALLS"]) as calls:
+        lines = [json.loads(line) for line in calls if line.endswith("\n")]     # a line still being written waits
+    return [c["agent"] for c in lines if c["event"] == "start"]
+
+
+def meet(agent, n):
+    """Wait until the record has the starts of `n` workers of `agent`."""
+    wait_until(lambda: started_agents().count(agent) >= n)
+
+
+def meet_all(n):
+    """Wait until the record has the starts of `n` workers, of any agent."""
+    wait_until(lambda: len(started_agents()) >= n)
+
+
+def meet_agents(names):
+    """Wait until the record has the start of a worker of each of the agents `names`."""
+    wait_until(lambda: all(any(a.split(":", 1)[-1] == n for a in started_agents()) for n in names))
+
+
+def ended_in(log, work_item):
+    """Whether the log `log` (work run's log.jsonl) has the end of the implementer of `work_item`."""
+    path = pathlib.Path(log)
+    lines = []
+    for line in path.read_text().splitlines() if path.exists() else []:
+        try:
+            lines.append(json.loads(line))
+        except ValueError:     # a line being written, or the file being put back
+            pass
+    return any(l.get("work-item") == work_item and l.get("stage") == "implement" and l.get("event") == "end" for l in lines)
+
+
+def keep_transcript(session):
+    """A transcript of the session in the store $CLAUDE_CONFIG_DIR names, as Claude Code keeps one."""
+    store = os.environ.get("CLAUDE_CONFIG_DIR")
+    if store:
+        (pathlib.Path(store) / "projects" / "stand-in").mkdir(parents=True, exist_ok=True)
+        (pathlib.Path(store) / "projects" / "stand-in" / (session + ".jsonl")).write_text(
+            json.dumps({"sessionId": session, "type": "user"}) + "\n")
 
 
 def record(entry):
@@ -145,6 +189,10 @@ def main(argv):
         pathlib.Path(path).touch()
     if step.get("meet"):
         meet(agent, step["meet"])
+    if step.get("meet_all"):
+        meet_all(step["meet_all"])
+    if step.get("meet_agents"):
+        meet_agents(step["meet_agents"])
     if step.get("commit"):
         step["commit"] = {rel.replace("{work_item}", work_item): text for rel, text in step["commit"].items()}
     if step.get("elsewhere"):
@@ -191,6 +239,10 @@ def main(argv):
         named = {field: str(pathlib.Path(rel).resolve()) for field, rel in step.get("names", {}).items()}
         result.write_text(json.dumps(dict({"status": step.get("status", "DONE"), "summary": "the stand-in's %s" % short,
                                            "questions": step.get("questions", [])}, **named, **step.get("fields", {}))))
+    hold = step.get("hold", {}).get(work_item)
+    if hold:     # this worker ends only once work run's log has the end of another work-item's
+        wait_until(lambda: ended_in(hold["log"], hold["work_item"]))
+    keep_transcript(session)
     subtype = step.get("subtype", "success")
     if "stdout" in step:
         print(step["stdout"])

@@ -6,7 +6,6 @@ import os
 import shutil
 import subprocess
 import tempfile
-import tomllib
 import uuid
 from pathlib import Path
 
@@ -72,6 +71,21 @@ def with_scripts(plugin=False, work_item=None):
     return env
 
 
+def with_transcript(stdout, session):
+    """claude's JSON output with `transcript_path` added: the path of the session's transcript in Claude Code's store
+    (`$CLAUDE_CONFIG_DIR`, else `~/.claude`, `projects/*/<session>.jsonl`) (r62). The output as it is when it is no JSON
+    object or when the store holds no transcript of the session."""
+    found = sorted((Path(os.environ.get("CLAUDE_CONFIG_DIR") or Path.home() / ".claude") / "projects").glob(
+        "*/%s.jsonl" % session))
+    try:
+        data = json.loads(stdout)
+    except ValueError:
+        return stdout
+    if not found or not isinstance(data, dict):
+        return stdout
+    return json.dumps(dict(data, transcript_path=str(found[0])))
+
+
 def now():
     return datetime.datetime.now(datetime.UTC).isoformat(timespec="seconds")
 
@@ -82,8 +96,8 @@ class Workers:
     not."""
 
     def delivery(self):
-        path = self.root / ".shop" / "delivery.toml"
-        return tomllib.loads(path.read_text()) if path.is_file() else {}
+        """.shop/delivery.toml as `work run` read it before it started (supervise_pool's read_delivery)."""
+        return self.delivered
 
     def tools(self, stage, agent):
         """The stage's list, less a bare Write or Edit (r13), with `Skill(<skill>)` for each skill the agent's definition
@@ -154,8 +168,11 @@ class Workers:
             changed = self.checkout_changes()
             shutil.copytree(here, kept_at)
             self.own.add(self.rel(kept_at))
-            (kept_at / "session.json").write_text(done.stdout)
+            (kept_at / "session.json").write_text(with_transcript(done.stdout, session))
             self.log(**{"work-item": name, "stage": stage, "agent": agent, "session": session, "event": "end"})
+            if stage == "implement":     # the order the implementers ended is the order their branches are merged in (r61)
+                with self.turns:
+                    self.finished.append(name)
         if changed:
             raise Fault("while its %s worked, %s changed in the repository's own checkout and not committed; work run "
                         "put %s back" % (ROLE[agent], ", ".join(changed), "it" if len(changed) == 1 else "them"))

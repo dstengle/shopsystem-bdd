@@ -87,9 +87,10 @@ def remote_dir(repo):
     return repo.parent / "remote.git"
 
 
-def item_text(name, status, under="thing", fileset=None):
-    """A work-item's file; with `fileset` (a list of paths), its `fileset:` too."""
+def item_text(name, status, under="thing", fileset=None, blocked_by=None):
+    """A work-item's file; with `fileset` (a list of paths), its `fileset:` too, and with `blocked_by`, its `blocked_by:`."""
     files = "fileset: [%s]\n" % ", ".join(fileset) if fileset else ""
+    files += "blocked_by: [%s]\n" % ", ".join(blocked_by) if blocked_by else ""
     return "---\nid: %s\nkind: work-item\npart_of: capability-proposal/p1\nstatus: %s\nunder: %s\naccepts: [%s#r1]\n%s---\n\n# %s\n" % (
         full("work-item", name), status, under, under, files, name)
 
