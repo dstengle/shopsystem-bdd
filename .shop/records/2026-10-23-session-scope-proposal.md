@@ -166,3 +166,35 @@ Partly there. v3 rule 9: every part's `part_of` reaches an initiative, and only 
 What is not in v3 and would need adding: `fulfils` as an edge; the request's body as lines with per-line outcomes; the `request` work-item kind and its stages; the two trace rules; and the seam-only rule from point 1. The product-level thread and `resolution` stay as they are.
 
 No file was changed.
+
+## The agent's fifth reply, to the person's points (done-ness composes through requests; "the upstream names no client"; narrators across a seam)
+
+## 1. Granularity: you are right, and it simplifies to one rule
+
+Done-ness composes through requests and nothing else:
+
+- a job-thread is built when every request it made is delivered;
+- a request is delivered when the initiative that fulfils it is done;
+- an initiative is done when its own work is green (its proposals formulated, their work-items green) *and* every request it raised is delivered.
+
+Each context checks only its own files plus the status of the requests it raised. The request-work-item I sketched, with six statuses, is too much: the request itself is the dependency node. In the asker's breakdown it is a part of the initiative (owned by the asker, as v3 already has it), implementation work-items name it in `depends_on`, and the `planned → ready` guard already holds them until it is delivered. Forming the request is a drafting dispatch, like drafting a work-item (capability-writer given the upstream's published spec and the seam, blind to both codes), not a lifecycle. That removes the kind, the stages and the model-check rule about foreign ids.
+
+What crosses the seam is then exactly two things, and only one of them is read as a dependency:
+
+- the **contract**: the upstream's published spec at a version the asker pins; the asker depends on nothing else;
+- the **request** as one node: written into the upstream's intake by the asker (its queue), from then on written only by the upstream and read by the asker. Its answer names the resolution ids and the version that holds them; the asker raises its pin, and the request is delivered. Looking at the upstream's work-items is observability, as you say, never a dependency, and `work status` can show the raised requests' statuses without anything resting on more than `delivered`.
+
+"All upstream requests done in addition to its own work" is the initiative's done guard above, and it needs no view into the upstream beyond that status.
+
+## 2. "The upstream names no client"
+
+Your reading is the original one. how-we-got-here.md ("Citation direction"): "An upstream naming the downstream scenarios that need it inverts the dependency and breaks at the second client. Demand is recorded by the downstream, carried by a request, and the upstream's spec names no client." The rule is about the upstream's *standing artifacts*: no capability line, scenario or decision is justified by "context X needs it", because such a line has no ground of its own, breaks when a second client wants it slightly differently, and goes stale when X stops. Demand lives in the request (a part, dated, closable); the upstream's line stands in its own terms and the request's `resolution` is the only tie. It has nothing to do with the narrator, and I was wrong to let it bleed into a "rewrite into the upstream's narrator" step.
+
+On narrators being common across a seam: v3 supports it more than I allowed. A job has a narrator (grammar.md:32, `narrator(id, who)` for capability *and* job; the job form "when [situation], [narrator] wants [outcome]"), jobs are product-level, and a capability `serves` a job; so a narrator is a product-level actor, and two capabilities serving the same job through a seam share it. A request's lines are written in that narrator's voice, and the upstream's capability keeps that narrator: no translation of who acts. Two cautions, both consistent with your point:
+
+- The narrator is a *role*, never a context. Where an upstream's narrator is "the caller" (as this plugin's `code-research` has "the script `work run`, which started the researcher"), the role is whoever holds the contract, not a named downstream; that is the same "names no client" rule applied to narrators.
+- Terms stay owned. A bounded context is "one language, one spec" (§2), so the request's lines use the upstream's glossary where it has the term (the glossary is part of the published contract) and the narrator from the job. The negotiation on individual lines is then about terms and observability through the seam, not about who the actor is.
+
+So the common ground across a seam is the job's narrator and the upstream's published terms, pinned at a version; the request is written in that language from the start, and the upstream owner's gate judges the lines, not their translation.
+
+No file was changed.
