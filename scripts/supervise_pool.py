@@ -59,7 +59,8 @@ class Pool:
     def choose(self, running, movable):
         """The work-items to start now, in the queue's order, while fewer workers than the limit run (r59, r60): not a
         blocked one (r63), and an implementer only when its claim shares no file with that of one running (r20)."""
-        statuses = dict(self.items())
+        statuses = {name: status for _, name, status in workqueue.items(self.root)}
+        statuses.update(self.items())     # this initiative's reading wins for a name more than one holds
         tracked = {}
 
         def files():

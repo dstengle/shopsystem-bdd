@@ -28,6 +28,18 @@ def blocked_item(repo, first, status, by, other, other_status):
     commit_all(repo, "a blocked work-item")
 
 
+@given(parsers.re(r"i1's work-item (?P<first>\w+) is (?P<status>[\w-]+), its blocked_by naming (?P<by>\w+)$"))
+def lone_blocked_item(repo, first, status, by):
+    write(repo, ".shop/work/i1/%s.md" % first, item_text(first, status, blocked_by=[by]))
+    commit_all(repo, "a blocked work-item")
+
+
+@given(parsers.re(r"an initiative (?P<initiative>\w+) under \.shop/work/ whose work-item (?P<name>\w+) is (?P<status>[\w-]+)$"))
+def other_initiative_item(repo, initiative, name, status):
+    write(repo, ".shop/work/%s/%s.md" % (initiative, name), item_text(name, status))
+    commit_all(repo, "a work-item of another initiative")
+
+
 @given(parsers.re(r"i1's work-items (?P<names>\w+(?:, \w+)+ and \w+) are (?P<status>[\w-]+)$"))
 def many_items(repo, names, status):
     for name in names.replace(" and ", ", ").split(", "):
@@ -117,6 +129,11 @@ def records_transcript(repo, context):
 
 def starts_of(repo, session):
     return next(c for c in starts(repo) if c["session"] == session)
+
+
+@then(parsers.re(r"a worker was started for (?P<name>\w+)$"))
+def some_started_for(repo, context, name):
+    assert any(work_item_of(c) == name for c in starts(repo)), (starts(repo), context["done"].stderr)
 
 
 @then(parsers.re(r"no worker was started for (?P<name>\w+)$"))
