@@ -11,14 +11,17 @@ retired: [r2]
 
 ## Purpose
 `scripts/work` keeps the work-queue of a bounded context in `.shop/work/`: it drafts work-items, shows them, and
-writes their transitions through their lifecycle, logging every transition; it prints where an initiative stands,
-for a session to start from, and appends notes to an initiative's ledger. It is the only writer of a work-item's
-status; `work run` (supervision) takes them through it. It judges nothing. A walking skeleton
+writes their transitions through their lifecycle, logging every transition; it starts an initiative from an
+`accepted` request and makes it `done` when its work and the requests it raised are; it prints where an initiative
+stands, for a session to start from, and appends notes to an initiative's ledger. It is the only writer of a
+work-item's status; `work run` (supervision) takes them through it. It judges nothing. A walking skeleton
 (design-decision/behaviour-lines-are-ears): it grows from what using it shows.
 
 ## Behaviour
 - [r1] **When** `work add <initiative> <title>` is run with `--part-of`, `--under` and `--accepts`, `work` shall write `.shop/work/<initiative>/w<n>.md` as a `drafted` work-item with the id `w<n>`, the fields given and the title as its `# ` heading, and print the id.
 - [r12] `work add` shall number a new work-item's id `w<n>` with `<n>` one above the highest `<n>` of any work-item under `.shop/work/`, in any initiative and any status.
+- [r22] **When** `work start <request>` is run on an `accepted` request, `work` shall write `.shop/work/<initiative>/initiative.md` as a `proposed` initiative of kind `capability-change` that fulfils the request, with the request's origins as its source, and print its id.
+- [r23] **When** every work-item of an initiative is `green` or `withdrawn` and every request it raised is `delivered`, `work` shall set the initiative's status to `done`.
 - [r3] **When** `work show` is run, `work` shall print each work-item of every initiative under `.shop/work/` with its status.
 - [r11] **Where** `--json` is given, `work show` shall print its result, each work-item with its initiative and status, as one JSON object.
 - [r16] **When** `work status <initiative>` is run, `work` shall print the initiative's status, each of its capability-proposals with its status, each of its work-items with its status and its open questions, the initiative branch and whether the remote has every commit of it, each tracked file of the checkout with uncommitted changes and each untracked file of the checkout that git does not ignore, the last ten lines of the initiative's ledger, and the ledger's last line whose note, the text given to `work note` after the date `work note` writes, begins `next:`.

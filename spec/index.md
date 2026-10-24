@@ -68,6 +68,7 @@ Tools the skills and agents run:
 | `feature-file-tools` | a session editing feature files | service |
 | `analysis-tools` | a session researching or reviewing a project's code | service |
 | `design-model-check` | a person or session verifying a repository against the design model | service |
+| `requests` | a context taking in or raising a request | service |
 | `work-queue` | a person, session or script reading work-items or writing their transitions | service |
 | `supervision` | the person who started `work run` | service |
 | `migration-tools` | a person or session migrating a repository to the final layout or upgrading it between plugin releases | service |
@@ -87,7 +88,7 @@ Tools the skills and agents run:
 ## Glossary
 
 - **agent**: a definition under `agents/` (its name, model, tools and skills) that a worker or a dispatch is started as. Not: persona.
-- **answer**: the person's answer to a work-item's question, written in the work-item in their words. Not: ruling.
+- **answer**: the answer to a question on a work-item or a request, written in it in its answerer's words. Not: ruling.
 - **brief**: the input data `work run` writes for one worker in its stage directory, naming the work-item, the files to read, the worktree and where the result goes. Not: task file.
 - **check**: a command a work-item names in place of scenarios, whose exit code 0 shows its work complete. Not: criterion.
 - **claim**: the tracked files a `claimed` work-item holds: those its file set covers and any added with `work claim`; no two claims share a file. Not: lock, reservation.
@@ -105,12 +106,14 @@ Tools the skills and agents run:
 - **initiative branch**: the branch `work run` commits each transition on and merges each work-item branch into; its base is the commit it started from. Not: integration branch.
 - **input**: what a session is started with: input data, such as a brief, or an input prompt, the text filled from a template.
 - **ledger**: the tracked file `.shop/work/<initiative>/ledger.md` of one initiative, one line an event, archived with the initiative.
+- **line outcome**: the upstream's answer to one line of a request: accepted, rewritten, refused, question or withdrawn.
 - **measurement**: a record under `.shop/records/measurements/` that `measure` writes for one initiative's deliveries, or that a trial writes. Not: facts file.
 - **outcome**: the one word a worker's result gives: `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `HAND-BACK`, `QUESTION` or `NEEDS_CONTEXT`. Not: verdict.
 - **plugin version**: the plugin release a repository on the final layout is on, recorded as one line in `.shop/plugin-version`.
 - **record**: a file under `.shop/records/` whose frontmatter id has a record kind. Not: log entry.
 - **remote**: the remote `work run` pushes the initiative branch to: the branch's upstream remote, else `origin`.
 - **report**: the implementer's file in its stage directory, beside its result, naming the files it touched, the tests whose setup it changed and its open questions. Not: write-up.
+- **request**: the one way work enters a bounded context: lines in strict EARS that its asker (another context, the product level, or the context itself) proposes to its upstream (the context asked), negotiated in turns until each is accepted, refused or withdrawn, and resolved by the requirement ids that hold the accepted ones.
 - **requirement**: one Behaviour line of a capability, named `#r<n>`. Not: behaviour requirement, capability requirement, carry, carries, carried, carrying.
 - **result**: the file `result.json` a worker writes in its stage directory, giving its outcome, its summary and the files it names. Not: return.
 - **review**: a reviewer's reading of commits against the plan, the spec and the repository's rules, written as graded findings: a work-item review, a branch review or an architecture review. Not: audit.
@@ -121,12 +124,13 @@ Tools the skills and agents run:
 - **session**: one Claude Code conversation with its own id and transcript: the person's, a worker or a dispatch. Not: conversation, chat.
 - **stage**: one of research, plan, implementation and review, done by one worker and started by `work run` from the work-item's status. Not: phase.
 - **stage directory**: the directory `runs/<work-item>/<k>-<stage>/` that holds one stage's brief, result, report and session. Not: run directory.
-- **status**: a node's place in its kind's lifecycle (a work-item's, a capability-proposal's, a decision's), written in its frontmatter; a work-item's are `drafted`, `researched`, `planned`, `ready`, `claimed`, `done`, `green`, `awaiting-answer`, `failed` and `withdrawn`; a capability-proposal's are `drafted`, `approved`, `formulated`, `merged` and `withdrawn`. Not: state.
+- **status**: a node's place in its kind's lifecycle (a work-item's, a capability-proposal's, a decision's), written in its frontmatter; a work-item's are `drafted`, `researched`, `planned`, `ready`, `claimed`, `done`, `green`, `awaiting-answer`, `failed` and `withdrawn`; a capability-proposal's are `drafted`, `approved`, `formulated`, `merged` and `withdrawn`; a request's are `open`, `awaiting-asker`, `awaiting-upstream`, `accepted`, `delivered`, `refused` and `withdrawn`; an initiative's are `proposed`, `started`, `done` and `abandoned`. Not: state.
 - **suite**: every test `python3 -m pytest` runs from the root by default. Not: fast suite.
 - **template**: standing text in a skill or an agent definition that a session fills with input to start another session. Not: boilerplate.
 - **tool use**: one call of a tool in a session's transcript, named by the tool.
-- **transition**: one change of a work-item's status, written by `work` and logged in `log.jsonl`. Not: move.
+- **transition**: one change of a node's status, written by `work`; a work-item's is logged in `log.jsonl`. Not: move.
 - **trial**: one run by the `trial-runner` of a plugin tool or `work run` on a real target or a fixture repository, measuring what its input names.
+- **turn**: the side of a request, its asker or its upstream, whose part of the request is to be written next, passed to the other side by `work turn`.
 - **upgrade**: what `migrate upgrade` does to a repository on the final layout to take it from one plugin release to the next: it applies the pending upgrade steps.
 - **upgrade step**: one change to a repository's files that the plugin holds with the version that introduced it and a one-line description, pending for a repository when its version is above the repository's plugin version and at or below the plugin's.
 - **work-item**: the unit of delivery under a capability-proposal, named by its id `w<n>`, complete when the scenarios it accepts or its check pass, or, where every requirement it accepts is of a guarantees capability, when its review passes, taken through its stages by `work run`.

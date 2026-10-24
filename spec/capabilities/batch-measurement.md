@@ -35,6 +35,8 @@ no prompt, reply or tool content, and refuses rather than guesses when its input
 - [r55] **If** a stage's session has no transcript `measure` can find, **then** `measure initiative` shall give the stage without its round trips.
 - [r41] `measure initiative` shall give, for each work-item, its transitions, how many times it went to `awaiting-answer` and to `failed`, and the commits merged into the initiative branch for it.
 - [r42] `measure initiative` shall give the totals over the initiative: stages, sessions, turns, round trips, tokens of each kind, cost, and the time from the first transition to the last.
+- [r63] `measure initiative` shall give whether the request the initiative fulfils is internal, its asker being this bounded context, or external.
+- [r64] **If** the initiative fulfils no request, **then** `measure initiative` shall give the measurement without the request's origin.
 - [r43] **Where** `--sessions <dir>` names a directory of transcripts, `measure initiative` shall also give each session found there that is active inside the initiative's window, starting inside it or starting before it with a message inside it, and each session it dispatched, with its tokens of each kind.
 - [r60] **Where** `--sessions <dir>` is given, `measure initiative` shall give, for each session it gives, its round trips, its tool uses by tool name, the sessions it dispatched, and the number of compactions its transcript holds.
 - [r49] `measure` shall write no prompt, reply or tool content into the measurement.

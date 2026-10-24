@@ -44,6 +44,12 @@ problem names the file.
 | [r34] | v_k5 | an initiative that is not a capability-change has more than one part directly under it (a capability-change may have several capability-proposals) |
 | [r35] | v_k6 | a capability-proposal argues more than one capability |
 | [r59] | v_d2 | an initiative is `abandoned` while a part of it, at any depth, is neither closed nor `withdrawn` |
+| [r113] | v16a | an initiative dated after 2026-10-23 fulfils no request |
+| [r114] | v_d1 | an initiative is `done` while a request it raised is not `delivered` |
+| [r119] | v_d3 | a request is `delivered` while the initiative that fulfils it is not `done` |
+| [r115] | v17 | a request neither is part of a job-thread nor cites an origin |
+| [r116] | v3 | a `delivered` request's resolution names a requirement the spec does not have |
+| [r117] | v18a, v18c | an id in this context's files resolves to a node under another context's `.shop/work/` |
 | [r52] | v_t1 | a requirement or a scenario mentions a word its context's glossary lists after `Not:`, named with the word and the term |
 | [r53] | v_t2 | two glossary entries have one term |
 | [r54] | v_t3 | a word one term lists after `Not:` is another term of the context, or the term itself |
@@ -51,6 +57,8 @@ problem names the file.
 | [r104] | v_e2 | a Behaviour line has more than one "shall" or more than one sentence |
 | [r106] | v_w4 | a work-item that is not `withdrawn` has no `accepts` and no `check` |
 | [r110] | file problem | a work-item's file name is not `w<n>.md`, or two work-items have one id |
+| [r112] | file problem | a request is not of the form `work request` writes (capability/requests) |
+| [r118] | file problem | an initiative's kind is `job` or `job-path` |
 | [r9] | unresolved | a scenario names a requirement its capability does not have, or a capability rests on a decision that does not exist |
 | [r22] | unresolved | a list names a reference that is not `<capability>#r<n>` (`#behaviour/r<n>` included), with the capability written `capability/<context path>/<name>`, `capability/<name>` or `<name>`, or a range `#r<a>-r<b>` with a greater than b |
 | [r23] | unresolved | a capability-proposal adds or removes an id its capability neither has nor lists as retired, or removes a retired id while not `merged`, `formulated` or `withdrawn`; a proposal that is may name a retired id in `adds`, `changes` or `removes`, one it removes read as that requirement |
@@ -65,7 +73,7 @@ problem names the file.
 | [r61] | file problem | the repository has `spec/decisions.md`, or a `decisions/`, `work/` or `records/` directory at its root, each named with `scripts/migrate` |
 
 ### Reading
-- [r19] `model` shall read, under `--root` (default the current directory), only `spec/index.md`, `spec/capabilities/*.md`, every `*.feature` under `features/`, every `spec/decisions/*.md` but `index.md` and `README.md`, `.shop/work/<initiative>/*.md`, `.shop/records/observations.md` and any other Markdown under `.shop/records/` whose frontmatter has an `id`.
+- [r19] `model` shall read, under `--root` (default the current directory), only `spec/index.md`, `spec/capabilities/*.md`, every `*.feature` under `features/`, every `spec/decisions/*.md` but `index.md` and `README.md`, `.shop/work/<initiative>/*.md`, `.shop/work/requests/*.md`, `.shop/records/observations.md` and any other Markdown under `.shop/records/` whose frontmatter has an `id`.
 - [r20] `model` shall read the `@r<n>` tag of a scenario not tagged `@deprecated` in `features/<capability name>.feature`, its own or its feature's, as the one requirement of that capability the scenario names.
 - [r21] `model` shall read a reference written `<name>#r<n>` or `capability/<name>#r<n>` as a requirement of the capability `capability/<context path>/<name>` in the bounded context, the field fixing the kind where it is written `<name>`.
 - [r18] `model` shall read `<capability>#r<a>-r<b>` in a proposal's or work-item's list as every id from a to b.
