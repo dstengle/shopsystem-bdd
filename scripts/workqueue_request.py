@@ -86,18 +86,25 @@ def request(root, title, asker, lines_file, sources, thread):
 
 
 def outcome(root, ident, number, word):
-    """Write line `number`'s outcome `word` (r12)."""
-    _change(root, ident, "outcome", lambda t: _with_entries(t, "Outcomes", _numbered(_entries(t, "Outcomes"), number, word)))
+    """Write line `number`'s outcome `word` (r12, r15); in the asker's turn it is refused, writing nothing (r16)."""
+    def edit(text):
+        if _field(text, "turn") == "asker":
+            raise Refused("%s is in the asker's turn; the upstream writes a line outcome only in its own turn" % ident)
+        return _with_entries(text, "Outcomes", _numbered(_entries(text, "Outcomes"), number, word))
+    _change(root, ident, "outcome", edit)
 
 
 def turn(root, ident):
-    """Pass the turn to the other side; the upstream ending its turn with every line settled sets the status (r8, r9)."""
+    """Pass the turn to the other side (r7); to the upstream it sets awaiting-upstream (r18). To the asker, the upstream
+    ending its turn with every line settled sets the status (r8, r9), else awaiting-asker (r17)."""
     def edit(text):
         if _field(text, "turn") == "asker":
-            return _with_field(text, "turn", "upstream")
+            return _with_field(_with_field(text, "status", "awaiting-upstream"), "turn", "upstream")
         words = [e.split(". ", 1)[1] for e in _entries(text, "Outcomes") if ". " in e]
         if len(words) == len(_entries(text, "Lines")) and all(w in SETTLED for w in words):
             text = _with_field(text, "status", "accepted" if "accepted" in words else "refused")
+        else:
+            text = _with_field(text, "status", "awaiting-asker")
         return _with_field(text, "turn", "asker")
     _change(root, ident, "turn", edit)
 
