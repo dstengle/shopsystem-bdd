@@ -88,11 +88,12 @@ Tools the skills and agents run:
 ## Glossary
 
 - **agent**: a definition under `agents/` (its name, model, tools and skills) that a worker or a dispatch is started as. Not: persona.
-- **answer**: the answer to a question on a work-item or a request, written in it in its answerer's words. Not: ruling.
+- **answer**: the answer to a question on a work-item, a capability-proposal or a request, written in it in its answerer's words. Not: ruling.
 - **brief**: the input data `work run` writes for one worker in its stage directory, naming the work-item, the files to read, the worktree and where the result goes. Not: task file.
 - **check**: a command a work-item names in place of scenarios, whose exit code 0 shows its work complete. Not: criterion.
 - **claim**: the tracked files a `claimed` work-item holds: those its file set covers and any added with `work claim`; no two claims share a file. Not: lock, reservation.
 - **compaction**: Claude Code's replacement of a session's earlier messages by a summary, recorded in its transcript.
+- **delegation**: the person's words, given with a request, naming the questions a session may answer in the person's place.
 - **delivery**: one invocation of `work run` on an initiative, from its start until it exits.
 - **deprecated scenario**: a scenario kept in its feature file, tagged `@deprecated`, after its line is changed or removed, until its replacement passes; it formulates no requirement. Not: held, holding, superseded.
 - **dispatch**: a session another session starts with its Agent tool, and the transcript it leaves. Not: subagent.
@@ -117,14 +118,14 @@ Tools the skills and agents run:
 - **requirement**: one Behaviour line of a capability, named `#r<n>`. Not: behaviour requirement, capability requirement, carry, carries, carried, carrying.
 - **result**: the file `result.json` a worker writes in its stage directory, giving its outcome, its summary and the files it names. Not: return.
 - **review**: a reviewer's reading of commits against the plan, the spec and the repository's rules, written as graded findings: a work-item review, a branch review or an architecture review. Not: audit.
-- **round**: one dispatch of `initiative-round` for one job, numbered under its drafts path. Not: iteration.
+- **round**: one `initiative-round` session for one kind, numbered under its drafts path. Not: iteration, job.
 - **round trip**: one assistant message of a session's transcript with its own request id, the unit `--max-turns` limits.
 - **run**: to execute a command, script, test, scenario or probe until it exits.
 - **scenario**: a Gherkin scenario in `features/<capability>.feature`, passing when the one test that binds it passes. Not: test case.
 - **session**: one Claude Code conversation with its own id and transcript: the person's, a worker or a dispatch. Not: conversation, chat.
 - **stage**: one of research, plan, implementation and review, done by one worker and started by `work run` from the work-item's status. Not: phase.
 - **stage directory**: the directory `runs/<work-item>/<k>-<stage>/` that holds one stage's brief, result, report and session. Not: run directory.
-- **status**: a node's place in its kind's lifecycle (a work-item's, a capability-proposal's, a decision's), written in its frontmatter; a work-item's are `drafted`, `researched`, `planned`, `ready`, `claimed`, `done`, `green`, `awaiting-answer`, `failed` and `withdrawn`; a capability-proposal's are `drafted`, `approved`, `formulated`, `merged` and `withdrawn`; a request's are `open`, `awaiting-asker`, `awaiting-upstream`, `accepted`, `delivered`, `refused` and `withdrawn`; an initiative's are `proposed`, `started`, `done` and `abandoned`. Not: state.
+- **status**: a node's place in its kind's lifecycle (a work-item's, a capability-proposal's, a decision's), written in its frontmatter; a work-item's are `drafted`, `researched`, `planned`, `ready`, `claimed`, `done`, `green`, `awaiting-answer`, `failed` and `withdrawn`; a capability-proposal's are `drafted`, `awaiting-answer`, `approved`, `formulated`, `merged` and `withdrawn`; a request's are `open`, `awaiting-asker`, `awaiting-upstream`, `accepted`, `delivered`, `refused` and `withdrawn`; an initiative's are `proposed`, `started`, `done` and `abandoned`. Not: state.
 - **suite**: every test `python3 -m pytest` runs from the root by default. Not: fast suite.
 - **template**: standing text in a skill or an agent definition that a session fills with input to start another session. Not: boilerplate.
 - **tool use**: one call of a tool in a session's transcript, named by the tool.

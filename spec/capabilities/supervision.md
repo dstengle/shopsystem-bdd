@@ -3,20 +3,39 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/supervision
 title: Supervision
 narrator: the person who started `work run`
 group: service
-rests_on: [design-decision/a-script-supervises-delivery, design-decision/worker-results-are-files, design-decision/work-item-lifecycle-as-run, design-decision/review-of-work-items, design-decision/the-file-set-is-the-claim, design-decision/the-v3-agents, design-decision/exits-are-successful-or-errors, design-decision/a-ruling-returns-to-the-asking-stage, design-decision/answers-not-rulings, design-decision/workflow-capabilities-are-guarantees]
+rests_on: [design-decision/a-script-supervises-delivery, design-decision/worker-results-are-files, design-decision/work-item-lifecycle-as-run, design-decision/review-of-work-items, design-decision/the-file-set-is-the-claim, design-decision/the-v3-agents, design-decision/exits-are-successful-or-errors, design-decision/a-ruling-returns-to-the-asking-stage, design-decision/answers-not-rulings, design-decision/workflow-capabilities-are-guarantees, design-decision/the-context-runs-without-a-coordinator, design-decision/requests-written-through-work]
 retired: []
 ---
 
 # Supervision
 
 ## Purpose
-`work run <initiative>` delivers an initiative's work-items: for each stage it starts a fresh `claude -p` worker,
-reads the worker's result and writes the status itself. It is a script and takes no judgment; what nobody may
-decide goes to the person as a question. A walking skeleton (design-decision/behaviour-lines-are-ears): it grows
-from what using it shows.
+`work run` takes a bounded context's initiatives through their transitions: `work run <initiative>` that
+initiative, `work run` with no initiative every initiative that is neither `done` nor `abandoned`. It starts the
+`intake` round of a request this context is the upstream of and the `integrate` round of a `proposed` initiative,
+starts a capability-proposal's `gate`, `apply` and `formulate` rounds, drafts and delivers its work-items, for each
+stage starting a fresh `claude -p` worker, reading the worker's result and writing the status itself, and starts the
+initiative's measurement and analysis (design-decision/the-context-runs-without-a-coordinator). It is a script and
+takes no judgment; what nobody may decide goes to the person as a question. A walking skeleton
+(design-decision/behaviour-lines-are-ears): it grows from what using it shows.
 
 ## Behaviour
 - [r1] **When** `work run <initiative>` is started, `work run` shall pull the initiative's work-items through research, plan, implementation and review until no work-item can make a transition.
+- [r66] **When** `work run` is started with no initiative, `work run` shall take every initiative that is neither `done` nor `abandoned` through every transition its nodes can make, starting one session at a time where two sessions would change the same files.
+- [r67] **When** a request of which this context is the upstream is `open` or `awaiting-upstream`, `work run` shall start an `initiative-round` session of the kind `intake`, given the request, that writes each line's line outcome or a question on it and passes the turn with `work turn`.
+- [r79] **When** an initiative is `proposed`, `work run` shall start a round of the kind `integrate` given the accepted lines of the request it fulfils.
+- [r68] **When** a capability-proposal is `drafted`, `work run` shall start a round of the kind `gate` that writes its gate as questions under the proposal's `## Questions`, each a decision with its readings and the recommended reading marked.
+- [r69] **When** a round of the kind `gate` that `work run` started for a capability-proposal ends, `work run` shall transition the proposal to `awaiting-answer`.
+- [r70] **When** every question of a capability-proposal has an answer, `work run` shall start a round of the kind `apply` given the answers.
+- [r80] **When** a round of the kind `apply` that `work run` started for a capability-proposal ends, `work run` shall transition the proposal to `approved`.
+- [r71] **When** a round of the kind `apply` that `work run` started for a capability-proposal ends, `work run` shall start a round of the kind `formulate` for the proposal.
+- [r72] **When** a capability-proposal is `formulated`, `work run` shall draft with `work add` one work-item for each capability the proposal's `adds` and `changes` name, accepting every requirement they name on that capability.
+- [r73] **When** `work run` drafts a work-item for a `formulated` capability-proposal, `work run` shall list under the work-item's `## Retires` each scenario tagged `@deprecated` whose `@r<n>` tag names a requirement the work-item accepts.
+- [r74] **When** a kept branch review's result lists findings to fix now, `work run` shall draft one work-item for them, naming the findings file, under the capability-proposal that the work-item the findings concern is part of.
+- [r75] **When** every work-item of an initiative is `green` or `withdrawn` and its kept branch review lists nothing to fix now, `work run` shall run `measure initiative` on the initiative.
+- [r76] **When** the `measure initiative` that `work run` ran on an initiative has written its measurement, `work run` shall start a session of `analyzing-a-batch` that writes the initiative's analysis record.
+- [r77] **Where** the request an initiative fulfils gives a delegation, `work run` shall have each question of the initiative that the delegation covers answered by a session given the delegation, the files the question names and nothing else.
+- [r78] **Where** the request an initiative fulfils gives a delegation, **when** a session `work run` started under it answers a question, `work run` shall write the answer naming the delegation it was given under.
 - [r59] **When** more than one work-item of the initiative is `drafted` or `researched`, `work run` shall start the research or plan stage of each of them at the same time, within the number of workers r60 gives.
 - [r60] `work run` shall run at most as many workers at the same time as `.shop/delivery.toml`'s number of workers, and 4 where it gives none.
 - [r2] **When** a work-item's status is `drafted`, `researched`, `ready` or `done`, `work run` shall start a new `claude -p` session of that stage's agent (`code-scout`, `bdd-planner`, `bdd-implementer`, `bdd-task-reviewer`), given one brief that names the work-item, the files to read and where its result goes.
@@ -30,6 +49,8 @@ from what using it shows.
 - [r9] **When** no work-item can make a transition and every work-item is `green` or `withdrawn`, `work run` shall exit successfully, printing each work-item's status.
 - [r32] **When** no work-item can make a transition and a work-item is `awaiting-answer`, `work run` shall exit with an error, printing each work-item's status and each open question.
 - [r52] **When** no work-item can make a transition and a work-item is `failed`, `work run` shall exit with an error, printing each work-item's status and each fault.
+- [r81] **When** `work run` was started with no initiative and no node of any initiative can make a transition, `work run` shall exit with an error where a node is `awaiting-answer` or `failed`, printing each initiative's status.
+- [r82] **When** `work run` was started with no initiative and no node of any initiative can make a transition, and none is `awaiting-answer` or `failed`, `work run` shall exit successfully, printing each initiative's status.
 - [r53] **If** the push after the branch review's commit fails, then `work run` shall exit with an error, saying why.
 - [r54] **When** `work run` starts and the initiative branch has commits its remote does not have, `work run` shall first push the initiative branch to the remote.
 - [r10] **If** `work run` cannot start the delivery it was asked for, then `work run` shall exit with an error, say why, and change nothing.
@@ -101,6 +122,9 @@ from what using it shows.
 - The push is verified by `git push --dry-run` to the initiative branch's upstream remote, else `origin`; a repository `work run` delivers has that remote. A fault is recorded under the work-item's `## Faults`. The n-th bullet of `## Answers` answers the n-th of `## Questions`.
 - `log.jsonl` also gets a `push verified` line for each push verification, and a `suite` line for each whole-suite run before a merge.
 - A failed commit of a fault's transition ends `work run` as r10's exit does, with an error saying why, not with a traceback.
+- r67: the `intake` round writes each line outcome with `work outcome` (requests r15), which `work` keeps under the request's `## Outcomes` (design-decision/requests-written-through-work).
+- r79, r68, r70, r71: the `integrate`, `gate` and `apply` rounds are `initiative-round` sessions of spec-integration, the `formulate` round one of formulation.
+- r78: the answer names the delegation in its `by`.
 
 ## Not yet
 - Retries, continuations after `PARTIAL`, refused claims, the guards between

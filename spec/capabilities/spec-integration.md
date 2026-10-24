@@ -3,17 +3,19 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration
 title: Spec integration
 narrator: the person at the gate
 group: guarantees
-rests_on: [design-decision/one-spec-per-context, design-decision/gate-on-behaviour-lines, design-decision/spec-writers-blind-to-code, design-decision/controller-per-spec-round, design-decision/light-decisions, design-decision/references-are-ids, design-decision/the-session-keeps-the-gate, design-decision/workflow-capabilities-are-guarantees, design-decision/the-ledger-is-tracked]
-retired: [r5, r9, r18]
+rests_on: [design-decision/one-spec-per-context, design-decision/gate-on-behaviour-lines, design-decision/spec-writers-blind-to-code, design-decision/controller-per-spec-round, design-decision/light-decisions, design-decision/references-are-ids, design-decision/workflow-capabilities-are-guarantees, design-decision/the-ledger-is-tracked, design-decision/the-context-runs-without-a-coordinator]
+retired: [r5, r9, r18, r8, r10, r11, r34, r36, r37, r38, r41, r42]
 ---
 
 # Spec integration
 
 ## Purpose
 Merges an approved brainstorming note, or a question's answer, into the bounded context's one spec,
-and stops at the one human gate: the Behaviour lines. It is `integrating-a-proposal`, used by the session
-the person talks to, each round a fresh dispatch of `initiative-round`, which dispatches the
-`capability-writer`. It is not formulation and not planning; it writes nothing a client can run.
+and stops at the one human gate: the Behaviour lines. It is `integrating-a-proposal`, run in rounds of
+`initiative-round` that `work run` starts (supervision): the `integrate` and `apply` rounds dispatch the
+`capability-writer`, and the `gate` round writes the gate as questions on the capability-proposal; no session
+writes spec itself (design-decision/the-context-runs-without-a-coordinator). It is not formulation and not
+planning; it writes nothing a client can run.
 
 ## Behaviour
 - [r1] **When** an approved note is integrated, `integrating-a-proposal` shall show the person every added, changed and removed Behaviour line, each with its id, and every question the note left open, each with the lines its answers would give.
@@ -23,9 +25,6 @@ the person talks to, each round a fresh dispatch of `initiative-round`, which di
 - [r6] **When** the person says yes, `integrating-a-proposal` shall commit the approved drafts to `spec/` alone, with the Behaviour lines exactly as approved.
 - [r15] **When** the approved drafts are committed, `integrating-a-proposal` shall name in the commit message the approval and its date, any delegation it was given under, and each id and each glossary term added, changed and removed.
 - [r7] **When** a note would start a second spec in a context that has one, `integrating-a-proposal` shall integrate it into the existing `spec/` instead.
-- [r8] **Where** a change adds or changes at most two Behaviour lines in existing capabilities, changes no published contract and leaves nothing unknown, `integrating-a-proposal` shall write the lines itself from `spec/` alone.
-- [r10] **When** an integration is started in the session that brainstormed the note, `integrating-a-proposal` shall recommend a new session for the integration before starting it, saying that this session brainstormed the note.
-- [r11] **When** integration is applied, `integrating-a-proposal` shall hand the changed capabilities to formulation.
 - [r12] **When** a line is added to a capability, `integrating-a-proposal` shall give it the id one above every id the capability has used or retired, wherever the line sits in the section.
 - [r13] **When** a line is changed, `integrating-a-proposal` shall keep its id.
 - [r14] **When** a line is removed, `integrating-a-proposal` shall add its id to the capability's `retired` list.
@@ -35,24 +34,18 @@ the person talks to, each round a fresh dispatch of `initiative-round`, which di
 - [r20] **When** a change makes a decision, `integrating-a-proposal` shall show it to the person as one file `spec/decisions/<nnnn>-<slug>.md`, `nnnn` one above the highest number in `spec/decisions/`.
 - [r21] **When** a drafted decision names what it came from, `integrating-a-proposal` shall list by id in its `source` only records, initiatives and decisions, writing the person, a date, a delegation or anything outside the repository in its `by`.
 - [r22] **When** the approved drafts are committed with a decision, `integrating-a-proposal` shall commit in the same commit the `spec/decisions/index.md` that `model decisions` writes.
-- [r34] **When** the rounds' drafts are ready to show the person, `integrating-a-proposal` shall dispatch `initiative-round` with the job `gate`, naming the rounds' drafts and any reports to show.
-- [r35] **When** `initiative-round` runs the job `gate`, `initiative-round` shall write under `<drafts path>/gate/` one card for each decision the person is asked to make, each card marking the coordinator's recommendation and giving the lines it concerns in full.
-- [r36] **When** the job `gate` has written its cards, `initiative-round` shall reply with the path of `<drafts path>/gate/`.
-- [r37] **When** the job `gate` replies, `integrating-a-proposal` shall publish the gate page from the files under `<drafts path>/gate/`.
-- [r38] **While** the gate page is published, `integrating-a-proposal` shall read only the person's answers, none of the rounds' drafts.
-- [r39] **When** `initiative-round` runs the job `apply` with the file of the person's answers, or with the person's approval in their words, `initiative-round` shall apply exactly the drafts the person approved.
-- [r40] **When** `initiative-round` finishes a round, `initiative-round` shall append one line to the initiative's ledger with `work note`, naming the job, the round, and what the round ended with or the answers it applied.
-- [r41] **When** `integrating-a-proposal` dispatches an agent, `integrating-a-proposal` shall ask it to reply in a few lines and leave the rest in files.
-- [r42] **When** a dispatch `integrating-a-proposal` started has replied, `integrating-a-proposal` shall read a file the dispatch wrote only to decide what to do next.
+- [r35] **When** `initiative-round` runs the kind `gate`, `initiative-round` shall write under the capability-proposal's `## Questions` one question for each decision the person is asked to make, each marking the recommended reading and giving the lines it concerns in full.
+- [r39] **When** `initiative-round` runs the kind `apply` with the file of the person's answers, or with the person's approval in their words, `initiative-round` shall apply exactly the drafts the person approved.
+- [r40] **When** `initiative-round` finishes a round, `initiative-round` shall append one line to the initiative's ledger with `work note`, naming the kind, the round, and what the round ended with or the answers it applied.
 - [r33] **If** `integrating-a-proposal` cannot do what it was asked, then `integrating-a-proposal` shall stop, saying why, and change nothing under `spec/`.
 
 ## Implementation, may change
-- The session dispatches `initiative-round` with an input giving the job `integrate`, `gate` or `apply`, the note's path, a drafts path
-  `.shop/scratch/drafts/<date>-<note>/` and the round number; the round dispatches `capability-writer`,
+- `work run` starts `initiative-round` with an input giving the kind `integrate`, `gate` or `apply`, the note's path, a drafts path
+  `.shop/scratch/drafts/<date>-<note>/` and the round number; the `integrate` and `apply` rounds dispatch `capability-writer`,
   which writes only under `<drafts>/round-<n>/` and replies with the change list, questions, cut sentences
   and paths, last of all to a reply file.
-- The job `gate` is given the rounds' drafts and any reports to show; the job `apply` is given the file of the
-  person's answers or their approval in their words.
+- The kind `gate` is given the rounds' drafts and any reports to show; the kind `apply` is given the answers under
+  the capability-proposal's `## Answers`.
 - The round compares `git status --porcelain` with the porcelain before dispatch and sends back a dispatch that
   wrote outside its drafts path; it verifies the change list in both directions.
 - The writer drafts a decision as a whole file under `<drafts>/round-<n>/spec/decisions/`; applying it copies the

@@ -3,7 +3,7 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/formulation
 title: Formulation
 narrator: the person who approved the lines
 group: guarantees
-rests_on: [design-decision/a-scenario-names-one-requirement, design-decision/exits-are-successful-or-errors, design-decision/formulation-needs-no-second-approval, design-decision/spec-writers-blind-to-code, design-decision/held-scenarios, design-decision/controller-per-spec-round, design-decision/workflow-capabilities-are-guarantees]
+rests_on: [design-decision/a-scenario-names-one-requirement, design-decision/exits-are-successful-or-errors, design-decision/formulation-needs-no-second-approval, design-decision/spec-writers-blind-to-code, design-decision/held-scenarios, design-decision/controller-per-spec-round, design-decision/workflow-capabilities-are-guarantees, design-decision/the-context-runs-without-a-coordinator]
 retired: [r8, r12]
 ---
 
@@ -11,8 +11,10 @@ retired: [r8, r12]
 
 ## Purpose
 Writes the acceptance-scenarios for approved Behaviour lines, one feature file per capability, from the
-narrator's side and without sight of the code. It is `formulating-features`, used in a round, a dispatch of `initiative-round`, which
-dispatches `feature-formulator`s. It decides nothing: a line with two readings comes back as a question.
+narrator's side and without sight of the code. It is `formulating-features`, used in a round of the kind
+`formulate`, an `initiative-round` session that `work run` starts (supervision), which dispatches
+`feature-formulator`s; no session writes feature files itself (design-decision/the-context-runs-without-a-coordinator).
+It decides nothing: a line with two readings comes back as a question.
 
 ## Behaviour
 - [r1] **When** lines are approved, `formulating-features` shall write the scenarios of each added or changed line that has one reading in its capability's feature file `features/<name>.feature`, one scenario or one outline for the line, or one scenario per reason for a line every call must keep (r9).
@@ -26,12 +28,12 @@ dispatches `feature-formulator`s. It decides nothing: a line with two readings c
 - [r10] **When** the person answers that a scenario a work-item's implementer handed back with evidence is a formulation question, `formulating-features` shall rewrite the scenario to fit its line and the evidence, or show the person a question with two readings.
 - [r11] `formulating-features` shall tag each scenario, on its tag line, with the one `@r<n>` of the one line it formulates, whatever the scenario's title.
 - [r13] **Where** `model check` is available, **when** feature files are committed, `model check` shall print no scenario that is not deprecated and names no line or more than one, and no added or changed line without a scenario.
-- [r14] **When** a scenario uses a word its context's glossary avoids, `formulating-features` shall reword the scenario to its line through the small-change path, without a further gate.
+- [r14] **When** a scenario uses a word its context's glossary avoids, `formulating-features` shall reword the scenario to its line in a round of the kind `formulate`, without a further gate.
 - [r22] **If** `formulating-features` cannot do what it was asked, then `formulating-features` shall stop, saying why, and commit nothing.
 
 ## Implementation, may change
 - This capability is guarantees, checked by `measure` on real batches (design-decision/workflow-capabilities-are-guarantees).
-- The session dispatches `initiative-round` with the job `formulate`; the round dispatches one `feature-formulator`
+- `work run` starts `initiative-round` with the kind `formulate`; the round dispatches one `feature-formulator`
   a capability with the template in the skill as its input, verifies coverage one to one, runs each old scenario alone before
   replacing it, uses `features deprecate`, `features rebind` and `features bindings`, splices and commits.
 - A scenario's title usually restates its line's condition, though the `@r<n>` tag is what names the line; Then lines name a refusal's reason, never message text, and say a command exits successfully or exits with an error, never an exit code.
