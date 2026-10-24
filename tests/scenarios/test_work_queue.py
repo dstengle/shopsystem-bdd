@@ -21,6 +21,8 @@ from .work_queue_add_steps import *
 from .work_queue_answer_steps import *
 from .work_queue_git_steps import *
 from .work_queue_git_steps import init
+from .work_queue_note_steps import *
+from .work_queue_status_steps import *
 from .work_queue_withdraw_steps import *
 
 MOVER = "supervision"     # the script that moves work-items in these scenarios

@@ -10,6 +10,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import supervise  # noqa: E402
 import workqueue  # noqa: E402
 import workqueue_answer  # noqa: E402
+import workqueue_note  # noqa: E402
+import workqueue_status  # noqa: E402
 
 
 def cmd_add(args):
@@ -42,6 +44,15 @@ def cmd_answer(args):
     return 0
 
 
+def cmd_note(args):
+    workqueue_note.note(args.root, args.initiative, args.line)
+    return 0
+
+
+def cmd_status(args):
+    return workqueue_status.status(args.root, args.initiative, args.json)
+
+
 def cmd_run(args):
     return supervise.run(args.root, args.initiative)
 
@@ -67,10 +78,16 @@ def main(argv=None):
     n = sub.add_parser("answer", help="answer the question of an awaiting-answer work-item and return it to the stage that asked")
     n.add_argument("name")
     n.add_argument("answer")
+    o = sub.add_parser("note", help="append a dated line to an initiative's ledger and commit it")
+    o.add_argument("initiative")
+    o.add_argument("line")
+    u = sub.add_parser("status", help="where an initiative (default: each open one) stands, for a session to start from")
+    u.add_argument("initiative", nargs="?")
+    u.add_argument("--json", action="store_true", help="print one JSON object instead of text")
     args = ap.parse_args(argv)
     try:
         return {"add": cmd_add, "show": cmd_show, "run": cmd_run, "retry": cmd_retry, "answer": cmd_answer,
-                "withdraw": cmd_withdraw}[args.cmd](args)
+                "withdraw": cmd_withdraw, "note": cmd_note, "status": cmd_status}[args.cmd](args)
     except workqueue.Refused as refused:
         print("work: %s" % refused, file=sys.stderr)
         return 1
