@@ -97,6 +97,13 @@ def test_a_guarantees_work_item_has_its_scenarios_deselected_and_exits_successfu
     assert done.returncode == 0 and "2 deselected" in done.stdout, done.stdout + done.stderr
 
 
+def test_a_guarantees_work_item_left_with_no_test_exits_successfully_under_xdist(tmp_path):
+    repo = consumer(tmp_path, "other#r1")
+    capabilities(repo, other=True)
+    done = pytest(repo, "-n", "2", "--work-item", "w1")
+    assert done.returncode == 0, done.stdout + done.stderr
+
+
 def test_a_guarantees_work_item_keeps_a_test_that_is_not_a_scenario(tmp_path):
     repo = consumer(tmp_path, "other#r1")
     capabilities(repo, other=True)

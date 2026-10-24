@@ -109,8 +109,6 @@ def pytest_collection_modifyitems(config, items):
         raise SystemExit("--work-item %s: %s accepts none of the scenarios it collected" % (name, name))
     config.hook.pytest_deselected(items=[i for i in items if i not in keep])
     items[:] = keep
-    if all(guarantees(config, c) for c, _ in want):
-        config.stash[GUARANTEES] = True
 
 
 def guarantees(config, cap):
@@ -122,10 +120,12 @@ def guarantees(config, cap):
     return bool(head) and re.search(r"(?m)^group: guarantees$", head[0]) is not None
 
 
-GUARANTEES = pytest.StashKey[bool]()
-
-
 def pytest_sessionfinish(session, exitstatus):
-    """A work-item all of whose requirements are of guarantees capabilities, left with no test, succeeds."""
-    if exitstatus == pytest.ExitCode.NO_TESTS_COLLECTED and session.config.stash.get(GUARANTEES, False):
+    """A work-item all of whose requirements are of guarantees capabilities, left with no test, succeeds. Decided
+    from the work-item and the spec, so on the xdist controller as on a worker."""
+    config = session.config
+    name = config.getoption("--work-item")
+    if exitstatus != pytest.ExitCode.NO_TESTS_COLLECTED or not name or config.getoption("--whole-suite"):
+        return
+    if all(guarantees(config, c) for c, _ in accepted(name, config.invocation_params.dir)):
         session.exitstatus = pytest.ExitCode.OK
