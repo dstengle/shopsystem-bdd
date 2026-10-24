@@ -1,0 +1,1 @@
+{"status": "DONE", "summary": "Request rules v16a, v_d1, v_d3, v17, v3, v18 in model.lp with readers and steps; w132 scenarios 157 passed.", "commits": ["437dc1c model check: request rules v16a, v_d1, v_d3, v17, v3, v18"], "report": ".shop/scratch/3-implement/report.md", "questions": []}
