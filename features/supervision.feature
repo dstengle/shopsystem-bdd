@@ -928,6 +928,23 @@ Feature: Supervision
     Then a session of analyzing-a-batch was started for i1 once `measure initiative` had written i1's measurement
     And i1's analysis record is there
 
+  @r77
+  Scenario Outline: under a delegation, each question of the initiative goes to a session of its own, given only the delegation and the files it names, that <reply>
+    Pins that a question is weighed against the person's words alone, apart from every other question, and answered only when those words cover it.
+    Given i1 fulfils the request q1, which gives the delegation "<delegation>"
+    And i1's work-item w1 is awaiting-answer, its ## Questions section with "Does scripts/log.py or scripts/queue.py own the log?" and no answer
+    And i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice in features/books.feature one book or two?" and no answer
+    And each session given a question under the delegation <reply>, and every round ends and every worker gives DONE
+    When the person runs `work run i1`
+    Then w1's question was given to a session of its own, given the question, the delegation "<delegation>", scripts/log.py and scripts/queue.py, and nothing else
+    And p1's question was given to a session of its own, given the question, the delegation "<delegation>", features/books.feature, and nothing else
+    And <after>
+
+    Examples:
+      | delegation                                                                       | reply                                   | after                                                                     |
+      | Please get everything delivered. Do not stop to ask me questions or permission. | answers it                              | w1's question and p1's question each have the session's answer            |
+      | Answer only the questions on the queue's tests; ask me everything else.          | leaves it for the person                | w1's question and p1's question have no answer, w1 and p1 awaiting-answer |
+
   @r78
   Scenario: an answer given by a session started under a delegation is written naming that delegation
     Pins that the person can tell an answer given in their place from one they gave, and under which words of theirs it was given.
@@ -957,6 +974,15 @@ Feature: Supervision
     And every round ends
     When the person runs `work run i1`
     Then i1's transition to started was made when the integrate round for i1 was started
+
+  @r68
+  Scenario: a drafted capability-proposal is given to a gate round whose brief asks for the gate as questions, each a decision with its readings and the recommended reading marked
+    Pins that the gate comes back as decisions the person can answer one by one, with the reading to take already marked.
+    Given i1's capability-proposal p1 is drafted
+    And every round ends
+    When the person runs `work run i1`
+    Then a round of the kind gate was started for p1
+    And the gate round's brief asks for the gate as questions, each a decision with its readings and the recommended reading marked
 
   @r85
   Scenario: when the gate round `work run` started for a capability-proposal ends, the questions its result gives are written under the proposal's ## Questions
