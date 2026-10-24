@@ -322,3 +322,9 @@
 {"time": "2026-10-24T00:05:20+00:00", "work-item": "w119", "before": "researched", "after": "planned", "by": "work run"}
 {"time": "2026-10-24T00:05:21+00:00", "work-item": "w119", "before": "planned", "after": "ready", "by": "work run"}
 {"time": "2026-10-24T00:05:22+00:00", "work-item": "w119", "before": "ready", "after": "claimed", "by": "work run"}
+{"time": "2026-10-24T00:05:39+00:00", "work-item": "w119", "stage": "implement", "event": "suite", "record": "Suite: 715 passed, 1 failed at 362827b in 16 s; failing: tests/scenarios/test_supervision.py::test_a_worker_is_started_for_a_workitem_whose_blocked_by_names_a_green_workitem_of_another_initiative"}
+{"time": "2026-10-24T00:05:40+00:00", "work-item": "w119", "stage": "implement", "event": "push verified"}
+{"time": "2026-10-24T00:05:40+00:00", "work-item": "w119", "stage": "implement", "agent": "bdd-implementer", "session": "f1853b70-a12b-45c3-9762-9e3453c7ca90", "event": "start"}
+{"time": "2026-10-24T00:06:29+00:00", "work-item": "w119", "stage": "implement", "agent": "bdd-implementer", "session": "f1853b70-a12b-45c3-9762-9e3453c7ca90", "event": "end"}
+{"time": "2026-10-24T00:06:45+00:00", "work-item": "w119", "stage": "merge", "event": "suite", "record": "Suite: 716 passed, 0 failed at fd035f0 in 17 s"}
+{"time": "2026-10-24T00:06:51+00:00", "work-item": "w119", "before": "claimed", "after": "done", "by": "work run"}

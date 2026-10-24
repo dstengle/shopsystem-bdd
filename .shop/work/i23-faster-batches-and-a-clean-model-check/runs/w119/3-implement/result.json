@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Pool.choose now reads blocker statuses from every initiative (own initiative wins on shared names); three steps added. Work-item scenarios green.","commits":["fd035f0 work run reads blocked_by across initiatives (r63)"],"report":"/home/vscode/shopsystem-bdd/.shop/worktrees/w119/.shop/scratch/3-implement/report.md","questions":[]}
