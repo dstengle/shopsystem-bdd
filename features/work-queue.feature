@@ -43,6 +43,24 @@ Feature: Work queue
     And .shop/work/i1/ is as it was
     And it exits successfully
 
+  @r23
+  Scenario Outline: a command whose change leaves every work-item of an initiative green or withdrawn, and every request this context asked naming it delivered, sets the initiative to done
+    Pins that the command that completes an initiative's work also ends the initiative, and that only requests this context asked and keeps, naming the initiative, can hold it open.
+    Given an initiative i1 under .shop/work/ that is started, whose work-item w1 is green and whose work-item w2 is ready
+    And .shop/work/i1/log.jsonl's last line for w2 is its transition to ready
+    And <request>
+    When the session runs `work withdraw w2`
+    Then .shop/work/i1/w2.md gives w2's status as withdrawn
+    And .shop/work/i1/initiative.md gives i1's status as done
+    And it exits successfully
+
+    Examples:
+      | request                                                                                    |
+      | no request kept in this context names i1                                                   |
+      | a request q1 kept in this context, whose asker is this context, names i1 and is delivered  |
+      | a request q1 kept in this context, whose asker is another context, names i1 and is accepted |
+      | a request q1 kept in this context, whose asker is this context, names i2 and is accepted   |
+
   @r3
   Scenario: show prints each work-item of every initiative with its status
     Pins that show reads every initiative under .shop/work/, and only their work-items.

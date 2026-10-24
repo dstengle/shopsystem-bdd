@@ -182,15 +182,15 @@ Feature: Batch measurement
       | another bounded context | external |
 
   @r64
-  Scenario: an initiative that fulfils no request is measured without a request's origin
-    An initiative no request started is still measured; there is only no origin to give.
+  Scenario: an initiative that fulfils no request is measured without saying internal or external
+    An initiative no request started is still measured; there is only no request to call internal or external.
     Given the initiative i7-cart has a log.jsonl
     And it gives work-item cart-1's research stage a start and an end, run in the session s-1
     And i7-cart fulfils no request
     When the session runs measure initiative i7-cart
     Then measure exits successfully
     And the measurement gives the stage of cart-1's research
-    And the measurement gives no origin of a request, internal or external
+    And the measurement gives no request as internal or external
 
   @r43
   Scenario: --sessions gives the sessions active inside the window, starting inside it or before it with a message inside it, and every session they dispatched

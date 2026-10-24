@@ -837,6 +837,22 @@ Feature: Design model check
     Then v16a names i1
     And v16a does not name i2 or i3
 
+  @r114
+  Scenario Outline: a done initiative whose own request in this context is not delivered is v_d1
+    Pins that an initiative is done only once each request this context raised to itself under it is delivered.
+    Given an initiative i1 with status done
+    And a request q1 in .shop/work/requests/q1.md whose asker is <asker>, whose <field> names i1, with status <status>
+    When `model check` is run
+    Then v_d1 <names> i1
+
+    Examples:
+      | asker           | field   | status    | names         |
+      | this context    | source  | open      | names         |
+      | this context    | part_of | accepted  | names         |
+      | this context    | source  | delivered | does not name |
+      | this context    | part_of | delivered | does not name |
+      | another context | source  | open      | does not name |
+
   @r119
   Scenario: a delivered request whose initiative is not done is v_d3
     Pins that a request is delivered only while the initiative that fulfils it is done.
@@ -864,6 +880,24 @@ Feature: Design model check
     When `model check` is run
     Then v3 names q1 and thing#r9
     And v3 does not name q2
+
+  @r117
+  Scenario Outline: an id of a kind kept in .shop/work/ with another context's path is v18
+    Pins that this context's files name work only of their own context, judged from the id whether or not anything in the repository has it.
+    Given a repository whose bounded context is bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+    And an initiative i1 whose source names <id>
+    And nothing in the repository has the id <id>
+    When `model check` is run
+    Then v18 <names> <id>
+
+    Examples:
+      | id                                                      | names         |
+      | request/missingmass.io/shopsystem/other/q3              | names         |
+      | initiative/missingmass.io/shopsystem/other/i2           | names         |
+      | capability-proposal/missingmass.io/shopsystem/other/p1  | names         |
+      | work-item/missingmass.io/shopsystem/other/w4            | names         |
+      | observation/missingmass.io/shopsystem/other/2026-10-01-x | does not name |
+      | request/missingmass.io/shopsystem/shopsystem-bdd/q3     | does not name |
 
   @r112
   Scenario: a request not of the form `work request` writes is a file problem
