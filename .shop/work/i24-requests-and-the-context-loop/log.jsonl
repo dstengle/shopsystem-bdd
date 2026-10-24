@@ -294,3 +294,4 @@
 {"time": "2026-10-24T23:52:42+00:00", "work-item": "w130", "before": "claimed", "after": "done", "by": "work run"}
 {"time": "2026-10-24T23:52:55+00:00", "work-item": "w134", "before": "awaiting-answer", "after": "researched", "by": "work answer"}
 {"time": "2026-10-24T23:52:55+00:00", "work-item": "w137", "before": "failed", "after": "drafted", "by": "work retry"}
+{"time": "2026-10-24T23:52:57+00:00", "work-item": "w127", "before": "ready", "after": "claimed", "by": "work run"}
