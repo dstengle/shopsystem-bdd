@@ -98,6 +98,11 @@ Feature: Requests
     When the upstream runs `work turn q1`
     Then q1's status is awaiting-asker
 
+    Examples:
+      | line 2                    |
+      | no line outcome           |
+      | the line outcome question |
+
   @r18
   Scenario: turn passing a request to its upstream sets the request's status to awaiting-upstream
     Pins that a request the asker hands back shows that the upstream is to answer next.
@@ -111,6 +116,13 @@ Feature: Requests
     Given a request q1 from the asker ctx-a whose turn is the upstream's, with three lines whose line outcomes are accepted, refused and withdrawn
     When the upstream runs `work turn q1`
     Then q1's status is accepted
+
+  @r8
+  Scenario: the upstream ending its turn on a delivered request with every line accepted leaves the status delivered
+    Pins that a request already delivered is not set back to accepted when the upstream passes its turn, though nothing on it is left to negotiate.
+    Given a request q1 from the asker ctx-a whose status is delivered and whose turn is the upstream's, with two lines whose line outcomes are accepted and accepted
+    When the upstream runs `work turn q1`
+    Then q1's status is delivered
 
   @r9
   Scenario: the upstream ending its turn with every line refused or withdrawn sets the status to refused

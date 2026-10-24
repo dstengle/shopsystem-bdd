@@ -186,6 +186,16 @@ Feature: Work queue
       | has a line that is not JSON  | line 2 of .shop/work/i1/log.jsonl  |
       | cannot be written            | .shop/work/i1/log.jsonl            |
 
+  @r7
+  Scenario: request with a --lines file that does not exist is refused, naming the file, and changes nothing
+    Pins that a missing lines file stops request with its reason, never a traceback, and leaves the files as they were.
+    Given an upstream that keeps no request
+    And no file lines.md
+    When the session runs `work request "Show the queue" --from ctx-a --lines lines.md --source o1`
+    Then work says that the file lines.md does not exist
+    And it exits with an error
+    And nothing under the repository has changed
+
   @r8
   Scenario: retry on a failed work-item transitions it to the status before its transition into failed
     Pins that retry, once the fault is remedied, returns the work-item to the status it had when it failed, not to one before it.
