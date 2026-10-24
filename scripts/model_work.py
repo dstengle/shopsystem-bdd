@@ -11,6 +11,7 @@ STATUSES = {
     "capability-proposal": {"drafted", "approved", "merged", "formulated", "withdrawn"},   # withdrawn: EXTENSION (r58)
     "work-item": {"drafted", "researched", "planned", "ready", "claimed", "done", "green", "awaiting-answer", "failed",
                   "withdrawn"},   # withdrawn: EXTENSION (r58); failed: design-decision/a-failed-work-item
+    "request": {"open", "awaiting-asker", "awaiting-upstream", "accepted", "refused", "delivered"},
 }
 SETTLED = {"merged", "formulated", "withdrawn"}     # a capability-proposal that may name a retired id (r5, r23)
 PART_KINDS = {"job-proposal", "map-proposal", "vision-proposal", "job-thread", "capability-proposal",
@@ -90,7 +91,7 @@ class WorkReading:
 
     def read_work(self):
         held = {}
-        for idir in sorted(p for p in (self.root / WORK).glob("*") if p.is_dir()):
+        for idir in sorted(p for p in (self.root / WORK).glob("*") if p.is_dir() and p.name != "requests"):
             ipath = idir / "initiative.md"
             if not ipath.exists():
                 self.problems.append(f"{self.rel(idir)}: no initiative.md")
@@ -105,6 +106,8 @@ class WorkReading:
             self.status(i, "initiative", data.get("status"), ipath)
             if data.get("kind"):
                 self.fact("ikind", i, data["kind"])
+                if data["kind"] in ("job", "job-path"):
+                    self.problems.append(f"{self.rel(ipath)}: kind {data['kind']!r} is not a kind an initiative may have")
             if data.get("priority") is not None:
                 try:
                     self.fact("priority", i, int(data["priority"]))

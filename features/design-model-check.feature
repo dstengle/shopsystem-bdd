@@ -123,30 +123,6 @@ Feature: Design model check
     When `model why` is run for thing#r2
     Then it prints the proposal as adding it
 
-  @r19 @deprecated
-  Scenario Outline: model reads the repository's files under its root (deprecated)
-    Deprecated for: model reads the repository's files under its root
-    Pins which files of a repository model reads, and that the root is the current directory unless --root names one.
-    Given a repository in a directory that has <file>
-    When `model facts` is run <how>
-    Then the facts printed <facts> what <file> contains
-
-    Examples:
-      | file                               | how                                   | facts           |
-      | spec/index.md                      | with --root naming that directory     | include         |
-      | spec/capabilities/thing.md         | with --root naming that directory     | include         |
-      | features/sub/thing.feature         | with --root naming that directory     | include         |
-      | spec/decisions/0001-one.md         | with --root naming that directory     | include         |
-      | spec/decisions/index.md            | with --root naming that directory     | do not include  |
-      | .shop/work/i1/initiative.md        | with --root naming that directory     | include         |
-      | .shop/records/observations.md      | with --root naming that directory     | include         |
-      | .shop/records/review/f1.md with an id | with --root naming that directory  | include         |
-      | .shop/records/review/f2.md with no id | with --root naming that directory  | do not include  |
-      | decisions/0001-one.md              | with --root naming that directory     | do not include  |
-      | work/i1/initiative.md              | with --root naming that directory     | do not include  |
-      | records/observations.md            | with --root naming that directory     | do not include  |
-      | spec/capabilities/thing.md         | from that directory with no --root    | include         |
-
   @r19
   Scenario Outline: model reads the repository's files under its root
     Pins which files of a repository model reads, and that the root is the current directory unless --root names one.

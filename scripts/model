@@ -33,6 +33,8 @@ contract:
     spec/decisions/*.md but index.md, one design-decision each (frontmatter
     id, summary, date, status, supersedes, revisit_when, revisit_signal);
     .shop/work/<initiative>/initiative.md and .shop/work/<initiative>/<part>.md;
+    .shop/work/requests/q<n>.md, one request each (a file not of the form
+    `work request` writes is a file problem);
     .shop/records/observations.md (one `## <id>` heading an observation) and
     any other Markdown under .shop/records/ whose frontmatter has an `id`.
     It reads no other layout: spec/decisions.md and a decisions/, work/ or

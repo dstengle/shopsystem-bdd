@@ -9,6 +9,7 @@ from pytest_bdd import given, parsers, then, when
 from .conftest import CONTEXT, I1, OBS1, P1, PATH, SCRIPTS, THING, cap, feature, full
 from .design_model_check_given import DECISION
 from .design_model_check_problems import _initiative_with
+from .design_model_check_requests import request_text
 from .design_model_check_then import found
 
 # === forms of an id and a reference (r24, r43, r46) ===============================================================
@@ -103,6 +104,7 @@ def _files_read():
         "spec/decisions/0001-one.md": (decision, one),
         "spec/decisions/index.md": (decision, one),
         ".shop/work/i1/initiative.md": (initiative, i1),
+        ".shop/work/requests/q1.md": (request_text(), 'node("%s", "request").' % full("request", "q1")),
         ".shop/records/observations.md": (observations, obs),
         ".shop/records/review/f1.md with an id": ("---\nid: %s\nkind: review-finding\n---\n" % full("review-finding", "f1"),
                                                   'node("%s", "review-finding").' % full("review-finding", "f1")),

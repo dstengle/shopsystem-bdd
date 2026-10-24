@@ -17,20 +17,21 @@ from model_parse import (
     scenarios,
     section,
 )
+from model_requests import RequestReading
 from model_work import WorkReading
 
 REF = re.compile(r"^(?P<cap>[\w.-]+(?:/[\w.-]+)*)#r(?P<n>\d+)$")
 KINDS = {"bounded-context", "capability", "design-decision", "acceptance-scenario", "term", "initiative",
          "capability-proposal", "job-proposal", "map-proposal", "vision-proposal", "job-thread",
          "cross-context-request", "map-escalation", "work-item", "observation", "measurement", "review-finding",
-         "decision-argument", "initiative-archive", "job", "context-seam", "product-vision"}
+         "decision-argument", "initiative-archive", "job", "context-seam", "product-vision", "request"}
 NAME = r"[a-z0-9]+(?:-[a-z0-9]+)*"
 CONTEXT_PATH = rf"{NAME}(?:\.{NAME})*/{NAME}/{NAME}"     # <owner>/<product>/<context name>; the owner may be a domain
 NOT_PROSE = re.compile(r'`[^`]*`|"[^"]*"|(?<!\w)@[\w-]+')
 OLD_LAYOUT = ("spec/decisions.md", "decisions/", "work/", "records/")    # what scripts/migrate moves (r61)
 
 
-class Model(WorkReading):
+class Model(WorkReading, RequestReading):
     def __init__(self, root, today=None):
         self.root = Path(root)
         self.today = today or datetime.date.today()
@@ -104,6 +105,7 @@ class Model(WorkReading):
         self.read_decisions()
         self.read_records()
         self.read_work()
+        self.read_requests()
         self.check_refs()
         self.read_mentions()
         return self
