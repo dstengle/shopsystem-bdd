@@ -936,3 +936,65 @@ Feature: Supervision
     And the session answering under the delegation answers "The queue module.", and every worker gives DONE
     When the person runs `work run i1`
     Then w1's answer to "Which module owns the log?" is "The queue module.", naming the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
+
+  @r66
+  Scenario: `work run` started with no initiative takes every initiative that is neither done nor abandoned through its transitions, the initiatives side by side and one session of an initiative at a time
+    Pins which initiatives a `work run` with no initiative takes, that they do not wait on each other, and that the sessions of one initiative do.
+    Given i1's capability-proposal p1 is drafted and i1's work-item w1 is drafted
+    And an initiative i2 under .shop/work/ whose capability-proposal p2 is drafted
+    And an initiative i3 under .shop/work/ that is done and an initiative i4 under .shop/work/ that is abandoned, each with a work-item that is drafted
+    And every round ends and every worker gives DONE, the gate rounds of p1 and p2 each ending once both have started
+    When the person runs `work run`
+    Then the gate rounds of p1 and p2 ran at the same time
+    And no two sessions of i1 ran at the same time
+    And no session was started for i3 or i4
+    And w1 is green, and p1 and p2 are awaiting-answer
+
+  @r84
+  Scenario: when `work run` starts the integrate round of a proposed initiative, the initiative is started
+    Pins that an initiative whose integration has begun is no longer proposed.
+    Given i1 is proposed and fulfils the request q1, whose line 1 has the line outcome accepted
+    And every round ends
+    When the person runs `work run i1`
+    Then i1's transition to started was made when the integrate round for i1 was started
+
+  @r85
+  Scenario: when the gate round `work run` started for a capability-proposal ends, the questions its result gives are written under the proposal's ## Questions
+    Pins that the gate a round gives reaches the proposal, where the person answers it, though the round writes nothing on the proposal itself.
+    Given i1's capability-proposal p1 is drafted
+    And the gate round's result gives the question "Is a title given twice one book or two?", with the readings "One book." and "Two books.", "One book." marked recommended, and every round ends
+    When the person runs `work run i1`
+    Then p1's ## Questions holds "Is a title given twice one book or two?", with the readings "One book." and "Two books.", "One book." marked recommended
+
+  @r83
+  Scenario: when the formulate round `work run` started for a capability-proposal ends, the proposal is formulated
+    Pins that a capability-proposal whose lines have been formulated is formulated.
+    Given i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", and its Answers section with "One book."
+    And every round ends and every worker gives DONE
+    When the person runs `work run i1`
+    Then p1's transition to formulated was made once the formulate round had ended
+
+  @r81
+  Scenario Outline: `work run` started with no initiative, ending with <node> <status>, exits with an error, printing the status of each initiative it took
+    Pins that a run over every initiative that stops on a question or a fault is an error, and what the person reads of each initiative.
+    Given i1 is started, and i1's <node> is <status>
+    And an initiative i2 under .shop/work/, started, none of whose nodes can make a transition and none of which is awaiting-answer or failed
+    When the person runs `work run`
+    Then `work run` prints i1 with started and i2 with started
+    And it exits with an error
+
+    Examples:
+      | node                   | status          |
+      | work-item w1           | awaiting-answer |
+      | capability-proposal p1 | awaiting-answer |
+      | work-item w1           | failed          |
+
+  @r82
+  Scenario: `work run` started with no initiative, ending with no node awaiting-answer or failed, exits successfully, printing the status of each initiative it took
+    Pins that a run over every initiative that leaves nothing waiting on the person is no failure, and that it reports only the initiatives it took.
+    Given i1 is started, none of its nodes can make a transition and none of them is awaiting-answer or failed
+    And an initiative i2 under .shop/work/, started, none of whose nodes can make a transition and none of which is awaiting-answer or failed
+    And an initiative i3 under .shop/work/ that is done
+    When the person runs `work run`
+    Then `work run` prints i1 with started and i2 with started, and does not print i3
+    And it exits successfully
