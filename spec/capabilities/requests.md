@@ -28,8 +28,8 @@ what using it shows.
 - [r7] **When** `work turn <request>` is run, `work` shall pass the request's turn to the other side.
 - [r17] **When** `work turn` passes a request's turn to its asker with a line that has no line outcome or a line outcome other than accepted, refused or withdrawn, `work` shall set the request's status to `awaiting-asker`.
 - [r18] **When** `work turn` passes a request's turn to its upstream, `work` shall set the request's status to `awaiting-upstream`.
-- [r8] **When** the upstream ends its turn on a request whose every line has the line outcome accepted, refused or withdrawn and at least one line the line outcome accepted, `work` shall set the request's status to `accepted`.
-- [r9] **When** the upstream ends its turn on a request whose every line has the line outcome refused or withdrawn, `work` shall set the request's status to `refused`.
+- [r8] **When** the upstream ends its turn on a request that is not `delivered` whose every line has the line outcome accepted, refused or withdrawn and at least one line the line outcome accepted, `work` shall set the request's status to `accepted`.
+- [r9] **When** the upstream ends its turn on a request that is not `delivered` whose every line has the line outcome refused or withdrawn, `work` shall set the request's status to `refused`.
 - [r10] **When** `work resolve <request>` is run on an `accepted` request with each accepted line's requirement id and the version that holds it, whichever side's turn it is, `work` shall write them as the request's resolution.
 - [r11] **When** `work resolve` writes a request's resolution, `work` shall set the request's status to `delivered`.
 - [r12] **When** `work request`, `work outcome`, `work turn` or `work resolve` changes a request, `work` shall commit the request on the current branch.
