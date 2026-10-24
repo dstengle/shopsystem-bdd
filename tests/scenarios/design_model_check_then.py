@@ -117,6 +117,34 @@ def does_not_name_requirements(world, context, code, ids):
     assert not _named(world, context, code) & set(re.findall(r"r\d+", ids)), found(world, context)
 
 
+def _row_ids(world, context, code):
+    """Every id the rows of `code` give, from `check --json`."""
+    return [a for name, args in found(world, context)["violations"] if name == code for a in args]
+
+
+def _is_named(given, rows):
+    return any(a == given or a.endswith("/" + given) for a in rows)
+
+
+@then(parsers.re(r"(?P<code>v16a|v_d1|v_d3|v17|v3|v18) (?P<how>names|does not name) (?P<ids>\S+(?: (?:and|or) \S+)*)$"))
+def request_rule_names(world, context, code, how, ids):
+    """r113-r119: a name is an id whole or its last part (i1, q1, thing#r9)."""
+    rows = _row_ids(world, context, code)
+    given = re.split(r" and | or ", ids)
+    if how == "names":
+        assert all(_is_named(g, rows) for g in given), found(world, context)
+    else:
+        assert not any(_is_named(g, rows) for g in given), found(world, context)
+
+
+@then(parsers.re(r"once (?P<ident>i\d) is done, (?P<code>v_d3) does not name (?P<q>q\d)$"))
+def once_done_not_named(world, context, ident, code, q):
+    from .design_model_check_requests import write_initiative
+    write_initiative(world, ident, status="done", fulfils=full("request", q))
+    context.pop("found")
+    assert not _is_named(q, _row_ids(world, context, code)), found(world, context)
+
+
 @then(parsers.re(r"(?P<subject>.+?) is printed as unresolved"))
 def reported_unresolved(world, context, subject):
     out = context["result"].stdout

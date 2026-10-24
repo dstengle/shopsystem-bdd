@@ -23,6 +23,8 @@
 #defined argues/2.    #defined adds/2.       #defined changes/2.   #defined removes/2.
 #defined under/2.     #defined for/2.        #defined accepts/2.   #defined check/2.
 #defined blocked_by/2.   #defined wi_depends/2.   #defined about/2.
+#defined asker/2.     #defined req_part_of/2.   #defined req_source/2.  #defined fulfils/2.
+#defined date/2.      #defined foreign/1.
 % Used by grammar.md with no .decl and no §2 row:
 #defined authored_depends_on/2.   % g:112 (v4); the parse of "CAP depends on X"
 #defined age/2.                   % g:203 (w_stale_intake); days since an initiative was proposed
@@ -89,10 +91,9 @@ v2(C, X) :- in(C, X),           nonstanding(C).    v2(C, X) :- in(C, X),        
 v2(R, X) :- seam(R, X, _),      nonstanding(R).    v2(R, X) :- seam(R, X, _),      nonstanding(X).
 v2(R, X) :- seam(R, _, X),      nonstanding(X).
 
-% 3. an acceptance-scenario is never on needs
-label("v3", "a scenario is on a needs edge").
-v3(S) :- needs(S, _), node(S, "acceptance-scenario").
-v3(S) :- needs(_, S), node(S, "acceptance-scenario").
+% 3. v4 (design-model-check r116): a delivered request's resolution names only requirements the spec has
+label("v3", "a delivered request's resolution names a requirement the spec does not have").
+v3(Q, R) :- status(Q, "delivered"), resolution(Q, R), not node(R, "capability-requirement").
 
 % 4. depends_on is derived
 label("v4", "a depends_on that no using gives").
@@ -236,8 +237,28 @@ label("v_w4", "a work-item has no acceptance and no check").
 v_w4(W)      :- node(W, "work-item"), not status(W, "withdrawn"), not has_accepts(W), not has_check(W).
 
 % initiative done only when every part is closed
-label("v_d1", "a done initiative has a part open").
+% design-model-check r114: also a request this context raised to itself, whose part_of or source names the initiative.
+label("v_d1", "a done initiative has a part or a request of its own open").
 v_d1(I) :- status(I, "done"), root(P, I), not closed(P).
+own_request(Q, I) :- req_part_of(Q, I), own_asker(Q).
+own_request(Q, I) :- req_source(Q, I),  own_asker(Q).
+own_asker(Q)    :- asker(Q, "internal").
+own_asker(Q)    :- asker(Q, C), node(C, "bounded-context").
+v_d1(I) :- status(I, "done"), own_request(Q, I), not status(Q, "delivered").
+% design-model-check r119: a request is delivered only while the initiative that fulfils it is done.
+label("v_d3", "a delivered request whose initiative is not done").
+v_d3(Q) :- status(Q, "delivered"), fulfils(I, Q), not status(I, "done").
+
+% requests (design-model-check r113, r115, r117)
+label("v16a", "an initiative dated after 2026-10-23 that fulfils no request").
+has_fulfils(I) :- fulfils(I, _).
+v16a(I) :- node(I, "initiative"), date(I, D), D > "2026-10-23", not has_fulfils(I).
+label("v17", "a request that is part of no job-thread and cites no origin").
+in_thread(Q)    :- req_part_of(Q, T), node(T, "job-thread").
+cites_origin(Q) :- req_source(Q, O), node(O, K), origin(K).
+v17(Q) :- node(Q, "request"), not in_thread(Q), not cites_origin(Q).
+label("v18", "an id of a kind kept in .shop/work/ with another context's path").
+v18(X) :- foreign(X).
 % EXTENSION (proposed against grammar.md v3; design-model-check r59): an abandoned initiative leaves
 % no part open; each is closed or withdrawn.
 % CONTRACT (scripts/model --help): `withdrawn` is closed, so "not withdrawn" adds nothing to "not closed"
@@ -289,14 +310,15 @@ w_stale_intake(I)  :- status(I, "proposed"), age(I, Days), Days > 90.
 
 #show.
 #show label/2.
-#show v1/1.  #show v2/2.  #show v3/1.  #show v4/2.  #show v5/2.  #show v6/2.  #show v6b/1.
+#show v1/1.  #show v2/2.  #show v3/2. #show v4/2.  #show v5/2.  #show v6/2.  #show v6b/1.
 #show v7/1.  #show v7b/1. #show v7c/2. #show v8/1.  #show v9a/1. #show v9b/1. #show v9c/1.
 #show v9d/1. #show v9e/1. #show v9f/1. #show v9g/1. #show v10a/2. #show v10b/1. #show v10c/1.
 #show v11/1. #show v12a/1. #show v12b/1. #show v13/1.
 #show v15a/1. #show v15b/2. #show v15c/1. #show v15d/2. #show v15e/2. #show v15f/1.
 #show v_k1/1. #show v_k2/1. #show v_k3/1. #show v_k4/1. #show v_k5/1. #show v_k6/1.
 #show v_b1/1. #show v_b2/1. #show v_b3/1. #show v_s1/1. #show v_s2/1. #show v_s3/1.
-#show v_w1/1. #show v_w2/1. #show v_w3/2. #show v_w4/1. #show v_d1/1.
+#show v_w1/1. #show v_w2/1. #show v_w3/2. #show v_w4/1. #show v_d1/1. #show v_d3/1.
+#show v16a/1. #show v17/1. #show v18/1.      % requests (design-model-check r113, r115, r117)
 #show v_t1/3. #show v_t2/1. #show v_t3/1.    % EXTENSION (proposed against grammar.md v3)
 #show v_e1/1. #show v_e2/1.                  % EXTENSION (proposed against grammar.md v3)
 #show v_d2/1.                                 % EXTENSION (proposed against grammar.md v3)

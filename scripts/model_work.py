@@ -117,10 +117,13 @@ class WorkReading:
             for s in self.sources[i]:
                 self.fact("source", i, s)
                 self.want(s, None, self.rel(ipath))
+            if data.get("fulfils"):
+                self.fact("fulfils", i, self.qualify(data["fulfils"], "request"))
             if data.get("date"):
                 try:
                     days = (self.today - datetime.date.fromisoformat(str(data["date"]))).days
                     self.fact("age", i, days)
+                    self.fact("date", i, str(data["date"]))
                 except ValueError:
                     self.problems.append(f"{self.rel(ipath)}: date {data['date']!r} is not YYYY-MM-DD")
             for ppath in sorted(idir.glob("*.md")):

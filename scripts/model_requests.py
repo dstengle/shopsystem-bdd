@@ -2,7 +2,7 @@
 
 import re
 
-from model_parse import frontmatter
+from model_parse import as_list, frontmatter, section
 from model_work import WORK
 
 REQUESTS = "requests"
@@ -24,6 +24,21 @@ class RequestReading:
             self.node(data["id"], "request")
             self.status(data["id"], "request", data["status"], path)
             self.unread(data, path)
+            self.request_links(data, body, where)
+
+    def request_links(self, data, body, where):
+        """The asker, the part_of and source (request-only relations, not the parts' and initiatives'), the resolution."""
+        ident = data["id"]
+        self.fact("asker", ident, str(data["asker"]).strip())
+        for rel, key in (("req_part_of", "part_of"), ("req_source", "source")):
+            for ref in as_list(data.get(key)):
+                self.fact(rel, ident, self.qualify(ref))
+        for line in section(body, "Resolution"):
+            m = re.match(r"^\d+\.\s+(\S+)", line)
+            if m:
+                req = self.resolve_req(m.group(1), where)
+                if req:
+                    self.fact("resolution", ident, req)
 
     def request_form(self, data, body, path):
         """What keeps a request from being of the form requests' Implementation gives, or None."""

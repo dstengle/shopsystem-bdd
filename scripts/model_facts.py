@@ -18,15 +18,16 @@ from model_parse import (
     section,
 )
 from model_requests import RequestReading
-from model_work import WorkReading
+from model_work import PART_KINDS, WorkReading
 
 REF = re.compile(r"^(?P<cap>[\w.-]+(?:/[\w.-]+)*)#r(?P<n>\d+)$")
 KINDS = {"bounded-context", "capability", "design-decision", "acceptance-scenario", "term", "initiative",
          "capability-proposal", "job-proposal", "map-proposal", "vision-proposal", "job-thread",
          "cross-context-request", "map-escalation", "work-item", "observation", "measurement", "review-finding",
          "decision-argument", "initiative-archive", "job", "context-seam", "product-vision", "request"}
+WORK_KINDS = PART_KINDS | {"initiative", "request"}      # the kinds kept in .shop/work/
 NAME = r"[a-z0-9]+(?:-[a-z0-9]+)*"
-CONTEXT_PATH = rf"{NAME}(?:\.{NAME})*/{NAME}/{NAME}"     # <owner>/<product>/<context name>; the owner may be a domain
+CONTEXT_PATH =rf"{NAME}(?:\.{NAME})*/{NAME}/{NAME}"     # <owner>/<product>/<context name>; the owner may be a domain
 NOT_PROSE = re.compile(r'`[^`]*`|"[^"]*"|(?<!\w)@[\w-]+')
 OLD_LAYOUT = ("spec/decisions.md", "decisions/", "work/", "records/")    # what scripts/migrate moves (r61)
 
@@ -76,13 +77,22 @@ class Model(WorkReading, RequestReading):
                 return ref
             if re.fullmatch(NAME, rest):
                 return f"{head}/{self.path}/{rest}"
+            self.foreign(ref)
             return ref      # another context's full id, or malformed: want() or resolve_req() reports it
         if kind and re.fullmatch(NAME, ref):
             return f"{kind}/{self.path}/{ref}"
         return ref
 
+    def foreign(self, ref):
+        """r117: an id of a kind kept in .shop/work/ with another context's path is a `foreign` fact."""
+        head, _, rest = ref.partition("/")
+        if head in WORK_KINDS and re.fullmatch(rf"{CONTEXT_PATH}/{NAME}", rest) and not rest.startswith(self.path + "/"):
+            self.fact("foreign", ref)
+
     def check_id(self, ident, kind, where):
         """A node's id is <kind>/<context path>/<name>, with its own kind."""
+        if self.path:
+            self.foreign(str(ident))
         prefix = f"{kind}/{self.path}/"
         if self.path and not (str(ident).startswith(prefix) and re.fullmatch(NAME, str(ident)[len(prefix):])):
             self.problems.append(f"{where}: id {ident!r} is not {prefix}<name>")
