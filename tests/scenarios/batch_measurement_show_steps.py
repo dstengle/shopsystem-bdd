@@ -45,6 +45,55 @@ def measure_wrote_no_trips(world, path):
                         "turns": 14})
 
 
+def session_entry(got):
+    """A session entry of the record `measure initiative` writes, from a table row by column."""
+    entry = {"session": got["session"], "started": None, "dispatched_by": None}
+    for column, value in got.items():
+        key = column.replace(" ", "_").replace("-", "_")
+        if column == "tool uses":
+            entry[key] = {n: int(c) for n, c in (p.split(" ") for p in value.split(", ") if p)}
+        elif column == "dispatched":
+            entry[key] = [s for s in value.split(", ") if s]
+        elif column != "session":
+            entry[key] = int(value)
+    return entry
+
+
+@given(parsers.parse("the measurement {path} that measure wrote, giving the sessions"))
+def measure_wrote_sessions(world, path, datatable):
+    """The path form (r61) and the '<name> for <initiative>' form (r62) share this step: both patterns match."""
+    sessions = [session_entry(dict(zip(datatable[0], row))) for row in datatable[1:]]
+    figures = {"stages": [], "work_items": [], "totals": {"stages": 0, "sessions": 0}, "sessions": sessions}
+    name, _, initiative = path.partition(" for ")
+    target = world.repo / (MEASUREMENTS + "/%s.md" % name if initiative else path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text("# Measurement\n\n```json\n%s\n```\n" % json.dumps(figures))
+    if initiative:
+        world.named[name] = str(target.relative_to(world.repo))
+    else:
+        world.shown = path
+
+
+@then("the printed sessions show")
+def printed_sessions_show(world, datatable):
+    assert world.code == 0, world.err
+    printed = rows_of(world.out)
+    head = next(r for r in printed if r[:1] == ["session"] and "dispatched" in r)
+    got = [dict(zip(head, r)) for r in printed[printed.index(head) + 1:] if len(r) == len(head)]
+    for row in datatable[1:]:
+        wanted = {c.replace("-", " "): v for c, v in zip(datatable[0], row)}
+        assert any(all(g[c] == v for c, v in wanted.items()) for g in got), (wanted, world.out)
+
+
+@then("the totals over the sessions are printed side by side")
+def session_totals_side_by_side(world, datatable):
+    assert world.code == 0, world.err
+    printed = rows_of(world.out)
+    after = printed[[i for i, r in enumerate(printed) if r == ["total", "a", "b", "ratio"]][-1] + 1:]
+    for wanted in datatable[1:]:
+        assert list(wanted) in after, (wanted, world.out)
+
+
 @when("the session runs measure show for it")
 def runs_show(world, measure_run):
     if world.has_log:

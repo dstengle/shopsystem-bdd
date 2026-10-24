@@ -102,13 +102,16 @@ def work_items_of(rows, root):
 
 
 def sessions_found(directory, window):
-    """The sessions that start inside the window, and every session those dispatched."""
+    """The sessions active inside the window (a message inside it, whenever they started), and every session those
+    dispatched, each with its tokens, round trips, tool uses by tool name, dispatched sessions and compactions."""
     first, last = window
-    found = read_transcripts(directory)
-    inside = {s["session"] for s in found.values() if first and first <= s["start"] <= last}
-    chosen = [s for s in found.values() if s["session"] in inside or s["dispatched_by"] in inside]
+    found = sorted(read_transcripts(directory).values(), key=lambda s: s["start"])
+    inside = {s["session"] for s in found if first and any(first <= t <= last for t in s["times"])}
+    chosen = [s for s in found if s["session"] in inside or s["dispatched_by"] in inside]
     return [{"session": s["session"], "started": s["start"].isoformat(), "dispatched_by": s["dispatched_by"],
-             **{k: s[k] for k in KINDS}} for s in sorted(chosen, key=lambda s: s["start"])]
+             **{k: s[k] for k in KINDS}, "round_trips": s["round_trips"], "tool_uses": s["tool_uses"],
+             "dispatched": [c["session"] for c in found if c["dispatched_by"] == s["session"]],
+             "compactions": s["compactions"]} for s in chosen]
 
 
 def figures_of(initiative, root, sessions_dir=None):

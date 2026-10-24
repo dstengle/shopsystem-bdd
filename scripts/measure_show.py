@@ -11,7 +11,8 @@ TOTALS = (("stages", "stages"), ("sessions", "sessions"), ("output tokens", "out
 STAGES = ("work-item", "stage", "agent", "session", "took", "turns", "output_tokens", "new_input_tokens",
           "cache_read_tokens", "cost")
 ITEMS = ("work-item", "transitions", "awaiting_answer", "failed", "commits")
-SESSIONS = ("session", "started", "dispatched_by", "output_tokens", "new_input_tokens", "cache_read_tokens")
+SESSIONS = ("session", "started", "dispatched_by", "output_tokens", "new_input_tokens", "cache_read_tokens",
+            "round_trips", "tool_uses", "dispatched", "compactions")
 
 
 def totals_of(*given):
@@ -64,8 +65,23 @@ def show(path):
            section("work-items", ITEMS, figures.get("work_items", [])),
            "totals\n%s\n" % table(["total", "value"], [(n, totals.get(k)) for n, k in totals_of(totals)])]
     if "sessions" in figures:
-        out.append(section("sessions", SESSIONS, figures["sessions"]))
+        out.append(section("sessions", SESSIONS, [written(s) for s in figures["sessions"]]))
     return "\n".join(out)
+
+
+def written(one):
+    """A session entry with its tool uses as 'name count, ...' and its dispatched sessions as 'id, ...'."""
+    uses, sent = one.get("tool_uses"), one.get("dispatched")
+    return {**one, "tool_uses": None if uses is None else ", ".join("%s %s" % pair for pair in uses.items()),
+            "dispatched": None if sent is None else ", ".join(sent)}
+
+
+def session_totals(figures):
+    """The round trips, tool uses (every use of every tool) and compactions over a measurement's sessions."""
+    found = figures.get("sessions", [])
+    return {"round_trips": sum(s.get("round_trips", 0) for s in found),
+            "tool_uses": sum(sum(s.get("tool_uses", {}).values()) for s in found),
+            "compactions": sum(s.get("compactions", 0) for s in found)}
 
 
 def ratio(first, second):
@@ -75,7 +91,8 @@ def ratio(first, second):
 
 
 def compare(first, second):
-    one, two = figures_of(first).get("totals", {}), figures_of(second).get("totals", {})
+    given = figures_of(first), figures_of(second)
+    one, two = given[0].get("totals", {}), given[1].get("totals", {})
     rows = []
     for name, key in totals_of(one, two):
         if key == "time":
@@ -84,4 +101,10 @@ def compare(first, second):
         else:
             shown = (cell(one.get(key)), cell(two.get(key)))
         rows.append((name, *shown, ratio(one.get(key), two.get(key))))
-    return table(["total", "a", "b", "ratio"], rows) + "\n"
+    out = table(["total", "a", "b", "ratio"], rows) + "\n"
+    if any("sessions" in g for g in given):
+        a, b = session_totals(given[0]), session_totals(given[1])
+        names = (("round trips", "round_trips"), ("tool uses", "tool_uses"), ("compactions", "compactions"))
+        out += "\n" + table(["total", "a", "b", "ratio"],
+                            [(n, a[k], b[k], ratio(a[k], b[k])) for n, k in names]) + "\n"
+    return out

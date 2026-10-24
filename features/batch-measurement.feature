@@ -167,24 +167,6 @@ Feature: Batch measurement
       | stages | sessions | turns | round trips | output tokens | new input tokens | cache-read tokens | cost | time              |
       | 2      | 2        | 20    | 43          | 4000          | 2500             | 70000             | 0.60 | 1 hour 45 minutes |
 
-  @r43 @deprecated
-  Scenario: --sessions gives the sessions that start inside the window and every session they dispatched (deprecated)
-    Deprecated for: --sessions gives the sessions active inside the window, starting inside it or before it with a message inside it, and every session they dispatched
-    A session belongs to the initiative by when it started, and what it dispatched comes with it whenever that ran.
-    Given i7-cart's log.jsonl gives its first transition at 09:55 and its last at 11:40
-    And the directory sessions holds the transcripts
-      | session | starts | ends  | dispatched by | output tokens | new input tokens | cache-read tokens |
-      | s-8     | 09:30  | 10:10 |               | 700           | 300              | 9000              |
-      | s-9     | 11:00  | 12:30 |               | 9000          | 4000             | 80000             |
-      | s-11    | 12:00  | 12:20 | s-9           | 2500          | 1500             | 30000             |
-      | s-10    | 11:50  | 12:10 |               | 400           | 200              | 6000              |
-    When the session runs measure initiative i7-cart with --sessions sessions
-    Then the measurement gives the sessions
-      | session | output tokens | new input tokens | cache-read tokens |
-      | s-9     | 9000          | 4000             | 80000             |
-      | s-11    | 2500          | 1500             | 30000             |
-    And it gives neither s-8 nor s-10
-
   @r43
   Scenario: --sessions gives the sessions active inside the window, starting inside it or before it with a message inside it, and every session they dispatched
     A session belongs to the initiative when it worked inside the window, whenever it started, and what it dispatched comes with it whenever that ran.

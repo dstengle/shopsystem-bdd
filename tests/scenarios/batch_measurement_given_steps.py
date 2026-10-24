@@ -4,7 +4,15 @@ import json
 
 from pytest_bdd import given, parsers
 
-from .batch_measurement_transcripts import raw_session, slim_session, store_session
+from .batch_measurement_transcripts import (
+    compaction_rows,
+    counted_session,
+    raw_session,
+    slim_session,
+    store_session,
+    timed_session,
+    tool_use_rows,
+)
 from .batch_measurement_world import git, stamp
 
 
@@ -131,7 +139,40 @@ def session_took_turns(world, session, turns):
 @given(parsers.parse("the transcript of the session {session} holds {messages:d} assistant messages with "
                      "{requests:d} distinct request ids"))
 def store_transcript(world, session, messages, requests):
-    world.store[session] = store_session(session, messages, requests)
+    if session in world.directory:
+        parent, start, where = world.directory[session]
+        world.transcripts[where] = counted_session(session, parent, start, messages, requests)
+    else:
+        world.store[session] = store_session(session, messages, requests)
+
+
+def add_rows(world, session, make):
+    """Append to the directory transcript of `session` the rows `make(parent, start)` gives."""
+    parent, start, where = world.directory[session]
+    world.transcripts[where] += make(parent, start)
+
+
+def times_of(count):
+    return {"once": 1, "twice": 2}.get(count) or int(count.split()[0])
+
+
+@given(parsers.parse("the transcript of the session {session} holds the tool uses {uses}"))
+def holds_tool_uses(world, session, uses):
+    counted = {}
+    for part in uses.replace(" and ", ", ").split(", "):
+        name, count = part.split(" ", 1)
+        counted[name] = times_of(count)
+    add_rows(world, session, lambda parent, start: tool_use_rows(session, parent, start, counted))
+
+
+@given(parsers.parse("the transcript of the session {session} holds {count:d} compactions"))
+def holds_compactions(world, session, count):
+    add_rows(world, session, lambda parent, start: compaction_rows(session, parent, start, count))
+
+
+@given(parsers.parse("the transcript of the session {session} holds no compaction"))
+def holds_no_compaction(world, session):
+    assert session in world.directory
 
 
 @given(parsers.parse("no transcript of the session {session} can be found"))
@@ -167,9 +208,18 @@ def transcript_inside_with_trips(world, path, name, turns, trips, out, new, read
 
 @given("the directory sessions holds the transcripts")
 def directory_holds(world, datatable):
-    for session, starts, ends, parent, out, new, read in datatable[1:]:
+    for row in datatable[1:]:
+        got = dict(zip(datatable[0], row))
+        session, starts, parent = got["session"], got["starts"], got["dispatched by"] or None
         where = "sessions/%s/subagents/%s.jsonl" % (parent, session) if parent else "sessions/%s.jsonl" % session
-        world.transcripts[where] = slim_session(session, parent or None, starts, ends, int(out), int(new), int(read))
+        world.directory[session] = (parent, starts, where)
+        tokens = [int(got.get(k, 0)) for k in ("output tokens", "new input tokens", "cache-read tokens")]
+        if "messages at" in got:
+            world.transcripts[where] = timed_session(session, parent, got["messages at"].split(", "), *tokens)
+        elif "ends" in got:
+            world.transcripts[where] = slim_session(session, parent, starts, got["ends"], *tokens)
+        else:
+            world.transcripts[where] = timed_session(session, parent, [starts], *tokens)
 
 
 @given(parsers.parse("work-item cart-1's research stage, whose session's reply reads \"{reply}\""))

@@ -49,7 +49,8 @@ class World:
         self.rows = []
         self.sessions = {}          # session id -> (work-item, stage, session.json text)
         self.transcripts = {}       # path under the repository -> text
-        self.store = {}             # session id -> its transcript in Claude Code's store (the test's own)
+        self.directory = {}         # session id -> (dispatched by, start, path) of a session --sessions's directory holds
+        self.store = {}           # session id -> its transcript in Claude Code's store (the test's own)
         self.git_steps = []       # callables run in order, in the repository, after the log is written
         self.last = None            # the stage the latest Given gave: (work-item, stage, indexes of its log rows)
         self.stage_of = {}          # session id -> (work-item, stage)

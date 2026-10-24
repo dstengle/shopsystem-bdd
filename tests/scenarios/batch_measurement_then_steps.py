@@ -70,7 +70,7 @@ def stage_of(world, item, stage):
     return found[0]
 
 
-NUMBERS = {"turns": "turns", "round trips": "round_trips","output tokens": "output_tokens", "new input tokens": "new_input_tokens",
+NUMBERS = {"turns": "turns", "round trips": "round_trips", "output tokens": "output_tokens", "new input tokens": "new_input_tokens",
            "cache-read tokens": "cache_read_tokens"}
 
 
@@ -168,8 +168,25 @@ def gives_sessions(world, datatable):
     wanted = [dict(zip(datatable[0], row)) for row in datatable[1:]]
     assert sorted(got) == sorted(w["session"] for w in wanted), sorted(got)
     for row in wanted:
-        for column in ("output tokens", "new input tokens", "cache-read tokens"):
-            assert str(got[row["session"]][NUMBERS[column]]) == row[column], (row, got[row["session"]])
+        for column in [c for c in datatable[0] if c != "session"]:
+            have = got[row["session"]]
+            if column == "tool uses":
+                assert have["tool_uses"] == uses_of(row[column]), (row, have)
+            elif column == "dispatched":
+                assert have["dispatched"] == [s for s in row[column].split(", ") if s], (row, have)
+            else:
+                assert str(have[NUMBERS.get(column, column)]) == row[column], (row, have)
+
+
+def uses_of(text):
+    """'Read 5, Grep 3' as {'Read': 5, 'Grep': 3}."""
+    return {name: int(count) for name, count in (part.split(" ") for part in text.split(", "))}
+
+
+@then(parsers.parse("it gives none of {first}, {second} or {third}"))
+def gives_none_of(world, first, second, third):
+    found = [s["session"] for s in world.figures()["sessions"]]
+    assert not {first, second, third} & set(found), found
 
 
 @then(parsers.parse("it gives neither {first} nor {second}"))

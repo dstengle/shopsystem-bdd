@@ -123,15 +123,38 @@ def round_trips(session):
                 if who == session and not (row.get("agentId") or row.get("agent") or row.get("isSidechain"))})
 
 
+def tool_uses(message, path, number_):
+    """(key, tool name) of each tool-use block of a message; the name only, never the tool's input."""
+    content = message.get("content")
+    for index, block in enumerate(content if isinstance(content, list) else []):
+        if isinstance(block, dict) and block.get("type") == "tool_use":
+            if not (isinstance(block.get("name"), str) and block["name"]):
+                raise Refused("%s:%d has a tool use with no name; the shape of %s is not known" % (path, number_, path.name))
+            yield block.get("id") or (number_, index), block["name"]
+
+
+def compactions(path):
+    """The session or subagent id of each compaction row (a system row of subtype compact_boundary) in `path`."""
+    for number_, row in enumerate(json_rows(path), 1):
+        if row.get("type") == "system" and row.get("subtype") == "compact_boundary":
+            who = row.get("agentId", row.get("agent")) or row.get("sessionId", row.get("session"))
+            if not (who and row.get("timestamp", row.get("time"))):
+                raise Refused("%s:%d has no time or session; the shape of %s is not known" % (path, number_, path.name))
+            yield who
+
+
 def read_transcripts(directory):
-    """The sessions in the transcripts under `directory`: per session id its start, tokens and the session that
-    dispatched it. A row is Claude Code's own (timestamp, sessionId, agentId, message.usage) or the slim export's
-    (time, session, agent, usage); a subagent's rows name the session that dispatched it as their session."""
+    """The sessions in the transcripts under `directory`: per session id its start, the time of each of its messages,
+    tokens, round trips (distinct requests), tool uses by tool name, compactions and the session that dispatched it.
+    A row is Claude Code's own (timestamp, sessionId, agentId, message.usage) or the slim export's (time, session,
+    agent, usage); a subagent's rows name the session that dispatched it as their session."""
     sessions = {}
     for path in sorted(Path(directory).rglob("*.jsonl")):
-        requests = {}
+        requests, uses = {}, {}
         for number_, row, message, usage, stamp, who in assistant_rows(path):
             key = request_key(row, message, path, number_)
+            for use, name in tool_uses(message, path, number_):
+                uses[row.get("agentId", row.get("agent")) or who, use] = name
             old = requests.get(key)
             requests[key] = {
                 "who": who, "agent": row.get("agentId", row.get("agent")),
@@ -142,9 +165,18 @@ def read_transcripts(directory):
         for request in requests.values():
             ident = request["agent"] or request["who"]
             one = sessions.setdefault(ident, {"session": ident, "start": request["at"], "output_tokens": 0,
-                                              "new_input_tokens": 0, "cache_read_tokens": 0,
+                                              "new_input_tokens": 0, "cache_read_tokens": 0, "times": [],
+                                              "round_trips": 0, "tool_uses": {}, "compactions": 0,
                                               "dispatched_by": request["who"] if request["agent"] else None})
             one["start"] = min(one["start"], request["at"])
+            one["times"].append(request["at"])
+            one["round_trips"] += 1
             for kind in ("output_tokens", "new_input_tokens", "cache_read_tokens"):
                 one[kind] += request[kind]
+        for (ident, _), name in uses.items():
+            if ident in sessions:
+                sessions[ident]["tool_uses"][name] = sessions[ident]["tool_uses"].get(name, 0) + 1
+        for ident in compactions(path):
+            if ident in sessions:
+                sessions[ident]["compactions"] += 1
     return sessions

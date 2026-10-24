@@ -26,8 +26,10 @@ contract:
     and the commits its merge brought in; the totals over the stages' sessions
     and the time from the first transition to the last.
   - --sessions <dir> names a directory of Claude Code transcripts, raw or the
-    slim export: the measurement also gives each session that starts inside the
-    initiative's window, and each session those dispatched.
+    slim export: the measurement also gives each session active inside the
+    initiative's window (a message inside it), and each session those
+    dispatched, with round trips, tool uses by tool name, dispatches and
+    compactions.
   - It writes no prompt, reply or tool content. A file whose shape is not
     known is refused, naming it. An empty session.json is not refused: its
     stage is given without the session's figures, named as such.
