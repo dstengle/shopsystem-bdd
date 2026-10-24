@@ -281,3 +281,16 @@ skills of 0.25.0 still hold what R5 removes (both small-change paths, "If the pe
 delivering-an-initiative). On 2026-10-24 the coordinator followed integrating-a-proposal's small-change path for
 observation 2026-10-24-guarantees-work-item and the person stopped it: "I thought the small-change path had been
 eliminated so that this session doesn't write anything". R6 is outside this context.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-24-i24-delivery-gaps
+about: capability/supervision
+by: the coordinator, delivering i24 under the person's delegation ("Please get everying delivered. Do not stop to ask me questions or permission.")
+date: 2026-10-24
+
+Gaps `work run` showed while delivering i24, each worked around:
+- A task review's finding on a `done` work-item can only go back to the reviewer: `work answer` returns the work-item to the stage that asked (decision 0063), and a reviewer changes nothing, so w121's finding came back unchanged. w121 was withdrawn and redrafted as w125; w126's and w128's findings were accepted and drafted as fix work-items w148 and w149.
+- A scenario formulated before any work-item accepts it fails every other work-item's whole-suite run (r43 counts only scenarios an open work-item accepts): w125 stopped on phase B's and C's scenarios until their work-items were drafted.
+- `work run` given no `agent-vault run` cannot push (its pre-flight `git push --dry-run` fails), so every work-item it started failed before its research.
+- An implementer's run of a scenario that starts a nested `work run` loaded the main checkout's `scripts/work_items.py` through the inherited PYTHONPATH, so a change to `--work-item` was tested against the old code (fixed in 82ad81f, the supervision steps).
+- work-queue r23 is set by `work` commands only (the coordinator's ruling on w130): an initiative whose last work-item `work run` takes to green stays `started`.
+- A Scenario Outline was committed with no Examples table (requests r17) and `features bindings` and `model check` passed it.
