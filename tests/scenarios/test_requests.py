@@ -2,6 +2,7 @@
 from pytest_bdd import scenarios
 
 from .requests_steps import *
+from .requests_write_steps import *
 from .work_queue_git_steps import *
 
 scenarios("requests.feature")
