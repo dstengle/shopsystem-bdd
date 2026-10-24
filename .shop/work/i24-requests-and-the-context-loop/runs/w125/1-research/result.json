@@ -1,0 +1,9 @@
+{
+  "status": "DONE",
+  "summary": "w125 research done. The three accepted scenarios (r56, r64, r65) pass today (run). The open defect: under xdist (-n 2) a guarantees-only --work-item run with no test left exits 5 (run, probes 2 and 9), because the stash that exit 0 depends on is set only at collection, which the controller does not run. Mechanism read in scripts/work_items.py:112-113 and 128-131. The merge gate in scripts/supervise_merge.py:128-130 then refuses such a work-item's merge under xdist (read, not run end to end). Files to change: scripts/work_items.py (sessionfinish computes from the option, drop the stash) and tests/scripts/test_work_items.py (new -n 2 test). Test lists are by search: tools has no map. Full notes in notes.md.",
+  "fileset": [
+    "scripts/work_items.py",
+    "tests/scripts/test_work_items.py"
+  ],
+  "questions": []
+}
