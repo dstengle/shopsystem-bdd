@@ -236,3 +236,4 @@
 {"time": "2026-10-24T23:43:10+00:00", "work-item": "w134", "before": "drafted", "after": "researched", "by": "work run"}
 {"time": "2026-10-24T23:43:56+00:00", "work-item": "w133", "before": "failed", "after": "drafted", "by": "work retry"}
 {"time": "2026-10-24T23:43:56+00:00", "work-item": "w130", "before": "awaiting-answer", "after": "researched", "by": "work answer"}
+{"time": "2026-10-24T23:44:06+00:00", "work-item": "w126", "before": "awaiting-answer", "after": "done", "by": "work answer"}
