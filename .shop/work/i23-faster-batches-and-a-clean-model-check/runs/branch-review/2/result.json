@@ -1,0 +1,8 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Branch review 2 of i23, 1ad6281..3280486 (branch next). Eleven green work-items: w107-w109 and w113-w120.\nSuite: 724 passed, 0 failed at 3280486 in 16.09 s (parallel, -n auto; not in-process).\nEach green work-item's --work-item run passes. tools size prints nothing. features bindings is clean. features deprecated gives only i21's two (replacements withdrawn).\nThe model decisions --check / write agreement probe tried 60 cases, all agreeing; the suite still has no such test.\nReview 1's F1 (w109) is fixed by w119; the cross-initiative blocker scenario passes. F2 (ruff, w113) is fixed by w120.\nNew, Important, fix now (w119, G1): 27b455b committed 440 probe files from w119's research run directory.\nThose include 7 gitlinks (mode 160000) to commits that exist in no repository, with no .gitmodules, plus bare probe repositories with hooks.\nTwo probe scripts also make tools check --base exit 1 (ruff: 2 I001, 1 F401). Fix: git rm them and commit.\nNothing is Critical. No test was removed or weakened since review 1, and every allowance holds. Observations are carried in findings.md.",
+  "findings": "/home/vscode/shopsystem-bdd/.shop/worktrees/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": [
+    "Important, fix now, w119: .shop/work/i23-faster-batches-and-a-clean-model-check/runs/w119/1-research/ (commit 27b455b) holds probe_blocked.py, probe_other.py and probe_blocked_runs/ (440 files, 7 dangling gitlinks with no .gitmodules). tools check --base 1ad6281 exits 1 on them; remove them from the branch."
+  ]
+}
