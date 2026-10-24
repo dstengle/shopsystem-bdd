@@ -1,0 +1,26 @@
+{
+  "status": "QUESTION",
+  "summary": "Plan of w134 (supervision r66, r81, r82) written as far as it goes, in .shop/scratch/2-plan/plan.md.\nAll five scenario cases are red at missing steps; with no initiative, `work run` is a usage error today (notes P1).\nDecisions taken: select by open_names; checks run once; print each initiative's status and its nodes; error exit if any node is awaiting-answer or failed; side by side under one worker limit, one session per initiative; a capability-proposal counts as a node.\nNew module scripts/supervise_all.py plus a CLAUDE.md row; new steps module tests/scenarios/supervision_all_steps.py.\nTests broken: none (verified from the notes, part 4, and the r63 scenario at :694).\nQ1: r66's scenario needs gate rounds (r68 is w146's, r69 is w136's), which w134 does not accept.\nQ2: several initiatives on one checked-out branch: one shared branch and review, or one branch per initiative.",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/work",
+    "scripts/supervise.py",
+    "scripts/supervise_all.py",
+    "scripts/supervise_pool.py",
+    "scripts/supervise_worker.py",
+    "scripts/workqueue.py",
+    "scripts/workqueue_status.py",
+    "scripts/supervise_faults.py",
+    "scripts/supervise_merge.py",
+    "scripts/supervise_review.py",
+    "scripts/supervise_brief.py",
+    "tests/scenarios/supervision_all_steps.py",
+    "tests/scenarios/test_supervision.py",
+    "tests/scenarios/supervision_world.py",
+    "CLAUDE.md"
+  ],
+  "questions": [
+    "Who builds the gate rounds that r66's scenario (features/supervision.feature:957) needs? Its Thens ('the gate rounds of p1 and p2 ran at the same time', 'p1 and p2 are awaiting-answer') need supervision#r68 (accepted by w146) and #r69 (accepted by w136). w134 accepts neither and has no blocked_by. Reading A: w134 does only the selection, the side-by-side pulling and the exit, and gets blocked_by [w146, w136]. The narrator sees no gate round from any `work run` until those land, and w134 waits for them. Reading B: w134 also starts the gate round of a drafted proposal and moves the proposal to awaiting-answer when that round ends. The narrator sees `work run` start gate rounds as soon as w134 is merged, and w146 and w136 build on that.",
+    "Which branch do the initiatives of a no-initiative `work run` commit on? One checkout has one branch, and today the checked-out branch is the initiative branch (supervise.py:74). Reading A: every taken initiative commits and pushes on the one checked-out branch, and the run has one branch review over it. The narrator sees i1's and i2's transitions mixed on that branch and, under supervision#r50, one review that reads all of them, so the second initiative gets no review of its own. Reading B: each initiative has its own branch, which `work run` checks out or makes (no requirement says how). The narrator sees one branch and one branch review per initiative."
+  ]
+}
