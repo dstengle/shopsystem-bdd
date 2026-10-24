@@ -10,6 +10,7 @@ from pytest_bdd import given, parsers, scenarios, then, when
 from .migration_ledger_steps import *
 from .migration_old import CONTEXT, body, front, migrate, said
 from .migration_safety_steps import *
+from .migration_session_steps import *
 from .migration_spec_steps import *
 from .migration_upgrade_answers_steps import *
 from .migration_upgrade_steps import *
