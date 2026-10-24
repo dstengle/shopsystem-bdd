@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"r7 r15 r16 r17 r18 green (149 passed in --work-item w127). outcome refused in asker turn; turn sets awaiting-asker/upstream; steps added. Commit fce7a8c.","commits":["fce7a8c work outcome refused in the asker's turn; work turn sets awaiting-asker and awaiting-upstream"],"report":".shop/scratch/4-implement/report.md","questions":[]}
