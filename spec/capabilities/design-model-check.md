@@ -45,11 +45,11 @@ problem names the file.
 | [r35] | v_k6 | a capability-proposal argues more than one capability |
 | [r59] | v_d2 | an initiative is `abandoned` while a part of it, at any depth, is neither closed nor `withdrawn` |
 | [r113] | v16a | an initiative dated after 2026-10-23 fulfils no request |
-| [r114] | v_d1 | an initiative is `done` while a request it raised is not `delivered` |
+| [r114] | v_d1 | an initiative is `done` while a request kept in this context, whose asker is this context and whose `part_of` or `source` names the initiative, is not `delivered` |
 | [r119] | v_d3 | a request is `delivered` while the initiative that fulfils it is not `done` |
 | [r115] | v17 | a request neither is part of a job-thread nor cites an origin |
 | [r116] | v3 | a `delivered` request's resolution names a requirement the spec does not have |
-| [r117] | v18a, v18c | an id in this context's files resolves to a node under another context's `.shop/work/` |
+| [r117] | v18 | an id in this context's files has another context's path on a kind kept in `.shop/work/`, judged from the id alone |
 | [r52] | v_t1 | a requirement or a scenario mentions a word its context's glossary lists after `Not:`, named with the word and the term |
 | [r53] | v_t2 | two glossary entries have one term |
 | [r54] | v_t3 | a word one term lists after `Not:` is another term of the context, or the term itself |
