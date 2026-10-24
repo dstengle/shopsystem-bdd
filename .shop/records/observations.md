@@ -267,3 +267,17 @@ pins today's behaviour:
   repositories there, committed as 7 dangling gitlinks (removed in c9e1de6). It should keep regular files only.
 - F3 (branch review 1): when implementers working at the same time end together, r61 merges them one at a time, but
   not necessarily in the order they ended.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-24-context-loop-not-queued
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+by: the person ("I really don't understand where the work is that I've requested"), recorded by the coordinator
+date: 2026-10-24
+
+The design note 2026-10-23-requests-and-the-context-loop, approved by the person on 2026-10-23 (f9a5ed2), proposes
+section 1 (design model v4) and requests R1-R6. Section 1 went into docs/design-model/ without an initiative, on the
+person's direction (8ba0618), and shipped in 0.25.0; `model check` still checks the v3 rules. R1-R5 were never put
+in `.shop/work/`: no initiative, capability-proposal or request cites the note, so nothing kept them in view, and the
+skills of 0.25.0 still hold what R5 removes (both small-change paths, "If the person is talking to you", drafting in
+delivering-an-initiative). On 2026-10-24 the coordinator followed integrating-a-proposal's small-change path for
+observation 2026-10-24-guarantees-work-item and the person stopped it: "I thought the small-change path had been
+eliminated so that this session doesn't write anything". R6 is outside this context.
