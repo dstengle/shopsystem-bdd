@@ -1,0 +1,20 @@
+{
+  "status": "DONE",
+  "summary": "Research of w134 (supervision r66, r81, r82) finished; notes.md is in the run directory.\nAll 5 accepted scenario cases fail at their first Given: the step definitions do not exist.\nNo-initiative `work run` today is an argparse error (scripts/work:100, initiative required); supervise.Run takes one initiative.\nNo gate, apply or formulate round exists (0 hits in scripts/supervise*.py), so r66's scenario needs r68/r85 rounds that w134 does not accept.\nNo code reads a capability-proposal's status; r81's second row needs a reader.\nSingle-initiative output (prints_end, prints_statuses, exits) is verified sound; no test pins the usage error.\nPart 3 lists 15 old-form places (one initiative per Run: items, check, limit, lock, unlogged, branch review, print).\nProbes P1-P6 ran in scratch repos only: no-arg usage error, awaiting-answer initiative, proposal ignored, unknown initiative, workers=0, uncommitted .shop/work.\nNo defect found by the probes.\nOpen conflicts A-D (proposal rounds scope, print format, shared branch, proposal reader) are in part 7 with both readings.\nNo map exists, so every test list is by search. refs misses scripts/work (no .py).\ngit status --porcelain is empty after the run; the scratch dir is ignored.",
+  "fileset": [
+    "scripts/work",
+    "scripts/supervise.py",
+    "scripts/supervise_pool.py",
+    "scripts/workqueue_status.py",
+    "scripts/workqueue.py",
+    "scripts/supervise_worker.py",
+    "scripts/supervise_faults.py",
+    "scripts/supervise_merge.py",
+    "scripts/supervise_review.py",
+    "scripts/supervise_brief.py",
+    "tests/scenarios/test_supervision.py",
+    "tests/scenarios/supervision_world.py",
+    "CLAUDE.md"
+  ],
+  "questions": []
+}
