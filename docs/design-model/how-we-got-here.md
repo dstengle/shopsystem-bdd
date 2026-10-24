@@ -1,9 +1,10 @@
 # How we got here
 
-Date: 2026-10-14. A condensed account of the conversation that produced
-`design-model.md`, in the order the ideas arrived, with what each turn
-decided and what it later overturned. Two sessions: 23–29 September on
-specifying, 13 October on building.
+Date: 2026-10-14; later passes to 2026-10-24. A condensed account of the
+conversation that produced `design-model.md`, in the order the ideas
+arrived, with what each turn decided and what it later overturned. Two
+sessions: 23–29 September on specifying, 13 October on building; then
+the passes of 14, 15 and 23–24 October.
 
 ## September: why the specs worked
 
@@ -177,6 +178,43 @@ are code and outside the model.
 
 **Result.** version 3.
 
+## 23–24 October: requests and the context loop
+
+**The diagnosis.** Sessions were running long enough to need compaction,
+with far too much tool use in the session that talks to the person.
+Every actor in the workflow left its state in files a script reads back,
+except that session: its state lived in its context, its compaction
+summary and memory notes outside the repository, none of which anything
+verified. When `work run` had a gap, the cheapest route was that
+session's own tools, and nothing refused it. The remedy was not a smaller
+coordinator but none: work enters a bounded-context only as a request,
+the context's script takes every node through its transitions, and every
+exchange with a person is a question on a node and its answer.
+
+**What changed from version 3.** One tree became a chain of per-context
+trees. `part_of` no longer crosses a seam: v3's "a part may be owned by a
+different bounded-context than its initiative", and the upstream's
+fulfilment being `part_of` the cross-context-request, went. A request is
+fulfilled by one initiative of the upstream (`fulfils`), and done-ness
+composes through requests only, so a context reads its own files and the
+status of the requests it raised. The request is the only thing that
+crosses a seam; `needs TEXT` gave way to lines in strict EARS, negotiated
+line by line between asker and upstream, each side writing its part
+through the upstream's tool. Narrators became product-level roles shared
+across seams; terms stay each context's. Internal requests, citing
+origins, share the form and the ranked list. Initiative kinds collapsed
+to `capability-change` and `defect`, since `job` and `job-path` are
+threads at the product level. The trace runs through `fulfils` and the
+request. Three terms arrived (question, request, interactive work), and
+`initiative-round`'s "job" became "the round's kind".
+
+The move of the model to a product-level repository, planned since
+16 October, never happened; under v4 the model is a product-level
+artifact and the product level has no repository yet. That move is a
+later request.
+
+**Result.** version 4.
+
 ## Decisions that were made and unmade
 
 | introduced | replaced by | why |
@@ -201,6 +239,9 @@ are code and outside the model.
 | `decisions.md` authored | generated from decision files | two authored places drift |
 | generic names | scoped names | cognitive load |
 | requirements referenced by text; `rebind` | stable requirement ids | links that don't drift; the gate approves ids |
+| request's fulfilment as parts of the requesting initiative | the upstream's own initiative `fulfils` the request | `part_of` across a seam made one context depend on another's work-items |
+| `needs TEXT` on a thread or request | a request's lines in EARS, negotiated | demand is lines the upstream answers one by one, in its own terms |
+| initiative kinds `job`, `job-path` | job-threads at the product level | a context's initiative is never a job |
 
 ## Documents
 
@@ -209,7 +250,7 @@ are code and outside the model.
 | `spec-method.md` | the September method: five parts, learning path, traces, FAQ |
 | `stage-1-capabilities-and-features.md` | the first adoption step |
 | `kb-and-bdd-assessment.md` | the October assessment of the plugin and kb |
-| `design-model.md` | the model, version 2: standing artifacts, initiatives and parts, records, grammar |
+| `design-model.md` | the model, version 4: standing artifacts, requests, initiatives and parts, records, grammar |
 | `grammar.md` | the grammar formally: schema, Datalog constraints, lifecycles, sentence forms |
 | `ecommerce-example.md` | the model read as sentences |
 | `terms-and-flow.md` | an earlier draft; retired with version 2 |
