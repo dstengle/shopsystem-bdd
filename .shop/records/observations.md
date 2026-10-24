@@ -239,3 +239,31 @@ scenario is written, `model check` reports it under v_s3. The harness of decisio
 scenarios do not exist yet. The coordinator gave the person the misreading when recommending the ten closings; the
 person closed them on it. The closings stand until the person decides between building the scenarios (0030 kept) and
 superseding 0030 with guarantees checked by `measure`.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-24-guarantees-work-item
+about: capability/supervision
+by: the coordinator, after i23's delivery and the 0.25.0 release
+date: 2026-10-24
+
+A work-item whose accepted requirements are all guarantees (decision 0065) has no scenarios, and `--work-item` refuses
+it ("accepts none of the scenarios it collected"), so `work run` cannot deliver it. In i23, w111 (delivery#r17, r18:
+skill text) was implemented by a direct bdd-implementer dispatch, reviewed by the coordinator, merged by hand and
+withdrawn; the person accepted that delivery on 2026-10-24. 0.25.0 still refuses such a work-item (README, 0.25.0).
+Every later change to a workflow capability's lines meets the same refusal. The coordinator's proposal: `--work-item`
+accepts a work-item with no scenarios when every requirement it accepts is a guarantee, and the review stage judges it.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-24-i23-open-cases
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+by: the coordinator, from i23's formulation rounds and branch reviews
+date: 2026-10-24
+
+Cases i23 left unpinned by any line, with what the code does in 0.25.0. Each is a candidate for a small change that
+pins today's behaviour:
+- migration-tools r30/r31: a `.shop/plugin-version` holding only whitespace reads as empty ("it is empty"); a version
+  followed by more lines is refused, naming what the file holds; a missing file is no version recorded (0.23.1).
+- work-queue r15: an answer ending in a newline is refused (the answer is not trimmed before the check).
+- batch-measurement r59: a time with no `Z` and no offset is read as UTC.
+- O1 (branch review 2): `work run` keeps every file a stage leaves in its run directory; w119's researcher left probe
+  repositories there, committed as 7 dangling gitlinks (removed in c9e1de6). It should keep regular files only.
+- F3 (branch review 1): when implementers working at the same time end together, r61 merges them one at a time, but
+  not necessarily in the order they ended.
