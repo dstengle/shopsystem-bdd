@@ -131,6 +131,31 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 Only `initiative-round` has the Agent tool. A plugin agent's `hooks` and `permissionMode` are ignored, so a role's
 limits are its tools; under `work run` they are also its `--allowedTools`.
 
+## 0.25.0: work-items side by side, answers, and guarantees
+
+- **`work run` runs work-items side by side** (supervision r59-r63): research and plan stages of independent
+  work-items start at the same time, up to `workers` in `.shop/delivery.toml` (4 where it gives none). Implementers'
+  branches merge one at a time. A work-item whose `blocked_by` names one that is not `green`, in any initiative, gets
+  no worker. Each stage's `session.json` records the path of its transcript.
+- **Answers, not rulings** (decisions 0063, 0064): the status `awaiting-ruling` is `awaiting-answer`.
+  `work answer <work-item> <answer>` writes a one-line answer under the work-item's `## Answers` and returns it to the
+  status the stage that asked started from, so `work run` takes it up again.
+- **Workflow capabilities are guarantees** (decision 0065, superseding 0030 and 0043): the ten workflow capabilities
+  have no scenarios and are checked by `measure` on real batches.
+  `--work-item` still refuses a work-item with no scenarios: deliver such a work-item outside `work run`.
+- **`measure`** counts round trips, reads an empty `session.json`, Unicode line breaks in transcripts and times
+  ending in `Z`. The analysis tools answer with `--json`.
+- **`model check`**'s own gaps are fixed; a capability-proposal argues one capability.
+- **`delivering-an-initiative`** lists a proposal's `## Retires`, and stops before drafting when the formulation
+  added or reworded a scenario that no requirement of the initiative accepts.
+- **`tools install` pins ruff**; `tools check` is clean.
+- **Design model v4** is written in `docs/design-model/`: requests are the one way work enters a bounded context.
+  `model check` still checks the v3 rules until a later release implements v4.
+
+Upgrading a consuming repository from 0.24.0: update the plugin and start a session; accept the offered upgrade (or
+run `migrate upgrade` with a clean checkout). Its step "answers, not rulings" renames `awaiting-ruling` to
+`awaiting-answer` in work-items and `log.jsonl`, and `## Rulings` to `## Answers`.
+
 ## 0.24.0: work-items named by ids, and upgrades between plugin releases
 
 - **Work-items are named by ids** (decision 0061): `work add <initiative> <title>` drafts `w<n>`, `<n>` one above the

@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/workflow-capabilities-are-guarantees
 summary: "The ten workflow capabilities are guarantees, checked by `measure` on real batches as role-boundaries is, and their scenarios do not run as fixture sessions."
 date: 2026-10-23
-status: proposed
+status: accepted
 supersedes: [design-decision/workflow-scenarios-run-as-fixture-sessions, design-decision/fixture-scenarios-under-pytest-bdd]
 source: [design-decision/workflow-scenarios-run-as-fixture-sessions, design-decision/fixture-scenarios-under-pytest-bdd]
 by: "the person, 2026-10-23 (\"go with B\"), on the design note 2026-10-23-faster-batches-clean-model-check (i23), part 6; drafted under the delegation of the drafting decisions to the coordinator"

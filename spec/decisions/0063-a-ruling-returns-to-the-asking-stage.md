@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/a-ruling-returns-to-the-asking-stage
 summary: "A ruling returns the work-item from `awaiting-ruling` to the status the stage that asked its question started from, not always to `planned`."
 date: 2026-10-22
-status: proposed
+status: accepted
 source: [observation/2026-10-22-release-0-24-0, design-decision/work-item-lifecycle-as-run]
 by: "the person, 2026-10-22 (\"yes, do 1-6\"), delegating the drafting decisions to the coordinator; on the design note rulings, round trips and the analysis tools' query output"
 ---

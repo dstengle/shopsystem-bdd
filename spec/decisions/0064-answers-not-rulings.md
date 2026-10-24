@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/answers-not-rulings
 summary: "The person's answer to a work-item's question is an answer, not a ruling: the status `awaiting-ruling` is `awaiting-answer`, the command is `work answer <work-item> <answer>` and it writes under the work-item's `## Answers`."
 date: 2026-10-22
-status: proposed
+status: accepted
 source: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/a-ruling-returns-to-the-asking-stage, design-decision/missingmass.io/shopsystem/shopsystem-bdd/work-item-lifecycle-as-run]
 by: "the person, 2026-10-22 (\"Rename to 'answer' throughout\"), under the delegation of the drafting decisions to the coordinator"
 ---
