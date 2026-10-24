@@ -4,6 +4,7 @@
   migrate run --context <owner/product/context>
   migrate status [--hook]
   migrate upgrade
+  migrate compacting
 
 It works on the top level of the git repository it is run in. Every change is computed first (moves, new texts,
 removals), checked, and only then written; a write that fails part way puts the repository back at its commit. A
@@ -16,6 +17,7 @@ from pathlib import Path
 from migrate_layout import Plan, plan_ids, plan_moves
 from migrate_ledger import plan_ledger
 from migrate_spec import plan_capabilities, plan_holding, plan_index, plan_references
+from migrate_session import run as run_session
 from migrate_upgrade import run as run_upgrade
 from migrate_write import Failed, check_moves, top_level, uncommitted, write
 
@@ -59,9 +61,12 @@ def main(argv=None):
     r = sub.add_parser("run", help="make every mechanical change, or none")
     r.add_argument("--context", required=True, help="<owner/product/context>")
     s = sub.add_parser("status", help="print the plugin versions and each pending upgrade step")
-    s.add_argument("--hook", action="store_true", help="print what a session is told at its start, and exit 0")
+    s.add_argument("--hook", action="store_true", help="print what a session is told at its start (with work status of open initiatives), and exit 0")
     sub.add_parser("upgrade", help="apply each pending upgrade step and commit it all")
+    sub.add_parser("compacting", help="the PreCompact hook: note `compacted` in each open initiative's ledger, ask for a hand-off")
     args = ap.parse_args(argv)
+    if args.cmd == "compacting":
+        return run_session()
     if args.cmd in ("status", "upgrade"):
         return run_upgrade(args.cmd, getattr(args, "hook", False))
     return cmd_run(args)

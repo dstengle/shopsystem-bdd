@@ -458,14 +458,6 @@ Feature: Migration tools
     When the person starts a session in it
     Then the plugin's SessionStart hook tells the session to tell the person to update the plugin
 
-  @r24 @deprecated
-  Scenario: a session starting in a repository on the plugin's version is told nothing (deprecated)
-    Deprecated for: a session starting in a repository on the plugin's version whose every initiative is done or abandoned is told nothing
-    Pins that a repository that needs nothing adds nothing to a session's start.
-    Given a repository with .shop/ whose .shop/plugin-version is the plugin's version
-    When the person starts a session in it
-    Then the plugin's SessionStart hook tells the session nothing
-
   @r24
   Scenario: a session starting in a repository on the plugin's version whose every initiative is done or abandoned is told nothing
     Pins that a repository that needs nothing and has no open initiative adds nothing to a session's start.

@@ -15,6 +15,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/tools_check.py` | `check`: ruff, vulture, import-linter |
 | `scripts/tools_size.py` | `size`: tracked Python files over a line limit |
 | `scripts/features*.py` | the `features` command: Gherkin reading, editing, bindings, reports |
+| `scripts/migrate_session.py` | the hooks' text about initiatives: `work status` at SessionStart, `migrate compacting` at PreCompact |
 | `scripts/model*.py` | the `model` command: parsing, facts, checks, work, reports |
 | `scripts/work` with `scripts/workqueue.py` | the `work` command: the work-item queue, its statuses and log |
 | `scripts/workqueue_answer.py` | `work answer` |
