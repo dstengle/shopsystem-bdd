@@ -3,7 +3,7 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/supervision
 title: Supervision
 narrator: the person who started `work run`
 group: service
-rests_on: [design-decision/a-script-supervises-delivery, design-decision/worker-results-are-files, design-decision/work-item-lifecycle-as-run, design-decision/review-of-work-items, design-decision/the-file-set-is-the-claim, design-decision/the-v3-agents, design-decision/exits-are-successful-or-errors, design-decision/a-ruling-returns-to-the-asking-stage, design-decision/answers-not-rulings]
+rests_on: [design-decision/a-script-supervises-delivery, design-decision/worker-results-are-files, design-decision/work-item-lifecycle-as-run, design-decision/review-of-work-items, design-decision/the-file-set-is-the-claim, design-decision/the-v3-agents, design-decision/exits-are-successful-or-errors, design-decision/a-ruling-returns-to-the-asking-stage, design-decision/answers-not-rulings, design-decision/workflow-capabilities-are-guarantees]
 retired: []
 ---
 
@@ -47,7 +47,9 @@ from what using it shows.
 - [r21] **If** `work run` is started by a worker of another `work run`, then `work run` shall refuse, saying so.
 - [r22] `work run` shall give every pytest command it starts, and every worker's, the plugin's option `--work-item <name>`, which selects the scenarios the work-item accepts.
 - [r55] **When** a pytest command given `--work-item <name>` collects a test that is not a scenario, the option shall keep that test.
-- [r56] **If** a pytest command given `--work-item <name>` collects scenarios and none that the work-item accepts, then the option shall refuse, saying so.
+- [r56] **If** a pytest command given `--work-item <name>` collects scenarios and none that the work-item accepts, and a requirement the work-item accepts is not of a guarantees capability, then the option shall refuse, saying so.
+- [r64] **When** a pytest command given `--work-item <name>` collects scenarios and none that the work-item accepts, and every requirement the work-item accepts is of a guarantees capability, the option shall deselect each scenario it collects.
+- [r65] **When** a pytest command given `--work-item <name>` for a work-item every requirement of which is of a guarantees capability is left with no test, the command shall exit successfully.
 - [r23] **Where** the repository is inside the plugin's own directory, `work run` shall make each worker's worktree in a temporary directory outside it.
 - [r24] **When** `work run` starts an implementer, `work run` shall first run the whole suite in the implementer's worktree and say in the brief how it ended.
 - [r25] **When** `work run` writes a worker's brief, `work run` shall name in it the plugin's scripts directory, the initiative branch's base, the worker's worktree and its work-item branch.
@@ -95,6 +97,7 @@ from what using it shows.
 - The transitions from `planned` to `ready` and from `ready` to `claimed` have no guard beyond the lifecycle's.
 - Commit message `work: <work-item> <before> -> <after>`. Exit code 0 every work-item `green` or `withdrawn`, 3 awaiting an answer, 1 otherwise.
 - The commands for the work-item's scenarios and the suite: `python3 -m pytest -q -p work_items --work-item <name>` (the plugin's `scripts/work_items.py` on `PYTHONPATH`) and `python3 -m pytest -q -rfEx -p work_items --work-item <name> --whole-suite`, `-n auto` where pytest-xdist is there; `.shop/delivery.toml`'s `[tests]` replaces them. `--whole-suite` keeps every test and marks as xfail each scenario r43 counts as expected; a worker's pytest gets `--work-item <name>` through `PYTEST_ADDOPTS`.
+- r56, r64, r65: a guarantees capability is one whose frontmatter has `group: guarantees` (design-decision/workflow-capabilities-are-guarantees).
 - The push is verified by `git push --dry-run` to the initiative branch's upstream remote, else `origin`; a repository `work run` delivers has that remote. A fault is recorded under the work-item's `## Faults`. The n-th bullet of `## Answers` answers the n-th of `## Questions`.
 - `log.jsonl` also gets a `push verified` line for each push verification, and a `suite` line for each whole-suite run before a merge.
 - A failed commit of a fault's transition ends `work run` as r10's exit does, with an error saying why, not with a traceback.

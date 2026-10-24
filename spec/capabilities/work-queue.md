@@ -3,7 +3,7 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue
 title: Work queue
 narrator: a person, session or script reading work-items or writing their transitions
 group: service
-rests_on: [design-decision/work-file-forms, design-decision/work-item-lifecycle-as-run, design-decision/the-file-set-is-the-claim, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/work-retry-reads-the-log, design-decision/query-commands-answer-in-their-output, design-decision/work-items-named-by-ids, design-decision/a-ruling-returns-to-the-asking-stage, design-decision/answers-not-rulings]
+rests_on: [design-decision/work-file-forms, design-decision/work-item-lifecycle-as-run, design-decision/the-file-set-is-the-claim, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/work-retry-reads-the-log, design-decision/query-commands-answer-in-their-output, design-decision/work-items-named-by-ids, design-decision/a-ruling-returns-to-the-asking-stage, design-decision/answers-not-rulings, design-decision/the-ledger-is-tracked]
 retired: [r2]
 ---
 
@@ -11,8 +11,9 @@ retired: [r2]
 
 ## Purpose
 `scripts/work` keeps the work-queue of a bounded context in `.shop/work/`: it drafts work-items, shows them, and
-writes their transitions through their lifecycle, logging every transition. It is the only writer of a work-item's status; `work run`
-(supervision) takes them through it. It judges nothing. A walking skeleton
+writes their transitions through their lifecycle, logging every transition; it prints where an initiative stands,
+for a session to start from, and appends notes to an initiative's ledger. It is the only writer of a work-item's
+status; `work run` (supervision) takes them through it. It judges nothing. A walking skeleton
 (design-decision/behaviour-lines-are-ears): it grows from what using it shows.
 
 ## Behaviour
@@ -20,6 +21,12 @@ writes their transitions through their lifecycle, logging every transition. It i
 - [r12] `work add` shall number a new work-item's id `w<n>` with `<n>` one above the highest `<n>` of any work-item under `.shop/work/`, in any initiative and any status.
 - [r3] **When** `work show` is run, `work` shall print each work-item of every initiative under `.shop/work/` with its status.
 - [r11] **Where** `--json` is given, `work show` shall print its result, each work-item with its initiative and status, as one JSON object.
+- [r16] **When** `work status <initiative>` is run, `work` shall print the initiative's status, each of its capability-proposals with its status, each of its work-items with its status and its open questions, the initiative branch and whether the remote has every commit of it, each file uncommitted in the checkout, the last ten lines of the initiative's ledger, and the ledger's last line that begins `next:`.
+- [r17] **When** `work status` is run with no initiative, `work` shall print what r16 gives for each initiative that is neither `done` nor `abandoned`.
+- [r18] **Where** `--json` is given, `work status` shall print its result as one JSON object.
+- [r19] **When** `work note <initiative> <line>` is run, `work` shall append the line, with the date, to the initiative's ledger `.shop/work/<initiative>/ledger.md`.
+- [r20] **When** `work note` appends a line to an initiative's ledger, `work` shall commit the ledger on the current branch.
+- [r21] **If** the line given to `work note` has in it one of Unicode's mandatory line breaks, U+000A (LF), U+000B (VT), U+000C (FF), U+000D (CR), U+0085 (NEL), U+2028 or U+2029, then `work` shall exit with an error, saying that a note is one line, and change nothing.
 - [r4] **When** `work` makes a work-item's transition, `work` shall write the new status into the work-item's file.
 - [r5] **When** `work` makes a work-item's transition, `work` shall append a line to `.shop/work/<initiative>/log.jsonl` with the time, the work-item, the status before and after, and who made the transition.
 - [r6] **If** a work-item's status in its file is not the last status `log.jsonl` gives it, then `work` shall refuse the transition, naming the file and both statuses.

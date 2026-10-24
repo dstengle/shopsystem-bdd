@@ -3,8 +3,8 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/delivery
 title: Delivery
 narrator: the person delivering an initiative
 group: guarantees
-rests_on: [design-decision/a-script-supervises-delivery, design-decision/gate-on-behaviour-lines, design-decision/formulation-needs-no-second-approval, design-decision/spec-writers-blind-to-code, design-decision/review-of-work-items, design-decision/the-session-keeps-the-gate, design-decision/workflow-capabilities-are-guarantees]
-retired: []
+rests_on: [design-decision/a-script-supervises-delivery, design-decision/gate-on-behaviour-lines, design-decision/formulation-needs-no-second-approval, design-decision/spec-writers-blind-to-code, design-decision/review-of-work-items, design-decision/the-session-keeps-the-gate, design-decision/workflow-capabilities-are-guarantees, design-decision/the-ledger-is-tracked]
+retired: [r16]
 ---
 
 # Delivery
@@ -32,8 +32,7 @@ files, never the code, and reads what `work run` ends with, never what its worke
 - [r12] **When** a fix needs a new scenario or a new row of a scenario's examples, `delivering-an-initiative` shall send it to the `feature-formulator` through a `formulate` round of `initiative-round`, never to the implementer.
 - [r13] **When** `delivering-an-initiative` dispatches an agent, `delivering-an-initiative` shall ask it to reply in a few lines and leave the rest in files.
 - [r14] **When** a dispatch `delivering-an-initiative` started has replied, `delivering-an-initiative` shall read a file the dispatch wrote only to decide what to do next.
-- [r15] **When** the person gives an answer, `delivering-an-initiative` shall append one line naming it to the initiative's ledger `.shop/scratch/run/ledger-<initiative>.md`.
-- [r16] **When** `work run` exits with every work-item of the initiative `green` or `withdrawn`, `delivering-an-initiative` shall archive the initiative's ledger under `.shop/records/archive/`.
+- [r15] **When** the person gives an answer, `delivering-an-initiative` shall append one line naming it to the initiative's ledger with `work note`.
 
 ## Implementation, may change
 - `skills/delivering-an-initiative/SKILL.md`. It shows the drafted work-items as one table (name, accepts, risk);

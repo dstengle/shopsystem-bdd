@@ -91,6 +91,7 @@ Tools the skills and agents run:
 - **brief**: the input data `work run` writes for one worker in its stage directory, naming the work-item, the files to read, the worktree and where the result goes. Not: task file.
 - **check**: a command a work-item names in place of scenarios, whose exit code 0 shows its work complete. Not: criterion.
 - **claim**: the tracked files a `claimed` work-item holds: those its file set covers and any added with `work claim`; no two claims share a file. Not: lock, reservation.
+- **compaction**: Claude Code's replacement of a session's earlier messages by a summary, recorded in its transcript.
 - **delivery**: one invocation of `work run` on an initiative, from its start until it exits.
 - **deprecated scenario**: a scenario kept in its feature file, tagged `@deprecated`, after its line is changed or removed, until its replacement passes; it formulates no requirement. Not: held, holding, superseded.
 - **dispatch**: a session another session starts with its Agent tool, and the transcript it leaves. Not: subagent.
@@ -99,10 +100,11 @@ Tools the skills and agents run:
 - **fault**: a failure outside a worker's work that stops a stage: a push or git command failing, a worker changing a file under `.shop/work/` outside its stage directory, or a worker's session ending in an error, at its turn limit or without a result `work run` can read.
 - **file set**: the paths, globs or directories a work-item says its work changes: drafted with it, revised by its researcher and fixed by its planner. Not: fileset, scope.
 - **gate**: the person's approval of Behaviour lines and glossary entries before they are committed to `spec/`, with the questions they raise. Not: sign-off.
+- **guarantees capability**: a capability of the group guarantees, checked by `measure` on real batches and not by scenarios.
 - **hand-back**: an implementer's stop with the outcome `HAND-BACK`, giving the condition and its evidence word for word. Not: handback.
 - **initiative branch**: the branch `work run` commits each transition on and merges each work-item branch into; its base is the commit it started from. Not: integration branch.
 - **input**: what a session is started with: input data, such as a brief, or an input prompt, the text filled from a template.
-- **ledger**: the file `.shop/scratch/run/ledger-<initiative>.md` of one initiative, one line an event, archived under `.shop/records/archive/` when the initiative's work ends.
+- **ledger**: the tracked file `.shop/work/<initiative>/ledger.md` of one initiative, one line an event, archived with the initiative.
 - **measurement**: a record under `.shop/records/measurements/` that `measure` writes for one initiative's deliveries, or that a trial writes. Not: facts file.
 - **outcome**: the one word a worker's result gives: `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `HAND-BACK`, `QUESTION` or `NEEDS_CONTEXT`. Not: verdict.
 - **plugin version**: the plugin release a repository on the final layout is on, recorded as one line in `.shop/plugin-version`.
@@ -122,11 +124,12 @@ Tools the skills and agents run:
 - **status**: a node's place in its kind's lifecycle (a work-item's, a capability-proposal's, a decision's), written in its frontmatter; a work-item's are `drafted`, `researched`, `planned`, `ready`, `claimed`, `done`, `green`, `awaiting-answer`, `failed` and `withdrawn`; a capability-proposal's are `drafted`, `approved`, `formulated`, `merged` and `withdrawn`. Not: state.
 - **suite**: every test `python3 -m pytest` runs from the root by default. Not: fast suite.
 - **template**: standing text in a skill or an agent definition that a session fills with input to start another session. Not: boilerplate.
+- **tool use**: one call of a tool in a session's transcript, named by the tool.
 - **transition**: one change of a work-item's status, written by `work` and logged in `log.jsonl`. Not: move.
 - **trial**: one run by the `trial-runner` of a plugin tool or `work run` on a real target or a fixture repository, measuring what its input names.
 - **upgrade**: what `migrate upgrade` does to a repository on the final layout to take it from one plugin release to the next: it applies the pending upgrade steps.
 - **upgrade step**: one change to a repository's files that the plugin holds with the version that introduced it and a one-line description, pending for a repository when its version is above the repository's plugin version and at or below the plugin's.
-- **work-item**: the unit of delivery under a capability-proposal, named by its id `w<n>`, complete when the scenarios it accepts or its check pass, taken through its stages by `work run`.
+- **work-item**: the unit of delivery under a capability-proposal, named by its id `w<n>`, complete when the scenarios it accepts or its check pass, or, where every requirement it accepts is of a guarantees capability, when its review passes, taken through its stages by `work run`.
 - **work-item branch**: the branch an implementer commits a work-item's work on, from the initiative branch's head, merged into the initiative branch and deleted when it is merged.
 - **worker**: a session `work run` starts with `claude -p` for one stage of one work-item, as that stage's agent; the branch reviewer, owning no work-item, is not one.
 

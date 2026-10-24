@@ -3,7 +3,7 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration
 title: Spec integration
 narrator: the person at the gate
 group: guarantees
-rests_on: [design-decision/one-spec-per-context, design-decision/gate-on-behaviour-lines, design-decision/spec-writers-blind-to-code, design-decision/controller-per-spec-round, design-decision/light-decisions, design-decision/references-are-ids, design-decision/the-session-keeps-the-gate, design-decision/workflow-capabilities-are-guarantees]
+rests_on: [design-decision/one-spec-per-context, design-decision/gate-on-behaviour-lines, design-decision/spec-writers-blind-to-code, design-decision/controller-per-spec-round, design-decision/light-decisions, design-decision/references-are-ids, design-decision/the-session-keeps-the-gate, design-decision/workflow-capabilities-are-guarantees, design-decision/the-ledger-is-tracked]
 retired: [r5, r9, r18]
 ---
 
@@ -41,7 +41,7 @@ the person talks to, each round a fresh dispatch of `initiative-round`, which di
 - [r37] **When** the job `gate` replies, `integrating-a-proposal` shall publish the gate page from the files under `<drafts path>/gate/`.
 - [r38] **While** the gate page is published, `integrating-a-proposal` shall read only the person's answers, none of the rounds' drafts.
 - [r39] **When** `initiative-round` runs the job `apply` with the file of the person's answers, or with the person's approval in their words, `initiative-round` shall apply exactly the drafts the person approved.
-- [r40] **When** `initiative-round` finishes a round, `initiative-round` shall append one line to the initiative's ledger `.shop/scratch/run/ledger-<initiative>.md`, naming the job, the round, and what the round ended with or the answers it applied.
+- [r40] **When** `initiative-round` finishes a round, `initiative-round` shall append one line to the initiative's ledger with `work note`, naming the job, the round, and what the round ended with or the answers it applied.
 - [r41] **When** `integrating-a-proposal` dispatches an agent, `integrating-a-proposal` shall ask it to reply in a few lines and leave the rest in files.
 - [r42] **When** a dispatch `integrating-a-proposal` started has replied, `integrating-a-proposal` shall read a file the dispatch wrote only to decide what to do next.
 - [r33] **If** `integrating-a-proposal` cannot do what it was asked, then `integrating-a-proposal` shall stop, saying why, and change nothing under `spec/`.

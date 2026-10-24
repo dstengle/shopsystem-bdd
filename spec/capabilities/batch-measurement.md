@@ -35,14 +35,17 @@ no prompt, reply or tool content, and refuses rather than guesses when its input
 - [r55] **If** a stage's session has no transcript `measure` can find, **then** `measure initiative` shall give the stage without its round trips.
 - [r41] `measure initiative` shall give, for each work-item, its transitions, how many times it went to `awaiting-answer` and to `failed`, and the commits merged into the initiative branch for it.
 - [r42] `measure initiative` shall give the totals over the initiative: stages, sessions, turns, round trips, tokens of each kind, cost, and the time from the first transition to the last.
-- [r43] **Where** `--sessions <dir>` names a directory of transcripts, `measure initiative` shall also give each session found there inside the initiative's window, and each session it dispatched, with its tokens of each kind.
+- [r43] **Where** `--sessions <dir>` names a directory of transcripts, `measure initiative` shall also give each session found there that is active inside the initiative's window, starting inside it or starting before it with a message inside it, and each session it dispatched, with its tokens of each kind.
+- [r60] **Where** `--sessions <dir>` is given, `measure initiative` shall give, for each session it gives, its round trips, its tool uses by tool name, the sessions it dispatched, and the number of compactions its transcript holds.
 - [r49] `measure` shall write no prompt, reply or tool content into the measurement.
 
 ### Reading measurements
 - [r44] **When** `measure show <record>` is run, `measure` shall print the measurement's figures as tables.
 - [r54] **When** `measure show <record>` is run, `measure` shall print each stage's round trips beside its turns.
 - [r56] **When** `measure show <record>` is run on a measurement that gives no round trips, `measure` shall print its stages without them.
+- [r61] **When** `measure show <record>` is run on a measurement that gives sessions, `measure` shall print each session's round trips, tool uses, dispatches and compactions beside its tokens.
 - [r45] **When** `measure compare <a> <b>` is run, `measure` shall print the two measurements' totals side by side with the ratio of the second to the first.
+- [r62] **When** `measure compare <a> <b>` is run on measurements that give sessions, `measure` shall print the sessions' totals of round trips, tool uses and compactions side by side with the ratio of the second to the first.
 
 ## Implementation, may change
 - A measurement is a record whose frontmatter id is of kind `measurement`; its figures are one JSON block in its
@@ -63,7 +66,6 @@ no prompt, reply or tool content, and refuses rather than guesses when its input
   initiative branch.
 - r42: the totals are over the stages' sessions only, with or without `--sessions`, and a stage with a start and no
   end counts in them.
-- r43: a session is inside the initiative's window when it starts inside it.
 - r43: each session it dispatched is each session dispatched by a session found inside the window, wherever its
   dispatches fall in time.
 

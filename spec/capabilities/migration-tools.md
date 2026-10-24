@@ -3,7 +3,7 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/migration-tools
 title: Migration tools
 narrator: a person or session migrating a repository to the final layout or upgrading it between plugin releases
 group: service
-rests_on: [design-decision/migration-in-one-pass, design-decision/living-plan-to-work-items, design-decision/final-layout, design-decision/references-are-ids, design-decision/capability-ids-are-context-scoped, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/upgrades-between-plugin-releases, design-decision/work-items-named-by-ids, design-decision/answers-not-rulings]
+rests_on: [design-decision/migration-in-one-pass, design-decision/living-plan-to-work-items, design-decision/final-layout, design-decision/references-are-ids, design-decision/capability-ids-are-context-scoped, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/upgrades-between-plugin-releases, design-decision/work-items-named-by-ids, design-decision/answers-not-rulings, design-decision/the-ledger-is-tracked]
 retired: []
 ---
 
@@ -41,7 +41,7 @@ that knows the old layout, and it decides nothing that needs judgment. A walking
 - [r20] **When** `migrate upgrade` is run, `migrate` shall apply each pending upgrade step, oldest first, write the plugin's version into `.shop/plugin-version`, and commit all of it in one commit that names each step.
 - [r22] **When** a session starts in a repository with `.shop/` for which an upgrade step is pending, the plugin's SessionStart hook shall tell the session to offer the person the upgrade, naming both versions and each pending upgrade step, and to run `migrate upgrade` only on the person's yes.
 - [r23] **When** a session starts in a repository with `.shop/` whose plugin version is above the plugin's, the plugin's SessionStart hook shall tell the session to tell the person to update the plugin.
-- [r24] **When** a session starts in a repository with `.shop/` for which no upgrade step is pending and whose plugin version is not above the plugin's, the plugin's SessionStart hook shall tell the session nothing.
+- [r24] **When** a session starts in a repository with `.shop/` for which no upgrade step is pending, whose plugin version is not above the plugin's and that has no initiative that is neither `done` nor `abandoned`, the plugin's SessionStart hook shall tell the session nothing.
 - [r25] **When** `migrate upgrade` applies the 0.24.0 upgrade step "work-items named by ids", `migrate` shall give every work-item under `.shop/work/` the id `w<n>`, numbered from 1 in the order of its initiative's number and, within one initiative, of its file name.
 - [r26] **When** the 0.24.0 upgrade step gives a work-item its id, `migrate` shall rename with git its file to `w<n>.md` and its `runs/<name>/` to `runs/w<n>/`, write its frontmatter `id` as `work-item/<context path>/w<n>`, keep its `# ` heading or, where it has none, write its old name as one, rewrite its old name to its id in its initiative's `log.jsonl` `work-item` fields and in every work-item's `blocked_by`, `depends_on` and `for` that names it, a name several initiatives hold being the naming work-item's own initiative's, and leave free text in records as it is.
 - [r27] **When** `migrate upgrade` is run on a repository with no uncommitted changes and finds no pending upgrade step, `migrate` shall say so, exit successfully and change nothing.
@@ -49,6 +49,11 @@ that knows the old layout, and it decides nothing that needs judgment. A walking
 - [r29] **When** `migrate upgrade` applies the upgrade step of the plugin version after 0.24.0, `migrate` shall rename the status `awaiting-ruling` to `awaiting-answer` in every work-item's file under `.shop/work/` and every `log.jsonl` line, and each work-item's `## Rulings` to `## Answers`.
 - [r30] **If** `.shop/plugin-version` holds no version, then `migrate status` and `migrate upgrade` shall exit with an error, saying that the file holds no version and naming, for an empty file, that the file is empty and, for a file with other text in it, what it holds, and change nothing.
 - [r31] **When** a session starts in a repository with `.shop/` whose `.shop/plugin-version` holds no version, the plugin's SessionStart hook shall tell the session to tell the person that the file holds no version, naming, for an empty file, that the file is empty and, for a file with other text in it, what it holds.
+
+### The session's start and compaction
+- [r32] **When** a session starts in a repository with an initiative that is neither `done` nor `abandoned`, the plugin's SessionStart hook shall give the session what `work status` prints for each such initiative.
+- [r33] **When** a session is about to be compacted in a repository with an initiative that is neither `done` nor `abandoned`, the plugin's PreCompact hook shall append `compacted`, with the time, to the ledger of each such initiative.
+- [r34] **When** a session is about to be compacted in a repository with an initiative that is neither `done` nor `abandoned`, the plugin's PreCompact hook shall tell the session to write its hand-off with `work note` and end instead of being compacted.
 
 ## Implementation, may change
 - r17's `by`: the entry's source, then `; supersedes <id> <qualifier>`.
