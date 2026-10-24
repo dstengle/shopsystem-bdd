@@ -669,6 +669,15 @@ Feature: Supervision
     When the person runs `work run i1`
     Then no worker was started for w1
 
+  @r63
+  Scenario: a worker is started for a work-item whose blocked_by names a green work-item of another initiative
+    Pins that a work-item's blocked_by is read across initiatives, so a blocker that is green in another initiative does not stop its work-item.
+    Given i1's work-item w1 is drafted, its blocked_by naming w2
+    And an initiative i2 under .shop/work/ whose work-item w2 is green
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then a worker was started for w1
+
   @r38
   Scenario: `work run` pushes the initiative branch after each commit it makes on it
     Pins that no committed transition or merge is left only on the machine.
