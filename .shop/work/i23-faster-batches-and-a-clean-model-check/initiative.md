@@ -4,7 +4,7 @@ title: Faster batches and a clean model check
 summary: work run runs independent work-items side by side; drafting and work run stop the causes of i22's questions and rework; measure reads what i22 left; model check's own gaps and the small spec defects it finds are fixed; the workflow capabilities' scenarios are settled.
 kind: capability-change
 owner-level: shopsystem-bdd
-status: proposed
+status: done
 priority: 1
 source: [observation/2026-10-23-decision-0030-misread, observation/2026-10-23-hung-worker]
 date: 2026-10-23
