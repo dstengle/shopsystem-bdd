@@ -123,6 +123,30 @@ Feature: Design model check
     When `model why` is run for thing#r2
     Then it prints the proposal as adding it
 
+  @r19 @deprecated
+  Scenario Outline: model reads the repository's files under its root (deprecated)
+    Deprecated for: model reads the repository's files under its root
+    Pins which files of a repository model reads, and that the root is the current directory unless --root names one.
+    Given a repository in a directory that has <file>
+    When `model facts` is run <how>
+    Then the facts printed <facts> what <file> contains
+
+    Examples:
+      | file                               | how                                   | facts           |
+      | spec/index.md                      | with --root naming that directory     | include         |
+      | spec/capabilities/thing.md         | with --root naming that directory     | include         |
+      | features/sub/thing.feature         | with --root naming that directory     | include         |
+      | spec/decisions/0001-one.md         | with --root naming that directory     | include         |
+      | spec/decisions/index.md            | with --root naming that directory     | do not include  |
+      | .shop/work/i1/initiative.md        | with --root naming that directory     | include         |
+      | .shop/records/observations.md      | with --root naming that directory     | include         |
+      | .shop/records/review/f1.md with an id | with --root naming that directory  | include         |
+      | .shop/records/review/f2.md with no id | with --root naming that directory  | do not include  |
+      | decisions/0001-one.md              | with --root naming that directory     | do not include  |
+      | work/i1/initiative.md              | with --root naming that directory     | do not include  |
+      | records/observations.md            | with --root naming that directory     | do not include  |
+      | spec/capabilities/thing.md         | from that directory with no --root    | include         |
+
   @r19
   Scenario Outline: model reads the repository's files under its root
     Pins which files of a repository model reads, and that the root is the current directory unless --root names one.
@@ -138,6 +162,7 @@ Feature: Design model check
       | spec/decisions/0001-one.md         | with --root naming that directory     | include         |
       | spec/decisions/index.md            | with --root naming that directory     | do not include  |
       | .shop/work/i1/initiative.md        | with --root naming that directory     | include         |
+      | .shop/work/requests/q1.md          | with --root naming that directory     | include         |
       | .shop/records/observations.md      | with --root naming that directory     | include         |
       | .shop/records/review/f1.md with an id | with --root naming that directory  | include         |
       | .shop/records/review/f2.md with no id | with --root naming that directory  | do not include  |
@@ -801,3 +826,63 @@ Feature: Design model check
     Given a repository with no spec/decisions/
     When `model decisions` is run
     Then spec/decisions/index.md is written with its header and no row
+
+  @r113
+  Scenario: an initiative dated after 2026-10-23 that fulfils no request is v16a
+    Pins that from 2026-10-24 on every initiative fulfils a request, and that one dated on or before 2026-10-23 need not.
+    Given an initiative i1 dated 2026-10-24 that fulfils no request
+    And an initiative i2 dated 2026-10-23 that fulfils no request
+    And an initiative i3 dated 2026-10-24 that fulfils the request q1
+    When `model check` is run
+    Then v16a names i1
+    And v16a does not name i2 or i3
+
+  @r119
+  Scenario: a delivered request whose initiative is not done is v_d3
+    Pins that a request is delivered only while the initiative that fulfils it is done.
+    Given a delivered request q1
+    And an initiative i1 with status started that fulfils q1
+    When `model check` is run
+    Then v_d3 names q1
+    And once i1 is done, v_d3 does not name q1
+
+  @r115
+  Scenario: a request that is part of no job-thread and cites no origin is v17
+    Pins that every request says where it comes from.
+    Given a request q1 that is part of no job-thread and cites no origin
+    And a request q2 that cites an observation as its origin
+    When `model check` is run
+    Then v17 names q1
+    And v17 does not name q2
+
+  @r116
+  Scenario: a delivered request whose resolution names a requirement the spec does not have is v3
+    Pins that a resolution names only requirements the spec has.
+    Given a capability thing with requirement r1 and no requirement r9
+    And a delivered request q1 whose resolution names thing#r9
+    And a delivered request q2 whose resolution names thing#r1
+    When `model check` is run
+    Then v3 names q1 and thing#r9
+    And v3 does not name q2
+
+  @r112
+  Scenario: a request not of the form `work request` writes is a file problem
+    Pins that `model check` reads a request only in the form `work request` gives it.
+    Given a request in .shop/work/requests/q1.md with no asker
+    And a request in .shop/work/requests/q2.md that `work request` wrote
+    When `model check` is run
+    Then it prints a file problem naming .shop/work/requests/q1.md
+    And it prints no file problem naming .shop/work/requests/q2.md
+
+  @r118
+  Scenario Outline: an initiative of kind job or job-path is a file problem
+    Pins that job and job-path are not kinds an initiative may have.
+    Given a repository with an initiative in .shop/work/i1/initiative.md of kind <kind>
+    When `model check` is run
+    Then it <prints> a file problem naming .shop/work/i1/initiative.md
+
+    Examples:
+      | kind              | prints         |
+      | job               | prints         |
+      | job-path          | prints         |
+      | capability-change | does not print |

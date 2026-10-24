@@ -31,6 +31,18 @@ Feature: Work queue
     And .shop/work/i1/w5.md is a drafted work-item whose id is w5
     And no other work-item's file has changed
 
+  @r22
+  Scenario: start on an accepted request writes a proposed capability-change initiative that fulfils it, sourced from its origins, and prints its id
+    Pins that an accepted request is where an initiative begins: start writes one new initiative for it, carrying the request's origins, and tells the caller its id.
+    Given an initiative i1 under .shop/work/
+    And a request q1 that is accepted, whose origins are o1 and o2
+    When the session runs `work start q1`
+    Then .shop/work/ has one new initiative, its initiative.md a proposed initiative of kind capability-change
+    And it fulfils q1, and its source is o1 and o2
+    And work prints that initiative's id
+    And .shop/work/i1/ is as it was
+    And it exits successfully
+
   @r3
   Scenario: show prints each work-item of every initiative with its status
     Pins that show reads every initiative under .shop/work/, and only their work-items.

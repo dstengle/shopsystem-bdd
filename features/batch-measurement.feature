@@ -167,6 +167,31 @@ Feature: Batch measurement
       | stages | sessions | turns | round trips | output tokens | new input tokens | cache-read tokens | cost | time              |
       | 2      | 2        | 20    | 43          | 4000          | 2500             | 70000             | 0.60 | 1 hour 45 minutes |
 
+  @r63
+  Scenario Outline: the request an initiative fulfils is given as <origin> when its asker is <asker>
+    The measurement says whether the work it measures was asked for by this bounded context itself or came from outside it.
+    Given the initiative i7-cart has a log.jsonl
+    And i7-cart fulfils the request q3, whose asker is <asker>
+    When the session runs measure initiative i7-cart
+    Then measure exits successfully
+    And the measurement gives the request q3 as <origin>
+
+    Examples:
+      | asker                   | origin   |
+      | this bounded context    | internal |
+      | another bounded context | external |
+
+  @r64
+  Scenario: an initiative that fulfils no request is measured without a request's origin
+    An initiative no request started is still measured; there is only no origin to give.
+    Given the initiative i7-cart has a log.jsonl
+    And it gives work-item cart-1's research stage a start and an end, run in the session s-1
+    And i7-cart fulfils no request
+    When the session runs measure initiative i7-cart
+    Then measure exits successfully
+    And the measurement gives the stage of cart-1's research
+    And the measurement gives no origin of a request, internal or external
+
   @r43
   Scenario: --sessions gives the sessions active inside the window, starting inside it or before it with a message inside it, and every session they dispatched
     A session belongs to the initiative when it worked inside the window, whenever it started, and what it dispatched comes with it whenever that ran.
