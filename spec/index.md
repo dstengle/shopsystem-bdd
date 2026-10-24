@@ -116,7 +116,7 @@ Tools the skills and agents run:
 - **report**: the implementer's file in its stage directory, beside its result, naming the files it touched, the tests whose setup it changed and its open questions. Not: write-up.
 - **request**: the one way work enters a bounded context: lines in strict EARS that its asker (another context, the product level, or the context itself) proposes to its upstream (the context asked), negotiated in turns until each is accepted, refused or withdrawn, and resolved by the requirement ids that hold the accepted ones.
 - **requirement**: one Behaviour line of a capability, named `#r<n>`. Not: behaviour requirement, capability requirement, carry, carries, carried, carrying.
-- **result**: the file `result.json` a worker writes in its stage directory, giving its outcome, its summary and the files it names. Not: return.
+- **result**: the file `result.json` a worker or a round writes, giving its outcome, its summary and the files it names. Not: return.
 - **review**: a reviewer's reading of commits against the plan, the spec and the repository's rules, written as graded findings: a work-item review, a branch review or an architecture review. Not: audit.
 - **round**: one `initiative-round` session for one kind, numbered under its drafts path. Not: iteration.
 - **round trip**: one assistant message of a session's transcript with its own request id, the unit `--max-turns` limits.

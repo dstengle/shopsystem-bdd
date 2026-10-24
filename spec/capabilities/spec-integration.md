@@ -13,9 +13,9 @@ retired: [r5, r9, r18, r8, r10, r11, r34, r36, r37, r38, r41, r42]
 Merges an approved brainstorming note, or a question's answer, into the bounded context's one spec,
 and stops at the one human gate: the Behaviour lines. It is `integrating-a-proposal`, run in rounds of
 `initiative-round` that `work run` starts (supervision): the `integrate` and `apply` rounds dispatch the
-`capability-writer`, and the `gate` round writes the gate as questions on the capability-proposal; no session
-writes spec itself (design-decision/the-context-runs-without-a-coordinator). It is not formulation and not
-planning; it writes nothing a client can run.
+`capability-writer`, and the `gate` round gives the gate as questions in its result, which `work run` writes
+on the capability-proposal; no session writes spec itself (design-decision/the-context-runs-without-a-coordinator).
+It is not formulation and not planning; it writes nothing a client can run.
 
 ## Behaviour
 - [r1] **When** an approved note is integrated, `integrating-a-proposal` shall show the person every added, changed and removed Behaviour line, each with its id, and every question the note left open, each with the lines its answers would give.
@@ -34,7 +34,7 @@ planning; it writes nothing a client can run.
 - [r20] **When** a change makes a decision, `integrating-a-proposal` shall show it to the person as one file `spec/decisions/<nnnn>-<slug>.md`, `nnnn` one above the highest number in `spec/decisions/`.
 - [r21] **When** a drafted decision names what it came from, `integrating-a-proposal` shall list by id in its `source` only records, initiatives and decisions, writing the person, a date, a delegation or anything outside the repository in its `by`.
 - [r22] **When** the approved drafts are committed with a decision, `integrating-a-proposal` shall commit in the same commit the `spec/decisions/index.md` that `model decisions` writes.
-- [r35] **When** `initiative-round` runs the kind `gate`, `initiative-round` shall write under the capability-proposal's `## Questions` one question for each decision the person is asked to make, each marking the recommended reading and giving the lines it concerns in full.
+- [r35] **When** `initiative-round` runs the kind `gate`, `initiative-round` shall give in its result one question for each decision the person is asked to make, each marking the recommended reading and giving the lines it concerns in full.
 - [r39] **When** `initiative-round` runs the kind `apply` with the file of the person's answers, or with the person's approval in their words, `initiative-round` shall apply exactly the drafts the person approved.
 - [r40] **When** `initiative-round` finishes a round, `initiative-round` shall append one line to the initiative's ledger with `work note`, naming the kind, the round, and what the round ended with or the answers it applied.
 - [r33] **If** `integrating-a-proposal` cannot do what it was asked, then `integrating-a-proposal` shall stop, saying why, and change nothing under `spec/`.
