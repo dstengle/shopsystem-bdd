@@ -17,6 +17,7 @@ import os
 import shlex
 import subprocess
 import sys
+from pathlib import Path
 
 from pytest_bdd import parsers, scenarios, then, when
 
@@ -54,6 +55,9 @@ def run_work(repo, plan, context, args):
                STUB_CLAUDE_CALLS=str(stub / "calls.jsonl"), PYTEST_XDIST_AUTO_NUM_WORKERS="2",
                CLAUDE_CONFIG_DIR=str(stub / "claude"),     # where the stand-in keeps its sessions' transcripts
                **context.get("env", {}))     # `-n auto` in a scenario's own small suite: two processes, not one a CPU
+    # The scenario's own `work run` puts this checkout's scripts on PYTHONPATH itself: another copy inherited is dropped.
+    kept = [p for p in env.get("PYTHONPATH", "").split(os.pathsep) if p and not (Path(p) / "work_items.py").exists()]
+    env["PYTHONPATH"] = os.pathsep.join(kept)
     context["before"] = state(repo)
     context["done"] = subprocess.run([sys.executable, str(context.get("work", SCRIPTS / "work")), *shlex.split(args)], cwd=repo, env=env,
                                      capture_output=True, text=True, timeout=300)
