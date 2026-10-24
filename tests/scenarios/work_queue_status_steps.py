@@ -25,7 +25,10 @@ def with_state(repo, ident, state, name, status):
     from .test_work_queue import initiative
     initiative(repo, ident)
     write(repo, ".shop/work/%s/initiative.md" % ident, text)
-    write(repo, ".shop/work/%s/%s.md" % (ident, name), item_text(name, status, ident))
+    items = [(name, status.split(" and whose work-item ")[0])]
+    items += [tuple(p.split(" is ")) for p in status.split(" and whose work-item ")[1:]]
+    for item, state_of in items:
+        write(repo, ".shop/work/%s/%s.md" % (ident, item), item_text(item, state_of, ident))
 
 
 @given(parsers.parse('i1\'s work-item w1 is ready, and its work-item w2 is awaiting-answer with the question "{question}" '

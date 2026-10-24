@@ -229,8 +229,15 @@ def withdraw(root, name):
         raise Refused("%s is already withdrawn; there is nothing to transition" % name)
     if status in ("claimed", "green"):
         raise Refused("%s is %s; work withdraw leaves a claimed or green work-item as it is" % (name, status))
-    committed(root, rels_of(root, path), "work withdraw: %s %s -> withdrawn" % (name, status),
-              lambda: move(root, path.parent.name, name, "withdrawn", by="work withdraw"))
+    import workqueue_done     # imports this module, so it is read here (r23)
+    done = workqueue_done.becomes(root, path.parent, {name: "withdrawn"})
+    rels = rels_of(root, path) + ([str((path.parent / "initiative.md").relative_to(root))] if done else [])
+
+    def write():
+        move(root, path.parent.name, name, "withdrawn", by="work withdraw")
+        if done:
+            workqueue_done.mark(path.parent, root)
+    committed(root, rels, "work withdraw: %s %s -> withdrawn" % (name, status), write)
     return "withdrawn"
 
 

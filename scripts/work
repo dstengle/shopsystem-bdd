@@ -12,6 +12,7 @@ import workqueue  # noqa: E402
 import workqueue_answer  # noqa: E402
 import workqueue_note  # noqa: E402
 import workqueue_request  # noqa: E402
+import workqueue_start  # noqa: E402
 import workqueue_status  # noqa: E402
 
 
@@ -78,6 +79,11 @@ def cmd_resolve(args):
     return 0
 
 
+def cmd_start(args):
+    print(workqueue_start.start(args.root, args.request))
+    return 0
+
+
 def cmd_run(args):
     return supervise.run(args.root, args.initiative)
 
@@ -124,11 +130,14 @@ def main(argv=None):
     q = sub.add_parser("resolve", help="write which requirement holds each accepted line of a request, and in which version")
     q.add_argument("request")
     q.add_argument("--line", nargs=3, action="append", default=[], metavar=("N", "REQUIREMENT", "VERSION"))
+    q = sub.add_parser("start", help="write the initiative an accepted request begins, proposed")
+    q.add_argument("request")
     args = ap.parse_args(argv)
     try:
         return {"add": cmd_add, "show": cmd_show, "run": cmd_run, "retry": cmd_retry, "answer": cmd_answer,
                 "withdraw": cmd_withdraw, "note": cmd_note, "status": cmd_status,
-                "request": cmd_request, "outcome": cmd_outcome, "turn": cmd_turn, "resolve": cmd_resolve}[args.cmd](args)
+                "request": cmd_request, "outcome": cmd_outcome, "turn": cmd_turn, "resolve": cmd_resolve,
+                "start": cmd_start}[args.cmd](args)
     except workqueue.Refused as refused:
         print("work: %s" % refused, file=sys.stderr)
         return 1

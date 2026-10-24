@@ -9,6 +9,7 @@ from pathlib import Path
 
 import model_parse
 import workqueue
+import workqueue_done
 from workqueue import Refused
 
 SETTLED = ("accepted", "refused", "withdrawn")
@@ -111,4 +112,13 @@ def resolve(root, ident, lines):
         for number, requirement, version in lines:
             entries = _numbered(entries, number, "%s %s" % (requirement, version))
         return _with_field(_with_entries(text, "Resolution", entries), "status", "delivered")
-    _change(root, ident, "resolve", edit)
+    path = _path(root, ident)
+    after = edit(workqueue.read(path, root))
+    done = [d for d in workqueue_done.naming(root, ident) if workqueue_done.becomes(root, d, {ident: "delivered"})]
+
+    def write():
+        path.write_text(after)
+        for directory in done:
+            workqueue_done.mark(directory, root)
+    rels = [str(p.relative_to(root)) for p in [path] + [d / "initiative.md" for d in done]]
+    workqueue.committed(root, rels, "work resolve: %s" % ident, write)
