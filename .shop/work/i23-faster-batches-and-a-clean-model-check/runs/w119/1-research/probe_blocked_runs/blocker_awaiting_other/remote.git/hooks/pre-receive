@@ -1,2 +1,0 @@
-#!/bin/sh
-if [ -e "$GIT_DIR/refuse" ]; then echo "the remote refuses pushes to this branch" >&2; exit 1; fi
