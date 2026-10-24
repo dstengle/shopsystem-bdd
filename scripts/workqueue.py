@@ -105,6 +105,16 @@ def items(root):
             yield path.parent.name, path.stem, data.get("status")
 
 
+def requests(root):
+    """Each request under .shop/work/requests/: (name, status, turn, source), by the number in its name (requests r13)."""
+    def number(path):
+        return [int(w) if w.isdigit() else w for w in re.split(r"(\d+)", path.stem)]
+    for path in sorted((Path(root) / WORK / "requests").glob("q*.md"), key=number):
+        data, _ = frontmatter(read(path, root))
+        if data.get("kind") == "request":
+            yield path.stem, data.get("status"), data.get("turn"), data.get("source")
+
+
 def last_logged(log, name, root):
     """The status the last move `log` gives for work-item `name` moved it to; None when no move names it.
 

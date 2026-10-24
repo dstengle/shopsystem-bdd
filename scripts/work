@@ -28,10 +28,14 @@ def cmd_withdraw(args):
 def cmd_show(args):
     if args.json:
         print(json.dumps({"work-items": [{"work-item": n, "initiative": i, "status": s}
-                                         for i, n, s in workqueue.items(args.root)]}))
+                                         for i, n, s in workqueue.items(args.root)],
+                          "requests": [{"request": n, "status": s, "turn": t}
+                                       for n, s, t, _ in workqueue.requests(args.root)]}))
         return 0
     for initiative, name, status in workqueue.items(args.root):
         print("%s/%s %s" % (initiative, name, status))
+    for name, status, turn, _ in workqueue.requests(args.root):
+        print("%s %s %s" % (name, status, turn))
     return 0
 
 
