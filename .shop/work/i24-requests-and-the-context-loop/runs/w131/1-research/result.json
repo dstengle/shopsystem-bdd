@@ -1,0 +1,17 @@
+{
+  "status": "DONE",
+  "summary": "w131 research done; notes in .shop/scratch/1-research/notes.md. Red today: r19 row for requests/q1.md (KeyError in _files_read; no request read in code), r112 (undefined steps; code shows only a 'requests: no initiative.md' problem), r118 (undefined Given; code writes ikind without a file problem). Deprecated r19 outline passes today (retired). Found: an empty .shop/work/requests/ is refused with 'no initiative.md' (defect). Old assumption: model_work.read_work globs requests/ as an initiative folder. Step module problems.py is at 300 lines, so new steps go in a new module. Three readings left open in notes: r112 form, r19 marker fact, v_k1/v_k2 removal.",
+  "fileset": [
+    "scripts/model_work.py",
+    "scripts/model_facts.py",
+    "scripts/model_requests.py",
+    "CLAUDE.md",
+    "scripts/model",
+    "scripts/model.lp",
+    "tests/scenarios/design_model_check_reading.py",
+    "tests/scenarios/design_model_check_requests.py",
+    "tests/scenarios/test_design_model_check.py",
+    "features/design-model-check.feature"
+  ],
+  "questions": []
+}
