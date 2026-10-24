@@ -83,6 +83,35 @@ def test_a_non_scenario_does_not_save_a_run_whose_scenarios_are_all_unaccepted(t
     assert done.returncode != 0 and "accepts none of the scenarios" in done.stdout + done.stderr, done.stdout + done.stderr
 
 
+def capabilities(repo, **groups):
+    for cap, guarantees in groups.items():
+        path = repo / "spec" / "capabilities" / ("%s.md" % cap)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("---\nkind: capability\n%s---\n" % ("group: guarantees\n" if guarantees else ""))
+
+
+def test_a_guarantees_work_item_has_its_scenarios_deselected_and_exits_successfully(tmp_path):
+    repo = consumer(tmp_path, "other#r1")
+    capabilities(repo, other=True)
+    done = pytest(repo, "--work-item", "w1")
+    assert done.returncode == 0 and "2 deselected" in done.stdout, done.stdout + done.stderr
+
+
+def test_a_guarantees_work_item_keeps_a_test_that_is_not_a_scenario(tmp_path):
+    repo = consumer(tmp_path, "other#r1")
+    capabilities(repo, other=True)
+    (repo / "test_probe.py").write_text("def test_probe():\n    pass\n")
+    done = pytest(repo, "--work-item", "w1")
+    assert done.returncode == 0 and "1 passed, 2 deselected" in done.stdout, done.stdout + done.stderr
+
+
+def test_one_requirement_outside_a_guarantees_capability_refuses_the_run(tmp_path):
+    repo = consumer(tmp_path, "other#r1, mixed#r1")
+    capabilities(repo, other=True, mixed=False)
+    done = pytest(repo, "--work-item", "w1")
+    assert done.returncode != 0 and "w1 accepts none of the scenarios it collected" in done.stdout + done.stderr
+
+
 def test_a_move_to_a_status_outside_the_lifecycle_is_refused(tmp_path):
     sys.path.insert(0, str(SCRIPTS))
     import workqueue

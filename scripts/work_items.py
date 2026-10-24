@@ -1,6 +1,8 @@
 """The plugin's pytest plugin: `--work-item <name>` runs the scenarios tagged with a requirement the work-item
 accepts, deselects the other scenarios and keeps every test that is not a scenario (a probe, a script's test). It
-refuses, saying so, a run that collects scenarios and none the work-item accepts. `work run` loads it with
+refuses, saying so, a run that collects scenarios and none the work-item accepts, unless every requirement it accepts
+is of a guarantees capability (spec/capabilities/<cap>.md with `group: guarantees` in its frontmatter): then it
+deselects them all, and a run left with no test exits 0. `work run` loads it with
 `-p work_items`, the scripts directory on PYTHONPATH, so a repository it delivers needs nothing of its own for the
 option; this repository's conftest.py loads it the same way.
 
@@ -103,7 +105,27 @@ def pytest_collection_modifyitems(config, items):
         scenarios += found is not None
         if found is None or any((found[0], tag) in want for tag in found[1]):
             keep.append(item)
-    if scenarios and len(keep) == len(items) - scenarios:
+    if scenarios and len(keep) == len(items) - scenarios and not all(guarantees(config, c) for c, _ in want):
         raise SystemExit("--work-item %s: %s accepts none of the scenarios it collected" % (name, name))
     config.hook.pytest_deselected(items=[i for i in items if i not in keep])
     items[:] = keep
+    if all(guarantees(config, c) for c, _ in want):
+        config.stash[GUARANTEES] = True
+
+
+def guarantees(config, cap):
+    """Whether spec/capabilities/<cap>.md, beside the .shop/ of the work-items, has `group: guarantees` in its
+    frontmatter."""
+    work = work_dir(pathlib.Path(config.invocation_params.dir).resolve())
+    path = (work.parent.parent if work else pathlib.Path(config.rootpath)) / "spec" / "capabilities" / ("%s.md" % cap)
+    head = path.read_text().split("---\n")[1:2] if path.is_file() else []
+    return bool(head) and re.search(r"(?m)^group: guarantees$", head[0]) is not None
+
+
+GUARANTEES = pytest.StashKey[bool]()
+
+
+def pytest_sessionfinish(session, exitstatus):
+    """A work-item all of whose requirements are of guarantees capabilities, left with no test, succeeds."""
+    if exitstatus == pytest.ExitCode.NO_TESTS_COLLECTED and session.config.stash.get(GUARANTEES, False):
+        session.exitstatus = pytest.ExitCode.OK

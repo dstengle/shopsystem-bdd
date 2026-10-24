@@ -112,6 +112,8 @@ def two_items(repo):
 
 
 @given('features/thing.feature has the scenario "it waits", tagged @r2, which fails')
+@given('features/thing.feature has the scenario "it waits", tagged @r2, which fails, and the repository holds no '
+       'other test')
 def thing_waits(repo):
     """A pytest-bdd suite: "it answers" (@r1, w1's) passes and "it waits" (@r2) fails; work run's own commands run it."""
     write(repo, "features/thing.feature", THING_FEATURE)
@@ -143,10 +145,29 @@ def counted_as(repo, context, counted):
 PROBE = 'def test_probe():\n    open("probe.ran", "w").write("ran")\n'
 
 
-@given("i1's work-item w1 is ready, accepting other#r1")
-def ready_accepting_other(repo):
-    write(repo, ".shop/work/i1/w1.md", item_text("w1", "ready").replace("accepts: [thing#r1]", "accepts: [other#r1]"))
-    commit_all(repo, "w1 accepts other#r1")
+@given(parsers.re(r"i1's work-item w1 is ready, accepting (?P<ids>\w+#r\d+(?: and \w+#r\d+)?)$"))
+def ready_accepting(repo, ids):
+    accepts = ", ".join(ids.split(" and "))
+    write(repo, ".shop/work/i1/w1.md", item_text("w1", "ready").replace("accepts: [thing#r1]", "accepts: [%s]" % accepts))
+    commit_all(repo, "w1 accepts %s" % ids)
+
+
+def capability(repo, name, guarantees):
+    group = "group: guarantees\n" if guarantees else ""
+    write(repo, "spec/capabilities/%s.md" % name, "---\nkind: capability\n%s---\n\n# %s\n" % (group, name))
+
+
+@given("spec/capabilities/steady.md is a guarantees capability")
+def steady_guarantees(repo):
+    capability(repo, "steady", True)
+    commit_all(repo, "steady is a guarantees capability")
+
+
+@given("spec/capabilities/steady.md is a guarantees capability and spec/capabilities/other.md is not")
+def steady_guarantees_other_not(repo):
+    capability(repo, "steady", True)
+    capability(repo, "other", False)
+    commit_all(repo, "steady is a guarantees capability, other is not")
 
 
 @given("the repository holds test_probe.py, a test that is not a scenario, which writes probe.ran when it runs")
@@ -163,6 +184,21 @@ def pytest_ran(repo, command):
 def probe_ran(repo, context):
     ran = pytest_ran(repo, "python3 -m pytest -q test_probe.py")
     assert len(ran) == 1 and ran[0]["code"] == 0 and "1 passed" in ran[0]["output"], (ran, context["done"].stderr)
+
+
+@then('the implementer\'s `python3 -m pytest -q` was not refused, and deselected "it waits" without running it')
+def pytest_deselected(repo, context):
+    ran = pytest_ran(repo, "python3 -m pytest -q")
+    assert len(ran) == 1, (ran, context["done"].stderr)
+    out = ran[0]["output"]
+    assert "accepts none of the scenarios" not in out and "deselected" in out, out
+    assert "it does not wait yet" not in out and "failed" not in out, out
+
+
+@then("the implementer's `python3 -m pytest -q` exited successfully")
+def pytest_succeeded(repo, context):
+    ran = pytest_ran(repo, "python3 -m pytest -q")
+    assert len(ran) == 1 and ran[0]["code"] == 0, (ran, context["done"].stderr)
 
 
 @then("the implementer's `python3 -m pytest -q` was refused, saying that w1 accepts none of the scenarios it collected")

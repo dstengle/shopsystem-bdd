@@ -456,16 +456,6 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the researcher's `python3 -m pytest -q test_probe.py` ran test_probe.py's test
 
-  @r56 @deprecated
-  Scenario: a worker's pytest run that collects scenarios, none of which its work-item accepts, is refused (deprecated)
-    Deprecated for: a worker's pytest run that collects scenarios, none of which its work-item accepts, is refused when a requirement the work-item accepts is not of a guarantees capability
-    Pins that `--work-item` still refuses a run that would show the worker none of its work-item's scenarios.
-    Given i1's work-item w1 is ready, accepting other#r1
-    And features/thing.feature has the scenario "it waits", tagged @r2, which fails
-    And every worker gives DONE, the implementer running `python3 -m pytest -q`
-    When the person runs `work run i1`
-    Then the implementer's `python3 -m pytest -q` was refused, saying that w1 accepts none of the scenarios it collected
-
   @r56
   Scenario: a worker's pytest run that collects scenarios, none of which its work-item accepts, is refused when a requirement the work-item accepts is not of a guarantees capability
     Pins that one requirement outside a guarantees capability is enough for `--work-item` to refuse a run that shows the worker none of its work-item's scenarios.
