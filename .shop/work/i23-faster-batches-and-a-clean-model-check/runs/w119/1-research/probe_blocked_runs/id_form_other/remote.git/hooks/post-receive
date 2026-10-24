@@ -1,0 +1,2 @@
+#!/bin/sh
+cat >> "$GIT_DIR/pushed"

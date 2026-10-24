@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /usr/local/bin/python3 /home/vscode/shopsystem-bdd/.shop/worktrees/w119-1-research/tests/scripts/stub_claude.py "$@"
