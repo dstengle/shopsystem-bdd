@@ -236,6 +236,25 @@ Feature: Work queue
     Then work exits with an error, saying that an answer is one line
     And .shop/work/i1/w1.md and .shop/work/i1/log.jsonl are as they were
 
+  @r16
+  Scenario: status of an initiative prints where it stands, for a session to start from
+    Pins what status gives a session about one initiative: its proposals and work-items with their statuses and open questions, whether its branch is pushed, the checkout's uncommitted and untracked files, the ledger's last ten lines and its last next: note.
+    Given an initiative i1 under .shop/work/ that is neither done nor abandoned, whose capability-proposal p1 is approved
+    And i1's work-item w1 is ready, and its work-item w2 is awaiting-answer with the question "Which reading of r3?" not yet answered
+    And the repository is a git repository whose initiative branch i1-delivery has one commit the remote does not have
+    And the tracked file spec/index.md has uncommitted changes
+    And notes.txt is untracked and git does not ignore it
+    And scratch.log is untracked and git ignores it
+    And .shop/work/i1/ledger.md has twelve lines, each written by `work note` with its date, whose notes are in turn "next: plan w1", "planned w1", eight notes that do not begin next:, "next: answer w2" and "w1 ready"
+    When the session runs `work status i1`
+    Then work prints i1's status
+    And it prints p1 with approved, w1 with ready and w2 with awaiting-answer and the question "Which reading of r3?"
+    And it prints i1-delivery and that the remote does not have every commit of it
+    And it prints spec/index.md and notes.txt, and nothing about scratch.log
+    And it prints the ledger's last ten lines, the eight notes, "next: answer w2" and "w1 ready", and neither of its first two lines
+    And it prints the ledger's line whose note is "next: answer w2" as its last line whose note begins next:
+    And it exits successfully
+
   @r17
   Scenario: status with no initiative prints each initiative that is neither done nor abandoned
     Pins which initiatives status reads when it is given none: every open one, and none that has ended.

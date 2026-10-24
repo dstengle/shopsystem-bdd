@@ -240,6 +240,19 @@ Feature: Batch measurement
     When the session runs measure show for it
     Then the measurement's figures are printed as tables
 
+  @r61
+  Scenario: show prints each session's round trips, tool uses by tool name, dispatches and compactions beside its tokens
+    A reader of the printed sessions sees how much each session did next to what it cost in tokens.
+    Given the measurement .shop/records/measurements/2026-10-24-i7-cart.md that measure wrote, giving the sessions
+      | session | output tokens | new input tokens | cache-read tokens | round trips | tool uses               | dispatched | compactions |
+      | s-9     | 9000          | 4000             | 80000             | 31          | Read 5, Grep 3, Agent 1 | s-11       | 2           |
+      | s-11    | 2500          | 1500             | 30000             | 8           | Read 2                  |            | 0           |
+    When the session runs measure show for it
+    Then the printed sessions show
+      | session | output tokens | new input tokens | cache-read tokens | round trips | tool uses               | dispatched | compactions |
+      | s-9     | 9000          | 4000             | 80000             | 31          | Read 5, Grep 3, Agent 1 | s-11       | 2           |
+      | s-11    | 2500          | 1500             | 30000             | 8           | Read 2                  |            | 0           |
+
   @r45
   Scenario: compare prints two measurements' totals side by side with the ratio of the second to the first
     Two initiatives' deliveries can be read against each other, with how the second differs from the first.
@@ -251,6 +264,24 @@ Feature: Batch measurement
       | stages        | 4      | 6      | 1.5   |
       | output tokens | 100000 | 150000 | 1.5   |
       | cost          | 2.00   | 3.00   | 1.5   |
+
+  @r62
+  Scenario: compare prints the totals over the sessions of round trips, tool uses and compactions side by side with the ratio of the second to the first
+    Two initiatives' sessions can be read against each other: how many round trips, tool calls of any tool, and compactions each took, and how the second differs from the first.
+    Given the measurement a for i6-pay that measure wrote, giving the sessions
+      | session | round trips | tool uses      | compactions |
+      | s-1     | 20          | Read 6, Grep 4 | 1           |
+      | s-2     | 10          | Read 2         | 0           |
+    And the measurement b for i7-cart that measure wrote, giving the sessions
+      | session | round trips | tool uses               | compactions |
+      | s-9     | 31          | Read 5, Grep 3, Agent 1 | 2           |
+      | s-11    | 14          | Read 2, Edit 4          | 1           |
+    When the session runs measure compare for a and b
+    Then the totals over the sessions are printed side by side
+      | total       | a  | b  | ratio |
+      | round trips | 30 | 45 | 1.5   |
+      | tool uses   | 12 | 15 | 1.25  |
+      | compactions | 1  | 3  | 3     |
 
   @r53
   Scenario: each stage is given with its session's round trips
