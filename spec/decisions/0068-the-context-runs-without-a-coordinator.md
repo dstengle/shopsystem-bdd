@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-context-runs-without-a-coordinator
 summary: "No session coordinates a bounded context: `work run` takes every open initiative's nodes through their transitions, starting the rounds that integrate, gate, apply and formulate its capability-proposals, drafting the work-items and starting the analysis, and the person works through `work status`, `work answer`, `work note`, `work turn` and `work run`."
 date: 2026-10-23
-status: proposed
+status: accepted
 supersedes: [design-decision/the-session-keeps-the-gate]
 source: [observation/2026-10-23-decision-0030-misread, observation/2026-10-21-session-keeps-the-gate, design-decision/the-session-keeps-the-gate, design-decision/a-script-supervises-delivery, design-decision/the-ledger-is-tracked]
 by: "the person, 2026-10-23, approving the design note 2026-10-23-requests-and-the-context-loop-design, R5; the answers of 2026-10-24 to R5's gate, given by the coordinator under the person's delegation of 2026-10-24 (\"Please get everying delivered. Do not stop to ask me questions or permission.\"); the i22 analysis (.shop/records/2026-10-23-i22-analysis.md), candidates 2 and 3 (hand merges and work with no task review)"

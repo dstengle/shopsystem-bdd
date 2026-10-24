@@ -118,7 +118,7 @@ Tools the skills and agents run:
 - **requirement**: one Behaviour line of a capability, named `#r<n>`. Not: behaviour requirement, capability requirement, carry, carries, carried, carrying.
 - **result**: the file `result.json` a worker writes in its stage directory, giving its outcome, its summary and the files it names. Not: return.
 - **review**: a reviewer's reading of commits against the plan, the spec and the repository's rules, written as graded findings: a work-item review, a branch review or an architecture review. Not: audit.
-- **round**: one `initiative-round` session for one kind, numbered under its drafts path. Not: iteration, job.
+- **round**: one `initiative-round` session for one kind, numbered under its drafts path. Not: iteration.
 - **round trip**: one assistant message of a session's transcript with its own request id, the unit `--max-turns` limits.
 - **run**: to execute a command, script, test, scenario or probe until it exits.
 - **scenario**: a Gherkin scenario in `features/<capability>.feature`, passing when the one test that binds it passes. Not: test case.
