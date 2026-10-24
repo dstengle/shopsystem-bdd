@@ -43,9 +43,9 @@ no prompt, reply or tool content, and refuses rather than guesses when its input
 - [r44] **When** `measure show <record>` is run, `measure` shall print the measurement's figures as tables.
 - [r54] **When** `measure show <record>` is run, `measure` shall print each stage's round trips beside its turns.
 - [r56] **When** `measure show <record>` is run on a measurement that gives no round trips, `measure` shall print its stages without them.
-- [r61] **When** `measure show <record>` is run on a measurement that gives sessions, `measure` shall print each session's round trips, tool uses, dispatches and compactions beside its tokens.
+- [r61] **When** `measure show <record>` is run on a measurement that gives sessions, `measure` shall print, beside each session's tokens, its round trips, its tool uses by tool name, the sessions it dispatched, and the number of compactions its transcript holds.
 - [r45] **When** `measure compare <a> <b>` is run, `measure` shall print the two measurements' totals side by side with the ratio of the second to the first.
-- [r62] **When** `measure compare <a> <b>` is run on measurements that give sessions, `measure` shall print the sessions' totals of round trips, tool uses and compactions side by side with the ratio of the second to the first.
+- [r62] **When** `measure compare <a> <b>` is run on measurements that give sessions, `measure` shall print, side by side, each measurement's total over its sessions of round trips, of tool uses of all tools together, and of compactions, each total with one ratio of the second measurement's to the first's.
 
 ## Implementation, may change
 - A measurement is a record whose frontmatter id is of kind `measurement`; its figures are one JSON block in its
