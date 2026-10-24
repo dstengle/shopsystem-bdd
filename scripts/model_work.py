@@ -121,7 +121,7 @@ class WorkReading:
                 except ValueError:
                     self.problems.append(f"{self.rel(ipath)}: date {data['date']!r} is not YYYY-MM-DD")
             for ppath in sorted(idir.glob("*.md")):
-                if ppath.name != "initiative.md":
+                if ppath.name not in ("initiative.md", "ledger.md"):
                     self.read_part(ppath, held)
 
     def read_part(self, path, held):
