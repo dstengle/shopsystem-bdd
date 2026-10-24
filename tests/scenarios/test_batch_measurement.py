@@ -8,6 +8,7 @@ from pytest_bdd import scenarios
 
 from .batch_measurement_given_steps import *
 from .batch_measurement_reading_steps import *
+from .batch_measurement_request_steps import *
 from .batch_measurement_show_steps import *
 from .batch_measurement_then_steps import *
 from .batch_measurement_world import measure_run, world  # noqa: F401  fixtures

@@ -25,6 +25,11 @@ contract:
     each work-item with its transitions, its awaiting-answer and failed counts
     and the commits its merge brought in; the totals over the stages' sessions
     and the time from the first transition to the last.
+  - When the initiative's initiative.md names a request in `fulfils`, the
+    measurement also gives that request's id and its origin: internal when the
+    request's asker is `internal` or this bounded context, else external. An
+    initiative that fulfils no request is given without it. A request that is
+    missing, has no asker, or a fulfils holding more than one id is refused.
   - --sessions <dir> names a directory of Claude Code transcripts, raw or the
     slim export: the measurement also gives each session active inside the
     initiative's window (a message inside it), and each session those

@@ -7,6 +7,7 @@ from pathlib import Path
 from measure_read import (
     Refused,
     read_log,
+    request_of,
     read_session_jsons,
     read_transcripts,
     round_trips,
@@ -134,6 +135,9 @@ def figures_of(initiative, root, sessions_dir=None):
     totals.update(time_seconds=seconds, time=duration(seconds))
     figures = {"initiative": initiative, "window": [m and m.isoformat() for m in window], "stages": stages,
                "work_items": work_items_of(rows, root), "totals": totals}
+    request = request_of(initiative, root)
+    if request:
+        figures["request"] = request
     if sessions_dir is not None:
         figures["sessions"] = sessions_found(sessions_dir, window)
     return figures

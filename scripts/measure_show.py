@@ -66,6 +66,8 @@ def show(path):
            "totals\n%s\n" % table(["total", "value"], [(n, totals.get(k)) for n, k in totals_of(totals)])]
     if "sessions" in figures:
         out.append(section("sessions", SESSIONS, [written(s) for s in figures["sessions"]]))
+    if "request" in figures:
+        out.append("request\n%s\n" % table(["request", "origin"], [(figures["request"]["id"], figures["request"]["origin"])]))
     return "\n".join(out)
 
 

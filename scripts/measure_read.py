@@ -43,6 +43,30 @@ def read_log(path):
     return rows
 
 
+def request_of(initiative, root):
+    """The request `initiative` fulfils, as {"id": q<n>, "origin": "internal"|"external"}; None when its initiative.md
+    names none. The request is read through `work`'s own reader. A link that cannot be read is refused."""
+    import workqueue
+    import workqueue_request
+    path = Path(root) / ".shop" / "work" / initiative / "initiative.md"
+    if not path.is_file():
+        return None
+    try:
+        value = workqueue_request.field(workqueue.read(path, root), "fulfils")
+        if not value:
+            return None
+        if not value.replace("/", "").replace("-", "").replace(".", "").isalnum():
+            raise Refused("%s: fulfils must hold one request id, not %r" % (path, value))
+        ident = value.rsplit("/", 1)[-1]
+        asker = workqueue_request.field(workqueue.read(workqueue_request.path_of(root, ident), root), "asker")
+        if not asker:
+            raise Refused("%s has no asker" % (Path(".shop/work/requests") / (ident + ".md")))
+        internal = asker == "internal" or asker == "bounded-context/" + workqueue.context_path(root)
+    except workqueue.Refused as why:
+        raise Refused(str(why)) from None
+    return {"id": ident, "origin": "internal" if internal else "external"}
+
+
 def number(value):
     return isinstance(value, (int, float)) and not isinstance(value, bool)
 
