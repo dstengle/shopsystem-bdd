@@ -25,7 +25,7 @@ takes no judgment; what nobody may decide goes to the person as a question. A wa
 - [r67] **When** a request of which this context is the upstream is `open` or `awaiting-upstream`, `work run` shall start an `initiative-round` session of the kind `intake`, given the request, that writes each line's line outcome or a question on it and passes the turn with `work turn`.
 - [r79] **When** an initiative is `proposed`, `work run` shall start a round of the kind `integrate` given the accepted lines of the request it fulfils.
 - [r84] **When** `work run` starts the round of the kind `integrate` of a `proposed` initiative, `work run` shall transition the initiative to `started`.
-- [r68] **When** a capability-proposal is `drafted`, `work run` shall start a round of the kind `gate` whose result gives the gate as questions, each a decision with its readings and the recommended reading marked.
+- [r68] **When** a capability-proposal is `drafted`, `work run` shall start a round of the kind `gate` whose brief asks for the gate as questions, each a decision with its readings and the recommended reading marked.
 - [r85] **When** a round of the kind `gate` that `work run` started for a capability-proposal ends, `work run` shall write the questions its result gives under the proposal's `## Questions`.
 - [r69] **When** a round of the kind `gate` that `work run` started for a capability-proposal ends, `work run` shall transition the proposal to `awaiting-answer`.
 - [r70] **When** every question of a capability-proposal has an answer, `work run` shall start a round of the kind `apply` given the answers.
@@ -37,7 +37,7 @@ takes no judgment; what nobody may decide goes to the person as a question. A wa
 - [r74] **When** a kept branch review's result lists findings to fix now, `work run` shall draft one work-item for them, naming the findings file, under the capability-proposal that the work-item the findings concern is part of.
 - [r75] **When** every work-item of an initiative is `green` or `withdrawn` and its kept branch review lists nothing to fix now, `work run` shall run `measure initiative` on the initiative.
 - [r76] **When** the `measure initiative` that `work run` ran on an initiative has written its measurement, `work run` shall start a session of `analyzing-a-batch` that writes the initiative's analysis record.
-- [r77] **Where** the request an initiative fulfils gives a delegation, `work run` shall give every question of the initiative to a session given the delegation, the files the question names and nothing else, which answers those the delegation covers and leaves the others for the person.
+- [r77] **Where** the request an initiative fulfils gives a delegation, `work run` shall give each question of the initiative to a session of its own, given the delegation, the files that one question names and nothing else, which answers the question if the delegation covers it and leaves it for the person otherwise.
 - [r78] **Where** the request an initiative fulfils gives a delegation, **when** a session `work run` started under it answers a question, `work run` shall write the answer naming the delegation it was given under.
 - [r59] **When** more than one work-item of the initiative is `drafted` or `researched`, `work run` shall start the research or plan stage of each of them at the same time, within the number of workers r60 gives.
 - [r60] `work run` shall run at most as many workers at the same time as `.shop/delivery.toml`'s number of workers, and 4 where it gives none.
