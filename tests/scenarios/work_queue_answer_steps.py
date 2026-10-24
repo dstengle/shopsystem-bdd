@@ -3,7 +3,6 @@ import datetime
 
 from pytest_bdd import parsers, then, when
 
-
 BREAKS = {"a newline": "\n"}
 BREAKS.update({"U+%04X, the %s" % (ord(c), n): c for c, n in [
     ("\x0b", "vertical tab"), ("\x0c", "form feed"), ("\r", "carriage return"), ("\x85", "next-line control"),
