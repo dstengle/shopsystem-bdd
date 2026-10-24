@@ -235,3 +235,59 @@ Feature: Work queue
     When the session runs `work answer w1` with an answer of two lines broken by a newline
     Then work exits with an error, saying that an answer is one line
     And .shop/work/i1/w1.md and .shop/work/i1/log.jsonl are as they were
+
+  @r17
+  Scenario: status with no initiative prints each initiative that is neither done nor abandoned
+    Pins which initiatives status reads when it is given none: every open one, and none that has ended.
+    Given an initiative i1 under .shop/work/ that is neither done nor abandoned, whose work-item w1 is drafted
+    And an initiative i2 under .shop/work/ that is neither done nor abandoned, whose work-item w2 is ready
+    And an initiative i3 under .shop/work/ that is done, whose work-item w3 is green
+    And an initiative i4 under .shop/work/ that is abandoned, whose work-item w4 is withdrawn
+    When the session runs `work status`
+    Then work prints what `work status i1` prints and what `work status i2` prints
+    And it prints nothing about i3 or i4
+
+  @r18
+  Scenario: status with --json prints its result as one JSON object
+    Pins that status's result, read by a script, is one JSON object and nothing besides.
+    Given an initiative i1 under .shop/work/ that is neither done nor abandoned, whose work-item w1 is drafted
+    When the session runs `work status i1 --json`
+    Then work prints one JSON object and nothing else
+    And it gives i1's status and w1 with drafted
+
+  @r19
+  Scenario: note appends the line, with the date, to the initiative's ledger
+    Pins that a note is kept, dated, as the ledger's new last line, and that earlier lines stay.
+    Given an initiative i1 under .shop/work/ whose ledger .shop/work/i1/ledger.md has one line
+    When the session runs `work note i1 "next: plan w2"`
+    Then .shop/work/i1/ledger.md has two lines, the first as it was
+    And its last line has the text "next: plan w2", with the date the command was run
+
+  @r20
+  Scenario: note commits the ledger on the current branch
+    Pins that what note writes is in the branch's history when it ends, so nothing that puts .shop/work/ back to its last commit undoes it.
+    Given an initiative i1 under .shop/work/ whose ledger .shop/work/i1/ledger.md has one line
+    And the repository is a git repository on the branch main, everything in it committed
+    When the session runs `work note i1 "next: plan w2"`
+    Then main has a new last commit, which holds .shop/work/i1/ledger.md as work left it
+    And nothing under .shop/work/ differs from main's last commit
+
+  @r21
+  Scenario Outline: note with a line break in it is refused, and nothing changes
+    Pins that a note is one line whichever kind of line break would make it two, so that each note stays one line of the ledger.
+    Given an initiative i1 under .shop/work/ whose ledger .shop/work/i1/ledger.md has one line
+    And the repository is a git repository on the branch main, everything in it committed
+    When the session runs `work note i1` with a line of two lines broken by <line break>
+    Then work exits with an error, saying that a note is one line
+    And .shop/work/i1/ledger.md is as it was
+    And main's last commit is the one it was
+
+    Examples:
+      | line break                          |
+      | a newline                           |
+      | U+000B, the vertical tab            |
+      | U+000C, the form feed               |
+      | U+000D, the carriage return         |
+      | U+0085, the next-line control       |
+      | U+2028, the line separator          |
+      | U+2029, the paragraph separator     |

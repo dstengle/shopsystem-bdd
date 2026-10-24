@@ -167,8 +167,9 @@ Feature: Batch measurement
       | stages | sessions | turns | round trips | output tokens | new input tokens | cache-read tokens | cost | time              |
       | 2      | 2        | 20    | 43          | 4000          | 2500             | 70000             | 0.60 | 1 hour 45 minutes |
 
-  @r43
-  Scenario: --sessions gives the sessions that start inside the window and every session they dispatched
+  @r43 @deprecated
+  Scenario: --sessions gives the sessions that start inside the window and every session they dispatched (deprecated)
+    Deprecated for: --sessions gives the sessions active inside the window, starting inside it or before it with a message inside it, and every session they dispatched
     A session belongs to the initiative by when it started, and what it dispatched comes with it whenever that ran.
     Given i7-cart's log.jsonl gives its first transition at 09:55 and its last at 11:40
     And the directory sessions holds the transcripts
@@ -184,6 +185,45 @@ Feature: Batch measurement
       | s-11    | 2500          | 1500             | 30000             |
     And it gives neither s-8 nor s-10
 
+  @r43
+  Scenario: --sessions gives the sessions active inside the window, starting inside it or before it with a message inside it, and every session they dispatched
+    A session belongs to the initiative when it worked inside the window, whenever it started, and what it dispatched comes with it whenever that ran.
+    Given i7-cart's log.jsonl gives its first transition at 09:55 and its last at 11:40
+    And the directory sessions holds the transcripts
+      | session | starts | messages at         | dispatched by | output tokens | new input tokens | cache-read tokens |
+      | s-7     | 09:00  | 09:00, 09:20, 12:00 |               | 500           | 100              | 4000              |
+      | s-8     | 09:30  | 09:30, 09:50, 10:05 |               | 700           | 300              | 9000              |
+      | s-9     | 11:00  | 11:00, 12:30        |               | 9000          | 4000             | 80000             |
+      | s-11    | 12:00  | 12:00, 12:20        | s-9           | 2500          | 1500             | 30000             |
+      | s-10    | 11:50  | 11:50, 12:10        |               | 400           | 200              | 6000              |
+      | s-12    | 12:05  | 12:05, 12:08        | s-10          | 300           | 100              | 2000              |
+    When the session runs measure initiative i7-cart with --sessions sessions
+    Then the measurement gives the sessions
+      | session | output tokens | new input tokens | cache-read tokens |
+      | s-8     | 700           | 300              | 9000              |
+      | s-9     | 9000          | 4000             | 80000             |
+      | s-11    | 2500          | 1500             | 30000             |
+    And it gives none of s-7, s-10 or s-12
+
+  @r60
+  Scenario: each session --sessions gives is given with its round trips, tool uses by tool name, dispatches and compactions
+    How much a session did is counted from its transcript: round trips, each tool's uses, the sessions it started and how often it was compacted.
+    Given i7-cart's log.jsonl gives its first transition at 09:55 and its last at 11:40
+    And the directory sessions holds the transcripts
+      | session | starts | dispatched by |
+      | s-9     | 10:00  |               |
+      | s-11    | 10:30  | s-9           |
+    And the transcript of the session s-9 holds 40 assistant messages with 31 distinct request ids
+    And the transcript of the session s-9 holds the tool uses Read 5 times, Grep 3 times and Agent once
+    And the transcript of the session s-9 holds 2 compactions
+    And the transcript of the session s-11 holds 9 assistant messages with 8 distinct request ids
+    And the transcript of the session s-11 holds the tool uses Read twice
+    And the transcript of the session s-11 holds no compaction
+    When the session runs measure initiative i7-cart with --sessions sessions
+    Then the measurement gives the sessions
+      | session | round trips | tool uses                | dispatched | compactions |
+      | s-9     | 31          | Read 5, Grep 3, Agent 1  | s-11       | 2           |
+      | s-11    | 8           | Read 2                   |            | 0           |
 
   @r49
   Scenario: the measurement holds no prompt, reply or tool content

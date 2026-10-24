@@ -458,10 +458,19 @@ Feature: Migration tools
     When the person starts a session in it
     Then the plugin's SessionStart hook tells the session to tell the person to update the plugin
 
-  @r24
-  Scenario: a session starting in a repository on the plugin's version is told nothing
+  @r24 @deprecated
+  Scenario: a session starting in a repository on the plugin's version is told nothing (deprecated)
+    Deprecated for: a session starting in a repository on the plugin's version whose every initiative is done or abandoned is told nothing
     Pins that a repository that needs nothing adds nothing to a session's start.
     Given a repository with .shop/ whose .shop/plugin-version is the plugin's version
+    When the person starts a session in it
+    Then the plugin's SessionStart hook tells the session nothing
+
+  @r24
+  Scenario: a session starting in a repository on the plugin's version whose every initiative is done or abandoned is told nothing
+    Pins that a repository that needs nothing and has no open initiative adds nothing to a session's start.
+    Given a repository with .shop/ whose .shop/plugin-version is the plugin's version
+    And its initiatives are i1, which is `done`, and i2, which is `abandoned`
     When the person starts a session in it
     Then the plugin's SessionStart hook tells the session nothing
 
@@ -555,3 +564,29 @@ Feature: Migration tools
       | file         | statement                |
       | is empty     | and that it is empty     |
       | holds "next" | and that it holds "next" |
+
+  @r32
+  Scenario: a session starting in a repository with initiatives neither done nor abandoned is given what `work status` prints for each of them
+    Pins that a session starts knowing where each open initiative stands, and hears nothing of one that is done or abandoned.
+    Given a repository with .shop/ whose .shop/plugin-version is the plugin's version
+    And its initiatives are i1 and i2, which are neither `done` nor `abandoned`, i3, which is `done`, and i4, which is `abandoned`
+    When the person starts a session in it
+    Then the plugin's SessionStart hook gives the session what `work status` prints for i1 and for i2
+    And it gives the session nothing of i3 or i4
+
+  @r33
+  Scenario: a session about to be compacted appends `compacted`, with the time, to the ledger of each initiative neither done nor abandoned
+    Pins that each open initiative's ledger records when a session was about to lose its earlier messages, and that a done or abandoned initiative's ledger is left as it was.
+    Given a repository with .shop/ whose initiatives are i1 and i2, which are neither `done` nor `abandoned`, and i3, which is `done`
+    And each of i1, i2 and i3 has a ledger
+    When a session in it is about to be compacted
+    Then the ledger of i1 and the ledger of i2 each end with a line of `compacted` and the time
+    And the ledger of i3 is as it was
+
+  @r34
+  Scenario: a session about to be compacted in a repository with an initiative neither done nor abandoned is told to write its hand-off with `work note` and end
+    Pins that a session about to be compacted is told to leave its hand-off in the ledger and end, rather than go on from a summary.
+    Given a repository with .shop/ whose initiative i1 is neither `done` nor `abandoned`
+    When a session in it is about to be compacted
+    Then the plugin's PreCompact hook tells the session to write its hand-off with `work note`
+    And it tells the session to end instead of being compacted
