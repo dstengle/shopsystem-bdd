@@ -341,3 +341,4 @@
 {"time": "2026-10-24T00:10:50+00:00", "work-item": "w120", "stage": "plan", "agent": "bdd-planner", "session": "e8568115-8199-487c-93b2-3b76f566f5dc", "event": "end"}
 {"time": "2026-10-24T00:10:50+00:00", "work-item": "w120", "before": "researched", "after": "planned", "by": "work run"}
 {"time": "2026-10-24T00:10:51+00:00", "work-item": "w120", "before": "planned", "after": "ready", "by": "work run"}
+{"time": "2026-10-24T00:10:52+00:00", "work-item": "w120", "before": "ready", "after": "claimed", "by": "work run"}
