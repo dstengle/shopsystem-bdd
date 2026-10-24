@@ -2,6 +2,8 @@
 
 Read-only: it prints each work-item's status as its file gives it and moves nothing.
 """
+import contextlib
+import io
 import json
 import re
 import subprocess
@@ -105,6 +107,22 @@ def render(found):
     lines += ["ledger:"] + ["  " + l for l in found["ledger"]]
     lines.append("last next: %s" % (found["next"] or "none"))
     return "\n".join(lines)
+
+
+def open_names(root):
+    """The names of the initiatives under .shop/work/ whose initiative.md gives a status other than done or abandoned."""
+    work = Path(root) / workqueue.WORK
+    names = sorted((p.parent.name for p in work.glob("*/initiative.md")), key=natural)
+    return [n for n in names
+            if workqueue.frontmatter(workqueue.read(work / n / "initiative.md", root))[0].get("status") not in ENDED]
+
+
+def open_text(root):
+    """What `work status` prints at `root` for each initiative neither done nor abandoned ('' when there is none)."""
+    out = io.StringIO()
+    with contextlib.redirect_stdout(out):
+        status(root, None, False)
+    return out.getvalue()
 
 
 def status(root, initiative, as_json):

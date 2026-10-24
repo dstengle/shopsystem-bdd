@@ -10,6 +10,7 @@ from pathlib import Path
 
 import migrate_upgrade_answers
 import migrate_upgrade_ids
+from migrate_session import work_text
 from migrate_write import check_moves, git, top_level, uncommitted
 
 SCRIPTS = Path(__file__).resolve().parent
@@ -165,6 +166,6 @@ def run(command, hook=False):
         print("migrate could not find a git repository at %s" % Path.cwd(), file=sys.stderr)
         return 1
     if hook:
-        sys.stdout.write(session_text(root))
+        sys.stdout.write(session_text(root) + (work_text(root) if (root / ".shop").is_dir() else ""))
         return 0
     return {"status": status, "upgrade": upgrade}[command](root)
