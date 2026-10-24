@@ -4,6 +4,7 @@ commit what they change on the current branch.
 `init` makes a scenario's repository a git repository on main, with an identity, before anything is committed; a Given
 here commits all of it, and the Then steps read main's history and what git says is not committed.
 """
+import re
 import subprocess
 
 from pytest_bdd import given, parsers, then
@@ -50,7 +51,18 @@ def new_commit_holds(repo, context, rel):
     assert done.returncode == 0, done
     assert git(repo, "rev-parse", "--abbrev-ref", "HEAD").strip() == "main"
     assert git(repo, "rev-parse", "main").strip() != context["head"], (git(repo, "log", "--oneline"), done.stderr)
+    rel = kept(rel)
     assert git(repo, "show", "main:" + rel) == (repo / rel).read_text()
+
+
+def kept(rel):
+    """The path of `rel`, which may be a request's id (q1) instead: a request is kept in .shop/work/requests/."""
+    return ".shop/work/requests/%s.md" % rel if re.fullmatch(r"q\d+", rel) else rel
+
+
+@then(parsers.parse("nothing work keeps for {request} differs from main's last commit"))
+def request_uncommitted(repo, request):
+    nothing_uncommitted(repo, kept(request))
 
 
 @then(parsers.parse("nothing under {where} differs from main's last commit"))

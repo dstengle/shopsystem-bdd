@@ -11,6 +11,7 @@ import supervise  # noqa: E402
 import workqueue  # noqa: E402
 import workqueue_answer  # noqa: E402
 import workqueue_note  # noqa: E402
+import workqueue_request  # noqa: E402
 import workqueue_status  # noqa: E402
 
 
@@ -53,6 +54,21 @@ def cmd_status(args):
     return workqueue_status.status(args.root, args.initiative, args.json)
 
 
+def cmd_outcome(args):
+    workqueue_request.outcome(args.root, args.request, args.line, args.outcome)
+    return 0
+
+
+def cmd_turn(args):
+    workqueue_request.turn(args.root, args.request)
+    return 0
+
+
+def cmd_resolve(args):
+    workqueue_request.resolve(args.root, args.request, [(int(n), req, version) for n, req, version in args.line])
+    return 0
+
+
 def cmd_run(args):
     return supervise.run(args.root, args.initiative)
 
@@ -84,10 +100,20 @@ def main(argv=None):
     u = sub.add_parser("status", help="where an initiative (default: each open one) stands, for a session to start from")
     u.add_argument("initiative", nargs="?")
     u.add_argument("--json", action="store_true", help="print one JSON object instead of text")
+    q = sub.add_parser("outcome", help="write the outcome of a line of a request")
+    q.add_argument("request")
+    q.add_argument("line", type=int)
+    q.add_argument("outcome")
+    q = sub.add_parser("turn", help="pass a request's turn to the other side")
+    q.add_argument("request")
+    q = sub.add_parser("resolve", help="write which requirement holds each accepted line of a request, and in which version")
+    q.add_argument("request")
+    q.add_argument("--line", nargs=3, action="append", default=[], metavar=("N", "REQUIREMENT", "VERSION"))
     args = ap.parse_args(argv)
     try:
         return {"add": cmd_add, "show": cmd_show, "run": cmd_run, "retry": cmd_retry, "answer": cmd_answer,
-                "withdraw": cmd_withdraw, "note": cmd_note, "status": cmd_status}[args.cmd](args)
+                "withdraw": cmd_withdraw, "note": cmd_note, "status": cmd_status,
+                "outcome": cmd_outcome, "turn": cmd_turn, "resolve": cmd_resolve}[args.cmd](args)
     except workqueue.Refused as refused:
         print("work: %s" % refused, file=sys.stderr)
         return 1
