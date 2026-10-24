@@ -203,8 +203,9 @@ Feature: Work queue
     Then .shop/work/i1/w1.md gives w1's status as withdrawn
     And .shop/work/i1/log.jsonl's last line is w1's transition from ready to withdrawn
 
-  @r9
-  Scenario Outline: `work <command>` commits the change it makes to a work-item on the current branch
+  @r9 @deprecated
+  Scenario Outline: `work <command>` commits the change it makes to a work-item on the current branch (deprecated)
+    Deprecated for: `work <command>` commits the change it makes to a work-item or a capability-proposal on the current branch
     Pins that what `work add`, `work retry`, `work withdraw` and `work answer` write, the work-item's file and any log line, is in the branch's history when they end, so nothing that puts .shop/work/ back to its last commit undoes it.
     Given <given>
     And the repository is a git repository on the branch main, everything in it committed
@@ -219,12 +220,36 @@ Feature: Work queue
       | withdraw | an initiative i1 under .shop/work/ whose work-item w1 is ready, its last log.jsonl line for w1 its transition to ready | withdraw w1                                                  | .shop/work/i1/w1.md as work left it and .shop/work/i1/log.jsonl with w1's transition from ready to withdrawn as its last line |
       | answer   | an initiative i1 under .shop/work/ whose work-item w1 is awaiting-answer, its question asked by an implementer | answer w1 "Use the first reading"                       | .shop/work/i1/w1.md as work left it and .shop/work/i1/log.jsonl with w1's transition from awaiting-answer to ready as its last line |
 
+  @r9
+  Scenario Outline: `work <command>` commits the change it makes to a work-item or a capability-proposal on the current branch
+    Pins that what `work add`, `work retry`, `work withdraw` and `work answer` write, the work-item's or the capability-proposal's file and any log line, is in the branch's history when they end, so nothing that puts .shop/work/ back to its last commit undoes it.
+    Given <given>
+    And the repository is a git repository on the branch main, everything in it committed
+    When the session runs `work <args>`
+    Then main has a new last commit, which holds <holds>
+    And nothing under .shop/work/ differs from main's last commit
+
+    Examples:
+      | command  | given                                                                                          | args                                                                        | holds                                                                                                     |
+      | add      | an initiative i1 under .shop/work/ with no work-item w1                                        | add i1 w1 --part-of capability-proposal/p1 --under thing --accepts thing#r1 | .shop/work/i1/w1.md as work left it                                                                       |
+      | retry    | an initiative i1 under .shop/work/ with a work-item w1 that failed in its implementation stage | retry w1                                                                    | .shop/work/i1/w1.md as work left it and .shop/work/i1/log.jsonl with w1's transition from failed as its last line    |
+      | withdraw | an initiative i1 under .shop/work/ whose work-item w1 is ready, its last log.jsonl line for w1 its transition to ready | withdraw w1                                                  | .shop/work/i1/w1.md as work left it and .shop/work/i1/log.jsonl with w1's transition from ready to withdrawn as its last line |
+      | answer   | an initiative i1 under .shop/work/ whose work-item w1 is awaiting-answer, its question asked by an implementer | answer w1 "Use the first reading"                       | .shop/work/i1/w1.md as work left it and .shop/work/i1/log.jsonl with w1's transition from awaiting-answer to ready as its last line |
+      | answer   | an initiative i1 under .shop/work/ whose capability-proposal p1 is awaiting-answer             | answer p1 "Use the first reading"                                           | .shop/work/i1/p1.md as work left it                                                                       |
+
   @r13
   Scenario: answer on an awaiting-answer work-item writes the answer with the date under the work-item's Answers
     Pins that the person's answer is kept in the work-item's file, dated, under its `## Answers`.
     Given an initiative i1 under .shop/work/ whose work-item w1 is awaiting-answer
     When the session runs `work answer w1 "Use the first reading"`
     Then .shop/work/i1/w1.md has under its `## Answers` the text "Use the first reading", with the date the command was run
+
+  @r24
+  Scenario: answer on an awaiting-answer capability-proposal writes the answer with the date under the proposal's Answers
+    Pins that the person's answer to a capability-proposal's question is kept in the proposal's file, dated, under its `## Answers`.
+    Given an initiative i1 under .shop/work/ whose capability-proposal p1 is awaiting-answer
+    When the session runs `work answer p1 "Use the first reading"`
+    Then .shop/work/i1/p1.md has under its `## Answers` the text "Use the first reading", with the date the command was run
 
   @r14
   Scenario Outline: answer on an awaiting-answer work-item transitions it to the status the asking stage started from

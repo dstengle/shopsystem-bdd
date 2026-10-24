@@ -830,3 +830,109 @@ Feature: Supervision
     And every worker gives DONE
     When the person runs `work run i1`
     Then the implementer of w1 worked in a worktree on the branch work/w1, with kept.txt in it
+
+  @r67
+  Scenario Outline: a request this context is the upstream of that is <status> is given to an intake round
+    Pins that a request waiting on this context is taken in without anyone starting a session for it by hand.
+    Given a request q1 of which this context is the upstream, <status>, its turn the upstream's, with two lines
+    And the intake round writes a line outcome for each of q1's lines and passes the turn with `work turn`
+    When the person runs `work run`
+    Then an `initiative-round` session of the kind intake was started, given q1
+    And each of q1's lines has a line outcome, and q1's turn is its asker's
+
+    Examples:
+      | status            |
+      | open              |
+      | awaiting-upstream |
+
+  @r79
+  Scenario: a proposed initiative is given to an integrate round with the accepted lines of the request it fulfils
+    Pins that the round integrating an initiative works from the lines its upstream accepted, and from no other line of the request.
+    Given i1 is proposed and fulfils the request q1, whose lines 1 and 3 have the line outcome accepted and line 2 the line outcome refused
+    And every round ends
+    When the person runs `work run i1`
+    Then a round of the kind integrate was started for i1, given q1's lines 1 and 3, and not line 2
+
+  @r69
+  Scenario: when the gate round `work run` started for a capability-proposal ends, the proposal is awaiting-answer
+    Pins that a capability-proposal whose gate has been given waits on its answers.
+    Given i1's capability-proposal p1 is drafted
+    And the gate round gives the question "Is a title given twice one book or two?" on p1, and every round ends
+    When the person runs `work run i1`
+    Then a round of the kind gate was started for p1
+    And p1 is awaiting-answer
+
+  @r70
+  Scenario: a capability-proposal whose every question has an answer is given to an apply round with its answers
+    Pins that the person's answers reach the round that applies them, without anyone starting it by hand.
+    Given i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?" and "Is the old reader kept?", and its Answers section with "One book." and "No."
+    And every round ends
+    When the person runs `work run i1`
+    Then a round of the kind apply was started for p1, given the answers "One book." and "No."
+
+  @r80
+  Scenario: when the apply round `work run` started for a capability-proposal ends, the proposal is approved
+    Pins that a capability-proposal whose answers have been applied is approved.
+    Given i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", and its Answers section with "One book."
+    And every round ends
+    When the person runs `work run i1`
+    Then p1's transition to approved was made once the apply round had ended
+
+  @r71
+  Scenario: when the apply round `work run` started for a capability-proposal ends, a formulate round is started for the proposal
+    Pins that applied lines go on to be formulated, without anyone starting the round by hand.
+    Given i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", and its Answers section with "One book."
+    And every round ends
+    When the person runs `work run i1`
+    Then a round of the kind formulate was started for p1 after the apply round had ended
+
+  @r72
+  Scenario: a formulated capability-proposal gets one work-item for each capability it adds or changes, accepting every requirement it names on that capability
+    Pins that the work-items of a formulated proposal are drafted one a capability, whichever of adds and changes names the requirement.
+    Given i1's capability-proposal p1 is formulated, its adds naming thing#r1 and thing#r2, and its changes naming thing#r3 and other#r4
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then `work add` drafted two work-items in i1, each part of p1: one under thing accepting thing#r1, thing#r2 and thing#r3, and one under other accepting other#r4
+
+  @r73
+  Scenario: a work-item drafted for a formulated capability-proposal lists under its Retires each deprecated scenario of a requirement it accepts
+    Pins which scenarios the work-item retires: the deprecated ones of its own requirements, and no other.
+    Given i1's capability-proposal p1 is formulated, its changes naming thing#r2
+    And features/thing.feature has the scenario "it used to wait", tagged @deprecated and @r2, the scenario "it used to answer", tagged @deprecated and @r5, and the scenario "it waits", tagged @r2
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then the work-item drafted for p1 under thing lists "it used to wait" under its ## Retires, and neither "it used to answer" nor "it waits"
+
+  @r74
+  Scenario: a kept branch review's findings to fix now get one work-item, naming the findings file, under the capability-proposal of the work-item they concern
+    Pins that what the branch review says to fix now is drafted as work, under the proposal it belongs to, rather than left for the person to take up.
+    Given i1's work-items w1 is green, part of the capability-proposal p1, and w2 is withdrawn
+    And every worker gives DONE, and the branch reviewer's result lists two findings to fix now, both concerning w1, in its findings.md
+    When the person runs `work run i1`
+    Then one work-item was drafted in i1 for the two findings, part of p1, naming the kept branch review's findings.md
+
+  @r75
+  Scenario: when every work-item is green or withdrawn and the kept branch review lists nothing to fix now, `measure initiative` is run on the initiative
+    Pins that an initiative whose work is done is measured without anyone running `measure` by hand.
+    Given i1's work-items w1 is green and w2 is withdrawn
+    And every worker gives DONE, and the branch reviewer's result lists nothing to fix now
+    When the person runs `work run i1`
+    Then `work run` ran `measure initiative` on i1 after the branch review was kept
+
+  @r76
+  Scenario: once `measure initiative` has written the initiative's measurement, a session of analyzing-a-batch writes its analysis record
+    Pins that a measured initiative is analysed without anyone starting the analysis by hand.
+    Given i1's work-items w1 is green and w2 is withdrawn
+    And every worker gives DONE, the branch reviewer's result lists nothing to fix now, and the analyzing-a-batch session writes i1's analysis record
+    When the person runs `work run i1`
+    Then a session of analyzing-a-batch was started for i1 once `measure initiative` had written i1's measurement
+    And i1's analysis record is there
+
+  @r78
+  Scenario: an answer given by a session started under a delegation is written naming that delegation
+    Pins that the person can tell an answer given in their place from one they gave, and under which words of theirs it was given.
+    Given i1 fulfils the request q1, which gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
+    And i1's work-item w1 is awaiting-answer, its ## Questions section with "Which module owns the log?" and no answer
+    And the session answering under the delegation answers "The queue module.", and every worker gives DONE
+    When the person runs `work run i1`
+    Then w1's answer to "Which module owns the log?" is "The queue module.", naming the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
