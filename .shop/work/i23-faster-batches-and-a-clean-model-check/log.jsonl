@@ -342,3 +342,9 @@
 {"time": "2026-10-24T00:10:50+00:00", "work-item": "w120", "before": "researched", "after": "planned", "by": "work run"}
 {"time": "2026-10-24T00:10:51+00:00", "work-item": "w120", "before": "planned", "after": "ready", "by": "work run"}
 {"time": "2026-10-24T00:10:52+00:00", "work-item": "w120", "before": "ready", "after": "claimed", "by": "work run"}
+{"time": "2026-10-24T00:11:07+00:00", "work-item": "w120", "stage": "implement", "event": "suite", "record": "Suite: 724 passed, 0 failed at 811e799 in 14 s"}
+{"time": "2026-10-24T00:11:08+00:00", "work-item": "w120", "stage": "implement", "event": "push verified"}
+{"time": "2026-10-24T00:11:08+00:00", "work-item": "w120", "stage": "implement", "agent": "bdd-implementer", "session": "01d08385-6c54-4b77-a8f3-87afaaa034cc", "event": "start"}
+{"time": "2026-10-24T00:11:45+00:00", "work-item": "w120", "stage": "implement", "agent": "bdd-implementer", "session": "01d08385-6c54-4b77-a8f3-87afaaa034cc", "event": "end"}
+{"time": "2026-10-24T00:11:59+00:00", "work-item": "w120", "stage": "merge", "event": "suite", "record": "Suite: 724 passed, 0 failed at edad3b6 in 14 s"}
+{"time": "2026-10-24T00:12:04+00:00", "work-item": "w120", "before": "claimed", "after": "done", "by": "work run"}
