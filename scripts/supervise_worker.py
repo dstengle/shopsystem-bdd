@@ -50,8 +50,8 @@ TOOLS["intake"] = [*READER, *("Bash(python3 %s/work %s*)" % (SCRIPTS, c) for c i
 for _round in ROUNDS:
     TOOLS[_round] = [*READER, "Bash(git add *)", "Bash(git commit *)", "Agent",
                       "Bash(python3 %s/work note *)" % SCRIPTS]
-# A stage's limit of turns: the researcher's is 40 (r19).
-MAX_TURNS = {"research": 40}
+# A stage's limit of turns: the researcher's is 80 (r19).
+MAX_TURNS = {"research": 80}
 ROLE = {"code-scout": "researcher", "bdd-planner": "planner", "bdd-implementer": "implementer",
         "bdd-task-reviewer": "reviewer", "bdd-branch-reviewer": "branch reviewer", "initiative-round": "round",
         "batch-analyst": "analyst", "delegation-answerer": "answerer"}
