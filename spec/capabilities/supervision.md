@@ -140,6 +140,7 @@ from what using it shows.
 - [r41] **If** a git command, a push included, fails during a work-item's stage, then `work run` shall transition the work-item to `failed`, recording git's reason.
 - [r42] **If** a worker ends without a result file that `work run` can read, then `work run` shall transition the work-item to `failed`, recording how its session ended.
 - [r43] **When** `work run` runs the whole suite before a merge, `work run` shall count as expected each failing scenario whose requirement a work-item other than the one being merged accepts and that is neither `green` nor `withdrawn`.
+- [r122] **When** `work run` checks a work-item against the whole suite, `work run` shall count as expected to fail each scenario whose requirement a capability-proposal that is neither `formulated` nor `withdrawn` adds or changes.
 - [r44] **When** `work run` writes a worker's brief, `work run` shall tell the worker to write its result file first with the outcome `PARTIAL`, and keep it current as it works.
 - [r45] **If** a worker's session ends in an error or at its turn limit, exits with an error, or leaves output that holds no JSON result, then `work run` shall transition the work-item to `failed`, recording how the session ended, whatever its result says.
 - [r46] **If** the main checkout's `.shop/work/` has uncommitted changes when `work run` starts, then `work run` shall exit with an error, naming them, and change nothing.
@@ -159,6 +160,7 @@ from what using it shows.
 - The transitions from `planned` to `ready` and from `ready` to `claimed` have no guard beyond the lifecycle's.
 - Commit message `work: <work-item> <before> -> <after>`. Exit code 0 every work-item `green` or `withdrawn`, 3 awaiting an answer, 1 otherwise.
 - The commands for the work-item's scenarios and the suite: `python3 -m pytest -q -p work_items --work-item <name>` (the plugin's `scripts/work_items.py` on `PYTHONPATH`) and `python3 -m pytest -q -rfEx -p work_items --work-item <name> --whole-suite`, `-n auto` where pytest-xdist is there; `.shop/delivery.toml`'s `[tests]` replaces them. `--whole-suite` keeps every test and marks as xfail each scenario r43 counts as expected; a worker's pytest gets `--work-item <name>` through `PYTEST_ADDOPTS`.
+- r122: the checks are the whole-suite runs of r24 and r43.
 - r56, r64, r65: a guarantees capability is one whose frontmatter has `group: guarantees` (design-decision/workflow-capabilities-are-guarantees).
 - The push is verified by `git push --dry-run` to the initiative branch's upstream remote, else `origin`; a repository `work run` delivers has that remote. A fault is recorded under the work-item's `## Faults`. The n-th bullet of `## Answers` answers the n-th of `## Questions`.
 - `log.jsonl` also gets a `push verified` line for each push verification, and a `suite` line for each whole-suite run before a merge.
