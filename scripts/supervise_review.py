@@ -35,9 +35,9 @@ class Reviews:
     def branch_review(self):
         """A `bdd-branch-reviewer` session over the initiative branch from its base, in a detached worktree of its own,
         given one brief (r27); the push of the branch verified first (r35, r51). Its directory is kept and committed
-        when its session ends (r47, r48)."""
+        when its session ends (r47, r48). The kept directory; None when no review was due."""
         if not self.unread():
-            return
+            return None
         reason = self.git_push("--dry-run")
         if reason:
             raise Refused("work run could not verify that it can push the initiative branch %s before the branch "
@@ -75,3 +75,4 @@ class Reviews:
         if reason:      # the review stays committed locally; the next run pushes it first (r54)
             raise Refused("the branch review is committed, but it cannot push the initiative branch to the "
                           "remote %s: %s" % (self.remote(), reason))
+        return kept

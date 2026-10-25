@@ -15,6 +15,7 @@ from pathlib import Path
 
 import workqueue
 from supervise_brief import Briefs
+from supervise_draft import Drafts
 from supervise_faults import Fault, Faults, fault_of
 from supervise_merge import Merge
 from supervise_pool import Pool
@@ -33,10 +34,10 @@ STAGES = {
 MOVABLE = ("drafted", "researched", "planned", "ready", "done")
 
 
-class Run(Workers, Briefs, Merge, Faults, Reviews, Pool):
+class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts):
     """One `work run` of one initiative in the repository at `root`: the workers' part is supervise_worker's, the briefs'
     supervise_brief's, the implementation stage's and its merge supervise_merge's, the faults' supervise_faults', the
-    branch review's supervise_review's, the pool of workers' supervise_pool's."""
+    branch review's supervise_review's, the pool of workers' supervise_pool's, the drafting's supervise_draft's."""
 
     def __init__(self, root, initiative):
         self.root = Path(root).resolve()
@@ -185,9 +186,13 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool):
         self.check()
         self.push_unpushed()
         try:
+            self.draft()
             self.pull(MOVABLE)
             if all(s in ("green", "withdrawn") for _, s in self.items()):
-                self.branch_review()     # inside the try: its worktree goes with the run's (r33)
+                kept = self.branch_review()     # inside the try: its worktree goes with the run's (r33)
+                if kept is not None and self.fix_work_item(kept):     # r74: the fix is pulled, not reviewed in this run
+                    self.push()
+                    self.pull(MOVABLE)
         finally:
             for tree in list(self.trees):      # on every way out, a failure's too: the run leaves no worktree
                 self.remove(tree)
@@ -205,6 +210,11 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool):
         if all(s in ("green", "withdrawn") for _, s in statuses):
             return 0
         return 3 if any(s == "awaiting-answer" for _, s in statuses) and not any(s == "failed" for _, s in statuses) else 1
+
+    def draft(self):
+        """The work-items of the initiative's formulated capability-proposals, drafted (r72) and pushed (r38)."""
+        if self.draft_proposals():
+            self.push()
 
     def faulted(self, name):
         """The faults of a failed work-item: those its `## Faults` records, the ones this run met as it told them (with a

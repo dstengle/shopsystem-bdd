@@ -71,8 +71,9 @@ def highest(root):
     return max(numbers, default=0)
 
 
-def add(root, initiative, title, part_of, under, accepts):
-    """Write .shop/work/<initiative>/w<n>.md as a drafted work-item titled `title`, <n> one above the highest; return w<n> (r1, r12)."""
+def add(root, initiative, title, part_of, under, accepts, retires=(), findings=None):
+    """Write .shop/work/<initiative>/w<n>.md as a drafted work-item titled `title`, <n> one above the highest; return w<n> (r1, r12).
+    `retires` are (scenario title, tag) pairs listed under its ## Retires; `findings` is the file it is to fix."""
     entry(initiative, "initiative")
     if title == "":
         raise Refused("the title is empty; a work-item needs a title for its heading")
@@ -90,8 +91,10 @@ def add(root, initiative, title, part_of, under, accepts):
     if path.exists():
         raise Refused("%s is a file that is not a work-item, and work add would number the new work-item %s; "
                       "work add leaves it as it was" % (path.relative_to(root), name))
-    text = ("---\nid: work-item/%s/%s\nkind: work-item\npart_of: %s\nstatus: drafted\nunder: %s\naccepts: [%s]\n---\n\n# %s\n"
-            % (context, name, part_of, under, ", ".join(accepts), title))
+    text = ("---\nid: work-item/%s/%s\nkind: work-item\npart_of: %s\nstatus: drafted\nunder: %s\naccepts: [%s]\n%s---\n\n# %s\n"
+            % (context, name, part_of, under, ", ".join(accepts), "findings: %s\n" % findings if findings else "", title))
+    if retires:
+        text += "\n## Retires\n\n" + "".join('- "%s" (%s @%s)\n' % (t, under, tag) for t, tag in retires)
     rel = str(path.relative_to(root))
     committed(root, [rel], "work add: %s/%s drafted" % (initiative, name), lambda: path.write_text(text))
     return name
