@@ -65,6 +65,8 @@ def request(root, title, asker, lines_file, sources, thread):
     """
     if not sources and thread is None:
         raise Refused("the request names neither an origin (--source) nor a job-thread (--thread)")
+    if not Path(lines_file).is_file():
+        raise Refused("the file %s does not exist" % lines_file)
     lines = [line.strip() for line in workqueue.read(Path(lines_file), Path(lines_file).parent).splitlines() if line.strip()]
     for number, line in enumerate(lines, 1):
         if not all(model_parse.ears(line)):
