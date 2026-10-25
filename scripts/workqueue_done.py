@@ -48,12 +48,12 @@ def becomes(root, directory, over):
     return data.get("status") != "done" and not _holds(root, directory, ident, {}) and _holds(root, directory, ident, over)
 
 
-def mark(directory, root):
-    """Set the status of the initiative.md of `directory` to done."""
+def mark(directory, root, status="done"):
+    """Set the status of the initiative.md of `directory` to `status`, done when none is given."""
     path = directory / "initiative.md"
     text = workqueue.read(path, root)
     end = text.find("\n---", 4)
-    path.write_text(re.sub(r"(?m)^status:.*$", "status: done", text[:end], count=1) + text[end:])
+    path.write_text(re.sub(r"(?m)^status:.*$", "status: " + status, text[:end], count=1) + text[end:])
 
 
 def naming(root, request):

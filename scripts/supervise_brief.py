@@ -4,6 +4,7 @@ import json
 import re
 
 import workqueue
+import workqueue_request
 from supervise_worker import ROUNDS, SCRIPTS, git
 
 
@@ -20,7 +21,7 @@ class Briefs:
         """The one brief file a worker is given (r2): the work-item, the files to read, where it works and writes."""
         if stage == "answer":     # the question, the delegation and the files it names, and nothing else (r77)
             return self.answer_brief(here, tree, extra)
-        item = self.dir / (name + ".md")
+        item = self.dir / ("initiative.md" if name == self.initiative else name + ".md")
         data, _ = workqueue.frontmatter(item.read_text())
         read = [self.rel(item)]
         under = data.get("under")
@@ -29,10 +30,12 @@ class Briefs:
         runs = self.dir / "runs" / name
         read += [self.rel(p) for p in sorted(runs.iterdir()) if p.is_dir()] if runs.is_dir() else []
         rnd = stage in ROUNDS
-        lines = ["%s: %s" % ("Capability-proposal" if rnd else "Work-item", self.rel(item)), "Agent: %s" % agent,
-                 "Scripts: %s" % SCRIPTS]
-        if rnd:     # a capability-proposal's round (supervise_rounds.py): the kind its agent runs
+        label = "Initiative" if stage == "integrate" else "Capability-proposal" if rnd else "Work-item"
+        lines = ["%s: %s" % (label, self.rel(item)), "Agent: %s" % agent, "Scripts: %s" % SCRIPTS]
+        if rnd:     # a round (supervise_rounds.py): the kind its agent runs
             lines.append("Kind: %s" % stage)
+            if stage == "integrate":
+                lines += self.integrate_lines(data)
             if stage == "gate":
                 lines.append("Give the gate as questions in your result's `questions`, one string each: every question a "
                              "decision, with its readings and the recommended reading marked.")
@@ -59,6 +62,12 @@ class Briefs:
                         % (stage, name, "\n".join(lines), "".join("- %s\n" % r for r in read), here, here / "result.json",
                            tree))
         return path
+
+    def integrate_lines(self, data):
+        """The request the initiative fulfils and the lines of it with the line outcome accepted, and no other."""
+        ident = str(data.get("fulfils") or "").rsplit("/", 1)[-1]
+        return ["Request: %s" % ident, "Accepted lines of the request:"] + [
+            "- %d. %s" % line for line in workqueue_request.accepted_lines(self.root, ident)]
 
     def answer_lines(self, name):
         """The work-item's answers as brief lines (r57), each beside the question it answers: the n-th bullet of

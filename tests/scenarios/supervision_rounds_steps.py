@@ -89,8 +89,38 @@ def every_round_ends_and_done(plan):
     plan["initiative-round"] = {"status": "DONE"}
 
 
-def rounds(repo, kind):
-    return [c for c in starts(repo) if c["agent"].endswith("initiative-round") and "# %s of p1" % kind in c["brief"]]
+def rounds(repo, kind, name="p1"):
+    return [c for c in starts(repo) if c["agent"].endswith("initiative-round") and "# %s of %s" % (kind, name) in c["brief"]]
+
+
+@given(parsers.re(r"i1 is proposed and fulfils the request q1, whose (?P<text>lines? .+)$"))
+def proposed_fulfilling(repo, text):
+    outcomes = {}
+    for numbers, word in re.findall(r"lines? ([\d ]+?(?: and \d+)?) (?:have |has )?the line outcome (\w+)", text):
+        for n in re.findall(r"\d+", numbers):
+            outcomes[int(n)] = word
+    write(repo, DIR + "/initiative.md", "---\nid: %s\nkind: initiative\nstatus: proposed\nfulfils: q1\n---\n" % full("initiative", "i1"))
+    write(repo, ".shop/work/requests/q1.md", "---\nid: %s\nkind: request\nasker: internal\nstatus: accepted\n---\n\n## Lines\n%s\n"
+          "## Outcomes\n%s" % (full("request", "q1"), "".join("%d. Line %d text.\n" % (n, n) for n in range(1, 4)),
+                               "".join("%d. %s\n" % (n, w) for n, w in sorted(outcomes.items()))))
+    commit_all(repo, "i1 is proposed and fulfils q1")
+
+
+@then(parsers.re(r"a round of the kind integrate was started for i1, given q1's lines 1 and 3, and not line 2$"))
+def integrate_started(repo, context):
+    found = rounds(repo, "integrate", "i1")
+    assert len(found) == 1, (starts(repo), context["done"].stdout, context["done"].stderr)
+    brief = found[0]["brief"]
+    assert "Line 1 text." in brief and "Line 3 text." in brief and "Line 2 text." not in brief, brief
+
+
+@then("i1's transition to started was made when the integrate round for i1 was started")
+def started_with_round(repo, context):
+    moved = [n for n, l in enumerate(log_lines(repo)) if l.get("work-item") == "i1" and l.get("after") == "started"]
+    began = [n for n, l in enumerate(log_lines(repo)) if l.get("work-item") == "i1" and l.get("stage") == "integrate"
+             and l.get("event") == "start"]
+    assert moved and began and moved[0] < began[0], (log_lines(repo), context["done"].stderr)
+    assert "status: started" in (repo / DIR / "initiative.md").read_text()
 
 
 def position(repo, **wanted):

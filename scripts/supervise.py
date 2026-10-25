@@ -94,7 +94,8 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
     def commit(self, name, before, after, push=True):
         """A move's commit on the initiative branch: the work-item's file, its run directories and log.jsonl (r7); then
         the push of the initiative branch (r38)."""
-        paths = [p for p in (self.dir / (name + ".md"), self.dir / "runs" / name, self.dir / "log.jsonl") if p.exists()]
+        item = "initiative.md" if name == self.initiative else name + ".md"
+        paths = [p for p in (self.dir / item, self.dir / "runs" / name, self.dir / "log.jsonl") if p.exists()]
         rels = [self.rel(p) for p in paths]
         git(self.root, "add", "--", *rels)
         git(self.root, "commit", "-q", "-m", "work: %s %s -> %s" % (name, before, after), "--", *rels)
@@ -168,7 +169,7 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
 
     def held(self, name, heading):
         """The bullets of the work-item's `## <heading>` section, each with its continuation lines."""
-        text = (self.dir / (name + ".md")).read_text()
+        text = (self.dir / ("initiative.md" if name == self.initiative else name + ".md")).read_text()
         if "\n## %s\n" % heading not in text:
             return []
         bullets = []

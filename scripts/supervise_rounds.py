@@ -5,6 +5,7 @@ import json
 import subprocess
 
 import workqueue
+import workqueue_done
 from supervise_faults import Fault, fault_of
 from supervise_worker import GitFailed, git
 from workqueue import Refused
@@ -27,6 +28,9 @@ class Rounds:
     def due(self):
         """(name, round, status after) of the first proposal with a round to run, else None. Its questions all have an
         answer when its `## Answers` holds as many bullets as its `## Questions`, none at all included (r70)."""
+        data, _ = workqueue.frontmatter((self.dir / "initiative.md").read_text())
+        if data.get("status") == "proposed":
+            return (self.initiative, "integrate", "started")
         for name, status in self.proposals():
             if status in AFTER and (status != "awaiting-answer"
                                     or len(self.held(name, "Answers")) >= len(self.held(name, "Questions"))):
@@ -41,7 +45,11 @@ class Rounds:
             due = self.due()
 
     def round(self, name, kind, after):
-        before = workqueue.agrees(self.root, self.initiative, name)
+        if kind == "integrate":     # r84: the initiative is started as its integrate round is, before the round's session
+            self.start_initiative(name, after)
+            before = after
+        else:
+            before = workqueue.agrees(self.root, self.initiative, name)
         label, _ = self.run_dir(name, kind)
         branch = "round/%s-%s" % (name, label)
         tree = None
@@ -62,7 +70,15 @@ class Rounds:
             raise Refused("the %s round of %s (%s) faulted, and %s keeps its status %s: %s" % (
                 kind, name, self.rel(self.dir / "runs" / name / label), name, before, fault_of(fault))) from None
         asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []] if kind == "gate" else None
-        self.move(name, before, after, asked)
+        if kind != "integrate":
+            self.move(name, before, after, asked)
+
+    def start_initiative(self, name, after):
+        """The initiative's own transition from proposed: its status written, logged and committed (not a work-item's move)."""
+        with self.lock:
+            workqueue_done.mark(self.dir, self.root, after)
+            self.log(**{"work-item": name, "before": "proposed", "after": after, "by": "work run"})
+            self.commit(name, "proposed", after)
 
     def keep_round(self, name, kind, label):
         """The round's stage directory and log lines, committed with no transition, so the next `work run` finds nothing

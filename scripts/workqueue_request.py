@@ -27,6 +27,14 @@ def _entries(text, name):
     return [line for line in found.group(1).splitlines() if line.strip()] if found else []
 
 
+def accepted_lines(root, ident):
+    """(number, text) of each line of request `ident` whose line outcome is accepted."""
+    text = workqueue.read(path_of(root, ident), root)
+    outcomes = dict(e.split(". ", 1) for e in _entries(text, "Outcomes") if ". " in e)
+    lines = dict(e.split(". ", 1) for e in _entries(text, "Lines") if ". " in e)
+    return [(int(n), lines[n]) for n in sorted(lines, key=int) if outcomes.get(n) == "accepted"]
+
+
 def _with_entries(text, name, entries):
     body = "## %s\n%s\n" % (name, "".join(entry + "\n" for entry in entries))
     if re.search(r"(?m)^## %s\n" % name, text):
