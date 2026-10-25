@@ -42,19 +42,19 @@ Do not explain, summarise or answer the questions yourself, and do not read the 
 - When `work run`'s printout says a worker needed a tool `work run` does not allow, put the tool to the person as a question, naming the stage as printed.
 - For each `failed` work-item, and for a `work: <why>` stop of `work run`, put the change to the person as a question, naming the work-item or the change and its fault as printed. Retry nothing, run `work run` again for nothing, edit no file and dispatch nobody to deliver it.
 
-## Fixes, rulings and the ledger
+## Fixes, answers and the ledger
 
 - A fix to code that a trial finds is drafted as a work-item for `work run` to deliver: `python3 <scripts>/work add <initiative> <title> --part-of capability-proposal/<the proposal's file name without .md> --under <capability> --accepts <id>`, one `--accepts` for each requirement id; `work add` prints the work-item's id and commits it. You change no code yourself.
 - A fix that needs a new scenario, or a new row of a scenario's examples, goes to the `feature-formulator` through a `formulate` round of `initiative-round`, never to the implementer.
 - Ask each dispatch to reply in a few lines and leave the rest in files. Read a file a dispatch wrote only to decide what to do next.
-- Each ruling the person gives is one line appended to the initiative's ledger, `.shop/scratch/run/ledger-<initiative>.md`.
-- When `work run` exits with every work-item of the initiative `green` or `withdrawn`, move the ledger to `.shop/records/archive/`.
+- When the person gives an answer, append one line naming it to the initiative's ledger, `.shop/work/<initiative>/ledger.md`, with `python3 <scripts>/work note <initiative> <line>`; the line names the work-item or question it answers and gives the answer in the person's words, on one line (`work note` refuses a line break). `work note` writes and commits the ledger; never write the ledger by any other means. If `work note` exits non-zero, show its `work: <why>` line and stop.
+- The ledger is tracked with the initiative: do not move or archive it.
 
 ## Red Flags
 
 - Opening a source file, a test or a script's code "to see what the work-item needs"
 - Reading a stage directory, `log.jsonl` or a worktree while `work run` is running, or after it, to explain what it printed
-- Drafting work-items from a capability-proposal yourself, or committing anything but a trial's fix
+- Drafting work-items from a capability-proposal yourself, or committing anything but a trial's fix or the ledger line `work note` commits
 - Starting a `claude -p` session, or merging a branch, because `work run` failed
 - Starting `work run` with uncommitted changes in the checkout
 - Rewording `work run`'s printout instead of showing it
