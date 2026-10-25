@@ -1,0 +1,6 @@
+{
+  "status": "DONE",
+  "summary": "Branch review 4 of i28, 4b7dca6c..125b2ad1 (w167-w172). Verdict: DONE.\nSuite: 870 passed, 8 failed at 125b2ad1 in 35.5 s (parallel, -n auto; not in-process).\nThe 8 failures are StepDefinitionNotFoundError in scenarios that i25's and i26's formulate rounds added after review 3 (requests r4 r5 r12 r20 r21; work-queue r26 r27 r28). None is i28's (finding 6). i25's w174 does not accept work-queue r28.\nNo code or test has changed since review 3 (4640ef08).\nEach work-item's check (pytest --work-item w167..w172) passes, run by this reviewer.\ntools check: ruff 5 errors, the same as before (Minor, drop); vulture clean; no import contracts.\ntools size: none over 300. features bindings: clean. features deprecated: i28's @r102 not yet retired (Minor, observation).\nNo removed or weakened tests. The w171 and w172 allowances hold.\nNo Critical finding and none triaged fix now.",
+  "findings": "/tmp/work-run-i28-2y7l6ako/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": []
+}
