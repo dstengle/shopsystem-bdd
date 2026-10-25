@@ -359,3 +359,14 @@ With i27's fixes the loop reached the gate for i25 and i26 (exit 3), and showed 
 - q5 was accepted, but no line has `work run` start its initiative (`work start` is run by hand).
 - i27 stays `started` with every work-item green: only `work withdraw` and `work retry` mark an initiative done (workqueue.moved_to), not `work run`'s own move to green, so r75 measures i27 again on every run and `measure` refuses (the record exists). q5 asks for it.
 Also: the installed 0.25.0 `initiative-round` drafted q4's round 2 itself instead of dispatching the capability-writer (the drafts were exactly the answers).
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-25-loop-after-i28
+about: capability/supervision
+by: the coordinator, from `work run` on i25, i26 and i29 after i28
+date: 2026-10-25
+
+After i28 the loop carried i25 through apply, formulate and drafting, and started i29 for q5 itself (r103), but:
+- i29's `requests` proposal had no question at its gate, so no session under q5's delegation was started (r77 answers questions) and the apply round found no approval (BLOCKED).
+- i26's formulate round ran `python -m pytest` as formulating-features step 2 writes it; `work run` allows only `python3 -m pytest` (r14), so the round could not run the old scenarios alone and stopped (BLOCKED).
+- A single `work run i28` ended after the fix work-item of branch review 1 (w172) turned green, without the branch review r27 asks for; the next run started it.
+- Researchers ended at their 40-turn limit (r19) again: w169, w173 (and w121-w152 in i24).
