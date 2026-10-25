@@ -1,0 +1,18 @@
+{
+  "status": "DONE",
+  "summary": "Plan of w134 (supervision r66, r81, r82) is in .shop/scratch/3-plan/plan.md.\nThe answer of 2026-10-24 ('Reading A') answers the one Questions bullet that held both earlier questions. It is read as Reading A of both: the gate rounds are not w134's (w146 and w152 are green), and every initiative works on one shared branch.\nThe notes predate w146, w151 and w152. The rounds and the proposal reader (Rounds.proposals) now exist, so workqueue.py drops out of the file set.\nDecisions: select by open_names, proposed initiatives included; run the run-wide checks once; one Run per initiative in its own thread, sharing the lock, the worker limit (round sessions included) and the registry of uncommitted writes that r28's check leaves alone; print each initiative's status and its nodes; exit with an error on any node awaiting-answer or failed, or on any refusal, without one initiative's fault stopping the others; r27 and r50 kept per initiative on the one branch.\nNew modules: scripts/supervise_all.py (plus a CLAUDE.md row) and tests/scenarios/supervision_all_steps.py.\nTests broken: none. No test pins the usage error or builds a Run, and with one initiative the shared state is the run's own.\nOpen cases: the print layout, the gate questions the r66 step definitions need, r82's no-move Givens, r75 without a review of its own, the start order, the form of the limit, temp-dir names.",
+  "plan": ".shop/scratch/3-plan/plan.md",
+  "fileset": [
+    "scripts/work",
+    "scripts/supervise_all.py",
+    "scripts/supervise.py",
+    "scripts/supervise_pool.py",
+    "scripts/supervise_worker.py",
+    "scripts/supervise_faults.py",
+    "tests/scenarios/supervision_all_steps.py",
+    "tests/scenarios/test_supervision.py",
+    "tests/scenarios/supervision_world.py",
+    "CLAUDE.md"
+  ],
+  "questions": []
+}
