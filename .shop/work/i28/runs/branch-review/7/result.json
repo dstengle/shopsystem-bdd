@@ -1,0 +1,6 @@
+{
+  "status": "DONE",
+  "summary": "Branch review 7 of i28, 4b7dca6c..eca9d404 (w167-w172, all green). Verdict: DONE.\nSuite: 874 passed, 8 failed at eca9d404 in 27.8 s (parallel, -n auto; not in-process).\nAll 8 failures are StepDefinitionNotFoundError in i29's scenarios: requests r22 (w175), supervision r15 (w179), r105-r109 (w181). None is i28's (finding 6).\nNone of i28's code has changed since review 6. I checked the two risks: w178's change to run_all leaves r103's start intact, and w176's --change/--accept leaves r30's <initiative>/<name> intact.\nI ran each work-item's check (pytest --work-item w167..w172) myself, and each passes.\ntools check: ruff gives 18 errors. The 5 i28 errors are unchanged (Minor, drop). The other 13: one I001 is i26's, and 12 are in i29's and i31's tracked helper scripts (observation). vulture is clean; there are no import contracts.\ntools size: no file over 300. features bindings: clean. features deprecated: i28's @r102 is not retired yet (Minor, observation).\nNo tests removed or weakened by i28. The w171 and w172 allowances hold.\nNo finding is Critical and none is triaged fix now.",
+  "findings": "/tmp/work-run-i28-vqhdo080/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": []
+}
