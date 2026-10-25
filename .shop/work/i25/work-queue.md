@@ -1,5 +1,5 @@
 ---
-id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/work-queue
+id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i25-work-queue
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i25
 status: formulated

@@ -1,5 +1,5 @@
 ---
-id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/supervision
+id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i26-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i26
 status: formulated
