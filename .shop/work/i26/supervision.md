@@ -38,3 +38,4 @@ The drafts of this proposal are in .shop/work/i26/runs/i26/2-integrate.
 - 2026-10-25: 1: B, lines as drafted; the commands stay Implementation (the coordinator under the person's delegation 2026-10-25)
 - 2026-10-25: 2: yes, change r4 to add the asker's answers and r5 to add the upstream's questions (the coordinator under the person's delegation 2026-10-25)
 - 2026-10-25: 3: yes, r12 covers the question and answer commands (the coordinator under the person's delegation 2026-10-25)
+- 2026-10-25: 4: yes, r16 is the refusal; nothing changes (the coordinator under the person's delegation 2026-10-25)
