@@ -7,3 +7,4 @@
 - 2026-10-25: integrate round 1 (re-run, q6): no writer dispatched; all 4 accepted lines already in spec/ (work-queue r30, supervision r102 r103 r104) since apply commit f85f0d23; 0 added, 0 changed, 0 removed, 0 questions; no gate.md written
 - 2026-10-25: The first work run of i28 started an integrate round because the hand bootstrap left i28 proposed with its capability-proposals already written; r96 stopped it (no change list), as it should. i28 is now started; work run is run again.
 - 2026-10-25: w167 (added by hand, supervision r92) kept work run from drafting the supervision work-item for r102-r104 (r72 drafts one a capability-proposal and capability); added with work add as w170. w169's researcher hit its turn limit; retried.
+- 2026-10-25: formulate round 3: supervision#r102 scenario changed (old deprecated), commit 7636eb12
