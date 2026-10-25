@@ -45,6 +45,24 @@ def sessions_reply(repo, plan, reply):
     plan["delegation-answerer"] = {"fields": {"answer": ANSWER}} if reply == "answers it" else {}
 
 
+@given(parsers.re(r'i1\'s work-item w1 is awaiting-answer, its ## Questions section with "(?P<one>[^"]+)" and "(?P<two>[^"]+)", '
+                  r"each with no answer$"))
+def two_unanswered(repo, one, two):
+    write(repo, DIR + "/w1.md", "---\nid: %s\nkind: work-item\npart_of: %s\nstatus: awaiting-answer\nunder: thing\n"
+          "accepts: [thing#r1]\n---\n\n## Questions\n\n- %s\n- %s\n" % (full("work-item", "w1"), full("initiative", "i1"), one, two))
+    commit_all(repo, "a work-item with two unanswered questions")
+
+
+@given(parsers.re(r'the session given "(?P<one>[^"]+)" under the delegation answers "(?P<a1>[^"]+)", the session given '
+                  r'"(?P<two>[^"]+)" answers "(?P<a2>[^"]+)", and every round ends and every worker gives DONE$'))
+def each_answers(repo, plan, one, a1, two, a2):
+    asked_by_the_log(repo)
+    plan["default"] = {"status": "DONE"}
+    plan["initiative-round"] = {"status": "DONE"}
+    plan["question:" + one] = {"fields": {"answer": a1}}
+    plan["question:" + two] = {"fields": {"answer": a2}}
+
+
 @given(parsers.re(r'the session answering under the delegation answers "(?P<answer>[^"]+)", and every worker gives DONE$'))
 def session_answers(repo, plan, answer):
     asked_by_the_log(repo)
@@ -115,6 +133,16 @@ def question_given(repo, context, name, files):
     other = "p1" if name == "w1" else "w1"
     brief = given_to(repo, section((repo / (DIR + "/%s.md" % name)).read_text(), "Questions").strip()[2:])
     assert section((repo / (DIR + "/%s.md" % other)).read_text(), "Questions").strip()[2:] not in brief, brief
+
+
+@then(parsers.re(r'"(?P<question>[^"]+)" was given to (?:a|another) session of its own, given the question, the delegation '
+                 r'"[^"]+", (?P<files>\S+(?: and \S+)?), and nothing else$'))
+def asked_question_given(repo, context, question, files):
+    brief = given_to(repo, question)
+    assert read_list(brief) == files.split(" and "), brief
+    assert context["delegation"] in brief and ".shop/work/" not in brief.split("Run directory:")[0] and "spec/" not in brief, brief
+    for other in re.findall(r'^- (.*)$', section((repo / (DIR + "/w1.md")).read_text(), "Questions"), re.M):
+        assert other == question or other not in brief, brief
 
 
 def answers_of(repo, name):

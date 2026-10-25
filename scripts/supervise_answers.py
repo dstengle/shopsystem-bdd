@@ -73,12 +73,19 @@ class Answers:
                     continue
                 self.section(name, "Answers", "%s: %s\nby: work run, under the delegation \"%s\"" % (
                     datetime.date.today().isoformat(), answer, delegation))
+                self.commit(name, before, before)     # kept now: the next session's end must not find it uncommitted (r28)
             if kind == "work-item" and not left and self.open_questions(name) == []:
                 path = self.dir / (name + ".md")
                 self.move(name, before, workqueue_answer.asked_from(self.root, path, name))
-            else:
+            elif self.uncommitted(name):
                 self.commit(name, before, before)
         self.push()
+
+    def uncommitted(self, name):
+        """Whether the item's file, its run directories or the log differ from the last commit."""
+        item = self.dir / (name + ".md")
+        rels = [self.rel(p) for p in (item, self.dir / "runs" / name, self.dir / "log.jsonl") if p.exists()]
+        return bool(git(self.root, "status", "--porcelain", "--untracked-files=all", "--", *rels).stdout.strip())
 
     def ask(self, name, question, delegation):
         """One session given `question` under `delegation`: its answer, else None when it leaves the question for the
