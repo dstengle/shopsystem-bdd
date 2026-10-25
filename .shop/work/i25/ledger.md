@@ -8,3 +8,4 @@
 - 2026-10-25: apply (work-queue): r26, r27, r28 added (r28 the refusal without the flag), r14 changed; answers 1 (a), 2 (a), 3 (a)(i), 4 (a) under the person's delegation 2026-10-25; spec commit 1c0c4fb6
 - 2026-10-25: formulate round 3 (work-queue): commit 159bdfdf; r26, r27, r28 added; r14 changed (old scenario deprecated); 0 questions; model check 15 violations, none of work-queue
 - 2026-10-25: formulate round 1 (coordinator): supervision r98 added; commit 46fef129
+- 2026-10-25: Branch review 3's Critical (w176's removal sanctioned in its Answers, not listed under Retires) is ruled by the coordinator under the person's delegation 2026-10-25: the Answers sanction stands. w186, drafted for it with nothing to fix in code, is withdrawn; the other findings go to q9.
