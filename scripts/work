@@ -47,7 +47,7 @@ def cmd_retry(args):
 
 
 def cmd_answer(args):
-    print("%s %s" % (args.name, workqueue_answer.answer(args.root, args.name, args.answer)))
+    print("%s %s" % (args.name, workqueue_answer.answer(args.root, args.name, args.answer, args.change, args.accept)))
     return 0
 
 
@@ -122,7 +122,9 @@ def main(argv=None):
     n = sub.add_parser("answer", help="answer the question of an awaiting-answer work-item (returning it to the stage that asked) or capability-proposal")
     n.add_argument("name")
     n.add_argument("answer")
-    o = sub.add_parser("note", help="append a dated line to an initiative's ledger and commit it")
+    n.add_argument("--change", action="store_true", help="a reviewer's question: the answer asks for a change (the work-item returns to ready)")
+    n.add_argument("--accept", action="store_true", help="a reviewer's question: the answer accepts the work-item as it is (it returns to done)")
+    o =sub.add_parser("note", help="append a dated line to an initiative's ledger and commit it")
     o.add_argument("initiative")
     o.add_argument("line")
     u = sub.add_parser("status", help="where an initiative (default: each open one) stands, for a session to start from")

@@ -282,21 +282,6 @@ Feature: Work queue
     When the session runs `work answer p1 "Use the first reading"`
     Then .shop/work/i1/p1.md has under its `## Answers` the text "Use the first reading", with the date the command was run
 
-  @r14 @deprecated
-  Scenario Outline: answer on an awaiting-answer work-item transitions it to the status the asking stage started from (deprecated)
-    Deprecated for: answer to a researcher's, a planner's or an implementer's question transitions the work-item to the status that stage started from
-    Pins that an answer returns the work-item to the stage that asked, whichever stage that was.
-    Given an initiative i1 under .shop/work/ whose work-item w1 is awaiting-answer, its question asked by <asker>
-    When the session runs `work answer w1 "Use the first reading"`
-    Then .shop/work/i1/w1.md gives w1's status as <status>
-
-    Examples:
-      | asker              | status     |
-      | a researcher       | drafted    |
-      | a planner          | researched |
-      | an implementer     | ready      |
-      | a reviewer         | done       |
-
   @r14
   Scenario Outline: answer to a researcher's, a planner's or an implementer's question transitions the work-item to the status that stage started from
     Pins that an answer returns the work-item to the stage that asked, for each of the three stages before review.

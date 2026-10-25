@@ -21,11 +21,20 @@ def asked_from(root, path, name):
     return ASKED_FROM.get(moves[-1]["before"], moves[-1]["before"])
 
 
-def answer(root, name, text):
+def asked_by_reviewer(root, path, name):
+    """Whether the last move of `name` into awaiting-answer was from done, the one status only a reviewer starts from."""
+    moves = [line for line in workqueue.logged(path.parent / "log.jsonl", root)
+             if line.get("work-item") == name and line.get("after") == "awaiting-answer"]
+    return bool(moves) and moves[-1].get("before") == "done"
+
+
+def answer(root, name, text, change=False, accept=False):
     """Write `text` with today's date under the awaiting-answer work-item `name`'s `## Answers` and return it to the
-    status the stage that asked started from; return that status."""
+    status the stage that asked started from (a reviewer's: ready on `change`, done on `accept`); return that status."""
     if any(c in text for c in LINE_BREAKS):
         raise Refused("the answer has a line break in it; an answer is one line")
+    if change and accept:
+        raise Refused("--change and --accept cannot be given together; an answer asks for a change or accepts the work-item")
     if "/" in name:     # <initiative>/<name> (r30): that initiative's file, whatever other initiatives hold the name
         initiative, name = (name.split("/", 1) + [""])[:2]
         workqueue.entry(initiative, "initiative")
@@ -38,6 +47,10 @@ def answer(root, name, text):
         raise Refused("%s is not awaiting-answer; work answer answers only an awaiting-answer work-item or capability-proposal" % name)
     proposal = "\nkind: capability-proposal\n" in workqueue.read(path, root).split("\n---\n", 1)[0] + "\n"
     status = "awaiting-answer" if proposal else asked_from(root, path, name)
+    if not proposal and asked_by_reviewer(root, path, name):
+        if not (change or accept):
+            raise Refused("the answer must say whether it asks for a change (--change) or accepts the work-item as it is (--accept)")
+        status = "ready" if change else "done"
     line = "- %s: %s\n" % (datetime.date.today().isoformat(), text)
 
     def write():
