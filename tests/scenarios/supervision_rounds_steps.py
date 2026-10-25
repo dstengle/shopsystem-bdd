@@ -112,6 +112,12 @@ def proposed_fulfilling_none(repo):
     commit_all(repo, "i1 is proposed and fulfils no request")
 
 
+@given("i1 is proposed and fulfils the request q9, which the queue does not hold")
+def proposed_fulfilling_missing(repo):
+    write(repo, DIR + "/initiative.md", "---\nid: %s\nkind: initiative\nstatus: proposed\nfulfils: q9\n---\n" % full("initiative", "i1"))
+    commit_all(repo, "i1 is proposed and fulfils q9")
+
+
 @then("no round of the kind integrate was started for i1")
 def no_integrate_started(repo, context):
     assert not rounds(repo, "integrate", "i1"), (starts(repo), context["done"].stdout, context["done"].stderr)

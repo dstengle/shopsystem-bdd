@@ -6,6 +6,7 @@ import subprocess
 
 import workqueue
 import workqueue_done
+import workqueue_request
 from supervise_faults import Fault, fault_of
 from supervise_worker import GitFailed, git
 from workqueue import Refused
@@ -30,7 +31,11 @@ class Rounds:
         answer when its `## Answers` holds as many bullets as its `## Questions`, none at all included (r70)."""
         data, _ = workqueue.frontmatter((self.dir / "initiative.md").read_text())
         if data.get("status") == "proposed" and data.get("fulfils"):     # r79: no request, no lines to integrate
-            return (self.initiative, "integrate", "started")
+            try:     # a request the queue lacks gives no round, before anything moves
+                workqueue_request.accepted_lines(self.root, str(data["fulfils"]).rsplit("/", 1)[-1])
+                return (self.initiative, "integrate", "started")
+            except Refused:
+                pass
         for name, status in self.proposals():
             if status in AFTER and (status != "awaiting-answer"
                                     or len(self.held(name, "Answers")) >= len(self.held(name, "Questions"))):
