@@ -175,7 +175,8 @@ class Workers:
             brief = self.brief(name, stage, agent, here, tree, branch, extra)
             session = str(uuid.uuid4())
             self.log(**{"work-item": name, "stage": stage, "agent": agent, "session": session, "event": "start"})
-        done = self.session(stage, agent, brief, session, tree, name)
+        with self.slots:     # at most the limit's sessions at once, those of every initiative taken (r60)
+            done = self.session(stage, agent, brief, session, tree, name)
         with self.lock:
             changed = self.checkout_changes()
             shutil.copytree(here, kept_at)

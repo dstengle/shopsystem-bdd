@@ -8,6 +8,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import supervise  # noqa: E402
+import supervise_all  # noqa: E402
 import workqueue  # noqa: E402
 import workqueue_answer  # noqa: E402
 import workqueue_note  # noqa: E402
@@ -85,6 +86,8 @@ def cmd_start(args):
 
 
 def cmd_run(args):
+    if args.initiative is None:
+        return supervise_all.run_all(args.root)
     return supervise.run(args.root, args.initiative)
 
 
@@ -103,7 +106,7 @@ def main(argv=None):
     w = sub.add_parser("withdraw", help="move a work-item that is neither claimed nor green to withdrawn")
     w.add_argument("name")
     r = sub.add_parser("run", help="take an initiative's work-items through their stages, one claude -p worker at a time")
-    r.add_argument("initiative")
+    r.add_argument("initiative", nargs="?", help="the initiative (default: every one that is neither done nor abandoned)")
     t = sub.add_parser("retry", help="return a failed work-item to the status before that log.jsonl gives in its transition into failed")
     t.add_argument("name")
     n = sub.add_parser("answer", help="answer the question of an awaiting-answer work-item (returning it to the stage that asked) or capability-proposal")

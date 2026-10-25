@@ -60,17 +60,21 @@ class Reviews:
         session = str(uuid.uuid4())
         self.log(stage=STAGE, agent=AGENT, session=session, event="start")
         try:
-            done = self.session("review", AGENT, path, session, tree, None)
+            with self.slots:     # one of the sessions the limit allows, with those of every initiative taken (r60)
+                done = self.session("review", AGENT, path, session, tree, None)
             kept = self.review_dir() / str(k)
-            shutil.copytree(here, kept)
-            (kept / "session.json").write_text(with_transcript(done.stdout, session))
+            with self.lock:     # the checkout's files are written and committed at once: another initiative's run sees them
+                shutil.copytree(here, kept)
+                self.own.add(self.rel(kept))
+                (kept / "session.json").write_text(with_transcript(done.stdout, session))
+                self.log(stage=STAGE, agent=AGENT, session=session, event="end")
+                rels = [self.rel(kept), self.rel(self.dir / "log.jsonl")]
+                git(self.root, "add", "--", *rels)
+                git(self.root, "commit", "-q", "-m", "branch review %d of %s" % (k, self.initiative), "--", *rels)
+                self.unlogged = []
+                self.own.discard(self.rel(kept))
         finally:
             self.remove(tree)
-        self.log(stage=STAGE, agent=AGENT, session=session, event="end")
-        rels = [self.rel(kept), self.rel(self.dir / "log.jsonl")]
-        git(self.root, "add", "--", *rels)
-        git(self.root, "commit", "-q", "-m", "branch review %d of %s" % (k, self.initiative), "--", *rels)
-        self.unlogged = []
         reason = self.git_push()
         if reason:      # the review stays committed locally; the next run pushes it first (r54)
             raise Refused("the branch review is committed, but it cannot push the initiative branch to the "

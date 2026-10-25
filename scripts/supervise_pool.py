@@ -42,6 +42,7 @@ class Pool:
         if isinstance(workers, bool) or not isinstance(workers, int) or workers < 1:
             raise Refused("workers in %s is %r, not a positive integer" % (self.rel(path), workers))
         self.limit = workers
+        self.slots = threading.Semaphore(workers)
 
     def blocked(self, name, statuses):
         """Whether `name` is blocked_by a work-item that is not green (r63); a blocker is named by its id or its name."""

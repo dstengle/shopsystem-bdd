@@ -22,6 +22,7 @@ from pathlib import Path
 from pytest_bdd import parsers, scenarios, then, when
 
 from .conftest import SCRIPTS
+from .supervision_all_steps import *
 from .supervision_analysis_steps import *
 from .supervision_answers_steps import *
 from .supervision_delegation_steps import *

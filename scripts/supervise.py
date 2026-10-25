@@ -58,6 +58,8 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
         self.limit = 4           # the number of workers at the same time (r60), read from it
         self.finished = []       # the implementers that ended with a worker's end, in that order, not yet merged (r61)
         self.turns = threading.Condition()
+        self.group = [self]      # the runs of one `work run` with no initiative, which share the checkout (supervise_all)
+        self.slots = threading.Semaphore(self.limit)     # the sessions at the same time (r60), shared by those runs
 
     def rel(self, path):
         return str(Path(path).relative_to(self.root))
@@ -190,6 +192,11 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
         (r9)."""
         self.check()
         self.push_unpushed()
+        self.pull_through()
+        return self.show()
+
+    def pull_through(self):
+        """The initiative's part of a run once checked: answers, rounds, drafting, the pool, the branch review."""
         try:
             self.answers()
             self.rounds()
@@ -207,15 +214,18 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
                 self.remove(tree)
             if self.outside is not None:
                 shutil.rmtree(self.outside, ignore_errors=True)
-        statuses = self.items()
+
+    def show(self, nodes=None, indent=""):
+        """Print each node's status, its open questions and its faults; the exit code of a run of this initiative alone."""
+        statuses = self.items() if nodes is None else nodes
         for name, status in statuses:
-            print("%s %s" % (name, status))
+            print("%s%s %s" % (indent, name, status))
             if status == "awaiting-answer":
                 for line in self.questions(name):
-                    print("  %s" % line)
+                    print("%s  %s" % (indent, line))
             if status == "failed":
                 for fault in self.faulted(name):
-                    print("  - %s" % fault)
+                    print("%s  - %s" % (indent, fault))
         if all(s in ("green", "withdrawn") for _, s in statuses):
             return 0
         return 3 if any(s == "awaiting-answer" for _, s in statuses) and not any(s == "failed" for _, s in statuses) else 1

@@ -25,8 +25,9 @@ class Faults:
 
     def git_push(self, *options):
         """`git push <options> <remote> <branch>`; None, else git's reason it failed."""
-        done = subprocess.run(["git", "push", "-q", *options, self.remote(), self.branch], cwd=self.root,
-                              capture_output=True, text=True)
+        with self.lock:     # initiatives taken together push the one branch, one push at a time
+            done = subprocess.run(["git", "push", "-q", *options, self.remote(), self.branch], cwd=self.root,
+                                  capture_output=True, text=True)
         if done.returncode == 0:
             return None
         said = [l.strip() for l in (done.stderr + done.stdout).splitlines() if l.strip() and not l.startswith("hint:")]
@@ -92,18 +93,18 @@ class Faults:
         """The paths under .shop/work/ in the repository's own checkout that differ from its last commit, other than
         what work run itself has written and not yet committed; each put back to its last commit (r28)."""
         out = supervise_worker.git(self.root, "status", "--porcelain", "--untracked-files=all", "--", WORK.as_posix()).stdout
-        log = self.rel(self.dir / "log.jsonl")
+        logs = {run.rel(run.dir / "log.jsonl"): run for run in self.group}     # the runs of the initiatives taken together
         changed = []
         for line in out.splitlines():
             path = line[3:].strip('"')
-            if any(path.startswith(own + "/") for own in self.own):
+            if any(path.startswith(own + "/") for run in self.group for own in run.own):
                 continue
-            if path == log and (self.dir / "log.jsonl").read_text() == self.committed(log) + "".join(self.unlogged):
+            if path in logs and (self.root / path).read_text() == self.committed(path) + "".join(logs[path].unlogged):
                 continue
             changed.append(path)
         for path in changed:
-            if path == log:
-                (self.dir / "log.jsonl").write_text(self.committed(log) + "".join(self.unlogged))
+            if path in logs:
+                (self.root / path).write_text(self.committed(path) + "".join(logs[path].unlogged))
             elif supervise_worker.git(self.root, "ls-tree", "--name-only", "HEAD", "--", path).stdout.strip():
                 supervise_worker.git(self.root, "checkout", "HEAD", "--", path)
             else:
