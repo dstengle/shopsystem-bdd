@@ -264,7 +264,8 @@ def main(argv):
     else:
         print(json.dumps({"type": "result", "subtype": subtype, "is_error": subtype != "success", "session_id": session,
                           "num_turns": step.get("num_turns", 26 if subtype == "error_max_turns" else 1),
-                          "total_cost_usd": 0, "result": "stand-in"}))
+                          "total_cost_usd": 0, "result": "stand-in",
+                          "usage": {"input_tokens": 1, "output_tokens": 1}}))
     record({"event": "end", "agent": agent, "session": session})
     return step.get("exit", 0 if subtype == "success" else 1)
 

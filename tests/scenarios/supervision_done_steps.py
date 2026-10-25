@@ -3,7 +3,7 @@ and the Thens that read the initiative's status and its commit."""
 from pytest_bdd import given, then
 
 from .conftest import full
-from .supervision_world import commit_all, fields, git, item_text, write
+from .supervision_world import commit_all, fields, git, item_text, log_lines, write
 
 INITIATIVE = ".shop/work/i1/initiative.md"
 
@@ -14,6 +14,21 @@ def started_with_items(repo):
     write(repo, ".shop/work/i1/w1.md", item_text("w1", "green"))
     write(repo, ".shop/work/i1/w2.md", item_text("w2", "withdrawn"))
     commit_all(repo, "i1 is started with w1 green and w2 withdrawn")
+
+
+@given("i1 is started and its work-item w1 is ready")
+def started_with_ready(repo):
+    write(repo, INITIATIVE, "---\nid: %s\nkind: initiative\nstatus: started\n---\n" % full("initiative", "i1"))
+    write(repo, ".shop/work/i1/w1.md", item_text("w1", "ready"))
+    commit_all(repo, "i1 is started with w1 ready")
+
+
+@then("i1's transition to done was made after w1's transition to green, before `work run` exited")
+def done_after_green(repo, context):
+    lines = log_lines(repo)
+    green = [n for n, l in enumerate(lines) if l.get("work-item") == "w1" and l.get("after") == "green"]
+    done = [n for n, l in enumerate(lines) if l.get("work-item") == "i1" and l.get("after") == "done"]
+    assert green and done and green[0] < done[0], (lines, context["done"].stdout, context["done"].stderr)
 
 
 @given("a request q2 kept in this context, whose asker is this context, that names i1 and is delivered")
