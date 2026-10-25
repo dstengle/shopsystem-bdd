@@ -1,0 +1,10 @@
+{
+  "status": "DONE",
+  "summary": "w168 research done; notes at .shop/scratch/1-research/notes.md.\nAccepted scenarios: work-queue.feature r30 (answer named by its initiative), 2 example rows, both red.\nRed cause: workqueue.find refuses any name with '/' (scripts/workqueue.py:222-227); scripts/workqueue_answer.py:answer calls it with 'i2/p1'.\nFix sits in answer: split <initiative>/<name>, validate with workqueue.entry, pass bare name on. Changing find also changes retry and withdraw.\nProbes (scratch, run): 17 cases of work answer today; bare-name answers work; prefixed ones refused.\nDefect D1: a glob name ('w*') matches a file, then is refused as 'does not exist'.\nSection 4 is by search only (no tools map); bare-name answer scenarios not run: pytest.ini deselects 65 of 67 in this session.\nScratch probes are under ignored .shop/scratch/; git status clean apart from the stage directory.",
+  "fileset": [
+    "scripts/workqueue_answer.py",
+    "scripts/workqueue.py",
+    "scripts/work"
+  ],
+  "questions": []
+}

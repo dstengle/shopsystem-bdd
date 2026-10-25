@@ -2,3 +2,11 @@
 {"time": "2026-10-25T15:48:39+00:00", "work-item": "i28", "stage": "integrate", "event": "push verified"}
 {"time": "2026-10-25T15:48:39+00:00", "work-item": "i28", "stage": "integrate", "agent": "initiative-round", "session": "afbacd91-8512-4b28-bf76-4ee10ad06361", "event": "start"}
 {"time": "2026-10-25T15:49:27+00:00", "work-item": "i28", "stage": "integrate", "agent": "initiative-round", "session": "afbacd91-8512-4b28-bf76-4ee10ad06361", "event": "end"}
+{"time": "2026-10-25T15:49:42+00:00", "work-item": "w168", "stage": "research", "event": "push verified"}
+{"time": "2026-10-25T15:49:42+00:00", "work-item": "w168", "stage": "research", "agent": "code-scout", "session": "5e62398b-3a38-48ec-ae28-5396cb92f2b3", "event": "start"}
+{"time": "2026-10-25T15:49:43+00:00", "work-item": "w167", "stage": "research", "event": "push verified"}
+{"time": "2026-10-25T15:49:43+00:00", "work-item": "w169", "stage": "research", "event": "push verified"}
+{"time": "2026-10-25T15:49:43+00:00", "work-item": "w167", "stage": "research", "agent": "code-scout", "session": "38fc8605-9856-4e20-8e3b-a470f66a2049", "event": "start"}
+{"time": "2026-10-25T15:49:43+00:00", "work-item": "w169", "stage": "research", "agent": "code-scout", "session": "e4039b4e-15ca-45fb-98d0-8844e528d6aa", "event": "start"}
+{"time": "2026-10-25T15:52:28+00:00", "work-item": "w168", "stage": "research", "agent": "code-scout", "session": "5e62398b-3a38-48ec-ae28-5396cb92f2b3", "event": "end"}
+{"time": "2026-10-25T15:52:28+00:00", "work-item": "w168", "before": "drafted", "after": "researched", "by": "work run"}
