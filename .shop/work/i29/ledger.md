@@ -1,1 +1,2 @@
 - 2026-10-25: integrate round 1 (q5): 5 lines added (supervision r105-r108, requests r22), 0 changed, 0 removed, 0 terms, 0 decisions, 6 questions, 0 cut sentences; .shop/scratch/1-integrate/drafts/round-1/gate.md
+- 2026-10-25: gate (requests): 0 questions
