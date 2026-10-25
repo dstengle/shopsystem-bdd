@@ -1,0 +1,14 @@
+{
+  "status": "DONE",
+  "summary": "w173 (supervision r98) researched; notes at .shop/scratch/2-research/notes.md.\nNo accepted scenario exists: no @r98 in features/ or tests; the formulate round must write it before any scenario can run.\nTests-of has no map; test lists are by search.\nProbes (run, 6 passed): a reviewer's question answered without a flag lands at done (rc 0), against work-queue r28.\nThe --change and --accept flags are unknown options today (rc 2), so work-queue r26-r27 (w174) must land first for r98's ready route.\nOpen for the plan: the findings path source, either the reviewer's result findings field or the newest -review directory (both in notes, no choice made).\nDelegated answers (supervise_answers.py:79) skip the flag too (read).\nfeatures/supervision.feature and tests/scenarios/test_supervision.py are needed for the scenario; supervise_brief.py needs the findings line.",
+  "fileset": [
+    "scripts/supervise_brief.py",
+    "tests/scenarios/supervision_answers_steps.py",
+    "tests/scenarios/test_supervision.py",
+    "features/supervision.feature",
+    "scripts/workqueue_answer.py",
+    "scripts/work",
+    "scripts/supervise_answers.py"
+  ],
+  "questions": []
+}
