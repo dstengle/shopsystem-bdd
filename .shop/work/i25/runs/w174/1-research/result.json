@@ -1,0 +1,21 @@
+{
+  "status": "DONE",
+  "summary": "Research of w174 (work answer for reviewer questions: r14, r26, r27). Notes at .shop/scratch/1-research/notes.md.\nRed today: the r26 and r27 scenarios fail on undefined When steps (saying that the answer asks for a change / accepts ...), and the flags --change and --accept do not exist (scripts/work answer parser, workqueue_answer.answer has no reviewer branch). The r14 rows pass today (run: 7 of 9 pass).\nProbes (run): a reviewer's question with no flag lands in done (rc 0), which r28 says must be refused (defect D1, r28 not in w174's accepts).\nOld assumptions: workqueue_answer.asked_from/ASKED_FROM, supervise_answers.py:79 (delegated move via asked_from), supervise.py STAGES 'done' (an accepted item is reviewed again by work run).\nTests the change makes impossible: the deprecated r14 outline's reviewer-done row (passes today; Retires lists it).\nFile set: scripts/work, scripts/workqueue_answer.py, tests/scenarios/work_queue_answer_steps.py; supervise_answers.py is a decision for the plan.\ntools tests-of unavailable (no map): tests found by search and by running them.",
+  "fileset": [
+    "scripts/work",
+    "scripts/workqueue_answer.py",
+    "tests/scenarios/work_queue_answer_steps.py",
+    "scripts/supervise_answers.py",
+    "scripts/workqueue.py",
+    "scripts/workqueue_note.py",
+    "scripts/supervise.py",
+    "tests/scenarios/test_work_queue.py",
+    "features/work-queue.feature"
+  ],
+  "questions": [
+    "r27 accepts a work-item into done, which work run treats as 'run the review stage' (supervise.py STAGES); is an accepted work-item to be reviewed again, or should accept land elsewhere?",
+    "The deprecated r14 outline's reviewer example is in the accepted list but the Retires section removes it: delete it from features/work-queue.feature in this work-item, or leave it to the plan?",
+    "supervise_answers.py:79 moves a reviewer's delegated work-item to done with no change-or-accept decision; is that in this work-item (w174) or in the one that takes r28?",
+    "r28 (refuse an answer to a reviewer's question with no flag) is in the capability but not in w174's accepts; D1 shows today's no-flag answer lands in done. Which work-item takes r28?"
+  ]
+}
