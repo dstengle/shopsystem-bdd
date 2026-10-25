@@ -332,3 +332,10 @@ by: the coordinator, from q2's first intake round
 date: 2026-10-25
 
 q2's intake round (supervision r67) wrote line 1's outcome `question` and passed the turn to the asker, but the question's text is only in the round's `result.json` (`.shop/work/requests/runs/q2/1-intake/`): `work` has no command for the upstream's questions or the asker's answers (requests, Not yet), so q2.md has no `## Questions` and the asker cannot answer through `work` (decision 0067). `work run` printed nothing about it and exited 0 (r82 looks only at initiatives' nodes), so q2 sits `awaiting-asker` with no way forward but an edit by hand.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-25-integrate-round-leaves-nothing
+about: capability/supervision
+by: the coordinator, from `work run` on i25 and i26
+date: 2026-10-25
+
+The first real `integrate` rounds `work run` started (supervision r79, for i25 and i26) each drafted lines, a decision and questions (i25: work-queue r25 r26, supervision r91, a change to r14, decision 0069, 5 questions; i26: requests r19 r20, supervision r91 r92, 8 questions), but their drafts were under `.shop/scratch/drafts/`, which git ignores, in the round's worktree, and were lost when it was removed. No line says who writes the capability-proposal an integrate round gives, so none was written, no `gate` round (r68) started, and nothing reached the person. `work run` then started a branch review of each initiative with no work-item (both NEEDS_CONTEXT) and exited 0. i24 never ran this path: its rounds were dispatched by the coordinator.
