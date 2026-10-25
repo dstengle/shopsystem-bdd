@@ -914,3 +914,11 @@
 {"time": "2026-10-25T02:17:03+00:00", "work-item": "w158", "stage": "implement", "agent": "bdd-implementer", "session": "2b187604-601a-40a7-ae45-4facbefa016d", "event": "end"}
 {"time": "2026-10-25T02:17:21+00:00", "work-item": "w158", "stage": "merge", "event": "suite", "record": "Suite: 828 passed, 0 failed at 38bc1ca in 18 s; expected: tests/scenarios/test_batch_measurement.py::test_an_initiative_fulfilling_a_request_the_queue_does_not_hold_is_refused, tests/scenarios/test_batch_measurement.py::test_an_initiative_fulfilling_a_request_with_no_asker_is_refused, tests/scenarios/test_batch_measurement.py::test_an_initiative_fulfilling_more_than_one_request_is_refused"}
 {"time": "2026-10-25T02:17:26+00:00", "work-item": "w158", "before": "claimed", "after": "done", "by": "work run"}
+{"time": "2026-10-25T02:17:28+00:00", "work-item": "w159", "stage": "review", "event": "push verified"}
+{"time": "2026-10-25T02:17:28+00:00", "work-item": "w159", "stage": "review", "agent": "bdd-task-reviewer", "session": "d6ab9392-da68-4bab-8651-7b0d8d61b9d0", "event": "start"}
+{"time": "2026-10-25T02:17:29+00:00", "work-item": "w161", "stage": "plan", "event": "push verified"}
+{"time": "2026-10-25T02:17:29+00:00", "work-item": "w161", "stage": "plan", "agent": "bdd-planner", "session": "0c62cd0f-ef50-45df-88c8-4b32c50e1904", "event": "start"}
+{"time": "2026-10-25T02:17:29+00:00", "work-item": "w158", "stage": "review", "event": "push verified"}
+{"time": "2026-10-25T02:17:29+00:00", "work-item": "w158", "stage": "review", "agent": "bdd-task-reviewer", "session": "33213bbd-e6e0-42c5-9ea6-7908507ed2ac", "event": "start"}
+{"time": "2026-10-25T02:17:36+00:00", "work-item": "w157", "stage": "review", "agent": "bdd-task-reviewer", "session": "2440bed1-dc4e-40c9-a522-636c28e6ae0b", "event": "end"}
+{"time": "2026-10-25T02:17:36+00:00", "work-item": "w157", "before": "done", "after": "green", "by": "work run"}
