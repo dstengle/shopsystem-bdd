@@ -94,3 +94,5 @@
 {"time": "2026-10-25T16:10:36+00:00", "work-item": "w170", "stage": "review", "agent": "bdd-task-reviewer", "session": "af5adc3d-d3d4-43da-802e-6c42f563c0b2", "event": "start"}
 {"time": "2026-10-25T16:12:02+00:00", "work-item": "w170", "stage": "review", "agent": "bdd-task-reviewer", "session": "af5adc3d-d3d4-43da-802e-6c42f563c0b2", "event": "end"}
 {"time": "2026-10-25T16:12:02+00:00", "work-item": "w170", "before": "done", "after": "green", "by": "work run"}
+{"time": "2026-10-25T16:12:45+00:00", "work-item": "w171", "stage": "research", "agent": "code-scout", "session": "bdcd7c54-0dba-43eb-a4e0-f91cba383af8", "event": "end"}
+{"time": "2026-10-25T16:12:45+00:00", "work-item": "w171", "before": "drafted", "after": "researched", "by": "work run"}
