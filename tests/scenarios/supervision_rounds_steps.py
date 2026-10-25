@@ -5,7 +5,7 @@ import re
 from pytest_bdd import given, parsers, then
 
 from .conftest import full
-from .supervision_world import commit_all, log_lines, starts, write
+from .supervision_world import commit_all, git, log_lines, starts, write
 
 DIR = ".shop/work/i1"
 
@@ -104,6 +104,41 @@ def proposed_fulfilling(repo, text):
           "## Outcomes\n%s" % (full("request", "q1"), "".join("%d. Line %d text.\n" % (n, n) for n in range(1, 4)),
                                "".join("%d. %s\n" % (n, w) for n, w in sorted(outcomes.items()))))
     commit_all(repo, "i1 is proposed and fulfils q1")
+
+
+@given("i1 is proposed and fulfils no request")
+def proposed_fulfilling_none(repo):
+    write(repo, DIR + "/initiative.md", "---\nid: %s\nkind: initiative\nstatus: proposed\n---\n" % full("initiative", "i1"))
+    commit_all(repo, "i1 is proposed and fulfils no request")
+
+
+@then("no round of the kind integrate was started for i1")
+def no_integrate_started(repo, context):
+    assert not rounds(repo, "integrate", "i1"), (starts(repo), context["done"].stdout, context["done"].stderr)
+
+
+@then("i1 is proposed")
+def i1_is_proposed(repo, context):
+    text = (repo / DIR / "initiative.md").read_text()
+    assert "\nstatus: proposed\n" in text, (text, context["done"].stdout, context["done"].stderr)
+
+
+@then("no branch is made for a round")
+def no_round_branch(repo):
+    branches = git(repo, "branch", "--list", "round/*")
+    assert not branches.strip(), branches
+
+
+@then("nothing under .shop/work/ is left uncommitted")
+def work_committed(repo):
+    left = git(repo, "status", "--porcelain", "--", ".shop/work")
+    assert not left.strip(), left
+
+
+@then("the second `work run` was not refused")
+def second_not_refused(context):
+    done = context["done"]
+    assert done.returncode == 0 and "work:" not in done.stderr, (done.returncode, done.stdout, done.stderr)
 
 
 @then(parsers.re(r"a round of the kind integrate was started for i1, given q1's lines 1 and 3, and not line 2$"))

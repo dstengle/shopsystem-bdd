@@ -69,6 +69,11 @@ def run_work(repo, plan, context, args):
                                      capture_output=True, text=True, timeout=300)
 
 
+@when("the person runs `work run i1` a second time")
+def run_a_second_time(repo, plan, context):
+    run_work(repo, plan, context, "run i1")
+
+
 @when("`work run i1` is started by a worker of another `work run`")
 def run_by_worker(repo, plan, context):
     context["env"] = BY_WORKER

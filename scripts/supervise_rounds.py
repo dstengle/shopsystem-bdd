@@ -29,7 +29,7 @@ class Rounds:
         """(name, round, status after) of the first proposal with a round to run, else None. Its questions all have an
         answer when its `## Answers` holds as many bullets as its `## Questions`, none at all included (r70)."""
         data, _ = workqueue.frontmatter((self.dir / "initiative.md").read_text())
-        if data.get("status") == "proposed":
+        if data.get("status") == "proposed" and data.get("fulfils"):     # r79: no request, no lines to integrate
             return (self.initiative, "integrate", "started")
         for name, status in self.proposals():
             if status in AFTER and (status != "awaiting-answer"
