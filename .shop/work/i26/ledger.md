@@ -7,3 +7,4 @@
 - 2026-10-25: formulate round 3 (requests): commit 3d3da4df; r20, r21 added; r4, r5, r12 changed (old scenarios deprecated); 0 questions; model check 13 violations, none of requests
 - 2026-10-25: formulate round 3 (supervision): no commit; drafts for r100, r101 added and r9, r67, r82 changed written and covered one to one, but the old r9, r67, r82 scenarios could not be run alone (pytest refused), so nothing was spliced; drafts at .shop/scratch/3-formulate/drafts/round-1/supervision.feature
 - 2026-10-25: formulate round 4 (supervision): no commit; drafts of round 3 reused (r67 r100 r9 r101 r82, still match spec), but pytest was refused for the old r9, r67, r82 scenarios again, so nothing was spliced; drafts at .shop/work/i26/runs/supervision/3-formulate/drafts/round-1/supervision.feature
+- 2026-10-25: formulate round 1 (coordinator): supervision r67, r9, r82 changed (old scenarios deprecated), r100, r101 added; commit 46fef129
