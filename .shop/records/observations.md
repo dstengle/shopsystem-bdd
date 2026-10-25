@@ -370,3 +370,10 @@ After i28 the loop carried i25 through apply, formulate and drafting, and starte
 - i26's formulate round ran `python -m pytest` as formulating-features step 2 writes it; `work run` allows only `python3 -m pytest` (r14), so the round could not run the old scenarios alone and stopped (BLOCKED).
 - A single `work run i28` ended after the fix work-item of branch review 1 (w172) turned green, without the branch review r27 asks for; the next run started it.
 - Researchers ended at their 40-turn limit (r19) again: w169, w173 (and w121-w152 in i24).
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-25-loop-single-pass
+about: capability/supervision
+by: the coordinator, from `work run` on i25, i26 and i29
+date: 2026-10-25
+
+`work run` takes each initiative through one pass (answers, rounds, drafting, work-items, branch review) and does not come back to a node a later step made movable (r1, r66): i29's gate questions came after the answers step, so q5's delegation answered none; the branch review after w172 waited for the next run. A blocked round of one proposal (i26 supervision, formulate) ends the pass, so i26's formulated `requests` proposal got no work-items. A formulate round's question (i25 r98) was dropped and its proposal marked `formulated`. The apply rounds wrote the lines the answers gave (i26 r100 r101 for r98 r99, i25 work-queue r28, i26 requests r4 r5 r12) but nothing rewrote the proposals' `adds` and `changes`, so w174 did not accept r28; corrected by hand once.
