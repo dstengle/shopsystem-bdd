@@ -5,3 +5,4 @@
 - 2026-10-25: formulate q6: commit 7e6266ca; work-queue r30, supervision r103 r104 + r92 case; r102 question open
 - 2026-10-25: formulate round 2 (q6): supervision#r102 formulated, commit 79f4b429
 - 2026-10-25: integrate round 1 (re-run, q6): no writer dispatched; all 4 accepted lines already in spec/ (work-queue r30, supervision r102 r103 r104) since apply commit f85f0d23; 0 added, 0 changed, 0 removed, 0 questions; no gate.md written
+- 2026-10-25: The first work run of i28 started an integrate round because the hand bootstrap left i28 proposed with its capability-proposals already written; r96 stopped it (no change list), as it should. i28 is now started; work run is run again.
