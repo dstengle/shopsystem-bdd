@@ -2,3 +2,4 @@
 - 2026-10-25: gate round 1 (supervision-1-gate): 5 questions
 - 2026-10-25: gate round 1 (work-queue-1-gate): 5 questions
 - 2026-10-25: apply (supervision, work-queue): r120, r121, r31, r32 added, r23 and supervision r75, r105 changed; answers 1-5 (a) under the person's delegation 2026-10-25; spec commit af6357e1
+- 2026-10-25: formulate round 8 (supervision, work-queue): commit f1a9ecd3; 6 scenarios added (supervision r121 r75 r105, work-queue r32 r23 r31), 4 old deprecated (r75 x2, r105, r23), r120 returned as a question, no scenario; model check 12 violations, 12 warnings, 0 unresolved references, 0 file problems

@@ -1020,8 +1020,25 @@ Feature: Supervision
     When the person runs `work run i1`
     Then one work-item was drafted in i1 for the two findings, part of p1, naming the kept branch review's findings.md
 
-  @r75
-  Scenario: when every work-item is green or withdrawn and the kept branch review lists nothing to fix now, `measure initiative` is run on the initiative
+  @r121
+  Scenario Outline: a kept branch review whose result gives <outcome> and no question is taken as listing nothing to fix now
+    Pins that a branch review with nothing to ask the person counts as finding nothing to fix now, however it ended, so no fix is drafted and the initiative goes on to its measurement.
+    Given i1's work-items w1 is green and w2 is withdrawn
+    And every worker gives DONE, and the branch reviewer's result gives <outcome>, with no question
+    When the person runs `work run i1`
+    Then no work-item was drafted in i1 for the kept branch review
+    And `work run` ran `measure initiative` on i1 after the branch review was kept
+
+    Examples:
+      | outcome       |
+      | DONE          |
+      | PARTIAL       |
+      | BLOCKED       |
+      | NEEDS_CONTEXT |
+
+  @r75 @deprecated
+  Scenario: when every work-item is green or withdrawn and the kept branch review lists nothing to fix now, `measure initiative` is run on the initiative (deprecated)
+    Deprecated for: an initiative whose work-items are <work-items> and whose kept branch review lists nothing to fix now <measured>
     Pins that an initiative whose work is done is measured without anyone running `measure` by hand.
     Given i1's work-items w1 is green and w2 is withdrawn
     And every worker gives DONE, and the branch reviewer's result lists nothing to fix now
@@ -1029,13 +1046,28 @@ Feature: Supervision
     Then `work run` ran `measure initiative` on i1 after the branch review was kept
 
 
-  @r75
-  Scenario: a kept branch review that ended PARTIAL, with no question and no finding, does not list nothing to fix now, and no `measure initiative` is run
+  @r75 @deprecated
+  Scenario: a kept branch review that ended PARTIAL, with no question and no finding, does not list nothing to fix now, and no `measure initiative` is run (deprecated)
+    Deprecated for: a kept branch review whose result gives <outcome> and no question is taken as listing nothing to fix now
     Pins that a branch review cut short is not taken for one that found nothing to fix, so the initiative is not measured on it.
     Given i1's work-items w1 is green and w2 is withdrawn
     And every worker gives DONE, and the branch reviewer's result gives PARTIAL, with no question and no finding
     When the person runs `work run i1`
     Then `work run` ran no `measure initiative` on i1 after the branch review was kept
+
+  @r75
+  Scenario Outline: an initiative whose work-items are <work-items> and whose kept branch review lists nothing to fix now <measured>
+    Pins that an initiative is measured once its work is done and at least one work-item delivered something, and not when every work-item was withdrawn.
+    Given i1's work-items <work-items>
+    And every worker gives DONE, and the branch reviewer's result lists nothing to fix now
+    When the person runs `work run i1`
+    Then `work run` <ran> on i1 after the branch review was kept
+
+    Examples:
+      | work-items                          | measured        | ran                         |
+      | w1 is green and w2 is withdrawn     | is measured     | ran `measure initiative`    |
+      | w1 is withdrawn and w2 is withdrawn | is not measured | ran no `measure initiative` |
+
   @r97
   Scenario: an initiative with no work-item is not measured
     Pins that an initiative whose work-items are all green or withdrawn only because it has none is not taken for one whose work is done.
@@ -1409,14 +1441,30 @@ Feature: Supervision
     Then the initiative branch has a commit of i1's measurement and i1's analysis record
     And nothing under .shop/records/ is left uncommitted
 
-  @r105
-  Scenario: an initiative whose work-items are green or withdrawn, whose branch review lists nothing to fix now, whose measurement and analysis record are committed and whose requests are delivered is set done
+  @r105 @deprecated
+  Scenario: an initiative whose work-items are green or withdrawn, whose branch review lists nothing to fix now, whose measurement and analysis record are committed and whose requests are delivered is set done (deprecated)
+    Deprecated for: an initiative whose work-items are <work-items>, its delivery otherwise closed, <set>
     Pins that an initiative whose delivery is closed is done without anyone setting it by hand.
     Given i1 is started and its work-items w1 is green and w2 is withdrawn
     And a request q2 kept in this context, whose asker is this context, that names i1 and is delivered
     And every worker gives DONE, the branch reviewer's result lists nothing to fix now, and the analyzing-a-batch session writes i1's analysis record
     When the person runs `work run i1`
     Then i1 is done
+
+  @r105
+  Scenario Outline: an initiative whose work-items are <work-items>, its delivery otherwise closed, <set>
+    Pins that an initiative is set done only when at least one of its work-items is green, even with its branch review, measurement, analysis record and requests closed.
+    Given i1 is started and its work-items <work-items>
+    And i1's kept branch review lists nothing to fix now, and i1's measurement and analysis record are committed on the initiative branch
+    And a request q2 kept in this context, whose asker is this context, that names i1 and is delivered
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then i1 <status>
+
+    Examples:
+      | work-items                          | set             | status      |
+      | w1 is green and w2 is withdrawn     | is set done     | is done     |
+      | w1 is withdrawn and w2 is withdrawn | is not set done | is not done |
 
   @r109
   Scenario: an initiative set done is committed on the initiative branch
