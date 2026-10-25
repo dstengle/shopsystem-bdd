@@ -1,5 +1,6 @@
 """supervision's steps about the rounds `work run` starts for an answered capability-proposal: the apply round and the
 formulate round, read from the stand-in's record and from log.jsonl."""
+import json
 import re
 
 from pytest_bdd import given, parsers, then
@@ -14,13 +15,23 @@ def quoted(text):
     return re.findall(r'"([^"]*)"', text)
 
 
-@given(parsers.re(r"i1's capability-proposal p1 is awaiting-answer, its ## Questions section with (?P<asked>.+?),? and its "
-                  r"Answers section with (?P<answered>.+)$"))
-def answered_proposal(repo, asked, answered):
+ASKED_FROM = {"gate": "drafted", "formulate": "approved"}     # the status a proposal moved from into awaiting-answer
+
+
+@given(parsers.re(r"i1's capability-proposal p1 is awaiting-answer, (?:its adds naming (?P<adds>.+?), )?its ## Questions "
+                  r"section with (?P<asked>.+?),? and its Answers section with (?P<answered>.+)$"))
+def answered_proposal(repo, asked, answered, adds=None):
+    """The proposal as the person left it; "given by its gate round" or "given by its formulate round" writes the move
+    into awaiting-answer that round made, as log.jsonl keeps it."""
     bullets = lambda texts: "".join("- %s\n" % t for t in quoted(texts))
+    ids = ", ".join(re.findall(r"\S+#r\d+", adds)) if adds else "thing#r1"
     write(repo, DIR + "/p1.md", "---\nid: %s\nkind: capability-proposal\npart_of: %s\nstatus: awaiting-answer\nargues: [thing]\n"
-          "adds: [thing#r1]\nchanges: []\nremoves: []\ndate: 2026-10-15\n---\n\n## Questions\n\n%s\n## Answers\n\n%s"
-          % (full("capability-proposal", "p1"), full("initiative", "i1"), bullets(asked), bullets(answered)))
+          "adds: [%s]\nchanges: []\nremoves: []\ndate: 2026-10-15\n---\n\n## Questions\n\n%s\n## Answers\n\n%s"
+          % (full("capability-proposal", "p1"), full("initiative", "i1"), ids, bullets(asked), bullets(answered)))
+    by = re.search(r"given by its (gate|formulate) round", asked)
+    if by:
+        write(repo, DIR + "/log.jsonl", json.dumps({"time": "2026-10-15T00:00:00+00:00", "work-item": "p1",
+                                                    "before": ASKED_FROM[by.group(1)], "after": "awaiting-answer", "by": "work run"}) + "\n")
     commit_all(repo, "an answered capability-proposal")
 
 
@@ -205,9 +216,9 @@ def position(repo, **wanted):
     return None
 
 
-@then(parsers.re(r'a round of the kind apply was started for p1, given the answers (?P<answers>.+)$'))
-def apply_started(repo, context, answers):
-    found = rounds(repo, "apply")
+@then(parsers.re(r'a round of the kind (?P<kind>apply|formulate) was started for p1, given the answers? (?P<answers>.+)$'))
+def apply_started(repo, context, kind, answers):
+    found = rounds(repo, kind)
     assert len(found) == 1, (found, context["done"].stdout, context["done"].stderr)
     for answer in quoted(answers):
         assert "Answer: %s" % answer in found[0]["brief"], (answer, found[0]["brief"])
