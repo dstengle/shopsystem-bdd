@@ -378,3 +378,13 @@
 {"time": "2026-10-25T00:13:29+00:00", "work-item": "w130", "before": "awaiting-answer", "after": "done", "by": "work answer"}
 {"time": "2026-10-25T00:13:29+00:00", "work-item": "w133", "before": "awaiting-answer", "after": "done", "by": "work answer"}
 {"time": "2026-10-25T00:13:29+00:00", "work-item": "w139", "before": "failed", "after": "drafted", "by": "work retry"}
+{"time": "2026-10-25T00:13:37+00:00", "work-item": "w137", "stage": "plan", "event": "push verified"}
+{"time": "2026-10-25T00:13:37+00:00", "work-item": "w137", "stage": "plan", "agent": "bdd-planner", "session": "de859ad5-53c4-4d02-b263-f40ba02cdd16", "event": "start"}
+{"time": "2026-10-25T00:13:37+00:00", "work-item": "w133", "stage": "review", "event": "push verified"}
+{"time": "2026-10-25T00:13:37+00:00", "work-item": "w133", "stage": "review", "agent": "bdd-task-reviewer", "session": "dca12bbb-3d97-45bc-b382-d62a4fb01a4b", "event": "start"}
+{"time": "2026-10-25T00:13:37+00:00", "work-item": "w130", "stage": "review", "event": "push verified"}
+{"time": "2026-10-25T00:13:37+00:00", "work-item": "w130", "stage": "review", "agent": "bdd-task-reviewer", "session": "7f422deb-3ccc-4138-b036-516d80f6dc67", "event": "start"}
+{"time": "2026-10-25T00:13:37+00:00", "work-item": "w138", "stage": "review", "event": "push verified"}
+{"time": "2026-10-25T00:13:37+00:00", "work-item": "w138", "stage": "review", "agent": "bdd-task-reviewer", "session": "fd3ae3c8-a0a5-4253-96c3-da8ef9d40e93", "event": "start"}
+{"time": "2026-10-25T00:14:53+00:00", "work-item": "w133", "stage": "review", "agent": "bdd-task-reviewer", "session": "dca12bbb-3d97-45bc-b382-d62a4fb01a4b", "event": "end"}
+{"time": "2026-10-25T00:14:54+00:00", "work-item": "w133", "before": "done", "after": "green", "by": "work run"}
