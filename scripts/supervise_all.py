@@ -5,17 +5,34 @@ library only."""
 import shutil
 import sys
 import threading
+from pathlib import Path
 
 import supervise_intake
 import workqueue
+import workqueue_start
 import workqueue_status
 from supervise import Run
 from workqueue import Refused
 
 
+def unfulfilled(root):
+    """The accepted requests of the queue that no initiative under .shop/work/, of any status, fulfils (r103)."""
+    held = set()
+    for path in (Path(root) / workqueue.WORK).glob("*/initiative.md"):
+        data, _ = workqueue.frontmatter(workqueue.read(path, root))
+        held.add(str(data.get("fulfils") or "").rsplit("/", 1)[-1])
+    return [name for name, status, _, _ in workqueue.requests(root) if status == "accepted" and name not in held]
+
+
 def run_all(root):
     """Take every open initiative; print each with its status, then its nodes; the exit code is 1 when a node is failed or
     a run was refused, 3 when a node is awaiting-answer, else 0 (r81, r82)."""
+    for run in [Run(root, name) for name in workqueue_status.open_names(root)]:
+        run.check()     # every refusal comes before anything moves (r10), the start of an initiative included
+    for request in unfulfilled(root):     # the same refusals before the first start, as an intake round's (r10, r103)
+        supervise_intake.Intake(root, request).check()
+    for request in unfulfilled(root):
+        workqueue_start.start(root, request)     # r103: the initiative `work start` begins; the run takes it below
     runs = [Run(root, name) for name in workqueue_status.open_names(root)]
     for run in runs:
         run.check()     # every refusal comes before anything moves (r10)
