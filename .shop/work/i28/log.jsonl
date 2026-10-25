@@ -18,3 +18,4 @@
 {"time": "2026-10-25T15:53:30+00:00", "work-item": "w168", "before": "researched", "after": "planned", "by": "work run"}
 {"time": "2026-10-25T15:53:37+00:00", "work-item": "w167", "stage": "research", "agent": "code-scout", "session": "38fc8605-9856-4e20-8e3b-a470f66a2049", "event": "end"}
 {"time": "2026-10-25T15:53:38+00:00", "work-item": "w167", "before": "drafted", "after": "researched", "by": "work run"}
+{"time": "2026-10-25T15:53:59+00:00", "work-item": "w169", "before": "failed", "after": "drafted", "by": "work retry"}
