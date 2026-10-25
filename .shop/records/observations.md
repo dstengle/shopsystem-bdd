@@ -377,3 +377,12 @@ by: the coordinator, from `work run` on i25, i26 and i29
 date: 2026-10-25
 
 `work run` takes each initiative through one pass (answers, rounds, drafting, work-items, branch review) and does not come back to a node a later step made movable (r1, r66): i29's gate questions came after the answers step, so q5's delegation answered none; the branch review after w172 waited for the next run. A blocked round of one proposal (i26 supervision, formulate) ends the pass, so i26's formulated `requests` proposal got no work-items. A formulate round's question (i25 r98) was dropped and its proposal marked `formulated`. The apply rounds wrote the lines the answers gave (i26 r100 r101 for r98 r99, i25 work-queue r28, i26 requests r4 r5 r12) but nothing rewrote the proposals' `adds` and `changes`, so w174 did not accept r28; corrected by hand once.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-25-apply-ids-and-fix-work-items
+about: capability/supervision
+by: the coordinator, from `work run` on i29, i30 and i25
+date: 2026-10-25
+
+- An apply round that writes a line a gate answer added numbers it as the next free id in `spec/`, without the ids other initiatives' kept drafts hold (r102 gives them only to integrate rounds): i29's apply wrote supervision r109, which i30's drafts at its gate also hold; i30's is renumbered r117 by its answer.
+- A work-item added with `work add` under a capability-proposal and capability (w179 under i29-supervision, as w167 under loop-side-by-side) keeps r72 from drafting that proposal's own work-item for the capability, and its scenarios then fail every other work-item's whole-suite check (w175, w179, w180); added as w181.
+- A work-item redrafted with `work add` (w176 for w174) loses the `## Retires` entry r73 wrote, and its review finds the deprecated scenario retired without one.
