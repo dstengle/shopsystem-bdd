@@ -1,0 +1,38 @@
+# apply of supervision
+
+Capability-proposal: .shop/work/i33/supervision.md
+Agent: initiative-round
+Scripts: /home/vscode/shopsystem-bdd/scripts
+Kind: apply
+Drafts path: .shop/work/i33/runs/i33/1-integrate/drafts/round-1/
+Base: 1caef88132eda3084c4ef5d18d7c8deeeccaf483
+Worktree: /tmp/work-run-i33-9vstbbh_/supervision-7-apply
+Branch: round/supervision-7-apply
+Answers the person gave, each with the question it answers:
+- Question: Q1 (work-queue r31, against r23, supervision r105, r75). Added line: [r31] **If** every work-item of an initiative is `withdrawn`, **then** `work` shall leave the initiative's status as it is. r23 sets an initiative `done` when every work-item is `green` or `withdrawn`, which an all-`withdrawn` initiative meets, so r23 and r31 contradict. (a, recommended) Change r23 to: "[r23] **When** a `work` command's change makes it true that an initiative has at least one work-item that is `green`, that every work-item of it is `green` or `withdrawn` and that every request kept in this context whose asker is this context and that names the initiative is `delivered`, that command shall set the initiative's status to `done`."; likewise change supervision r105 "that has at least one work-item" to "that has at least one work-item that is `green`", and add to r75 "and at least one of them is `green`". (b) Leave r23, r105, r75 as they are; r31 overrides them and they read as contradicting it.
+  Answer: 2026-10-25: (a) under the person's delegation 2026-10-25 (answer every question with its recommended reading): change r23, supervision r105 and r75 as (a) describes, so an all-`withdrawn` initiative no longer meets r23 and r31 does not contradict them. by: work run, under the delegation "The person, 2026-10-25: "Do not involve me in fixing all of the bugs. Please get the system into a correctly working state before doing a release". Answer every question with its recommended reading."
+- Question: Q2 (work-queue r32). Added line: [r32] **If** `work add` is given an initiative that is `done` or `abandoned`, **then** `work add` shall refuse, naming the initiative's status, and change nothing. (Drafted without a question in the gate text; confirm it as drafted.) (a, recommended) Keep r32 as drafted. (b) Drop r32.
+  Answer: 2026-10-25: (a) Keep r32 as drafted, under the person's delegation of 2026-10-25 to answer every question with its recommended reading. by: work run, under the delegation "The person, 2026-10-25: "Do not involve me in fixing all of the bugs. Please get the system into a correctly working state before doing a release". Answer every question with its recommended reading."
+- Question: Q3 (supervision r120, subject). Added line: [r120] **When** the delegation-answerer answers a reviewer's question on a work-item, the delegation-answerer shall give in its result whether its answer asks for a change or accepts the work-item as it is. "the delegation-answerer" is no glossary term; r77 calls it "a session of its own, given the delegation". (a, recommended) Recast: "[r120] **Where** the request an initiative fulfils gives a delegation, **when** a session that `work run` started under it answers a reviewer's question on a work-item, the session shall give in its result whether its answer asks for a change or accepts the work-item as it is." (b) Keep r120 as drafted and add the glossary entry "- **delegation-answerer**: the session `work run` starts under a request's delegation to answer one question of an initiative."
+  Answer: 2026-10-25: (a) Recast r120 as proposed, under the person's delegation of 2026-10-25 to answer every question with its recommended reading: "[r120] **Where** the request an initiative fulfils gives a delegation, **when** a session that `work run` started under it answers a reviewer's question on a work-item, the session shall give in its result whether its answer asks for a change or accepts the work-item as it is." by: work run, under the delegation "The person, 2026-10-25: "Do not involve me in fixing all of the bugs. Please get the system into a correctly working state before doing a release". Answer every question with its recommended reading."
+- Question: Q4 (supervision r120, the result's field). The note gives none. (a, recommended) Draft none. (b) Add under Implementation: "- r120: the answer's result gives `change` or `accept`, as `work answer`'s `--change` and `--accept` (work-queue r26, r27)."
+  Answer: 2026-10-25: (a) Draft none, under the person's delegation of 2026-10-25 (answer every question with its recommended reading). by: work run, under the delegation "The person, 2026-10-25: "Do not involve me in fixing all of the bugs. Please get the system into a correctly working state before doing a release". Answer every question with its recommended reading."
+- Question: Q5 (supervision r121, "whatever its status"). Added line: [r121] **When** a kept branch review's result gives no question, `work run` shall take the review as listing nothing to fix now, whatever its status. (a, recommended) The status of the review's result (its outcome, e.g. `DONE` or `PARTIAL`): r121 as drafted. (b) The review's verdict: "[r121] **When** a kept branch review's result gives no question, `work run` shall take the review as listing nothing to fix now, whatever verdict the review gives." Related, optional: a branch reviewer's session that ends in error, at its turn limit or with no readable result; (a, recommended) add nothing; (b) add "[r122] **If** a branch reviewer's session ends in an error or at its turn limit or leaves no result `work run` can read, then `work run` shall take the review as not read."
+  Answer: 2026-10-25: (a) r121 as drafted, the status being the review result's outcome (e.g. DONE or PARTIAL); and for the related question (a), add nothing (no r122), under the person's delegation of 2026-10-25 to answer every question with its recommended reading. by: work run, under the delegation "The person, 2026-10-25: "Do not involve me in fixing all of the bugs. Please get the system into a correctly working state before doing a release". Answer every question with its recommended reading."
+
+Read (paths in your worktree):
+- .shop/work/i33/supervision.md
+- .shop/work/i33/runs/supervision/1-gate
+- .shop/work/i33/runs/supervision/2-answer
+- .shop/work/i33/runs/supervision/3-answer
+- .shop/work/i33/runs/supervision/4-answer
+- .shop/work/i33/runs/supervision/5-answer
+- .shop/work/i33/runs/supervision/6-answer
+- .shop/work/i33/runs/i33/1-integrate/drafts/round-1/
+
+Run directory: /tmp/work-run-i33-9vstbbh_/supervision-7-apply/.shop/scratch/7-apply
+Result file: /tmp/work-run-i33-9vstbbh_/supervision-7-apply/.shop/scratch/7-apply/result.json
+
+You start in your worktree, /tmp/work-run-i33-9vstbbh_/supervision-7-apply: run every command from there, as it is, and never change directory (no `cd`, no `git -C`); a command that does is refused.
+
+Write the result file first, with the outcome `PARTIAL`, and keep it current as you work: JSON with `status`, `summary` (under fifteen lines) and `questions` (a list of strings), so that a session that stops part-way still leaves a result, and one that does not claim the work done. Write your notes, plan, report or findings in the run directory.
