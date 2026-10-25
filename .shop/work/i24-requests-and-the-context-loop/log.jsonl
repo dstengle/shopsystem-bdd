@@ -605,3 +605,5 @@
 {"time": "2026-10-25T00:47:50+00:00", "work-item": "w150", "stage": "research", "event": "push verified"}
 {"time": "2026-10-25T00:47:50+00:00", "work-item": "w150", "stage": "research", "agent": "code-scout", "session": "894bc3b1-38a9-4329-85f8-bd1c0f684b36", "event": "start"}
 {"time": "2026-10-25T00:47:50+00:00", "work-item": "w146", "before": "ready", "after": "claimed", "by": "work run"}
+{"time": "2026-10-25T00:48:00+00:00", "work-item": "w148", "stage": "plan", "agent": "bdd-planner", "session": "02ab6492-fb0e-4de5-ade5-f3e28f7c3c2f", "event": "end"}
+{"time": "2026-10-25T00:48:01+00:00", "work-item": "w148", "before": "researched", "after": "planned", "by": "work run"}
