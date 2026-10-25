@@ -16,7 +16,8 @@ initiative, `work run` with no initiative every initiative that is neither `done
 request once it is `accepted`, and starts the `integrate` round of an initiative, keeps that round's drafts and
 writes the capability-proposals its change list names, starts a capability-proposal's `gate`, `apply` and
 `formulate` rounds, drafts and delivers its work-items, for each stage starting a fresh `claude -p` worker, reading
-the worker's result and writing the status itself, and starts the initiative's measurement and analysis
+the worker's result and writing the status itself, starts the initiative's measurement and analysis and commits
+them, and sets the initiative `done`, committing it, when what it delivers is closed
 (design-decision/the-context-runs-without-a-coordinator). It is a script and takes no judgment; what nobody may
 decide goes to the person as a question. A walking skeleton (design-decision/behaviour-lines-are-ears): it grows
 from what using it shows.
@@ -35,8 +36,10 @@ from what using it shows.
 - [r84] **When** `work run` starts the round of the kind `integrate` of a `proposed` initiative, `work run` shall transition the initiative to `started`.
 - [r91] **When** a round of the kind `integrate` that `work run` started ends, `work run` shall keep the round's drafts on the initiative branch.
 - [r92] **When** a round of the kind `integrate` that `work run` started ends with a change list, `work run` shall write a `drafted` capability-proposal for each capability the change list names, with the requirement ids and terms it adds, changes and removes on that capability.
+- [r107] **If** a change list that `work run` reads names a capability that neither `spec/capabilities/` nor the round's drafts have, **then** `work run` shall write no capability-proposal for it and exit with an error, naming the capability.
 - [r68] **When** a capability-proposal is `drafted`, `work run` shall start a round of the kind `gate` whose brief asks for the gate as questions, each a decision with its readings and the recommended reading marked.
 - [r104] **When** `work run` starts a round of the kind `gate` for a capability-proposal, `work run` shall ask the round only for the questions on the lines and terms the proposal adds, changes or removes.
+- [r108] **When** `work run` starts a round of the kind `gate` or `apply` for a capability-proposal, `work run` shall give the round the path of the kept drafts of the round of the kind `integrate` that wrote the proposal.
 - [r85] **When** a round of the kind `gate` that `work run` started for a capability-proposal ends, `work run` shall write the questions its result gives under the proposal's `## Questions`.
 - [r69] **When** a round of the kind `gate` that `work run` started for a capability-proposal ends, `work run` shall transition the proposal to `awaiting-answer`.
 - [r70] **When** every question of a capability-proposal has an answer, `work run` shall start a round of the kind `apply` given the answers.
@@ -52,6 +55,9 @@ from what using it shows.
 - [r75] **When** every work-item of an initiative is `green` or `withdrawn` and its kept branch review lists nothing to fix now, `work run` shall run `measure initiative` on the initiative.
 - [r97] **While** an initiative has no work-item, `work run` shall run no `measure initiative` on it.
 - [r76] **When** the `measure initiative` that `work run` ran on an initiative has written its measurement, `work run` shall start a session of `analyzing-a-batch` that writes the initiative's analysis record.
+- [r106] **When** `work run` has written an initiative's measurement and its analysis record, `work run` shall commit them on the initiative branch.
+- [r105] **When** `work run` finds an initiative that is not `done`, that has at least one work-item, whose every work-item is `green` or `withdrawn`, whose kept branch review lists nothing to fix now, whose measurement and analysis record `work run` has committed and whose every request kept in this context whose asker is this context and that names the initiative is `delivered`, `work run` shall set the initiative's status to `done`.
+- [r109] **When** `work run` sets an initiative's status to `done`, `work run` shall commit the initiative on the initiative branch.
 - [r77] **Where** the request an initiative fulfils gives a delegation, `work run` shall give each question of the initiative to a session of its own, given the delegation, the files that one question names and nothing else, which answers the question if the delegation covers it and leaves it for the person otherwise.
 - [r78] **Where** the request an initiative fulfils gives a delegation, **when** a session `work run` started under it answers a question, `work run` shall write the answer naming the delegation it was given under.
 - [r89] **If** a session that `work run` started under a delegation to answer a question gives an outcome other than `DONE`, ends in an error or at its turn limit, or leaves no result `work run` can read, then `work run` shall leave the question unanswered for the person.
