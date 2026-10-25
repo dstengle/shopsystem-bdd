@@ -230,8 +230,12 @@ class Workers:
         for field, value in data.items():
             if field in ("status", "summary") or not isinstance(value, str) or not value.strip():
                 continue
-            path = (tree / value).resolve()
-            if path.is_file() and path.is_relative_to(tree.resolve()) and not path.is_relative_to(here.resolve()):
+            try:
+                path = (tree / value).resolve()
+                named = path.is_file()
+            except (OSError, ValueError):   # text the file system refuses as a name names no file
+                continue
+            if named and path.is_relative_to(tree.resolve()) and not path.is_relative_to(here.resolve()):
                 to = kept_at / path.name
                 if to.exists():     # never over the run's own record (brief.md, result.json, session.json) or notes
                     to = kept_at / ("named-" + path.name)

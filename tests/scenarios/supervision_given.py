@@ -202,6 +202,12 @@ def implementer_names_report(plan):
     plan["bdd-implementer"] = {"write": {"report.md": "the implementer's report\n"}, "names": {"report": "report.md"}}
 
 
+@given("the implementer's result also gives a field whose value is a sentence of over 255 characters, with spaces, naming no file")
+def implementer_gives_long_sentence(plan):
+    fields = plan["bdd-implementer"].setdefault("fields", {})
+    fields["remark"] = " ".join(["a sentence that names no file at all"] * 8)
+
+
 @given("the repository is the plugin: it holds `work run`'s own scripts and agents")
 def repository_is_plugin(repo, context):
     for name in ("scripts", "agents"):
