@@ -1,0 +1,1 @@
+- 2026-10-25: integrate round 1: 4 lines added (work-queue r31 r32, supervision r120 r121), 0 changed, 0 removed, 0 terms, 0 decisions, 5 questions, 1 cut sentence; .shop/scratch/1-integrate/drafts/round-1/gate.md
