@@ -35,7 +35,7 @@ class Briefs:
         if rnd:     # a round (supervise_rounds.py): the kind its agent runs
             lines.append("Kind: %s" % stage)
             if stage == "integrate":
-                lines += self.integrate_lines(data)
+                lines += self.integrate_lines(data, here)
             if stage == "gate":
                 lines.append("Give the gate as questions in your result's `questions`, one string each: every question a "
                              "decision, with its readings and the recommended reading marked.")
@@ -63,11 +63,17 @@ class Briefs:
                            tree))
         return path
 
-    def integrate_lines(self, data):
-        """The request the initiative fulfils and the lines of it with the line outcome accepted, and no other."""
+    def integrate_lines(self, data, here):
+        """The request the initiative fulfils and the lines of it with the line outcome accepted, and no other; then the
+        drafts path, which `work run` keeps with the round's stage directory however the round ends (r91), and the form
+        of the change list the result gives (r92)."""
         ident = str(data.get("fulfils") or "").rsplit("/", 1)[-1]
         return ["Request: %s" % ident, "Accepted lines of the request:"] + [
-            "- %d. %s" % line for line in workqueue_request.accepted_lines(self.root, ident)]
+            "- %d. %s" % line for line in workqueue_request.accepted_lines(self.root, ident)] + [
+            "Drafts path: %s" % (here / "drafts"),
+            "Give your change list in your result's `changes`: a list with one entry for each capability, each "
+            "`{\"capability\": <name>, \"adds\": [...], \"changes\": [...], \"removes\": [...]}`, the ids as "
+            "`<capability>#r<n>` or `term/<term>`."]
 
     def answer_lines(self, name):
         """The work-item's answers as brief lines (r57), each beside the question it answers: the n-th bullet of

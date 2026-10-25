@@ -7,6 +7,7 @@ import subprocess
 import workqueue
 import workqueue_done
 import workqueue_request
+from supervise_change import BadChanges, Changes, entries
 from supervise_faults import Fault, fault_of
 from supervise_worker import GitFailed, git
 from workqueue import Refused
@@ -14,7 +15,7 @@ from workqueue import Refused
 AFTER = {"drafted": ("gate", "awaiting-answer"), "awaiting-answer": ("apply", "approved"), "approved": ("formulate", "formulated")}
 
 
-class Rounds:
+class Rounds(Changes):
     """The part of supervise.Run that runs a capability-proposal's rounds, one session at a time."""
 
     def proposals(self):
@@ -30,7 +31,8 @@ class Rounds:
         """(name, round, status after) of the first proposal with a round to run, else None. Its questions all have an
         answer when its `## Answers` holds as many bullets as its `## Questions`, none at all included (r70)."""
         data, _ = workqueue.frontmatter((self.dir / "initiative.md").read_text())
-        if data.get("status") == "proposed" and data.get("fulfils"):     # r79: no request, no lines to integrate
+        if data.get("fulfils") and (data.get("status") == "proposed" or (     # r79: no request, no lines to integrate
+                data.get("status") == "started" and not self.proposals() and not self.items())):     # r93
             try:     # a request the queue lacks gives no round, before anything moves
                 workqueue_request.accepted_lines(self.root, str(data["fulfils"]).rsplit("/", 1)[-1])
                 return (self.initiative, "integrate", "started")
@@ -51,7 +53,9 @@ class Rounds:
 
     def round(self, name, kind, after):
         if kind == "integrate":     # r84: the initiative is started as its integrate round is, before the round's session
-            self.start_initiative(name, after)
+            status, _ = workqueue.frontmatter((self.dir / "initiative.md").read_text())
+            if status.get("status") == "proposed":     # r93: one already started has no transition to make
+                self.start_initiative(name, after)
             before = after
         else:
             before = workqueue.agrees(self.root, self.initiative, name)
@@ -79,12 +83,28 @@ class Rounds:
             raise Refused("the %s round of %s (%s) gave the outcome %s, and %s keeps its status %s: %s" % (
                 kind, name, self.rel(self.dir / "runs" / name / label), data.get("status"), name, before,
                 data.get("summary", "")))
+        found = []
+        if kind == "integrate":     # r96, r92: a DONE without a change list is an error; the list gives the proposals
+            try:
+                found = entries(data)
+            except BadChanges as bad:
+                self.refuse_integrate(name, label, before, "its result cannot be read: %s" % bad)
+            if not found:
+                self.refuse_integrate(name, label, before, "it gave DONE without a change list")
         asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []] if kind == "gate" else None
         if kind != "integrate":
             self.move(name, before, after, asked)
         else:     # r84: the round's stage directory is committed once it has ended, on top of the commit of started
             with self.lock:
-                self.commit(name, after, after)
+                proposals = self.write_proposals(found, self.rel(self.dir / "runs" / name / label))
+                self.commit(name, after, after, also=[self.rel(p) for p in proposals])
+
+    def refuse_integrate(self, name, label, before, why):
+        """The integrate round ended DONE with no change list `work run` can use: its stage directory and drafts kept,
+        the status kept, and the run's error naming the round (r96)."""
+        self.keep_round(name, "integrate", label)
+        raise Refused("the integrate round of %s (%s) gave DONE, and %s keeps its status %s: %s" % (
+            name, self.rel(self.dir / "runs" / name / label), name, before, why))
 
     def start_initiative(self, name, after):
         """The initiative's own transition from proposed: its status written, logged and committed (not a work-item's move)."""

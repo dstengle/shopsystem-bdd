@@ -93,12 +93,12 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
             workqueue.append(self.dir / "log.jsonl", text.encode())
             self.unlogged.append(text)
 
-    def commit(self, name, before, after, push=True):
+    def commit(self, name, before, after, push=True, also=()):
         """A move's commit on the initiative branch: the work-item's file, its run directories and log.jsonl (r7); then
         the push of the initiative branch (r38)."""
         item = "initiative.md" if name == self.initiative else name + ".md"
         paths = [p for p in (self.dir / item, self.dir / "runs" / name, self.dir / "log.jsonl") if p.exists()]
-        rels = [self.rel(p) for p in paths]
+        rels = [self.rel(p) for p in paths] + list(also)
         git(self.root, "add", "--", *rels)
         git(self.root, "commit", "-q", "-m", "work: %s %s -> %s" % (name, before, after), "--", *rels)
         self.unlogged = []

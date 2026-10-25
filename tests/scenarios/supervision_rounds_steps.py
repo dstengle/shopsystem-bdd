@@ -110,12 +110,12 @@ def rounds(repo, kind, name="p1"):
 
 
 @given(parsers.re(r"i1 is proposed and fulfils the request q1, whose (?P<text>lines? .+)$"))
-def proposed_fulfilling(repo, text):
+def proposed_fulfilling(repo, text, status="proposed"):
     outcomes = {}
     for numbers, word in re.findall(r"lines? ([\d ]+?(?: and \d+)?) (?:have |has )?the line outcome (\w+)", text):
         for n in re.findall(r"\d+", numbers):
             outcomes[int(n)] = word
-    write(repo, DIR + "/initiative.md", "---\nid: %s\nkind: initiative\nstatus: proposed\nfulfils: q1\n---\n" % full("initiative", "i1"))
+    write(repo, DIR + "/initiative.md", "---\nid: %s\nkind: initiative\nstatus: %s\nfulfils: q1\n---\n" % (full("initiative", "i1"), status))
     write(repo, ".shop/work/requests/q1.md", "---\nid: %s\nkind: request\nasker: internal\nstatus: accepted\n---\n\n## Lines\n%s\n"
           "## Outcomes\n%s" % (full("request", "q1"), "".join("%d. Line %d text.\n" % (n, n) for n in range(1, 4)),
                                "".join("%d. %s\n" % (n, w) for n, w in sorted(outcomes.items()))))
@@ -158,9 +158,11 @@ def work_committed(repo):
 
 
 @then("the second `work run` was not refused")
-def second_not_refused(context):
+def second_not_refused(repo, context):
+    """Not refused over anything left uncommitted under .shop/work/ (r10), and got as far as starting its round."""
     done = context["done"]
-    assert done.returncode == 0 and "work:" not in done.stderr, (done.returncode, done.stdout, done.stderr)
+    assert "not committed" not in done.stderr and len(rounds(repo, "integrate", "i1")) == 2, (
+        done.returncode, done.stdout, done.stderr, starts(repo))
 
 
 @then(parsers.re(r"a round of the kind integrate was started for i1, given q1's lines 1 and 3, and not line 2$"))
