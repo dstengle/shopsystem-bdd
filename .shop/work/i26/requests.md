@@ -33,3 +33,6 @@ The drafts of this proposal are in .shop/work/i26/runs/i26/2-integrate.
 - supervision r99, which requests: only those kept in this repository (recommended; line becomes "a request kept in this context whose asker is this context") / also requests this context raised elsewhere.
 - supervision r99 vs r9 and r82 (exit successfully when all work-items green / no node awaiting): add to both "and no request whose asker is this context is in the asker's turn"? Yes (recommended; r99 would otherwise contradict them; two changed lines) / no.
 - supervision r99, "open questions": A (recommended): every question with no answer under `## Answers`, stated as an Implementation line. B: only those of the upstream's latest turn.
+
+## Answers
+- 2026-10-25: 1: B, lines as drafted; the commands stay Implementation (the coordinator under the person's delegation 2026-10-25)
