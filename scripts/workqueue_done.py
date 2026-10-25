@@ -38,6 +38,12 @@ def _holds(root, directory, ident, over):
     return True
 
 
+def holds(root, directory, ident):
+    """Whether the condition holds now for the initiative in `directory` with id `ident` (the part of `work run`'s done
+    that the command's is too, r105)."""
+    return _holds(root, directory, ident, {})
+
+
 def becomes(root, directory, over):
     """Whether initiative.md of `directory` is not done, the condition does not hold now and holds with `over` made."""
     path = directory / "initiative.md"

@@ -26,6 +26,7 @@ from .supervision_all_steps import *
 from .supervision_analysis_steps import *
 from .supervision_answers_steps import *
 from .supervision_delegation_steps import *
+from .supervision_done_steps import *
 from .supervision_faults_steps import *
 from .supervision_given import *
 from .supervision_integrate_steps import *
