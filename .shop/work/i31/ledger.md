@@ -1,2 +1,3 @@
 - 2026-10-25: integrate round 1 (q8): 5 lines added (supervision r111 r112 r113 r114 r115), 1 changed (supervision r83), 0 removed, 0 terms, 0 decisions, 4 questions, 1 cut sentence; .shop/scratch/1-integrate/drafts/round-1/gate.md
 - 2026-10-25: gate (supervision): 4 questions
+- 2026-10-25: apply (supervision): r111, r112, r113, r114, r115, r116 added, r70 and r83 changed; answers 1 (a), 2 (b), 3 (b), 4 (a) under the person's delegation 2026-10-25; spec commit fa05204d

@@ -25,6 +25,7 @@ from what using it shows.
 ## Behaviour
 - [r1] **When** `work run <initiative>` is started, `work run` shall pull the initiative's work-items through research, plan, implementation and review until no work-item can make a transition.
 - [r66] **When** `work run` is started with no initiative, `work run` shall take every initiative that is neither `done` nor `abandoned` through every transition its nodes can make, the initiatives side by side and, but for the workers r20 and r59 start together, one session of an initiative at a time, and the rounds r95 names one at a time across initiatives.
+- [r111] **When** a transition that `work run` makes leaves a node of an initiative able to make another transition, `work run` shall take the node through that transition before it ends.
 - [r95] `work run` shall start the rounds of the kind `integrate`, `apply` and `formulate` of different initiatives one at a time.
 - [r67] **When** a request of which this context is the upstream is `open` or `awaiting-upstream`, `work run` shall start an `initiative-round` session of the kind `intake`, given the request, that writes each line's line outcome or a question on it and passes the turn with `work turn`.
 - [r100] **When** a round of the kind `intake` that `work run` started gives a question on a line of a request, `work run` shall write the question in the request.
@@ -43,13 +44,18 @@ from what using it shows.
 - [r85] **When** a round of the kind `gate` that `work run` started for a capability-proposal ends, `work run` shall write the questions its result gives under the proposal's `## Questions`.
 - [r117] **When** a round of the kind `gate` that `work run` started for a capability-proposal gives no question, `work run` shall write under the proposal's `## Questions` one question asking for the approval of the proposal's lines as drafted.
 - [r69] **When** a round of the kind `gate` that `work run` started for a capability-proposal ends, `work run` shall transition the proposal to `awaiting-answer`.
-- [r70] **When** every question of a capability-proposal has an answer, `work run` shall start a round of the kind `apply` given the answers.
+- [r70] **When** every question that a round of the kind `gate` gave on a capability-proposal has an answer, `work run` shall start a round of the kind `apply` given the answers.
+- [r116] **When** every question that a round of the kind `formulate` gave on a capability-proposal has an answer, `work run` shall start a round of the kind `formulate` for the proposal, given the answers.
 - [r80] **When** a round of the kind `apply` that `work run` started for a capability-proposal ends, `work run` shall transition the proposal to `approved`.
+- [r114] **When** a round of the kind `apply` that `work run` started for a capability-proposal ends, `work run` shall write the proposal's `adds`, `changes` and `removes` from the change list the round applied.
 - [r71] **When** a round of the kind `apply` that `work run` started for a capability-proposal ends, `work run` shall start a round of the kind `formulate` for the proposal.
-- [r83] **When** a round of the kind `formulate` that `work run` started for a capability-proposal ends, `work run` shall transition the proposal to `formulated`.
+- [r83] **When** a round of the kind `formulate` that `work run` started for a capability-proposal ends without giving a question, `work run` shall transition the proposal to `formulated`.
+- [r112] **When** a round of the kind `formulate` that `work run` started for a capability-proposal gives questions, `work run` shall write each question its result gives under the proposal's `## Questions`.
+- [r113] **When** a round of the kind `formulate` that `work run` started for a capability-proposal gives a question, `work run` shall transition the proposal to `awaiting-answer`.
 - [r86] **If** a round of any kind that `work run` started for a capability-proposal or an initiative gives an outcome other than `DONE`, ends in an error or at its turn limit, or leaves no result `work run` can read, then `work run` shall keep the proposal's or initiative's status.
 - [r87] **If** a round of any kind that `work run` started for a capability-proposal or an initiative gives an outcome other than `DONE`, ends in an error or at its turn limit, or leaves no result `work run` can read, then `work run` shall make no transition from the round.
 - [r88] **If** a round of any kind that `work run` started for a capability-proposal or an initiative gives an outcome other than `DONE`, ends in an error or at its turn limit, or leaves no result `work run` can read, then `work run` shall exit with an error, naming the round and how it ended.
+- [r115] **If** a round of any kind that `work run` started for a capability-proposal or an initiative gives an outcome other than `DONE`, ends in an error or at its turn limit, or leaves no result `work run` can read, then `work run` shall take the initiative's other nodes through their transitions before it exits with an error.
 - [r72] **When** a capability-proposal is `formulated`, `work run` shall draft with `work add` one work-item for each capability the proposal's `adds` and `changes` name, accepting every requirement they name on that capability.
 - [r73] **When** `work run` drafts a work-item for a `formulated` capability-proposal, `work run` shall list under the work-item's `## Retires` each scenario tagged `@deprecated` whose `@r<n>` tag names a requirement the work-item accepts.
 - [r74] **When** a kept branch review's result lists findings to fix now, `work run` shall draft one work-item for them, naming the findings file, under the capability-proposal that the work-item the findings concern is part of.
