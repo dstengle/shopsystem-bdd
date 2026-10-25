@@ -29,8 +29,9 @@ def answer(root, name, text):
     path = workqueue.find(root, name)
     initiative = path.parent.name
     if workqueue.agrees(root, initiative, name) != "awaiting-answer":
-        raise Refused("%s is not awaiting-answer; work answer answers only an awaiting-answer work-item" % name)
-    status = asked_from(root, path, name)
+        raise Refused("%s is not awaiting-answer; work answer answers only an awaiting-answer work-item or capability-proposal" % name)
+    proposal = "\nkind: capability-proposal\n" in workqueue.read(path, root).split("\n---\n", 1)[0] + "\n"
+    status = "awaiting-answer" if proposal else asked_from(root, path, name)
     line = "- %s: %s\n" % (datetime.date.today().isoformat(), text)
 
     def write():
@@ -43,6 +44,10 @@ def answer(root, name, text):
         else:
             body = body.rstrip("\n") + "\n\n## Answers\n" + line
         path.write_text(body)
-        workqueue.move(root, initiative, name, status, by="work answer")
-    workqueue.committed(root, workqueue.rels_of(root, path), "work answer: %s awaiting-answer -> %s" % (name, status), write)
+        if not proposal:
+            workqueue.move(root, initiative, name, status, by="work answer")
+    if proposal:     # a proposal's answer is written only: no transition, no log line (r24, r9)
+        workqueue.committed(root, [str(path.relative_to(root))], "work answer: %s" % name, write)
+    else:
+        workqueue.committed(root, workqueue.rels_of(root, path), "work answer: %s awaiting-answer -> %s" % (name, status), write)
     return status

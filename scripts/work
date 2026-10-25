@@ -106,7 +106,7 @@ def main(argv=None):
     r.add_argument("initiative")
     t = sub.add_parser("retry", help="return a failed work-item to the status before that log.jsonl gives in its transition into failed")
     t.add_argument("name")
-    n = sub.add_parser("answer", help="answer the question of an awaiting-answer work-item and return it to the stage that asked")
+    n = sub.add_parser("answer", help="answer the question of an awaiting-answer work-item (returning it to the stage that asked) or capability-proposal")
     n.add_argument("name")
     n.add_argument("answer")
     o = sub.add_parser("note", help="append a dated line to an initiative's ledger and commit it")

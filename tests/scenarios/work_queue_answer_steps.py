@@ -1,7 +1,7 @@
 """features/work-queue.feature's Then step of `work answer` (r13): the answer, dated, under the work-item's `## Answers`."""
 import datetime
 
-from pytest_bdd import parsers, then, when
+from pytest_bdd import given, parsers, then, when
 
 BREAKS = {"a newline": "\n"}
 BREAKS.update({"U+%04X, the %s" % (ord(c), n): c for c, n in [
@@ -14,6 +14,15 @@ def answer_of_two_lines(repo, run, context, line_break):
     from .test_work_queue import snapshot
     context["before"] = snapshot(repo)
     context["done"] = run("work", "answer", "w1", "line one" + BREAKS[line_break] + "line two")
+
+
+@given(parsers.re(r"an initiative (?P<ident>i\d+) under \.shop/work/ whose capability-proposal (?P<name>\w+) is (?P<status>[\w-]+)$"))
+def initiative_with_proposal(repo, ident, name, status):
+    """A capability-proposal in the given status, with a question and no log.jsonl line."""
+    from .test_work_queue import initiative, item_text, write
+    initiative(repo, ident)
+    text = item_text(name, status, ident, "capability-proposal") + "\n## Questions\n\n- Which reading?\n"
+    write(repo, ".shop/work/%s/%s.md" % (ident, name), text)
 
 
 @then("work exits with an error, saying that an answer is one line")
