@@ -1,0 +1,12 @@
+{
+  "status": "DONE",
+  "summary": "w177 research done; notes at .shop/scratch/1-research/notes.md.\n5 of 8 accepted scenarios red: undefined steps (question/answer Givens, Whens, Thens); no question or answer writer in scripts/workqueue_request.py or scripts/work.\n3 deprecated scenarios (r4, r5, r12) pass today and are retired.\nThe spec names no command for asking or answering; `work answer` is taken by work-items. Both readings are for the plan.\nDefects shown by probe: outcome on a missing line lands (D1); empty request accepted, then refused on turn (D2); empty --delegation accepted against r22 (D3). Two reading-dependent: out-of-turn turn (D4), arbitrary outcome word (D5).\nNo coverage map: test lists are by search. refs misses scripts/work callers.\nFile set: scripts/workqueue_request.py, scripts/work, tests/scenarios/requests_write_steps.py, tests/scenarios/requests_steps.py, features/requests.feature.\nSize limit: none over 300.",
+  "fileset": [
+    "scripts/workqueue_request.py",
+    "scripts/work",
+    "tests/scenarios/requests_write_steps.py",
+    "tests/scenarios/requests_steps.py",
+    "features/requests.feature"
+  ],
+  "questions": []
+}
