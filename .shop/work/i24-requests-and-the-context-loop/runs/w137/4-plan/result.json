@@ -1,0 +1,20 @@
+{
+  "status": "DONE",
+  "summary": "The plan of w137 is written and covers r70, r80, r71 and r83. The person's answers settle all three earlier questions.\nAll four scenarios fail at their first Given today: no step writes a proposal with Questions and Answers, Run.items reads work-items only, and workqueue.move refuses approved and formulated.\nDecisions:\n- r70 applies only to awaiting-answer proposals; a proposal with no questions gets apply with no answers (Q2 A).\n- A round is an initiative-round worker through Workers.worker; it 'ends' when it leaves a readable result.\n- At the end of a round, work run merges its branch into the initiative branch and deletes it, before the transition (Q1 A).\n- A faulted round leaves the proposal's status as it was, and work run exits 1 naming the round and its fault (Q3 B).\n- workqueue.move checks statuses by the node's kind; items() does not change.\n- New module scripts/supervise_rounds.py, with a CLAUDE.md row. supervise_merge.py and supervise_faults.py join the set.\nThe decisions break no existing tests.",
+  "plan": ".shop/scratch/4-plan/plan.md",
+  "fileset": [
+    "scripts/supervise_rounds.py",
+    "scripts/supervise.py",
+    "scripts/workqueue.py",
+    "scripts/supervise_brief.py",
+    "scripts/supervise_worker.py",
+    "scripts/supervise_merge.py",
+    "scripts/supervise_faults.py",
+    "tests/scenarios/supervision_proposal_steps.py",
+    "tests/scenarios/supervision_world.py",
+    "tests/scenarios/test_supervision.py",
+    "tests/scripts/stub_claude.py",
+    "CLAUDE.md"
+  ],
+  "questions": []
+}
