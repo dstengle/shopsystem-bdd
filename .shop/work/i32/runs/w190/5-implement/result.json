@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"r118 implemented: delegated answer to a reviewer question moves item to ready/done by verdict field of the session result. w190 scenarios 145 passed.","questions":[],"commits":["see git log"],"report":".shop/scratch/5-implement/report.md"}
