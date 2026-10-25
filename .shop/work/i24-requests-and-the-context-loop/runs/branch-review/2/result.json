@@ -1,0 +1,8 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Branch review 2 of i24-requests-and-the-context-loop, f890f2f..25f9d50 (437 commits; the fix commits since review 1 at 4dec501 read line by line).\nSuite: 848 passed, 0 failed at 25f9d50 in 18 s (parallel, -n auto; the steps run the entry points as subprocesses).\nEvery green work-item's --work-item check passes (38 work-items). tools size: none over 300. features bindings: clean.\nreview 1's F1, F3, F4 and F5 are fixed (w157, w159, w161, w160). F2 is fixed only for an initiative with no fulfils (w158).\nFix now (Important, w158): a proposed initiative whose fulfils names a request the queue does not hold is moved to started, its round branch is left and log.jsonl is left uncommitted, so every later work run is refused. Reproduced at HEAD; it contradicts r10.\nObservations: measure's new fulfils reader (w161) misreads a trailing comment and [a] lists; r79's text does not state the no-request case its new scenario pins; 13 ruff hits (4 new on the fix commits, 2 in w156's run record, review 1's 7 still there); the deprecated work-queue @r9 scenario is still not retired.\nNo test is removed or weakened, and nothing is Critical.",
+  "findings": "/tmp/work-run-i24-requests-and-the-context-loop-tdnk4mdl/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": [
+    "Important, w158, scripts/supervise_rounds.py:32-33 with :47-49 and scripts/supervise_brief.py:68-70: a proposed initiative whose fulfils names a request the queue does not hold is moved to started; the round/i1-1-integrate branch and an uncommitted log.jsonl are left, and later work runs are refused (against r10 'change nothing'). Fix now."
+  ]
+}
