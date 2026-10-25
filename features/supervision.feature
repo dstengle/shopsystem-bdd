@@ -365,6 +365,16 @@ Feature: Supervision
     When the person runs `work run i1`
     Then w1's implementation stage directory has report.md, as the implementer wrote it
 
+  @r15
+  Scenario: a field of a worker's result giving a sentence longer than a file name may be is taken as no file
+    Pins that text in a result that cannot be a file name neither stops the copy of the files it names nor the work-item.
+    Given i1's work-item w1 is ready
+    And every worker gives DONE, the implementer writing report.md at the top of its worktree and naming it as its report
+    And the implementer's result also gives a field whose value is a sentence of over 255 characters, with spaces, naming no file
+    When the person runs `work run i1`
+    Then w1's implementation stage directory has report.md, as the implementer wrote it
+    And w1 is green
+
   @r16
   Scenario: a researcher's DONE with questions puts those questions into the planner's brief
     Pins that what the researcher asked reaches the planner, rather than being asked again.
