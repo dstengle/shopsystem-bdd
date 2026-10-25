@@ -1,0 +1,25 @@
+/tmp/work-run-i33-2zhew41f/i33-1-integrate/.shop/scratch/1-integrate/drafts/round-1/spec/capabilities/work-queue.md
+/tmp/work-run-i33-2zhew41f/i33-1-integrate/.shop/scratch/1-integrate/drafts/round-1/spec/capabilities/supervision.md
+
+## Change list
+
+| change | capability | id | line | note sentence |
+|---|---|---|---|---|
+| added | work-queue | r31 | **If** every work-item of an initiative is `withdrawn`, **then** `work` shall leave the initiative's status as it is. | "1. **If** every work-item of an initiative is `withdrawn`, **then** `work` shall leave the initiative's status as it is." |
+| added | work-queue | r32 | **If** `work add` is given an initiative that is `done` or `abandoned`, **then** `work add` shall refuse, naming the initiative's status, and change nothing. | "2. **If** `work add` is given an initiative that is `done` or `abandoned`, **then** `work add` shall refuse, naming the initiative's status, and change nothing." |
+| added | supervision | r120 | **When** the delegation-answerer answers a reviewer's question on a work-item, the delegation-answerer shall give in its result whether its answer asks for a change or accepts the work-item as it is. | "3. **When** the delegation-answerer answers a reviewer's question on a work-item, the delegation-answerer shall give in its result whether its answer asks for a change or accepts the work-item as it is." |
+| added | supervision | r121 | **When** a kept branch review's result gives no question, `work run` shall take the review as listing nothing to fix now, whatever its status. | "4. **When** a kept branch review's result gives no question, `work run` shall take the review as listing nothing to fix now, whatever its status." |
+
+Placement: work-queue r32 after r12 (with `work add`), r31 after r23 (with the rule setting `done`); supervision r121 after r74 (the branch review's findings), r120 after r119 (answers under a delegation). No glossary term, decision, frontmatter or Implementation section changed.
+
+## Questions
+
+1. work-queue r23 and r31 (and supervision r75, r105): r23 sets an initiative `done` when every work-item is `green` or `withdrawn`, which an initiative whose every work-item is `withdrawn` meets, so r23 and r31 contradict. If yes, change r23 to: "[r23] **When** a `work` command's change makes it true that an initiative has at least one work-item that is `green`, that every work-item of it is `green` or `withdrawn` and that every request kept in this context whose asker is this context and that names the initiative is `delivered`, that command shall set the initiative's status to `done`." If no, r23 stays as it is, and r31 is read as overriding it (r23 then reads as contradictory to a scenario writer). The same question stands for supervision r105 (change "that has at least one work-item" to "that has at least one work-item that is `green`") and r75 (whether `measure initiative` runs on an initiative whose every work-item is `withdrawn`; if not: add "and at least one of them is `green`"). Recommended: yes, all three.
+2. supervision r120, its subject: "the delegation-answerer" is no term of the glossary and no system the capability names; r77 calls it "a session of its own, given the delegation". If kept: add to the glossary "- **delegation-answerer**: the session `work run` starts under a request's delegation to answer one question of an initiative." If recast: "[r120] **Where** the request an initiative fulfils gives a delegation, **when** a session that `work run` started under it answers a reviewer's question on a work-item, the session shall give in its result whether its answer asks for a change or accepts the work-item as it is." Recommended: recast, matching r118 and r119.
+3. supervision r120, Implementation: the note gives no field of the result that carries which the answer is. If one is wanted, add under Implementation, may change: "- r120: the answer's result gives `change` or `accept`, as `work answer`'s `--change` and `--accept` (work-queue r26, r27)." Otherwise none is drafted.
+4. supervision r121, "whatever its status": the status of the review's result (its outcome, e.g. `DONE` or `PARTIAL`) or the status the review itself grades. Reading A (the result's outcome): the line as drafted. Reading B (the review's verdict): "[r121] **When** a kept branch review's result gives no question, `work run` shall take the review as listing nothing to fix now, whatever verdict the review gives." Recommended: A.
+5. supervision r121 and r88: if a kept branch review's result gives an outcome other than `DONE` and no question, r121 takes it as listing nothing to fix now; whether r86 to r88's handling of a failed round still applies is not given. If it does: "[r122] **If** a branch reviewer's session ends in an error or at its turn limit or leaves no result `work run` can read, then `work run` shall take the review as not read." If not, nothing is added.
+
+## Cut sentences
+
+- "Initiatives done only when delivered, and reviews read as they now report" (the note's title; intent, no section).
