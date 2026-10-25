@@ -5,3 +5,4 @@
 - 2026-10-25: formulate round 4 (requests): commit 6cd77b2b; r22 added; 0 changed; 0 questions; model check 15 violations, none of requests
 - 2026-10-25: initiative-round formulate 1: supervision#r15 case (result field of over-255-character text is no file) added as a scenario, commit 7fed86a0
 - 2026-10-25: apply (supervision): r105, r106, r107, r108, r109 added; answers 1 (a), 2 (a), 3 (a), 4 (a), 5 (a), 6 (a) under the person's delegation 2026-10-25; round 2 draft by the writer on the current spec; spec commit see git log
+- 2026-10-25: formulate round 6 (supervision): commit d073c518, 5 scenarios added (r105 r106 r107 r108 r109), 0 changed, 0 deprecated, 0 questions; bindings ok; model check 11 violations, none v_s1/v_s3/v_t1; drafts .shop/scratch/drafts/i29-supervision/round-1
