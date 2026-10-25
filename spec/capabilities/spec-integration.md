@@ -37,6 +37,7 @@ It is not formulation and not planning; it writes nothing a client can run.
 - [r35] **When** `initiative-round` runs the kind `gate`, `initiative-round` shall give in its result one question for each decision the person is asked to make, each marking the recommended reading and giving the lines it concerns in full.
 - [r39] **When** `initiative-round` runs the kind `apply` with the file of the person's answers, or with the person's approval in their words, `initiative-round` shall apply exactly the drafts the person approved.
 - [r40] **When** `initiative-round` finishes a round, `initiative-round` shall append one line to the initiative's ledger with `work note`, naming the kind, the round, and what the round ended with or the answers it applied.
+- [r43] **When** a round of the kind `integrate` is given requirement ids that other initiatives' drafts add, `initiative-round` shall number the round's added lines above every id it is given on the same capability.
 - [r33] **If** `integrating-a-proposal` cannot do what it was asked, then `integrating-a-proposal` shall stop, saying why, and change nothing under `spec/`.
 
 ## Implementation, may change

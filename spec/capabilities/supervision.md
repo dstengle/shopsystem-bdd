@@ -12,12 +12,13 @@ retired: []
 ## Purpose
 `work run` takes a bounded context's initiatives through their transitions: `work run <initiative>` that
 initiative, `work run` with no initiative every initiative that is neither `done` nor `abandoned`. It starts the
-`intake` round of a request this context is the upstream of and the `integrate` round of an initiative, keeps that
-round's drafts and writes the capability-proposals its change list names, starts a capability-proposal's `gate`,
-`apply` and `formulate` rounds, drafts and delivers its work-items, for each stage starting a fresh `claude -p`
-worker, reading the worker's result and writing the status itself, and starts the initiative's measurement and
-analysis (design-decision/the-context-runs-without-a-coordinator). It is a script and takes no judgment; what nobody
-may decide goes to the person as a question. A walking skeleton (design-decision/behaviour-lines-are-ears): it grows
+`intake` round of a request this context is the upstream of, starts with `work start` the initiative of such a
+request once it is `accepted`, and starts the `integrate` round of an initiative, keeps that round's drafts and
+writes the capability-proposals its change list names, starts a capability-proposal's `gate`, `apply` and
+`formulate` rounds, drafts and delivers its work-items, for each stage starting a fresh `claude -p` worker, reading
+the worker's result and writing the status itself, and starts the initiative's measurement and analysis
+(design-decision/the-context-runs-without-a-coordinator). It is a script and takes no judgment; what nobody may
+decide goes to the person as a question. A walking skeleton (design-decision/behaviour-lines-are-ears): it grows
 from what using it shows.
 
 ## Behaviour
@@ -25,13 +26,16 @@ from what using it shows.
 - [r66] **When** `work run` is started with no initiative, `work run` shall take every initiative that is neither `done` nor `abandoned` through every transition its nodes can make, the initiatives side by side and, but for the workers r20 and r59 start together, one session of an initiative at a time, and the rounds r95 names one at a time across initiatives.
 - [r95] `work run` shall start the rounds of the kind `integrate`, `apply` and `formulate` of different initiatives one at a time.
 - [r67] **When** a request of which this context is the upstream is `open` or `awaiting-upstream`, `work run` shall start an `initiative-round` session of the kind `intake`, given the request, that writes each line's line outcome or a question on it and passes the turn with `work turn`.
+- [r103] **When** a request of which this context is the upstream is `accepted` and no initiative fulfils it, `work run` shall start its initiative with `work start`.
 - [r79] **When** an initiative is `proposed`, `work run` shall start a round of the kind `integrate` given the accepted lines of the request it fulfils.
 - [r93] **When** an initiative is `started` and has neither a capability-proposal nor a work-item, `work run` shall start a round of the kind `integrate` given the accepted lines of the request it fulfils.
+- [r102] **When** `work run` starts a round of the kind `integrate`, `work run` shall give the round every requirement id that the kept drafts of another initiative, not yet applied, add.
 - [r96] **If** a round of the kind `integrate` that `work run` started ends without a change list, **then** `work run` shall exit with an error, naming the round.
 - [r84] **When** `work run` starts the round of the kind `integrate` of a `proposed` initiative, `work run` shall transition the initiative to `started`.
 - [r91] **When** a round of the kind `integrate` that `work run` started ends, `work run` shall keep the round's drafts on the initiative branch.
 - [r92] **When** a round of the kind `integrate` that `work run` started ends with a change list, `work run` shall write a `drafted` capability-proposal for each capability the change list names, with the requirement ids and terms it adds, changes and removes on that capability.
 - [r68] **When** a capability-proposal is `drafted`, `work run` shall start a round of the kind `gate` whose brief asks for the gate as questions, each a decision with its readings and the recommended reading marked.
+- [r104] **When** `work run` starts a round of the kind `gate` for a capability-proposal, `work run` shall ask the round only for the questions on the lines and terms the proposal adds, changes or removes.
 - [r85] **When** a round of the kind `gate` that `work run` started for a capability-proposal ends, `work run` shall write the questions its result gives under the proposal's `## Questions`.
 - [r69] **When** a round of the kind `gate` that `work run` started for a capability-proposal ends, `work run` shall transition the proposal to `awaiting-answer`.
 - [r70] **When** every question of a capability-proposal has an answer, `work run` shall start a round of the kind `apply` given the answers.
