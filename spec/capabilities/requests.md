@@ -19,6 +19,7 @@ what using it shows.
 
 ## Behaviour
 - [r1] **When** `work request <title> --from <asker> --lines <file>` is run with one or more `--source <id>` or with `--thread <id>`, `work` shall write an `open` request with the file's lines as its lines, the asker given as its asker, the origins `--source` names or the job-thread `--thread` names, and the turn the upstream's, and print its id.
+- [r19] **Where** `--delegation <text>` is given to `work request`, `work` shall write the delegation in the request.
 - [r2] **If** a line given to `work request` is not in the strict form `model check` holds (v_e1, v_e2), **then** `work request` shall refuse, naming the line, and change nothing.
 - [r3] **If** `work request` is run with neither `--source` nor `--thread`, **then** `work request` shall refuse, because the request names neither an origin nor a job-thread, and change nothing.
 - [r4] `work` shall write the asker's part of a request, its lines, only when `work request` is run.
@@ -46,6 +47,7 @@ what using it shows.
   `upstream`); sections `## Lines` (the asker's), `## Outcomes` (the upstream's, one a line), `## Questions`,
   `## Answers`, `## Resolution` (the upstream's).
 - `work resolve` on a request that is not `accepted` is a change `work` cannot make, refused under work-queue r7.
+- `--delegation` is written as the frontmatter field `delegation`.
 
 ## Not yet
 - The detail of turns, which the person reserved ("the person will ask for more detail later", the Approval of

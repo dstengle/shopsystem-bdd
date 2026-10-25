@@ -21,6 +21,7 @@ work-item's status; `work run` (supervision) takes them through it. It judges no
 - [r1] **When** `work add <initiative> <title>` is run with `--part-of`, `--under` and `--accepts`, `work` shall write `.shop/work/<initiative>/w<n>.md` as a `drafted` work-item with the id `w<n>`, the fields given and the title as its `# ` heading, and print the id.
 - [r12] `work add` shall number a new work-item's id `w<n>` with `<n>` one above the highest `<n>` of any work-item under `.shop/work/`, in any initiative and any status.
 - [r22] **When** `work start <request>` is run on an `accepted` request, `work` shall write `.shop/work/<initiative>/initiative.md` as a `proposed` initiative of kind `capability-change` that fulfils the request, with the request's origins as its source, and print its id.
+- [r25] **When** `work start` writes an initiative, `work` shall commit the initiative on the current branch.
 - [r23] **When** a `work` command's change makes it true that an initiative has at least one work-item, that every work-item of it is `green` or `withdrawn` and that every request kept in this context whose asker is this context and that names the initiative is `delivered`, that command shall set the initiative's status to `done`.
 - [r3] **When** `work show` is run, `work` shall print each work-item of every initiative under `.shop/work/` with its status.
 - [r11] **Where** `--json` is given, `work show` shall print its result, each work-item with its initiative and status, as one JSON object.

@@ -12,19 +12,25 @@ retired: []
 ## Purpose
 `work run` takes a bounded context's initiatives through their transitions: `work run <initiative>` that
 initiative, `work run` with no initiative every initiative that is neither `done` nor `abandoned`. It starts the
-`intake` round of a request this context is the upstream of and the `integrate` round of a `proposed` initiative,
-starts a capability-proposal's `gate`, `apply` and `formulate` rounds, drafts and delivers its work-items, for each
-stage starting a fresh `claude -p` worker, reading the worker's result and writing the status itself, and starts the
-initiative's measurement and analysis (design-decision/the-context-runs-without-a-coordinator). It is a script and
-takes no judgment; what nobody may decide goes to the person as a question. A walking skeleton
-(design-decision/behaviour-lines-are-ears): it grows from what using it shows.
+`intake` round of a request this context is the upstream of and the `integrate` round of an initiative, keeps that
+round's drafts and writes the capability-proposals its change list names, starts a capability-proposal's `gate`,
+`apply` and `formulate` rounds, drafts and delivers its work-items, for each stage starting a fresh `claude -p`
+worker, reading the worker's result and writing the status itself, and starts the initiative's measurement and
+analysis (design-decision/the-context-runs-without-a-coordinator). It is a script and takes no judgment; what nobody
+may decide goes to the person as a question. A walking skeleton (design-decision/behaviour-lines-are-ears): it grows
+from what using it shows.
 
 ## Behaviour
 - [r1] **When** `work run <initiative>` is started, `work run` shall pull the initiative's work-items through research, plan, implementation and review until no work-item can make a transition.
-- [r66] **When** `work run` is started with no initiative, `work run` shall take every initiative that is neither `done` nor `abandoned` through every transition its nodes can make, the initiatives side by side and, but for the workers r20 and r59 start together, one session of an initiative at a time.
+- [r66] **When** `work run` is started with no initiative, `work run` shall take every initiative that is neither `done` nor `abandoned` through every transition its nodes can make, the initiatives side by side and, but for the workers r20 and r59 start together, one session of an initiative at a time, and the rounds r95 names one at a time across initiatives.
+- [r95] `work run` shall start the rounds of the kind `integrate`, `apply` and `formulate` of different initiatives one at a time.
 - [r67] **When** a request of which this context is the upstream is `open` or `awaiting-upstream`, `work run` shall start an `initiative-round` session of the kind `intake`, given the request, that writes each line's line outcome or a question on it and passes the turn with `work turn`.
 - [r79] **When** an initiative is `proposed`, `work run` shall start a round of the kind `integrate` given the accepted lines of the request it fulfils.
+- [r93] **When** an initiative is `started` and has neither a capability-proposal nor a work-item, `work run` shall start a round of the kind `integrate` given the accepted lines of the request it fulfils.
+- [r96] **If** a round of the kind `integrate` that `work run` started ends without a change list, **then** `work run` shall exit with an error, naming the round.
 - [r84] **When** `work run` starts the round of the kind `integrate` of a `proposed` initiative, `work run` shall transition the initiative to `started`.
+- [r91] **When** a round of the kind `integrate` that `work run` started ends, `work run` shall keep the round's drafts on the initiative branch.
+- [r92] **When** a round of the kind `integrate` that `work run` started ends with a change list, `work run` shall write a `drafted` capability-proposal for each capability the change list names, with the requirement ids and terms it adds, changes and removes on that capability.
 - [r68] **When** a capability-proposal is `drafted`, `work run` shall start a round of the kind `gate` whose brief asks for the gate as questions, each a decision with its readings and the recommended reading marked.
 - [r85] **When** a round of the kind `gate` that `work run` started for a capability-proposal ends, `work run` shall write the questions its result gives under the proposal's `## Questions`.
 - [r69] **When** a round of the kind `gate` that `work run` started for a capability-proposal ends, `work run` shall transition the proposal to `awaiting-answer`.
@@ -39,6 +45,7 @@ takes no judgment; what nobody may decide goes to the person as a question. A wa
 - [r73] **When** `work run` drafts a work-item for a `formulated` capability-proposal, `work run` shall list under the work-item's `## Retires` each scenario tagged `@deprecated` whose `@r<n>` tag names a requirement the work-item accepts.
 - [r74] **When** a kept branch review's result lists findings to fix now, `work run` shall draft one work-item for them, naming the findings file, under the capability-proposal that the work-item the findings concern is part of.
 - [r75] **When** every work-item of an initiative is `green` or `withdrawn` and its kept branch review lists nothing to fix now, `work run` shall run `measure initiative` on the initiative.
+- [r97] **While** an initiative has no work-item, `work run` shall run no `measure initiative` on it.
 - [r76] **When** the `measure initiative` that `work run` ran on an initiative has written its measurement, `work run` shall start a session of `analyzing-a-batch` that writes the initiative's analysis record.
 - [r77] **Where** the request an initiative fulfils gives a delegation, `work run` shall give each question of the initiative to a session of its own, given the delegation, the files that one question names and nothing else, which answers the question if the delegation covers it and leaves it for the person otherwise.
 - [r78] **Where** the request an initiative fulfils gives a delegation, **when** a session `work run` started under it answers a question, `work run` shall write the answer naming the delegation it was given under.
@@ -90,6 +97,7 @@ takes no judgment; what nobody may decide goes to the person as a question. A wa
 - [r48] **When** the branch reviewer's session ends, `work run` shall commit `.shop/work/<initiative>/runs/branch-review/<k>/` on the initiative branch.
 - [r49] **When** the branch reviewer's session starts or ends, `work run` shall append a line to `log.jsonl` with the time, the stage `branch-review`, the agent and the session id.
 - [r50] **While** every commit on the initiative branch other than the kept branch reviews' own commits has been read by a kept branch review, `work run` shall start no branch review.
+- [r94] **While** an initiative has no work-item, `work run` shall start no branch review of it.
 - [r51] **If** the push verification before the branch review fails, then `work run` shall exit with an error, saying why, and start no branch review.
 - [r28] **If** the main checkout's `.shop/work/` differs from its last commit when a worker ends, then `work run` shall put it back and transition the work-item to `failed`, naming each file.
 - [r29] **Where** `.shop/delivery.toml` gives `[tests]`, `work run` shall run those commands in place of its own commands for the work-item's scenarios and the suite.
