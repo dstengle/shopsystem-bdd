@@ -45,3 +45,4 @@ The drafts of this proposal are in .shop/work/i26/runs/i26/2-integrate.
 - 2026-10-25: 8: A, asker internal or this context's id, with an Implementation line (the coordinator under the person's delegation 2026-10-25)
 - 2026-10-25: 9: only requests kept in this repository (the coordinator under the person's delegation 2026-10-25)
 - 2026-10-25: 10: yes, change r9 and r82 as recommended (the coordinator under the person's delegation 2026-10-25)
+- 2026-10-25: 11: A, every question with no answer under ## Answers, as an Implementation line (the coordinator under the person's delegation 2026-10-25)
