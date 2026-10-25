@@ -4,3 +4,4 @@
 - 2026-10-25: gate (requests): 11 questions
 - 2026-10-25: gate (supervision): 11 questions
 - 2026-10-25: apply (requests): r20, r21 added, r4, r5, r12 changed, Implementation line and Not yet narrowed; answers 1-5 under the person's delegation 2026-10-25; supervision answers 6-11 left to the supervision apply
+- 2026-10-25: formulate round 3 (requests): commit 3d3da4df; r20, r21 added; r4, r5, r12 changed (old scenarios deprecated); 0 questions; model check 13 violations, none of requests
