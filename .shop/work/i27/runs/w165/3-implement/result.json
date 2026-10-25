@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"work request --delegation writes JSON-quoted delegation frontmatter; r19 scenario green, test_requests green.","commits":["6a4244bb work request: --delegation writes the delegation into the request"],"report":"/tmp/work-run-i27-15a81p5x/w165/.shop/scratch/3-implement/report.md","questions":[]}
