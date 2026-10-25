@@ -33,3 +33,6 @@ The drafts of this proposal are in .shop/work/i26/runs/i26/2-integrate.
 - supervision r99, which requests: only those kept in this repository (recommended; the line becomes "a request kept in this context whose asker is this context") / also requests this context raised elsewhere.
 - supervision r99 vs r9 and r82. r9 ("**When** no work-item can make a transition and every work-item is `green` or `withdrawn`, `work run` shall exit successfully, printing each work-item's status.") and r82 ("**When** `work run` was started with no initiative, no node of an initiative it took can make a transition and none is `awaiting-answer` or `failed`, `work run` shall exit successfully, printing the status of each initiative it took."): add to both "and no request whose asker is this context is in the asker's turn" (two changed lines)? Yes (recommended; r99 would otherwise contradict them) / no.
 - supervision r99, "open questions": A (recommended): every question with no answer under `## Answers`, stated as an Implementation line. B: only those of the upstream's latest turn.
+
+## Answers
+- 2026-10-25: 1: B, lines as drafted; the commands stay Implementation (the coordinator under the person's delegation 2026-10-25)
