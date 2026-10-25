@@ -25,3 +25,7 @@ The drafts of this proposal are in .shop/work/i32/runs/i32/1-integrate/drafts/ro
   (a, recommended) Approve both as drafted. An answer that says neither stays covered by work-queue r28, which already refuses it.
   (b) Approve both and add [supervision#r120]: **If** a session started under a delegation answers a reviewer's question without saying whether it asks for a change or accepts the work-item as it is, **then** `work run` shall leave the question unanswered for the person.
   (c) Do not approve; say what to change.
+
+## Answers
+- 2026-10-25: Reading (a): approve supervision#r118 and supervision#r119 as drafted, with decision 0069. This follows the person's delegation of 2026-10-25 to answer every question with its recommended reading.
+  by: work run, under the delegation "The person, 2026-10-25: "Do not involve me in fixing all of the bugs. Please get the system into a correctly working state before doing a release". Answer every question with its recommended reading."
