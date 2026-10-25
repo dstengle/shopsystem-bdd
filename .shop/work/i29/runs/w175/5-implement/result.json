@@ -1,0 +1,1 @@
+{"status": "DONE", "summary": "r22 implemented in 72bd6f14 (empty or whitespace delegation refused); w175 scenarios pass (143 passed); no new edits this session", "questions": [], "commits": ["72bd6f14 work request refuses an empty delegation (requests r22)"], "report": ".shop/scratch/5-implement/report.md"}
