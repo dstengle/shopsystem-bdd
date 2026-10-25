@@ -1,0 +1,1 @@
+- 2026-10-25: The person, 2026-10-25, chose "One hand edit + q3": the request commands q2's intake showed missing go in a request of their own, released with q1 and q2.
