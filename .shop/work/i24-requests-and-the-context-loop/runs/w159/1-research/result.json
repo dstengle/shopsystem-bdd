@@ -1,0 +1,8 @@
+{
+  "status": "DONE",
+  "summary": "w159 research done; notes at .shop/scratch/1-research/notes.md.\nAccepted: 5 scenarios of design-model-check r27. 3 already green (9+1+1+1 rows pass); 2 red (status outline, 2 rows).\nRed cause: no step branch for the two rows (tests/scenarios/design_model_check_problems.py:147) and code lacks awaiting-answer on capability-proposal and withdrawn on request (scripts/model_work.py:11, :14).\nProbes (run): awaiting-answer proposal and withdrawn request each give a file problem today; drafted, withdrawn proposal, refused and open requests do not.\nNo existing test asserts the old behaviour (search); tests-of had no map, so all test lists are by search.\nFile problems-step module is at 300 lines: new branches need a new module.\nReading-dependent, both readings in notes: a kept withdrawn request blocks done (v_d1); a missing requirement accepted by a work-item is a file problem, not unresolved.",
+  "questions": [
+    "Should a withdrawn kept request block an initiative's done (v_d1, workqueue_done.py), as a refused one does today? Reading A: r114 literal, as designed. Reading B: withdrawn should close.",
+    "Should a work-item accepting a requirement its capability does not have be a file problem (r27 literal) or an unresolved reference?"
+  ]
+}
