@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/requests
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i26
-status: drafted
+status: awaiting-answer
 argues: [requests]
 adds: [requests#r20, requests#r21]
 changes: []
@@ -13,3 +13,23 @@ date: 2026-10-25
 # requests
 
 The drafts of this proposal are in .shop/work/i26/runs/i26/2-integrate.
+
+## Questions
+- Which command writes a question and which an answer (requests r20, r21)? Lines:
+  [requests#r20] **When** the upstream asks a question on a line of a request in its turn, `work` shall write the question in the request.
+  [requests#r21] **When** the asker answers a question on a request in its turn, `work` shall write the answer in the request.
+  The note names no command. A: put new commands in the lines (`work question <request> <n> <text>`, `work answer <request> <text>`). B (recommended): lines as drafted; commands stay Implementation, named once known.
+- requests r4 (asker's part written only by `work request`) and r5 (upstream's part only by `work outcome`/`work resolve`) contradict r20/r21. Change r4 to add answers and r5 to add questions? Yes (recommended) / no, leaving a contradiction.
+- requests r12 (commit rule): should it cover the question and answer commands? Yes (recommended) / no.
+- Is requests r16's refusal out of turn the intended refusal for a question in the asker's turn or an answer in the upstream's turn? Yes (recommended), nothing changes / no, a separate refusal line.
+- requests Implementation: add "r20, r21: a question is written under `## Questions`, an answer under `## Answers`, the n-th answering the n-th"? Yes (recommended) / no.
+- supervision r67 vs r98. Line:
+  [supervision#r98] **When** a round of the kind `intake` that `work run` started gives a question on a line of a request, `work run` shall write the question in the request.
+  A (recommended): the intake round gives the question in its result and `work run` writes it; r67 changes to "... that writes each line's line outcome or gives a question on it, and passes the turn with `work turn`." (a changed line; it was: the intake round writes line outcomes and passes the turn). B: both may write it; r67 stays and r98 would write it twice.
+- supervision r98 Implementation line: "`work run` writes the question with `work`'s question command (requests r20), in the upstream's turn, before the round's `work turn`". Add? Yes (recommended) / no.
+- supervision r99, "asker is this context". Line:
+  [supervision#r99] **When** `work run` ends while a request whose asker is this context is in the asker's turn, `work run` shall exit with an error, printing the request with its open questions.
+  A (recommended): asker is `internal` or this context's id (q3 is `internal`), with an Implementation line saying so. B: only this context's id.
+- supervision r99, which requests: only those kept in this repository (recommended; line becomes "a request kept in this context whose asker is this context") / also requests this context raised elsewhere.
+- supervision r99 vs r9 and r82 (exit successfully when all work-items green / no node awaiting): add to both "and no request whose asker is this context is in the asker's turn"? Yes (recommended; r99 would otherwise contradict them; two changed lines) / no.
+- supervision r99, "open questions": A (recommended): every question with no answer under `## Answers`, stated as an Implementation line. B: only those of the upstream's latest turn.
