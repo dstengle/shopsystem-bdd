@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Applied supervision: r117 added (draft r109 renumbered, spec holds r109), r110 added with \"before `work run` exits\", r19 changed to 80 turns. Commit d54f006a. Decisions: none added. model check: 13 violations, 13 warnings, 5 unresolved (v_s3 for r110, r117 awaiting formulate; unresolved are i31 drafts).","questions":[]}
