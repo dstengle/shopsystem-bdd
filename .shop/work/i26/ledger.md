@@ -2,3 +2,4 @@
 - 2026-10-25: integrate round 1: 4 lines added (requests r19 r20, supervision r91 r92), 0 changed, 0 removed, 0 terms, 0 decisions, 8 questions, 1 cut sentence; .shop/scratch/drafts/2026-10-25-q3/round-1/
 - 2026-10-25: integrate round 2 (q3): 4 lines added (requests r20 r21, supervision r98 r99), 0 changed, 0 removed, 0 terms, 0 decisions, 11 questions, 0 cut sentences; .shop/scratch/2-integrate/drafts/round-1/gate.md
 - 2026-10-25: gate (requests): 11 questions
+- 2026-10-25: gate (supervision): 11 questions
