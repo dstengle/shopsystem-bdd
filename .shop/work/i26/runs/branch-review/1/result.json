@@ -1,0 +1,9 @@
+{
+  "status": "NEEDS_CONTEXT",
+  "summary": "Branch review of i26 cannot be done: there is nothing to review against.\nRange f582b1bb..d66ea85c holds 6 commits, all work-queue bookkeeping (work note, status changes, the integrate stage's brief/result/session). No code, test, feature or spec file changed.\ni26 has no work-item and no capability-proposal, and its status is still 'started'. Its only stage is 1-integrate, which reported 'DONE' with 4 lines added and 8 questions, plus a gate at .shop/scratch/drafts/2026-10-25-q3/round-1/gate.md. That gate is not on this branch, the branch round/i26-1-integrate does not exist here, and spec/capabilities has none of the lines r19, r20, r91, r92.\nThe branch also holds i25's commits 08e81d98 and c59cf651, because it is shared with i25 (i25-review-findings-to-implementation).\nThe brief has no Read: line. Suite and checks were not run; nothing was changed and no findings.md was written.\nThe branch review looks like it started before i26's integrate gate was ruled on and its work-items were drafted and merged.",
+  "findings": "",
+  "questions": [
+    "i26 has no work-items or capability-proposals on f582b1bb..d66ea85c, only bookkeeping commits. Its integrate gate (round 1, 8 questions) is not on the branch, and q3's 4 lines are not in spec/capabilities. Rule on the gate and run the work-items before the branch review.",
+    "The branch review was started on an initiative still at its integrate gate, with no work-item merged. Check that work run's branch-review trigger (scripts/supervise*.py) waits for the gate and the work-items."
+  ]
+}

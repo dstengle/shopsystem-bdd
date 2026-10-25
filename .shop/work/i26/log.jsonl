@@ -2,3 +2,6 @@
 {"time": "2026-10-25T14:39:52+00:00", "work-item": "i26", "stage": "integrate", "event": "push verified"}
 {"time": "2026-10-25T14:39:52+00:00", "work-item": "i26", "stage": "integrate", "agent": "initiative-round", "session": "2d4bf60e-e8f5-4127-94a3-c3175ea45c18", "event": "start"}
 {"time": "2026-10-25T14:42:37+00:00", "work-item": "i26", "stage": "integrate", "agent": "initiative-round", "session": "2d4bf60e-e8f5-4127-94a3-c3175ea45c18", "event": "end"}
+{"time": "2026-10-25T14:42:38+00:00", "stage": "branch-review", "event": "push verified"}
+{"time": "2026-10-25T14:42:39+00:00", "stage": "branch-review", "agent": "bdd-branch-reviewer", "session": "7f6625f5-b36f-426d-b2ea-b035b64b48fd", "event": "start"}
+{"time": "2026-10-25T14:43:20+00:00", "stage": "branch-review", "agent": "bdd-branch-reviewer", "session": "7f6625f5-b36f-426d-b2ea-b035b64b48fd", "event": "end"}
