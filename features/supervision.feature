@@ -993,6 +993,26 @@ Feature: Supervision
     And no session was started for i3 or i4
     And w1 is green, and p1 and p2 are awaiting-answer
 
+  @r89
+  Scenario: when a session started under a delegation to answer a question ends at its turn limit, the question is left unanswered for the person
+    Pins that an answering session cut short gives no answer in the person's place, even when its result file holds one.
+    Given i1 fulfils the request q1, which gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
+    And i1's work-item w1 is awaiting-answer, its ## Questions section with "Which module owns the log?" and no answer
+    And the session answering under the delegation ends at its turn limit, its result file answering "The queue module.", and every worker gives DONE
+    When the person runs `work run i1`
+    Then w1's question "Which module owns the log?" has no answer
+    And w1 is awaiting-answer
+
+  @r90
+  Scenario: when a session started under a delegation to answer a question ends in an error, its stage directory and log lines are committed
+    Pins that what an answering session left behind is kept in the initiative's history for the person, though it answered nothing.
+    Given i1 fulfils the request q1, which gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
+    And i1's work-item w1 is awaiting-answer, its ## Questions section with "Which module owns the log?" and no answer
+    And the session answering under the delegation ends in an error, having written notes.md beside its brief
+    When the person runs `work run i1`
+    Then the initiative branch has a commit of the answering session's stage directory, its notes.md included, and of log.jsonl's lines for that session
+    And nothing of that stage directory or of log.jsonl is left uncommitted
+
   @r84
   Scenario: when `work run` starts the integrate round of a proposed initiative, the initiative is started
     Pins that an initiative whose integration has begun is no longer proposed.
@@ -1025,6 +1045,33 @@ Feature: Supervision
     And every round ends and every worker gives DONE
     When the person runs `work run i1`
     Then p1's transition to formulated was made once the formulate round had ended
+
+  @r86
+  Scenario: when a round `work run` started for a capability-proposal ends at its turn limit, the proposal keeps its status
+    Pins that a round cut short leaves the proposal where it stood, rather than moving it on as if the round's work were done.
+    Given i1's capability-proposal p1 is drafted
+    And the gate round's session ends at its turn limit, its result giving the question "Is a title given twice one book or two?" on p1
+    When the person runs `work run i1`
+    Then a round of the kind gate was started for p1
+    And p1 is drafted
+
+  @r87
+  Scenario: when a round `work run` started for a capability-proposal gives an outcome other than DONE, no transition is made from it
+    Pins that a round that did not finish its work brings no transition, neither of the proposal nor of any other node.
+    Given i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", and its Answers section with "One book."
+    And the apply round gives BLOCKED, asking "Is the old reader kept?"
+    When the person runs `work run i1`
+    Then a round of the kind apply was started for p1
+    And log.jsonl gives no transition made after the apply round had ended
+
+  @r88
+  Scenario: when a round `work run` started for a capability-proposal leaves no result it can read, `work run` exits with an error naming the round and how it ended
+    Pins that the person learns which round stopped the run and how, from `work run` itself.
+    Given i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", and its Answers section with "One book."
+    And the apply round ends, and the formulate round's session ends with no error and before its turn limit, having written no result file
+    When the person runs `work run i1`
+    Then `work run` names the formulate round of p1 and that it left no result it can read
+    And it exits with an error
 
   @r81
   Scenario Outline: `work run` started with no initiative, ending with <node> <status>, exits with an error, printing the status of each initiative it took
