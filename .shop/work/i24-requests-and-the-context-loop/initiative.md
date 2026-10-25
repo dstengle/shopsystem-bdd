@@ -4,7 +4,7 @@ title: Requests and the context loop
 summary: The requests R1-R5 of the approved design note 2026-10-23-requests-and-the-context-loop - sessions measured around a delivery, a session started from the repository's state, requests and their two-way protocol, an initiative fulfilling one request, and the context running without a coordinator - with work run delivering a work-item whose requirements are all guarantees.
 kind: capability-change
 owner-level: shopsystem-bdd
-status: proposed
+status: started
 priority: 1
 source: [observation/2026-10-24-context-loop-not-queued, observation/2026-10-24-guarantees-work-item]
 date: 2026-10-24

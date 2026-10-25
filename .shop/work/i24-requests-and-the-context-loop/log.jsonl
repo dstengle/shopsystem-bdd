@@ -731,3 +731,4 @@
 {"time": "2026-10-25T01:03:41+00:00", "work-item": "w151", "before": "done", "after": "green", "by": "work run"}
 {"time": "2026-10-25T01:04:10+00:00", "work-item": "w146", "before": "awaiting-answer", "after": "done", "by": "work answer"}
 {"time": "2026-10-25T01:04:11+00:00", "work-item": "w147", "before": "awaiting-answer", "after": "done", "by": "work answer"}
+{"time": "2026-10-25T01:04:13+00:00", "work-item": "i24-requests-and-the-context-loop", "before": "proposed", "after": "started", "by": "work run"}
