@@ -42,7 +42,7 @@ TOOLS = {
 }
 # A capability-proposal's rounds (supervise_rounds.py): they commit spec/ or features/ in a worktree of their own, and
 # dispatch the capability-writer and the feature-formulators.
-ROUNDS = ("apply", "formulate")
+ROUNDS = ("gate", "apply", "formulate")
 for _round in ROUNDS:
     TOOLS[_round] = [*READER, "Bash(git add *)", "Bash(git commit *)", "Agent",
                       "Bash(python3 %s/work note *)" % SCRIPTS]

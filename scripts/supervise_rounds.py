@@ -1,6 +1,7 @@
 """`work run`'s rounds for a capability-proposal (capability supervision r70, r71, r80, r83): an `awaiting-answer`
 proposal whose every question has an answer is given to an apply round and, once that has ended, approved; an approved one
 is given to a formulate round and, once that has ended, formulated. Standard library only; a part of supervise.Run."""
+import json
 import subprocess
 
 import workqueue
@@ -8,7 +9,7 @@ from supervise_faults import Fault, fault_of
 from supervise_worker import GitFailed, git
 from workqueue import Refused
 
-AFTER = {"awaiting-answer": ("apply", "approved"), "approved": ("formulate", "formulated")}
+AFTER = {"drafted": ("gate", "awaiting-answer"), "awaiting-answer": ("apply", "approved"), "approved": ("formulate", "formulated")}
 
 
 class Rounds:
@@ -60,7 +61,8 @@ class Rounds:
             self.keep_round(name, kind, label)
             raise Refused("the %s round of %s (%s) faulted, and %s keeps its status %s: %s" % (
                 kind, name, self.rel(self.dir / "runs" / name / label), name, before, fault_of(fault))) from None
-        self.move(name, before, after)
+        asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []] if kind == "gate" else None
+        self.move(name, before, after, asked)
 
     def keep_round(self, name, kind, label):
         """The round's stage directory and log lines, committed with no transition, so the next `work run` finds nothing

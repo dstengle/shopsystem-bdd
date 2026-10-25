@@ -106,8 +106,8 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
     def move(self, name, before, after, question=None, fileset=None):
         with self.lock:
             workqueue.move(self.root, self.initiative, name, after, by=BY)
-            if question:
-                self.section(name, "Questions", question)
+            for each in [question] if isinstance(question, str) else question or []:     # a gate gives several
+                self.section(name, "Questions", each)
             if fileset:
                 self.write_fileset(name, fileset)
             self.commit(name, before, after)

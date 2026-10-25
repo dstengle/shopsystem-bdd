@@ -33,6 +33,9 @@ class Briefs:
                  "Scripts: %s" % SCRIPTS]
         if rnd:     # a capability-proposal's round (supervise_rounds.py): the kind its agent runs
             lines.append("Kind: %s" % stage)
+            if stage == "gate":
+                lines.append("Give the gate as questions in your result's `questions`, one string each: every question a "
+                             "decision, with its readings and the recommended reading marked.")
         base = self.base()
         if base:
             lines.append("Base: %s" % base)

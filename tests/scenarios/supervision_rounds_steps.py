@@ -24,6 +24,55 @@ def answered_proposal(repo, asked, answered):
     commit_all(repo, "an answered capability-proposal")
 
 
+@given("i1's capability-proposal p1 is drafted")
+def drafted_proposal(repo):
+    write(repo, DIR + "/p1.md", "---\nid: %s\nkind: capability-proposal\npart_of: %s\nstatus: drafted\nargues: [thing]\n"
+          "adds: [thing#r1]\nchanges: []\nremoves: []\ndate: 2026-10-15\n---\n" % (
+              full("capability-proposal", "p1"), full("initiative", "i1")))
+    commit_all(repo, "a drafted capability-proposal")
+
+
+def gate_question(text):
+    """The question as one string: the decision, its readings, and the mark on the recommended one."""
+    ask, first, second, marked = quoted(text)
+    return "%s Readings: %s%s, %s%s" % (ask, first, " (recommended)" if marked == first else "",
+                                         second, " (recommended)" if marked == second else "")
+
+
+@given(parsers.re(r"the gate round's result gives the question (?P<text>.+), and every round ends$"))
+def gate_result(plan, text):
+    plan["initiative-round"] = {"status": "DONE", "questions": [gate_question(text)]}
+
+
+@then(parsers.re(r"p1's ## Questions holds (?P<text>.+)$"))
+def questions_hold(repo, text):
+    held = ["\n".join(b) for b in bullets((repo / DIR / "p1.md").read_text(), "Questions")]
+    assert any(gate_question(text) == " ".join(b.split())[2:] for b in held), held
+
+
+def bullets(text, heading):
+    section = text.split("\n## %s\n" % heading, 1)[1].split("\n## ", 1)[0]
+    found = []
+    for line in section.splitlines():
+        if line.startswith("- "):
+            found.append([line])
+        elif line.strip() and found:
+            found[-1].append(line)
+    return found
+
+
+@then("a round of the kind gate was started for p1")
+def gate_started(repo, context):
+    assert len(rounds(repo, "gate")) == 1, (starts(repo), context["done"].stdout, context["done"].stderr)
+
+
+@then("the gate round's brief asks for the gate as questions, each a decision with its readings and the recommended "
+      "reading marked")
+def gate_brief_asks(repo):
+    brief = rounds(repo, "gate")[0]["brief"]
+    assert "questions" in brief and "readings" in brief and "recommended" in brief, brief
+
+
 @given("every round ends")
 def every_round_ends(plan):
     plan["initiative-round"] = {"status": "DONE"}
