@@ -304,3 +304,10 @@ Cases i24's task reviews found that no line pins, accepted as the code has them:
 - work-queue r23: `work retry` returning a work-item to green (after a push failure) does not run the done check, so the initiative stays `started` (w130).
 - batch-measurement r63/r64: `measure initiative` refuses an initiative whose request is missing, has no asker, or whose `fulfils` holds more than one id; no line asks for the refusal (w133).
 - supervision: the readings ruled on w135 and w137 (intake only from `work run` with no initiative; a round's branch merged when it ends; a gate with no question goes on to apply; a failed round keeps the proposal's status) are in those work-items' answers, not in lines.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-25-answer-pass-once-a-run
+about: capability/supervision
+by: the coordinator, from w147's task review, under the person's delegation
+date: 2026-10-25
+
+`work run` gives questions to a delegated answer session (supervision r77) once, at the start of a run, so a question raised during the run (a gate round's, a worker's) goes to the person with exit 3 and is answered under the delegation only by the next `work run`. Accepted as it is for i24.
