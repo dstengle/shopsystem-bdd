@@ -2,3 +2,4 @@
 - 2026-10-25: gate round 1: 1 question (review#r31)
 - 2026-10-25: gate round 1 (supervision-1-gate): 1 question (supervision#r118, supervision#r119)
 - 2026-10-25: apply round 3 (review): applied the answer (a) keep the wording, review#r31 added in spec/capabilities/review.md, commit cb357911; supervision and decision 0069 not applied, unanswered
+- 2026-10-25: formulate round 4 (review): no scenario formulated, review is a guarantees capability (group: guarantees, exempt from v_s3 and v15f), review#r31 needs none; no commit, model check 12 violations, 12 warnings, 2 unresolved references, none naming review
