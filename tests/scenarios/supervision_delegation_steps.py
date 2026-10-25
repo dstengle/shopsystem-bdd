@@ -53,6 +53,33 @@ def two_unanswered(repo, one, two):
     commit_all(repo, "a work-item with two unanswered questions")
 
 
+@given(parsers.re(r'i1\'s work-item w1 is awaiting-answer on its reviewer\'s question "(?P<question>[^"]+)", with no answer$'))
+def reviewer_unanswered(repo, question):
+    write(repo, DIR + "/w1.md", "---\nid: %s\nkind: work-item\npart_of: %s\nstatus: awaiting-answer\nunder: thing\n"
+          "accepts: [thing#r1]\n---\n\n## Questions\n\n- %s\n" % (full("work-item", "w1"), full("initiative", "i1"), question))
+    write(repo, DIR + "/log.jsonl", "".join(json.dumps({"time": "2026-10-19T10:0%d:00+00:00" % i, "work-item": "w1", "before": b,
+                                                        "after": a, "by": "work run"}) + "\n"
+                                            for i, (b, a) in enumerate([("ready", "claimed"), ("claimed", "done"),
+                                                                        ("done", "awaiting-answer")])))
+    commit_all(repo, "w1 asked by its reviewer")
+
+
+@given(parsers.re(r'the session answering under the delegation answers "(?P<answer>[^"]+)", an answer that '
+                  r"(?P<verdict>asks for a change|accepts the work-item as it is), and every worker gives DONE$"))
+def session_answers_with_verdict(repo, plan, answer, verdict):
+    plan["default"] = {"status": "DONE"}
+    plan["delegation-answerer"] = {"fields": {"answer": answer, "verdict": "change" if verdict.startswith("asks") else "accept"}}
+
+
+@then(parsers.re(r"w1's transition from awaiting-answer to (?P<status>ready|done) was made once the session had answered$"))
+def moved_after_answer(repo, context, status):
+    moves = [json.loads(l) for l in (repo / (DIR + "/log.jsonl")).read_text().splitlines()]
+    asked = max(i for i, m in enumerate(moves) if m.get("after") == "awaiting-answer")
+    assert any(m.get("work-item") == "w1" and m.get("before") == "awaiting-answer" and m.get("after") == status
+               for m in moves[asked + 1:]), (moves, context["done"].stderr)
+    assert answers_of(repo, "w1").strip(), moves
+
+
 @given(parsers.re(r'the session given "(?P<one>[^"]+)" under the delegation answers "(?P<a1>[^"]+)", the session given '
                   r'"(?P<two>[^"]+)" answers "(?P<a2>[^"]+)", and every round ends and every worker gives DONE$'))
 def each_answers(repo, plan, one, a1, two, a2):
