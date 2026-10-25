@@ -44,6 +44,11 @@ def gate_result(plan, text):
     plan["initiative-round"] = {"status": "DONE", "questions": [gate_question(text)]}
 
 
+@given(parsers.re(r'the gate round gives the question "(?P<ask>[^"]*)" on p1, and every round ends$'))
+def gate_gives_question(plan, ask):
+    plan["initiative-round"] = {"status": "DONE", "questions": [ask]}
+
+
 @then(parsers.re(r"p1's ## Questions holds (?P<text>.+)$"))
 def questions_hold(repo, text):
     held = ["\n".join(b) for b in bullets((repo / DIR / "p1.md").read_text(), "Questions")]
