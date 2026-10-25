@@ -1,0 +1,14 @@
+{
+  "status": "DONE",
+  "summary": "Research of w142 (delivery r15) done; notes in .shop/scratch/1-research/notes.md.\nNo accepted scenario: delivery has no feature file; r15 is judged by review.\nProbes (8, run in scratch nested repos) of `work note`: happy path commits only the ledger; LF and U+2028 refused; missing or path-named initiative refused; absent ledger created; staged files stay staged.\nDefect candidate: empty note lands as `- <date>: ` (spec silent).\nConflicts for the plan: SKILL.md writes a scratch ledger by hand (line 62) and archives the ledger (line 63, vs decision 0066 and retired r16); agents/initiative-round.md and accepted decision 0059 keep the scratch path.\nReading of 'answer' is open: work answer writes ## Answers in work-item files, not the ledger.\nFile set: skills/delivering-an-initiative/SKILL.md (edit); agents/initiative-round.md and decision 0059 (conflicts, not r15's).\nModule room: scripts/workqueue.py has 14 lines left.\nNo test reads the skill or the scratch ledger path (search).",
+  "fileset": [
+    "skills/delivering-an-initiative/SKILL.md",
+    "agents/initiative-round.md",
+    "spec/decisions/0059-the-session-keeps-the-gate.md",
+    "scripts/work",
+    "scripts/workqueue_note.py",
+    "scripts/workqueue.py",
+    "scripts/workqueue_answer.py"
+  ],
+  "questions": []
+}
