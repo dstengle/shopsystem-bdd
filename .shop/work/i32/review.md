@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i32-review
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i32
-status: approved
+status: formulated
 argues: [review]
 adds: [review#r31]
 changes: []
