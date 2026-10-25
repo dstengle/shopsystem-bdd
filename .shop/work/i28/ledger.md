@@ -4,3 +4,4 @@
 - 2026-10-25: initiative-round apply, rounds 1-2 of q6: applied r30, r102, r103, r104, r43 (answers 1 No, 2 Separate, 3 add line, 4 Both); committed f85f0d23
 - 2026-10-25: formulate q6: commit 7e6266ca; work-queue r30, supervision r103 r104 + r92 case; r102 question open
 - 2026-10-25: formulate round 2 (q6): supervision#r102 formulated, commit 79f4b429
+- 2026-10-25: integrate round 1 (re-run, q6): no writer dispatched; all 4 accepted lines already in spec/ (work-queue r30, supervision r102 r103 r104) since apply commit f85f0d23; 0 added, 0 changed, 0 removed, 0 questions; no gate.md written
