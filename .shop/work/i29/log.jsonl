@@ -38,3 +38,4 @@
 {"time": "2026-10-25T17:18:14+00:00", "work-item": "supervision", "stage": "answer", "event": "push verified"}
 {"time": "2026-10-25T17:18:14+00:00", "work-item": "supervision", "stage": "answer", "agent": "delegation-answerer", "session": "1e287163-8d2a-4771-960b-d65abb2ec518", "event": "start"}
 {"time": "2026-10-25T17:20:34+00:00", "work-item": "supervision", "stage": "answer", "agent": "delegation-answerer", "session": "1e287163-8d2a-4771-960b-d65abb2ec518", "event": "end"}
+{"time": "2026-10-25T17:29:37+00:00", "work-item": "w175", "before": "awaiting-answer", "after": "researched", "by": "work answer"}
