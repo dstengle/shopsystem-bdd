@@ -6,7 +6,8 @@ kind: capability-change
 owner-level: shopsystem-bdd
 status: done
 priority: 1
-source: [observation/2026-10-24-context-loop-not-queued, observation/2026-10-24-guarantees-work-item]
+fulfils: request/q1
+source: [observation/2026-10-24-context-loop-not-queued, observation/2026-10-24-guarantees-work-item, observation/2026-10-24-i24-delivery-gaps, observation/2026-10-25-i24-unpinned-cases, observation/2026-10-25-answer-pass-once-a-run, observation/2026-10-25-integrate-round-without-request, observation/2026-10-25-thread-crash-exits-zero]
 date: 2026-10-24
 ---
 
