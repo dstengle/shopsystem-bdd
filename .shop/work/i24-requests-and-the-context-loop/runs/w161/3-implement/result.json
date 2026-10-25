@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"r65-r67 green; request_of reads all fulfils lines and refuses in the requirements words. Commit 16eaabf.","commits":["16eaabf measure refuses an initiative whose request it cannot read, saying why (r65-r67)"],"report":".shop/scratch/3-implement/report.md","questions":[]}
