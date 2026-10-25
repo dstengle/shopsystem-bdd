@@ -3,3 +3,4 @@
 - 2026-10-25: apply (requests): BLOCKED, the brief gave no approval; nothing applied
 - 2026-10-25: apply (requests): r22 added; approved 2026-10-25 by the coordinator under the person's delegation, the gate gave no question; no decision files; model check 16 violations, none of requests
 - 2026-10-25: formulate round 4 (requests): commit 6cd77b2b; r22 added; 0 changed; 0 questions; model check 15 violations, none of requests
+- 2026-10-25: initiative-round formulate 1: supervision#r15 case (result field of over-255-character text is no file) added as a scenario, commit 7fed86a0
