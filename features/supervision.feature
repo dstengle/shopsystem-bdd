@@ -563,6 +563,14 @@ Feature: Supervision
     When the person runs `work run i1`
     Then no session of bdd-branch-reviewer was started
 
+  @r94
+  Scenario: an initiative with no work-item gets no branch review, though its branch holds a commit no kept branch review has read
+    Pins that a branch review waits for an initiative to have work-items, whatever its branch holds.
+    Given i1 is started, its capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?" and no answer, and i1 has no work-item
+    And the initiative branch holds a commit of notes.txt that no kept branch review has read
+    When the person runs `work run i1`
+    Then no session of bdd-branch-reviewer was started
+
   @r51
   Scenario: a push that cannot be verified before the branch review ends `work run` with an error, saying why, and no branch review is started
     Pins that a branch review is never spent on a branch whose review could not be pushed.
@@ -831,6 +839,17 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the implementer of w1 worked in a worktree on the branch work/w1, with kept.txt in it
 
+  @r95
+  Scenario: `work run` started with no initiative runs the integrate, apply and formulate rounds of different initiatives one at a time
+    Pins that rounds of these kinds never run side by side across initiatives, whether they are of one kind or of different kinds.
+    Given i1 is proposed and fulfils the request q1, whose line 1 has the line outcome accepted
+    And an initiative i2 under .shop/work/ whose capability-proposal p2 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", and its Answers section with "One book."
+    And an initiative i3 under .shop/work/ whose capability-proposal p3 is awaiting-answer, its ## Questions section with "Is the old reader kept?", and its Answers section with "No."
+    And every round ends, each round of the kind integrate, apply or formulate ending only after long enough for another round to start beside it
+    When the person runs `work run`
+    Then a round of the kind integrate was started for i1, and a round of the kind apply for each of p2 and p3
+    And no round of the kind integrate, apply or formulate was started before every other round of those kinds had ended
+
   @r67
   Scenario Outline: a request this context is the upstream of that is <status> is given to an intake round
     Pins that a request waiting on this context is taken in without anyone starting a session for it by hand.
@@ -962,6 +981,13 @@ Feature: Supervision
     And every worker gives DONE, and the branch reviewer's result gives PARTIAL, with no question and no finding
     When the person runs `work run i1`
     Then `work run` ran no `measure initiative` on i1 after the branch review was kept
+  @r97
+  Scenario: an initiative with no work-item is not measured
+    Pins that an initiative whose work-items are all green or withdrawn only because it has none is not taken for one whose work is done.
+    Given i1 is started, its capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?" and no answer, and i1 has no work-item
+    When the person runs `work run i1`
+    Then `work run` ran no `measure initiative` on i1
+
   @r76
   Scenario: once `measure initiative` has written the initiative's measurement, a session of analyzing-a-batch writes its analysis record
     Pins that a measured initiative is analysed without anyone starting the analysis by hand.
@@ -1052,6 +1078,23 @@ Feature: Supervision
     Then the initiative branch has a commit of the answering session's stage directory, its notes.md included, and of log.jsonl's lines for that session
     And nothing of that stage directory or of log.jsonl is left uncommitted
 
+  @r93
+  Scenario: a started initiative with neither a capability-proposal nor a work-item is given to an integrate round with the accepted lines of the request it fulfils
+    Pins that an initiative whose integration left nothing behind is integrated again, from the lines its upstream accepted and no other.
+    Given i1 is started, has neither a capability-proposal nor a work-item, and fulfils the request q1, whose lines 1 and 3 have the line outcome accepted and line 2 the line outcome refused
+    And every round ends
+    When the person runs `work run i1`
+    Then a round of the kind integrate was started for i1, given q1's lines 1 and 3, and not line 2
+
+  @r96
+  Scenario: an integrate round that ends DONE without a change list ends `work run` with an error naming the round
+    Pins that an integration that names no capability to change is reported to the person, even when the round says its work is done.
+    Given i1 is started, has neither a capability-proposal nor a work-item, and fulfils the request q1, whose line 1 has the line outcome accepted
+    And the integrate round for i1 gives DONE with no change list
+    When the person runs `work run i1`
+    Then `work run` names the integrate round of i1
+    And it exits with an error
+
   @r84
   Scenario: when `work run` starts the integrate round of a proposed initiative, the initiative is started
     Pins that an initiative whose integration has begun is no longer proposed.
@@ -1071,6 +1114,29 @@ Feature: Supervision
     And nothing under .shop/work/ is left uncommitted
     When the person runs `work run i1` a second time
     Then the second `work run` was not refused
+
+  @r91
+  Scenario Outline: the drafts of an integrate round that <ending> are kept on the initiative branch
+    Pins that what an integrate round drafted is in the initiative's history once the round is over, however it ended.
+    Given i1 is proposed and fulfils the request q1, whose line 1 has the line outcome accepted
+    And the integrate round for i1 writes spec/capabilities/thing.md under its drafts path and <ending>
+    And every other round ends
+    When the person runs `work run i1`
+    Then the initiative branch has a commit of the integrate round's drafts, its spec/capabilities/thing.md as the round wrote it
+
+    Examples:
+      | ending                                |
+      | gives DONE with a change list naming thing |
+      | ends at its turn limit                |
+
+  @r92
+  Scenario: an integrate round's change list gives one drafted capability-proposal for each capability it names, with what it adds, changes and removes on that capability
+    Pins that the change list is split by capability, each proposal holding that capability's requirement ids and terms and nothing of another's.
+    Given i1 is proposed and fulfils the request q1, whose line 1 has the line outcome accepted
+    And the integrate round for i1 gives DONE with a change list that adds thing#r4 and the term "ledger", changes thing#r2 and removes thing#r3 on thing, and adds other#r1 on other
+    And every other round ends
+    When the person runs `work run i1`
+    Then the commit that wrote i1's capability-proposals wrote two, each drafted: one for thing, its adds naming thing#r4 and the term "ledger", its changes thing#r2 and its removes thing#r3, and one for other, its adds naming other#r1 and its changes and removes naming nothing
 
   @r68
   Scenario: a drafted capability-proposal is given to a gate round whose brief asks for the gate as questions, each a decision with its readings and the recommended reading marked

@@ -43,6 +43,16 @@ Feature: Work queue
     And .shop/work/i1/ is as it was
     And it exits successfully
 
+  @r25
+  Scenario: start commits the initiative it writes on the current branch
+    Pins that the initiative start writes is in the branch's history when it ends, so nothing that puts .shop/work/ back to its last commit undoes it.
+    Given a request q1 that is accepted, whose origins are o1 and o2
+    And the repository is a git repository on the branch main, everything in it committed
+    When the session runs `work start q1`
+    Then main has a new last commit, which holds the new initiative's initiative.md as work left it
+    And nothing under the new initiative's directory under .shop/work/ differs from main's last commit
+    And it exits successfully
+
   @r23
   Scenario Outline: a command whose change leaves every work-item of an initiative green or withdrawn, and every request this context asked naming it delivered, sets the initiative to done
     Pins that the command that completes an initiative's work also ends the initiative, and that only requests this context asked and keeps, naming the initiative, can hold it open.

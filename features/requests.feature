@@ -19,6 +19,16 @@ Feature: Requests
       | two --source | --source o1 --source o2 | origins    | are o1 and o2 |
       | --thread     | --thread t1             | job-thread | is t1         |
 
+  @r19
+  Scenario: request with --delegation writes the delegation given in the request
+    Pins that a request keeps the person's words naming which questions a session may answer in the person's place, as they were given.
+    Given an upstream that keeps no request
+    And a file lines.md with two lines in strict EARS
+    When the asker runs `work request "Show the queue" --from ctx-a --lines lines.md --source o1 --delegation "answer any question on line 2"`
+    Then the upstream keeps one new request
+    And its delegation is "answer any question on line 2"
+    And it exits successfully
+
   @r2
   Scenario Outline: request with a line that <fault> is refused, naming the line, and nothing changes
     Pins that a request holds only lines in the strict form model check holds, and that request says which line is not.
