@@ -1,0 +1,27 @@
+# implement of w134
+
+Work-item: .shop/work/i24-requests-and-the-context-loop/w134.md
+Agent: bdd-implementer
+Scripts: /home/vscode/shopsystem-bdd/scripts
+Base: f890f2f134c30ab6fe6c80036cfd0d3e207e7d7d
+Worktree: /tmp/work-run-i24-requests-and-the-context-loop-48xzxfbo/w134
+Branch: work/w134
+Work-item branch: work/w134
+Suite record: Suite: 828 passed, 5 failed at 9cc45b1 in 20 s; failing: tests/scenarios/test_supervision.py::test_work_run_started_with_no_initiative_takes_every_initiative_that_is_neither_done_nor_abandoned_through_its_transitions_the_initiatives_side_by_side_and_one_session_of_an_initiative_at_a_time, tests/scenarios/test_supervision.py::test_work_run_started_with_no_initiative_ending_with_node_status_exits_with_an_error_printing_the_status_of_each_initiative_it_took[work-item w1-failed], tests/scenarios/test_supervision.py::test_work_run_started_with_no_initiative_ending_with_node_status_exits_with_an_error_printing_the_status_of_each_initiative_it_took[work-item w1-awaiting-answer], tests/scenarios/test_supervision.py::test_work_run_started_with_no_initiative_ending_with_no_node_awaitinganswer_or_failed_exits_successfully_printing_the_status_of_each_initiative_it_took, tests/scenarios/test_supervision.py::test_work_run_started_with_no_initiative_ending_with_node_status_exits_with_an_error_printing_the_status_of_each_initiative_it_took[capability-proposal p1-awaiting-answer]; expected: tests/scenarios/test_supervision.py::test_a_request_this_context_is_the_upstream_of_that_is_status_is_given_to_an_intake_round[open], tests/scenarios/test_supervision.py::test_a_request_this_context_is_the_upstream_of_that_is_status_is_given_to_an_intake_round[awaiting-upstream], tests/scenarios/test_supervision.py::test_when_a_session_started_under_a_delegation_to_answer_a_question_ends_at_its_turn_limit_the_question_is_left_unanswered_for_the_person, tests/scenarios/test_supervision.py::test_when_a_session_started_under_a_delegation_to_answer_a_question_ends_in_an_error_its_stage_directory_and_log_lines_are_committed, tests/scenarios/test_supervision.py::test_when_a_round_work_run_started_for_a_capabilityproposal_gives_an_outcome_other_than_done_no_transition_is_made_from_it, tests/scenarios/test_supervision.py::test_when_a_round_work_run_started_for_a_capabilityproposal_leaves_no_result_it_can_read_work_run_exits_with_an_error_naming_the_round_and_how_it_ended, tests/scenarios/test_supervision.py::test_when_a_round_work_run_started_for_a_capabilityproposal_ends_at_its_turn_limit_the_proposal_keeps_its_status
+Answers the person gave, each with the question it answers:
+- Question: Who builds the gate rounds that r66's scenario (features/supervision.feature:957) needs? Its Thens ('the gate rounds of p1 and p2 ran at the same time', 'p1 and p2 are awaiting-answer') need supervision#r68 (accepted by w146) and #r69 (accepted by w136). w134 accepts neither and has no blocked_by. Reading A: w134 does only the selection, the side-by-side pulling and the exit, and gets blocked_by [w146, w136]. The narrator sees no gate round from any `work run` until those land, and w134 waits for them. Reading B: w134 also starts the gate round of a drafted proposal and moves the proposal to awaiting-answer when that round ends. The narrator sees `work run` start gate rounds as soon as w134 is merged, and w146 and w136 build on that.; Which branch do the initiatives of a no-initiative `work run` commit on? One checkout has one branch, and today the checked-out branch is the initiative branch (supervise.py:74). Reading A: every taken initiative commits and pushes on the one checked-out branch, and the run has one branch review over it. The narrator sees i1's and i2's transitions mixed on that branch and, under supervision#r50, one review that reads all of them, so the second initiative gets no review of its own. Reading B: each initiative has its own branch, which `work run` checks out or makes (no requirement says how). The narrator sees one branch and one branch review per initiative.
+  Answer: 2026-10-24: Reading A (the coordinator, under the person's delegation): w134 does only the selection, the side-by-side pulling and the exit; it is now blocked_by w146 and w136, which give the gate rounds and the move to awaiting-answer, and goes on once they are green.
+
+Read (paths in your worktree):
+- .shop/work/i24-requests-and-the-context-loop/w134.md
+- spec/capabilities/supervision.md
+- .shop/work/i24-requests-and-the-context-loop/runs/w134/1-research
+- .shop/work/i24-requests-and-the-context-loop/runs/w134/2-plan
+- .shop/work/i24-requests-and-the-context-loop/runs/w134/3-plan
+
+Run directory: /tmp/work-run-i24-requests-and-the-context-loop-48xzxfbo/w134/.shop/scratch/4-implement
+Result file: /tmp/work-run-i24-requests-and-the-context-loop-48xzxfbo/w134/.shop/scratch/4-implement/result.json
+
+You start in your worktree, /tmp/work-run-i24-requests-and-the-context-loop-48xzxfbo/w134: run every command from there, as it is, and never change directory (no `cd`, no `git -C`); a command that does is refused.
+
+Write the result file first, with the outcome `PARTIAL`, and keep it current as you work: JSON with `status`, `summary` (under fifteen lines) and `questions` (a list of strings), so that a session that stops part-way still leaves a result, and one that does not claim the work done. Write your notes, plan, report or findings in the run directory.
