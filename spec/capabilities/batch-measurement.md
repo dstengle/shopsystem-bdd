@@ -20,6 +20,9 @@ no prompt, reply or tool content, and refuses rather than guesses when its input
 ### The initiative
 - [r39] **When** `measure initiative <initiative>` is run, `measure` shall write one measurement for the initiative at `.shop/records/measurements/<date>-<initiative>.md`, the date being the day it is run.
 - [r46] **If** the initiative has no `log.jsonl`, **then** `measure initiative` shall refuse, writing nothing, because the initiative has no `log.jsonl`.
+- [r65] **If** the initiative fulfils a request that the queue does not hold, **then** `measure initiative` shall refuse, writing no measurement, because the queue does not hold that request.
+- [r66] **If** the request the initiative fulfils has no asker, **then** `measure initiative` shall refuse, writing no measurement, because the request has no asker.
+- [r67] **If** the initiative fulfils more than one request, **then** `measure initiative` shall refuse, writing no measurement, because the initiative fulfils more than one request.
 - [r47] **If** a `session.json` that is not empty, or a transcript, is not of a shape `measure` knows, **then** `measure` shall refuse, writing nothing, naming that file.
 - [r58] **When** a line of a transcript holds U+2028 or another Unicode line break inside a JSON string, `measure` shall read it as one line.
 - [r59] **When** a time in `log.jsonl` or in a transcript ends in `Z`, `measure` shall read it as a time in UTC.
