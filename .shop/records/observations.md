@@ -311,3 +311,10 @@ by: the coordinator, from w147's task review, under the person's delegation
 date: 2026-10-25
 
 `work run` gives questions to a delegated answer session (supervision r77) once, at the start of a run, so a question raised during the run (a gate round's, a worker's) goes to the person with exit 3 and is answered under the delegation only by the next `work run`. Accepted as it is for i24.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-25-integrate-round-without-request
+about: capability/supervision
+by: the coordinator, delivering i24
+date: 2026-10-25
+
+Once w151 (supervision r79, r84) was merged, `work run i24` moved the `proposed` i24 to `started` and then stopped with "work: there is no request  under .shop/work/requests", leaving a `log.jsonl` line uncommitted: i24 fulfils no request (it predates R3's requests), and r79 gives a `proposed` initiative an integrate round from its request's lines. No line says what `work run` does for a `proposed` initiative that fulfils no request (v16a reports it). The line was committed by hand and the run restarted.
