@@ -43,3 +43,4 @@ The drafts of this proposal are in .shop/work/i31/runs/i31/1-integrate.
 
 ## Answers
 - 2026-10-25: Q1: (a), DONE with questions; r86-r88 stand (the coordinator under the person's delegation 2026-10-25)
+- 2026-10-25: Q2: (b), a formulate round given the answers: add r116 and change r70 as given (the coordinator under the person's delegation 2026-10-25)
