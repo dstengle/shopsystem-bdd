@@ -1,0 +1,11 @@
+{
+  "status": "DONE",
+  "summary": "w166 (work-queue r25: work start commits the initiative). Research notes at .shop/scratch/1-research/notes.md.\nRed today: the accepted scenario fails at work_queue_git_steps.py:51, work start exits 1 (no spec/index.md: its Givens write none).\nCode gap: workqueue_start.start writes initiative.md and never commits; workqueue.committed() is the helper to reuse.\nStep gaps: the Then phrases 'the new initiative's initiative.md' and 'the new initiative's directory' are not mapped to a path; the directory Then passes vacuously.\nProbes (9, run, 'probe_start.py'): no-git repo and detached HEAD are accepted today; a dir holding only ledger.md crashes with FileExistsError.\nOld assumptions: supervise.py:84-88 refuses work run while .shop/work/ is uncommitted; supervise_brief.base() reads the commit that added initiative.md; workqueue_status lists the start as untracked.\nTests: no coverage map, so lists are by search. No test found asserts an uncommitted start.\nOpen: only one of test_work_queue.py's 65 tests collects here; the r22 start scenario did not run, so its status is unverified.\nFile set: scripts/workqueue_start.py, tests/scenarios/work_queue_git_steps.py, tests/scenarios/work_queue_start_steps.py, features/work-queue.feature.\nCheckout: git status clean; scratch is under the ignored .shop/scratch.",
+  "fileset": [
+    "scripts/workqueue_start.py",
+    "tests/scenarios/work_queue_git_steps.py",
+    "tests/scenarios/work_queue_start_steps.py",
+    "features/work-queue.feature"
+  ],
+  "questions": []
+}
