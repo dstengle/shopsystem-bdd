@@ -4,7 +4,7 @@ kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i30
 status: formulated
 argues: [supervision]
-adds: [supervision#r109, supervision#r110]
+adds: [supervision#r110, supervision#r117]
 changes: [supervision#r19]
 removes: []
 date: 2026-10-25
