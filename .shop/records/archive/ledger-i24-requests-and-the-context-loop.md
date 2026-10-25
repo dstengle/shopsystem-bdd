@@ -1,0 +1,83 @@
+- 2026-10-24: the person: "Please get everying delivered. Do not stop to ask me questions or permission." Rulings and gates from here are the coordinator's under that delegation.
+- 2026-10-24 (delegation): three phases in the note's order: A = guarantees work-item (observation 2026-10-24-guarantees-work-item), R1, R2; B = R3, R4; C = R5. Each: integrate, gate, apply, formulate, draft, work run (the checkout's scripts/work, so a merged fix serves the next phase).
+- integrate round 1: gate.md written (changed 4 lines, added 15, 1 glossary change, 1 decision, 8 questions, 7 cut sentences) at .shop/scratch/drafts/2026-10-24-context-loop-a/round-1/gate.md
+- 2026-10-24 (delegation): gate A round 1 answered: 1a, 2-3 yes, 4a, 5b, 6-7 yes, 8 0059 stays accepted; .shop/scratch/drafts/2026-10-24-context-loop-a/answers-round-1.md
+- integrate round 2: gate.md written (added 1 line, changed 3, removed 1, glossary added 3 and changed 1, 0 decisions, 0 questions, 0 cut sentences) at .shop/scratch/drafts/2026-10-24-context-loop-a/round-2/gate.md
+- 2026-10-24 (delegation): gate A round 2 approved as drafted (0 questions)
+- apply rounds 1-2: applied answers-round-1 (all rows, answers 1-8) and round 2 as drafted; commit 474bc25
+- formulate round 1: commit 67112f7; 4 feature files; 2 old scenarios deprecated... 3 deprecated (r43, r24, r56); questions r61, r62, r16
+- 2026-10-24 (delegation): formulate A round 1 questions ruled: r61 reading 1, r62 reading 1, r16 next: reading 2, r16 uncommitted reading 2; answers-round-3.md; unmentioned cases stay out
+- integrate round 3: gate.md written (changed 3 lines: batch-measurement#r61, r62, work-queue#r16; 0 added, 0 removed, 0 glossary, 0 decisions, 0 questions, 1 cut sentence) at .shop/scratch/drafts/2026-10-24-context-loop-a/round-3/gate.md
+- apply round 3: applied as drafted (answers-round-3); commit 1778e8a
+- formulate round 2: commit 43b147f; batch-measurement r61, r62, work-queue r16 scenarios added; no questions
+- 2026-10-24: phase A work run 1 failed w121-w123 at the push check (no credentials outside agent-vault); work retry; rerun under agent-vault run
+- integrate round 1: 25 rows (14 requests r1-r14, 2 work-queue r22-r23, 7 design-model-check r112-r118, 1 batch-measurement r63), 2 terms, 1 decision (0067), 8 questions, 9 cut sentences; .shop/scratch/drafts/2026-10-24-context-loop-b/round-1/gate.md at .shop/scratch/drafts/2026-10-24-context-loop-b/gate.md
+- 2026-10-24 (delegation): gate B round 1 answered: 1a, 2b (turn sealing open to the person's later detail), 3a, 4b, 5 statuses yes/withdraw no, 6-7 yes, 8 no-initiative form; context-loop-b/answers-round-1.md
+- integrate round 2: 12 rows (requests r5 r8 r9 r14 changed, r15-r18 added; design-model-check r113, r19 changed, r119 added; batch-measurement r64), 4 glossary rows, decision 0067 redrafted, 1 question (r12 commits), 2 cut sentences; .shop/scratch/drafts/2026-10-24-context-loop-b/round-2/gate.md
+- 2026-10-24 (delegation): gate B round 2 approved; Q1 yes (r12 commits for all four commands); withdraw deferred
+- integrate round 3: 1 changed line (requests#r12), 0 questions, 0 cut sentences; .shop/scratch/drafts/2026-10-24-context-loop-b/round-3/gate.md
+- 2026-10-24 (delegation): w121 answered: merge check loaded the main checkout's work_items.py through inherited PYTHONPATH; fix the supervision steps' environment
+- apply rounds 1-3: answers-round-1, answers-round-2 and round 3 as drafted; commit fbcae98; only v_s3 rows new (30)
+- formulate round 1: commit 8c569b9; requests (new, 8 scenarios), work-queue r22, design-model-check r112 r113 r115 r116 r118 r119 + r19 changed (old deprecated), batch-measurement r63 r64; 13 lines without scenario, questions on requests r1-r6 r10 r11 r14 r17, work-queue r23, design-model-check r114 r117; drafts .shop/scratch/drafts/2026-10-24-context-loop-b-f/round-1/
+- 2026-10-24 (delegation): w121 review finding (r65 exit under xdist) answered: decide in pytest_sessionfinish from the work-item, controller included
+- 2026-10-24 (delegation): formulate B round 1 questions ruled (answers-round-4.md): r1 a, r4/r5 b, r6 retired, r10 b, r17 a, r14 a, r23 b/a/a, r114 a, r117 a + one v18 row, r64 reworded
+- integrate round 1 (context-loop-c, R5): 1 gate.md, 12 questions, 5 cut sentences; .shop/scratch/drafts/2026-10-24-context-loop-c/round-1/gate.md
+- 2026-10-24 (delegation): w121 withdrawn (review finding cannot return to implementation; its commits merged already), redrafted as w125 with the xdist exit finding
+- 2026-10-24 (delegation): gate C round 1 answered: 1a, 2b, 3-5 yes, 6a, 7b, 8a, 9-12 yes; context-loop-c/answers-round-1.md
+- integrate round 4: gate.md written (12 changed rows incl. r3, r16; 1 removed r6; 0 questions; 0 cut sentences beyond an instruction); .shop/scratch/drafts/2026-10-24-context-loop-b/round-4/gate.md
+- apply round 4 (context-loop-b): answers-round-4 applied under delegation; d5bee28
+- integrate round 2 (context-loop-c, R5): gate.md, 2 questions, 0 cut sentences; .shop/scratch/drafts/2026-10-24-context-loop-c/round-2/gate.md
+- 2026-10-24 (delegation): gate C round 2 approved; Q1 a, Q2 b
+- integrate round 3 (context-loop-c): gate.md, 3 rows (work-queue r24 added, r9 changed; supervision r82 added), 0 questions, 0 cut sentences; .shop/scratch/drafts/2026-10-24-context-loop-c/round-3/gate.md
+apply rounds 1-3 (answers-round-1, answers-round-2, round 3 as drafted, under delegation 2026-10-24): 131d474
+- 2026-10-24 (delegation): after C apply (131d474): term/round Not: iteration only (job is an initiative kind, 3 v_t1); 0068 status accepted
+- integrate round 4: 1 glossary change (term/round), 1 decision replacement (0068 status accepted), 0 lines, 0 cut; .shop/scratch/drafts/2026-10-24-context-loop-c/round-4/
+- apply round 4 (answers-round-3, delegation 2026-10-24): c0ba438
+- formulate round 2 (context-loop-b-f): d2c54ff; scenarios for requests r1-r5 r10 r11 r14 r17, work-queue r23, design-model-check r114 r117, batch-measurement r64 reworded
+- formulate round 1 (context-loop-c-f): 28047f5; supervision 12 scenarios added (r67 r69-r76 r78-r80), 5 questions (r66 r68 r77 r81 r82); work-queue r24 added, r9 changed (old deprecated)
+- 2026-10-24 (delegation): formulate C questions ruled (answers-round-5.md): r66 B, r68 B, r77 A, r81/r82 B; adds formulated and started transitions
+integrate round 5: 8 lines (6 changed: supervision r66 r68 r77 r81 r82, spec-integration r35; 2 added: supervision r83 r84), 0 decisions, 3 questions, 2 cut sentences; .shop/scratch/drafts/2026-10-24-context-loop-c/round-5/gate.md
+- 2026-10-24 (delegation): gate C round 5 approved; Q1-3 yes
+integrate round 6: 2 lines (1 changed: supervision r68; 1 added: supervision r85), 1 glossary entry changed (term/result), Purpose and Implementation drafted to match, 0 decisions, 0 questions, 0 cut sentences; .shop/scratch/drafts/2026-10-24-context-loop-c/round-6/gate.md
+- apply rounds 5-6: applied answers-round-6 and round 6 as drafted; commit d154a59; v_s3 new for supervision r83 r84 r85
+formulate round 2: supervision r66 r81 r82 r83 r84 r85 formulated, r68 r77 returned as questions; commit 8e2efaf
+- 2026-10-24 (delegation): drafted w134-w145 (phase C but r68/r77/r78/r85), guarantees ones blocked_by w125; w125 answered (whole-suite failures were B/C scenarios with no work-item)
+- 2026-10-24 (delegation): formulate C round 2 questions: r68 reading 1, r77 reading 2 (answers-round-7.md); w146/w147 drafted ahead of their r68/r77 scenarios
+- integrate round 7: 2 changed lines (supervision r68, r77), 0 questions, 0 decisions; .shop/scratch/drafts/2026-10-24-context-loop-c/round-7/gate.md
+- apply round 7: r68 reading 1, r77 reading 2 applied; commit 75b000e
+- formulate round 3 (supervision r68, r77): 2 scenarios added; commit 948112b
+- 2026-10-24 (delegation): run 4 exit: w133 retried (researcher turn limit); w130 B (work run is not a done-setting command; gap observed); w128 finding -> r8/r9 for not-delivered requests (answers-round-5.md); w127 A (r17 Examples); w126 finding -> r7 row for work request with a missing --lines file
+integrate round 5: 2 changed lines (requests#r8, r9), 0 cut, /home/vscode/shopsystem-bdd/.shop/scratch/drafts/2026-10-24-context-loop-b/round-5/gate.md
+- apply round 5: requests r8, r9 applied (not delivered); commit e840075
+formulate round 3: r17 examples, r8 delivered, r7 lines file; commit 5d4cc75
+- 2026-10-24: formulate B round 3 5d4cc75 (r17 Examples, @r8 delivered, @r7 missing --lines); w127 answered A
+- 2026-10-24 (delegation): w134 A (blocked_by w146, w136); w137 retried (researcher turn limit)
+- 2026-10-25 (delegation): w135 A/B (+blocked_by w134), w137 A/A/B, w130 and w133 accepted as they stand (observation 2026-10-25-i24-unpinned-cases), w139 retried
+- 2026-10-25 (delegation): w136 retried; w138 accepted, its range finding fixed by w150 after an r73 range row
+- 2026-10-25: formulate C round 4 aa3a579 (supervision: one more @r73 scenario, range in changes; w150)
+- 2026-10-25 (delegation): w136 withdrawn (researcher limit twice), split into w151 (r79 r84) and w152 (r69); w134 blocked_by w151 w152 w146
+- 2026-10-25 (delegation): w139 accepted, findings fixed by w153 after r75/r76 cases; w143 retried with a narrow research note
+- 2026-10-25: formulate C round 5 26175cd (supervision: one @r75 and one @r76 scenario for w153)
+- 2026-10-25 (delegation): formulate C round 5 26175cd (r75 PARTIAL, r76 turn limit); its follow-ups left: one case each suffices, r75 line stands as the scenario reads it, r76's record is one work run does not count
+- 2026-10-25 (delegation): w144 accepted (moot after w143); w146 retried with a narrow note
+- 2026-10-25 (delegation): w146/w147 findings -> two supervision lines (answers-round-8.md); w147's first finding (answer pass once a run) accepted, observed
+- 2026-10-25: integrate round 8: 5 added lines (supervision r86-r90), 0 changed, 0 questions, 0 cut; .shop/scratch/drafts/2026-10-24-context-loop-c/round-8/gate.md
+apply round 8: supervision r86-r90 applied, approved 2026-10-25 under delegation; commit a67f7d6
+- 2026-10-25: formulate C round 6 a6ccc6a: supervision r86-r90, 5 scenarios added
+- 2026-10-25 (delegation): formulate C round 6 a6ccc6a (r86-r90); r86 for an integrate round: the initiative stays started
+- 2026-10-25 (delegation): w154 B (r85 only on DONE); w134 accepted (thread crash observed)
+- 2026-10-25 (delegation): w135 Q1 A, Q2 outcome 'question' via work outcome, text in result
+- 2026-10-25 (delegation): branch review 1 (DONE_WITH_CONCERNS, F1-F5 fix now): w156 (r74's draft, wrong accepts, failed on probes) withdrawn; F4 gets a batch-measurement line; F1 F2 F3 F5 get formulate cases; one fix work-item each
+- 2026-10-25: integrate round 6: 3 lines added (batch-measurement r65-r67), 0 cut-sentence rows in gate; .shop/scratch/drafts/2026-10-24-context-loop-b/round-6/gate.md
+apply round 6: applied r65 r66 r67 (batch-measurement), commit f9395a2
+- 2026-10-25 (delegation): formulate C round 7 3a47d3b: supervision r77 r79, design-model-check r27, work-queue r23, one scenario each (F1 F2 F3 F5)
+- 2026-10-25 (delegation): review cases 3a47d3b (F1 F2 F3 F5); r79 first run with no request: reading B (nothing to do, exits by r9/r32/r52)
+- 2026-10-25 (delegation): formulate D round 4 45beb7f: batch-measurement r65 r66 r67, one scenario each (w161)
+- 2026-10-25 (delegation): formulate C-F round 8 e3fbf0b: supervision r79, one scenario added (w162)
+- 2026-10-25 (delegation): branch review 2 (DONE_WITH_CONCERNS): one fix now (F2's dangling-request half, w162); scenario e3fbf0b; w162 answered
+- 2026-10-25 (delegation): branch review 3 (DONE_WITH_CONCERNS; R2-F1 fixed): one fix now (integrate stage dir uncommitted), w163 drafted by work run; researcher limit, retried with a narrow note
+- 2026-10-25 (delegation): w163's researcher again left probe repos (4 gitlinks) in its run record; removed by hand, retried to researched
+- formulate round 9: supervision r84, +1 scenario (leaves nothing uncommitted), commit c552fa6c; 2 questions returned
+- 2026-10-25 (delegation): r84 stage-dir scenario c552fa6c; w163 answered (one commit)
+- 2026-10-25 (delegation): rebased work/w163 onto the initiative branch (no commits of its own); w163 answered
+- 2026-10-25 (delegation): w163 review (two commits not one) accepted
