@@ -45,3 +45,4 @@ The drafts of this proposal are in .shop/work/i31/runs/i31/1-integrate.
 - 2026-10-25: Q1: (a), DONE with questions; r86-r88 stand (the coordinator under the person's delegation 2026-10-25)
 - 2026-10-25: Q2: (b), a formulate round given the answers: add r116 and change r70 as given (the coordinator under the person's delegation 2026-10-25)
 - 2026-10-25: Q3: (b), every such ending, as given (the coordinator under the person's delegation 2026-10-25)
+- 2026-10-25: Q4: (a), write each question its result gives (the coordinator under the person's delegation 2026-10-25)
