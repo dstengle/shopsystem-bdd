@@ -346,3 +346,16 @@ by: the coordinator; the person, 2026-10-25: "Are there no skills or tooling for
 date: 2026-10-25
 
 No command, skill or agent writes a capability-proposal: every line reads one, answers it or moves its status. i24's fourteen were written by the coordinator by hand (e.g. 1b257307), which hid the gap that 2026-10-25-integrate-round-leaves-nothing then showed. Where the workflow has no tool for a step, the session stops and puts the gap to the person instead of copying how earlier files were made.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-25-loop-collisions
+about: capability/supervision
+by: the coordinator, from `work run` on i25, i26 and q5 after i27
+date: 2026-10-25
+
+With i27's fixes the loop reached the gate for i25 and i26 (exit 3), and showed five more defects:
+- i25's and i26's integrate rounds both drafted supervision r98: a round counts only its own drafts' ids, not the kept drafts of another initiative not yet applied.
+- Capability-proposals are named after their capability, so i25 and i26 each have `supervision`; `work answer supervision` is refused ("more than one"), and neither can be answered.
+- i26's gate round gave the whole round's questions to each of its two capability-proposals.
+- q5 was accepted, but no line has `work run` start its initiative (`work start` is run by hand).
+- i27 stays `started` with every work-item green: only `work withdraw` and `work retry` mark an initiative done (workqueue.moved_to), not `work run`'s own move to green, so r75 measures i27 again on every run and `measure` refuses (the record exists). q5 asks for it.
+Also: the installed 0.25.0 `initiative-round` drafted q4's round 2 itself instead of dispatching the capability-writer (the drafts were exactly the answers).
