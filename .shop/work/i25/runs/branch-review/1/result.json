@@ -1,0 +1,9 @@
+{
+  "status": "NEEDS_CONTEXT",
+  "summary": "I couldn't do the branch review of i25 because there is nothing to review against.\nThe range f582b1bb..aa1f4e9b has 10 commits, all work-queue bookkeeping: work notes, status changes, a merge of round/i25-1-integrate and the integrate stage's brief, result and session files. No code, test, feature or spec file changed.\ni25 has no work-items and no capability-proposals. Its status is still 'started' and its only stage is 1-integrate.\nThat stage reported DONE: 3 lines added (work-queue r25, r26; supervision r91), 1 changed (r14), decision 0069 and 5 open questions at .shop/scratch/drafts/2026-10-25-q2/round-1/gate.md.\nThat gate is not in this worktree. spec/capabilities has none of r25, r26 or r91, and spec/decisions has no 0069.\nThe branch also holds i26's commits (eda1690e, 74bbaa68, 4faebfbc, d66ea85c, 72a5e2c7), because i25 and i26 share the branch i25-review-findings-to-implementation.\nThe brief has no Read: line. I did not run the suite or the checks, changed nothing and wrote no findings.md.\nThe review was started while i25 was still waiting at its integrate gate, before any work-item was drafted or merged. i26's branch review stopped the same way (.shop/work/i26/runs/branch-review/1/result.json).",
+  "findings": "",
+  "questions": [
+    "i25 has no work-items or capability-proposals on f582b1bb..aa1f4e9b, only bookkeeping commits. Its integrate gate (round 1, 5 questions, .shop/scratch/drafts/2026-10-25-q2/round-1/gate.md) is not on the branch, and r25, r26, r91 and decision 0069 are not in spec/. Rule on the gate, draft the work-items and merge them, then run the branch review again.",
+    "work run started a branch review of an initiative still waiting at its integrate gate with no work-item merged, for both i25 and i26. Check the condition that starts the branch review in scripts/supervise*.py: it should wait for the gate and for the work-items to be done."
+  ]
+}
