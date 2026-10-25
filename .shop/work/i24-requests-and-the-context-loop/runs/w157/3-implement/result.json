@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"answers() now commits each delegated answer as written, so the next session's end no longer reverts it. w157's scenarios are green. The stand-in picks steps by question, and four new steps are added.","commits":["c4db04a work run commits each delegated answer as it is written (r77)"],"report":".shop/scratch/3-implement/report.md","questions":[]}
