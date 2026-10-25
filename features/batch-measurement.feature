@@ -19,6 +19,35 @@ Feature: Batch measurement
     Then measure initiative refuses because the initiative has no log.jsonl
     And nothing is written
 
+  @r65
+  Scenario: an initiative fulfilling a request the queue does not hold is refused
+    Measure does not guess where the work came from when the request it names is not in the queue.
+    Given the initiative i7-cart has a log.jsonl
+    And i7-cart fulfils the request q3
+    And the queue does not hold the request q3
+    When the session runs measure initiative i7-cart
+    Then measure initiative refuses because the queue does not hold that request
+    And no measurement is written
+
+  @r66
+  Scenario: an initiative fulfilling a request with no asker is refused
+    Without an asker the request cannot be called internal or external, so measure does not guess.
+    Given the initiative i7-cart has a log.jsonl
+    And i7-cart fulfils the request q3, which the queue holds
+    And the request q3 has no asker
+    When the session runs measure initiative i7-cart
+    Then measure initiative refuses because the request has no asker
+    And no measurement is written
+
+  @r67
+  Scenario: an initiative fulfilling more than one request is refused
+    A measurement gives one request's origin, so measure does not pick among several.
+    Given the initiative i7-cart has a log.jsonl
+    And i7-cart fulfils the requests q3 and q4, which the queue holds, each with an asker
+    When the session runs measure initiative i7-cart
+    Then measure initiative refuses because the initiative fulfils more than one request
+    And no measurement is written
+
   @r47
   Scenario Outline: a <file kind> of a shape measure does not know is refused, naming it
     Measure does not guess at a session it cannot read; it says which file stopped it.
