@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /usr/local/bin/python3 /tmp/work-run-i24-requests-and-the-context-loop-85n5lsvr/w163-2-research/tests/scripts/stub_claude.py "$@"
