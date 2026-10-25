@@ -1,0 +1,14 @@
+{
+  "status": "DONE",
+  "summary": "w177 planned: r20, r21, r4, r5, r12 go green; three deprecated scenarios (r4, r5, r12) are removed per Retires.\nDecisions: new commands `work ask <request> <line> <question>` and `work reply <request> <n> <answer>` (0067: each part its own command); `work answer` stays the work-item command.\nQuestions are numbered in asking order, each naming its line; the n-th answer answers the n-th (Implementation r20/r21).\nAsk is refused in the asker's turn, reply in the upstream's (r16); both commit through _change (r12); asking does not write the line outcome (0067, r5).\nTests broken: none (verified by search and notes section 4).\nFile set: the researcher's five plus CLAUDE.md's module-map row.\nOpen cases: question on a missing line, reply to a missing or answered question, empty texts, the supervise_intake question route, defects D1-D5.",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/workqueue_request.py",
+    "scripts/work",
+    "tests/scenarios/requests_write_steps.py",
+    "tests/scenarios/requests_steps.py",
+    "features/requests.feature",
+    "CLAUDE.md"
+  ],
+  "questions": []
+}
