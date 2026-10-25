@@ -23,8 +23,9 @@ SCRIPTS = Path(__file__).resolve().parent
 # `claude -p --agent` session does not preload an agent's `skills:`, so each is added as `Skill(<skill>)` to whatever
 # list the stage has, and the worker loads it itself.
 # A worker's Bash runs pytest, the plugin's scripts by their path and the git commands its stage needs, and no other
-# Python (r14). The scripts are the ones a stage's agent and skills run, each by name: never `work`, with which a worker
-# could move statuses as work run does, nor any other of the plugin's scripts.
+# Python (r14). The scripts are the ones a stage's agent and skills run, each by name: no stage gets `work`, with which a
+# worker could move statuses as work run does, nor any other of the plugin's scripts. A round alone gets `work note`
+# (ROUNDS below), which moves no status: it appends the round's line to the initiative's ledger.
 STAGE_SCRIPTS = ("features", "model", "tools")
 PYTHON = ["Bash(python3 -m pytest*)", *("Bash(python3 %s/%s *)" % (SCRIPTS, s) for s in STAGE_SCRIPTS)]
 READER = ["Read", "Glob", "Grep", *PYTHON, "Bash(git status*)", "Bash(git diff*)", "Bash(git log*)", "Bash(git show*)"]
@@ -41,7 +42,8 @@ TOOLS = {
 # dispatch the capability-writer and the feature-formulators.
 ROUNDS = ("apply", "formulate")
 for _round in ROUNDS:
-    TOOLS[_round] = [*READER, "Bash(git add *)", "Bash(git commit *)", "Agent"]
+    TOOLS[_round] = [*READER, "Bash(git add *)", "Bash(git commit *)", "Agent",
+                      "Bash(python3 %s/work note *)" % SCRIPTS]
 # A stage's limit of turns: the researcher's is 40 (r19).
 MAX_TURNS = {"research": 40}
 ROLE = {"code-scout": "researcher", "bdd-planner": "planner", "bdd-implementer": "implementer",

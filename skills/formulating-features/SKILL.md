@@ -15,9 +15,9 @@ A note under `docs/` is not the spec. If lines are not yet in `spec/`, integrati
 
 The session the person talks to hands a formulation round to `shopsystem-bdd:initiative-round` and reads only its reply, for the reason integrating-a-proposal gives.
 
-**If the person is talking to you:** dispatch one `initiative-round` with the job `formulate`, the changed capability paths, the change list, a drafts path, the round's number and `Scripts:`, described `spec <note's name>: formulate round <n>`. It does steps 1, 2 and 4 below and commits. Step 3 is yours: each question in its reply goes to the person with its two readings; their answer goes to integrating-a-proposal as a round of its own, and the changed line comes back here as the next formulation round, for that capability alone. You do not dispatch a `feature-formulator`, read a draft or splice a scenario yourself.
+**If the person is talking to you:** dispatch one `initiative-round` with the job `formulate`, the changed capability paths, the change list, a drafts path, the round's number, the initiative's name and `Scripts:`, described `spec <note's name>: formulate round <n>`. It does steps 1, 2 and 4 below and commits. Step 3 is yours: each question in its reply goes to the person with its two readings; their answer goes to integrating-a-proposal as a round of its own, and the changed line comes back here as the next formulation round, for that capability alone. You do not dispatch a `feature-formulator`, read a draft or splice a scenario yourself.
 
-**If you are `initiative-round`:** steps 1, 2 and 4 are yours. A question is returned in your reply, never shown to anyone and never decided.
+**If you are `initiative-round`:** steps 1, 2 and 4 are yours. A question is returned in your reply, never shown to anyone and never decided. You end with your ledger line, appended with `work note` (see the agent's "The ledger").
 
 The small-change path below has no round: the session writes its scenarios itself.
 

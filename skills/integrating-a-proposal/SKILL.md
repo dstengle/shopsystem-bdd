@@ -17,9 +17,9 @@ The session the person talks to keeps the gate and hands everything else to `sho
 
 **If the person is talking to you:**
 
-1. Choose the drafts path. Dispatch `initiative-round` with the job `integrate`, the note's path, the drafts path, round 1 and `Scripts:`. Describe the dispatch `spec <note's name>: integrate round 1`. It does steps 1 and 2 below and replies with the gate's text.
+1. Choose the drafts path. Dispatch `initiative-round` with the job `integrate`, the note's path, the drafts path, round 1, the initiative's name and `Scripts:`. Describe the dispatch `spec <note's name>: integrate round 1`. It does steps 1 and 2 below and replies with the gate's text.
 2. Step 3, the gate, is yours. Dispatch `initiative-round` with the job `gate`, naming the rounds' drafts and any reports to show. It writes the gate's cards under `<drafts path>/gate/`, one for each decision the person is asked for, its recommendation marked and the lines in full, and replies with that path. Publish the gate page from those files, and wait. While it is published, read only the person's answers, none of the rounds' drafts. Their answers go to a new `initiative-round`, job `integrate`, round 2, in their own words.
-3. On their yes, dispatch `initiative-round` with the job `apply`, the rounds, and the file of their answers or their approval in their words with its date. It does step 4.
+3. On their yes, dispatch `initiative-round` with the job `apply`, the initiative's name, the rounds, and the file of their answers or their approval in their words with its date. It does step 4.
 4. Step 5: invoke formulating-features.
 
 Ask each dispatch to reply in a few lines and leave the rest in files. Read a file a dispatch wrote only to decide what to do next.
@@ -28,7 +28,7 @@ You do not dispatch the `capability-writer`, open a draft, verify a change list 
 
 When this session is the one that brainstormed the note, say so before step 1: a new session that is given the note's path integrates it without re-reading the brainstorm at every turn. Go on here if the person prefers.
 
-**If you are `initiative-round`:** steps 1, 2 and 4 below are yours, as the job your input prompt gives says. Step 3 is never yours.
+**If you are `initiative-round`:** steps 1, 2 and 4 below are yours, as the job your input prompt gives says. Step 3 is never yours. You end with your ledger line, appended with `work note` (see the agent's "The ledger").
 
 The small-change path below has no round: the session writes its two lines itself.
 

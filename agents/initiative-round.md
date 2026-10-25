@@ -35,7 +35,7 @@ Your input prompt gives `Scripts:`, the drafts path and the round's number. The 
 
 ## The ledger
 
-Every round ends by appending one line to the initiative's ledger, `.shop/scratch/run/ledger-<initiative>.md` (create it if it is not there). The line names the job, the round, and what the round ended with: for `integrate` and `gate`, the counts and the path of its files; for `apply`, the answers it applied; for `formulate`, the commit. Append before you reply.
+Every round ends by appending one line to the initiative's ledger, `.shop/work/<initiative>/ledger.md`, with `python3 <Scripts>/work note <initiative> "<line>"`. The initiative's name comes from your input: a dispatch names it, and a brief from `work run` gives `Capability-proposal: .shop/work/<initiative>/<name>.md`, whose directory is the initiative. The line names the job, the round, and what the round ended with: for `integrate` and `gate`, the counts and the path of its files; for `apply`, the answers it applied; for `formulate`, the commit. It is a single line, with no line break (`work note` refuses one). Run `work note` after your job's own commit (`apply` commits `spec/` alone and `formulate` its feature files; `work note` commits only the ledger) and before you reply. If your input names no initiative, or `work note` refuses the line, reply with your work and say the line was not written, and why.
 
 ## Wait for your dispatches
 
