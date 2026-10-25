@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"work request refuses a delegation empty after stripping whitespace (r22); scenario green, work-item scenarios 143 passed.","commits":["eef9320a work request refuses an empty delegation (requests r22)"],"report":"/tmp/work-run-i29-uk3_aing/w175/.shop/scratch/4-implement/report.md","questions":[]}
