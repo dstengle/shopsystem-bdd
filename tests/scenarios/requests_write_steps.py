@@ -1,5 +1,6 @@
 """features/requests.feature's steps about `work request` (requests r1 to r5): the upstream that takes a request in, the
 lines file the asker gives, and what the upstream keeps afterwards."""
+import json
 import re
 import shlex
 
@@ -50,6 +51,19 @@ def keeps_one_open(repo, context):
     assert [p.name for p in kept(repo)] == ["q1.md"], context["done"]
     text = (repo / request_rel("q1")).read_text()
     assert "status: open\n" in text and "turn: upstream\n" in text
+
+
+@then("the upstream keeps one new request")
+def keeps_one(repo, context):
+    assert [p.name for p in kept(repo)] == ["q1.md"], context["done"]
+
+
+@then(parsers.parse('its delegation is "{text}"'))
+def delegation_is(repo, text):
+    found = re.search(r"(?m)^delegation: (.*)$", (repo / request_rel("q1")).read_text())
+    assert found, "no delegation field"
+    value = found.group(1)
+    assert (json.loads(value) if value.startswith('"') else value) == text
 
 
 @then("its lines are the two lines of lines.md and its asker is ctx-a")

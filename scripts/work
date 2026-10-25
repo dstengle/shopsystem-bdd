@@ -61,7 +61,7 @@ def cmd_status(args):
 
 
 def cmd_request(args):
-    print(workqueue_request.request(args.root, args.title, args.asker, args.lines, args.source, args.thread))
+    print(workqueue_request.request(args.root, args.title, args.asker, args.lines, args.source, args.thread, args.delegation))
     return 0
 
 
@@ -124,6 +124,7 @@ def main(argv=None):
     q.add_argument("--lines", required=True, help="a file of the request's lines, one a line")
     q.add_argument("--source", action="append", default=[])
     q.add_argument("--thread")
+    q.add_argument("--delegation")
     q = sub.add_parser("outcome", help="write the outcome of a line of a request")
     q.add_argument("request")
     q.add_argument("line", type=int)

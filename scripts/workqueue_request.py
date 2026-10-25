@@ -4,6 +4,7 @@
 A request's `## Lines`, `## Outcomes` and `## Resolution` hold one entry a line, `<n>. <text>`; the resolution's text is
 the requirement id and the version.
 """
+import json
 import re
 from pathlib import Path
 
@@ -65,7 +66,7 @@ def _numbered(entries, number, text):
     return sorted(kept, key=lambda e: int(e.split(".", 1)[0]))
 
 
-def request(root, title, asker, lines_file, sources, thread):
+def request(root, title, asker, lines_file, sources, thread, delegation=None):
     """Write a new open request in the upstream's turn, `q<n>` one above the highest kept; return q<n> (r1).
 
     A request that names neither an origin nor a job-thread is refused (r3), and so is one with a line not in the strict
@@ -83,9 +84,10 @@ def request(root, title, asker, lines_file, sources, thread):
     taken = [int(m.group(1)) for p in directory.glob("q*.md") if (m := re.fullmatch(r"q(\d+)\.md", p.name))]
     name = "q%d" % (max(taken, default=0) + 1)
     origin = "part_of: %s" % thread if thread is not None else "source: [%s]" % ", ".join(sources)
-    text = ("---\nid: request/%s/%s\nkind: request\nasker: %s\n%s\nstatus: open\nturn: upstream\n---\n\n# %s\n\n## Lines\n%s\n"
+    given = "delegation: %s\n" % json.dumps(delegation) if delegation is not None else ""
+    text = ("---\nid: request/%s/%s\nkind: request\nasker: %s\n%s\nstatus: open\nturn: upstream\n%s---\n\n# %s\n\n## Lines\n%s\n"
             "## Outcomes\n\n## Resolution\n"
-            % (workqueue.context_path(root), name, asker, origin, title, "".join("%d. %s\n" % e for e in enumerate(lines, 1))))
+            % (workqueue.context_path(root), name, asker, origin, given, title,"".join("%d. %s\n" % e for e in enumerate(lines, 1))))
     path = directory / (name + ".md")
 
     def write():
