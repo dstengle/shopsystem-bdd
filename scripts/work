@@ -70,6 +70,16 @@ def cmd_outcome(args):
     return 0
 
 
+def cmd_ask(args):
+    workqueue_request.ask(args.root, args.request, args.line, args.question)
+    return 0
+
+
+def cmd_reply(args):
+    workqueue_request.reply(args.root, args.request, args.question, args.answer)
+    return 0
+
+
 def cmd_turn(args):
     workqueue_request.turn(args.root, args.request)
     return 0
@@ -129,6 +139,14 @@ def main(argv=None):
     q.add_argument("request")
     q.add_argument("line", type=int)
     q.add_argument("outcome")
+    q = sub.add_parser("ask", help="write the upstream's question on a line of a request")
+    q.add_argument("request")
+    q.add_argument("line", type=int)
+    q.add_argument("question")
+    q = sub.add_parser("reply", help="write the asker's answer to a question of a request")
+    q.add_argument("request")
+    q.add_argument("question", type=int, help="the number of the question answered")
+    q.add_argument("answer")
     q = sub.add_parser("turn", help="pass a request's turn to the other side")
     q.add_argument("request")
     q = sub.add_parser("resolve", help="write which requirement holds each accepted line of a request, and in which version")
@@ -140,7 +158,7 @@ def main(argv=None):
     try:
         return {"add": cmd_add, "show": cmd_show, "run": cmd_run, "retry": cmd_retry, "answer": cmd_answer,
                 "withdraw": cmd_withdraw, "note": cmd_note, "status": cmd_status,
-                "request": cmd_request, "outcome": cmd_outcome, "turn": cmd_turn, "resolve": cmd_resolve,
+                "request": cmd_request, "outcome": cmd_outcome, "ask": cmd_ask, "reply": cmd_reply, "turn": cmd_turn, "resolve": cmd_resolve,
                 "start": cmd_start}[args.cmd](args)
     except workqueue.Refused as refused:
         print("work: %s" % refused, file=sys.stderr)

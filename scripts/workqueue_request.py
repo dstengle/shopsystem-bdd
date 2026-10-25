@@ -1,8 +1,9 @@
 """The requests of a context, kept as .shop/work/requests/<id>.md: the library behind `work outcome`, `turn` and
-`resolve` (capability requests). Every change is committed on the current branch (r12).
+`resolve`, `ask` and `reply` (capability requests). Every change is committed on the current branch (r12).
 
-A request's `## Lines`, `## Outcomes` and `## Resolution` hold one entry a line, `<n>. <text>`; the resolution's text is
-the requirement id and the version.
+A request's `## Lines`, `## Questions`, `## Answers`, `## Outcomes` and `## Resolution` hold one entry a line,
+`<n>. <text>`; the resolution's text is the requirement id and the version. A question's text is `line <l>: <words>`;
+answer n answers question n.
 """
 import json
 import re
@@ -86,7 +87,7 @@ def request(root, title, asker, lines_file, sources, thread, delegation=None):
     origin = "part_of: %s" % thread if thread is not None else "source: [%s]" % ", ".join(sources)
     given = "delegation: %s\n" % json.dumps(delegation) if delegation is not None else ""
     text = ("---\nid: request/%s/%s\nkind: request\nasker: %s\n%s\nstatus: open\nturn: upstream\n%s---\n\n# %s\n\n## Lines\n%s\n"
-            "## Outcomes\n\n## Resolution\n"
+            "## Questions\n\n## Answers\n\n## Outcomes\n\n## Resolution\n"
             % (workqueue.context_path(root), name, asker, origin, given, title,"".join("%d. %s\n" % e for e in enumerate(lines, 1))))
     path = directory / (name + ".md")
 
@@ -104,6 +105,25 @@ def outcome(root, ident, number, word):
             raise Refused("%s is in the asker's turn; the upstream writes a line outcome only in its own turn" % ident)
         return _with_entries(text, "Outcomes", _numbered(_entries(text, "Outcomes"), number, word))
     _change(root, ident, "outcome", edit)
+
+
+def ask(root, ident, number, question):
+    """Write the next question, on line `number`, as `<n>. line <number>: <question>` (r20); the asker's turn refuses it."""
+    def edit(text):
+        if field(text, "turn") == "asker":
+            raise Refused("%s is in the asker's turn; the upstream asks a question only in its own turn" % ident)
+        entries = _entries(text, "Questions")
+        return _with_entries(text, "Questions", entries + ["%d. line %d: %s" % (len(entries) + 1, number, question)])
+    _change(root, ident, "ask", edit)
+
+
+def reply(root, ident, number, answer):
+    """Write `answer` as the answer to question `number`, under the same number (r21); the upstream's turn refuses it."""
+    def edit(text):
+        if field(text, "turn") == "upstream":
+            raise Refused("%s is in the upstream's turn; the asker answers a question only in its own turn" % ident)
+        return _with_entries(text, "Answers", _numbered(_entries(text, "Answers"), number, answer))
+    _change(root, ident, "reply", edit)
 
 
 def turn(root, ident):

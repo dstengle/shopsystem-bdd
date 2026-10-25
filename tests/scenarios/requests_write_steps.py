@@ -120,3 +120,54 @@ def gives_outcome(repo, ident, n, word):
 @then(parsers.parse("{ident} has no resolution"))
 def has_no_resolution(repo, ident):
     assert sections(repo, ident)["Resolution"] == []
+
+
+def add_sections(repo, context, ident, question, answer=None):
+    """Append the upstream's question on line 1 (and the asker's answer to it) to the request, as work writes them."""
+    path = repo / request_rel(ident)
+    text = path.read_text().rstrip("\n") + "\n\n## Questions\n1. line 1: %s\n\n## Answers\n" % question
+    path.write_text(text + ("1. %s\n" % answer if answer else ""))
+    context["written"] = path.read_text()
+    context["questions"], context["answers"] = sections(repo, ident)["Questions"], sections(repo, ident)["Answers"]
+
+
+@given(parsers.parse('{ident} holds the upstream\'s question "{question}" on line 1 and the asker\'s answer "{answer}" to it'))
+def holds_question_and_answer(repo, context, ident, question, answer):
+    add_sections(repo, context, ident, question, answer)
+
+
+@given(parsers.parse('{ident} holds the upstream\'s question "{question}" on line 1'))
+def holds_question(repo, context, ident, question):
+    add_sections(repo, context, ident, question)
+
+
+@when(parsers.parse('the upstream asks the question "{question}" on line {n} of {ident}'))
+def the_upstream_asks(run, context, question, n, ident):
+    context["done"] = run("work", "ask", ident, n, question)
+
+
+@when(parsers.parse('the asker answers that question with "{answer}"'))
+def the_asker_answers(run, context, answer):
+    context["done"] = run("work", "reply", "q1", "1", answer)
+
+
+@then(parsers.parse('{ident} holds the question "{question}" on line {n}'))
+def holds_the_question(repo, ident, question, n):
+    assert "line %s: %s" % (n, question) in [e.split(". ", 1)[1] for e in sections(repo, ident)["Questions"]]
+
+
+@then(parsers.parse('{ident} holds the answer "{answer}" to the question "{question}"'))
+def holds_the_answer(repo, ident, answer, question):
+    found = sections(repo, ident)
+    number = next(e.split(". ", 1)[0] for e in found["Questions"] if e.endswith(": " + question))
+    assert "%s. %s" % (number, answer) in found["Answers"]
+
+
+@then(parsers.parse("{ident}'s questions are as they were"))
+def questions_as_they_were(repo, context, ident):
+    assert sections(repo, ident)["Questions"] == context["questions"]
+
+
+@then(parsers.parse("{ident}'s answers are as they were"))
+def answers_as_they_were(repo, context, ident):
+    assert sections(repo, ident)["Answers"] == context["answers"]

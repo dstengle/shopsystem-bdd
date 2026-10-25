@@ -24,7 +24,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/workqueue_note.py` | `work note` |
 | `scripts/workqueue_start.py` | `work start`: the initiative an accepted request begins |
 | `scripts/workqueue_done.py` | an initiative done: the condition and the rewrite `work withdraw` and `work resolve` commit |
-| `scripts/workqueue_request.py` | the requests of a context: `work request`, `outcome`, `turn`, `resolve` |
+| `scripts/workqueue_request.py` | the requests of a context: `work request`, `outcome`, `ask`, `reply`, `turn`, `resolve` |
 | `scripts/supervise*.py` | `work run`: briefs, workers, the pool of workers side by side (`supervise_pool.py`), merging, faults, the branch review, a capability-proposal's apply and formulate rounds (`supervise_rounds.py`) |
 | `scripts/supervise_change.py` | `work run`'s reading of an integrate round's change list and its writing of one drafted capability-proposal for each capability it names |
 | `scripts/supervise_all.py` | `work run` with no initiative: every open initiative taken side by side, one `Run` each, and the exit on their statuses |
