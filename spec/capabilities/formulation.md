@@ -22,6 +22,7 @@ It decides nothing: a line with two readings comes back as a question.
 - [r3] **If** a line admits two readings, then `formulating-features` shall show the person the question with its two readings in place of that line's scenarios, formulating the rest of the capability.
 - [r4] **When** a line whose old scenario passes today is changed or removed, `formulating-features` shall keep the old scenario in its feature file, deprecated and with the `@r<n>` tag it had, until the work-item whose work makes its replacement pass retires it.
 - [r5] **When** a line whose old scenario does not pass today is changed or removed, `formulating-features` shall replace or remove the old scenario.
+- [r23] **When** `formulating-features` runs an old scenario alone, `formulating-features` shall run it with `python3 -m pytest`.
 - [r6] **When** `formulating-features` commits feature files, `formulating-features` shall commit only the feature files and the test files `features rebind` changed, with `features bindings` printing that every binding names a scenario.
 - [r7] **When** an existing feature file is changed, `formulating-features` shall keep every scenario not added, changed or removed byte for byte as it was, tags included.
 - [r9] `formulating-features` shall formulate a line every call must keep as one scenario per reason the line gives, each with one representative call.
