@@ -41,3 +41,4 @@ The drafts of this proposal are in .shop/work/i26/runs/i26/2-integrate.
 - 2026-10-25: 4: yes, r16 is the refusal; nothing changes (the coordinator under the person's delegation 2026-10-25)
 - 2026-10-25: 5: yes, add the Implementation line (the coordinator under the person's delegation 2026-10-25)
 - 2026-10-25: 6: A, the intake round gives the question in its result and work run writes it; r67 changes as drafted. The supervision lines this initiative adds take r100 (for r98) and r101 (for r99), since i25's drafts hold supervision r98 (the coordinator under the person's delegation 2026-10-25)
+- 2026-10-25: 7: yes, add the Implementation line (the coordinator under the person's delegation 2026-10-25)
