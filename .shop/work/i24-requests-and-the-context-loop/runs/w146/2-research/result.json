@@ -1,0 +1,18 @@
+{
+  "status": "DONE",
+  "summary": "w146 research done; notes.md in the stage directory has the seven parts.\nBoth accepted scenarios (r68, r85) red at their first Given: \"i1's capability-proposal p1 is drafted\" has no step.\nToday a drafted proposal starts no round: due() (supervise_rounds.py) only selects awaiting-answer and approved; probe exit 0, silent.\nGate needs: AFTER/due() for drafted, round() writing result questions, gate in ROUNDS and TOOLS (supervise_worker.py), gate brief text (supervise_brief.py).\nConflict for the planner: agents/initiative-round.md gate job writes cards and replies a path; spec-integration r35 wants questions in result.json.\nDefect D1 (probe_zero, run): awaiting-answer with no question runs apply and formulate unanswered, to formulated.\nD2 (minor): drafted-only run exits 0 silently.\nTests: by search only (no tests-of map). No existing test found impossible to keep.\nNo tracked Python file over 300 lines (tools size).",
+  "fileset": [
+    "scripts/supervise_rounds.py",
+    "scripts/supervise_worker.py",
+    "scripts/supervise_brief.py",
+    "tests/scenarios/supervision_rounds_steps.py",
+    "agents/initiative-round.md",
+    "scripts/supervise.py",
+    "tests/scenarios/test_supervision.py",
+    "scripts/workqueue.py",
+    "scripts/model_work.py",
+    "scripts/supervise_faults.py",
+    "scripts/supervise_draft.py"
+  ],
+  "questions": []
+}
