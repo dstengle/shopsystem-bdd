@@ -1,0 +1,32 @@
+/tmp/work-run-i25-fu_s7dlu/i25-2-integrate/.shop/scratch/2-integrate/drafts/round-1/spec/capabilities/work-queue.md
+/tmp/work-run-i25-fu_s7dlu/i25-2-integrate/.shop/scratch/2-integrate/drafts/round-1/spec/capabilities/supervision.md
+
+## Change list
+
+| change | capability | id | line | note sentence |
+|---|---|---|---|---|
+| changed | work-queue | r14 | new: **When** `work answer <work-item> <answer>` is run on an `awaiting-answer` work-item whose question a researcher, a planner or an implementer asked, `work` shall transition it to the status the stage that asked its question started from: `drafted` for a researcher's question, `researched` for a planner's and `ready` for an implementer's. / old: **When** `work answer <work-item> <answer>` is run on an `awaiting-answer` work-item, `work` shall transition it to the status the stage that asked its question started from: `drafted` for a researcher's question, `researched` for a planner's, `ready` for an implementer's and `done` for a reviewer's. | Answers 1: "work-queue r14's return to `done` for a reviewer's question then holds only for acceptance." |
+| added | work-queue | r26 | **When** `work answer <work-item> <answer>` is run, with the flag saying that the answer asks for a change, on an `awaiting-answer` work-item whose question a reviewer asked, `work` shall transition the work-item to `ready`. | Line 1: "**When** a question a reviewer asked on a work-item is answered with a change to make, `work` shall return the work-item to `ready`." with Answers 1: "(a), a flag on `work answer` saying whether the answer asks for a change or accepts the work-item as it is" |
+| added | work-queue | r27 | **When** `work answer <work-item> <answer>` is run, with the flag saying that the answer accepts the work-item as it is, on an `awaiting-answer` work-item whose question a reviewer asked, `work` shall transition the work-item to `done`. | Line 3: "**When** a question a reviewer asked on a work-item is answered accepting the work-item as it is, `work` shall return the work-item to `done`." with Answers 1 (as above) |
+| added | supervision | r98 | **When** `work run` starts an implementer for a work-item that an answer to a reviewer's question returned to `ready`, `work run` shall give the implementer the reviewer's findings and the answer. | Line 2: "**When** `work run` starts an implementer for a work-item that an answer to a reviewer's question returned to `ready`, `work run` shall give the implementer the reviewer's findings and the answer." |
+
+No glossary term is added, changed or removed.
+
+Implementation line added to work-queue: "r26, r27: the flag is `--change` for an answer that asks for a change and `--accept` for one that accepts the work-item as it is; the answer stays one line of free text." From Answers 1: "The gate chooses the flag's form." (form chosen here, as the brief allowed; the gate may change it).
+
+No decision files.
+
+## Questions
+
+1. work-queue: when `work answer` is run on an `awaiting-answer` work-item whose question a reviewer asked, with neither flag, what happens? (a) refused: "**If** `work answer <work-item> <answer>` is run without the flag saying whether the answer asks for a change or accepts the work-item as it is on an `awaiting-answer` work-item whose question a reviewer asked, then `work` shall exit with an error, saying that the answer must say which, and change nothing." (recommended: the note gives no default); (b) acceptance by default: change r27 to "... is run without the flag saying that the answer asks for a change ..." so no flag returns it to `done`.
+2. work-queue: when the flag is given on a work-item whose question a researcher, a planner or an implementer asked, what happens? (a) the flag is ignored and r14 holds (no new line); (b) refused: "**If** `work answer <work-item> <answer>` is run with the flag saying whether the answer asks for a change or accepts the work-item as it is on a work-item whose question a reviewer did not ask, then `work` shall exit with an error, saying that the flag is for a reviewer's question, and change nothing."
+3. supervision r98: what are "the reviewer's findings" and how are they given? (a) the work-item review's findings file, named in the implementer's brief: Implementation line "r98: the brief names the findings file of the work-item's last review stage directory and writes the answer as r57 does."; (b) the findings' text written into the brief: Behaviour r98 reworded "... `work run` shall write the reviewer's findings and the answer in the implementer's brief." Either way, does r98 hold also when the reviewer's question was a kept branch review's (r74 drafts a new work-item for those), or only a work-item review's? If only the work-item review's, r98 would read "... an answer to the question of a work-item's reviewer returned to `ready` ...".
+4. work-queue: is the form of the flag (`--change` / `--accept`) to stay Implementation, as drafted, or be Behaviour? If Behaviour, r26 and r27 would name it: "**When** `work answer <work-item> <answer> --change` is run on ..." and "**When** `work answer <work-item> <answer> --accept` is run on ...".
+
+## Cut sentences
+
+- Question 1: "Line 1: work-queue r14 already returns a reviewer's question to `done` on any answer, and `work answer` takes a free-text answer." (context of the question, superseded by the answer)
+- Question 1: "How does `work` tell an answer 'with a change to make' from one 'accepting the work-item as it is' (line 3)?" (the question; its answer lands in r14, r26, r27)
+- Question 1: "Readings: (a) a flag or keyword on `work answer` (e.g. `--change` / `--accept`), the recommended one since the answer stays one line of free text; (b) `work` infers it from the answer's wording, which is unreliable; (c) the answer's author is the person or delegation session and picks the transition by running `work answer` for acceptance or another command for a change." (readings weighed; rationale; no decision file written since the choice is held by the Behaviour lines)
+- Question 1: "Also: should r14's `done` for a reviewer's question then apply only to acceptance?" (answered; lands in r14)
+- Answers 1 `by:` line: "the coordinator as asker, on the person's approval 2026-10-25 ("Yes, set that up") of a flag on `work answer`; written by hand once, by the person's choice 2026-10-25 ("One hand edit + q3"), because `work` has no command for it (observation/2026-10-25-request-question-unwritten)" (provenance)
