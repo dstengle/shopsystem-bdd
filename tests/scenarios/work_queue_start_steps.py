@@ -4,7 +4,7 @@ import re
 
 from pytest_bdd import given, parsers, then
 
-from .conftest import full
+from .conftest import INDEX, full
 
 
 def request_text(status, asker="internal", origin="part_of: initiative/x"):
@@ -15,6 +15,7 @@ def request_text(status, asker="internal", origin="part_of: initiative/x"):
 @given(parsers.parse("a request q1 that is accepted, whose origins are {first} and {second}"))
 def accepted_request(repo, first, second):
     from .test_work_queue import write
+    write(repo, "spec/index.md", INDEX)
     write(repo, ".shop/work/requests/q1.md", request_text("accepted", origin="source: [%s, %s]" % (first, second)))
 
 

@@ -47,6 +47,7 @@ def all_committed(repo, context):
 
 @then(parsers.parse("main has a new last commit, which holds {rel} as work left it"))
 def new_commit_holds(repo, context, rel):
+    rel = _resolved(repo, context, rel)
     done = context["done"]
     assert done.returncode == 0, done
     assert git(repo, "rev-parse", "--abbrev-ref", "HEAD").strip() == "main"
@@ -55,17 +56,33 @@ def new_commit_holds(repo, context, rel):
     assert git(repo, "show", "main:" + rel) == (repo / rel).read_text()
 
 
+def _resolved(repo, context, phrase):
+    """`phrase` as a path: "the new initiative's initiative.md" and "the new initiative's directory under .shop/work/"
+    name the one initiative that is new since the When's snapshot; any other phrase is already a path."""
+    if not phrase.startswith("the new initiative's "):
+        return phrase
+    from .work_queue_start_steps import new_initiatives
+    found = new_initiatives(repo, context)
+    assert len(found) == 1, found
+    rel = str(found[0].relative_to(repo))
+    if phrase.endswith("initiative.md"):
+        return rel + "/initiative.md"
+    assert found[0].is_dir()
+    return rel
+
+
 def kept(rel):
     """The path of `rel`, which may be a request's id (q1) instead: a request is kept in .shop/work/requests/."""
     return ".shop/work/requests/%s.md" % rel if re.fullmatch(r"q\d+", rel) else rel
 
 
 @then(parsers.parse("nothing work keeps for {request} differs from main's last commit"))
-def request_uncommitted(repo, request):
-    nothing_uncommitted(repo, kept(request))
+def request_uncommitted(repo, context, request):
+    nothing_uncommitted(repo, context, kept(request))
 
 
 @then(parsers.parse("nothing under {where} differs from main's last commit"))
-def nothing_uncommitted(repo, where):
+def nothing_uncommitted(repo, context, where):
+    where = _resolved(repo, context, where)
     left = git(repo, "status", "--porcelain", "--untracked-files=all", "--", where)
     assert left == "", left

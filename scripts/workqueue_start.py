@@ -1,4 +1,4 @@
-"""`work start`: the initiative an accepted request begins (work-queue r22). Written, not committed."""
+"""`work start`: the initiative an accepted request begins (work-queue r22). Committed on the current branch (r25)."""
 import datetime
 import re
 from pathlib import Path
@@ -35,9 +35,19 @@ def start(root, request):
     title = re.search(r"(?m)^# (.*)$", body)
     name = "i%d" % (_highest(root) + 1)
     directory = Path(root) / workqueue.WORK / name
-    directory.mkdir(parents=True)
-    (directory / "initiative.md").write_text(
-        "---\nid: initiative/%s/%s\nkind: capability-change\nstatus: proposed\nfulfils: %s\nsource: [%s]\ndate: %s\n---\n\n# %s\n"
-        % (workqueue.context_path(root), name, data.get("id"), ", ".join(source), datetime.date.today().isoformat(),
-           title.group(1) if title else request))
+    text = ("---\nid: initiative/%s/%s\nkind: capability-change\nstatus: proposed\nfulfils: %s\nsource: [%s]\ndate: %s\n---\n\n# %s\n"
+            % (workqueue.context_path(root), name, data.get("id"), ", ".join(source), datetime.date.today().isoformat(),
+               title.group(1) if title else request))
+
+    def write():
+        directory.mkdir(parents=True)
+        (directory / "initiative.md").write_text(text)
+
+    try:
+        workqueue.committed(root, [str(workqueue.WORK / name / "initiative.md")],
+                            "work: start %s, fulfilling %s" % (name, request), write)
+    except Refused:
+        if directory.is_dir() and not any(directory.iterdir()):
+            directory.rmdir()
+        raise
     return name
