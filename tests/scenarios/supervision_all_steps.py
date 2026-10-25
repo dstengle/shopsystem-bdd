@@ -87,6 +87,47 @@ def gates_meet(plan):
     plan["initiative-round"] = {"status": "DONE", "meet": 2, "questions": ["Which module owns the log?"]}
 
 
+@given(parsers.re(r'an initiative (?P<name>i\d) under \.shop/work/ whose capability-proposal (?P<prop>p\d) is awaiting-answer, '
+                  r'its ## Questions section with "(?P<asked>[^"]+)", and its Answers section with "(?P<answer>[^"]+)"$'))
+def answered_initiative(repo, name, prop, asked, answer):
+    initiative_file(repo, name, "started")
+    proposal_file(repo, name, prop, "awaiting-answer", [asked])
+    path = repo / (".shop/work/%s/%s.md" % (name, prop))
+    path.write_text(path.read_text() + "\n## Answers\n\n- %s\n" % answer)
+    commit_all(repo, "%s's %s is answered" % (name, prop))
+
+
+@given("every round ends, each round of the kind integrate, apply or formulate ending only after long enough for another "
+       "round to start beside it")
+def rounds_linger(plan):
+    plan["default"] = {"status": "DONE"}
+    plan["initiative-round"] = {"status": "DONE", "linger": 1}
+
+
+def serial_rounds(repo):
+    """(kind, name, start, end) of each round of the kind integrate, apply or formulate, by where it started."""
+    found = []
+    for _, brief, start, end in sessions(repo):
+        kind = re.search(r"^# (integrate|apply|formulate) of (\w+)", brief, re.M)
+        if kind:
+            found.append((kind.group(1), kind.group(2), start, end))
+    return sorted(found, key=lambda r: r[2])
+
+
+@then("a round of the kind integrate was started for i1, and a round of the kind apply for each of p2 and p3")
+def serial_rounds_started(repo, context):
+    got = [(kind, name) for kind, name, _, _ in serial_rounds(repo)]
+    assert ("integrate", "i1") in got and ("apply", "p2") in got and ("apply", "p3") in got, (got, context["done"].stderr)
+
+
+@then("no round of the kind integrate, apply or formulate was started before every other round of those kinds had ended")
+def serial_rounds_apart(repo, context):
+    found = serial_rounds(repo)
+    assert len(found) >= 3, (found, context["done"].stderr)
+    for (_, _, _, ended), (_, _, started, _) in zip(found, found[1:]):
+        assert ended < started, found
+
+
 def sessions(repo):
     """(initiative, brief, start, end): each session of the stand-in's record, with where in it it started and ended."""
     events = calls(repo)

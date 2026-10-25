@@ -58,7 +58,8 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
         self.limit = 4           # the number of workers at the same time (r60), read from it
         self.finished = []       # the implementers that ended with a worker's end, in that order, not yet merged (r61)
         self.turns = threading.Condition()
-        self.group = [self]      # the runs of one `work run` with no initiative, which share the checkout (supervise_all)
+        self.round_lock = threading.Lock()     # held by an integrate, apply or formulate round, shared by those runs (r95)
+        self.group = [self]    # the runs of one `work run` with no initiative, which share the checkout (supervise_all)
         self.slots = threading.Semaphore(self.limit)     # the sessions at the same time (r60), shared by those runs
 
     def rel(self, path):

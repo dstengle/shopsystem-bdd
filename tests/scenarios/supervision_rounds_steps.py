@@ -161,8 +161,11 @@ def work_committed(repo):
 def second_not_refused(repo, context):
     """Not refused over anything left uncommitted under .shop/work/ (r10), and got as far as starting its round."""
     done = context["done"]
-    assert "not committed" not in done.stderr and len(rounds(repo, "integrate", "i1")) == 2, (
-        done.returncode, done.stdout, done.stderr, starts(repo))
+    if rounds(repo, "integrate", "i1"):     # a run that began a round: its second run begins one again (r93, r96)
+        assert "not committed" not in done.stderr and len(rounds(repo, "integrate", "i1")) == 2, (
+            done.returncode, done.stdout, done.stderr, starts(repo))
+    else:
+        assert done.returncode == 0 and "work:" not in done.stderr, (done.returncode, done.stdout, done.stderr)
 
 
 @then(parsers.re(r"a round of the kind integrate was started for i1, given q1's lines 1 and 3, and not line 2$"))

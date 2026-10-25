@@ -31,6 +31,8 @@ brief's `Question:` line, taking precedence over all of those), each an object o
              agent, this one's included (up to a minute, so a worker nobody joins still ends);
   meet_all   a number n: the same for the starts of n workers of any agent;
   meet_agents a list of agents (`code-scout`): the same for the start of a worker of each;
+  linger     a number of seconds: before anything is written, wait up to that long for the start of another worker, so
+             a worker that may run beside this one has the time to start;
   hold       {work-item: {"log": a log.jsonl, "work_item": another work-item}}: the worker of that work-item ends,
              as work run sees it, only once the log has the end of the other work-item's implementer;
   watch      a list of files: the worker's start is followed by a `seen` record of what each holds then;
@@ -112,9 +114,9 @@ def plugin_refuses(argv, path):
     return False
 
 
-def wait_until(done):
-    """Wait, up to a minute, until `done()` holds: a signal, polled, never a fixed sleep."""
-    deadline = time.monotonic() + 60
+def wait_until(done, seconds=60):
+    """Wait, up to a minute (or `seconds`), until `done()` holds: a signal, polled, never a fixed sleep."""
+    deadline = time.monotonic() + seconds
     while time.monotonic() < deadline and not done():
         time.sleep(0.05)
 
@@ -198,6 +200,9 @@ def main(argv):
         meet_all(step["meet_all"])
     if step.get("meet_agents"):
         meet_agents(step["meet_agents"])
+    if step.get("linger"):     # wait, up to that many seconds, for the start of any other worker
+        before = len(started_agents())
+        wait_until(lambda: len(started_agents()) > before, step["linger"])
     if step.get("commit"):
         step["commit"] = {rel.replace("{work_item}", work_item): text for rel, text in step["commit"].items()}
     if step.get("elsewhere"):

@@ -12,7 +12,8 @@ from supervise_faults import Fault, fault_of
 from supervise_worker import GitFailed, git
 from workqueue import Refused
 
-AFTER = {"drafted": ("gate", "awaiting-answer"), "awaiting-answer": ("apply", "approved"), "approved": ("formulate", "formulated")}
+SERIAL = ("integrate", "apply", "formulate")     # the rounds one at a time across initiatives (r95)
+AFTER ={"drafted": ("gate", "awaiting-answer"), "awaiting-answer": ("apply", "approved"), "approved": ("formulate", "formulated")}
 
 
 class Rounds(Changes):
@@ -52,6 +53,14 @@ class Rounds(Changes):
             due = self.due()
 
     def round(self, name, kind, after):
+        """One round. An integrate, apply or formulate round holds the round lock of every initiative a `work run`
+        takes, from before its session to its last commit, so no two run side by side (r95); the gate round does not."""
+        if kind not in SERIAL:
+            return self.run_round(name, kind, after)
+        with self.round_lock:
+            return self.run_round(name, kind, after)
+
+    def run_round(self, name, kind, after):
         if kind == "integrate":     # r84: the initiative is started as its integrate round is, before the round's session
             status, _ = workqueue.frontmatter((self.dir / "initiative.md").read_text())
             if status.get("status") == "proposed":     # r93: one already started has no transition to make

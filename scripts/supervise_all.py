@@ -24,8 +24,9 @@ def run_all(root):
         intake.check()
     everyone = runs + taken
     lock, slots = threading.RLock(), threading.Semaphore(everyone[0].limit) if everyone else None
+    rounds = threading.Lock()     # one integrate, apply or formulate round at a time across the initiatives (r95)
     for run in runs:
-        run.lock, run.slots, run.group = lock, slots, runs
+        run.lock, run.slots, run.group, run.round_lock = lock, slots, runs, rounds
     for intake in taken:
         intake.lock, intake.slots = lock, slots
     if everyone:
