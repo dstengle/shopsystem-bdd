@@ -2,7 +2,7 @@
 lists, `measure initiative` run by `work run`, and the session of analyzing-a-batch it starts."""
 from pytest_bdd import given, then
 
-from .supervision_world import log_lines, starts
+from .supervision_world import git, log_lines, starts
 
 MEASUREMENTS = ".shop/records/measurements"
 ANALYST = "shopsystem-bdd:batch-analyst"
@@ -75,6 +75,20 @@ def measured_never(repo, context):
 def analysis_not_there(repo, context):
     records = sorted((repo / ".shop/records").glob("*-i1-analysis.md")) if (repo / ".shop/records").is_dir() else []
     assert records == [], (records, context["done"].stderr)
+
+
+@then("the initiative branch has a commit of i1's measurement and i1's analysis record")
+def records_committed(repo, context):
+    found = [str(p.relative_to(repo)) for p in measurement(repo) + sorted((repo / ".shop/records").glob("*-i1-analysis.md"))]
+    assert len(found) == 2, (found, context["done"].stdout, context["done"].stderr)
+    for path in found:
+        assert git(repo, "ls-files", "--", path).strip() == path, (path, context["done"].stderr)
+        assert git(repo, "log", "--format=%H", "--", path).split(), path
+
+
+@then("nothing under .shop/records/ is left uncommitted")
+def records_clean(repo):
+    assert git(repo, "status", "--porcelain", "--untracked-files=all", "--", ".shop/records").strip() == ""
 
 
 @then("i1's analysis record is there")

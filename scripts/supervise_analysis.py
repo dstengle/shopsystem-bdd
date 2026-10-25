@@ -7,7 +7,7 @@ import subprocess
 import sys
 import uuid
 
-from supervise_worker import SCRIPTS, cut_short     # supervise_worker first: it and supervise_faults import each other
+from supervise_worker import SCRIPTS, cut_short, git    # supervise_worker first: it and supervise_faults import each other
 
 AGENT = "batch-analyst"
 STAGE = "analysis"
@@ -68,6 +68,12 @@ class Analyses:
             elif (here / "analysis.md").is_file():
                 record = self.root / ".shop" / "records" / ("%s-%s-analysis.md" % (measurement.name[:10], self.initiative))
                 shutil.copy2(here / "analysis.md", record)
+                with self.lock:     # r106: the measurement and the record are in the initiative branch's history, then pushed (r38)
+                    rels = [self.rel(measurement), self.rel(record)]
+                    git(self.root, "add", "--", *rels)
+                    git(self.root, "commit", "-q", "-m", "work: %s measurement and analysis record" % self.initiative,
+                        "--", *rels)
+                    self.push()
             else:
                 print("work run: the analysis session of %s wrote no analysis record" % self.initiative, file=sys.stderr)
         finally:
