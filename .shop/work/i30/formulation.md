@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i30-formulation
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i30
-status: drafted
+status: awaiting-answer
 argues: [formulation]
 adds: [formulation#r23]
 changes: []

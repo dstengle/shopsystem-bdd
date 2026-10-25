@@ -1,0 +1,1 @@
+{"status": "DONE", "summary": "Gate for formulation#r23 only: [r23] When formulating-features runs an old scenario alone, formulating-features shall run it with `python3 -m pytest`. The line is strict EARS with one reading; no question needed. The draft gate's five questions concern supervision r19, r109 and r110, which this brief does not list.", "questions": []}
