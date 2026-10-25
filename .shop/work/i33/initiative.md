@@ -1,7 +1,7 @@
 ---
 id: initiative/missingmass.io/shopsystem/shopsystem-bdd/i33
 kind: capability-change
-status: proposed
+status: started
 fulfils: request/missingmass.io/shopsystem/shopsystem-bdd/q10
 source: [observation/2026-10-25-withdrawn-initiative-done]
 date: 2026-10-25
