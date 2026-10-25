@@ -1,0 +1,22 @@
+{
+  "status": "DONE",
+  "summary": "Plan of w181 (supervision r105-r109) in .shop/scratch/2-plan/plan.md.\nr107: check each named capability against spec/capabilities/ and the round's kept drafts; write the known ones' proposals (r92), none for the unknown, exit with an error naming it; all unknown -> round kept as r96 keeps it.\nr108: the proposal's drafts sentence names the integrate stage dir's last drafts/round-<m>/; gate and apply briefs give it as 'Drafts path:' and read it.\nr106: analyse commits measurement and record, then pushes (r38).\nr105/r109: new scripts/supervise_done.py: run-path condition = workqueue_done's existing condition (unchanged, given a public name; work-queue r23 untouched) + branch review lists nothing + measurement and record tracked at HEAD; mark done, log, commit initiative.md and log, push.\nNew steps module supervision_done_steps.py; CLAUDE.md row for supervise_done.py.\nTests broken: none by read; the r92 'other' scenario's Given may need a draft of other under r107.",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/supervise.py",
+    "scripts/supervise_rounds.py",
+    "scripts/supervise_change.py",
+    "scripts/supervise_brief.py",
+    "scripts/supervise_analysis.py",
+    "scripts/supervise_done.py",
+    "scripts/workqueue_done.py",
+    "CLAUDE.md",
+    "tests/scenarios/supervision_integrate_steps.py",
+    "tests/scenarios/supervision_analysis_steps.py",
+    "tests/scenarios/supervision_proposal_steps.py",
+    "tests/scenarios/supervision_given.py",
+    "tests/scenarios/supervision_done_steps.py",
+    "tests/scenarios/test_supervision.py"
+  ],
+  "questions": []
+}
