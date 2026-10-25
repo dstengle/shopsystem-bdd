@@ -204,13 +204,32 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the session.json in each of w1's four stage directories records the path of the transcript of that stage's session
 
-  @r9
-  Scenario: when every work-item is green or withdrawn, `work run` exits successfully, printing each work-item's status
+  @r9 @deprecated
+  Scenario: when every work-item is green or withdrawn, `work run` exits successfully, printing each work-item's status (deprecated)
+    Deprecated for: when every work-item is green or withdrawn and no request whose asker is this context is in the asker's turn, `work run` exits successfully, printing each work-item's status
     Pins that a delivery whose work-items all ended well, or were set aside, is no failure.
     Given i1's work-items w1 is green and w2 is withdrawn
     When the person runs `work run i1`
     Then `work run` prints w1 with green, and w2 with withdrawn
     And it exits successfully
+
+  @r9
+  Scenario: when every work-item is green or withdrawn and no request whose asker is this context is in the asker's turn, `work run` exits successfully, printing each work-item's status
+    Pins that a delivery whose work-items all ended well, or were set aside, is no failure while no request this context asked waits on it.
+    Given i1's work-items w1 is green and w2 is withdrawn
+    And a request q2 whose asker is this context, awaiting-upstream, its turn the upstream's
+    When the person runs `work run i1`
+    Then `work run` prints w1 with green, and w2 with withdrawn
+    And it exits successfully
+
+  @r101
+  Scenario: when `work run` ends while a request whose asker is this context is in the asker's turn, it exits with an error, printing the request with its open questions
+    Pins that a request this context asked, waiting on this context's own answer, stops the run as something for the person, even when every work-item ended well.
+    Given i1's work-item w1 is green
+    And a request q2 kept in this context whose asker is this context, awaiting-asker, its turn the asker's, with the question "Which unit is the limit in?" and no answer
+    When the person runs `work run i1`
+    Then `work run` prints q2 with the question "Which unit is the limit in?"
+    And it exits with an error
 
   @r32
   Scenario: when no work-item can make a transition and one is awaiting-answer, `work run` exits with an error, printing each work-item's status and each open question
@@ -850,8 +869,9 @@ Feature: Supervision
     Then a round of the kind integrate was started for i1, and a round of the kind apply for each of p2 and p3
     And no round of the kind integrate, apply or formulate was started before every other round of those kinds had ended
 
-  @r67
-  Scenario Outline: a request this context is the upstream of that is <status> is given to an intake round
+  @r67 @deprecated
+  Scenario Outline: a request this context is the upstream of that is <status> is given to an intake round (deprecated)
+    Deprecated for: a request this context is the upstream of that is <status> is given to an intake round that writes each line's line outcome or a question on it
     Pins that a request waiting on this context is taken in without anyone starting a session for it by hand.
     Given a request q1 of which this context is the upstream, <status>, its turn the upstream's, with two lines
     And the intake round writes a line outcome for each of q1's lines and passes the turn with `work turn`
@@ -863,6 +883,28 @@ Feature: Supervision
       | status            |
       | open              |
       | awaiting-upstream |
+
+  @r67
+  Scenario Outline: a request this context is the upstream of that is <status> is given to an intake round that writes each line's line outcome or a question on it
+    Pins that a request waiting on this context is taken in without anyone starting a session for it by hand, and that the round may answer a line with a question instead of a line outcome.
+    Given a request q1 of which this context is the upstream, <status>, its turn the upstream's, with two lines
+    And the intake round writes a line outcome for q1's line 1, gives a question on q1's line 2 and passes the turn with `work turn`
+    When the person runs `work run`
+    Then an `initiative-round` session of the kind intake was started, given q1, its brief asking for each line's line outcome or a question on it and for the turn passed with `work turn`
+    And q1's line 1 has a line outcome, and q1's turn is its asker's
+
+    Examples:
+      | status            |
+      | open              |
+      | awaiting-upstream |
+
+  @r100
+  Scenario: a question an intake round gives on a line of a request is written in the request
+    Pins that a question the upstream raises on a line reaches the request, where the asker reads it, without anyone copying it there by hand.
+    Given a request q1 of which this context is the upstream, open, its turn the upstream's, with two lines
+    And the intake round writes a line outcome for q1's line 1, gives the question "Which unit is the limit in?" on q1's line 2 and passes the turn with `work turn`
+    When the person runs `work run`
+    Then q1 holds the question "Which unit is the limit in?" on its line 2
 
   @r79
   Scenario: a proposed initiative is given to an integrate round with the accepted lines of the request it fulfils
@@ -987,6 +1029,15 @@ Feature: Supervision
     Given i1 is started, its capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?" and no answer, and i1 has no work-item
     When the person runs `work run i1`
     Then `work run` ran no `measure initiative` on i1
+
+  @r98
+  Scenario: an implementer started for a work-item that an answer to its reviewer's question returned to ready is given the reviewer's findings and the answer
+    Pins that the implementer who takes up a work-item again after its review knows what the reviewer found and what the person answered, without anyone passing either on by hand.
+    Given i1's work-item w1 was awaiting-answer on its reviewer's question "Is the old reader kept?", the reviewer having written findings.md beside its brief
+    And the answer "No." to "Is the old reader kept?" returned w1 to ready
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then the implementer of w1 was given the reviewer's findings.md, and the question "Is the old reader kept?" with the answer "No."
 
   @r76
   Scenario: once `measure initiative` has written the initiative's measurement, a session of analyzing-a-batch writes its analysis record
@@ -1216,12 +1267,24 @@ Feature: Supervision
       | capability-proposal p1 | awaiting-answer |
       | work-item w1           | failed          |
 
-  @r82
-  Scenario: `work run` started with no initiative, ending with no node awaiting-answer or failed, exits successfully, printing the status of each initiative it took
+  @r82 @deprecated
+  Scenario: `work run` started with no initiative, ending with no node awaiting-answer or failed, exits successfully, printing the status of each initiative it took (deprecated)
+    Deprecated for: `work run` started with no initiative, ending with no node awaiting-answer or failed and no request whose asker is this context in the asker's turn, exits successfully, printing the status of each initiative it took
     Pins that a run over every initiative that leaves nothing waiting on the person is no failure, and that it reports only the initiatives it took.
     Given i1 is started, none of its nodes can make a transition and none of them is awaiting-answer or failed
     And an initiative i2 under .shop/work/, started, none of whose nodes can make a transition and none of which is awaiting-answer or failed
     And an initiative i3 under .shop/work/ that is done
+    When the person runs `work run`
+    Then `work run` prints i1 with started and i2 with started, and does not print i3
+    And it exits successfully
+
+  @r82
+  Scenario: `work run` started with no initiative, ending with no node awaiting-answer or failed and no request whose asker is this context in the asker's turn, exits successfully, printing the status of each initiative it took
+    Pins that a run over every initiative that leaves nothing waiting on the person, and no request this context asked waiting on it, is no failure, and that it reports only the initiatives it took.
+    Given i1 is started, none of its nodes can make a transition and none of them is awaiting-answer or failed
+    And an initiative i2 under .shop/work/, started, none of whose nodes can make a transition and none of which is awaiting-answer or failed
+    And an initiative i3 under .shop/work/ that is done
+    And a request q2 whose asker is this context, awaiting-upstream, its turn the upstream's
     When the person runs `work run`
     Then `work run` prints i1 with started and i2 with started, and does not print i3
     And it exits successfully
