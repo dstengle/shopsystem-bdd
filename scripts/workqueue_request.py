@@ -104,7 +104,8 @@ def turn(root, ident):
             return _with_field(_with_field(text, "status", "awaiting-upstream"), "turn", "upstream")
         words = [e.split(". ", 1)[1] for e in _entries(text, "Outcomes") if ". " in e]
         if len(words) == len(_entries(text, "Lines")) and all(w in SETTLED for w in words):
-            text = _with_field(text, "status", "accepted" if "accepted" in words else "refused")
+            if field(text, "status") != "delivered":
+                text = _with_field(text, "status", "accepted" if "accepted" in words else "refused")
         else:
             text = _with_field(text, "status", "awaiting-asker")
         return _with_field(text, "turn", "asker")
