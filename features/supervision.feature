@@ -1060,6 +1060,18 @@ Feature: Supervision
     When the person runs `work run i1`
     Then i1's transition to started was made when the integrate round for i1 was started
 
+  @r84
+  Scenario: when the integrate round `work run` started for a proposed initiative ends DONE, the initiative is started and work run leaves nothing uncommitted
+    Pins that the round's stage directory is committed with the initiative's change to started, so a later `work run` finds nothing under .shop/work/ to refuse on.
+    Given i1 is proposed and fulfils the request q1, whose line 1 has the line outcome accepted
+    And the integrate round for i1 gives DONE, and every round ends
+    When the person runs `work run i1`
+    Then i1's transition to started was made when the integrate round for i1 was started
+    And the initiative branch has a commit of the integrate round's stage directory with i1's change to started
+    And nothing under .shop/work/ is left uncommitted
+    When the person runs `work run i1` a second time
+    Then the second `work run` was not refused
+
   @r68
   Scenario: a drafted capability-proposal is given to a gate round whose brief asks for the gate as questions, each a decision with its readings and the recommended reading marked
     Pins that the gate comes back as decisions the person can answer one by one, with the reading to take already marked.
