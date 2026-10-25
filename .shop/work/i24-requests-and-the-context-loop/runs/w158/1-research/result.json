@@ -1,0 +1,14 @@
+{
+  "status": "DONE",
+  "summary": "Research of w158 (r79, no request). Scenario 1 passes today (run). Scenario 2 fails on an undefined Given 'i1 is proposed and fulfils no request' (run); its other Thens are undefined too (by search). Probe, run: a proposed initiative with no request (or a missing one) is moved to started, the next run refuses on an uncommitted log, and a branch round/i1-1-integrate is left (defect D1). A faulted integrate round leaves i1 started; the next run starts a branch review over an initiative with no work-items (D2, D3). Code: scripts/supervise_rounds.py due() (32-33) and round() (48-49); scripts/supervise_brief.py integrate_lines (66-70); scripts/supervise.py pull_through (205). Readings in conflict (r10 refusal vs the ruling's exit; r84 vs r86 for the started status; whether zero work-items are green) are given in notes.md, not as questions. tests-of refused (no map; not made); test lists are by search. git status clean.",
+  "fileset": [
+    "scripts/supervise_rounds.py",
+    "scripts/supervise_brief.py",
+    "scripts/supervise.py",
+    "scripts/supervise_review.py",
+    "scripts/workqueue.py",
+    "tests/scenarios/supervision_rounds_steps.py",
+    "tests/scenarios/test_supervision.py"
+  ],
+  "questions": []
+}
