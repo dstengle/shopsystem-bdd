@@ -1,0 +1,14 @@
+{
+  "status": "QUESTION",
+  "summary": "Plan of w154 written (plan.md). r86/r88 scenarios are red only for missing steps (code already keeps status and names the round on turn limit / no result); r87 also has a code gap (a BLOCKED apply moves p1 on to formulated, D2).\nChange: Rounds.round in supervise_rounds.py checks the result's status; non-DONE makes no move, goes through keep_round (commit stage dir + log, push, keep branch) and raises naming the round and its outcome. Stub plans keyable by round kind; new Givens/Thens in supervision_rounds_steps.py and a status Then in test_supervision.py.\nDecided: integrate round failing leaves the initiative started (r84 + r87: rolling back would be a transition); r88 message kept, step matches it (r88); D3 out of scope (r81/r32 not accepted).\nTests broken: none.\nOne question: whether a non-DONE gate round still writes its questions under ## Questions; plan written for reading B, with reading A's change stated.",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/supervise_rounds.py",
+    "tests/scripts/stub_claude.py",
+    "tests/scenarios/supervision_rounds_steps.py",
+    "tests/scenarios/test_supervision.py"
+  ],
+  "questions": [
+    "When a gate round gives a readable result whose outcome is not DONE (e.g. BLOCKED or QUESTION) and lists questions, does `work run` still write those questions under the capability-proposal's ## Questions (r85 'when a gate round ends') while keeping the status and making no transition (r86/r87)? Reading A (r85 applies to any gate round that ends): the person sees p1 still drafted with the round's questions under ## Questions, and `work run` exits with an error naming the round; the next run starts the gate round again on a proposal that already has questions, which may then be listed twice. Reading B ('ends' in r85 means ends with DONE, as r69's 'ends' has to under r87): the person sees p1 drafted with nothing written on it, the questions only in the round's committed result.json, and `work run` exits with an error naming the round and its outcome. Under B, a gate agent that gives its gate with the outcome QUESTION instead of DONE would stop the run every time."
+  ]
+}
