@@ -90,6 +90,8 @@ def request(root, title, asker, lines_file, sources, thread, delegation=None):
     A request that names neither an origin nor a job-thread is refused (r3), and so is one with a line not in the strict
     form `model check` holds (r2); a refusal writes nothing.
     """
+    if delegation is not None and not delegation.strip():
+        raise Refused("the delegation is empty")
     if not sources and thread is None:
         raise Refused("the request names neither an origin (--source) nor a job-thread (--thread)")
     if not Path(lines_file).is_file():

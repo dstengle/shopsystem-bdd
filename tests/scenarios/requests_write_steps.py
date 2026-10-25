@@ -97,6 +97,11 @@ def refused_no_origin(context):
     assert "neither an origin" in err and "job-thread" in err, context["done"]
 
 
+@then("the command is refused because the delegation is empty")
+def refused_empty_delegation(context):
+    assert "delegation is empty" in context["done"].stderr, context["done"]
+
+
 @then("it exits with an error")
 def exits_with_an_error(context):
     assert context["done"].returncode != 0, context["done"]
