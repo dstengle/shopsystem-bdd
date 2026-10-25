@@ -1,2 +1,3 @@
 - 2026-10-25: integrate round 1 (q11): 1 line added (supervision r122), 0 changed, 0 removed, 0 terms, 0 decisions, 4 questions, 1 cut sentence; .shop/scratch/1-integrate/drafts/round-1/gate.md
 - 2026-10-25: gate round 1 (supervision-1-gate): 1 question (supervision#r122)
+- 2026-10-25: apply (supervision): r122 added in spec/capabilities/supervision.md with Implementation note r122 (reading b), answer under the person's delegation 2026-10-25; questions 1, 3, 4 unanswered, r4 and --whole-suite note unchanged, no r123; spec commit eb30678a
