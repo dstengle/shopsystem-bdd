@@ -71,6 +71,6 @@ Write it last, as one JSON object:
 - `status`, the outcome: `DONE` when no finding is triaged fix now, none is Critical and every check was verified; `DONE_WITH_CONCERNS` when one is, or a check could not be verified, so it goes to the person; `NEEDS_CONTEXT` when you cannot review;
 - `summary`: under fifteen lines, the suite line among them;
 - `findings`: the findings file's path;
-- `questions`: each fix-now or Critical finding, and each check you could not verify, in one line (grade, work-item, file:line, what is wrong), else empty.
+- `questions`: only the findings you triaged fix now, one line each (grade, work-item, file:line, what is wrong), else empty. A Critical finding not triaged fix now and a check you could not verify stay in `findings.md` (`Findings`, `Cannot verify`) and in the `status`, and are not listed here.
 
-`NEEDS_CONTEXT` is a stop: the brief has no result file or stage directory, the initiative or its base is not there, or a work-item it names is missing. Say why in the summary and in `questions`, change nothing and write only the result file.
+`NEEDS_CONTEXT` is a stop: the brief has no result file or stage directory, the initiative or its base is not there, or a work-item it names is missing. Say why in the summary, leave `questions` empty, change nothing and write only the result file.
