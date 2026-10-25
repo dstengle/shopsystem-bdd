@@ -20,3 +20,4 @@ The drafts of this proposal are in .shop/work/i25/runs/i25/2-integrate.
 
 ## Answers
 - 2026-10-25: 1: (a), the brief names the findings file of the work-item's last review stage directory and writes the answer as r57 does (the coordinator under the person's delegation 2026-10-25)
+- 2026-10-25: 2: (a), only a work-item's reviewer; r98 reads as recommended (the coordinator under the person's delegation 2026-10-25)
