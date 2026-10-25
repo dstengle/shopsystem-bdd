@@ -29,6 +29,16 @@ Feature: Requests
     And its delegation is "answer any question on line 2"
     And it exits successfully
 
+  @r22
+  Scenario: request with an empty delegation is refused, and nothing changes
+    Pins that a request is not taken in with a delegation that names no question a session may answer in the person's place.
+    Given an upstream that keeps no request
+    And a file lines.md with two lines in strict EARS
+    When the asker runs `work request "Show the queue" --from ctx-a --lines lines.md --source o1 --delegation ""`
+    Then the command is refused because the delegation is empty
+    And it exits with an error
+    And the upstream keeps no request
+
   @r2
   Scenario Outline: request with a line that <fault> is refused, naming the line, and nothing changes
     Pins that a request holds only lines in the strict form model check holds, and that request says which line is not.
