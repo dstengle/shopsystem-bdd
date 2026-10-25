@@ -1,4 +1,6 @@
 """supervision's steps about the answers a work-item carries (r57) and the work-item branch `work run` keeps (r58)."""
+import json
+
 from pytest_bdd import given, parsers, then
 
 from .supervision_then_workers import brief_lines
@@ -30,6 +32,40 @@ def briefs_hold_answers(repo, context, q1, a1, q2, a2):
         for q, a in ((q1, a1), (q2, a2)):
             at = [i for i, l in enumerate(lines) if q in l]
             assert at and any(a in l for l in lines[at[0]:at[0] + 3]), (q, a, c["brief"])
+
+
+REVIEW = ".shop/work/i1/runs/w1/3-review"
+
+
+@given(parsers.re(r'i1\'s work-item w1 was awaiting-answer on its reviewer\'s question "(?P<q>[^"]+)", the reviewer having '
+                  r"written findings\.md beside its brief$"))
+def reviewer_asked(repo, context, q):
+    context["question"] = q
+    write(repo, REVIEW + "/brief.md", "# review of w1\n")
+    write(repo, REVIEW + "/findings.md", "The old reader is still called.\n")
+    write(repo, ".shop/work/i1/w1.md", item_text("w1", "awaiting-answer") + "\n## Questions\n- %s\n" % q)
+    commit_all(repo, "w1 awaiting-answer on its reviewer's question")
+
+
+@given(parsers.re(r'the answer "(?P<a>[^"]+)" to "(?P<q>[^"]+)" returned w1 to ready$'))
+def answer_returned_to_ready(repo, a, q):
+    write(repo, ".shop/work/i1/w1.md", item_text("w1", "ready") + "\n## Questions\n- %s\n\n## Answers\n- %s\n" % (q, a))
+    steps = [("ready", "claimed"), ("claimed", "done"), ("done", "awaiting-answer"), ("awaiting-answer", "ready")]
+    write(repo, ".shop/work/i1/log.jsonl", "".join(
+        json.dumps({"time": "2026-10-19T10:0%d:00+00:00" % n, "work-item": "w1", "before": b, "after": a_,
+                    "by": "work answer" if a_ == "ready" else "work run"}) + "\n" for n, (b, a_) in enumerate(steps)))
+    commit_all(repo, "w1 returned to ready by an answer")
+
+
+@then(parsers.re(r'the implementer of w1 was given the reviewer\'s findings\.md, and the question "(?P<q>[^"]+)" with the '
+                 r'answer "(?P<a>[^"]+)"$'))
+def implementer_given_findings(repo, context, q, a):
+    started = [c for c in starts(repo) if work_item_of(c) == "w1" and c["agent"].endswith("bdd-implementer")]
+    assert len(started) == 1, (started, context["done"].stderr)
+    lines = started[0]["brief"].splitlines()
+    assert any(l.strip().endswith("-review/findings.md") and "Read (paths" not in l and not l.startswith("- ") for l in lines), lines
+    at = [i for i, l in enumerate(lines) if q in l]
+    assert at and any(a in l for l in lines[at[0]:at[0] + 3]), (q, a, started[0]["brief"])
 
 
 @given(parsers.re(r"i1's work-item (?P<name>\w+) is ready, and the branch work/(?P=name) was kept with a commit of (?P<path>\S+)$"))

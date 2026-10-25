@@ -55,6 +55,8 @@ class Briefs:
             lines += self.research_lines(data)
         if stage == "plan":
             lines += self.research_questions(name)
+        if stage == "implement":
+            lines += self.findings_lines(name)
         lines += self.answer_lines(name)
         path = here / "brief.md"
         path.write_text("# %s of %s\n\n%s\n\nRead (paths in your worktree):\n%s\nRun directory: %s\nResult file: %s\n\n"
@@ -82,6 +84,23 @@ class Briefs:
             "Give your change list in your result's `changes`: a list with one entry for each capability, each "
             '`{"capability": <name>, "adds": [...], "changes": [...], "removes": [...]}`, the ids as '
             "`<capability>#r<n>` or `term/<term>`."]
+
+    def findings_lines(self, name):
+        """For a work-item an answer to its reviewer's question returned to ready (r98), a line naming the findings file
+        of its last review stage directory."""
+        moves = []
+        log = self.dir / "log.jsonl"
+        for line in log.read_text().splitlines() if log.is_file() else []:
+            data = json.loads(line)
+            if isinstance(data, dict) and data.get("work-item") == name and "after" in data:
+                moves.append((data.get("before"), data["after"]))
+        into = [i for i, m in enumerate(moves) if m[1] == "ready"]     # the claim after it is no part of the route
+        if not into or into[-1] == 0 or moves[into[-1]][0] != "awaiting-answer" or moves[into[-1] - 1] != ("done", "awaiting-answer"):
+            return []
+        runs = self.dir / "runs" / name
+        reviews = sorted((p for p in runs.glob("*-review") if p.name.split("-")[0].isdigit()),
+                         key=lambda p: int(p.name.split("-")[0])) if runs.is_dir() else []
+        return ["Reviewer's findings: %s" % self.rel(reviews[-1] / "findings.md")] if reviews else []
 
     def answer_lines(self, name):
         """The work-item's answers as brief lines (r57), each beside the question it answers: the n-th bullet of
