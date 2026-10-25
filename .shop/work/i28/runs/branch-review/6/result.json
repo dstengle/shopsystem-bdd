@@ -1,0 +1,6 @@
+{
+  "status": "DONE",
+  "summary": "Branch review 6 of i28, 4b7dca6c..f647911b (w167-w172, all green). Verdict: DONE.\nSuite: 873 passed, 11 failed at f647911b in 26.9 s (parallel, -n auto; not in-process).\nEach of the 11 failures is a StepDefinitionNotFoundError in a scenario that another initiative formulated: requests r22; supervision r9 r15 r67 r82 r100 r101; work-queue r26 r27 r28. Each is waiting on w175, w176, w178 or w179. None is i28's (finding 6).\nNone of i28's code has changed since review 5. w173 (i25) added findings_lines to supervise_brief.py for the implement stage only, and i28's integrate and gate lines are untouched. w177 (i26) retired requests @r4 @r5 @r12, all listed under its Retires.\nI ran each work-item's check (pytest --work-item w167..w172) myself, and each passes.\ntools check: ruff gives the same 7 errors as before: 5 are i28's (Minor, drop) and 2 are in i29's mk.py. vulture is clean; there are no import contracts.\ntools size: no file over 300. features bindings: clean. features deprecated: i28's @r102 is not retired yet (Minor, observation).\nNo removed or weakened tests. The w171 and w172 allowances hold.\nNo finding is Critical and none is triaged fix now.",
+  "findings": "/tmp/work-run-i28-0981do5m/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": []
+}
