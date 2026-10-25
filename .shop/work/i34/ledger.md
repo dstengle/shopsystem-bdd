@@ -1,0 +1,1 @@
+- 2026-10-25: integrate round 1 (q11): 1 line added (supervision r122), 0 changed, 0 removed, 0 terms, 0 decisions, 4 questions, 1 cut sentence; .shop/scratch/1-integrate/drafts/round-1/gate.md
