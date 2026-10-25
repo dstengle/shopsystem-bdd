@@ -106,6 +106,9 @@ class Rounds(Changes):
                                   "its drafts have" % ", ".join(absent))
         found = [one for one in found if one["capability"] not in absent]
         asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []] if kind == "gate" else None
+        if kind == "gate" and not asked:     # r117: a gate with nothing to decide still asks for the approval of the lines
+            asked = ["Are the lines of %s approved as drafted? Readings: approve %s as drafted (recommended), "
+                     "or change its lines." % (name, name)]
         if kind != "integrate":
             self.move(name, before, after, asked)
         else:     # r84: the round's stage directory is committed once it has ended, on top of the commit of started

@@ -49,10 +49,22 @@ def gate_gives_question(plan, ask):
     plan["initiative-round"] = {"status": "DONE", "questions": [ask]}
 
 
-@then(parsers.re(r"p1's ## Questions holds (?P<text>.+)$"))
+@given("the gate round's result gives no question, and every round ends")
+def gate_result_no_question(plan):
+    plan["initiative-round"] = {"status": "DONE", "questions": []}
+
+
+@then(parsers.re(r"p1's ## Questions holds (?P<text>\".+)$"))
 def questions_hold(repo, text):
     held = ["\n".join(b) for b in bullets((repo / DIR / "p1.md").read_text(), "Questions")]
     assert any(gate_question(text) == " ".join(b.split())[2:] for b in held), held
+
+
+@then("p1's ## Questions holds one question, asking for the approval of p1's lines as drafted")
+def questions_hold_approval(repo):
+    held = [" ".join(" ".join(b).split())[2:] for b in bullets((repo / DIR / "p1.md").read_text(), "Questions")]
+    assert len(held) == 1, held
+    assert "approv" in held[0].lower() and "p1" in held[0] and "as drafted" in held[0], held
 
 
 def bullets(text, heading):
