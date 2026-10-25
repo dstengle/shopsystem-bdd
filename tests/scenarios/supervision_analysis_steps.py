@@ -34,6 +34,19 @@ def analyst_writes_record(plan):
     plan["batch-analyst"] = {"notes": {"analysis.md": ANALYSIS}}
 
 
+@given("every worker gives DONE, and the branch reviewer's result gives PARTIAL, with no question and no finding")
+def reviewer_partial(plan):
+    plan["default"] = {"status": "DONE"}
+    plan["bdd-branch-reviewer"] = {"status": "PARTIAL", "questions": []}
+
+
+@given("every worker gives DONE, the branch reviewer's result lists nothing to fix now, and the analyzing-a-batch "
+       "session writes an analysis file of i1 and ends at its turn limit")
+def analyst_turn_limit(plan):
+    reviewer_lists_nothing(plan)
+    plan["batch-analyst"] = {"notes": {"analysis.md": ANALYSIS}, "subtype": "error_max_turns"}
+
+
 def analysts(repo):
     return [c for c in starts(repo) if c["agent"] == ANALYST]
 
@@ -43,6 +56,19 @@ def analyst_started(repo, context):
     found, called = measurement(repo), analysts(repo)
     assert len(found) == 1 and len(called) == 1, (found, called, context["done"].stderr)
     assert str(found[0]) in called[0]["brief"], called[0]["brief"]
+
+
+@then("`work run` ran no `measure initiative` on i1 after the branch review was kept")
+def measured_not(repo, context):
+    ended = [l for l in log_lines(repo) if l.get("stage") == "branch-review" and l.get("event") == "end"]
+    found = measurement(repo)
+    assert len(ended) == 1 and found == [], (ended, found, context["done"].stderr)
+
+
+@then("i1's analysis record is not there")
+def analysis_not_there(repo, context):
+    records = sorted((repo / ".shop/records").glob("*-i1-analysis.md")) if (repo / ".shop/records").is_dir() else []
+    assert records == [], (records, context["done"].stderr)
 
 
 @then("i1's analysis record is there")

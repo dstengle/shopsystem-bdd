@@ -7,7 +7,7 @@ import subprocess
 import sys
 import uuid
 
-from supervise_worker import SCRIPTS
+from supervise_worker import SCRIPTS, cut_short     # supervise_worker first: it and supervise_faults import each other
 
 AGENT = "batch-analyst"
 STAGE = "analysis"
@@ -17,12 +17,21 @@ class Analyses:
     """The part of supervise.Run that measures an initiative whose work is done and has it analysed."""
 
     def lists_nothing(self, kept):
-        """Whether the kept review's result file is readable and its `questions`, the list r74 reads, is empty."""
+        """Whether the kept review's result file is readable, its status is DONE and its `questions`, the list r74
+        reads, is empty (r75): a review that ended any other way lists nothing to fix now no more than one with findings."""
         try:
             data = json.loads((kept / "result.json").read_text())
         except (OSError, ValueError):
             return False
-        return isinstance(data, dict) and not data.get("questions")
+        return isinstance(data, dict) and data.get("status") == "DONE" and not data.get("questions")
+
+    @staticmethod
+    def readable(path):
+        """Whether `path` holds a JSON object (r76: a missing or malformed result is a failed stage)."""
+        try:
+            return isinstance(json.loads(path.read_text()), dict)
+        except (OSError, ValueError):
+            return False
 
     def analyse(self):
         """Run `measure initiative` from the repository root; when it writes the measurement, start the analysis session
@@ -49,8 +58,14 @@ class Analyses:
                 "`summary` and `questions`.\n"
                 % (self.initiative, self.rel(self.dir), AGENT, SCRIPTS, measurement, measurement.parent, tree, here,
                    here / "result.json"))
-            self.session(STAGE, AGENT, brief, str(uuid.uuid4()), tree, None)
-            if (here / "analysis.md").is_file():
+            ended = self.session(STAGE, AGENT, brief, str(uuid.uuid4()), tree, None)
+            cut = cut_short(ended.stdout, ended.returncode)
+            if cut is None and not self.readable(here / "result.json"):
+                cut = "session left no readable result file"
+            if cut is not None:
+                print("work run: the analysis session of %s was cut short, so there is no analysis record: %s"
+                      % (self.initiative, cut), file=sys.stderr)
+            elif (here / "analysis.md").is_file():
                 record = self.root / ".shop" / "records" / ("%s-%s-analysis.md" % (measurement.name[:10], self.initiative))
                 shutil.copy2(here / "analysis.md", record)
             else:
