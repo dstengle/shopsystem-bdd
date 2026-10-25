@@ -28,6 +28,11 @@ def asked_by_reviewer(root, path, name):
     return bool(moves) and moves[-1].get("before") == "done"
 
 
+def reviewer_status(change):
+    """The status a reviewer's answered question returns the work-item to: ready on a change, done on an accept."""
+    return "ready" if change else "done"
+
+
 def answer(root, name, text, change=False, accept=False):
     """Write `text` with today's date under the awaiting-answer work-item `name`'s `## Answers` and return it to the
     status the stage that asked started from (a reviewer's: ready on `change`, done on `accept`); return that status."""
@@ -50,7 +55,7 @@ def answer(root, name, text, change=False, accept=False):
     if not proposal and asked_by_reviewer(root, path, name):
         if not (change or accept):
             raise Refused("the answer must say whether it asks for a change (--change) or accepts the work-item as it is (--accept)")
-        status = "ready" if change else "done"
+        status = reviewer_status(change)
     line = "- %s: %s\n" % (datetime.date.today().isoformat(), text)
 
     def write():

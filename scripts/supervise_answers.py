@@ -14,6 +14,8 @@ from supervise_worker import SCRIPTS, GitFailed, git
 from workqueue import Refused
 
 AGENT = "delegation-answerer"
+VERDICT = (" The question is a reviewer's: also give `verdict`, `change` when the answer asks for the work-item to be "
+           "changed, `accept` when it takes the work-item as it is.")
 PATH = re.compile(r"[\w.\-]+(?:/[\w.\-]+)+\.\w+")
 
 
@@ -63,6 +65,7 @@ class Answers:
         delegation = self.delegation()
         if delegation is None:
             return
+        self.verdicts = {}
         for name, kind in self.asking():
             before = workqueue.agrees(self.root, self.initiative, name)
             left = False
@@ -76,7 +79,11 @@ class Answers:
                 self.commit(name, before, before)     # kept now: the next session's end must not find it uncommitted (r28)
             if kind == "work-item" and not left and self.open_questions(name) == []:
                 path = self.dir / (name + ".md")
-                self.move(name, before, workqueue_answer.asked_from(self.root, path, name))
+                if workqueue_answer.asked_by_reviewer(self.root, path, name):
+                    target = workqueue_answer.reviewer_status(self.verdicts[name] == "change")
+                else:
+                    target = workqueue_answer.asked_from(self.root, path, name)
+                self.move(name, before, target)
             elif self.uncommitted(name):
                 self.commit(name, before, before)
         self.push()
@@ -94,7 +101,9 @@ class Answers:
         tree = self.worktree(name, "%s-%s" % (name, label))
         try:
             start = git(tree, "rev-parse", "HEAD").stdout.strip()
-            data, failure = self.worker(name, "answer", AGENT, tree, extra=(("Question", question), ("Delegation", delegation)))
+            reviewer = workqueue_answer.asked_by_reviewer(self.root, self.dir / (name + ".md"), name)
+            extra = (("Question", question), ("Delegation", delegation)) + ((("Reviewer", "yes"),) if reviewer else ())
+            data, failure = self.worker(name, "answer", AGENT, tree, extra=extra)
             changed = self.tree_changes(tree, start)
         except (Fault, GitFailed) as fault:
             failure, changed = fault_of(fault), []
@@ -107,6 +116,10 @@ class Answers:
         answer = data.get("answer")
         if data.get("status") != "DONE" or not isinstance(answer, str) or not answer.strip():
             return None
+        if workqueue_answer.asked_by_reviewer(self.root, self.dir / (name + ".md"), name):
+            if data.get("verdict") not in ("change", "accept"):     # no verdict: the question is left for the person
+                return None
+            self.verdicts[name] = data["verdict"]
         return None if any(c in answer for c in workqueue_answer.LINE_BREAKS) else answer.strip()
 
     def answer_brief(self, here, tree, extra):
@@ -122,7 +135,8 @@ class Answers:
                         "Write the result file first, with the outcome `PARTIAL`, and keep it current as you work: JSON "
                         "with `status`, `summary` (under fifteen lines) and `questions` (a list of strings). When the "
                         "delegation covers the question, give `DONE` with `answer`, the answer as one line; otherwise "
-                        "give `DONE` with no `answer`.\n"
+                        "give `DONE` with no `answer`.%s\n"
                         % (AGENT, SCRIPTS, tree, given["Question"], given["Delegation"],
-                           "".join("- %s\n" % f for f in files), here, here / "result.json", tree))
+                           "".join("- %s\n" % f for f in files), here, here / "result.json", tree,
+                           VERDICT if given.get("Reviewer") else ""))
         return path
