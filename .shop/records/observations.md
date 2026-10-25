@@ -386,3 +386,12 @@ date: 2026-10-25
 - An apply round that writes a line a gate answer added numbers it as the next free id in `spec/`, without the ids other initiatives' kept drafts hold (r102 gives them only to integrate rounds): i29's apply wrote supervision r109, which i30's drafts at its gate also hold; i30's is renumbered r117 by its answer.
 - A work-item added with `work add` under a capability-proposal and capability (w179 under i29-supervision, as w167 under loop-side-by-side) keeps r72 from drafting that proposal's own work-item for the capability, and its scenarios then fail every other work-item's whole-suite check (w175, w179, w180); added as w181.
 - A work-item redrafted with `work add` (w176 for w174) loses the `## Retires` entry r73 wrote, and its review finds the deprecated scenario retired without one.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-25-withdrawn-initiative-done
+about: capability/work-queue
+by: the coordinator, from i31 and i32
+date: 2026-10-25
+
+- `work withdraw w183` left every work-item of i31 `withdrawn` (its redraft w185 was added after), and r23 set i31 `done`; `work add` then drafted w185 into the done initiative and `work run` never took it, so q8's ten scenarios failed the suite while i31 read `done`. i31 was put back to `started` by hand.
+- r118 and r119 move a reviewer's work-item by the answering session's `verdict`, but the delegation-answerer's agent file does not ask for one (i32's branch review 2).
+- i32's branch review 2 ended `DONE_WITH_CONCERNS` with no question (checks it could not verify, named in its summary, as review r31 now has it), and r75 counts only `DONE` as listing nothing to fix now, so i32 cannot be done.
