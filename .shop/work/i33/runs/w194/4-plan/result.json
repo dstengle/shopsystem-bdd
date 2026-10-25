@@ -1,0 +1,14 @@
+{
+  "status": "DONE",
+  "summary": "Plan of w194 (supervision#r120, r121, r75, r105) in .shop/scratch/4-plan/plan.md.\nr121: lists_nothing in supervise_analysis.py ignores the status, so only a question counts; add the r121 parameterised Given. Retire feature:1050 (## Retires) and its step reviewer_partial with features retire.\nr120: no production change; add the Then in supervision_delegation_steps.py.\nr75: pull_through (supervise.py:222) also needs at least one green work-item before analyse/set_done. This is r75's own guard, not workqueue_done.holds, which also requires the requests to be delivered. The branch review still runs when every work-item is withdrawn, as the Then asserts.\nr105: set_done already requires a green work-item through workqueue_done.holds (w192, in the base); the rows are red only because steps are missing. In supervision_done_steps.py: make the 'i1 is started and its work-items ...' Given parameterised, add the Given for the committed records and the kept review, and add 'i1 is not done'.\nOnly the retired test breaks.",
+  "plan": ".shop/scratch/4-plan/plan.md",
+  "fileset": [
+    "scripts/supervise_analysis.py",
+    "scripts/supervise.py",
+    "tests/scenarios/supervision_analysis_steps.py",
+    "tests/scenarios/supervision_delegation_steps.py",
+    "tests/scenarios/supervision_done_steps.py",
+    "features/supervision.feature"
+  ],
+  "questions": []
+}
