@@ -325,3 +325,10 @@ by: the coordinator, from w134's task review, under the person's delegation
 date: 2026-10-25
 
 In a `work run` with no initiative (supervision r66, r81, r82), an exception other than `Refused` raised in one initiative's thread is only printed by `threading.excepthook`, and the run can exit 0 under r82 although that initiative's nodes can still move; with one initiative the same crash exits non-zero. Accepted as it is for i24.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-25-request-question-unwritten
+about: capability/requests
+by: the coordinator, from q2's first intake round
+date: 2026-10-25
+
+q2's intake round (supervision r67) wrote line 1's outcome `question` and passed the turn to the asker, but the question's text is only in the round's `result.json` (`.shop/work/requests/runs/q2/1-intake/`): `work` has no command for the upstream's questions or the asker's answers (requests, Not yet), so q2.md has no `## Questions` and the asker cannot answer through `work` (decision 0067). `work run` printed nothing about it and exited 0 (r82 looks only at initiatives' nodes), so q2 sits `awaiting-asker` with no way forward but an edit by hand.
