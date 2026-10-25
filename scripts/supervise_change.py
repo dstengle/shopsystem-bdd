@@ -1,4 +1,4 @@
-"""An integrate round's change list (capability supervision r92, r96): read from the round's result, checked for its form,
+"""An integrate or apply round's change list (capability supervision r92, r96, r107, r114): read from the round's result, checked for its form,
 and written as one `drafted` capability-proposal for each capability it names. Standard library only; a part of
 supervise.Run."""
 import datetime
@@ -35,11 +35,12 @@ def entries(data):
 class Changes:
     """The part of supervise.Run that writes the proposals of a change list."""
 
-    def unknown(self, found, stage):
+    def unknown(self, found, stage, runs=False):
         """The capabilities `found` names that neither spec/capabilities/ nor a kept draft of the integrate round's stage
-        directory `stage` has (r107), in the order named."""
+        directory `stage` has (r107), in the order named; with `runs`, `stage` holds the stage directories of rounds and
+        the drafts of all of them count (an apply round's list)."""
         held = {p.stem for p in (self.root / "spec" / "capabilities").glob("*.md")}
-        held |= {p.stem for p in stage.glob("drafts/round-*/spec/capabilities/*.md")}
+        held |= {p.stem for p in stage.glob(("*/" if runs else "") + "drafts/round-*/spec/capabilities/*.md")}
         return [one["capability"] for one in found if one["capability"] not in held]
 
     def kept_path(self, stage):

@@ -31,11 +31,12 @@ class Rounds(Changes):
                 found.append((path.stem, data.get("status")))
         return found
 
-    def due(self):
-        """(name, round, status after) of the first proposal with a round to run, else None. Its questions all have an
-        answer when its `## Answers` holds as many bullets as its `## Questions`, none at all included (r70)."""
+    def due(self, left=()):
+        """(name, round, status after) of the first proposal with a round to run, else None; the names in `left` have none.
+        Its questions all have an answer when its `## Answers` holds as many bullets as its `## Questions`, none at all
+        included (r70)."""
         data, _ = workqueue.frontmatter((self.dir / "initiative.md").read_text())
-        if data.get("fulfils") and (data.get("status") == "proposed" or (     # r79: no request, no lines to integrate
+        if self.initiative not in left and data.get("fulfils") and (data.get("status") == "proposed" or (     # r79: no request, no lines to integrate
                 data.get("status") == "started" and not self.proposals() and not self.items())):     # r93
             try:     # a request the queue lacks gives no round, before anything moves
                 workqueue_request.accepted_lines(self.root, str(data["fulfils"]).rsplit("/", 1)[-1])
@@ -43,7 +44,7 @@ class Rounds(Changes):
             except Refused:
                 pass
         for name, status in self.proposals():
-            if status in AFTER and (status != "awaiting-answer"
+            if name not in left and status in AFTER and (status != "awaiting-answer"
                                     or len(self.held(name, "Answers")) >= len(self.held(name, "Questions"))):
                 return (name, *self.route(name, status))
         return None
@@ -60,11 +61,19 @@ class Rounds(Changes):
         return AFTER[status]
 
     def rounds(self):
-        """Run the rounds due until none is; a Refused naming the round when one faults (it keeps the proposal as it was)."""
-        due = self.due()
+        """Run the rounds due until none is. A round that faults keeps its proposal as it was and is left out; the others'
+        rounds still run (r111, r115), and the first fault is raised as a Refused naming the round once none is due."""
+        held, left = None, set()
+        due = self.due(left)
         while due:
-            self.round(*due)
-            due = self.due()
+            try:
+                self.round(*due)
+            except Refused as fault:
+                left.add(due[0])
+                held = held or fault
+            due = self.due(left)
+        if held is not None:
+            raise held
 
     def round(self, name, kind, after):
         """One round. An integrate, apply or formulate round holds the round lock of every initiative a `work run`
@@ -128,6 +137,12 @@ class Rounds(Changes):
                 applied = entries(data)
             except BadChanges:
                 applied = []
+            lacking = self.unknown(applied, self.dir / "runs" / self.initiative, runs=True)
+            if lacking:     # r107: the round is kept, the proposal's lists as they were, and the run's error names it
+                self.keep_round(name, kind, label)
+                raise Refused("the apply round of %s (%s) gave DONE, and %s keeps its status %s: its change list names %s, "
+                              "which neither spec/capabilities/ nor its drafts have" % (
+                                  name, self.rel(self.dir / "runs" / name / label), name, before, ", ".join(lacking)))
             if applied:
                 self.rewrite_lists(name, applied)
         if kind == "formulate":     # r112, r113: what the formulation could not decide is asked; with nothing, r83
