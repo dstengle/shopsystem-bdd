@@ -1,0 +1,22 @@
+{
+  "status": "DONE",
+  "summary": "Research of w164 done; notes.md has the seven parts. 8 of 9 accepted test ids red today (undefined steps first, then missing code: r91-r93, r94, r95, r96, r97, r92); r66 passes. Probes (7 cases, run) show: a review and a measure start with no work-item (r94/r97 gap); integrate DONE with no change list accepted (r96 gap); change list ignored, no proposal written (r92 gap); drafts lost on DONE and turn limit (r91 gap); started initiative with request lines gets no integrate round (r93 gap). No coverage map: test lists are by search. Probe file .shop/scratch/w164-1-research/probe_w164.py (ignored scratch). Nothing in the checkout changed.",
+  "fileset": [
+    "scripts/supervise_rounds.py",
+    "scripts/supervise.py",
+    "scripts/supervise_review.py",
+    "scripts/supervise_all.py",
+    "scripts/supervise_worker.py",
+    "scripts/supervise_brief.py",
+    "scripts/supervise_change.py",
+    "agents/initiative-round.md",
+    "skills/integrating-a-proposal/SKILL.md",
+    "tests/scenarios/supervision_rounds_steps.py",
+    "tests/scenarios/supervision_all_steps.py",
+    "tests/scenarios/supervision_analysis_steps.py",
+    "tests/scenarios/supervision_review_steps.py",
+    "tests/scenarios/supervision_given.py",
+    "tests/scenarios/supervision_world.py"
+  ],
+  "questions": []
+}
