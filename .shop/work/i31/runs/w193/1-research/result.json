@@ -1,0 +1,20 @@
+{
+  "status": "DONE",
+  "summary": "Research of w193 done; notes.md in the run directory. All 11 accepted scenario nodes (r111, r70, r116, r114, r83, r112, r113, r115 x4) pass today by node id, so none is red. The code already implements them (commits ce5c1bfb, 968344f4). Probes (run through work run with the stand-in) found: D1 the real apply round never gives `changes` (branch review 1 finding 1; confirmed by reading the apply brief and agent text); D2 an apply list naming only other capabilities silently empties the proposal's lists; D3 work run exits 0 while a proposal waits on an answer, printing nothing; D4 an awaiting-answer proposal with no question goes to apply. No coverage map, so counts are by refs or search. Checkout unchanged; probes live in the gitignored scratch directory.",
+  "fileset": [
+    "agents/initiative-round.md",
+    "scripts/supervise_brief.py",
+    "scripts/supervise_rounds.py",
+    "scripts/supervise_change.py",
+    "scripts/supervise.py",
+    "scripts/supervise_all.py",
+    "scripts/supervise_worker.py",
+    "scripts/supervise_draft.py",
+    "scripts/supervise_done.py",
+    "features/supervision.feature",
+    "tests/scenarios/supervision_formulate_steps.py",
+    "tests/scenarios/test_supervision.py",
+    "tests/scenarios/supervision_rounds_steps.py"
+  ],
+  "questions": []
+}
