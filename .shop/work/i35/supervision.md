@@ -21,3 +21,6 @@ The drafts of this proposal are in .shop/work/i35/runs/i35/1-integrate/drafts/ro
 - r123 (added): under which capability-proposal is the retiring work-item drafted? Readings: (a) the capability-proposal of the last-drafted work-item whose replacement it retires; (b) the initiative's last `formulated` capability-proposal. No recommendation; the line as drafted names neither.
 - r123 against r27 and r75: is the retiring work-item drafted before the branch review starts and `measure initiative` runs? Readings: (a) Yes (recommended): add a line "**When** every work-item of an initiative is `green` or `withdrawn`, `work run` shall draft the work-item r123 names before it starts a branch review or runs `measure initiative`."; (b) No: no line.
 - r73/r123: a scenario deprecated with `Deprecated for: removal` names no replacement; is it retired by a work-item? Readings: (a) No (recommended, as the note gives): no line; (b) Yes: a line listing it under the r123 work-item's `## Retires` when a capability-proposal of the initiative removes its requirement.
+
+## Answers
+- 2026-10-25: 1: (a), replaced; r73 as drafted (the coordinator under the person's delegation 2026-10-25)
