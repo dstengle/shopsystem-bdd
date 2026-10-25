@@ -35,6 +35,7 @@ fixed now becomes a fix work-item, and the rest an observation.
 - [r30] **When** a work-item or branch review, a re-review included, finds code whose observable behaviour no Behaviour line asks for, the reviewer shall triage it as fix now, the fix being its line written first or the code removed, whatever r8 and r12 would make it.
 - [r8] **When** the re-review of a fix work-item finds something other than data left invalid, the system's own fault on input, or a write that lands where a refusal belongs, the reviewer shall triage it as an observation.
 - [r7] **When** a branch review ends, the branch reviewer shall write in its findings the suite's wall time, the code's shape against `CLAUDE.md` and its coupling to the projects it depends on.
+- [r31] **When** a branch review ends, the branch reviewer shall give in its result's questions only the findings it triages fix now.
 - [r9] **Where** the system reviewed has a dry-run mode and a real mode of one operation, the branch reviewer shall run the randomized test that they agree.
 - [r14] **When** the architecture reviewer finds a refactor to call for, the architecture reviewer shall give it as an observation with a check that would show it complete, naming the work-item it would unblock, if any.
 - [r28] **If** a reviewer cannot do what its input asks, then the reviewer shall stop, saying why, and change nothing.
