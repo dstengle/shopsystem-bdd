@@ -2,3 +2,4 @@
 - 2026-10-25: gate (formulation): 0 questions
 - 2026-10-25: apply (formulation): r23 added, approved by the coordinator under the person's delegation 2026-10-25; spec commit 31738369
 - 2026-10-25: formulate round 4 (formulation): no commit; r23 is a guarantees capability line (design-decision/workflow-capabilities-are-guarantees), so it gets no scenario and no formulator was dispatched; features bindings: every binding names a scenario; model check last line: 16 violations, 12 warnings, 6 unresolved references, 0 file problems
+- 2026-10-25: gate (supervision): 5 questions
