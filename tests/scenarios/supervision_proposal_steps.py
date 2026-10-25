@@ -101,6 +101,21 @@ def drafted_with(repo, name, adds, term, changes, removes):
     commit_all(repo, "%s is drafted" % name)
 
 
+@given(parsers.re(r"p1 was written from the change list of i1's integrate round, whose drafts are kept at (?P<path>\S+)$"))
+def written_from_round(repo, path):
+    file = repo / DIR / "p1.md"
+    head, sep, rest = file.read_text().partition("\n---\n")     # the sentence follows the front matter, as work run writes it
+    file.write_text(head + sep + "\n# thing\n\nThe drafts of this proposal are in %s.\n" % path + rest)
+    commit_all(repo, "p1 names the drafts it was written from")
+
+
+@then(parsers.re(r"the (?P<kind>gate|apply) round for p1 was given the path (?P<path>\S+)$"))
+def round_given_drafts(repo, context, kind, path):
+    found = rounds(repo, kind, "p1")
+    assert len(found) == 1, (context["done"].stdout, context["done"].stderr)
+    assert "Drafts path: %s\n" % path in found[0]["brief"], found[0]["brief"]
+
+
 @then(parsers.re(r'the brief of the gate round for p1 asks only for the questions on thing#r4, thing#r2, thing#r3 and the '
                  r'term "ledger"$'))
 def gate_names_its_ids(repo, context):

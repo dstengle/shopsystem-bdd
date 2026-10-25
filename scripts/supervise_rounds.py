@@ -110,7 +110,7 @@ class Rounds(Changes):
             self.move(name, before, after, asked)
         else:     # r84: the round's stage directory is committed once it has ended, on top of the commit of started
             with self.lock:
-                proposals = self.write_proposals(found, self.rel(self.dir / "runs" / name / label))
+                proposals = self.write_proposals(found, self.kept_path(self.dir / "runs" / name / label))
                 self.commit(name, after, after, also=[self.rel(p) for p in proposals])
             if absent:     # r107: the known capabilities' proposals are written; the unknown ones are an error
                 raise Refused("the integrate round of %s (%s) named %s, which neither spec/capabilities/ nor its drafts have; "

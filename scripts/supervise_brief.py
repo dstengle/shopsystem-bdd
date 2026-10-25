@@ -44,6 +44,11 @@ class Briefs:
                           for kind in ("adds", "changes", "removes")]
                 lines.append("Ask questions only on the lines and terms listed above as adds, changes or removes, and on "
                              "no other line or term.")
+            if stage in ("gate", "apply"):     # r108: the kept drafts of the integrate round that wrote the proposal
+                kept = re.search(r"The drafts of this proposal are in (\S+?)\.(?:\s|$)", item.read_text())
+                if kept:
+                    lines.append("Drafts path: %s" % kept.group(1))
+                    read.append(kept.group(1))
         base = self.base()
         if base:
             lines.append("Base: %s" % base)

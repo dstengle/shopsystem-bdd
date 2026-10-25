@@ -42,8 +42,16 @@ class Changes:
         held |= {p.stem for p in stage.glob("drafts/round-*/spec/capabilities/*.md")}
         return [one["capability"] for one in found if one["capability"] not in held]
 
+    def kept_path(self, stage):
+        """The integrate round's kept drafts directory with the highest round number, relative to the repository with a
+        trailing slash (r108); the stage directory itself when the round kept none."""
+        rounds = [p for p in stage.glob("drafts/round-*") if p.name.split("-")[-1].isdigit()]
+        best = max(rounds, key=lambda p: int(p.name.split("-")[-1]), default=None)
+        return self.rel(best or stage) + ("/" if best else "")
+
     def write_proposals(self, found, stage_dir):
-        """One file a capability in the initiative's directory, `drafted`; the paths written."""
+        """One file a capability in the initiative's directory, `drafted`, naming `stage_dir`, the path of the round's
+        kept drafts; the paths written."""
         text = (self.dir / "initiative.md").read_text()
         ident = next((l.split(":", 1)[1].strip() for l in text.splitlines() if l.startswith("id:")), "")
         prefix = ident.split("/", 1)[1].rsplit("/", 1)[0] if "/" in ident else ""
