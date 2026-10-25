@@ -1,0 +1,22 @@
+{
+  "status": "DONE",
+  "summary": "Plan of w164 (supervision r91-r97, r66) written. Eight accepted scenarios red (undefined steps, then missing code); r66 green and kept green.\nDecisions: the integrate brief names a drafts path in its run directory, and on every ending its tree is copied into the stage directory's drafts/ and committed (r91); the change list is the result field `changes`, one entry for each capability with adds/changes/removes ids (r92); missing or empty means no change list, which is an error naming the round, with the drafts kept (r96); a malformed one is an unreadable result (r86-r88); one drafted proposal for each capability, named after it, all in the round's closing commit (r92); a started initiative with neither node gets an integrate round, with no start transition (r93); pull_through gives no review and no measure without work-items (r94, r97); one cross-initiative lock for integrate, apply and formulate rounds (r95).\nNew modules: scripts/supervise_change.py (plus a CLAUDE.md row) and tests/scenarios/supervision_integrate_steps.py. Dropped from the research set: supervise_review.py, supervise_worker.py, the skill and supervision_world.py.\nBroken test: the r84 step second_not_refused asserts exit 0, which r93 and r96 rule out; it is rewritten to assert no refusal over uncommitted .shop/work/.",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/supervise_rounds.py",
+    "scripts/supervise_change.py",
+    "CLAUDE.md",
+    "scripts/supervise.py",
+    "scripts/supervise_all.py",
+    "scripts/supervise_brief.py",
+    "agents/initiative-round.md",
+    "tests/scenarios/supervision_integrate_steps.py",
+    "tests/scenarios/test_supervision.py",
+    "tests/scenarios/supervision_rounds_steps.py",
+    "tests/scenarios/supervision_given.py",
+    "tests/scenarios/supervision_review_steps.py",
+    "tests/scenarios/supervision_analysis_steps.py",
+    "tests/scenarios/supervision_all_steps.py"
+  ],
+  "questions": []
+}
