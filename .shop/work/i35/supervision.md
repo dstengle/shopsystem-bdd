@@ -28,3 +28,4 @@ The drafts of this proposal are in .shop/work/i35/runs/i35/1-integrate/drafts/ro
 - 2026-10-25: 3: (b), any initiative's work-item: the scenarios left by earlier initiatives (supervision @r75, @r102, @r105; work-queue @r9, @r23) are retired too (the coordinator under the person's delegation 2026-10-25)
 - 2026-10-25: 4: (a), under the capability-proposal of the last-drafted work-item whose replacement it retires (the coordinator under the person's delegation 2026-10-25)
 - 2026-10-25: 5: (a), yes: add the line; drafted before the branch review and measure initiative (the coordinator under the person's delegation 2026-10-25)
+- 2026-10-25: 6: (a), no line (the coordinator under the person's delegation 2026-10-25)
