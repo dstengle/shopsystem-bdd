@@ -90,10 +90,11 @@ class Answers:
             data, failure = self.worker(name, "answer", AGENT, tree, extra=(("Question", question), ("Delegation", delegation)))
             changed = self.tree_changes(tree, start)
         except (Fault, GitFailed) as fault:
-            raise Refused("the session answering %s's question faulted: %s" % (name, fault_of(fault))) from None
+            failure, changed = fault_of(fault), []
         finally:
             self.remove(tree)
         if failure or changed:
+            self.keep_round(name, "answer", label)     # the record is kept in the initiative's history, then the run stops
             raise Refused("the session answering %s's question faulted: %s" % (
                 name, failure or "it changed %s under .shop/work/" % ", ".join(changed)))
         answer = data.get("answer")

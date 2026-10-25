@@ -6,7 +6,7 @@ from pytest_bdd import given, parsers, then
 
 from .conftest import full
 from .supervision_rounds_steps import DIR
-from .supervision_world import commit_all, section, starts, write
+from .supervision_world import commit_all, git, section, starts, write
 
 ANSWER = "The delegation covers it."
 
@@ -50,6 +50,45 @@ def session_answers(repo, plan, answer):
     asked_by_the_log(repo)
     plan["default"] = {"status": "DONE"}
     plan["delegation-answerer"] = {"fields": {"answer": answer}}
+
+
+@given(parsers.re(r'the session answering under the delegation ends at its turn limit, its result file answering '
+                  r'"(?P<answer>[^"]+)", and every worker gives DONE$'))
+def session_at_turn_limit(repo, plan, answer):
+    asked_by_the_log(repo)
+    plan["default"] = {"status": "DONE"}
+    plan["delegation-answerer"] = {"fields": {"answer": answer}, "subtype": "error_max_turns", "num_turns": 26}
+
+
+@given("the session answering under the delegation ends in an error, having written notes.md beside its brief")
+def session_in_error(repo, plan):
+    asked_by_the_log(repo)
+    plan["default"] = {"status": "DONE"}
+    plan["delegation-answerer"] = {"status": "DONE", "subtype": "error_during_execution", "num_turns": 7,
+                                   "notes": {"notes.md": "what the session found\n"}}
+
+
+@then(parsers.re(r'w1\'s question "(?P<question>[^"]+)" has no answer$'))
+def question_unanswered(repo, question):
+    text = (repo / (DIR + "/w1.md")).read_text()
+    assert question in section(text, "Questions") and not section(text, "Answers").strip(), text
+
+
+STAGE = DIR + "/runs/w1"
+
+
+@then("the initiative branch has a commit of the answering session's stage directory, its notes.md included, and of "
+      "log.jsonl's lines for that session")
+def record_committed(repo, context):
+    files = git(repo, "ls-tree", "-r", "--name-only", "HEAD", "--", STAGE).split()
+    assert any(f.endswith("-answer/notes.md") for f in files), (files, context["done"].stderr)
+    assert any(f.endswith("-answer/brief.md") for f in files), files
+    assert "answer" in git(repo, "show", "HEAD:" + DIR + "/log.jsonl")
+
+
+@then("nothing of that stage directory or of log.jsonl is left uncommitted")
+def record_clean(repo):
+    assert git(repo, "status", "--porcelain", "--", STAGE, DIR + "/log.jsonl") == ""
 
 
 def given_to(repo, question):
