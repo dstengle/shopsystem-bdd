@@ -1,0 +1,5 @@
+s = open('spec/capabilities/supervision.md').read().split('\n')
+d = open('.shop/scratch/5-apply/drafts/round-2/spec/capabilities/supervision.md').read().rstrip('\n').split('\n')
+i = next(n for n, l in enumerate(s) if l.startswith('## Purpose'))
+j = next(n for n, l in enumerate(s) if l.startswith('## Implementation'))
+open('spec/capabilities/supervision.md', 'w').write('\n'.join(s[:i] + d + [''] + s[j:]))

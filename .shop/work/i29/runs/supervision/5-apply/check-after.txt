@@ -1,0 +1,28 @@
+v9b  a part has two part_of  (2)
+    capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/requests
+    capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/supervision
+v_d1  a done initiative has a part or a request of its own open  (9)
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i1
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i10
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i11
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i13
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i16
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i17
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i3
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i8
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i9
+v_s3  a requirement has no scenario  (5)
+    capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r105
+    capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r106
+    capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r107
+    capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r108
+    capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r109
+warning w_uncited_obs  an observation no initiative cites  (12)
+unresolved: .shop/work/i30/formulation.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/formulation#r23, which no capability has
+unresolved: .shop/work/i30/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r110, which no capability has
+unresolved: .shop/work/i31/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r111, which no capability has
+unresolved: .shop/work/i31/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r112, which no capability has
+unresolved: .shop/work/i31/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r113, which no capability has
+unresolved: .shop/work/i31/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r114, which no capability has
+unresolved: .shop/work/i31/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r115, which no capability has
+16 violations, 12 warnings, 7 unresolved references, 0 file problems
