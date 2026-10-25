@@ -18,6 +18,8 @@ class Briefs:
 
     def brief(self, name, stage, agent, here, tree, branch, extra):
         """The one brief file a worker is given (r2): the work-item, the files to read, where it works and writes."""
+        if stage == "answer":     # the question, the delegation and the files it names, and nothing else (r77)
+            return self.answer_brief(here, tree, extra)
         item = self.dir / (name + ".md")
         data, _ = workqueue.frontmatter(item.read_text())
         read = [self.rel(item)]

@@ -24,6 +24,7 @@ from pytest_bdd import parsers, scenarios, then, when
 from .conftest import SCRIPTS
 from .supervision_analysis_steps import *
 from .supervision_answers_steps import *
+from .supervision_delegation_steps import *
 from .supervision_faults_steps import *
 from .supervision_given import *
 from .supervision_parallel_steps import *
