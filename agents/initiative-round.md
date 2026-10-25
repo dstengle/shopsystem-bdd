@@ -1,6 +1,6 @@
 ---
 name: initiative-round
-description: Runs one round of spec work: one integration round (dispatches the capability-writer and verifies its change list), the gate as questions in its result, the applying of approved drafts to spec/, or one formulation round (dispatches the feature-formulators, verifies coverage, writes and commits the feature files). Started by work run; not for general use.
+description: Runs one round of spec work: one integration round (dispatches the capability-writer and verifies its change list), the gate as questions in its result, the applying of approved drafts to spec/, one formulation round (dispatches the feature-formulators, verifies coverage, writes and commits the feature files), or the intake of one upstream request (writes a line outcome for each of its lines and passes the turn). Started by work run; not for general use.
 tools: Read, Glob, Grep, Bash, Write, Edit, Agent
 skills:
   - shopsystem-bdd:integrating-a-proposal
@@ -33,7 +33,12 @@ Your input prompt gives `Scripts:`, the kind (`Kind:`), the drafts path and the 
 - **`formulate`**: the capability paths and the change list. Do formulating-features' steps 1, 2 and 4: dispatch one formulator a capability, all in one message so they run together; verify the porcelain and the coverage, one to one; deprecate a scenario that passes today, rebind, splice, run `features bindings` and, once the files are written, `scripts/model check --limit 100000` (no path; the option shows every row), and commit the feature files with the rebound test files. A line a formulator returns as a question gets no scenario; the rest of its capability is written.
   Reply: the commit; a line a feature file with its scenarios added, changed and deprecated; `features bindings`' result; `model check`'s last line, or "model check did not run: clingo missing"; each question with its line quoted and its two readings; the cases no line mentions, a line each; the rewording this round did for each `v_t1` (a word the glossary avoids) row naming a scenario of a capability it did not formulate: the commit, and the scenarios reworded or deprecated. No file content.
 
+- **`intake`**: a request this context is the upstream of, its path and its lines in your input prompt. Read `spec/` (index, decisions, capabilities) and the request, and no code. For each line you can judge, write its line outcome with `python3 <Scripts>/work outcome <request> <line> <accepted|refused|withdrawn>`. For each line you cannot judge, write the line outcome `question` the same way. Then pass the turn once with `python3 <Scripts>/work turn <request>`. Dispatch nothing and write no ledger line: an intake has no initiative. Your result gives the outcome, one line for each line judged, and the text of each question with the number of its line.
+  Reply: one line for each request line with its outcome. Nothing else.
+
 ## The ledger
+
+(Not for `intake`.)
 
 Every round ends by appending one line to the initiative's ledger, `.shop/work/<initiative>/ledger.md`, with `python3 <Scripts>/work note <initiative> "<line>"`. The initiative's name comes from your input: a dispatch names it, and a brief from `work run` gives `Capability-proposal: .shop/work/<initiative>/<name>.md`, whose directory is the initiative. The line names the kind, the round, and what the round ended with: for `integrate`, the counts and the path of its files; for `gate`, the number of its questions; for `apply`, the answers it applied; for `formulate`, the commit. It is a single line, with no line break (`work note` refuses one). Run `work note` after your job's own commit (`apply` commits `spec/` alone and `formulate` its feature files; `work note` commits only the ledger) and before you reply. If your input names no initiative, or `work note` refuses the line, reply with your work and say the line was not written, and why.
 

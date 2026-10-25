@@ -25,7 +25,8 @@ SCRIPTS = Path(__file__).resolve().parent
 # A worker's Bash runs pytest, the plugin's scripts by their path and the git commands its stage needs, and no other
 # Python (r14). The scripts are the ones a stage's agent and skills run, each by name: no stage gets `work`, with which a
 # worker could move statuses as work run does, nor any other of the plugin's scripts. A round alone gets `work note`
-# (ROUNDS below), which moves no status: it appends the round's line to the initiative's ledger.
+# (ROUNDS below), which moves no status: it appends the round's line to the initiative's ledger. The intake round alone
+# gets `work outcome` and `work turn`, which write a request's line outcomes.
 STAGE_SCRIPTS = ("features", "model", "tools")
 PYTHON = ["Bash(python3 -m pytest*)", *("Bash(python3 %s/%s *)" % (SCRIPTS, s) for s in STAGE_SCRIPTS)]
 READER = ["Read", "Glob", "Grep", *PYTHON, "Bash(git status*)", "Bash(git diff*)", "Bash(git log*)", "Bash(git show*)"]
@@ -43,6 +44,9 @@ TOOLS = {
 # A capability-proposal's rounds (supervise_rounds.py): they commit spec/ or features/ in a worktree of their own, and
 # dispatch the capability-writer and the feature-formulators.
 ROUNDS = ("integrate", "gate", "apply", "formulate")
+# The intake round (supervise_intake.py) writes a request's line outcomes and passes its turn: `work outcome`, `work turn`
+# and `work show`, no other `work` command.
+TOOLS["intake"] = [*READER, *("Bash(python3 %s/work %s*)" % (SCRIPTS, c) for c in ("outcome ", "turn ", "show"))]
 for _round in ROUNDS:
     TOOLS[_round] = [*READER, "Bash(git add *)", "Bash(git commit *)", "Agent",
                       "Bash(python3 %s/work note *)" % SCRIPTS]
@@ -217,7 +221,7 @@ class Workers:
                                "--permission-mode", "acceptEdits", "--allowedTools", ",".join(self.tools(stage, agent)),
                                *(["--max-turns", str(MAX_TURNS[stage])] if stage in MAX_TURNS else [])],
                               cwd=tree, capture_output=True, text=True, env=with_scripts(plugin=True, work_item=work_item,
-                                                                         rounds=stage in ROUNDS))
+                                                                         rounds=stage in (*ROUNDS, "intake")))
 
     def keep_named(self, data, tree, here, kept_at):
         """Copy into the run directory each file of the worktree the result names outside the worker's run directory,
