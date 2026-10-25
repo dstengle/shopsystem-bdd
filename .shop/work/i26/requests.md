@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/requests
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i26
-status: approved
+status: formulated
 argues: [requests]
 adds: [requests#r20, requests#r21]
 changes: []
