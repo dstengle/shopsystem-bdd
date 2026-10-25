@@ -4,9 +4,9 @@ import re
 
 from pytest_bdd import given, parsers, then
 
-from .conftest import full
-from .supervision_rounds_steps import proposed_fulfilling
-from .supervision_world import commit_all, git, write
+from .conftest import cap, full
+from .supervision_rounds_steps import proposed_fulfilling, rounds
+from .supervision_world import commit_all, git, starts, write
 
 DRAFT = "# thing\nThe thing as the integrate round drafted it.\n"
 DRAFTS = ".shop/scratch/1-integrate/drafts/spec/capabilities/thing.md"
@@ -128,4 +128,43 @@ def proposals_written(repo, context):
         text = git(repo, "show", "%s:.shop/work/i1/%s.md" % (commits[0], name))
         assert "\nkind: capability-proposal\n" in text and "\nstatus: drafted\n" in text, text
         assert tuple(listed(text, f) for f in ("adds", "changes", "removes")) == lists, text
+
+
+def ids_of(text):
+    return re.findall(r"\b\w+#r\d+", text)
+
+
+@given(parsers.re(r"spec/capabilities/thing\.md on the branch i1's integrate round starts from holds (?P<ids>.+)$"))
+def spec_holds(repo, ids):
+    write(repo, "spec/capabilities/thing.md",
+          cap("thing", ["- [r%s] **When** asked, `thing` shall answer." % i.split("#r")[1] for i in ids_of(ids)]))
+    commit_all(repo, "thing holds %s" % ids)
+
+
+@given(parsers.re(r"an initiative (?P<name>i\d) under \.shop/work/, started, whose kept drafts add (?P<ids>.+?) on "
+                  r"(?P<capability>\w+), and whose capability-proposal (?P<proposal>p\d) for them is (?P<status>\w+)$"))
+def other_initiative(repo, name, ids, capability, proposal, status):
+    base = ".shop/work/%s/" % name
+    write(repo, base + "initiative.md", "---\nid: %s\nkind: initiative\nstatus: started\n---\n" % full("initiative", name))
+    write(repo, base + "runs/%s/1-integrate/drafts/spec/capabilities/%s.md" % (name, capability),
+          cap(capability, ["- [r%s] **When** asked, `%s` shall answer." % (i.split("#r")[1], capability) for i in ids_of(ids)]))
+    write(repo, base + proposal + ".md", "---\nid: %s\nkind: capability-proposal\npart_of: %s\nstatus: %s\nargues: [%s]\n"
+          "adds: [%s]\nchanges: []\nremoves: []\ndate: 2026-10-15\n---\n"
+          % (full("capability-proposal", proposal), full("initiative", name), status, capability, ", ".join(ids_of(ids))))
+    commit_all(repo, "%s keeps drafts adding %s" % (name, ids))
+
+
+@then(parsers.re(r"a round of the kind integrate was started for i1, given (?P<ids>\w+#r\d+ and \w+#r\d+)$"))
+def integrate_given_ids(repo, context, ids):
+    found = rounds(repo, "integrate", "i1")
+    assert len(found) == 1, (starts(repo), context["done"].stdout, context["done"].stderr)
+    for one in ids_of(ids):
+        assert one in found[0]["brief"], (one, found[0]["brief"])
+
+
+@then(parsers.re(r"the integrate round for i1 was not given thing#r1, thing#r2 or thing#r5$"))
+def integrate_not_given(repo):
+    brief = rounds(repo, "integrate", "i1")[0]["brief"]
+    for one in ("thing#r1", "thing#r2", "thing#r5"):
+        assert one not in brief, (one, brief)
 

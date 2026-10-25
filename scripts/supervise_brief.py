@@ -4,6 +4,7 @@ import json
 import re
 
 import workqueue
+import supervise_drafts
 import workqueue_request
 from supervise_worker import ROUNDS, SCRIPTS, git
 
@@ -68,8 +69,11 @@ class Briefs:
         drafts path, which `work run` keeps with the round's stage directory however the round ends (r91), and the form
         of the change list the result gives (r92)."""
         ident = str(data.get("fulfils") or "").rsplit("/", 1)[-1]
+        others = supervise_drafts.added_by_others(self.root, self.initiative)     # r102
         return ["Request: %s" % ident, "Accepted lines of the request:"] + [
             "- %d. %s" % line for line in workqueue_request.accepted_lines(self.root, ident)] + [
+            "Requirement ids other initiatives' kept drafts add, which spec/ does not hold yet; take none of them: %s"
+            % (", ".join(others) or "none")] + [
             "Drafts path: %s" % (here / "drafts"),
             "Give your change list in your result's `changes`: a list with one entry for each capability, each "
             "`{\"capability\": <name>, \"adds\": [...], \"changes\": [...], \"removes\": [...]}`, the ids as "
