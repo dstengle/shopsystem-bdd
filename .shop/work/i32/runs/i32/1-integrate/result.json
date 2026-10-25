@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"integrate round 1: supervision r118,r119 and review r31 added; decision 0069 drafted; 3 questions; 0 cut sentences","questions":[],"changes":[{"capability":"supervision","adds":["supervision#r118","supervision#r119"],"changes":[],"removes":[]},{"capability":"review","adds":["review#r31"],"changes":[],"removes":[]}]}

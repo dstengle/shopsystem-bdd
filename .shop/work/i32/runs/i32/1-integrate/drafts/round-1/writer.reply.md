@@ -1,0 +1,1 @@
+Fixed /tmp/work-run-i32-_8yggjjo/i32-1-integrate/.shop/scratch/1-integrate/drafts/round-1/spec/decisions/0069-an-answer-to-a-reviewer-returns-to-ready-or-done.md: status accepted; supersedes and the request and design-decision ids in source written in full (the observation id left short, as 0063 writes its observation id); nothing else changed.
