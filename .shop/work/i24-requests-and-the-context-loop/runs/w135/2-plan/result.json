@@ -1,0 +1,20 @@
+{
+  "status": "QUESTION",
+  "summary": "Plan of w135 (supervision#r67, intake round) written as far as it goes, in .shop/scratch/2-plan/plan.md.\nBoth examples are red at the unbound first Given. `work run` with no initiative is a usage error, and no code or agent job does intake.\nDecisions: select open/awaiting-upstream upstream requests; the round writes through `work outcome`/`work turn` itself (r67 note, decision 0067), with an intake Bash list; a question on a line is written as a non-settled outcome (requests#r17).\nThe session is an initiative-round in its own worktree. Its commits of q1 alone are brought onto the checked-out branch and pushed. Any other .shop/work change is a fault.\nA fault exits with an error naming the request, and nothing is brought over.\nNew module scripts/supervise_intake.py plus a CLAUDE.md row, and new steps module tests/scenarios/supervision_intake_steps.py.\nTests broken: none (verified from notes part 4 and the tool-list and agent tests).\nQ1: wait on w134's no-initiative path, or add the entry in w135. Q2: does `work run <initiative>` also start intake rounds.",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/work",
+    "scripts/supervise.py",
+    "scripts/supervise_intake.py",
+    "scripts/supervise_worker.py",
+    "scripts/supervise_faults.py",
+    "agents/initiative-round.md",
+    "CLAUDE.md",
+    "tests/scenarios/supervision_intake_steps.py",
+    "tests/scenarios/test_supervision.py"
+  ],
+  "questions": [
+    "Does w135 wait on w134 for `work run` with no initiative? The r67 outline's When is `work run` with no initiative (supervision#r66, accepted by w134, which is researched and blocked_by w146 and w136, both drafted). w135 is blocked_by w127 only. Reading A: w135 gets blocked_by [work-item/w134] and builds on w134's no-initiative driver. The narrator sees no intake round from any `work run` until w146, w136, w134 and then w135 are green. Reading B: w135 makes `work run`'s initiative optional and, when none is given, runs only the intake pass, exiting successfully unless a round faults. w134 later adds the initiatives' pass. The narrator sees `work run` take in upstream requests as soon as w135 is merged, and until w134 is green that run takes no initiative.",
+    "Does `work run <initiative>` also start intake rounds? r67's trigger is the request's state and does not say which `work run`. The Purpose says `work run <initiative>` takes 'that initiative'. Reading A: every `work run`, with or without an initiative, first gives each open or awaiting-upstream upstream request to an intake round. The narrator running `work run i1` with q1 open sees an intake round of q1, with q1's outcomes committed on i1's branch. Reading B: only `work run` with no initiative starts intake rounds. The narrator running `work run i1` sees q1 untouched, and q1 is taken in only by a `work run` with no initiative."
+  ]
+}
