@@ -7,7 +7,7 @@ from pytest_bdd import given, parsers, then
 from .conftest import cap, feature, full
 from .supervision_review_steps import FINDINGS
 from .supervision_rounds_steps import rounds
-from .supervision_world import commit_all, fields, git, item_text, section, write
+from .supervision_world import calls, commit_all, fields, git, item_text, section, write
 
 DIR = ".shop/work/i1"
 FIX_NOW = ["Important, w1, thing.py:3: the first thing to fix now", "Important, w1, thing.py:9: the second thing to fix now"]
@@ -45,7 +45,29 @@ def green_and_withdrawn(repo):
        "its findings.md")
 def reviewer_lists(plan):
     plan["default"] = {"status": "DONE"}
-    plan["bdd-branch-reviewer"] = {"questions": FIX_NOW, "notes": {"findings.md": FINDINGS + "\n".join(FIX_NOW) + "\n"}}
+    plan["bdd-branch-reviewer"] = [{"questions": FIX_NOW, "notes": {"findings.md": FINDINGS + "\n".join(FIX_NOW) + "\n"}},
+                                   {"questions": []}]     # a review of the fix lists nothing
+
+
+@given("every worker gives DONE, the first branch reviewer's result lists two findings to fix now, both concerning w1, in "
+       "its findings.md, and the second lists nothing to fix now")
+def reviewers_first_and_second(plan):
+    reviewer_lists(plan)
+
+
+@then("one work-item was drafted in i1 for the two findings, and it is green")
+def fix_drafted_green(repo, context):
+    found = drafted(repo)
+    assert len(found) == 1, (found, context["done"].stderr)
+    assert fields(repo / DIR / (found[0][0] + ".md"))["status"] == "green", found
+
+
+@then("after that work-item turned green a second session of bdd-branch-reviewer was started, before `work run` exited")
+def second_review_after_fix(repo, context):
+    events = calls(repo)
+    review = [i for i, c in enumerate(events) if c["event"] == "start" and c["agent"].endswith("bdd-branch-reviewer")]
+    green = [i for i, c in enumerate(events) if c["event"] == "end" and c["agent"].endswith("bdd-task-reviewer")]
+    assert len(review) == 2 and green and green[-1] < review[1], (events, context["done"].stderr)
 
 
 def drafted(repo, base=0):

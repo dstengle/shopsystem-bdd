@@ -183,6 +183,9 @@ def main(argv):
             "agent": agent, "session": session})
     plan = json.loads(pathlib.Path(os.environ["STUB_CLAUDE_PLAN"]).read_text())
     short = agent.split(":", 1)[-1]
+    if isinstance(plan.get(short), list):     # one result for each session of the agent, in the order they start; the last repeats
+        nth = started_agents().count(agent)
+        plan[short] = plan[short][min(nth, len(plan[short])) - 1]
     kind = re.search(r"^# (\w+) of (\S+)", brief, re.M)
     asked = re.search(r"^Question: (.*)$", brief, re.M)
     step = {**plan.get("default", {}), **plan.get(short, {}), **(plan.get("round:" + kind.group(1), {}) if kind else {}),

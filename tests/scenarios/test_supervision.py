@@ -97,7 +97,7 @@ def all_green(repo, context, names):
         assert fields(repo / (".shop/work/i1/%s.md" % name))["status"] == "green", (name, context["done"].stdout, context["done"].stderr)
 
 
-@then(parsers.parse("{name} is green"))
+@then(parsers.re(r"(?P<name>w\d+) is green$"))
 def is_green(repo, context, name):
     assert fields(repo / (".shop/work/i1/%s.md" % name))["status"] == "green", (context["done"].stdout, context["done"].stderr)
 
