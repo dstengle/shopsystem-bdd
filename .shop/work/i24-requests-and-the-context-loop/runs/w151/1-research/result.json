@@ -1,0 +1,18 @@
+{
+  "status": "DONE",
+  "summary": "w151 research done (notes.md has all seven parts). Both accepted scenarios red: undefined Givens at lines 851 and 999 of features/supervision.feature. No code starts an integrate round: supervise_rounds.py Rounds.due and AFTER cover capability-proposals only; workqueue.move refuses status started (probe P4). Probes P1-P5 run in scratch. Findings: D1 a round's commit on a zero-work-item initiative starts bdd-branch-reviewer and measure in the same work run (vacuous all() in supervise.py run, supervise_review.unread); D2 measure refusal printed with exit 0; D3 Run.commit leaves initiative.md uncommitted (commit fails, next work run refused); D4 Briefs.brief reads <name>.md, FileNotFoundError for an initiative. File set: supervise.py, supervise_rounds.py, supervise_worker.py, supervise_brief.py, workqueue.py (room 14), workqueue_done.py, workqueue_request.py, maybe supervise_review.py; tests: supervision_rounds_steps.py plus a new steps module and an import in test_supervision.py (room 50). No file over 300 lines. tests-of and untested unavailable (no map): test lists are by search or not searched, as marked.",
+  "fileset": [
+    "scripts/supervise.py",
+    "scripts/supervise_rounds.py",
+    "scripts/supervise_worker.py",
+    "scripts/supervise_brief.py",
+    "scripts/supervise_review.py",
+    "scripts/supervise_faults.py",
+    "scripts/workqueue.py",
+    "scripts/workqueue_done.py",
+    "scripts/workqueue_request.py",
+    "tests/scenarios/supervision_rounds_steps.py",
+    "tests/scenarios/test_supervision.py"
+  ],
+  "questions": []
+}
