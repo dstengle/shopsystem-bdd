@@ -1,0 +1,19 @@
+{
+  "status": "QUESTION",
+  "summary": "Third plan of w135 (supervision#r67, intake round), in .shop/scratch/3-plan/plan.md, built on the answers of 2026-10-25 (builds on w134's run_all; only work run with no initiative takes requests in).\nBoth examples are red at the unbound first Given; run_all reads no request and no intake kind exists.\nDecisions: every open/awaiting-upstream request is taken (requests are kept in their upstream's repository); the intake pass runs in run_all before the initiatives' threads, sharing lock and slots; an initiative-round session on a round/<q>-<k> branch with an intake Bash list allowing only work outcome/turn/show; its commits merged and pushed, its record committed under .shop/work/requests/runs/<q>/; checks with no initiative (r21, r46, r54) only when a request is due.\nFile set drops scripts/work, supervise.py, supervise_faults.py (w134 and the round pattern cover them) and adds supervise_all.py and supervise_brief.py.\nTests broken: none (the r66/r81/r82 fixtures hold no request; work run i1 is untouched).\nQ1: exit of a no-initiative run when an intake round faults or is not DONE (error as r88, or r82 as written). Q2: how a line the round cannot judge is written (question as the line outcome, or no outcome and the question only in the round's result).",
+  "plan": ".shop/scratch/3-plan/plan.md",
+  "fileset": [
+    "scripts/supervise_intake.py",
+    "scripts/supervise_all.py",
+    "scripts/supervise_worker.py",
+    "scripts/supervise_brief.py",
+    "agents/initiative-round.md",
+    "CLAUDE.md",
+    "tests/scenarios/supervision_intake_steps.py",
+    "tests/scenarios/test_supervision.py"
+  ],
+  "questions": [
+    "When an intake round that a `work run` with no initiative started does not end DONE (it ends in an error or at its turn limit, leaves no readable result, fails its push verification, or gives another outcome), how does `work run` exit? r86-r88 cover only rounds for a capability-proposal or an initiative; r82 says a no-initiative run whose initiatives' nodes are settled exits successfully. Under both readings none of the round's commits are merged and q1 stays as it was. Reading A (as r86-r88 for the other rounds): `work run` prints the fault and exits with an error naming q1's intake round and how it ended, whatever the initiatives' nodes are; the other requests and initiatives are still taken. Reading B (r82 as written): `work run` prints the fault on stderr and its exit follows r81/r82 alone, so with no initiative node awaiting-answer or failed the narrator sees a successful exit.",
+    "How does an intake round write 'a question on' a line it cannot judge (r67), when the requests capability has no upstream-question command yet and design-decision/requests-written-through-work wants each part written by its own command? Reading A: the round writes the question's text as that line's outcome with `work outcome`; the narrator sees the question under q1's ## Outcomes on that line, and after `work turn` q1 is awaiting-asker (requests#r17). Reading B: the round writes no outcome on that line and gives the question in its result; the narrator sees no outcome on that line, q1 awaiting-asker after `work turn`, and the question only in the round's record .shop/work/requests/runs/q1/<k>-intake/result.json."
+  ]
+}
