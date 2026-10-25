@@ -24,3 +24,4 @@ The drafts of this proposal are in .shop/work/i29/runs/i29/1-integrate.
 
 ## Answers
 - 2026-10-25: 1: (a), keep the wording as work-queue r23 words it (the coordinator under the person's delegation 2026-10-25: "Do not involve me in fixing all of the bugs. Please get the system into a correctly working state before doing a release")
+- 2026-10-25: 2: (a), add 'that has at least one work-item' (the coordinator under the person's delegation 2026-10-25: "Do not involve me in fixing all of the bugs. Please get the system into a correctly working state before doing a release")
