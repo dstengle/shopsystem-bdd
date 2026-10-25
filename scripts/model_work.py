@@ -8,10 +8,10 @@ from model_parse import as_list, decision_files, expand, frontmatter, scalar
 
 STATUSES = {
     "initiative": {"proposed", "started", "done", "abandoned"},
-    "capability-proposal": {"drafted", "approved", "merged", "formulated", "withdrawn"},   # withdrawn: EXTENSION (r58)
+    "capability-proposal": {"drafted", "approved", "merged", "formulated", "withdrawn", "awaiting-answer"},   # withdrawn: EXTENSION (r58)
     "work-item": {"drafted", "researched", "planned", "ready", "claimed", "done", "green", "awaiting-answer", "failed",
                   "withdrawn"},   # withdrawn: EXTENSION (r58); failed: design-decision/a-failed-work-item
-    "request": {"open", "awaiting-asker", "awaiting-upstream", "accepted", "refused", "delivered"},
+    "request": {"open", "awaiting-asker", "awaiting-upstream", "accepted", "refused", "delivered", "withdrawn"},
 }
 SETTLED = {"merged", "formulated", "withdrawn"}     # a capability-proposal that may name a retired id (r5, r23)
 PART_KINDS = {"job-proposal", "map-proposal", "vision-proposal", "job-thread", "capability-proposal",

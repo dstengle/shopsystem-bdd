@@ -15,6 +15,7 @@ from .design_model_check_one_each import *
 from .design_model_check_problems import *
 from .design_model_check_requests import *
 from .design_model_check_reading import *
+from .design_model_check_records import *
 from .design_model_check_then import *
 from .design_model_check_trace import *
 
