@@ -1,0 +1,14 @@
+{
+  "status": "QUESTION",
+  "summary": "Plan of w194 (supervision#r120, r121) written: .shop/scratch/2-plan/plan.md.\nr121: lists_nothing in scripts/supervise_analysis.py drops its DONE condition, so only a question counts; add the parameterised Given '<outcome>, with no question' in supervision_analysis_steps.py.\nr120: no production change (answer_brief already asks for the verdict); add the Then in supervision_delegation_steps.py using given_to.\nBlocking: the deprecated scenario at features/supervision.feature:1050 (@r75 @deprecated, Deprecated for: the r121 Outline) passes today and fails after r121. Decision 0011 says this work retires it. But w194 has no ## Retires (r73 matches on @r<n>, and it is tagged r75), and red-green#r2 and review#r10 forbid retiring an unlisted scenario. The question asks how to proceed.",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/supervise_analysis.py",
+    "tests/scenarios/supervision_analysis_steps.py",
+    "tests/scenarios/supervision_delegation_steps.py",
+    "features/supervision.feature"
+  ],
+  "questions": [
+    "w194 turns green the r121 Outline that replaces the deprecated scenario 'a kept branch review that ended PARTIAL, with no question and no finding, does not list nothing to fix now, and no `measure initiative` is run (deprecated)' (features/supervision.feature:1050). That scenario passes today and fails once r121 is in. w194 does not list it under ## Retires, because r73 matches only @r120/@r121 and it is tagged @r75, so under red-green#r2 the implementer may not retire it. Reading (a): it is added to w194's ## Retires (as decision 0011, held-scenarios, implies), and the implementer removes it and its step with `features retire`. The narrator then sees it gone from features/supervision.feature and w194's whole-suite gate can pass. Reading (b): w194 stays without Retires. The scenario is left in place and fails, and the narrator sees w194's whole-suite gate fail on it, with w194 sent awaiting-answer until another work-item retires it."
+  ]
+}
