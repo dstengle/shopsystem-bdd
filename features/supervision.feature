@@ -1017,8 +1017,9 @@ Feature: Supervision
     When the person runs `work run i1`
     Then `work add` drafted two work-items in i1, each part of p1: one under thing accepting thing#r1, thing#r2 and thing#r3, and one under other accepting other#r4
 
-  @r73
-  Scenario: a work-item drafted for a formulated capability-proposal lists under its Retires each deprecated scenario of a requirement it accepts
+  @r73 @deprecated
+  Scenario: a work-item drafted for a formulated capability-proposal lists under its Retires each deprecated scenario of a requirement it accepts (deprecated)
+    Deprecated for: a work-item lists under its Retires each deprecated scenario whose Deprecated for line names a scenario of a requirement it accepts
     Pins which scenarios the work-item retires: the deprecated ones of its own requirements, and no other.
     Given i1's capability-proposal p1 is formulated, its changes naming thing#r2
     And features/thing.feature has the scenario "it used to wait", tagged @deprecated and @r2, the scenario "it used to answer", tagged @deprecated and @r5, and the scenario "it waits", tagged @r2
@@ -1026,14 +1027,60 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the work-item drafted for p1 under thing lists "it used to wait" under its ## Retires, and neither "it used to answer" nor "it waits"
 
-  @r73
-  Scenario: a work-item drafted for a formulated capability-proposal whose changes name a range lists under its Retires each deprecated scenario of a requirement in the range
+  @r73 @deprecated
+  Scenario: a work-item drafted for a formulated capability-proposal whose changes name a range lists under its Retires each deprecated scenario of a requirement in the range (deprecated)
+    Deprecated for: a work-item that accepts a range lists under its Retires each deprecated scenario whose Deprecated for line names a scenario of a requirement in the range
     Pins that a range of requirements is read as each requirement in it when the work-item's retired scenarios are listed.
     Given i1's capability-proposal p1 is formulated, its changes naming thing#r3-r6
     And features/thing.feature has the scenario "it used to wait", tagged @deprecated and @r4, the scenario "it used to answer", tagged @deprecated and @r8, and the scenario "it waits", tagged @r4
     And every worker gives DONE
     When the person runs `work run i1`
     Then the work-item drafted for p1 under thing lists "it used to wait" under its ## Retires, and neither "it used to answer" nor "it waits"
+
+  @r73
+  Scenario: a work-item lists under its Retires each deprecated scenario whose Deprecated for line names a scenario of a requirement it accepts
+    Pins that a deprecated scenario is retired by the work-item that accepts its replacement's requirement, not by the one that accepts the requirement it was tagged with.
+    Given i1's capability-proposal p1 is formulated, its changes naming thing#r2
+    And features/thing.feature has the scenario "it waits", tagged @r2, and the scenario "it answers", tagged @r5
+    And features/thing.feature has the scenario "it used to wait", tagged @deprecated and @r9, deprecated for "it waits"
+    And features/thing.feature has the scenario "it used to answer", tagged @deprecated and @r2, deprecated for "it answers"
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then the work-item drafted for p1 under thing lists "it used to wait" under its ## Retires, and neither "it used to answer", "it waits" nor "it answers"
+
+  @r73
+  Scenario: a work-item that accepts a range lists under its Retires each deprecated scenario whose Deprecated for line names a scenario of a requirement in the range
+    Pins that a range of requirements is read as each requirement in it when the deprecated scenarios a work-item retires are found through their replacements.
+    Given i1's capability-proposal p1 is formulated, its changes naming thing#r3-r6
+    And features/thing.feature has the scenario "it waits", tagged @r4, and the scenario "it answers", tagged @r8
+    And features/thing.feature has the scenario "it used to wait", tagged @deprecated and @r9, deprecated for "it waits"
+    And features/thing.feature has the scenario "it used to answer", tagged @deprecated and @r4, deprecated for "it answers"
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then the work-item drafted for p1 under thing lists "it used to wait" under its ## Retires, and neither "it used to answer", "it waits" nor "it answers"
+
+  @r123
+  Scenario: when every work-item is green or withdrawn, one work-item is drafted retiring each deprecated scenario whose replacement's work-item is green
+    Pins that deprecated scenarios left behind once their replacements pass are retired by one work-item, under the proposal of the last-drafted work-item among those replacements', and that a scenario whose replacement is not yet green is left.
+    Given i1's work-item w1 is green, part of the capability-proposal p1 and accepting thing#r2, and i1's work-item w2, drafted after w1, is green, part of the capability-proposal p2 and accepting other#r4
+    And i1's work-item w3 is withdrawn
+    And i2's work-item w4 is ready, accepting thing#r7
+    And features/thing.feature has the scenario "it waits", tagged @r2, and the scenario "it closes", tagged @r7, and features/other.feature has the scenario "it answers", tagged @r4
+    And features/thing.feature has the scenario "it used to wait", tagged @deprecated, deprecated for "it waits", and the scenario "it used to close", tagged @deprecated, deprecated for "it closes"
+    And features/other.feature has the scenario "it used to answer", tagged @deprecated, deprecated for "it answers"
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then one work-item was drafted in i1, part of p2, listing "it used to wait" and "it used to answer" under its ## Retires, and not "it used to close"
+
+  @r124
+  Scenario: the work-item retiring deprecated scenarios is drafted before the branch review starts and before measure initiative runs
+    Pins that the retiring of deprecated scenarios is work of the initiative, drafted before its branch review and its measurement rather than after them.
+    Given i1's work-item w1 is green, part of the capability-proposal p1 and accepting thing#r2, and w2 is withdrawn
+    And features/thing.feature has the scenario "it waits", tagged @r2, and the scenario "it used to wait", tagged @deprecated, deprecated for "it waits"
+    And every worker gives DONE, and the branch reviewer's result lists nothing to fix now
+    When the person runs `work run i1`
+    Then the work-item retiring "it used to wait" was drafted in i1 before `work run` started the branch review of i1
+    And it was drafted before `work run` ran `measure initiative` on i1
 
   @r74
   Scenario: a kept branch review's findings to fix now get one work-item, naming the findings file, under the capability-proposal of the work-item they concern
