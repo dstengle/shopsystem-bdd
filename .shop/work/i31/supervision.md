@@ -40,3 +40,6 @@ The drafts of this proposal are in .shop/work/i31/runs/i31/1-integrate.
   (a, recommended) yes: r112 becomes "**When** a round of the kind `formulate` that `work run` started for a capability-proposal gives questions, `work run` shall write each question its result gives under the proposal's `## Questions`."
   (b) r112 as drafted, in the request's words.
   (Also drafted, no question: [r111] **When** a transition that `work run` makes leaves a node of an initiative able to make another transition, `work run` shall take the node through that transition before it ends. and [r114] **When** a round of the kind `apply` that `work run` started for a capability-proposal ends, `work run` shall write the proposal's `adds`, `changes` and `removes` from the change list the round applied.)
+
+## Answers
+- 2026-10-25: Q1: (a), DONE with questions; r86-r88 stand (the coordinator under the person's delegation 2026-10-25)
