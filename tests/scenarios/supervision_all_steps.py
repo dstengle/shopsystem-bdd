@@ -101,17 +101,17 @@ def answered_initiative(repo, name, prop, asked, answer):
        "round to start beside it")
 def rounds_linger(plan):
     plan["default"] = {"status": "DONE"}
-    plan["initiative-round"] = {"status": "DONE", "linger": 1}
+    plan["initiative-round"] = {"status": "DONE", "linger": 3}
 
 
 def serial_rounds(repo):
     """(kind, name, start, end) of each round of the kind integrate, apply or formulate, by where it started."""
     found = []
     for _, brief, start, end in sessions(repo):
-        kind = re.search(r"^# (integrate|apply|formulate) of (\w+)", brief, re.M)
+        kind = re.search(r"^# (integrate|apply|formulate) of (\w+)", brief, re.MULTILINE)
         if kind:
             found.append((kind.group(1), kind.group(2), start, end))
-    return sorted(found, key=lambda r: r[2])
+    return sorted(found, key=lambda r: r[2])     # by where each started
 
 
 @then("a round of the kind integrate was started for i1, and a round of the kind apply for each of p2 and p3")
@@ -124,7 +124,7 @@ def serial_rounds_started(repo, context):
 def serial_rounds_apart(repo, context):
     found = serial_rounds(repo)
     assert len(found) >= 3, (found, context["done"].stderr)
-    for (_, _, _, ended), (_, _, started, _) in zip(found, found[1:]):
+    for (_, _, _, ended), (_, _, started, _) in zip(found, found[1:], strict=False):
         assert ended < started, found
 
 

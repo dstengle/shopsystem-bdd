@@ -55,8 +55,13 @@ class Changes:
         text = (self.dir / "initiative.md").read_text()
         ident = next((l.split(":", 1)[1].strip() for l in text.splitlines() if l.startswith("id:")), "")
         prefix = ident.split("/", 1)[1].rsplit("/", 1)[0] if "/" in ident else ""
+        merged = {}
+        for each in found:     # the entries that name one capability are one proposal's lists, in the order first named
+            one = merged.setdefault(each["capability"], {"capability": each["capability"], **{f: [] for f in FIELDS}})
+            for field in FIELDS:
+                one[field] += [i for i in each[field] if i not in one[field]]
         written = []
-        for one in found:
+        for one in merged.values():
             path = self.dir / (one["capability"] + ".md")
             lists = "".join("%s: [%s]\n" % (f, ", ".join(one[f])) for f in FIELDS)
             path.write_text("---\nid: capability-proposal/%s/%s-%s\nkind: capability-proposal\npart_of: %s\nstatus: drafted\n"

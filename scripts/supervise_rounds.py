@@ -1,6 +1,9 @@
-"""`work run`'s rounds for a capability-proposal (capability supervision r70, r71, r80, r83): an `awaiting-answer`
-proposal whose every question has an answer is given to an apply round and, once that has ended, approved; an approved one
-is given to a formulate round and, once that has ended, formulated. Standard library only; a part of supervise.Run."""
+"""`work run`'s rounds for a capability-proposal (capability supervision r70, r71, r80, r83, r91, r95, r96): an
+`awaiting-answer` proposal whose every question has an answer is given to an apply round and, once that has ended,
+approved; an approved one is given to a formulate round and, once that has ended, formulated. The integrate round of a
+started initiative with neither proposal nor work-item ends in its change list's drafted proposals (r91; r96 refuses a
+DONE with no change list). Integrate, apply and formulate rounds run one at a time across initiatives, under the lock
+`round_lock` (r95). Standard library only; a part of supervise.Run."""
 import json
 import subprocess
 
