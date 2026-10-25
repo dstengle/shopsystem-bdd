@@ -4,3 +4,4 @@
 - 2026-10-25: gate (supervision): 2 questions
 - 2026-10-25: gate (work-queue): 4 questions
 - 2026-10-25: apply (supervision): r98 added in the approved reading (a work-item's reviewer; brief names the findings file), answers 1 (a), 2 (a) under the person's delegation 2026-10-25; spec commit 112fe1b6
+- 2026-10-25: formulate round 3 (supervision): no commit; r98 returned as a question (conflicts with work-queue r14 in spec/, reviewer question returns to done; changed r14 not yet applied), no scenario written; reply .shop/scratch/3-formulate/drafts/round-1/supervision.reply.md
