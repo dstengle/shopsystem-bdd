@@ -71,6 +71,28 @@ def integrate_writes_drafts(plan, ending):
     plan["round:integrate"] = step
 
 
+@given("spec/capabilities/ holds no capability nowhere")
+def spec_lacks_nowhere(repo):
+    assert not (repo / "spec/capabilities/nowhere.md").exists()
+
+
+@given("the integrate round for i1 gives DONE with a change list that adds nowhere#r1 on nowhere, having written no draft of "
+       "nowhere under its drafts path")
+def integrate_names_nowhere(plan):
+    plan["round:integrate"] = {"status": "DONE", "fields": {"changes": [entry("nowhere", "adds nowhere#r1")]}}
+
+
+@then("i1 has no capability-proposal for nowhere")
+def no_proposal_for_nowhere(repo, context):
+    assert not (repo / ".shop/work/i1/nowhere.md").exists(), context["done"].stderr
+    assert not git(repo, "ls-files", "--", ".shop/work/i1/nowhere.md").strip()
+
+
+@then("`work run` names the capability nowhere")
+def names_nowhere(context):
+    assert "nowhere" in context["done"].stderr, (context["done"].stdout, context["done"].stderr)
+
+
 @then("`work run` names the integrate round of i1")
 def names_integrate_round(context):
     assert "integrate round of i1" in context["done"].stderr, context["done"].stderr

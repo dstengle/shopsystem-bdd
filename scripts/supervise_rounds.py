@@ -100,6 +100,11 @@ class Rounds(Changes):
                 self.refuse_integrate(name, label, before, "its result cannot be read: %s" % bad)
             if not found:
                 self.refuse_integrate(name, label, before, "it gave DONE without a change list")
+        absent = self.unknown(found, self.dir / "runs" / name / label) if kind == "integrate" else []
+        if absent and len(absent) == len(found):     # r107: no proposal for it; the round is kept as r96 keeps it
+            self.refuse_integrate(name, label, before, "its change list names %s, which neither spec/capabilities/ nor "
+                                  "its drafts have" % ", ".join(absent))
+        found = [one for one in found if one["capability"] not in absent]
         asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []] if kind == "gate" else None
         if kind != "integrate":
             self.move(name, before, after, asked)
@@ -107,6 +112,11 @@ class Rounds(Changes):
             with self.lock:
                 proposals = self.write_proposals(found, self.rel(self.dir / "runs" / name / label))
                 self.commit(name, after, after, also=[self.rel(p) for p in proposals])
+            if absent:     # r107: the known capabilities' proposals are written; the unknown ones are an error
+                raise Refused("the integrate round of %s (%s) named %s, which neither spec/capabilities/ nor its drafts have; "
+                              "no capability-proposal was written for %s" % (
+                                  name, self.rel(self.dir / "runs" / name / label), ", ".join(absent),
+                                  "it" if len(absent) == 1 else "them"))
 
     def refuse_integrate(self, name, label, before, why):
         """The integrate round ended DONE with no change list `work run` can use: its stage directory and drafts kept,

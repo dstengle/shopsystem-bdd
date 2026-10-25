@@ -35,6 +35,13 @@ def entries(data):
 class Changes:
     """The part of supervise.Run that writes the proposals of a change list."""
 
+    def unknown(self, found, stage):
+        """The capabilities `found` names that neither spec/capabilities/ nor a kept draft of the integrate round's stage
+        directory `stage` has (r107), in the order named."""
+        held = {p.stem for p in (self.root / "spec" / "capabilities").glob("*.md")}
+        held |= {p.stem for p in stage.glob("drafts/round-*/spec/capabilities/*.md")}
+        return [one["capability"] for one in found if one["capability"] not in held]
+
     def write_proposals(self, found, stage_dir):
         """One file a capability in the initiative's directory, `drafted`; the paths written."""
         text = (self.dir / "initiative.md").read_text()
