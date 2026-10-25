@@ -853,6 +853,19 @@ Feature: Supervision
     When the person runs `work run i1`
     Then a round of the kind integrate was started for i1, given q1's lines 1 and 3, and not line 2
 
+  @r79
+  Scenario: a proposed initiative that fulfils no request is given no integrate round, stays proposed and leaves nothing behind
+    Pins that only an initiative with a request's accepted lines to work from is integrated, and that one with none blocks no later `work run`.
+    Given i1 is proposed and fulfils no request
+    And every round ends
+    When the person runs `work run i1`
+    Then no round of the kind integrate was started for i1
+    And i1 is proposed
+    And no branch is made for a round
+    And nothing under .shop/work/ is left uncommitted
+    When the person runs `work run i1` a second time
+    Then the second `work run` was not refused
+
   @r69
   Scenario: when the gate round `work run` started for a capability-proposal ends, the proposal is awaiting-answer
     Pins that a capability-proposal whose gate has been given waits on its answers.
@@ -970,6 +983,19 @@ Feature: Supervision
       | delegation                                                                       | reply                                   | after                                                                     |
       | Please get everything delivered. Do not stop to ask me questions or permission. | answers it                              | w1's question and p1's question each have the session's answer            |
       | Answer only the questions on the queue's tests; ask me everything else.          | leaves it for the person                | w1's question and p1's question have no answer, w1 and p1 awaiting-answer |
+
+  @r77
+  Scenario: under a delegation, a work-item with two questions has each given to a session of its own, and both answers stay written when the run ends
+    Pins that two questions of one work-item are answered apart, in one `work run`, and that the run keeps every answer its sessions gave instead of losing one to the other.
+    Given i1 fulfils the request q1, which gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
+    And i1's work-item w1 is awaiting-answer, its ## Questions section with "Does scripts/log.py own the log?" and "Is a title given twice in features/books.feature one book or two?", each with no answer
+    And the session given "Does scripts/log.py own the log?" under the delegation answers "Yes.", the session given "Is a title given twice in features/books.feature one book or two?" answers "One book.", and every round ends and every worker gives DONE
+    When the person runs `work run i1`
+    Then "Does scripts/log.py own the log?" was given to a session of its own, given the question, the delegation "Please get everything delivered. Do not stop to ask me questions or permission.", scripts/log.py, and nothing else
+    And "Is a title given twice in features/books.feature one book or two?" was given to another session of its own, given the question, the delegation "Please get everything delivered. Do not stop to ask me questions or permission.", features/books.feature, and nothing else
+    And w1's answer to "Does scripts/log.py own the log?" is "Yes.", naming the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
+    And w1's answer to "Is a title given twice in features/books.feature one book or two?" is "One book.", naming the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
+    And it exits successfully
 
   @r78
   Scenario: an answer given by a session started under a delegation is written naming that delegation

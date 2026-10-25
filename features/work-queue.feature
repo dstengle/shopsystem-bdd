@@ -61,6 +61,17 @@ Feature: Work queue
       | a request q1 kept in this context, whose asker is another context, names i1 and is accepted |
       | a request q1 kept in this context, whose asker is this context, names i2 and is accepted   |
 
+  @r23
+  Scenario: retry that makes an initiative's last open work-item green again sets the initiative to done
+    Pins that retry, like withdraw, is a command whose change can complete an initiative, and that it ends the initiative when it does.
+    Given an initiative i1 under .shop/work/ that is started, whose work-item w1 is green and whose work-item w2 is failed
+    And .shop/work/i1/log.jsonl gives w2's last transitions as from claimed to green, then from green to failed
+    And no request kept in this context names i1
+    When the session runs `work retry w2`
+    Then .shop/work/i1/w2.md gives w2's status as green
+    And .shop/work/i1/initiative.md gives i1's status as done
+    And it exits successfully
+
   @r3
   Scenario: show prints each work-item of every initiative with its status
     Pins that show reads every initiative under .shop/work/, and only their work-items.

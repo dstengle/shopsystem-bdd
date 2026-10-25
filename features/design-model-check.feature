@@ -330,6 +330,18 @@ Feature: Design model check
     When `model check` is run
     Then it prints no file problem naming .shop/work/i1/w1.md
 
+  @r27
+  Scenario Outline: a status in its kind's lifecycle is no file problem
+    Pins that each status the glossary gives a kind is in that kind's lifecycle, awaiting-answer a capability-proposal's and withdrawn a request's.
+    Given a repository in which <case>
+    When `model check` is run
+    Then it prints no file problem naming <file>
+
+    Examples:
+      | case                                                                                                       | file                      |
+      | a work directory .shop/work/i1 has the part p1.md with the kind capability-proposal and the status awaiting-answer | .shop/work/i1/p1.md       |
+      | a request in .shop/work/requests/q1.md, of the form `work request` writes, has the status withdrawn        | .shop/work/requests/q1.md |
+
   @r110
   Scenario Outline: a work-item not named w<n>.md, or two work-items with one id, is a file problem
     Pins that a work-item's file is named by its id and that no id is held by two work-items, in one initiative or across them.
