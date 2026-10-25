@@ -15,6 +15,8 @@ WORK = Path(".shop") / "work"
 # The statuses of the work-item lifecycle (design-decision/work-item-lifecycle-as-run); a move to any other is refused.
 STATUSES = ("drafted", "researched", "planned", "ready", "claimed", "done", "green", "awaiting-answer", "withdrawn",
             "failed")
+# What a capability-proposal is moved to besides those: its apply round ended, its formulate round ended.
+PROPOSAL_STATUSES = ("approved", "formulated")
 
 
 def _load_model():
@@ -145,7 +147,9 @@ def move(root, initiative, name, status, by):
     is not the last one log.jsonl gives it is refused (r6), and so is a file with no status.
     """
     path = Path(root) / WORK / initiative / (name + ".md")
-    if status not in STATUSES:
+    text = read(path, root) if path.is_file() else ""
+    own = STATUSES + PROPOSAL_STATUSES if frontmatter(text)[0].get("kind") == "capability-proposal" else STATUSES
+    if status not in own:
         raise Refused("%s is no status of the work-item lifecycle; %s is not moved" % (status, name))
     before = agrees(root, initiative, name)
     text = read(path, root)

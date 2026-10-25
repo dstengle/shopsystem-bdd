@@ -20,6 +20,7 @@ from supervise_faults import Fault, Faults, fault_of
 from supervise_merge import Merge
 from supervise_pool import Pool
 from supervise_review import Reviews
+from supervise_rounds import Rounds
 from supervise_worker import ROLE, WORKER, GitFailed, Workers, git, now
 from workqueue import WORK, Refused
 
@@ -34,10 +35,10 @@ STAGES = {
 MOVABLE = ("drafted", "researched", "planned", "ready", "done")
 
 
-class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts):
+class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds):
     """One `work run` of one initiative in the repository at `root`: the workers' part is supervise_worker's, the briefs'
     supervise_brief's, the implementation stage's and its merge supervise_merge's, the faults' supervise_faults', the
-    branch review's supervise_review's, the pool of workers' supervise_pool's, the drafting's supervise_draft's."""
+    branch review's supervise_review's, the pool of workers' supervise_pool's, the drafting's supervise_draft's, a proposal's rounds' supervise_rounds'."""
 
     def __init__(self, root, initiative):
         self.root = Path(root).resolve()
@@ -186,6 +187,7 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts):
         self.check()
         self.push_unpushed()
         try:
+            self.rounds()
             self.draft()
             self.pull(MOVABLE)
             if all(s in ("green", "withdrawn") for _, s in self.items()):

@@ -35,10 +35,15 @@ TOOLS = {
                   "Bash(git diff*)"],
     "review": READER,
 }
+# A capability-proposal's rounds (supervise_rounds.py): they commit spec/ or features/ in a worktree of their own, and
+# dispatch the capability-writer and the feature-formulators.
+ROUNDS = ("apply", "formulate")
+for _round in ROUNDS:
+    TOOLS[_round] = [*READER, "Bash(git add *)", "Bash(git commit *)", "Agent"]
 # A stage's limit of turns: the researcher's is 40 (r19).
 MAX_TURNS = {"research": 40}
 ROLE = {"code-scout": "researcher", "bdd-planner": "planner", "bdd-implementer": "implementer",
-        "bdd-task-reviewer": "reviewer", "bdd-branch-reviewer": "branch reviewer"}
+        "bdd-task-reviewer": "reviewer", "bdd-branch-reviewer": "branch reviewer", "initiative-round": "round"}
 # Set in each worker's environment: a `work run` that finds it was started by a worker (r21).
 WORKER = "SHOPSYSTEM_WORK_RUN_WORKER"
 
@@ -56,7 +61,7 @@ def git(root, *args):
     return done
 
 
-def with_scripts(plugin=False, work_item=None):
+def with_scripts(plugin=False, work_item=None, rounds=False):
     """The environment with the plugin's scripts directory last on PYTHONPATH, so `-p work_items` finds the plugin's
     `--work-item` and a module of the project's own named as one of the scripts still comes first; with `plugin`, that
     pytest plugin loaded by every pytest run too (PYTEST_PLUGINS), and with `work_item`, `--work-item <it>` given to
@@ -66,7 +71,7 @@ def with_scripts(plugin=False, work_item=None):
     if plugin:
         env["PYTEST_PLUGINS"] = ",".join(p for p in (env.get("PYTEST_PLUGINS"), "work_items") if p)
         env[WORKER] = work_item or "the branch review"      # a `work run` started from here refuses (r21)
-    if work_item:      # every pytest a worker runs selects its work-item's scenarios (r22)
+    if work_item and not rounds:      # every pytest a worker runs selects its work-item's scenarios (r22)
         env["PYTEST_ADDOPTS"] = " ".join(p for p in (env.get("PYTEST_ADDOPTS"), "--work-item " + work_item) if p)
     return env
 
@@ -203,7 +208,8 @@ class Workers:
                                "--session-id", session, "--output-format", "json",
                                "--permission-mode", "acceptEdits", "--allowedTools", ",".join(self.tools(stage, agent)),
                                *(["--max-turns", str(MAX_TURNS[stage])] if stage in MAX_TURNS else [])],
-                              cwd=tree, capture_output=True, text=True, env=with_scripts(plugin=True, work_item=work_item))
+                              cwd=tree, capture_output=True, text=True, env=with_scripts(plugin=True, work_item=work_item,
+                                                                         rounds=stage in ROUNDS))
 
     def keep_named(self, data, tree, here, kept_at):
         """Copy into the run directory each file of the worktree the result names outside the worker's run directory,

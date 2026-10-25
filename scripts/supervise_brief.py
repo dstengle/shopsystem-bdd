@@ -4,7 +4,7 @@ import json
 import re
 
 import workqueue
-from supervise_worker import SCRIPTS, git
+from supervise_worker import ROUNDS, SCRIPTS, git
 
 
 class Briefs:
@@ -26,12 +26,17 @@ class Briefs:
             read.append("spec/capabilities/%s.md" % under)
         runs = self.dir / "runs" / name
         read += [self.rel(p) for p in sorted(runs.iterdir()) if p.is_dir()] if runs.is_dir() else []
-        lines = ["Work-item: %s" % self.rel(item), "Agent: %s" % agent, "Scripts: %s" % SCRIPTS]
+        rnd = stage in ROUNDS
+        lines = ["%s: %s" % ("Capability-proposal" if rnd else "Work-item", self.rel(item)), "Agent: %s" % agent,
+                 "Scripts: %s" % SCRIPTS]
+        if rnd:     # a capability-proposal's round (supervise_rounds.py): the job its agent does
+            lines.append("Job: %s" % stage)
         base = self.base()
         if base:
             lines.append("Base: %s" % base)
-        lines += ["Worktree: %s" % tree, "Branch: %s" % (branch or "none (a detached checkout)"),
-                  "Work-item branch: work/%s" % name]
+        lines += ["Worktree: %s" % tree, "Branch: %s" % (branch or "none (a detached checkout)")]
+        if not rnd:
+            lines.append("Work-item branch: work/%s" % name)
         lines += ["%s: %s" % kv for kv in extra]
         if stage == "research":
             lines += self.research_lines(data)
