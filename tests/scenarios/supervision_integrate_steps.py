@@ -4,8 +4,9 @@ import re
 
 from pytest_bdd import given, parsers, then
 
+from .conftest import full
 from .supervision_rounds_steps import proposed_fulfilling
-from .supervision_world import git
+from .supervision_world import commit_all, git, write
 
 DRAFT = "# thing\nThe thing as the integrate round drafted it.\n"
 DRAFTS = ".shop/scratch/1-integrate/drafts/spec/capabilities/thing.md"
@@ -43,6 +44,22 @@ def integrate_with_changes(plan, first, second):
     plan["round:integrate"] = {"status": "DONE", "fields": {"changes": [entry("thing", first), entry("other", second)]}}
 
 
+@given("an initiative i2 under .shop/work/, proposed, that fulfils the request q2, whose line 1 has the line outcome accepted")
+def proposed_i2(repo):
+    write(repo, ".shop/work/i2/initiative.md",
+          "---\nid: %s\nkind: initiative\nstatus: proposed\nfulfils: q2\n---\n" % full("initiative", "i2"))
+    write(repo, ".shop/work/requests/q2.md", "---\nid: %s\nkind: request\nasker: internal\nstatus: accepted\n---\n\n## Lines\n"
+          "1. Line 1 text.\n\n## Outcomes\n1. accepted\n" % full("request", "q2"))
+    commit_all(repo, "i2 is proposed and fulfils q2")
+
+
+@given(parsers.re(r"the integrate round for i1 gives DONE with a change list that (?P<first>.+) on thing, and the integrate "
+                  r"round for i2 gives DONE with a change list that (?P<second>.+) on thing$"))
+def integrate_each_with_changes(plan, first, second):
+    for name, text in (("i1", first), ("i2", second)):
+        plan["round:integrate:" + name] = {"status": "DONE", "fields": {"changes": [entry("thing", text)]}}
+
+
 @given(parsers.re(r"the integrate round for i1 writes spec/capabilities/thing\.md under its drafts path and "
                   r"(?P<ending>gives DONE with a change list naming thing|ends at its turn limit)$"))
 def integrate_writes_drafts(plan, ending):
@@ -66,6 +83,29 @@ def drafts_committed(repo, context):
     assert len(kept) == 1, (git(repo, "ls-files", "--", KEPT), context["done"].stdout, context["done"].stderr)
     assert git(repo, "show", "HEAD:" + kept[0]) == DRAFT
     assert git(repo, "log", "--format=%H", "--", kept[0]).split()
+
+
+def thing_of(repo, initiative):
+    """The text of the capability-proposal for thing that `initiative` has, as the commit that added it wrote it."""
+    path = ".shop/work/%s/thing.md" % initiative
+    added = git(repo, "log", "--diff-filter=A", "--format=%H", "--", path).split()
+    assert len(added) == 1, (path, added)
+    return git(repo, "show", "%s:%s" % (added[0], path))
+
+
+@then(parsers.re(r"i1 has one drafted capability-proposal for thing, its adds naming thing#r4, and i2 has one drafted "
+                 r"capability-proposal for thing, its adds naming thing#r5$"))
+def each_has_thing(repo, context):
+    for initiative, added in (("i1", "thing#r4"), ("i2", "thing#r5")):
+        text = thing_of(repo, initiative)
+        assert "\nkind: capability-proposal\n" in text and "\nstatus: drafted\n" in text, (text, context["done"].stderr)
+        assert listed(text, "adds") == [added], text
+
+
+@then("the two capability-proposals have different ids")
+def different_ids(repo):
+    ids = [re.search(r"^id: (.*)$", thing_of(repo, i), re.M).group(1) for i in ("i1", "i2")]
+    assert ids[0] != ids[1], ids
 
 
 def listed(text, field):

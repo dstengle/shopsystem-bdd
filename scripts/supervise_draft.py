@@ -48,7 +48,7 @@ class Drafts:
                 if found:
                     groups.setdefault(found.group(1), []).append(str(entry))
             for capability, accepts in groups.items():
-                if (name, capability) in have:
+                if (str(data.get("id", name)).rsplit("/", 1)[-1], capability) in have:
                     continue
                 workqueue.add(self.root, self.initiative, "%s: %s" % (name, capability), str(data.get("id", name)),
                               capability, accepts, retires=self.retires(capability, accepts))

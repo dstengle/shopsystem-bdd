@@ -44,9 +44,9 @@ class Changes:
         for one in found:
             path = self.dir / (one["capability"] + ".md")
             lists = "".join("%s: [%s]\n" % (f, ", ".join(one[f])) for f in FIELDS)
-            path.write_text("---\nid: capability-proposal/%s/%s\nkind: capability-proposal\npart_of: %s\nstatus: drafted\n"
+            path.write_text("---\nid: capability-proposal/%s/%s-%s\nkind: capability-proposal\npart_of: %s\nstatus: drafted\n"
                             "argues: [%s]\n%sdate: %s\n---\n\n# %s\n\nThe drafts of this proposal are in %s.\n" % (
-                                prefix, one["capability"], ident, one["capability"], lists,
+                                prefix, self.dir.name, one["capability"], ident, one["capability"], lists,
                                 datetime.date.today().isoformat(), one["capability"], stage_dir))
             written.append(path)
         return written

@@ -8,7 +8,8 @@ when the list has a bare `Write`.
 
 The script is the JSON file $STUB_CLAUDE_PLAN: an object whose keys are agents without the plugin's prefix
 (`code-scout`), or "default", or a round's kind after "round:" (`round:apply`, read from the brief's `# <kind> of <name>`
-heading, taking precedence over the agent's), or a question after "question:" (`question:Which module?`, read from the
+heading, taking precedence over the agent's; `round:<kind>:<name>` is one round of one node, taking precedence over
+`round:<kind>`), or a question after "question:" (`question:Which module?`, read from the
 brief's `Question:` line, taking precedence over all of those), each an object of:
   status     the result file's status (default "DONE"); with `result` "none" no result file is written, with
              "not-json" one that is not JSON;
@@ -182,9 +183,10 @@ def main(argv):
             "agent": agent, "session": session})
     plan = json.loads(pathlib.Path(os.environ["STUB_CLAUDE_PLAN"]).read_text())
     short = agent.split(":", 1)[-1]
-    kind = re.search(r"^# (\w+) of ", brief, re.M)
+    kind = re.search(r"^# (\w+) of (\S+)", brief, re.M)
     asked = re.search(r"^Question: (.*)$", brief, re.M)
     step = {**plan.get("default", {}), **plan.get(short, {}), **(plan.get("round:" + kind.group(1), {}) if kind else {}),
+            **(plan.get("round:%s:%s" % kind.groups(), {}) if kind else {}),
             **(plan.get("question:" + asked.group(1), {}) if asked else {})}
     result = pathlib.Path(next(line.split(":", 1)[1].strip() for line in brief.splitlines() if line.startswith("Result file:")))
     work_item = pathlib.Path(next((line.split(":", 1)[1].strip() for line in brief.splitlines()
