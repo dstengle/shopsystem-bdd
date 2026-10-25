@@ -131,6 +131,43 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 Only `initiative-round` has the Agent tool. A plugin agent's `hooks` and `permissionMode` are ignored, so a role's
 limits are its tools; under `work run` they are also its `--allowedTools`.
 
+## 0.26.0: requests and the context loop
+
+- **Requests** (capability requests, decision 0067): the one way work enters a bounded context. `work request <title>
+  --from <asker> --lines <file>` takes one in (strict EARS lines; `--source` or `--thread`; `--delegation <text>` for
+  questions a session may answer in the person's place). The upstream writes each line's outcome with `work outcome`
+  and its questions with `work ask`; the asker answers with `work reply`; `work turn` passes the turn; `work resolve`
+  writes the requirement and version that hold each accepted line. `work start <request>` writes the initiative an
+  accepted request begins. Requests are kept as `.shop/work/requests/q<n>.md`.
+- **The context runs without a coordinator** (decision 0068): `work run` with no initiative takes every open request and
+  initiative through every transition it can: the intake round of a request, the initiative of an accepted one, its
+  integrate round (drafts kept on the branch, one capability-proposal a capability, ids above those other initiatives'
+  drafts hold), the gate (its questions on the proposal, or one asking for approval), answers under the request's
+  delegation, the apply round (the proposal's ids rewritten from what it applied), the formulate round (a question
+  sends the proposal back to awaiting-answer), drafting (deprecated scenarios listed under `## Retires` by their
+  `Deprecated for:`), delivery, the branch review again after its fixes, the measurement and analysis, committed, and
+  the initiative set `done` once it has a green work-item and nothing open. A round that stops does not stop the
+  other nodes.
+- **A reviewer's question reaches implementation** (decision 0069, superseding 0063's row): `work answer <work-item>
+  --change <answer>` returns the work-item to `ready` with the findings and the answer in the implementer's brief;
+  `--accept` returns it to `done`. One of them is required on a reviewer's question.
+- **Sessions start from the repository's state**: `work status` prints where each open initiative stands; `work note`
+  appends to the initiative's ledger, now tracked as `.shop/work/<initiative>/ledger.md` (decision 0066). The
+  SessionStart hook gives a new session `work status`; a PreCompact hook logs the compaction and asks for a hand-off.
+- **`measure initiative`** gives each session's round trips, tool uses, dispatches and compactions, and whether the
+  request behind the initiative was internal or external.
+- **`work run`** delivers a work-item whose requirements are all of guarantees capabilities; a researcher's limit is
+  80 turns; `work start` commits the initiative; `work add` refuses a done initiative; `work answer
+  <initiative>/<name>` names a node of one initiative.
+- **`model check`** reads requests: a request's form, an initiative dated after 2026-10-23 that fulfils none, a request
+  neither part of a job-thread nor citing an origin, a delivered request naming a requirement the spec lacks.
+- **Skills**: `delivering-an-initiative` starts `work run` and shows what it printed; `integrating-a-proposal` and
+  `formulating-features` have no small-change path: every change goes through rounds.
+
+Upgrading a consuming repository from 0.25.0: update the plugin and start a session; accept the offered upgrade (or
+run `migrate upgrade` with a clean checkout). There is no file to rewrite: initiatives dated before 2026-10-24 need no
+request, and a ledger under `.shop/scratch/` stays where it is while new lines go to the initiative's `ledger.md`.
+
 ## 0.25.0: work-items side by side, answers, and guarantees
 
 - **`work run` runs work-items side by side** (supervision r59-r63): research and plan stages of independent
