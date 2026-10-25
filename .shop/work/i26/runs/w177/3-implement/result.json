@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"work ask/reply added; r20, r21, r4, r5, r12 scenarios green; three deprecated scenarios retired; CLAUDE.md row updated. Work-item scenarios: 147 passed.","commits":["db4d07f2 work ask and reply write a request's questions and answers; retire three deprecated request scenarios"],"report":".shop/scratch/3-implement/report.md","questions":[]}
