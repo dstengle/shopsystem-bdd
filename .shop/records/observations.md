@@ -395,3 +395,10 @@ date: 2026-10-25
 - `work withdraw w183` left every work-item of i31 `withdrawn` (its redraft w185 was added after), and r23 set i31 `done`; `work add` then drafted w185 into the done initiative and `work run` never took it, so q8's ten scenarios failed the suite while i31 read `done`. i31 was put back to `started` by hand.
 - r118 and r119 move a reviewer's work-item by the answering session's `verdict`, but the delegation-answerer's agent file does not ask for one (i32's branch review 2).
 - i32's branch review 2 ended `DONE_WITH_CONCERNS` with no question (checks it could not verify, named in its summary, as review r31 now has it), and r75 counts only `DONE` as listing nothing to fix now, so i32 cannot be done.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-25-scenarios-before-work-items
+about: capability/supervision
+by: the coordinator, from i29, i30, i31 and i33
+date: 2026-10-25
+
+A formulate round commits a proposal's scenarios and may still give a question (r112, r113), leaving the proposal `awaiting-answer` and undrafted; until it is formulated and drafted no work-item accepts the scenarios, and every other work-item's whole-suite check (r43) fails on them (w175, w179, w180 on i29's; w192, w193 on i33's). Also once: a fixture's `shutil.rmtree(repo / ".git")` met git's `maintenance.lock` (tests/scenarios/supervision_given.py:72), a flake from git's background maintenance.
