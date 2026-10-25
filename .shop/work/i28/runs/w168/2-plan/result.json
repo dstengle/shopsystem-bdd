@@ -1,0 +1,7 @@
+{
+  "status": "DONE",
+  "summary": "w168 plan written: work-queue#r30, both rows of 'answer named by its initiative' (red: find refuses '/').\nThe split of <initiative>/<name> lands in workqueue_answer.answer; workqueue.find stays bare so retry and withdraw are unchanged (r8, r10).\nBoth parts are checked with workqueue.entry and the initiative directory must exist; refusals fall under r7.\nThe printed line and the bare form are unchanged; README documents the new form.\nThe researcher's scripts/workqueue.py and scripts/work are dropped from the file set.\nTests broken: none found by the notes' search; the bare-name answer scenarios must be run to confirm.",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": ["scripts/workqueue_answer.py", "README.md"],
+  "questions": []
+}
