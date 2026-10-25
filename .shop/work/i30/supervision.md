@@ -25,3 +25,4 @@ The drafts of this proposal are in .shop/work/i30/runs/i30/1-integrate.
 - 2026-10-25: 1: (a), keep the file set and scenarios, change only the limit (the coordinator under the person's delegation 2026-10-25)
 - 2026-10-25: 2: (a), keep r110 as drafted (the coordinator under the person's delegation 2026-10-25)
 - 2026-10-25: 3: (b), before work run exits (the coordinator under the person's delegation 2026-10-25)
+- 2026-10-25: 4: (a), keep '80 turns' (the coordinator under the person's delegation 2026-10-25)
