@@ -6,6 +6,7 @@ import re
 
 import workqueue
 from features_gherkin import Feature
+from model_parse import expand
 
 REQUIREMENT = re.compile(r"([\w-]+)#(r\d+(?:-r\d+)?)$")
 WORK_ITEM = re.compile(r"\bw\d+\b")
@@ -27,7 +28,7 @@ class Drafts:
         path = self.root / "features" / (capability + ".feature")
         if not path.is_file():
             return []
-        wanted = {a.split("#", 1)[1] for a in accepts}
+        wanted = {a.split("#", 1)[1] for a in expand(accepts)}
         feature = Feature(path.read_text())
         return [(sc.title, tag) for sc in feature.scenarios if "deprecated" in sc.tags
                 for tag in sc.tags if tag in wanted]

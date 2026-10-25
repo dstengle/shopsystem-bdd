@@ -14,7 +14,7 @@ FIX_NOW = ["Important, w1, thing.py:3: the first thing to fix now", "Important, 
 
 def named(text):
     """The requirement ids in "thing#r1 and thing#r2"."""
-    return re.findall(r"\w+#r\d+", text or "")
+    return re.findall(r"\w+#r\d+(?:-r\d+)?", text or "")
 
 
 @given(parsers.re(r"i1's capability-proposal p1 is formulated(?:, its adds naming (?P<adds>[^,]+?))?"
