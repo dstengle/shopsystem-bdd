@@ -404,3 +404,4 @@
 {"time": "2026-10-25T00:15:22+00:00", "work-item": "w140", "stage": "implement", "agent": "bdd-implementer", "session": "e02e5c4e-f278-4774-bbd9-5e63bc50071a", "event": "start"}
 {"time": "2026-10-25T00:16:16+00:00", "work-item": "w138", "stage": "review", "agent": "bdd-task-reviewer", "session": "fd3ae3c8-a0a5-4253-96c3-da8ef9d40e93", "event": "end"}
 {"time": "2026-10-25T00:16:16+00:00", "work-item": "w138", "before": "done", "after": "awaiting-answer", "by": "work run"}
+{"time": "2026-10-25T00:16:17+00:00", "work-item": "w137", "before": "ready", "after": "claimed", "by": "work run"}
