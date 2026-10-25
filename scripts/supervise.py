@@ -202,7 +202,7 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
             self.rounds()
             self.draft()
             self.pull(MOVABLE)
-            if all(s in ("green", "withdrawn") for _, s in self.items()):
+            if self.items() and all(s in ("green", "withdrawn") for _, s in self.items()):     # r94, r97: none is not done
                 kept = self.branch_review()     # inside the try: its worktree goes with the run's (r33)
                 if kept is not None and self.fix_work_item(kept):     # r74: the fix is pulled, not reviewed in this run
                     self.push()

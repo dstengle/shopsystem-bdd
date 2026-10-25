@@ -43,6 +43,12 @@ def reviewed_last(repo):
     kept_review(repo)
 
 
+@given("the initiative branch holds a commit of notes.txt that no kept branch review has read")
+def unread_notes(repo):
+    write(repo, "notes.txt", "notes\n")
+    commit_all(repo, "notes.txt")
+
+
 def reviewer_calls(repo):
     return [c for c in starts(repo) if c["agent"] == REVIEWER]
 

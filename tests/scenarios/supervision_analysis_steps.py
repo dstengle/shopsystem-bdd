@@ -65,6 +65,12 @@ def measured_not(repo, context):
     assert len(ended) == 1 and found == [], (ended, found, context["done"].stderr)
 
 
+@then("`work run` ran no `measure initiative` on i1")
+def measured_never(repo, context):
+    assert measurement(repo) == [] and "measure initiative" not in context["done"].stderr, (
+        measurement(repo), context["done"].stderr)
+
+
 @then("i1's analysis record is not there")
 def analysis_not_there(repo, context):
     records = sorted((repo / ".shop/records").glob("*-i1-analysis.md")) if (repo / ".shop/records").is_dir() else []

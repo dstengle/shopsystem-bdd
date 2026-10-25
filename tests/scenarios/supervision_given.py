@@ -244,6 +244,15 @@ def implementers_commit_own(repo, plan, meet, order):
         plan["bdd-implementer"]["hold"] = {"w1": {"log": str(repo / ".shop/work/i1/log.jsonl"), "work_item": "w2"}}
 
 
+@given(parsers.re(r'i1 is started, its capability-proposal p1 is awaiting-answer, its ## Questions section with "(?P<asked>[^"]+)" '
+                  r"and no answer, and i1 has no work-item$"))
+def started_without_work_item(repo, asked):
+    write(repo, ".shop/work/i1/p1.md", "---\nid: %s\nkind: capability-proposal\npart_of: %s\nstatus: awaiting-answer\nargues: [thing]\n"
+          "adds: [thing#r1]\nchanges: []\nremoves: []\ndate: 2026-10-15\n---\n\n## Questions\n\n- %s\n" % (
+              full("capability-proposal", "p1"), full("initiative", "i1"), asked))
+    commit_all(repo, "i1 is started and has no work-item")
+
+
 @given(parsers.parse("the repository has {rel} committed"))
 def has_committed(repo, rel):
     write(repo, rel, "tracked\n")
