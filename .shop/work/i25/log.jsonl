@@ -130,3 +130,4 @@
 {"time": "2026-10-25T18:21:45+00:00", "work-item": "w186", "stage": "implement", "agent": "bdd-implementer", "session": "f7594f44-4cb9-49a5-9414-45ae01afd508", "event": "start"}
 {"time": "2026-10-25T18:22:36+00:00", "work-item": "w186", "stage": "implement", "agent": "bdd-implementer", "session": "f7594f44-4cb9-49a5-9414-45ae01afd508", "event": "end"}
 {"time": "2026-10-25T18:22:36+00:00", "work-item": "w186", "before": "claimed", "after": "awaiting-answer", "by": "work run"}
+{"time": "2026-10-25T18:33:42+00:00", "work-item": "w186", "before": "awaiting-answer", "after": "withdrawn", "by": "work withdraw"}
