@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i33-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i33
-status: approved
+status: awaiting-answer
 argues: [supervision]
 adds: [supervision#r120, supervision#r121]
 changes: []
@@ -20,6 +20,7 @@ The drafts of this proposal are in .shop/work/i33/runs/i33/1-integrate/drafts/ro
 - Q3 (supervision r120, subject). Added line: [r120] **When** the delegation-answerer answers a reviewer's question on a work-item, the delegation-answerer shall give in its result whether its answer asks for a change or accepts the work-item as it is. "the delegation-answerer" is no glossary term; r77 calls it "a session of its own, given the delegation". (a, recommended) Recast: "[r120] **Where** the request an initiative fulfils gives a delegation, **when** a session that `work run` started under it answers a reviewer's question on a work-item, the session shall give in its result whether its answer asks for a change or accepts the work-item as it is." (b) Keep r120 as drafted and add the glossary entry "- **delegation-answerer**: the session `work run` starts under a request's delegation to answer one question of an initiative."
 - Q4 (supervision r120, the result's field). The note gives none. (a, recommended) Draft none. (b) Add under Implementation: "- r120: the answer's result gives `change` or `accept`, as `work answer`'s `--change` and `--accept` (work-queue r26, r27)."
 - Q5 (supervision r121, "whatever its status"). Added line: [r121] **When** a kept branch review's result gives no question, `work run` shall take the review as listing nothing to fix now, whatever its status. (a, recommended) The status of the review's result (its outcome, e.g. `DONE` or `PARTIAL`): r121 as drafted. (b) The review's verdict: "[r121] **When** a kept branch review's result gives no question, `work run` shall take the review as listing nothing to fix now, whatever verdict the review gives." Related, optional: a branch reviewer's session that ends in error, at its turn limit or with no readable result; (a, recommended) add nothing; (b) add "[r122] **If** a branch reviewer's session ends in an error or at its turn limit or leaves no result `work run` can read, then `work run` shall take the review as not read."
+- supervision r120 ("the session shall give in its result whether its answer asks for a change or accepts the work-item as it is"): reading 1, the line binds work run, whose brief for the answering session asks it to say so in its result; reading 2, the line binds the answering session's agent, which only a real session's result shows, so a scenario under the stand-in claude would be true by its own setup.
 
 ## Answers
 - 2026-10-25: (a) under the person's delegation 2026-10-25 (answer every question with its recommended reading): change r23, supervision r105 and r75 as (a) describes, so an all-`withdrawn` initiative no longer meets r23 and r31 does not contradict them.
