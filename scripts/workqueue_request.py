@@ -37,6 +37,23 @@ def accepted_lines(root, ident):
     return [(int(n), lines[n]) for n in sorted(lines, key=int) if outcomes.get(n) == "accepted"]
 
 
+def asked_here(root):
+    """(name, open questions) of each request whose asker is this context and whose status is awaiting-asker (supervision
+    r101): a question is open when no answer of the same number is under `## Answers`."""
+    try:
+        mine = ("internal", "bounded-context/" + workqueue.context_path(root))
+    except Refused:
+        mine = ("internal",)
+    found = []
+    for name, status, _, _ in workqueue.requests(root):
+        text = workqueue.read(path_of(root, name), root)
+        if status == "awaiting-asker" and field(text, "asker") in mine:
+            answered = {e.split(". ", 1)[0] for e in _entries(text, "Answers") if ". " in e}
+            found.append((name, [e.split(". ", 1)[1] for e in _entries(text, "Questions")
+                                 if ". " in e and e.split(". ", 1)[0] not in answered]))
+    return found
+
+
 def _with_entries(text, name, entries):
     body = "## %s\n%s\n" % (name, "".join(entry + "\n" for entry in entries))
     if re.search(r"(?m)^## %s\n" % name, text):

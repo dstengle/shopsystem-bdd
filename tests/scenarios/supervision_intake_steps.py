@@ -7,7 +7,6 @@ from .conftest import full
 from .supervision_world import calls, commit_all, git, scripts_in, starts, write
 
 REQUEST = ".shop/work/requests/q1.md"
-JUDGED = ("accepted", "refused")
 
 
 @given(parsers.re(r"a request q1 of which this context is the upstream, (?P<status>[\w-]+), its turn the upstream's, "
@@ -18,26 +17,46 @@ def upstream_request(repo, status):
     commit_all(repo, "a request this context is the upstream of")
 
 
-@given("the intake round writes a line outcome for each of q1's lines and passes the turn with `work turn`")
-def intake_writes(plan):
+def round_with_question(plan, question):
     work = ["python3", scripts_in("{scripts}/work")]
-    commands = [work + ["outcome", "q1", str(n), word] for n, word in enumerate(JUDGED, 1)]
-    plan["initiative-round"] = {"status": "DONE", "run": commands + [work + ["turn", "q1"]]}
+    plan["initiative-round"] = {"status": "DONE", "questions": ["2. " + question],
+                                "run": [work + ["outcome", "q1", "1", "accepted"], work + ["turn", "q1"]]}
 
 
-@then("an `initiative-round` session of the kind intake was started, given q1")
+@given("the intake round writes a line outcome for q1's line 1, gives a question on q1's line 2 and passes the turn with "
+       "`work turn`")
+def intake_questions(plan):
+    round_with_question(plan, "What is meant by line 2?")
+
+
+@given(parsers.parse('the intake round writes a line outcome for q1\'s line 1, gives the question "{question}" on q1\'s '
+                     'line 2 and passes the turn with `work turn`'))
+def intake_asks(plan, question):
+    round_with_question(plan, question)
+
+
+@then("an `initiative-round` session of the kind intake was started, given q1, its brief asking for each line's line "
+      "outcome or a question on it and for the turn passed with `work turn`")
 def intake_started(repo, context):
     found = [c for c in starts(repo) if c["agent"].endswith("initiative-round") and "# intake of q1" in c["brief"]
-             and "Kind: intake" in c["brief"] and REQUEST in c["brief"]]
+             and "Kind: intake" in c["brief"] and REQUEST in c["brief"] and "line outcome or a question on it" in c["brief"]
+             and "/work turn q1" in c["brief"]]
     assert len(found) == 1, (starts(repo), context["done"].stdout, context["done"].stderr)
 
 
-@then("each of q1's lines has a line outcome, and q1's turn is its asker's")
-def lines_have_outcomes(repo, context):
+@then("q1's line 1 has a line outcome, and q1's turn is its asker's")
+def line_one_has_outcome(repo, context):
     text = (repo / REQUEST).read_text()
     outcomes = text.split("\n## Outcomes\n", 1)[1].split("\n## ", 1)[0].split()
-    assert outcomes == ["1.", "accepted", "2.", "refused"], (text, context["done"].stderr, calls(repo, ("ran", "refused")))
+    assert outcomes == ["1.", "accepted"], (text, context["done"].stderr, calls(repo, ("ran", "refused")))
     assert "\nturn: asker\n" in text, text
+
+
+@then(parsers.parse('q1 holds the question "{question}" on its line 2'))
+def q1_holds_question(repo, context, question):
+    text = (repo / REQUEST).read_text()
+    held = text.split("\n## Questions\n", 1)[1].split("\n## ", 1)[0].strip().splitlines()
+    assert held == ["1. line 2: " + question], (text, context["done"].stderr)
 
 
 def accepted_request(repo, name):

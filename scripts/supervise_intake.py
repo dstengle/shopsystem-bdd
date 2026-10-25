@@ -6,6 +6,7 @@ import os
 import subprocess
 
 import workqueue
+import workqueue_request
 from supervise import Run
 from supervise_faults import Fault, fault_of
 from supervise_worker import SCRIPTS, WORKER, GitFailed, git
@@ -58,8 +59,9 @@ class Intake(Run):
             "# intake of %s\n\nRequest: %s\nAgent: %s\nScripts: %s\nKind: intake\nWorktree: %s\nBranch: %s\n"
             "Lines of the request:\n%s\n\nRead (paths in your worktree):\n- %s\n- spec/index.md\n\n"
             "Write the line outcome of each line with `%s outcome %s <line> <accepted|refused|withdrawn>`; for a line you "
-            "cannot judge write the line outcome `question` and give the question's text, with the number of its line, in "
-            "your result's `questions`. Then pass the turn once with `%s turn %s`.\n\n"
+            "cannot judge write no line outcome, and give a question on it in your result's `questions` as "
+            "`<line>. <question>`, so each line has its line outcome or a question on it. Then pass the turn once with "
+            "`%s turn %s`.\n\n"
             "Run directory: %s\nResult file: %s\n\n"
             "You start in your worktree, %s: run every command from there, as it is, and never change directory (no `cd`, "
             "no `git -C`); a command that does is refused.\n\n"
@@ -85,7 +87,16 @@ class Intake(Run):
             self.remove(tree)
             if data.get("status") == "DONE":
                 with self.lock:
-                    git(self.root, "merge", "-q", "--no-edit", branch)
+                    head = git(self.root, "rev-parse", "HEAD").stdout.strip()
+                    try:     # r100: the questions are written while the request is in the upstream's turn, then merged
+                        for question in data.get("questions") or []:
+                            number, text = str(question).split(". ", 1)
+                            workqueue_request.ask(self.root, name, int(number), text)
+                        git(self.root, "merge", "-q", "--no-edit", branch)
+                    except (Refused, ValueError, GitFailed) as error:
+                        subprocess.run(["git", "merge", "--abort"], cwd=self.root, capture_output=True)
+                        git(self.root, "reset", "-q", "--hard", head)
+                        raise Fault(str(error)) from None
                     git(self.root, "branch", "-q", "-d", branch)
         except (Fault, GitFailed) as fault:
             if tree is not None:

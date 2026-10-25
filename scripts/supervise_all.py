@@ -11,7 +11,7 @@ import supervise_intake
 import workqueue
 import workqueue_start
 import workqueue_status
-from supervise import Run
+from supervise import Run, asked
 from workqueue import Refused
 
 
@@ -79,6 +79,5 @@ def run_all(root):
         nodes += [s for _, s in here]
     for name, error in refused.items():
         print("work: %s: %s" % (name, error), file=sys.stderr)
-    if refused or "failed" in nodes:
-        return 1
-    return 3 if "awaiting-answer" in nodes else 0
+    code = 1 if refused or "failed" in nodes else 3 if "awaiting-answer" in nodes else 0
+    return asked(root, code)     # r101: the requests this context asked, waiting in its turn

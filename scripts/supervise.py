@@ -14,6 +14,7 @@ import threading
 from pathlib import Path
 
 import workqueue
+import workqueue_request
 from supervise_analysis import Analyses
 from supervise_answers import Answers
 from supervise_brief import Briefs
@@ -194,7 +195,7 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
         self.check()
         self.push_unpushed()
         self.pull_through()
-        return self.show()
+        return asked(self.root, self.show())
 
     def pull_through(self):
         """The initiative's part of a run once checked: answers, rounds, drafting, the pool, the branch review."""
@@ -242,6 +243,17 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
         mine = [fault for failed, fault in self.faults if failed == name]
         recorded = [" ".join(b[0][2:].split() + [l.strip() for l in b[1:]]) for b in self.held(name, "Faults")]
         return [r for r in recorded if not any(m.startswith(r) for m in mine)] + mine
+
+
+def asked(root, code):
+    """Print each request whose asker is this context and which waits in the asker's turn, with its open questions; such
+    a request makes a successful exit an error (r101)."""
+    waiting = workqueue_request.asked_here(root)
+    for name, open_questions in waiting:
+        print("%s awaiting-asker" % name)
+        for question in open_questions:
+            print("  %s" % question)
+    return 3 if waiting and code == 0 else code
 
 
 def run(root, initiative):
