@@ -1236,13 +1236,28 @@ Feature: Supervision
     Then `work start` was run for q1, and an initiative under .shop/work/ fulfils q1
     And `work start` was not run for q2, and i1 is the only initiative that fulfils q2
 
-  @r102
-  Scenario: an integrate round is given every requirement id another initiative's kept drafts add that spec/ on the branch it starts from does not hold, whatever that initiative's capability-proposal's status
+  @r102 @deprecated
+  Scenario: an integrate round is given every requirement id another initiative's kept drafts add that spec/ on the branch it starts from does not hold, whatever that initiative's capability-proposal's status (deprecated)
+    Deprecated for: an integrate round is given every requirement id another initiative's kept drafts add that spec/ on the branch it starts from does not hold, whatever that initiative's capability-proposal's status
     Pins that an integration knows the ids other initiatives have drafted and spec/ does not yet hold, however far their proposals have got, and is given no id spec/ already holds.
     Given i1 is proposed and fulfils the request q1, whose line 1 has the line outcome accepted
     And spec/capabilities/thing.md on the branch i1's integrate round starts from holds thing#r1, thing#r2 and thing#r5
     And an initiative i2 under .shop/work/, started, whose kept drafts add thing#r4 and thing#r5 on thing, and whose capability-proposal p2 for them is formulated
     And an initiative i3 under .shop/work/, started, whose kept drafts add other#r1 on other, and whose capability-proposal p3 for them is drafted
+    And every round ends
+    When the person runs `work run i1`
+    Then a round of the kind integrate was started for i1, given thing#r4 and other#r1
+    And the integrate round for i1 was not given thing#r1, thing#r2 or thing#r5
+
+  @r102
+  Scenario: an integrate round is given every requirement id another initiative's kept drafts add that spec/ on the branch it starts from does not hold, whatever that initiative's capability-proposal's status
+    Pins that an integration knows the ids other initiatives have drafted and spec/ does not yet hold, however far their proposals have got, and is given no id spec/ already holds.
+    Given i1 is proposed and fulfils the request q1, whose line 1 has the line outcome accepted
+    And spec/capabilities/thing.md on the branch i1's integrate round starts from holds thing#r1, thing#r2 and thing#r5
+    And an initiative i2 under .shop/work/, started, whose capability-proposal p2 is formulated
+    And i2 keeps a draft of thing adding thing#r4 and thing#r5 at .shop/work/i2/runs/i2/2-integrate/drafts/round-1/spec/capabilities/thing.md
+    And an initiative i3 under .shop/work/, started, whose capability-proposal p3 is drafted
+    And i3 keeps a draft of other adding other#r1 at .shop/work/i3/runs/i3/2-integrate/drafts/round-2/spec/capabilities/other.md
     And every round ends
     When the person runs `work run i1`
     Then a round of the kind integrate was started for i1, given thing#r4 and other#r1
