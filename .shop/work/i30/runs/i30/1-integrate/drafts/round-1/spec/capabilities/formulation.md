@@ -1,0 +1,15 @@
+## Behaviour
+- [r1] **When** lines are approved, `formulating-features` shall write the scenarios of each added or changed line that has one reading in its capability's feature file `features/<name>.feature`, one scenario or one outline for the line, or one scenario per reason for a line every call must keep (r9).
+- [r2] `formulating-features` shall commit formulated scenarios without showing them to the person for approval.
+- [r3] **If** a line admits two readings, then `formulating-features` shall show the person the question with its two readings in place of that line's scenarios, formulating the rest of the capability.
+- [r4] **When** a line whose old scenario passes today is changed or removed, `formulating-features` shall keep the old scenario in its feature file, deprecated and with the `@r<n>` tag it had, until the work-item whose work makes its replacement pass retires it.
+- [r5] **When** a line whose old scenario does not pass today is changed or removed, `formulating-features` shall replace or remove the old scenario.
+- [r23] **When** `formulating-features` runs an old scenario alone, `formulating-features` shall run it with `python3 -m pytest`.
+- [r6] **When** `formulating-features` commits feature files, `formulating-features` shall commit only the feature files and the test files `features rebind` changed, with `features bindings` printing that every binding names a scenario.
+- [r7] **When** an existing feature file is changed, `formulating-features` shall keep every scenario not added, changed or removed byte for byte as it was, tags included.
+- [r9] `formulating-features` shall formulate a line every call must keep as one scenario per reason the line gives, each with one representative call.
+- [r10] **When** the person answers that a scenario a work-item's implementer handed back with evidence is a formulation question, `formulating-features` shall rewrite the scenario to fit its line and the evidence, or show the person a question with two readings.
+- [r11] `formulating-features` shall tag each scenario, on its tag line, with the one `@r<n>` of the one line it formulates, whatever the scenario's title.
+- [r13] **Where** `model check` is available, **when** feature files are committed, `model check` shall print no scenario that is not deprecated and names no line or more than one, and no added or changed line without a scenario.
+- [r14] **When** a scenario uses a word its context's glossary avoids, `formulating-features` shall reword the scenario to its line in a round of the kind `formulate`, without a further gate.
+- [r22] **If** `formulating-features` cannot do what it was asked, then `formulating-features` shall stop, saying why, and commit nothing.
