@@ -46,3 +46,4 @@
 {"time": "2026-10-25T16:56:02+00:00", "work-item": "w174", "before": "researched", "after": "planned", "by": "work run"}
 {"time": "2026-10-25T16:57:19+00:00", "work-item": "w173", "before": "failed", "after": "drafted", "by": "work retry"}
 {"time": "2026-10-25T16:57:56+00:00", "work-item": "w174", "before": "planned", "after": "ready", "by": "work run"}
+{"time": "2026-10-25T16:57:58+00:00", "work-item": "w174", "before": "ready", "after": "claimed", "by": "work run"}
