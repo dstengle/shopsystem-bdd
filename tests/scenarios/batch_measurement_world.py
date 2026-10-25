@@ -61,7 +61,7 @@ class World:
         self.shown = None           # the measurement `measure show` is run on
         self.named = {}             # measurement name -> its path, for `measure compare`
         self.merged = ()            # the commits a work-item's merge brought in
-        self.request = None         # (request id, its asker) the initiative fulfils
+        self.requests = []          # [id, held by the queue, asker] of each request the initiative fulfils
         self.code = None
         self.err = ""
         self.out = ""
@@ -90,15 +90,17 @@ class World:
         (self.repo / "spec").mkdir(exist_ok=True)
         (self.repo / "spec" / "index.md").write_text("---\nid: bounded-context/ex.com/prod/ctx\n---\n")
         self.work().mkdir(parents=True, exist_ok=True)
-        if self.request:
-            ident, asker = self.request
+        if self.requests:
+            links = "".join("fulfils: request/%s\n" % ident for ident, _, _ in self.requests)
             (self.work() / "initiative.md").write_text(
-                "---\nid: initiative/ex.com/prod/ctx/%s\nkind: initiative\nfulfils: request/%s\n---\n" % (INITIATIVE, ident))
+                "---\nid: initiative/ex.com/prod/ctx/%s\nkind: initiative\n%s---\n" % (INITIATIVE, links))
             requests = self.repo / ".shop" / "work" / "requests"
             requests.mkdir(parents=True, exist_ok=True)
-            (requests / (ident + ".md")).write_text(
-                "---\nid: request/ex.com/prod/ctx/%s\nkind: request\nasker: %s\nsource: [%s]\nstatus: accepted\n"
-                "turn: asker\n---\n\n# a request\n" % (ident, asker, INITIATIVE))
+            for ident, held, asker in self.requests:
+                if held:
+                    (requests / (ident + ".md")).write_text(
+                        "---\nid: request/ex.com/prod/ctx/%s\nkind: request\nasker: %s\nsource: [%s]\n"
+                        "status: accepted\nturn: asker\n---\n\n# a request\n" % (ident, asker, INITIATIVE))
         if self.has_log:
             (self.work() / "log.jsonl").write_text("".join(json.dumps(r) + "\n" for r in self.rows))
         for number, (session, (item, stage, text)) in enumerate(self.sessions.items(), 1):

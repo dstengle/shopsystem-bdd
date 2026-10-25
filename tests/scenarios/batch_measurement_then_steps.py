@@ -31,6 +31,11 @@ def nothing_written(world):
     assert world.written() == [], world.written()
 
 
+@then("no measurement is written")
+def no_measurement_written(world):
+    assert not list((world.repo / ".shop" / "records" / "measurements").glob("*.md")), world.written()
+
+
 @then(parsers.parse("measure refuses, naming {file}"))
 def refuses_naming(world, file):
     name = "session.json" if file.startswith("the session.json") else "sessions/s-9.jsonl"

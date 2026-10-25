@@ -9,12 +9,51 @@ ASKERS = {"this bounded context": "internal", "another bounded context": "bounde
 
 @given(parsers.parse("i7-cart fulfils the request {request}, whose asker is {asker}"))
 def fulfils(world, request, asker):
-    world.request = (request, ASKERS[asker])
+    world.requests = [[request, True, ASKERS[asker]]]
 
 
 @given("i7-cart fulfils no request")
 def fulfils_none(world):
-    world.request = None
+    world.requests = []
+
+
+@given(parsers.re(r"i7-cart fulfils the request (?P<request>\w+)(, which the queue holds)?"))
+def fulfils_held(world, request):
+    world.requests.append([request, True, "internal"])
+
+
+@given(parsers.parse("i7-cart fulfils the requests {first} and {second}, which the queue holds, each with an asker"))
+def fulfils_two(world, first, second):
+    world.requests = [[first, True, "internal"], [second, True, "internal"]]
+
+
+@given(parsers.parse("the queue does not hold the request {request}"))
+def queue_lacks(world, request):
+    for entry in world.requests:
+        if entry[0] == request:
+            entry[1] = False
+
+
+@given(parsers.parse("the request {request} has no asker"))
+def request_no_asker(world, request):
+    for entry in world.requests:
+        if entry[0] == request:
+            entry[2] = ""
+
+
+@then("measure initiative refuses because the queue does not hold that request")
+def refuses_not_held(world):
+    assert world.code != 0 and "does not hold" in world.err, world.err
+
+
+@then("measure initiative refuses because the request has no asker")
+def refuses_no_asker(world):
+    assert world.code != 0 and "has no asker" in world.err, world.err
+
+
+@then("measure initiative refuses because the initiative fulfils more than one request")
+def refuses_several(world):
+    assert world.code != 0 and "more than one request" in world.err, world.err
 
 
 @then(parsers.parse("the measurement gives the stage of {item}'s {stage}"))

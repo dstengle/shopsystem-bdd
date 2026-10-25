@@ -3,6 +3,7 @@ slim export). A file of a shape not known is refused, naming it; no figure is gu
 import datetime
 import json
 import os
+import re
 from pathlib import Path
 
 
@@ -52,12 +53,18 @@ def request_of(initiative, root):
     if not path.is_file():
         return None
     try:
-        value = workqueue_request.field(workqueue.read(path, root), "fulfils")
-        if not value:
+        workqueue.read(path, root)
+        head = path.read_text(encoding="utf-8").split("\n---", 1)[0]
+        values = [v.strip() for v in re.findall(r"^fulfils:[ \t]*(.*)$", head, re.M) if v.strip()]
+        idents = {v.rsplit("/", 1)[-1] for value in values for v in re.split(r"[,\s]+", value) if v}
+        if not idents:
             return None
-        if not value.replace("/", "").replace("-", "").replace(".", "").isalnum():
-            raise Refused("%s: fulfils must hold one request id, not %r" % (path, value))
-        ident = value.rsplit("/", 1)[-1]
+        if len(idents) > 1:
+            raise Refused("%s: the initiative fulfils more than one request: %s" % (path, ", ".join(sorted(idents))))
+        ident = idents.pop()
+        if "/" in ident or not (Path(root) / ".shop" / "work" / "requests" / (ident + ".md")).is_file():
+            raise Refused("the queue does not hold the request %s (no %s)" % (
+                ident, Path(".shop/work/requests") / (ident + ".md")))
         asker = workqueue_request.field(workqueue.read(workqueue_request.path_of(root, ident), root), "asker")
         if not asker:
             raise Refused("%s has no asker" % (Path(".shop/work/requests") / (ident + ".md")))
