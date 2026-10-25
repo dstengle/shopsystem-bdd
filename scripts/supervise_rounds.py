@@ -82,6 +82,9 @@ class Rounds:
         asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []] if kind == "gate" else None
         if kind != "integrate":
             self.move(name, before, after, asked)
+        else:     # r84: the round's stage directory is committed once it has ended, on top of the commit of started
+            with self.lock:
+                self.commit(name, after, after)
 
     def start_initiative(self, name, after):
         """The initiative's own transition from proposed: its status written, logged and committed (not a work-item's move)."""

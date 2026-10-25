@@ -89,6 +89,22 @@ def every_round_ends_and_done(plan):
     plan["initiative-round"] = {"status": "DONE"}
 
 
+@given("the integrate round for i1 gives DONE, and every round ends")
+def integrate_gives_done(plan):
+    plan["initiative-round"] = {"status": "DONE"}
+
+
+@then("the initiative branch has a commit of the integrate round's stage directory with i1's change to started")
+def integrate_stage_committed(repo, context):
+    stage = git(repo, "ls-files", "--", DIR + "/runs/i1").split()
+    assert any("-integrate/" in p for p in stage), (stage, context["done"].stderr)
+    for commit in git(repo, "log", "--format=%H", "--", DIR + "/runs/i1").split():
+        files = git(repo, "show", "--name-only", "--format=", commit).split()
+        if any("-integrate/" in f for f in files) and "status: started" in git(repo, "show", commit + ":" + DIR + "/initiative.md"):
+            return
+    raise AssertionError((git(repo, "log", "--stat", "--format=%H %s"), context["done"].stderr))
+
+
 def rounds(repo, kind, name="p1"):
     return [c for c in starts(repo) if c["agent"].endswith("initiative-round") and "# %s of %s" % (kind, name) in c["brief"]]
 
