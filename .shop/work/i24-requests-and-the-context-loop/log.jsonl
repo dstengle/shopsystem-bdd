@@ -733,3 +733,9 @@
 {"time": "2026-10-25T01:04:11+00:00", "work-item": "w147", "before": "awaiting-answer", "after": "done", "by": "work answer"}
 {"time": "2026-10-25T01:04:13+00:00", "work-item": "i24-requests-and-the-context-loop", "before": "proposed", "after": "started", "by": "work run"}
 {"time": "2026-10-25T01:04:14+00:00", "work-item": "i24-requests-and-the-context-loop", "stage": "integrate", "event": "push verified"}
+{"time": "2026-10-25T01:04:49+00:00", "work-item": "w147", "stage": "review", "event": "push verified"}
+{"time": "2026-10-25T01:04:49+00:00", "work-item": "w147", "stage": "review", "agent": "bdd-task-reviewer", "session": "8df0d39c-f3ec-4436-b1e0-d97f61fa0e9f", "event": "start"}
+{"time": "2026-10-25T01:04:49+00:00", "work-item": "w146", "stage": "review", "event": "push verified"}
+{"time": "2026-10-25T01:04:49+00:00", "work-item": "w146", "stage": "review", "agent": "bdd-task-reviewer", "session": "f0420416-c713-4ad4-ab37-d1627df53494", "event": "start"}
+{"time": "2026-10-25T01:06:09+00:00", "work-item": "w147", "stage": "review", "agent": "bdd-task-reviewer", "session": "8df0d39c-f3ec-4436-b1e0-d97f61fa0e9f", "event": "end"}
+{"time": "2026-10-25T01:06:09+00:00", "work-item": "w147", "before": "done", "after": "green", "by": "work run"}
