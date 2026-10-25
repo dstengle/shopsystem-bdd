@@ -1,0 +1,14 @@
+{
+  "status": "DONE",
+  "summary": "Research of w169 (spec-integration#r43) done; notes.md has all seven parts.\nNo accepted scenario: no spec-integration feature file; the capability is group guarantees, so work run passes it with no test (work_items.py:114-131, read).\nProbe (run, 3 passed): the integrate brief (supervise_brief.py:integrate_lines) names the request's accepted lines, the drafts path and the change-list form, but no id other initiatives' drafts add (supervision#r98 in two fixture drafts). This is the r43 gap.\nA missing request or an absent fulfils refuses (workqueue_request.py:22), shown by probe.\nOld assumption: the writer and skill step 2 number added lines above this initiative's ids only (capability-writer.md:18-21, SKILL.md:23, capability-format.md:159-163).\nTests: none can no longer pass; no test asserts the brief's text (searched).\nv15b checks spec/ only; two proposals adding one live id pass model check (read).\ntests-of and untested refuse: no map; tests listed by search.\nFile set: scripts/supervise_brief.py, agents/initiative-round.md, agents/capability-writer.md, skills/integrating-a-proposal/SKILL.md, docs/capability-format.md, plus a test step and a feature scenario if planned.\nTwo readings of r43 (brief carries the ids vs round reads other drafts) are left to the planner.",
+  "fileset": [
+    "scripts/supervise_brief.py",
+    "agents/initiative-round.md",
+    "agents/capability-writer.md",
+    "skills/integrating-a-proposal/SKILL.md",
+    "docs/capability-format.md",
+    "tests/scenarios/supervision_integrate_steps.py",
+    "features/supervision.feature"
+  ],
+  "questions": []
+}
