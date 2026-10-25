@@ -26,3 +26,4 @@ The drafts of this proposal are in .shop/work/i30/runs/i30/1-integrate.
 - 2026-10-25: 2: (a), keep r110 as drafted (the coordinator under the person's delegation 2026-10-25)
 - 2026-10-25: 3: (b), before work run exits (the coordinator under the person's delegation 2026-10-25)
 - 2026-10-25: 4: (a), keep '80 turns' (the coordinator under the person's delegation 2026-10-25)
+- 2026-10-25: 5: (a), keep as drafted. Its id: spec now holds supervision r109 (i29's line, 3bfdba68, applied after this round's integrate), so this proposal's r109 is numbered r117 (r116 is drafted by i31) (the coordinator under the person's delegation 2026-10-25)
