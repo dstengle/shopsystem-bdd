@@ -339,3 +339,10 @@ by: the coordinator, from `work run` on i25 and i26
 date: 2026-10-25
 
 The first real `integrate` rounds `work run` started (supervision r79, for i25 and i26) each drafted lines, a decision and questions (i25: work-queue r25 r26, supervision r91, a change to r14, decision 0069, 5 questions; i26: requests r19 r20, supervision r91 r92, 8 questions), but their drafts were under `.shop/scratch/drafts/`, which git ignores, in the round's worktree, and were lost when it was removed. No line says who writes the capability-proposal an integrate round gives, so none was written, no `gate` round (r68) started, and nothing reached the person. `work run` then started a branch review of each initiative with no work-item (both NEEDS_CONTEXT) and exited 0. i24 never ran this path: its rounds were dispatched by the coordinator.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-25-proposals-written-by-hand
+about: capability/supervision
+by: the coordinator; the person, 2026-10-25: "Are there no skills or tooling for doing this? We should not be copying work forward"
+date: 2026-10-25
+
+No command, skill or agent writes a capability-proposal: every line reads one, answers it or moves its status. i24's fourteen were written by the coordinator by hand (e.g. 1b257307), which hid the gap that 2026-10-25-integrate-round-leaves-nothing then showed. Where the workflow has no tool for a step, the session stops and puts the gap to the person instead of copying how earlier files were made.
