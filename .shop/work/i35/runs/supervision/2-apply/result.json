@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Applied answers 1-6: supervision r73 changed, r123 added, r124 added. spec/ committed alone. model check: 11 violations, 2 new v_s3 (r123, r124 have no scenario yet).","questions":[],"changes":[{"capability":"supervision","adds":["supervision#r123","supervision#r124"],"changes":["supervision#r73"],"removes":[]}]}
