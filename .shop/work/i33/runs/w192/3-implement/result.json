@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"work add refuses done/abandoned initiatives naming the status (r32); an initiative is done only with at least one green work-item (r31). Work-item scenarios: 147 passed.","commits":["678b2865 work-queue r31, r32: add refuses a done or abandoned initiative; done needs a green work-item"],"report":".shop/scratch/3-implement/report.md","questions":[]}
