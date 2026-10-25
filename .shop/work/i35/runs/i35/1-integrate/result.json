@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Round 1: supervision r73 changed (Deprecated for: criterion), r123 added (retiring work-item). 6 questions, 1 cut sentence. Gate at drafts/round-1/gate.md.","questions":[],"changes":[{"capability":"supervision","adds":["supervision#r123"],"changes":["supervision#r73"],"removes":[]}]}
