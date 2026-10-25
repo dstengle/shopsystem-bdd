@@ -103,3 +103,4 @@
 {"time": "2026-10-25T18:24:26+00:00", "work-item": "w184", "stage": "review", "agent": "bdd-task-reviewer", "session": "4b371b2b-78e2-4020-a382-2136b9f2933f", "event": "end"}
 {"time": "2026-10-25T18:24:26+00:00", "work-item": "w184", "before": "done", "after": "green", "by": "work run"}
 {"time": "2026-10-25T18:33:42+00:00", "work-item": "w180", "before": "awaiting-answer", "after": "ready", "by": "work answer"}
+{"time": "2026-10-25T18:34:10+00:00", "work-item": "w180", "before": "ready", "after": "claimed", "by": "work run"}
