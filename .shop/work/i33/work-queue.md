@@ -28,3 +28,5 @@ The drafts of this proposal are in .shop/work/i33/runs/i33/1-integrate/drafts/ro
   by: work run, under the delegation "The person, 2026-10-25: "Do not involve me in fixing all of the bugs. Please get the system into a correctly working state before doing a release". Answer every question with its recommended reading."
 - 2026-10-25: (a) draft none, under the person's delegation 2026-10-25 to answer every question with its recommended reading
   by: work run, under the delegation "The person, 2026-10-25: "Do not involve me in fixing all of the bugs. Please get the system into a correctly working state before doing a release". Answer every question with its recommended reading."
+- 2026-10-25: (a) the status of the review's result (its outcome, e.g. DONE or PARTIAL): r121 as drafted, under the person's delegation of 2026-10-25 to answer every question with its recommended reading.
+  by: work run, under the delegation "The person, 2026-10-25: "Do not involve me in fixing all of the bugs. Please get the system into a correctly working state before doing a release". Answer every question with its recommended reading."
