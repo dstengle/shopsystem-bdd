@@ -157,7 +157,8 @@ Every Behaviour line has an id, `[r<n>]`, written first: `- [r3] **If** ...`. Th
 name for good: scenarios, proposals and commits point at it, and it survives re-wording.
 
 - A new line takes the id one above every id the capability has used or retired, wherever it sits in the
-  section. Ids are never renumbered, so they need not be in order.
+  section. Ids are never renumbered, so they need not be in order. A round given ids that other
+  initiatives' drafts add numbers its added lines above those ids too, on the same capability.
 - A changed line keeps its id. A line whose meaning is replaced by a different rule is a removal and an
   addition, not a change.
 - A removed line's id goes into the frontmatter's `retired: [r<n>, ...]` and is never taken again.

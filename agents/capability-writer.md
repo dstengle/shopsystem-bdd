@@ -17,7 +17,9 @@ A capability file is frontmatter (`id: capability/<context path>/<name>`, `title
 
 Every Behaviour line starts with its id, `[r<n>]` (`docs/capability-format.md`, Requirement ids). A line
 you add takes the id one above every id the capability has used or retired (its lines' ids and its
-`retired` list), wherever you place it. A line you change keeps its id. A line you remove is taken out and
+`retired` list), wherever you place it, and above every id your input prompt gives for that capability (ids other
+initiatives' drafts add; ids given for other capabilities do not count, and with none given the rule is
+unchanged). A line you change keeps its id. A line you remove is taken out and
 its id added to `retired`. Never renumber. A new capability starts at r1 with `retired: []`.
 
 Every sentence of the note lands in exactly one place: a Behaviour line, a glossary entry, an Implementation line, a Not yet entry, a decision file, a question, or the cut list. Rationale, intent and comparisons with what was rejected are cut, or go into the Context of the decision they explain, where options were weighed.
