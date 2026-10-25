@@ -1,2 +1,3 @@
 - 2026-10-25: integrate round 1: 1 changed (supervision#r73), 1 added (supervision#r123), 6 questions, 1 cut sentence; drafts .shop/scratch/1-integrate/drafts/round-1
 - 2026-10-25: gate round 1: 6 questions
+- 2026-10-25: apply round 2: answers 1-6 applied under the coordinator's delegation 2026-10-25; supervision r73 changed, r123 and r124 added
