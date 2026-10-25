@@ -5,7 +5,7 @@ part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i26
 status: formulated
 argues: [requests]
 adds: [requests#r20, requests#r21]
-changes: []
+changes: [requests#r4, requests#r5, requests#r12]
 removes: []
 date: 2026-10-25
 ---

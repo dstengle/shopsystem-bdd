@@ -4,8 +4,8 @@ kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i26
 status: approved
 argues: [supervision]
-adds: [supervision#r98, supervision#r99]
-changes: []
+adds: [supervision#r100, supervision#r101]
+changes: [supervision#r9, supervision#r67, supervision#r82]
 removes: []
 date: 2026-10-25
 ---

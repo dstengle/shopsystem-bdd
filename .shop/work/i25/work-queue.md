@@ -4,7 +4,7 @@ kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i25
 status: formulated
 argues: [work-queue]
-adds: [work-queue#r26, work-queue#r27]
+adds: [work-queue#r26, work-queue#r27, work-queue#r28]
 changes: [work-queue#r14]
 removes: []
 date: 2026-10-25
