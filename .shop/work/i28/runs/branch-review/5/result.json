@@ -1,0 +1,6 @@
+{
+  "status": "DONE",
+  "summary": "Branch review 5 of i28, 4b7dca6c..c6673e6a (w167-w172). Verdict: DONE.\nSuite: 870 passed, 16 failed at c6673e6a in 31.8 s (parallel, -n auto; not in-process).\nEach of the 16 failures is a StepDefinitionNotFoundError in a scenario formulated for another initiative (requests r4 r5 r12 r20 r21 r22; supervision r9 r67 r82 r98 r100 r101; work-queue r26 r27 r28). None is i28's (finding 6).\nNo code, test or step definition has changed since review 4 (125b2ad1).\nEach work-item's check (pytest --work-item w167..w172) passes; I ran each one myself.\ntools check: ruff 7 errors. 5 are the same as before (Minor, drop). 2 are new, in i29's tracked gate helper .shop/work/i29/runs/supervision/1-gate/mk.py (Minor, observation, not i28's).\nvulture clean; no import contracts. tools size: none over 300. features bindings: clean.\nfeatures deprecated: i28's @r102 is not retired yet (Minor, observation).\nNo removed or weakened tests. The w171 and w172 allowances hold.\nNo Critical finding and none triaged fix now.",
+  "findings": "/tmp/work-run-i28-ixwxur22/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": []
+}
