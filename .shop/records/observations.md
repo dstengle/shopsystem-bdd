@@ -409,3 +409,10 @@ by: the coordinator, from w194 and the branch's deprecated scenarios
 date: 2026-10-25
 
 r73 lists under a drafted work-item's `## Retires` only the `@deprecated` scenarios tagged with a requirement it accepts. A replaced scenario tagged with another line (w194: the `@r75` PARTIAL scenario that r121's Outline replaces) is missed, and its work-item is asked about it. Five deprecated scenarios whose replacements are green stay in the suite on this branch (supervision @r75, @r102, @r105; work-queue @r9, @r23), from work-items drafted by `work add` (no Retires) or matched by tag.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-25-probe-repositories-again
+about: capability/supervision
+by: the coordinator, at the 0.26.0 release
+date: 2026-10-25
+
+w192's researcher left eight probe repositories in its run directory (`.shop/work/i33/runs/w192/1-research/add_*`, `withdraw_*`), and `work run` committed them as gitlinks, as w156's and w163's were in i24; they reached main with 0.26.0's merge and were removed after it. No line keeps a worker's run directory free of git repositories.
