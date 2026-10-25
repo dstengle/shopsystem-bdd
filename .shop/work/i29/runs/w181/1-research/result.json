@@ -1,0 +1,17 @@
+{
+  "status": "DONE",
+  "summary": "w181 research done; notes in .shop/scratch/1-research/notes.md. All five accepted scenarios (r105-r109) are red: each fails at an undefined step, the first of several, so later steps are by search. Code gaps: r107 no capability check (supervise_change.py write_proposals, confirmed by probe); r108 gate/apply briefs give no drafts path (supervise_brief.py brief); r106 analyse() commits nothing (supervise_analysis.py); r105/r109 run path never sets done (supervise.py pull_through), and workqueue_done._holds lacks branch-review and analysis conditions (probe: True without them). Risk: _holds is shared with the command path (work-queue r23 tests, by search, not run: the shell's PYTEST_ADDOPTS --work-item w181 refuses them). No map: tests-of unavailable, tests found by search. refs misses self./module-attribute calls. Defects: a change list naming a missing capability gets a drafted proposal today; the analysis record stays uncommitted. Git status clean at end.",
+  "fileset": [
+    "scripts/supervise.py",
+    "scripts/supervise_rounds.py",
+    "scripts/supervise_change.py",
+    "scripts/supervise_brief.py",
+    "scripts/supervise_analysis.py",
+    "scripts/workqueue_done.py",
+    "tests/scenarios/supervision_integrate_steps.py",
+    "tests/scenarios/supervision_analysis_steps.py",
+    "tests/scenarios/supervision_proposal_steps.py",
+    "tests/scenarios/supervision_given.py"
+  ],
+  "questions": []
+}
