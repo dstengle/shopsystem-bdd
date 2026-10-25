@@ -928,6 +928,14 @@ Feature: Supervision
     When the person runs `work run i1`
     Then `work run` ran `measure initiative` on i1 after the branch review was kept
 
+
+  @r75
+  Scenario: a kept branch review that ended PARTIAL, with no question and no finding, does not list nothing to fix now, and no `measure initiative` is run
+    Pins that a branch review cut short is not taken for one that found nothing to fix, so the initiative is not measured on it.
+    Given i1's work-items w1 is green and w2 is withdrawn
+    And every worker gives DONE, and the branch reviewer's result gives PARTIAL, with no question and no finding
+    When the person runs `work run i1`
+    Then `work run` ran no `measure initiative` on i1 after the branch review was kept
   @r76
   Scenario: once `measure initiative` has written the initiative's measurement, a session of analyzing-a-batch writes its analysis record
     Pins that a measured initiative is analysed without anyone starting the analysis by hand.
@@ -937,6 +945,15 @@ Feature: Supervision
     Then a session of analyzing-a-batch was started for i1 once `measure initiative` had written i1's measurement
     And i1's analysis record is there
 
+
+  @r76
+  Scenario: an analyzing-a-batch session that ends at its turn limit leaves no analysis record of the initiative, even though it wrote an analysis file
+    Pins that an analysis cut short is not kept as the initiative's analysis record.
+    Given i1's work-items w1 is green and w2 is withdrawn
+    And every worker gives DONE, the branch reviewer's result lists nothing to fix now, and the analyzing-a-batch session writes an analysis file of i1 and ends at its turn limit
+    When the person runs `work run i1`
+    Then a session of analyzing-a-batch was started for i1 once `measure initiative` had written i1's measurement
+    And i1's analysis record is not there
   @r77
   Scenario Outline: under a delegation, each question of the initiative goes to a session of its own, given only the delegation and the files it names, that <reply>
     Pins that a question is weighed against the person's words alone, apart from every other question, and answered only when those words cover it.
