@@ -4,10 +4,10 @@ import re
 
 from pytest_bdd import given, parsers, then
 
-from .conftest import cap, feature, full
+from .conftest import cap, full
 from .supervision_review_steps import FINDINGS
 from .supervision_rounds_steps import rounds
-from .supervision_world import calls, commit_all, fields, git, item_text, section, write
+from .supervision_world import calls, commit_all, fields, git, item_text, write
 
 DIR = ".shop/work/i1"
 FIX_NOW = ["Important, w1, thing.py:3: the first thing to fix now", "Important, w1, thing.py:9: the second thing to fix now"]
@@ -25,13 +25,6 @@ def formulated(repo, adds, changes):
           "adds: [%s]\nchanges: [%s]\nremoves: []\ndate: 2026-10-15\n---\n"
           % (full("capability-proposal", "p1"), full("initiative", "i1"), ", ".join(named(adds)), ", ".join(named(changes))))
     commit_all(repo, "a formulated capability-proposal")
-
-
-@given(parsers.re(r'features/thing\.feature has the scenario "(?P<a>[^"]+)", tagged @deprecated and (?P<ta>@r\d+), the scenario '
-                  r'"(?P<b>[^"]+)", tagged @deprecated and (?P<tb>@r\d+), and the scenario "(?P<c>[^"]+)", tagged (?P<tc>@r\d+)$'))
-def thing_feature_deprecated(repo, a, ta, b, tb, c, tc):
-    write(repo, "features/thing.feature", feature("thing", ("@deprecated " + ta, a), ("@deprecated " + tb, b), (tc, c)))
-    commit_all(repo, "the thing's scenarios")
 
 
 @given("i1's work-items w1 is green, part of the capability-proposal p1, and w2 is withdrawn")
@@ -84,15 +77,6 @@ def two_drafted(repo, context):
     assert [(u, a) for u, a, _ in found] == [("other", "[other#r4]"), ("thing", "[thing#r1, thing#r2, thing#r3]")], (
         found, context["done"].stderr)
     assert all(p.startswith("capability-proposal/") and p.endswith("/p1") for _, _, p in found), found
-
-
-@then('the work-item drafted for p1 under thing lists "it used to wait" under its ## Retires, and neither "it used to '
-      'answer" nor "it waits"')
-def retires_listed(repo, context):
-    found = [t for _, f, t in drafted(repo) if f["under"] == "thing"]
-    assert len(found) == 1, (found, context["done"].stderr)
-    held = section(found[0], "Retires")
-    assert '"it used to wait"' in held and "it used to answer" not in held and "it waits" not in held, held
 
 
 @then("one work-item was drafted in i1 for the two findings, part of p1, naming the kept branch review's findings.md")

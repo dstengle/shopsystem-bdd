@@ -209,6 +209,10 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
                 refused = fault
             self.draft()
             self.pull(MOVABLE)
+            if refused is None and self.items() and all(s in ("green", "withdrawn") for _, s in self.items()) \
+                    and self.draft_retires():     # r123, r124: drafted before the review and the measurement, then pulled
+                self.push()
+                self.pull(MOVABLE)
             if refused is not None:
                 raise refused
             if self.items() and all(s in ("green", "withdrawn") for _, s in self.items()):     # r94, r97: none is not done

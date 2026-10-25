@@ -100,7 +100,7 @@ def add(root, initiative, title, part_of, under, accepts, retires=(), findings=N
     text = ("---\nid: work-item/%s/%s\nkind: work-item\npart_of: %s\nstatus: drafted\nunder: %s\naccepts: [%s]\n%s---\n\n# %s\n"
             % (context, name, part_of, under, ", ".join(accepts), "findings: %s\n" % findings if findings else "", title))
     if retires:
-        text += "\n## Retires\n\n" + "".join('- "%s" (%s @%s)\n' % (t, under, tag) for t, tag in retires)
+        text += "\n## Retires\n\n" + "".join('- "%s" (%s @%s)\n' % ((t,) + tuple(req.split("#"))) for t, req in retires)
     rel = str(path.relative_to(root))
     committed(root, [rel], "work add: %s/%s drafted" % (initiative, name), lambda: path.write_text(text))
     return name
