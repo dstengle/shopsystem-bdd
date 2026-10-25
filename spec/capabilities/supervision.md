@@ -26,6 +26,7 @@ from what using it shows.
 - [r66] **When** `work run` is started with no initiative, `work run` shall take every initiative that is neither `done` nor `abandoned` through every transition its nodes can make, the initiatives side by side and, but for the workers r20 and r59 start together, one session of an initiative at a time, and the rounds r95 names one at a time across initiatives.
 - [r95] `work run` shall start the rounds of the kind `integrate`, `apply` and `formulate` of different initiatives one at a time.
 - [r67] **When** a request of which this context is the upstream is `open` or `awaiting-upstream`, `work run` shall start an `initiative-round` session of the kind `intake`, given the request, that writes each line's line outcome or a question on it and passes the turn with `work turn`.
+- [r100] **When** a round of the kind `intake` that `work run` started gives a question on a line of a request, `work run` shall write the question in the request.
 - [r103] **When** a request of which this context is the upstream is `accepted` and no initiative fulfils it, `work run` shall start its initiative with `work start`.
 - [r79] **When** an initiative is `proposed`, `work run` shall start a round of the kind `integrate` given the accepted lines of the request it fulfils.
 - [r93] **When** an initiative is `started` and has neither a capability-proposal nor a work-item, `work run` shall start a round of the kind `integrate` given the accepted lines of the request it fulfils.
@@ -65,11 +66,12 @@ from what using it shows.
 - [r7] **When** `work run` makes a work-item's transition, `work run` shall commit the work-item's file, its stage directories and `log.jsonl` on the initiative branch, and nothing else.
 - [r8] **When** a worker starts or ends, `work run` shall append a line to `log.jsonl` with the time, the work-item, the stage, the agent and the session id.
 - [r62] **When** `work run` writes a stage's `session.json`, `work run` shall record in it the path of the transcript of the stage's session.
-- [r9] **When** no work-item can make a transition and every work-item is `green` or `withdrawn`, `work run` shall exit successfully, printing each work-item's status.
+- [r9] **When** no work-item can make a transition, every work-item is `green` or `withdrawn` and no request whose asker is this context is in the asker's turn, `work run` shall exit successfully, printing each work-item's status.
+- [r101] **When** `work run` ends while a request kept in this context whose asker is this context is in the asker's turn, `work run` shall exit with an error, printing the request with its open questions.
 - [r32] **When** no work-item can make a transition and a work-item is `awaiting-answer`, `work run` shall exit with an error, printing each work-item's status and each open question.
 - [r52] **When** no work-item can make a transition and a work-item is `failed`, `work run` shall exit with an error, printing each work-item's status and each fault.
 - [r81] **When** `work run` was started with no initiative, no node of an initiative it took can make a transition and one such node is `awaiting-answer` or `failed`, `work run` shall exit with an error, printing the status of each initiative it took.
-- [r82] **When** `work run` was started with no initiative, no node of an initiative it took can make a transition and none is `awaiting-answer` or `failed`, `work run` shall exit successfully, printing the status of each initiative it took.
+- [r82] **When** `work run` was started with no initiative, no node of an initiative it took can make a transition and none is `awaiting-answer` or `failed` and no request whose asker is this context is in the asker's turn, `work run` shall exit successfully, printing the status of each initiative it took.
 - [r53] **If** the push after the branch review's commit fails, then `work run` shall exit with an error, saying why.
 - [r54] **When** `work run` starts and the initiative branch has commits its remote does not have, `work run` shall first push the initiative branch to the remote.
 - [r10] **If** `work run` cannot start the delivery it was asked for, then `work run` shall exit with an error, say why, and change nothing.
@@ -147,6 +149,8 @@ from what using it shows.
 - r79, r68, r70, r71: the `integrate`, `gate` and `apply` rounds are `initiative-round` sessions of spec-integration, the `formulate` round one of formulation.
 - r68, r85: the `gate` round gives its gate in its `result.json` (spec-integration r35) and writes nothing on the capability-proposal; `work run` writes the questions under the proposal's `## Questions`.
 - r78: the answer names the delegation in its `by`.
+- r100: `work run` writes the question with `work`'s question command (requests r20), in the upstream's turn, before the round's `work turn`.
+- r101: a request's asker is this context when its `asker` is `internal` or this context's id; the open questions are every question with no answer under the request's `## Answers`.
 - r98: the brief names the findings file of the work-item's last review stage directory and writes the answer as r57 does.
 
 ## Not yet
