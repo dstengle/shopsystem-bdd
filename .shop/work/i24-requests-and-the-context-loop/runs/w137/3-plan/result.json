@@ -1,0 +1,22 @@
+{
+  "status": "QUESTION",
+  "summary": "Plan of w137 is written as far as it goes; three questions remain open.\nAll four scenarios (r70, r80, r71, r83) fail at their first Given: no step writes a proposal with Questions and Answers. Run.items reads work-items only, workqueue.move refuses approved and formulated, and no round brief or session exists.\nDecided:\n- r70 applies only to awaiting-answer proposals.\n- A round runs as an initiative-round worker through Workers.worker.\n- A round 'ends' when it leaves a readable result.\n- Apply and formulate run in one work run, each transition committed through Run.move.\n- workqueue.move checks statuses by the node's kind; items() is unchanged.\n- A new module, scripts/supervise_rounds.py, plus a CLAUDE.md row.\nThe decisions break no tests.\nOpen questions: where a round's commits land; an awaiting-answer proposal with no questions; what a faulted round makes of the proposal.",
+  "plan": ".shop/scratch/3-plan/plan.md",
+  "fileset": [
+    "scripts/supervise_rounds.py",
+    "scripts/supervise.py",
+    "scripts/workqueue.py",
+    "scripts/supervise_brief.py",
+    "scripts/supervise_worker.py",
+    "tests/scenarios/supervision_proposal_steps.py",
+    "tests/scenarios/supervision_world.py",
+    "tests/scenarios/test_supervision.py",
+    "tests/scripts/stub_claude.py",
+    "CLAUDE.md"
+  ],
+  "questions": [
+    "Where do the commits of an apply or formulate round go? The round commits spec/ (apply) or features/ (formulate) in the worktree work run gives it, and no supervision line says what becomes of them. Reading A: work run merges the round's branch into the initiative branch when the round ends, before the proposal's transition; the person sees spec/ and features/ changed on the initiative branch, with p1 approved and then formulated. Reading B: the round's branch is kept unmerged, as r26 keeps a work-item branch; the person sees p1 approved and then formulated, spec/ and features/ unchanged on the initiative branch, and the round's commits on a kept branch.",
+    "Does r70 start an apply round for an awaiting-answer capability-proposal that has no question at all? This happens when a gate's result gives none. Reading A: yes, 'every question has an answer' holds, so apply starts given no answers; the person sees p1 approved and then formulated in the same run. Reading B: no, no round starts; the person sees p1 stay awaiting-answer, and work run exits as it does on an awaiting-answer node.",
+    "What happens to a capability-proposal whose apply or formulate round's session ends in an error, at its turn limit, or without a readable result? Reading A: work run moves the proposal to failed and writes the fault under its ## Faults, as r45 does for a work-item; the person sees p1 failed, and work run exits with an error naming p1 and its fault. Reading B: the proposal keeps its status and work run exits with an error naming p1's round and its fault; the person sees p1 still awaiting-answer (or approved), and the next work run starts the round again."
+  ]
+}
