@@ -24,3 +24,4 @@ The drafts of this proposal are in .shop/work/i35/runs/i35/1-integrate/drafts/ro
 
 ## Answers
 - 2026-10-25: 1: (a), replaced; r73 as drafted (the coordinator under the person's delegation 2026-10-25)
+- 2026-10-25: 2: (a), no work-item when no deprecated scenario has a green replacement (the coordinator under the person's delegation 2026-10-25)
