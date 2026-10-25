@@ -903,6 +903,15 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the work-item drafted for p1 under thing lists "it used to wait" under its ## Retires, and neither "it used to answer" nor "it waits"
 
+  @r73
+  Scenario: a work-item drafted for a formulated capability-proposal whose changes name a range lists under its Retires each deprecated scenario of a requirement in the range
+    Pins that a range of requirements is read as each requirement in it when the work-item's retired scenarios are listed.
+    Given i1's capability-proposal p1 is formulated, its changes naming thing#r3-r6
+    And features/thing.feature has the scenario "it used to wait", tagged @deprecated and @r4, the scenario "it used to answer", tagged @deprecated and @r8, and the scenario "it waits", tagged @r4
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then the work-item drafted for p1 under thing lists "it used to wait" under its ## Retires, and neither "it used to answer" nor "it waits"
+
   @r74
   Scenario: a kept branch review's findings to fix now get one work-item, naming the findings file, under the capability-proposal of the work-item they concern
     Pins that what the branch review says to fix now is drafted as work, under the proposal it belongs to, rather than left for the person to take up.
