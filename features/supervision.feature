@@ -1311,3 +1311,58 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the brief of the gate round for p1 asks only for the questions on thing#r4, thing#r2, thing#r3 and the term "ledger"
     And it asks for no question on thing#r1 or on other#r1
+
+  @r107
+  Scenario: a change list naming a capability that neither spec/capabilities/ nor the round's drafts have gives no capability-proposal for it, and `work run` exits with an error naming it
+    Pins that a change list cannot bring a proposal for a capability that exists nowhere, and that the person learns which capability it named.
+    Given i1 is proposed and fulfils the request q1, whose line 1 has the line outcome accepted
+    And spec/capabilities/ holds no capability nowhere
+    And the integrate round for i1 gives DONE with a change list that adds nowhere#r1 on nowhere, having written no draft of nowhere under its drafts path
+    And every other round ends
+    When the person runs `work run i1`
+    Then i1 has no capability-proposal for nowhere
+    And `work run` names the capability nowhere
+    And it exits with an error
+
+  @r108
+  Scenario Outline: the <kind> round of a capability-proposal is given the path of the kept drafts of the integrate round that wrote the proposal
+    Pins that the round weighing or applying a proposal reads the drafts the proposal came from, without anyone pointing it to them by hand.
+    Given i1's capability-proposal p1 is <status>
+    And p1 was written from the change list of i1's integrate round, whose drafts are kept at .shop/work/i1/runs/i1/2-integrate/drafts/round-1/
+    And every round ends
+    When the person runs `work run i1`
+    Then a round of the kind <kind> was started for p1
+    And the <kind> round for p1 was given the path .shop/work/i1/runs/i1/2-integrate/drafts/round-1/
+
+    Examples:
+      | kind  | status                                                                                                                   |
+      | gate  | drafted                                                                                                                  |
+      | apply | awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", and its Answers section with "One book." |
+
+  @r106
+  Scenario: once the initiative's measurement and analysis record are written, they are committed on the initiative branch
+    Pins that what was measured and analysed of an initiative is in the initiative's history, not left uncommitted in the checkout.
+    Given i1's work-items w1 is green and w2 is withdrawn
+    And every worker gives DONE, the branch reviewer's result lists nothing to fix now, and the analyzing-a-batch session writes i1's analysis record
+    When the person runs `work run i1`
+    Then the initiative branch has a commit of i1's measurement and i1's analysis record
+    And nothing under .shop/records/ is left uncommitted
+
+  @r105
+  Scenario: an initiative whose work-items are green or withdrawn, whose branch review lists nothing to fix now, whose measurement and analysis record are committed and whose requests are delivered is set done
+    Pins that an initiative whose delivery is closed is done without anyone setting it by hand.
+    Given i1 is started and its work-items w1 is green and w2 is withdrawn
+    And a request q2 kept in this context, whose asker is this context, that names i1 and is delivered
+    And every worker gives DONE, the branch reviewer's result lists nothing to fix now, and the analyzing-a-batch session writes i1's analysis record
+    When the person runs `work run i1`
+    Then i1 is done
+
+  @r109
+  Scenario: an initiative set done is committed on the initiative branch
+    Pins that the initiative's being done is in its history, not only in the checkout.
+    Given i1 is started and its work-items w1 is green and w2 is withdrawn
+    And a request q2 kept in this context, whose asker is this context, that names i1 and is delivered
+    And every worker gives DONE, the branch reviewer's result lists nothing to fix now, and the analyzing-a-batch session writes i1's analysis record
+    When the person runs `work run i1`
+    Then the initiative branch has a commit of i1 with its status done
+    And i1's file is not left uncommitted
