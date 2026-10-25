@@ -1,0 +1,6 @@
+{
+  "status": "DONE",
+  "summary": "Branch review 8 of i28, 4b7dca6c..225d3ed2 (w167-w172, all green). Verdict: DONE.\nSuite: 876 passed, 19 failed at 225d3ed2 in 25.0 s (parallel, -n auto; not in-process).\nNone of the 19 failures is i28's. 18 are StepDefinitionNotFoundError in scenarios of w181 (i29), w184 (i30) and w185 (i31). The 19th is i30's r19 '80 turns' (w180, claimed) (finding 6).\nNone of i28's code has changed since review 7. The changes since then are w175's and w179's (i29) and the i30 and i31 spec and feature rounds; none names r92, r102-r104, r30 or r43.\nI ran each work-item's check (pytest --work-item w167..w172) myself, and each passes.\ntools check: ruff gives 29 errors. The 5 i28 errors are unchanged (Minor, drop). The other 24 are i26's I001 and helper scripts tracked under .shop/ by i29, i30 and i31 (observation). vulture is clean; there are no import contracts.\ntools size: no file over 300. features bindings: clean. features deprecated: i28's @r102 is not retired yet (Minor, observation).\nNo tests removed or weakened by i28. The w171 and w172 allowances hold.\nNo finding is Critical and none is triaged fix now.",
+  "findings": "/tmp/work-run-i28-1e4z24xw/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": []
+}
