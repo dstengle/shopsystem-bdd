@@ -5,7 +5,7 @@ import re
 from pytest_bdd import given, parsers, then
 
 from .supervision_rounds_steps import DIR, quoted
-from .supervision_world import log_lines
+from .supervision_world import log_lines, starts
 
 
 @given("the formulate round for p1 gives DONE with no question")
@@ -74,6 +74,8 @@ def proposal_awaiting(repo, context):
 
 @then(parsers.re(r"p1's adds name (?P<adds>.+) and not (?P<gone>\S+), its changes name (?P<changes>\S+), and its removes name nothing$"))
 def lists_written(repo, adds, gone, changes):
+    asked = [c["brief"] for c in starts(repo) if c["agent"].endswith("initiative-round") and "# apply of p1" in c["brief"]]
+    assert asked and all("result's `changes`" in b for b in asked), asked     # the real round is asked for its list
     text = (repo / DIR / "p1.md").read_text()
     line = lambda field: next(l for l in text.splitlines() if l.startswith(field + ":"))
     assert line("adds") == "adds: [%s]" % adds, text

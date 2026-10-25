@@ -8,6 +8,10 @@ import workqueue
 import workqueue_request
 from supervise_worker import ROUNDS, SCRIPTS, git
 
+CHANGE_LIST = ("Give your change list in your result's `changes`: a list with one entry for each capability, each "
+               '`{"capability": <name>, "adds": [...], "changes": [...], "removes": [...]}`, the ids as '
+               "`<capability>#r<n>` or `term/<term>`.")
+
 
 class Briefs:
     """The part of supervise.Run that writes a worker's brief."""
@@ -44,6 +48,8 @@ class Briefs:
                           for kind in ("adds", "changes", "removes")]
                 lines.append("Ask questions only on the lines and terms listed above as adds, changes or removes, and on "
                              "no other line or term.")
+            if stage == "apply":     # r114: the list the round applied, which `work run` writes into the proposal
+                lines.append(CHANGE_LIST.replace("Give your change list", "Give the change list of what you applied"))
             if stage in ("gate", "apply"):     # r108: the kept drafts of the integrate round that wrote the proposal
                 kept = re.search(r"The drafts of this proposal are in (\S+?)\.(?:\s|$)", item.read_text())
                 if kept:
@@ -86,9 +92,7 @@ class Briefs:
             "Ids drafted elsewhere (number added lines above each on the same capability): %s"
             % (", ".join(others) or "none"),
             "Drafts path: %s" % (here / "drafts"),
-            "Give your change list in your result's `changes`: a list with one entry for each capability, each "
-            '`{"capability": <name>, "adds": [...], "changes": [...], "removes": [...]}`, the ids as '
-            "`<capability>#r<n>` or `term/<term>`."]
+            CHANGE_LIST]
 
     def findings_lines(self, name):
         """For a work-item an answer to its reviewer's question returned to ready (r98), a line naming the findings file
