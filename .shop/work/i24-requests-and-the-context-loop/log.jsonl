@@ -800,3 +800,8 @@
 {"time": "2026-10-25T01:28:50+00:00", "work-item": "w154", "stage": "implement", "agent": "bdd-implementer", "session": "e1477796-1326-4b4d-889c-5a5612d545cf", "event": "start"}
 {"time": "2026-10-25T01:29:07+00:00", "work-item": "w134", "stage": "review", "agent": "bdd-task-reviewer", "session": "928a917a-09f6-4b25-9661-79b053f7bc0b", "event": "end"}
 {"time": "2026-10-25T01:29:07+00:00", "work-item": "w134", "before": "done", "after": "green", "by": "work run"}
+{"time": "2026-10-25T01:29:08+00:00", "work-item": "w135", "stage": "plan", "event": "push verified"}
+{"time": "2026-10-25T01:29:08+00:00", "work-item": "w135", "stage": "plan", "agent": "bdd-planner", "session": "5f3cdf4a-f205-4972-bfe9-4147186e921e", "event": "start"}
+{"time": "2026-10-25T01:30:23+00:00", "work-item": "w154", "stage": "implement", "agent": "bdd-implementer", "session": "e1477796-1326-4b4d-889c-5a5612d545cf", "event": "end"}
+{"time": "2026-10-25T01:30:42+00:00", "work-item": "w154", "stage": "merge", "event": "suite", "record": "Suite: 838 passed, 0 failed at 2739c54 in 19 s; expected: tests/scenarios/test_supervision.py::test_a_request_this_context_is_the_upstream_of_that_is_status_is_given_to_an_intake_round[open], tests/scenarios/test_supervision.py::test_a_request_this_context_is_the_upstream_of_that_is_status_is_given_to_an_intake_round[awaiting-upstream]"}
+{"time": "2026-10-25T01:30:47+00:00", "work-item": "w154", "before": "claimed", "after": "done", "by": "work run"}
