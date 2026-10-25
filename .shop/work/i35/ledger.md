@@ -1,0 +1,1 @@
+- 2026-10-25: integrate round 1: 1 changed (supervision#r73), 1 added (supervision#r123), 6 questions, 1 cut sentence; drafts .shop/scratch/1-integrate/drafts/round-1
