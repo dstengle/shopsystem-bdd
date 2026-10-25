@@ -26,8 +26,14 @@ def answer(root, name, text):
     status the stage that asked started from; return that status."""
     if any(c in text for c in LINE_BREAKS):
         raise Refused("the answer has a line break in it; an answer is one line")
-    path = workqueue.find(root, name)
-    initiative = path.parent.name
+    if "/" in name:     # <initiative>/<name> (r30): that initiative's file, whatever other initiatives hold the name
+        initiative, name = (name.split("/", 1) + [""])[:2]
+        workqueue.entry(initiative, "initiative")
+        workqueue.entry(name, "name")
+        path = workqueue.Path(root) / workqueue.WORK / initiative / (name + ".md")
+    else:
+        path = workqueue.find(root, name)
+        initiative = path.parent.name
     if workqueue.agrees(root, initiative, name) != "awaiting-answer":
         raise Refused("%s is not awaiting-answer; work answer answers only an awaiting-answer work-item or capability-proposal" % name)
     proposal = "\nkind: capability-proposal\n" in workqueue.read(path, root).split("\n---\n", 1)[0] + "\n"

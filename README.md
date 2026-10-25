@@ -138,7 +138,7 @@ limits are its tools; under `work run` they are also its `--allowedTools`.
   branches merge one at a time. A work-item whose `blocked_by` names one that is not `green`, in any initiative, gets
   no worker. Each stage's `session.json` records the path of its transcript.
 - **Answers, not rulings** (decisions 0063, 0064): the status `awaiting-ruling` is `awaiting-answer`.
-  `work answer <work-item> <answer>` writes a one-line answer under the work-item's `## Answers` and returns it to the
+  `work answer <work-item> <answer>` (or `<initiative>/<name>`, naming the initiative) writes a one-line answer under the work-item's `## Answers` and returns it to the
   status the stage that asked started from, so `work run` takes it up again. On an awaiting-answer capability-proposal
   it writes the answer under the proposal's `## Answers` and commits the proposal's file alone.
 - **Workflow capabilities are guarantees** (decision 0065, superseding 0030 and 0043): the ten workflow capabilities
