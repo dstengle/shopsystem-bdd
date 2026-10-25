@@ -894,3 +894,5 @@
 {"time": "2026-10-25T02:15:08+00:00", "work-item": "w159", "stage": "implement", "event": "push verified"}
 {"time": "2026-10-25T02:15:08+00:00", "work-item": "w159", "stage": "implement", "agent": "bdd-implementer", "session": "a668cdd9-f74e-4f03-b2c8-58cd48ad0e6a", "event": "start"}
 {"time": "2026-10-25T02:15:08+00:00", "work-item": "w158", "before": "ready", "after": "claimed", "by": "work run"}
+{"time": "2026-10-25T02:15:18+00:00", "work-item": "w161", "stage": "research", "agent": "code-scout", "session": "f4442b54-8eee-45b7-83de-8ddc207d2359", "event": "end"}
+{"time": "2026-10-25T02:15:19+00:00", "work-item": "w161", "before": "drafted", "after": "researched", "by": "work run"}
