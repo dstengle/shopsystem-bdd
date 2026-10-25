@@ -5,7 +5,7 @@ part_of: initiative/i24
 status: formulated
 date: 2026-10-24
 argues: [supervision]
-adds: [supervision#r66-r85]
+adds: [supervision#r66-r90]
 changes: []
 removes: []
 ---
