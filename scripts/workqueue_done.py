@@ -28,7 +28,7 @@ def _holds(root, directory, ident, over):
         data, _ = workqueue.frontmatter(workqueue.read(path, root))
         if data.get("kind") == "work-item":
             statuses.append(over.get(path.stem, data.get("status")))
-    if not statuses or any(s not in ("green", "withdrawn") for s in statuses):
+    if "green" not in statuses or any(s not in ("green", "withdrawn") for s in statuses):
         return False
     for path in sorted((Path(root) / workqueue.WORK / "requests").glob("*.md")):
         data, _ = workqueue.frontmatter(workqueue.read(path, root))

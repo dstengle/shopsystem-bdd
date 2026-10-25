@@ -26,6 +26,13 @@ def prints_id(context, ident):
     context["printed"] = ident
 
 
+@then(parsers.re(r"the add is refused because (?P<ident>i\d+) is (?P<status>\w+), naming (?P=status)$"))
+def add_refused_for_status(context, ident, status):
+    done = context["done"]
+    assert done.returncode == 1, done
+    assert done.stdout == "" and status in done.stderr, done
+
+
 def _fields(path):
     from .test_work_queue import fields
     return fields(path)

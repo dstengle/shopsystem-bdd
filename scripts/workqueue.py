@@ -87,6 +87,10 @@ def add(root, initiative, title, part_of, under, accepts, retires=(), findings=N
     directory = Path(root) / WORK / initiative
     if not directory.is_dir():
         raise Refused("the initiative %s does not exist (no %s)" % (initiative, directory.relative_to(root)))
+    ini = directory / "initiative.md"
+    state = frontmatter(read(ini, root))[0].get("status") if ini.is_file() else None
+    if state in ("done", "abandoned"):
+        raise Refused("the initiative %s is %s; work add leaves it as it was" % (initiative, state))
     context = context_path(root)
     name = "w%d" % (highest(root) + 1)
     path = directory / (name + ".md")
