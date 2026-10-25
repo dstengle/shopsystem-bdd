@@ -3,3 +3,4 @@
 - 2026-10-25: integrate round 2 (q6): 1 line added (spec-integration r43), 0 questions, 0 cut; gate at /home/vscode/shopsystem-bdd/.shop/scratch/drafts/2026-10-25-q6/round-2/gate.md
 - 2026-10-25: initiative-round apply, rounds 1-2 of q6: applied r30, r102, r103, r104, r43 (answers 1 No, 2 Separate, 3 add line, 4 Both); committed f85f0d23
 - 2026-10-25: formulate q6: commit 7e6266ca; work-queue r30, supervision r103 r104 + r92 case; r102 question open
+- 2026-10-25: formulate round 2 (q6): supervision#r102 formulated, commit 79f4b429
