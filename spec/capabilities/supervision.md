@@ -41,6 +41,7 @@ from what using it shows.
 - [r104] **When** `work run` starts a round of the kind `gate` for a capability-proposal, `work run` shall ask the round only for the questions on the lines and terms the proposal adds, changes or removes.
 - [r108] **When** `work run` starts a round of the kind `gate` or `apply` for a capability-proposal, `work run` shall give the round the path of the kept drafts of the round of the kind `integrate` that wrote the proposal.
 - [r85] **When** a round of the kind `gate` that `work run` started for a capability-proposal ends, `work run` shall write the questions its result gives under the proposal's `## Questions`.
+- [r117] **When** a round of the kind `gate` that `work run` started for a capability-proposal gives no question, `work run` shall write under the proposal's `## Questions` one question asking for the approval of the proposal's lines as drafted.
 - [r69] **When** a round of the kind `gate` that `work run` started for a capability-proposal ends, `work run` shall transition the proposal to `awaiting-answer`.
 - [r70] **When** every question of a capability-proposal has an answer, `work run` shall start a round of the kind `apply` given the answers.
 - [r80] **When** a round of the kind `apply` that `work run` started for a capability-proposal ends, `work run` shall transition the proposal to `approved`.
@@ -52,6 +53,7 @@ from what using it shows.
 - [r72] **When** a capability-proposal is `formulated`, `work run` shall draft with `work add` one work-item for each capability the proposal's `adds` and `changes` name, accepting every requirement they name on that capability.
 - [r73] **When** `work run` drafts a work-item for a `formulated` capability-proposal, `work run` shall list under the work-item's `## Retires` each scenario tagged `@deprecated` whose `@r<n>` tag names a requirement the work-item accepts.
 - [r74] **When** a kept branch review's result lists findings to fix now, `work run` shall draft one work-item for them, naming the findings file, under the capability-proposal that the work-item the findings concern is part of.
+- [r110] **When** a work-item drafted for a kept branch review's findings turns `green`, `work run` shall start the next branch review of the initiative before `work run` exits.
 - [r75] **When** every work-item of an initiative is `green` or `withdrawn` and its kept branch review lists nothing to fix now, `work run` shall run `measure initiative` on the initiative.
 - [r97] **While** an initiative has no work-item, `work run` shall run no `measure initiative` on it.
 - [r76] **When** the `measure initiative` that `work run` ran on an initiative has written its measurement, `work run` shall start a session of `analyzing-a-batch` that writes the initiative's analysis record.
@@ -89,7 +91,7 @@ from what using it shows.
 - [r16] **When** a researcher's result gives the outcome `DONE` with questions, `work run` shall put those questions into the planner's brief.
 - [r17] **When** `work run` writes a worker's brief, `work run` shall tell the worker that it starts in its worktree and never changes directory.
 - [r18] **When** `work run` merges a work-item branch, `work run` shall delete that branch.
-- [r19] **When** `work run` starts a researcher, `work run` shall give it the work-item's file set and accepted scenarios and a limit of 40 turns.
+- [r19] **When** `work run` starts a researcher, `work run` shall give it the work-item's file set and accepted scenarios and a limit of 80 turns.
 - [r20] **While** ready work-items have claims that share no file, `work run` shall have them implemented at the same time, each in its own worktree, within the number of workers r60 gives.
 - [r61] **When** implementers working at the same time end with the outcome `DONE`, `work run` shall merge their work-item branches into the initiative branch one at a time, in the order the implementers ended.
 - [r21] **If** `work run` is started by a worker of another `work run`, then `work run` shall refuse, saying so.
