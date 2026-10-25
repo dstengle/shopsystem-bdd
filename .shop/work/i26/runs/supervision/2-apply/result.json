@@ -1,0 +1,1 @@
+{"status": "DONE", "summary": "supervision applied: r100, r101 added, r9, r82 changed (r67 already in spec), two Implementation lines. Commit d07a8b38. No decision files. model check: 121 violations (scenarios of the new and changed lines not yet formulated).", "questions": []}
