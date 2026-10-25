@@ -4,8 +4,9 @@ import re
 
 from pytest_bdd import given, parsers, then
 
-from .conftest import feature, full
+from .conftest import cap, feature, full
 from .supervision_review_steps import FINDINGS
+from .supervision_rounds_steps import rounds
 from .supervision_world import commit_all, fields, git, item_text, section, write
 
 DIR = ".shop/work/i1"
@@ -80,3 +81,36 @@ def fix_drafted(repo, context):
     assert fix["part_of"].endswith("/p1"), fix
     assert fix["findings"] == ".shop/work/i1/runs/branch-review/1/findings.md", fix
     assert (repo / fix["findings"]).is_file()
+
+
+@given(parsers.re(r"the capability thing holds (?P<ids>.+)$"))
+def capability_holds(repo, ids):
+    write(repo, "spec/capabilities/thing.md",
+          cap("thing", ["- [r%s] **When** asked, `thing` shall answer." % n for n in re.findall(r"#r(\d+)", ids)]))
+    commit_all(repo, "thing holds %s" % ids)
+
+
+@given(parsers.re(r'i1\'s capability-proposal (?P<name>p\d) is drafted, its adds naming (?P<adds>\w+#r\d+)(?: and the term '
+                  r'"(?P<term>\w+)")?(?:, its changes (?P<changes>\w+#r\d+))?(?: and its removes (?P<removes>\w+#r\d+))?$'))
+def drafted_with(repo, name, adds, term, changes, removes):
+    listed = lambda *ids: ", ".join(i for i in ids if i)     # noqa: E731
+    write(repo, "%s/%s.md" % (DIR, name), "---\nid: %s\nkind: capability-proposal\npart_of: %s\nstatus: drafted\n"
+          "argues: [%s]\nadds: [%s]\nchanges: [%s]\nremoves: [%s]\ndate: 2026-10-15\n---\n"
+          % (full("capability-proposal", name), full("initiative", "i1"), adds.split("#")[0],
+             listed(adds, term and "term/" + term), listed(changes), listed(removes)))
+    commit_all(repo, "%s is drafted" % name)
+
+
+@then(parsers.re(r'the brief of the gate round for p1 asks only for the questions on thing#r4, thing#r2, thing#r3 and the '
+                 r'term "ledger"$'))
+def gate_names_its_ids(repo, context):
+    found = rounds(repo, "gate", "p1")
+    assert len(found) == 1, (context["done"].stdout, context["done"].stderr)
+    for one in ("thing#r4", "thing#r2", "thing#r3", "term/ledger"):
+        assert one in found[0]["brief"], (one, found[0]["brief"])
+
+
+@then("it asks for no question on thing#r1 or on other#r1")
+def gate_names_no_other(repo):
+    brief = rounds(repo, "gate", "p1")[0]["brief"]
+    assert "thing#r1" not in brief and "other#r1" not in brief, brief

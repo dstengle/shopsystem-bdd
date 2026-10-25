@@ -40,6 +40,10 @@ class Briefs:
             if stage == "gate":
                 lines.append("Give the gate as questions in your result's `questions`, one string each: every question a "
                              "decision, with its readings and the recommended reading marked.")
+                lines += ["%s: %s" % (kind.capitalize(), ", ".join(data.get(kind) or []) or "none")     # r104
+                          for kind in ("adds", "changes", "removes")]
+                lines.append("Ask questions only on the lines and terms listed above as adds, changes or removes, and on "
+                             "no other line or term.")
         base = self.base()
         if base:
             lines.append("Base: %s" % base)
