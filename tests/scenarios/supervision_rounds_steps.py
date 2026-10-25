@@ -68,7 +68,9 @@ def gate_result_no_question(plan):
 @then(parsers.re(r"p1's ## Questions holds (?P<text>\".+)$"))
 def questions_hold(repo, text):
     held = ["\n".join(b) for b in bullets((repo / DIR / "p1.md").read_text(), "Questions")]
-    assert any(gate_question(text) == " ".join(b.split())[2:] for b in held), held
+    asked = [gate_question(text)] if len(quoted(text)) == 4 else quoted(text)     # a gate's reading, or each question as given
+    for question in asked:
+        assert any(question == " ".join(b.split())[2:] for b in held), (question, held)
 
 
 @then("p1's ## Questions holds one question, asking for the approval of p1's lines as drafted")

@@ -202,9 +202,15 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
         """The initiative's part of a run once checked: answers, rounds, drafting, the pool, the branch review."""
         try:
             self.answers()
-            self.rounds()
+            refused = None
+            try:
+                self.rounds()
+            except Refused as fault:     # r115: a round that stopped holds back its own node; the others go on, then the error
+                refused = fault
             self.draft()
             self.pull(MOVABLE)
+            if refused is not None:
+                raise refused
             if self.items() and all(s in ("green", "withdrawn") for _, s in self.items()):     # r94, r97: none is not done
                 kept = self.branch_review()     # inside the try: its worktree goes with the run's (r33)
                 while kept is not None and self.fix_work_item(kept):     # r74: the fix is pulled

@@ -45,8 +45,19 @@ class Rounds(Changes):
         for name, status in self.proposals():
             if status in AFTER and (status != "awaiting-answer"
                                     or len(self.held(name, "Answers")) >= len(self.held(name, "Questions"))):
-                return (name, *AFTER[status])
+                return (name, *self.route(name, status))
         return None
+
+    def route(self, name, status):
+        """(round, status after) of a proposal at `status`. An answered proposal goes back to the round that asked: its
+        last move into awaiting-answer from approved is a formulate round's question (r116), from drafted a gate round's
+        (r70), and with no such move, a gate round's."""
+        if status == "awaiting-answer":
+            moves = [l for l in workqueue.logged(self.dir / "log.jsonl", self.root)
+                     if l.get("work-item") == name and l.get("after") == "awaiting-answer"]
+            if moves and moves[-1].get("before") == "approved":
+                return ("formulate", "formulated")
+        return AFTER[status]
 
     def rounds(self):
         """Run the rounds due until none is; a Refused naming the round when one faults (it keeps the proposal as it was)."""
@@ -112,6 +123,22 @@ class Rounds(Changes):
         if kind == "gate" and not asked:     # r117: a gate with nothing to decide still asks for the approval of the lines
             asked = ["Are the lines of %s approved as drafted? Readings: approve %s as drafted (recommended), "
                      "or change its lines." % (name, name)]
+        if kind == "apply":     # r114: the proposal names what the round applied; a round giving no list leaves it as it was
+            try:
+                applied = entries(data)
+            except BadChanges:
+                applied = []
+            if applied:
+                self.rewrite_lists(name, applied)
+        if kind == "formulate":     # r112, r113: what the formulation could not decide is asked; with nothing, r83
+            asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []]
+            if asked and before == "awaiting-answer":     # it stays so, its route to formulate kept by its log (r116)
+                with self.lock:
+                    for each in asked:
+                        self.section(name, "Questions", each)
+                    self.commit(name, before, before)
+                return
+            after = "awaiting-answer" if asked else after
         if kind != "integrate":
             self.move(name, before, after, asked)
         else:     # r84: the round's stage directory is committed once it has ended, on top of the commit of started

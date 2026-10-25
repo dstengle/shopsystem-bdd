@@ -49,6 +49,21 @@ class Changes:
         best = max(rounds, key=lambda p: int(p.name.split("-")[-1]), default=None)
         return self.rel(best or stage) + ("/" if best else "")
 
+    def rewrite_lists(self, name, found):
+        """The `adds`, `changes` and `removes` of the capability-proposal `name`, each replaced by what the entries of
+        `found` naming its capability give; a list they give nothing for becomes empty (r114)."""
+        path = self.dir / (name + ".md")
+        lists = {f: [] for f in FIELDS}
+        text = path.read_text()
+        argues = next((l.split(":", 1)[1].strip().strip("[]") for l in text.splitlines() if l.startswith("argues:")), "")
+        for each in found:
+            if each["capability"] == argues:
+                for field in FIELDS:
+                    lists[field] += [i for i in each[field] if i not in lists[field]]
+        end = text.find("\n---", 4)
+        head = "\n".join(l for l in text[:end].split("\n") if l.split(":")[0] not in FIELDS)
+        path.write_text(head + "\n" + "\n".join("%s: [%s]" % (f, ", ".join(lists[f])) for f in FIELDS) + text[end:])
+
     def write_proposals(self, found, stage_dir):
         """One file a capability in the initiative's directory, `drafted`, naming `stage_dir`, the path of the round's
         kept drafts; the paths written."""

@@ -1230,15 +1230,6 @@ Feature: Supervision
     When the person runs `work run i1`
     Then p1's ## Questions holds "Is a title given twice one book or two?", with the readings "One book." and "Two books.", "One book." marked recommended
 
-  @r83 @deprecated
-  Scenario: when the formulate round `work run` started for a capability-proposal ends, the proposal is formulated (deprecated)
-    Deprecated for: when the formulate round `work run` started for a capability-proposal ends without giving a question, the proposal is formulated
-    Pins that a capability-proposal whose lines have been formulated is formulated.
-    Given i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", and its Answers section with "One book."
-    And every round ends and every worker gives DONE
-    When the person runs `work run i1`
-    Then p1's transition to formulated was made once the formulate round had ended
-
   @r83
   Scenario: when the formulate round `work run` started for a capability-proposal ends without giving a question, the proposal is formulated
     Pins that a capability-proposal whose lines have been formulated with nothing left to ask is formulated.
