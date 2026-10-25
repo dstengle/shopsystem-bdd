@@ -1,0 +1,16 @@
+{
+  "status": "DONE",
+  "summary": "Fourth plan of w135 (supervision#r67, intake round) in .shop/scratch/4-plan/plan.md, built on the third plan and the answers of 2026-10-25.\nRed: the first Given of both examples (feature :837) is unbound; run_all reads no request; no intake kind exists.\nDecisions: every open/awaiting-upstream request is taken; the intake pass runs only in run_all (no-initiative run), before the initiatives' threads, sharing lock and slots; it is an initiative-round session on a round/<q>-<k> branch with an intake Bash list (work outcome/turn/show only); a DONE round's branch is merged, its record committed under .shop/work/requests/runs/<q>/ and pushed; the no-initiative checks (r21, r46, r54) run only when a request is due.\nAnswers applied: a line the round cannot judge gets the line outcome `question` via work outcome, with the question's text in its result; a round not ending DONE is handled as r86-r88: nothing merged, fault printed, other requests and initiatives still taken, work run exits with an error naming the round.\nFile set: supervise_intake.py (new), supervise_all.py, supervise_worker.py, supervise_brief.py, agents/initiative-round.md, CLAUDE.md, the new intake steps module, test_supervision.py.\nTests broken: none (r66/r81/r82 fixtures hold no request; work run i1 untouched; tool-list and agent tests stay sound).",
+  "plan": ".shop/scratch/4-plan/plan.md",
+  "fileset": [
+    "scripts/supervise_intake.py",
+    "scripts/supervise_all.py",
+    "scripts/supervise_worker.py",
+    "scripts/supervise_brief.py",
+    "agents/initiative-round.md",
+    "CLAUDE.md",
+    "tests/scenarios/supervision_intake_steps.py",
+    "tests/scenarios/test_supervision.py"
+  ],
+  "questions": []
+}
