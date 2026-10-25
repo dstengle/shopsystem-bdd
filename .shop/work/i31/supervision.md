@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i31-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i31
-status: approved
+status: formulated
 argues: [supervision]
 adds: [supervision#r111, supervision#r112, supervision#r113, supervision#r114, supervision#r115]
 changes: [supervision#r83]
