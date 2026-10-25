@@ -468,3 +468,4 @@
 {"time": "2026-10-25T00:28:25+00:00", "work-item": "w139", "before": "claimed", "after": "done", "by": "work run"}
 {"time": "2026-10-25T00:29:26+00:00", "work-item": "w141", "stage": "review", "agent": "bdd-task-reviewer", "session": "766fbcb2-2325-42a2-ba2f-24ddcda9cd0f", "event": "end"}
 {"time": "2026-10-25T00:29:26+00:00", "work-item": "w141", "before": "done", "after": "green", "by": "work run"}
+{"time": "2026-10-25T00:29:40+00:00", "work-item": "w136", "before": "failed", "after": "withdrawn", "by": "work withdraw"}
