@@ -40,7 +40,9 @@ def entry(capability, text):
 
 @given(parsers.re(r"the integrate round for i1 gives DONE with a change list that (?P<first>.+) on thing, and "
                   r"(?P<second>.+) on other$"))
-def integrate_with_changes(plan, first, second):
+def integrate_with_changes(plan, repo, first, second):
+    write(repo, "spec/capabilities/other.md", cap("other", ["- [r1] **When** asked, `other` shall answer."]))
+    commit_all(repo, "spec/capabilities/ holds the capability other")
     plan["round:integrate"] = {"status": "DONE", "fields": {"changes": [entry("thing", first), entry("other", second)]}}
 
 
