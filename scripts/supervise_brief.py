@@ -29,8 +29,8 @@ class Briefs:
         rnd = stage in ROUNDS
         lines = ["%s: %s" % ("Capability-proposal" if rnd else "Work-item", self.rel(item)), "Agent: %s" % agent,
                  "Scripts: %s" % SCRIPTS]
-        if rnd:     # a capability-proposal's round (supervise_rounds.py): the job its agent does
-            lines.append("Job: %s" % stage)
+        if rnd:     # a capability-proposal's round (supervise_rounds.py): the kind its agent runs
+            lines.append("Kind: %s" % stage)
         base = self.base()
         if base:
             lines.append("Base: %s" % base)
