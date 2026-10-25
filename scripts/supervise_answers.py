@@ -77,12 +77,14 @@ class Answers:
                 self.section(name, "Answers", "%s: %s\nby: work run, under the delegation \"%s\"" % (
                     datetime.date.today().isoformat(), answer, delegation))
                 self.commit(name, before, before)     # kept now: the next session's end must not find it uncommitted (r28)
+            target = None
             if kind == "work-item" and not left and self.open_questions(name) == []:
                 path = self.dir / (name + ".md")
-                if workqueue_answer.asked_by_reviewer(self.root, path, name):
-                    target = workqueue_answer.reviewer_status(self.verdicts[name] == "change")
-                else:
+                if not workqueue_answer.asked_by_reviewer(self.root, path, name):
                     target = workqueue_answer.asked_from(self.root, path, name)
+                elif name in self.verdicts:     # no verdict from this run: no move, the item is left for the person
+                    target = workqueue_answer.reviewer_status(self.verdicts[name] == "change")
+            if target is not None:
                 self.move(name, before, target)
             elif self.uncommitted(name):
                 self.commit(name, before, before)

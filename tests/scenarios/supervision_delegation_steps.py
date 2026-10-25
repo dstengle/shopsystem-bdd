@@ -168,7 +168,7 @@ def asked_question_given(repo, context, question, files):
     brief = given_to(repo, question)
     assert read_list(brief) == files.split(" and "), brief
     assert context["delegation"] in brief and ".shop/work/" not in brief.split("Run directory:")[0] and "spec/" not in brief, brief
-    for other in re.findall(r'^- (.*)$', section((repo / (DIR + "/w1.md")).read_text(), "Questions"), re.M):
+    for other in re.findall(r'^- (.*)$', section((repo / (DIR + "/w1.md")).read_text(), "Questions"), re.MULTILINE):
         assert other == question or other not in brief, brief
 
 
