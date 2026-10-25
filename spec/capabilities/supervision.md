@@ -94,6 +94,7 @@ from what using it shows.
 - [r24] **When** `work run` starts an implementer, `work run` shall first run the whole suite in the implementer's worktree and say in the brief how it ended.
 - [r25] **When** `work run` writes a worker's brief, `work run` shall name in it the plugin's scripts directory, the initiative branch's base, the worker's worktree and its work-item branch.
 - [r57] **When** `work run` writes the brief of a worker for a work-item that has answers, `work run` shall write each of the work-item's answers, with the question it answers, in it.
+- [r98] **When** `work run` starts an implementer for a work-item that an answer to the question of a work-item's reviewer returned to `ready`, `work run` shall give the implementer the reviewer's findings and the answer.
 - [r26] **When** `work run` makes a work-item's transition to `awaiting-answer`, `work run` shall keep the work-item branch.
 - [r58] **When** `work run` starts an implementer for a work-item whose work-item branch it kept, `work run` shall make the implementer's worktree on that branch.
 - [r27] **When** every work-item of the initiative is `green` or `withdrawn` and the initiative branch holds a commit, other than a kept branch review's own commit, that no kept branch review has read, `work run` shall start a `claude -p` session of `bdd-branch-reviewer` over the initiative branch from its base, given one brief.
@@ -146,6 +147,7 @@ from what using it shows.
 - r79, r68, r70, r71: the `integrate`, `gate` and `apply` rounds are `initiative-round` sessions of spec-integration, the `formulate` round one of formulation.
 - r68, r85: the `gate` round gives its gate in its `result.json` (spec-integration r35) and writes nothing on the capability-proposal; `work run` writes the questions under the proposal's `## Questions`.
 - r78: the answer names the delegation in its `by`.
+- r98: the brief names the findings file of the work-item's last review stage directory and writes the answer as r57 does.
 
 ## Not yet
 - Retries, continuations after `PARTIAL`, refused claims, the guards between
