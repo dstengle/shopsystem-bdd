@@ -318,3 +318,10 @@ by: the coordinator, delivering i24
 date: 2026-10-25
 
 Once w151 (supervision r79, r84) was merged, `work run i24` moved the `proposed` i24 to `started` and then stopped with "work: there is no request  under .shop/work/requests", leaving a `log.jsonl` line uncommitted: i24 fulfils no request (it predates R3's requests), and r79 gives a `proposed` initiative an integrate round from its request's lines. No line says what `work run` does for a `proposed` initiative that fulfils no request (v16a reports it). The line was committed by hand and the run restarted.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-25-thread-crash-exits-zero
+about: capability/supervision
+by: the coordinator, from w134's task review, under the person's delegation
+date: 2026-10-25
+
+In a `work run` with no initiative (supervision r66, r81, r82), an exception other than `Refused` raised in one initiative's thread is only printed by `threading.excepthook`, and the run can exit 0 under r82 although that initiative's nodes can still move; with one initiative the same crash exits non-zero. Accepted as it is for i24.
