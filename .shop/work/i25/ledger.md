@@ -2,3 +2,4 @@
 - 2026-10-25: integrate round 1: 3 lines added (work-queue r25, r26; supervision r91), 1 changed (work-queue r14), 1 decision (0069), 5 questions, 8 cut sentences; .shop/scratch/drafts/2026-10-25-q2/round-1/gate.md
 - 2026-10-25: integrate round 2 (q2): 2 lines added (work-queue r26 r27; supervision r98), 1 changed (work-queue r14), 0 removed, 0 terms, 0 decisions, 4 questions, 5 cut sentences; .shop/scratch/2-integrate/drafts/round-1/gate.md
 - 2026-10-25: gate (supervision): 2 questions
+- 2026-10-25: gate (work-queue): 4 questions
