@@ -104,12 +104,12 @@ def each_has_thing(repo, context):
 
 @then("the two capability-proposals have different ids")
 def different_ids(repo):
-    ids = [re.search(r"^id: (.*)$", thing_of(repo, i), re.M).group(1) for i in ("i1", "i2")]
+    ids = [re.search(r"^id: (.*)$", thing_of(repo, i), re.MULTILINE).group(1) for i in ("i1", "i2")]
     assert ids[0] != ids[1], ids
 
 
 def listed(text, field):
-    got = re.search(r"^%s: \[(.*)\]$" % field, text, re.M)
+    got = re.search(r"^%s: \[(.*)\]$" % field, text, re.MULTILINE)
     return [i.strip() for i in got.group(1).split(",") if i.strip()] if got else None
 
 
@@ -176,8 +176,10 @@ def keeps_draft(repo, name, capability, ids, path):
 def integrate_given_ids(repo, context, ids):
     found = rounds(repo, "integrate", "i1")
     assert len(found) == 1, (starts(repo), context["done"].stdout, context["done"].stderr)
+    line = next((l for l in found[0]["brief"].splitlines() if l.startswith("Ids drafted elsewhere")), None)
+    assert line is not None, found[0]["brief"]
     for one in ids_of(ids):
-        assert one in found[0]["brief"], (one, found[0]["brief"])
+        assert one in line, (one, line)
 
 
 @then(parsers.re(r"the integrate round for i1 was not given thing#r1, thing#r2 or thing#r5$"))
