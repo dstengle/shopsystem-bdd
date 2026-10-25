@@ -1,1 +1,2 @@
 - 2026-10-25: The person, 2026-10-25, chose "One hand edit + q3": the request commands q2's intake showed missing go in a request of their own, released with q1 and q2.
+- 2026-10-25: integrate round 1: 4 lines added (requests r19 r20, supervision r91 r92), 0 changed, 0 removed, 0 terms, 0 decisions, 8 questions, 1 cut sentence; .shop/scratch/drafts/2026-10-25-q3/round-1/
