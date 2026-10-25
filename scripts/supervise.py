@@ -219,7 +219,7 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
                     if not all(s in ("green", "withdrawn") for _, s in self.items()):
                         break     # a fix that did not turn green gets no review in this run
                     kept = self.branch_review()     # r110: the fix, reviewed in the same run
-                if kept is not None and self.lists_nothing(kept):     # r75, r76
+                if kept is not None and self.lists_nothing(kept) and any(s == "green" for _, s in self.items()):     # r75, r76
                     self.analyse()
                     self.set_done()     # r105, r109
         finally:
