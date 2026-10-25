@@ -1,0 +1,16 @@
+{
+  "status": "DONE",
+  "summary": "w135 (supervision#r67, intake round). Research complete; notes.md has parts 1-7.\nScenario red: undefined Given (feature line 837) for both examples; intake steps and the intake job do not exist.\n`work run` with no initiative is a usage error today (scripts/work:147): the scenario's When needs r66, owned by w134 (not green). w135 is blocked_by w127 only.\n`work outcome` and `work turn` already write what r67 needs (probe: q1 becomes accepted, turn asker).\nWorker Bash excludes `work` on purpose (supervise_worker.py:25-27); intake needs it: conflict, both readings in notes Q2.\nAny worker's change under .shop/work/ is a fault (r6/r34); requests live there: conflict, notes Q3.\nWorker code is work-item-bound (worker(), ROLE, brief, verify_push): an intake path needs its own session code.\nDefects reproduced: D1 outcome for line 9 of a 2-line request accepted; D2 outcome word 'maybe' accepted; D3 zero-line request accepted and refused on turn.\nTests: none becomes impossible to keep; test_agents r1 and the research tool-list tests stay sound (by search: no tools map).\nWorktree git status clean; scratch probes in .shop/scratch/w135-1-research/ (ignored).",
+  "fileset": [
+    "scripts/work",
+    "scripts/supervise.py",
+    "scripts/supervise_intake.py",
+    "scripts/supervise_worker.py",
+    "scripts/supervise_faults.py",
+    "agents/initiative-round.md",
+    "CLAUDE.md",
+    "tests/scenarios/supervision_intake_steps.py",
+    "tests/scenarios/test_supervision.py"
+  ],
+  "questions": []
+}
