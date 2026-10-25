@@ -210,8 +210,7 @@ def retry(root, name):
     if at is None:
         raise Refused("log.jsonl gives no transition of %s to failed; work retry has no status to return it to" % name)
     before = moves[at]["before"]
-    committed(root, rels_of(root, found[0]), "work retry: %s failed -> %s" % (name, before),
-              lambda: move(root, initiative, name, before, by="work retry"))
+    moved_to(root, found[0], name, before, "work retry: %s failed -> %s" % (name, before), "work retry")
     return before
 
 
@@ -236,16 +235,21 @@ def withdraw(root, name):
         raise Refused("%s is already withdrawn; there is nothing to transition" % name)
     if status in ("claimed", "green"):
         raise Refused("%s is %s; work withdraw leaves a claimed or green work-item as it is" % (name, status))
-    import workqueue_done     # imports this module, so it is read here (r23)
-    done = workqueue_done.becomes(root, path.parent, {name: "withdrawn"})
+    moved_to(root, path, name, "withdrawn", "work withdraw: %s %s -> withdrawn" % (name, status), "work withdraw")
+    return "withdrawn"
+
+
+def moved_to(root, path, name, after, message, by):
+    """Move work-item `name` to `after` and commit; when that leaves its initiative done, mark and commit that too (r23)."""
+    import workqueue_done     # imports this module, so it is read here
+    done = workqueue_done.becomes(root, path.parent, {name: after})
     rels = rels_of(root, path) + ([str((path.parent / "initiative.md").relative_to(root))] if done else [])
 
     def write():
-        move(root, path.parent.name, name, "withdrawn", by="work withdraw")
+        move(root, path.parent.name, name, after, by=by)
         if done:
             workqueue_done.mark(path.parent, root)
-    committed(root, rels, "work withdraw: %s %s -> withdrawn" % (name, status), write)
-    return "withdrawn"
+    committed(root, rels, message, write)
 
 
 def git(root, *args):
