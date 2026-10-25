@@ -402,3 +402,10 @@ by: the coordinator, from i29, i30, i31 and i33
 date: 2026-10-25
 
 A formulate round commits a proposal's scenarios and may still give a question (r112, r113), leaving the proposal `awaiting-answer` and undrafted; until it is formulated and drafted no work-item accepts the scenarios, and every other work-item's whole-suite check (r43) fails on them (w175, w179, w180 on i29's; w192, w193 on i33's). Also once: a fixture's `shutil.rmtree(repo / ".git")` met git's `maintenance.lock` (tests/scenarios/supervision_given.py:72), a flake from git's background maintenance.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-25-retires-by-tag
+about: capability/supervision
+by: the coordinator, from w194 and the branch's deprecated scenarios
+date: 2026-10-25
+
+r73 lists under a drafted work-item's `## Retires` only the `@deprecated` scenarios tagged with a requirement it accepts. A replaced scenario tagged with another line (w194: the `@r75` PARTIAL scenario that r121's Outline replaces) is missed, and its work-item is asked about it. Five deprecated scenarios whose replacements are green stay in the suite on this branch (supervision @r75, @r102, @r105; work-queue @r9, @r23), from work-items drafted by `work add` (no Retires) or matched by tag.
