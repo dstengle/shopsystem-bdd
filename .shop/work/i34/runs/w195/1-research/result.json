@@ -1,0 +1,14 @@
+{
+  "status": "DONE",
+  "summary": "Research of w195 (supervision r122, whole-suite expected red for capability-proposals) is done; notes.md holds the seven parts.\nRed today: 9 of 10 rows of features/supervision.feature:813 fail: 6 undefined Givens (line 817), 3 undefined Then (line 820). One row passes only by coincidence.\nCode: scripts/work_items.py acceptors (58) and expect_red (79) read work-items only; no proposal branch. Probe: every proposal case counted as not expected today.\nSteps: tests/scenarios/supervision_proposal_steps.py needs a generic Given for approved, withdrawn, awaiting-answer, merged; tests/scenarios/supervision_tests_steps.py needs the implement-stage Then.\nNo existing test becomes impossible to keep (by search; no tools map). Implement and merge suite runs share one command, so one change in work_items.py covers both.\nOld assumption: model_work SETTLED counts merged as settled; r122 counts it expected. work run never writes merged. Probe D2: --whole-suite with an unknown work-item runs instead of refusing.\nSize: no tracked Python file over 300 lines.",
+  "fileset": [
+    "scripts/work_items.py",
+    "tests/scenarios/supervision_proposal_steps.py",
+    "tests/scenarios/supervision_tests_steps.py"
+  ],
+  "questions": [
+    "merged: counted as expected by r122 (the outline row), or settled as model_work.py treats it, which work run never writes?",
+    "Should --whole-suite with an unknown work-item refuse as the scenario path does (probe_skip.py), or run?",
+    "Scope: does a capability-proposal in any initiative's .shop/work/ count toward r122, or only the work-item's own initiative?"
+  ]
+}
