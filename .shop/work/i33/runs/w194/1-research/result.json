@@ -1,0 +1,10 @@
+{
+  "status": "DONE",
+  "summary": "Research of w194 (r120, r121) done; notes.md holds the seven parts.\nr121 Outline: all four rows red by an undefined Given (\"gives <outcome>, with no question\"). Code: supervise_analysis.py lists_nothing requires status DONE, so PARTIAL/BLOCKED/NEEDS_CONTEXT without a question are not measured. Change: drop the status condition and rewrite its docstring.\nr120 scenario red only by its undefined Then (\"the brief ... asks it to give in its result whether its answer asks for a change or accepts\"). supervise_answers.py answer_brief already asks for a verdict on reviewer questions (probed); no code change.\nFile set: scripts/supervise_analysis.py; tests/scenarios/supervision_analysis_steps.py; tests/scenarios/supervision_delegation_steps.py.\nConflict to decide: the deprecated scenario at features/supervision.feature:1050 (PARTIAL, no question, not measured; tagged @r75) passes today and fails after r121. Its tag is not r120/r121, so the r73 Retires rule does not list it. Retire it by hand, or leave it failing.\nTests were run through the worktree scripts; the shell's --work-item w194 filter was bypassed with --whole-suite for the deprecated and measurement tests.\nNo defect shown by probe.",
+  "fileset": [
+    "scripts/supervise_analysis.py",
+    "tests/scenarios/supervision_analysis_steps.py",
+    "tests/scenarios/supervision_delegation_steps.py"
+  ],
+  "questions": []
+}
