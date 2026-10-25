@@ -69,6 +69,11 @@ class Rounds:
             self.keep_round(name, kind, label)
             raise Refused("the %s round of %s (%s) faulted, and %s keeps its status %s: %s" % (
                 kind, name, self.rel(self.dir / "runs" / name / label), name, before, fault_of(fault))) from None
+        if data.get("status") != "DONE":     # r87: no transition, and nothing written on the node; r88: the run stops
+            self.keep_round(name, kind, label)
+            raise Refused("the %s round of %s (%s) gave the outcome %s, and %s keeps its status %s: %s" % (
+                kind, name, self.rel(self.dir / "runs" / name / label), data.get("status"), name, before,
+                data.get("summary", "")))
         asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []] if kind == "gate" else None
         if kind != "integrate":
             self.move(name, before, after, asked)

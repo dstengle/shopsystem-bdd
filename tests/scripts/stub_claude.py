@@ -7,7 +7,8 @@ no model runs. Like the real claude under -p, it runs a Bash command only when -
 when the list has a bare `Write`.
 
 The script is the JSON file $STUB_CLAUDE_PLAN: an object whose keys are agents without the plugin's prefix
-(`code-scout`), or "default", each an object of:
+(`code-scout`), or "default", or a round's kind after "round:" (`round:apply`, read from the brief's `# <kind> of <name>`
+heading, taking precedence over the agent's), each an object of:
   status     the result file's status (default "DONE"); with `result` "none" no result file is written, with
              "not-json" one that is not JSON;
   subtype    how the session ends, as claude's JSON output gives it (default "success"; "error_max_turns" at its
@@ -178,7 +179,8 @@ def main(argv):
             "agent": agent, "session": session})
     plan = json.loads(pathlib.Path(os.environ["STUB_CLAUDE_PLAN"]).read_text())
     short = agent.split(":", 1)[-1]
-    step = dict(plan.get("default", {}), **plan.get(short, {}))
+    kind = re.search(r"^# (\w+) of ", brief, re.M)
+    step = {**plan.get("default", {}), **plan.get(short, {}), **(plan.get("round:" + kind.group(1), {}) if kind else {})}
     result = pathlib.Path(next(line.split(":", 1)[1].strip() for line in brief.splitlines() if line.startswith("Result file:")))
     work_item = pathlib.Path(next((line.split(":", 1)[1].strip() for line in brief.splitlines()
                                    if line.startswith("Work-item:")), "none")).stem

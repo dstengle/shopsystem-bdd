@@ -152,6 +152,49 @@ def formulate_after_apply(repo, context):
     assert ended is not None and began is not None and ended < began, (log_lines(repo), context["done"].stderr)
 
 
+@given(parsers.re(r"the gate round's session ends at its turn limit, its result giving the question (?P<text>.+) on p1$"))
+def gate_at_turn_limit(plan, text):
+    plan["initiative-round"] = {"status": "DONE", "questions": quoted(text), "subtype": "error_max_turns"}
+
+
+@given(parsers.re(r"the apply round gives BLOCKED, asking (?P<text>.+)$"))
+def apply_blocked(plan, text):
+    plan["initiative-round"] = {"status": "DONE"}
+    plan["round:apply"] = {"status": "BLOCKED", "questions": quoted(text)}
+
+
+@given("the apply round ends, and the formulate round's session ends with no error and before its turn limit, having "
+       "written no result file")
+def formulate_without_result(plan):
+    plan["initiative-round"] = {"status": "DONE"}
+    plan["round:formulate"] = {"result": "none"}
+
+
+@then(parsers.re(r"(?P<name>p1) is (?P<status>drafted)$"))
+def proposal_status(repo, context, name, status):
+    text = (repo / DIR / (name + ".md")).read_text()
+    assert "\nstatus: %s\n" % status in text, (text, context["done"].stdout, context["done"].stderr)
+
+
+@then("a round of the kind apply was started for p1")
+def apply_was_started(repo, context):
+    assert len(rounds(repo, "apply")) == 1, (starts(repo), context["done"].stdout, context["done"].stderr)
+
+
+@then("log.jsonl gives no transition made after the apply round had ended")
+def no_transition_after_apply(repo, context):
+    ended = position(repo, stage="apply", event="end")
+    assert ended is not None, (log_lines(repo), context["done"].stderr)
+    later = [l for l in log_lines(repo)[ended + 1:] if "after" in l]
+    assert not later, (later, log_lines(repo), context["done"].stderr)
+
+
+@then("`work run` names the formulate round of p1 and that it left no result it can read")
+def names_formulate_without_result(context):
+    err = context["done"].stderr
+    assert "formulate round of p1" in err and "no result file" in err, err
+
+
 @then("p1's transition to formulated was made once the formulate round had ended")
 def formulated_after_formulate(repo, context):
     ended, moved = position(repo, stage="formulate", event="end"), position(repo, after="formulated")
