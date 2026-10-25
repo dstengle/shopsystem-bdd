@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"A faulted answering session now has its stage directory and log lines committed and pushed (via keep_round) before the run stops with an error; r89 and r90 steps added. Work-item scenarios: 144 passed.","commits":["b1442b4 work run: a faulted answering session's record is committed (w155)"],"report":".shop/scratch/3-implement/report.md","questions":[]}
