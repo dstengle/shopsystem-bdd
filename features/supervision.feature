@@ -1138,6 +1138,17 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the commit that wrote i1's capability-proposals wrote two, each drafted: one for thing, its adds naming thing#r4 and the term "ledger", its changes thing#r2 and its removes thing#r3, and one for other, its adds naming other#r1 and its changes and removes naming nothing
 
+  @r92
+  Scenario: the change lists of two initiatives that name the same capability give two drafted capability-proposals with different ids
+    Pins that two initiatives changing one capability each get a capability-proposal of their own, never two proposals sharing one id.
+    Given i1 is proposed and fulfils the request q1, whose line 1 has the line outcome accepted
+    And an initiative i2 under .shop/work/, proposed, that fulfils the request q2, whose line 1 has the line outcome accepted
+    And the integrate round for i1 gives DONE with a change list that adds thing#r4 on thing, and the integrate round for i2 gives DONE with a change list that adds thing#r5 on thing
+    And every other round ends
+    When the person runs `work run`
+    Then i1 has one drafted capability-proposal for thing, its adds naming thing#r4, and i2 has one drafted capability-proposal for thing, its adds naming thing#r5
+    And the two capability-proposals have different ids
+
   @r68
   Scenario: a drafted capability-proposal is given to a gate round whose brief asks for the gate as questions, each a decision with its readings and the recommended reading marked
     Pins that the gate comes back as decisions the person can answer one by one, with the reading to take already marked.
@@ -1214,3 +1225,24 @@ Feature: Supervision
     When the person runs `work run`
     Then `work run` prints i1 with started and i2 with started, and does not print i3
     And it exits successfully
+
+  @r103
+  Scenario: an accepted request this context is the upstream of, that no initiative fulfils, has its initiative started with `work start`
+    Pins that an accepted request gets its initiative without anyone running `work start` by hand, and that a request an initiative already fulfils gets no second one.
+    Given a request q1 of which this context is the upstream, accepted, that no initiative fulfils
+    And a request q2 of which this context is the upstream, accepted, that i1 fulfils
+    And every round ends and every worker gives DONE
+    When the person runs `work run`
+    Then `work start` was run for q1, and an initiative under .shop/work/ fulfils q1
+    And `work start` was not run for q2, and i1 is the only initiative that fulfils q2
+
+  @r104
+  Scenario: the gate round of a capability-proposal is asked only for the questions on the lines and terms that proposal adds, changes or removes
+    Pins that the gate of one capability-proposal raises no question on what another proposal, or the rest of the capability, holds.
+    Given the capability thing holds thing#r1, thing#r2 and thing#r3
+    And i1's capability-proposal p1 is drafted, its adds naming thing#r4 and the term "ledger", its changes thing#r2 and its removes thing#r3
+    And i1's capability-proposal p2 is drafted, its adds naming other#r1
+    And every round ends
+    When the person runs `work run i1`
+    Then the brief of the gate round for p1 asks only for the questions on thing#r4, thing#r2, thing#r3 and the term "ledger"
+    And it asks for no question on thing#r1 or on other#r1

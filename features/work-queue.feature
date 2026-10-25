@@ -396,3 +396,18 @@ Feature: Work queue
       | U+0085, the next-line control       |
       | U+2028, the line separator          |
       | U+2029, the paragraph separator     |
+
+  @r30
+  Scenario Outline: answer named by its initiative answers the <kind> <name> of that initiative
+    Pins that an answer given as <initiative>/<name> goes to the work-item or capability-proposal of that name in that initiative, and to nothing in any other initiative, even one with a capability-proposal of the same name.
+    Given an initiative i1 under .shop/work/ whose <other> is awaiting-answer
+    And an initiative i2 under .shop/work/ whose <kind> <name> is awaiting-answer
+    When the session runs `work answer i2/<name> "Use the first reading"`
+    Then .shop/work/i2/<name>.md has under its `## Answers` the text "Use the first reading", with the date the command was run
+    And .shop/work/i1/ is as it was
+    And it exits successfully
+
+    Examples:
+      | kind                | name | other                  |
+      | capability-proposal | p1   | capability-proposal p1 |
+      | work-item           | w2   | work-item w1           |
