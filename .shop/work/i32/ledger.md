@@ -1,3 +1,4 @@
 - 2026-10-25: integrate round 1: 3 added lines (supervision#r118, supervision#r119, review#r31), 1 decision (0069), 3 questions, 0 cut sentences; drafts .shop/scratch/1-integrate/drafts/round-1
 - 2026-10-25: gate round 1: 1 question (review#r31)
 - 2026-10-25: gate round 1 (supervision-1-gate): 1 question (supervision#r118, supervision#r119)
+- 2026-10-25: apply round 3 (review): applied the answer (a) keep the wording, review#r31 added in spec/capabilities/review.md, commit cb357911; supervision and decision 0069 not applied, unanswered
