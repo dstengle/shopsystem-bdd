@@ -3,3 +3,4 @@
 - 2026-10-25: round 2 integrate: 3 lines (r96, r97 added, r66 changed) and requests Implementation; drafts /home/vscode/shopsystem-bdd/.shop/scratch/drafts/2026-10-25-q4/round-2/, gate /home/vscode/shopsystem-bdd/.shop/scratch/drafts/2026-10-25-q4/round-2/gate.md
 - 2026-10-25: apply q4 rounds 1-2: spec commit 9ed288cf; adds supervision#r91-r97, work-queue#r25, requests#r19; changes supervision#r66; lines approved 2026-10-25 under the person's delegation
 - 2026-10-25: formulate round 1 (q4): commit 18cd9812
+- 2026-10-25: integrate round (re-run, q4): no writer dispatched; all 7 accepted lines already in spec/ (supervision r91-r95, work-queue r25, requests r19) since apply commit 9ed288cf; 0 added, 0 changed, 0 removed, 0 questions; no gate.md written
