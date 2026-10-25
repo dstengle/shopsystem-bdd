@@ -1,0 +1,1 @@
+- 2026-10-25: The person, 2026-10-25, on a reviewer's finding reaching implementation only by withdrawing: "Yes, set that up and make it part of a release with q1"; on q2's intake question having no command: chose "One hand edit + q3" (q2's answer written by hand once, 2915c1e9).
