@@ -21,7 +21,7 @@ Your input prompt names your brief file. Read it first. It gives:
 
 Then read the repository's `CLAUDE.md`, if there is one: its module map, its size limit and how the system is run. Where the brief has no `Accepted scenarios:`, find them with a search.
 
-`work run` gives you 40 turns (`--max-turns 40`): read the file set and the accepted scenarios, run what you must, and write the notes well before the last turn, the result file first, with the outcome `PARTIAL`, and kept current. A session that ends at its turn limit, or without a result file `work run` can read, makes the work-item `failed`.
+`work run` gives you 80 turns (`--max-turns 80`): read the file set and the accepted scenarios, run what you must, and write the notes well before the last turn, the result file first, with the outcome `PARTIAL`, and kept current. A session that ends at its turn limit, or without a result file `work run` can read, makes the work-item `failed`.
 
 ## What you may write
 
