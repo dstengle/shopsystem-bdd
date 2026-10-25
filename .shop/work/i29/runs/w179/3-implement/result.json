@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"keep_named skips result values the file system refuses as names; new given added; w179 scenarios green (144 passed).","commits":["f0695846 keep_named: a result value the file system refuses as a name names no file (r15)"],"report":".shop/scratch/3-implement/report.md","questions":[]}
