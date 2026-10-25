@@ -34,6 +34,8 @@ TOOLS = {
     "implement": ["Read", "Glob", "Grep", *PYTHON, "Bash(git add *)", "Bash(git commit *)", "Bash(git status*)",
                   "Bash(git diff*)"],
     "review": READER,
+    # The analysis session reads the measurement with `measure`, which no other stage is given (r14).
+    "analysis": ["Read", "Glob", "Grep", "Bash(python3 %s/measure *)" % SCRIPTS],
 }
 # A capability-proposal's rounds (supervise_rounds.py): they commit spec/ or features/ in a worktree of their own, and
 # dispatch the capability-writer and the feature-formulators.
@@ -43,7 +45,8 @@ for _round in ROUNDS:
 # A stage's limit of turns: the researcher's is 40 (r19).
 MAX_TURNS = {"research": 40}
 ROLE = {"code-scout": "researcher", "bdd-planner": "planner", "bdd-implementer": "implementer",
-        "bdd-task-reviewer": "reviewer", "bdd-branch-reviewer": "branch reviewer", "initiative-round": "round"}
+        "bdd-task-reviewer": "reviewer", "bdd-branch-reviewer": "branch reviewer", "initiative-round": "round",
+        "batch-analyst": "analyst"}
 # Set in each worker's environment: a `work run` that finds it was started by a worker (r21).
 WORKER = "SHOPSYSTEM_WORK_RUN_WORKER"
 

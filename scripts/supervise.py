@@ -14,6 +14,7 @@ import threading
 from pathlib import Path
 
 import workqueue
+from supervise_analysis import Analyses
 from supervise_brief import Briefs
 from supervise_draft import Drafts
 from supervise_faults import Fault, Faults, fault_of
@@ -35,10 +36,11 @@ STAGES = {
 MOVABLE = ("drafted", "researched", "planned", "ready", "done")
 
 
-class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds):
+class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyses):
     """One `work run` of one initiative in the repository at `root`: the workers' part is supervise_worker's, the briefs'
     supervise_brief's, the implementation stage's and its merge supervise_merge's, the faults' supervise_faults', the
-    branch review's supervise_review's, the pool of workers' supervise_pool's, the drafting's supervise_draft's, a proposal's rounds' supervise_rounds'."""
+    branch review's supervise_review's, the pool of workers' supervise_pool's, the drafting's supervise_draft's, a proposal's rounds' supervise_rounds', the measure and analysis of a finished
+    initiative supervise_analysis'."""
 
     def __init__(self, root, initiative):
         self.root = Path(root).resolve()
@@ -195,6 +197,8 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds):
                 if kept is not None and self.fix_work_item(kept):     # r74: the fix is pulled, not reviewed in this run
                     self.push()
                     self.pull(MOVABLE)
+                elif kept is not None and self.lists_nothing(kept):     # r75, r76
+                    self.analyse()
         finally:
             for tree in list(self.trees):      # on every way out, a failure's too: the run leaves no worktree
                 self.remove(tree)
