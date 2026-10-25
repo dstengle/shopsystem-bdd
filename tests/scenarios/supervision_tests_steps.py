@@ -133,7 +133,17 @@ def r2_accepted(repo, who):
 
 @then(parsers.parse('the whole suite `work run` ran before w1\'s merge counted "it waits" as {counted}'))
 def counted_as(repo, context, counted):
-    records = [l["record"] for l in log_lines(repo) if l.get("event") == "suite" and l.get("stage") == "merge"
+    check_counted(repo, context, "merge", counted)
+
+
+@then(parsers.parse('the whole suite `work run` ran in the implementer\'s worktree before the implementer started '
+                    'counted "it waits" as {counted}'))
+def counted_at_start(repo, context, counted):
+    check_counted(repo, context, "implement", counted)
+
+
+def check_counted(repo, context, stage, counted):
+    records = [l["record"] for l in log_lines(repo) if l.get("event") == "suite" and l.get("stage") == stage
                and l.get("work-item") == "w1"]
     assert len(records) == 1, (log_lines(repo), context["done"].stdout, context["done"].stderr)
     failing = records[0].partition("; failing: ")[2].partition("; expected: ")[0]

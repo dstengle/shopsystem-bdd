@@ -11,8 +11,8 @@ that has .shop/work/; its `accepts: [<capability>#r<n>, <capability>#r<n>-r<m>, 
 scenario is pytest-bdd's, its capability the stem of its feature file and its requirements its `@r<n>` tags.
 
 With `--whole-suite` too, every test runs (the whole suite before the work-item's merge), and a scenario whose
-requirement a work-item other than the work-item, neither green nor withdrawn, accepts is expected to fail: an xfail
-(supervision r43). Standard library and pytest only.
+requirement a work-item other than the work-item, neither green nor withdrawn, accepts, or a capability-proposal
+neither formulated nor withdrawn adds or changes, is expected to fail: an xfail (supervision r43, r122). Standard library and pytest only.
 """
 import pathlib
 import re
@@ -68,6 +68,23 @@ def acceptors(start):
     return found
 
 
+def proposals(start):
+    """{(capability, requirement): {proposal, ...}} that a capability-proposal under .shop/work/, neither formulated
+    nor withdrawn, adds or changes (supervision r122)."""
+    work = work_dir(pathlib.Path(start).resolve())
+    found = {}
+    for path in sorted(work.glob("*/*.md")) if work else []:
+        text = path.read_text()
+        status = re.search(r"(?m)^status: (\S+)$", text)
+        if re.search(r"(?m)^kind: capability-proposal$", text) and (status.group(1) if status else None) not in (
+                "formulated", "withdrawn"):
+            for field in ("adds", "changes"):
+                line = re.search(r"(?m)^%s: \[(.*)\]$" % field, text)
+                for req in requirements("accepts: [%s]" % line.group(1) if line else ""):
+                    found.setdefault(req, set()).add(path.stem)
+    return found
+
+
 def scenario_of(item):
     """The pytest-bdd scenario `item` runs, as (capability, its requirement tags); None for any other test."""
     scenario = getattr(getattr(item, "function", None), "__scenario__", None)
@@ -80,12 +97,14 @@ def expect_red(config, items, name):
     """Mark as xfail each scenario whose requirement a work-item other than `name`, neither green nor withdrawn,
     accepts."""
     by = acceptors(config.invocation_params.dir)
+    drafts = proposals(config.invocation_params.dir)
     for item in items:
         found = scenario_of(item)
         if found is None:
             continue
         who = set().union(*[by.get((found[0], tag), set()) for tag in found[1]])
         open_ = sorted(other for other, status in who if other != name and status not in ("green", "withdrawn"))
+        open_ += sorted(set().union(*[drafts.get((found[0], tag), set()) for tag in found[1]]))
         if open_:
             item.add_marker(pytest.mark.xfail(reason="expected: accepted by %s, neither green nor withdrawn"
                                               % ", ".join(open_), strict=False))

@@ -123,6 +123,21 @@ def drafted_with(repo, name, adds, term, changes, removes):
     commit_all(repo, "%s is drafted" % name)
 
 
+@given(parsers.re(r"i1's capability-proposal p1 is (?P<status>approved|withdrawn|awaiting-answer|merged), its "
+                  r"(?P<field>adds|changes) naming (?P<ids>\w+#r\d+)$"))
+def proposal_in_status(repo, plan, status, field, ids):
+    """`work run` moves a proposal on by its rounds before it runs the suites; so that p1 is still `status` when they
+    run, an awaiting-answer p1 has a question unanswered, and an approved p1's formulate round asks a question."""
+    other = {"adds": "changes", "changes": "adds"}[field]
+    held = "\n## Questions\n\n- Is it right?\n" if status == "awaiting-answer" else ""
+    if status == "approved":
+        plan["initiative-round"] = {"status": "DONE", "questions": ["Is it right?"]}
+    write(repo, DIR + "/p1.md", "---\nid: %s\nkind: capability-proposal\npart_of: %s\nstatus: %s\nargues: [thing]\n"
+          "%s: [%s]\n%s: []\nremoves: []\ndate: 2026-10-15\n---\n%s"
+          % (full("capability-proposal", "p1"), full("initiative", "i1"), status, field, ids, other, held))
+    commit_all(repo, "p1 is %s" % status)
+
+
 @given(parsers.re(r"p1 was written from the change list of i1's integrate round, whose drafts are kept at (?P<path>\S+)$"))
 def written_from_round(repo, path):
     file = repo / DIR / "p1.md"
