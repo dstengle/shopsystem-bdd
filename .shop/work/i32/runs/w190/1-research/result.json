@@ -1,0 +1,12 @@
+{
+  "status": "DONE",
+  "summary": "w190 research done; notes at .shop/scratch/1-research/notes.md.\nBoth accepted scenarios red: undefined Given (reviewer's question, no answer) in each; the change/accept When and the transition Then have no matching step.\nCode: supervise_answers.py answers() moves a reviewer's item to asked_from (done on change too); ask/answer_brief carry no change/accept verdict.\nworkqueue_answer.answer already has the ready/done rule (run): change->ready, accept->done; the delegation path does not call it.\nDefect D1 (run library, read path): a change answer to a reviewer's question lands at done, not ready.\nConflicts for the plan: C1 how a reviewer's question is detected (log before=done vs step helper's drafted); C2 r119 done re-enters the review stage (STAGES/MOVABLE) and keeps the initiative open; C3 how the verdict reaches work run.\nTests: no map, so by search; none found that asserts the status after an answer.\nFile set: supervise_answers.py, workqueue_answer.py, tests/scenarios/supervision_delegation_steps.py (+ maybe supervise.py, supervision_answers_steps.py).\nGit status clean; scratch ignored.",
+  "fileset": [
+    "scripts/supervise_answers.py",
+    "scripts/workqueue_answer.py",
+    "scripts/supervise.py",
+    "tests/scenarios/supervision_delegation_steps.py",
+    "tests/scenarios/supervision_answers_steps.py"
+  ],
+  "questions": []
+}
