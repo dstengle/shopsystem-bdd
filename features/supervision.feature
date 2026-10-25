@@ -866,6 +866,19 @@ Feature: Supervision
     When the person runs `work run i1` a second time
     Then the second `work run` was not refused
 
+  @r79
+  Scenario: a proposed initiative whose fulfils names a request the queue does not hold is given no integrate round, and nothing changes
+    Pins that an initiative naming a request with no lines to work from is not integrated, and that it blocks no later `work run`.
+    Given i1 is proposed and fulfils the request q9, which the queue does not hold
+    And every round ends
+    When the person runs `work run i1`
+    Then no round of the kind integrate was started for i1
+    And i1 is proposed
+    And no branch is made for a round
+    And nothing under .shop/work/ is left uncommitted
+    When the person runs `work run i1` a second time
+    Then the second `work run` was not refused
+
   @r69
   Scenario: when the gate round `work run` started for a capability-proposal ends, the proposal is awaiting-answer
     Pins that a capability-proposal whose gate has been given waits on its answers.
