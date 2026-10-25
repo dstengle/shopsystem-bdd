@@ -40,7 +40,10 @@ work-item's status; `work run` (supervision) takes them through it. It judges no
 - [r13] **When** `work answer <work-item> <answer>` is run on an `awaiting-answer` work-item, `work` shall write the answer, with the date, under the work-item's `## Answers`.
 - [r24] **When** `work answer <capability-proposal> <answer>` is run on an `awaiting-answer` capability-proposal, `work` shall write the answer, with the date, under the proposal's `## Answers`.
 - [r30] **When** `work answer <initiative>/<name> <answer>` is run, `work` shall answer the work-item or capability-proposal `<name>` of that initiative.
-- [r14] **When** `work answer <work-item> <answer>` is run on an `awaiting-answer` work-item, `work` shall transition it to the status the stage that asked its question started from: `drafted` for a researcher's question, `researched` for a planner's, `ready` for an implementer's and `done` for a reviewer's.
+- [r14] **When** `work answer <work-item> <answer>` is run on an `awaiting-answer` work-item whose question a researcher, a planner or an implementer asked, `work` shall transition it to the status the stage that asked its question started from: `drafted` for a researcher's question, `researched` for a planner's and `ready` for an implementer's.
+- [r26] **When** `work answer <work-item> <answer>` is run, with the flag saying that the answer asks for a change, on an `awaiting-answer` work-item whose question a reviewer asked, `work` shall transition the work-item to `ready`.
+- [r27] **When** `work answer <work-item> <answer>` is run, with the flag saying that the answer accepts the work-item as it is, on an `awaiting-answer` work-item whose question a reviewer asked, `work` shall transition the work-item to `done`.
+- [r28] **If** `work answer <work-item> <answer>` is run without the flag saying whether the answer asks for a change or accepts the work-item as it is on an `awaiting-answer` work-item whose question a reviewer asked, then `work` shall exit with an error, saying that the answer must say which, and change nothing.
 - [r15] **If** the answer given to `work answer` has in it one of Unicode's mandatory line breaks, U+000A (LF), U+000B (VT), U+000C (FF), U+000D (CR), U+0085 (NEL), U+2028 or U+2029, then `work` shall exit with an error, saying that an answer is one line, and change nothing.
 - [r9] **When** `work add`, `work retry`, `work withdraw` or `work answer` changes a work-item or a capability-proposal, `work` shall commit on the current branch the changed file and the `log.jsonl` line the change made, if it made one.
 
@@ -54,6 +57,8 @@ work-item's status; `work run` (supervision) takes them through it. It judges no
 - `work answer` on a work-item that is not `awaiting-answer` is a change `work` cannot make, refused under r7.
 - `work retry` and `work withdraw` print `<work-item> <status>`, the status being the one the transition made.
 - r23: a request names the initiative in its `part_of` or its `source`.
+- r26, r27: the flag is `--change` for an answer that asks for a change and `--accept` for one that accepts the
+  work-item as it is; the answer stays one line of free text.
 
 ## Not yet
 - `next`, `claim`, `questions`, `log` and `plugin` (`work_expectations.py`), `--check`
