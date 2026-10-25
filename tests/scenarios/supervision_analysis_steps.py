@@ -1,7 +1,8 @@
 """supervision's steps about the measurement of a finished initiative and its analysis: what the branch reviewer's result
 lists, `measure initiative` run by `work run`, and the session of analyzing-a-batch it starts."""
-from pytest_bdd import given, then
+from pytest_bdd import given, parsers, then
 
+from .supervision_proposal_steps import drafted
 from .supervision_world import git, log_lines, starts
 
 MEASUREMENTS = ".shop/records/measurements"
@@ -34,10 +35,16 @@ def analyst_writes_record(plan):
     plan["batch-analyst"] = {"notes": {"analysis.md": ANALYSIS}}
 
 
-@given("every worker gives DONE, and the branch reviewer's result gives PARTIAL, with no question and no finding")
-def reviewer_partial(plan):
+@given(parsers.re(r"every worker gives DONE, and the branch reviewer's result gives (?P<outcome>[A-Z_]+), with no question$"))
+def reviewer_gives_no_question(plan, outcome):
     plan["default"] = {"status": "DONE"}
-    plan["bdd-branch-reviewer"] = {"status": "PARTIAL", "questions": []}
+    plan["bdd-branch-reviewer"] = {"status": outcome, "questions": []}
+
+
+@then("no work-item was drafted in i1 for the kept branch review")
+def nothing_drafted(repo, context):
+    found = drafted(repo)
+    assert found == [], (found, context["done"].stderr)
 
 
 @given("every worker gives DONE, the branch reviewer's result lists nothing to fix now, and the analyzing-a-batch "

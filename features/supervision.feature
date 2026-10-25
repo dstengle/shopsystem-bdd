@@ -1069,15 +1069,6 @@ Feature: Supervision
     Then `work run` ran `measure initiative` on i1 after the branch review was kept
 
 
-  @r75 @deprecated
-  Scenario: a kept branch review that ended PARTIAL, with no question and no finding, does not list nothing to fix now, and no `measure initiative` is run (deprecated)
-    Deprecated for: a kept branch review whose result gives <outcome> and no question is taken as listing nothing to fix now
-    Pins that a branch review cut short is not taken for one that found nothing to fix, so the initiative is not measured on it.
-    Given i1's work-items w1 is green and w2 is withdrawn
-    And every worker gives DONE, and the branch reviewer's result gives PARTIAL, with no question and no finding
-    When the person runs `work run i1`
-    Then `work run` ran no `measure initiative` on i1 after the branch review was kept
-
   @r75
   Scenario Outline: an initiative whose work-items are <work-items> and whose kept branch review lists nothing to fix now <measured>
     Pins that an initiative is measured once its work is done and at least one work-item delivered something, and not when every work-item was withdrawn.

@@ -17,13 +17,13 @@ class Analyses:
     """The part of supervise.Run that measures an initiative whose work is done and has it analysed."""
 
     def lists_nothing(self, kept):
-        """Whether the kept review's result file is readable, its status is DONE and its `questions`, the list r74
-        reads, is empty (r75): a review that ended any other way lists nothing to fix now no more than one with findings."""
+        """Whether the kept review's result file is readable and its `questions`, the list r74 reads, is empty (r121):
+        a review with nothing to ask the person lists nothing to fix now, however it ended."""
         try:
             data = json.loads((kept / "result.json").read_text())
         except (OSError, ValueError):
             return False
-        return isinstance(data, dict) and data.get("status") == "DONE" and not data.get("questions")
+        return isinstance(data, dict) and not data.get("questions")
 
     @staticmethod
     def readable(path):

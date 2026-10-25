@@ -92,7 +92,8 @@ def each_answers(repo, plan, one, a1, two, a2):
 
 @given(parsers.re(r'the session answering under the delegation answers "(?P<answer>[^"]+)", and every worker gives DONE$'))
 def session_answers(repo, plan, answer):
-    asked_by_the_log(repo)
+    if not (repo / DIR / "log.jsonl").exists():     # a reviewer's question (r120) has its own log
+        asked_by_the_log(repo)
     plan["default"] = {"status": "DONE"}
     plan["delegation-answerer"] = {"fields": {"answer": answer}}
 
@@ -170,6 +171,13 @@ def asked_question_given(repo, context, question, files):
     assert context["delegation"] in brief and ".shop/work/" not in brief.split("Run directory:")[0] and "spec/" not in brief, brief
     for other in re.findall(r'^- (.*)$', section((repo / (DIR + "/w1.md")).read_text(), "Questions"), re.MULTILINE):
         assert other == question or other not in brief, brief
+
+
+@then(parsers.re(r'the brief of the session answering "(?P<question>[^"]+)" asks it to give in its result whether its answer '
+                 r"asks for a change or accepts (?P<name>\w+) as it is$"))
+def brief_asks_verdict(repo, context, question, name):
+    brief = given_to(repo, question)
+    assert "verdict" in brief and "`change`" in brief and "`accept`" in brief, (brief, context["done"].stderr)
 
 
 def answers_of(repo, name):
