@@ -57,19 +57,40 @@ Feature: Requests
     And it exits with an error
     And the upstream keeps no request
 
-  @r4
-  Scenario: outcome writing a line outcome leaves the request's lines as the asker wrote them
+  @r4 @deprecated
+  Scenario: outcome writing a line outcome leaves the request's lines as the asker wrote them (deprecated)
+    Deprecated for: outcome writing a line outcome leaves the request's lines and answers as the asker wrote them
     Pins that a request's lines are the asker's, written by request alone, and that a command answering a line does not rewrite it.
     Given a request q1 from the asker ctx-a whose turn is the upstream's, with two lines that have no line outcome
     When the upstream runs `work outcome q1 2 accepted`
     Then q1's lines are as they were
 
-  @r5
-  Scenario: turn passing a request leaves its line outcomes as they were and writes no resolution
+  @r4
+  Scenario: outcome writing a line outcome leaves the request's lines and answers as the asker wrote them
+    Pins that a request's lines and answers are the asker's, and that a command answering a line rewrites neither.
+    Given a request q1 from the asker ctx-a whose turn is the upstream's, with two lines that have no line outcome
+    And q1 holds the upstream's question "Which queue?" on line 1 and the asker's answer "The work queue" to it
+    When the upstream runs `work outcome q1 2 accepted`
+    Then q1's lines are as they were
+    And q1's answers are as they were
+
+  @r5 @deprecated
+  Scenario: turn passing a request leaves its line outcomes as they were and writes no resolution (deprecated)
+    Deprecated for: the asker answering a question leaves the request's questions and line outcomes as they were and writes no resolution
     Pins that the upstream's part of a request is written by outcome and resolve alone, and that passing the turn writes none of it.
     Given a request q1 from the asker ctx-a whose turn is the asker's, with one line whose line outcome is question
     When the asker runs `work turn q1`
     Then q1 gives line 1 the line outcome question
+    And q1 has no resolution
+
+  @r5
+  Scenario: the asker answering a question leaves the request's questions and line outcomes as they were and writes no resolution
+    Pins that the upstream's part of a request is not written when the asker writes its own, even beside the question the asker answers.
+    Given a request q1 from the asker ctx-a whose turn is the asker's, with one line whose line outcome is question
+    And q1 holds the upstream's question "Which queue?" on line 1
+    When the asker answers that question with "The work queue"
+    Then q1's questions are as they were
+    And q1 gives line 1 the line outcome question
     And q1 has no resolution
 
   @r15
@@ -79,6 +100,21 @@ Feature: Requests
     When the upstream runs `work outcome q1 2 accepted`
     Then q1 gives line 2 the line outcome accepted
     And q1 gives line 1 no line outcome
+
+  @r20
+  Scenario: the upstream asking a question on a line in its turn writes the question in the request
+    Pins that a question the upstream asks is kept in the request, on the line it asks about, in the upstream's words.
+    Given a request q1 from the asker ctx-a whose turn is the upstream's, with two lines that have no line outcome
+    When the upstream asks the question "Which queue?" on line 1 of q1
+    Then q1 holds the question "Which queue?" on line 1
+
+  @r21
+  Scenario: the asker answering a question in its turn writes the answer in the request
+    Pins that an answer the asker gives is kept in the request, as the answer to the question it answers, in the asker's words.
+    Given a request q1 from the asker ctx-a whose turn is the asker's, with one line whose line outcome is question
+    And q1 holds the upstream's question "Which queue?" on line 1
+    When the asker answers that question with "The work queue"
+    Then q1 holds the answer "The work queue" to the question "Which queue?"
 
   @r16
   Scenario: a side writing a part of a request in the other side's turn is refused, and nothing changes
@@ -157,12 +193,22 @@ Feature: Requests
     When the upstream runs `work resolve q1`, giving thing#r3 for line 1, found in the version 0.26.0
     Then q1's status is delivered
 
-  @r12
-  Scenario: a command that changes a request commits the request on the current branch
+  @r12 @deprecated
+  Scenario: a command that changes a request commits the request on the current branch (deprecated)
+    Deprecated for: a change to a request commits the request on the current branch
     Pins that what a request command writes is in the branch's history when it ends, so nothing that puts the repository back to its last commit undoes it.
     Given a request q1 from the asker ctx-a whose turn is the upstream's, with one line that has no line outcome
     And the repository is a git repository on the branch main, everything in it committed
     When the upstream runs `work outcome q1 1 accepted`
+    Then main has a new last commit, which holds q1 as work left it
+    And nothing work keeps for q1 differs from main's last commit
+
+  @r12
+  Scenario: a change to a request commits the request on the current branch
+    Pins that what is written in a request is in the branch's history when the writing ends, so nothing that puts the repository back to its last commit undoes it.
+    Given a request q1 from the asker ctx-a whose turn is the upstream's, with one line that has no line outcome
+    And the repository is a git repository on the branch main, everything in it committed
+    When the upstream asks the question "Which queue?" on line 1 of q1
     Then main has a new last commit, which holds q1 as work left it
     And nothing work keeps for q1 differs from main's last commit
 
