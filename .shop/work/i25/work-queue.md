@@ -22,3 +22,4 @@ The drafts of this proposal are in .shop/work/i25/runs/i25/2-integrate.
 
 ## Answers
 - 2026-10-25: 1: (a), refuse: work answer without the flag on a reviewer's question exits with an error saying the answer must say which, and changes nothing (the coordinator under the person's delegation 2026-10-25)
+- 2026-10-25: 2: (a), the flag is ignored on a researcher's, planner's or implementer's question and r14 holds; no new line (the coordinator under the person's delegation 2026-10-25)
