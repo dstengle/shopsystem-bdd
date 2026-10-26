@@ -9,3 +9,4 @@
 - 2026-10-26: w199 implementer question: rewrite to ask through the planner (q16's delegation); r32, r36, r37 scenarios reformulated by a feature-formulator hand-back, the old ones deprecated and added to w199's Retires
 - 2026-10-26: w199 suite failure: r32, r36, r37 added to w199's accepts; apply decision 4 and make the three planner scenarios green (q16's delegation)
 - 2026-10-26: w199 review findings 1-2: change, fix both (q16's delegation)
+- 2026-10-26: w199 suite failure (r80, r114, delegation scenario): allowance to make their apply-round stand-ins give a change list (gate answer 3, q16's delegation)
