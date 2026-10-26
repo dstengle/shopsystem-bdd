@@ -1086,16 +1086,6 @@ Feature: Supervision
       | BLOCKED       |
       | NEEDS_CONTEXT |
 
-  @r75 @deprecated
-  Scenario: when every work-item is green or withdrawn and the kept branch review lists nothing to fix now, `measure initiative` is run on the initiative (deprecated)
-    Deprecated for: an initiative whose work-items are <work-items> and whose kept branch review lists nothing to fix now <measured>
-    Pins that an initiative whose work is done is measured without anyone running `measure` by hand.
-    Given i1's work-items w1 is green and w2 is withdrawn
-    And every worker gives DONE, and the branch reviewer's result lists nothing to fix now
-    When the person runs `work run i1`
-    Then `work run` ran `measure initiative` on i1 after the branch review was kept
-
-
   @r75
   Scenario Outline: an initiative whose work-items are <work-items> and whose kept branch review lists nothing to fix now <measured>
     Pins that an initiative is measured once its work is done and at least one work-item delivered something, and not when every work-item was withdrawn.
@@ -1408,19 +1398,6 @@ Feature: Supervision
     Then `work start` was run for q1, and an initiative under .shop/work/ fulfils q1
     And `work start` was not run for q2, and i1 is the only initiative that fulfils q2
 
-  @r102 @deprecated
-  Scenario: an integrate round is given every requirement id another initiative's kept drafts add that spec/ on the branch it starts from does not hold, whatever that initiative's capability-proposal's status (deprecated)
-    Deprecated for: an integrate round is given every requirement id another initiative's kept drafts add that spec/ on the branch it starts from does not hold, whatever that initiative's capability-proposal's status
-    Pins that an integration knows the ids other initiatives have drafted and spec/ does not yet hold, however far their proposals have got, and is given no id spec/ already holds.
-    Given i1 is proposed and fulfils the request q1, whose line 1 has the line outcome accepted
-    And spec/capabilities/thing.md on the branch i1's integrate round starts from holds thing#r1, thing#r2 and thing#r5
-    And an initiative i2 under .shop/work/, started, whose kept drafts add thing#r4 and thing#r5 on thing, and whose capability-proposal p2 for them is formulated
-    And an initiative i3 under .shop/work/, started, whose kept drafts add other#r1 on other, and whose capability-proposal p3 for them is drafted
-    And every round ends
-    When the person runs `work run i1`
-    Then a round of the kind integrate was started for i1, given thing#r4 and other#r1
-    And the integrate round for i1 was not given thing#r1, thing#r2 or thing#r5
-
   @r102
   Scenario: an integrate round is given every requirement id another initiative's kept drafts add that spec/ on the branch it starts from does not hold, whatever that initiative's capability-proposal's status
     Pins that an integration knows the ids other initiatives have drafted and spec/ does not yet hold, however far their proposals have got, and is given no id spec/ already holds.
@@ -1481,16 +1458,6 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the initiative branch has a commit of i1's measurement and i1's analysis record
     And nothing under .shop/records/ is left uncommitted
-
-  @r105 @deprecated
-  Scenario: an initiative whose work-items are green or withdrawn, whose branch review lists nothing to fix now, whose measurement and analysis record are committed and whose requests are delivered is set done (deprecated)
-    Deprecated for: an initiative whose work-items are <work-items>, its delivery otherwise closed, <set>
-    Pins that an initiative whose delivery is closed is done without anyone setting it by hand.
-    Given i1 is started and its work-items w1 is green and w2 is withdrawn
-    And a request q2 kept in this context, whose asker is this context, that names i1 and is delivered
-    And every worker gives DONE, the branch reviewer's result lists nothing to fix now, and the analyzing-a-batch session writes i1's analysis record
-    When the person runs `work run i1`
-    Then i1 is done
 
   @r105
   Scenario Outline: an initiative whose work-items are <work-items>, its delivery otherwise closed, <set>

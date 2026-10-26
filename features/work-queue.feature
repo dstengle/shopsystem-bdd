@@ -2,15 +2,6 @@
 Feature: Work queue
   Narrator: a person, session or script reading work-items or writing their transitions
 
-  @r1 @deprecated
-  Scenario: add with --part-of, --under and --accepts writes a drafted work-item with the fields given (deprecated)
-    Deprecated for: add with a title, --part-of, --under and --accepts writes a drafted work-item named by its id and prints the id
-    Pins where add writes the work-item and that it holds what the command was given, as drafted.
-    Given an initiative i1 under .shop/work/ with no work-item w1
-    When the session runs `work add i1 w1 --part-of capability-proposal/p1 --under thing --accepts thing#r1`
-    Then .shop/work/i1/w1.md is a drafted work-item w1
-    And its part_of is capability-proposal/p1, its under is thing and its accepts is thing#r1
-
   @r1
   Scenario: add with a title, --part-of, --under and --accepts writes a drafted work-item named by its id and prints the id
     Pins that add names the work-item's file by the id it gives it, holds the title and the fields given, and tells the caller that id.
@@ -65,25 +56,6 @@ Feature: Work queue
     Then main has a new last commit, which holds the new initiative's initiative.md as work left it
     And nothing under the new initiative's directory under .shop/work/ differs from main's last commit
     And it exits successfully
-
-  @r23 @deprecated
-  Scenario Outline: a command whose change leaves every work-item of an initiative green or withdrawn, and every request this context asked naming it delivered, sets the initiative to done (deprecated)
-    Deprecated for: a command whose change leaves an initiative with a green work-item, every work-item green or withdrawn, and every request this context asked naming it delivered, sets the initiative to done
-    Pins that the command that completes an initiative's work also ends the initiative, and that only requests this context asked and keeps, naming the initiative, can hold it open.
-    Given an initiative i1 under .shop/work/ that is started, whose work-item w1 is green and whose work-item w2 is ready
-    And .shop/work/i1/log.jsonl's last line for w2 is its transition to ready
-    And <request>
-    When the session runs `work withdraw w2`
-    Then .shop/work/i1/w2.md gives w2's status as withdrawn
-    And .shop/work/i1/initiative.md gives i1's status as done
-    And it exits successfully
-
-    Examples:
-      | request                                                                                    |
-      | no request kept in this context names i1                                                   |
-      | a request q1 kept in this context, whose asker is this context, names i1 and is delivered  |
-      | a request q1 kept in this context, whose asker is another context, names i1 and is accepted |
-      | a request q1 kept in this context, whose asker is this context, names i2 and is accepted   |
 
   @r23
   Scenario Outline: a command whose change leaves an initiative with a green work-item, every work-item green or withdrawn, and every request this context asked naming it delivered, sets the initiative to done
@@ -276,23 +248,6 @@ Feature: Work queue
     When the session runs `work withdraw w1`
     Then .shop/work/i1/w1.md gives w1's status as withdrawn
     And .shop/work/i1/log.jsonl's last line is w1's transition from ready to withdrawn
-
-  @r9 @deprecated
-  Scenario Outline: `work <command>` commits the change it makes to a work-item on the current branch (deprecated)
-    Deprecated for: `work <command>` commits the change it makes to a work-item or a capability-proposal on the current branch
-    Pins that what `work add`, `work retry`, `work withdraw` and `work answer` write, the work-item's file and any log line, is in the branch's history when they end, so nothing that puts .shop/work/ back to its last commit undoes it.
-    Given <given>
-    And the repository is a git repository on the branch main, everything in it committed
-    When the session runs `work <args>`
-    Then main has a new last commit, which holds <holds>
-    And nothing under .shop/work/ differs from main's last commit
-
-    Examples:
-      | command  | given                                                                                          | args                                                                        | holds                                                                                                     |
-      | add      | an initiative i1 under .shop/work/ with no work-item w1                                        | add i1 w1 --part-of capability-proposal/p1 --under thing --accepts thing#r1 | .shop/work/i1/w1.md as work left it                                                                       |
-      | retry    | an initiative i1 under .shop/work/ with a work-item w1 that failed in its implementation stage | retry w1                                                                    | .shop/work/i1/w1.md as work left it and .shop/work/i1/log.jsonl with w1's transition from failed as its last line    |
-      | withdraw | an initiative i1 under .shop/work/ whose work-item w1 is ready, its last log.jsonl line for w1 its transition to ready | withdraw w1                                                  | .shop/work/i1/w1.md as work left it and .shop/work/i1/log.jsonl with w1's transition from ready to withdrawn as its last line |
-      | answer   | an initiative i1 under .shop/work/ whose work-item w1 is awaiting-answer, its question asked by an implementer | answer w1 "Use the first reading"                       | .shop/work/i1/w1.md as work left it and .shop/work/i1/log.jsonl with w1's transition from awaiting-answer to ready as its last line |
 
   @r9
   Scenario Outline: `work <command>` commits the change it makes to a work-item or a capability-proposal on the current branch

@@ -165,19 +165,6 @@ def spec_holds(repo, ids):
     commit_all(repo, "thing holds %s" % ids)
 
 
-@given(parsers.re(r"an initiative (?P<name>i\d) under \.shop/work/, started, whose kept drafts add (?P<ids>.+?) on "
-                  r"(?P<capability>\w+), and whose capability-proposal (?P<proposal>p\d) for them is (?P<status>\w+)$"))
-def other_initiative(repo, name, ids, capability, proposal, status):
-    base = ".shop/work/%s/" % name
-    write(repo, base + "initiative.md", "---\nid: %s\nkind: initiative\nstatus: started\n---\n" % full("initiative", name))
-    write(repo, base + "runs/%s/1-integrate/drafts/round-1/spec/capabilities/%s.md" % (name, capability),
-          cap(capability, ["- [r%s] **When** asked, `%s` shall answer." % (i.split("#r")[1], capability) for i in ids_of(ids)]))
-    write(repo, base + proposal + ".md", "---\nid: %s\nkind: capability-proposal\npart_of: %s\nstatus: %s\nargues: [%s]\n"
-          "adds: [%s]\nchanges: []\nremoves: []\ndate: 2026-10-15\n---\n"
-          % (full("capability-proposal", proposal), full("initiative", name), status, capability, ", ".join(ids_of(ids))))
-    commit_all(repo, "%s keeps drafts adding %s" % (name, ids))
-
-
 @given(parsers.re(r"an initiative (?P<name>i\d) under \.shop/work/, started, whose capability-proposal (?P<proposal>p\d) is "
                   r"(?P<status>\w+)$"))
 def started_with_proposal(repo, name, proposal, status):

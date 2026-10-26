@@ -308,23 +308,6 @@ Feature: Migration tools
     When the session runs `migrate run --context example.org/acme/shop`
     Then .shop/records/archive/plans/p1.md, .shop/records/archive/requests/q1.md, .shop/records/archive/design-notes/s1.md, .shop/records/decision-arguments/0001-use-x.md and .shop/records/logs/run1-test-log.md are each about bounded-context/example.org/acme/shop
 
-  @r15 @deprecated
-  Scenario Outline: `migrate run` on a repository with <change> refuses, naming it, exits non-zero and changes no file (deprecated)
-    Deprecated for: `<command>` on a repository with <change> refuses, naming it, exits with an error and changes no file
-    Pins that migrate starts only from a working tree with nothing uncommitted, untracked files included.
-    Given a repository on the old system with work/i1/w1.md
-    And <change>
-    When the session runs `migrate run --context example.org/acme/shop`
-    Then migrate refuses, naming <named>
-    And it exits non-zero
-    And nothing under the repository has changed
-
-    Examples:
-      | change                                            | named       |
-      | a tracked README.md changed since the last commit | README.md   |
-      | an untracked notes/n2.md                          | notes/n2.md |
-      | a tracked README.md deleted since the last commit | README.md   |
-
   @r15
   Scenario Outline: `<command>` on a repository with <change> refuses, naming it, exits with an error and changes no file
     Pins that both commands start only from a working tree with nothing uncommitted, untracked files included.

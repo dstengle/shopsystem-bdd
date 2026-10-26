@@ -205,12 +205,6 @@ def move(repo, context, name, status):
 
 # --- Then -----------------------------------------------------------------------------------------------------
 
-@then(parsers.re(r"\.shop/work/(?P<initiative>[^/]+)/(?P<name>[^/]+)\.md is a drafted work-item (?P<name2>(?!whose)\S+)$"))
-def drafted(repo, initiative, name, name2):
-    data = fields(repo / f".shop/work/{initiative}/{name}.md")
-    assert (data.get("id"), data.get("kind"), data.get("status")) == (full("work-item", name2), "work-item", "drafted"), data
-
-
 @then(parsers.parse("its part_of is {part_of}, its under is {under} and its accepts is {accepts}"))
 def given_fields(repo, context, part_of, under, accepts):
     data = fields(repo / ".shop/work/i1/{}.md".format(context.get("printed", "w1")))
