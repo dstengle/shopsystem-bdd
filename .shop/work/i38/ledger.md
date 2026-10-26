@@ -5,3 +5,4 @@
 - 2026-10-26: formulate round 3: supervision commit 70195d02; 14 lines formulated (r4 r31 r45 r61 r87-r90 r115 r130-r134), 18 scenarios deprecated; r128, r129 and r86 returned as 3 questions
 - 2026-10-26: i38-supervision formulate questions 1-3: A each (r128 records and prints the fault; a researcher's questions go to the planner's brief without awaiting-answer; r86 keeps started), under q16's delegation
 - 2026-10-26: formulate round 4: supervision commit 04ab2ba1; r128 and r129 formulated (2 outlines), r86 keeps its scenario; no question
+- 2026-10-26: w199 planner questions 1-2: B each, as the gate answers 6 and 7 ruled (q16's delegation)
