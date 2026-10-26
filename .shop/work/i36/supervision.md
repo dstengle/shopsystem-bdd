@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i36-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i36
-status: drafted
+status: awaiting-answer
 argues: [supervision]
 adds: [supervision#r125, supervision#r126, supervision#r127]
 changes: []
@@ -13,3 +13,19 @@ date: 2026-10-26
 # supervision
 
 The drafts of this proposal are in .shop/work/i36/runs/i36/1-integrate/drafts/round-1/.
+
+## Questions
+- New lines or changes? Drafted as new lines (r112 and r113 untouched):
+  [r125] **When** `work run` writes the brief of a round of the kind `formulate`, `work run` shall tell the round that a round that has formulated every line with one reading and gives each other line as a question has done its work, with the outcome `DONE`.
+  [r126] **When** a round of the kind `formulate` that `work run` started for a capability-proposal gives a question with the outcome `PARTIAL`, `work run` shall write each question its result gives under the proposal's `## Questions`.
+  [r127] **When** a round of the kind `formulate` that `work run` started for a capability-proposal gives a question with the outcome `PARTIAL`, `work run` shall transition the proposal to `awaiting-answer`.
+  Existing:
+  [r112] **When** a round of the kind `formulate` that `work run` started for a capability-proposal gives questions, `work run` shall write each question its result gives under the proposal's `## Questions`.
+  [r113] **When** a round of the kind `formulate` that `work run` started for a capability-proposal gives a question, `work run` shall transition the proposal to `awaiting-answer`.
+  Readings: (a) new lines, r112/r113 as they are; (b) change: drop r126 and r127; r112 reads 'gives questions, with the outcome `DONE` or `PARTIAL`, ...' and r113 'gives a question, with the outcome `DONE` or `PARTIAL`, ...'. Recommended: (a).
+- r86 and r87 (keep status; make no transition on an outcome other than `DONE`) conflict with r127:
+  [r127] **When** a round of the kind `formulate` that `work run` started for a capability-proposal gives a question with the outcome `PARTIAL`, `work run` shall transition the proposal to `awaiting-answer`.
+  Exempt a `formulate` round that gives a question with `PARTIAL` from r86 and r87? Readings: (a) yes, exempt; (b) no, so r127 cannot hold (drop it, and r126 with it or keep r126 alone). Recommended: (a).
+- r88 and r115 (exit with an error naming the round, and take other nodes through their transitions first) apply to any outcome other than `DONE`. Does `work run` still exit with an error for a `formulate` round that gives a question with `PARTIAL`? Readings: (a) no: r88 and r115 take the same exemption and the proposal waits like any `awaiting-answer` node (r81/r32/r101 decide the exit); (b) yes: r88 and r115 stay as they are. Recommended: (a).
+- A `formulate` round ends in an error or at its turn limit, but its result gives a question with `PARTIAL`: do r126 and r127 hold then too? Readings: (a) yes: the exemptions read 'other than a round of the kind `formulate` whose result gives a question with the outcome `PARTIAL`'; (b) no: r126 and r127 gain 'ends neither in an error nor at its turn limit and' (exemption only for rounds that ended normally). Recommended: (b).
+- 'Not yet' says: 'Retries, continuations after `PARTIAL`, refused claims, the guards between ...'. Does r126/r127 take a `formulate` round's `PARTIAL` out of it? Readings: (a) yes: it becomes 'continuations after `PARTIAL` other than a `formulate` round's questions'; (b) no: left as it is. Recommended: (a).
