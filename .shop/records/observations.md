@@ -423,3 +423,14 @@ by: the person, from q13
 date: 2026-10-26
 
 q13's intake round accepted all three lines and passed the turn, as r7 and r8 have it: q13 reads `accepted` with `turn: asker`. The asker has nothing to do (r17 sets `awaiting-asker` only for a line without a decided outcome, and r10 resolves in either side's turn), while the delivery the acceptance promises is the upstream's. The person, 2026-10-26: "the state doesn't make sense for the work to be accepted but then appear to be in the askers court."
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-26-outcome-and-lifecycle
+about: capability/supervision
+by: the person and the coordinator, from i36's gate
+date: 2026-10-26
+
+- `work run` moves a node by its worker's outcome label: `DONE` makes the next transition, any other label a work-item's `awaiting-answer` (r3, r5) and a round's kept status and error exit (r86, r87, r88, r115, and r89, r90 for answer sessions). Questions are carved back in kind by kind (r100 intake, r112 and r113 formulate, r16 research), and i36's integrate round drafted three more (r125, r126, r127) with four exemptions for q13.
+- `PARTIAL` means two things: r44's placeholder, written first in case the session dies, and a worker stopped with open questions.
+- Of 604 committed `result.json` files every one gives `status`, `summary` and `questions`. Workers gave seven labels (`DONE`, `PARTIAL`, `BLOCKED`, `NEEDS_CONTEXT`, `DONE_WITH_CONCERNS`, `QUESTION`, `HAND-BACK`). Every result of an implementer, planner or reviewer that was not `DONE` gave questions (10, 23, 22); 12 researchers' `PARTIAL` results gave none. Researchers gave `DONE` with questions 24 times; those go to the planner (r16), not to the person.
+- Each stage's output can be checked from its result or from what it left: `fileset`, `plan`, `commits` with the suite, `findings`, `answer`, `changes`; a formulate round's scenarios, an intake round's line outcomes, a gate round's questions.
+- The rules of the nodes' lifecycles (which event moves which node where) are written into supervision's lines about running sessions. The person, 2026-10-26: "we are starting to mix business rules of process transitions and the implementation of the work run processing. We can't deal with that now, but it does need to be addressed."
