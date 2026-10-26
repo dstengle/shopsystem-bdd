@@ -1,3 +1,4 @@
 - 2026-10-26: integrate round 1: adds supervision#r128-r133; changes 10; removes 5; 10 questions; 2 cut sentences; drafts .shop/scratch/1-integrate/drafts/round-1
 - 2026-10-26: gate round 1: 10 questions
 - 2026-10-26: i38-supervision questions 1-10: answered under q16's delegation, each with its recommended reading; 'continuations after PARTIAL' leaves Not yet (q16's delegation)
+- 2026-10-26: apply round 2: answers of the 9 questions applied under q16's delegation (all recommended readings); supervision r128-r134 added, r3 r5 r16 r112 r113 removed, 11 lines changed, fault/outcome/stage entries changed; commit 4be48031
