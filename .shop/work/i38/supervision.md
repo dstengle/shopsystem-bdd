@@ -28,3 +28,4 @@ The drafts of this proposal are in .shop/work/i38/runs/i38/1-integrate/drafts/ro
 
 ## Answers
 - 2026-10-26: Reading A: r45 stays, 'whatever its result says' dropped (q16 delegation: the recommended reading).
+- 2026-10-26: Reading A: merge only when the result gives no question (q16 delegation: the recommended reading).
