@@ -131,7 +131,7 @@ Tools the skills and agents run:
 - **tool use**: one call of a tool in a session's transcript, named by the tool.
 - **transition**: one change of a node's status, written by `work`; a work-item's is logged in `log.jsonl`. Not: move.
 - **trial**: one run by the `trial-runner` of a plugin tool or `work run` on a real target or a fixture repository, measuring what its input names.
-- **turn**: the side of a request, its asker or its upstream, whose part of the request is to be written next, passed to the other side by `work turn`.
+- **turn**: the side of a request, its asker or its upstream, whose part of the request is to be written next, passed to the other side by `work turn` unless the request becomes accepted, and to the asker when the request is delivered.
 - **upgrade**: what `migrate upgrade` does to a repository on the final layout to take it from one plugin release to the next: it applies the pending upgrade steps.
 - **upgrade step**: one change to a repository's files that the plugin holds with the version that introduced it and a one-line description, pending for a repository when its version is above the repository's plugin version and at or below the plugin's.
 - **work-item**: the unit of delivery under a capability-proposal, named by its id `w<n>`, complete when the scenarios it accepts or its check pass, or, where every requirement it accepts is of a guarantees capability, when its review passes, taken through its stages by `work run`.
