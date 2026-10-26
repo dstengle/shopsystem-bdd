@@ -47,3 +47,4 @@
 {"time": "2026-10-26T21:45:48+00:00", "work-item": "w199", "stage": "merge", "event": "suite", "record": "Suite: 948 passed, 3 failed at 29da2f9d in 27 s; failing: tests/scenarios/test_supervision.py::test_a_question_goes_into_the_workitems__questions_before_a_section_that_follows_it, tests/scenarios/test_supervision.py::test_no_worker_is_started_for_a_workitem_after_its_transition_to_awaitinganswer, tests/scenarios/test_supervision.py::test_when_no_workitem_can_make_a_transition_and_one_is_awaitinganswer_work_run_exits_with_an_error_printing_each_workitems_status_and_each_open_question"}
 {"time": "2026-10-26T21:45:57+00:00", "work-item": "w199", "before": "claimed", "after": "awaiting-answer", "by": "work run"}
 {"time": "2026-10-26T21:46:23+00:00", "work-item": "w199", "before": "awaiting-answer", "after": "ready", "by": "work answer"}
+{"time": "2026-10-26T21:46:39+00:00", "work-item": "w199", "before": "ready", "after": "claimed", "by": "work run"}
