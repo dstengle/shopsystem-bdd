@@ -5,7 +5,7 @@ import re
 from pytest_bdd import given, parsers, then
 
 from .conftest import full
-from .supervision_rounds_steps import DIR, apply_did_its_work
+from .supervision_rounds_steps import DIR, apply_did_its_work, formulate_did_its_work
 from .supervision_world import commit_all, git, section, starts, write
 
 ANSWER = "The delegation covers it."
@@ -43,6 +43,7 @@ def sessions_reply(repo, plan, reply):
     plan["default"] = {"status": "DONE"}
     plan["initiative-round"] = {"status": "DONE"}
     apply_did_its_work(plan)
+    formulate_did_its_work(plan)
     plan["delegation-answerer"] = {"fields": {"answer": ANSWER}} if reply == "answers it" else {}
 
 

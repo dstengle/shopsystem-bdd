@@ -5,7 +5,7 @@ import re
 
 from pytest_bdd import given, parsers, then
 
-from .conftest import full
+from .conftest import feature, full
 from .supervision_world import commit_all, git, log_lines, starts, write
 
 DIR = ".shop/work/i1"
@@ -109,6 +109,13 @@ def gate_brief_asks(repo):
 def apply_did_its_work(plan):
     """The apply round that stands in gives the change list of a round that did its work (r130, r131)."""
     plan["round:apply"] = {"status": "DONE", "fields": {"changes": [{"capability": "thing", "adds": ["thing#r1"]}]}}
+
+
+def formulate_did_its_work(plan):
+    """The formulate round that stands in commits a scenario for the requirement its proposal adds, as a round that did
+    its work does (r131, r132)."""
+    plan["round:formulate"] = {"status": "DONE", "questions": [], "commit": {
+        "features/thing.feature": feature("thing", ("@r1", "it does what thing#r1 asks"))}}
 
 
 @given("every round ends")

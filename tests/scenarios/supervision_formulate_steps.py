@@ -4,13 +4,13 @@ import re
 
 from pytest_bdd import given, parsers, then
 
-from .supervision_rounds_steps import DIR, quoted
+from .supervision_rounds_steps import DIR, formulate_did_its_work, quoted
 from .supervision_world import log_lines, starts
 
 
 @given("the formulate round for p1 gives DONE with no question")
 def formulate_no_question(plan):
-    plan["round:formulate"] = {"status": "DONE", "questions": []}
+    formulate_did_its_work(plan)
 
 
 @given(parsers.re(r"the formulate round for p1 gives DONE with the questions (?P<text>.+)$"))
