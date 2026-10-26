@@ -39,6 +39,8 @@ from .supervision_review_steps import *
 from .supervision_request_steps import *
 from .supervision_retire_steps import *
 from .supervision_rounds_steps import *
+from .supervision_session_faults_steps import *
+from .supervision_then_faults_steps import *
 from .supervision_tests_steps import *
 from .supervision_then_workers import *
 from .supervision_world import *
