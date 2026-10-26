@@ -42,3 +42,4 @@ The drafts of this proposal are in .shop/work/i38/runs/i38/1-integrate/drafts/ro
 - 2026-10-26: Reading B for term/stage, and the outcome change goes with it: 'the one word a session's result gives' (q16 delegation: the recommended reading).
 - 2026-10-26: Reading A: r128 has a response of its own, the session's end recorded and printed as a fault of the node, for proposals, initiatives and questions too (q16 delegation: no reading recommended, the one a test can check).
 - 2026-10-26: Reading A: only the other stages' questions move the node to awaiting-answer; a researcher's work-item moves on to researched with its questions in the planner's brief, as q16's line 2 says (q16 delegation).
+- 2026-10-26: Reading A: it keeps started, the status r84 gave it before the round's session (q16 delegation: the reading consistent with r84 that a test can check).
