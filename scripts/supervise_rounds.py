@@ -7,10 +7,10 @@ result with no change list). Integrate, apply and formulate rounds run one at a 
 import json
 import subprocess
 
+import supervise_outputs
 import workqueue
 import workqueue_done
 import workqueue_request
-import supervise_outputs
 from supervise_change import BadChanges, Changes, entries
 from supervise_faults import Fault, ended_of, fault_of
 from supervise_worker import GitFailed, git
