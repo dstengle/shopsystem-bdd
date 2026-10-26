@@ -60,16 +60,18 @@ Feature: Supervision
       | ready      | bdd-implementer   |
       | done       | bdd-task-reviewer |
 
-  @r3
-  Scenario: a worker's outcome DONE makes the work-item's transition to its next status
+  @r3 @deprecated
+  Scenario: a worker's outcome DONE makes the work-item's transition to its next status (deprecated)
+    Deprecated for: removal
     Pins the transitions DONE makes, in the lifecycle's order, from where the work-item stands.
     Given i1's work-item w1 is researched
     And every worker gives DONE
     When the person runs `work run i1`
     Then log.jsonl gives w1's transitions from researched to planned, ready, claimed, done and green, in that order
 
-  @r4
-  Scenario: an implementer's DONE is merged into the initiative branch when the work-item's scenarios and the whole suite pass on its branch
+  @r4 @deprecated
+  Scenario: an implementer's DONE is merged into the initiative branch when the work-item's scenarios and the whole suite pass on its branch (deprecated)
+    Deprecated for: an implementer whose result gives no question has its branch merged only if the work-item's scenarios and the whole suite pass on it: <case>
     Pins that the merge is of the implementer's own commit, tested where that commit is.
     Given i1's work-item w1 is ready
     And every worker gives DONE, the implementer committing feature.txt
@@ -77,8 +79,9 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the initiative branch has the implementer's commit of feature.txt
 
-  @r4
-  Scenario Outline: an implementer's DONE whose <tests> fail is not merged
+  @r4 @deprecated
+  Scenario Outline: an implementer's DONE whose <tests> fail is not merged (deprecated)
+    Deprecated for: an implementer whose result gives no question has its branch merged only if the work-item's scenarios and the whole suite pass on it: <case>
     Pins that a failing test keeps the branch out of the initiative branch.
     Given i1's work-item w1 is ready
     And every worker gives DONE, the implementer committing feature.txt
@@ -91,8 +94,9 @@ Feature: Supervision
       | the work-item's scenarios |
       | the whole suite           |
 
-  @r4
-  Scenario: an implementer's DONE whose scenarios pass only on a file it left uncommitted is not merged
+  @r4 @deprecated
+  Scenario: an implementer's DONE whose scenarios pass only on a file it left uncommitted is not merged (deprecated)
+    Deprecated for: an implementer whose result gives no question has its branch merged only if the work-item's scenarios and the whole suite pass on it: <case>
     Pins that the scenarios and the suite run on the branch, which is what the merge takes: a file the implementer wrote and did not commit is not there.
     Given i1's work-item w1 is ready
     And every worker gives DONE, the implementer writing feature.txt and not committing it
@@ -100,8 +104,9 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the initiative branch does not have feature.txt
 
-  @r4
-  Scenario: an implementer's DONE whose whole suite fails only on a scenario r43 counts as expected is merged
+  @r4 @deprecated
+  Scenario: an implementer's DONE whose whole suite fails only on a scenario r43 counts as expected is merged (deprecated)
+    Deprecated for: an implementer whose result gives no question has its branch merged only if the work-item's scenarios and the whole suite pass on it: <case>
     Pins that a failure of work another work-item of the initiative has still to do does not keep the work-item branch out of the initiative branch.
     Given i1's work-item w1 is ready, accepting thing#r1, and w2 is awaiting-answer, accepting thing#r2
     And features/thing.feature has the scenario "it waits", tagged @r2, which fails
@@ -110,8 +115,26 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the initiative branch has the implementer's commit of feature.txt
 
-  @r5
-  Scenario Outline: an implementer's DONE whose <tests> fail makes the work-item's transition to awaiting-answer
+  @r4
+  Scenario Outline: an implementer whose result gives no question has its branch merged only if the work-item's scenarios and the whole suite pass on it: <case>
+    Pins that the merge takes the implementer's committed work only when it passes where that work is, a failure of work another work-item has still to do excepted.
+    Given i1's work-item w1 is ready, accepting thing#r1
+    And the implementer's result gives no question, the implementer <doing>, and every other worker gives DONE
+    And <tests>
+    When the person runs `work run i1`
+    Then the initiative branch <merged>
+
+    Examples:
+      | case                             | doing                                     | tests                                                                                                                                                                                | merged                                      |
+      | both pass                        | committing feature.txt                    | the work-item's scenarios pass only where feature.txt is                                                                                                                             | has the implementer's commit of feature.txt |
+      | the work-item's scenarios fail   | committing feature.txt                    | the work-item's scenarios fail on the implementer's branch                                                                                                                           | does not have the implementer's commit      |
+      | the whole suite fails            | committing feature.txt                    | the whole suite fails on the implementer's branch                                                                                                                                    | does not have the implementer's commit      |
+      | a file left uncommitted          | writing feature.txt and not committing it | the work-item's scenarios pass only where feature.txt is                                                                                                                             | does not have feature.txt                   |
+      | a failure r43 counts as expected | committing feature.txt                    | the work-item's scenarios pass only where feature.txt is, and the whole suite fails only on "it waits", tagged @r2, while i1's work-item w2, accepting thing#r2, is awaiting-answer | has the implementer's commit of feature.txt |
+
+  @r5 @deprecated
+  Scenario Outline: an implementer's DONE whose <tests> fail makes the work-item's transition to awaiting-answer (deprecated)
+    Deprecated for: removal
     Pins that work that fails the tests waits on the person.
     Given i1's work-item w1 is ready
     And every worker gives DONE, the implementer committing feature.txt
@@ -124,8 +147,9 @@ Feature: Supervision
       | the work-item's scenarios |
       | the whole suite           |
 
-  @r5
-  Scenario Outline: a researcher that gives <outcome> makes the work-item's transition to awaiting-answer
+  @r5 @deprecated
+  Scenario Outline: a researcher that gives <outcome> makes the work-item's transition to awaiting-answer (deprecated)
+    Deprecated for: removal
     Pins that any outcome but DONE stops the work-item for the person.
     Given i1's work-item w1 is drafted
     And the researcher gives <outcome>
@@ -366,8 +390,9 @@ Feature: Supervision
     Then w1's implementation stage directory has report.md, as the implementer wrote it
     And w1 is green
 
-  @r16
-  Scenario: a researcher's DONE with questions puts those questions into the planner's brief
+  @r16 @deprecated
+  Scenario: a researcher's DONE with questions puts those questions into the planner's brief (deprecated)
+    Deprecated for: removal
     Pins that what the researcher asked reaches the planner, rather than being asked again.
     Given i1's work-item w1 is drafted
     And every worker gives DONE, the researcher asking "Is a title given twice one book or two?"
@@ -434,11 +459,22 @@ Feature: Supervision
     When the person runs `work run i1`
     Then two implementers worked at the same time, and never three
 
-  @r61
-  Scenario: implementers working at the same time that end with DONE have their branches merged one at a time, in the order they ended
+  @r61 @deprecated
+  Scenario: implementers working at the same time that end with DONE have their branches merged one at a time, in the order they ended (deprecated)
+    Deprecated for: implementers working at the same time have the branches r4 merges merged one at a time, in the order they ended
     Pins that the initiative branch takes one work-item branch at a time, each on top of the one before, first the one whose implementer ended first.
     Given i1's work-items w1 is ready, its file set w1.txt, and w2 is ready, its file set w2.txt
     And every worker gives DONE, each implementer committing a file named for its work-item once two implementers have started, w2's implementer ending before w1's
+    When the person runs `work run i1`
+    Then the implementers of w1 and w2 worked at the same time
+    And the initiative branch has w2's implementer's commit and then w1's, with no merge commit
+
+  @r61
+  Scenario: implementers working at the same time have the branches r4 merges merged one at a time, in the order they ended
+    Pins that the initiative branch takes one work-item branch at a time, each on top of the one before, first the one whose implementer ended first.
+    Given i1's work-items w1 is ready, its file set w1.txt, and w2 is ready, its file set w2.txt
+    And each implementer's result gives no question, each implementer committing a file named for its work-item once two implementers have started, w2's implementer ending before w1's, and every other worker gives DONE
+    And each work-item's scenarios and the whole suite pass on its branch
     When the person runs `work run i1`
     Then the implementers of w1 and w2 worked at the same time
     And the initiative branch has w2's implementer's commit and then w1's, with no merge commit
@@ -634,11 +670,20 @@ Feature: Supervision
       | Read and Bash(git commit *)  | Read,Bash(git commit *)  |
       | Read, Write and Edit         | Read                     |
 
-  @r31
-  Scenario: a planner's DONE with a `fileset` writes that file set into the work-item as it makes the transition to planned
+  @r31 @deprecated
+  Scenario: a planner's DONE with a `fileset` writes that file set into the work-item as it makes the transition to planned (deprecated)
+    Deprecated for: a planner's result with a `fileset` writes that file set into the work-item as it makes the transition to planned
     Pins that the planner's file set is the work-item's from planned on.
     Given i1's work-item w1 is researched, its file set scripts/thing.py
     And every worker gives DONE, the planner's result giving a `fileset` of scripts/thing.py and tests/test_thing.py
+    When the person runs `work run i1`
+    Then the commit of w1's transition to planned writes `fileset:` scripts/thing.py and tests/test_thing.py into .shop/work/i1/w1.md
+
+  @r31
+  Scenario: a planner's result with a `fileset` writes that file set into the work-item as it makes the transition to planned
+    Pins that the planner's file set is the work-item's from planned on, whatever outcome the planner's result gives.
+    Given i1's work-item w1 is researched, its file set scripts/thing.py
+    And the planner's result gives a plan, no question and a `fileset` of scripts/thing.py and tests/test_thing.py, and every other worker gives DONE
     When the person runs `work run i1`
     Then the commit of w1's transition to planned writes `fileset:` scripts/thing.py and tests/test_thing.py into .shop/work/i1/w1.md
 
@@ -840,8 +885,9 @@ Feature: Supervision
     When the person runs `work run i1`
     Then each of w1's four briefs tells the worker to write its result file first, with the outcome PARTIAL, and keep it current as it works
 
-  @r45
-  Scenario Outline: a worker whose session <ending> makes the work-item's transition to failed, whatever its result says
+  @r45 @deprecated
+  Scenario Outline: a worker whose session <ending> makes the work-item's transition to failed, whatever its result says (deprecated)
+    Deprecated for: a worker whose session <ending> makes the work-item's transition to failed, recording how the session ended
     Pins that a session cut short is a fault even when its result file claims the work done, and the person learns how it ended.
     Given i1's work-item w1 is drafted
     And the researcher's result file gives DONE, its session <ending>
@@ -854,6 +900,21 @@ Feature: Supervision
       | ending at its turn limit                  | ended at its turn limit               |
       | exiting with an error                     | exited with an error                  |
       | leaving output that holds no JSON result  | left output that holds no JSON result |
+
+  @r45
+  Scenario Outline: a worker whose session <ending> makes the work-item's transition to failed, recording how the session ended
+    Pins that a session cut short is a fault of its work-item, and the person learns how the session ended.
+    Given i1's work-item w1 is drafted
+    And the researcher's session <ending>
+    When the person runs `work run i1`
+    Then w1 is failed, recording that the researcher's session <ended>
+
+    Examples:
+      | ending                                  | ended                                 |
+      | ends in an error                        | ended in an error                     |
+      | ends at its turn limit                  | ended at its turn limit               |
+      | exits with an error                     | exited with an error                  |
+      | leaves output that holds no JSON result | left output that holds no JSON result |
 
   @r46
   Scenario: `work run` started while .shop/work/ in the repository's own checkout has uncommitted changes exits with an error, naming them, and changes nothing
@@ -891,6 +952,77 @@ Feature: Supervision
     When the person runs `work run i1`
     Then w1 is green
     And i1's transition to done was made after w1's transition to green, before `work run` exited
+
+  @r130
+  Scenario Outline: a <who> whose result gives no question and its stage's output makes the work-item's transition from <from> to <next>
+    Pins that a session which delivered its stage's output, and asked nothing, moves its node on to its next status.
+    Given i1's work-item w1 is <status>
+    And the <who>'s result gives no question and <output>, and every other worker gives DONE
+    When the person runs `work run i1`
+    Then w1's transition from <from> to <next> was made once the <who>'s session had ended
+
+    Examples:
+      | who         | status     | output                                                                  | from       | next       |
+      | researcher  | drafted    | a file set of scripts/thing.py                                          | drafted    | researched |
+      | planner     | researched | a plan and a file set of scripts/thing.py                               | researched | planned    |
+      | implementer | ready      | commits of feature.txt on which w1's scenarios and the whole suite pass | claimed    | done       |
+      | reviewer    | done       | its findings                                                            | done       | green      |
+
+  @r131
+  Scenario Outline: a <who> whose result gives neither a question nor <missing> puts a question naming it under the work-item's ## Questions and makes the work-item awaiting-answer
+    Pins that a session which delivered nothing of its stage reaches the person as a question saying what is missing, rather than moving its node on or stopping it as a fault.
+    Given i1's work-item w1 is <status>
+    And the <who>'s result gives no question and <gives>, and every other worker gives DONE
+    When the person runs `work run i1`
+    Then w1's ## Questions holds a question naming <missing> as missing
+    And w1 is awaiting-answer
+
+    Examples:
+      | who         | status     | gives                                               | missing                                                  |
+      | researcher  | drafted    | no file set                                         | the researcher's file set                                |
+      | planner     | researched | a file set of scripts/thing.py and no plan          | the planner's plan                                       |
+      | implementer | ready      | commits of feature.txt on which w1's scenarios fail | commits on which w1's scenarios and the whole suite pass |
+      | reviewer    | done       | no findings                                         | the reviewer's findings                                  |
+
+  @r132
+  Scenario Outline: a <stage>'s result giving <output> is taken as its stage's output
+    Pins what each stage must deliver for `work run` to take its work as done: with it the node goes on, and no question asks for a missing output.
+    Given <setup>
+    And the <stage>'s result gives <output>, and every other session gives DONE
+    When the person runs <run>
+    Then `work run` wrote no question naming a missing output
+    And <after>
+
+    Examples:
+      | stage             | setup                                                                                                                                                                                                                                                   | output                                                                                     | run           | after                                                                                       |
+      | researcher        | i1's work-item w1 is drafted                                                                                                                                                                                                                            | a file set of scripts/thing.py and no question                                             | `work run i1` | w1's transition to researched was made once the researcher's session had ended              |
+      | planner           | i1's work-item w1 is researched                                                                                                                                                                                                                         | a plan, a file set of scripts/thing.py and no question                                     | `work run i1` | w1's transition to planned was made once the planner's session had ended                    |
+      | implementer       | i1's work-item w1 is ready                                                                                                                                                                                                                              | commits of feature.txt on which w1's scenarios and the whole suite pass, and no question   | `work run i1` | w1's transition to done was made once the implementer's session had ended                   |
+      | reviewer          | i1's work-item w1 is done                                                                                                                                                                                                                               | its findings and no question                                                               | `work run i1` | w1's transition to green was made once the reviewer's session had ended                     |
+      | answering session | i1 fulfils the request q1, which gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission.", and i1's work-item w1 is awaiting-answer, its ## Questions section with "Which module owns the log?" and no answer | the answer "The queue module." and no question                                             | `work run i1` | w1's answer to "Which module owns the log?" is "The queue module."                          |
+      | integrate round   | i1 is proposed and fulfils the request q1, whose line 1 has the line outcome accepted                                                                                                                                                                   | a change list that adds thing#r4 on thing, and no question                                 | `work run i1` | i1 has a drafted capability-proposal for thing, its adds naming thing#r4                    |
+      | apply round       | i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", given by its gate round, and its Answers section with "One book."                                                               | a change list that adds thing#r4 on thing, and no question                                 | `work run i1` | p1's transition to approved was made once the apply round had ended                         |
+      | formulate round   | i1's capability-proposal p1 is awaiting-answer, its adds naming thing#r4, its ## Questions section with "Is a shelf one place or a list?", given by its formulate round, and its Answers section with "One place."                                     | a scenario for thing#r4 and no question                                                    | `work run i1` | p1's transition to formulated was made once the formulate round had ended                   |
+      | intake round      | a request q1 of which this context is the upstream, open, its turn the upstream's, with two lines                                                                                                                                                       | a line outcome on q1's line 1 and the question "Which unit is the limit in?" on its line 2 | `work run`    | q1's line 1 has that line outcome and its line 2 the question "Which unit is the limit in?" |
+      | gate round        | i1's capability-proposal p1 is drafted                                                                                                                                                                                                                  | the question "Is a title given twice one book or two?"                                     | `work run i1` | p1's ## Questions holds "Is a title given twice one book or two?"                           |
+
+  @r133
+  Scenario: a researcher whose result gives the outcome BLOCKED with its file set and no question is moved on by its output, not stopped by its outcome
+    Pins that the one word a result gives decides no transition: the work-item goes where its output and its questions take it.
+    Given i1's work-item w1 is drafted
+    And the researcher's result gives the outcome BLOCKED, a file set of scripts/thing.py and no question, and every other worker gives DONE
+    When the person runs `work run i1`
+    Then w1's transition from drafted to researched was made once the researcher's session had ended
+    And w1 made no transition to awaiting-answer
+
+  @r134
+  Scenario: when an intake round gives a question, the request's status stays as `work turn` set it
+    Pins that the request's status after its intake is the one passing the turn wrote, and `work run` sets no status of its own over it because the round asked something.
+    Given a request q1 of which this context is the upstream, open, its turn the upstream's, with two lines
+    And the intake round writes a line outcome for q1's line 1, gives the question "Which unit is the limit in?" on q1's line 2 and passes the turn with `work turn`
+    When the person runs `work run`
+    Then q1 is awaiting-asker, as `work turn` set it when the round passed the turn
+    And `work run` made no change to q1's status after the round had ended
 
   @r95
   Scenario: `work run` started with no initiative runs the integrate, apply and formulate rounds of different initiatives one at a time
@@ -1185,8 +1317,9 @@ Feature: Supervision
     And no session was started for i3 or i4
     And w1 is green, and p1 and p2 are awaiting-answer
 
-  @r89
-  Scenario: when a session started under a delegation to answer a question ends at its turn limit, the question is left unanswered for the person
+  @r89 @deprecated
+  Scenario: when a session started under a delegation to answer a question ends at its turn limit, the question is left unanswered for the person (deprecated)
+    Deprecated for: when a session started under a delegation to answer a question <ending>, the question is left unanswered for the person
     Pins that an answering session cut short gives no answer in the person's place, even when its result file holds one.
     Given i1 fulfils the request q1, which gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
     And i1's work-item w1 is awaiting-answer, its ## Questions section with "Which module owns the log?" and no answer
@@ -1195,8 +1328,25 @@ Feature: Supervision
     Then w1's question "Which module owns the log?" has no answer
     And w1 is awaiting-answer
 
-  @r90
-  Scenario: when a session started under a delegation to answer a question ends in an error, its stage directory and log lines are committed
+  @r89
+  Scenario Outline: when a session started under a delegation to answer a question <ending>, the question is left unanswered for the person
+    Pins that an answering session cut short gives no answer in the person's place, even when its result file holds one.
+    Given i1 fulfils the request q1, which gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
+    And i1's work-item w1 is awaiting-answer, its ## Questions section with "Which module owns the log?" and no answer
+    And the session answering under the delegation <ending>, and every worker gives DONE
+    When the person runs `work run i1`
+    Then w1's question "Which module owns the log?" has no answer
+    And w1 is awaiting-answer
+
+    Examples:
+      | ending                                                                      |
+      | ends in an error, its result file answering "The queue module."             |
+      | ends at its turn limit, its result file answering "The queue module."       |
+      | ends with no error and before its turn limit, having written no result file |
+
+  @r90 @deprecated
+  Scenario: when a session started under a delegation to answer a question ends in an error, its stage directory and log lines are committed (deprecated)
+    Deprecated for: when a session started under a delegation to answer a question <ending>, its stage directory and log lines are committed
     Pins that what an answering session left behind is kept in the initiative's history for the person, though it answered nothing.
     Given i1 fulfils the request q1, which gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
     And i1's work-item w1 is awaiting-answer, its ## Questions section with "Which module owns the log?" and no answer
@@ -1204,6 +1354,22 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the initiative branch has a commit of the answering session's stage directory, its notes.md included, and of log.jsonl's lines for that session
     And nothing of that stage directory or of log.jsonl is left uncommitted
+
+  @r90
+  Scenario Outline: when a session started under a delegation to answer a question <ending>, its stage directory and log lines are committed
+    Pins that what an answering session left behind is kept in the initiative's history for the person, though it answered nothing.
+    Given i1 fulfils the request q1, which gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
+    And i1's work-item w1 is awaiting-answer, its ## Questions section with "Which module owns the log?" and no answer
+    And the session answering under the delegation writes notes.md beside its brief and <ending>
+    When the person runs `work run i1`
+    Then the initiative branch has a commit of the answering session's stage directory, its notes.md included, and of log.jsonl's lines for that session
+    And nothing of that stage directory or of log.jsonl is left uncommitted
+
+    Examples:
+      | ending                                                               |
+      | ends in an error                                                     |
+      | ends at its turn limit                                               |
+      | ends with no error and before its turn limit, writing no result file |
 
   @r93
   Scenario: a started initiative with neither a capability-proposal nor a work-item is given to an integrate round with the accepted lines of the request it fulfils
@@ -1302,16 +1468,18 @@ Feature: Supervision
     When the person runs `work run i1`
     Then p1's transition to formulated was made once the formulate round had ended
 
-  @r112
-  Scenario: when the formulate round `work run` started for a capability-proposal gives questions, each is written under the proposal's ## Questions
+  @r112 @deprecated
+  Scenario: when the formulate round `work run` started for a capability-proposal gives questions, each is written under the proposal's ## Questions (deprecated)
+    Deprecated for: removal
     Pins that what a formulation could not decide reaches the proposal, where the person answers it.
     Given i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a shelf one place or a list?", given by its formulate round, and its Answers section with "One place."
     And the formulate round for p1 gives DONE with the questions "Are returns counted?" and "Is a loan one book or many?"
     When the person runs `work run i1`
     Then p1's ## Questions holds "Are returns counted?" and "Is a loan one book or many?"
 
-  @r113
-  Scenario: when the formulate round `work run` started for a capability-proposal gives a question, the proposal is awaiting-answer
+  @r113 @deprecated
+  Scenario: when the formulate round `work run` started for a capability-proposal gives a question, the proposal is awaiting-answer (deprecated)
+    Deprecated for: removal
     Pins that a capability-proposal whose formulation asked a question waits on its answer instead of going on to be formulated.
     Given i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", given by its gate round, and its Answers section with "One book."
     And the apply round for p1 ends, and the formulate round for p1 gives DONE with the question "Are returns counted?"
@@ -1328,8 +1496,9 @@ Feature: Supervision
     Then a round of the kind gate was started for p1
     And p1 is drafted
 
-  @r87
-  Scenario: when a round `work run` started for a capability-proposal gives an outcome other than DONE, no transition is made from it
+  @r87 @deprecated
+  Scenario: when a round `work run` started for a capability-proposal gives an outcome other than DONE, no transition is made from it (deprecated)
+    Deprecated for: the <kind> round of <node> that <ending> brings no transition
     Pins that a round that did not finish its work brings no transition, neither of the proposal nor of any other node.
     Given i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", and its Answers section with "One book."
     And the apply round gives BLOCKED, asking "Is the old reader kept?"
@@ -1337,14 +1506,62 @@ Feature: Supervision
     Then a round of the kind apply was started for p1
     And log.jsonl gives no transition made after the apply round had ended
 
-  @r88
-  Scenario: when a round `work run` started for a capability-proposal leaves no result it can read, `work run` exits with an error naming the round and how it ended
+  @r87
+  Scenario Outline: the <kind> round of <node> that <ending> brings no transition
+    Pins that a round cut short moves no node on, whatever it wrote before it stopped.
+    Given <setup>
+    And the <kind> round for <node> <ending>
+    When the person runs `work run i1`
+    Then a round of the kind <kind> was started for <node>
+    And no transition of any node was made from the <kind> round
+
+    Examples:
+      | kind      | node | setup                                                                                                                                                                                       | ending                                                                                     |
+      | gate      | p1   | i1's capability-proposal p1 is drafted                                                                                                                                                      | ends in an error, its result giving the question "Is a title given twice one book or two?" |
+      | apply     | p1   | i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", given by its gate round, and its Answers section with "One book." | ends at its turn limit, its result giving a change list that adds thing#r4 on thing        |
+      | integrate | i1   | i1 is started, has neither a capability-proposal nor a work-item, and fulfils the request q1, whose line 1 has the line outcome accepted                                                    | ends with no error and before its turn limit, having written no result file                |
+
+  @r88 @deprecated
+  Scenario: when a round `work run` started for a capability-proposal leaves no result it can read, `work run` exits with an error naming the round and how it ended (deprecated)
+    Deprecated for: the <kind> round of <node> that <ending> ends `work run` with an error naming the round and how it ended
     Pins that the person learns which round stopped the run and how, from `work run` itself.
     Given i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", and its Answers section with "One book."
     And the apply round ends, and the formulate round's session ends with no error and before its turn limit, having written no result file
     When the person runs `work run i1`
     Then `work run` names the formulate round of p1 and that it left no result it can read
     And it exits with an error
+
+  @r88
+  Scenario Outline: the <kind> round of <node> that <ending> ends `work run` with an error naming the round and how it ended
+    Pins that the person learns from `work run` itself which round stopped and how.
+    Given <setup>
+    And the <kind> round for <node> <ending>
+    When the person runs `work run i1`
+    Then `work run` names the <kind> round of <node> and that it <ended>
+    And it exits with an error
+
+    Examples:
+      | kind      | node | setup                                                                                                                                                                                       | ending                                                                      | ended                              |
+      | gate      | p1   | i1's capability-proposal p1 is drafted                                                                                                                                                      | ends in an error                                                            | ended in an error                  |
+      | apply     | p1   | i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", given by its gate round, and its Answers section with "One book." | ends at its turn limit                                                      | ended at its turn limit            |
+      | integrate | i1   | i1 is started, has neither a capability-proposal nor a work-item, and fulfils the request q1, whose line 1 has the line outcome accepted                                                    | ends with no error and before its turn limit, having written no result file | left no result `work run` can read |
+
+  @r115 @deprecated
+  Scenario Outline: when the gate round of a capability-proposal <ending>, the initiative's other nodes are taken through their transitions before `work run` exits with an error (deprecated)
+    Deprecated for: when the gate round of a capability-proposal <ending>, the initiative's other nodes are taken through their transitions before `work run` exits with an error
+    Pins that one round stopping holds back only its own node, not the rest of the initiative's delivery.
+    Given i1's capability-proposal p1 is drafted and i1's work-item w1 is drafted
+    And the gate round for p1 <ending>, and every worker gives DONE
+    When the person runs `work run i1`
+    Then w1 is green
+    And it exits with an error
+
+    Examples:
+      | ending                                                                      |
+      | gives BLOCKED, asking "Is a title given twice one book or two?"              |
+      | ends in an error                                                            |
+      | ends at its turn limit                                                      |
+      | ends with no error and before its turn limit, having written no result file |
 
   @r115
   Scenario Outline: when the gate round of a capability-proposal <ending>, the initiative's other nodes are taken through their transitions before `work run` exits with an error
@@ -1357,7 +1574,6 @@ Feature: Supervision
 
     Examples:
       | ending                                                                      |
-      | gives BLOCKED, asking "Is a title given twice one book or two?"              |
       | ends in an error                                                            |
       | ends at its turn limit                                                      |
       | ends with no error and before its turn limit, having written no result file |
