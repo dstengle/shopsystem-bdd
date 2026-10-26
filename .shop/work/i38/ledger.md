@@ -12,3 +12,4 @@
 - 2026-10-26: w199 suite failure (r80, r114, delegation scenario): allowance to make their apply-round stand-ins give a change list (gate answer 3, q16's delegation)
 - 2026-10-26: w200 question: r131 outline reformulated with a formulate round row by a feature-formulator (round 2); old outline deprecated and in w200's Retires
 - 2026-10-26: w200: main merged into work/w200 so the r131 formulate row is on its branch
+- 2026-10-26: w200 suite failure (r83, delegation scenario): allowance to make their formulate-round stand-ins give scenarios (gate answer 3, q16's delegation)
