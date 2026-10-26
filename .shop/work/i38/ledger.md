@@ -13,3 +13,4 @@
 - 2026-10-26: w200 question: r131 outline reformulated with a formulate round row by a feature-formulator (round 2); old outline deprecated and in w200's Retires
 - 2026-10-26: w200: main merged into work/w200 so the r131 formulate row is on its branch
 - 2026-10-26: w200 suite failure (r83, delegation scenario): allowance to make their formulate-round stand-ins give scenarios (gate answer 3, q16's delegation)
+- 2026-10-26: w200 review finding: change, the formulate check takes only requirement ids, not term ids (q16's delegation)
