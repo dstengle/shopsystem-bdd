@@ -4,6 +4,7 @@ import re
 
 from pytest_bdd import given, parsers
 
+from .conftest import feature
 from .supervision_delegation_steps import asked_by_the_log, fulfils_with_delegation
 from .supervision_faults_steps import awaiting_with_questions
 from .supervision_intake_steps import round_with_question
@@ -24,6 +25,12 @@ def changes(text):
     for verb, ids in re.findall(r"(adds|changes|removes) (\S+#r\d+(?: and \S+#r\d+)*)", text):
         found[verb] = re.findall(r"\S+#r\d+", ids)
     return [found]
+
+
+def scenario_commit(ids):
+    """The formulate round's stand-in committing features/thing.feature with a scenario tagged for each of `ids`."""
+    tagged = [("@r1", "it answers")] + [("@r" + i.split("#r")[1], "it does what %s asks" % i) for i in ids]
+    return {"status": "DONE", "commit": {"features/thing.feature": feature("thing", *tagged)}}
 
 
 def given_by(text, step):
@@ -77,8 +84,13 @@ def stage_gives(plan, stage, what):
         round_with_question(plan, asked[0])
     elif stage == "gate round":
         plan["round:gate"] = {"status": "DONE", "questions": asked}
-    elif stage != "formulate round":     # a formulate round's scenario is its output, no question is asked
+    elif stage == "formulate round":     # its scenario is its output: committed when the row gives one, else none
+        if "a scenario for" in what:
+            plan["round:formulate"] = scenario_commit(re.findall(r"\S+#r\d+", what))
+    else:
         plan["round:" + stage.split()[0]] = {"status": "DONE", "fields": {"changes": changes(what)}}
+        if stage == "apply round":     # the formulate round that follows it gives the scenario for what it added
+            plan["round:formulate"] = scenario_commit(changes(what)[0].get("adds", []))
 
 
 @given(parsers.re(r"the apply round for p1 ends, and the formulate round's result gives a scenario for thing#r4 and the "

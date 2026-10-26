@@ -10,6 +10,7 @@ import subprocess
 import workqueue
 import workqueue_done
 import workqueue_request
+import supervise_outputs
 from supervise_change import BadChanges, Changes, entries
 from supervise_faults import Fault, ended_of, fault_of
 from supervise_worker import GitFailed, git
@@ -146,6 +147,11 @@ class Rounds(Changes):
                 asked = ["The apply round of %s gave no change list; which capabilities' lines did it apply?" % name]
         if kind == "formulate":     # r112, r113: what the formulation could not decide is asked; with nothing, r83
             asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []]
+            if not asked:     # r131, r132: no question and no scenario for a requirement it adds or changes is asked
+                lists, _ = workqueue.frontmatter((self.dir / (name + ".md")).read_text())
+                lacking = supervise_outputs.unformulated(self.root, list(lists.get("adds") or []) + list(lists.get("changes") or []))
+                if lacking:
+                    asked = [supervise_outputs.question("formulate round", "the formulate round's scenario for %s" % ", ".join(lacking))]
         if kind in ("apply", "formulate"):     # r129: asked on a proposal already awaiting-answer, it stays so (r116)
             if asked and before == "awaiting-answer":     # it stays so, its route to formulate kept by its log (r116)
                 with self.lock:

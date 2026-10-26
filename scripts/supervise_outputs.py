@@ -25,6 +25,36 @@ def missing(role, data):
     return None
 
 
+def scenario_ids(text):
+    """The requirement ids (`r4`) the non-deprecated scenarios of the feature file `text` are tagged with."""
+    found, tags = set(), []
+    for line in text.splitlines():
+        line = line.strip()
+        if line.startswith("@"):
+            tags += line.split()
+        elif line.startswith(("Scenario:", "Scenario Outline:")):
+            if "@deprecated" not in tags:
+                found.update(t[1:] for t in tags)
+            tags = []
+        elif line and not line.startswith("#"):
+            tags = []
+    return found
+
+
+def unformulated(root, ids):
+    """The ids (`thing#r4`) of `ids` with no non-deprecated scenario in features/<capability>.feature under `root`: a
+    formulate round's output is a scenario for each requirement its proposal adds or changes (r132)."""
+    lacking, read = [], {}
+    for each in ids:
+        capability, _, number = each.partition("#")
+        if capability not in read:
+            path = root / "features" / (capability + ".feature")
+            read[capability] = scenario_ids(path.read_text()) if path.is_file() else set()
+        if number not in read[capability]:
+            lacking.append(each)
+    return lacking
+
+
 def question(role, what):
     """The question that names `what` as missing from the result of the stage of `role`, which gave no question."""
     return "%s is missing: the %s's result gave no question and does not give it" % (what, role)

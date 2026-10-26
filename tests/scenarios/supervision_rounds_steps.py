@@ -19,10 +19,13 @@ ASKED_FROM = {"gate": "drafted", "formulate": "approved"}     # the status a pro
 
 
 @given(parsers.re(r"i1's capability-proposal p1 is awaiting-answer, (?:its adds naming (?P<adds>.+?), )?its ## Questions "
-                  r"section with (?P<asked>.+?),? and its Answers section with (?P<answered>.+)$"))
-def answered_proposal(repo, asked, answered, adds=None):
+                  r"section with (?P<asked>.+?),? and its Answers section with (?P<answered>.+?)"
+                  r"(?:, and the apply round for p1 ends with a change list that adds (?P<applied>\S+#r\d+) on thing)?$"))
+def answered_proposal(repo, plan, asked, answered, adds=None, applied=None):
     """The proposal as the person left it; "given by its gate round" or "given by its formulate round" writes the move
-    into awaiting-answer that round made, as log.jsonl keeps it."""
+    into awaiting-answer that round made, as log.jsonl keeps it. A clause on the apply round sets its change list."""
+    if applied:
+        plan["round:apply"] = {"status": "DONE", "fields": {"changes": [{"capability": "thing", "adds": [applied]}]}}
     bullets = lambda texts: "".join("- %s\n" % t for t in quoted(texts))
     ids = ", ".join(re.findall(r"\S+#r\d+", adds)) if adds else "thing#r1"
     write(repo, DIR + "/p1.md", "---\nid: %s\nkind: capability-proposal\npart_of: %s\nstatus: awaiting-answer\nargues: [thing]\n"

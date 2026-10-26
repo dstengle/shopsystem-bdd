@@ -906,23 +906,6 @@ Feature: Supervision
       | implementer | ready      | commits of feature.txt on which w1's scenarios and the whole suite pass | claimed    | done       |
       | reviewer    | done       | its findings                                                            | done       | green      |
 
-  @r131 @deprecated
-  Scenario Outline: a <who> whose result gives neither a question nor <missing> puts a question naming it under the work-item's ## Questions and makes the work-item awaiting-answer (deprecated)
-    Deprecated for: a <who> whose result gives neither a question nor <missing> puts a question naming it under <node>'s ## Questions and makes <node> awaiting-answer
-    Pins that a session which delivered nothing of its stage reaches the person as a question saying what is missing, rather than moving its node on or stopping it as a fault.
-    Given i1's work-item w1 is <status>
-    And the <who>'s result gives no question and <gives>, and every other worker gives DONE
-    When the person runs `work run i1`
-    Then w1's ## Questions holds a question naming <missing> as missing
-    And w1 is awaiting-answer
-
-    Examples:
-      | who         | status     | gives                                               | missing                                                  |
-      | researcher  | drafted    | no file set                                         | the researcher's file set                                |
-      | planner     | researched | a file set of scripts/thing.py and no plan          | the planner's plan                                       |
-      | implementer | ready      | commits of feature.txt on which w1's scenarios fail | commits on which w1's scenarios and the whole suite pass |
-      | reviewer    | done       | no findings                                         | the reviewer's findings                                  |
-
   @r131
   Scenario Outline: a <who> whose result gives neither a question nor <missing> puts a question naming it under <node>'s ## Questions and makes <node> awaiting-answer
     Pins that a session which delivered nothing of its stage reaches the person as a question saying what is missing, rather than moving its node on or stopping it as a fault.
