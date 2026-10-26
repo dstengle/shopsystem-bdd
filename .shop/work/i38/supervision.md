@@ -34,3 +34,4 @@ The drafts of this proposal are in .shop/work/i38/runs/i38/1-integrate/drafts/ro
 - 2026-10-26: Reading A: an intake round's question goes in the request (r100) and its turn passes with work turn (r67); add r134 (q16 delegation: the recommended reading).
 - 2026-10-26: Reading A: r96 stays (q16 delegation: the recommended reading).
 - 2026-10-26: Reading A: r131 does not apply to an answering session; r77 unchanged (q16 delegation: the recommended reading).
+- 2026-10-26: Reading A: r44 kept; and 'continuations after PARTIAL' leaves Not yet, as q16's delegation says (q16 delegation: the recommended reading).
