@@ -155,6 +155,8 @@ def turn(root, ident):
         if len(words) == len(_entries(text, "Lines")) and all(w in SETTLED for w in words):
             if field(text, "status") != "delivered":
                 text = _with_field(text, "status", "accepted" if "accepted" in words else "refused")
+                if "accepted" in words:
+                    return text  # r23: the upstream's end that sets accepted keeps the turn
         else:
             text = _with_field(text, "status", "awaiting-asker")
         return _with_field(text, "turn", "asker")
@@ -170,7 +172,8 @@ def resolve(root, ident, lines):
         entries = []
         for number, requirement, version in lines:
             entries = _numbered(entries, number, "%s %s" % (requirement, version))
-        return _with_field(_with_entries(text, "Resolution", entries), "status", "delivered")
+        text = _with_field(_with_entries(text, "Resolution", entries), "status", "delivered")
+        return _with_field(text, "turn", "asker")  # r24
     path = path_of(root, ident)
     after =edit(workqueue.read(path, root))
     done = [d for d in workqueue_done.naming(root, ident) if workqueue_done.becomes(root, d, {ident: "delivered"})]

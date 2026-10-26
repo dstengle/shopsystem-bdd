@@ -118,19 +118,6 @@ Feature: Requests
     And it exits with an error
     And q1 is as it was
 
-  @r7 @deprecated
-  Scenario Outline: turn passes the request's turn from the <side> to the <other side> (deprecated)
-    Deprecated for: turn on a request it does not set to accepted passes the request's turn from the <side> to the <other side>
-    Pins that turn hands the request to the side that did not have it, whichever side that is.
-    Given a request q1 from the asker ctx-a whose turn is the <side>'s, with one line whose line outcome is question
-    When the <side> runs `work turn q1`
-    Then q1's turn is the <other side>'s
-
-    Examples:
-      | side     | other side |
-      | upstream | asker      |
-      | asker    | upstream   |
-
   @r7
   Scenario Outline: turn on a request it does not set to accepted passes the request's turn from the <side> to the <other side>
     Pins that turn hands a request still under negotiation to the side that did not have it, whichever side that is.

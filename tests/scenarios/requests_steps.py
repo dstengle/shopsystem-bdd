@@ -68,7 +68,11 @@ def the_upstream_runs(repo, run, context, args, giving):
 
 @then(parsers.parse("{ident}'s status is {status}"))
 def status_is(repo, ident, status):
-    assert status_of(repo, ident) == status
+    actual = status_of(repo, ident)
+    if status == "not accepted":
+        assert actual != "accepted"
+    else:
+        assert actual == status
 
 
 @then(parsers.re(r"(?P<ident>q\d+)'s resolution gives (?P<gives>.+), each found in (?P<version>\S+)"))
