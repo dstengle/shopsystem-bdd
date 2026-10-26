@@ -1298,17 +1298,6 @@ Feature: Supervision
     And no session was started for i3 or i4
     And w1 is green, and p1 and p2 are awaiting-answer
 
-  @r89 @deprecated
-  Scenario: when a session started under a delegation to answer a question ends at its turn limit, the question is left unanswered for the person (deprecated)
-    Deprecated for: when a session started under a delegation to answer a question <ending>, the question is left unanswered for the person
-    Pins that an answering session cut short gives no answer in the person's place, even when its result file holds one.
-    Given i1 fulfils the request q1, which gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
-    And i1's work-item w1 is awaiting-answer, its ## Questions section with "Which module owns the log?" and no answer
-    And the session answering under the delegation ends at its turn limit, its result file answering "The queue module.", and every worker gives DONE
-    When the person runs `work run i1`
-    Then w1's question "Which module owns the log?" has no answer
-    And w1 is awaiting-answer
-
   @r89
   Scenario Outline: when a session started under a delegation to answer a question <ending>, the question is left unanswered for the person
     Pins that an answering session cut short gives no answer in the person's place, even when its result file holds one.
@@ -1324,17 +1313,6 @@ Feature: Supervision
       | ends in an error, its result file answering "The queue module."             |
       | ends at its turn limit, its result file answering "The queue module."       |
       | ends with no error and before its turn limit, having written no result file |
-
-  @r90 @deprecated
-  Scenario: when a session started under a delegation to answer a question ends in an error, its stage directory and log lines are committed (deprecated)
-    Deprecated for: when a session started under a delegation to answer a question <ending>, its stage directory and log lines are committed
-    Pins that what an answering session left behind is kept in the initiative's history for the person, though it answered nothing.
-    Given i1 fulfils the request q1, which gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
-    And i1's work-item w1 is awaiting-answer, its ## Questions section with "Which module owns the log?" and no answer
-    And the session answering under the delegation ends in an error, having written notes.md beside its brief
-    When the person runs `work run i1`
-    Then the initiative branch has a commit of the answering session's stage directory, its notes.md included, and of log.jsonl's lines for that session
-    And nothing of that stage directory or of log.jsonl is left uncommitted
 
   @r90
   Scenario Outline: when a session started under a delegation to answer a question <ending>, its stage directory and log lines are committed
@@ -1477,16 +1455,6 @@ Feature: Supervision
     Then a round of the kind gate was started for p1
     And p1 is drafted
 
-  @r87 @deprecated
-  Scenario: when a round `work run` started for a capability-proposal gives an outcome other than DONE, no transition is made from it (deprecated)
-    Deprecated for: the <kind> round of <node> that <ending> brings no transition
-    Pins that a round that did not finish its work brings no transition, neither of the proposal nor of any other node.
-    Given i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", and its Answers section with "One book."
-    And the apply round gives BLOCKED, asking "Is the old reader kept?"
-    When the person runs `work run i1`
-    Then a round of the kind apply was started for p1
-    And log.jsonl gives no transition made after the apply round had ended
-
   @r87
   Scenario Outline: the <kind> round of <node> that <ending> brings no transition
     Pins that a round cut short moves no node on, whatever it wrote before it stopped.
@@ -1502,16 +1470,6 @@ Feature: Supervision
       | apply     | p1   | i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", given by its gate round, and its Answers section with "One book." | ends at its turn limit, its result giving a change list that adds thing#r4 on thing        |
       | integrate | i1   | i1 is started, has neither a capability-proposal nor a work-item, and fulfils the request q1, whose line 1 has the line outcome accepted                                                    | ends with no error and before its turn limit, having written no result file                |
 
-  @r88 @deprecated
-  Scenario: when a round `work run` started for a capability-proposal leaves no result it can read, `work run` exits with an error naming the round and how it ended (deprecated)
-    Deprecated for: the <kind> round of <node> that <ending> ends `work run` with an error naming the round and how it ended
-    Pins that the person learns which round stopped the run and how, from `work run` itself.
-    Given i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", and its Answers section with "One book."
-    And the apply round ends, and the formulate round's session ends with no error and before its turn limit, having written no result file
-    When the person runs `work run i1`
-    Then `work run` names the formulate round of p1 and that it left no result it can read
-    And it exits with an error
-
   @r88
   Scenario Outline: the <kind> round of <node> that <ending> ends `work run` with an error naming the round and how it ended
     Pins that the person learns from `work run` itself which round stopped and how.
@@ -1526,23 +1484,6 @@ Feature: Supervision
       | gate      | p1   | i1's capability-proposal p1 is drafted                                                                                                                                                      | ends in an error                                                            | ended in an error                  |
       | apply     | p1   | i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", given by its gate round, and its Answers section with "One book." | ends at its turn limit                                                      | ended at its turn limit            |
       | integrate | i1   | i1 is started, has neither a capability-proposal nor a work-item, and fulfils the request q1, whose line 1 has the line outcome accepted                                                    | ends with no error and before its turn limit, having written no result file | left no result `work run` can read |
-
-  @r115 @deprecated
-  Scenario Outline: when the gate round of a capability-proposal <ending>, the initiative's other nodes are taken through their transitions before `work run` exits with an error (deprecated)
-    Deprecated for: when the gate round of a capability-proposal <ending>, the initiative's other nodes are taken through their transitions before `work run` exits with an error
-    Pins that one round stopping holds back only its own node, not the rest of the initiative's delivery.
-    Given i1's capability-proposal p1 is drafted and i1's work-item w1 is drafted
-    And the gate round for p1 <ending>, and every worker gives DONE
-    When the person runs `work run i1`
-    Then w1 is green
-    And it exits with an error
-
-    Examples:
-      | ending                                                                      |
-      | gives BLOCKED, asking "Is a title given twice one book or two?"              |
-      | ends in an error                                                            |
-      | ends at its turn limit                                                      |
-      | ends with no error and before its turn limit, having written no result file |
 
   @r115
   Scenario Outline: when the gate round of a capability-proposal <ending>, the initiative's other nodes are taken through their transitions before `work run` exits with an error

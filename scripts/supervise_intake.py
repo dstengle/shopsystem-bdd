@@ -85,19 +85,18 @@ class Intake(Run):
             if failure:
                 raise Fault(failure)
             self.remove(tree)
-            if data.get("status") == "DONE":
-                with self.lock:
-                    head = git(self.root, "rev-parse", "HEAD").stdout.strip()
-                    try:     # r100: the questions are written while the request is in the upstream's turn, then merged
-                        for question in data.get("questions") or []:
-                            number, text = str(question).split(". ", 1)
-                            workqueue_request.ask(self.root, name, int(number), text)
-                        git(self.root, "merge", "-q", "--no-edit", branch)
-                    except (Refused, ValueError, GitFailed) as error:
-                        subprocess.run(["git", "merge", "--abort"], cwd=self.root, capture_output=True)
-                        git(self.root, "reset", "-q", "--hard", head)
-                        raise Fault(str(error)) from None
-                    git(self.root, "branch", "-q", "-d", branch)
+            with self.lock:     # r133: the status word of the result decides nothing
+                head = git(self.root, "rev-parse", "HEAD").stdout.strip()
+                try:     # r100: the questions are written while the request is in the upstream's turn, then merged
+                    for question in data.get("questions") or []:
+                        number, text = str(question).split(". ", 1)
+                        workqueue_request.ask(self.root, name, int(number), text)
+                    git(self.root, "merge", "-q", "--no-edit", branch)
+                except (Refused, ValueError, GitFailed) as error:
+                    subprocess.run(["git", "merge", "--abort"], cwd=self.root, capture_output=True)
+                    git(self.root, "reset", "-q", "--hard", head)
+                    raise Fault(str(error)) from None
+                git(self.root, "branch", "-q", "-d", branch)
         except (Fault, GitFailed) as fault:
             if tree is not None:
                 self.remove(tree)
@@ -105,10 +104,6 @@ class Intake(Run):
             self.keep(name, label, "faulted")
             raise Refused("the intake round of %s (%s) faulted, and %s stays as it was: %s"
                           % (name, where, name, fault_of(fault))) from None
-        if data.get("status") != "DONE":
-            self.keep(name, label, "gave " + str(data.get("status")))
-            raise Refused("the intake round of %s (%s) gave the outcome %s, and %s stays as it was: %s"
-                          % (name, where, data.get("status"), name, data.get("summary", "")))
         self.keep(name, label, "ended")
 
     def keep(self, name, label, how):

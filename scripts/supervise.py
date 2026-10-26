@@ -54,6 +54,7 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
         self.outside = None      # where the worktrees go when the repository is inside the plugin's own directory
         self.lock = threading.RLock()     # held for each change to the main checkout while two implementers run (r20)
         self.faults = []         # (work-item, fault) of each work-item this run moved to failed (r40)
+        self.noted = []          # (node, fault) of each fault this run recorded and left the node's status as it was (r128)
         self.own = set()         # the run directories work run copied into the main checkout and has not committed
         self.unlogged = []       # the lines work run appended to log.jsonl since it last committed it
         self.delivered = {}      # .shop/delivery.toml, read once by check
@@ -121,7 +122,7 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
     def section(self, name, heading, text):
         """Write `text` as the last bullet of the work-item's `## <heading>` section, before any section after it (r36);
         its continuation lines are indented, so none of them starts a heading."""
-        path = self.dir / (name + ".md")
+        path = self.dir / ("initiative.md" if name == self.initiative else name + ".md")
         old = path.read_text()
         bullet = "- %s\n" % text.strip().replace("\n", "\n  ")
         mark = "\n## %s\n" % heading
@@ -214,6 +215,8 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
                 self.push()
                 self.pull(MOVABLE)
             if refused is not None:
+                if self.noted:     # r128: the node whose session faulted is printed with its fault, then the error
+                    self.show()
                 raise refused
             if self.items() and all(s in ("green", "withdrawn") for _, s in self.items()):     # r94, r97: none is not done
                 kept = self.branch_review()     # inside the try: its worktree goes with the run's (r33)
@@ -240,9 +243,15 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
             if status == "awaiting-answer":
                 for line in self.questions(name):
                     print("%s  %s" % (indent, line))
-            if status == "failed":
+            if status == "failed" or any(noted == name for noted, _ in self.noted):
                 for fault in self.faulted(name):
                     print("%s  - %s" % (indent, fault))
+        if nodes is None:     # r128: a proposal or the initiative itself, which a round faulted
+            for name in dict.fromkeys(n for n, _ in self.noted if n not in dict(statuses)):
+                data, _ = workqueue.frontmatter((self.dir / ("initiative.md" if name == self.initiative else name + ".md")).read_text())
+                print("%s %s" % (name, data.get("status")))
+                for fault in self.faulted(name):
+                    print("  - %s" % fault)
         if all(s in ("green", "withdrawn") for _, s in statuses):
             return 0
         return 3 if any(s == "awaiting-answer" for _, s in statuses) and not any(s == "failed" for _, s in statuses) else 1
@@ -255,7 +264,7 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
     def faulted(self, name):
         """The faults of a failed work-item: those its `## Faults` records, the ones this run met as it told them (with a
         failed push of the failure named), r40 and r52."""
-        mine = [fault for failed, fault in self.faults if failed == name]
+        mine = [fault for failed, fault in self.faults + self.noted if failed == name]
         recorded = [" ".join(b[0][2:].split() + [l.strip() for l in b[1:]]) for b in self.held(name, "Faults")]
         return [r for r in recorded if not any(m.startswith(r) for m in mine)] + mine
 

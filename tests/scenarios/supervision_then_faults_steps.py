@@ -46,7 +46,7 @@ def no_transition_after_round(repo, context, kind):
     assert not later, (later, context["done"].stderr)
 
 
-@then(parsers.re(r"a round of the kind (?P<kind>gate|apply|integrate) was started for (?P<node>p1|i1)$"))
+@then(parsers.re(r"a round of the kind (?P<kind>apply|integrate) was started for (?P<node>p1|i1)$"))
 def round_started(repo, context, kind, node):
     starts = [l for l in log_lines(repo) if l.get("work-item") == node and l.get("stage") == kind and l.get("event") == "start"]
     assert len(starts) == 1, (log_lines(repo), context["done"].stderr)

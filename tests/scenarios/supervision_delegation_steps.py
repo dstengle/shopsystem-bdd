@@ -106,14 +106,6 @@ def session_at_turn_limit(repo, plan, answer):
     plan["delegation-answerer"] = {"fields": {"answer": answer}, "subtype": "error_max_turns", "num_turns": 26}
 
 
-@given("the session answering under the delegation ends in an error, having written notes.md beside its brief")
-def session_in_error(repo, plan):
-    asked_by_the_log(repo)
-    plan["default"] = {"status": "DONE"}
-    plan["delegation-answerer"] = {"status": "DONE", "subtype": "error_during_execution", "num_turns": 7,
-                                   "notes": {"notes.md": "what the session found\n"}}
-
-
 @then(parsers.re(r'w1\'s question "(?P<question>[^"]+)" has no answer$'))
 def question_unanswered(repo, question):
     text = (repo / (DIR + "/w1.md")).read_text()

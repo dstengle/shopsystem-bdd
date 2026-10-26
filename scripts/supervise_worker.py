@@ -11,7 +11,7 @@ from pathlib import Path
 
 import supervise_outputs as outputs
 import workqueue
-from supervise_faults import Fault, cut_short, session_end
+from supervise_faults import NO_RESULT, Fault, cut_short, how_ended, session_end
 from workqueue import Refused
 
 AGENT_PREFIX = "shopsystem-bdd:"
@@ -196,7 +196,8 @@ class Workers:
                         "put %s back" % (ROLE[agent], ", ".join(changed), "it" if len(changed) == 1 else "them"))
         cut = cut_short(done.stdout, done.returncode)
         if cut:     # its result, whatever it says, is no outcome (r45)
-            raise Fault("its %s's %s; work run takes no outcome from it, whatever its result file says" % (ROLE[agent], cut))
+            raise Fault("its %s's %s; work run takes no outcome from it, whatever its result file says" % (ROLE[agent], cut),
+                        how_ended(done.stdout))
         result = kept_at / "result.json"
         try:
             data = json.loads(result.read_text()) if result.is_file() else None
@@ -204,7 +205,8 @@ class Workers:
             data = None
         if not isinstance(data, dict):
             raise Fault("its %s wrote %s; %s" % (ROLE[agent], "a result file that is not JSON" if result.is_file()
-                                                  else "no result file", session_end(done.stdout, done.returncode)))
+                                                  else "no result file", session_end(done.stdout, done.returncode)),
+                        NO_RESULT)
         self.keep_named(data, tree, here, kept_at)
         questions = data.get("questions")
         if isinstance(questions, str):

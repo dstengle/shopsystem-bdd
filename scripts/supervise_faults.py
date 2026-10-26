@@ -11,8 +11,12 @@ from workqueue import WORK, Refused
 
 
 class Fault(Exception):
-    """A fault of the work-item's stage that is no question for the person: the work-item goes to `failed` (r40)."""
+    """A fault of the work-item's stage that is no question for the person: the work-item goes to `failed` (r40). `how`
+    is how the session ended when it was cut short or left no result, in r88's words."""
 
+    def __init__(self, message, how=None):
+        super().__init__(message)
+        self.how = how
 
 class Faults:
     """The part of supervise.Run that verifies and pushes the initiative branch and moves a work-item to `failed`."""
@@ -89,6 +93,14 @@ class Faults:
                 fault = "%s; and the push of the failure failed: %s" % (fault, reason)
             self.faults.append((name, fault))
 
+    def note(self, name, fault, status):
+        """A fault of a node that is no work-item's, or of an answering session: recorded under its `## Faults` and
+        committed, its status `status` kept (r86, r89, r128); `show` prints it."""
+        with self.lock:
+            self.section(name, "Faults", fault)
+            self.commit(name, status, status)
+            self.noted.append((name, fault))
+
     def checkout_changes(self):
         """The paths under .shop/work/ in the repository's own checkout that differ from its last commit, other than
         what work run itself has written and not yet committed; each put back to its last commit (r28)."""
@@ -154,6 +166,23 @@ def session_end(stdout, code):
            "error_during_execution": "its session ended on an error during execution"}.get(
         subtype, "its session ended with %s" % subtype)
     return "%s (%s, %s turns, exit code %d)" % (how, subtype, turns, code)
+
+
+NO_RESULT = "left no result `work run` can read"
+
+
+def how_ended(stdout):
+    """How a session cut short ended, in r88's words: at its turn limit, or in an error."""
+    try:
+        data = json.loads(stdout)
+    except ValueError:
+        data = None
+    return "ended at its turn limit" if isinstance(data, dict) and data.get("subtype") == "error_max_turns" else "ended in an error"
+
+
+def ended_of(error):
+    """How the session of a Fault ended, else 'faulted'."""
+    return getattr(error, "how", None) or "faulted"
 
 
 def fault_of(error):

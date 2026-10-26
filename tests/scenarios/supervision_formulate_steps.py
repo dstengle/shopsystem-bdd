@@ -46,9 +46,7 @@ def every_other_round_ends(plan):
 @given(parsers.re(r"the gate round for p1 (?P<ending>.+), and every worker gives DONE$"))
 def gate_ends_badly(plan, ending):
     plan["default"] = {"status": "DONE"}
-    if ending.startswith("gives BLOCKED"):
-        plan["round:gate"] = {"status": "BLOCKED", "questions": quoted(ending)}
-    elif ending == "ends in an error":
+    if ending == "ends in an error":
         plan["round:gate"] = {"status": "DONE", "subtype": "error_during_execution"}
     elif ending == "ends at its turn limit":
         plan["round:gate"] = {"status": "DONE", "subtype": "error_max_turns"}

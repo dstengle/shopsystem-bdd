@@ -11,7 +11,7 @@ import workqueue
 import workqueue_done
 import workqueue_request
 from supervise_change import BadChanges, Changes, entries
-from supervise_faults import Fault, fault_of
+from supervise_faults import Fault, ended_of, fault_of
 from supervise_worker import GitFailed, git
 from workqueue import Refused
 
@@ -107,15 +107,11 @@ class Rounds(Changes):
             if tree is not None:
                 self.remove(tree)
             subprocess.run(["git", "merge", "--abort"], cwd=self.root, capture_output=True)
-            self.keep_round(name, kind, label)
-            raise Refused("the %s round of %s (%s) faulted, and %s keeps its status %s: %s" % (
-                kind, name, self.rel(self.dir / "runs" / name / label), name, before, fault_of(fault))) from None
-        if data.get("status") != "DONE":     # r87: no transition, and nothing written on the node; r88: the run stops
-            self.keep_round(name, kind, label)
-            raise Refused("the %s round of %s (%s) gave the outcome %s, and %s keeps its status %s: %s" % (
-                kind, name, self.rel(self.dir / "runs" / name / label), data.get("status"), name, before,
-                data.get("summary", "")))
-        found = []
+            how = ended_of(fault)     # r88: the round's fault is the node's, recorded and printed (r128), its status kept (r86)
+            self.note(name, "the %s round %s: %s" % (kind, how, fault_of(fault)), before)
+            raise Refused("the %s round of %s (%s) %s, and %s keeps its status %s: %s" % (
+                kind, name, self.rel(self.dir / "runs" / name / label), how, name, before, fault_of(fault))) from None
+        found = []     # r133: the status word of the result decides nothing; what it gives does
         if kind == "integrate":     # r96, r92: a DONE without a change list is an error; the list gives the proposals
             try:
                 found = entries(data)

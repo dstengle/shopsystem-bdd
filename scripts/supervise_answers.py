@@ -9,7 +9,7 @@ import re
 import workqueue
 import workqueue_answer
 import workqueue_request
-from supervise_faults import Fault, fault_of
+from supervise_faults import Fault, ended_of, fault_of
 from supervise_worker import SCRIPTS, GitFailed, git
 from workqueue import Refused
 
@@ -107,8 +107,10 @@ class Answers:
             extra = (("Question", question), ("Delegation", delegation)) + ((("Reviewer", "yes"),) if reviewer else ())
             data, failure = self.worker(name, "answer", AGENT, tree, extra=extra)
             changed = self.tree_changes(tree, start)
-        except (Fault, GitFailed) as fault:
-            failure, changed = fault_of(fault), []
+        except (Fault, GitFailed) as fault:     # r128, r89: the node's fault, the question left unanswered for the person
+            self.note(name, "the session answering %s's question %s: %s" % (name, ended_of(fault), fault_of(fault)),
+                      "awaiting-answer")
+            return None
         finally:
             self.remove(tree)
         if failure or changed:
@@ -116,7 +118,7 @@ class Answers:
             raise Refused("the session answering %s's question faulted: %s" % (
                 name, failure or "it changed %s under .shop/work/" % ", ".join(changed)))
         answer = data.get("answer")
-        if data.get("status") != "DONE" or not isinstance(answer, str) or not answer.strip():
+        if not isinstance(answer, str) or not answer.strip():
             return None
         if workqueue_answer.asked_by_reviewer(self.root, self.dir / (name + ".md"), name):
             if data.get("verdict") not in ("change", "accept"):     # no verdict: the question is left for the person
