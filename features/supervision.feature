@@ -953,6 +953,40 @@ Feature: Supervision
     Then w1 is green
     And i1's transition to done was made after w1's transition to green, before `work run` exited
 
+  @r128
+  Scenario Outline: the <session> for <node> that <ending> is recorded and printed as a fault of <node>, whatever its result says
+    Pins that a session cut short, or leaving nothing `work run` can read, is a fault of the node it was started for, of every kind of node, even when its result file claims its stage's output.
+    Given <setup>
+    And <session ending>, and every other session gives DONE
+    When the person runs `work run i1`
+    Then `work run` recorded a fault of <node>: that the <session> <ended>
+    And `work run` prints <node> with the fault that the <session> <ended>
+
+    Examples:
+      | session           | node | setup                                                                                                                                                                                                                            | ending                 | session ending                                                                                                                | ended                              |
+      | researcher        | w1   | i1's work-item w1 is drafted                                                                                                                                                                                                     | ends at its turn limit | the researcher's session ends at its turn limit, its result file giving a file set of scripts/thing.py and no question        | ended at its turn limit            |
+      | gate round        | p1   | i1's capability-proposal p1 is drafted                                                                                                                                                                                           | ends in an error       | the gate round for p1 ends in an error, its result giving the question "Is a title given twice one book or two?"              | ended in an error                  |
+      | apply round       | p1   | i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", given by its gate round, and its Answers section with "One book."                                       | leaves no result       | the apply round for p1 ends with no error and before its turn limit, having written no result file                            | left no result `work run` can read |
+      | integrate round   | i1   | i1 is started, has neither a capability-proposal nor a work-item, and fulfils the request q1, whose line 1 has the line outcome accepted                                                                                         | ends at its turn limit | the integrate round for i1 ends at its turn limit, its result giving a change list that adds thing#r4 on thing                | ended at its turn limit            |
+      | answering session | w1   | i1 fulfils the request q1, which gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission.", and i1's work-item w1 is awaiting-answer, its ## Questions section with "Which module owns the log?" and no answer | ends in an error | the session answering w1's question "Which module owns the log?" under the delegation ends in an error, its result file answering "The queue module." | ended in an error |
+
+  @r129
+  Scenario Outline: the questions a <who>'s result gives go <where>, and <node> makes its transition from <from> to <to>
+    Pins where a stage's questions are sent: a researcher's reach the planner and its work-item moves on to researched, every other stage's reach the person under the node's ## Questions and the node waits on the answers.
+    Given <setup>
+    And <gives>, and every other session gives DONE
+    When the person runs `work run i1`
+    Then <sent>
+    And <node>'s transition from <from> to <to> was made once the <who> had ended
+
+    Examples:
+      | who                   | where                    | node | setup                                                                                                                                                                                                                    | gives                                                                                                                                                       | sent                                                                                                                       | from       | to              |
+      | researcher's session  | into the planner's brief | w1   | i1's work-item w1 is drafted                                                                                                                                                                                             | the researcher's result gives a file set of scripts/thing.py and the questions "Is a title given twice one book or two?" and "Is the old reader kept?"     | the planner's brief has the researcher's questions "Is a title given twice one book or two?" and "Is the old reader kept?" | drafted    | researched      |
+      | planner's session     | under w1's ## Questions  | w1   | i1's work-item w1 is researched                                                                                                                                                                                          | the planner's result gives a plan, a file set of scripts/thing.py and the questions "Which module owns the log?" and "Is the old reader kept?"              | w1's ## Questions holds "Which module owns the log?" and "Is the old reader kept?"                                         | researched | awaiting-answer |
+      | implementer's session | under w1's ## Questions  | w1   | i1's work-item w1 is ready                                                                                                                                                                                               | the implementer's result gives commits of feature.txt on which w1's scenarios and the whole suite pass, and the question "Which module owns the log?"        | w1's ## Questions holds "Which module owns the log?"                                                                       | claimed    | awaiting-answer |
+      | reviewer's session    | under w1's ## Questions  | w1   | i1's work-item w1 is done                                                                                                                                                                                                | the reviewer's result gives its findings and the question "Is the old reader kept?"                                                                         | w1's ## Questions holds "Is the old reader kept?"                                                                          | done       | awaiting-answer |
+      | formulate round       | under p1's ## Questions  | p1   | i1's capability-proposal p1 is awaiting-answer, its adds naming thing#r4, its ## Questions section with "Is a title given twice one book or two?", given by its gate round, and its Answers section with "One book." | the apply round for p1 ends, and the formulate round's result gives a scenario for thing#r4 and the questions "Are returns counted?" and "Is a loan one book or many?" | p1's ## Questions holds "Are returns counted?" and "Is a loan one book or many?"                                           | approved   | awaiting-answer |
+
   @r130
   Scenario Outline: a <who> whose result gives no question and its stage's output makes the work-item's transition from <from> to <next>
     Pins that a session which delivered its stage's output, and asked nothing, moves its node on to its next status.
