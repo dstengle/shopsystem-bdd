@@ -103,9 +103,15 @@ def gate_brief_asks(repo):
     assert "questions" in brief and "readings" in brief and "recommended" in brief, brief
 
 
+def apply_did_its_work(plan):
+    """The apply round that stands in gives the change list of a round that did its work (r130, r131)."""
+    plan["round:apply"] = {"status": "DONE", "fields": {"changes": [{"capability": "thing", "adds": ["thing#r1"]}]}}
+
+
 @given("every round ends")
 def every_round_ends(plan):
     plan["initiative-round"] = {"status": "DONE"}
+    apply_did_its_work(plan)
 
 
 @given("every round ends and every worker gives DONE")
