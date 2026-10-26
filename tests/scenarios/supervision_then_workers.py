@@ -64,7 +64,7 @@ def first_worker(repo, context, name, agent):
 
 @then(parsers.parse("no worker was started for {name} after the {who}"))
 def none_after(repo, name, who):
-    agent = {"researcher": "code-scout", "implementer": "bdd-implementer"}[who]
+    agent = {"researcher": "code-scout", "planner": "bdd-planner", "implementer": "bdd-implementer"}[who]
     agents = [c["agent"] for c in starts(repo) if work_item_of(c) == name]
     assert agents and agents[-1] == "shopsystem-bdd:" + agent, agents
 

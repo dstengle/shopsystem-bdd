@@ -150,11 +150,9 @@ def failing_tests(plan, tests):
     plan["bdd-implementer"]["commit"][marker] = "\n"
 
 
-@given(parsers.re(r'the researcher gives (?P<status>[A-Z_-]+)(?:, asking "(?P<question>[^"]+)")?$'))
-def researcher_asks(plan, status, question):
-    plan["code-scout"] = {"status": status, "questions": [question] if question else []}
-    if not question:     # a researcher that gives only a status did none of its stage's work: no file set (r131)
-        plan["code-scout"]["fields"] = {"fileset": None}
+@given(parsers.parse('the planner gives {status}, asking "{question}"'))
+def planner_asks(plan, status, question):
+    plan["bdd-planner"] = {"status": status, "questions": [question]}
 
 
 @given("every worker gives DONE, the researcher also changing .shop/work/i1/initiative.md and writing notes.md in its "

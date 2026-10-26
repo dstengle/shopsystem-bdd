@@ -250,7 +250,7 @@ class Workers:
         if failure:
             return failure
         asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []]
-        if asked:     # a researcher's DONE questions still go to the planner (r16), until the person rules r129's researcher row
-            return None if agent == "code-scout" and data.get("status") == "DONE" else "; ".join(asked)
+        if asked:     # a researcher's questions go to the planner's brief, whatever its status word (r129)
+            return None if agent == "code-scout" else "; ".join(asked)
         gone = outputs.missing(ROLE[agent], data)
         return None if gone is None else outputs.question(ROLE[agent], gone)

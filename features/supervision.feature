@@ -101,21 +101,6 @@ Feature: Supervision
       | the work-item's scenarios |
       | the whole suite           |
 
-  @r5 @deprecated
-  Scenario Outline: a researcher that gives <outcome> makes the work-item's transition to awaiting-answer (deprecated)
-    Deprecated for: removal
-    Pins that any outcome but DONE stops the work-item for the person.
-    Given i1's work-item w1 is drafted
-    And the researcher gives <outcome>
-    When the person runs `work run i1`
-    Then w1 is awaiting-answer
-
-    Examples:
-      | outcome                                                  |
-      | QUESTION, asking "Which module owns the log?"            |
-      | BLOCKED, asking "Is the old reader kept?"                |
-      | NEEDS_CONTEXT                                            |
-
   @r6
   Scenario: a worker's change to a file under .shop/work/ outside its stage directory is put back
     Pins that only `work run` writes the initiative's files, while the worker's stage directory keeps what it wrote.
@@ -198,16 +183,6 @@ Feature: Supervision
     And a request q2 kept in this context whose asker is this context, awaiting-asker, its turn the asker's, with the question "Which unit is the limit in?" and no answer
     When the person runs `work run i1`
     Then `work run` prints q2 with the question "Which unit is the limit in?"
-    And it exits with an error
-
-  @r32 @deprecated
-  Scenario: when no work-item can make a transition and one is awaiting-answer, `work run` exits with an error, printing each work-item's status and each open question (deprecated)
-    Deprecated for: when no work-item can make a transition and one is awaiting-answer, `work run` exits with an error, printing each work-item's status and each open question
-    Pins what the person reads when `work run` stops on a question, and that waiting on the person is an error.
-    Given i1's work-items w1 is drafted and w2 is green
-    And the researcher gives QUESTION, asking "Which module owns the log?"
-    When the person runs `work run i1`
-    Then `work run` prints w1 with awaiting-answer and the question "Which module owns the log?", and w2 with green
     And it exits with an error
 
   @r32
@@ -671,15 +646,6 @@ Feature: Supervision
     When the person runs `work run i1`
     Then before each of w1's four workers was started, and before the branch reviewer was started, `work run` had verified that it can push the initiative branch to the remote
 
-  @r36 @deprecated
-  Scenario: a question goes into the work-item's ## Questions, before a section that follows it (deprecated)
-    Deprecated for: a question goes into the work-item's ## Questions, before a section that follows it
-    Pins where the question is written, so that what follows the Questions section is never read as a question.
-    Given i1's work-item w1 is drafted, its file with a ## Questions of "Old question?" and then an Answers section with "Old answer."
-    And the researcher gives QUESTION, asking "Which module owns the log?"
-    When the person runs `work run i1`
-    Then w1's ## Questions holds "Old question?" and then "Which module owns the log?", and its Answers section only "Old answer."
-
   @r36
   Scenario: a question goes into the work-item's ## Questions, before a section that follows it
     Pins where the question is written, so that what follows the Questions section is never read as a question.
@@ -700,15 +666,6 @@ Feature: Supervision
       | status          |
       | awaiting-answer |
       | failed          |
-
-  @r37 @deprecated
-  Scenario: no worker is started for a work-item after its transition to awaiting-answer (deprecated)
-    Deprecated for: no worker is started for a work-item after its transition to awaiting-answer
-    Pins that a question stops the work-item's stages within the delivery that raised it.
-    Given i1's work-item w1 is drafted
-    And the researcher gives QUESTION, asking "Which module owns the log?"
-    When the person runs `work run i1`
-    Then no worker was started for w1 after the researcher
 
   @r37
   Scenario: no worker is started for a work-item after its transition to awaiting-answer
