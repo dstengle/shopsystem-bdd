@@ -69,17 +69,6 @@ def researcher_no_result(plan, result):
                           "num_turns": 12}
 
 
-ENDINGS = {"ending in an error": {"subtype": "error_during_execution", "num_turns": 7},
-           "ending at its turn limit": {"subtype": "error_max_turns", "num_turns": 26},
-           "exiting with an error": {"exit": 1},
-           "leaving output that holds no JSON result": {"stdout": "no result here, only words"}}
-
-
-@given(parsers.re(r"the researcher's result file gives DONE, its session (?P<ending>[A-Za-z ]+)$"))
-def researcher_cut_short(plan, ending):
-    plan["code-scout"] = dict(ENDINGS[ending], status="DONE")
-
-
 FAULT_WORDS = {
     "that the researcher's session exited with an error": ["researcher", "session exited with an error"],
     "that the researcher's session left output that holds no JSON result": [

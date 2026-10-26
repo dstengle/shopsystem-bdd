@@ -153,6 +153,8 @@ def failing_tests(plan, tests):
 @given(parsers.re(r'the researcher gives (?P<status>[A-Z_-]+)(?:, asking "(?P<question>[^"]+)")?$'))
 def researcher_asks(plan, status, question):
     plan["code-scout"] = {"status": status, "questions": [question] if question else []}
+    if not question:     # a researcher that gives only a status did none of its stage's work: no file set (r131)
+        plan["code-scout"]["fields"] = {"fileset": None}
 
 
 @given("every worker gives DONE, the researcher also changing .shop/work/i1/initiative.md and writing notes.md in its "
@@ -188,12 +190,6 @@ def loads_skill(plan, who, skill):
 def researcher_writes_outside(repo, plan):
     plan["default"] = {"status": "DONE"}
     plan["code-scout"] = {"write": {str(repo / "notes.md"): "written outside the worktree\n"}}
-
-
-@given("every worker gives DONE, the implementer writing feature.txt and not committing it")
-def implementer_leaves_uncommitted(plan):
-    plan["default"] = {"status": "DONE"}
-    plan["bdd-implementer"] = {"write": {"feature.txt": "the feature\n"}}
 
 
 @given("every worker gives DONE, the implementer writing report.md at the top of its worktree and naming it as its report")

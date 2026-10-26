@@ -69,52 +69,6 @@ Feature: Supervision
     When the person runs `work run i1`
     Then log.jsonl gives w1's transitions from researched to planned, ready, claimed, done and green, in that order
 
-  @r4 @deprecated
-  Scenario: an implementer's DONE is merged into the initiative branch when the work-item's scenarios and the whole suite pass on its branch (deprecated)
-    Deprecated for: an implementer whose result gives no question has its branch merged only if the work-item's scenarios and the whole suite pass on it: <case>
-    Pins that the merge is of the implementer's own commit, tested where that commit is.
-    Given i1's work-item w1 is ready
-    And every worker gives DONE, the implementer committing feature.txt
-    And the work-item's scenarios pass only where feature.txt is
-    When the person runs `work run i1`
-    Then the initiative branch has the implementer's commit of feature.txt
-
-  @r4 @deprecated
-  Scenario Outline: an implementer's DONE whose <tests> fail is not merged (deprecated)
-    Deprecated for: an implementer whose result gives no question has its branch merged only if the work-item's scenarios and the whole suite pass on it: <case>
-    Pins that a failing test keeps the branch out of the initiative branch.
-    Given i1's work-item w1 is ready
-    And every worker gives DONE, the implementer committing feature.txt
-    And <tests> fail on the implementer's branch
-    When the person runs `work run i1`
-    Then the initiative branch does not have the implementer's commit
-
-    Examples:
-      | tests                     |
-      | the work-item's scenarios |
-      | the whole suite           |
-
-  @r4 @deprecated
-  Scenario: an implementer's DONE whose scenarios pass only on a file it left uncommitted is not merged (deprecated)
-    Deprecated for: an implementer whose result gives no question has its branch merged only if the work-item's scenarios and the whole suite pass on it: <case>
-    Pins that the scenarios and the suite run on the branch, which is what the merge takes: a file the implementer wrote and did not commit is not there.
-    Given i1's work-item w1 is ready
-    And every worker gives DONE, the implementer writing feature.txt and not committing it
-    And the work-item's scenarios pass only where feature.txt is
-    When the person runs `work run i1`
-    Then the initiative branch does not have feature.txt
-
-  @r4 @deprecated
-  Scenario: an implementer's DONE whose whole suite fails only on a scenario r43 counts as expected is merged (deprecated)
-    Deprecated for: an implementer whose result gives no question has its branch merged only if the work-item's scenarios and the whole suite pass on it: <case>
-    Pins that a failure of work another work-item of the initiative has still to do does not keep the work-item branch out of the initiative branch.
-    Given i1's work-item w1 is ready, accepting thing#r1, and w2 is awaiting-answer, accepting thing#r2
-    And features/thing.feature has the scenario "it waits", tagged @r2, which fails
-    And every worker gives DONE, the implementer committing feature.txt
-    And the work-item's scenarios pass only where feature.txt is
-    When the person runs `work run i1`
-    Then the initiative branch has the implementer's commit of feature.txt
-
   @r4
   Scenario Outline: an implementer whose result gives no question has its branch merged only if the work-item's scenarios and the whole suite pass on it: <case>
     Pins that the merge takes the implementer's committed work only when it passes where that work is, a failure of work another work-item has still to do excepted.
@@ -469,16 +423,6 @@ Feature: Supervision
     When the person runs `work run i1`
     Then two implementers worked at the same time, and never three
 
-  @r61 @deprecated
-  Scenario: implementers working at the same time that end with DONE have their branches merged one at a time, in the order they ended (deprecated)
-    Deprecated for: implementers working at the same time have the branches r4 merges merged one at a time, in the order they ended
-    Pins that the initiative branch takes one work-item branch at a time, each on top of the one before, first the one whose implementer ended first.
-    Given i1's work-items w1 is ready, its file set w1.txt, and w2 is ready, its file set w2.txt
-    And every worker gives DONE, each implementer committing a file named for its work-item once two implementers have started, w2's implementer ending before w1's
-    When the person runs `work run i1`
-    Then the implementers of w1 and w2 worked at the same time
-    And the initiative branch has w2's implementer's commit and then w1's, with no merge commit
-
   @r61
   Scenario: implementers working at the same time have the branches r4 merges merged one at a time, in the order they ended
     Pins that the initiative branch takes one work-item branch at a time, each on top of the one before, first the one whose implementer ended first.
@@ -679,15 +623,6 @@ Feature: Supervision
       | Read and Grep                | Read,Grep                |
       | Read and Bash(git commit *)  | Read,Bash(git commit *)  |
       | Read, Write and Edit         | Read                     |
-
-  @r31 @deprecated
-  Scenario: a planner's DONE with a `fileset` writes that file set into the work-item as it makes the transition to planned (deprecated)
-    Deprecated for: a planner's result with a `fileset` writes that file set into the work-item as it makes the transition to planned
-    Pins that the planner's file set is the work-item's from planned on.
-    Given i1's work-item w1 is researched, its file set scripts/thing.py
-    And every worker gives DONE, the planner's result giving a `fileset` of scripts/thing.py and tests/test_thing.py
-    When the person runs `work run i1`
-    Then the commit of w1's transition to planned writes `fileset:` scripts/thing.py and tests/test_thing.py into .shop/work/i1/w1.md
 
   @r31
   Scenario: a planner's result with a `fileset` writes that file set into the work-item as it makes the transition to planned
@@ -912,22 +847,6 @@ Feature: Supervision
     And every worker gives DONE
     When the person runs `work run i1`
     Then each of w1's four briefs tells the worker to write its result file first, with the outcome PARTIAL, and keep it current as it works
-
-  @r45 @deprecated
-  Scenario Outline: a worker whose session <ending> makes the work-item's transition to failed, whatever its result says (deprecated)
-    Deprecated for: a worker whose session <ending> makes the work-item's transition to failed, recording how the session ended
-    Pins that a session cut short is a fault even when its result file claims the work done, and the person learns how it ended.
-    Given i1's work-item w1 is drafted
-    And the researcher's result file gives DONE, its session <ending>
-    When the person runs `work run i1`
-    Then w1 is failed, recording that the researcher's session <ended>
-
-    Examples:
-      | ending                                    | ended                                 |
-      | ending in an error                        | ended in an error                     |
-      | ending at its turn limit                  | ended at its turn limit               |
-      | exiting with an error                     | exited with an error                  |
-      | leaving output that holds no JSON result  | left output that holds no JSON result |
 
   @r45
   Scenario Outline: a worker whose session <ending> makes the work-item's transition to failed, recording how the session ended

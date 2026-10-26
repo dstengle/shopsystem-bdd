@@ -128,8 +128,8 @@ class Merge:
         scenarios = subprocess.run(tests["work_item"], cwd=tree, capture_output=True, text=True, env=with_scripts())
         for done in (scenarios, suite):
             if done.returncode != 0:
-                return "`%s` failed on %s's branch work/%s:\n%s" % (
-                    " ".join(done.args), name, name, (done.stdout + done.stderr).strip())
+                return "commits on which %s's scenarios and the whole suite pass are missing: `%s` failed on %s's branch " \
+                       "work/%s:\n%s" % (name, " ".join(done.args), name, name, (done.stdout + done.stderr).strip())
         git(self.root, "merge", "--ff-only", "work/" + name)
         self.move(name, "claimed", "done")
         return None

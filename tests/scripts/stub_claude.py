@@ -18,7 +18,8 @@ brief's `Question:` line, taking precedence over all of those), each an object o
              `num_turns` its turns (default 1; 26 at the turn limit, as the real CLI gives for a cap of 25);
   exit       the exit code of the session (default 0, or 1 when `subtype` is not "success", as the real CLI exits);
   stdout     the text the session prints, in place of its JSON result (`subtype` and `num_turns` then unused);
-  fields     {field: value}, more fields of the result file (a planner's `fileset`);
+  fields     {field: value}, more fields of the result file (a planner's `fileset`), over the stage's default output
+             (DELIVERS);
   touch      a list of paths, files created first, wherever they are (no tool of the worker's: the world changing
              while it works, as a remote that starts refusing pushes);
   questions  the result file's questions;
@@ -62,6 +63,11 @@ import subprocess
 import sys
 import time
 
+# What a session of each stage delivers unless `fields` says otherwise (a `fields` value of null withholds it): a worker
+# that did its stage's work (supervision r131, r132).
+DELIVERS = {"code-scout": {"fileset": ["scripts/thing.py"]},
+            "bdd-planner": {"plan": "plan.md", "fileset": ["scripts/thing.py"]},
+            "bdd-task-reviewer": {"findings": "findings.md"}}
 VALUED = ("--agent", "--plugin-dir", "--session-id", "--output-format", "--permission-mode", "--allowedTools", "--allowed-tools",
           "--max-turns")
 
@@ -253,7 +259,8 @@ def main(argv):
     elif step.get("result") != "none":
         named = {field: str(pathlib.Path(rel).resolve()) for field, rel in step.get("names", {}).items()}
         result.write_text(json.dumps(dict({"status": step.get("status", "DONE"), "summary": "the stand-in's %s" % short,
-                                           "questions": step.get("questions", [])}, **named, **step.get("fields", {}))))
+                                           "questions": step.get("questions", [])}, **named,
+                                          **{**DELIVERS.get(short, {}), **step.get("fields", {})})))
     hold = step.get("hold", {}).get(work_item)
     if hold:     # this worker ends only once work run's log has the end of another work-item's
         wait_until(lambda: ended_in(hold["log"], hold["work_item"]))

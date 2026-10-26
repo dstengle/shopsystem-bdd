@@ -9,6 +9,7 @@ import tempfile
 import uuid
 from pathlib import Path
 
+import supervise_outputs as outputs
 import workqueue
 from supervise_faults import Fault, cut_short, session_end
 from workqueue import Refused
@@ -242,10 +243,12 @@ class Workers:
                 shutil.copy2(path, to)
 
     def outcome(self, agent, data, failure):
-        """None for DONE, else the question it puts to the person (r5)."""
+        """None when the stage's output is there and it gives no question for the person, else the question it puts
+        (r129, r131, r133): what its status says decides nothing."""
         if failure:
             return failure
-        if data.get("status") == "DONE":
-            return None
         asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []]
-        return "; ".join(asked) or "%s gave %s: %s" % (agent, data.get("status"), data.get("summary", ""))
+        if asked:     # a researcher's DONE questions still go to the planner (r16), until the person rules r129's researcher row
+            return None if agent == "code-scout" and data.get("status") == "DONE" else "; ".join(asked)
+        gone = outputs.missing(ROLE[agent], data)
+        return None if gone is None else outputs.question(ROLE[agent], gone)
