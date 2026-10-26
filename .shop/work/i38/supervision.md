@@ -40,3 +40,4 @@ The drafts of this proposal are in .shop/work/i38/runs/i38/1-integrate/drafts/ro
 - 2026-10-26: Reading A: r44 kept; and 'continuations after PARTIAL' leaves Not yet, as q16's delegation says (q16 delegation: the recommended reading).
 - 2026-10-26: Reading B: the fault entry changed as drafted (q16 delegation: the recommended reading).
 - 2026-10-26: Reading B for term/stage, and the outcome change goes with it: 'the one word a session's result gives' (q16 delegation: the recommended reading).
+- 2026-10-26: Reading A: r128 has a response of its own, the session's end recorded and printed as a fault of the node, for proposals, initiatives and questions too (q16 delegation: no reading recommended, the one a test can check).
