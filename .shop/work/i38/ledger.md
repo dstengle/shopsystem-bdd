@@ -14,3 +14,4 @@
 - 2026-10-26: w200: main merged into work/w200 so the r131 formulate row is on its branch
 - 2026-10-26: w200 suite failure (r83, delegation scenario): allowance to make their formulate-round stand-ins give scenarios (gate answer 3, q16's delegation)
 - 2026-10-26: w200 review finding: change, the formulate check takes only requirement ids, not term ids (q16's delegation)
+- 2026-10-26: w201 question: r132 guarantees row formulated (round 3), merged into work/w201
