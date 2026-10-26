@@ -2,3 +2,4 @@
 - 2026-10-26: gate round 1: 5 questions
 - 2026-10-26: i37-requests questions 1-5: (a) each, the recommended readings (the person, 2026-10-26: "yes, answer both and run work run")
 - 2026-10-26: apply round 2: requests r7 narrowed, r23 and r24 added, term/turn changed (the person, 2026-10-26: "yes, answer both"); commit 5cfc4c92
+- 2026-10-26: formulate round 3: requests.feature r7 changed (old deprecated), r23 and r24 added; commit 5d08c1c3
