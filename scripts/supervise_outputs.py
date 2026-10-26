@@ -46,6 +46,8 @@ def unformulated(root, ids):
     formulate round's output is a scenario for each requirement its proposal adds or changes (r132)."""
     lacking, read = [], {}
     for each in ids:
+        if "#r" not in each:     # a term/<term> id is no requirement
+            continue
         capability, _, number = each.partition("#")
         if capability not in read:
             path = root / "features" / (capability + ".feature")
