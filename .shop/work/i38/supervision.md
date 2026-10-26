@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i38-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i38
-status: approved
+status: awaiting-answer
 argues: [supervision]
 date: 2026-10-26
 adds: [supervision#r128, supervision#r129, supervision#r130, supervision#r131, supervision#r132, supervision#r133, supervision#r134]
@@ -25,6 +25,9 @@ The drafts of this proposal are in .shop/work/i38/runs/i38/1-integrate/drafts/ro
 - supervision r44 (the brief tells the worker to write its result first with the outcome `PARTIAL`). Reading A (drafted, recommended): kept, as it decides no transition. Reading B: removed and retired, since after r133 ('`work run` shall make no transition from the outcome a session's result gives.') the outcome decides nothing; 'continuations after `PARTIAL`' stays in Not yet either way (the delegation says it leaves Not yet; the draft left it unchanged, so whether to remove it is open).
 - Glossary, term/fault: r128 ('**If** a session that `work run` started for a work-item, a capability-proposal, an initiative or a question ends in an error or at its turn limit, or leaves no result `work run` can read, **then** `work run` shall take the session's end as a fault, whatever its result says.') makes the end of any session `work run` started a fault, not only a worker's. Reading A: the entry stays unchanged. Reading B (recommended): changed to '- **fault**: a failure outside a session's work that stops it: a push or git command failing, a worker changing a file under `.shop/work/` outside its stage directory, or a session `work run` started ending in an error, at its turn limit or without a result `work run` can read.'
 - Glossary, term/stage and term/outcome: r129 to r132 speak of a round's and an answering session's 'stage' and 'stage's output', while the entry names only research, plan, implementation and review. Reading A: the entry stays and 'stage' in those lines is read loosely. Reading B (recommended): term/stage changed to '- **stage**: one session `work run` starts for a node from its status: research, plan, implementation and review by a worker, a round of a kind, or an answering session. Not: phase.' Similarly term/outcome ('the one word a worker's result gives') becomes 'the one word a session's result gives', r133 speaking of any session's result. Say whether the outcome change goes with B.
+- supervision r128: '...take the session's end as a fault, whatever its result says.' Reading A: r128 has a response of its own, the end recorded and printed as a fault of the node (as a work-item's fault under its ## Questions... Faults), for proposals, initiatives and questions too. Reading B: r128 only classifies; the observable responses are those of r45, r86-r88, r115, r89, r90, nothing more.
+- supervision r129: '...a researcher's into the planner's brief, every other stage's under the node's ## Questions, transitioning the node to awaiting-answer.' Reading A: only the other stages' questions move the node to awaiting-answer; a researcher's work-item moves on to researched and the planner starts with the questions in its brief. Reading B: every stage's questions, the researcher's included, move the node to awaiting-answer; the planner's brief gets them once answered.
+- supervision r86: '...shall keep the proposal's or initiative's status.' For the integrate round of a proposed initiative, which r84 already moved to started. Reading A: it keeps started. Reading B: it keeps proposed. (Its old scenario stays.)
 
 ## Answers
 - 2026-10-26: Reading A: r45 stays, 'whatever its result says' dropped (q16 delegation: the recommended reading).
