@@ -148,3 +148,8 @@
 {"time": "2026-10-26T22:47:06+00:00", "work-item": "w201", "before": "researched", "after": "planned", "by": "work run"}
 {"time": "2026-10-26T22:47:08+00:00", "work-item": "w201", "before": "planned", "after": "ready", "by": "work run"}
 {"time": "2026-10-26T22:47:11+00:00", "work-item": "w201", "before": "ready", "after": "claimed", "by": "work run"}
+{"time": "2026-10-26T22:47:40+00:00", "work-item": "w201", "stage": "implement", "event": "suite", "record": "Suite: 946 passed, 0 failed at d3cd55f0 in 28 s"}
+{"time": "2026-10-26T22:47:41+00:00", "work-item": "w201", "stage": "implement", "event": "push verified"}
+{"time": "2026-10-26T22:47:41+00:00", "work-item": "w201", "stage": "implement", "agent": "bdd-implementer", "session": "57d61959-9ea8-4bb4-bb45-778fcdef4102", "event": "start"}
+{"time": "2026-10-26T22:48:29+00:00", "work-item": "w201", "stage": "implement", "agent": "bdd-implementer", "session": "57d61959-9ea8-4bb4-bb45-778fcdef4102", "event": "end"}
+{"time": "2026-10-26T22:48:29+00:00", "work-item": "w201", "before": "claimed", "after": "awaiting-answer", "by": "work run"}
