@@ -2,7 +2,7 @@
 `awaiting-answer` proposal whose every question has an answer is given to an apply round and, once that has ended,
 approved; an approved one is given to a formulate round and, once that has ended, formulated. The integrate round of a
 started initiative with neither proposal nor work-item ends in its change list's drafted proposals (r91; r96 refuses a
-DONE with no change list). Integrate, apply and formulate rounds run one at a time across initiatives, under the lock
+result with no change list). Integrate, apply and formulate rounds run one at a time across initiatives, under the lock
 `round_lock` (r95). Standard library only; a part of supervise.Run."""
 import json
 import subprocess
@@ -112,7 +112,7 @@ class Rounds(Changes):
             raise Refused("the %s round of %s (%s) %s, and %s keeps its status %s: %s" % (
                 kind, name, self.rel(self.dir / "runs" / name / label), how, name, before, fault_of(fault))) from None
         found = []     # r133: the status word of the result decides nothing; what it gives does
-        if kind == "integrate":     # r96, r92: a DONE without a change list is an error; the list gives the proposals
+        if kind == "integrate":     # r96, r92: no change list is an error; the list gives the proposals
             try:
                 found = entries(data)
             except BadChanges as bad:
@@ -136,7 +136,7 @@ class Rounds(Changes):
             lacking = self.unknown(applied, self.dir / "runs" / self.initiative, runs=True)
             if lacking:     # r107: the round is kept, the proposal's lists as they were, and the run's error names it
                 self.keep_round(name, kind, label)
-                raise Refused("the apply round of %s (%s) gave DONE, and %s keeps its status %s: its change list names %s, "
+                raise Refused("the apply round of %s (%s) ended, and %s keeps its status %s: its change list names %s, "
                               "which neither spec/capabilities/ nor its drafts have" % (
                                   name, self.rel(self.dir / "runs" / name / label), name, before, ", ".join(lacking)))
             if applied:
@@ -167,10 +167,10 @@ class Rounds(Changes):
                                   "it" if len(absent) == 1 else "them"))
 
     def refuse_integrate(self, name, label, before, why):
-        """The integrate round ended DONE with no change list `work run` can use: its stage directory and drafts kept,
+        """The integrate round ended with no change list `work run` can use: its stage directory and drafts kept,
         the status kept, and the run's error naming the round (r96)."""
         self.keep_round(name, "integrate", label)
-        raise Refused("the integrate round of %s (%s) gave DONE, and %s keeps its status %s: %s" % (
+        raise Refused("the integrate round of %s (%s) ended, and %s keeps its status %s: %s" % (
             name, self.rel(self.dir / "runs" / name / label), name, before, why))
 
     def start_initiative(self, name, after):
