@@ -1,0 +1,29 @@
+{
+  "status": "DONE",
+  "summary": "Plan of w199 written: 17 accepted requirements; the 12 retired deprecated scenarios and the deprecated r5 researcher outline (which contradicts r129/r133) are removed.\nThe earlier plan's two questions were answered B and are now rulings: an answering session with neither answer nor question leaves the question for the person, with no r131 question (decision 12); the integrate round's questions stay in its drafts, a missing change list stays r96's error, and an initiative never goes awaiting-answer (decision 9).\nOther decisions: the outcome word gates nothing (r133); stage outputs come from 0038's fields, the formulate round's from its committed @r<n> scenarios (r132); the stand-in's DONE defaults deliver each output; faults are recorded under any node's ## Faults, only a work-item turns failed (r128, r86, r89); show() prints this run's faults; r88's wording.\nNew module scripts/supervise_outputs.py with a CLAUDE.md row; two new step modules.",
+  "plan": ".shop/scratch/3-plan/plan.md",
+  "fileset": [
+    "scripts/supervise.py",
+    "scripts/supervise_worker.py",
+    "scripts/supervise_outputs.py",
+    "scripts/supervise_rounds.py",
+    "scripts/supervise_faults.py",
+    "scripts/supervise_answers.py",
+    "scripts/supervise_intake.py",
+    "scripts/supervise_brief.py",
+    "scripts/supervise_merge.py",
+    "CLAUDE.md",
+    "features/supervision.feature",
+    "tests/scenarios/test_supervision.py",
+    "tests/scenarios/supervision_outputs_steps.py",
+    "tests/scenarios/supervision_session_faults_steps.py",
+    "tests/scenarios/supervision_rounds_steps.py",
+    "tests/scenarios/supervision_formulate_steps.py",
+    "tests/scenarios/supervision_given.py",
+    "tests/scenarios/supervision_then_workers.py",
+    "tests/scenarios/supervision_intake_steps.py",
+    "tests/scenarios/supervision_faults_steps.py",
+    "tests/scripts/stub_claude.py"
+  ],
+  "questions": []
+}
