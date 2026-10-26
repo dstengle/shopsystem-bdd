@@ -24,3 +24,9 @@
 {"time": "2026-10-26T19:56:35+00:00", "work-item": "w197", "before": "researched", "after": "planned", "by": "work run"}
 {"time": "2026-10-26T19:56:37+00:00", "work-item": "w197", "before": "planned", "after": "ready", "by": "work run"}
 {"time": "2026-10-26T19:56:38+00:00", "work-item": "w197", "before": "ready", "after": "claimed", "by": "work run"}
+{"time": "2026-10-26T19:57:06+00:00", "work-item": "w197", "stage": "implement", "event": "suite", "record": "Suite: 924 passed, 4 failed at b6815a57 in 26 s; failing: tests/scenarios/test_requests.py::test_resolve_setting_a_requests_status_to_delivered_passes_the_requests_turn_to_its_asker, tests/scenarios/test_requests.py::test_the_upstream_ending_its_turn_on_a_request_that_turn_sets_to_accepted_keeps_the_requests_turn_the_upstreams, tests/scenarios/test_requests.py::test_turn_on_a_request_it_does_not_set_to_accepted_passes_the_requests_turn_from_the_side_to_the_other_side[upstream-asker], tests/scenarios/test_requests.py::test_turn_on_a_request_it_does_not_set_to_accepted_passes_the_requests_turn_from_the_side_to_the_other_side[asker-upstream]"}
+{"time": "2026-10-26T19:57:06+00:00", "work-item": "w197", "stage": "implement", "event": "push verified"}
+{"time": "2026-10-26T19:57:06+00:00", "work-item": "w197", "stage": "implement", "agent": "bdd-implementer", "session": "d958b54e-0650-486e-aa49-a11433479b1a", "event": "start"}
+{"time": "2026-10-26T19:58:00+00:00", "work-item": "w197", "stage": "implement", "agent": "bdd-implementer", "session": "d958b54e-0650-486e-aa49-a11433479b1a", "event": "end"}
+{"time": "2026-10-26T19:58:28+00:00", "work-item": "w197", "stage": "merge", "event": "suite", "record": "Suite: 926 passed, 0 failed at 9237a0f9 in 29 s"}
+{"time": "2026-10-26T19:58:35+00:00", "work-item": "w197", "before": "claimed", "after": "done", "by": "work run"}
