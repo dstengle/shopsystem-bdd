@@ -1,0 +1,1 @@
+{"status": "DONE", "summary": "integrate round 1 of i37: requests adds r23, r24, changes r7; 5 questions; 2 cut sentences; gate at .shop/scratch/1-integrate/drafts/round-1/gate.md", "questions": [], "changes": [{"capability": "requests", "adds": ["requests#r23", "requests#r24"], "changes": ["requests#r7"], "removes": []}]}
