@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Formulate check takes only <capability>#r<n> ids (review finding 1); w200 scenarios green (208 passed).","commits":["supervise_outputs: the formulate check takes only <capability>#r<n> ids, not term ids (r132)"],"report":".shop/scratch/8-implement/report.md","questions":[]}

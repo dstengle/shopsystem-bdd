@@ -125,3 +125,9 @@
 {"time": "2026-10-26T22:33:49+00:00", "work-item": "w200", "before": "done", "after": "awaiting-answer", "by": "work run"}
 {"time": "2026-10-26T22:33:59+00:00", "work-item": "w200", "before": "awaiting-answer", "after": "ready", "by": "work answer"}
 {"time": "2026-10-26T22:34:02+00:00", "work-item": "w200", "before": "ready", "after": "claimed", "by": "work run"}
+{"time": "2026-10-26T22:34:32+00:00", "work-item": "w200", "stage": "implement", "event": "suite", "record": "Suite: 946 passed, 0 failed at 56c39faa in 28 s"}
+{"time": "2026-10-26T22:34:32+00:00", "work-item": "w200", "stage": "implement", "event": "push verified"}
+{"time": "2026-10-26T22:34:32+00:00", "work-item": "w200", "stage": "implement", "agent": "bdd-implementer", "session": "19ae59d2-d99f-410d-a3ed-b3d8f5fdbb52", "event": "start"}
+{"time": "2026-10-26T22:35:19+00:00", "work-item": "w200", "stage": "implement", "agent": "bdd-implementer", "session": "19ae59d2-d99f-410d-a3ed-b3d8f5fdbb52", "event": "end"}
+{"time": "2026-10-26T22:35:45+00:00", "work-item": "w200", "stage": "merge", "event": "suite", "record": "Suite: 946 passed, 0 failed at 684f1409 in 26 s"}
+{"time": "2026-10-26T22:35:54+00:00", "work-item": "w200", "before": "claimed", "after": "done", "by": "work run"}
