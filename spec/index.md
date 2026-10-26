@@ -99,7 +99,7 @@ Tools the skills and agents run:
 - **dispatch**: a session another session starts with its Agent tool, and the transcript it leaves. Not: subagent.
 - **failed**: a work-item's status when a fault stopped a stage from starting or finishing; its committed work is kept, and pushed when the remote takes it, and `work retry` returns it once the fault is remedied. Not: aborted.
 - **fact**: one statement `model facts` gives clingo about the repository's files.
-- **fault**: a failure outside a worker's work that stops a stage: a push or git command failing, a worker changing a file under `.shop/work/` outside its stage directory, or a worker's session ending in an error, at its turn limit or without a result `work run` can read.
+- **fault**: a failure outside a session's work that stops it: a push or git command failing, a worker changing a file under `.shop/work/` outside its stage directory, or a session `work run` started ending in an error, at its turn limit or without a result `work run` can read.
 - **file set**: the paths, globs or directories a work-item says its work changes: drafted with it, revised by its researcher and fixed by its planner. Not: fileset, scope.
 - **gate**: the person's approval of Behaviour lines and glossary entries before they are committed to `spec/`, with the questions they raise. Not: sign-off.
 - **guarantees capability**: a capability of the group guarantees, checked by `measure` on real batches and not by scenarios.
@@ -109,7 +109,7 @@ Tools the skills and agents run:
 - **ledger**: the tracked file `.shop/work/<initiative>/ledger.md` of one initiative, one line an event, archived with the initiative.
 - **line outcome**: the upstream's answer to one line of a request: accepted, rewritten, refused, question or withdrawn.
 - **measurement**: a record under `.shop/records/measurements/` that `measure` writes for one initiative's deliveries, or that a trial writes. Not: facts file.
-- **outcome**: the one word a worker's result gives: `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `HAND-BACK`, `QUESTION` or `NEEDS_CONTEXT`. Not: verdict.
+- **outcome**: the one word a session's result gives: `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `HAND-BACK`, `QUESTION` or `NEEDS_CONTEXT`. Not: verdict.
 - **plugin version**: the plugin release a repository on the final layout is on, recorded as one line in `.shop/plugin-version`.
 - **record**: a file under `.shop/records/` whose frontmatter id has a record kind. Not: log entry.
 - **remote**: the remote `work run` pushes the initiative branch to: the branch's upstream remote, else `origin`.
@@ -123,7 +123,7 @@ Tools the skills and agents run:
 - **run**: to execute a command, script, test, scenario or probe until it exits.
 - **scenario**: a Gherkin scenario in `features/<capability>.feature`, passing when the one test that binds it passes. Not: test case.
 - **session**: one Claude Code conversation with its own id and transcript: the person's, a worker or a dispatch. Not: conversation, chat.
-- **stage**: one of research, plan, implementation and review, done by one worker and started by `work run` from the work-item's status. Not: phase.
+- **stage**: one session `work run` starts for a node from its status: research, plan, implementation and review by a worker, a round of a kind, or an answering session. Not: phase.
 - **stage directory**: the directory `runs/<work-item>/<k>-<stage>/` that holds one stage's brief, result, report and session. Not: run directory.
 - **status**: a node's place in its kind's lifecycle (a work-item's, a capability-proposal's, a decision's), written in its frontmatter; a work-item's are `drafted`, `researched`, `planned`, `ready`, `claimed`, `done`, `green`, `awaiting-answer`, `failed` and `withdrawn`; a capability-proposal's are `drafted`, `awaiting-answer`, `approved`, `formulated`, `merged` and `withdrawn`; a request's are `open`, `awaiting-asker`, `awaiting-upstream`, `accepted`, `delivered`, `refused` and `withdrawn`; an initiative's are `proposed`, `started`, `done` and `abandoned`. Not: state.
 - **suite**: every test `python3 -m pytest` runs from the root by default. Not: fast suite.
