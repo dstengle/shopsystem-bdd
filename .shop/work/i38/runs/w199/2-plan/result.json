@@ -1,0 +1,32 @@
+{
+  "status": "QUESTION",
+  "summary": "Plan of w199 written: the plan covers 17 accepted requirements, the 12 retired deprecated scenarios, and the deprecated r5 researcher outline, which is removed because it contradicts r129 and r133.\nDecisions: the outcome word gates nothing (r133). Stage outputs are read from 0038's result fields; the formulate round's are its committed @r<n> scenarios (r132). The test stand-in's DONE defaults deliver each stage's output, so r131 does not turn today's suite awaiting-answer. Faults are recorded under any node's ## Faults: only a work-item turns failed, and proposals, initiatives and answered nodes keep their status (r128, r86, r89). show() prints every fault this run recorded. Errors use r88's words.\nNew module scripts/supervise_outputs.py, plus a CLAUDE.md row; two new step modules.\nTwo questions, which change what the person sees: (1) an answering session that declines to answer: does it get r131's missing-answer question (which can recur with no bound under r77) or is the question just left for the person? (2) an integrate round's questions or missing change list: does i1 go awaiting-answer, a status initiatives lack (r129/r131), or stay as today (questions to the gate, r96's error)?",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/supervise.py",
+    "scripts/supervise_worker.py",
+    "scripts/supervise_outputs.py",
+    "scripts/supervise_rounds.py",
+    "scripts/supervise_faults.py",
+    "scripts/supervise_answers.py",
+    "scripts/supervise_intake.py",
+    "scripts/supervise_brief.py",
+    "scripts/supervise_merge.py",
+    "CLAUDE.md",
+    "features/supervision.feature",
+    "tests/scenarios/test_supervision.py",
+    "tests/scenarios/supervision_outputs_steps.py",
+    "tests/scenarios/supervision_session_faults_steps.py",
+    "tests/scenarios/supervision_rounds_steps.py",
+    "tests/scenarios/supervision_formulate_steps.py",
+    "tests/scenarios/supervision_given.py",
+    "tests/scenarios/supervision_then_workers.py",
+    "tests/scenarios/supervision_intake_steps.py",
+    "tests/scenarios/supervision_faults_steps.py",
+    "tests/scripts/stub_claude.py"
+  ],
+  "questions": [
+    "When a session answering a question under a delegation gives neither an answer nor a question (r77's 'leaves it for the person'; the delegation-answerer's not-covered result is DONE with no answer), what does work run do? Reading A (r131 with r132): a question naming the missing answer is written under the node's ## Questions, and the node stays awaiting-answer. The person sees an extra question on each node whose question the delegation does not cover, and that question is itself given to an answering session (r77), so in one run it can recur with no bound. Reading B (r77): the question is left for the person as it stands and no question is written. The person sees only the original question, unanswered.",
+    "When an integrate round's result gives questions (spec-integration's reply carries the questions the gate round then asks), or gives no change list, what does work run do? Reading A (r129 and r131 as written): the questions, or a question naming the missing change list, go under i1's ## Questions and i1 moves to awaiting-answer. The person sees i1 awaiting-answer, a status the initiative lifecycle does not have and from which no round is named, and the same questions asked again by the gate. Reading B: the integrate round's questions stay in its drafts for the gate round, and a missing change list stays r96's error naming the round. The person sees i1 started and the questions only on the proposals the gate asks."
+  ]
+}
