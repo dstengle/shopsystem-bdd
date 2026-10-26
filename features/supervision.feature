@@ -906,8 +906,9 @@ Feature: Supervision
       | implementer | ready      | commits of feature.txt on which w1's scenarios and the whole suite pass | claimed    | done       |
       | reviewer    | done       | its findings                                                            | done       | green      |
 
-  @r131
-  Scenario Outline: a <who> whose result gives neither a question nor <missing> puts a question naming it under the work-item's ## Questions and makes the work-item awaiting-answer
+  @r131 @deprecated
+  Scenario Outline: a <who> whose result gives neither a question nor <missing> puts a question naming it under the work-item's ## Questions and makes the work-item awaiting-answer (deprecated)
+    Deprecated for: a <who> whose result gives neither a question nor <missing> puts a question naming it under <node>'s ## Questions and makes <node> awaiting-answer
     Pins that a session which delivered nothing of its stage reaches the person as a question saying what is missing, rather than moving its node on or stopping it as a fault.
     Given i1's work-item w1 is <status>
     And the <who>'s result gives no question and <gives>, and every other worker gives DONE
@@ -921,6 +922,23 @@ Feature: Supervision
       | planner     | researched | a file set of scripts/thing.py and no plan          | the planner's plan                                       |
       | implementer | ready      | commits of feature.txt on which w1's scenarios fail | commits on which w1's scenarios and the whole suite pass |
       | reviewer    | done       | no findings                                         | the reviewer's findings                                  |
+
+  @r131
+  Scenario Outline: a <who> whose result gives neither a question nor <missing> puts a question naming it under <node>'s ## Questions and makes <node> awaiting-answer
+    Pins that a session which delivered nothing of its stage reaches the person as a question saying what is missing, rather than moving its node on or stopping it as a fault.
+    Given <setup>
+    And the <who>'s result gives no question and <gives>, and every other session gives DONE
+    When the person runs `work run i1`
+    Then <node>'s ## Questions holds a question naming <missing> as missing
+    And <node> is awaiting-answer
+
+    Examples:
+      | who             | node | setup                                                                                                                                                                                                                                                                         | gives                                               | missing                                                  |
+      | researcher      | w1   | i1's work-item w1 is drafted                                                                                                                                                                                                                                                  | no file set                                         | the researcher's file set                                |
+      | planner         | w1   | i1's work-item w1 is researched                                                                                                                                                                                                                                               | a file set of scripts/thing.py and no plan          | the planner's plan                                       |
+      | implementer     | w1   | i1's work-item w1 is ready                                                                                                                                                                                                                                                    | commits of feature.txt on which w1's scenarios fail | commits on which w1's scenarios and the whole suite pass |
+      | reviewer        | w1   | i1's work-item w1 is done                                                                                                                                                                                                                                                     | no findings                                         | the reviewer's findings                                  |
+      | formulate round | p1   | i1's capability-proposal p1 is awaiting-answer, its adds naming thing#r4, its ## Questions section with "Is a title given twice one book or two?", given by its gate round, and its Answers section with "One book.", and the apply round for p1 ends with a change list that adds thing#r4 on thing | no scenario for thing#r4                            | the formulate round's scenario for thing#r4              |
 
   @r132
   Scenario Outline: a <stage>'s result giving <output> is taken as its stage's output
