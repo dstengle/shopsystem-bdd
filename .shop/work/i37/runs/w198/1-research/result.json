@@ -1,0 +1,10 @@
+{
+  "status": "DONE",
+  "summary": "w198 research done. All 11 accepted scenario tests pass today (r75, r105, r120, r121), so none is red.\nRan probes through `work run` (stand-in claude, scratch repositories): (A) after a cut-short analysis, a second run never retries it; (B) a branch review's one-string question is dropped; (C) a list question naming w1 makes an unbounded fix loop (killed at 300 s, 198 fix work-items); (D) the one-string question naming w1 drafts no fix.\nSection 3 lists six old-assumption places; section 4 finds no accepted test that the requirements break; the retirement removes two accepted deprecated tests that pass today.\nFile set: features/supervision.feature, features/migration-tools.feature, features/work-queue.feature (deprecated scenarios only). No Python change.\nNo coverage map: tests-of/untested not used; counts by search.",
+  "fileset": [
+    "features/supervision.feature",
+    "features/migration-tools.feature",
+    "features/work-queue.feature"
+  ],
+  "questions": []
+}
