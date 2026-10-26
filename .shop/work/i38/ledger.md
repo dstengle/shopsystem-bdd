@@ -7,3 +7,4 @@
 - 2026-10-26: formulate round 4: supervision commit 04ab2ba1; r128 and r129 formulated (2 outlines), r86 keeps its scenario; no question
 - 2026-10-26: w199 planner questions 1-2: B each, as the gate answers 6 and 7 ruled (q16's delegation)
 - 2026-10-26: w199 implementer question: rewrite to ask through the planner (q16's delegation); r32, r36, r37 scenarios reformulated by a feature-formulator hand-back, the old ones deprecated and added to w199's Retires
+- 2026-10-26: w199 suite failure: r32, r36, r37 added to w199's accepts; apply decision 4 and make the three planner scenarios green (q16's delegation)
