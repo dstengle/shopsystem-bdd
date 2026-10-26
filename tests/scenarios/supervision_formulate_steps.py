@@ -21,6 +21,7 @@ def formulate_questions(plan, text):
 @given(parsers.re(r"the apply round for p1 ends, and the formulate round for p1 gives DONE with the question (?P<text>.+)$"))
 def apply_ends_formulate_question(plan, text):
     plan["initiative-round"] = {"status": "DONE"}
+    plan["round:apply"] = {"status": "DONE", "fields": {"changes": [{"capability": "thing", "adds": ["thing#r4"]}]}}
     plan["round:formulate"] = {"status": "DONE", "questions": quoted(text)}
 
 

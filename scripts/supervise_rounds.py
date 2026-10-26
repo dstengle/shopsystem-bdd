@@ -118,7 +118,7 @@ class Rounds(Changes):
             except BadChanges as bad:
                 self.refuse_integrate(name, label, before, "its result cannot be read: %s" % bad)
             if not found:
-                self.refuse_integrate(name, label, before, "it gave DONE without a change list")
+                self.refuse_integrate(name, label, before, "it gave no change list")
         absent = self.unknown(found, self.dir / "runs" / name / label) if kind == "integrate" else []
         if absent and len(absent) == len(found):     # r107: no proposal for it; the round is kept as r96 keeps it
             self.refuse_integrate(name, label, before, "its change list names %s, which neither spec/capabilities/ nor "
@@ -141,8 +141,12 @@ class Rounds(Changes):
                                   name, self.rel(self.dir / "runs" / name / label), name, before, ", ".join(lacking)))
             if applied:
                 self.rewrite_lists(name, applied)
+            asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []]
+            if not asked and not applied:     # r131: neither questions nor its output; the missing output is asked
+                asked = ["The apply round of %s gave no change list; which capabilities' lines did it apply?" % name]
         if kind == "formulate":     # r112, r113: what the formulation could not decide is asked; with nothing, r83
             asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []]
+        if kind in ("apply", "formulate"):     # r129: asked on a proposal already awaiting-answer, it stays so (r116)
             if asked and before == "awaiting-answer":     # it stays so, its route to formulate kept by its log (r116)
                 with self.lock:
                     for each in asked:

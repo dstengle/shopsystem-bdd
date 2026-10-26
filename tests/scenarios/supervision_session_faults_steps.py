@@ -85,6 +85,7 @@ def stage_gives(plan, stage, what):
                   r"questions (?P<text>.+), and every other session gives DONE$"))
 def formulate_gives_questions(plan, text):
     plan["default"] = {"status": "DONE"}
+    plan["round:apply"] = {"status": "DONE", "fields": {"changes": [{"capability": "thing", "adds": ["thing#r4"]}]}}
     plan["round:formulate"] = {"status": "DONE", "questions": re.findall(r'"([^"]+)"', text)}
 
 

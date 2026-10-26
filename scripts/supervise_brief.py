@@ -129,10 +129,10 @@ class Briefs:
         done = sorted((p for p in runs.glob("*-research") if p.is_dir() and p.name.split("-")[0].isdigit()),
                       key=lambda p: int(p.name.split("-")[0])) if runs.is_dir() else []
         data = json.loads((done[-1] / "result.json").read_text()) if done else {}
-        if data.get("status") != "DONE" or not data.get("questions"):
+        if not data.get("questions"):
             return []
         asked = data["questions"] if isinstance(data["questions"], list) else [data["questions"]]
-        return ["Questions the researcher gave with its DONE, for you to settle or ask:"] + [
+        return ["Questions the researcher gave, for you to settle or ask:"] + [
             "- %s" % (q if isinstance(q, str) else json.dumps(q)) for q in asked]
 
     def research_lines(self, data):
