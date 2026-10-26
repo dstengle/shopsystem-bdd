@@ -32,3 +32,4 @@ The drafts of this proposal are in .shop/work/i37/runs/i37/1-integrate/drafts/ro
 - 2026-10-26: (a) change the glossary entry of turn as drafted (q15 delegation: the recommended reading; the person, 2026-10-26: "yes, answer both").
 - 2026-10-26: (a) keep the Not yet entry (q15 delegation: the recommended reading; the person, 2026-10-26: "yes, answer both").
 - 2026-10-26: (a) no line (q15 delegation: the recommended reading; the person, 2026-10-26: "yes, answer both").
+- 2026-10-26: (a) keep r10's whichever side's turn it is (q15 delegation: the recommended reading; the person, 2026-10-26: "yes, answer both").
