@@ -416,3 +416,10 @@ by: the coordinator, at the 0.26.0 release
 date: 2026-10-25
 
 w192's researcher left eight probe repositories in its run directory (`.shop/work/i33/runs/w192/1-research/add_*`, `withdraw_*`), and `work run` committed them as gitlinks, as w156's and w163's were in i24; they reached main with 0.26.0's merge and were removed after it. No line keeps a worker's run directory free of git repositories.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-26-accepted-in-askers-turn
+about: capability/requests
+by: the person, from q13
+date: 2026-10-26
+
+q13's intake round accepted all three lines and passed the turn, as r7 and r8 have it: q13 reads `accepted` with `turn: asker`. The asker has nothing to do (r17 sets `awaiting-asker` only for a line without a decided outcome, and r10 resolves in either side's turn), while the delivery the acceptance promises is the upstream's. The person, 2026-10-26: "the state doesn't make sense for the work to be accepted but then appear to be in the askers court."
