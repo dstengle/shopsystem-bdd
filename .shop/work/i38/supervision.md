@@ -31,3 +31,4 @@ The drafts of this proposal are in .shop/work/i38/runs/i38/1-integrate/drafts/ro
 - 2026-10-26: Reading A: merge only when the result gives no question (q16 delegation: the recommended reading).
 - 2026-10-26: Reading A: r80, r71, r114 and r83 stay as written, r130 and r131 deciding whether the next transition happens (q16 delegation: the recommended reading).
 - 2026-10-26: Reading A for both: r117 holds and r131 does not apply to a gate round; keep r85 (q16 delegation: the recommended reading).
+- 2026-10-26: Reading A: an intake round's question goes in the request (r100) and its turn passes with work turn (r67); add r134 (q16 delegation: the recommended reading).
