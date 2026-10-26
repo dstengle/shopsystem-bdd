@@ -10,3 +10,4 @@
 - 2026-10-26: w199 suite failure: r32, r36, r37 added to w199's accepts; apply decision 4 and make the three planner scenarios green (q16's delegation)
 - 2026-10-26: w199 review findings 1-2: change, fix both (q16's delegation)
 - 2026-10-26: w199 suite failure (r80, r114, delegation scenario): allowance to make their apply-round stand-ins give a change list (gate answer 3, q16's delegation)
+- 2026-10-26: w200 question: r131 outline reformulated with a formulate round row by a feature-formulator (round 2); old outline deprecated and in w200's Retires
