@@ -1,0 +1,1 @@
+{"status": "DONE", "summary": "Formulated supervision, commit 04ab2ba1: r128 and r129 each have a scenario outline; r86 keeps its scenario (reading A needs no change). features bindings: every binding names a scenario. model check: no v_s1/v_s3/v_t1.", "questions": []}
