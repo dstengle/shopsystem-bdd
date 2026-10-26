@@ -1,1 +1,2 @@
 - 2026-10-26: integrate round 1: adds supervision#r125, r126, r127; 5 questions; 0 cut sentences; drafts .shop/scratch/1-integrate/drafts/round-1
+- 2026-10-26: gate round 1: 5 questions
