@@ -1,3 +1,4 @@
 - 2026-10-26: integrate round 1: adds supervision#r125, r126, r127; 5 questions; 0 cut sentences; drafts .shop/scratch/1-integrate/drafts/round-1
 - 2026-10-26: gate round 1: 5 questions
 - 2026-10-26: i36-supervision questions 1-5: the person, 2026-10-26: "Collapse the delivery of q13": every node's transition decided from how its session ended and what its result holds, not its outcome label; r125-r127 not added; the lifecycle split left for later (observation 2026-10-26-outcome-and-lifecycle)
+- 2026-10-26: i36-supervision questions 2-5: answered under the collapse of question 1 (the person, 2026-10-26: "yes, answer both and run work run")
