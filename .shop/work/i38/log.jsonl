@@ -155,3 +155,9 @@
 {"time": "2026-10-26T22:48:29+00:00", "work-item": "w201", "before": "claimed", "after": "awaiting-answer", "by": "work run"}
 {"time": "2026-10-26T22:50:02+00:00", "work-item": "w201", "before": "awaiting-answer", "after": "ready", "by": "work answer"}
 {"time": "2026-10-26T22:50:07+00:00", "work-item": "w201", "before": "ready", "after": "claimed", "by": "work run"}
+{"time": "2026-10-26T22:50:36+00:00", "work-item": "w201", "stage": "implement", "event": "suite", "record": "Suite: 946 passed, 1 failed at 402fe8f4 in 28 s; failing: tests/scenarios/test_supervision.py::test_a_stages_result_giving_output_is_taken_as_its_stages_output[formulate round-spec/capabilities/steady.md is a guarantees capability, and i1's capability-proposal p1 is awaiting-answer, its adds naming steady#r4, its ## Questions section with \"Is a shelf one place or a list?\", given by its formulate round, and its Answers section with \"One place.\"-no scenario and no question-`work run i1`-p1's transition to formulated was made once the formulate round had ended]"}
+{"time": "2026-10-26T22:50:36+00:00", "work-item": "w201", "stage": "implement", "event": "push verified"}
+{"time": "2026-10-26T22:50:36+00:00", "work-item": "w201", "stage": "implement", "agent": "bdd-implementer", "session": "31e8fd99-dab7-4d1f-908e-7fed66e443c2", "event": "start"}
+{"time": "2026-10-26T22:52:33+00:00", "work-item": "w201", "stage": "implement", "agent": "bdd-implementer", "session": "31e8fd99-dab7-4d1f-908e-7fed66e443c2", "event": "end"}
+{"time": "2026-10-26T22:53:02+00:00", "work-item": "w201", "stage": "merge", "event": "suite", "record": "Suite: 947 passed, 0 failed at dcba3f4a in 28 s"}
+{"time": "2026-10-26T22:53:10+00:00", "work-item": "w201", "before": "claimed", "after": "done", "by": "work run"}
