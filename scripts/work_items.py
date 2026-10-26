@@ -18,6 +18,7 @@ import pathlib
 import re
 
 import pytest
+from supervise_outputs import is_guarantees
 
 
 def pytest_addoption(parser):
@@ -135,8 +136,7 @@ def guarantees(config, cap):
     frontmatter."""
     work = work_dir(pathlib.Path(config.invocation_params.dir).resolve())
     path = (work.parent.parent if work else pathlib.Path(config.rootpath)) / "spec" / "capabilities" / ("%s.md" % cap)
-    head = path.read_text().split("---\n")[1:2] if path.is_file() else []
-    return bool(head) and re.search(r"(?m)^group: guarantees$", head[0]) is not None
+    return is_guarantees(path.parent.parent.parent, cap)
 
 
 def pytest_sessionfinish(session, exitstatus):

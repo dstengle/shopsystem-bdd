@@ -8,6 +8,8 @@ from .conftest import feature
 from .supervision_delegation_steps import asked_by_the_log, fulfils_with_delegation
 from .supervision_faults_steps import awaiting_with_questions
 from .supervision_intake_steps import round_with_question
+from .supervision_rounds_steps import answered_proposal
+from .supervision_tests_steps import capability
 
 ENDING = (r"ends in an error|ends at its turn limit|ends with no error and before its turn limit, having written no "
           r"result file")
@@ -91,6 +93,14 @@ def stage_gives(plan, stage, what):
         plan["round:" + stage.split()[0]] = {"status": "DONE", "fields": {"changes": changes(what)}}
         if stage == "apply round":     # the formulate round that follows it gives the scenario for what it added
             plan["round:formulate"] = scenario_commit(changes(what)[0].get("adds", []))
+
+
+@given(parsers.re(r"spec/capabilities/steady\.md is a guarantees capability, and i1's capability-proposal p1 is awaiting-answer, "
+                  r"its adds naming (?P<adds>.+?), its ## Questions section with (?P<asked>.+?),? and its Answers section "
+                  r"with (?P<answered>.+)$"))
+def guarantees_then_answered_proposal(repo, plan, adds, asked, answered):
+    capability(repo, "steady", True)     # committed with the proposal
+    answered_proposal(repo, plan, asked, answered, adds=adds)
 
 
 @given(parsers.re(r"the apply round for p1 ends, and the formulate round's result gives a scenario for thing#r4 and the "

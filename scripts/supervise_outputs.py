@@ -1,6 +1,7 @@
 """What a stage's result must give for `work run` to take its work as done (supervision r131, r132, design-decision
 0038): the stage's output, and the question that says it is missing. The one word a result's status gives decides no
 transition (r133). Standard library only."""
+import re
 
 
 def given(data, field):
@@ -41,14 +42,24 @@ def scenario_ids(text):
     return found
 
 
+def is_guarantees(root, capability):
+    """Whether spec/capabilities/<capability>.md under `root` has `group: guarantees` in its frontmatter."""
+    path = root / "spec" / "capabilities" / (capability + ".md")
+    head = path.read_text().split("---\n")[1:2] if path.is_file() else []
+    return bool(head) and re.search(r"(?m)^group: guarantees$", head[0]) is not None
+
+
 def unformulated(root, ids):
     """The ids (`thing#r4`) of `ids` with no non-deprecated scenario in features/<capability>.feature under `root`: a
-    formulate round's output is a scenario for each requirement its proposal adds or changes (r132)."""
+    formulate round's output is a scenario for each requirement its proposal adds or changes (r132), except those of a
+    guarantees capability, which has no scenarios (design-decision 0065)."""
     lacking, read = [], {}
     for each in ids:
         if "#r" not in each:     # a term/<term> id is no requirement
             continue
         capability, _, number = each.partition("#")
+        if is_guarantees(root, capability):
+            continue
         if capability not in read:
             path = root / "features" / (capability + ".feature")
             read[capability] = scenario_ids(path.read_text()) if path.is_file() else set()
