@@ -26,3 +26,6 @@ The drafts of this proposal are in .shop/work/i37/runs/i37/1-integrate/drafts/ro
   Reading (a, recommended): no line. Reading (b): add "**While** a request is `accepted` and its turn is the asker's, **when** `work turn <request>` is run, `work` shall pass the request's turn to its upstream."
 - Decision: r10's scope of turn (r10 is not changed by the draft; this asks whether to change it).
   Reading (a, recommended): keep "whichever side's turn it is" (the r10 scenario's given is an accepted request in the asker's turn; narrowing would break it). Reading (b): narrow to "**When** `work resolve <request>` is run in the upstream's turn on an `accepted` request with each accepted line's requirement id and the version that holds it, `work` shall write them as the request's resolution."
+
+## Answers
+- 2026-10-26: (a) narrow r7 as drafted (q15 delegation: the recommended reading; the person, 2026-10-26: "yes, answer both").
