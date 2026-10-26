@@ -1,0 +1,21 @@
+{
+  "status": "DONE",
+  "summary": "w199 research done; notes.md holds parts 1-7. Scenario reds: 16 requirement groups, all but r86 and r115 red, mostly undefined Given/Then steps (vocabulary absent). Probes (run) of today's work run: researcher BLOCKED goes to awaiting-answer (r133); researcher DONE without file set goes to researched (r131/r132); researcher PARTIAL question stops on w1, not planner brief (r129); round and answering-session faults are not recorded under their node (r128), messages lack the spec's wording (r88). Old assumptions: outcome() status-only (supervise_worker.py:244), supervise_brief research_questions keyed on DONE, rounds/intake/answers DONE gates. Tests: deprecated r5 researcher outline (features lines 150-163) contradicts r129/r133 and is not in Retires; not run here (PYTEST_ADDOPTS filters to accepted scenarios). Tools: no map (tests-of/untested unavailable); refs misses self-method calls. Scratch probes in .shop/scratch/w199-1-research/ (ignored by git); git status clean.",
+  "fileset": [
+    "scripts/supervise.py",
+    "scripts/supervise_worker.py",
+    "scripts/supervise_rounds.py",
+    "scripts/supervise_faults.py",
+    "scripts/supervise_answers.py",
+    "scripts/supervise_intake.py",
+    "scripts/supervise_brief.py",
+    "scripts/supervise_merge.py",
+    "tests/scenarios/test_supervision.py",
+    "tests/scenarios/supervision_rounds_steps.py",
+    "tests/scenarios/supervision_then_workers.py",
+    "tests/scenarios/supervision_intake_steps.py",
+    "tests/scenarios/supervision_faults_steps.py",
+    "tests/scenarios/supervision_outputs_steps.py"
+  ],
+  "questions": []
+}
