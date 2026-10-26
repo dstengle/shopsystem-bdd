@@ -1,2 +1,3 @@
 - 2026-10-26: integrate round 1: adds requests#r23, r24; changes requests#r7; 5 questions; 2 cut sentences; drafts .shop/scratch/1-integrate/drafts/round-1
 - 2026-10-26: gate round 1: 5 questions
+- 2026-10-26: i37-requests questions 1-5: (a) each, the recommended readings (the person, 2026-10-26: "yes, answer both and run work run")
