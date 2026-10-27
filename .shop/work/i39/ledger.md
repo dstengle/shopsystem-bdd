@@ -32,3 +32,4 @@
 - 2026-10-27: integrate round 5 work-queue: adds work-queue r34-r39, requests r46 r47; removes work-queue r3 r11 r16 r17 r18, requests r13 r14; decision 0072; 6 questions; migration-tools r32 left as a question; drafts .shop/scratch/5-integrate/drafts/round-1
 - 2026-10-27: gate round 7 work-queue: 3 questions
 - 2026-10-27: apply round 8 work-queue: commit 9bc3be06; adds work-queue r34-r39, removes r3 r11 r16 r17 r18, decision 0072; requests r46 r47 not applied (requests proposal)
+- 2026-10-27: formulate round 9 work-queue: commit fefe7407; scenarios added r34 r35 r36 r37 r38 r39, deprecated r3 r11 r16 r17 r18; model check: 22 violations, none from work-queue
