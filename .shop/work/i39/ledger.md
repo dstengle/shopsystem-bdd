@@ -20,3 +20,4 @@
 - 2026-10-27: formulate round 3 requests: commit bc58e42e; r28 r29 r30 r31 r32 r40 r42 r44 r45 formulated, scenarios of retired r1 and r3 deprecated; r25 r33 r34 r39 r41 r43 returned as questions
 - 2026-10-27: spec-integration apply round 2: r44 added as drafted (reading a, 2026-10-27); commit da5772d6
 - 2026-10-27: formulate round 3 spec-integration: commit 8c95a5fd; r44 formulated in a new features/spec-integration.feature; no questions
+- 2026-10-27: apply round 2 supervision: r135 r136 added as drafted, r137 not added (the answer of 2026-10-27 picks neither reading); model check 22 violations from other proposals' unresolved references
