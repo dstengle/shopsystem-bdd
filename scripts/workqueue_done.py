@@ -1,13 +1,16 @@
 """An initiative done (work-queue r23): the condition over its work-items and the requests this context asked naming it,
 and the rewrite of its initiative.md that a command's commit carries.
 
-An initiative qualifies when it has a work-item, every work-item is green or withdrawn, and every request kept under
+An initiative qualifies when it has a work-item, every work-item is green or withdrawn, every capability-proposal is
+formulated, withdrawn or merged, and every request kept under
 .shop/work/requests/ that this context asked and that names the initiative (in its part_of or source) is delivered.
 """
 import re
 from pathlib import Path
 
 import workqueue
+
+CLOSED_PROPOSAL = ("formulated", "withdrawn", "merged")
 
 
 def _named(data):
@@ -28,6 +31,8 @@ def _holds(root, directory, ident, over):
         data, _ = workqueue.frontmatter(workqueue.read(path, root))
         if data.get("kind") == "work-item":
             statuses.append(over.get(path.stem, data.get("status")))
+        elif data.get("kind") == "capability-proposal" and data.get("status") not in CLOSED_PROPOSAL:
+            return False     # a proposal still open has lines not yet delivered (observation 2026-10-27-done-with-proposal-open)
     if "green" not in statuses or any(s not in ("green", "withdrawn") for s in statuses):
         return False
     for path in sorted((Path(root) / workqueue.WORK / "requests").glob("*.md")):

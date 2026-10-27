@@ -237,7 +237,7 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
 
     def show(self, nodes=None, indent=""):
         """Print each node's status, its open questions and its faults; the exit code of a run of this initiative alone."""
-        statuses = self.items() if nodes is None else nodes
+        statuses = self.items() + [(n, s) for n, s in self.proposals() if n != self.initiative] if nodes is None else nodes
         for name, status in statuses:
             print("%s%s %s" % (indent, name, status))
             if status == "awaiting-answer":
@@ -252,7 +252,7 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
                 print("%s %s" % (name, data.get("status")))
                 for fault in self.faulted(name):
                     print("  - %s" % fault)
-        if all(s in ("green", "withdrawn") for _, s in statuses):
+        if all(s in ("green", "withdrawn", "formulated", "merged") for _, s in statuses):     # a proposal ends formulated
             return 0
         return 3 if any(s == "awaiting-answer" for _, s in statuses) and not any(s == "failed" for _, s in statuses) else 1
 

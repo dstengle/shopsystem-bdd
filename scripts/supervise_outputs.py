@@ -14,7 +14,7 @@ def missing(role, data):
     """What the stage of `role` (researcher, planner, reviewer) was to deliver and its result `data` does not give, as
     words (the researcher's file set), else None. The implementer's output is commits the tests pass on; the merge says
     if they are missing."""
-    if role == "researcher" and not given(data, "fileset"):
+    if role == "researcher" and not isinstance(data.get("fileset"), list) and not given(data, "fileset"):     # [] says no file changes
         return "the researcher's file set"
     if role == "planner":
         if not given(data, "plan"):
