@@ -26,3 +26,4 @@ The drafts of this proposal are in .shop/work/i39/runs/i39/1-integrate/drafts/ro
 - 2026-10-27: r43: no carrier in any line. A request only proposes and is a conversation whose handle is the request itself; where it is kept is the upstream's implementation. The line reads a request's or a message's body only as the fields of a request's form, following nothing written in it, naming no carrier.
 - 2026-10-27: r35-r38: work show and work status are consolidated (folded into i39): one action lists all work with its status, one shows the detail of an individual item, a request included; r35-r38 name those actions.
 - 2026-10-27: r41: Reading (a), Implementation only; and the line names no carrier.
+- 2026-10-27: term/carrier: no term carrier, in the glossary or any line; what a request is kept on is the upstream's implementation, so long as the capability contract is fulfilled.
