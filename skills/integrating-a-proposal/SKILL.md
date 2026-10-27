@@ -56,7 +56,7 @@ You may read that file, anything under spec/, features/ and docs/, and the
 earlier rounds under <DRAFTS PATH>. Nothing else. Write your drafts under
 <DRAFTS PATH>/round-<N>/ and nowhere else; a section you change is drafted
 whole, with the earlier rounds' drafts of it applied.
-Write the drafts and reply with the change list for the lines the answer
+Write the drafts and reply with the change list (and, where `spec/index.md` names an upstream whose published spec does not yet give what a drafted line needs, the lines of a request into that upstream, one set for each upstream, in strict EARS form and in the terms of that upstream's glossary) for the lines the answer
 decides, and the drafts' paths; if the answer is a decision, draft its decision
 file. If nothing decides it yet, reply with the question in one sentence
 with the two readings. Write that same reply, last of all, to

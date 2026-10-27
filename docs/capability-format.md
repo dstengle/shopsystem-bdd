@@ -190,6 +190,20 @@ title: shop-kb
 # shop-kb
 ```
 
+## Upstreams
+
+A context that depends on others names each one in a `## Upstreams` section of `spec/index.md`, one bullet for
+each: the upstream's bounded-context id, a colon, and the path of its published spec (its `spec/` directory; a
+relative path is taken from the repository's root). An integrate round is given each upstream's id and the absolute
+path of its spec, and gives the lines of a request into an upstream, in its glossary's terms, where a drafted line needs
+what the upstream does not yet give.
+
+```markdown
+## Upstreams
+
+- bounded-context/missingmass.io/shopsystem/billing: ../billing/spec
+```
+
 ## Glossary
 
 A bounded context's terms are its ubiquitous language: the one word its lines and scenarios use for each

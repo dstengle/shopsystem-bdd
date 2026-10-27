@@ -11,6 +11,11 @@ from supervise_worker import ROUNDS, SCRIPTS, git
 CHANGE_LIST = ("Give your change list in your result's `changes`: a list with one entry for each capability, each "
                '`{"capability": <name>, "adds": [...], "changes": [...], "removes": [...]}`, the ids as '
                "`<capability>#r<n>` or `term/<term>`.")
+REQUEST_LINES = ("Where a line you draft needs what an upstream above does not yet give, give the lines of a request into "
+                 "that upstream in your result's `requests`: a list with one entry for each such upstream, each "
+                 '`{"upstream": <its id>, "lines": [...]}`, the lines in strict form, worded in the terms of the '
+                 "glossary in that upstream's published spec (its index.md), read there; write nothing into it.")
+UPSTREAM = re.compile(r"^- (bounded-context/\S+?):\s+(\S.*?)\s*$")
 
 
 class Briefs:
@@ -41,6 +46,11 @@ class Briefs:
             lines.append("Kind: %s" % stage)
             if stage == "integrate":
                 lines += self.integrate_lines(data, here)
+                found = self.upstreams()     # r44: where the upstreams' published specs are read, and the form of the lines
+                lines += [("Upstream: %s, its published spec: %s" % pair) for pair in found]
+                read += [str(path) for _, path in found]
+                if found:
+                    lines.append(REQUEST_LINES)
             if stage == "gate":
                 lines.append("Give the gate as questions in your result's `questions`, one string each: every question a "
                              "decision, with its readings and the recommended reading marked.")
@@ -80,6 +90,15 @@ class Briefs:
                         % (stage, name, "\n".join(lines), "".join("- %s\n" % r for r in read), here, here / "result.json",
                            tree))
         return path
+
+    def upstreams(self):
+        """(id, absolute path of the published spec) of each bullet of spec/index.md's `## Upstreams`; a relative path
+        is taken from the repository's root."""
+        index = self.root / "spec" / "index.md"
+        section = re.search(r"^## Upstreams\s*$(.*?)(?=^## |\Z)", index.read_text() if index.is_file() else "",
+                            re.MULTILINE | re.DOTALL)
+        found = [UPSTREAM.match(l) for l in section.group(1).splitlines()] if section else []
+        return [(m.group(1), (self.root / m.group(2)).resolve()) for m in found if m]
 
     def integrate_lines(self, data, here):
         """The request the initiative fulfils and the lines of it with the line outcome accepted, and no other; then the
