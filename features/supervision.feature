@@ -1056,16 +1056,113 @@ Feature: Supervision
     When the person runs `work run i1`
     Then a round of the kind formulate was started for p1, given the answer "One place."
 
-  @r80
-  Scenario: when the apply round `work run` started for a capability-proposal ends, the proposal is approved
+  @r140
+  Scenario: an apply round that applies nothing because the proposal's answers give what its drafts do not hold is followed by a new integrate round for the proposal
+    Pins that answers asking for what the drafts never held go back to integration, without anyone starting it by hand.
+    Given i1 is started and fulfils the request q1, whose line 1 has the line outcome accepted
+    And i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", given by its gate round, and its Answers section with "One book, and a book's edition is listed with it."
+    And the apply round for p1 applies nothing, giving that p1's answers give what its drafts do not hold
+    And every other round ends
+    When the person runs `work run i1`
+    Then a round of the kind integrate was started for p1 after the apply round had ended
+
+  @r141
+  Scenario: an integrate round started for a capability-proposal that has answers is given its questions and answers, the initiative's ledger and the accepted lines of the request
+    Pins that a new integration of a proposal works from what the person answered, what the initiative has done so far and the lines its upstream accepted, and from no other line of the request.
+    Given i1 is started and fulfils the request q1, whose lines 1 and 3 have the line outcome accepted and line 2 the line outcome refused
+    And i1's ledger holds the line "integrate round 1 drafted p1"
+    And i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", given by its gate round, and its Answers section with "One book, and a book's edition is listed with it."
+    And the apply round for p1 applies nothing, giving that p1's answers give what its drafts do not hold
+    And every other round ends
+    When the person runs `work run i1`
+    Then the integrate round for p1 was given the question "Is a title given twice one book or two?" with its answer "One book, and a book's edition is listed with it."
+    And it was given i1's ledger
+    And it was given q1's lines 1 and 3, and not line 2
+
+  @r142
+  Scenario: a capability-proposal an integrate round drafts anew from its answers is set drafted, the earlier drafts kept where their round wrote them
+    Pins that a proposal drafted again goes back through its gate, and that what the first integration drafted is not lost to the second.
+    Given i1 is started and fulfils the request q1, whose line 1 has the line outcome accepted
+    And i1's capability-proposal p1 is awaiting-answer, written from the change list of i1's integrate round, whose drafts are kept at .shop/work/i1/runs/i1/2-integrate/drafts/round-1/ with spec/capabilities/thing.md
+    And p1's ## Questions section holds "Is a title given twice one book or two?", given by its gate round, and its Answers section "One book, and a book's edition is listed with it."
+    And the apply round for p1 applies nothing, giving that p1's answers give what its drafts do not hold
+    And the integrate round for p1 writes spec/capabilities/thing.md under its drafts path and gives DONE with a change list that adds thing#r4 and thing#r6 on thing
+    And every other round ends
+    When the person runs `work run i1`
+    Then p1's transition to drafted was made once the integrate round for p1 had ended
+    And .shop/work/i1/runs/i1/2-integrate/drafts/round-1/spec/capabilities/thing.md is as the first integrate round wrote it
+
+  @r143
+  Scenario: a capability-proposal keeps its status while the integrate round started for it runs
+    Pins that a proposal being drafted again shows no new status until its new drafts are there.
+    Given i1 is started and fulfils the request q1, whose line 1 has the line outcome accepted
+    And i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", given by its gate round, and its Answers section with "One book, and a book's edition is listed with it."
+    And the apply round for p1 applies nothing, giving that p1's answers give what its drafts do not hold
+    And every other round ends
+    When the person runs `work run i1`
+    Then p1 was awaiting-answer while the integrate round for p1 ran
+    And no transition of p1 was made between the start and the end of the integrate round for p1
+
+  @r144
+  Scenario: when the apply round `work run` started for a capability-proposal ends having applied its drafts, the proposal is approved
+    Pins that a capability-proposal whose drafts have been applied after its answers is approved.
+    Given i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", given by its gate round, and its Answers section with "One book."
+    And the apply round for p1 applies p1's drafts and gives DONE with a change list that adds thing#r4 on thing
+    And every other round ends
+    When the person runs `work run i1`
+    Then p1's transition to approved was made once the apply round had ended
+
+  @r145
+  Scenario: when the apply round `work run` started for a capability-proposal ends having applied its drafts, the proposal's adds, changes and removes are written from the change list the round applied
+    Pins that the proposal names what was applied after the answers, not what was drafted before them.
+    Given i1's capability-proposal p1 is awaiting-answer, its adds naming thing#r4 and thing#r5, its ## Questions section with "Is thing#r5 kept?", given by its gate round, and its Answers section with "No."
+    And the apply round for p1 applies p1's drafts and gives DONE with a change list that adds thing#r4 and changes thing#r2 on thing
+    And every other round ends and every worker gives DONE
+    When the person runs `work run i1`
+    Then p1's adds name thing#r4 and not thing#r5, its changes name thing#r2, and its removes name nothing
+
+  @r146
+  Scenario: when the apply round `work run` started for a capability-proposal ends having applied its drafts, a formulate round is started for the proposal
+    Pins that applied lines go on to be formulated, without anyone starting the round by hand.
+    Given i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", given by its gate round, and its Answers section with "One book."
+    And the apply round for p1 applies p1's drafts and gives DONE with a change list that adds thing#r4 on thing
+    And every other round ends
+    When the person runs `work run i1`
+    Then a round of the kind formulate was started for p1 after the apply round had ended
+
+  @r147
+  Scenario: an apply round that applies nothing because the proposal's answers give what its drafts do not hold has given its output
+    Pins that an apply round sending the proposal back to integration is not taken as one that left its output out, so the person is asked nothing about a missing change list.
+    Given i1 is started and fulfils the request q1, whose line 1 has the line outcome accepted
+    And i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", given by its gate round, and its Answers section with "One book, and a book's edition is listed with it."
+    And the apply round for p1 applies nothing, giving that p1's answers give what its drafts do not hold, and no change list
+    And every other round ends
+    When the person runs `work run i1`
+    Then no question naming the apply round's output as missing was written under p1's ## Questions
+
+  @r148
+  Scenario: a capability-proposal an integrate round drafts anew from its answers is the only capability-proposal of the initiative for its capability
+    Pins that drafting a proposal again rewrites that proposal and never brings a second one for the same capability beside it.
+    Given i1 is started and fulfils the request q1, whose line 1 has the line outcome accepted
+    And i1's capability-proposal p1, for thing, is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", given by its gate round, and its Answers section with "One book, and a book's edition is listed with it."
+    And the apply round for p1 applies nothing, giving that p1's answers give what its drafts do not hold
+    And the integrate round for p1 gives DONE with a change list that adds thing#r4 and thing#r6 on thing
+    And every other round ends
+    When the person runs `work run i1`
+    Then i1 has one capability-proposal for thing, and it is p1
+
+  @r80 @deprecated
+  Scenario: when the apply round `work run` started for a capability-proposal ends, the proposal is approved (deprecated)
+    Deprecated for: when the apply round `work run` started for a capability-proposal ends having applied its drafts, the proposal is approved
     Pins that a capability-proposal whose answers have been applied is approved.
     Given i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", and its Answers section with "One book."
     And every round ends
     When the person runs `work run i1`
     Then p1's transition to approved was made once the apply round had ended
 
-  @r114
-  Scenario: when the apply round `work run` started for a capability-proposal ends, the proposal's adds, changes and removes are written from the change list the round applied
+  @r114 @deprecated
+  Scenario: when the apply round `work run` started for a capability-proposal ends, the proposal's adds, changes and removes are written from the change list the round applied (deprecated)
+    Deprecated for: when the apply round `work run` started for a capability-proposal ends having applied its drafts, the proposal's adds, changes and removes are written from the change list the round applied
     Pins that the proposal names what was applied after the answers, not what was drafted before them.
     Given i1's capability-proposal p1 is awaiting-answer, its adds naming thing#r4 and thing#r5, its ## Questions section with "Is thing#r5 kept?", given by its gate round, and its Answers section with "No."
     And the apply round for p1 gives DONE with a change list that adds thing#r4 and changes thing#r2 on thing
@@ -1073,8 +1170,9 @@ Feature: Supervision
     When the person runs `work run i1`
     Then p1's adds name thing#r4 and not thing#r5, its changes name thing#r2, and its removes name nothing
 
-  @r71
-  Scenario: when the apply round `work run` started for a capability-proposal ends, a formulate round is started for the proposal
+  @r71 @deprecated
+  Scenario: when the apply round `work run` started for a capability-proposal ends, a formulate round is started for the proposal (deprecated)
+    Deprecated for: when the apply round `work run` started for a capability-proposal ends having applied its drafts, a formulate round is started for the proposal
     Pins that applied lines go on to be formulated, without anyone starting the round by hand.
     Given i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", and its Answers section with "One book."
     And every round ends
