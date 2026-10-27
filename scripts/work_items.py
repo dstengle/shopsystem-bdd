@@ -14,6 +14,7 @@ With `--whole-suite` too, every test runs (the whole suite before the work-item'
 requirement a work-item other than the work-item, neither green nor withdrawn, accepts, or a capability-proposal
 neither formulated nor withdrawn adds or changes, is expected to fail: an xfail (supervision r43, r122). Standard library and pytest only.
 """
+import os
 import pathlib
 import re
 
@@ -109,6 +110,19 @@ def expect_red(config, items, name):
         if open_:
             item.add_marker(pytest.mark.xfail(reason="expected: accepted by %s, neither green nor withdrawn"
                                               % ", ".join(open_), strict=False))
+
+
+WORKER = "SHOPSYSTEM_WORK_RUN_WORKER"     # set by work run in each worker's environment (supervise_worker)
+
+
+def pytest_configure(config):
+    """A work-item's worker runs its work-item's scenarios and the tests it touches, never the whole suite: work run runs
+    that once at the merge and gives its record in the brief (red-green r1; agent-time analysis 2026-10-27). The branch
+    review, whose worker is no work-item's, may."""
+    worker = os.environ.get(WORKER)
+    if worker and worker != "the branch review" and config.getoption("--whole-suite", default=False):
+        raise pytest.UsageError("--whole-suite is refused to %s's worker: work run runs the whole suite at the merge "
+                                "and gives its record as the brief's `Suite record:`" % worker)
 
 
 def pytest_collection_modifyitems(config, items):

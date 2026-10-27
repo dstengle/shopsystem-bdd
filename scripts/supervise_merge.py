@@ -130,6 +130,9 @@ class Merge:
             if done.returncode != 0:
                 return "commits on which %s's scenarios and the whole suite pass are missing: `%s` failed on %s's branch " \
                        "work/%s:\n%s" % (name, " ".join(done.args), name, name, (done.stdout + done.stderr).strip())
+        before = git(self.root, "rev-parse", "HEAD").stdout.strip()
         git(self.root, "merge", "--ff-only", "work/" + name)
+        commits = git(self.root, "rev-list", "--reverse", "%s..HEAD" % before).stdout.split()
+        self.log(**{"work-item": name, "stage": "merge", "event": "merged", "commits": commits, "record": record})
         self.move(name, "claimed", "done")
         return None

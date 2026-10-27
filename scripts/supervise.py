@@ -161,7 +161,7 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
         tree = self.worktree(name, "%s-%s" % (name, label))
         try:
             start = git(tree, "rev-parse", "HEAD").stdout.strip()
-            data, failure = self.worker(name, stage, agent, tree)
+            data, failure = self.worker(name, stage, agent, tree, extra=self.merged(name) if stage == "review" else ())
             changed = self.tree_changes(tree, start)
         finally:
             self.remove(tree)     # what the worker changed under .shop/work/ goes with it (r6)
@@ -172,6 +172,15 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
         fileset = data.get("fileset") if question is None and agent == "bdd-planner" else None
         self.move(name, status, after if question is None else "awaiting-answer", question,
                   fileset=fileset if isinstance(fileset, list) and fileset else None)
+
+    def merged(self, name):
+        """For a reviewer's brief: the commits the work-item's last merge brought and work run's whole-suite record on
+        them, so the reviewer neither derives the one nor runs the other (agent-time analysis 2026-10-27)."""
+        found = [l for l in workqueue.logged(self.dir / "log.jsonl", self.root)
+                 if l.get("work-item") == name and l.get("event") == "merged"]
+        if not found:
+            return ()
+        return (("Commits", " ".join(found[-1].get("commits") or []) or "none"), ("Suite record", found[-1].get("record")))
 
     def held(self, name, heading):
         """The bullets of the work-item's `## <heading>` section, each with its continuation lines."""
