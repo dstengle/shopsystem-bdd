@@ -1,0 +1,16 @@
+{
+  "status": "DONE",
+  "summary": "w207 (work-queue r34-r39): research done; notes in .shop/scratch/1-research/notes.md.\nAll 7 accepted scenarios pass today (run by node id). None is red, so no step or code is missing for them.\nProbes (run, scratch repos): list and show of empty, waiting, malformed, and refused targets.\nDefect D1: work show <initiative> crashes with a traceback on a non-UTF-8 ledger.md (workqueue_status.ledger).\nDefect D2 (reading to settle): work list --json omits the waiting initiative that the text list prints.\nDefect D3: a work-item with no kind is refused as 'w9 is a None'.\nOld assumptions: work status and the no-target show are retired in the spec but live in code; hook, tests and requests r13/r14 still use them.\nNo tracked Python file is over 300 lines; git status is clean.\nBranch review 3's fix-now finding 2 (supervise_change.py merge) is outside r34-r39; see questions.\nNo coverage map existed, so every test list is by search.",
+  "fileset": [
+    "scripts/workqueue_status.py",
+    "scripts/workqueue_list.py",
+    "tests/scripts/test_workqueue_list.py",
+    "tests/scenarios/work_queue_list_steps.py"
+  ],
+  "questions": [
+    "The accepted scenarios already pass. Does w207 fix branch review 3's findings (D1, D2, D3), which are not scenarios, or only r34-r39? Its findings file also lists fix-now finding 2 in scripts/supervise_change.py, which r34-r39 do not cover.",
+    "D2: must work list --json carry the waiting initiative (r39 applies to list in any form), or is the JSON of r35 only the statuses (r35 read literally)?",
+    "Retiring work status (decision 0072) conflicts with live requests r13 (work show prints requests), requests r14 (work status prints observations) and migration-tools r32 (the SessionStart hook gives work status). Are these to be replaced before the retirement lands?",
+    "The live r7 scenario at features/work-queue.feature:268 uses the no-target work show; removing that branch needs that scenario rewritten. Which?"
+  ]
+}
