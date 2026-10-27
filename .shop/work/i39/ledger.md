@@ -39,3 +39,4 @@
 - 2026-10-27: formulate round 5 design-model-check: commit 3ae24282; scenario added r121 (r120 formulated in round 3), r115 r117 already deprecated; model check: 21 violations, none from design-model-check
 - 2026-10-27: formulate round 4 requests: commit 479b8fbe; scenarios added r33 r34 r39 r41 r43; r25 left as a question; features bindings clean; model check: 16 violations, none from requests but r25 v_s3
 - 2026-10-27: formulate round 4 supervision: commit 2615e821; scenario added r136 (r135 formulated in round 3); features bindings clean; model check: 15 violations, none from supervision
+- 2026-10-27: formulate round 5 requests: nothing formulated, no commit; the gate answers (r35-r38 and r13 naming work list and work show, r14 retired, r33 r34 internal request, r39 r41 r43 without message, r25 reading a) change lines not yet in spec/ and need an integrate round first
