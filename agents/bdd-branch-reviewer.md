@@ -31,6 +31,7 @@ Nothing. The working tree, the index, HEAD and every branch are as they were whe
 ## What you run
 
 - **The suite, once, at the branch's head.** Paste its summary line and its wall time, as `Suite: <N> passed, <M> failed at <HEAD short hash> in <seconds> s`. Say whether it runs in parallel and whether the step definitions drive the entry point in-process. A suite over 60 s that does neither, with no reason in `CLAUDE.md`, is a finding.
+- **Each work-item's scenarios**, where you need them apart from the suite: `python3 -m pytest -q --work-item <name>`, never with `--whole-suite` and never the whole suite again. The run above is the one whole-suite run of the review: every other question about the suite is answered from its output.
 - **Every check a work-item names**, yourself. A check you did not run is not a check that passed: a check you cannot verify fails the review.
 - **`python3 <Scripts>/tools check --base <Base>`**: lint, dead code and import contracts. Give each heading with its result. A heading that says `missing` names what you read for yourself, and the findings say so.
 - **`python3 <Scripts>/tools size --limit <the limit CLAUDE.md gives>`**: a file the branch touched that it prints is a finding; one it did not touch is named as already over.
