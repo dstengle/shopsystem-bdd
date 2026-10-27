@@ -2,8 +2,9 @@
 Feature: Requests
   Narrator: a context taking in or raising a request
 
-  @r1
-  Scenario Outline: request with <given> writes an open request in the upstream's turn with the lines, asker and <where from> given, and prints its id
+  @r1 @deprecated
+  Scenario Outline: request with <given> writes an open request in the upstream's turn with the lines, asker and <where from> given, and prints its id (deprecated)
+    Deprecated for: request with <given> writes an open request in the upstream's turn with the lines and asker given<and where from>, and prints its id
     Pins that request takes in what the asker gives it, as an open request for the upstream to answer first, and tells the caller its id.
     Given an upstream that keeps no request
     And a file lines.md with two lines in strict EARS
@@ -18,6 +19,54 @@ Feature: Requests
       | given        | options                 | where from | named         |
       | two --source | --source o1 --source o2 | origins    | are o1 and o2 |
       | --thread     | --thread t1             | job-thread | is t1         |
+
+  @r28
+  Scenario Outline: the asker <doing> from its own repository, with no checkout of the upstream's repository
+    Pins that an asker writes its part of a request and hands it on without ever holding a copy of the upstream's repository.
+    Given a request q1 from the asker ctx-a whose turn is the asker's, with one line whose line outcome is question
+    And q1 holds the upstream's question "Which queue?" on line 1
+    And a file lines.md with two lines in strict EARS in the asker ctx-a's repository
+    And the asker ctx-a's repository has no checkout of the upstream's repository
+    When the asker <does> in its own repository
+    Then <the upstream keeps>
+    And work made no checkout of the upstream's repository
+    And it exits successfully
+
+    Examples:
+      | doing                | does                                                                           | the upstream keeps                                                  |
+      | raising a request    | runs `work request "Show the queue" --from ctx-a --lines lines.md --thread t1` | the upstream keeps a new request from the asker ctx-a               |
+      | answering a question | answers that question with "The work queue"                                    | q1 holds the answer "The work queue" to the question "Which queue?" |
+      | passing the turn     | runs `work turn q1`                                                            | q1's turn is the upstream's                                         |
+
+  @r44
+  Scenario Outline: request with <given> writes an open request in the upstream's turn with the lines and asker given<and where from>, and prints its id
+    Pins that request takes in what the asker gives it, as an open request for the upstream to answer first, and tells the caller its id.
+    Given an upstream ctx-u that keeps no request
+    And the asker ctx-a keeps a request q7 from its own asker ctx-b
+    And a file lines.md with two lines in strict EARS
+    When <role> runs `work request "Show the queue" --from <asker> --lines lines.md <options>` in its own repository
+    Then the upstream keeps one new request, whose status is open and whose turn is the upstream's
+    And its lines are the two lines of lines.md
+    And work prints that request's id
+    And it exits successfully
+    And <what it names>
+
+    Examples:
+      | given        | role            | asker | options                 | and where from                      | what it names                                    |
+      | two --source | the upstream    | ctx-u | --source o1 --source o2 | , and the origins --source names    | its asker is ctx-u and its origins are o1 and o2 |
+      | --thread     | the asker ctx-a | ctx-a | --thread t1             | , and the job-thread --thread names | its asker is ctx-a and its job-thread is t1      |
+      | --raised-for | the asker ctx-a | ctx-a | --raised-for q7         |                                     | its asker is ctx-a                               |
+
+  @r29
+  Scenario: request with --raised-for writes in the upstream's request the request it is raised for
+    Pins that a request raised to fulfil another request says which one, in the request the upstream keeps.
+    Given an upstream ctx-u that keeps no request
+    And the asker ctx-a keeps a request q7 from its own asker ctx-b
+    And a file lines.md with two lines in strict EARS
+    When the asker ctx-a runs `work request "Show the queue" --from ctx-a --lines lines.md --raised-for q7` in its own repository
+    Then the upstream keeps one new request
+    And it names q7 as the request it is raised for
+    And it exits successfully
 
   @r19
   Scenario: request with --delegation writes the delegation given in the request
@@ -57,8 +106,9 @@ Feature: Requests
       | has two shalls                             |
       | has two sentences                          |
 
-  @r3
-  Scenario: request with neither --source nor --thread is refused, and nothing changes
+  @r3 @deprecated
+  Scenario: request with neither --source nor --thread is refused, and nothing changes (deprecated)
+    Deprecated for: a request the upstream raises for itself with neither --source nor --thread is refused, and nothing changes
     Pins that no request is taken in without saying where it comes from.
     Given an upstream that keeps no request
     And a file lines.md with two lines in strict EARS
@@ -66,6 +116,51 @@ Feature: Requests
     Then the command is refused because the request names neither an origin nor a job-thread
     And it exits with an error
     And the upstream keeps no request
+
+  @r45
+  Scenario: a request the upstream raises for itself with neither --source nor --thread is refused, and nothing changes
+    Pins that a context takes in no request of its own without saying where it comes from.
+    Given an upstream ctx-u that keeps no request
+    And a file lines.md with two lines in strict EARS
+    When the upstream runs `work request "Show the queue" --from ctx-u --lines lines.md` in its own repository
+    Then the command is refused because the request names neither an origin nor a job-thread
+    And it exits with an error
+    And the upstream keeps no request
+
+  @r30
+  Scenario: a request from another asker raised with --source is refused, and nothing changes
+    Pins that only a context's own requests name origins, even when the other asker also names a job-thread.
+    Given an upstream ctx-u that keeps no request
+    And a file lines.md with two lines in strict EARS
+    When the asker ctx-a runs `work request "Show the queue" --from ctx-a --lines lines.md --source o1 --thread t1` in its own repository
+    Then the command is refused because an origin belongs to an internal request
+    And it exits with an error
+    And the upstream keeps no request
+
+  @r31
+  Scenario: a request from another asker raised with neither --raised-for nor --thread is refused, and nothing changes
+    Pins that a request from outside the context is not taken in without saying which request or job-thread it serves.
+    Given an upstream ctx-u that keeps no request
+    And a file lines.md with two lines in strict EARS
+    When the asker ctx-a runs `work request "Show the queue" --from ctx-a --lines lines.md` in its own repository
+    Then the command is refused because the request names neither a request it is raised for nor a job-thread
+    And it exits with an error
+    And the upstream keeps no request
+
+  @r32
+  Scenario Outline: request raised from <role>'s repository giving the asker <given asker> is refused, naming the asker, and nothing changes
+    Pins that a repository raises requests only as the context or product level it is, and request says which asker it would not take.
+    Given an upstream ctx-u that keeps no request
+    And a file lines.md with two lines in strict EARS
+    When <role> runs `work request "Show the queue" --from <given asker> --lines lines.md --thread t1` in its own repository
+    Then the command is refused, naming <given asker>
+    And it exits with an error
+    And the upstream keeps no request
+
+    Examples:
+      | role                 | given asker |
+      | the asker ctx-a      | ctx-b       |
+      | the product level p1 | ctx-a       |
 
   @r4
   Scenario: outcome writing a line outcome leaves the request's lines and answers as the asker wrote them
@@ -211,6 +306,23 @@ Feature: Requests
     When the upstream asks the question "Which queue?" on line 1 of q1
     Then main has a new last commit, which holds q1 as work left it
     And nothing work keeps for q1 differs from main's last commit
+
+  @r40
+  Scenario: run in an upstream's repository takes in what has been sent to it before its intake rounds start
+    Pins that the intake rounds of a run see every request sent to the upstream, not only those it took in before.
+    Given a request q1 that the asker ctx-a has sent to the upstream ctx-u and that ctx-u has not taken in
+    When the upstream runs `work run` in its own repository
+    Then ctx-u had taken in q1 when work run started its first round of the kind intake
+    And that round is given q1
+
+  @r42
+  Scenario: requests from repositories registered under different asker ids are taken in as different askers' requests
+    Pins that which asker a request comes from is told by the asker id its repository is registered under.
+    Given a repository registered under the asker id id-a, which the upstream ctx-u allows for the asker ctx-a, that has sent a request q1 naming the asker ctx-a
+    And a repository registered under the asker id id-b, which ctx-u allows for the asker ctx-b, that has sent a request q2 naming the asker ctx-b
+    When the upstream takes in what has been sent to it
+    Then ctx-u keeps q1 from the asker ctx-a
+    And it keeps q2 from the asker ctx-b
 
   @r13
   Scenario: show prints each request with its status and whose turn it is
