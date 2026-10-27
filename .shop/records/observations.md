@@ -467,3 +467,11 @@ date: 2026-10-27
 
 - `work run i40` set i40 `done` while its supervision capability-proposal was still `awaiting-answer`: w203 (spec-integration r45) was green and the branch review passed, but q18's lines 1, 2 and 4 were in the open proposal and undelivered.
 - The answer to i40's gate question 3 (reading a, recommended) adds a line, so the apply round of the very proposal that brings in redrafting could not apply it. Its lines and the gate's other fixes were raised as q19 and the proposal withdrawn.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-27-redraft-overwrites-other-proposal
+about: capability/supervision
+by: the coordinator, from i39
+date: 2026-10-27
+
+- i39's work-queue proposal, redrafted by a new integrate round (supervision r140-r148, i41), named requests r46 and r47 in its change list. `work run` wrote the requests proposal from that change list (r92), replacing its `adds` and `removes` (r25, r28-r34, r39-r45; r1, r3, applied and formulated earlier) with r46, r47 and r13, r14 alone (commit 2862e7bf). The formulated requests scenarios then lost their xfail and every work-item's whole-suite run failed (14 failures). The coordinator restored the union by hand.
+- The same apply round (8) applied the drafts as they stood and not the gate's answers that add work-queue r48 and retire r34 for r40, with no redraft after it.
