@@ -33,6 +33,7 @@ The drafts of this proposal are in .shop/work/i39/runs/work-queue/5-integrate/dr
 - 2026-10-27: r33: superseded; r33 never entered spec/ and r39 replaces it, as the person's answer of 2026-10-27 has it (answered by the coordinator under the person's delegation of 2026-10-27).
 - 2026-10-27: r34-r39, removes r3 r11 r16 r17 r18, decision 0072: (A) approve as drafted, recommended (answered by the coordinator under the person's delegation of 2026-10-27).
 - 2026-10-27: work show <request>: (A) add r48 '**When** `work show <request>` is run, `work` shall print the request's status, whose turn it is, its lines with their line outcomes, its questions, its answers and its resolution.' and keep r37, recommended (answered by the coordinator under the person's delegation of 2026-10-27).
+- 2026-10-27: r34 and requests r46: (B) retire r34 and add r40 '**When** `work list` is run, `work` shall print each initiative and each work-item under `.shop/work/` with its status.', recommended (answered by the coordinator under the person's delegation of 2026-10-27).
 
 ## Faults
 - the gate round left no result `work run` can read: its round wrote no result file; its session ended as a success (success, 8 turns, exit code 0)
