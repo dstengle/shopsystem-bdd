@@ -30,3 +30,7 @@
 {"time": "2026-10-27T15:21:16+00:00", "work-item": "design-model-check", "stage": "formulate", "agent": "initiative-round", "session": "0026858b-fea9-4a24-a2b0-22ceb79d4447", "event": "start"}
 {"time": "2026-10-27T15:23:52+00:00", "work-item": "design-model-check", "stage": "formulate", "agent": "initiative-round", "session": "0026858b-fea9-4a24-a2b0-22ceb79d4447", "event": "end"}
 {"time": "2026-10-27T15:23:52+00:00", "work-item": "design-model-check", "before": "approved", "after": "awaiting-answer", "by": "work run"}
+{"time": "2026-10-27T15:23:55+00:00", "work-item": "requests", "stage": "apply", "event": "push verified"}
+{"time": "2026-10-27T15:23:55+00:00", "work-item": "requests", "stage": "apply", "agent": "initiative-round", "session": "2dd74cbe-6637-4875-be22-225001869738", "event": "start"}
+{"time": "2026-10-27T15:26:42+00:00", "work-item": "requests", "stage": "apply", "agent": "initiative-round", "session": "2dd74cbe-6637-4875-be22-225001869738", "event": "end"}
+{"time": "2026-10-27T15:26:42+00:00", "work-item": "requests", "before": "awaiting-answer", "after": "approved", "by": "work run"}
