@@ -21,3 +21,4 @@ The drafts of this proposal are in .shop/work/i41/runs/i41/1-integrate/drafts/ro
 
 ## Answers
 - 2026-10-27: r147 and r132: Reading A, recommended: r147 stays and extends r132's list, r132 unchanged (answered by the coordinator under the person's delegation of 2026-10-27).
+- 2026-10-27: r148 and r92: Reading A, recommended: r92 stays and r148 is the exception for a round started for a capability-proposal (r140) (answered by the coordinator under the person's delegation of 2026-10-27).
