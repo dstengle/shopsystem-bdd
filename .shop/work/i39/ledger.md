@@ -17,3 +17,4 @@
 - 2026-10-27: apply round 2 for design-model-check: rows r115 and r117 retired, replaced by r120 (v17) and r121 (v18) per the 2026-10-27 answer; commit af0977ce
 - 2026-10-27: formulate round 3 design-model-check: commit e27313e1; r120 formulated, scenarios of retired r115 and r117 deprecated; r121 returned as a question (two readings)
 - 2026-10-27: apply round 1 requests: r25 r28-r34 r39-r45 added, r1 r3 retired, decision 0071 added, r35-r38 and r13 held out; commit e3d62661
+- 2026-10-27: formulate round 3 requests: commit bc58e42e; r28 r29 r30 r31 r32 r40 r42 r44 r45 formulated, scenarios of retired r1 and r3 deprecated; r25 r33 r34 r39 r41 r43 returned as questions
