@@ -2,3 +2,4 @@
 - 2026-10-27: integrate round 1, correction: 25 Behaviour lines added (not 27), 3 changed
 - 2026-10-27: gate round 1 for design-model-check: 1 question (r120, r121 against rows r115, r117)
 - 2026-10-27: gate round 1 for requests: 5 questions (r3, r43, r35-r38, r41, term/carrier)
+- 2026-10-27: gate round 1 for spec-integration: 1 question (r44)
