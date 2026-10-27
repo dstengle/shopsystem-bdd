@@ -2,12 +2,12 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i39-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i39
-status: awaiting-answer
+status: approved
 argues: [supervision]
+date: 2026-10-27
 adds: [supervision#r135, supervision#r136]
 changes: []
 removes: []
-date: 2026-10-27
 ---
 
 # supervision

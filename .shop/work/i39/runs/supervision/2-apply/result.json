@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"apply supervision: r135 and r136 added as drafted, commit 6cd0d09c. r137 not added: the answer picks neither reading. model check: 22 violations from other proposals' unresolved references.","questions":[],"changes":[{"capability":"supervision","adds":["supervision#r135","supervision#r136"],"changes":[],"removes":[]}]}
