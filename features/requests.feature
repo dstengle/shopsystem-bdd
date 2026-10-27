@@ -415,3 +415,28 @@ Feature: Requests
     When the session runs `work status`
     Then work prints o3 with its date
     And it gives neither o1 nor o2 as an observation nothing names
+
+  # formulates [r25] of spec/capabilities/requests.md
+  @r25
+  Scenario: requests from another context, from the product level and from the upstream itself are each taken through the same work commands and the same statuses
+    Pins that whoever asks and whichever side acts, each action on a request is done by the one work command for it, and every request goes through one lifecycle.
+    Given an upstream ctx-u that keeps no request
+    And a file lines.md with one line in strict EARS in each of the repositories of the asker ctx-a, the product level p1 and the upstream ctx-u
+    When the asker ctx-a, the product level p1 and the upstream ctx-u each raise a request of their own, and each request is taken through these steps, each step run as the same work command for every request
+      | side     | step                                                                                                        |
+      | asker    | runs `work request "Show the queue" --from <its asker> --lines lines.md --thread t1` in its own repository |
+      | upstream | takes in what has been sent to it                                                                           |
+      | upstream | asks the question "Which queue?" on line 1 of the request                                                   |
+      | upstream | runs `work turn <the request>`                                                                              |
+      | asker    | answers that question with "The work queue" in its own repository                                           |
+      | asker    | runs `work turn <the request>` in its own repository                                                        |
+      | upstream | takes in what has been sent to it                                                                           |
+      | upstream | runs `work outcome <the request> 1 accepted`                                                                |
+      | upstream | runs `work turn <the request>`                                                                              |
+      | upstream | runs `work resolve <the request>`, giving thing#r3 for line 1, found in the version 0.26.0                  |
+      | upstream | runs `work show <the request>`                                                                              |
+    Then each step exits successfully for each of the three requests
+    And each step was done by one command of work's set, the same command for the three requests
+    And each of the three requests' status went open, awaiting-asker, awaiting-upstream, accepted, delivered, in that order
+    And each of the three requests' turn went the upstream's, the asker's, the upstream's, the upstream's, the asker's, in that order
+    And for each of the three requests, work show <the request> prints that request with delivered and the asker's turn
