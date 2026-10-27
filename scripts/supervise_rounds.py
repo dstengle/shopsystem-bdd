@@ -71,10 +71,13 @@ class Rounds(Changes):
         return AFTER[status]
 
     def applied_nothing(self, name):
-        """Whether the proposal's latest round is an apply round whose result gives that it applied nothing (r140, r147)."""
+        """Whether the proposal's latest round, integrate rounds that failed aside, is an apply round whose result gives
+        that it applied nothing (r140, r147)."""
         runs = self.dir / "runs" / name
         stages = sorted((p for p in runs.iterdir() if p.is_dir() and p.name.split("-")[0].isdigit()),
                         key=lambda p: int(p.name.split("-")[0])) if runs.is_dir() else []
+        while stages and stages[-1].name.endswith("-integrate"):     # an integrate round that left it awaiting an answer failed: judge by the round before
+            stages.pop()
         try:
             return bool(stages) and stages[-1].name.endswith("-apply") and gives_nothing(json.loads((stages[-1] / "result.json").read_text()))
         except (OSError, ValueError):
