@@ -1,0 +1,1 @@
+- 2026-10-27: integrate round 1: q18 drafted as 4 added lines (supervision r137 r138 r139, spec-integration r45), 5 questions, 0 cut sentences; .shop/scratch/1-integrate/drafts/round-1
