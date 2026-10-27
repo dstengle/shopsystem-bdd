@@ -5,7 +5,7 @@ part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i39
 status: awaiting-answer
 argues: [requests]
 date: 2026-10-27
-adds: [requests#r25, requests#r28, requests#r29, requests#r30, requests#r31, requests#r32, requests#r33, requests#r34, requests#r39, requests#r40, requests#r41, requests#r42, requests#r43, requests#r44, requests#r45, requests#r46, requests#r47]
+adds: [requests#r25, requests#r28, requests#r29, requests#r30, requests#r31, requests#r32, requests#r33, requests#r34, requests#r39, requests#r40, requests#r41, requests#r42, requests#r43, requests#r44, requests#r45]
 changes: []
 removes: [requests#r1, requests#r3, requests#r13, requests#r14]
 ---
