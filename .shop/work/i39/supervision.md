@@ -20,3 +20,4 @@ The drafts of this proposal are in .shop/work/i39/runs/i39/1-integrate/drafts/ro
 
 ## Answers
 - 2026-10-27: r135: a delegation always passes upstream as a flag; the upstream decides what to do with that fact ('I did this under delegation' is not 'we are all supposed to do this under delegation'). Whether a shop repo acts on a delegation is a setting of that repo, on to start with.
+- 2026-10-27: r136: Reading 2, only the proposal the raised lines belong to, as q14 line 25 says ('the capability-proposal whose lines it raised'); r135 ties the raised lines to the proposal whose integrate round gave them (answered by the coordinator under the person's delegation of 2026-10-27; no reading was recommended).
