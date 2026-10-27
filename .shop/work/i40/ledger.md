@@ -1,3 +1,4 @@
 - 2026-10-27: integrate round 1: q18 drafted as 4 added lines (supervision r137 r138 r139, spec-integration r45), 5 questions, 0 cut sentences; .shop/scratch/1-integrate/drafts/round-1
 - 2026-10-27: gate round 1 spec-integration: 0 questions (the draft's five questions are on supervision lines outside this brief's list)
 - 2026-10-27: gate round 1 supervision: 1 question (draft's other four are on lines outside this brief's list)
+- 2026-10-27: delegation, the person 2026-10-27: "I'm delegating this to you. Please get the new version delivered without involving me." The coordinator answers each question with its recommended reading, or the one a test can check where none is recommended, and carries i40 (q18), then i39 (q14) and q17, through to a release.
