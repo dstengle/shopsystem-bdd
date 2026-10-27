@@ -3,6 +3,7 @@ upstream, billing's published spec is kept beside the repository, and the stand-
 of a request into billing. The Thens read the round's brief (what `work run` told it) and the result `work run` kept."""
 import json
 import os
+import subprocess
 import sys
 
 from pytest_bdd import given, then, when
@@ -36,6 +37,10 @@ def names_upstream(repo):
 def billing_gives_no_refund(repo):
     write(repo, BILLING_SPEC + "/capabilities/orders.md", cap("orders", ["- [r1] **When** asked, `orders` shall list the orders."]))
     assert "refund" not in (billing_spec(repo) / "capabilities" / "orders.md").read_text()
+    there = billing_spec(repo).parent     # the lines are raised into billing's repository (r135): it is one
+    for args in (("init", "-q", "-b", "main"), ("config", "user.name", "Someone"), ("config", "user.email", "someone@example.com"),
+                 ("config", "commit.gpgsign", "false"), ("add", "-A"), ("commit", "-q", "-m", "billing")):
+        subprocess.run(["git", *args], cwd=there, check=True, capture_output=True)
 
 
 @given("billing's glossary names a refund of an order a credit note")

@@ -5,6 +5,7 @@ started initiative with neither proposal nor work-item ends in its change list's
 result with no change list). Integrate, apply and formulate rounds run one at a time across initiatives, under the lock
 `round_lock` (r95). Standard library only; a part of supervise.Run."""
 import json
+import shutil
 import subprocess
 
 import supervise_outputs
@@ -119,15 +120,15 @@ class Rounds(Changes, Raises):
             before = workqueue.agrees(self.root, self.initiative, name)
         label, _ = self.run_dir(name, kind)
         branch = "round/%s-%s" % (name, label)
-        tree = None
+        tree, record = None, ""
         try:
             tree = self.worktree(name, "%s-%s" % (name, label), branch)
             data, failure = self.worker(name, kind, "initiative-round", tree, branch)
             if failure:
                 raise Fault(failure)
             self.remove(tree)
+            record = self.raise_before_merge(name, kind, label, data, before)
             with self.lock:     # the round's commits reach the initiative branch before the transition
-                head = git(self.root, "rev-parse", "HEAD").stdout.strip()
                 git(self.root, "merge", "-q", "--no-edit", branch)
                 git(self.root, "branch", "-q", "-d", branch)
         except (Fault, GitFailed) as fault:
@@ -151,17 +152,6 @@ class Rounds(Changes, Raises):
             self.refuse_integrate(name, label, before, "its change list names %s, which neither spec/capabilities/ nor "
                                   "its drafts have" % ", ".join(absent))
         found = [one for one in found if one["capability"] not in absent]
-        record = ""
-        if kind == "integrate":     # r135: the lines given into an upstream are raised before any proposal is written
-            here = self.dir / "runs" / name / label
-            try:
-                record = self.raise_requests(data, here, self.kept_path(here))
-            except Refused as why:     # the round's merge is undone, its stage directory kept, and it runs again next time
-                with self.lock:
-                    git(self.root, "reset", "-q", "--hard", head)
-                self.keep_round(name, kind, label)
-                raise Refused("the integrate round of %s (%s) ended, and %s keeps its status %s: %s" % (
-                    name, self.rel(here), name, before, why)) from None
         asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []] if kind == "gate" else None
         if kind == "gate" and not asked:     # r117: a gate with nothing to decide still asks for the approval of the lines
             asked = ["Are the lines of %s approved as drafted? Readings: approve %s as drafted (recommended), "
@@ -216,6 +206,40 @@ class Rounds(Changes, Raises):
                               "no capability-proposal was written for %s" % (
                                   name, self.rel(self.dir / "runs" / name / label), ", ".join(absent),
                                   "it" if len(absent) == 1 else "them"))
+
+    def raise_before_merge(self, name, kind, label, data, before):
+        """r135: an integrate round's lines are raised into their upstreams before its merge, so a raise that fails leaves
+        no merge to undo on the shared checkout: its branch is dropped, its stage directory and its session's log lines
+        taken back, nothing committed, and the run's error names the round. The record lines (not yet on disk) as one
+        text; empty when the round raises nothing, or gives a result r96 or r107 refuses (the checks after the merge
+        refuse it)."""
+        if kind != "integrate":
+            return ""
+        here = self.dir / "runs" / name / label
+        try:
+            found = entries(data)
+        except BadChanges:
+            return ""
+        if not found or len(self.unknown(found, here)) == len(found):
+            return ""
+        try:
+            return self.raise_requests(data, here, self.kept_path(here))
+        except Refused as why:
+            self.undo_round(name, kind, here, "round/%s-%s" % (name, label))
+            raise Refused("the integrate round of %s (%s) ended, and %s keeps its status %s: %s" % (
+                name, self.rel(here), name, before, why)) from None
+
+    def undo_round(self, name, kind, here, branch):
+        """Take back a round that committed nothing: its branch dropped, its uncommitted stage directory removed, and
+        log.jsonl as committed plus the lines of the runs' other sessions, not the round's own."""
+        git(self.root, "branch", "-q", "-D", branch)
+        with self.lock:
+            shutil.rmtree(here, ignore_errors=True)
+            self.own.discard(self.rel(here))
+            self.unlogged = [l for l in self.unlogged
+                             if (json.loads(l).get("work-item"), json.loads(l).get("stage")) != (name, kind)]
+            log = self.dir / "log.jsonl"
+            log.write_text(git(self.root, "show", "HEAD:" + self.rel(log)).stdout + "".join(self.unlogged))
 
     def refuse_integrate(self, name, label, before, why):
         """The integrate round ended with no change list `work run` can use: its stage directory and drafts kept,
