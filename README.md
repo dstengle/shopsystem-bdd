@@ -131,6 +131,35 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 Only `initiative-round` has the Agent tool. A plugin agent's `hooks` and `permissionMode` are ignored, so a role's
 limits are its tools; under `work run` they are also its `--allowedTools`.
 
+## 0.28.0: one set of request commands, `work list` and `work show`, and answers that redraft
+
+- **`work list` and `work show <id>`** (work-queue r34-r39, decision 0072): `work list` lists every initiative, request
+  and work-item with its status; `work show <initiative>` gives where an initiative stands (what `work status
+  <initiative>` gave), `work show <work-item>` a work-item's status and open questions, `work show <request>` a
+  request. `work status` and the old `work show` are retired in the spec; `work status` still runs in this release
+  and is removed in a later one.
+- **Requests** (requests r25, r29-r34, r44, r45; q14 lines 1, 5-7, 10-12): one set of commands and one lifecycle for
+  every request; `work request` refuses, changing nothing, a request from another asker raised with `--source` or with
+  neither `--raised-for` nor `--thread`, and an asker that is not the context or product whose repository raises it;
+  `--raised-for <request>` names the request it is raised for. The side that writes a part of a request is taken from
+  the repository, and `work outcome`, `ask` and `resolve` refuse a side writing the other side's part. Requests between
+  repositories (q14 lines 2-4, 13-16, 18, 20-22) are not in this release: they will travel as GitHub issues. Until then another
+  context cannot raise a request into this repository with `work request`, which raises only as the repository it runs
+  in; `work run`'s raise is the one way a request reaches an upstream.
+- **An integrate round that needs an upstream** (spec-integration r44; supervision r135, r136; work-queue r39; q14 lines
+  23-26): the round gives the lines of a request into the upstream named in `spec/index.md`; `work run` raises them,
+  raised for the request the initiative fulfils and with its delegation, holds the proposal's work-items until that
+  request is `delivered`, and `work list` shows the initiative waiting on it.
+- **`model check`** (design-model-check r120, r121; q14 lines 8-9): no `v17` for a request that is part of a job-thread
+  kept in another repository, and neither `v17` nor `v18` for a request raised for a request of another context.
+- **Answers that ask for what the drafts do not hold are redrafted** (supervision r140-r148, spec-integration r45):
+  an apply round that applies nothing because of its answers sends the proposal back to a new integrate round, given
+  its questions, answers and the initiative's ledger; that round drafts the lines the answers ask for, and the ids it
+  writes for another capability are added to that capability's proposal, never written over it.
+
+Upgrading a consuming repository from 0.27.0: update the plugin and start a session. No file is rewritten. Use `work
+list` and `work show <id>` in place of `work show` and `work status`.
+
 ## 0.27.0: transitions from how a session ended, and the turn of an accepted request
 
 - **`work run` moves a node by how its session ended and what its result holds** (supervision r128-r134), never by
