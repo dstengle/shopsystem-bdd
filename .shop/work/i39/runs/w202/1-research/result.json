@@ -1,0 +1,13 @@
+{
+  "status": "DONE",
+  "summary": "Research of w202 (spec-integration r44) done; notes.md has parts 1-7.\nThe accepted scenario is unbound: no test module runs features/spec-integration.feature (820 deselected, run).\nToday the integrate round's result is read for `changes` only; request lines would be dropped (supervise_rounds.py run_round).\nThe brief has no upstream or request-lines form and does not read spec/index.md (supervise_brief.py integrate_lines, read list).\nspec/index.md naming an upstream is accepted and ignored by model check (probe, run); its form is undefined in the repo.\nProbe of work request: --source from a non-upstream asker writes q1 (D1); --raised-for is unrecognized (D2), both run.\nThe round input is an initiative, not the note the scenario and skill name (a reading to settle).\nI ran `tools map` by mistake (whole suite, 145 tests); tests-of answers are as old as d2c91c3c.\nNo test asserts the old one-output behaviour; test_agents.py and test_supervise_change.py are sound.\nFile set: agents/initiative-round.md, skills/integrating-a-proposal/SKILL.md, scripts/supervise_brief.py, scripts/supervise_rounds.py, plus two new test files.",
+  "fileset": [
+    "agents/initiative-round.md",
+    "skills/integrating-a-proposal/SKILL.md",
+    "scripts/supervise_brief.py",
+    "scripts/supervise_rounds.py",
+    "tests/scenarios/test_spec_integration.py",
+    "tests/scenarios/spec_integration_steps.py"
+  ],
+  "questions": []
+}
