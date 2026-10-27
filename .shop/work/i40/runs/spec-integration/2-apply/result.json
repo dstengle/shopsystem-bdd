@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Applied spec-integration#r45 as drafted (commit 0c09944f), approval 2026-10-27 under the person's delegation. No decisions. model check: 21 violations, 15 warnings, 11 unresolved references (from other proposals; none about r45).","questions":[],"changes":[{"capability":"spec-integration","adds":["spec-integration#r45"],"changes":[],"removes":[]}]}
