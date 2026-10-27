@@ -4,6 +4,8 @@ supervise.Run."""
 import datetime
 import re
 
+import workqueue
+
 FIELDS = ("adds", "changes", "removes")
 
 
@@ -74,10 +76,23 @@ class Changes:
                 return path
         return None
 
-    def write_proposals(self, found, stage_dir):
+    def merge_lists(self, name, one):
+        """The round's ids for the capability of the proposal `name` (a held proposal the round was not started for)
+        appended to its `adds`, `changes` and `removes`, after the ids it holds."""
+        path = self.dir / (name + ".md")
+        text = path.read_text()
+        lists, _ = workqueue.frontmatter(text)
+        for field in FIELDS:
+            mine = list(lists.get(field) or [])
+            mine += [i for i in one[field] if i not in mine]
+            text = re.sub(r"(?m)^%s:.*$" % field, lambda _: "%s: [%s]" % (field, ", ".join(mine)), text, count=1)
+        path.write_text(text)
+
+    def write_proposals(self, found, stage_dir, own=None):
         """One file a capability in the initiative's directory, `drafted`, naming `stage_dir`, the path of the round's
         kept drafts; the paths written. A capability the initiative has a proposal for has that proposal rewritten in
-        place: its lists and its drafts path replaced, its status left to the move (r142, r148)."""
+        place: its lists and its drafts path replaced, its status left to the move (r142, r148). When that proposal is
+        not `own`, the one the round was started for, the round's ids are merged into its lists instead."""
         text = (self.dir / "initiative.md").read_text()
         ident = next((l.split(":", 1)[1].strip() for l in text.splitlines() if l.startswith("id:")), "")
         prefix = ident.split("/", 1)[1].rsplit("/", 1)[0] if "/" in ident else ""
@@ -90,7 +105,10 @@ class Changes:
         for one in merged.values():
             held = self.proposal_for(one["capability"])
             if held:     # r148: a proposal drafted anew is rewritten, never a second one beside it
-                self.rewrite_lists(held.stem, [one])
+                if held.stem == own:
+                    self.rewrite_lists(held.stem, [one])
+                else:
+                    self.merge_lists(held.stem, one)
                 text = held.read_text()
                 said = "The drafts of this proposal are in %s." % stage_dir
                 held.write_text(re.sub(r"The drafts of this proposal are in \S+?\.(?=\s|$)", lambda _: said, text)

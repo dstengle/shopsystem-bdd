@@ -192,7 +192,7 @@ class Rounds(Changes):
             self.move(name, before, after, asked)
         else:     # r84: the round's stage directory is committed once it has ended, on top of the commit of started
             with self.lock:
-                proposals = self.write_proposals(found, self.kept_path(self.dir / "runs" / name / label))
+                proposals = self.write_proposals(found, self.kept_path(self.dir / "runs" / name / label), name)
                 if name != self.initiative:     # r142: the proposal drafted anew is drafted, in one commit with its new lists
                     self.move(name, before, after, also=[self.rel(p) for p in proposals])
                 else:

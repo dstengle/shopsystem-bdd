@@ -26,10 +26,14 @@ def waiting(root, initiative):
     """The requests `initiative` raised that its record does not give as delivered: (upstream, request, status)."""
     path = Path(root) / workqueue.WORK / initiative / RAISED
     last = {}
-    for line in workqueue.read(path, root).splitlines() if path.is_file() else []:
+    lines = workqueue.read(path, root).splitlines() if path.is_file() else []
+    for number, line in enumerate(lines, 1):
         if line.strip():
-            found = json.loads(line)
-            last[(found["upstream"], found["request"])] = found["status"]
+            try:
+                found = json.loads(line)
+                last[(found["upstream"], found["request"])] = found["status"]
+            except (ValueError, KeyError, TypeError):
+                raise Refused("%s line %d is not a record of a raised request (upstream, request, status)" % (path, number))
     return [(u, r, s) for (u, r), s in last.items() if s != "delivered"]
 
 
@@ -39,7 +43,7 @@ def listing(root, as_json):
     items = list(workqueue.items(root))
     if as_json:
         print(json.dumps({"initiatives": [{"initiative": n, "status": s} for n, s in found],
-                          "requests": [{"request": n, "status": s, "turn": t} for n, s, t, _ in requests],
+                          "requests": [{"request": n, "status": s} for n, s, _, _ in requests],
                           "work-items": [{"work-item": n, "initiative": i, "status": s} for i, n, s in items]}))
         return 0
     for name, status in found:
