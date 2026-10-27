@@ -3,8 +3,8 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue
 title: Work queue
 narrator: a person, session or script reading work-items or writing their transitions
 group: service
-rests_on: [design-decision/work-file-forms, design-decision/work-item-lifecycle-as-run, design-decision/the-file-set-is-the-claim, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/work-retry-reads-the-log, design-decision/query-commands-answer-in-their-output, design-decision/work-items-named-by-ids, design-decision/a-ruling-returns-to-the-asking-stage, design-decision/answers-not-rulings, design-decision/the-ledger-is-tracked]
-retired: [r2]
+rests_on: [design-decision/work-file-forms, design-decision/work-item-lifecycle-as-run, design-decision/the-file-set-is-the-claim, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/work-retry-reads-the-log, design-decision/query-commands-answer-in-their-output, design-decision/work-items-named-by-ids, design-decision/a-ruling-returns-to-the-asking-stage, design-decision/answers-not-rulings, design-decision/the-ledger-is-tracked, design-decision/work-list-and-work-show-replace-work-status]
+retired: [r2, r3, r11, r16, r17, r18, r33]
 ---
 
 # Work queue
@@ -25,11 +25,12 @@ work-item's status; `work run` (supervision) takes them through it. It judges no
 - [r25] **When** `work start` writes an initiative, `work` shall commit the initiative on the current branch.
 - [r23] **When** a `work` command's change makes it true that an initiative has at least one work-item that is `green`, that every work-item of it is `green` or `withdrawn` and that every request kept in this context whose asker is this context and that names the initiative is `delivered`, that command shall set the initiative's status to `done`.
 - [r31] **If** every work-item of an initiative is `withdrawn`, **then** `work` shall leave the initiative's status as it is.
-- [r3] **When** `work show` is run, `work` shall print each work-item of every initiative under `.shop/work/` with its status.
-- [r11] **Where** `--json` is given, `work show` shall print its result, each work-item with its initiative and status, as one JSON object.
-- [r16] **When** `work status <initiative>` is run, `work` shall print the initiative's status, each of its capability-proposals with its status, each of its work-items with its status and its open questions, the initiative branch and whether the remote has every commit of it, each tracked file of the checkout with uncommitted changes and each untracked file of the checkout that git does not ignore, the last ten lines of the initiative's ledger, and the ledger's last line whose note, the text given to `work note` after the date `work note` writes, begins `next:`.
-- [r17] **When** `work status` is run with no initiative, `work` shall print what r16 gives for each initiative that is neither `done` nor `abandoned`.
-- [r18] **Where** `--json` is given, `work status` shall print its result as one JSON object.
+- [r34] **When** `work list` is run, `work` shall print each initiative, each request and each work-item under `.shop/work/` with its status.
+- [r35] **Where** `--json` is given, `work list` shall print its result, each initiative, request and work-item with its status, as one JSON object.
+- [r39] **While** a request that an initiative raised into an upstream is not `delivered`, `work list` shall print the initiative as waiting on that request.
+- [r36] **When** `work show <initiative>` is run, `work` shall print the initiative's status, each of its capability-proposals with its status, each of its work-items with its status and its open questions, the initiative branch and whether the remote has every commit of it, each tracked file of the checkout with uncommitted changes and each untracked file of the checkout that git does not ignore, the last ten lines of the initiative's ledger, and the ledger's last line whose note, the text given to `work note` after the date `work note` writes, begins `next:`.
+- [r37] **When** `work show <work-item>` is run, `work` shall print the work-item's status and its open questions.
+- [r38] **Where** `--json` is given, `work show` shall print its result as one JSON object.
 - [r19] **When** `work note <initiative> <line>` is run, `work` shall append the line, with the date, to the initiative's ledger `.shop/work/<initiative>/ledger.md`.
 - [r20] **When** `work note` appends a line to an initiative's ledger, `work` shall commit the ledger on the current branch.
 - [r21] **If** the line given to `work note` has in it one of Unicode's mandatory line breaks, U+000A (LF), U+000B (VT), U+000C (FF), U+000D (CR), U+0085 (NEL), U+2028 or U+2029, then `work` shall exit with an error, saying that a note is one line, and change nothing.
