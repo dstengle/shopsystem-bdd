@@ -34,3 +34,4 @@
 - 2026-10-27: apply round 8 work-queue: commit 9bc3be06; adds work-queue r34-r39, removes r3 r11 r16 r17 r18, decision 0072; requests r46 r47 not applied (requests proposal)
 - 2026-10-27: formulate round 9 work-queue: commit fefe7407; scenarios added r34 r35 r36 r37 r38 r39, deprecated r3 r11 r16 r17 r18; model check: 22 violations, none from work-queue
 - 2026-10-27: apply round 8 work-queue applied r34-r39 as drafted but not the answers of gate round 7 that add r48 (work show <request>) and retire r34 for r40 (work list without requests); no redraft followed. Carried as an internal request after i39.
+- 2026-10-27: w206 branch review finding 1: reading B (union of the round's ids into another capability's proposal); a supervision line for it goes into the follow-up request with work-queue r48 and r40.
