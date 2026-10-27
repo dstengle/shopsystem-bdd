@@ -33,7 +33,7 @@ def entry(text):
     return found
 
 
-@given(parsers.re(r"the apply round for p1 gives DONE with a change list that (?P<text>.+) on thing$"))
+@given(parsers.re(r"the apply round for p1 (?:applies p1's drafts and )?gives DONE with a change list that (?P<text>.+) on thing$"))
 def apply_change_list(plan, text):
     plan["round:apply"] = {"status": "DONE", "fields": {"changes": [{"capability": "thing", **entry(text)}]}}
 

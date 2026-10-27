@@ -110,14 +110,14 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
         if push:
             self.push()
 
-    def move(self, name, before, after, question=None, fileset=None):
+    def move(self, name, before, after, question=None, fileset=None, also=()):
         with self.lock:
             workqueue.move(self.root, self.initiative, name, after, by=BY)
             for each in [question] if isinstance(question, str) else question or []:     # a gate gives several
                 self.section(name, "Questions", each)
             if fileset:
                 self.write_fileset(name, fileset)
-            self.commit(name, before, after)
+            self.commit(name, before, after, also=also)
 
     def section(self, name, heading, text):
         """Write `text` as the last bullet of the work-item's `## <heading>` section, before any section after it (r36);

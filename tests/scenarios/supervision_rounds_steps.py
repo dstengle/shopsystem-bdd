@@ -18,7 +18,7 @@ def quoted(text):
 ASKED_FROM = {"gate": "drafted", "formulate": "approved"}     # the status a proposal moved from into awaiting-answer
 
 
-@given(parsers.re(r"i1's capability-proposal p1 is awaiting-answer, (?:its adds naming (?P<adds>.+?), )?its ## Questions "
+@given(parsers.re(r"i1's capability-proposal p1(?:, for thing,)? is awaiting-answer, (?:its adds naming (?P<adds>.+?), )?its ## Questions "
                   r"section with (?P<asked>.+?),? and its Answers section with (?P<answered>.+?)"
                   r"(?:, and the apply round for p1 ends with a change list that adds (?P<applied>\S+#r\d+) on thing)?$"))
 def answered_proposal(repo, plan, asked, answered, adds=None, applied=None):

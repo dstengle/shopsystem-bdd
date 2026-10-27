@@ -1151,34 +1151,6 @@ Feature: Supervision
     When the person runs `work run i1`
     Then i1 has one capability-proposal for thing, and it is p1
 
-  @r80 @deprecated
-  Scenario: when the apply round `work run` started for a capability-proposal ends, the proposal is approved (deprecated)
-    Deprecated for: when the apply round `work run` started for a capability-proposal ends having applied its drafts, the proposal is approved
-    Pins that a capability-proposal whose answers have been applied is approved.
-    Given i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", and its Answers section with "One book."
-    And every round ends
-    When the person runs `work run i1`
-    Then p1's transition to approved was made once the apply round had ended
-
-  @r114 @deprecated
-  Scenario: when the apply round `work run` started for a capability-proposal ends, the proposal's adds, changes and removes are written from the change list the round applied (deprecated)
-    Deprecated for: when the apply round `work run` started for a capability-proposal ends having applied its drafts, the proposal's adds, changes and removes are written from the change list the round applied
-    Pins that the proposal names what was applied after the answers, not what was drafted before them.
-    Given i1's capability-proposal p1 is awaiting-answer, its adds naming thing#r4 and thing#r5, its ## Questions section with "Is thing#r5 kept?", given by its gate round, and its Answers section with "No."
-    And the apply round for p1 gives DONE with a change list that adds thing#r4 and changes thing#r2 on thing
-    And every other round ends and every worker gives DONE
-    When the person runs `work run i1`
-    Then p1's adds name thing#r4 and not thing#r5, its changes name thing#r2, and its removes name nothing
-
-  @r71 @deprecated
-  Scenario: when the apply round `work run` started for a capability-proposal ends, a formulate round is started for the proposal (deprecated)
-    Deprecated for: when the apply round `work run` started for a capability-proposal ends having applied its drafts, a formulate round is started for the proposal
-    Pins that applied lines go on to be formulated, without anyone starting the round by hand.
-    Given i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", and its Answers section with "One book."
-    And every round ends
-    When the person runs `work run i1`
-    Then a round of the kind formulate was started for p1 after the apply round had ended
-
   @r72
   Scenario: a formulated capability-proposal gets one work-item for each capability it adds or changes, accepting every requirement it names on that capability
     Pins that the work-items of a formulated proposal are drafted one a capability, whichever of adds and changes names the requirement.

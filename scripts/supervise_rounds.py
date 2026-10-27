@@ -20,6 +20,13 @@ SERIAL = ("integrate", "apply", "formulate")     # the rounds one at a time acro
 AFTER ={"drafted": ("gate", "awaiting-answer"), "awaiting-answer": ("apply", "approved"), "approved": ("formulate", "formulated")}
 
 
+def gives_nothing(data):
+    """Whether an apply round's result gives that it applied nothing, because the proposal's answers give what its drafts
+    do not hold: its `nothing_applied` field, with no question and no change list (r147)."""
+    said = data.get("nothing_applied") if isinstance(data, dict) else None
+    return isinstance(said, str) and bool(said.strip()) and not data.get("questions") and data.get("changes") in (None, [])
+
+
 class Rounds(Changes):
     """The part of supervise.Run that runs a capability-proposal's rounds, one session at a time."""
 
@@ -55,11 +62,23 @@ class Rounds(Changes):
         last move into awaiting-answer from approved is a formulate round's question (r116), from drafted a gate round's
         (r70), and with no such move, a gate round's."""
         if status == "awaiting-answer":
+            if self.applied_nothing(name):     # r140: its answers give what its drafts do not hold
+                return ("integrate", "drafted")
             moves = [l for l in workqueue.logged(self.dir / "log.jsonl", self.root)
                      if l.get("work-item") == name and l.get("after") == "awaiting-answer"]
             if moves and moves[-1].get("before") == "approved":
                 return ("formulate", "formulated")
         return AFTER[status]
+
+    def applied_nothing(self, name):
+        """Whether the proposal's latest round is an apply round whose result gives that it applied nothing (r140, r147)."""
+        runs = self.dir / "runs" / name
+        stages = sorted((p for p in runs.iterdir() if p.is_dir() and p.name.split("-")[0].isdigit()),
+                        key=lambda p: int(p.name.split("-")[0])) if runs.is_dir() else []
+        try:
+            return bool(stages) and stages[-1].name.endswith("-apply") and gives_nothing(json.loads((stages[-1] / "result.json").read_text()))
+        except (OSError, ValueError):
+            return False
 
     def rounds(self):
         """Run the rounds due until none is. A round that faults keeps its proposal as it was and is left out; the others'
@@ -85,7 +104,9 @@ class Rounds(Changes):
             return self.run_round(name, kind, after)
 
     def run_round(self, name, kind, after):
-        if kind == "integrate":     # r84: the initiative is started as its integrate round is, before the round's session
+        if kind == "integrate" and name != self.initiative:     # r143: a proposal drafted anew keeps its status as it runs
+            before = workqueue.agrees(self.root, self.initiative, name)
+        elif kind == "integrate":     # r84: the initiative is started as its integrate round is, before the round's session
             status, _ = workqueue.frontmatter((self.dir / "initiative.md").read_text())
             if status.get("status") == "proposed":     # r93: one already started has no transition to make
                 self.start_initiative(name, after)
@@ -143,6 +164,10 @@ class Rounds(Changes):
             if applied:
                 self.rewrite_lists(name, applied)
             asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []]
+            if gives_nothing(data):     # r147: its output; the proposal stays as it is and the next round is due (r140)
+                with self.lock:
+                    self.commit(name, before, before)
+                return
             if not asked and not applied:     # r131: neither questions nor its output; the missing output is asked
                 asked = ["The apply round of %s gave no change list; which capabilities' lines did it apply?" % name]
         if kind == "formulate":     # r112, r113: what the formulation could not decide is asked; with nothing, r83
@@ -165,7 +190,10 @@ class Rounds(Changes):
         else:     # r84: the round's stage directory is committed once it has ended, on top of the commit of started
             with self.lock:
                 proposals = self.write_proposals(found, self.kept_path(self.dir / "runs" / name / label))
-                self.commit(name, after, after, also=[self.rel(p) for p in proposals])
+                if name != self.initiative:     # r142: the proposal drafted anew is drafted, in one commit with its new lists
+                    self.move(name, before, after, also=[self.rel(p) for p in proposals])
+                else:
+                    self.commit(name, after, after, also=[self.rel(p) for p in proposals])
             if absent:     # r107: the known capabilities' proposals are written; the unknown ones are an error
                 raise Refused("the integrate round of %s (%s) named %s, which neither spec/capabilities/ nor its drafts have; "
                               "no capability-proposal was written for %s" % (

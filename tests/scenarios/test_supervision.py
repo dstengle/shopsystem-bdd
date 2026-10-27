@@ -36,6 +36,7 @@ from .supervision_outputs_steps import *
 from .supervision_parallel_steps import *
 from .supervision_proposal_steps import *
 from .supervision_review_steps import *
+from .supervision_reintegrate_steps import *
 from .supervision_request_steps import *
 from .supervision_retire_steps import *
 from .supervision_rounds_steps import *

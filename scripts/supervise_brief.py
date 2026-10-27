@@ -47,7 +47,16 @@ class Briefs:
         if rnd:     # a round (supervise_rounds.py): the kind its agent runs
             lines.append("Kind: %s" % stage)
             if stage == "integrate":
-                lines += self.integrate_lines(data, here)
+                if name == self.initiative:
+                    lines += self.integrate_lines(data, here)
+                else:     # r141, r142: a proposal drafted anew: the initiative's request and ledger, the earlier drafts to read
+                    lines += self.integrate_lines(workqueue.frontmatter((self.dir / "initiative.md").read_text())[0], here)
+                    lines.append("Ledger: %s" % self.rel(self.dir / "ledger.md"))
+                    read.append(self.rel(self.dir / "ledger.md"))
+                    earlier = re.search(r"The drafts of this proposal are in (\S+?)\.(?:\s|$)", item.read_text())
+                    if earlier:
+                        lines.append("Earlier drafts path (read only): %s" % earlier.group(1))
+                        read.append(earlier.group(1))
                 if self.answer_lines(name):     # r45: answers that ask for lines beyond the accepted ones
                     lines.append(ANSWER_LINES)
                 found = self.upstreams()     # r44: where the upstreams' published specs are read, and the form of the lines

@@ -2,6 +2,7 @@
 and written as one `drafted` capability-proposal for each capability it names. Standard library only; a part of
 supervise.Run."""
 import datetime
+import re
 
 FIELDS = ("adds", "changes", "removes")
 
@@ -65,9 +66,18 @@ class Changes:
         head = "\n".join(l for l in text[:end].split("\n") if l.split(":")[0] not in FIELDS)
         path.write_text(head + "\n" + "\n".join("%s: [%s]" % (f, ", ".join(lists[f])) for f in FIELDS) + text[end:])
 
+    def proposal_for(self, capability):
+        """The initiative's capability-proposal that argues `capability`, as a path, else None."""
+        for path in sorted(self.dir.glob("*.md")):
+            text = path.read_text()
+            if "\nkind: capability-proposal\n" in text and re.search(r"(?m)^argues: \[%s\]$" % re.escape(capability), text):
+                return path
+        return None
+
     def write_proposals(self, found, stage_dir):
         """One file a capability in the initiative's directory, `drafted`, naming `stage_dir`, the path of the round's
-        kept drafts; the paths written."""
+        kept drafts; the paths written. A capability the initiative has a proposal for has that proposal rewritten in
+        place: its lists and its drafts path replaced, its status left to the move (r142, r148)."""
         text = (self.dir / "initiative.md").read_text()
         ident = next((l.split(":", 1)[1].strip() for l in text.splitlines() if l.startswith("id:")), "")
         prefix = ident.split("/", 1)[1].rsplit("/", 1)[0] if "/" in ident else ""
@@ -78,6 +88,15 @@ class Changes:
                 one[field] += [i for i in each[field] if i not in one[field]]
         written = []
         for one in merged.values():
+            held = self.proposal_for(one["capability"])
+            if held:     # r148: a proposal drafted anew is rewritten, never a second one beside it
+                self.rewrite_lists(held.stem, [one])
+                text = held.read_text()
+                said = "The drafts of this proposal are in %s." % stage_dir
+                held.write_text(re.sub(r"The drafts of this proposal are in \S+?\.(?=\s|$)", lambda _: said, text)
+                                if "The drafts of this proposal are in" in text else text.rstrip("\n") + "\n\n" + said + "\n")
+                written.append(held)
+                continue
             path = self.dir / (one["capability"] + ".md")
             lists = "".join("%s: [%s]\n" % (f, ", ".join(one[f])) for f in FIELDS)
             path.write_text("---\nid: capability-proposal/%s/%s-%s\nkind: capability-proposal\npart_of: %s\nstatus: drafted\n"
