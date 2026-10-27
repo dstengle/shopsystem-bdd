@@ -1,7 +1,7 @@
 """features/requests.feature's steps about a request kept as .shop/work/requests/<id>.md (requests r8 to r12).
 
 A Given writes the request in the file form of the capability's Implementation section; a When runs `work`; the Thens
-read the request's file back.
+read the request back as its upstream keeps it (requests_world_steps.text_of).
 """
 import re
 import shlex
@@ -9,24 +9,18 @@ import shlex
 from pytest_bdd import given, parsers, then, when
 
 from .conftest import full
+from .requests_world_steps import request_rel, sections_of, text_of
 from .work_queue_git_steps import init
 
 COUNTS = {"one": 1, "two": 2, "three": 3}
 
 
-def request_rel(ident):
-    return ".shop/work/requests/%s.md" % ident
+def sections(repo, context, ident):
+    return sections_of(text_of(repo, context, ident))
 
 
-def sections(repo, ident):
-    """The request's `## <name>` sections, each as its list of entry lines."""
-    text = (repo / request_rel(ident)).read_text()
-    return {name: [line for line in body.splitlines() if line.strip()]
-            for name, body in re.findall(r"(?ms)^## (\w+)\n(.*?)(?=^## |\Z)", text)}
-
-
-def status_of(repo, ident):
-    return re.search(r"(?m)^status: (.*)$", (repo / request_rel(ident)).read_text()).group(1)
+def status_of(repo, context, ident):
+    return re.search(r"(?m)^status: (.*)$", text_of(repo, context, ident)).group(1)
 
 
 def write_request(repo, context, ident, asker, status, turn, count, given):
@@ -66,9 +60,9 @@ def the_upstream_runs(repo, run, context, args, giving):
     context["done"] = run("work", *argv)
 
 
-@then(parsers.parse("{ident}'s status is {status}"))
-def status_is(repo, ident, status):
-    actual = status_of(repo, ident)
+@then(parsers.re(r"(?P<ident>q\d+)'s status is (?P<status>not accepted|[\w-]+)"))
+def status_is(repo, context, ident, status):
+    actual = status_of(repo, context, ident)
     if status == "not accepted":
         assert actual != "accepted"
     else:
@@ -76,25 +70,25 @@ def status_is(repo, ident, status):
 
 
 @then(parsers.re(r"(?P<ident>q\d+)'s resolution gives (?P<gives>.+), each found in (?P<version>\S+)"))
-def resolution_gives(repo, ident, gives, version):
+def resolution_gives(repo, context, ident, gives, version):
     expected = {n: "%s %s" % (req, version) for n, req in re.findall(r"line (\d+) (\S+?)(?: and |$)", gives)}
-    kept = dict(entry.split(". ", 1) for entry in sections(repo, ident)["Resolution"])
+    kept = dict(entry.split(". ", 1) for entry in sections(repo, context, ident)["Resolution"])
     assert {k: kept.get(k) for k in expected} == expected, kept
 
 
 @then(parsers.parse("it gives line {n} nothing"))
-def gives_nothing(repo, n):
-    assert n not in dict(entry.split(". ", 1) for entry in sections(repo, "q1")["Resolution"])
+def gives_nothing(repo, context, n):
+    assert n not in dict(entry.split(". ", 1) for entry in sections(repo, context, "q1")["Resolution"])
 
 
 @then(parsers.parse("{ident} gives line {n} no line outcome"))
-def gives_no_outcome(repo, ident, n):
-    assert n not in dict(entry.split(". ", 1) for entry in sections(repo, ident)["Outcomes"])
+def gives_no_outcome(repo, context, ident, n):
+    assert n not in dict(entry.split(". ", 1) for entry in sections(repo, context, ident)["Outcomes"])
 
 
 @then(parsers.re(r"(?P<ident>q\d+)'s turn is the (?P<side>asker|upstream)'s"))
-def turn_is(repo, ident, side):
-    assert re.search(r"(?m)^turn: (.*)$", (repo / request_rel(ident)).read_text()).group(1) == side
+def turn_is(repo, context, ident, side):
+    assert re.search(r"(?m)^turn: (.*)$", text_of(repo, context, ident)).group(1) == side
 
 
 @then("the command is refused because it is the asker's turn")
@@ -104,7 +98,7 @@ def refused_asker_turn(context):
 
 @then(parsers.parse("{ident} is as it was"))
 def as_it_was(repo, context, ident):
-    assert (repo / request_rel(ident)).read_text() == context["written"]
+    assert text_of(repo, context, ident) == context["written"]
 
 
 @then("it exits successfully")

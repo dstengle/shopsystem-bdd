@@ -2,24 +2,6 @@
 Feature: Requests
   Narrator: a context taking in or raising a request
 
-  @r1 @deprecated
-  Scenario Outline: request with <given> writes an open request in the upstream's turn with the lines, asker and <where from> given, and prints its id (deprecated)
-    Deprecated for: request with <given> writes an open request in the upstream's turn with the lines and asker given<and where from>, and prints its id
-    Pins that request takes in what the asker gives it, as an open request for the upstream to answer first, and tells the caller its id.
-    Given an upstream that keeps no request
-    And a file lines.md with two lines in strict EARS
-    When the asker runs `work request "Show the queue" --from ctx-a --lines lines.md <options>`
-    Then the upstream keeps one new request, whose status is open and whose turn is the upstream's
-    And its lines are the two lines of lines.md and its asker is ctx-a
-    And its <where from> <named>
-    And work prints that request's id
-    And it exits successfully
-
-    Examples:
-      | given        | options                 | where from | named         |
-      | two --source | --source o1 --source o2 | origins    | are o1 and o2 |
-      | --thread     | --thread t1             | job-thread | is t1         |
-
   @r28
   Scenario Outline: the asker <doing> from its own repository, with no checkout of the upstream's repository
     Pins that an asker writes its part of a request and hands it on without ever holding a copy of the upstream's repository.
@@ -105,17 +87,6 @@ Feature: Requests
       | has an If clause with no then              |
       | has two shalls                             |
       | has two sentences                          |
-
-  @r3 @deprecated
-  Scenario: request with neither --source nor --thread is refused, and nothing changes (deprecated)
-    Deprecated for: a request the upstream raises for itself with neither --source nor --thread is refused, and nothing changes
-    Pins that no request is taken in without saying where it comes from.
-    Given an upstream that keeps no request
-    And a file lines.md with two lines in strict EARS
-    When the asker runs `work request "Show the queue" --from ctx-a --lines lines.md`
-    Then the command is refused because the request names neither an origin nor a job-thread
-    And it exits with an error
-    And the upstream keeps no request
 
   @r45
   Scenario: a request the upstream raises for itself with neither --source nor --thread is refused, and nothing changes

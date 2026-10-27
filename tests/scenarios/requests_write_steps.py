@@ -6,11 +6,8 @@ import shlex
 
 from pytest_bdd import given, parsers, then, when
 
-from .conftest import INDEX
-from .requests_steps import request_rel, sections
-from .work_queue_git_steps import init
-
-GOOD = ["The queue shall show each item.", "While idle, when a request arrives, the system shall answer it."]
+from .requests_steps import sections
+from .requests_world_steps import GOOD, kept_ids, make_repo, pending, publish_kept, request_rel, text_of
 FAULTS = {
     "is in none of EARS's patterns": "Show the queue to the caller.",
     "puts its When clause before a While clause": "When a request arrives, while idle, the system shall answer it.",
@@ -26,9 +23,7 @@ def kept(repo):
 
 @given("an upstream that keeps no request")
 def upstream_keeps_none(repo):
-    (repo / "spec").mkdir()
-    (repo / "spec" / "index.md").write_text(INDEX)
-    init(repo)
+    make_repo(repo, "ctx-a")     # a repository of its own, whose requests are internal ones: no upstream is set (requests r33)
 
 
 @given("a file lines.md with two lines in strict EARS")
@@ -48,37 +43,42 @@ def the_asker_runs(run, context, args):
 
 @then("the upstream keeps one new request, whose status is open and whose turn is the upstream's")
 def keeps_one_open(repo, context):
-    assert [p.name for p in kept(repo)] == ["q1.md"], context["done"]
-    text = (repo / request_rel("q1")).read_text()
+    assert kept_ids(repo, context) == ["q1"], context["done"]
+    text = text_of(repo, context, "q1")
     assert "status: open\n" in text and "turn: upstream\n" in text
 
 
 @then("the upstream keeps one new request")
 def keeps_one(repo, context):
-    assert [p.name for p in kept(repo)] == ["q1.md"], context["done"]
+    assert kept_ids(repo, context) == ["q1"], context["done"]
 
 
 @then(parsers.parse('its delegation is "{text}"'))
-def delegation_is(repo, text):
-    found = re.search(r"(?m)^delegation: (.*)$", (repo / request_rel("q1")).read_text())
+def delegation_is(repo, context, text):
+    found = re.search(r"(?m)^delegation: (.*)$", text_of(repo, context, "q1"))
     assert found, "no delegation field"
     value = found.group(1)
     assert (json.loads(value) if value.startswith('"') else value) == text
 
 
-@then("its lines are the two lines of lines.md and its asker is ctx-a")
-def lines_and_asker(repo):
-    assert sections(repo, "q1")["Lines"] == ["%d. %s" % (n, line) for n, line in enumerate(GOOD, 1)]
-    assert "asker: ctx-a\n" in (repo / request_rel("q1")).read_text()
+@then("its lines are the two lines of lines.md")
+def lines_are(repo, context):
+    assert sections(repo, context, "q1")["Lines"] == ["%d. %s" % (n, line) for n, line in enumerate(GOOD, 1)]
 
 
-@then(parsers.re(r"its (?P<field>origins|job-thread) (?:are|is) (?P<named>.+)"))
-def names_origin(repo, field, named):
-    text = (repo / request_rel("q1")).read_text()
+@then(parsers.re(r"its asker is (?P<asker>\S+)(?: and its (?P<field>origins|job-thread) (?:are|is) (?P<named>.+))?"))
+def names_origin(repo, context, asker, field, named):
+    text = text_of(repo, context, "q1")
+    assert "asker: %s\n" % asker in text, text
     if field == "origins":
         assert re.search(r"(?m)^source: \[o1, o2\]$", text), text
-    else:
+    elif field:
         assert re.search(r"(?m)^part_of: t1$", text), text
+
+
+@then("it names q7 as the request it is raised for")
+def names_raised_for(repo, context):
+    assert "raised_for: q7\n" in text_of(repo, context, "q1")
 
 
 @then("work prints that request's id")
@@ -108,32 +108,33 @@ def exits_with_an_error(context):
 
 
 @then("the upstream keeps no request")
-def keeps_no_request(repo):
-    assert kept(repo) == []
+def keeps_no_request(repo, context):
+    assert kept(context.get("upstream", repo)) == [] and not [i for _, _, i in pending(repo, context) if i["kind"] == "request"]
 
 
 @then(parsers.parse("{ident}'s lines are as they were"))
-def lines_as_they_were(repo, ident):
-    assert sections(repo, ident)["Lines"] == ["1. line 1", "2. line 2"]
+def lines_as_they_were(repo, context, ident):
+    assert sections(repo, context, ident)["Lines"] == ["1. line 1", "2. line 2"]
 
 
 @then(parsers.parse("{ident} gives line {n} the line outcome {word}"))
-def gives_outcome(repo, ident, n, word):
-    assert "%s. %s" % (n, word) in sections(repo, ident)["Outcomes"]
+def gives_outcome(repo, context, ident, n, word):
+    assert "%s. %s" % (n, word) in sections(repo, context, ident)["Outcomes"]
 
 
-@then(parsers.parse("{ident} has no resolution"))
-def has_no_resolution(repo, ident):
-    assert sections(repo, ident)["Resolution"] == []
+@then(parsers.re(r"(?P<ident>q\d+) has no resolution"))
+def has_no_resolution(repo, context, ident):
+    assert sections(repo, context, ident)["Resolution"] == []
 
 
 def add_sections(repo, context, ident, question, answer=None):
     """Append the upstream's question on line 1 (and the asker's answer to it) to the request, as work writes them."""
-    path = repo / request_rel(ident)
+    path = context.get("upstream", repo) / request_rel(ident)
     text = path.read_text().rstrip("\n") + "\n\n## Questions\n1. line 1: %s\n\n## Answers\n" % question
     path.write_text(text + ("1. %s\n" % answer if answer else ""))
     context["written"] = path.read_text()
-    context["questions"], context["answers"] = sections(repo, ident)["Questions"], sections(repo, ident)["Answers"]
+    context["questions"], context["answers"] = sections(repo, context, ident)["Questions"], sections(repo, context, ident)["Answers"]
+    publish_kept(repo, context)
 
 
 @given(parsers.parse('{ident} holds the upstream\'s question "{question}" on line 1 and the asker\'s answer "{answer}" to it'))
@@ -157,22 +158,22 @@ def the_asker_answers(run, context, answer):
 
 
 @then(parsers.parse('{ident} holds the question "{question}" on line {n}'))
-def holds_the_question(repo, ident, question, n):
-    assert "line %s: %s" % (n, question) in [e.split(". ", 1)[1] for e in sections(repo, ident)["Questions"]]
+def holds_the_question(repo, context, ident, question, n):
+    assert "line %s: %s" % (n, question) in [e.split(". ", 1)[1] for e in sections(repo, context, ident)["Questions"]]
 
 
 @then(parsers.parse('{ident} holds the answer "{answer}" to the question "{question}"'))
-def holds_the_answer(repo, ident, answer, question):
-    found = sections(repo, ident)
+def holds_the_answer(repo, context, ident, answer, question):
+    found = sections(repo, context, ident)
     number = next(e.split(". ", 1)[0] for e in found["Questions"] if e.endswith(": " + question))
     assert "%s. %s" % (number, answer) in found["Answers"]
 
 
 @then(parsers.parse("{ident}'s questions are as they were"))
 def questions_as_they_were(repo, context, ident):
-    assert sections(repo, ident)["Questions"] == context["questions"]
+    assert sections(repo, context, ident)["Questions"] == context["questions"]
 
 
 @then(parsers.parse("{ident}'s answers are as they were"))
 def answers_as_they_were(repo, context, ident):
-    assert sections(repo, ident)["Answers"] == context["answers"]
+    assert sections(repo, context, ident)["Answers"] == context["answers"]
