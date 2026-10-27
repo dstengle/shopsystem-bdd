@@ -228,3 +228,4 @@
 {"time": "2026-10-27T20:47:42+00:00", "work-item": "w208", "stage": "research", "agent": "code-scout", "session": "b009b8ee-f8cf-45bd-83b5-caaf858f5770", "event": "start"}
 {"time": "2026-10-27T20:52:37+00:00", "work-item": "w208", "stage": "research", "agent": "code-scout", "session": "b009b8ee-f8cf-45bd-83b5-caaf858f5770", "event": "end"}
 {"time": "2026-10-27T20:52:37+00:00", "work-item": "w208", "before": "drafted", "after": "awaiting-answer", "by": "work run"}
+{"time": "2026-10-27T20:52:49+00:00", "work-item": "w208", "before": "awaiting-answer", "after": "drafted", "by": "work answer"}
