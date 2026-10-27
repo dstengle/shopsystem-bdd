@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Applied spec-integration r44 (reading a) to spec/capabilities/spec-integration.md; commit da5772d6. No decision files. model check: 20 violations, 13 warnings, 10 unresolved references (other proposals' ids not yet applied).","questions":[],"changes":[{"capability":"spec-integration","adds":["spec-integration#r44"],"changes":[],"removes":[]}]}
