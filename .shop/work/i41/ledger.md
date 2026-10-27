@@ -1,3 +1,4 @@
 - 2026-10-27: integrate round 1: supervision adds r140-r148, removes r80 r114 r71, 5 questions; drafts at .shop/scratch/1-integrate/drafts/round-1
 - 2026-10-27: gate round 1: 3 questions
 - 2026-10-27: gate round 1 answered under the person's delegation of 2026-10-27: A, A, and B for r142 (not the recommended A, which adds a line the apply round cannot apply before redrafting exists).
+- 2026-10-27: apply round 2 supervision: r140-r148 added, r80 r114 r71 retired; answers r147/r132 A, r148/r92 A, r142 B applied; commit 580ad083
