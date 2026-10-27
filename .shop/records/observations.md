@@ -459,3 +459,11 @@ date: 2026-10-27
 
 - `work run i39` (plugin 0.26.0) ended with every capability-proposal `awaiting-answer` after its gate rounds, yet printed nothing and exited 0; `work run i40` did the same. Exit 0 means every work-item green and 3 a question for the person, so the questions were found only by reading the proposals.
 - Answers that give what no drafted reading holds (i39's action names, the retiring of rows r115 and r117) leave an apply round `BLOCKED` with no route to a new integrate round, as in observation 2026-10-26-answer-redirects-draft; raised as q18, delivered through i40.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-27-done-with-proposal-open
+about: capability/supervision
+by: the coordinator, from i40
+date: 2026-10-27
+
+- `work run i40` set i40 `done` while its supervision capability-proposal was still `awaiting-answer`: w203 (spec-integration r45) was green and the branch review passed, but q18's lines 1, 2 and 4 were in the open proposal and undelivered.
+- The answer to i40's gate question 3 (reading a, recommended) adds a line, so the apply round of the very proposal that brings in redrafting could not apply it. Its lines and the gate's other fixes were raised as q19 and the proposal withdrawn.
