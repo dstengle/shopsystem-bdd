@@ -1360,6 +1360,16 @@ Feature: Supervision
     Then i1 has one drafted capability-proposal for thing, its adds naming thing#r4, and i2 has one drafted capability-proposal for thing, its adds naming thing#r5
     And the two capability-proposals have different ids
 
+  @r135
+  Scenario: the lines an integrate round gives into an upstream are raised with `work request`, raised for the request the initiative fulfils and with its delegation
+    Pins that what an integration needs from an upstream reaches that upstream as a request tied to the request it serves and answerable under the same delegation.
+    Given i1 is proposed and fulfils the request q1, whose line 1 has the line outcome accepted, and which gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
+    And the integrate round for i1 gives DONE with a change list that adds thing#r4 on thing, and gives the lines of a request into the upstream catalogue: "When a book is listed, the catalogue shall give its edition."
+    And every other round ends
+    When the person runs `work run i1`
+    Then `work request` was run for the upstream catalogue, with the line "When a book is listed, the catalogue shall give its edition." as its one line
+    And the request it wrote in catalogue is raised for q1 and gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
+
   @r68
   Scenario: a drafted capability-proposal is given to a gate round whose brief asks for the gate as questions, each a decision with its readings and the recommended reading marked
     Pins that the gate comes back as decisions the person can answer one by one, with the reading to take already marked.
