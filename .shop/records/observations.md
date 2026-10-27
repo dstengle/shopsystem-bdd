@@ -442,3 +442,12 @@ date: 2026-10-26
 
 - The person answered i36's gate with a direction that neither drafted reading held (the collapse of observation 2026-10-26-outcome-and-lifecycle). The apply round ended `PARTIAL`, "No draft contains the collapse", and asked for a new integrate round; an integrate round is given only the accepted lines of the request the initiative fulfils (r79, r93), so no route takes an answer back into a draft, and `work` has no command that abandons an initiative. The collapse was raised as its own request, q16, and i36's proposal withdrawn.
 - q15 gave a delegation ("Answer every question with its recommended reading"), yet i37's gate questions were printed for the person: no session answered them under it.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-27-published-contracts
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+by: the person, from i39
+date: 2026-10-27
+
+- A downstream writing a request into an upstream uses whatever terminology it can; the upstream corrects the request to its own glossary terms. A request only proposes: the downstream has no final say on wording, terminology or implementation, and where a request is kept is the upstream's implementation, so long as the capability contract is fulfilled.
+- There is no way to publish a context's contracts, its glossary included, to other contexts, so a downstream cannot know the terms a request into an upstream should use. The person, 2026-10-27: "we need a way to publish contracts including glossaries between contexts in order to clarify how downstream contexts should write requests."
+- Related and left for later: what belongs in a capability contract versus what is public facing (i39 ledger, question on carriers).
