@@ -21,6 +21,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/work` with `scripts/workqueue.py` | the `work` command: the work-item queue, its statuses and log |
 | `scripts/workqueue_answer.py` | `work answer` |
 | `scripts/workqueue_status.py` | `work status` |
+| `scripts/workqueue_list.py` | `work list` and `work show <target>`: the queue listed, an initiative or a work-item shown, the record of raised requests (`raised.jsonl`) |
 | `scripts/workqueue_note.py` | `work note` |
 | `scripts/workqueue_start.py` | `work start`: the initiative an accepted request begins |
 | `scripts/workqueue_done.py` | an initiative done: the condition and the rewrite `work withdraw` and `work resolve` commit |

@@ -1,5 +1,6 @@
 """features/work-queue.feature's steps of `work status` (r16-r18): the repository, branch, remote and ledger it is read
 from, and what the output must hold."""
+import re
 import shlex
 
 from pytest_bdd import given, parsers, then
@@ -10,25 +11,24 @@ from .work_queue_git_steps import git
 NOTES = ["next: plan w1", "planned w1"] + ["filler note %d" % n for n in range(3, 11)] + ["next: answer w2", "w1 ready"]
 
 
-@given(parsers.parse("an initiative {ident} under .shop/work/ that is neither done nor abandoned, whose capability-proposal "
+@given(parsers.parse("an initiative {ident} under .shop/work/ that is {state}, whose capability-proposal "
                      "{proposal} is {pstatus}"))
-def open_with_proposal(repo, ident, proposal, pstatus):
+def open_with_proposal(repo, ident, state, proposal, pstatus):
     from .test_work_queue import initiative, item_text, write
     initiative(repo, ident)
     write(repo, ".shop/work/%s/%s.md" % (ident, proposal), item_text(proposal, pstatus, ident, "capability-proposal"))
 
 
-@given(parsers.parse("an initiative {ident} under .shop/work/ that is {state}, whose work-item {name} is {status}"))
-def with_state(repo, ident, state, name, status):
+@given(parsers.re(r"an initiative (?P<ident>\w+) under \.shop/work/ that is (?P<state>[^,]+), whose work-items? (?P<items>.+)$"))
+def with_state(repo, ident, state, items):
     from .test_work_queue import item_text, write
     text = "---\nid: %s\nkind: initiative\nstatus: %s\n---\n" % (full("initiative", ident), state.replace("neither done nor abandoned", "started"))
     from .test_work_queue import initiative
     initiative(repo, ident)
     write(repo, ".shop/work/%s/initiative.md" % ident, text)
-    items = [(name, status.split(" and whose work-item ")[0])]
-    items += [tuple(p.split(" is ")) for p in status.split(" and whose work-item ")[1:]]
-    for item, state_of in items:
-        write(repo, ".shop/work/%s/%s.md" % (ident, item), item_text(item, state_of, ident))
+    for item, state_of, question in re.findall(r'(\w+) is ([\w-]+)(?: with the question "([^"]*)" not yet answered)?', items):
+        write(repo, ".shop/work/%s/%s.md" % (ident, item), item_text(item, state_of, ident)
+              + ("\n## Questions\n- %s\n" % question if question else ""))
 
 
 @given(parsers.parse('i1\'s work-item w1 is ready, and its work-item w2 is awaiting-answer with the question "{question}" '

@@ -11,6 +11,7 @@ import supervise  # noqa: E402
 import supervise_all  # noqa: E402
 import workqueue  # noqa: E402
 import workqueue_answer  # noqa: E402
+import workqueue_list  # noqa: E402
 import workqueue_note  # noqa: E402
 import workqueue_request  # noqa: E402
 import workqueue_start  # noqa: E402
@@ -27,7 +28,13 @@ def cmd_withdraw(args):
     return 0
 
 
+def cmd_list(args):
+    return workqueue_list.listing(args.root, args.json)
+
+
 def cmd_show(args):
+    if args.target is not None:
+        return workqueue_list.show(args.root, args.target, args.json)
     if args.json:
         print(json.dumps({"work-items": [{"work-item": n, "initiative": i, "status": s}
                                          for i, n, s in workqueue.items(args.root)],
@@ -111,7 +118,10 @@ def main(argv=None):
     a.add_argument("--part-of", required=True)
     a.add_argument("--under", required=True)
     a.add_argument("--accepts", required=True, action="append")
-    s = sub.add_parser("show", help="each work-item of every initiative, with its status")
+    li = sub.add_parser("list", help="each initiative, request and work-item under .shop/work/, with its status")
+    li.add_argument("--json", action="store_true", help="print one JSON object instead of lines")
+    s = sub.add_parser("show", help="where an initiative or a work-item stands (default: each work-item and request, with its status)")
+    s.add_argument("target", nargs="?", help="an initiative or a work-item")
     s.add_argument("--json", action="store_true", help="print one JSON object instead of lines")
     w = sub.add_parser("withdraw", help="move a work-item that is neither claimed nor green to withdrawn")
     w.add_argument("name")
@@ -158,7 +168,7 @@ def main(argv=None):
     q.add_argument("request")
     args = ap.parse_args(argv)
     try:
-        return {"add": cmd_add, "show": cmd_show, "run": cmd_run, "retry": cmd_retry, "answer": cmd_answer,
+        return {"add": cmd_add, "show": cmd_show, "list": cmd_list, "run": cmd_run, "retry": cmd_retry, "answer": cmd_answer,
                 "withdraw": cmd_withdraw, "note": cmd_note, "status": cmd_status,
                 "request": cmd_request, "outcome": cmd_outcome, "ask": cmd_ask, "reply": cmd_reply, "turn": cmd_turn, "resolve": cmd_resolve,
                 "start": cmd_start}[args.cmd](args)

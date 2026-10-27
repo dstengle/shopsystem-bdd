@@ -55,7 +55,7 @@ def entries(shown):
             yield from entries(value)
 
 
-@then(parsers.parse("it gives {triples}"))
+@then(parsers.re(r"it gives (?P<triples>\S+ in \S+ with .+)$"))
 def gives(context, triples):
     found = set(entries(context["json"]))
     for triple in triples.replace(" and ", ", ").split(", "):
