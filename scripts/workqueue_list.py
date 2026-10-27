@@ -56,7 +56,10 @@ def listing(root, as_json):
 def work_item(root, target, as_json):
     path = workqueue.find(root, target)
     text = workqueue.read(path, root)
-    status = workqueue.frontmatter(text)[0].get("status")
+    data = workqueue.frontmatter(text)[0]
+    if data.get("kind") != "work-item":
+        raise Refused("%s is a %s, not a work-item or an initiative that work show shows" % (target, data.get("kind")))
+    status = data.get("status")
     questions = workqueue_status.section(text, "Questions")[len(workqueue_status.section(text, "Answers")):]
     if as_json:
         print(json.dumps({"work-item": target, "initiative": path.parent.name, "status": status, "questions": questions}))
