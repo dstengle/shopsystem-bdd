@@ -1,0 +1,11 @@
+{
+  "status": "DONE",
+  "summary": "w203 research done; notes at .shop/scratch/1-research/notes.md (seven parts).\nr45 scenario is red today: StepDefinitionNotFoundError at its first Given; the other four steps are undefined too (by search).\nProbe (run): an integrate brief gives the request's accepted lines and ids, but not the request's ## Answers; an answer in the initiative's own ## Answers does reach the brief (answer_lines).\nRequest answers are the r45 gap, so the change is in supervise_brief.integrate_lines plus a reader of request Questions/Answers in workqueue_request.py.\nThe Then must glob drafts under drafts/round-*; a flat drafts path with a new capability is refused (r107), probe run.\nDefect (run): an integrate round's result questions are dropped; initiative.md gets no Questions section; the question stays only in result.json.\nTests-of and untested have no map (not made); test lists are by search; refs missed attribute calls (accepted_lines).\nStray probe_r45.py sits in the run directory by mistake; shell cannot delete it; git ignores .shop/.\ngit status --porcelain is empty at the end; scratch probes are under .shop/scratch/w203-1-research/.",
+  "fileset": [
+    "scripts/supervise_brief.py",
+    "scripts/workqueue_request.py",
+    "tests/scenarios/spec_integration_steps.py",
+    "tests/scenarios/test_spec_integration.py"
+  ],
+  "questions": []
+}
