@@ -157,8 +157,9 @@ def proposed_fulfilling(repo, text, status="proposed"):
         for n in re.findall(r"\d+", numbers):
             outcomes[int(n)] = word
     write(repo, DIR + "/initiative.md", "---\nid: %s\nkind: initiative\nstatus: %s\nfulfils: q1\n---\n" % (full("initiative", "i1"), status))
-    write(repo, ".shop/work/requests/q1.md", "---\nid: %s\nkind: request\nasker: internal\nstatus: accepted\n---\n\n## Lines\n%s\n"
-          "## Outcomes\n%s" % (full("request", "q1"), "".join("%d. Line %d text.\n" % (n, n) for n in range(1, 4)),
+    given = re.search(r'which gives the delegation ("[^"]+")', text)     # r135: the request may give a delegation
+    write(repo, ".shop/work/requests/q1.md", "---\nid: %s\nkind: request\nasker: internal\nstatus: accepted\n%s---\n\n## Lines\n%s\n"
+          "## Outcomes\n%s" % (full("request", "q1"), "delegation: %s\n" % given.group(1) if given else "", "".join("%d. Line %d text.\n" % (n, n) for n in range(1, 4)),
                                "".join("%d. %s\n" % (n, w) for n, w in sorted(outcomes.items()))))
     commit_all(repo, "i1 is proposed and fulfils q1")
 

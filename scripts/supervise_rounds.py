@@ -13,6 +13,7 @@ import workqueue_done
 import workqueue_request
 from supervise_change import BadChanges, Changes, entries
 from supervise_faults import Fault, ended_of, fault_of
+from supervise_raise import Raises
 from supervise_worker import GitFailed, git
 from workqueue import Refused
 
@@ -27,7 +28,7 @@ def gives_nothing(data):
     return isinstance(said, str) and bool(said.strip()) and not data.get("questions") and data.get("changes") in (None, [])
 
 
-class Rounds(Changes):
+class Rounds(Changes, Raises):
     """The part of supervise.Run that runs a capability-proposal's rounds, one session at a time."""
 
     def proposals(self):
@@ -126,6 +127,7 @@ class Rounds(Changes):
                 raise Fault(failure)
             self.remove(tree)
             with self.lock:     # the round's commits reach the initiative branch before the transition
+                head = git(self.root, "rev-parse", "HEAD").stdout.strip()
                 git(self.root, "merge", "-q", "--no-edit", branch)
                 git(self.root, "branch", "-q", "-d", branch)
         except (Fault, GitFailed) as fault:
@@ -149,6 +151,17 @@ class Rounds(Changes):
             self.refuse_integrate(name, label, before, "its change list names %s, which neither spec/capabilities/ nor "
                                   "its drafts have" % ", ".join(absent))
         found = [one for one in found if one["capability"] not in absent]
+        record = ""
+        if kind == "integrate":     # r135: the lines given into an upstream are raised before any proposal is written
+            here = self.dir / "runs" / name / label
+            try:
+                record = self.raise_requests(data, here, self.kept_path(here))
+            except Refused as why:     # the round's merge is undone, its stage directory kept, and it runs again next time
+                with self.lock:
+                    git(self.root, "reset", "-q", "--hard", head)
+                self.keep_round(name, kind, label)
+                raise Refused("the integrate round of %s (%s) ended, and %s keeps its status %s: %s" % (
+                    name, self.rel(here), name, before, why)) from None
         asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []] if kind == "gate" else None
         if kind == "gate" and not asked:     # r117: a gate with nothing to decide still asks for the approval of the lines
             asked = ["Are the lines of %s approved as drafted? Readings: approve %s as drafted (recommended), "
@@ -193,6 +206,7 @@ class Rounds(Changes):
         else:     # r84: the round's stage directory is committed once it has ended, on top of the commit of started
             with self.lock:
                 proposals = self.write_proposals(found, self.kept_path(self.dir / "runs" / name / label), name)
+                proposals = proposals + [self.root / p for p in self.write_record(record)]
                 if name != self.initiative:     # r142: the proposal drafted anew is drafted, in one commit with its new lists
                     self.move(name, before, after, also=[self.rel(p) for p in proposals])
                 else:

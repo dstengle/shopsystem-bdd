@@ -81,7 +81,7 @@ class Drafts:
         have = {(str(d.get("part_of")).rsplit("/", 1)[-1], d.get("under")) for _, d in self.nodes("work-item")}
         drafted = False
         for name, data in self.nodes("capability-proposal"):
-            if data.get("status") != "formulated":
+            if data.get("status") != "formulated" or self.waits(self.dir / (name + ".md")):     # r136
                 continue
             groups = {}
             for entry in list(data.get("adds") or []) + list(data.get("changes") or []):

@@ -84,7 +84,7 @@ def _numbered(entries, number, text):
     return sorted(kept, key=lambda e: int(e.split(".", 1)[0]))
 
 
-def request(root, title, asker, lines_file, sources, thread, delegation=None):
+def request(root, title, asker, lines_file, sources, thread, delegation=None, raised_for=None):
     """Write a new open request in the upstream's turn, `q<n>` one above the highest kept; return q<n> (r1).
 
     A request that names neither an origin nor a job-thread is refused (r3), and so is one with a line not in the strict
@@ -92,7 +92,7 @@ def request(root, title, asker, lines_file, sources, thread, delegation=None):
     """
     if delegation is not None and not delegation.strip():
         raise Refused("the delegation is empty")
-    if not sources and thread is None:
+    if not sources and thread is None and raised_for is None:
         raise Refused("the request names neither an origin (--source) nor a job-thread (--thread)")
     if not Path(lines_file).is_file():
         raise Refused("the file %s does not exist" % lines_file)
@@ -103,7 +103,8 @@ def request(root, title, asker, lines_file, sources, thread, delegation=None):
     directory = Path(root) / workqueue.WORK / "requests"
     taken = [int(m.group(1)) for p in directory.glob("q*.md") if (m := re.fullmatch(r"q(\d+)\.md", p.name))]
     name = "q%d" % (max(taken, default=0) + 1)
-    origin = "part_of: %s" % thread if thread is not None else "source: [%s]" % ", ".join(sources)
+    origin = ["part_of: %s" % thread] if thread is not None else ["source: [%s]" % ", ".join(sources)] if sources else []
+    origin = "\n".join(origin + (["raised_for: %s" % raised_for] if raised_for is not None else []))
     given = "delegation: %s\n" % json.dumps(delegation) if delegation is not None else ""
     text = ("---\nid: request/%s/%s\nkind: request\nasker: %s\n%s\nstatus: open\nturn: upstream\n%s---\n\n# %s\n\n## Lines\n%s\n"
             "## Questions\n\n## Answers\n\n## Outcomes\n\n## Resolution\n"
