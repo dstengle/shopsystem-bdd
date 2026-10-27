@@ -4,7 +4,7 @@ title: Design model check
 narrator: a person or session verifying a repository against the design model
 group: service
 rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/query-commands-answer-in-their-output, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items, design-decision/work-items-named-by-ids]
-retired: [r28, r30, r31, r32, r38, r39, r40, r41, r42, r44, r45, r47, r50, r56, r57, r58, r60, r62, r63, r67]
+retired: [r28, r30, r31, r32, r38, r39, r40, r41, r42, r44, r45, r47, r50, r56, r57, r58, r60, r62, r63, r67, r115, r117]
 ---
 
 # Design model check
@@ -47,9 +47,9 @@ problem names the file.
 | [r113] | v16a | an initiative dated after 2026-10-23 fulfils no request |
 | [r114] | v_d1 | an initiative is `done` while a request kept in this context, whose asker is this context and whose `part_of` or `source` names the initiative, is not `delivered` |
 | [r119] | v_d3 | a request is `delivered` while the initiative that fulfils it is not `done` |
-| [r115] | v17 | a request neither is part of a job-thread nor cites an origin |
+| [r120] | v17 | a request neither is part of a job-thread, cites an origin nor is raised for a request |
 | [r116] | v3 | a `delivered` request's resolution names a requirement the spec does not have |
-| [r117] | v18 | an id in this context's files has another context's path on a kind kept in `.shop/work/`, judged from the id alone |
+| [r121] | v18 | an id in this context's files has another context's path on a kind kept in `.shop/work/`, judged from the id alone, other than the request a request is raised for |
 | [r52] | v_t1 | a requirement or a scenario mentions a word its context's glossary lists after `Not:`, named with the word and the term |
 | [r53] | v_t2 | two glossary entries have one term |
 | [r54] | v_t3 | a word one term lists after `Not:` is another term of the context, or the term itself |
