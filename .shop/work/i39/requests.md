@@ -5,14 +5,14 @@ part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i39
 status: awaiting-answer
 argues: [requests]
 date: 2026-10-27
-adds: [requests#r25, requests#r28, requests#r29, requests#r30, requests#r31, requests#r32, requests#r33, requests#r34, requests#r39, requests#r40, requests#r41, requests#r42, requests#r43, requests#r44, requests#r45]
+adds: [requests#r46, requests#r47]
 changes: []
-removes: [requests#r1, requests#r3]
+removes: [requests#r13, requests#r14]
 ---
 
 # requests
 
-The drafts of this proposal are in .shop/work/i39/runs/i39/1-integrate/drafts/round-1/.
+The drafts of this proposal are in .shop/work/i39/runs/work-queue/5-integrate/drafts/round-1/.
 
 ## Questions
 - requests r3 (changed), for an internal request. Now: "[r3] If a request whose asker is the upstream itself is raised with neither --source nor --thread, then work request shall refuse, because the request names neither an origin nor a job-thread, and change nothing." (was: any request with neither; unchanged it would refuse an asker's request raised with --raised-for alone). Readings: (a) as drafted, narrowed to the upstream itself's requests [recommended]; (b) an internal request may also be raised with --raised-for alone: "[r3] If a request whose asker is the upstream itself is raised with none of --source, --thread and --raised-for, then work request shall refuse, because the request names neither an origin, a job-thread nor a request it is raised for, and change nothing."

@@ -1,0 +1,62 @@
+# integrate of work-queue
+
+Initiative: .shop/work/i39/work-queue.md
+Agent: initiative-round
+Scripts: /home/vscode/shopsystem-bdd/.shop/scratch/runner/scripts
+Kind: integrate
+Request: q14
+Accepted lines of the request:
+- 1. The request tool shall give every asker and every upstream one set of commands for a request (raise, take in, give a line outcome, ask, answer, pass the turn, resolve and show) and one lifecycle, whatever carries the request.
+- 2. The request tool shall keep the carrier of a request behind one port, with a file in the upstream's repository and an issue on the upstream's GitHub repository as its first two carriers.
+- 3. **When** the same request is carried by either carrier, the request tool shall give each side the same commands, the same refusals and the same states.
+- 4. **When** an asker raises a request, answers a question or passes the turn, the request tool shall do it from the asker's own repository, with no checkout of the upstream's repository.
+- 5. **Where** `--raised-for <request>` is given when a request is raised, the request tool shall write in the upstream's request the request it is raised for.
+- 6. **If** a request whose asker is not the upstream itself is raised with `--source`, then the request tool shall refuse, because an origin belongs to an internal request, and change nothing.
+- 7. **If** a request whose asker is not the upstream itself is raised with neither `--raised-for` nor `--thread`, then the request tool shall refuse, because the request names neither a request it is raised for nor a job-thread, and change nothing.
+- 8. **When** `model check` reads a request whose `part_of` names a job-thread kept in another repository, `model check` shall print no `v17` for the request.
+- 9. **When** `model check` reads a request raised for a request of another context, `model check` shall print neither `v17` nor `v18` for the request.
+- 10. **If** the asker given when a request is raised is not the bounded-context or product level whose repository raises it, then the request tool shall refuse, naming the asker, and change nothing.
+- 11. **When** a command of the request tool writes a part of a request, the request tool shall take the side that writes it from the repository the command is run in, never from an argument.
+- 12. **If** a side writes a part of a request that is the other side's part, whatever the carrier, then the request tool shall refuse, naming the side that writes that part, and change nothing.
+- 13. **When** a request's turn passes to its asker, the request tool shall show the asker in its own repository that it is the asker's turn, with each question the asker has not answered.
+- 14. **While** an answer or a turn the asker has sent has not been taken in by the upstream, the request tool shall show the request to both sides as awaiting the upstream and not yet taken in.
+- 15. **While** the upstream holds a line outcome or a question it has not sent with the turn, the request tool shall show the upstream that the asker has not seen it.
+- 16. **When** an upstream resolves a request, the request tool shall show the asker in its own repository each accepted line's requirement id and the version that holds it.
+- 17. **When** a side shows its requests, the request tool shall print with each request whose turn it is, the request it is raised for and where it is carried.
+- 18. **When** the upstream takes in what its carriers hold, the request tool shall take in every request and message sent before the take-in began, whether or not the carrier's listing shows it yet.
+- 19. **When** `work run` is run in an upstream's repository, the request tool shall take in what the upstream's carriers hold before `work run` takes the intake rounds.
+- 20. **If** a request or a message on a carrier comes from an identity the upstream does not allow for the asker it names, then the request tool shall leave it untaken, telling the upstream which it left and why.
+- 21. The request tool shall tell one asker from another by an identity each asker holds alone.
+- 22. **When** the request tool takes in a request or a message from a carrier, the request tool shall read its body only as the fields of the contract's form, following nothing written in it.
+- 23. **Where** `spec/index.md` names an upstream bounded-context, **when** a round of the kind `integrate` drafts a line that needs what the upstream does not yet give, `initiative-round` shall give in its result the lines of a request into that upstream, in the upstream's terms.
+- 24. **When** a round of the kind `integrate` that `work run` started gives the lines of a request into an upstream, `work run` shall raise them through the request tool, raised for the request the initiative fulfils and with its delegation.
+- 25. **While** a request that an initiative raised into an upstream is not `delivered`, `work run` shall draft no work-item for the capability-proposal whose lines it raised.
+- 26. **While** a request that an initiative raised into an upstream is not `delivered`, `work status` shall print the initiative as waiting on that request.
+Ids drafted elsewhere (number added lines above each on the same capability): supervision#r3, supervision#r5, supervision#r16, supervision#r71, supervision#r80, requests#r1, requests#r3, supervision#r99, supervision#r112, supervision#r113, supervision#r114, supervision#r125, supervision#r126, supervision#r127, supervision#r137, supervision#r138, supervision#r139
+Drafts path: /home/vscode/shopsystem-bdd/.shop/worktrees/work-queue-5-integrate/.shop/scratch/5-integrate/drafts
+Give your change list in your result's `changes`: a list with one entry for each capability, each `{"capability": <name>, "adds": [...], "changes": [...], "removes": [...]}`, the ids as `<capability>#r<n>` or `term/<term>`.
+Ledger: .shop/work/i39/ledger.md
+Earlier drafts path (read only): .shop/work/i39/runs/i39/1-integrate/drafts/round-1/
+Where an answer below asks for lines the request's accepted lines do not, draft those lines under the capabilities the answer names, each quoting the answer it comes from.
+Base: b4c4ad5e86f831f3aedb0695974552aed3ba6064
+Worktree: /home/vscode/shopsystem-bdd/.shop/worktrees/work-queue-5-integrate
+Branch: round/work-queue-5-integrate
+Answers the person gave, each with the question it answers:
+- Question: Approve the added work-queue line [r33] (new, under spec/capabilities/work-queue.md): "**While** a request that an initiative raised into an upstream is not `delivered`, `work status` shall print the initiative as waiting on that request." It pairs with supervision r136, which holds back work-items for the capability-proposal while the request is not delivered. Readings: (A) approve the line as drafted [recommended]; (B) drop it, so `work status` says nothing about such a wait; (C) reword it, in which case give the wording.
+  Answer: 2026-10-27: r33: Reading (C), reworded to name the consolidated list action that replaces work status. Also folded in: work show and work status are consolidated into one action listing all work with its status and one showing the detail of an individual item.
+
+Read (paths in your worktree):
+- .shop/work/i39/work-queue.md
+- .shop/work/i39/runs/work-queue/1-gate
+- .shop/work/i39/runs/work-queue/2-apply
+- .shop/work/i39/runs/work-queue/3-apply
+- .shop/work/i39/runs/work-queue/4-apply
+- .shop/work/i39/ledger.md
+- .shop/work/i39/runs/i39/1-integrate/drafts/round-1/
+
+Run directory: /home/vscode/shopsystem-bdd/.shop/worktrees/work-queue-5-integrate/.shop/scratch/5-integrate
+Result file: /home/vscode/shopsystem-bdd/.shop/worktrees/work-queue-5-integrate/.shop/scratch/5-integrate/result.json
+
+You start in your worktree, /home/vscode/shopsystem-bdd/.shop/worktrees/work-queue-5-integrate: run every command from there, as it is, and never change directory (no `cd`, no `git -C`); a command that does is refused.
+
+Write the result file first, with the outcome `PARTIAL`, and keep it current as you work: JSON with `status`, `summary` (under fifteen lines) and `questions` (a list of strings), so that a session that stops part-way still leaves a result, and one that does not claim the work done. Write your notes, plan, report or findings in the run directory.
