@@ -61,6 +61,8 @@ def work_item(root, target, as_json):
     path = workqueue.find(root, target)
     text = workqueue.read(path, root)
     data = workqueue.frontmatter(text)[0]
+    if data.get("kind") is None:
+        raise Refused("%s has no kind (a work-item or an initiative is what work show shows)" % target)
     if data.get("kind") != "work-item":
         raise Refused("%s is a %s, not a work-item or an initiative that work show shows" % (target, data.get("kind")))
     status = data.get("status")

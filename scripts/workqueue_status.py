@@ -74,9 +74,9 @@ def changes(root):
     return changed, untracked
 
 
-def ledger(directory):
+def ledger(root, directory):
     path = directory / "ledger.md"
-    lines = path.read_text(encoding="utf-8").splitlines() if path.is_file() else []
+    lines = workqueue.read(path, root).splitlines() if path.is_file() else []
     nexts = [l for l in lines if (DATED.match(l) or [None, ""])[1].startswith("next:")]
     return lines[-10:], (nexts[-1] if nexts else None)
 
@@ -85,7 +85,7 @@ def read(root, name, shared):
     directory = Path(root) / workqueue.WORK / name
     data, _ = workqueue.frontmatter(workqueue.read(directory / "initiative.md", root))
     found = list(parts(root, directory))
-    last, newest = ledger(directory)
+    last, newest = ledger(root, directory)
     return {"initiative": name, "status": data.get("status"),
             "proposals": [{"capability-proposal": n, "status": s} for k, n, s, _ in found if k == "capability-proposal"],
             "work-items": [{"work-item": n, "status": s, "questions": q} for k, n, s, q in found if k == "work-item"],

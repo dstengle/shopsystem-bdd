@@ -105,10 +105,11 @@ class Changes:
         for one in merged.values():
             held = self.proposal_for(one["capability"])
             if held:     # r148: a proposal drafted anew is rewritten, never a second one beside it
-                if held.stem == own:
-                    self.rewrite_lists(held.stem, [one])
-                else:
+                if held.stem != own:     # the round did not write this proposal's drafts: its drafts path stays
                     self.merge_lists(held.stem, one)
+                    written.append(held)
+                    continue
+                self.rewrite_lists(held.stem, [one])
                 text = held.read_text()
                 said = "The drafts of this proposal are in %s." % stage_dir
                 held.write_text(re.sub(r"The drafts of this proposal are in \S+?\.(?=\s|$)", lambda _: said, text)

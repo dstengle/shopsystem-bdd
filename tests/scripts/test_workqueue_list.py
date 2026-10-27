@@ -25,6 +25,28 @@ def test_list_json_gives_each_request_and_its_status_and_nothing_besides(tmp_pat
     assert json.loads(done.stdout)["requests"] == [{"request": "q1", "status": "accepted"}]
 
 
+def run(tmp_path, *args):
+    return subprocess.run([sys.executable, str(WORK), "--root", str(tmp_path), *args], capture_output=True, text=True)
+
+
+def test_show_of_an_initiative_whose_ledger_is_not_utf8_is_refused_naming_the_ledger(tmp_path):
+    repo(tmp_path)
+    (tmp_path / ".shop" / "work" / "i1" / "ledger.md").write_bytes(b"- 2026-01-01: \xff\xfe\n")
+    done = run(tmp_path, "show", "i1")
+    assert done.returncode == 1
+    assert "Traceback" not in done.stderr
+    assert "ledger.md" in done.stderr and "UTF-8" in done.stderr
+
+
+def test_show_of_a_work_item_file_with_no_kind_is_refused_saying_it_has_no_kind(tmp_path):
+    repo(tmp_path)
+    (tmp_path / ".shop" / "work" / "i1" / "w1.md").write_text("---\nstatus: ready\n---\n")
+    done = run(tmp_path, "show", "w1")
+    assert done.returncode == 1
+    assert "Traceback" not in done.stderr
+    assert "no kind" in done.stderr and "None" not in done.stderr
+
+
 def test_a_raised_record_line_that_cannot_be_read_is_refused_naming_the_file_and_line(tmp_path):
     for n, record in enumerate(["not json\n", '{"upstream": "u", "request": "q9"}\n']):
         done = repo(tmp_path / str(n), record)

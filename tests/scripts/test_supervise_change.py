@@ -41,6 +41,18 @@ def test_a_round_started_for_one_proposal_merges_its_ids_into_another_held_propo
     assert "status: applied" in other
 
 
+def test_a_round_started_for_one_proposal_leaves_another_held_proposals_drafts_path_as_it_was(tmp_path):
+    initiative = tmp_path / "i1"
+    initiative.mkdir()
+    (initiative / "initiative.md").write_text("---\nid: initiative/a.io/b/c/i1\nkind: initiative\n---\n")
+    proposal(initiative, "p1", "thing", ["thing#r1"], [])
+    proposal(initiative, "p2", "other", ["other#r1"], [])
+    holder = Changes()
+    holder.dir = initiative
+    holder.write_proposals(entries({"changes": [{"capability": "other", "adds": ["other#r2"]}]}), "drafts/", "p1")
+    assert "The drafts of this proposal are in old/." in (initiative / "p2.md").read_text()
+
+
 def test_two_entries_naming_one_capability_give_one_proposal_with_both_entries_ids(tmp_path):
     written = write(tmp_path, [{"capability": "thing", "adds": ["thing#r3"]},
                                {"capability": "thing", "adds": ["thing#r4"], "removes": ["thing#r1"]},
