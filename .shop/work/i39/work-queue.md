@@ -30,6 +30,7 @@ The drafts of this proposal are in .shop/work/i39/runs/work-queue/5-integrate/dr
 ## Answers
 - 2026-10-27: r33: Reading (C), reworded to name the consolidated list action that replaces work status. Also folded in: work show and work status are consolidated into one action listing all work with its status and one showing the detail of an individual item.
 - 2026-10-27: Names: the consolidated actions are named: work list lists all work with its status (initiatives, requests and work-items); work show <id> shows the detail of one initiative, request or work-item; work status is retired, its lines retired and replaced by lines naming work list or work show. r33 is retired and replaced by: '**While** a request that an initiative raised into an upstream is not `delivered`, `work list` shall print the initiative as waiting on that request.'
+- 2026-10-27: r33: superseded; r33 never entered spec/ and r39 replaces it, as the person's answer of 2026-10-27 has it (answered by the coordinator under the person's delegation of 2026-10-27).
 
 ## Faults
 - the gate round left no result `work run` can read: its round wrote no result file; its session ended as a success (success, 8 turns, exit code 0)
