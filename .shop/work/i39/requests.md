@@ -24,6 +24,7 @@ The drafts of this proposal are in .shop/work/i39/runs/work-queue/5-integrate/dr
 - requests r33, r34: for an internal request asker and upstream repository are the same, so the repository does not say which side writes. Readings: (a) the command writes as the side owning the part, r34 never refuses on an internal request; (b) the repository is the upstream's side only, writing the asker's part (an answer) is refused under r34.
 - requests r39, r41, r43: 'message' is in no glossary entry and no line. Readings: (a) a message is the asker's answer or turn-passing (the acts r28 lists); (b) a separate kind of thing sent, needing its own command and form.
 - requests r25: 'one set of commands ... and one lifecycle'. Readings: (a) whatever the request and side, the same command does each action and every request goes through the same statuses; (b) a request's actions are part of work's one consolidated set for all work (work list, work show <id>), and its lifecycle is the one all work follows. The answer given named the consolidated actions but chose neither reading.
+- the formulate round's scenario for requests#r25, requests#r46, requests#r47 is missing: the formulate round's result gave no question and does not give it
 
 ## Answers
 - 2026-10-27: r3: Reading (a), narrowed to requests whose asker is the upstream itself; as a changed line, r3 is retired and replaced by a line with a new id (no requirement is edited in place).
