@@ -1,0 +1,25 @@
+/home/vscode/shopsystem-bdd/.shop/worktrees/i40-1-integrate/.shop/scratch/1-integrate/drafts/round-1/spec/capabilities/supervision.md
+/home/vscode/shopsystem-bdd/.shop/worktrees/i40-1-integrate/.shop/scratch/1-integrate/drafts/round-1/spec/capabilities/spec-integration.md
+
+## Change list
+
+| change | capability | id | line | note sentence |
+|---|---|---|---|---|
+| added | supervision | r137 | **When** a round of the kind `apply` applies nothing because a capability-proposal's answers give what its drafts do not hold, `work run` shall start a new round of the kind `integrate` for the capability-proposal. | q18 Line 1: "When a round of the kind `apply` applies nothing because a capability-proposal's answers give what its drafts do not hold, `work run` shall start a new round of the kind `integrate` for the capability-proposal." |
+| added | supervision | r138 | **When** `work run` starts a round of the kind `integrate` for a capability-proposal that has answers, `work run` shall give the round the capability-proposal's questions and answers and the initiative's ledger, with the accepted lines of the request the initiative fulfils. | q18 Line 2: "When `work run` starts a round of the kind `integrate` for a capability-proposal that has answers, `work run` shall give the round the capability-proposal's questions and answers and the initiative's ledger, with the accepted lines of the request the initiative fulfils." |
+| added | supervision | r139 | **When** a round of the kind `integrate` drafts a capability-proposal anew from its answers, `work run` shall set the capability-proposal `drafted`, its earlier drafts kept in their round's directory. | q18 Line 4: "When a round of the kind `integrate` drafts a capability-proposal anew from its answers, `work run` shall set the capability-proposal `drafted`, its earlier drafts kept in their round's directory." |
+| added | spec-integration | r45 | **When** a round of the kind `integrate` is given answers that ask for lines the request's accepted lines do not, `initiative-round` shall draft those lines under the capabilities the answers name. | q18 Line 3: "When a round of the kind `integrate` is given answers that ask for lines the request's accepted lines do not, `initiative-round` shall draft those lines under the capabilities the answers name." |
+
+Placement: supervision r138 after r102, r139 after r92, r137 after r80; spec-integration r45 after r43. No line changed or removed; frontmatter (`retired`) unchanged. No glossary term added, changed or removed (ledger, round, answer, capability-proposal used as the glossary defines them). No decision files.
+
+## Questions
+
+1. supervision r80, r71, r114 against r137 (contradiction): r80, r71 and r114 fire whenever an `apply` round ends, so an `apply` round that applies nothing would set the proposal `approved`, start `formulate` and write `adds`/`changes`/`removes`, while r137 starts a new `integrate` round. Readings: (a, recommended) change r80, r71 and r114 to "**When** a round of the kind `apply` that `work run` started for a capability-proposal ends having applied its drafts, ..." (each keeps its id); (b) leave them as they are, so both happen.
+2. supervision r132/r131 against r137: an `apply` round's output is its change list; an `apply` round that applies nothing may give none, and r131 would then write a question naming the missing output and set the proposal `awaiting-answer`. If an empty change list counts as that output: no line changes. Otherwise: change r132 to read "... an integrate round's change list; an apply round's change list, or that it applied nothing because the answers give what the drafts do not hold; ...".
+3. supervision, the capability-proposal's status between r137 and r139: the note does not say what it is while the new `integrate` round runs. If it is kept: "**When** `work run` starts a round of the kind `integrate` for a capability-proposal, `work run` shall keep the proposal's status until the round ends." If it is set `drafted` at once, r139 would move to the start of the round.
+4. supervision r92 against r139 and spec-integration r45: when a redrafting `integrate` round's change list names the capability-proposal's own capability, does r92 write a second `drafted` capability-proposal, or does r139 alone apply? And when r45 drafts lines under other capabilities the answers name, does r92 write a new capability-proposal for each? If r139 replaces r92 for the proposal's own capability: change r92 to "... for each capability the change list names that no capability-proposal of the initiative is redrafted for, ...". If both apply: no change.
+5. supervision r79/r93 against r138: r138 starts an `integrate` round "for a capability-proposal"; r79 and r93 start it for an initiative. No contradiction read; confirm that r138's round is the one r137 starts and no other (if yes, no change).
+
+## Cut sentences
+
+- None. The note's title ("An answer that redirects a draft starts a new integrate round") restates Lines 1-4 and is not a sentence of its own.
