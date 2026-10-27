@@ -77,3 +77,4 @@
 {"time": "2026-10-27T15:50:25+00:00", "work-item": "w202", "stage": "review", "agent": "bdd-task-reviewer", "session": "58908e7a-5d04-4698-805c-984b3b320b78", "event": "start"}
 {"time": "2026-10-27T15:51:58+00:00", "work-item": "w202", "stage": "review", "agent": "bdd-task-reviewer", "session": "58908e7a-5d04-4698-805c-984b3b320b78", "event": "end"}
 {"time": "2026-10-27T15:51:58+00:00", "work-item": "w202", "before": "done", "after": "awaiting-answer", "by": "work run"}
+{"time": "2026-10-27T16:42:49+00:00", "work-item": "w202", "before": "awaiting-answer", "after": "ready", "by": "work answer"}
