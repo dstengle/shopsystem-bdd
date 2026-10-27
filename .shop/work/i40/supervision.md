@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i40-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i40
-status: awaiting-answer
+status: withdrawn
 argues: [supervision]
 adds: [supervision#r137, supervision#r138, supervision#r139]
 changes: []
