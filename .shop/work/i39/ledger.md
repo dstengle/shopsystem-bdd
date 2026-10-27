@@ -23,3 +23,4 @@
 - 2026-10-27: apply round 2 supervision: r135 r136 added as drafted, r137 not added (the answer of 2026-10-27 picks neither reading); model check 22 violations from other proposals' unresolved references
 - 2026-10-27: formulate round 3 supervision: commit b80813ca; r135 formulated; r136 returned as a question (two readings)
 - 2026-10-27: apply round 2 work-queue: nothing applied; the r33 answer is a reword with no wording and folds in a consolidation of work show and work status that the drafts lack; needs a new integrate round
+- 2026-10-27: design-model-check, retired requirements: every query hides retired requirements by default and includes them only when asked.
