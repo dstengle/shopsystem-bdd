@@ -5,3 +5,4 @@
 - 2026-10-27: gate round 1 for spec-integration: 1 question (r44)
 - 2026-10-27: gate round 1 for supervision: 1 question (r135 with no delegation)
 - 2026-10-27: gate round 1 for work-queue: 1 question (r33)
+- 2026-10-27: requests term/carrier and r43 (questions 2 and 5): no term carrier and no carrier in any line. A request only proposes; the downstream has no final say on wording, terminology or implementation. A request is a conversation whose handle is the request itself; where it is kept (a file in a repository, an issue) is implementation, the upstream's alone, so long as the capability contract is fulfilled. What belongs in the capability contract versus what is public facing is left for later.
