@@ -131,6 +131,30 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 Only `initiative-round` has the Agent tool. A plugin agent's `hooks` and `permissionMode` are ignored, so a role's
 limits are its tools; under `work run` they are also its `--allowedTools`.
 
+## 0.27.0: transitions from how a session ended, and the turn of an accepted request
+
+- **`work run` moves a node by how its session ended and what its result holds** (supervision r128-r134), never by
+  the outcome word a result gives (r133). A session that ends in an error, at its turn limit or with no result
+  `work run` can read is a fault, whatever its result says (r128): a work-item goes to `failed`; a round's or an
+  answering session's fault is recorded under its node's `## Faults` and printed, the node keeping its status. A
+  result that gives questions sends them where its stage's questions go (r129): a researcher's into the planner's
+  brief, the work-item moving on to `researched`; every other stage's under the node's `## Questions`, the node
+  `awaiting-answer`. A result with no question and its stage's output makes the next transition (r130); one with
+  neither gets a question naming the missing output (r131). Each stage's output (r132): a researcher's file set, a
+  planner's plan and file set, an implementer's commits on which the work-item's scenarios and the whole suite pass,
+  a reviewer's findings, an answer, an integrate or apply round's change list, a formulate round's scenario for each
+  requirement its proposal adds or changes (none for a requirement of a guarantees capability, none for a term), an
+  intake round's line outcome or question on each line, a gate round's questions. So a formulate round's question
+  waits for its answer whatever the round reports (q13). Supervision r3, r5, r16, r112 and r113 are removed; "fault",
+  "outcome" and "stage" in the glossary now speak of every session.
+- **An accepted request stays in the upstream's turn** (requests r23, r24, r7 narrowed): the delivery an acceptance
+  promises is the upstream's, so `work` keeps the turn there when it sets a request `accepted`, and passes it to the
+  asker when the request is `delivered`.
+
+Upgrading a consuming repository from 0.26.0: update the plugin and start a session. No file is rewritten. A request
+already `accepted` in the asker's turn stays there until it is resolved, which passes the turn to the asker as before.
+Workers are still asked for an outcome word; it is kept for reports.
+
 ## 0.26.0: requests and the context loop
 
 - **Requests** (capability requests, decision 0067): the one way work enters a bounded context. `work request <title>
