@@ -20,3 +20,4 @@ The drafts of this proposal are in .shop/work/i39/runs/i39/1-integrate/drafts/ro
 
 ## Answers
 - 2026-10-27: r120, r121: no requirement edits or overrides another. Rows r115 (v17) and r117 (v18) are retired and replaced by new rows with new ids covering q14 lines 8 and 9; r120 and r121 are dropped. Also folded in: a retired requirement is a node labelled retired, not returned by queries about the current spec; closed records (a delivered request, a done work-item, a merged, formulated or withdrawn proposal, ledgers, decisions, measurements) may name one; the current spec (scenario tags, live lines and rows) and open work naming one is an error; v3 becomes a resolution naming a requirement that never existed.
+- 2026-10-27: Also: every query hides retired requirements by default and includes them only when asked.
