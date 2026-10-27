@@ -32,11 +32,23 @@ class Reviews:
             return bool(paths) and all(p.startswith(kept) or p == log for p in paths)
         return [sha for sha in shas if not own(sha)]
 
+    def unread_mine(self):
+        """The unread commits (r27, r50) that touch this initiative's own files, its log and kept reviews aside: on a
+        branch the initiatives share, another initiative's commits call for no review of this one (each work-item's
+        transition commits a file of the initiative, so its new work does)."""
+        mine = self.rel(self.dir) + "/"
+        kept = self.rel(self.review_dir()) + "/"
+        log = self.rel(self.dir / "log.jsonl")
+        def touches(sha):
+            paths = git(self.root, "diff-tree", "--root", "--no-commit-id", "--name-only", "-r", "-m", sha).stdout.split()
+            return any(p.startswith(mine) and not p.startswith(kept) and p != log for p in paths)
+        return [sha for sha in self.unread() if touches(sha)]
+
     def branch_review(self):
         """A `bdd-branch-reviewer` session over the initiative branch from its base, in a detached worktree of its own,
         given one brief (r27); the push of the branch verified first (r35, r51). Its directory is kept and committed
         when its session ends (r47, r48). The kept directory; None when no review was due."""
-        if not self.unread():
+        if not self.unread_mine():
             return None
         reason = self.git_push("--dry-run")
         if reason:
