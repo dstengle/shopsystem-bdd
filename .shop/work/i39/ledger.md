@@ -41,3 +41,4 @@
 - 2026-10-27: formulate round 4 supervision: commit 2615e821; scenario added r136 (r135 formulated in round 3); features bindings clean; model check: 15 violations, none from supervision
 - 2026-10-27: formulate round 5 requests: nothing formulated, no commit; the gate answers (r35-r38 and r13 naming work list and work show, r14 retired, r33 r34 internal request, r39 r41 r43 without message, r25 reading a) change lines not yet in spec/ and need an integrate round first
 - 2026-10-27: formulate round 6 requests: commit b9bf5ff9; scenario added r25; r46 r47 not in spec/; line changes of the gate answers carried in q21; features bindings clean; model check: 14 violations, none from requests
+- 2026-10-27: w211: carrier reading A (git ref namespace per asker id on the upstream's remote), supervision's raise reading A (unchanged for now). Follow-up: work run's raise (supervision r135) to go through the same carrier as any asker, reformulating r135's scenario.
