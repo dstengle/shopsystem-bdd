@@ -123,8 +123,9 @@ def path_of(repo, context, who, where, aname):
                  + r"(?P<giving>, giving no side)?"))
 def runs_in_a_repository(repo, run, context, who, what, answer, args, where, aname, giving):
     argv = ["reply", "q1", "1", answer] if answer is not None else shlex.split(args)
+    from .requests_run_steps import stub_env     # `work run` runs with the stand-in claude (r40)
     context["ran_in"] = path_of(repo, context, who, where, aname)
-    context["done"] = run("work", *argv, cwd=context["ran_in"])
+    context["done"] = run("work", *argv, cwd=context["ran_in"], **({"env": stub_env(context)} if argv[0] == "run" else {}))
 
 
 @when("the asker answers that question with \"{answer}\" in its own repository")

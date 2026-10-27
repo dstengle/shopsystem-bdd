@@ -26,6 +26,8 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/workqueue_start.py` | `work start`: the initiative an accepted request begins |
 | `scripts/workqueue_done.py` | an initiative done: the condition and the rewrite `work withdraw` and `work resolve` commit |
 | `scripts/workqueue_request.py` | the requests of a context: `work request`, `outcome`, `ask`, `reply`, `turn`, `resolve` |
+| `scripts/workqueue_sent.py` | the carrier of what an asker sends an upstream (r28, decision 0071): git refs on the upstream's remote, the settings in `.shop/requests.toml`, the publishing of requests |
+| `scripts/workqueue_takein.py` | `work request`'s gate and sending, and `work take-in`: what has been sent, taken in against the upstream's allow list (r30-r32, r39-r43) |
 | `scripts/supervise*.py` | `work run`: briefs, workers, the pool of workers side by side (`supervise_pool.py`), merging, faults, the branch review, a capability-proposal's apply and formulate rounds and the integrate round's ending in drafted proposals (r91, r96), all three one at a time across initiatives (r95) (`supervise_rounds.py`) |
 | `scripts/supervise_raise.py` | `work run`'s raising of the lines an integrate round gives into an upstream, its record (`raised.jsonl`) and the hold of a proposal while a request raised with it is not delivered (r135, r136) |
 | `scripts/supervise_outputs.py` | `work run`'s reading of what a stage's result must give (its output) and the question naming it when missing (r131, r132) |
