@@ -114,7 +114,8 @@ def names_asker(repo, context, asker, field, named):
 
 @then(parsers.parse("it names {ident} as the request it is raised for"))
 def names_raised_for(repo, context, ident):
-    assert "raised_for: %s\n" % ident in (repo / request_rel(new_request(repo, context))).read_text()
+    text = (repo / request_rel(new_request(repo, context))).read_text()
+    assert re.search(r"(?m)^raised_for: request/\S+/%s$" % re.escape(ident), text), text
 
 
 @then("work prints that request's id")

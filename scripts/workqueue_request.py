@@ -92,11 +92,17 @@ def upstreams(root):
     return [m.group(1).rsplit("/", 1)[-1] for m in found if m]
 
 
+def own_askers(root):
+    """The spellings of this repository's own asker: its context path, its last part and its bounded-context id (r32)."""
+    path = workqueue.context_path(root)
+    return {path, path.rsplit("/", 1)[-1], "bounded-context/" + path}
+
+
 def gate(root, asker, sources, thread, raised_for):
     """Refuse, before anything is written, a request this repository may not raise: one given another asker than the
     repository's own (r32), and, where the repository asks an upstream, one with an origin (r30) or with neither a
     request it is raised for nor a job-thread (r31)."""
-    if asker != workqueue.context_path(root).rsplit("/", 1)[-1]:
+    if asker != "internal" and asker not in own_askers(root):
         raise Refused("this repository raises requests only as itself; it does not raise one for the asker %s" % asker)
     if upstreams(root):
         if sources and (thread is not None or raised_for is not None):
@@ -110,7 +116,7 @@ def _refuse_upstream_part(root, text, ident, part):
     to an upstream when its asker is this repository's own id, the repository lists upstreams and the request names no
     origin; an internal request (asker the upstream itself) is written by this repository as either side (r44, r15, r25)."""
     asked = upstreams(root)
-    if asked and field(text, "asker") == workqueue.context_path(root).rsplit("/", 1)[-1] and field(text, "source") is None:
+    if asked and field(text, "asker") in own_askers(root) and field(text, "source") is None:
         raise Refused("%s is a request to the upstream %s; the upstream writes %s" % (ident, asked[0], part))
 
 
@@ -134,6 +140,8 @@ def request(root, title, asker, lines_file, sources, thread, delegation=None, ra
     taken = [int(m.group(1)) for p in directory.glob("q*.md") if (m := re.fullmatch(r"q(\d+)\.md", p.name))]
     name = "q%d" % (max(taken, default=0) + 1)
     origin = ["part_of: %s" % thread] if thread is not None else ["source: [%s]" % ", ".join(sources)] if sources else []
+    if raised_for is not None and re.fullmatch(r"q\d+", raised_for):     # a bare q<n> names a request of this context
+        raised_for = "request/%s/%s" % (workqueue.context_path(root), raised_for)
     origin = "\n".join(origin + (["raised_for: %s" % raised_for] if raised_for is not None else []))
     given = "delegation: %s\n" % json.dumps(delegation) if delegation is not None else ""
     text = ("---\nid: request/%s/%s\nkind: request\nasker: %s\n%s\nstatus: open\nturn: upstream\n%s---\n\n# %s\n\n## Lines\n%s\n"

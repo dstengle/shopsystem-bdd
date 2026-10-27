@@ -2,6 +2,7 @@
 waits for the request raised with them (r136): the upstream catalogue is a repository beside the context's, named by
 spec/index.md's `## Upstreams`; the record of what this context raised is .shop/work/i1/raised.jsonl."""
 import json
+import re
 import subprocess
 
 from pytest_bdd import given, parsers, then
@@ -51,7 +52,7 @@ def request_run(repo, context, line):
 @then(parsers.re(r'the request it wrote in catalogue is raised for q1 and gives the delegation "(?P<text>[^"]+)"$'))
 def request_raised(repo, text):
     body = requests_of(repo.parent / "catalogue-ctx")[0].read_text()
-    assert "\nraised_for: q1\n" in body and "\ndelegation: %s\n" % json.dumps(text) in body, body
+    assert re.search(r"(?m)^raised_for: request/\S+/q1$", body) and "\ndelegation: %s\n" % json.dumps(text) in body, body
 
 
 @given("i1 is started and fulfils the request q1, and i1's capability-proposal p1 is formulated, its adds naming thing#r1, "
@@ -81,7 +82,7 @@ def p1_from_round_with_lines(repo, context, line):
 def q2_awaiting(repo, line):
     there = catalogue(repo)
     write(there, ".shop/work/requests/q2.md", "---\nid: request/ex.com/prod/catalogue/q2\nkind: request\n"
-          "asker: bounded-context/ex.com/prod/ctx\nraised_for: q1\nstatus: awaiting-upstream\nturn: upstream\n---\n\n"
+          "asker: bounded-context/ex.com/prod/ctx\nraised_for: request/ex.com/prod/ctx/q1\nstatus: awaiting-upstream\nturn: upstream\n---\n\n"
           "# q2\n\n## Lines\n1. %s\n" % line)
     commit_all(there, "q2")
     write(repo, DIR + "/raised.jsonl", json.dumps({"upstream": CATALOGUE, "request": "q2", "initiative": "i1",

@@ -29,7 +29,7 @@ class Raises:
             return ""
         me, _ = workqueue.frontmatter((self.root / "spec" / "index.md").read_text())
         fulfils = workqueue.frontmatter((self.dir / "initiative.md").read_text())[0].get("fulfils")
-        asked = str(fulfils).rsplit("/", 1)[-1] if fulfils else None
+        asked = str(fulfils) if fulfils else None     # the full id, which model check reads (design-model-check r120)
         delegation = self.delegation()
         record = ""
         for number, each in enumerate(entries, 1):
