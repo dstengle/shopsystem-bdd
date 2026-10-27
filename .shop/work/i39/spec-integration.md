@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i39-spec-integration
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i39
-status: approved
+status: formulated
 argues: [spec-integration]
 date: 2026-10-27
 adds: [spec-integration#r44]
