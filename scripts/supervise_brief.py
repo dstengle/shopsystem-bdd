@@ -15,6 +15,8 @@ REQUEST_LINES = ("Where a line you draft needs what an upstream above does not y
                  "that upstream in your result's `requests`: a list with one entry for each such upstream, each "
                  '`{"upstream": <its id>, "lines": [...]}`, the lines in strict form, worded in the terms of the '
                  "glossary in that upstream's published spec (its index.md), read there; write nothing into it.")
+ANSWER_LINES = ("Where an answer below asks for lines the request's accepted lines do not, draft those lines under the "
+                "capabilities the answer names, each quoting the answer it comes from.")
 UPSTREAM = re.compile(r"^- (bounded-context/\S+?):\s+(\S.*?)\s*$")
 
 
@@ -46,6 +48,8 @@ class Briefs:
             lines.append("Kind: %s" % stage)
             if stage == "integrate":
                 lines += self.integrate_lines(data, here)
+                if self.answer_lines(name):     # r45: answers that ask for lines beyond the accepted ones
+                    lines.append(ANSWER_LINES)
                 found = self.upstreams()     # r44: where the upstreams' published specs are read, and the form of the lines
                 lines += [("Upstream: %s, its published spec: %s" % pair) for pair in found]
                 read += [str(path) for _, path in found]

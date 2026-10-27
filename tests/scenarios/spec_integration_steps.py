@@ -57,6 +57,44 @@ def approved_note(repo, plan):
     plan["initiative-round"] = {"status": "DONE"}
 
 
+SHIP = "The customer is told when an order ships."
+SHIP_DRAFTS = ".shop/scratch/1-integrate/drafts/round-1/spec/capabilities/notifications.md"
+
+
+@given("a request whose accepted lines ask that the customer sees the status of an order", target_fixture="plan")
+def status_request(repo):
+    plan = repository(repo)
+    write(repo, ".shop/work/i1/initiative.md",
+          "---\nid: %s\nkind: initiative\nstatus: proposed\nfulfils: q1\n---\n" % full("initiative", "i1"))
+    write(repo, ".shop/work/requests/q1.md", "---\nid: %s\nkind: request\nasker: internal\nstatus: accepted\n---\n\n## Lines\n"
+          "1. The customer sees the status of an order.\n\n## Outcomes\n1. accepted\n" % full("request", "q1"))
+    commit_all(repo, "i1 fulfils q1")
+    return plan
+
+
+@given("none of those lines asks that the customer is told when an order ships")
+def lines_ask_no_shipping(repo):
+    assert "ships" not in (repo / ".shop/work/requests/q1.md").read_text()
+
+
+@given("an answer that asks that the customer is told when an order ships")
+def answer_asks_shipping(repo):
+    path = repo / ".shop/work/i1/initiative.md"
+    write(repo, ".shop/work/i1/initiative.md", path.read_text() + "\n## Questions\n\n- Anything the customer is told?\n\n"
+          "## Answers\n\n- %s Put it under notifications.\n" % SHIP)
+    commit_all(repo, "i1 has an answer")
+
+
+@given("that answer names the capability notifications")
+def answer_names_notifications(repo, plan):
+    assert "notifications" in (repo / ".shop/work/i1/initiative.md").read_text()
+    line = "**When** an order ships, `notifications` shall tell the customer that the order has shipped."
+    plan["round:integrate"] = {"status": "DONE", "write": {SHIP_DRAFTS: cap("notifications", ["- [r1] " + line])}, "fields": {
+        "changes": [entry("notifications", "adds notifications#r1")]}}
+    plan["initiative-round"] = {"status": "DONE"}
+
+
+@when("work run starts a round of the kind integrate given that request and that answer")
 @when("work run starts a round of the kind integrate on that note")
 def run_integrate(repo, plan, context):
     stub = repo.parent / "stub"
@@ -105,3 +143,13 @@ def lines_in_billing_terms(repo, context):
     assert str(billing_spec(repo)) in brief and "glossary" in brief, brief
     lines = " ".join(l for r in kept_requests(repo, context) for l in r["lines"])
     assert "credit note" in lines and "refund" not in lines, lines
+
+
+@then("the round drafts, under notifications, a line that the customer is told when an order ships")
+def drafts_shipping_line(repo, context):
+    brief = integrate_brief(repo, context)
+    assert SHIP in brief and "notifications" in brief and "asks for lines the request's accepted lines do not" in brief, brief
+    drafts = sorted((repo / ".shop/work/i1/runs/i1").glob("*-integrate/drafts/round-*/spec/capabilities/notifications.md"))
+    assert any("ships" in p.read_text() for p in drafts), (drafts, context["done"].stdout, context["done"].stderr)
+    proposals = git(repo, "ls-files", ".shop/work")
+    assert "notifications" in proposals, proposals
