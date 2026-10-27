@@ -16,7 +16,6 @@ import workqueue_note  # noqa: E402
 import workqueue_request  # noqa: E402
 import workqueue_start  # noqa: E402
 import workqueue_status  # noqa: E402
-import workqueue_takein  # noqa: E402
 
 
 def cmd_add(args):
@@ -69,13 +68,8 @@ def cmd_status(args):
 
 
 def cmd_request(args):
-    print(workqueue_takein.raise_request(args.root, args.title, args.asker, args.lines, args.source, args.thread,
-                                         args.delegation, args.raised_for))
-    return 0
-
-
-def cmd_take_in(args):
-    workqueue_takein.take_in(args.root)
+    print(workqueue_request.request(args.root, args.title, args.asker, args.lines, args.source, args.thread, args.delegation,
+                                     args.raised_for))
     return 0
 
 
@@ -110,7 +104,6 @@ def cmd_start(args):
 
 
 def cmd_run(args):
-    workqueue_takein.take_in(args.root)     # r40: what was sent is taken in before the intake rounds start
     if args.initiative is None:
         return supervise_all.run_all(args.root)
     return supervise.run(args.root, args.initiative)
@@ -173,7 +166,6 @@ def main(argv=None):
     q = sub.add_parser("resolve", help="write which requirement holds each accepted line of a request, and in which version")
     q.add_argument("request")
     q.add_argument("--line", nargs=3, action="append", default=[], metavar=("N", "REQUIREMENT", "VERSION"))
-    sub.add_parser("take-in", help="take in the requests and messages sent to this upstream, in the order sent")
     q = sub.add_parser("start", help="write the initiative an accepted request begins, proposed")
     q.add_argument("request")
     args = ap.parse_args(argv)
@@ -181,7 +173,7 @@ def main(argv=None):
         return {"add": cmd_add, "show": cmd_show, "list": cmd_list, "run": cmd_run, "retry": cmd_retry, "answer": cmd_answer,
                 "withdraw": cmd_withdraw, "note": cmd_note, "status": cmd_status,
                 "request": cmd_request, "outcome": cmd_outcome, "ask": cmd_ask, "reply": cmd_reply, "turn": cmd_turn, "resolve": cmd_resolve,
-                "start": cmd_start, "take-in": cmd_take_in}[args.cmd](args)
+                "start": cmd_start}[args.cmd](args)
     except workqueue.Refused as refused:
         print("work: %s" % refused, file=sys.stderr)
         return 1
