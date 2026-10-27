@@ -68,6 +68,7 @@ def cmd_status(args):
 
 
 def cmd_request(args):
+    workqueue_request.gate(args.root, args.asker, args.source, args.thread, args.raised_for)
     print(workqueue_request.request(args.root, args.title, args.asker, args.lines, args.source, args.thread, args.delegation,
                                      args.raised_for))
     return 0

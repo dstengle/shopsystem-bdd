@@ -84,6 +84,27 @@ def _numbered(entries, number, text):
     return sorted(kept, key=lambda e: int(e.split(".", 1)[0]))
 
 
+def upstreams(root):
+    """The ids (without `bounded-context/`) of the bullets of spec/index.md's `## Upstreams`: the contexts this one asks."""
+    index = Path(root) / "spec" / "index.md"
+    section = re.search(r"(?ms)^## Upstreams\s*$(.*?)(?=^## |\Z)", index.read_text() if index.is_file() else "")
+    found = [re.match(r"^- bounded-context/([^\s:]+):", line) for line in section.group(1).splitlines()] if section else []
+    return [m.group(1).rsplit("/", 1)[-1] for m in found if m]
+
+
+def gate(root, asker, sources, thread, raised_for):
+    """Refuse, before anything is written, a request this repository may not raise: one given another asker than the
+    repository's own (r32), and, where the repository asks an upstream, one with an origin (r30) or with neither a
+    request it is raised for nor a job-thread (r31)."""
+    if asker != workqueue.context_path(root).rsplit("/", 1)[-1]:
+        raise Refused("this repository raises requests only as itself; it does not raise one for the asker %s" % asker)
+    if upstreams(root):
+        if sources:
+            raise Refused("an origin (--source) belongs to an internal request; a request to an upstream names none")
+        if thread is None and raised_for is None:
+            raise Refused("the request names neither a request it is raised for (--raised-for) nor a job-thread (--thread)")
+
+
 def request(root, title, asker, lines_file, sources, thread, delegation=None, raised_for=None):
     """Write a new open request in the upstream's turn, `q<n>` one above the highest kept; return q<n> (r1).
 
@@ -121,6 +142,9 @@ def request(root, title, asker, lines_file, sources, thread, delegation=None, ra
 def outcome(root, ident, number, word):
     """Write line `number`'s outcome `word` (r12, r15); in the asker's turn it is refused, writing nothing (r16)."""
     def edit(text):
+        asked = upstreams(root)
+        if asked and field(text, "asker") == workqueue.context_path(root).rsplit("/", 1)[-1]:
+            raise Refused("%s is a request to the upstream %s; the upstream writes the line outcomes" % (ident, asked[0]))
         if field(text, "turn") == "asker":
             raise Refused("%s is in the asker's turn; the upstream writes a line outcome only in its own turn" % ident)
         return _with_entries(text, "Outcomes", _numbered(_entries(text, "Outcomes"), number, word))

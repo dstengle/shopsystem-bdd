@@ -79,6 +79,10 @@ def work_item(root, target, as_json):
 def show(root, target, as_json):
     """Print where `target`, an initiative or a work-item, stands; return the exit status."""
     workqueue.entry(target, "target")
+    for name, status, turn, _ in workqueue.requests(root):
+        if name == target and not (Path(root) / workqueue.WORK / target / "initiative.md").is_file():
+            print(json.dumps({"request": name, "status": status, "turn": turn}) if as_json else "%s %s %s" % (name, status, turn))
+            return 0
     if (Path(root) / workqueue.WORK / target / "initiative.md").is_file():
         return workqueue_status.status(root, target, as_json)
     return work_item(root, target, as_json)

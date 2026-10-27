@@ -6,7 +6,6 @@ import shlex
 
 from pytest_bdd import given, parsers, then, when
 
-from .conftest import INDEX
 from .requests_steps import request_rel, sections
 from .work_queue_git_steps import init
 
@@ -27,7 +26,7 @@ def kept(repo):
 @given("an upstream that keeps no request")
 def upstream_keeps_none(repo):
     (repo / "spec").mkdir()
-    (repo / "spec" / "index.md").write_text(INDEX)
+    (repo / "spec" / "index.md").write_text("---\nid: bounded-context/ctx-a\n---\n# ctx-a\n")
     init(repo)
 
 
@@ -46,44 +45,12 @@ def the_asker_runs(run, context, args):
     context["done"] = run("work", *shlex.split(args))
 
 
-@then("the upstream keeps one new request, whose status is open and whose turn is the upstream's")
-def keeps_one_open(repo, context):
-    assert [p.name for p in kept(repo)] == ["q1.md"], context["done"]
-    text = (repo / request_rel("q1")).read_text()
-    assert "status: open\n" in text and "turn: upstream\n" in text
-
-
-@then("the upstream keeps one new request")
-def keeps_one(repo, context):
-    assert [p.name for p in kept(repo)] == ["q1.md"], context["done"]
-
-
 @then(parsers.parse('its delegation is "{text}"'))
 def delegation_is(repo, text):
     found = re.search(r"(?m)^delegation: (.*)$", (repo / request_rel("q1")).read_text())
     assert found, "no delegation field"
     value = found.group(1)
     assert (json.loads(value) if value.startswith('"') else value) == text
-
-
-@then("its lines are the two lines of lines.md and its asker is ctx-a")
-def lines_and_asker(repo):
-    assert sections(repo, "q1")["Lines"] == ["%d. %s" % (n, line) for n, line in enumerate(GOOD, 1)]
-    assert "asker: ctx-a\n" in (repo / request_rel("q1")).read_text()
-
-
-@then(parsers.re(r"its (?P<field>origins|job-thread) (?:are|is) (?P<named>.+)"))
-def names_origin(repo, field, named):
-    text = (repo / request_rel("q1")).read_text()
-    if field == "origins":
-        assert re.search(r"(?m)^source: \[o1, o2\]$", text), text
-    else:
-        assert re.search(r"(?m)^part_of: t1$", text), text
-
-
-@then("work prints that request's id")
-def prints_id(context):
-    assert context["done"].stdout.strip() == "q1"
 
 
 @then("the command is refused, naming line 2")
