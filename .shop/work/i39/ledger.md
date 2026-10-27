@@ -24,3 +24,4 @@
 - 2026-10-27: formulate round 3 supervision: commit b80813ca; r135 formulated; r136 returned as a question (two readings)
 - 2026-10-27: apply round 2 work-queue: nothing applied; the r33 answer is a reword with no wording and folds in a consolidation of work show and work status that the drafts lack; needs a new integrate round
 - 2026-10-27: design-model-check, retired requirements: every query hides retired requirements by default and includes them only when asked.
+- 2026-10-27: w202 (review question on request lines in the upstream's glossary terms): a downstream writer uses whatever terminology it can; the upstream corrects the request to its own glossary terms. spec-integration r44's 'in the upstream's terms' is to be retired and replaced accordingly. Publishing contracts with glossaries between contexts is tracked as observation 2026-10-27-published-contracts.
