@@ -1,0 +1,1 @@
+Revised the @r25 scenario in /home/vscode/shopsystem-bdd/.shop/worktrees/requests-6-formulate/.shop/scratch/6-formulate/drafts/requests.feature.fragment: the show step is now `work show <the request>` and the last Then reads "for each of the three requests, work show <the request> prints that request with delivered and the asker's turn"; nothing else changed.
