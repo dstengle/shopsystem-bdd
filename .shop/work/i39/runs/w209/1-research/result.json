@@ -1,0 +1,12 @@
+{
+  "status": "DONE",
+  "summary": "Research of w209 (design-model-check r120 v17, r121 v18) done; notes.md in the run directory, parts 1-7.\nBoth accepted scenarios are red at undefined steps: r120 at its Given 'a request q1 ... raised for no request'; r121 at 'no request is raised for it' and 'a request q9 ... is raised for it'. The Then 'v17 does not name q2, q3 or q4' matches no pattern.\nToday's rules: model.lp:256-261 read no raised-for field; model_requests.py reads only part_of and source; request_form refuses a request with neither (raised-for-only request is a file problem).\nNo job-thread node is ever created in this context, so a request part of a job-thread is v17 (defect D1, reproduced with work request --thread).\n`work request --raised-for` is refused (D2); a hand-written raised-for-only request is a file problem (D3); a request source naming nothing is not printed unresolved (D4).\nFile set: scripts/model.lp, scripts/model_requests.py, tests/scenarios/design_model_check_requests.py, tests/scenarios/design_model_check_then.py, features/design-model-check.feature.\nOpen points for the plan, both readings in notes: job-thread visibility; raised-for alone vs origin required; Retires names @r120 where the feature tags @r115; field name.\nTests by search (tools tests-of has no map); tests/scripts model tests 42 pass; no test breaks by the requirements.",
+  "fileset": [
+    "scripts/model.lp",
+    "scripts/model_requests.py",
+    "tests/scenarios/design_model_check_requests.py",
+    "tests/scenarios/design_model_check_then.py",
+    "features/design-model-check.feature"
+  ],
+  "questions": []
+}
