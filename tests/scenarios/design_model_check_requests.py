@@ -7,6 +7,9 @@ from pytest_bdd import given, parsers
 from .conftest import CONTEXT, PATH, full
 
 
+OTHER = "bounded-context/other.com/prod/other"
+
+
 def request_text(name="q1", asker="internal", links=None, resolution=None, status="open", path=PATH):
     """A request file in the form requests' Implementation gives `work request`; `asker` None leaves the line out.
 
@@ -82,7 +85,7 @@ def initiative_with_status_fulfilling(world, ident, status, q):
 @given(parsers.re(r"a request (?P<q>q\d) in (?P<path>\S+) whose asker is (?P<asker>this context|another context), "
                   r"whose (?P<field>source|part_of) names (?P<ident>i\d), with status (?P<status>[\w-]+)$"))
 def request_of_an_initiative(world, q, path, asker, field, ident, status):
-    who = CONTEXT if asker == "this context" else "bounded-context/other.com/prod/other"
+    who = CONTEXT if asker == "this context" else OTHER
     link = "%s: [%s]" % (field, full("initiative", ident))
     world.write(path, request_text(q, asker=who, links=[link], status=status))
 
@@ -93,9 +96,30 @@ def delivered_request(world, q):
     world.write(".shop/work/requests/%s.md" % q, request_text(q, status="delivered"))
 
 
-@given(parsers.re(r"a request (?P<q>q\d) that is part of no job-thread and cites no origin$"))
+@given(parsers.re(r"a request (?P<q>q\d) that is part of no job-thread, cites no origin and is raised for no request$"))
 def request_with_no_origin(world, q):
     world.write(".shop/work/requests/%s.md" % q, request_text(q, links=["part_of: %s" % full("initiative", "i1")]))
+
+
+@given(parsers.re(r"a request (?P<q>q\d) that is part of a job-thread$"))
+def request_in_a_thread(world, q):
+    world.write(".shop/work/requests/%s.md" % q, request_text(q, links=["part_of: %s" % full("job-thread", "save-x")]))
+
+
+@given(parsers.re(r"a request (?P<q>q\d) raised for the request (?P<ref>\S+)$"))
+def request_raised_for(world, q, ref):
+    world.write(".shop/work/requests/%s.md" % q, request_text(q, asker=OTHER, links=["raised_for: %s" % ref]))
+
+
+@given("no request is raised for it")
+def no_request_is_raised_for_it():
+    """Nothing is written."""
+
+
+@given(parsers.re(r"a request (?P<q>q\d) of this context is raised for it$"))
+def request_of_this_context_raised_for_it(world, q):
+    world.write(".shop/work/requests/%s.md" % q,
+                request_text(q, asker=OTHER, links=["raised_for: %s" % world.cited]))
 
 
 @given(parsers.re(r"a request (?P<q>q\d) that cites an observation as its origin$"))
@@ -123,6 +147,7 @@ def repository_of_context(world, ident):
 
 @given(parsers.re(r"an initiative (?P<ident>i\d) whose source names (?P<ref>\S+)$"))
 def initiative_citing(world, ident, ref):
+    world.cited = ref
     write_initiative(world, ident, source=ref, path=world.path)
 
 

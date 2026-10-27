@@ -25,6 +25,7 @@
 #defined blocked_by/2.   #defined wi_depends/2.   #defined about/2.
 #defined asker/2.     #defined req_part_of/2.   #defined req_source/2.  #defined fulfils/2.
 #defined date/2.      #defined foreign/1.
+#defined req_thread/1.   #defined req_raised_for/2.
 % Used by grammar.md with no .decl and no §2 row:
 #defined authored_depends_on/2.   % g:112 (v4); the parse of "CAP depends on X"
 #defined age/2.                   % g:203 (w_stale_intake); days since an initiative was proposed
@@ -253,12 +254,17 @@ v_d3(Q) :- status(Q, "delivered"), fulfils(I, Q), not status(I, "done").
 label("v16a", "an initiative dated after 2026-10-23 that fulfils no request").
 has_fulfils(I) :- fulfils(I, _).
 v16a(I) :- node(I, "initiative"), date(I, D), D > "2026-10-23", not has_fulfils(I).
-label("v17", "a request that is part of no job-thread and cites no origin").
+% r120: a job-thread is judged from the id (req_thread), and a request raised for a request is let off.
+label("v17", "a request that is part of no job-thread, cites no origin and is raised for no request").
 in_thread(Q)    :- req_part_of(Q, T), node(T, "job-thread").
+in_thread(Q)    :- req_thread(Q).
 cites_origin(Q) :- req_source(Q, O), node(O, K), origin(K).
-v17(Q) :- node(Q, "request"), not in_thread(Q), not cites_origin(Q).
-label("v18", "an id of a kind kept in .shop/work/ with another context's path").
-v18(X) :- foreign(X).
+raises_a_request(Q) :- req_raised_for(Q, _).
+v17(Q) :- node(Q, "request"), not in_thread(Q), not cites_origin(Q), not raises_a_request(Q).
+% r121: except a request that some request is raised for.
+label("v18", "an id of a kind kept in .shop/work/ with another context's path, other than the request a request is raised for").
+raised_for_any(R) :- req_raised_for(_, R).
+v18(X) :- foreign(X), not raised_for_any(X).
 % EXTENSION (proposed against grammar.md v3; design-model-check r59): an abandoned initiative leaves
 % no part open; each is closed or withdrawn.
 % CONTRACT (scripts/model --help): `withdrawn` is closed, so "not withdrawn" adds nothing to "not closed"

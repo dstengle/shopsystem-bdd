@@ -850,16 +850,6 @@ Feature: Design model check
     Then v_d3 names q1
     And once i1 is done, v_d3 does not name q1
 
-  @r115 @deprecated
-  Scenario: a request that is part of no job-thread and cites no origin is v17 (deprecated)
-    Deprecated for: a request that is part of no job-thread, cites no origin and is raised for no request is v17
-    Pins that every request says where it comes from.
-    Given a request q1 that is part of no job-thread and cites no origin
-    And a request q2 that cites an observation as its origin
-    When `model check` is run
-    Then v17 names q1
-    And v17 does not name q2
-
   @r120
   Scenario: a request that is part of no job-thread, cites no origin and is raised for no request is v17
     Pins that every request says where it comes from: a job-thread, an origin or the request it is raised for.

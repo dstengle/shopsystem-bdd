@@ -33,6 +33,11 @@ class RequestReading:
         for rel, key in (("req_part_of", "part_of"), ("req_source", "source")):
             for ref in as_list(data.get(key)):
                 self.fact(rel, ident, self.qualify(ref))
+                if rel == "req_part_of" and str(ref).startswith("job-thread/"):
+                    self.fact("req_thread", ident)
+        for ref in as_list(data.get("raised_for")):
+            if str(ref).startswith("request/"):     # the kind is judged from the id
+                self.fact("req_raised_for", ident, self.qualify(ref))
         for line in section(body, "Resolution"):
             m = re.match(r"^\d+\.\s+(\S+)", line)
             if m:
@@ -50,7 +55,8 @@ class RequestReading:
         for key in ("asker", "status"):
             if not data.get(key):
                 return f"no {key}"
-        if not (data.get("part_of") or data.get("source")):
+        raised = data.get("raised_for") and str(data["asker"]).strip() != "internal"
+        if not (data.get("part_of") or data.get("source") or raised):
             return "neither part_of nor source"
         if data.get("turn") not in ("asker", "upstream"):
             return "turn is not asker or upstream"
