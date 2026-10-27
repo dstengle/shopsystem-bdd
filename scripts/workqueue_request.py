@@ -110,8 +110,7 @@ def _refuse_upstream_part(root, text, ident, part):
     to an upstream when its asker is this repository's own id, the repository lists upstreams and the request names no
     origin; an internal request (asker the upstream itself) is written by this repository as either side (r44, r15, r25)."""
     asked = upstreams(root)
-    own = workqueue.context_path(root).rsplit("/", 1)[-1]
-    if asked and field(text, "asker") == own and field(text, "source") is None:
+    if asked and field(text, "asker") == workqueue.context_path(root).rsplit("/", 1)[-1] and field(text, "source") is None:
         raise Refused("%s is a request to the upstream %s; the upstream writes %s" % (ident, asked[0], part))
 
 
