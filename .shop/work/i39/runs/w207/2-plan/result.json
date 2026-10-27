@@ -1,0 +1,13 @@
+{
+  "status": "DONE",
+  "summary": "w207 plan: the r34-r39 scenarios already pass. The scope is branch review 3's fix-now findings.\nFinding 1 (merge into another held proposal): kept, no code change, per the 2026-10-27 ledger ruling (the line goes to the follow-up request).\nFinding 2: on the merge path, write_proposals leaves the other proposal's drafts sentence as it is (supervision r108, r142). New unit test in test_supervise_change.py.\nD1: work show <initiative> refuses a non-UTF-8 ledger, naming the file (r7). D3: the refusal of a no-kind work-item says it has no kind (r7). Unit tests in test_workqueue_list.py.\nNot taken: D2 (list --json waiting; unsettled, not fix-now) and the work status / no-target show retirement (not accepted by w207).\nNo existing test breaks (verified by reading test_supervise_change.py and the notes).",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/supervise_change.py",
+    "tests/scripts/test_supervise_change.py",
+    "scripts/workqueue_status.py",
+    "scripts/workqueue_list.py",
+    "tests/scripts/test_workqueue_list.py"
+  ],
+  "questions": []
+}
