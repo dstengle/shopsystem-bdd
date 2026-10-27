@@ -10,3 +10,4 @@
 - 2026-10-27: supervision r135 (question 8): delegation always passes upstream as a flag; it is up to the upstream to decide what to do with that fact. 'I did this under delegation' is not 'we are all supposed to do this under delegation'. Whether a shop repo acts on a delegation is configurable in that repo, on to start with, to be turned off as confidence grows.
 - 2026-10-27: requests r3 (question 1): (a), as drafted, narrowed to requests whose asker is the upstream itself.
 - 2026-10-27: design-model-check r120, r121 (question 6): no requirement edits or overrides another requirement. The table rows are individually numbered requirements, so rows r115 (v17) and r117 (v18) change in place to cover q14 lines 8 and 9, and the standalone lines r120, r121 are dropped.
+- 2026-10-27: work-queue r33 (question 9): (C), reworded to name the consolidated list action that replaces work status, not work status.
