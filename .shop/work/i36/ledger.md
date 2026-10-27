@@ -4,3 +4,4 @@
 - 2026-10-26: i36-supervision questions 2-5: answered under the collapse of question 1 (the person, 2026-10-26: "yes, answer both and run work run")
 - 2026-10-26: apply round 2: nothing applied; the approved collapse (replacing r3, r5, r45, r86-r90, r100, r112, r113, r115, r44 placeholder) is in no draft and r125-r127 were declined; a new integrate round is needed
 - 2026-10-26: i36-supervision withdrawn: its apply round found no draft of the collapse; the collapse is raised as q16, by whose lines q13 is to be resolved (observation 2026-10-26-answer-redirects-draft)
+- 2026-10-27: i36 set done by hand: q13 delivered through i38's lines (supervision r129, r133) and resolved at 0.27.0 (observation 2026-10-26-answer-redirects-draft)
