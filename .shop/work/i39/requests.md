@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i39-requests
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i39
-status: approved
+status: awaiting-answer
 argues: [requests]
 date: 2026-10-27
 adds: [requests#r25, requests#r28, requests#r29, requests#r30, requests#r31, requests#r32, requests#r33, requests#r34, requests#r39, requests#r40, requests#r41, requests#r42, requests#r43, requests#r44, requests#r45]
@@ -20,6 +20,9 @@ The drafts of this proposal are in .shop/work/i39/runs/i39/1-integrate/drafts/ro
 - requests r35-r38 (lines 13-16), which command shows what. r35: "When a request's turn passes to its asker, work shall show the asker, in its own repository, that it is the asker's turn, with each question the asker has not answered." r36 (awaiting the upstream, not yet taken in), r37 (upstream holds an outcome or question not sent with the turn) and r38 (each accepted line's requirement id and the version holding it) are written the same way. Readings: (a) name work show run in that side's repository, e.g. "[r35] When work show is run in the asker's repository while a request is in the asker's turn, work shall print that it is the asker's turn, with each question the asker has not answered."; (b) name work status; (c) as drafted, no command named [recommended: the lines do not name one].
 - requests r41: "If a request or a message on a carrier comes from a repository registered under an asker id that the upstream does not allow for the asker it names, then work shall leave it untaken, telling the upstream which it left and why." Where is the upstream's allow list kept and how is an asker id allowed? Readings: (a) Implementation only, a setting [recommended]; (b) a command: "[r45] When work allow <asker> <asker id> is run in the upstream's repository, work shall allow requests and messages from that asker id for that asker."
 - term/carrier: "carrier: what a request is kept on between its asker and its upstream, behind one port of work: a file in the upstream's repository or an issue on the upstream's GitHub repository." Line 2 of q14 names carriers but does not define the word. Readings: (a) confirm the entry as drafted [recommended]; (b) the person gives the definition.
+- requests r25: 'one set of commands ... and one lifecycle'. Readings: (a) every kind of asker uses the same commands and statuses; (b) asker and upstream share one command set. 'take in' is listed as a command but no line names it.
+- requests r33, r34: for an internal request asker and upstream repository are the same, so the repository does not say which side writes. Readings: (a) the command writes as the side owning the part, r34 never refuses on an internal request; (b) the repository is the upstream's side only, writing the asker's part (an answer) is refused under r34.
+- requests r39, r41, r43: 'message' is in no glossary entry and no line. Readings: (a) a message is the asker's answer or turn-passing (the acts r28 lists); (b) a separate kind of thing sent, needing its own command and form.
 
 ## Answers
 - 2026-10-27: r3: Reading (a), narrowed to requests whose asker is the upstream itself; as a changed line, r3 is retired and replaced by a line with a new id (no requirement is edited in place).

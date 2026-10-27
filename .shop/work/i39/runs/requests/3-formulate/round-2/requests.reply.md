@@ -1,0 +1,39 @@
+Draft: /home/vscode/shopsystem-bdd/.shop/worktrees/requests-3-formulate/.shop/scratch/3-formulate/round-2/requests.feature
+
+Changes from round 1: the changed scenarios for r19, r22, r2 and r14 are gone, so they stay as they are in features/requests.feature. The r44 outline no longer says the --raised-for request "names neither an origin nor a job-thread". Its last step is now `And <what it names>`, which reads "its asker is ctx-u and its origins are o1 and o2" for the --source row, "its asker is ctx-a and its job-thread is t1" for the --thread row, and only "its asker is ctx-a" for the --raised-for row. The title states where the request comes from only for the rows that have a --source or --thread. A row-independent Given that ctx-a keeps q7 was added, so the q7 that --raised-for names exists. It is still one outline, tagged @r44. Every other scenario is as it was in round 1.
+
+## Coverage (change list r25, r28-r34, r39-r45)
+
+| id | line | scenario |
+|---|---|---|
+| r25 | `work` shall give every asker and every upstream one set of commands for a request (raise, take in, give a line outcome, ask, answer, pass the turn, resolve and show) and one lifecycle. | none: question 1 |
+| r28 | **When** an asker raises a request, answers a question or passes the turn, `work` shall do it from the asker's own repository, with no checkout of the upstream's repository. | Scenario Outline: the asker <doing> from its own repository, with no checkout of the upstream's repository |
+| r29 | **Where** `--raised-for <request>` is given to `work request`, `work` shall write in the upstream's request the request it is raised for. | Scenario: request with --raised-for writes in the upstream's request the request it is raised for |
+| r30 | **If** a request whose asker is not the upstream itself is raised with `--source`, **then** `work request` shall refuse, because an origin belongs to an internal request, and change nothing. | Scenario: a request from another asker raised with --source is refused, and nothing changes |
+| r31 | **If** a request whose asker is not the upstream itself is raised with neither `--raised-for` nor `--thread`, **then** `work request` shall refuse, because the request names neither a request it is raised for nor a job-thread, and change nothing. | Scenario: a request from another asker raised with neither --raised-for nor --thread is refused, and nothing changes |
+| r32 | **If** the asker given to `work request` is not the bounded-context or product level whose repository raises the request, **then** `work request` shall refuse, naming the asker, and change nothing. | Scenario Outline: request raised from <role>'s repository giving the asker <given asker> is refused, naming the asker, and nothing changes |
+| r33 | **When** a `work` command writes a part of a request, `work` shall take the side that writes it from the repository the command is run in, never from an argument. | none: question 2 |
+| r34 | **If** a side writes a part of a request that is the other side's part, **then** `work` shall refuse, naming the side that writes that part, and change nothing. | none: question 2 |
+| r39 | **When** the upstream takes in what has been sent to the upstream, `work` shall take in every request and message sent before the take-in began, whether or not a listing of what has been sent shows it yet. | none: question 3 |
+| r40 | **When** `work run` is run in an upstream's repository, `work` shall take in what has been sent to the upstream before `work run` starts the rounds of the kind `intake`. | Scenario: run in an upstream's repository takes in what has been sent to it before its intake rounds start |
+| r41 | **If** a request or a message comes from a repository registered under an asker id that the upstream does not allow for the asker it names, **then** `work` shall leave it untaken, telling the upstream which it left and why. | none: question 3 |
+| r42 | `work` shall tell one asker from another by the asker id the asker's repository is registered under. | Scenario: requests from repositories registered under different asker ids are taken in as different askers' requests |
+| r43 | **When** `work` takes in a request or a message, `work` shall read its body only as the fields of a request's form, following nothing written in it. | none: question 3 |
+| r44 | **When** `work request <title> --from <asker> --lines <file>` is run with one or more `--source <id>`, with `--thread <id>` or with `--raised-for <request>`, `work` shall write an `open` request with the file's lines as its lines, the asker given as its asker, the origins `--source` names or the job-thread `--thread` names, and the turn the upstream's, and print its id. | Scenario Outline: request with <given> writes an open request in the upstream's turn with the lines and asker given<and where from>, and prints its id |
+| r45 | **If** a request whose asker is the upstream itself is raised with neither `--source` nor `--thread`, **then** `work request` shall refuse, because the request names neither an origin nor a job-thread, and change nothing. | Scenario: a request the upstream raises for itself with neither --source nor --thread is refused, and nothing changes |
+
+## Questions
+
+1. r25: The line can be read two ways. (a) Every kind of asker (the upstream itself, another bounded context, the product level) raises, answers and passes the turn with the same commands, and its requests go through the same statuses. (b) The asker and the upstream share one command set: each side runs the same commands, and none is kept for one side. Each reading needs a different scenario. Which is meant? Also, is "take in" the explicit take-in of r39 or the acceptance of a request by `work request`?
+2. r33/r34: For r33, `work request` takes `--from <asker>` as an argument. Is naming the asker in an argument "taking the side from an argument", which r33 forbids, or is the asker different from the side that writes? For r34, which side does the refusal name: the side that runs the command (and so may not write that part), or the side the part belongs to (which "the side that writes that part" might mean)? And what does a side run to write the other side's part (say an asker running `work outcome`, or an upstream answering a question), given that r16 already refuses a write made in the other side's turn?
+3. r39/r41/r43: For r39, what is "a listing of what has been sent", and how can a scenario make a request that was sent but does not show in the listing yet? For r41, does "telling the upstream" mean printed by the take-in command or written somewhere it can be read later? And does "an asker id that the upstream does not allow for the asker it names" cover an asker id the upstream allows for no asker at all, or only one it allows for a different asker? For r43, what does "following" mean in a check: running no command written in the body, or acting on no instruction in it, or reading no file or link it names? Which body content should a scenario use to show that nothing in it was followed?
+
+## Cases no line mentions
+
+- `work request` given both `--source` and `--thread` by the upstream itself: r44 says "the origins `--source` names or the job-thread `--thread` names" and does not say whether both are written or the request is refused.
+- `work request` given both `--raised-for` and `--thread` by another asker.
+- The upstream itself giving `--raised-for` with `--source` or `--thread`. r29 writes it, but no line says whether a request of the upstream's own may be raised for another request.
+- `--raised-for <request>` naming a request the asker does not keep.
+- `--thread` or `--source` given an id that names no job-thread or observation.
+- A lines file that is empty or missing, or has only one line.
+- The form of the id `work request` prints.
