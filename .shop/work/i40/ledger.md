@@ -4,3 +4,4 @@
 - 2026-10-27: delegation, the person 2026-10-27: "I'm delegating this to you. Please get the new version delivered without involving me." The coordinator answers each question with its recommended reading, or the one a test can check where none is recommended, and carries i40 (q18), then i39 (q14) and q17, through to a release.
 - 2026-10-27: apply round 2 spec-integration: r45 added as drafted (approved 2026-10-27 under the person's delegation); supervision lines not in this apply; model check 21 violations from other proposals' unresolved references
 - 2026-10-27: formulate round 3 spec-integration: commit 3df7df2e; r45 formulated in features/spec-integration.feature; no questions
+- 2026-10-27: apply round 2 supervision: nothing applied; the 2026-10-27 answer (reading a) adds a keep-status line the drafts lack, and the gate's questions 1, 2 and 4 on r80, r71, r114, r131, r132 and r92 are unanswered; needs a new integrate round
