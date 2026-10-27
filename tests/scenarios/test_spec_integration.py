@@ -3,6 +3,6 @@ scenarios run in, with an upstream billing kept beside it; the steps are spec_in
 from pytest_bdd import scenarios
 
 from .spec_integration_steps import *
-from .supervision_world import *     # noqa: F401,F403  (the repo fixture and helpers)
+from .supervision_world import *
 
 scenarios("spec-integration.feature")

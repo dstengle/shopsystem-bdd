@@ -5,9 +5,9 @@ import json
 import os
 import sys
 
-from pytest_bdd import given, parsers, then, when
+from pytest_bdd import given, then, when
 
-from .conftest import CONTEXT, INDEX, SCRIPTS, cap, full
+from .conftest import INDEX, SCRIPTS, cap, full
 from .supervision_given import repository
 from .supervision_integrate_steps import entry
 from .supervision_rounds_steps import rounds
