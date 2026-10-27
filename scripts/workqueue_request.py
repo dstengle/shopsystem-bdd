@@ -99,10 +99,20 @@ def gate(root, asker, sources, thread, raised_for):
     if asker != workqueue.context_path(root).rsplit("/", 1)[-1]:
         raise Refused("this repository raises requests only as itself; it does not raise one for the asker %s" % asker)
     if upstreams(root):
-        if sources:
+        if sources and (thread is not None or raised_for is not None):
             raise Refused("an origin (--source) belongs to an internal request; a request to an upstream names none")
-        if thread is None and raised_for is None:
+        if not sources and thread is None and raised_for is None:
             raise Refused("the request names neither a request it is raised for (--raised-for) nor a job-thread (--thread)")
+
+
+def _refuse_upstream_part(root, text, ident, part):
+    """r34: refuse, naming the upstream, a write of `part` of a request to an upstream from this repository. A request is
+    to an upstream when its asker is this repository's own id, the repository lists upstreams and the request names no
+    origin; an internal request (asker the upstream itself) is written by this repository as either side (r44, r15, r25)."""
+    asked = upstreams(root)
+    own = workqueue.context_path(root).rsplit("/", 1)[-1]
+    if asked and field(text, "asker") == own and field(text, "source") is None:
+        raise Refused("%s is a request to the upstream %s; the upstream writes %s" % (ident, asked[0], part))
 
 
 def request(root, title, asker, lines_file, sources, thread, delegation=None, raised_for=None):
@@ -142,9 +152,7 @@ def request(root, title, asker, lines_file, sources, thread, delegation=None, ra
 def outcome(root, ident, number, word):
     """Write line `number`'s outcome `word` (r12, r15); in the asker's turn it is refused, writing nothing (r16)."""
     def edit(text):
-        asked = upstreams(root)
-        if asked and field(text, "asker") == workqueue.context_path(root).rsplit("/", 1)[-1]:
-            raise Refused("%s is a request to the upstream %s; the upstream writes the line outcomes" % (ident, asked[0]))
+        _refuse_upstream_part(root, text, ident, "the line outcomes")
         if field(text, "turn") == "asker":
             raise Refused("%s is in the asker's turn; the upstream writes a line outcome only in its own turn" % ident)
         return _with_entries(text, "Outcomes", _numbered(_entries(text, "Outcomes"), number, word))
@@ -154,6 +162,7 @@ def outcome(root, ident, number, word):
 def ask(root, ident, number, question):
     """Write the next question, on line `number`, as `<n>. line <number>: <question>` (r20); the asker's turn refuses it."""
     def edit(text):
+        _refuse_upstream_part(root, text, ident, "the questions")
         if field(text, "turn") == "asker":
             raise Refused("%s is in the asker's turn; the upstream asks a question only in its own turn" % ident)
         entries = _entries(text, "Questions")
@@ -192,6 +201,7 @@ def resolve(root, ident, lines):
     """Write each accepted line's requirement and version, `lines` being (number, requirement, version), and set the
     status to delivered (r10, r11); a request that is not accepted is refused."""
     def edit(text):
+        _refuse_upstream_part(root, text, ident, "the resolution")
         if field(text, "status") != "accepted":
             raise Refused("%s is %s, not accepted; work resolve resolves only an accepted request" % (ident, field(text, "status")))
         entries = []
