@@ -4,3 +4,4 @@
 - 2026-10-27: gate round 1 for requests: 5 questions (r3, r43, r35-r38, r41, term/carrier)
 - 2026-10-27: gate round 1 for spec-integration: 1 question (r44)
 - 2026-10-27: gate round 1 for supervision: 1 question (r135 with no delegation)
+- 2026-10-27: gate round 1 for work-queue: 1 question (r33)
