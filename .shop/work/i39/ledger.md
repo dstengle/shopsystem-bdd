@@ -1,3 +1,4 @@
 - 2026-10-27: integrate round 1: 5 capabilities (requests, design-model-check, spec-integration, supervision, work-queue), 27 lines added, 3 changed, term/carrier and 2 decisions drafted, 12 questions, 0 cut sentences; gate text at .shop/scratch/1-integrate/drafts/round-1/gate.md
 - 2026-10-27: integrate round 1, correction: 25 Behaviour lines added (not 27), 3 changed
 - 2026-10-27: gate round 1 for design-model-check: 1 question (r120, r121 against rows r115, r117)
+- 2026-10-27: gate round 1 for requests: 5 questions (r3, r43, r35-r38, r41, term/carrier)
