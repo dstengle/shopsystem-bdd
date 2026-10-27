@@ -1,1 +1,2 @@
 - 2026-10-27: integrate round 1: supervision adds r140-r148, removes r80 r114 r71, 5 questions; drafts at .shop/scratch/1-integrate/drafts/round-1
+- 2026-10-27: gate round 1: 3 questions
