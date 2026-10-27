@@ -81,3 +81,6 @@
 {"time": "2026-10-27T17:26:11+00:00", "work-item": "design-model-check", "stage": "formulate", "event": "push verified"}
 {"time": "2026-10-27T17:26:11+00:00", "work-item": "design-model-check", "stage": "formulate", "agent": "initiative-round", "session": "ff7e127c-5627-4cf6-b5b0-f1ce0b986b29", "event": "start"}
 {"time": "2026-10-27T17:27:02+00:00", "work-item": "design-model-check", "stage": "formulate", "agent": "initiative-round", "session": "ff7e127c-5627-4cf6-b5b0-f1ce0b986b29", "event": "end"}
+{"time": "2026-10-27T17:27:05+00:00", "work-item": "work-queue", "stage": "apply", "event": "push verified"}
+{"time": "2026-10-27T17:27:05+00:00", "work-item": "work-queue", "stage": "apply", "agent": "initiative-round", "session": "bd3f452c-62ba-4145-8a1c-19892defa1b7", "event": "start"}
+{"time": "2026-10-27T17:27:26+00:00", "work-item": "work-queue", "stage": "apply", "agent": "initiative-round", "session": "bd3f452c-62ba-4145-8a1c-19892defa1b7", "event": "end"}
