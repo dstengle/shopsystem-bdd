@@ -451,3 +451,11 @@ date: 2026-10-27
 - A downstream writing a request into an upstream uses whatever terminology it can; the upstream corrects the request to its own glossary terms. A request only proposes: the downstream has no final say on wording, terminology or implementation, and where a request is kept is the upstream's implementation, so long as the capability contract is fulfilled.
 - There is no way to publish a context's contracts, its glossary included, to other contexts, so a downstream cannot know the terms a request into an upstream should use. The person, 2026-10-27: "we need a way to publish contracts including glossaries between contexts in order to clarify how downstream contexts should write requests."
 - Related and left for later: what belongs in a capability contract versus what is public facing (i39 ledger, question on carriers).
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-27-silent-exit-on-questions
+about: capability/supervision
+by: the coordinator, from i39 and i40
+date: 2026-10-27
+
+- `work run i39` (plugin 0.26.0) ended with every capability-proposal `awaiting-answer` after its gate rounds, yet printed nothing and exited 0; `work run i40` did the same. Exit 0 means every work-item green and 3 a question for the person, so the questions were found only by reading the proposals.
+- Answers that give what no drafted reading holds (i39's action names, the retiring of rows r115 and r117) leave an apply round `BLOCKED` with no route to a new integrate round, as in observation 2026-10-26-answer-redirects-draft; raised as q18, delivered through i40.
