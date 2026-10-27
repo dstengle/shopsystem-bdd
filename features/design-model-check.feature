@@ -900,6 +900,26 @@ Feature: Design model check
       | observation/missingmass.io/shopsystem/other/2026-10-01-x | does not name |
       | request/missingmass.io/shopsystem/shopsystem-bdd/q3     | does not name |
 
+  @r121
+  Scenario Outline: an id of a kind kept in .shop/work/ with another context's path is v18 unless a request is raised for it
+    Pins that this context's files name work only of their own context, judged from the id alone, except a request of another context that some request is raised for, which any of this context's files may name.
+    Given a repository whose bounded context is bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+    And an initiative i1 whose source names <id>
+    And nothing in the repository has the id <id>
+    And <raised>
+    When `model check` is run
+    Then v18 <names> <id>
+
+    Examples:
+      | id                                                       | raised                                                                   | names         |
+      | request/missingmass.io/shopsystem/other/q3               | no request is raised for it                                              | names         |
+      | initiative/missingmass.io/shopsystem/other/i2            | no request is raised for it                                              | names         |
+      | capability-proposal/missingmass.io/shopsystem/other/p1   | no request is raised for it                                              | names         |
+      | work-item/missingmass.io/shopsystem/other/w4             | no request is raised for it                                              | names         |
+      | observation/missingmass.io/shopsystem/other/2026-10-01-x | no request is raised for it                                              | does not name |
+      | request/missingmass.io/shopsystem/shopsystem-bdd/q3      | no request is raised for it                                              | does not name |
+      | request/missingmass.io/shopsystem/other/q3               | a request q9 of this context is raised for it                            | does not name |
+
   @r112
   Scenario: a request not of the form `work request` writes is a file problem
     Pins that `model check` reads a request only in the form `work request` gives it.
