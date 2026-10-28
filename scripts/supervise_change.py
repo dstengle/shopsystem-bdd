@@ -23,13 +23,15 @@ def entries(data):
         raise BadChanges("its `changes` is not a list of entries")
     found = []
     for each in changes:
-        if not isinstance(each, dict) or not isinstance(each.get("capability"), str) or not each["capability"].strip():
+        glossary = isinstance(each, dict) and each.get("glossary") is True and "capability" not in each
+        if not glossary and (not isinstance(each, dict) or not isinstance(each.get("capability"), str)
+                             or not each["capability"].strip()):
             raise BadChanges("an entry of its `changes` names no `capability`")
-        one = {"capability": each["capability"].strip()}
+        one = {"capability": None, "glossary": True} if glossary else {"capability": each["capability"].strip()}
         for field in FIELDS:
             ids = each.get(field, [])
             if not isinstance(ids, list) or not all(isinstance(i, str) and i.strip() for i in ids):
-                raise BadChanges("the `%s` of its entry for %s is not a list of ids" % (field, one["capability"]))
+                raise BadChanges("the `%s` of its entry for %s is not a list of ids" % (field, one["capability"] or "the glossary"))
             one[field] = [i.strip() for i in ids]
         found.append(one)
     return found
@@ -44,7 +46,7 @@ class Changes:
         the drafts of all of them count (an apply round's list)."""
         held = {p.stem for p in (self.root / "spec" / "capabilities").glob("*.md")}
         held |= {p.stem for p in stage.glob(("*/" if runs else "") + "drafts/round-*/spec/capabilities/*.md")}
-        return [one["capability"] for one in found if one["capability"] not in held]
+        return [one["capability"] for one in found if not one.get("glossary") and one["capability"] not in held]
 
     def kept_path(self, stage):
         """The integrate round's kept drafts directory with the highest round number, relative to the repository with a
@@ -97,7 +99,7 @@ class Changes:
         ident = next((l.split(":", 1)[1].strip() for l in text.splitlines() if l.startswith("id:")), "")
         prefix = ident.split("/", 1)[1].rsplit("/", 1)[0] if "/" in ident else ""
         merged = {}
-        for each in found:     # the entries that name one capability are one proposal's lists, in the order first named
+        for each in (e for e in found if not e.get("glossary")):     # the entries that name one capability are one proposal's lists, in the order first named
             one = merged.setdefault(each["capability"], {"capability": each["capability"], **{f: [] for f in FIELDS}})
             for field in FIELDS:
                 one[field] += [i for i in each[field] if i not in one[field]]

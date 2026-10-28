@@ -10,7 +10,9 @@ from supervise_worker import ROUNDS, SCRIPTS, git
 
 CHANGE_LIST = ("Give your change list in your result's `changes`: a list with one entry for each capability, each "
                '`{"capability": <name>, "adds": [...], "changes": [...], "removes": [...]}`, the ids as '
-               "`<capability>#r<n>` or `term/<term>`.")
+               "`<capability>#r<n>`. Every term you add, change or remove goes in one entry for the glossary, "
+               '`{"glossary": true, "adds": [...], "changes": [...], "removes": [...]}`, the ids as `term/<term>`, '
+               "and in no capability's entry.")
 REQUEST_LINES = ("Where a line you draft needs what an upstream above does not yet give, give the lines of a request into "
                  "that upstream in your result's `requests`: a list with one entry for each such upstream, each "
                  '`{"upstream": <its id>, "lines": [...]}`, the lines in strict form, worded in the terms of the '

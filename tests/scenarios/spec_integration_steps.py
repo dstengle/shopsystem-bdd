@@ -6,7 +6,7 @@ import os
 import subprocess
 import sys
 
-from pytest_bdd import given, then, when
+from pytest_bdd import given, parsers, then, when
 
 from .conftest import INDEX, SCRIPTS, cap, full
 from .supervision_given import repository
@@ -60,6 +60,70 @@ def approved_note(repo, plan):
     plan["round:integrate"] = {"status": "DONE", "write": {DRAFTS: cap("thing", ["- [r2] " + LINE])}, "fields": {
         "changes": [entry("thing", "adds thing#r2")], "requests": [{"upstream": BILLING, "lines": [ASK]}]}}
     plan["initiative-round"] = {"status": "DONE"}
+
+
+REFUNDS_DRAFTS = ".shop/scratch/1-integrate/drafts/round-1/spec/capabilities/refunds.md"
+REFUND_LINE = "**When** an order is cancelled, `refunds` shall show the customer the refund of the order."
+
+
+@given(parsers.re(r"spec/index.md's glossary has the terms (?P<first>\w+) and (?P<second>\w+)$"), target_fixture="plan")
+def glossary_with_terms(repo, first, second):
+    plan = repository(repo)
+    write(repo, "spec/index.md", INDEX + "\n## Glossary\n\n- **%s**: a thing.\n- **%s**: a thing.\n" % (first, second))
+    commit_all(repo, "spec/index.md's glossary")
+    return plan
+
+
+@given("an approved note asks that the customer sees the refund of a cancelled order")
+def cancelled_note(repo, plan):
+    approved_note(repo, plan)
+
+
+@given("that note adds the term refund, changes the term order and removes the term basket")
+def note_terms(plan):
+    plan["round:integrate"] = {"status": "DONE", "write": {REFUNDS_DRAFTS: cap("refunds", ["- [r1] " + REFUND_LINE])}, "fields": {
+        "changes": [entry("refunds", "adds refunds#r1"), {"glossary": True, "adds": ["term/refund"],
+                                                          "changes": ["term/order"], "removes": ["term/basket"]}]}}
+
+
+def kept_changes(repo, context):
+    results = sorted((repo / ".shop/work/i1/runs/i1").glob("*-integrate/result.json"))
+    assert len(results) == 1, (git(repo, "ls-files"), context["done"].stdout, context["done"].stderr)
+    return json.loads(results[0].read_text()).get("changes") or []
+
+
+def entry_of(repo, context, whose):
+    found = [e for e in kept_changes(repo, context) if (e.get("glossary") if whose == "glossary" else e.get("capability") == whose)]
+    assert len(found) == 1, (kept_changes(repo, context), context["done"].stdout, context["done"].stderr)
+    return found[0]
+
+
+@then("the round drafts a line under the capability refunds that the customer sees the refund of a cancelled order")
+def drafts_refunds_line(repo, context):
+    drafts = sorted((repo / ".shop/work/i1/runs/i1").glob("*-integrate/drafts/round-*/spec/capabilities/refunds.md"))
+    assert any("refund of the order" in p.read_text() for p in drafts), (drafts, context["done"].stdout, context["done"].stderr)
+    assert (repo / ".shop/work/i1/refunds.md").is_file(), (git(repo, "ls-files", ".shop/work"), context["done"].stderr)
+
+
+@then("the round drafts a change to the glossary")
+def drafts_glossary_change(repo, context):
+    brief = integrate_brief(repo, context)
+    assert "glossary" in brief and "no capability's entry" in brief, brief
+    assert entry_of(repo, context, "glossary")
+    assert not (repo / ".shop/work/i1/glossary.md").exists()
+
+
+@then(parsers.re(r"the change list's entry for the glossary gives (?P<a>\w+) as added, (?P<c>\w+) as changed and (?P<r>\w+) as removed$"))
+def glossary_entry_gives(repo, context, a, c, r):
+    one = entry_of(repo, context, "glossary")
+    assert (one["adds"], one["changes"], one["removes"]) == (["term/" + a], ["term/" + c], ["term/" + r]), one
+
+
+@then("the change list's entry for refunds gives none of the terms refund, order and basket")
+def refunds_entry_no_terms(repo, context):
+    one = entry_of(repo, context, "refunds")
+    ids = one["adds"] + one["changes"] + one["removes"]
+    assert ids and not [i for i in ids if i.startswith("term/")], one
 
 
 SHIP = "The customer is told when an order ships."
