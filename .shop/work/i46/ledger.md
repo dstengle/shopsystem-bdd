@@ -15,3 +15,4 @@
 - 2026-10-28: 2026-10-28: under the person's delegation: w225 accepted as it is (the approval question for a glossary-proposal's gate with no question keeps glossary changes with the person; r117 widened through a request)
 - 2026-10-28: 2026-10-28: under the person's delegation: w225 returned for the reviewer's fix, glossary_only_done skipping ledger.md (r161)
 - 2026-10-28: 2026-10-28: under the person's delegation: w227 (branch review 2 F1) reading A, the approval question kept until q36 line 1 is integrated; w227 withdrawn, changing no file
+- 2026-10-28: 2026-10-28: the person on branch review 3 F4: "A question counts as glossary related if it mentions the glossary explicitly. Any question about definition of a term or proposal for a new term shall refer to this in relation to the glossary." Raised as a request retiring r162 and r163; F3, F5, F6 raised as another
