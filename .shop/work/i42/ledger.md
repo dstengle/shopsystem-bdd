@@ -3,3 +3,4 @@
 - 2026-10-28: 2026-10-28 the person: take recommendations on all gate round 1 questions (spec-integration approved as drafted; supervision r150/r140 a, r150/r144-r146 b, r149/r83 a, r149/r131-r132 a); run independently through the next release, then analyse whether the performance fixes had the intended effect.
 - 2026-10-28: 2026-10-28 the person: 'I am delegating to you.' The coordinator answers further questions of i42 under this delegation, taking the recommended reading, and runs through the next release and its analysis.
 - 2026-10-28: apply round 2: spec-integration approved as drafted (the person, 2026-10-28), r46 added; commit 356ac0f4
+- 2026-10-28: formulate round 3 spec-integration: commit 6c1dca8d; scenario added r46; features bindings clean; model check: 12 violations, none from spec-integration
