@@ -11,3 +11,4 @@
 - 2026-10-28: 2026-10-28: apply round 5 supervision: commit applied r171 r172 replacing r158 r160 (the person, yes, 2026-10-28); no unheld answers
 - 2026-10-28: formulate round 6 supervision: commit e4159920; scenarios added r171 r172; features bindings clean; model check: 29 violations, none from supervision
 - 2026-10-28: 2026-10-28: the person, "yes, go ahead with 1 to 4": supervision proposal's lists restored (the redraft for r171 r172 had emptied them under r114); w223 (r162 r163), w224 (r159 r168), w225 (r161 r164-r167 r169 r170) drafted for the lines that lost their work-items; w221 and w222 answered to run the whole suite again; the redraft fault raised as a request
+- 2026-10-28: 2026-10-28: the person, "i am delegating to you": w222 accepted as it is (r93's wording out of date, its retirement raised as a request); w225 accepted as covered (r167 checked with w225's routing, r166's scenario proves it)
