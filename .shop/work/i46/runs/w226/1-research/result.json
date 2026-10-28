@@ -1,0 +1,8 @@
+{
+  "status": "DONE",
+  "summary": "Research of w226 done; notes.md has the four parts.\nAccepted scenarios (features/supervision.feature:1507 @r159, :1757 @r168) run once with --work-item w226: 183 passed, 1 skipped, 0 failed. Neither is red today; the code for r159 (scripts/supervise_change.py write_proposals) and r168 (scripts/supervise_brief.py gate limit) already holds.\nThe work-item only retires three deprecated scenarios in features/supervision.feature (lines 1301-1318, 1474-1483, 1706-1716); no code or test change needed.\nNo tests-of map exists (tools tests-of said so; not made); tests found by search.\nNo test is made impossible to keep by the retirement; comments citing retired r92/r104/r77 in scripts/ are the only old-form places.\nConflicts given in notes, not decided: A) Retires bullet 1 (r163 scenario) whose replacement r163 is accepted by w223, not w226; B) features/supervision.feature:1484 (deprecated for removal) not named by Retires; C) w224 accepts the same r159 and r168 as w226.\nFile set: features/supervision.feature only; path modules with line counts and room in notes.\n`tools size --limit 300` clean; git status clean.",
+  "fileset": [
+    "features/supervision.feature"
+  ],
+  "questions": []
+}
