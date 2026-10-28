@@ -1,0 +1,1 @@
+- 2026-10-28: integrate round 1: q32; work-queue adds r42-r45, spec-integration adds r56, 0 glossary terms, 7 questions, 0 cut sentences; drafts .shop/scratch/1-integrate/drafts/round-1
