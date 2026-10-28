@@ -1,0 +1,8 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Branch review of i46, 134745663c..1f668040: one work-item, w219 (spec-integration r54, r55).\nSuite: 1036 passed, 0 failed at 1f668040 in 33.74 s (parallel with -n auto; not in-process, the steps run scripts/work as a subprocess). 36 xfailed, 8 xpassed.\nw219's scenarios: 182 passed, 1 skipped. tools size: clean. features deprecated and features bindings: clean.\ntools check exits 1 with 10 ruff errors: 7 in the formulate rounds' committed splice.py helpers, and 3 B023 in supervise_change.py that were already there and are false positives. vulture is clean.\nNo test removed or weakened. The report claims no allowances. Nothing is Critical, and nothing is under Cannot verify.\nFix now (Important, w219): with r54 delivered and supervision r158/r164 not yet built, an integrate round's terms go in a glossary entry that work run drops. They reach no proposal, and the gate brief excludes them from its questions.\nObservations: r55 reads not-approved as status != approved, which will withhold a glossary-proposal's own terms once r165 is built. Also loose checking of glossary entries, 18 commits with no work-item, and 8 unnamed XPASS.",
+  "findings": "/tmp/work-run-i46-0i81ojqg/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": [
+    "Important, w219, scripts/supervise_change.py:102 with scripts/supervise_brief.py:13-16 and :79-82: the integrate brief now puts terms in a glossary entry, which work run writes into no proposal (r158 not built). The gate round is then told to ask about no term outside the proposal's lists, so drafted terms bypass the gate's questions."
+  ]
+}
