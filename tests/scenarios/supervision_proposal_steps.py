@@ -122,16 +122,16 @@ def proposal_in_status(repo, plan, status, field, ids):
     commit_all(repo, "p1 is %s" % status)
 
 
-@given(parsers.re(r"p1 was written from the change list of i1's integrate round, whose drafts are kept at (?P<path>\S+)$"))
-def written_from_round(repo, path):
-    file = repo / DIR / "p1.md"
+@given(parsers.re(r"(?P<name>[pg]1) was written from the change list of i1's integrate round, whose drafts are kept at (?P<path>\S+)$"))
+def written_from_round(repo, name, path):
+    file = repo / DIR / (name + ".md")
     head, sep, rest = file.read_text().partition("\n---\n")     # the sentence follows the front matter, as work run writes it
     file.write_text(head + sep + "\n# thing\n\nThe drafts of this proposal are in %s.\n" % path + rest)
     commit_all(repo, "p1 names the drafts it was written from")
 
 
-@given(parsers.re(r"i1's glossary-proposal g1 is awaiting-answer, its ## Questions section with (?P<asked>\"[^,]+), given by its "
-                  r"gate round, and its Answers section with (?P<answers>\"[^,]+?)(?: only)?$"))
+@given(parsers.re(r"i1's glossary-proposal g1 is awaiting-answer, its ## Questions section with (?P<asked>\"[^,]+?)(?:, given by its "
+                  r"gate round)?,? and its Answers section with (?P<answers>\"[^,]+?)(?: only)?$"))
 def glossary_proposal_answered(repo, asked, answers):
     """g1 holds each quoted question as a bullet of its Questions and each quoted answer as a bullet of its Answers."""
     bullets = lambda text: "".join("- %s\n" % q for q in re.findall(r'"([^"]+)"', text))     # noqa: E731
@@ -146,9 +146,9 @@ def no_apply_for_g1(repo, context):
     assert not rounds(repo, "apply", "g1"), (starts(repo), context["done"].stdout, context["done"].stderr)
 
 
-@then(parsers.re(r"the (?P<kind>gate|apply) round for p1 was given the path (?P<path>\S+)$"))
-def round_given_drafts(repo, context, kind, path):
-    found = rounds(repo, kind, "p1")
+@then(parsers.re(r"the (?P<kind>gate|apply) round for (?P<name>[pg]1) was given the path (?P<path>\S+)$"))
+def round_given_drafts(repo, context, kind, name, path):
+    found = rounds(repo, kind, name)
     assert len(found) == 1, (context["done"].stdout, context["done"].stderr)
     assert "Drafts path: %s\n" % path in found[0]["brief"], found[0]["brief"]
 
@@ -160,6 +160,33 @@ def gate_names_its_ids(repo, context, term):
     assert len(found) == 1, (context["done"].stdout, context["done"].stderr)
     for one in ("thing#r4", "thing#r2", "thing#r3") + (("term/ledger",) if term else ()):
         assert one in found[0]["brief"], (one, found[0]["brief"])
+
+
+def terms_of(text):
+    return re.findall(r'"([^"]+)"', text or "")
+
+
+@given(parsers.re(r"i1's glossary-proposal g1 is drafted(?:, its adds naming the term (?P<adds>\"[^\"]+\"), its changes the term "
+                  r"(?P<changes>\"[^\"]+\") and its removes the term (?P<removes>\"[^\"]+\"))?$"))
+def glossary_drafted(repo, adds, changes, removes):
+    listed = lambda text: ", ".join("term/" + t for t in terms_of(text))     # noqa: E731
+    write(repo, DIR + "/g1.md", "---\nid: %s\nkind: glossary-proposal\npart_of: %s\nstatus: drafted\nadds: [%s]\nchanges: [%s]\n"
+          "removes: [%s]\ndate: 2026-10-15\n---\n" % (full("glossary-proposal", "g1"), full("initiative", "i1"),
+                                                       listed(adds) or "term/ledger", listed(changes), listed(removes)))
+    commit_all(repo, "g1 is drafted")
+
+
+@then(parsers.re(r"the brief of the gate round for g1 asks only for the questions on the terms (?P<terms>.+)$"))
+def gate_g1_terms(repo, context, terms):
+    found = rounds(repo, "gate", "g1")
+    assert len(found) == 1, (context["done"].stdout, context["done"].stderr)
+    for one in terms_of(terms):
+        assert "term/" + one in found[0]["brief"], (one, found[0]["brief"])
+
+
+@then(parsers.re(r'it asks for no question on the term "(?P<term>[^"]+)"$'))
+def gate_g1_no_other(repo, term):
+    assert "term/" + term not in rounds(repo, "gate", "g1")[0]["brief"]
 
 
 @then("it asks for no question on thing#r1 or on other#r1")

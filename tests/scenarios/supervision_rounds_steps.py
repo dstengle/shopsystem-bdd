@@ -58,7 +58,7 @@ def gate_result(plan, text):
     plan["initiative-round"] = {"status": "DONE", "questions": [gate_question(text)]}
 
 
-@given(parsers.re(r'the gate round gives the question "(?P<ask>[^"]*)" on p1, and every round ends$'))
+@given(parsers.re(r'the gate round gives the question "(?P<ask>[^"]*)" on [pg]1, and every round ends$'))
 def gate_gives_question(plan, ask):
     plan["initiative-round"] = {"status": "DONE", "questions": [ask]}
 
@@ -94,9 +94,10 @@ def bullets(text, heading):
     return found
 
 
-@then("a round of the kind gate was started for p1")
-def gate_started(repo, context):
-    assert len(rounds(repo, "gate")) == 1, (starts(repo), context["done"].stdout, context["done"].stderr)
+@then(parsers.re(r"a round of the kind (?P<kind>gate) was started for (?P<name>[pg]1)$"))
+@then(parsers.re(r"a round of the kind (?P<kind>apply) was started for (?P<name>g1)$"))
+def gate_started(repo, context, kind, name):
+    assert len(rounds(repo, kind, name)) == 1, (starts(repo), context["done"].stdout, context["done"].stderr)
 
 
 @then("the gate round's brief asks for the gate as questions, each a decision with its readings and the recommended "
@@ -227,25 +228,25 @@ def started_with_round(repo, context):
     assert "status: started" in (repo / DIR / "initiative.md").read_text()
 
 
-def position(repo, **wanted):
-    """The index in log.jsonl of the first line holding every field of `wanted`, else None."""
+def position(repo, node="p1", **wanted):
+    """The index in log.jsonl of the first line of `node` holding every field of `wanted`, else None."""
     for number, line in enumerate(log_lines(repo)):
-        if line.get("work-item") == "p1" and all(line.get(k) == v for k, v in wanted.items()):
+        if line.get("work-item") == node and all(line.get(k) == v for k, v in wanted.items()):
             return number
     return None
 
 
-@then(parsers.re(r'a round of the kind (?P<kind>apply|formulate) was started for p1, given the answers? (?P<answers>.+)$'))
-def apply_started(repo, context, kind, answers):
-    found = rounds(repo, kind)
+@then(parsers.re(r'a round of the kind (?P<kind>apply|formulate) was started for (?P<name>[pg]1), given the answers? (?P<answers>.+)$'))
+def apply_started(repo, context, kind, name, answers):
+    found = rounds(repo, kind, name)
     assert len(found) == 1, (found, context["done"].stdout, context["done"].stderr)
     for answer in quoted(answers):
         assert "Answer: %s" % answer in found[0]["brief"], (answer, found[0]["brief"])
 
 
-@then("p1's transition to approved was made once the apply round had ended")
-def approved_after_apply(repo, context):
-    ended, moved = position(repo, stage="apply", event="end"), position(repo, after="approved")
+@then(parsers.re(r"(?P<node>[pg]1)'s transition to approved was made once the apply round had ended$"))
+def approved_after_apply(repo, context, node):
+    ended, moved = position(repo, node, stage="apply", event="end"), position(repo, node, after="approved")
     assert ended is not None and moved is not None and ended < moved, (log_lines(repo), context["done"].stderr)
 
 

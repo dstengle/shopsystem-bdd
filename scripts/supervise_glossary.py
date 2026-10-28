@@ -9,13 +9,34 @@ import workqueue
 FIELDS = ("adds", "changes", "removes")
 
 
-def withheld(directory):
+ROUTES = {"drafted": ("gate", "awaiting-answer"), "awaiting-answer": ("apply", "approved")}     # no further round (r167)
+
+
+def statuses(directory):
+    """(name, status) of each glossary-proposal in the initiative's directory, by name."""
+    found = []
+    for path in sorted(directory.glob("*.md")):
+        data, _ = workqueue.frontmatter(path.read_text())
+        if data.get("kind") == "glossary-proposal":
+            found.append((path.stem, data.get("status")))
+    return found
+
+
+def route(status, questions, answers):
+    """(round, status after) of a glossary-proposal at `status`, else None: a drafted one is given to a gate round (r164,
+    r169); an awaiting-answer one with a question, every one answered, to an apply round (r165, r166, r172)."""
+    if status == "awaiting-answer" and not (questions and answers >= questions):
+        return None
+    return ROUTES.get(status)
+
+
+def withheld(directory, applying=None):
     """The terms (`term/<term>` ids, in the order found) of each glossary-proposal in the initiative's directory whose
-    status is not `approved`."""
+    status is not `approved`, the one named `applying` left out: its answers are the approval (r165)."""
     terms = []
     for path in sorted(directory.glob("*.md")):
         data, _ = workqueue.frontmatter(path.read_text())
-        if data.get("kind") != "glossary-proposal" or data.get("status") == "approved":
+        if data.get("kind") != "glossary-proposal" or data.get("status") == "approved" or path.stem == applying:
             continue
         terms += [i for f in FIELDS for i in data.get(f) or [] if i not in terms]
     return terms
@@ -52,9 +73,9 @@ def names_one(root, question):
                for n in terms_of(root) + proposals_of(root))
 
 
-def text(directory):
+def text(directory, applying=None):
     """The line an apply round's brief gives about them; empty when no term is withheld."""
-    terms = withheld(directory)
+    terms = withheld(directory, applying)
     if not terms:
         return ""
     return ("The person has not approved these terms of the initiative's glossary-proposals: %s. Apply none of them to "

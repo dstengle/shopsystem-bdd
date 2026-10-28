@@ -8,6 +8,7 @@ import json
 import shutil
 import subprocess
 
+import supervise_glossary
 import supervise_outputs
 import workqueue
 import workqueue_done
@@ -54,6 +55,10 @@ class Rounds(Changes, Raises):
             if name not in left and status in AFTER and (status != "awaiting-answer"
                                     or len(self.held(name, "Answers")) >= len(self.held(name, "Questions"))):
                 return (name, *self.route(name, status))
+        for name, status in supervise_glossary.statuses(self.dir):     # r164, r165, r169
+            one = supervise_glossary.route(status, len(self.held(name, "Questions")), len(self.held(name, "Answers")))
+            if name not in left and one:
+                return (name, *one)
         return None
 
     def route(self, name, status):
@@ -165,7 +170,7 @@ class Rounds(Changes, Raises):
                 raise Refused("the apply round of %s (%s) ended, and %s keeps its status %s: its change list names %s, "
                               "which neither spec/capabilities/ nor its drafts have" % (
                                   name, self.rel(self.dir / "runs" / name / label), name, before, ", ".join(lacking)))
-            if applied:
+            if applied and name not in dict(supervise_glossary.statuses(self.dir)):     # r166: a glossary-proposal keeps its lists
                 self.rewrite_lists(name, applied)
             asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []]
             if supervise_outputs.gives_nothing(data):     # r147: its output; the proposal stays as it is and the next round is due (r150)

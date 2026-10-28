@@ -80,9 +80,9 @@ def integrate_after_formulate(repo, context):
     assert ended is not None and began is not None and ended < began, (log_lines(repo), context["done"].stderr)
 
 
-@then("no round of the kind formulate was started for p1")
-def no_formulate_for_p1(repo, context):
-    assert rounds(repo, "formulate", "p1") == [], (starts(repo), context["done"].stderr)
+@then(parsers.re(r"no round of the kind formulate was started for (?P<name>[pg]1)$"))
+def no_formulate_for_p1(repo, context, name):
+    assert rounds(repo, "formulate", name) == [], (starts(repo), context["done"].stderr)
 
 
 @then("p1 was awaiting-answer when the formulate round for p1 had ended")

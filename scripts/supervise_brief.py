@@ -83,7 +83,7 @@ class Briefs:
             if stage == "apply":     # r114: the list the round applied, which `work run` writes into the proposal
                 lines.append(CHANGE_LIST.replace("Give your change list", "Give the change list of what you applied"))
                 lines.append(UNHELD_ANSWERS)     # spec-integration r46
-                lines += [supervise_glossary.text(self.dir)] if supervise_glossary.withheld(self.dir) else []     # r55
+                lines += [supervise_glossary.text(self.dir, name)] if supervise_glossary.withheld(self.dir, name) else []     # r55, r165
             if stage == "formulate":     # r149: the output of a formulation whose answers change lines outside spec/
                 lines.append(NOTHING_FORMULATED)
             if stage in ("gate", "apply"):     # r108: the kept drafts of the integrate round that wrote the proposal

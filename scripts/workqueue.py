@@ -152,7 +152,7 @@ def move(root, initiative, name, status, by):
     """
     path = Path(root) / WORK / initiative / (name + ".md")
     text = read(path, root) if path.is_file() else ""
-    own = STATUSES + PROPOSAL_STATUSES if frontmatter(text)[0].get("kind") == "capability-proposal" else STATUSES
+    own = STATUSES + PROPOSAL_STATUSES if frontmatter(text)[0].get("kind") in ("capability-proposal", "glossary-proposal") else STATUSES
     if status not in own:
         raise Refused("%s is no status of the work-item lifecycle; %s is not moved" % (status, name))
     before = agrees(root, initiative, name)

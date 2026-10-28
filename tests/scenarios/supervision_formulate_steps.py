@@ -45,6 +45,12 @@ def apply_change_list(plan, text):
     plan["round:apply"] = {"status": "DONE", "fields": {"changes": [{"capability": "thing", **entry(text)}]}}
 
 
+@given(parsers.re(r'the apply round for g1 applies g1\'s drafts and gives DONE with a change list that adds the term "(?P<term>[^"]+)" '
+                  r"in the glossary$"))
+def apply_glossary_list(plan, term):
+    plan["round:apply"] = {"status": "DONE", "fields": {"changes": [{"glossary": True, "adds": ["term/" + term]}]}}
+
+
 @given("every other round ends and every worker gives DONE")
 def every_other_round_ends(plan):
     plan["default"] = {"status": "DONE"}
@@ -72,9 +78,9 @@ def awaiting_after_formulate(repo, context):
     assert ended is not None and moved is not None and ended < moved, (lines, context["done"].stderr)
 
 
-@then("p1 is awaiting-answer")
-def proposal_awaiting(repo, context):
-    text = (repo / DIR / "p1.md").read_text()
+@then(parsers.re(r"(?P<name>[pg]1) is awaiting-answer$"))
+def proposal_awaiting(repo, context, name):
+    text = (repo / DIR / (name + ".md")).read_text()
     assert "\nstatus: awaiting-answer\n" in text, (text, context["done"].stdout, context["done"].stderr)
 
 
