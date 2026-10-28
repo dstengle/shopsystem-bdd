@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i43-review
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i43
-status: awaiting-answer
+status: formulated
 argues: [review]
 date: 2026-10-28
 adds: [review#r32, review#r33, review#r34]
