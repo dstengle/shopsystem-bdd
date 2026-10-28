@@ -24,3 +24,4 @@ Integrated in a session, not by `work run`: the drafts (.shop/scratch/drafts/202
 - 2026-10-28: r160: reading A, no apply round while the glossary-proposal is awaiting-answer and some question has no answer; once all are answered r165 starts the apply round (the person, 2026-10-28)
 
 The drafts of this proposal are in .shop/work/i46/runs/supervision/3-integrate/drafts/round-3/.
+- 2026-10-28: yes: r171 and r172 approved as drafted, holding reading A of each answer; r158 and r160 retired (the person, 2026-10-28)
