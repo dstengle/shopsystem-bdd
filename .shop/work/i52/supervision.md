@@ -26,3 +26,4 @@ The drafts of this proposal are in .shop/work/i52/runs/i52/1-integrate/drafts/ro
 - 2026-10-28: Q4, r182 with r163 after the answer: reading (a), r163 resumes for the remaining questions (answered by the coordinator under the person's delegation, 2026-10-28)
 - 2026-10-28: Q5, r182 across runs: reading (a), yes, it is a state on the initiative (answered by the coordinator under the person's delegation, 2026-10-28)
 - 2026-10-28: Q1, r181's statuses: reading (b), only a glossary-proposal neither approved nor withdrawn; an approved one gets the terms and is set drafted, keeping its questions and answers (answered by the person, 2026-10-28)
+- 2026-10-28: Q2, r181 and a term already listed: reading (a), the new entry replaces the earlier one (answered by the person, 2026-10-28)
