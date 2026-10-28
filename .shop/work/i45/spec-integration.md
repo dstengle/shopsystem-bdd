@@ -44,3 +44,6 @@ The drafts of this proposal are in .shop/work/i45/runs/i45/1-integrate/drafts/ro
 - Q8 (decision; spec-integration r52, r53): line 7 reverses a rule `docs/capability-format.md` states, which decision 0031's Context relies on. Is a decision drafted?
   A: yes: draft `spec/decisions/0073-a-changed-line-is-retired.md` (summary "A changed Behaviour line is retired and its replacement given a new id; no line keeps its id when its words change.", date 2026-10-28, status proposed, source [request/q26, record/2026-10-28-requirement-checking], by "the request q26, line 7, accepted"), and spec-integration's `rests_on` names it.
   B (recommended, drafted): no decision; r52 and r53 are the rule.
+
+## Answers
+- 2026-10-28: Q1, r48's finding: reading A, the finding is given in the round's result and in the gate's questions, naming both lines' ids (answered by the coordinator under the person's delegation, 2026-10-28)
