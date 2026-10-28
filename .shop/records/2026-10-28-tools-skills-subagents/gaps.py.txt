@@ -1,0 +1,19 @@
+import json,datetime,sys
+rows=json.load(open('analyzed.json'))
+f=lambda s: datetime.datetime.fromisoformat(s.replace('Z','+00:00'))
+tot=0
+for r in rows:
+    prev=None;pl=None
+    for l in open(r['tp']):
+        j=json.loads(l); t=j.get('timestamp')
+        if not t: continue
+        if prev and (f(t)-prev).total_seconds()>300:
+            g=(f(t)-prev).total_seconds(); tot+=g
+            print(r['kind'],r['sid'][:8],round(g),'after',pl)
+        prev=f(t); 
+        m=j.get('message') or {}
+        c=m.get('content')
+        if isinstance(c,list):
+            for b in c:
+                if isinstance(b,dict) and b.get('type')=='tool_use': pl=(b['name'],json.dumps(b['input'])[:120])
+print(tot)

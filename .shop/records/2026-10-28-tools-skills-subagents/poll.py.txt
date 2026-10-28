@@ -1,0 +1,13 @@
+import json,re
+exec(open('analyze.py').read().split('def bash_shape')[0])
+tot=0;totc=0
+for r in rows:
+    if r['kind'] not in ('integrate','formulate'): continue
+    cs=calls(r['tp'])
+    idx=[i for i,u in enumerate(cs) if u['name']=='Agent']
+    if not idx: continue
+    after=cs[idx[0]+1:]
+    poll=[u for u in after if u['name']=='Bash' and re.search(r'sleep|until |timeout |; date|tail -f|^ls[^|;]*drafts',u['input'].get('command',''))]
+    tot+=len(poll); totc+=len(cs)
+    print(r['init'],r['path'].split('runs/')[-1],r['sid'][:8],'calls',len(cs),'polling',len(poll),'denied',sum(1 for u in poll if u.get('_err')))
+print('total polling',tot,'of',totc)

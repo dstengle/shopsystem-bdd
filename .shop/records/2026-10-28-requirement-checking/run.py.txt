@@ -1,0 +1,7 @@
+import clingo, collections, sys
+ctl=clingo.Control(["--warn=none"]); ctl.load("overlap.lp"); ctl.load(sys.argv[1]); ctl.ground([("base",[])])
+res=collections.defaultdict(list)
+ctl.solve(on_model=lambda m: [res[s.name].append(tuple(str(a).strip('"') for a in s.arguments)) for s in m.symbols(shown=True)])
+for k in sorted(res):
+    print("==",k,len(res[k]))
+    for r in sorted(res[k]): print("  ",r)

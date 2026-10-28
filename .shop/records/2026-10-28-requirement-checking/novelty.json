@@ -1,0 +1,266 @@
+{
+ "q14:1": {
+  "novel": [
+   "carry",
+   "lifecycle"
+  ],
+  "impl": []
+ },
+ "q14:2": {
+  "novel": [
+   "carrier",
+   "issue",
+   "port"
+  ],
+  "impl": [
+   "carrier",
+   "port",
+   "issue",
+   "GitHub"
+  ]
+ },
+ "q14:3": {
+  "novel": [
+   "carrier",
+   "carry",
+   "state"
+  ],
+  "impl": [
+   "carrier"
+  ]
+ },
+ "q14:4": {
+  "novel": [],
+  "impl": []
+ },
+ "q14:5": {
+  "novel": [],
+  "impl": []
+ },
+ "q14:6": {
+  "novel": [],
+  "impl": []
+ },
+ "q14:7": {
+  "novel": [],
+  "impl": []
+ },
+ "q14:8": {
+  "novel": [],
+  "impl": []
+ },
+ "q14:9": {
+  "novel": [],
+  "impl": []
+ },
+ "q14:10": {
+  "novel": [
+   "bound",
+   "product"
+  ],
+  "impl": []
+ },
+ "q14:11": {
+  "novel": [],
+  "impl": []
+ },
+ "q14:12": {
+  "novel": [
+   "carrier"
+  ],
+  "impl": [
+   "carrier"
+  ]
+ },
+ "q14:13": {
+  "novel": [],
+  "impl": []
+ },
+ "q14:14": {
+  "novel": [
+   "await"
+  ],
+  "impl": []
+ },
+ "q14:15": {
+  "novel": [
+   "see"
+  ],
+  "impl": []
+ },
+ "q14:16": {
+  "novel": [],
+  "impl": []
+ },
+ "q14:17": {
+  "novel": [
+   "carry"
+  ],
+  "impl": []
+ },
+ "q14:18": {
+  "novel": [
+   "begin",
+   "carrier",
+   "in",
+   "listing"
+  ],
+  "impl": [
+   "carrier"
+  ]
+ },
+ "q14:19": {
+  "novel": [
+   "carrier",
+   "intake"
+  ],
+  "impl": []
+ },
+ "q14:20": {
+  "novel": [
+   "carrier",
+   "identity"
+  ],
+  "impl": [
+   "carrier"
+  ]
+ },
+ "q14:21": {
+  "novel": [
+   "identity"
+  ],
+  "impl": []
+ },
+ "q14:22": {
+  "novel": [
+   "carrier",
+   "contract",
+   "follow"
+  ],
+  "impl": [
+   "carrier",
+   "fields"
+  ]
+ },
+ "q14:23": {
+  "novel": [
+   "bound"
+  ],
+  "impl": []
+ },
+ "q14:24": {
+  "novel": [],
+  "impl": []
+ },
+ "q14:25": {
+  "novel": [],
+  "impl": []
+ },
+ "q14:26": {
+  "novel": [
+   "wait"
+  ],
+  "impl": []
+ },
+ "q18:1": {
+  "novel": [],
+  "impl": []
+ },
+ "q18:2": {
+  "novel": [],
+  "impl": []
+ },
+ "q18:3": {
+  "novel": [],
+  "impl": []
+ },
+ "q18:4": {
+  "novel": [],
+  "impl": []
+ },
+ "q19:1": {
+  "novel": [],
+  "impl": []
+ },
+ "q19:2": {
+  "novel": [],
+  "impl": []
+ },
+ "q19:3": {
+  "novel": [],
+  "impl": []
+ },
+ "q19:4": {
+  "novel": [],
+  "impl": []
+ },
+ "q19:5": {
+  "novel": [],
+  "impl": []
+ },
+ "q19:6": {
+  "novel": [],
+  "impl": []
+ },
+ "q19:7": {
+  "novel": [],
+  "impl": []
+ },
+ "q19:8": {
+  "novel": [],
+  "impl": []
+ },
+ "q19:9": {
+  "novel": [],
+  "impl": []
+ },
+ "q22:1": {
+  "novel": [],
+  "impl": []
+ },
+ "q22:2": {
+  "novel": [],
+  "impl": []
+ },
+ "q22:3": {
+  "novel": [],
+  "impl": []
+ },
+ "q23:1": {
+  "novel": [],
+  "impl": [
+   "exit code"
+  ]
+ },
+ "q23:2": {
+  "novel": [
+   "range"
+  ],
+  "impl": []
+ },
+ "q23:3": {
+  "novel": [],
+  "impl": []
+ },
+ "q23:4": {
+  "novel": [],
+  "impl": []
+ },
+ "q23:5": {
+  "novel": [],
+  "impl": []
+ },
+ "q23:6": {
+  "novel": [
+   "agree",
+   "operation"
+  ],
+  "impl": []
+ },
+ "q24:1": {
+  "novel": [
+   "shell"
+  ],
+  "impl": []
+ }
+}

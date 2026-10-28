@@ -1,0 +1,24 @@
+"""Collect every Behaviour line with id from spec/capabilities, using the repo's own parser."""
+import sys, json, re
+from pathlib import Path
+ROOT = Path("/home/vscode/shopsystem-bdd")
+sys.path.insert(0, str(ROOT / "scripts"))
+from model_parse import behaviour_items, section, frontmatter, RID, ears
+
+def load():
+    out = []
+    for p in sorted((ROOT / "spec/capabilities").glob("*.md")):
+        data, body = frontmatter(p.read_text())
+        for text, lead in behaviour_items(section(body, "Behaviour")):
+            m = RID.match(text)
+            if not m: continue
+            out.append({"cap": p.stem, "id": int(m.group(1)), "text": text[m.end():], "lead": lead,
+                        "table": "|" in text and lead is not None})
+    return out
+
+if __name__ == "__main__":
+    L = load()
+    json.dump(L, open(sys.argv[1], "w"), indent=1)
+    ok = sum(1 for l in L if ears(l["lead"] if l["lead"] else l["text"])[0])
+    single = sum(1 for l in L if ears(l["lead"] if l["lead"] else l["text"])[1])
+    print(len(L), "lines;", sum(l["table"] for l in L), "table rows; ears-shaped", ok, "single", single)

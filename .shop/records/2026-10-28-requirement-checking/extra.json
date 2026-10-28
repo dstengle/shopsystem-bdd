@@ -1,0 +1,108 @@
+[
+ {
+  "ok": true,
+  "kw": "When",
+  "clauses": [
+   [
+    "When",
+    "a round of the kind `apply` applies nothing because a capability-proposal's answers give what its drafts do not hold"
+   ]
+  ],
+  "system": "`work run`",
+  "response": "start a new round of the kind `integrate` for the capability-proposal",
+  "system_ok": true,
+  "trigger": {
+   "subject": "a round of the kind `apply`",
+   "verb": "applies",
+   "qual": "nothing because a capability-proposal's answers give what its drafts do not hold",
+   "kind": "apply"
+  },
+  "rverb": "start",
+  "robj": "a new round of the kind `integrate` for the capability-proposal",
+  "many": 0,
+  "cap": "supervision",
+  "id": 140,
+  "text": "**When** a round of the kind `apply` applies nothing because a capability-proposal's answers give what its drafts do not hold, `work run` shall start a new round of the kind `integrate` for the capability-proposal.",
+  "table": false,
+  "retired": true,
+  "new": false
+ },
+ {
+  "ok": true,
+  "kw": "Where",
+  "clauses": [
+   [
+    "Where",
+    "the branch reviewer finds a behaviour that only a run would show"
+   ]
+  ],
+  "system": "the branch reviewer",
+  "response": "give it as a finding with the test that would show it, marked not run, in place of a reproduction",
+  "system_ok": true,
+  "rverb": "give",
+  "robj": "it as a finding with the test that would show it, marked not run, in place of a reproduction",
+  "many": 0,
+  "cap": "q23",
+  "id": 5,
+  "text": "**Where** the branch reviewer finds a behaviour that only a run would show, the branch reviewer shall give it as a finding with the test that would show it, marked not run, in place of a reproduction.",
+  "table": false,
+  "retired": false,
+  "new": true
+ },
+ {
+  "ok": true,
+  "kw": "When",
+  "clauses": [
+   [
+    "When",
+    "`work run` starts a branch review"
+   ]
+  ],
+  "system": "`work run`",
+  "response": "first run, at the initiative branch's head, the whole suite, each work-item's scenarios, each check a work-item names, `tools check`, `tools size`, `features deprecated` and `features bindings`, and give the branch reviewer each one's command, exit code and output, naming the commit they ran at",
+  "system_ok": true,
+  "trigger": {
+   "subject": "`work run`",
+   "verb": "starts",
+   "qual": "a branch review",
+   "kind": null
+  },
+  "rverb": "first",
+  "robj": "run, at the initiative branch's head, the whole suite, each work-item's scenarios, each check a work-item names, `tools check`, `tools size`, `features deprecated` and `features bindings`, and give the branch reviewer each one's command, exit code and output, naming the commit they ran at",
+  "many": 2,
+  "cap": "q23",
+  "id": 1,
+  "text": "**When** `work run` starts a branch review, `work run` shall first run, at the initiative branch's head, the whole suite, each work-item's scenarios, each check a work-item names, `tools check`, `tools size`, `features deprecated` and `features bindings`, and give the branch reviewer each one's command, exit code and output, naming the commit they ran at.",
+  "table": false,
+  "retired": false,
+  "new": true
+ },
+ {
+  "ok": true,
+  "kw": "When",
+  "clauses": [
+   [
+    "When",
+    "a round of the kind `integrate` drafts a capability-proposal anew from its answers"
+   ]
+  ],
+  "system": "`work run`",
+  "response": "set the capability-proposal `drafted`, its earlier drafts kept in their round's directory",
+  "system_ok": true,
+  "trigger": {
+   "subject": "a round of the kind `integrate`",
+   "verb": "drafts",
+   "qual": "a capability-proposal anew from its answers",
+   "kind": "integrate"
+  },
+  "rverb": "set",
+  "robj": "the capability-proposal `drafted`, its earlier drafts kept in their round's directory",
+  "many": 0,
+  "cap": "q19",
+  "id": 4,
+  "text": "**When** a round of the kind `integrate` drafts a capability-proposal anew from its answers, `work run` shall set the capability-proposal `drafted`, its earlier drafts kept in their round's directory.",
+  "table": false,
+  "retired": false,
+  "new": true
+ }
+]

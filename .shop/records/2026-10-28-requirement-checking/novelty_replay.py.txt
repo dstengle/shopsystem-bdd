@@ -1,0 +1,17 @@
+import json, re, collections, sys
+from pathlib import Path
+args = sys.argv[1:]; sys.argv = [sys.argv[0]]
+from clarity import nlp, clean
+from replay import spec_lines, req_lines
+IMPL = r"\b(exit code|status code|return code|exit status|json|yaml|fields?|column|port|carriers?|github|issue|api|endpoint|database|schema|stdout|stderr)\b"
+for n in args:
+    root = Path(f"snap/q{n}")
+    gl = {w for t in re.findall(r"^- \*\*([^*]+)\*\*:", (root / "spec/index.md").read_text(), re.M) for w in t.lower().split()}
+    freq = collections.Counter()
+    for l in spec_lines(root):
+        for lem in {t.lemma_.lower() for t in nlp(clean(l["text"])) if t.pos_ in ("NOUN", "VERB")}: freq[lem] += 1
+    for l in req_lines(root / f"q{n}.md", n):
+        toks = [t for t in nlp(clean(l["text"])) if t.pos_ in ("NOUN", "VERB") and t.lemma_.lower() != "foo"]
+        novel = sorted({t.lemma_.lower() for t in toks if freq[t.lemma_.lower()] <= 2 and t.lemma_.lower() not in gl})
+        impl = re.findall(IMPL, l["text"].replace("**", ""), re.I)
+        if novel or impl: print(f"q{n}:{l['id']:<3} novel={novel} impl={impl}")

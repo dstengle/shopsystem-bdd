@@ -1,0 +1,21 @@
+import json, glob, os, re, sys
+from pathlib import Path
+R=Path('/home/vscode/shopsystem-bdd/.shop/work')
+rows=[]
+for i in (37,38,40,41,42):
+    for s in sorted(R.glob('i%d/runs/**/session.json'%i)):
+        rel=s.parent.relative_to(R)
+        parts=rel.parts
+        stage=parts[-1]
+        kind=re.sub(r'^\d+-','',stage)
+        if parts[2]=='branch-review': kind='branch-review'
+        try: d=json.load(open(s))
+        except Exception as e: print('bad',s,e); continue
+        if not isinstance(d,dict): print('nondict',s); continue
+        rows.append(dict(init='i%d'%i,path=str(rel),kind=kind,sid=d.get('session_id'),turns=d.get('num_turns'),cost=d.get('total_cost_usd'),
+            models=list((d.get('modelUsage') or {}).keys()),denials=d.get('permission_denials') or [],tp=d.get('transcript_path'),
+            sub=(d.get('subagent_stats') or {}).get('spawned'),subtype=d.get('subtype'),dur=d.get('duration_ms')))
+json.dump(rows,open(sys.argv[1],'w'),indent=1)
+from collections import Counter
+print(Counter(r['kind'] for r in rows))
+print(sum(1 for r in rows if r['tp'] and os.path.exists(r['tp'])),'transcripts present of',len(rows))

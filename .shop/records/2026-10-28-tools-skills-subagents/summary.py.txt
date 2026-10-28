@@ -1,0 +1,11 @@
+import json
+from collections import Counter,defaultdict
+a=json.load(open('analyzed.json'))
+K=defaultdict(list)
+for r in a: K[r['kind']].append(r)
+for k,rs in K.items():
+    n=len(rs); t=sum(r['turns'] or 0 for r in rs); c=sum(r['cost'] or 0 for r in rs)
+    tl=Counter(); sh=Counter(); st=Counter()
+    for r in rs: tl.update(r['tools']); sh.update(r['shapes']); st.update(r['subtools'])
+    print(f"## {k}: n={n} turns={t} mean={t/n:.1f} cost=${c:.2f} mean=${c/n:.2f} calls={sum(r['ncalls'] for r in rs)} denials={sum(r['ndeny'] for r in rs)} errs={sum(len(r['errs']) for r in rs)} rereads={sum(sum(v-1 for v in r['rereads'].values()) for r in rs)} sub={sum(r['nsub'] for r in rs)} models={Counter(m for r in rs for m in r['models'])}")
+    print('  tools',dict(tl), 'subtools',dict(st)); print('  bash',sh.most_common(14))

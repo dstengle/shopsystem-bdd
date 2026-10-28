@@ -1,0 +1,42 @@
+"""Replay: each request's lines against the spec as it stood when the request was raised.
+Layer (b): parse -> facts -> overlap.lp, flags involving a request line. Novel words against that spec's glossary/lines."""
+import json, re, sys, collections
+from pathlib import Path
+sys.path.insert(0, "/home/vscode/shopsystem-bdd/scripts"); sys.path.insert(0, ".")
+from model_parse import behaviour_items, section, frontmatter, RID
+from parse import parse
+from facts import emit
+import clingo
+
+def spec_lines(root):
+    out = []
+    for p in sorted((root / "spec/capabilities").glob("*.md")):
+        data, body = frontmatter(p.read_text())
+        for text, lead in behaviour_items(section(body, "Behaviour")):
+            m = RID.match(text)
+            if m: out.append(dict(cap=p.stem, id=int(m.group(1)), text=text[m.end():], lead=lead, table=lead is not None and "|" in text))
+    return out
+
+def req_lines(path, n):
+    out, inside = [], False
+    for line in path.read_text().splitlines():
+        if line.startswith("## "): inside = line.strip() == "## Lines"; continue
+        m = re.match(r"^(\d+)\.\s+(.*)$", line)
+        if inside and m: out.append(dict(cap=f"q{n}", id=int(m.group(1)), text=m.group(2), lead=None, table=False, new=True))
+    return out
+
+def solve(P):
+    ctl = clingo.Control(["--warn=none"]); ctl.load("overlap.lp"); ctl.add("base", [], "\n".join(emit(P, [])))
+    ctl.ground([("base", [])]); res = []
+    ctl.solve(on_model=lambda m: res.extend((s.name, tuple(str(a).strip('"') for a in s.arguments)) for s in m.symbols(shown=True)))
+    return res
+
+for n in sys.argv[1:]:
+    root = Path(f"snap/q{n}")
+    S, R = spec_lines(root), req_lines(root / f"q{n}.md", n)
+    P = []
+    for l in S + R:
+        p = parse(l["lead"] if l["table"] else l["text"]); p.update(l); P.append(p)
+    flags = [f for f in solve(P) if any(a.startswith(f"q{n}#") for a in f[1])]
+    print(f"== q{n}: {len(R)} lines against {len(S)} spec lines; {len(flags)} flags on its lines")
+    for f in sorted(flags): print("  ", f[0], *f[1])

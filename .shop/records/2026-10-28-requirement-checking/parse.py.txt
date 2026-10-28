@@ -1,0 +1,88 @@
+"""A deterministic structural parser of EARS Behaviour lines: clauses, system, trigger (subject/event/qualifier),
+response (verb/object). Levels of coverage are reported separately."""
+import json, re, sys, collections
+
+CODE = re.compile(r"`[^`]*`")
+
+def protect(t):
+    spans = []
+    def sub(m):
+        spans.append(m.group(0)); return f"§{len(spans)-1}§"
+    return CODE.sub(sub, t), spans
+
+def restore(t, spans):
+    return re.sub(r"§(\d+)§", lambda m: spans[int(m.group(1))], t)
+
+KW = r"(Where|While|When|If)"
+EVENT_VERBS = r"(ends|end|gives|give|is started|are started|is run|is given|starts|finds|reads|applies|formulates|drafts|is|are|has|have|becomes|exits|names|writes|takes|runs|cannot|fails|leaves|changes|asks|meets|is not|lacks|holds|returns|merges|stops|sees)"
+
+def clauses(pre):
+    """[(kw, text)] in order, from the text before the system."""
+    out, rest = [], pre.strip()
+    while True:
+        m = re.match(KW + r"\b\s*(.*)$", rest, re.I)
+        if not m: break
+        kw, body = m.group(1).capitalize(), m.group(2)
+        if kw == "If":
+            mm = re.match(r"(.+?),\s*then\s+(.*)$", body, re.I)
+            if not mm: return None, rest
+            out.append(("If", mm.group(1))); rest = mm.group(2); continue
+        nxt = re.search(r",\s*(?=(Where|While|When|If)\b)", body, re.I)
+        if nxt:
+            out.append((kw, body[:nxt.start()])); rest = body[nxt.end():]; continue
+        cut = body.rfind(", ")
+        if cut < 0: return None, rest
+        out.append((kw, body[:cut])); rest = body[cut+2:]
+        break
+    return out, rest
+
+def parse(raw):
+    t = raw.replace("**", "").strip()
+    t, spans = protect(t)
+    m = re.search(r"\bshall\b", t)
+    if not m: return {"ok": False, "why": "no shall"}
+    pre, resp = t[:m.start()].strip(), t[m.end():].strip().rstrip(".")
+    cl, system = clauses(pre)
+    if cl is None: return {"ok": False, "why": "clause split"}
+    system = system.strip()
+    r = {"ok": True, "kw": "+".join(k for k, _ in cl) or "ubiquitous",
+         "clauses": [(k, restore(x, spans)) for k, x in cl], "system": restore(system, spans),
+         "response": restore(resp, spans)}
+    # system recognised: a code span, or "the <noun>"
+    r["system_ok"] = bool(re.fullmatch(r"(§\d+§|[Tt]he [\w\- ]+|[\w-]+)", system)) and len(system.split()) <= 5
+    # trigger decomposition of the When/If clause
+    trig = next((x for k, x in cl if k in ("When", "If")), None)
+    if trig is not None:
+        mv = re.search(r"\b" + EVENT_VERBS + r"\b", trig)
+        if mv:
+            subj, verb, qual = trig[:mv.start()].strip(), mv.group(1), trig[mv.end():].strip()
+            kind = re.search(r"of the kind (§\d+§)", subj)
+            r["trigger"] = {"subject": restore(subj, spans), "verb": verb, "qual": restore(qual, spans),
+                            "kind": restore(kind.group(1), spans).strip("`") if kind else None}
+    # response decomposition: verb + object; count of conjoined responses
+    mr = re.match(r"(not |never |no longer )?(\w+)\s*(.*)$", resp)
+    if mr:
+        r["rverb"] = (mr.group(1) or "") + mr.group(2)
+        r["robj"] = restore(mr.group(3), spans)
+    # heuristic: two responses joined by ", and <verb>" or " and <verb> " where verb is a known response verb
+    RV = r"(exit|exits|print|prints|write|writes|say|says|change|changes|transition|start|keep|give|name|set|commit|leave|refuse|draft|take|make|run|show|list|add|remove|stop|end|push|raise|return)"
+    trail = re.sub(r",? (and )?(then )?(exit|exits) (with an error|successfully).*$|,? (and )?say(s)? (why|so)\b|,? and change nothing", "", resp)
+    r["many"] = len(re.findall(r"(?:,| and| then)\s+(?:then\s+)?" + RV + r"\b", trail))
+    return r
+
+if __name__ == "__main__":
+    L = json.load(open(sys.argv[1]))
+    out, stats = [], collections.Counter()
+    for l in L:
+        txt = l["text"] if not l["table"] else l["lead"]
+        p = parse(txt); p.update(cap=l["cap"], id=l["id"], text=l["text"], table=l["table"])
+        out.append(p)
+        stats["total"] += 1
+        if p["ok"]: stats["L1 clauses+system+response"] += 1
+        if p.get("system_ok"): stats["L2 system recognised"] += 1
+        if p["ok"] and (p["kw"] in ("ubiquitous", "Where", "While", "Where+While") or "trigger" in p): stats["L3 trigger split (or none needed)"] += 1
+        if "trigger" in p and p["trigger"]["kind"]: stats["  trigger names a round kind"] += 1
+        if p.get("many"): stats["heuristic: >1 response in one shall"] += 1
+        stats["kw " + p.get("kw", "?")] += 1
+    json.dump(out, open(sys.argv[2], "w"), indent=1)
+    for k, v in sorted(stats.items()): print(f"{v:4d}  {k}")

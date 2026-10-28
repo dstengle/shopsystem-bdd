@@ -1,0 +1,28 @@
+import json,re
+from collections import Counter,defaultdict
+a=json.load(open('analyzed.json'))
+def cause(d):
+    if d['tool_name']!='Bash': return 'Write outside worktree' if '/tmp' in d['tool_input'].get('file_path','') or 'scratch_' in d['tool_input'].get('file_path','') or 'splice_i41' in d['tool_input'].get('file_path','') else d['tool_name']
+    c=d['tool_input']['command']
+    if '<<' in c and re.search(r'python3 -? ?<<|python3 - <<|python3 <<',c): return 'python heredoc (inline script)'
+    if '<<' in c: return 'heredoc to write a file (cat >)'
+    if re.search(r'python3 (-I )?(\.shop/scratch|/tmp)\S*\.py',c) and 'pytest' not in c: return 'running a scratch .py script'
+    if re.search(r'\bsed -i\b',c): return 'sed -i (edit by shell)'
+    if re.search(r'sleep|until|timeout|tail -f',c): return 'waiting loop for subagent reply'
+    if re.search(r'(^|[;\s])[A-Za-z_]+=',c) or '$(' in c: return 'variable assignment / $( )'
+    if re.search(r'^\s*for |; *for |\bfor \w+ in',c): return 'for loop'
+    if re.search(r'^(/|\.?/?scripts/)\S*(model|features|tools|work) ',c.strip()) : return 'plugin script not via python3 / wrong path'
+    if 'scratch/runner' in c: return 'plugin script at an unlisted path'
+    if re.search(r'echo .?(exit|rc)',c): return 'echo "exit $?"'
+    if re.search(r'\benv\b|pip list|cd /dev/null|git (check-ignore|branch|range-diff|log -S)|cat pytest.ini|git add .*&& git commit',c): return 'unlisted command'
+    return 'compound / other'
+K=defaultdict(Counter); ex=defaultdict(list)
+for r in a:
+    for d in r['denials']:
+        c=cause(d); K[r['kind']][c]+=1
+        ex[(r['kind'],c)].append(r['sid'][:8])
+for k,v in K.items(): print(k,sum(v.values()),dict(v.most_common()))
+print()
+for (k,c),l in ex.items():
+    if c=='compound / other': print(k,c,l)
+json.dump({k:dict(v) for k,v in K.items()},open('deny_causes.json','w'))

@@ -1,0 +1,21 @@
+"""Novel-word check: a noun or verb lemma in a request line that is no glossary term and that the current spec's
+lines use at most twice -> a candidate undefined term. Plus an implementation-detail lexicon."""
+import json, re, collections, sys
+sys.argv=[sys.argv[0]]
+from clarity import nlp, clean, glossary, load_requests
+gl = glossary()
+glw = {w for t in gl for w in t.split()}
+spec = json.load(open("lines.json"))
+freq = collections.Counter()
+for l in spec:
+    for tok in set(t.lemma_.lower() for t in nlp(clean(l["text"])) if t.pos_ in ("NOUN", "VERB")): freq[tok] += 1
+IMPL = r"\b(exit code|status code|return code|exit status|json|yaml|field|fields|column|table|port|carrier|github|issue|api|endpoint|database|schema|regex|stdout|stderr|flag)\b"
+R = load_requests([14, 18, 19, 22, 23, 24])
+out = {}
+for l in R:
+    toks = [t for t in nlp(clean(l["text"])) if t.pos_ in ("NOUN", "VERB") and t.lemma_.lower() not in ("foo",)]
+    novel = sorted({t.lemma_.lower() for t in toks if freq[t.lemma_.lower()] <= 2 and t.lemma_.lower() not in glw})
+    impl = re.findall(IMPL, l["text"].replace("**", ""), re.I)
+    out[f'{l["cap"]}:{l["id"]}'] = {"novel": novel, "impl": impl}
+    print(f'{l["cap"]}:{l["id"]:<3}', "novel:", novel, "| impl:", impl)
+json.dump(out, open("novelty.json", "w"), indent=1)

@@ -1,0 +1,85 @@
+"""Parsed lines -> ASP facts for the set-level PoC. Normalisation is deliberately small and explicit."""
+import json, re, sys
+
+def q(s): return '"' + str(s).replace('\\', '\\\\').replace('"', '\\"') + '"'
+
+HEADS = ["capability-proposal", "branch review", "work-item", "initiative", "request", "session", "round",
+         "worker", "scenario", "check", "finding", "change list", "result"]
+EVENTS = {"ends": "ends", "end": "ends", "gives": "gives", "give": "gives", "applies": "applies",
+          "formulates": "formulates", "drafts": "drafts", "finds": "finds", "starts": "starts", "is started": "started"}
+QUALS = [  # (regex on the trigger, qualifier atom)
+    (r"without giving a question|gives no question", "no_question"),
+    (r"gives (a question|questions)|(?<!without )giving a question", "question"),
+    (r"having applied its drafts", "applied_drafts"),
+    (r"do(es)? not hold|does not hold|what its drafts do not hold", "unheld"),
+    (r"without a change list", "no_change_list"),
+    (r"with a change list", "change_list"),
+    (r"\bnothing\b", "nothing"),
+    (r"in an error|turn limit|no result", "fault"),
+    (r"lines not in `spec/`", "lines_not_in_spec"),
+    (r"anew from its answers", "anew"),
+    (r"lines of a request into an upstream", "raises"),
+    (r"behaviour that only a run would show", "needs_run"),
+]
+
+def system(s):
+    s = s.strip().strip("`").lower()
+    s = re.sub(r"^the ", "", s).strip("`")
+    return {"reviewer": "the reviewer", "branch reviewer": "branch reviewer"}.get(s, s)
+
+def resp_atoms(r):
+    """(verb, object, arg) atoms of a response. Objects normalised: proposal = capability-proposal."""
+    r = r.replace("capability-proposal", "proposal")
+    out = []
+    for m in re.finditer(r"transition (?:the |an |a )?(proposal|initiative|work-item|node)\w* to `(\w[\w-]*)`", r):
+        out.append(("transition", m.group(1), m.group(2)))
+    for m in re.finditer(r"set (?:the |an |a )?(proposal|initiative|work-item)\w* `(\w[\w-]*)`", r):
+        out.append(("transition", m.group(1), m.group(2)))
+    for m in re.finditer(r"keep the (?:proposal's or initiative's|(proposal|initiative|work-item|request)'s) status", r):
+        objs = [m.group(1)] if m.group(1) else ["proposal", "initiative"]
+        out += [("keep_status", o, "-") for o in objs]
+    if re.search(r"\bmake no transition", r): out.append(("no_transition", "any", "-"))
+    if re.search(r"make the node's next transition", r): out.append(("transition", "node", "next"))
+    for m in re.finditer(r"start (a|a new|no) round of the kind `(\w+)`", r):
+        out.append(("start_round" if m.group(1) != "no" else "no_round", m.group(2), "-"))
+    if re.search(r"exit with an error", r): out.append(("exit_error", "-", "-"))
+    if re.search(r"\brun nothing\b", r): out.append(("runs_nothing", "-", "-"))
+    if re.search(r"\b(run|runs)\b", r) and not re.search(r"run nothing", r): out.append(("runs", "-", "-"))
+    if re.search(r"wall time|reproduction|cannot verify|verify", r): out.append(("presupposes_run", "-", "-"))
+    return out
+
+def emit(P, out):
+    for p in P:
+        if not p["ok"]: continue
+        L = f'{p["cap"]}#r{p["id"]}'
+        out.append(f'line({q(L)}, {q(p["cap"])}, {q(p["kw"])}).')
+        out.append(f'system({q(L)}, {q(system(p["system"]))}).')
+        if p.get("retired"): out.append(f'retired({q(L)}).')
+        if p.get("new"): out.append(f'new({q(L)}).')
+        trig = " ".join(x for k, x in p["clauses"] if k in ("When", "If", "Where", "While"))
+        if p["clauses"]:
+            plain = re.sub(r"`[^`]*`", "X", trig.split(" that ")[0] if trig else "")
+            hh = [(m.start(), h) for h in HEADS for m in [re.search(r"\b" + h + r"\b", plain)] if m]
+            head = min(hh)[1] if hh else None
+            if head: out.append(f'subject({q(L)}, {q(head)}).')
+            k = re.search(r"of the kind `(\w+)`", trig)
+            if k: out.append(f'kind({q(L)}, {q(k.group(1))}).')
+            elif re.search(r"a round of any kind", trig): out.append(f'kind({q(L)}, "any").')
+            hits = [(m.start(), e) for w, e in EVENTS.items() for m in [re.search(r"\b" + w + r"\b", trig)] if m]
+            if hits: out.append(f'event({q(L)}, {min(hits)[1]}).')
+            for rx, a in QUALS:
+                if re.search(rx, trig): out.append(f'qual({q(L)}, {a}).')
+        # Where-clause holding an event verb: wrong keyword
+        for k, x in p["clauses"]:
+            if k == "Where" and re.search(r"\b(finds|ends|starts|is run|fails|reads|is started)\b", x):
+                out.append(f'where_event({q(L)}).')
+        for v, o, a in resp_atoms(p["response"]):
+            out.append(f'resp({q(L)}, {v}, {q(o)}, {q(a)}).')
+        if p.get("many"): out.append(f'many_responses({q(L)}, {p["many"]}).')
+    return out
+
+if __name__ == "__main__":
+    P = json.load(open(sys.argv[1]))
+    for extra in sys.argv[3:]:
+        P += json.load(open(extra))
+    open(sys.argv[2], "w").write("\n".join(emit(P, [])) + "\n")

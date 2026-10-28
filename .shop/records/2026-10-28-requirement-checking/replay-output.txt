@@ -1,0 +1,47 @@
+== q14: 26 lines against 500 spec lines; 4 flags on its lines
+   c2_catchall supervision#r91 q14#r24
+   c2_catchall supervision#r92 q14#r24
+   c2_catchall supervision#r96 q14#r24
+   p2_many q14#r1 3
+== q18: 4 lines against 520 spec lines; 6 flags on its lines
+   c2_catchall supervision#r114 q18#r1
+   c2_catchall supervision#r71 q18#r1
+   c2_catchall supervision#r80 q18#r1
+   c2_catchall supervision#r91 q18#r4
+   c2_catchall supervision#r92 q18#r4
+   c2_catchall supervision#r96 q18#r4
+== q19: 9 lines against 521 spec lines; 20 flags on its lines
+   c2_catchall q19#r5 q19#r1
+   c2_catchall q19#r5 q19#r8
+   c2_catchall q19#r6 q19#r1
+   c2_catchall q19#r6 q19#r8
+   c2_catchall q19#r7 q19#r1
+   c2_catchall q19#r7 q19#r8
+   c2_catchall supervision#r114 q19#r1
+   c2_catchall supervision#r114 q19#r8
+   c2_catchall supervision#r71 q19#r1
+   c2_catchall supervision#r71 q19#r8
+   c2_catchall supervision#r80 q19#r1
+   c2_catchall supervision#r80 q19#r8
+   c2_catchall supervision#r91 q19#r3
+   c2_catchall supervision#r91 q19#r9
+   c2_catchall supervision#r92 q19#r3
+   c2_catchall supervision#r92 q19#r9
+   c2_catchall supervision#r96 q19#r3
+   c2_catchall supervision#r96 q19#r9
+   c3_widens q19#r5 supervision#r80
+   c3_widens q19#r7 supervision#r71
+== q22: 3 lines against 528 spec lines; 5 flags on its lines
+   c2_catchall supervision#r144 q22#r3
+   c2_catchall supervision#r145 q22#r3
+   c2_catchall supervision#r146 q22#r3
+   c2_catchall supervision#r83 q22#r1
+   c3_widens q22#r3 supervision#r140
+== q23: 6 lines against 533 spec lines; 7 flags on its lines
+   c4_presupposes q23#r4 q23#r5
+   c4_presupposes q23#r4 q23#r6
+   c4_presupposes q23#r4 review#r7
+   c4_presupposes q23#r4 review#r9
+   p1_where_event q23#r5
+   p2_many q23#r1 2
+   p2_many q23#r4 1

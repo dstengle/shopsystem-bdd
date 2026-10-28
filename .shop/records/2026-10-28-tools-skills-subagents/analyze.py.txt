@@ -1,0 +1,52 @@
+import json, os, re, sys, glob
+from collections import Counter, defaultdict
+S='/tmp/claude-1000/-home-vscode-shopsystem-bdd/13b84a78-e105-499b-b557-6347f2f3b373/scratchpad/'
+rows=json.load(open(S+'rows.json'))
+def calls(tp):
+    """yield (tool_use dict, result content str, is_error) in order, main thread only."""
+    uses={}; out=[]
+    for l in open(tp):
+        try: j=json.loads(l)
+        except: continue
+        m=j.get('message') or {}
+        c=m.get('content')
+        if not isinstance(c,list): continue
+        for b in c:
+            if not isinstance(b,dict): continue
+            if b.get('type')=='tool_use':
+                (out.append(b['id']) if b['id'] not in uses else None); uses[b['id']]=b
+            elif b.get('type')=='tool_result':
+                rc=b.get('content'); 
+                if isinstance(rc,list): rc=' '.join(x.get('text','') for x in rc if isinstance(x,dict))
+                u=uses.get(b.get('tool_use_id'))
+                if u is not None: u['_res']=str(rc); u['_err']=bool(b.get('is_error'))
+    return [uses[i] for i in out]
+def bash_shape(cmd):
+    c=cmd.strip()
+    c=re.sub(r'^cd \S+ && ','',c)
+    first=c.split()[0] if c.split() else ''
+    if first=='python3':
+        m=re.match(r'python3 (-m pytest|\S*/(features|model|tools|work|measure)\b ?(\S+)?|\S+)',c)
+        return 'python3 '+(m.group(2)+' '+(m.group(3) or '') if m and m.group(2) else (m.group(1) if m else ''))
+    if first=='git': return 'git '+(c.split()[1] if len(c.split())>1 else '')
+    return first
+out=[]
+for r in rows:
+    cs=calls(r['tp'])
+    tools=Counter(u['name'] for u in cs)
+    errs=[(u['name'],(u.get('_res') or '')[:160], json.dumps(u['input'])[:200]) for u in cs if u.get('_err')]
+    reads=Counter(u['input'].get('file_path') for u in cs if u['name']=='Read')
+    rereads={k:v for k,v in reads.items() if v>1}
+    bash=[u['input'].get('command','') for u in cs if u['name']=='Bash']
+    shapes=Counter(bash_shape(b) for b in bash)
+    greps=[u['input'].get('pattern') for u in cs if u['name']=='Grep']
+    subdirs=glob.glob(r['tp'][:-6]+'/subagents/*.jsonl')
+    subtools=Counter(); subn=0
+    for sp in subdirs:
+        if sp.endswith('.meta.json'): continue
+        subn+=1
+        for u in calls(sp): subtools[u['name']]+=1
+    r.update(ncalls=len(cs),tools=dict(tools),errs=errs,rereads=rereads,bash=bash,shapes=dict(shapes),greps=greps,nsub=subn,subtools=dict(subtools),
+             ndeny=len(r['denials']))
+    out.append(r)
+json.dump(out,open(S+'analyzed.json','w'),indent=1)

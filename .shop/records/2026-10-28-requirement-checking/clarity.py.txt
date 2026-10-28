@@ -1,0 +1,91 @@
+"""Layer (a): English-structure clarity checks per line with spaCy (en_core_web_sm). Offline once installed."""
+import json, re, sys, collections
+from pathlib import Path
+import spacy
+nlp = spacy.load("en_core_web_sm")
+ROOT = Path("/home/vscode/shopsystem-bdd")
+
+VAGUE = r"\b(appropriate(ly)?|as needed|as required|if possible|etc|and/or|some|several|relevant|adequate|sufficient|normally|usually|typically|quickly|easily|user-friendly|efficient(ly)?|may|might|could|should|possibly|as far as possible|minimi[sz]e|maximi[sz]e|reasonable|properly|correctly|any kind|whatever|e\.g|i\.e|such as)\b"
+PRONOUNS = {"it", "they", "them", "this", "these", "those", "that"}   # 'that' only as a pronoun (not det/relativiser)
+
+def glossary():
+    text = (ROOT / "spec/index.md").read_text()
+    g = re.findall(r"^- \*\*([^*]+)\*\*:", text, re.M)
+    return {t.lower() for t in g}
+
+def load_requests(nums):
+    out = []
+    for n in nums:
+        body = (ROOT / f".shop/work/requests/q{n}.md").read_text()
+        inside = False
+        for line in body.splitlines():
+            if line.startswith("## "): inside = line.strip() == "## Lines"; continue
+            m = re.match(r"^(\d+)\.\s+(.*)$", line)
+            if inside and m: out.append({"cap": f"q{n}", "id": int(m.group(1)), "text": m.group(2), "table": False})
+    return out
+
+def clean(t):
+    t = t.replace("**", "")
+    t = re.sub(r"`[^`]*`", "Foo", t)          # a code span stands for a proper noun
+    return t
+
+def check(text, gl):
+    t = clean(text)
+    doc = nlp(t)
+    f = collections.OrderedDict()
+    toks = list(doc)
+    # passive with no agent
+    for tok in toks:
+        if tok.dep_ in ("nsubjpass",) or (tok.dep_ == "auxpass"):
+            head = tok.head
+            if not any(c.dep_ == "agent" for c in head.children):
+                f.setdefault("passive_no_agent", []).append(head.text)
+    # pronouns used as arguments (anaphora)
+    for tok in toks:
+        if tok.lower_ in PRONOUNS and tok.pos_ == "PRON" and tok.tag_ not in ("WDT", "WP") and tok.dep_ in ("nsubj", "dobj", "pobj", "nsubjpass", "dative") \
+                and not (tok.lower_ == "it" and tok.dep_ == "nsubj" and tok.head.lemma_ == "be"):
+            f.setdefault("anaphora", []).append(tok.text)
+    # 'shall' governing coordinated verbs: more than one response
+    for tok in toks:
+        if tok.lower_ == "shall":
+            v = tok.head
+            conj = [c for c in v.children if c.dep_ == "conj" and c.pos_ in ("VERB", "AUX")]
+            if conj: f["coordinated_responses"] = [v.text] + [c.text for c in conj]
+    # nested subordinate clauses
+    sub = [tok for tok in toks if tok.dep_ in ("advcl", "relcl", "acl", "ccomp", "csubj")]
+    if len(sub) >= 4: f["deep_nesting"] = len(sub)
+    # coordination ambiguity: 'A and B' noun conjuncts whose first conjunct has a prep/adj modifier
+    for tok in toks:
+        if tok.dep_ == "conj" and tok.pos_ == "NOUN" and tok.head.pos_ == "NOUN":
+            if any(c.dep_ in ("prep", "amod", "compound") for c in tok.head.children) or any(c.dep_ == "prep" for c in tok.children):
+                f.setdefault("coordination_ambiguity", []).append(f"{tok.head.text}..{tok.text}")
+    # vague words
+    v = re.findall(VAGUE, t, re.I)
+    if v: f["vague"] = [x[0] if isinstance(x, tuple) else x for x in v]
+    # length
+    n = len([x for x in toks if not x.is_punct])
+    if n > 45: f["long"] = n
+    # nominalisations
+    nom = [x.text for x in toks if x.pos_ == "NOUN" and re.search(r"(tion|ment|ance|ence|ing)$", x.lower_) and x.lower_ not in gl]
+    if len(nom) >= 3: f["nominalisations"] = nom
+    # nouns not in glossary (candidate undefined terms): heads of noun chunks
+    heads = [c.root.lemma_.lower() for c in doc.noun_chunks if c.root.pos_ == "NOUN"]
+    f["_heads"] = heads
+    return f
+
+if __name__ == "__main__":
+    gl = glossary()
+    L = json.load(open("lines.json")) + load_requests([14, 18, 19, 22, 23, 24])
+    out = []
+    for l in L:
+        txt = l["lead"] + " " + l["text"] if l.get("table") and l.get("lead") else l["text"]
+        r = check(txt, gl); r.update(cap=l["cap"], id=l["id"]); out.append(r)
+    json.dump(out, open("clarity.json", "w"), indent=1)
+    c = collections.Counter()
+    for r in out:
+        for k in r:
+            if not k.startswith("_") and k not in ("cap", "id"): c[k, r["cap"].startswith("q")] += 1
+    print("check, spec lines flagged (/539), request lines flagged")
+    for k in sorted({k for k, _ in c}): print(f"{k:25s} {c[k, False]:4d} {c[k, True]:4d}")
+    heads = collections.Counter(h for r in out for h in r["_heads"])
+    print("most frequent noun heads not in glossary:", [(h, n) for h, n in heads.most_common(80) if h not in gl and h + "s" not in gl][:40])

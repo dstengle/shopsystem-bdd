@@ -1,0 +1,18 @@
+import json,datetime
+from collections import defaultdict
+a=json.load(open('analyzed.json'))
+def wall(tp):
+    ts=[]
+    for l in open(tp):
+        try: j=json.loads(l)
+        except: continue
+        t=j.get('timestamp')
+        if t: ts.append(t)
+    f=lambda s: datetime.datetime.fromisoformat(s.replace('Z','+00:00'))
+    return (f(max(ts))-f(min(ts))).total_seconds() if ts else 0
+K=defaultdict(list)
+for r in a:
+    r['wall']=wall(r['tp']); K[r['kind']].append(r)
+for k,rs in K.items():
+    print(k, 'wall_s total',round(sum(r['wall'] for r in rs)),'mean',round(sum(r['wall'] for r in rs)/len(rs)), 'subtypes',set(r['subtype'] for r in rs), 'max turns', max(r['turns'] for r in rs))
+json.dump(a,open('analyzed.json','w'),indent=1)
