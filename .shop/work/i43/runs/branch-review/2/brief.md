@@ -1,0 +1,13 @@
+# branch review of i43
+
+Initiative: .shop/work/i43
+Agent: bdd-branch-reviewer
+Scripts: /home/vscode/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.28.1/scripts
+Initiative branch: main
+Base: ebbf1beaaa1fb5e4e3d29ffde673a5999a2cbd22
+Head: fdf90439e529ae8110ccad5bb72dd1cc962518b4
+Worktree: /home/vscode/shopsystem-bdd/.shop/worktrees/branch-review
+Run directory: /home/vscode/shopsystem-bdd/.shop/worktrees/branch-review/.shop/scratch/branch-review
+Result file: /home/vscode/shopsystem-bdd/.shop/worktrees/branch-review/.shop/scratch/branch-review/result.json
+
+Review the initiative branch from its base. You start in your worktree: run every command from there and never change directory. Write the result file first, with the outcome `PARTIAL`, and keep it current as you work: JSON with `status`, `summary` and `questions`.
