@@ -1,0 +1,1 @@
+{"status": "DONE", "summary": "supervision adds r174 r175 r176, removes r162 r163; no glossary terms; 2 questions; 0 cut sentences", "questions": [], "changes": [{"capability": "supervision", "adds": ["supervision#r174", "supervision#r175", "supervision#r176"], "changes": [], "removes": ["supervision#r162", "supervision#r163"]}]}
