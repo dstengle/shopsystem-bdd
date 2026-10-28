@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"r159 and r168 Thens now bind with the term clause optional; w224 scenarios 182 passed; no production change.","commits":["2b992dad Bind the r159 and r168 Thens: the term clause is optional"],"report":"/tmp/work-run-i46-3cyz6a2g/w224/.shop/scratch/3-implement/report.md","questions":[]}
