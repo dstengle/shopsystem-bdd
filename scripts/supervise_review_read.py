@@ -32,13 +32,15 @@ class ReviewRead:
         """The commits from `base` to `head`, oldest first, each as `<commit> <work-item or none> <subject>`: the
         work-item whose merge brought it or whose transition it is, else none; and the change less `.shop/`."""
         merged = self.merged_commits()
+        names = [name for name, _ in self.items()]
         text = "\n## Commits\n\n"
         if base is None:
             return text + "The initiative has no base.\n"
         for line in git(self.root, "log", "--reverse", "--format=%H %s", "%s..%s" % (base, head)).stdout.splitlines():
             sha, subject = line.split(" ", 1)
             found = TRANSITION.match(subject)
-            text += "    %s %s %s\n" % (sha, merged.get(sha) or (found.group(1) if found else "none"), subject)
+            owner = merged.get(sha) or (found.group(1) if found and found.group(1) in names else "none")
+            text += "    %s %s %s\n" % (sha, owner, subject)
         change = git(self.root, "diff", base, head, "--", ".", ":(exclude).shop").stdout
         return text + "\n## Change\n\nThe change from %s to %s, without the workflow's own files:\n\n%s" % (base, head, indented(change))
 
