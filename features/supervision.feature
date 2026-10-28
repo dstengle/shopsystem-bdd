@@ -1299,24 +1299,6 @@ Feature: Supervision
     Then a session of analyzing-a-batch was started for i1 once `measure initiative` had written i1's measurement
     And i1's analysis record is not there
   @r77 @deprecated
-  Scenario Outline: under a delegation, each question of the initiative goes to a session of its own, given only the delegation and the files it names, that <reply> (deprecated)
-    Deprecated for: under a delegation, each question of the initiative that names neither a term of the glossary nor a glossary-proposal goes to a session of its own, given only the delegation and the files it names, that <reply>
-    Pins that a question is weighed against the person's words alone, apart from every other question, and answered only when those words cover it.
-    Given i1 fulfils the request q1, which gives the delegation "<delegation>"
-    And i1's work-item w1 is awaiting-answer, its ## Questions section with "Does scripts/log.py or scripts/queue.py own the log?" and no answer
-    And i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice in features/books.feature one book or two?" and no answer
-    And each session given a question under the delegation <reply>, and every round ends and every worker gives DONE
-    When the person runs `work run i1`
-    Then w1's question was given to a session of its own, given the question, the delegation "<delegation>", scripts/log.py and scripts/queue.py, and nothing else
-    And p1's question was given to a session of its own, given the question, the delegation "<delegation>", features/books.feature, and nothing else
-    And <after>
-
-    Examples:
-      | delegation                                                                       | reply                                   | after                                                                     |
-      | Please get everything delivered. Do not stop to ask me questions or permission. | answers it                              | w1's question and p1's question each have the session's answer            |
-      | Answer only the questions on the queue's tests; ask me everything else.          | leaves it for the person                | w1's question and p1's question have no answer, w1 and p1 awaiting-answer |
-
-  @r77 @deprecated
   Scenario: under a delegation, a work-item with two questions has each given to a session of its own, and both answers stay written when the run ends (deprecated)
     Deprecated for: removal
     Pins that two questions of one work-item are answered apart, in one `work run`, and that the run keeps every answer its sessions gave instead of losing one to the other.
@@ -1470,16 +1452,6 @@ Feature: Supervision
       | ending                                |
       | gives DONE with a change list naming thing |
       | ends at its turn limit                |
-
-  @r92 @deprecated
-  Scenario: an integrate round's change list gives one drafted capability-proposal for each capability it names, with what it adds, changes and removes on that capability (deprecated)
-    Deprecated for: an integrate round that ends with a change list gives one drafted capability-proposal for each capability it names, with the requirement ids it adds, changes and removes on that capability
-    Pins that the change list is split by capability, each proposal holding that capability's requirement ids and terms and nothing of another's.
-    Given i1 is proposed and fulfils the request q1, whose line 1 has the line outcome accepted
-    And the integrate round for i1 gives DONE with a change list that adds thing#r4 and the term "ledger", changes thing#r2 and removes thing#r3 on thing, and adds other#r1 on other
-    And every other round ends
-    When the person runs `work run i1`
-    Then the commit that wrote i1's capability-proposals wrote two, each drafted: one for thing, its adds naming thing#r4 and the term "ledger", its changes thing#r2 and its removes thing#r3, and one for other, its adds naming other#r1 and its changes and removes naming nothing
 
   @r92 @deprecated
   Scenario: the change lists of two initiatives that name the same capability give two drafted capability-proposals with different ids (deprecated)
@@ -1702,18 +1674,6 @@ Feature: Supervision
     When the person runs `work run i1`
     Then a round of the kind integrate was started for i1, given thing#r4 and other#r1
     And the integrate round for i1 was not given thing#r1, thing#r2 or thing#r5
-
-  @r104 @deprecated
-  Scenario: the gate round of a capability-proposal is asked only for the questions on the lines and terms that proposal adds, changes or removes (deprecated)
-    Deprecated for: the gate round of a capability-proposal is asked only for the questions on the lines that proposal adds, changes or removes
-    Pins that the gate of one capability-proposal raises no question on what another proposal, or the rest of the capability, holds.
-    Given the capability thing holds thing#r1, thing#r2 and thing#r3
-    And i1's capability-proposal p1 is drafted, its adds naming thing#r4 and the term "ledger", its changes thing#r2 and its removes thing#r3
-    And i1's capability-proposal p2 is drafted, its adds naming other#r1
-    And every round ends
-    When the person runs `work run i1`
-    Then the brief of the gate round for p1 asks only for the questions on thing#r4, thing#r2, thing#r3 and the term "ledger"
-    And it asks for no question on thing#r1 or on other#r1
 
   @r107
   Scenario: a change list naming a capability that neither spec/capabilities/ nor the round's drafts have gives no capability-proposal for it, and `work run` exits with an error naming it
