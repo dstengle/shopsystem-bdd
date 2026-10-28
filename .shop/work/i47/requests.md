@@ -2,17 +2,17 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i47-requests
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i47
-status: awaiting-answer
+status: drafted
 argues: [requests]
-adds: [requests#r47, requests#r48]
-changes: []
-removes: [requests#r9]
 date: 2026-10-28
+adds: [requests#r59, requests#r60, requests#r61]
+changes: []
+removes: [requests#r9, requests#r18]
 ---
 
 # requests
 
-The drafts of this proposal are in .shop/work/i47/runs/i47/1-integrate/drafts/round-1/.
+The drafts of this proposal are in .shop/work/i47/runs/requests/3-integrate/drafts/round-1/.
 
 ## Questions
 - requests, r48 against r18: line 3 of q33 says 'passes a request's turn' without saying which side. When the asker passes the turn to the upstream with every line withdrawn, r18 sets awaiting-upstream and r48 sets withdrawn. Lines: [r47] When the upstream ends its turn on a request that is not delivered whose every line has the line outcome refused or withdrawn and at least one line refused, work shall set the request's status to refused (replaces r9, retired). [r48] When work turn passes a request's turn with every line's line outcome withdrawn, work shall set the request's status to withdrawn. Reading A (recommended): r48 holds for either side; change r18 to '[r18] When work turn passes a request's turn to its upstream with a line whose line outcome is not withdrawn, work shall set the request's status to awaiting-upstream.' and keep r48 as drafted. Reading B: r48 holds only for the upstream's turn: '[r48] When work turn passes a request's turn to its asker with every line's line outcome withdrawn, work shall set the request's status to withdrawn.' and r18 stays.

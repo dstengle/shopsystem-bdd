@@ -1,0 +1,1 @@
+{"status": "DONE", "summary": "requests: adds r59 r60 r61, removes r9 r18; no glossary terms; no questions", "questions": [], "changes": [{"capability": "requests", "adds": ["requests#r59", "requests#r60", "requests#r61"], "changes": [], "removes": ["requests#r9", "requests#r18"]}]}
