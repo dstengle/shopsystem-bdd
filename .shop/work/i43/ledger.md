@@ -6,3 +6,4 @@
 - 2026-10-28: apply round 2 (review): answers applied, supervision r154-r157 and review r32-r34 added, r9 retired; commit 525db3cc
 - 2026-10-28: formulate round 3 review: commit 243800d0; scenario added supervision r154 r155 r157; r156 left as a question; review r32-r34 not formulated (guarantees capability); features bindings clean; model check: 17 violations, none from this round but r156 v_s3
 - 2026-10-28: apply round 2 (supervision): answer of 2026-10-28 (r155 reading A) already in spec/ at commit 525db3cc (r154-r157 added, Implementation line for r155 present); nothing new committed
+- 2026-10-28: formulate round 3 supervision: nothing new, no commit; r154 r155 r157 already formulated at 243800d0 (the r155 answer, reading A, changes no scenario), r156 still a question, unanswered
