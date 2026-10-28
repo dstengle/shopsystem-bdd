@@ -7,3 +7,4 @@
 - 2026-10-28: formulate round 2 design-model-check: commit d6c99676; scenario added r122 (reading 2); features bindings clean; model check: 30 violations, none from design-model-check
 - 2026-10-28: formulate round 2 supervision: nothing formulated, no commit; the answers r158 reading A and r160 reading A change lines not yet worded so in spec/ and need an integrate round first
 - 2026-10-28: integrate round 3 supervision: adds r171 r172, removes r158 r160 (answers: reading A on both), no glossary change, 0 questions, 0 cut sentences; drafts .shop/scratch/3-integrate/drafts/round-3
+- 2026-10-28: gate round 4 supervision: 1 question
