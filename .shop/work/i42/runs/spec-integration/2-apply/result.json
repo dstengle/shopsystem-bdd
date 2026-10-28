@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Applied spec-integration r46 (commit 356ac0f4). model check: 12 violations, 15 warnings, 8 unresolved references, 0 file problems (unresolved are supervision r149/r150, not part of this apply).","questions":[],"changes":[{"capability":"spec-integration","adds":["spec-integration#r46"],"changes":[],"removes":[]}]}

@@ -10,3 +10,7 @@
 {"time": "2026-10-28T01:11:27+00:00", "work-item": "supervision", "stage": "gate", "agent": "initiative-round", "session": "077f75bd-0f03-4d6c-b408-ebe5eb8166a9", "event": "start"}
 {"time": "2026-10-28T01:11:50+00:00", "work-item": "supervision", "stage": "gate", "agent": "initiative-round", "session": "077f75bd-0f03-4d6c-b408-ebe5eb8166a9", "event": "end"}
 {"time": "2026-10-28T01:11:51+00:00", "work-item": "supervision", "before": "drafted", "after": "awaiting-answer", "by": "work run"}
+{"time": "2026-10-28T01:14:10+00:00", "work-item": "spec-integration", "stage": "apply", "event": "push verified"}
+{"time": "2026-10-28T01:14:10+00:00", "work-item": "spec-integration", "stage": "apply", "agent": "initiative-round", "session": "b5a624f4-709d-4708-9aa6-ebf55850bd12", "event": "start"}
+{"time": "2026-10-28T01:14:35+00:00", "work-item": "spec-integration", "stage": "apply", "agent": "initiative-round", "session": "b5a624f4-709d-4708-9aa6-ebf55850bd12", "event": "end"}
+{"time": "2026-10-28T01:14:35+00:00", "work-item": "spec-integration", "before": "awaiting-answer", "after": "approved", "by": "work run"}

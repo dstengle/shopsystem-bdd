@@ -2,12 +2,12 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i42-spec-integration
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i42
-status: awaiting-answer
+status: approved
 argues: [spec-integration]
+date: 2026-10-28
 adds: [spec-integration#r46]
 changes: []
 removes: []
-date: 2026-10-28
 ---
 
 # spec-integration
