@@ -2,17 +2,17 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i42-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i42
-status: awaiting-answer
+status: drafted
 argues: [supervision]
-adds: [supervision#r149, supervision#r150]
-changes: []
-removes: []
 date: 2026-10-28
+adds: [supervision#r149, supervision#r150, supervision#r151, supervision#r152, supervision#r153]
+changes: []
+removes: [supervision#r140]
 ---
 
 # supervision
 
-The drafts of this proposal are in .shop/work/i42/runs/i42/1-integrate/drafts/round-1/.
+The drafts of this proposal are in .shop/work/i42/runs/supervision/3-integrate/drafts/round-1/.
 
 ## Questions
 - r150 against r140: an apply that applies nothing also gives the answers its drafts do not hold, so r150 covers r140's case. Line concerned (added): [supervision#r150] **When** a round of the kind `apply` gives in its result an answer that the drafts it applied do not hold, `work run` shall start a new round of the kind `integrate` for the capability-proposal. Readings: (a) retire r140 and keep r150, r140's scenario deprecated for r150 (recommended); (b) keep both.
