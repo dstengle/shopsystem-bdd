@@ -4,6 +4,7 @@ import json
 import re
 
 import supervise_drafts
+import supervise_glossary
 import workqueue
 import workqueue_request
 from supervise_worker import ROUNDS, SCRIPTS, git
@@ -82,6 +83,7 @@ class Briefs:
             if stage == "apply":     # r114: the list the round applied, which `work run` writes into the proposal
                 lines.append(CHANGE_LIST.replace("Give your change list", "Give the change list of what you applied"))
                 lines.append(UNHELD_ANSWERS)     # spec-integration r46
+                lines += [supervise_glossary.text(self.dir)] if supervise_glossary.withheld(self.dir) else []     # r55
             if stage == "formulate":     # r149: the output of a formulation whose answers change lines outside spec/
                 lines.append(NOTHING_FORMULATED)
             if stage in ("gate", "apply"):     # r108: the kept drafts of the integrate round that wrote the proposal
