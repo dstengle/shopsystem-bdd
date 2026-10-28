@@ -24,3 +24,4 @@ The drafts of this proposal are in .shop/work/i52/runs/i52/1-integrate/drafts/ro
 ## Answers
 - 2026-10-28: Q3, r182 'until the person has answered': reading (a), that question only, as drafted (answered by the coordinator under the person's delegation, 2026-10-28)
 - 2026-10-28: Q4, r182 with r163 after the answer: reading (a), r163 resumes for the remaining questions (answered by the coordinator under the person's delegation, 2026-10-28)
+- 2026-10-28: Q5, r182 across runs: reading (a), yes, it is a state on the initiative (answered by the coordinator under the person's delegation, 2026-10-28)
