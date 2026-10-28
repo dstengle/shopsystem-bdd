@@ -1298,8 +1298,9 @@ Feature: Supervision
     When the person runs `work run i1`
     Then a session of analyzing-a-batch was started for i1 once `measure initiative` had written i1's measurement
     And i1's analysis record is not there
-  @r77
-  Scenario Outline: under a delegation, each question of the initiative goes to a session of its own, given only the delegation and the files it names, that <reply>
+  @r77 @deprecated
+  Scenario Outline: under a delegation, each question of the initiative goes to a session of its own, given only the delegation and the files it names, that <reply> (deprecated)
+    Deprecated for: under a delegation, each question of the initiative that names neither a term of the glossary nor a glossary-proposal goes to a session of its own, given only the delegation and the files it names, that <reply>
     Pins that a question is weighed against the person's words alone, apart from every other question, and answered only when those words cover it.
     Given i1 fulfils the request q1, which gives the delegation "<delegation>"
     And i1's work-item w1 is awaiting-answer, its ## Questions section with "Does scripts/log.py or scripts/queue.py own the log?" and no answer
@@ -1315,8 +1316,9 @@ Feature: Supervision
       | Please get everything delivered. Do not stop to ask me questions or permission. | answers it                              | w1's question and p1's question each have the session's answer            |
       | Answer only the questions on the queue's tests; ask me everything else.          | leaves it for the person                | w1's question and p1's question have no answer, w1 and p1 awaiting-answer |
 
-  @r77
-  Scenario: under a delegation, a work-item with two questions has each given to a session of its own, and both answers stay written when the run ends
+  @r77 @deprecated
+  Scenario: under a delegation, a work-item with two questions has each given to a session of its own, and both answers stay written when the run ends (deprecated)
+    Deprecated for: removal
     Pins that two questions of one work-item are answered apart, in one `work run`, and that the run keeps every answer its sessions gave instead of losing one to the other.
     Given i1 fulfils the request q1, which gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
     And i1's work-item w1 is awaiting-answer, its ## Questions section with "Does scripts/log.py own the log?" and "Is a title given twice in features/books.feature one book or two?", each with no answer
@@ -1327,6 +1329,42 @@ Feature: Supervision
     And w1's answer to "Does scripts/log.py own the log?" is "Yes.", naming the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
     And w1's answer to "Is a title given twice in features/books.feature one book or two?" is "One book.", naming the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
     And it exits successfully
+
+  @r163
+  Scenario Outline: under a delegation, each question of the initiative that names neither a term of the glossary nor a glossary-proposal goes to a session of its own, given only the delegation and the files it names, that <reply>
+    Pins that a question is weighed against the person's words alone, apart from every other question, and answered only when those words cover it.
+    Given spec/index.md's Glossary holds the term "ledger"
+    And i1 fulfils the request q1, which gives the delegation "<delegation>"
+    And i1's work-item w1 is awaiting-answer, its ## Questions section with "Does scripts/log.py or scripts/queue.py own the log?" and no answer
+    And i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice in features/books.feature one book or two?" and no answer
+    And each session given a question under the delegation <reply>, and every round ends and every worker gives DONE
+    When the person runs `work run i1`
+    Then w1's question was given to a session of its own, given the question, the delegation "<delegation>", scripts/log.py and scripts/queue.py, and nothing else
+    And p1's question was given to a session of its own, given the question, the delegation "<delegation>", features/books.feature, and nothing else
+    And <after>
+
+    Examples:
+      | delegation                                                                       | reply                    | after                                                                     |
+      | Please get everything delivered. Do not stop to ask me questions or permission. | answers it               | w1's question and p1's question each have the session's answer            |
+      | Answer only the questions on the queue's tests; ask me everything else.          | leaves it for the person | w1's question and p1's question have no answer, w1 and p1 awaiting-answer |
+
+  @r162
+  Scenario Outline: under a delegation, a question of the initiative that names <named> is left for the person and given to no session
+    Pins that a question touching the glossary is the person's to answer, whatever the delegation's words allow.
+    Given spec/index.md's Glossary holds the term "ledger"
+    And i1 fulfils the request q1, which gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
+    And i1's glossary-proposal g1 is awaiting-answer
+    And i1's work-item w1 is awaiting-answer, its ## Questions section with "<question>" and no answer
+    And each session given a question under the delegation answers it, and every round ends and every worker gives DONE
+    When the person runs `work run i1`
+    Then "<question>" was given to no session
+    And w1's question "<question>" has no answer
+    And w1 is awaiting-answer
+
+    Examples:
+      | named                         | question                                       |
+      | the term "ledger"             | Does scripts/log.py write the ledger?          |
+      | the glossary-proposal g1      | Does scripts/log.py wait for g1 to be applied? |
 
   @r78
   Scenario: an answer given by a session started under a delegation is written naming that delegation
@@ -1433,8 +1471,9 @@ Feature: Supervision
       | gives DONE with a change list naming thing |
       | ends at its turn limit                |
 
-  @r92
-  Scenario: an integrate round's change list gives one drafted capability-proposal for each capability it names, with what it adds, changes and removes on that capability
+  @r92 @deprecated
+  Scenario: an integrate round's change list gives one drafted capability-proposal for each capability it names, with what it adds, changes and removes on that capability (deprecated)
+    Deprecated for: an integrate round that ends with a change list gives one drafted capability-proposal for each capability it names, with the requirement ids it adds, changes and removes on that capability
     Pins that the change list is split by capability, each proposal holding that capability's requirement ids and terms and nothing of another's.
     Given i1 is proposed and fulfils the request q1, whose line 1 has the line outcome accepted
     And the integrate round for i1 gives DONE with a change list that adds thing#r4 and the term "ledger", changes thing#r2 and removes thing#r3 on thing, and adds other#r1 on other
@@ -1442,8 +1481,9 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the commit that wrote i1's capability-proposals wrote two, each drafted: one for thing, its adds naming thing#r4 and the term "ledger", its changes thing#r2 and its removes thing#r3, and one for other, its adds naming other#r1 and its changes and removes naming nothing
 
-  @r92
-  Scenario: the change lists of two initiatives that name the same capability give two drafted capability-proposals with different ids
+  @r92 @deprecated
+  Scenario: the change lists of two initiatives that name the same capability give two drafted capability-proposals with different ids (deprecated)
+    Deprecated for: removal
     Pins that two initiatives changing one capability each get a capability-proposal of their own, never two proposals sharing one id.
     Given i1 is proposed and fulfils the request q1, whose line 1 has the line outcome accepted
     And an initiative i2 under .shop/work/, proposed, that fulfils the request q2, whose line 1 has the line outcome accepted
@@ -1462,6 +1502,15 @@ Feature: Supervision
     When the person runs `work run i1`
     Then `work request` was run for the upstream catalogue, with the line "When a book is listed, the catalogue shall give its edition." as its one line
     And the request it wrote in catalogue is raised for q1 and gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
+
+  @r159
+  Scenario: an integrate round that ends with a change list gives one drafted capability-proposal for each capability it names, with the requirement ids it adds, changes and removes on that capability
+    Pins that the change list is split by capability, each proposal holding that capability's requirement ids and nothing of another's.
+    Given i1 is proposed and fulfils the request q1, whose line 1 has the line outcome accepted
+    And the integrate round for i1 gives DONE with a change list that adds thing#r4, changes thing#r2 and removes thing#r3 on thing, and adds other#r1 on other
+    And every other round ends
+    When the person runs `work run i1`
+    Then the commit that wrote i1's capability-proposals wrote two, each drafted: one for thing, its adds naming thing#r4, its changes thing#r2 and its removes thing#r3, and one for other, its adds naming other#r1 and its changes and removes naming nothing
 
   @r68
   Scenario: a drafted capability-proposal is given to a gate round whose brief asks for the gate as questions, each a decision with its readings and the recommended reading marked
@@ -1643,8 +1692,9 @@ Feature: Supervision
     Then a round of the kind integrate was started for i1, given thing#r4 and other#r1
     And the integrate round for i1 was not given thing#r1, thing#r2 or thing#r5
 
-  @r104
-  Scenario: the gate round of a capability-proposal is asked only for the questions on the lines and terms that proposal adds, changes or removes
+  @r104 @deprecated
+  Scenario: the gate round of a capability-proposal is asked only for the questions on the lines and terms that proposal adds, changes or removes (deprecated)
+    Deprecated for: the gate round of a capability-proposal is asked only for the questions on the lines that proposal adds, changes or removes
     Pins that the gate of one capability-proposal raises no question on what another proposal, or the rest of the capability, holds.
     Given the capability thing holds thing#r1, thing#r2 and thing#r3
     And i1's capability-proposal p1 is drafted, its adds naming thing#r4 and the term "ledger", its changes thing#r2 and its removes thing#r3
@@ -1681,6 +1731,78 @@ Feature: Supervision
       | gate  | drafted                                                                                                                  |
       | apply | awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", and its Answers section with "One book." |
 
+  @r164
+  Scenario: a drafted glossary-proposal is given to a gate round asked only for the questions on the terms it adds, changes or removes
+    Pins that the gate of a glossary-proposal raises no question on a term of the glossary the proposal leaves as it is.
+    Given spec/index.md's Glossary holds the terms "shelf", "loan" and "reader"
+    And i1's glossary-proposal g1 is drafted, its adds naming the term "ledger", its changes the term "shelf" and its removes the term "loan"
+    And every round ends
+    When the person runs `work run i1`
+    Then a round of the kind gate was started for g1
+    And the brief of the gate round for g1 asks only for the questions on the terms "ledger", "shelf" and "loan"
+    And it asks for no question on the term "reader"
+
+  @r168
+  Scenario: the gate round of a capability-proposal is asked only for the questions on the lines that proposal adds, changes or removes
+    Pins that the gate of one capability-proposal raises no question on what another proposal, or the rest of the capability, holds.
+    Given the capability thing holds thing#r1, thing#r2 and thing#r3
+    And i1's capability-proposal p1 is drafted, its adds naming thing#r4, its changes thing#r2 and its removes thing#r3
+    And i1's capability-proposal p2 is drafted, its adds naming other#r1
+    And every round ends
+    When the person runs `work run i1`
+    Then the brief of the gate round for p1 asks only for the questions on thing#r4, thing#r2 and thing#r3
+    And it asks for no question on thing#r1 or on other#r1
+
+  @r170
+  Scenario Outline: the <kind> round of a glossary-proposal is given the path of the kept drafts of the integrate round that wrote the proposal
+    Pins that the round weighing or applying a glossary-proposal reads the drafts the proposal came from, without anyone pointing it to them by hand.
+    Given i1's glossary-proposal g1 is <status>
+    And g1 was written from the change list of i1's integrate round, whose drafts are kept at .shop/work/i1/runs/i1/2-integrate/drafts/round-1/
+    And every round ends
+    When the person runs `work run i1`
+    Then a round of the kind <kind> was started for g1
+    And the <kind> round for g1 was given the path .shop/work/i1/runs/i1/2-integrate/drafts/round-1/
+
+    Examples:
+      | kind  | status                                                                                                                    |
+      | gate  | drafted                                                                                                                   |
+      | apply | awaiting-answer, its ## Questions section with "Is a ledger one file or one line an event?", and its Answers section with "One file." |
+
+  @r169
+  Scenario: when the gate round `work run` started for a glossary-proposal ends, the proposal is awaiting-answer
+    Pins that a glossary-proposal whose gate has been given waits on its answers.
+    Given i1's glossary-proposal g1 is drafted
+    And the gate round gives the question "Is a ledger one file or one line an event?" on g1, and every round ends
+    When the person runs `work run i1`
+    Then a round of the kind gate was started for g1
+    And g1 is awaiting-answer
+
+  @r165
+  Scenario: a glossary-proposal whose every question from its gate round has an answer is given to an apply round with its answers
+    Pins that the person's answers on a glossary-proposal reach the round that applies them, without anyone starting it by hand.
+    Given i1's glossary-proposal g1 is awaiting-answer, its ## Questions section with "Is a ledger one file or one line an event?" and "Is the term shelf kept?", given by its gate round, and its Answers section with "One file." and "No."
+    And every round ends
+    When the person runs `work run i1`
+    Then a round of the kind apply was started for g1, given the answers "One file." and "No."
+
+  @r166
+  Scenario: when the apply round `work run` started for a glossary-proposal ends having applied its drafts, the proposal is approved
+    Pins that a glossary-proposal whose drafts have been applied after its answers is approved.
+    Given i1's glossary-proposal g1 is awaiting-answer, its ## Questions section with "Is a ledger one file or one line an event?", given by its gate round, and its Answers section with "One file."
+    And the apply round for g1 applies g1's drafts and gives DONE with a change list that adds the term "ledger" in the glossary
+    And every other round ends
+    When the person runs `work run i1`
+    Then g1's transition to approved was made once the apply round had ended
+
+  @r167
+  Scenario: when the apply round `work run` started for a glossary-proposal ends having applied its drafts, no formulate round is started for the proposal
+    Pins that applied glossary terms are not taken to a formulation, which has no Behaviour line of theirs to formulate.
+    Given i1's glossary-proposal g1 is awaiting-answer, its ## Questions section with "Is a ledger one file or one line an event?", given by its gate round, and its Answers section with "One file."
+    And the apply round for g1 applies g1's drafts and gives DONE with a change list that adds the term "ledger" in the glossary
+    And every other round ends
+    When the person runs `work run i1`
+    Then no round of the kind formulate was started for g1
+
   @r106
   Scenario: once the initiative's measurement and analysis record are written, they are committed on the initiative branch
     Pins that what was measured and analysed of an initiative is in the initiative's history, not left uncommitted in the checkout.
@@ -1704,6 +1826,14 @@ Feature: Supervision
       | work-items                          | set             | status      |
       | w1 is green and w2 is withdrawn     | is set done     | is done     |
       | w1 is withdrawn and w2 is withdrawn | is not set done | is not done |
+
+  @r161
+  Scenario: an initiative that changes only the glossary, its glossary-proposal approved and its terms committed to spec/index.md, is set done
+    Pins that an initiative with no Behaviour line to deliver is done once its terms are in the glossary, without a work-item, a branch review or a measurement.
+    Given i1 is started, has neither a capability-proposal nor a work-item, and its glossary-proposal g1 is approved, its adds naming the term "ledger"
+    And spec/index.md's Glossary holds the term "ledger", committed on the initiative branch
+    When the person runs `work run i1`
+    Then i1 is done
 
   @r109
   Scenario: an initiative set done is committed on the initiative branch
