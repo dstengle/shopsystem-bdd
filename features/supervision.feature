@@ -1759,3 +1759,43 @@ Feature: Supervision
     And the session answering under the delegation answers "Yes, keep it as it is.", and every worker gives DONE
     When the person runs `work run i1`
     Then the brief of the session answering "Is the old reader kept?" asks it to give in its result whether its answer asks for a change or accepts w1 as it is
+
+  @r154
+  Scenario Outline: before the branch review starts, <run> is run at the initiative branch's head
+    Pins that the branch reviewer starts from runs already made at the head it reviews, rather than making them itself.
+    Given i1's work-items w1 and w2 are green, w2 naming the check `python3 -c pass`
+    And every worker gives DONE, and the branch reviewer ends
+    When the person runs `work run i1`
+    Then <run> was run at the initiative branch's head before the branch reviewer was started
+
+    Examples:
+      | run                          |
+      | the whole suite              |
+      | w1's scenarios               |
+      | w2's check `python3 -c pass` |
+      | `tools check`                |
+      | `tools size`                 |
+      | `features deprecated`        |
+      | `features bindings`          |
+
+  @r155
+  Scenario: the branch reviewer is given each run made before it, with its command, how it exited and its output, and the commit they ran at
+    Pins that the branch reviewer reads what each run gave, a run that failed included, and at which commit, without running any of them again.
+    Given i1's work-items w1 and w2 are green, w2 naming the check `python3 -c "import sys; print('too short'); sys.exit(1)"`
+    And every worker gives DONE, and the branch reviewer ends
+    When the person runs `work run i1`
+    Then the branch reviewer's brief gives each run made before it was started with its command, how it exited and its output
+    And the branch reviewer's brief gives w2's check with its command, that it exited with an error, and its output "too short"
+    And the branch reviewer's brief gives the whole suite's run with its command, that it exited successfully, and its output
+    And the branch reviewer's brief names the initiative branch's head as the commit those runs ran at
+
+  @r157
+  Scenario: the branch reviewer is given as files to read the work-items' capabilities, the design-decisions they rest on, and each work-item's plan, report and review findings
+    Pins that the branch reviewer is pointed at the spec and the work-items' own record of their work, rather than searching the repository for them.
+    Given i1's work-item w1 is under thing and w2 under other, spec/capabilities/thing.md's rests_on naming design-decision/a and spec/capabilities/other.md's rests_on naming design-decision/b
+    And i1's work-items w1 and w2 are drafted
+    And every worker gives DONE, each planner writing plan.md, each implementer writing report.md and each reviewer writing findings.md beside its brief
+    When the person runs `work run i1`
+    Then the branch reviewer's brief names as files to read spec/capabilities/thing.md and spec/capabilities/other.md
+    And the branch reviewer's brief names as files to read design-decision/a and design-decision/b
+    And the branch reviewer's brief names as files to read, for each of w1 and w2, its plan.md, its implementer's report.md and its reviewer's findings.md, in its stage directories
