@@ -63,7 +63,8 @@ def glossary_only_done(root, directory):
     """Whether the initiative changes only the glossary and is delivered (r161): it has glossary-proposals, no other
     proposal and no work-item, every glossary-proposal is approved, and spec/index.md as committed at HEAD holds each term
     they add or change and none they remove, with no uncommitted change."""
-    kinds = [workqueue.frontmatter(p.read_text())[0] for p in sorted(directory.glob("*.md")) if p.name != "initiative.md"]
+    kinds = [workqueue.frontmatter(p.read_text())[0] for p in sorted(directory.glob("*.md"))
+             if p.name not in ("initiative.md", "ledger.md")]
     if not kinds or any(d.get("kind") != "glossary-proposal" or d.get("status") != "approved" for d in kinds):
         return False
     try:

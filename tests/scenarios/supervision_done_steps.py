@@ -31,6 +31,7 @@ def started_glossary_only(repo, term):
     write(repo, INITIATIVE, "---\nid: %s\nkind: initiative\nstatus: started\n---\n" % full("initiative", "i1"))
     write(repo, ".shop/work/i1/g1.md", "---\nid: %s\nkind: glossary-proposal\npart_of: %s\nstatus: approved\nadds: [term/%s]\n"
           "changes: []\nremoves: []\ndate: 2026-10-15\n---\n" % (full("glossary-proposal", "g1"), full("initiative", "i1"), term))
+    write(repo, ".shop/work/i1/ledger.md", "  - 2026-10-15: gate round 1 glossary: 0 questions\n")
     commit_all(repo, "i1 is started with an approved glossary-proposal")
 
 

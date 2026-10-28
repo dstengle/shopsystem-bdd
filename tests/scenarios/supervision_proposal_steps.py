@@ -169,7 +169,7 @@ def terms_of(text):
 @given(parsers.re(r"i1's glossary-proposal g1 is drafted(?:, its adds naming the term (?P<adds>\"[^\"]+\"), its changes the term "
                   r"(?P<changes>\"[^\"]+\") and its removes the term (?P<removes>\"[^\"]+\"))?$"))
 def glossary_drafted(repo, adds, changes, removes):
-    listed = lambda text: ", ".join("term/" + t for t in terms_of(text))     # noqa: E731
+    listed = lambda text: ", ".join("term/" + t for t in terms_of(text))
     write(repo, DIR + "/g1.md", "---\nid: %s\nkind: glossary-proposal\npart_of: %s\nstatus: drafted\nadds: [%s]\nchanges: [%s]\n"
           "removes: [%s]\ndate: 2026-10-15\n---\n" % (full("glossary-proposal", "g1"), full("initiative", "i1"),
                                                        listed(adds) or "term/ledger", listed(changes), listed(removes)))
