@@ -21,6 +21,7 @@ Bash can still write files through the shell, which is why `work run` verifies t
 - [r4] The plugin's agent definitions shall give the implementer the skills listed under its `skills:`, `bdd-red-green` always among them, and the Skill tool, which `work run` allows only for those skills.
 - [r5] The plugin's agent definitions shall name each agent's model: Opus for the `capability-writer` and the `feature-formulator`, the planner and the reviewers, Sonnet for the implementer, `initiative-round`, the `spec-checker` and the `trial-runner`, Haiku for the researcher.
 - [r6] The plugin's agent definitions shall give the `bdd-planner` no shell tool.
+- [r7] The plugin's agent definitions shall give the `bdd-branch-reviewer` no shell tool.
 
 ## Implementation, may change
 - Tool lists and `model:` in `agents/*.md`; `skills:` names a skill, which a `claude -p --agent` session does not
