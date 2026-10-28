@@ -220,6 +220,30 @@ Feature: Design model check
       | formulated | removes | shelf | not printed as unresolved |
       | merged    | adds    | shelf | printed as unresolved     |
 
+  @r122
+  Scenario Outline: a glossary-proposal's list naming a term the glossary lacks is unresolved, unless an approved glossary-proposal removes it
+    Pins that term/<term> in a glossary-proposal's list is read against the glossary, and that a term an approved glossary-proposal removes is excused wherever a glossary-proposal names it, a drafted one included.
+    Given a glossary with the term store
+    And <remover>
+    And a <status> glossary-proposal whose <list> names term/<term>
+    When `model check` is run
+    Then term/<term> is <printed>
+
+    Examples:
+      | remover                                                             | status   | list    | term  | printed                   |
+      | no other glossary-proposal                                          | drafted  | adds    | store | not printed as unresolved |
+      | no other glossary-proposal                                          | drafted  | changes | store | not printed as unresolved |
+      | no other glossary-proposal                                          | drafted  | adds    | shelf | printed as unresolved     |
+      | no other glossary-proposal                                          | drafted  | changes | shelf | printed as unresolved     |
+      | no other glossary-proposal                                          | drafted  | removes | shelf | printed as unresolved     |
+      | an approved glossary-proposal whose removes names term/shelf        | drafted  | adds    | shelf | not printed as unresolved |
+      | an approved glossary-proposal whose removes names term/shelf        | drafted  | changes | shelf | not printed as unresolved |
+      | an approved glossary-proposal whose removes names term/shelf        | drafted  | removes | shelf | not printed as unresolved |
+      | no other glossary-proposal                                          | approved | removes | shelf | not printed as unresolved |
+      | no other glossary-proposal                                          | approved | adds    | shelf | printed as unresolved     |
+      | an awaiting-answer glossary-proposal whose removes names term/shelf | drafted  | adds    | shelf | printed as unresolved     |
+      | a withdrawn glossary-proposal whose removes names term/shelf        | drafted  | adds    | shelf | printed as unresolved     |
+
   @r24
   Scenario Outline: a frontmatter reference to nothing, or to the wrong kind, is unresolved
     Pins that each named frontmatter reference must reach a node, and that supersedes, under, for, blocked_by and depends_on must reach a node of the kind they need.
