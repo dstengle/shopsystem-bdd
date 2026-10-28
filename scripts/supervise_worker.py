@@ -37,6 +37,9 @@ TOOLS = {
     "implement": ["Read", "Glob", "Grep", *PYTHON, "Bash(git add *)", "Bash(git commit *)", "Bash(git status*)",
                   "Bash(git diff*)"],
     "review": READER,
+    # The branch review runs nothing (review r32): it reads what work run gives it, and has no Bash at all. Its own key,
+    # `branch-review`, is not the work-item reviewer's `review`.
+    "branch-review": ["Read", "Glob", "Grep"],
     # The analysis session reads the measurement with `measure`, which no other stage is given (r14).
     "analysis": ["Read", "Glob", "Grep", "Bash(python3 %s/measure *)" % SCRIPTS],
     # The session answering a question under a delegation (supervise_answers.py) reads, and runs nothing.

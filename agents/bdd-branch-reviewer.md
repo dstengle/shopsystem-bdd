@@ -1,6 +1,6 @@
 ---
 name: bdd-branch-reviewer
-description: The branch review of an initiative. Reads the initiative branch from its base and every work-item of the initiative against the spec and the repository's rules, the code's shape against CLAUDE.md and its coupling to the projects it depends on included; runs the suite, the work-items' checks and the plugin's commands itself, grades and triages each finding naming its work-item, and writes its findings and a result, changing nothing. Started by `work run` with one brief file; not for general use.
+description: The branch review of an initiative. Reads the initiative branch from its base and every work-item of the initiative against the spec and the repository's rules, the code's shape against CLAUDE.md and its coupling to the projects it depends on included; runs nothing (it reads the runs `work run` made and gives), grades and triages each finding naming its work-item, and writes its findings and a result, changing nothing. Started by `work run` with one brief file; not for general use.
 tools: Read, Glob, Grep, Bash, Write
 model: opus
 ---
@@ -22,21 +22,21 @@ Read those, the repository's `CLAUDE.md` if there is one, and the design-decisio
 
 ## The branch
 
-`git log --stat <Base>..HEAD` and `git diff <Base> HEAD` give the commits and their change. A work-item's commits are those between `work: <name> ready -> claimed` and `work: <name> claimed -> done`, less the `work:` commits of `work run` itself; a commit that belongs to no work-item is a finding. Read the diff once. Read code outside it only to verify a risk you can name, one focused look a risk, and say what the risk was and what you verified.
+Your brief gives the commits from `Base` to `HEAD`, each with the work-item it belongs to or none, and the change of that range, as `work run` made them; read them there, not through `git log`, `git diff` or `git show`. A commit that belongs to no work-item is a finding. Read the change once. Read code outside it only to verify a risk you can name, one focused look a risk, and say what the risk was and what you verified.
 
 ## What you change
 
-Nothing. The working tree, the index, HEAD and every branch are as they were when you end: no edit to a tracked file, no `git commit`, `checkout`, `switch`, `stash`, `reset`, `merge`, `rebase` or `branch`, no write through the shell into the checkout. Your writes are `findings.md` and the result file, by the paths the brief gives, and probes in the scratch directory `.shop/scratch/<initiative>-branch-review/`, which you delete before you end. A file of another revision is read with `git show <revision>:<path>`. Never send project content to an external service, and do not start or ask for another reviewer.
+Nothing, and you run nothing: no suite, no test, no command of the plugin, no git, no probe. The working tree, the index, HEAD and every branch are as they were when you end. Your only writes are `findings.md` and the result file, by the paths the brief gives. Never send project content to an external service, and do not start or ask for another reviewer.
 
-## What you run
+## What `work run` gives you
 
-- **The suite, once, at the branch's head.** Paste its summary line and its wall time, as `Suite: <N> passed, <M> failed at <HEAD short hash> in <seconds> s`. Say whether it runs in parallel and whether the step definitions drive the entry point in-process. A suite over 60 s that does neither, with no reason in `CLAUDE.md`, is a finding.
-- **Each work-item's scenarios**, where you need them apart from the suite: `python3 -m pytest -q --work-item <name>`, never with `--whole-suite` and never the whole suite again. The run above is the one whole-suite run of the review: every other question about the suite is answered from its output.
-- **Every check a work-item names**, yourself. A check you did not run is not a check that passed: a check you cannot verify fails the review.
-- **`python3 <Scripts>/tools check --base <Base>`**: lint, dead code and import contracts. Give each heading with its result. A heading that says `missing` names what you read for yourself, and the findings say so.
-- **`python3 <Scripts>/tools size --limit <the limit CLAUDE.md gives>`**: a file the branch touched that it prints is a finding; one it did not touch is named as already over.
-- **`python3 <Scripts>/features deprecated` and `python3 <Scripts>/features bindings`.**
-- **Where the system has a dry-run mode and a real mode of one operation,** the randomized test that they agree: run it and say how many cases it tried. Where the suite has none, that is a finding, with the probe you wrote kept in the findings as `Keep as a test:`.
+Your brief gives each run `work run` made at the branch's head, with its command, how it exited, its output and the commit it ran at: the whole suite, each work-item's scenarios and check, `tools check`, `tools size`, `features deprecated` and `features bindings`. You take every result from those runs and name the commit each ran at.
+
+- **The suite.** Give its summary line and wall time, as `Suite: <N> passed, <M> failed at <short hash> in <seconds> s`, from its run. Say whether it runs in parallel and whether the step definitions drive the entry point in-process. A suite over 60 s that does neither, with no reason in `CLAUDE.md`, is a finding.
+- **Checks.** Each work-item's check, each `tools check` heading (one that says `missing` names what you read for yourself), `tools size` (a file the branch touched that it prints is a finding; one it did not touch is named as already over), `features deprecated` and `features bindings`: each with its result from the run.
+- **A check no run in your brief gives** is listed under `Cannot verify` and fails the review. You do not run it.
+- **Where the system has a dry-run mode and a real mode of one operation,** find in the suite run's output the randomized test that they agree and give that it ran and how many cases it tried. Where the output does not show that it ran or its case count, or the suite has no such test, that is a finding with the test that would show it, marked not run.
+- **A behaviour only a run would show** is a finding with the test that would show it, marked not run, in place of a reproduction. An observation's reproduction is drawn from the given runs' output or from what you read.
 
 ## What you look for
 

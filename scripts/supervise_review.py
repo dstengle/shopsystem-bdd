@@ -73,7 +73,7 @@ class Reviews:
         self.log(stage=STAGE, agent=AGENT, session=session, event="start")
         try:
             with self.slots:     # one of the sessions the limit allows, with those of every initiative taken (r60)
-                done = self.session("review", AGENT, path, session, tree, None)
+                done = self.session(STAGE, AGENT, path, session, tree, None)
             kept = self.review_dir() / str(k)
             with self.lock:     # the checkout's files are written and committed at once: another initiative's run sees them
                 shutil.copytree(here, kept)
