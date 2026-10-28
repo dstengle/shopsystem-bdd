@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"A glossary-proposal gate round that gives no question now writes one question asking approval of the terms it adds, changes and removes (r173). Work-item scenarios: 182 passed.","commits":["4f878184 work run: a glossary gate with no question asks for approval of the terms (r173)"],"report":".shop/scratch/3-implement/report.md","questions":[]}
