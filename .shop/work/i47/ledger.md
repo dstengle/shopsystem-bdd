@@ -3,3 +3,4 @@
 - 2026-10-28: gate round 1 supervision: 2 questions
 - 2026-10-28: gate round 1 glossary: 0 questions
 - 2026-10-28 21:14: compacted
+- 2026-10-28: apply round 2 (requests): nothing applied; answers Q1 (r18 changed) and Q2 (r48 only for a request not delivered) are not held by the round-1 drafts, Q3 is; integrate round needed
