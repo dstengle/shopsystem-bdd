@@ -1,3 +1,4 @@
 - 2026-10-28: 2026-10-28 the person: 'raise it as a request and do all the work for a release, I'm delegating decisions to you.' The coordinator answers i43's questions under this delegation, taking the recommended reading, and releases when i43 is done.
 - 2026-10-28: integrate round 1: supervision adds r154-r157, review adds r32-r34 and removes r9; 7 questions, 1 cut sentence; drafts in .shop/scratch/1-integrate/drafts/round-1/
 - 2026-10-28: gate round 1: 7 questions
+- 2026-10-28: gate round 1 (supervision): 1 question
