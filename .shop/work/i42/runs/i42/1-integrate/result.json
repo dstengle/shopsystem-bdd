@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Drafted supervision r149, r150 and spec-integration r46 for q22 lines 1-3; 5 questions; gate.md written.","questions":[],"changes":[{"capability":"supervision","adds":["supervision#r149","supervision#r150"],"changes":[],"removes":[]},{"capability":"spec-integration","adds":["spec-integration#r46"],"changes":[],"removes":[]}]}
