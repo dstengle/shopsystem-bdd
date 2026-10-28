@@ -1,3 +1,4 @@
 - 2026-10-28: integrate round 1: 10 lines added (backlog#r1-r8 new capability, migration-tools#r35-r36), 2 glossary terms, 8 questions, 1 cut sentence; drafts .shop/scratch/1-integrate/drafts/round-1
 - 2026-10-28: gate round 1: 8 questions for the person (backlog r1-r8, migration-tools r35/r36)
 - 2026-10-28: gate round 1: 1 question (migration-tools#r36 against r24 and r28)
+- 2026-10-28: gate round 1: 1 question (term/backlog: observation vs observation record)
