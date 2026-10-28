@@ -34,3 +34,27 @@ Feature: Spec integration
     Then the round applies those drafts
     And the round's result gives the answer that the customer is told when an order ships
     And the round's result does not give the answer that the customer sees the status of an order
+
+  @r54
+  Scenario: a round of the kind integrate that drafts a change to the glossary gives the terms it adds, changes and removes in the change list's entry for the glossary and in no entry for a capability
+    Pins that the person at the gate finds every term a round drafts in the one place the glossary's change is listed, and never mixed into the lines listed for a capability.
+    Given spec/index.md's glossary has the terms order and basket
+    And an approved note asks that the customer sees the refund of a cancelled order
+    And that note adds the term refund, changes the term order and removes the term basket
+    When work run starts a round of the kind integrate on that note
+    Then the round drafts a line under the capability refunds that the customer sees the refund of a cancelled order
+    And the round drafts a change to the glossary
+    And the change list's entry for the glossary gives refund as added, order as changed and basket as removed
+    And the change list's entry for refunds gives none of the terms refund, order and basket
+
+  @r55
+  Scenario: while the person has not approved the terms of a glossary-proposal, no round applies any of them to spec/index.md
+    Pins that a term reaches the glossary only through the gate: a glossary-proposal the person has not approved leaves spec/index.md as it was, even while a round applies other drafts of the same initiative.
+    Given spec/index.md's glossary has the term order and no term refund
+    And an initiative with a glossary-proposal that adds the term refund and changes the term order
+    And the person has not approved the terms of that glossary-proposal
+    And a capability-proposal of that initiative the person has approved
+    When work run starts a round of the kind apply on that capability-proposal
+    Then the round applies the capability-proposal's drafts
+    And spec/index.md's glossary has no term refund
+    And spec/index.md's glossary has the term order as it was before the round
