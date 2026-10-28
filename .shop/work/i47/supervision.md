@@ -20,3 +20,4 @@ The drafts of this proposal are in .shop/work/i47/runs/i47/1-integrate/drafts/ro
 
 ## Answers
 - 2026-10-28: Q1, r177 against r4: reading A, r4 changes (retired, new id) so a failure r177 counts as expected does not block the merge (answered by the coordinator under the person's delegation, 2026-10-28)
+- 2026-10-28: Q2, the Implementation note for r177: reading A, r177 covers the whole-suite runs of r24 and r43 (answered by the coordinator under the person's delegation, 2026-10-28)
