@@ -134,6 +134,10 @@ from what using it shows.
 - [r26] **When** `work run` makes a work-item's transition to `awaiting-answer`, `work run` shall keep the work-item branch.
 - [r58] **When** `work run` starts an implementer for a work-item whose work-item branch it kept, `work run` shall make the implementer's worktree on that branch.
 - [r27] **When** every work-item of the initiative is `green` or `withdrawn` and the initiative branch holds a commit, other than a kept branch review's own commit, that no kept branch review has read, `work run` shall start a `claude -p` session of `bdd-branch-reviewer` over the initiative branch from its base, given one brief.
+- [r154] **When** `work run` starts a branch review, `work run` shall first run, at the initiative branch's head, the whole suite, each work-item's scenarios, each check a work-item names, `tools check`, `tools size`, `features deprecated` and `features bindings`.
+- [r155] **When** `work run` starts a branch review, `work run` shall give the branch reviewer each run r154 names with its command, how it exited and its output, naming the commit they ran at.
+- [r156] **When** `work run` starts a branch review, `work run` shall give the branch reviewer the commits from the initiative branch's base to its head, each with the work-item it belongs to or none, and the change of that range less `.shop/`.
+- [r157] **When** `work run` starts a branch review, `work run` shall give the branch reviewer the files to read: the capabilities the work-items are under, the design-decisions those capabilities rest on, and each work-item's plan, implementer's report and review findings.
 - [r47] **When** the branch reviewer's session ends, `work run` shall copy its directory into `.shop/work/<initiative>/runs/branch-review/<k>/`.
 - [r48] **When** the branch reviewer's session ends, `work run` shall commit `.shop/work/<initiative>/runs/branch-review/<k>/` on the initiative branch.
 - [r49] **When** the branch reviewer's session starts or ends, `work run` shall append a line to `log.jsonl` with the time, the stage `branch-review`, the agent and the session id.
@@ -188,6 +192,7 @@ from what using it shows.
 - r100: `work run` writes the question with `work`'s question command (requests r20), in the upstream's turn, before the round's `work turn`.
 - r101: a request's asker is this context when its `asker` is `internal` or this context's id; the open questions are every question with no answer under the request's `## Answers`.
 - r98: the brief names the findings file of the work-item's last review stage directory and writes the answer as r57 does.
+- r155: how a run exited is given as its exit code.
 
 ## Not yet
 - Retries, refused claims, the guards between
