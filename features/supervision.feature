@@ -1056,17 +1056,6 @@ Feature: Supervision
     When the person runs `work run i1`
     Then a round of the kind formulate was started for p1, given the answer "One place."
 
-  @r140 @deprecated
-  Scenario: an apply round that applies nothing because the proposal's answers give what its drafts do not hold is followed by a new integrate round for the proposal (deprecated)
-    Deprecated for: an apply round that gives an answer the drafts it applied do not hold is followed by a new integrate round for the proposal
-    Pins that answers asking for what the drafts never held go back to integration, without anyone starting it by hand.
-    Given i1 is started and fulfils the request q1, whose line 1 has the line outcome accepted
-    And i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", given by its gate round, and its Answers section with "One book, and a book's edition is listed with it."
-    And the apply round for p1 applies nothing, giving that p1's answers give what its drafts do not hold
-    And every other round ends
-    When the person runs `work run i1`
-    Then a round of the kind integrate was started for p1 after the apply round had ended
-
   @r150
   Scenario: an apply round that gives an answer the drafts it applied do not hold is followed by a new integrate round for the proposal
     Pins that an answer asking for what the drafts never held goes back to integration, without anyone starting it by hand.

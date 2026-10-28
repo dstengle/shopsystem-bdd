@@ -18,6 +18,13 @@ def formulate_questions(plan, text):
     plan["round:formulate"] = {"status": "DONE", "questions": quoted(text)}
 
 
+@given(parsers.re(r"the formulate round for p1 formulates nothing, giving that p1's answers change lines not in spec/"
+                  r"(?:, and no scenario)?$"))
+def formulate_formulates_nothing(plan):
+    plan["round:formulate"] = {"status": "DONE", "fields": {
+        "nothing_formulated": "p1's answers change lines not in spec/"}}
+
+
 @given(parsers.re(r"the apply round for p1 ends, and the formulate round for p1 gives DONE with the question (?P<text>.+)$"))
 def apply_ends_formulate_question(plan, text):
     plan["initiative-round"] = {"status": "DONE"}

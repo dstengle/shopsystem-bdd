@@ -73,6 +73,43 @@ def integrate_after_apply(repo, context):
     assert ended is not None and began is not None and ended < began, (log_lines(repo), context["done"].stderr)
 
 
+@then("a round of the kind integrate was started for p1 after the formulate round had ended")
+def integrate_after_formulate(repo, context):
+    ended, began = position(repo, stage="formulate", event="end"), position(repo, stage="integrate", event="start")
+    assert len(rounds(repo, "integrate", "p1")) == 1, (starts(repo), context["done"].stderr)
+    assert ended is not None and began is not None and ended < began, (log_lines(repo), context["done"].stderr)
+
+
+@then("no round of the kind formulate was started for p1")
+def no_formulate_for_p1(repo, context):
+    assert rounds(repo, "formulate", "p1") == [], (starts(repo), context["done"].stderr)
+
+
+@then("p1 was awaiting-answer when the formulate round for p1 had ended")
+def awaiting_when_formulate_ended(repo, context):
+    ended = position(repo, stage="formulate", event="end")
+    assert ended is not None, (log_lines(repo), context["done"].stderr)
+    moved = [l for l in log_lines(repo)[:ended] if l.get("work-item") == "p1" and "after" in l]
+    assert not moved or moved[-1]["after"] == "awaiting-answer", moved
+    text = (repo / DIR / "p1.md").read_text()
+    assert "\nstatus: formulated\n" not in text, text
+
+
+@then("no transition of p1 was made between the start of the formulate round for p1 and the start of the integrate round for p1")
+def no_move_formulate_to_integrate(repo, context):
+    began, ran = position(repo, stage="formulate", event="start"), position(repo, stage="integrate", event="start")
+    assert began is not None and ran is not None and began < ran, (log_lines(repo), context["done"].stderr)
+    between = [l for l in log_lines(repo)[began:ran] if l.get("work-item") == "p1" and "after" in l]
+    assert not between, between
+
+
+@then("no question naming the formulate round's output as missing was written under p1's ## Questions")
+def no_missing_formulate_question(repo):
+    text = (repo / DIR / "p1.md").read_text()
+    held = text.split("\n## Questions\n", 1)[1].split("\n## ", 1)[0]
+    assert "formulate round" not in held and "scenario" not in held.replace("Is a shelf one place or a list?", ""), held
+
+
 @then(parsers.re(r'the integrate round for p1 was given the question "(?P<ask>[^"]*)" with its answer "(?P<answer>[^"]*)"$'))
 def integrate_given_answer(repo, context, ask, answer):
     brief = integrate_brief(repo, context)

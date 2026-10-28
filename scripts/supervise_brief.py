@@ -20,7 +20,10 @@ ANSWER_LINES = ("Where an answer below asks for lines the request's accepted lin
 UNHELD_ANSWERS = ("Compare each answer below with the drafts you applied, and give each answer they do not hold in your "
                   "result's `unheld_answers`, a list of the answers' texts, also when you applied some of the drafts; "
                   "leave out an answer they hold.")
-UPSTREAM = re.compile(r"^- (bounded-context/\S+?):\s+(\S.*?)\s*$")
+NOTHING_FORMULATED = ("Where the answers below change lines that are not in spec/, so that you formulate nothing, give in your "
+                      "result `nothing_formulated`, a sentence saying so, and no `questions`: `work run` then starts an "
+                      "integrate round for the proposal.")
+UPSTREAM =re.compile(r"^- (bounded-context/\S+?):\s+(\S.*?)\s*$")
 
 
 class Briefs:
@@ -77,6 +80,8 @@ class Briefs:
             if stage == "apply":     # r114: the list the round applied, which `work run` writes into the proposal
                 lines.append(CHANGE_LIST.replace("Give your change list", "Give the change list of what you applied"))
                 lines.append(UNHELD_ANSWERS)     # spec-integration r46
+            if stage == "formulate":     # r149: the output of a formulation whose answers change lines outside spec/
+                lines.append(NOTHING_FORMULATED)
             if stage in ("gate", "apply"):     # r108: the kept drafts of the integrate round that wrote the proposal
                 kept = re.search(r"The drafts of this proposal are in (\S+?)\.(?:\s|$)", item.read_text())
                 if kept:

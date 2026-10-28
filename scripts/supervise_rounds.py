@@ -22,13 +22,6 @@ SERIAL = ("integrate", "apply", "formulate")     # the rounds one at a time acro
 AFTER ={"drafted": ("gate", "awaiting-answer"), "awaiting-answer": ("apply", "approved"), "approved": ("formulate", "formulated")}
 
 
-def gives_nothing(data):
-    """Whether an apply round's result gives that it applied nothing, because the proposal's answers give what its drafts
-    do not hold: its `nothing_applied` field, with no question and no change list (r147)."""
-    said = data.get("nothing_applied") if isinstance(data, dict) else None
-    return isinstance(said, str) and bool(said.strip()) and not data.get("questions") and data.get("changes") in (None, [])
-
-
 class Rounds(Changes, Raises):
     """The part of supervise.Run that runs a capability-proposal's rounds, one session at a time."""
 
@@ -63,25 +56,26 @@ class Rounds(Changes, Raises):
         """(round, status after) of a proposal at `status`. An answered proposal goes back to the round that asked: its
         last move into awaiting-answer from approved is a formulate round's question (r116), from drafted a gate round's
         (r70), and with no such move, a gate round's."""
+        if status in ("awaiting-answer", "approved") and self.sent_back(name):     # r149, r150: back to integration
+            return ("integrate", "drafted")
         if status == "awaiting-answer":
-            if self.applied_nothing(name):     # r140: its answers give what its drafts do not hold
-                return ("integrate", "drafted")
             moves = [l for l in workqueue.logged(self.dir / "log.jsonl", self.root)
                      if l.get("work-item") == name and l.get("after") == "awaiting-answer"]
             if moves and moves[-1].get("before") == "approved":
                 return ("formulate", "formulated")
         return AFTER[status]
 
-    def applied_nothing(self, name):
-        """Whether the proposal's latest round, integrate rounds that failed aside, is an apply round whose result gives
-        that it applied nothing (r140, r147)."""
+    def sent_back(self, name):
+        """Whether the proposal's latest round, integrate rounds that failed aside, is an apply or formulate round whose
+        result sends the proposal back to integration (r149, r150)."""
         runs = self.dir / "runs" / name
         stages = sorted((p for p in runs.iterdir() if p.is_dir() and p.name.split("-")[0].isdigit()),
                         key=lambda p: int(p.name.split("-")[0])) if runs.is_dir() else []
         while stages and stages[-1].name.endswith("-integrate"):     # an integrate round that left it awaiting an answer failed: judge by the round before
             stages.pop()
         try:
-            return bool(stages) and stages[-1].name.endswith("-apply") and gives_nothing(json.loads((stages[-1] / "result.json").read_text()))
+            return bool(stages) and supervise_outputs.sent_back(stages[-1].name.split("-", 1)[1],
+                                                                json.loads((stages[-1] / "result.json").read_text()))
         except (OSError, ValueError):
             return False
 
@@ -170,12 +164,16 @@ class Rounds(Changes, Raises):
             if applied:
                 self.rewrite_lists(name, applied)
             asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []]
-            if gives_nothing(data):     # r147: its output; the proposal stays as it is and the next round is due (r140)
+            if supervise_outputs.gives_nothing(data):     # r147: its output; the proposal stays as it is and the next round is due (r150)
                 with self.lock:
                     self.commit(name, before, before)
                 return
             if not asked and not applied:     # r131: neither questions nor its output; the missing output is asked
                 asked = ["The apply round of %s gave no change list; which capabilities' lines did it apply?" % name]
+        if kind == "formulate" and supervise_outputs.formulated_nothing(data):     # r149, r153: its output; r152: no move
+            with self.lock:
+                self.commit(name, before, before)
+            return
         if kind == "formulate":     # r112, r113: what the formulation could not decide is asked; with nothing, r83
             asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []]
             if not asked:     # r131, r132: no question and no scenario for a requirement it adds or changes is asked

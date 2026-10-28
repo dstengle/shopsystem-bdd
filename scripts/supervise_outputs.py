@@ -26,6 +26,36 @@ def missing(role, data):
     return None
 
 
+def says(data, field):
+    """Whether the result `data` gives `field` as a sentence and gives no question."""
+    said = data.get(field) if isinstance(data, dict) else None
+    return isinstance(said, str) and bool(said.strip()) and not data.get("questions")
+
+
+def gives_nothing(data):
+    """Whether an apply round's result gives that it applied nothing, because the proposal's answers give what its drafts
+    do not hold: its `nothing_applied` field, with no question and no change list (r147)."""
+    return says(data, "nothing_applied") and data.get("changes") in (None, [])
+
+
+def formulated_nothing(data):
+    """Whether a formulate round's result gives that it formulated nothing, because the proposal's answers change lines not
+    in spec/: its `nothing_formulated` field, with no question (r149, r153)."""
+    return says(data, "nothing_formulated")
+
+
+def sent_back(kind, data):
+    """Whether the result `data` of a round of `kind` sends the proposal back to integration: an apply round that gives
+    an answer its drafts do not hold, as `unheld_answers` or as `nothing_applied` (r150), or a formulate round that
+    formulated nothing (r149)."""
+    if kind == "formulate":
+        return formulated_nothing(data)
+    if kind == "apply":
+        unheld = data.get("unheld_answers") if isinstance(data, dict) else None
+        return gives_nothing(data) or (isinstance(unheld, list) and bool(unheld))
+    return False
+
+
 def scenario_ids(text):
     """The requirement ids (`r4`) the non-deprecated scenarios of the feature file `text` are tagged with."""
     found, tags = set(), []
