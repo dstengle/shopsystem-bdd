@@ -27,3 +27,6 @@ The drafts of this proposal are in .shop/work/i51/runs/i51/1-integrate/drafts/ro
   Readings:
   (a) [recommended] Only rounds and workers `work run` starts (the glossary's worker is a session for one stage of one work-item); as drafted.
   (b) Also the branch reviewer and answering sessions. r176 would read: "**When** a session that `work run` started writes a question on the definition of a term or on a proposed term, the session shall name the glossary in the question."
+
+## Answers
+- 2026-10-28: Question 1, mentions the glossary: reading (a), the question's text names the glossary itself; lines as drafted (answered by the person, 2026-10-28)
