@@ -9,3 +9,4 @@
 - 2026-10-28: gate round 4: 2 questions on supervision r152/r83 and r150-r151/r144-r145
 - 2026-10-28: 2026-10-28 gate round 2: supervision r152/r83 reading (a), r150-r151/r144-r145 reading (a), answered by the coordinator under the person's delegation (recommended readings).
 - 2026-10-28: apply round 5 supervision: adds r149 r150 r151 r152 r153, removes r140 (r152 over r83 and r150/r151 over r144-r145 as meant, per the person's delegation 2026-10-28); commit 83361ea7
+- 2026-10-28: formulate round 6 supervision: commit 0b2f17e0; scenario added r149 r150 r151 r152 r153, r140 deprecated for r150; features bindings clean; model check: 12 violations, none from supervision
