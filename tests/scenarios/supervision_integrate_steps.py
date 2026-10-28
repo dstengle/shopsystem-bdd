@@ -19,6 +19,12 @@ def started_fulfilling(repo, text):
     proposed_fulfilling(repo, text, "started")
 
 
+@given(parsers.re(r"i1 is started, has neither a capability-proposal, a glossary-proposal nor a work-item, and fulfils the "
+                  r"request q1, whose (?P<text>lines? .+)$"))
+def started_fulfilling_bare(repo, text):
+    proposed_fulfilling(repo, text, "started")
+
+
 @given("the integrate round for i1 gives DONE with no change list")
 def integrate_without_changes(plan):
     plan["round:integrate"] = {"status": "DONE"}
