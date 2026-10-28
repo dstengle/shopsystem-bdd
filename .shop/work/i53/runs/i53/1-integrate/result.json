@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"spec-integration: r44 changed (in whatever terms the round has), r57 added (intake writes line outcomes in glossary terms). No glossary change, no questions.","questions":[],"changes":[{"capability":"spec-integration","adds":["spec-integration#r57"],"changes":["spec-integration#r44"],"removes":[]}]}
