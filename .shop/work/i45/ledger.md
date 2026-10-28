@@ -3,3 +3,4 @@
 - 2026-10-28: gate round 1 spec-consistency: 1 question
 - 2026-10-28: gate round 1 spec-integration: 8 questions
 - 2026-10-28 21:14: compacted
+- 2026-10-28: apply round 2 of requests: nothing applied; answers Q7 A and Q12 A reword r46, which the drafts do not hold (Q1 A held)
