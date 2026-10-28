@@ -1,0 +1,1 @@
+- 2026-10-28: integrate round 1: 10 lines added (backlog#r1-r8 new capability, migration-tools#r35-r36), 2 glossary terms, 8 questions, 1 cut sentence; drafts .shop/scratch/1-integrate/drafts/round-1
