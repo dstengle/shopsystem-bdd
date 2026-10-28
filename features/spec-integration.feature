@@ -23,3 +23,14 @@ Feature: Spec integration
     And that answer names the capability notifications
     When work run starts a round of the kind integrate given that request and that answer
     Then the round drafts, under notifications, a line that the customer is told when an order ships
+
+  @r46
+  Scenario: a round of the kind apply gives in its result each answer of the capability-proposal that the drafts it applied do not hold
+    Pins that an answer the person gave but the applied drafts left out reaches the result of the round, rather than being lost once the drafts are applied.
+    Given a capability-proposal whose answers are that the customer sees the status of an order and that the customer is told when an order ships
+    And drafts that hold a line that the customer sees the status of an order
+    And no line of those drafts holds that the customer is told when an order ships
+    When work run starts a round of the kind apply on that capability-proposal with those drafts
+    Then the round applies those drafts
+    And the round's result gives the answer that the customer is told when an order ships
+    And the round's result does not give the answer that the customer sees the status of an order
