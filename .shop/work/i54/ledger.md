@@ -1,2 +1,3 @@
 - 2026-10-28: integrate round 1: adds work-queue#r48, work-queue#r49, supervision#r187; removes work-queue#r34; 3 questions, 3 cut sentences; drafts .shop/scratch/1-integrate/drafts/round-1
 - 2026-10-28: gate round 1: 1 question (supervision r187 wording)
+- 2026-10-28: gate round 1: 1 question (work-queue r35 against r49)
