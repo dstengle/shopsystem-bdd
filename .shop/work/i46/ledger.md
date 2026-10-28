@@ -4,3 +4,4 @@
 - 2026-10-28: formulate round 1 spec-integration: commit a7147684; scenarios added r54 r55; features bindings clean; model check: 47 violations, none from spec-integration
 - 2026-10-28: formulate round 1 supervision: commit edf0301e; scenarios added r159 r161-r170, 5 scenarios of r92 r77 r104 deprecated; r158 r160 left as questions; features bindings clean; model check: 30 violations, none from supervision but r158 r160 v_s3
 - 2026-10-28: 2026-10-28: the person, "yes, all recommended, withdraw w220": supervision r158 reading A, r160 reading A, design-model-check r122 reading 2; w220 withdrawn (its researcher found no file to change and work run read the empty file set as missing, as w208 in i39)
+- 2026-10-28: formulate round 2 design-model-check: commit d6c99676; scenario added r122 (reading 2); features bindings clean; model check: 30 violations, none from design-model-check
