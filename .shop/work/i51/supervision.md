@@ -2,17 +2,17 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i51-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i51
-status: awaiting-answer
+status: drafted
 argues: [supervision]
-adds: [supervision#r174, supervision#r175, supervision#r176]
+date: 2026-10-28
+adds: [supervision#r188, supervision#r189, supervision#r190]
 changes: []
 removes: [supervision#r162, supervision#r163]
-date: 2026-10-28
 ---
 
 # supervision
 
-The drafts of this proposal are in .shop/work/i51/runs/i51/1-integrate/drafts/round-1/.
+The drafts of this proposal are in .shop/work/i51/runs/supervision/3-integrate/drafts/round-3/.
 
 ## Questions
 - Question 1 (r174, r175; replace retired r162, r163): what does "mentions the glossary" mean?
