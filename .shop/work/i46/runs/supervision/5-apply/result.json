@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Applied r171 r172 (replacing r158 r160, retired) to spec/capabilities/supervision.md. No decisions, no glossary change.","questions":[],"changes":[{"capability":"supervision","adds":["supervision#r171","supervision#r172"],"changes":[],"removes":["supervision#r158","supervision#r160"]}],"unheld_answers":[]}
