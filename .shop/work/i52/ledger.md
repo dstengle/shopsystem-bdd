@@ -5,3 +5,4 @@
 - 2026-10-28: apply round 2: nothing applied; answers Q1 and Q2 change r181, which the drafts do not hold; integrate to redraft
 - 2026-10-28: integrate round 3 supervision: q38; supervision adds r188 r189 r190 changes r171, work-queue adds r50 r51 changes r23, 0 glossary terms, 1 question, 0 cut sentences; drafts .shop/scratch/3-integrate/drafts/round-1
 - 2026-10-28: gate round 4: 1 question (withdrawn glossary-proposal, r171/r188/r189)
+- 2026-10-28: apply round 2: nothing applied; answers Q1 (b) and Q2 (a) are not held by the drafts, so an integrate round follows
