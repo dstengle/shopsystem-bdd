@@ -20,3 +20,4 @@ The drafts of this proposal are in .shop/work/i50/runs/i50/1-integrate/drafts/ro
 
 ## Answers
 - 2026-10-28: Q1, r173's question: reading (a), r173 as drafted (answered by the person, 2026-10-28)
+- 2026-10-28: Q2, r173 against r131/r132: reading (a), no change; r131 and r173 both apply (answered by the person, 2026-10-28)
