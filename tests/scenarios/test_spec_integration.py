@@ -2,6 +2,7 @@
 scenarios run in, with an upstream billing kept beside it; the steps are spec_integration_steps.py's."""
 from pytest_bdd import scenarios
 
+from .spec_integration_apply_steps import *
 from .spec_integration_steps import *
 from .supervision_world import *
 

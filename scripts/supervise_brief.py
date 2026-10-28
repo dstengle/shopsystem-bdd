@@ -17,6 +17,9 @@ REQUEST_LINES = ("Where a line you draft needs what an upstream above does not y
                  "glossary in that upstream's published spec (its index.md), read there; write nothing into it.")
 ANSWER_LINES = ("Where an answer below asks for lines the request's accepted lines do not, draft those lines under the "
                 "capabilities the answer names, each quoting the answer it comes from.")
+UNHELD_ANSWERS = ("Compare each answer below with the drafts you applied, and give each answer they do not hold in your "
+                  "result's `unheld_answers`, a list of the answers' texts, also when you applied some of the drafts; "
+                  "leave out an answer they hold.")
 UPSTREAM = re.compile(r"^- (bounded-context/\S+?):\s+(\S.*?)\s*$")
 
 
@@ -73,6 +76,7 @@ class Briefs:
                              "no other line or term.")
             if stage == "apply":     # r114: the list the round applied, which `work run` writes into the proposal
                 lines.append(CHANGE_LIST.replace("Give your change list", "Give the change list of what you applied"))
+                lines.append(UNHELD_ANSWERS)     # spec-integration r46
             if stage in ("gate", "apply"):     # r108: the kept drafts of the integrate round that wrote the proposal
                 kept = re.search(r"The drafts of this proposal are in (\S+?)\.(?:\s|$)", item.read_text())
                 if kept:

@@ -170,7 +170,8 @@ Upgrading a consuming repository from 0.28.0: update the plugin and start a sess
 - **Answers that ask for what the drafts do not hold are redrafted** (supervision r140-r148, spec-integration r45):
   an apply round that applies nothing because of its answers sends the proposal back to a new integrate round, given
   its questions, answers and the initiative's ledger; that round drafts the lines the answers ask for, and the ids it
-  writes for another capability are added to that capability's proposal, never written over it.
+  writes for another capability are added to that capability's proposal, never written over it. An apply round also
+  gives in its result (`unheld_answers`, spec-integration r46) each answer its applied drafts do not hold.
 
 Upgrading a consuming repository from 0.27.0: update the plugin and start a session. No file is rewritten. Use `work
 list` and `work show <id>` in place of `work show` and `work status`.
