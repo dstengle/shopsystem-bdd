@@ -1402,10 +1402,19 @@ Feature: Supervision
       | ends at its turn limit                                               |
       | ends with no error and before its turn limit, writing no result file |
 
-  @r93
-  Scenario: a started initiative with neither a capability-proposal nor a work-item is given to an integrate round with the accepted lines of the request it fulfils
+  @r93 @deprecated
+  Scenario: a started initiative with neither a capability-proposal nor a work-item is given to an integrate round with the accepted lines of the request it fulfils (deprecated)
+    Deprecated for: removal
     Pins that an initiative whose integration left nothing behind is integrated again, from the lines its upstream accepted and no other.
     Given i1 is started, has neither a capability-proposal nor a work-item, and fulfils the request q1, whose lines 1 and 3 have the line outcome accepted and line 2 the line outcome refused
+    And every round ends
+    When the person runs `work run i1`
+    Then a round of the kind integrate was started for i1, given q1's lines 1 and 3, and not line 2
+
+  @r180
+  Scenario: a started initiative fulfilling a request, with neither a capability-proposal, a glossary-proposal nor a work-item, is given to an integrate round with the accepted lines of the request
+    Pins that an initiative whose integration left nothing behind, not even a glossary-proposal, is integrated again, from the lines its upstream accepted and no other.
+    Given i1 is started, has neither a capability-proposal, a glossary-proposal nor a work-item, and fulfils the request q1, whose lines 1 and 3 have the line outcome accepted and line 2 the line outcome refused
     And every round ends
     When the person runs `work run i1`
     Then a round of the kind integrate was started for i1, given q1's lines 1 and 3, and not line 2
