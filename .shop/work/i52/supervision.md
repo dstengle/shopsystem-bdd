@@ -2,17 +2,17 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i52-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i52
-status: awaiting-answer
+status: drafted
 argues: [supervision]
-adds: [supervision#r181, supervision#r182]
+date: 2026-10-28
+adds: [supervision#r188, supervision#r189, supervision#r190]
 changes: [supervision#r171]
 removes: []
-date: 2026-10-28
 ---
 
 # supervision
 
-The drafts of this proposal are in .shop/work/i52/runs/i52/1-integrate/drafts/round-1/.
+The drafts of this proposal are in .shop/work/i52/runs/supervision/3-integrate/drafts/round-1/.
 
 ## Questions
 - supervision r181 (added): **When** a round of the kind `integrate` that `work run` started ends with a change list that names the glossary and the initiative has a glossary-proposal, `work run` shall add the terms the change list adds, changes and removes in the glossary to that glossary-proposal, keeping its status, its questions and its answers. Which statuses of the glossary-proposal does it apply to? (a) Any, as drafted: an `approved` proposal keeps its status, so added terms skip the gate. (b) Only one that is neither `approved` nor `withdrawn`: r181 gets 'and the initiative has a glossary-proposal that is neither `approved` nor `withdrawn`', plus a line such as '**When** ... the initiative's glossary-proposal is `approved`, `work run` shall add the terms to it and set it `drafted`, keeping its questions and answers.' Recommended: (b).
