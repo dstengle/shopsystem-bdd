@@ -7,3 +7,4 @@
 - 2026-10-28: apply round 2 supervision: nothing applied; the answers (retire r140, add r151 and lines for r149 keeping status and taking the output, from q22) ask for lines the drafts never held, so an integrate round follows
 - 2026-10-28: integrate round 3 supervision (q22 anew): adds supervision#r149 r150 r151 r152 r153, removes r140; 2 questions, 0 cut sentences; drafts .shop/scratch/3-integrate/drafts/round-1
 - 2026-10-28: gate round 4: 2 questions on supervision r152/r83 and r150-r151/r144-r145
+- 2026-10-28: 2026-10-28 gate round 2: supervision r152/r83 reading (a), r150-r151/r144-r145 reading (a), answered by the coordinator under the person's delegation (recommended readings).
