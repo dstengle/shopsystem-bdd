@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Applied supervision r180 (replaces r93, retired). Commit 86104ff4.","questions":[],"changes":[{"capability":"supervision","adds":["supervision#r180"],"changes":[],"removes":["supervision#r93"]}],"unheld_answers":[]}
