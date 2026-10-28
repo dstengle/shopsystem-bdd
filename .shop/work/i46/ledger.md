@@ -14,3 +14,4 @@
 - 2026-10-28: 2026-10-28: the person, "i am delegating to you": w222 accepted as it is (r93's wording out of date, its retirement raised as a request); w225 accepted as covered (r167 checked with w225's routing, r166's scenario proves it)
 - 2026-10-28: 2026-10-28: under the person's delegation: w225 accepted as it is (the approval question for a glossary-proposal's gate with no question keeps glossary changes with the person; r117 widened through a request)
 - 2026-10-28: 2026-10-28: under the person's delegation: w225 returned for the reviewer's fix, glossary_only_done skipping ledger.md (r161)
+- 2026-10-28: 2026-10-28: under the person's delegation: w227 (branch review 2 F1) reading A, the approval question kept until q36 line 1 is integrated; w227 withdrawn, changing no file
