@@ -1,0 +1,6 @@
+{
+  "status": "DONE",
+  "summary": "Branch review of i50 (2c461ed7..837a59ee), work-item w228 (supervision#r173, green).\nSuite: 1060 passed, 0 failed at 837a59ee in 34.02 s (parallel -n auto, scripts run as subprocesses; 11 xfailed are w212's, 8 xpassed).\nw228's scenarios: 182 passed, 1 skipped. features bindings and features deprecated clean; tools size prints nothing.\ntools check exits 1 on ruff: 6 SIM115 in round scratch splice.py files under .shop/work/i50/runs/, and 3 hits in step-file lines that predate the branch. None is in w228's lines.\nNo tests removed or weakened; no allowances; nothing that cannot be verified.\nNo Critical finding and nothing to fix now.\nImportant observation: r131 and r173 conflict for a gate with no question (the person said both apply, but the code and the r173 scenario write one question). This needs a spec question.\nMinor: an empty glossary-proposal gives 'It .'; term/ is cut without a check; a step definition (r180, i49) was committed outside any work-item; scratch scripts are committed into .shop/work.",
+  "findings": "/tmp/work-run-i50-dmmrs8mf/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": []
+}
