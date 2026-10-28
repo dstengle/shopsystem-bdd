@@ -1,0 +1,1 @@
+- 2026-10-28: integrate round 1: q33; supervision adds r177 r178, requests adds r47 r48 removes r9, 0 glossary terms, 5 questions, 1 cut sentences; drafts .shop/scratch/1-integrate/drafts/round-1
