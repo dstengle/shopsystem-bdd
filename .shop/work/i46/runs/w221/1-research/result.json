@@ -1,0 +1,17 @@
+{
+  "status": "DONE",
+  "summary": "w221 research done; notes.md in the run directory. Accepted scenarios run once: 23 red of the work-item's cases (r122: 12 of 12 rows; r123: 1; r124: 10 of 18), 188 passed, 1 skipped. Red because steps are missing (glossary-proposal givens, the approved-glossary-proposal Given, malformed_work branches) and code lacks glossary-proposal: not in PART_KINDS or STATUSES, no term refs for it (scripts/model_work.py), and approved does not close it (scripts/model.lp:57). Changes: model_work.py, model.lp, and tests/scenarios design_model_check_given, _trace, _problems and conftest. Tests-of had no map, so test lists are by search. Questions: r122 excuse scope (one initiative or the whole context); a drafted glossary-proposal under a done initiative (model check blocks it, the queue ignores it); glossary-proposal lifecycle read as drafted, awaiting-answer, approved, withdrawn.",
+  "fileset": [
+    "scripts/model_work.py",
+    "scripts/model.lp",
+    "tests/scenarios/design_model_check_given.py",
+    "tests/scenarios/design_model_check_trace.py",
+    "tests/scenarios/design_model_check_problems.py",
+    "tests/scenarios/conftest.py"
+  ],
+  "questions": [
+    "r122: is an approved glossary-proposal's removes excused across the whole context, or only within its own initiative? The scenario has one initiative; the spec is unscoped.",
+    "A drafted glossary-proposal under a done initiative: model check's v_d1 blocks it, while workqueue_done.py ignores glossary-proposals. r123 names only the approved case; should the queue match model check?",
+    "glossary-proposal lifecycle is read as drafted, awaiting-answer, approved, withdrawn (from the decision 0073 ledger and supervision r160, r169); the scenarios fix only drafted, approved and formulated. Confirm it."
+  ]
+}
