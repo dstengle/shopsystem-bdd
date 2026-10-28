@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i56-requests
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i56
-status: drafted
+status: awaiting-answer
 argues: [requests]
 adds: [requests#r49]
 changes: []
@@ -13,3 +13,10 @@ date: 2026-10-28
 # requests
 
 The drafts of this proposal are in .shop/work/i56/runs/i56/1-integrate/drafts/round-1/.
+
+## Questions
+- requests r49 (added, q27 line 1): `**When** `work request` is given a title and a reason and no lines, `work request` shall keep the request with its reason and no lines.` Does a lineless request get what r44 gives a request with lines? (a) Yes, RECOMMENDED: r49 becomes `**When** `work request <title> --from <asker>` is run with a reason and no lines, `work` shall write an `open` request with its reason and no lines, the asker given as its asker, the origins or job-thread given, and the turn the upstream's, and print its id.` (b) No, r49 as drafted, the rest left to r44 alone.
+- requests r49, a reason beside lines. r49 covers a reason with no lines only. (a) A reason is only in place of lines, RECOMMENDED: add `**If** `work request` is given both a reason and lines, **then** `work request` shall refuse, because a reason is given only in place of lines, and change nothing.` (b) A reason may also come with lines: add `**Where** a reason is given to `work request`, `work` shall write the reason in the request.`
+- requests r49, neither lines nor reason. (a) RECOMMENDED: add `**If** `work request` is given neither lines nor a reason, **then** `work request` shall refuse, because the request has neither lines nor a reason, and change nothing.` (b) No line.
+- requests r49 with r4/r34, who writes the drafted lines. The lines are the asker's part, written only by `work request` or the asker's answer. (a) The asker's answer to the drafting question writes them, RECOMMENDED: add `**When** the asker answers the question of a request's drafted lines accepting them, `work` shall write the drafted lines as the request's lines.` (b) The asker writes them with a further command (a new line naming it). (c) Only a request whose asker is this context may have no lines: add `**If** a request whose asker is not the upstream itself is given no lines, **then** `work request` shall refuse, because only an internal request may be raised with a reason alone, and change nothing.`
+- requests Implementation, how r49's reason is given and kept is not given. (a) Yes: add `- r49: the reason is given as `--reason <text>` and kept under the request's `## Reason`.` with the flag and section the person names. (b) No line, RECOMMENDED: this is `work`'s own.
