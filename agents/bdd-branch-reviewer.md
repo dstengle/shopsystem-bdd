@@ -1,7 +1,7 @@
 ---
 name: bdd-branch-reviewer
 description: The branch review of an initiative. Reads the initiative branch from its base and every work-item of the initiative against the spec and the repository's rules, the code's shape against CLAUDE.md and its coupling to the projects it depends on included; runs nothing (it reads the runs `work run` made and gives), grades and triages each finding naming its work-item, and writes its findings and a result, changing nothing. Started by `work run` with one brief file; not for general use.
-tools: Read, Glob, Grep, Bash, Write
+tools: Read, Glob, Grep, Write
 model: opus
 ---
 

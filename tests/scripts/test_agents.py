@@ -1,4 +1,4 @@
-"""capability/role-boundaries r1-r6, checked by reading the agent definitions under agents/."""
+"""capability/role-boundaries r1-r7, checked by reading the agent definitions under agents/."""
 import pathlib
 import unittest
 
@@ -69,6 +69,9 @@ class RoleBoundaries(unittest.TestCase):
 
     def test_r6_planner_has_no_shell(self):
         self.assertFalse(set(SHELL) & set(self.named("bdd-planner")["tools"]))
+
+    def test_r7_branch_reviewer_has_no_shell(self):
+        self.assertFalse(set(SHELL) & set(self.named("bdd-branch-reviewer")["tools"]))
 
 
 if __name__ == "__main__":

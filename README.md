@@ -124,7 +124,7 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 | `bdd-planner` | Read, Glob, Grep, Write | opus | a work-item's plan for `work run`, from the research notes, intent and never code |
 | `bdd-implementer` | Read, Edit, Write, Glob, Grep, Bash, Skill | sonnet | a work-item, red-green under `bdd-red-green`, in its worktree and branch |
 | `bdd-task-reviewer` | Read, Glob, Grep, Bash, Write | opus | a done work-item's review for `work run`; changes nothing |
-| `bdd-branch-reviewer` | Read, Glob, Grep, Bash, Write | opus | an initiative's branch review, from its base, over every work-item; changes nothing |
+| `bdd-branch-reviewer` | Read, Glob, Grep, Write | opus | an initiative's branch review, from its base, over every work-item; changes nothing |
 | `architecture-reviewer` | Read, Glob, Grep, Bash, Write | opus | an architecture review when the person asks for one |
 | `trial-runner` | Read, Glob, Grep, Bash, Write | sonnet | one trial of a plugin tool or `work run` on a target; writes only one measurement record |
 
