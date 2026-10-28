@@ -2,17 +2,17 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i45-spec-integration
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i45
-status: awaiting-answer
+status: drafted
 argues: [spec-integration]
-adds: [spec-integration#r47, spec-integration#r48, spec-integration#r49, spec-integration#r50, spec-integration#r51, spec-integration#r52, spec-integration#r53]
+date: 2026-10-28
+adds: [spec-integration#r58, spec-integration#r59, spec-integration#r60, spec-integration#r61, spec-integration#r62, spec-integration#r63, spec-integration#r64, spec-integration#r65]
 changes: []
 removes: [spec-integration#r13]
-date: 2026-10-28
 ---
 
 # spec-integration
 
-The drafts of this proposal are in .shop/work/i45/runs/i45/1-integrate/drafts/round-1/.
+The drafts of this proposal are in .shop/work/i45/runs/spec-integration/3-integrate/drafts/round-3/.
 
 ## Questions
 - Q1 (spec-integration r48): the check has no visible result. What does the round do with a finding? Line drafted: [r48] **When** a round of the kind `integrate` has drafted its lines, `initiative-round` shall check them against the lines of `spec/` for overlapping triggers, conflicting responses and catch-all triggers before the gate round starts.
