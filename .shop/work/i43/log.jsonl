@@ -34,3 +34,9 @@
 {"time": "2026-10-28T12:24:25+00:00", "work-item": "supervision", "stage": "formulate", "agent": "initiative-round", "session": "47ce7787-76c4-4113-8564-0dcc72c701e1", "event": "start"}
 {"time": "2026-10-28T12:24:42+00:00", "work-item": "supervision", "stage": "formulate", "agent": "initiative-round", "session": "47ce7787-76c4-4113-8564-0dcc72c701e1", "event": "end"}
 {"time": "2026-10-28T12:24:42+00:00", "work-item": "supervision", "before": "awaiting-answer", "after": "formulated", "by": "work run"}
+{"time": "2026-10-28T12:24:46+00:00", "work-item": "w215", "stage": "research", "event": "push verified"}
+{"time": "2026-10-28T12:24:46+00:00", "work-item": "w215", "stage": "research", "agent": "code-scout", "session": "d3c845fe-4007-4f1c-97ea-b1f85f398b5d", "event": "start"}
+{"time": "2026-10-28T12:24:46+00:00", "work-item": "w216", "stage": "research", "event": "push verified"}
+{"time": "2026-10-28T12:24:46+00:00", "work-item": "w216", "stage": "research", "agent": "code-scout", "session": "ff236484-0bbf-465b-897a-139329cac0ef", "event": "start"}
+{"time": "2026-10-28T12:27:36+00:00", "work-item": "w215", "stage": "research", "agent": "code-scout", "session": "d3c845fe-4007-4f1c-97ea-b1f85f398b5d", "event": "end"}
+{"time": "2026-10-28T12:27:36+00:00", "work-item": "w215", "before": "drafted", "after": "researched", "by": "work run"}
