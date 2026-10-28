@@ -1,0 +1,8 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Branch review 3 of i46 (134745663..c52906d), work-items w219-w227. The change outside .shop/ is the same as branch review 2's: w227 was withdrawn, changing no file.\nSuite: 1066 passed, 0 failed at c52906d in 33.80 s (parallel, not in-process; 1 skipped, 11 xfailed are w212's parked scenarios).\nEvery work-item's scenarios exit 0; tools size clean; features deprecated lists 13 (2 of i46 without replacement); features bindings clean; tools check exit 1 (ruff 29, branch-added ones Minor; vulture clean; no import contracts).\nFix now: F1, Important, w225. work run writes r117's approval question on a glossary-proposal whose gate gives no question; no line asks for it, q36 line 1 is still open, and w227 was withdrawn without a fix.\nNo Critical finding; nothing under Cannot verify.\nObservations: F2 r93 against due() (q35 open); F3 glossary.md overwritten whole on re-integrate; F4 names_one matches common glossary words; F5 discarded delegation answers after a gap; F6 i46 already done at HEAD (set by work withdraw w227, not logged) while F1 is open.",
+  "findings": "/tmp/work-run-i46-e8dawgu0/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": [
+    "Important, w225, scripts/supervise_rounds.py:159-161: a glossary-proposal whose gate round gives no question gets r117's approval question, which no Behaviour line asks for (r117 names only a capability-proposal; q36 line 1 still open). Integrate q36 line 1 first, or limit the branch to capability-proposals."
+  ]
+}
