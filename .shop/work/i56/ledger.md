@@ -1,0 +1,1 @@
+- 2026-10-28: integrate round 1: q27; requests adds r49, supervision adds r183, work-queue adds r46, 0 glossary terms, 13 questions, 1 cut sentences; drafts .shop/scratch/1-integrate/drafts/round-1
