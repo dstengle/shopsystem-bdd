@@ -52,3 +52,4 @@ The drafts of this proposal are in .shop/work/i45/runs/i45/1-integrate/drafts/ro
 - 2026-10-28: Q8, a decision for line 7: reading B, no decision; r52 and r53 are the rule (decision number 0073 is now taken by i46's) (answered by the coordinator under the person's delegation, 2026-10-28)
 - 2026-10-28: Q2, r48 and the general failure line: reading A, it is not a finding; r48 is replaced under a new id excluding a capability's general failure line (answered by the person, 2026-10-28)
 - 2026-10-28: Q3, r50's convention: reading A, a rule docs/capability-format.md or a decision under spec/decisions/ states; a question r50 settles is not asked, so r35 is unchanged (answered by the person, 2026-10-28)
+- 2026-10-28: Q5, r49's subject: reading A, r49 replaced by: an integrate round that drafts a line whose trigger names an event or condition the glossary does not define drafts a glossary entry for it (answered by the person, 2026-10-28)
