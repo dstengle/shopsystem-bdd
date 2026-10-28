@@ -1,0 +1,11 @@
+{
+ "status": "DONE",
+ "summary": "Nothing applied. The answers on r48 (give the finding in the result and the gate's questions, excluding a capability's general failure line, under a new id) and on r49 (replaced by an integrate-round line, lines drafted from now on) ask for lines the drafts never held; r48 and r49 stand in the drafts as the request words them. The answers on r47 (A), r50/r35 (A, unchanged), r13/r52/r53 (retire r13) and no decision are held by the drafts, but are not applied alone so that the redraft numbers all lines together.",
+ "nothing_applied": "The proposal's answers give what its drafts do not hold: r48 replaced by a line that gives the finding in the round's result and the gate's questions and excludes a capability's general failure line, and r49 replaced by the integrate-round line for a trigger naming an event or condition the glossary does not define, for lines drafted from now on.",
+ "unheld_answers": [
+  "2026-10-28: Q1, r48's finding: reading A, the finding is given in the round's result and in the gate's questions, naming both lines' ids (answered by the coordinator under the person's delegation, 2026-10-28)",
+  "2026-10-28: Q2, r48 and the general failure line: reading A, it is not a finding; r48 is replaced under a new id excluding a capability's general failure line (answered by the person, 2026-10-28)",
+  "2026-10-28: Q5, r49's subject: reading A, r49 replaced by: an integrate round that drafts a line whose trigger names an event or condition the glossary does not define drafts a glossary entry for it (answered by the person, 2026-10-28)",
+  "2026-10-28: Q6, r49 and existing lines: reading A, only lines drafted from now on (answered by the person, 2026-10-28)"
+ ]
+}
