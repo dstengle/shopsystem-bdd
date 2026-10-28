@@ -1,0 +1,17 @@
+{
+  "status": "DONE",
+  "summary": "Plan for w221 (design-model-check r122, r123, r124) in plan.md.\nglossary-proposal becomes a part kind with the lifecycle drafted, awaiting-answer, approved, withdrawn (from the glossary's term status).\nIts term references are judged after all of .shop/work/ is read; an approved glossary-proposal's removes excuses the term across the bounded context (r122 is unscoped; the scenario says 'wherever').\napproved closes a glossary-proposal only, in model.lp (r123; r36 keeps an approved capability-proposal open).\nworkqueue_done.py is left alone (work-queue's rule, not this capability's), noted as an open case.\nThe r124 step malformed_work moves to a new tests/scenarios/design_model_check_work.py to keep problems.py under 300 lines; five deprecated @r124 scenarios are removed.\nNo existing test breaks (verified by search).",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/model_work.py",
+    "scripts/model.lp",
+    "tests/scenarios/conftest.py",
+    "tests/scenarios/design_model_check_given.py",
+    "tests/scenarios/design_model_check_trace.py",
+    "tests/scenarios/design_model_check_problems.py",
+    "tests/scenarios/design_model_check_work.py",
+    "tests/scenarios/test_design_model_check.py",
+    "features/design-model-check.feature"
+  ],
+  "questions": []
+}
