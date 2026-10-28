@@ -1,0 +1,23 @@
+{
+  "status": "DONE",
+  "summary": "w225 research done; notes in .shop/scratch/1-research/notes.md. Run: --work-item w225, 8 failed (missing glossary step definitions), 180 passed; r172 passes only because glossary-proposals are never routed. Root causes (read): supervise_rounds.py due/proposals route only capability-proposals; workqueue.py move refuses approved for glossary-proposal (own set, 294 lines, room 6); workqueue_done.py _holds needs a green work-item; supervise_done.py set_done needs measurement; supervise_change.py rewrite_lists empties a glossary-proposal's lists on apply. Conflict: supervise_glossary.withheld withholds g1's own terms during its apply (r55 vs r165/r166). Test lists are by search: no tools map exists. File set: 8 production and 5 test files, listed in notes part 4.",
+  "fileset": [
+    "scripts/supervise_rounds.py",
+    "scripts/supervise_change.py",
+    "scripts/supervise_glossary.py",
+    "scripts/supervise_brief.py",
+    "scripts/workqueue.py",
+    "scripts/workqueue_done.py",
+    "scripts/supervise_done.py",
+    "scripts/supervise.py",
+    "scripts/workqueue_answer.py",
+    "tests/scenarios/supervision_proposal_steps.py",
+    "tests/scenarios/supervision_rounds_steps.py",
+    "tests/scenarios/supervision_formulate_steps.py",
+    "tests/scenarios/supervision_done_steps.py",
+    "tests/scenarios/supervision_integrate_steps.py"
+  ],
+  "questions": [
+    "Conflict (spec-integration r55 vs supervision r165/r166): supervise_glossary.withheld withholds the terms of every glossary-proposal not approved, including g1 while its own apply round runs, so g1's apply cannot add its terms. Reading A: withhold excludes the proposal being applied (r165/r166 hold). Reading B: keep withholding for all, and r166 cannot hold. Which reading does the person choose?"
+  ]
+}
