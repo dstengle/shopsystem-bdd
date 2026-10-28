@@ -2,3 +2,4 @@
 - 2026-10-28: gate round 1 supervision: 5 questions
 - 2026-10-28: gate round 1 work-queue: 4 questions
 - 2026-10-28 21:14: compacted
+- 2026-10-28: apply round 2: nothing applied; answers Q1 and Q2 change r181, which the drafts do not hold; integrate to redraft
