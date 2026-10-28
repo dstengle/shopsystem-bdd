@@ -183,16 +183,16 @@ def listed(text, field):
 
 
 @then(parsers.re(r"the commit that wrote i1's capability-proposals wrote two, each drafted: one for thing, its adds naming "
-                 r'thing#r4 and the term "ledger", its changes thing#r2 and its removes thing#r3, and one for other, its '
-                 r"adds naming other#r1 and its changes and removes naming nothing$"))
-def proposals_written(repo, context):
+                 r'thing#r4(?P<term> and the term "ledger")?, its changes thing#r2 and its removes thing#r3, and one for '
+                 r"other, its adds naming other#r1 and its changes and removes naming nothing$"))
+def proposals_written(repo, context, term):
     where = (context["done"].stdout, context["done"].stderr)
     commits = git(repo, "log", "--diff-filter=A", "--format=%H", "--", ".shop/work/i1/thing.md").split()
     assert len(commits) == 1, where
     added = git(repo, "show", "--diff-filter=A", "--name-only", "--format=", commits[0]).split()
     assert sorted(p for p in added if p.startswith(".shop/work/i1/") and p.endswith(".md") and "/runs/" not in p) == [
         ".shop/work/i1/other.md", ".shop/work/i1/thing.md"], (added, where)
-    expected = {"thing": (["thing#r4", "term/ledger"], ["thing#r2"], ["thing#r3"]), "other": (["other#r1"], [], [])}
+    expected = {"thing": (["thing#r4"] + (["term/ledger"] if term else []), ["thing#r2"], ["thing#r3"]), "other": (["other#r1"], [], [])}
     for name, lists in expected.items():
         text = git(repo, "show", "%s:.shop/work/i1/%s.md" % (commits[0], name))
         assert "\nkind: capability-proposal\n" in text and "\nstatus: drafted\n" in text, text

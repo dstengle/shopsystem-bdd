@@ -153,12 +153,12 @@ def round_given_drafts(repo, context, kind, path):
     assert "Drafts path: %s\n" % path in found[0]["brief"], found[0]["brief"]
 
 
-@then(parsers.re(r'the brief of the gate round for p1 asks only for the questions on thing#r4, thing#r2, thing#r3 and the '
-                 r'term "ledger"$'))
-def gate_names_its_ids(repo, context):
+@then(parsers.re(r'the brief of the gate round for p1 asks only for the questions on thing#r4, thing#r2(?:, | and )thing#r3'
+                 r'(?P<term> and the term "ledger")?$'))
+def gate_names_its_ids(repo, context, term):
     found = rounds(repo, "gate", "p1")
     assert len(found) == 1, (context["done"].stdout, context["done"].stderr)
-    for one in ("thing#r4", "thing#r2", "thing#r3", "term/ledger"):
+    for one in ("thing#r4", "thing#r2", "thing#r3") + (("term/ledger",) if term else ()):
         assert one in found[0]["brief"], (one, found[0]["brief"])
 
 
