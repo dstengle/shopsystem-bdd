@@ -1,0 +1,8 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Branch review of i43 (ebbf1bea..dfeaa30f): w215 (review r32-r34) and w216 (supervision r154-r157), both green.\nSuite: 1031 passed, 0 failed at dfeaa30f in 34.23 s (parallel -n auto, out of process; 11 xfailed are w212's parked scenarios).\ntools check: ruff 19 errors (12 new in w216's step module and import order, 5 in the apply round's apply.py, 2 pre-existing); vulture clean; no import contracts. tools size: nothing over 300. features bindings clean; features deprecated: 11, none of i43's.\nNo work-item names a check. No test removed or weakened; no allowance rows. Nothing Critical; features/ changed only by the formulate rounds.\nOne Important fix-now finding: the r156 commit attribution gives none for transitions committed by work answer/withdraw/retry/add (e.g. 2faf85d3 'work answer: w216 awaiting-answer -> ready').\nEight Minor findings (observations or drops): the brief still says 'run every command', the agent dropped its exception for work run's own commits, the consumer allowed_tools.review key no longer reaches the branch review, the Ran at race, and unbounded runs and brief.\nThis review was started by plugin 0.28.1, so its brief predates r154-r157 and the runs were made by the reviewer itself.",
+  "findings": "/home/vscode/shopsystem-bdd/.shop/worktrees/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": [
+    "Important, w216, scripts/supervise_review_read.py:11,42: the r156 attribution matches only 'work: <name> a -> b', so a work-item's transitions committed by work answer (e.g. 2faf85d3 'work answer: w216 awaiting-answer -> ready'), work withdraw, work retry and work add are given as none"
+  ]
+}
