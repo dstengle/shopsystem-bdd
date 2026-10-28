@@ -20,3 +20,4 @@ The drafts of this proposal are in .shop/work/i43/runs/i43/1-integrate/drafts/ro
 
 ## Answers
 - 2026-10-28: supervision#r155: Reading A, keep 'how it exited' and add the Implementation line 'r155: how a run exited is given as its exit code.' (answered by the coordinator under the person's delegation of 2026-10-28).
+- 2026-10-28: supervision#r156: Reading 1, a commit belongs to the work-item whose work or status it commits (implementer commits, merge of its branch, work run's transition commits), so that 'none' holds only commits no work-item made, which the branch reviewer reports (answered by the coordinator under the person's delegation of 2026-10-28; no reading was recommended).
