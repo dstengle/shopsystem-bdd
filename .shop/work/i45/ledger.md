@@ -4,3 +4,4 @@
 - 2026-10-28: gate round 1 spec-integration: 8 questions
 - 2026-10-28 21:14: compacted
 - 2026-10-28: apply round 2 of requests: nothing applied; answers Q7 A and Q12 A reword r46, which the drafts do not hold (Q1 A held)
+- 2026-10-28: integrate round 3: q26 requests redrafted from answers Q1 A Q7 A Q12 A: requests adds r59; 0 questions, 0 cut sentences; drafts .shop/scratch/3-integrate/drafts/round-3
