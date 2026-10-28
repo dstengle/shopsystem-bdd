@@ -1,2 +1,3 @@
 - 2026-10-28: integrate round 1: requests +9 -5, supervision +3, work-queue +1, no glossary, 10 questions, 1 cut sentence; drafts .shop/scratch/1-integrate/drafts/round-1
 - 2026-10-28: gate round 1: 10 questions
+- 2026-10-28: gate round 1: 4 questions on supervision r184, r185, r186
