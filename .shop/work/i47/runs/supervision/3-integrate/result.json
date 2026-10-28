@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"integrate round 3 for supervision: adds r188 r189 r190, removes r4 (retired), Implementation line for r188; 0 glossary terms; 3 questions; 1 cut sentence","questions":[],"changes":[{"capability":"supervision","adds":["supervision#r188","supervision#r189","supervision#r190"],"changes":[],"removes":["supervision#r4"]}]}
