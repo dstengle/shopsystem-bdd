@@ -2,17 +2,17 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i48-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i48
-status: awaiting-answer
+status: drafted
 argues: [supervision]
-adds: [supervision#r179]
+date: 2026-10-28
+adds: [supervision#r188, supervision#r189]
 changes: []
 removes: []
-date: 2026-10-28
 ---
 
 # supervision
 
-The drafts of this proposal are in .shop/work/i48/runs/i48/1-integrate/drafts/round-1/.
+The drafts of this proposal are in .shop/work/i48/runs/supervision/3-integrate/drafts/round-1/.
 
 ## Questions
 - r179, "terms of the proposal": a capability-proposal lists requirement ids, and terms are listed by a glossary-proposal. Line: [r179] **When** a round of the kind `integrate` redrafts some of the lines of a capability-proposal it was started for, `work run` shall keep the requirement ids and terms of the proposal that the round's change list does not name. Reading A: split it into r179 (requirement ids of the capability-proposal) and r180 "**When** a round of the kind `integrate` redrafts some of the terms of a glossary-proposal it was started for, `work run` shall keep the terms of the glossary-proposal that the round's change list does not name." Reading B: drop "terms", so r179 reads "...shall keep the requirement ids of the capability-proposal that the round's change list does not name." Reading C: keep the line as drafted. Recommended: A.
