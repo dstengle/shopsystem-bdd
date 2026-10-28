@@ -24,3 +24,4 @@ The drafts of this proposal are in .shop/work/i42/runs/i42/1-integrate/drafts/ro
 - 2026-10-28: r150 against r140: reading (a), retire r140 and keep r150, r140's scenario deprecated for r150 (the person, 2026-10-28: take recommendations).
 - 2026-10-28: r150 against r144-r146: reading (b), add r151 'When an apply round gives an answer its drafts do not hold, work run shall start no formulate round for the proposal until the new integrate round has been applied.' (the person, 2026-10-28: take recommendations).
 - 2026-10-28: r149 against r83: reading (a), add a line 'When a formulate round formulates nothing because answers change lines not in spec/, work run shall keep the proposal's status.' (the person, 2026-10-28: take recommendations).
+- 2026-10-28: r149 against r131/r132: reading (a), add a line that work run shall take that case as the round's output, as r147 does for apply (the person, 2026-10-28: take recommendations).
