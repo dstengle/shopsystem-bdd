@@ -9,3 +9,7 @@
 {"time": "2026-10-28T16:19:10+00:00", "work-item": "design-model-check", "stage": "formulate", "agent": "initiative-round", "session": "ca5bfb74-c6c7-4ea7-84d1-b3089926002f", "event": "start"}
 {"time": "2026-10-28T16:23:00+00:00", "work-item": "design-model-check", "stage": "formulate", "agent": "initiative-round", "session": "ca5bfb74-c6c7-4ea7-84d1-b3089926002f", "event": "end"}
 {"time": "2026-10-28T16:23:00+00:00", "work-item": "design-model-check", "before": "approved", "after": "awaiting-answer", "by": "work run"}
+{"time": "2026-10-28T16:23:03+00:00", "work-item": "spec-integration", "stage": "formulate", "event": "push verified"}
+{"time": "2026-10-28T16:23:03+00:00", "work-item": "spec-integration", "stage": "formulate", "agent": "initiative-round", "session": "c304719b-828f-43db-bd9b-0be66e9222ef", "event": "start"}
+{"time": "2026-10-28T16:25:23+00:00", "work-item": "spec-integration", "stage": "formulate", "agent": "initiative-round", "session": "c304719b-828f-43db-bd9b-0be66e9222ef", "event": "end"}
+{"time": "2026-10-28T16:25:23+00:00", "work-item": "spec-integration", "before": "approved", "after": "formulated", "by": "work run"}
