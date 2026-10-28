@@ -131,6 +131,20 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 Only `initiative-round` has the Agent tool. A plugin agent's `hooks` and `permissionMode` are ignored, so a role's
 limits are its tools; under `work run` they are also its `--allowedTools`.
 
+## 0.28.3: a branch review that runs nothing
+
+- **`work run` makes the branch review's runs before it starts** (supervision r154, r155): the whole suite, each
+  work-item's scenarios, each check a work-item names, `tools check`, `tools size`, `features deprecated` and
+  `features bindings`, at the branch's head, and gives the reviewer each one's command, how it exited and its output,
+  naming the commit.
+- **The reviewer is given what to read** (supervision r156, r157): the commits from the initiative's base, each with its
+  work-item or none, the change less `.shop/`, and the capabilities, decisions, plans, reports and review findings.
+- **The branch reviewer runs nothing and has no shell tool** (review r32-r34, role-boundaries r7): a behaviour only a
+  run would show is a finding with the test that would show it, marked not run. review r9 is retired. In i42 a
+  branch review took about 33 turns, 6 to 8 of them commands the sandbox refused, and re-ran every check itself.
+
+Upgrading a consuming repository from 0.28.2: update the plugin and start a session. No file is rewritten.
+
 ## 0.28.2: answers a round cannot hold go back to integration
 
 - **An apply round names the answers its drafts do not hold** (spec-integration r46): `initiative-round` gives them in
