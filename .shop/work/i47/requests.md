@@ -21,3 +21,4 @@ The drafts of this proposal are in .shop/work/i47/runs/i47/1-integrate/drafts/ro
 
 ## Answers
 - 2026-10-28: Q1, r48 against r18: reading A, r48 holds for either side and r18 changes to name a line whose outcome is not withdrawn (answered by the coordinator under the person's delegation, 2026-10-28)
+- 2026-10-28: Q2, r48 and delivered: reading A, r48 holds only for a request that is not delivered (answered by the coordinator under the person's delegation, 2026-10-28)
