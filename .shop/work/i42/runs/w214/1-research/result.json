@@ -1,0 +1,13 @@
+{
+  "status": "DONE",
+  "summary": "w214 research done. Ran the 5 accepted scenarios once: r150 passes; r149, r151, r152, r153 fail on undefined steps (Givens for 'formulates nothing ... change lines not in spec/' and Thens for the formulate and r151 cases). Code gap: scripts/supervise_rounds.py route, applied_nothing and the formulate branch (lines 62-195) do not handle a formulate round that formulates nothing, so an answered formulate question goes back to formulate, moves to formulated, or asks a scenario question. No coverage map: test lists are by search. Field name for the formulate case is in no spec or agent. r150 wording is wider than the code's nothing-applied check (unheld_answers ignored). Both readings in notes.md part 2 and 4. Planned file set: supervise_rounds.py, supervise_brief.py, agents/initiative-round.md, two step modules, and the Retires scenario in features/supervision.feature.",
+  "fileset": [
+    "scripts/supervise_rounds.py",
+    "scripts/supervise_brief.py",
+    "agents/initiative-round.md",
+    "tests/scenarios/supervision_formulate_steps.py",
+    "tests/scenarios/supervision_reintegrate_steps.py",
+    "features/supervision.feature"
+  ],
+  "questions": []
+}
