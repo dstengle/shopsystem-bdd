@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i42-spec-integration
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i42
-status: drafted
+status: awaiting-answer
 argues: [spec-integration]
 adds: [spec-integration#r46]
 changes: []
@@ -13,3 +13,6 @@ date: 2026-10-28
 # spec-integration
 
 The drafts of this proposal are in .shop/work/i42/runs/i42/1-integrate/drafts/round-1/.
+
+## Questions
+- Are the lines of spec-integration approved as drafted? Readings: approve spec-integration as drafted (recommended), or change its lines.
