@@ -1,0 +1,13 @@
+{
+  "status": "DONE",
+  "summary": "Research of w228 (supervision#r173) done. Accepted scenario run once: 1 failed, 1 passed. The failure is an undefined Then step for the glossary gate question (features/supervision.feature:1844). Code: scripts/supervise_rounds.py run_round lines 158-161 writes the capability approval wording for every gate with no question, glossary included. Change: a terms question for glossary-proposals (scripts/supervise_rounds.py, scripts/supervise_glossary.py) and a Then step (tests/scenarios/supervision_proposal_steps.py). No coverage map: tests-of unavailable, tests found by search. size check: no tracked file over 300 lines. Notes at .shop/scratch/1-research/notes.md.",
+  "fileset": [
+    "scripts/supervise_rounds.py",
+    "scripts/supervise_glossary.py",
+    "tests/scenarios/supervision_proposal_steps.py",
+    "scripts/supervise.py",
+    "scripts/workqueue.py",
+    "scripts/supervise_brief.py"
+  ],
+  "questions": []
+}
