@@ -112,3 +112,4 @@
 {"time": "2026-10-28T18:13:59+00:00", "work-item": "w221", "before": "awaiting-answer", "after": "ready", "by": "work answer"}
 {"time": "2026-10-28T18:13:59+00:00", "work-item": "w222", "before": "awaiting-answer", "after": "ready", "by": "work answer"}
 {"time": "2026-10-28T18:14:04+00:00", "work-item": "w221", "before": "ready", "after": "claimed", "by": "work run"}
+{"time": "2026-10-28T18:14:06+00:00", "work-item": "w222", "before": "ready", "after": "claimed", "by": "work run"}
