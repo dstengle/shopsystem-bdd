@@ -16,3 +16,6 @@ The drafts of this proposal are in .shop/work/i42/runs/i42/1-integrate/drafts/ro
 
 ## Questions
 - Are the lines of spec-integration approved as drafted? Readings: approve spec-integration as drafted (recommended), or change its lines.
+
+## Answers
+- 2026-10-28: Approve spec-integration as drafted (the person, 2026-10-28: take recommendations).
