@@ -29,3 +29,4 @@ The drafts of this proposal are in .shop/work/i43/runs/i43/1-integrate/drafts/ro
 - 2026-10-28: review#r12 against r32/r33: Reading A, r12 stands; a reproduction is written, not run (answered by the coordinator under the person's delegation of 2026-10-28).
 - 2026-10-28: review#r7 against r32: Reading A, r7 stands; the reviewer reads the wall time from the suite run output r155 gives (answered by the coordinator under the person's delegation of 2026-10-28).
 - 2026-10-28: review#r6 against r32: Reading A, r6 stands; the reviewer verifies each check from the runs r154/r155 give (answered by the coordinator under the person's delegation of 2026-10-28).
+- 2026-10-28: review Implementation probes: Reading A, keep; it covers only the work-item reviewer now (answered by the coordinator under the person's delegation of 2026-10-28).
