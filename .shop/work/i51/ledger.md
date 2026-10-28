@@ -3,3 +3,4 @@
 - 2026-10-28 21:14: compacted
 - 2026-10-28: apply round 2: nothing applied; answer 2 (r176 reading b, every session work run starts) is not held by the drafts, which hold reading (a); integrate round needed
 - 2026-10-28: integrate round 3: q37; supervision adds r188 r189 r190 removes r162 r163, 0 glossary terms, 0 questions, 0 cut sentences; drafts .shop/scratch/3-integrate/drafts/round-3
+- 2026-10-28: gate round 4: 0 questions (answers to questions 1 and 2 held by r188, r189, r190)
