@@ -2,3 +2,7 @@
 {"time": "2026-10-28T20:01:16+00:00", "work-item": "i50", "stage": "integrate", "event": "push verified"}
 {"time": "2026-10-28T20:01:16+00:00", "work-item": "i50", "stage": "integrate", "agent": "initiative-round", "session": "df3cd5cc-7670-41e8-bb88-4f72abb50a55", "event": "start"}
 {"time": "2026-10-28T20:03:34+00:00", "work-item": "i50", "stage": "integrate", "agent": "initiative-round", "session": "df3cd5cc-7670-41e8-bb88-4f72abb50a55", "event": "end"}
+{"time": "2026-10-28T20:03:38+00:00", "work-item": "supervision", "stage": "gate", "event": "push verified"}
+{"time": "2026-10-28T20:03:38+00:00", "work-item": "supervision", "stage": "gate", "agent": "initiative-round", "session": "4bcbfe0f-2aed-4904-bb13-3ab45880d9ff", "event": "start"}
+{"time": "2026-10-28T20:03:53+00:00", "work-item": "supervision", "stage": "gate", "agent": "initiative-round", "session": "4bcbfe0f-2aed-4904-bb13-3ab45880d9ff", "event": "end"}
+{"time": "2026-10-28T20:03:53+00:00", "work-item": "supervision", "before": "drafted", "after": "awaiting-answer", "by": "work run"}
