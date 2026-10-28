@@ -232,3 +232,7 @@
 {"time": "2026-10-28T19:07:52+00:00", "work-item": "w226", "stage": "research", "agent": "code-scout", "session": "274363a2-2ecb-4d46-919c-712a6f9fb49a", "event": "start"}
 {"time": "2026-10-28T19:09:48+00:00", "work-item": "w226", "stage": "research", "agent": "code-scout", "session": "274363a2-2ecb-4d46-919c-712a6f9fb49a", "event": "end"}
 {"time": "2026-10-28T19:09:48+00:00", "work-item": "w226", "before": "drafted", "after": "researched", "by": "work run"}
+{"time": "2026-10-28T19:09:50+00:00", "work-item": "w226", "stage": "plan", "event": "push verified"}
+{"time": "2026-10-28T19:09:50+00:00", "work-item": "w226", "stage": "plan", "agent": "bdd-planner", "session": "3c156198-440c-4430-ba0a-0d3d40dc5a5f", "event": "start"}
+{"time": "2026-10-28T19:10:46+00:00", "work-item": "w226", "stage": "plan", "agent": "bdd-planner", "session": "3c156198-440c-4430-ba0a-0d3d40dc5a5f", "event": "end"}
+{"time": "2026-10-28T19:10:46+00:00", "work-item": "w226", "before": "researched", "after": "planned", "by": "work run"}
