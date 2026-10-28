@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i52-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i52
-status: drafted
+status: awaiting-answer
 argues: [supervision]
 date: 2026-10-28
 adds: [supervision#r188, supervision#r189, supervision#r190]
@@ -20,6 +20,14 @@ The drafts of this proposal are in .shop/work/i52/runs/supervision/3-integrate/d
 - supervision r182 (added): **While** a question of an initiative is left for the person and has no answer, `work run` shall start no further session under the delegation for that initiative's questions. What does 'until the person has answered' mean? (a) That question only, as drafted. (b) Every question of the initiative: '**While** a question of the initiative has no answer and one of its questions is left for the person, ...'. Recommended: (a), the request names that question.
 - supervision r182 (added) with r163: once the person has answered the question left for them, what happens to the later questions? (a) r163 resumes for the remaining questions, no new line, as drafted. (b) Every later question is left for the person: new line '**When** a question of an initiative has been left for the person, `work run` shall leave every later question of that initiative for the person.' Recommended: (a).
 - supervision r182 (added): does a question left for the person in an earlier delivery hold back sessions in a later `work run`? (a) Yes, it is a state on the initiative, as drafted. (b) No, only within one delivery: '**While** a delivery has left a question of an initiative for the person and ...'. Recommended: (a), since the question stays unanswered across runs.
+- Which glossary-proposal does a round write when the initiative's only glossary-proposal is `withdrawn`? Concerns supervision r171 (changed), r188 and r189 (added).
+  r171 now: **When** a round of the kind `integrate` that `work run` started ends with a change list that names the glossary and the initiative has no glossary-proposal, `work run` shall write a `drafted` glossary-proposal with the terms the change list adds, changes and removes in the glossary.
+  r171 was: **When** a round of the kind `integrate` that `work run` started ends with a change list that names the glossary, `work run` shall write a `drafted` glossary-proposal with the terms the change list adds, changes and removes in the glossary.
+  r188: **When** ... the initiative has a glossary-proposal that is neither `approved` nor `withdrawn`, `work run` shall add to that glossary-proposal the terms ..., the round's entry replacing the entry of a term the proposal already lists, keeping the proposal's status, its questions and its answers.
+  r189: **When** ... the initiative's glossary-proposal is `approved`, `work run` shall transition it to `drafted` with the terms added, the round's entry replacing the entry of a term already listed, keeping its questions and its answers.
+  The initiative's only glossary-proposal is `withdrawn`, so no line covers it.
+  (a) RECOMMENDED: A new `drafted` glossary-proposal is written: r171 reads '...and the initiative has no glossary-proposal, or only a `withdrawn` one, `work run` shall write a `drafted` glossary-proposal with the terms the change list adds, changes and removes in the glossary.'
+  (b) The terms go to no proposal: a new line '**If** a round of the kind `integrate` that `work run` started ends with a change list that names the glossary and the initiative's glossary-proposal is `withdrawn`, **then** `work run` shall exit with an error, naming the glossary-proposal.'
 
 ## Answers
 - 2026-10-28: Q3, r182 'until the person has answered': reading (a), that question only, as drafted (answered by the coordinator under the person's delegation, 2026-10-28)
