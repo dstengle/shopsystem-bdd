@@ -36,6 +36,7 @@ It is not formulation and not planning; it writes nothing a client can run.
 - [r22] **When** the approved drafts are committed with a decision, `integrating-a-proposal` shall commit in the same commit the `spec/decisions/index.md` that `model decisions` writes.
 - [r35] **When** `initiative-round` runs the kind `gate`, `initiative-round` shall give in its result one question for each decision the person is asked to make, each marking the recommended reading and giving the lines it concerns in full.
 - [r39] **When** `initiative-round` runs the kind `apply` with the file of the person's answers, or with the person's approval in their words, `initiative-round` shall apply exactly the drafts the person approved.
+- [r46] **When** a round of the kind `apply` ends, `initiative-round` shall give in its result each answer of the capability-proposal that the drafts it applied do not hold.
 - [r40] **When** `initiative-round` finishes a round, `initiative-round` shall append one line to the initiative's ledger with `work note`, naming the kind, the round, and what the round ended with or the answers it applied.
 - [r43] **When** a round of the kind `integrate` is given requirement ids that other initiatives' drafts add, `initiative-round` shall number the round's added lines above every id it is given on the same capability.
 - [r45] **When** a round of the kind `integrate` is given answers that ask for lines the request's accepted lines do not, `initiative-round` shall draft those lines under the capabilities the answers name.
