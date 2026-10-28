@@ -3,3 +3,4 @@
 - 2026-10-28: gate round 1: 7 questions
 - 2026-10-28: gate round 1 (supervision): 1 question
 - 2026-10-28: 2026-10-28 coordinator, under the person's delegation: the agent-tools question of the review proposal answered Reading B, not recommended; the branch reviewer's Bash tool is removed through q24 (i44), since 'runs nothing' held only by the brief is an instruction, not a boundary.
+- 2026-10-28: apply round 2 (review): answers applied, supervision r154-r157 and review r32-r34 added, r9 retired; commit 525db3cc
