@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i55-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i55
-status: drafted
+status: awaiting-answer
 argues: [supervision]
 adds: [supervision#r184, supervision#r185, supervision#r186]
 changes: []
@@ -13,3 +13,9 @@ date: 2026-10-28
 # supervision
 
 The drafts of this proposal are in .shop/work/i55/runs/i55/1-integrate/drafts/round-1/.
+
+## Questions
+- supervision r186 repeats r149 word for word. Line: [r186] **When** a round of the kind `formulate` formulates nothing because a capability-proposal's answers change lines not in `spec/`, `work run` shall start a new round of the kind `integrate` for the capability-proposal. Readings: (a, recommended) retire r149 and keep r186, so a work-item is drafted for the fault i39 met; (b) drop r186 and keep r149; (c) keep both. r152 and r153 do not conflict and stay.
+- supervision r184 against r32, r81 and r9. Line: [r184] **When** `work run` ends with a capability-proposal or a work-item `awaiting-answer`, `work run` shall exit with an error, printing each with its open questions. It covers r32 and conflicts with r9 when every work-item is done while a capability-proposal is `awaiting-answer`. Readings: (a, recommended) retire r32 and r9 and add "[r187] **When** no node of the initiative can make a transition, every work-item is `green` or `withdrawn`, no capability-proposal is `awaiting-answer` and no request whose asker is this context is in the asker's turn, `work run` shall exit successfully, printing each work-item's status."; (b) keep r32 and r9, r184 taking precedence; (c) keep r32 and r184, retire r9 only. r81 stays (recommended) or also prints each proposal's open questions.
+- supervision r184, the exit code. Line: [r184] **When** `work run` ends with a capability-proposal or a work-item `awaiting-answer`, `work run` shall exit with an error, printing each with its open questions. (q21 asked for exit code 3; drafted as "an error" under design-decision/exits-are-successful-or-errors, the code held by Implementation: "3 awaiting an answer".) Readings: (a, recommended) as drafted, the code in Implementation only; (b) add an Implementation line "r184: the exit code is 3".
+- supervision r185 against r132 and r131. Line: [r185] **When** a researcher's result gives an empty file set, `work run` shall take it as the researcher's file set. Readings: (a, recommended) keep r132 and r131 with r185 beside them; (b) retire r132 for "a researcher's file set, empty or not" and drop r185. For an empty planner's file set: (a, recommended) nothing drafted; (b) add "[r189] **When** a planner's result gives an empty file set, `work run` shall take it as the planner's file set."
