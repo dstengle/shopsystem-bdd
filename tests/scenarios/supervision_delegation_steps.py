@@ -20,6 +20,25 @@ def fulfils_with_delegation(repo, context, delegation):
     commit_all(repo, "i1 fulfils q1, which gives a delegation")
 
 
+@given(parsers.re(r'spec/index\.md\'s Glossary holds the term "(?P<term>[^"]+)"$'))
+def glossary_holds_term(repo, term):
+    write(repo, "spec/index.md", "# Index\n\n## Glossary\n\n- **%s**: a thing.\n" % term)
+    commit_all(repo, "spec/index.md's Glossary holds a term")
+
+
+@given(parsers.re(r"i1's glossary-proposal g1 is awaiting-answer$"))
+def glossary_proposal_awaiting(repo):
+    write(repo, DIR + "/g1.md", "---\nid: %s\nkind: glossary-proposal\npart_of: %s\nstatus: awaiting-answer\nadds: [term/ledger]\n"
+          "changes: []\nremoves: []\ndate: 2026-10-15\n---\n" % (full("glossary-proposal", "g1"), full("initiative", "i1")))
+    commit_all(repo, "an awaiting-answer glossary-proposal")
+
+
+@then(parsers.re(r'"(?P<question>[^"]+)" was given to no session$'))
+def given_to_no_session(repo, question):
+    found = [c for c in starts(repo) if c["agent"].endswith("delegation-answerer") and question in c["brief"]]
+    assert not found, found
+
+
 @given(parsers.re(r'i1\'s capability-proposal p1 is awaiting-answer, its ## Questions section with "(?P<question>[^"]+)" and '
                   r"no answer$"))
 def unanswered_proposal(repo, question):
