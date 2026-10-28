@@ -31,7 +31,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/supervise_outputs.py` | `work run`'s reading of what a stage's result must give (its output) and the question naming it when missing (r131, r132) |
 | `scripts/supervise_branch_runs.py` | `work run`'s runs before a branch review (the suite, scenarios, checks, `tools`, `features`) and their text in the reviewer's brief (r154, r155) |
 | `scripts/supervise_review_read.py` | what `work run` gives a branch review to read: its commits with their work-items, the change less `.shop/`, the files to read (r156, r157) |
-| `scripts/supervise_change.py` | `work run`'s reading of an integrate round's change list and its writing of one drafted capability-proposal for each capability it names |
+| `scripts/supervise_change.py` | `work run`'s reading of an integrate round's change list and its writing of one drafted capability-proposal for each capability it names and of one drafted glossary-proposal for its glossary entries |
 | `scripts/supervise_all.py` | `work run` with no initiative: every open initiative taken side by side, one `Run` each, and the exit on their statuses |
 | `scripts/supervise_answers.py` | `work run`'s answers under a request's delegation: a session for each question, the answer naming the delegation |
 | `scripts/supervise_glossary.py` | `work run`'s reading of an initiative's glossary-proposals: the terms of those not approved, withheld from an apply round (spec-integration r55) |

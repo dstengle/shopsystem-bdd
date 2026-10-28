@@ -110,7 +110,6 @@ def drafts_glossary_change(repo, context):
     brief = integrate_brief(repo, context)
     assert "glossary" in brief and "no capability's entry" in brief, brief
     assert entry_of(repo, context, "glossary")
-    assert not (repo / ".shop/work/i1/glossary.md").exists()
 
 
 @then(parsers.re(r"the change list's entry for the glossary gives (?P<a>\w+) as added, (?P<c>\w+) as changed and (?P<r>\w+) as removed$"))

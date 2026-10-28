@@ -7,7 +7,7 @@ from pytest_bdd import given, parsers, then
 from .conftest import cap, full
 from .supervision_review_steps import FINDINGS
 from .supervision_rounds_steps import rounds
-from .supervision_world import calls, commit_all, fields, git, item_text, write
+from .supervision_world import calls, commit_all, fields, git, item_text, starts, write
 
 DIR = ".shop/work/i1"
 FIX_NOW = ["Important, w1, thing.py:3: the first thing to fix now", "Important, w1, thing.py:9: the second thing to fix now"]
@@ -128,6 +128,22 @@ def written_from_round(repo, path):
     head, sep, rest = file.read_text().partition("\n---\n")     # the sentence follows the front matter, as work run writes it
     file.write_text(head + sep + "\n# thing\n\nThe drafts of this proposal are in %s.\n" % path + rest)
     commit_all(repo, "p1 names the drafts it was written from")
+
+
+@given(parsers.re(r"i1's glossary-proposal g1 is awaiting-answer, its ## Questions section with (?P<asked>\"[^,]+), given by its "
+                  r"gate round, and its Answers section with (?P<answers>\"[^,]+?)(?: only)?$"))
+def glossary_proposal_answered(repo, asked, answers):
+    """g1 holds each quoted question as a bullet of its Questions and each quoted answer as a bullet of its Answers."""
+    bullets = lambda text: "".join("- %s\n" % q for q in re.findall(r'"([^"]+)"', text))     # noqa: E731
+    write(repo, DIR + "/g1.md", "---\nid: %s\nkind: glossary-proposal\npart_of: %s\nstatus: awaiting-answer\nadds: [term/ledger]\n"
+          "changes: [term/shelf]\nremoves: []\ndate: 2026-10-15\n---\n\n## Questions\n\n%s\n## Answers\n\n%s"
+          % (full("glossary-proposal", "g1"), full("initiative", "i1"), bullets(asked), bullets(answers)))
+    commit_all(repo, "g1 is awaiting-answer")
+
+
+@then("no round of the kind apply was started for g1")
+def no_apply_for_g1(repo, context):
+    assert not rounds(repo, "apply", "g1"), (starts(repo), context["done"].stdout, context["done"].stderr)
 
 
 @then(parsers.re(r"the (?P<kind>gate|apply) round for p1 was given the path (?P<path>\S+)$"))

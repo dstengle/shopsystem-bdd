@@ -34,13 +34,17 @@ class Rounds(Changes, Raises):
                 found.append((path.stem, data.get("status")))
         return found
 
+    def glossary_proposals(self):
+        """The names of the initiative's glossary-proposals: an output of its integration, as a capability-proposal is."""
+        return [p.stem for p in sorted(self.dir.glob("*.md")) if workqueue.frontmatter(p.read_text())[0].get("kind") == "glossary-proposal"]
+
     def due(self, left=()):
         """(name, round, status after) of the first proposal with a round to run, else None; the names in `left` have none.
         Its questions all have an answer when its `## Answers` holds as many bullets as its `## Questions`, none at all
         included (r70)."""
         data, _ = workqueue.frontmatter((self.dir / "initiative.md").read_text())
         if self.initiative not in left and data.get("fulfils") and (data.get("status") == "proposed" or (     # r79: no request, no lines to integrate
-                data.get("status") == "started" and not self.proposals() and not self.items())):     # r93
+                data.get("status") == "started" and not self.proposals() and not self.glossary_proposals() and not self.items())):     # r93
             try:     # a request the queue lacks gives no round, before anything moves
                 workqueue_request.accepted_lines(self.root, str(data["fulfils"]).rsplit("/", 1)[-1])
                 return (self.initiative, "integrate", "started")

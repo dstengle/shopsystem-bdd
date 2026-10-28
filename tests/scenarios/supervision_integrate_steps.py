@@ -4,7 +4,7 @@ import re
 
 from pytest_bdd import given, parsers, then
 
-from .conftest import cap, full
+from .conftest import INDEX, cap, full
 from .supervision_rounds_steps import proposed_fulfilling, rounds
 from .supervision_world import commit_all, git, starts, write
 
@@ -44,6 +44,51 @@ def integrate_with_changes(plan, repo, first, second):
     write(repo, "spec/capabilities/other.md", cap("other", ["- [r1] **When** asked, `other` shall answer."]))
     commit_all(repo, "spec/capabilities/ holds the capability other")
     plan["round:integrate"] = {"status": "DONE", "fields": {"changes": [entry("thing", first), entry("other", second)]}}
+
+
+@given(parsers.re(r'spec/index\.md\'s Glossary holds the terms "(?P<one>\w+)", "(?P<two>\w+)" and "(?P<three>\w+)"$'))
+def glossary_holds(repo, one, two, three):
+    write(repo, "spec/index.md", INDEX + "\n## Glossary\n\n" + "".join("- **%s**: a thing.\n" % t for t in (one, two, three)))
+    commit_all(repo, "spec/index.md's Glossary")
+
+
+@given(parsers.re(r'the integrate round for i1 gives DONE with a change list that adds the term "(?P<added>\w+)", changes the '
+                  r'term "(?P<changed>\w+)" and removes the term "(?P<removed>\w+)" in the glossary$'))
+def integrate_changes_glossary(plan, added, changed, removed):
+    plan["round:integrate"] = {"status": "DONE", "fields": {"changes": [{
+        "glossary": True, "adds": ["term/" + added], "changes": ["term/" + changed], "removes": ["term/" + removed]}]}}
+
+
+def glossary_proposals(repo):
+    """The commits that added a glossary-proposal file under .shop/work/i1/, each with its files' text."""
+    found = []
+    for commit in git(repo, "log", "--diff-filter=A", "--format=%H", "--", ".shop/work/i1/").split():
+        for path in git(repo, "show", "--diff-filter=A", "--name-only", "--format=", commit).split():
+            if path.startswith(".shop/work/i1/") and path.endswith(".md") and "/runs/" not in path:
+                text = git(repo, "show", "%s:%s" % (commit, path))
+                if "\nkind: glossary-proposal\n" in text:
+                    found.append((commit, path, text))
+    return found
+
+
+@then(parsers.re(r'the commit that wrote i1\'s glossary-proposal wrote one, drafted, its adds naming the term "(?P<added>\w+)", '
+                 r'its changes the term "(?P<changed>\w+)" and its removes the term "(?P<removed>\w+)"$'),
+      target_fixture="glossary_text")
+def glossary_proposal_written(repo, context, added, changed, removed):
+    found = glossary_proposals(repo)
+    where = (found, context["done"].stdout, context["done"].stderr)
+    assert len(found) == 1, where
+    commit, _, text = found[0]
+    assert "\nstatus: drafted\n" in text, where
+    assert tuple(listed(text, f) for f in ("adds", "changes", "removes")) == (
+        ["term/" + added], ["term/" + changed], ["term/" + removed]), where
+    return text
+
+
+@then(parsers.re(r'it names the term "(?P<term>\w+)" in none of its adds, changes and removes$'))
+def names_in_none(glossary_text, term):
+    for field in ("adds", "changes", "removes"):
+        assert "term/" + term not in listed(glossary_text, field), glossary_text
 
 
 @given("an initiative i2 under .shop/work/, proposed, that fulfils the request q2, whose line 1 has the line outcome accepted")

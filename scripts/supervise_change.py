@@ -1,5 +1,6 @@
 """An integrate or apply round's change list (capability supervision r92, r96, r107, r114): read from the round's result, checked for its form,
-and written as one `drafted` capability-proposal for each capability it names. Standard library only; a part of
+and written as one `drafted` capability-proposal for each capability it names and, for its glossary entries, one `drafted`
+glossary-proposal (r171). Standard library only; a part of
 supervise.Run."""
 import datetime
 import re
@@ -124,5 +125,16 @@ class Changes:
                             "argues: [%s]\n%sdate: %s\n---\n\n# %s\n\nThe drafts of this proposal are in %s.\n" % (
                                 prefix, self.dir.name, one["capability"], ident, one["capability"], lists,
                                 datetime.date.today().isoformat(), one["capability"], stage_dir))
+            written.append(path)
+        terms = {f: [] for f in FIELDS}
+        for each in (e for e in found if e.get("glossary")):     # r171: the glossary's entries are one proposal's lists
+            for field in FIELDS:
+                terms[field] += [i for i in each[field] if i not in terms[field]]
+        if any(e.get("glossary") for e in found):
+            path = self.dir / "glossary.md"
+            path.write_text("---\nid: glossary-proposal/%s/%s-glossary\nkind: glossary-proposal\npart_of: %s\nstatus: drafted\n%sdate: %s\n"
+                            "---\n\n# glossary\n\nThe drafts of this proposal are in %s.\n" % (
+                                prefix, self.dir.name, ident, "".join("%s: [%s]\n" % (f, ", ".join(terms[f])) for f in FIELDS),
+                                datetime.date.today().isoformat(), stage_dir))
             written.append(path)
         return written
