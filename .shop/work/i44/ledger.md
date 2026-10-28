@@ -1,3 +1,4 @@
 - 2026-10-28: integrate round 1: 1 add (role-boundaries#r7), 0 changes, 0 removes, 0 cut sentences; drafts .shop/scratch/1-integrate/drafts/round-1
 - 2026-10-28: gate round 1: 1 question on role-boundaries r7
 - 2026-10-28: apply round 2: applied r7 (reading a, 2026-10-28) to role-boundaries, commit c1446053
+- 2026-10-28: formulate round 3 role-boundaries: nothing formulated, no commit; the capability is verified by reading agents/ (no scenarios), r7 has none
