@@ -44,7 +44,8 @@ brief's `Question:` line, taking precedence over all of those), each an object o
              path taken relative to the working directory;
   elsewhere  {"root": a directory, "commit": {path: text}} or {"root": ..., "write": {path: text}}: while this worker
              runs, another session (not the worker, so no tool of its own and nothing recorded) writes these files
-             relative to that directory, first, and commits them there unless given as `write`.
+             relative to that directory, first, and commits them there unless given as `write`; with a "work_item" in
+             it, only the worker of that work-item does.
 It refuses an --agent the --plugin-dir has no agents/<agent>.md for. As the real claude does, it refuses to write any
 file (a `write` path, the result file) under its --plugin-dir, as a sensitive file: the write is recorded as refused
 (`Write`) and nothing is written.
@@ -216,7 +217,7 @@ def main(argv):
         wait_until(lambda: len(started_agents()) > before, step["linger"])
     if step.get("commit"):
         step["commit"] = {rel.replace("{work_item}", work_item): text for rel, text in step["commit"].items()}
-    if step.get("elsewhere"):
+    if step.get("elsewhere") and step["elsewhere"].get("work_item", work_item) == work_item:
         other = pathlib.Path(step["elsewhere"]["root"])
         files = step["elsewhere"].get("commit") or step["elsewhere"]["write"]
         for rel, text in files.items():

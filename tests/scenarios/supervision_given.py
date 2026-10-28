@@ -63,7 +63,7 @@ def work_items(repo, context, items, under, lname, lafter, nogit, detached, work
     else:
         pairs = [tuple(pair.split(" is ")) for pair in items.split(" and ")]
     for name, status in pairs:
-        write(repo, ".shop/work/i1/%s.md" % name, item_text(name, status, under or "thing"))
+        write(repo, ".shop/work/i1/%s.md" % name, item_text(name, status, under or context.get("unders", {}).get(name, "thing")))
     if lname:
         write(repo, ".shop/work/i1/log.jsonl", json.dumps({"time": "2026-10-19T10:00:00+00:00", "work-item": lname,
                                                            "before": "drafted", "after": lafter, "by": "someone"}) + "\n")

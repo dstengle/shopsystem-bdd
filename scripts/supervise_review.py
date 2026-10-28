@@ -3,6 +3,8 @@ initiative branch, and the keeping of its directory in the initiative. Standard 
 import shutil
 import uuid
 
+from supervise_branch_runs import BranchRuns
+from supervise_review_read import ReviewRead
 from supervise_worker import SCRIPTS, git, with_transcript
 from workqueue import Refused
 
@@ -10,7 +12,7 @@ AGENT = "bdd-branch-reviewer"
 STAGE = "branch-review"
 
 
-class Reviews:
+class Reviews(BranchRuns, ReviewRead):
     """The part of supervise.Run that reviews the initiative branch once its work-items are done."""
 
     def review_dir(self):
@@ -61,17 +63,20 @@ class Reviews:
         here = tree / ".shop" / "scratch" / STAGE
         here.mkdir(parents=True)
         path = here / "brief.md"
-        path.write_text("# branch review of %s\n\nInitiative: %s\nAgent: %s\nScripts: %s\n"
-                        "Initiative branch: %s\nBase: %s\nHead: %s\nWorktree: %s\nRun directory: %s\nResult file: %s\n\n"
-                        "Review the initiative branch from its base. You start in your worktree: run every command "
-                        "from there and never change directory. Write the result file first, with the outcome "
-                        "`PARTIAL`, and keep it current as you work: JSON with `status`, `summary` and "
-                        "`questions`.\n"
-                        % (self.initiative, self.rel(self.dir), AGENT, SCRIPTS, self.branch, self.base(),
-                           git(self.root, "rev-parse", "HEAD").stdout.strip(), tree, here, here / "result.json"))
-        session = str(uuid.uuid4())
-        self.log(stage=STAGE, agent=AGENT, session=session, event="start")
         try:
+            head = git(self.root, "rev-parse", "HEAD").stdout.strip()
+            runs = self.branch_runs(tree)     # made first, at the head the review reads (r154); the session takes no slot
+            path.write_text("# branch review of %s\n\nInitiative: %s\nAgent: %s\nScripts: %s\n"
+                            "Initiative branch: %s\nBase: %s\nHead: %s\nWorktree: %s\nRun directory: %s\nResult file: %s\n\n"
+                            "Review the initiative branch from its base. You start in your worktree: run every command "
+                            "from there and never change directory. Write the result file first, with the outcome "
+                            "`PARTIAL`, and keep it current as you work: JSON with `status`, `summary` and "
+                            "`questions`.\n"
+                            % (self.initiative, self.rel(self.dir), AGENT, SCRIPTS, self.branch, self.base(),
+                               head, tree, here, here / "result.json")
+                            + self.read_text() + self.runs_text(runs, head) + self.commits_text(self.base(), head))
+            session = str(uuid.uuid4())
+            self.log(stage=STAGE, agent=AGENT, session=session, event="start")
             with self.slots:     # one of the sessions the limit allows, with those of every initiative taken (r60)
                 done = self.session(STAGE, AGENT, path, session, tree, None)
             kept = self.review_dir() / str(k)
