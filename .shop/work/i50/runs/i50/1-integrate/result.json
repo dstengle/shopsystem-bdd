@@ -1,0 +1,1 @@
+{"status": "DONE", "summary": "integrate round 1 for q36: supervision adds r173; 2 questions; gate.md written", "questions": [], "changes": [{"capability": "supervision", "adds": ["supervision#r173"], "changes": [], "removes": []}]}
