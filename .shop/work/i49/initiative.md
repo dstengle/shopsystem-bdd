@@ -1,7 +1,7 @@
 ---
 id: initiative/missingmass.io/shopsystem/shopsystem-bdd/i49
 kind: capability-change
-status: proposed
+status: started
 fulfils: request/missingmass.io/shopsystem/shopsystem-bdd/q35
 source: [request/missingmass.io/shopsystem/shopsystem-bdd/q30]
 date: 2026-10-28
