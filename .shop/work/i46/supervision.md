@@ -20,3 +20,4 @@ Integrated in a session, not by `work run`: the drafts (.shop/scratch/drafts/202
 
 ## Answers
 - 2026-10-28: r158: reading A, only an integrate round's change list gives a glossary-proposal, as in r159 (the person, 2026-10-28)
+- 2026-10-28: r160: reading A, no apply round while the glossary-proposal is awaiting-answer and some question has no answer; once all are answered r165 starts the apply round (the person, 2026-10-28)
