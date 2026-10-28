@@ -8,3 +8,4 @@
 - 2026-10-28: formulate round 2 supervision: nothing formulated, no commit; the answers r158 reading A and r160 reading A change lines not yet worded so in spec/ and need an integrate round first
 - 2026-10-28: integrate round 3 supervision: adds r171 r172, removes r158 r160 (answers: reading A on both), no glossary change, 0 questions, 0 cut sentences; drafts .shop/scratch/3-integrate/drafts/round-3
 - 2026-10-28: gate round 4 supervision: 1 question
+- 2026-10-28: 2026-10-28: apply round 5 supervision: commit applied r171 r172 replacing r158 r160 (the person, yes, 2026-10-28); no unheld answers
