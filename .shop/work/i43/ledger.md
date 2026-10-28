@@ -2,3 +2,4 @@
 - 2026-10-28: integrate round 1: supervision adds r154-r157, review adds r32-r34 and removes r9; 7 questions, 1 cut sentence; drafts in .shop/scratch/1-integrate/drafts/round-1/
 - 2026-10-28: gate round 1: 7 questions
 - 2026-10-28: gate round 1 (supervision): 1 question
+- 2026-10-28: 2026-10-28 coordinator, under the person's delegation: the agent-tools question of the review proposal answered Reading B, not recommended; the branch reviewer's Bash tool is removed through q24 (i44), since 'runs nothing' held only by the brief is an instruction, not a boundary.
