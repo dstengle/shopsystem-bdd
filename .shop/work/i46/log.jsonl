@@ -1,0 +1,7 @@
+{"time": "2026-10-28T16:18:53+00:00", "work-item": "supervision", "before": "drafted", "after": "awaiting-answer", "by": "the person at the gate, kept in session (ledger 2026-10-28)"}
+{"time": "2026-10-28T16:18:53+00:00", "work-item": "supervision", "before": "awaiting-answer", "after": "approved", "by": "the person at the gate, kept in session (ledger 2026-10-28)"}
+{"time": "2026-10-28T16:18:53+00:00", "work-item": "spec-integration", "before": "drafted", "after": "awaiting-answer", "by": "the person at the gate, kept in session (ledger 2026-10-28)"}
+{"time": "2026-10-28T16:18:53+00:00", "work-item": "spec-integration", "before": "awaiting-answer", "after": "approved", "by": "the person at the gate, kept in session (ledger 2026-10-28)"}
+{"time": "2026-10-28T16:18:53+00:00", "work-item": "design-model-check", "before": "drafted", "after": "awaiting-answer", "by": "the person at the gate, kept in session (ledger 2026-10-28)"}
+{"time": "2026-10-28T16:18:53+00:00", "work-item": "design-model-check", "before": "awaiting-answer", "after": "approved", "by": "the person at the gate, kept in session (ledger 2026-10-28)"}
+{"time": "2026-10-28T16:18:53+00:00", "work-item": "i46", "before": "proposed", "after": "started", "by": "the session that integrated q30"}
