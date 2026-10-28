@@ -1,0 +1,54 @@
+v10a  a source that is not an origin  (4)
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i43, record/2026-10-28-i42-analysis
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i44, request/missingmass.io/shopsystem/shopsystem-bdd/q23
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i45, record/2026-10-28-requirement-checking
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i46, request/missingmass.io/shopsystem/shopsystem-bdd/q28
+v17  a request that is part of no job-thread, cites no origin and is raised for no request  (11)
+    request/missingmass.io/shopsystem/shopsystem-bdd/q23
+    request/missingmass.io/shopsystem/shopsystem-bdd/q24
+    request/missingmass.io/shopsystem/shopsystem-bdd/q25
+    request/missingmass.io/shopsystem/shopsystem-bdd/q26
+    request/missingmass.io/shopsystem/shopsystem-bdd/q27
+    request/missingmass.io/shopsystem/shopsystem-bdd/q28
+    request/missingmass.io/shopsystem/shopsystem-bdd/q29
+    request/missingmass.io/shopsystem/shopsystem-bdd/q30
+    request/missingmass.io/shopsystem/shopsystem-bdd/q31
+    request/missingmass.io/shopsystem/shopsystem-bdd/q32
+    request/missingmass.io/shopsystem/shopsystem-bdd/q33
+v3  a delivered request's resolution names a requirement the spec does not have  (5)
+    request/missingmass.io/shopsystem/shopsystem-bdd/q1, capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r1
+    request/missingmass.io/shopsystem/shopsystem-bdd/q4, capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r92
+    request/missingmass.io/shopsystem/shopsystem-bdd/q6, capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r104
+    request/missingmass.io/shopsystem/shopsystem-bdd/q8, capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r113
+    request/missingmass.io/shopsystem/shopsystem-bdd/q8, capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r114
+v_d1  a done initiative has a part or a request of its own open  (9)
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i1
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i10
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i11
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i13
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i16
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i17
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i3
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i8
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i9
+warning w_uncited_obs  an observation no initiative cites  (15)
+unresolved: .shop/work/i36/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r125, which no capability has
+unresolved: .shop/work/i36/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r126, which no capability has
+unresolved: .shop/work/i36/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r127, which no capability has
+unresolved: .shop/work/i40/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r137, which no capability has
+unresolved: .shop/work/i40/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r138, which no capability has
+unresolved: .shop/work/i40/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r139, which no capability has
+unresolved: .shop/work/i45/requests.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r46, which no capability has
+unresolved: .shop/work/i45/spec-consistency.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/spec-consistency#r28, which no capability has
+unresolved: .shop/work/i45/spec-integration.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration#r47, which no capability has
+unresolved: .shop/work/i45/spec-integration.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration#r48, which no capability has
+unresolved: .shop/work/i45/spec-integration.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration#r49, which no capability has
+unresolved: .shop/work/i45/spec-integration.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration#r50, which no capability has
+unresolved: .shop/work/i45/spec-integration.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration#r51, which no capability has
+unresolved: .shop/work/i45/spec-integration.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration#r52, which no capability has
+unresolved: .shop/work/i45/spec-integration.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration#r53, which no capability has
+unresolved: .shop/work/i46/supervision.md: removes capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r158, which no capability has
+unresolved: .shop/work/i46/supervision.md: removes capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r160, which no capability has
+unresolved: .shop/work/i43/initiative.md: record/2026-10-28-i42-analysis names nothing in this repository
+unresolved: .shop/work/i45/initiative.md: record/2026-10-28-requirement-checking names nothing in this repository
+29 violations, 15 warnings, 19 unresolved references, 0 file problems
