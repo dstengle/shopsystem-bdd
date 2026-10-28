@@ -1,0 +1,10 @@
+{
+  "status": "DONE",
+  "summary": "w227 research done; notes in .shop/scratch/1-research/notes.md.\nRun once: python3 -m pytest -q --work-item w227 -> 189 passed, 1 skipped, 56 subtests, nothing failed.\nAll seven accepted scenarios (r161, r164-r167, r169, r170) pass today; none is red. Work-item is for branch review 2's findings.\nFix-now finding F1: supervise_rounds.py:159-161 writes an approval question on a glossary-proposal whose gate gives no question; r117 is for capability-proposals only.\nTwo readings given in notes, not chosen: A keeps it (needs q36 line 1 integrated first); B limits r117 to capabilities and needs a route for a glossary gate with no question.\nOptional, not fix-now: supervise_done.py:31-32 abandoned guard; request check missing in set_glossary_done (r105 has it).\nTests found by search (tools has no map): none assert the glossary approval question; no test covers the abandoned or request cases.\nFile set: scripts/supervise_rounds.py (room 26), scripts/supervise_glossary.py (room 197); supervise_done.py optional.",
+  "fileset": [
+    "scripts/supervise_rounds.py",
+    "scripts/supervise_glossary.py",
+    "scripts/supervise_done.py"
+  ],
+  "questions": []
+}
