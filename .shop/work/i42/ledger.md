@@ -4,3 +4,4 @@
 - 2026-10-28: 2026-10-28 the person: 'I am delegating to you.' The coordinator answers further questions of i42 under this delegation, taking the recommended reading, and runs through the next release and its analysis.
 - 2026-10-28: apply round 2: spec-integration approved as drafted (the person, 2026-10-28), r46 added; commit 356ac0f4
 - 2026-10-28: formulate round 3 spec-integration: commit 6c1dca8d; scenario added r46; features bindings clean; model check: 12 violations, none from spec-integration
+- 2026-10-28: apply round 2 supervision: nothing applied; the answers (retire r140, add r151 and lines for r149 keeping status and taking the output, from q22) ask for lines the drafts never held, so an integrate round follows
