@@ -5,6 +5,7 @@ left for the person (supervision r162). Standard library only."""
 import re
 
 import workqueue
+from supervise_worker import GitFailed, git
 
 FIELDS = ("adds", "changes", "removes")
 
@@ -45,15 +46,34 @@ def withheld(directory, applying=None):
 def terms_of(root):
     """The terms of spec/index.md's `## Glossary`: the bold name of each bullet."""
     path = root / "spec" / "index.md"
-    if not path.is_file():
-        return []
+    return terms_in(path.read_text()) if path.is_file() else []
+
+
+def terms_in(text):
     terms, inside = [], False
-    for line in path.read_text().splitlines():
+    for line in text.splitlines():
         if line.startswith("## "):
             inside = line.strip() == "## Glossary"
         elif inside and (m := re.match(r"- \*\*(.+?)\*\*", line)):
             terms.append(m.group(1).strip())
     return terms
+
+
+def glossary_only_done(root, directory):
+    """Whether the initiative changes only the glossary and is delivered (r161): it has glossary-proposals, no other
+    proposal and no work-item, every glossary-proposal is approved, and spec/index.md as committed at HEAD holds each term
+    they add or change and none they remove, with no uncommitted change."""
+    kinds = [workqueue.frontmatter(p.read_text())[0] for p in sorted(directory.glob("*.md")) if p.name != "initiative.md"]
+    if not kinds or any(d.get("kind") != "glossary-proposal" or d.get("status") != "approved" for d in kinds):
+        return False
+    try:
+        held = terms_in(git(root, "show", "HEAD:spec/index.md").stdout)
+        if git(root, "status", "--porcelain", "--", "spec/index.md").stdout.strip():
+            return False
+    except GitFailed:
+        return False
+    return (all(i[len("term/"):] in held for d in kinds for f in ("adds", "changes") for i in d.get(f) or [])
+            and not any(i[len("term/"):] in held for d in kinds for i in d.get("removes") or []))
 
 
 def proposals_of(root):

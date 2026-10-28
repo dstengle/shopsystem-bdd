@@ -227,6 +227,8 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
                 if self.noted:     # r128: the node whose session faulted is printed with its fault, then the error
                     self.show()
                 raise refused
+            if not self.items():
+                self.set_glossary_done()     # r161
             if self.items() and all(s in ("green", "withdrawn") for _, s in self.items()):     # r94, r97: none is not done
                 kept = self.branch_review()     # inside the try: its worktree goes with the run's (r33)
                 while kept is not None and self.fix_work_item(kept):     # r74: the fix is pulled

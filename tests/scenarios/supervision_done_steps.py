@@ -25,6 +25,21 @@ def review_and_records_committed(repo, plan):
     commit_all(repo, "i1's measurement and analysis record")
 
 
+@given(parsers.re(r'i1 is started, has neither a capability-proposal nor a work-item, and its glossary-proposal g1 is approved, '
+                  r'its adds naming the term "(?P<term>[^"]+)"$'))
+def started_glossary_only(repo, term):
+    write(repo, INITIATIVE, "---\nid: %s\nkind: initiative\nstatus: started\n---\n" % full("initiative", "i1"))
+    write(repo, ".shop/work/i1/g1.md", "---\nid: %s\nkind: glossary-proposal\npart_of: %s\nstatus: approved\nadds: [term/%s]\n"
+          "changes: []\nremoves: []\ndate: 2026-10-15\n---\n" % (full("glossary-proposal", "g1"), full("initiative", "i1"), term))
+    commit_all(repo, "i1 is started with an approved glossary-proposal")
+
+
+@given(parsers.re(r'spec/index\.md\'s Glossary holds the term "(?P<term>[^"]+)", committed on the initiative branch$'))
+def glossary_committed(repo, term):
+    write(repo, "spec/index.md", "# Index\n\n## Glossary\n\n- **%s**: a thing.\n" % term)
+    commit_all(repo, "spec/index.md's Glossary holds %s" % term)
+
+
 @given("i1 is started and its work-item w1 is ready")
 def started_with_ready(repo):
     write(repo, INITIATIVE, "---\nid: %s\nkind: initiative\nstatus: started\n---\n" % full("initiative", "i1"))

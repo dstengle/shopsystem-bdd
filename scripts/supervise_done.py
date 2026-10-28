@@ -4,6 +4,7 @@ record are committed is set `done`, and that is committed on the initiative bran
 supervise.Run."""
 import re
 
+import supervise_glossary
 import workqueue
 import workqueue_done
 from supervise_worker import git
@@ -23,6 +24,17 @@ class Dones:
         if len(found) < len(wanted):
             return False
         return not git(self.root, "status", "--porcelain", "--", *found).stdout.strip()
+
+    def set_glossary_done(self):
+        """The done of an initiative that changes only the glossary (r161), with no branch review, measurement or analysis."""
+        data, _ = workqueue.frontmatter((self.dir / "initiative.md").read_text())
+        before = data.get("status")
+        if before == "done" or not supervise_glossary.glossary_only_done(self.root, self.dir):
+            return
+        with self.lock:
+            workqueue_done.mark(self.dir, self.root)
+            self.log(**{"work-item": self.initiative, "before": before, "after": "done", "by": "work run"})
+            self.commit(self.initiative, before, "done")
 
     def set_done(self):
         """The initiative's own transition to done (r105), logged and committed on the initiative branch (r109)."""
