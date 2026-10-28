@@ -1,0 +1,1 @@
+- 2026-10-28: 2026-10-28 the person: 'raise it as a request and do all the work for a release, I'm delegating decisions to you.' The coordinator answers i43's questions under this delegation, taking the recommended reading, and releases when i43 is done.
