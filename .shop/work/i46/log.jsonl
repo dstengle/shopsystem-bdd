@@ -86,3 +86,4 @@
 {"time": "2026-10-28T17:41:32+00:00", "work-item": "supervision", "stage": "formulate", "agent": "initiative-round", "session": "911f2a8d-80ed-4dba-b373-fae515089f69", "event": "start"}
 {"time": "2026-10-28T17:43:33+00:00", "work-item": "supervision", "stage": "formulate", "agent": "initiative-round", "session": "911f2a8d-80ed-4dba-b373-fae515089f69", "event": "end"}
 {"time": "2026-10-28T17:43:33+00:00", "work-item": "supervision", "before": "approved", "after": "formulated", "by": "work run"}
+{"time": "2026-10-28T17:43:38+00:00", "work-item": "w221", "before": "ready", "after": "claimed", "by": "work run"}
