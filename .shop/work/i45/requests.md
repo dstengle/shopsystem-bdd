@@ -2,17 +2,17 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i45-requests
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i45
-status: awaiting-answer
+status: drafted
 argues: [requests]
-adds: [requests#r46]
+date: 2026-10-28
+adds: [requests#r59]
 changes: []
 removes: []
-date: 2026-10-28
 ---
 
 # requests
 
-The drafts of this proposal are in .shop/work/i45/runs/i45/1-integrate/drafts/round-1/.
+The drafts of this proposal are in .shop/work/i45/runs/requests/3-integrate/drafts/round-3/.
 
 ## Questions
 - Q1 (requests r46): What does `work request` check for "an implementation detail or a term the glossary does not define"? Line concerned: [r46] **If** a line given to `work request` names an implementation detail or uses a word that is neither a glossary term nor a word of a Behaviour line under `spec/capabilities/`, **then** `work request` shall refuse the line, naming the word and why it is refused. (added). Readings: A (recommended, drafted): a word of a fixed list of implementation details, or a word that is neither a glossary term nor used in a Behaviour line under `spec/capabilities/` (r46 as above). B (stricter): any word that is not a glossary term: "**If** a line given to `work request` names an implementation detail or uses a word that is not a glossary term, **then** `work request` shall refuse the line, naming the word and why it is refused." (nearly every line refused unless ordinary words are exempt). C: implementation details only: "**If** a line given to `work request` names an implementation detail, **then** `work request` shall refuse the line, naming the word and why it is refused." Recommended: A.
