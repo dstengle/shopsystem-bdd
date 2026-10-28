@@ -1,0 +1,13 @@
+{
+  "status": "QUESTION",
+  "summary": "w227's seven accepted scenarios (supervision r161 r164-r167 r169 r170) are all green today (research: 189 passed). The work-item exists for branch review 2's fix-now finding F1: a glossary-proposal whose gate gives no question gets r117's approval question, which r117 asks for a capability-proposal only.\nWhether that question stays is narrator-observable and unsettled: the coordinator's delegated answer on w225 kept it (q30 line 4; q36 line 1 raised, still open), while the review triages it as fix now.\nPlan written as far as it goes. Under reading B the file set is scripts/supervise_rounds.py (r117 branch limited to capability-proposals), scripts/supervise_glossary.py (route a zero-question awaiting-answer proposal to r165's apply round) and CLAUDE.md (F6 row). Under reading A nothing changes in w227.\nscripts/supervise_done.py is left out: its abandoned guard and request check have no line behind them (r161 silent).\nTests broken: none under either reading (r117's test is capability-only; r165's scenario has an answered question).",
+  "plan": ".shop/scratch/2-plan/plan.md",
+  "fileset": [
+    "scripts/supervise_rounds.py",
+    "scripts/supervise_glossary.py",
+    "CLAUDE.md"
+  ],
+  "questions": [
+    "When a gate round that work run started for a glossary-proposal gives no question, does work run still write an approval question for the person (F1 of branch review 2 of i46; r117 names only a capability-proposal, q36 line 1 open, the delegated answer on w225 kept it citing q30 line 4)? Reading A, keep it until q36 line 1 is integrated: the person sees an approval question under the glossary-proposal's ## Questions, the proposal stays awaiting-answer and its terms reach spec/index.md only after they answer; w227 changes no file and is withdrawn or held behind q36. Reading B, limit r117 to capability-proposals: no question is written, the proposal goes awaiting-answer (r169) and, with no unanswered question, straight to its apply round (r165) and approved (r166), so the terms reach spec/index.md with no answer from the person; w227 changes scripts/supervise_rounds.py, scripts/supervise_glossary.py and CLAUDE.md."
+  ]
+}
