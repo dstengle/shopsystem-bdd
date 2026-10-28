@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i46-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i46
-status: drafted
+status: awaiting-answer
 argues: [supervision]
 date: 2026-10-28
 adds: [supervision#r171, supervision#r172]
@@ -17,6 +17,7 @@ Integrated in a session, not by `work run`: the drafts (.shop/scratch/drafts/202
 ## Questions
 - r158: "When a change list that `work run` reads names the glossary, `work run` shall write a `drafted` glossary-proposal with the terms the change list adds, changes and removes in the glossary." Reading A: only an integrate round's change list gives a glossary-proposal, as in r159. Reading B: every change list work run reads gives one, an apply round's included (r145); then an apply round applying a glossary-proposal's drafts would give a new drafted glossary-proposal, against r166.
 - r160: "While a glossary-proposal is `awaiting-answer`, `work run` shall start no round of the kind `apply` for it." Reading A: no apply round while it is awaiting-answer and some question has no answer; once all are answered r165 starts the apply round. Reading B: no apply round while the status is awaiting-answer whatever the answers; but r169 sets that status at gate end and an answered proposal still has it, so r165 could never hold.
+- Approve the two lines that carry your answers on r158 and r160? Changed (old retired, new id): [r171] replaces [r158]: "**When** a round of the kind `integrate` that `work run` started ends with a change list that names the glossary, `work run` shall write a `drafted` glossary-proposal with the terms the change list adds, changes and removes in the glossary." (was r158: "**When** a change list that `work run` reads names the glossary, `work run` shall write a `drafted` glossary-proposal with the terms the change list adds, changes and removes in the glossary."). [r172] replaces [r160]: "**While** a glossary-proposal is `awaiting-answer` and a question that a round of the kind `gate` gave on it has no answer, `work run` shall start no round of the kind `apply` for it." (was r160: "**While** a glossary-proposal is `awaiting-answer`, `work run` shall start no round of the kind `apply` for it."). r158 and r160 are retired. Readings: (yes) approve both as drafted, recommended, they hold reading A of each answer; (no) reword, and say how.
 
 ## Answers
 - 2026-10-28: r158: reading A, only an integrate round's change list gives a glossary-proposal, as in r159 (the person, 2026-10-28)
