@@ -5,3 +5,7 @@
 {"time": "2026-10-28T16:18:53+00:00", "work-item": "design-model-check", "before": "drafted", "after": "awaiting-answer", "by": "the person at the gate, kept in session (ledger 2026-10-28)"}
 {"time": "2026-10-28T16:18:53+00:00", "work-item": "design-model-check", "before": "awaiting-answer", "after": "approved", "by": "the person at the gate, kept in session (ledger 2026-10-28)"}
 {"time": "2026-10-28T16:18:53+00:00", "work-item": "i46", "before": "proposed", "after": "started", "by": "the session that integrated q30"}
+{"time": "2026-10-28T16:19:10+00:00", "work-item": "design-model-check", "stage": "formulate", "event": "push verified"}
+{"time": "2026-10-28T16:19:10+00:00", "work-item": "design-model-check", "stage": "formulate", "agent": "initiative-round", "session": "ca5bfb74-c6c7-4ea7-84d1-b3089926002f", "event": "start"}
+{"time": "2026-10-28T16:23:00+00:00", "work-item": "design-model-check", "stage": "formulate", "agent": "initiative-round", "session": "ca5bfb74-c6c7-4ea7-84d1-b3089926002f", "event": "end"}
+{"time": "2026-10-28T16:23:00+00:00", "work-item": "design-model-check", "before": "approved", "after": "awaiting-answer", "by": "work run"}
