@@ -6,7 +6,7 @@ from pytest_bdd import given, parsers, then
 
 from .conftest import cap, full
 from .supervision_review_steps import FINDINGS
-from .supervision_rounds_steps import rounds
+from .supervision_rounds_steps import bullets, rounds
 from .supervision_world import calls, commit_all, fields, git, item_text, starts, write
 
 DIR = ".shop/work/i1"
@@ -182,6 +182,15 @@ def gate_g1_terms(repo, context, terms):
     assert len(found) == 1, (context["done"].stdout, context["done"].stderr)
     for one in terms_of(terms):
         assert "term/" + one in found[0]["brief"], (one, found[0]["brief"])
+
+
+@then(parsers.re(r"one question was written for g1, asking the person to approve the terms (?P<terms>.+)$"))
+def g1_one_question(repo, terms):
+    held = [" ".join(" ".join(b).split())[2:] for b in bullets((repo / DIR / "g1.md").read_text(), "Questions")]
+    assert len(held) == 1, held
+    assert "approv" in held[0].lower(), held
+    for one in terms_of(terms):
+        assert one in held[0], (one, held)
 
 
 @then(parsers.re(r'it asks for no question on the term "(?P<term>[^"]+)"$'))

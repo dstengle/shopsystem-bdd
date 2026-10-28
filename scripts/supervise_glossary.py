@@ -43,6 +43,18 @@ def withheld(directory, applying=None):
     return terms
 
 
+def approval_question(path):
+    """The question a gate round that gave none writes for the glossary-proposal at `path` (r173), else None: it asks the
+    person to approve the terms the proposal adds, changes and removes, each by its bare name."""
+    data, _ = workqueue.frontmatter(path.read_text())
+    if data.get("kind") != "glossary-proposal":
+        return None
+    named = ["%s \"%s\"" % (verb, i[len("term/"):]) for verb, f in (("adds", "adds"), ("changes", "changes"),
+                                                                    ("removes", "removes"))
+             for i in data.get(f) or []]
+    return "Are the terms of %s approved as drafted? It %s." % (path.stem, ", ".join(named))
+
+
 def terms_of(root):
     """The terms of spec/index.md's `## Glossary`: the bold name of each bullet."""
     path = root / "spec" / "index.md"

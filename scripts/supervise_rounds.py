@@ -157,7 +157,8 @@ class Rounds(Changes, Raises):
         found = [one for one in found if one["capability"] not in absent]
         asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []] if kind == "gate" else None
         if kind == "gate" and not asked:     # r117: a gate with nothing to decide still asks for the approval of the lines
-            asked = ["Are the lines of %s approved as drafted? Readings: approve %s as drafted (recommended), "
+            glossary = supervise_glossary.approval_question(self.dir / (name + ".md"))
+            asked = [glossary] if glossary else ["Are the lines of %s approved as drafted? Readings: approve %s as drafted (recommended), "
                      "or change its lines." % (name, name)]
         if kind == "apply":     # r114: the proposal names what the round applied; a round giving no list leaves it as it was
             try:
