@@ -28,3 +28,4 @@ The drafts of this proposal are in .shop/work/i42/runs/supervision/3-integrate/d
 - 2026-10-28: r149 against r83: reading (a), add a line 'When a formulate round formulates nothing because answers change lines not in spec/, work run shall keep the proposal's status.' (the person, 2026-10-28: take recommendations).
 - 2026-10-28: r149 against r131/r132: reading (a), add a line that work run shall take that case as the round's output, as r147 does for apply (the person, 2026-10-28: take recommendations).
 - 2026-10-28: r152 against r83: reading (a), r152 is read as the exception and r83 stands, no change (answered by the coordinator under the person's delegation of 2026-10-28, taking the recommended reading).
+- 2026-10-28: r150/r151 against r144 and r145: reading (a), meant, no further line (answered by the coordinator under the person's delegation of 2026-10-28, taking the recommended reading).
