@@ -2,12 +2,12 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i46-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i46
-status: awaiting-answer
+status: drafted
 argues: [supervision]
 date: 2026-10-28
-adds: [supervision#r158, supervision#r159, supervision#r160, supervision#r161, supervision#r162, supervision#r163, supervision#r164, supervision#r165, supervision#r166, supervision#r167, supervision#r168, supervision#r169, supervision#r170, term/glossary-proposal]
-changes: [term/status, term/answer]
-removes: [supervision#r92, supervision#r77, supervision#r104]
+adds: [supervision#r171, supervision#r172]
+changes: []
+removes: [supervision#r158, supervision#r160]
 ---
 
 # supervision
@@ -21,3 +21,5 @@ Integrated in a session, not by `work run`: the drafts (.shop/scratch/drafts/202
 ## Answers
 - 2026-10-28: r158: reading A, only an integrate round's change list gives a glossary-proposal, as in r159 (the person, 2026-10-28)
 - 2026-10-28: r160: reading A, no apply round while the glossary-proposal is awaiting-answer and some question has no answer; once all are answered r165 starts the apply round (the person, 2026-10-28)
+
+The drafts of this proposal are in .shop/work/i46/runs/supervision/3-integrate/drafts/round-3/.
