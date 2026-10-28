@@ -1,3 +1,4 @@
 - 2026-10-28: integrate round 1: q34; supervision adds r179, 0 glossary terms, 4 questions, 1 cut sentences; drafts .shop/scratch/1-integrate/drafts/round-1
 - 2026-10-28: gate round 1 supervision: 3 questions
 - 2026-10-28 21:14: compacted
+- 2026-10-28: apply round 2 for supervision: nothing applied, the answer splitting r179 into r179 and r180 is not in the drafts
