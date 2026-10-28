@@ -193,3 +193,4 @@
 {"time": "2026-10-28T18:28:18+00:00", "work-item": "w225", "stage": "implement", "agent": "bdd-implementer", "session": "5f00345c-2e5a-407b-a643-493d1a06c494", "event": "end"}
 {"time": "2026-10-28T18:28:18+00:00", "work-item": "w225", "before": "claimed", "after": "awaiting-answer", "by": "work run"}
 {"time": "2026-10-28T18:57:06+00:00", "work-item": "w222", "before": "awaiting-answer", "after": "done", "by": "work answer"}
+{"time": "2026-10-28T18:57:07+00:00", "work-item": "w225", "before": "awaiting-answer", "after": "ready", "by": "work answer"}
