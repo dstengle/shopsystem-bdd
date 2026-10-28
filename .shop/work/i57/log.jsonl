@@ -10,3 +10,7 @@
 {"time": "2026-10-28T21:59:27+00:00", "work-item": "migration-tools", "stage": "gate", "agent": "initiative-round", "session": "9a2699e7-427a-4750-9a5a-ea88c217e91f", "event": "start"}
 {"time": "2026-10-28T21:59:43+00:00", "work-item": "migration-tools", "stage": "gate", "agent": "initiative-round", "session": "9a2699e7-427a-4750-9a5a-ea88c217e91f", "event": "end"}
 {"time": "2026-10-28T21:59:43+00:00", "work-item": "migration-tools", "before": "drafted", "after": "awaiting-answer", "by": "work run"}
+{"time": "2026-10-28T21:59:45+00:00", "work-item": "glossary", "stage": "gate", "event": "push verified"}
+{"time": "2026-10-28T21:59:45+00:00", "work-item": "glossary", "stage": "gate", "agent": "initiative-round", "session": "5563078b-5f94-4a06-bbe5-e3c59d58a746", "event": "start"}
+{"time": "2026-10-28T22:00:01+00:00", "work-item": "glossary", "stage": "gate", "agent": "initiative-round", "session": "5563078b-5f94-4a06-bbe5-e3c59d58a746", "event": "end"}
+{"time": "2026-10-28T22:00:01+00:00", "work-item": "glossary", "before": "drafted", "after": "awaiting-answer", "by": "work run"}
