@@ -1,0 +1,1 @@
+- 2026-10-28: integrate round 1: 1 add (role-boundaries#r7), 0 changes, 0 removes, 0 cut sentences; drafts .shop/scratch/1-integrate/drafts/round-1
