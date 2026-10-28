@@ -30,3 +30,4 @@ The drafts of this proposal are in .shop/work/i51/runs/i51/1-integrate/drafts/ro
 
 ## Answers
 - 2026-10-28: Question 1, mentions the glossary: reading (a), the question's text names the glossary itself; lines as drafted (answered by the person, 2026-10-28)
+- 2026-10-28: Question 2, r176's sessions: reading (b), every session work run starts, the branch reviewer and answering sessions included (answered by the person, 2026-10-28)
