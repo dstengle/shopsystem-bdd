@@ -2,3 +2,4 @@
 - 2026-10-28: gate round 1 supervision: 2 questions
 - 2026-10-28 21:14: compacted
 - 2026-10-28: apply round 2: supervision r173 applied (Q1 reading a, Q2 reading a, answered by the person 2026-10-28); commit 78f23fae
+- 2026-10-28: formulate round 3: supervision r173 scenario added in features/supervision.feature, commit e4e58445
