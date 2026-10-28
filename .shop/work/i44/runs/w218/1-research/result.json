@@ -1,0 +1,14 @@
+{
+  "status": "DONE",
+  "summary": "w218 accepts role-boundaries#r7: the bdd-branch-reviewer gets no shell tool. Today agents/bdd-branch-reviewer.md:4 grants Bash, so r7 is violated. No accepted scenarios exist (no @r7 scenario under role-boundaries; the capability is checked by tests/scripts/test_agents.py). Nothing was run. Runtime --allowedTools for the branch review (scripts/supervise_worker.py:42) already excludes Bash. No existing test asserts the reviewer's Bash. Change: remove Bash from agents/bdd-branch-reviewer.md line 4; add test_r7 in tests/scripts/test_agents.py (its docstring says r1-r6); docs README.md:127 and spec/decisions/0053 row 28 go stale (0053 edit or supersede is open). Counts are by search (no tools map). Details in notes.md.",
+  "fileset": [
+    "agents/bdd-branch-reviewer.md",
+    "tests/scripts/test_agents.py",
+    "README.md",
+    "spec/decisions/0053-the-v3-agents.md",
+    "scripts/supervise_worker.py",
+    "scripts/supervise_review.py",
+    "scripts/supervise_review_read.py"
+  ],
+  "questions": []
+}
