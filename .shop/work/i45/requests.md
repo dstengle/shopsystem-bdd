@@ -21,3 +21,4 @@ The drafts of this proposal are in .shop/work/i45/runs/i45/1-integrate/drafts/ro
 
 ## Answers
 - 2026-10-28: Q1, r46's check: reading A, a word of a fixed list of implementation details, or a word that is neither a glossary term nor used in a Behaviour line (answered by the person, 2026-10-28)
+- 2026-10-28: Q7, r46's glossary: reading A, the upstream's glossary and spec/capabilities/ (answered by the person, 2026-10-28)
