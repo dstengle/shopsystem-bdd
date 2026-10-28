@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Applied role-boundaries#r7 (reading a, 2026-10-28). Commit c1446053. model check: 16 violations, 15 warnings, 7 unresolved references, 0 file problems.","questions":[],"changes":[{"capability":"role-boundaries","adds":["role-boundaries#r7"],"changes":[],"removes":[]}]}

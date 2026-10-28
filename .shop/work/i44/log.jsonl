@@ -6,3 +6,7 @@
 {"time": "2026-10-28T13:04:08+00:00", "work-item": "role-boundaries", "stage": "gate", "agent": "initiative-round", "session": "cd23d75a-5b92-42b0-8cc2-33ef65559ca1", "event": "start"}
 {"time": "2026-10-28T13:04:37+00:00", "work-item": "role-boundaries", "stage": "gate", "agent": "initiative-round", "session": "cd23d75a-5b92-42b0-8cc2-33ef65559ca1", "event": "end"}
 {"time": "2026-10-28T13:04:37+00:00", "work-item": "role-boundaries", "before": "drafted", "after": "awaiting-answer", "by": "work run"}
+{"time": "2026-10-28T13:04:50+00:00", "work-item": "role-boundaries", "stage": "apply", "event": "push verified"}
+{"time": "2026-10-28T13:04:50+00:00", "work-item": "role-boundaries", "stage": "apply", "agent": "initiative-round", "session": "db08ffe7-7f0e-45fd-94c3-7032e7fd9edb", "event": "start"}
+{"time": "2026-10-28T13:05:20+00:00", "work-item": "role-boundaries", "stage": "apply", "agent": "initiative-round", "session": "db08ffe7-7f0e-45fd-94c3-7032e7fd9edb", "event": "end"}
+{"time": "2026-10-28T13:05:20+00:00", "work-item": "role-boundaries", "before": "awaiting-answer", "after": "approved", "by": "work run"}
