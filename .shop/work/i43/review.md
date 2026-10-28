@@ -26,3 +26,4 @@ The drafts of this proposal are in .shop/work/i43/runs/i43/1-integrate/drafts/ro
 ## Answers
 - 2026-10-28: supervision#r155 exit code: Reading A, 'how it exited', with the exit code in Implementation (answered by the coordinator under the person's delegation of 2026-10-28).
 - 2026-10-28: review#r33: Reading A, 'When a branch review finds ...' as drafted (answered by the coordinator under the person's delegation of 2026-10-28).
+- 2026-10-28: review#r12 against r32/r33: Reading A, r12 stands; a reproduction is written, not run (answered by the coordinator under the person's delegation of 2026-10-28).
