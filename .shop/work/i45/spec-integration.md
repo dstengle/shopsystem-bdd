@@ -47,3 +47,4 @@ The drafts of this proposal are in .shop/work/i45/runs/i45/1-integrate/drafts/ro
 
 ## Answers
 - 2026-10-28: Q1, r48's finding: reading A, the finding is given in the round's result and in the gate's questions, naming both lines' ids (answered by the coordinator under the person's delegation, 2026-10-28)
+- 2026-10-28: Q4, r47's session: reading A, every session that writes a request's lines (answered by the coordinator under the person's delegation, 2026-10-28)
