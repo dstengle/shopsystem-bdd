@@ -1,2 +1,3 @@
 - 2026-10-28: integrate round 1: adds supervision#r149 r150, spec-integration#r46; 5 questions, 1 cut sentence; drafts .shop/scratch/1-integrate/drafts/round-1
 - 2026-10-28: gate round 1: 4 questions on supervision r149 r150
+- 2026-10-28: 2026-10-28 the person: take recommendations on all gate round 1 questions (spec-integration approved as drafted; supervision r150/r140 a, r150/r144-r146 b, r149/r83 a, r149/r131-r132 a); run independently through the next release, then analyse whether the performance fixes had the intended effect.
