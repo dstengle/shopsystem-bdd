@@ -49,3 +49,4 @@ The drafts of this proposal are in .shop/work/i45/runs/i45/1-integrate/drafts/ro
 - 2026-10-28: Q1, r48's finding: reading A, the finding is given in the round's result and in the gate's questions, naming both lines' ids (answered by the coordinator under the person's delegation, 2026-10-28)
 - 2026-10-28: Q4, r47's session: reading A, every session that writes a request's lines (answered by the coordinator under the person's delegation, 2026-10-28)
 - 2026-10-28: Q7, r13 against line 7: reading A, retire r13 and add r52 and r53 (answered by the coordinator under the person's delegation, 2026-10-28)
+- 2026-10-28: Q8, a decision for line 7: reading B, no decision; r52 and r53 are the rule (decision number 0073 is now taken by i46's) (answered by the coordinator under the person's delegation, 2026-10-28)
