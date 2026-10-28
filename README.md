@@ -131,6 +131,21 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 Only `initiative-round` has the Agent tool. A plugin agent's `hooks` and `permissionMode` are ignored, so a role's
 limits are its tools; under `work run` they are also its `--allowedTools`.
 
+## 0.28.1: `work run` stops visibly on questions, and spends less agent time
+
+- **`work run <initiative>` prints each capability-proposal with its status**, and one awaiting an answer with its open
+  questions, exiting 3; before, an initiative with no work-item yet exited 0 printing nothing.
+- **An initiative is not set `done` while a capability-proposal of it is neither formulated, withdrawn nor merged**, by
+  `work run` or by `work withdraw`.
+- **A researcher's empty file set** (no file to change) is its output, not a missing one.
+- **Less agent time, quality kept** (from a measurement of 801 sessions): a branch review is started only when an
+  unread commit touches the initiative's own files, not for another initiative's commits on a shared branch; a
+  work-item's worker is refused `pytest --whole-suite` (`work run` runs the suite at the merge); a task reviewer's brief
+  gives the merged `Commits:` and the `Suite record:`; the researcher locates the change (one run of the accepted
+  scenarios, no probes); the branch reviewer runs the whole suite once.
+
+Upgrading a consuming repository from 0.28.0: update the plugin and start a session. No file is rewritten.
+
 ## 0.28.0: one set of request commands, `work list` and `work show`, and answers that redraft
 
 - **`work list` and `work show <id>`** (work-queue r34-r39, decision 0072): `work list` lists every initiative, request
