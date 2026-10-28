@@ -116,6 +116,11 @@ def formulated_proposal(world):
     world.proposal(status="formulated", adds="[thing#r1]")
 
 
+@given("under it a glossary-proposal with status approved")
+def approved_glossary_proposal(world):
+    world.glossary_proposal(status="approved")
+
+
 @given(parsers.parse("under it a capability-proposal with status withdrawn, and under that a work-item with status {status}"))
 def withdrawn_proposal_with_item(world, status):
     world.proposal(status="withdrawn", adds="[thing#r1]")

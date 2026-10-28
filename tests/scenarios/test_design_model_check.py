@@ -18,6 +18,7 @@ from .design_model_check_reading import *
 from .design_model_check_records import *
 from .design_model_check_then import *
 from .design_model_check_trace import *
+from .design_model_check_work import *
 
 scenarios("design-model-check.feature")
 

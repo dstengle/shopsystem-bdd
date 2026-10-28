@@ -11,11 +11,12 @@ STATUSES = {
     "capability-proposal": {"drafted", "approved", "merged", "formulated", "withdrawn", "awaiting-answer"},   # withdrawn: EXTENSION (r58)
     "work-item": {"drafted", "researched", "planned", "ready", "claimed", "done", "green", "awaiting-answer", "failed",
                   "withdrawn"},   # withdrawn: EXTENSION (r58); failed: design-decision/a-failed-work-item
+    "glossary-proposal": {"drafted", "awaiting-answer", "approved", "withdrawn"},   # the glossary's term `status` (r124)
     "request": {"open", "awaiting-asker", "awaiting-upstream", "accepted", "refused", "delivered", "withdrawn"},
 }
 SETTLED = {"merged", "formulated", "withdrawn"}     # a capability-proposal that may name a retired id (r5, r23)
 PART_KINDS = {"job-proposal", "map-proposal", "vision-proposal", "job-thread", "capability-proposal",
-              "cross-context-request", "map-escalation", "work-item"}
+              "cross-context-request", "map-escalation", "work-item", "glossary-proposal"}
 RECORD_KINDS = {"observation", "measurement", "review-finding", "decision-argument", "initiative-archive"}
 WORK = Path(".shop") / "work"
 RECORDS = Path(".shop") / "records"
@@ -89,7 +90,18 @@ class WorkReading:
         else:
             held[ident] = where
 
+    def judge_glossary_refs(self):
+        """r122: a glossary-proposal's term the glossary lacks is unresolved, unless an approved glossary-proposal removes it."""
+        for where, rel, t in self.glossary_refs:
+            if self.nodes.get(t) != "term" and t not in self.glossary_removed:
+                self.dangling.append(f"{where}: {rel} {t}, which the glossary does not have")
+
     def read_work(self):
+        self.glossary_refs, self.glossary_removed = [], set()
+        self.read_initiatives()
+        self.judge_glossary_refs()
+
+    def read_initiatives(self):
         held = {}
         for idir in sorted(p for p in (self.root / WORK).glob("*") if p.is_dir() and p.name != "requests"):
             ipath = idir / "initiative.md"
@@ -173,6 +185,15 @@ class WorkReading:
                         self.fact("req_id", q, cap, int(n))   # grammar.md's refusal table: v15c
                     elif rel != "changes":                     # changes: v15e reports it
                         self.dangling.append(f"{where}: {rel} {q}, which no capability has")
+        if kind == "glossary-proposal":
+            for rel in ("adds", "changes", "removes"):
+                for ref in expand(as_list(data.get(rel))):
+                    if str(ref).strip().startswith("term/"):
+                        head, _, name = str(ref).strip().rpartition("/")
+                        t = self.qualify(f"{head}/{name.lower()}")
+                        self.glossary_refs.append((where, rel, t))
+                        if rel == "removes" and data.get("status") == "approved":
+                            self.glossary_removed.add(t)
         if kind == "work-item":
             self.check_work_item_name(path, where, held, p)
             if data.get("wkind"):

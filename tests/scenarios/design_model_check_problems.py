@@ -73,53 +73,6 @@ def _initiative_with(world, old, new):
     p.write_text(p.read_text().replace(old, new))
 
 
-@given(parsers.parse("a repository with a work directory .shop/work/i1 in which {case}"))
-def malformed_work(world, case):
-    def part(**changes):
-        fm = {"id": full("work-item", "p1"), "kind": "work-item", "part_of": "initiative/i1", "status": "drafted",
-              "under": "thing", "check": "true"}
-        fm.update(changes)
-        world.write(".shop/work/i1/p1.md", "---\n" + "".join("%s: %s\n" % (k, v) for k, v in fm.items() if v is not None) + "---\n")
-    world.good()
-    if case == "there is no initiative.md":
-        part()
-        return
-    world.initiative()
-    if case == "initiative.md has no id":
-        _initiative_with(world, "id: %s\n" % I1, "")
-    elif case == "the part p1.md has no id":
-        part(id=None)
-    elif case == "the part p1.md has the kind banana":
-        part(kind="banana")
-    elif case == "the part p1.md has no status":
-        part(status=None)
-    elif case == "the part p1.md has a status not in its kind's lifecycle":
-        part(status="loved")
-    elif case == "the part p1.md has the kind capability-proposal and the status built":
-        part(id=full("capability-proposal", "p1"), kind="capability-proposal", status="built")
-    elif case == "initiative.md has the priority high":
-        _initiative_with(world, "priority: 1", "priority: high")
-    else:
-        assert case == "initiative.md has a date written 16/10/2026", case
-        _initiative_with(world, "date: 2026-10-15", "date: 16/10/2026")
-
-
-@given("a work-item in .shop/work/i1/w1.md that accepts thing#r2")
-def work_item_accepting(world, context):
-    world.observation()
-    world.initiative()
-    world.work_item(accepts="[thing#r2]")
-    context["mentions"] = THING + "#r2"
-
-
-@given(parsers.parse("a work-item in .shop/work/i1/w1.md with status {status} that accepts thing#r2"))
-def work_item_with_status_accepting(world, context, status):
-    world.observation()
-    world.initiative()
-    world.work_item(status=status, accepts="[thing#r2]")
-    context["mentions"] = THING + "#r2"
-
-
 @given("a repository with two capabilities that each have no ## Behaviour section")
 def two_capabilities_without_behaviour(world):
     for name in ("thing", "other"):

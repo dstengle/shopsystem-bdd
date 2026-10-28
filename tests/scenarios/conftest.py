@@ -158,6 +158,13 @@ class World:
             ---
             """ % (full("capability-proposal", ident), initiative, status, argues, adds, changes, removes, date)))
 
+    def glossary_proposal(self, ident="p1", status="drafted", initiative="i1", **lists):
+        """A glossary-proposal part; `lists` are its adds, changes and removes, each as the text of a list."""
+        body = "".join("%s: %s\n" % (k, v) for k, v in lists.items())
+        self.write(".shop/work/%s/%s.md" % (initiative, ident),
+                   "---\nid: %s\nkind: glossary-proposal\npart_of: initiative/%s\nstatus: %s\n%s---\n"
+                   % (full("glossary-proposal", ident), initiative, status, body))
+
     def observation(self, ident="obs-1"):
         self.write(".shop/records/observations.md", "# Observations\n\n## %s\nabout: %s\nby: someone\ndate: 2026-10-15\n\nSeen.\n"
                    % (full("observation", ident), CONTEXT))

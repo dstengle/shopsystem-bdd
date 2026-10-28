@@ -56,6 +56,8 @@ root(P, I)            :- part_of(P, P2), root(P2, I).
 % `merged`. Read with the lifecycle: a capability-proposal is closed at `formulated`, any other part as listed.
 closed(P)             :- status(P, S), S = ("merged"; "built"; "delivered"; "ruled"; "green"; "refused"), not node(P, "capability-proposal").
 closed(P)             :- status(P, "formulated").
+% design-model-check r123: `approved` closes a glossary-proposal, and no other kind.
+closed(P)             :- status(P, "approved"), node(P, "glossary-proposal").
 % EXTENSION (proposed against grammar.md v3; design-model-check r58): a part no longer pursued is
 % `withdrawn`, and is closed.
 closed(P)             :- status(P, "withdrawn").
@@ -194,7 +196,7 @@ v_k1(I) :- ikind(I, "job"),               part_of(P, I), not node(P, "job-propos
 label("v_k2", "a job-path initiative's first part is not a job-thread").
 v_k2(I) :- ikind(I, "job-path"),          part_of(P, I), not node(P, "job-thread").
 label("v_k3", "a capability-change initiative's first part is not a capability-proposal").
-v_k3(I) :- ikind(I, "capability-change"), part_of(P, I), not node(P, "capability-proposal").
+v_k3(I) :- ikind(I, "capability-change"), part_of(P, I), not node(P, "capability-proposal"), not node(P, "glossary-proposal").   % r123: a glossary-proposal is a part of one
 label("v_k4", "a defect initiative's first part is not a work-item").
 v_k4(I) :- ikind(I, "defect"),            part_of(P, I), not node(P, "work-item").
 % FIX g:171 (design-decision/one-capability-per-proposal): a capability-change initiative may have several

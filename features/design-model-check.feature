@@ -311,66 +311,6 @@ Feature: Design model check
       | features/thing.feature     | a scenario with its own title is tagged @holding                           | prints          |
       | features/thing.feature     | a scenario is tagged @deprecated and @holding                              | prints          |
 
-  @r27 @deprecated
-  Scenario Outline: a malformed work directory or work file is a file problem (deprecated)
-    Deprecated for: a malformed work directory or work file is a file problem
-    Pins the shape each initiative and part file must have, and that a missing initiative.md is charged to its directory.
-    Given a repository with a work directory .shop/work/i1 in which <case>
-    When `model check` is run
-    Then it prints a file problem naming <named>
-
-    Examples:
-      | case                                                                 | named                                              |
-      | there is no initiative.md                                            | .shop/work/i1, and not .shop/work/i1/initiative.md |
-      | initiative.md has no id                                              | .shop/work/i1/initiative.md                        |
-      | the part p1.md has no id                                             | .shop/work/i1/p1.md                                |
-      | the part p1.md has the kind banana                                   | .shop/work/i1/p1.md                                |
-      | the part p1.md has no status                                         | .shop/work/i1/p1.md                                |
-      | the part p1.md has a status not in its kind's lifecycle              | .shop/work/i1/p1.md                                |
-      | the part p1.md has the kind capability-proposal and the status built | .shop/work/i1/p1.md                                |
-      | initiative.md has the priority high                                  | .shop/work/i1/initiative.md                        |
-      | initiative.md has a date written 16/10/2026                          | .shop/work/i1/initiative.md                        |
-
-  @r27 @deprecated
-  Scenario: a work-item accepting a requirement no scenario names is a file problem (deprecated)
-    Deprecated for: a malformed work directory or work file is a file problem
-    Pins that a work-item may accept only requirements a scenario already names.
-    Given a capability thing with requirement r2 that no scenario names
-    And a work-item in .shop/work/i1/w1.md that accepts thing#r2
-    When `model check` is run
-    Then it prints a file problem naming .shop/work/i1/w1.md
-
-  @r27 @deprecated
-  Scenario: a work-item accepting a requirement of a guarantees capability that no scenario names is no file problem (deprecated)
-    Deprecated for: a malformed work directory or work file is a file problem
-    Pins that a guarantees capability's requirements, which no scenario names, may be accepted by a work-item.
-    Given a capability thing in the guarantees group with requirement r2 that no scenario names
-    And a work-item in .shop/work/i1/w1.md that accepts thing#r2
-    When `model check` is run
-    Then it prints no file problem naming .shop/work/i1/w1.md
-
-  @r27 @deprecated
-  Scenario: a green work-item accepting a retired id is no file problem (deprecated)
-    Deprecated for: a malformed work directory or work file is a file problem
-    Pins that a retired id is left out of what a scenario must name for a work-item to accept it, once that work-item is green.
-    Given a capability thing whose frontmatter lists r2 as retired
-    And a work-item in .shop/work/i1/w1.md with status green that accepts thing#r2
-    When `model check` is run
-    Then it prints no file problem naming .shop/work/i1/w1.md
-
-  @r27 @deprecated
-  Scenario Outline: a status in its kind's lifecycle is no file problem (deprecated)
-    Deprecated for: a malformed work directory or work file is a file problem
-    Pins that each status the glossary gives a kind is in that kind's lifecycle, awaiting-answer a capability-proposal's and withdrawn a request's.
-    Given a repository in which <case>
-    When `model check` is run
-    Then it prints no file problem naming <file>
-
-    Examples:
-      | case                                                                                                       | file                      |
-      | a work directory .shop/work/i1 has the part p1.md with the kind capability-proposal and the status awaiting-answer | .shop/work/i1/p1.md       |
-      | a request in .shop/work/requests/q1.md, of the form `work request` writes, has the status withdrawn        | .shop/work/requests/q1.md |
-
   @r123
   Scenario: an initiative may be `done` when its glossary-proposal is approved
     Pins that approved is a closed status for a glossary-proposal under a `done` initiative.

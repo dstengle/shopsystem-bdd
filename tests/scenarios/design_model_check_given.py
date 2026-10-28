@@ -123,6 +123,26 @@ def proposal_naming_term(world, context, status, field, term):
     context["term"] = term
 
 
+@given("no other glossary-proposal")
+def no_other_glossary_proposal(world):
+    pass
+
+
+@given(parsers.re(r"(?:an|a) (?P<status>awaiting-answer|withdrawn|(?<=an )approved) glossary-proposal whose removes names term/(?P<term>\w+)"))
+def remover_glossary_proposal(world, status, term):
+    world.observation()
+    world.initiative()
+    world.glossary_proposal(ident="p2", status=status, removes="[term/%s]" % term)
+
+
+@given(parsers.re(r"a (?P<status>drafted|(?<!n )approved) glossary-proposal whose (?P<field>adds|changes|removes) names term/(?P<term>\w+)"))
+def glossary_proposal_naming_term(world, context, status, field, term):
+    world.observation()
+    world.initiative()
+    world.glossary_proposal(status=status, **{field: "[term/%s]" % term})
+    context["term"] = term
+
+
 # --- Given: frontmatter references (r24) -----------------------------------------------------------------------
 
 DECISION = "---\nid: %s\nsummary: S\ndate: 2026-01-01\nstatus: accepted\n%s---\n\n## Decision\nWe do it.\n"
