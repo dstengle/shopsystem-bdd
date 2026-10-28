@@ -131,6 +131,19 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 Only `initiative-round` has the Agent tool. A plugin agent's `hooks` and `permissionMode` are ignored, so a role's
 limits are its tools; under `work run` they are also its `--allowedTools`.
 
+## 0.28.2: answers a round cannot hold go back to integration
+
+- **An apply round names the answers its drafts do not hold** (spec-integration r46): `initiative-round` gives them in
+  its result.
+- **`work run` starts a new integrate round for them** (supervision r150, r151): when an apply round gives an answer
+  its drafts do not hold, the proposal goes back to integration, and no formulate round starts for it until the new
+  integrate round has been applied. r140 is retired for r150.
+- **A formulate round that formulates nothing because the answers change lines not in `spec/`** (supervision r149,
+  r152, r153) starts a new integrate round, keeps the proposal's status and counts as the round's output, where before
+  the proposal was set `formulated` with nothing formulated.
+
+Upgrading a consuming repository from 0.28.1: update the plugin and start a session. No file is rewritten.
+
 ## 0.28.1: `work run` stops visibly on questions, and spends less agent time
 
 - **`work run <initiative>` prints each capability-proposal with its status**, and one awaiting an answer with its open
