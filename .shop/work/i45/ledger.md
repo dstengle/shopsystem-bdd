@@ -1,2 +1,3 @@
 - 2026-10-28: integrate round 1: q26; spec-integration adds r47-r53 removes r13, requests adds r46, spec-consistency adds r28 removes r5, 5 glossary terms added, 12 questions, 0 cut sentences; drafts .shop/scratch/1-integrate/drafts/round-1
 - 2026-10-28: gate round 1 requests: 3 questions
+- 2026-10-28: gate round 1 spec-consistency: 1 question
