@@ -45,3 +45,4 @@
 {"time": "2026-10-28T16:44:57+00:00", "work-item": "w220", "stage": "research", "agent": "code-scout", "session": "a4e4ccda-5cf0-4873-849f-3a837db06015", "event": "start"}
 {"time": "2026-10-28T16:46:41+00:00", "work-item": "w220", "stage": "research", "agent": "code-scout", "session": "a4e4ccda-5cf0-4873-849f-3a837db06015", "event": "end"}
 {"time": "2026-10-28T16:46:41+00:00", "work-item": "w220", "before": "drafted", "after": "awaiting-answer", "by": "work run"}
+{"time": "2026-10-28T17:18:31+00:00", "work-item": "w220", "before": "awaiting-answer", "after": "withdrawn", "by": "work withdraw"}
