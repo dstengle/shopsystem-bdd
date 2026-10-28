@@ -7,3 +7,4 @@
 - 2026-10-28: integrate round 3: q26 requests redrafted from answers Q1 A Q7 A Q12 A: requests adds r59; 0 questions, 0 cut sentences; drafts .shop/scratch/3-integrate/drafts/round-3
 - 2026-10-28: gate round 4: 0 questions (requests#r59 holds answers Q1 A, Q7 A, Q12 A)
 - 2026-10-28: apply round 2: spec-consistency r5 retired, r28 added (reading A, person 2026-10-28), commit d27c27d3; model check not run (not permitted)
+- 2026-10-28: formulate round 3: spec-consistency feature written with 17 scenarios (r9 and r11 returned as questions), commit a3da368c
