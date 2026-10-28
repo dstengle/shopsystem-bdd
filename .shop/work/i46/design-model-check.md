@@ -16,3 +16,6 @@ Integrated in a session, not by `work run`: the drafts (.shop/scratch/drafts/202
 
 ## Questions
 - design-model-check r122: "a glossary-proposal's `adds`, `changes` or `removes` names `term/<term>` the glossary does not have, except one an `approved` glossary-proposal removes". Reading 1: only an approved glossary-proposal's own `removes` is excused; a drafted glossary-proposal naming the same missing term is still unresolved. Reading 2: any term that some approved glossary-proposal removes is excused wherever it is named, including in a drafted glossary-proposal.
+
+## Answers
+- 2026-10-28: r122: reading 2, any term that some approved glossary-proposal removes is excused wherever it is named, a drafted glossary-proposal included (the person, 2026-10-28)
