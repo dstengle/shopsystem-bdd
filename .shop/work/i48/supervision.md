@@ -21,3 +21,4 @@ The drafts of this proposal are in .shop/work/i48/runs/i48/1-integrate/drafts/ro
 
 ## Answers
 - 2026-10-28: r179's terms: reading A, split into r179 (a capability-proposal's requirement ids) and r180 (a glossary-proposal's terms) (answered by the person, 2026-10-28)
+- 2026-10-28: r179's keep: reading A, the ids stay in the adds, changes and removes work run writes for the proposal (answered by the person, 2026-10-28)
