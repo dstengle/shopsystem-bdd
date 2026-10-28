@@ -190,3 +190,5 @@
 {"time": "2026-10-28T18:23:45+00:00", "work-item": "w225", "stage": "implement", "agent": "bdd-implementer", "session": "5f00345c-2e5a-407b-a643-493d1a06c494", "event": "start"}
 {"time": "2026-10-28T18:25:12+00:00", "work-item": "w223", "stage": "review", "agent": "bdd-task-reviewer", "session": "44976fc6-0115-4ee7-9e92-dfc6b16659a0", "event": "end"}
 {"time": "2026-10-28T18:25:12+00:00", "work-item": "w223", "before": "done", "after": "green", "by": "work run"}
+{"time": "2026-10-28T18:28:18+00:00", "work-item": "w225", "stage": "implement", "agent": "bdd-implementer", "session": "5f00345c-2e5a-407b-a643-493d1a06c494", "event": "end"}
+{"time": "2026-10-28T18:28:18+00:00", "work-item": "w225", "before": "claimed", "after": "awaiting-answer", "by": "work run"}
