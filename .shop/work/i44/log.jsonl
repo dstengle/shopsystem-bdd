@@ -1,1 +1,4 @@
 {"time": "2026-10-28T13:03:11+00:00", "work-item": "i44", "before": "proposed", "after": "started", "by": "work run"}
+{"time": "2026-10-28T13:03:14+00:00", "work-item": "i44", "stage": "integrate", "event": "push verified"}
+{"time": "2026-10-28T13:03:14+00:00", "work-item": "i44", "stage": "integrate", "agent": "initiative-round", "session": "3814ad5a-1514-4b9c-b98e-c22b61669d31", "event": "start"}
+{"time": "2026-10-28T13:04:06+00:00", "work-item": "i44", "stage": "integrate", "agent": "initiative-round", "session": "3814ad5a-1514-4b9c-b98e-c22b61669d31", "event": "end"}
