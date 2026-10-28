@@ -8,7 +8,7 @@ import workqueue
 from supervise_branch_runs import indented
 from supervise_worker import git
 
-TRANSITION = re.compile(r"^work: (\S+) \S+ -> \S+$")
+TRANSITION = re.compile(r"^(?:work(?: answer| withdraw| retry)?: (\S+) \S+ -> \S+|work add: [^/\s]+/(\S+) drafted)$")
 
 
 class ReviewRead:
@@ -39,7 +39,8 @@ class ReviewRead:
         for line in git(self.root, "log", "--reverse", "--format=%H %s", "%s..%s" % (base, head)).stdout.splitlines():
             sha, subject = line.split(" ", 1)
             found = TRANSITION.match(subject)
-            owner = merged.get(sha) or (found.group(1) if found and found.group(1) in names else "none")
+            name = found and (found.group(1) or found.group(2))
+            owner = merged.get(sha) or (name if name in names else "none")
             text += "    %s %s %s\n" % (sha, owner, subject)
         change = git(self.root, "diff", base, head, "--", ".", ":(exclude).shop").stdout
         return text + "\n## Change\n\nThe change from %s to %s, without the workflow's own files:\n\n%s" % (base, head, indented(change))
