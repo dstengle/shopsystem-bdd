@@ -1,0 +1,11 @@
+{
+  "status": "DONE",
+  "summary": "Research of w223 (supervision r162, r163) done; notes.md written in the run directory.\nRun: python3 -m pytest -q --work-item w223: 4 failed, 180 passed, 1 skipped.\nAll 4 accepted outlines fail at an undefined Given: spec/index.md's Glossary holds the term \"ledger\" (no step matches).\nBy search, also undefined: i1's glossary-proposal g1 is awaiting-answer; \"<question>\" was given to no session.\nCode: scripts/supervise_answers.py Answers.answers gives every open question to ask(); no glossary term or proposal id is read.\nChange: skip such questions before ask (leave them open), read terms from spec/index.md and glossary-proposal ids and terms from scripts/supervise_glossary.py.\nTests: steps in tests/scenarios/supervision_delegation_steps.py; unit test in tests/scripts/test_supervise_answers.py (its Stubbed class must keep working).\nNo test asserts a glossary question goes to a session (by search). r77 deprecated outline at features/supervision.feature line 1302 still passes; w223 has no ## Retires section (r73).\nConflict, both readings in notes: r163 every eligible question gets a session vs the n-th bullet rule of ## Answers after a skipped question.\nNot decided: whether a term match is whole-word or substring.\ntools tests-of and untested had no map, so test lists are by search. tools size: none over 300 lines.\nThe worktree git status is clean apart from the stage directory.",
+  "fileset": [
+    "scripts/supervise_answers.py",
+    "scripts/supervise_glossary.py",
+    "tests/scenarios/supervision_delegation_steps.py",
+    "tests/scripts/test_supervise_answers.py"
+  ],
+  "questions": []
+}
