@@ -46,3 +46,7 @@
 {"time": "2026-10-28T16:46:41+00:00", "work-item": "w220", "stage": "research", "agent": "code-scout", "session": "a4e4ccda-5cf0-4873-849f-3a837db06015", "event": "end"}
 {"time": "2026-10-28T16:46:41+00:00", "work-item": "w220", "before": "drafted", "after": "awaiting-answer", "by": "work run"}
 {"time": "2026-10-28T17:18:31+00:00", "work-item": "w220", "before": "awaiting-answer", "after": "withdrawn", "by": "work withdraw"}
+{"time": "2026-10-28T17:18:39+00:00", "work-item": "design-model-check", "stage": "formulate", "event": "push verified"}
+{"time": "2026-10-28T17:18:39+00:00", "work-item": "design-model-check", "stage": "formulate", "agent": "initiative-round", "session": "77f6a0c4-9919-4280-b5c0-61e38413df82", "event": "start"}
+{"time": "2026-10-28T17:20:07+00:00", "work-item": "design-model-check", "stage": "formulate", "agent": "initiative-round", "session": "77f6a0c4-9919-4280-b5c0-61e38413df82", "event": "end"}
+{"time": "2026-10-28T17:20:07+00:00", "work-item": "design-model-check", "before": "awaiting-answer", "after": "formulated", "by": "work run"}
