@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Round 2: work-queue r23 retired for r59, supervision r105 retired for r213; no questions.","questions":[],"changes":[{"capability":"work-queue","adds":["work-queue#r59"],"changes":[],"removes":["work-queue#r23"]},{"capability":"supervision","adds":["supervision#r213"],"changes":[],"removes":["supervision#r105"]}]}

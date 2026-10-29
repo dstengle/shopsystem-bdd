@@ -5,9 +5,9 @@ part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i55
 status: awaiting-answer
 argues: [supervision]
 date: 2026-10-28
-adds: [supervision#r212]
+adds: [supervision#r212, supervision#r213]
 changes: []
-removes: [supervision#r149, supervision#r32, supervision#r9]
+removes: [supervision#r149, supervision#r32, supervision#r9, supervision#r105]
 ---
 
 # supervision
