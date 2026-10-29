@@ -1,0 +1,8 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Branch review 3 of i60, ae85edd3..46d6b92a on main.\nSuite: 1069 passed, 0 failed at 46d6b92a in 35.22 s (parallel -n auto, not in-process). Also 26 xfailed (10 new: the requests r65-r71 scenarios, not yet delivered by any work-item) and 6 xpassed.\nw233 (green, supervision#r211, steps only) has no Critical finding and nothing to fix now. It removed or weakened no test and claims no allowance.\nThe fix-now finding is in another initiative's code on main: i54/w232's work show <request> leaves out lines that have no outcome (workqueue_list.py:85-88). It is already w232's open question; do not draft it in i60.\ntools check exits 1 on 5 ruff errors. Three are new, in a formulate round's helper script kept tracked under .shop/work/i60/runs/requests/23-formulate/splice.py. Two predate this review.\nvulture is clean. tools size printed nothing. features bindings: every binding names a scenario. features deprecated: no replacement is green.\ni60 stays started while its proposal i60-requests is awaiting-answer on r69's question.",
+  "findings": "/tmp/work-run-i60-47epophg/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": [
+    "Important, w232 (i54), scripts/workqueue_list.py:85-88: request_parts skips every line with no line outcome, so work show <request> leaves out the lines of a request not yet settled (work-queue r59). It is already w232's open question; fix it there, not in i60."
+  ]
+}
