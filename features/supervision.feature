@@ -1370,6 +1370,21 @@ Feature: Supervision
       | Please get everything delivered. Do not stop to ask me questions or permission. | answers it               | w1's question, p1's question and each of w2's questions have the session's answer               |
       | Answer only the questions on the queue's tests; ask me everything else.          | leaves it for the person | w1's question, p1's question and w2's questions have no answer, w1, w2 and p1 awaiting-answer |
 
+  @r211
+  Scenario Outline: `work run` reads the delegation the request has when it reads it, the delegation given <when> the initiative started
+    Pins that a question is answered under the delegation the request holds now, whether the person gave it with the request or after the initiative was already under way.
+    Given i1 fulfils the request q1, which gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission.", given <when> i1 started
+    And i1's work-item w1 is awaiting-answer, its ## Questions section with "Does scripts/log.py own the log?" and no answer
+    And the session answering under the delegation answers "Yes.", and every worker gives DONE
+    When the person runs `work run i1`
+    Then "Does scripts/log.py own the log?" was given to a session of its own, given the question, the delegation "Please get everything delivered. Do not stop to ask me questions or permission.", scripts/log.py, and nothing else
+    And w1's answer to "Does scripts/log.py own the log?" is "Yes.", naming the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
+
+    Examples:
+      | when   |
+      | before |
+      | after  |
+
   @r78
   Scenario: an answer given by a session started under a delegation is written naming that delegation
     Pins that the person can tell an answer given in their place from one they gave, and under which words of theirs it was given.
