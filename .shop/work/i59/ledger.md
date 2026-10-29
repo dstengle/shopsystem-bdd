@@ -4,3 +4,4 @@
 - 2026-10-29: gate round 1 delivery: 0 questions (adds r23, removes r6, no open decision on them)
 - 2026-10-29: gate round 1: 4 questions on design-model-check
 - 2026-10-29: gate round 1: 4 questions for feature-file-tools (drafts .shop/work/i59/runs/i59/1-integrate/drafts)
+- 2026-10-29: gate round 1: 3 questions for migration-tools
