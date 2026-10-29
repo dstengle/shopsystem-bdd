@@ -1312,8 +1312,9 @@ Feature: Supervision
     And w1's answer to "Is a title given twice in features/books.feature one book or two?" is "One book.", naming the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
     And it exits successfully
 
-  @r163
-  Scenario Outline: under a delegation, each question of the initiative that names neither a term of the glossary nor a glossary-proposal goes to a session of its own, given only the delegation and the files it names, that <reply>
+  @r163 @deprecated
+  Scenario Outline: under a delegation, each question of the initiative that names neither a term of the glossary nor a glossary-proposal goes to a session of its own, given only the delegation and the files it names, that <reply> (deprecated)
+    Deprecated for: r209 and r210
     Pins that a question is weighed against the person's words alone, apart from every other question, and answered only when those words cover it.
     Given spec/index.md's Glossary holds the term "ledger"
     And i1 fulfils the request q1, which gives the delegation "<delegation>"
@@ -1330,8 +1331,9 @@ Feature: Supervision
       | Please get everything delivered. Do not stop to ask me questions or permission. | answers it               | w1's question and p1's question each have the session's answer            |
       | Answer only the questions on the queue's tests; ask me everything else.          | leaves it for the person | w1's question and p1's question have no answer, w1 and p1 awaiting-answer |
 
-  @r162
-  Scenario Outline: under a delegation, a question of the initiative that names <named> is left for the person and given to no session
+  @r162 @deprecated
+  Scenario Outline: under a delegation, a question of the initiative that names <named> is left for the person and given to no session (deprecated)
+    Deprecated for: r209 and r210
     Pins that a question touching the glossary is the person's to answer, whatever the delegation's words allow.
     Given spec/index.md's Glossary holds the term "ledger"
     And i1 fulfils the request q1, which gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
@@ -1347,6 +1349,45 @@ Feature: Supervision
       | named                         | question                                       |
       | the term "ledger"             | Does scripts/log.py write the ledger?          |
       | the glossary-proposal g1      | Does scripts/log.py wait for g1 to be applied? |
+
+  @r209
+  Scenario Outline: under a delegation, a question of the initiative's glossary-proposal is left for the person and given to no session, whatever words it uses, here <words>
+    Pins that a question the glossary-proposal asks is the person's to answer, whatever the delegation's words allow and whatever the question's words name.
+    Given spec/index.md's Glossary holds the term "ledger"
+    And i1 fulfils the request q1, which gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
+    And i1's glossary-proposal g1 is awaiting-answer, its ## Questions section with "<question>" and no answer
+    And each session given a question under the delegation answers it, and every round ends and every worker gives DONE
+    When the person runs `work run i1`
+    Then "<question>" was given to no session
+    And g1's question "<question>" has no answer
+    And g1 is awaiting-answer
+
+    Examples:
+      | words                                  | question                                                  |
+      | naming the term "ledger"               | Is the ledger the record of every entry or the open ones? |
+      | naming no term of the glossary         | Does scripts/log.py keep its reader?                      |
+
+  @r210
+  Scenario Outline: under a delegation, each question of the initiative that is not a question of a glossary-proposal goes to a session of its own, given only the delegation and the files it names, even when it names a term of the glossary or a glossary-proposal, that <reply>
+    Pins that a question outside the glossary-proposal is weighed against the person's words alone, apart from every other question, whatever its own words name, and answered only when the delegation covers it.
+    Given spec/index.md's Glossary holds the term "ledger"
+    And i1 fulfils the request q1, which gives the delegation "<delegation>"
+    And i1's glossary-proposal g1 is awaiting-answer
+    And i1's work-item w1 is awaiting-answer, its ## Questions section with "Does scripts/log.py or scripts/queue.py own the log?" and no answer
+    And i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a title given twice in features/books.feature one book or two?" and no answer
+    And i1's work-item w2 is awaiting-answer, its ## Questions section with "Does scripts/log.py write the ledger?" and "Does scripts/queue.py wait for g1 to be applied?", each with no answer
+    And each session given a question under the delegation <reply>, and every round ends and every worker gives DONE
+    When the person runs `work run i1`
+    Then w1's question was given to a session of its own, given the question, the delegation "<delegation>", scripts/log.py and scripts/queue.py, and nothing else
+    And p1's question was given to a session of its own, given the question, the delegation "<delegation>", features/books.feature, and nothing else
+    And "Does scripts/log.py write the ledger?" was given to a session of its own, given the question, the delegation "<delegation>", scripts/log.py, and nothing else
+    And "Does scripts/queue.py wait for g1 to be applied?" was given to another session of its own, given the question, the delegation "<delegation>", scripts/queue.py, and nothing else
+    And <after>
+
+    Examples:
+      | delegation                                                                       | reply                    | after                                                                                          |
+      | Please get everything delivered. Do not stop to ask me questions or permission. | answers it               | w1's question, p1's question and each of w2's questions have the session's answer               |
+      | Answer only the questions on the queue's tests; ask me everything else.          | leaves it for the person | w1's question, p1's question and w2's questions have no answer, w1, w2 and p1 awaiting-answer |
 
   @r78
   Scenario: an answer given by a session started under a delegation is written naming that delegation
