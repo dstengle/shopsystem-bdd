@@ -10,3 +10,4 @@
 - 2026-10-29: 2026-10-29: integrate round 14: supervision adds r218, removes r217 (retired, replaced by r218), 0 changes, 0 questions, 0 cut sentences; .shop/scratch/14-integrate/drafts/round-2/
 - 2026-10-29: gate round 15: 1 question (approval of r218 replacing r217)
 - 2026-10-29: 2026-10-29: hand repair by the coordinator: integrate round 14 left the proposal with adds r218 and removes r217 only (q34); restored to adds r214 r215 r216 r218, removes r28 r217
+- 2026-10-29: apply round 17: supervision r218 replaces r217 (answers of 2026-10-29 applied), commit 1af90a20
