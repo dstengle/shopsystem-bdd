@@ -3,3 +3,4 @@
 - 2026-10-28: gate round 1: 4 questions on supervision r184, r185, r186
 - 2026-10-28: gate round 1: 2 questions on work-queue r47
 - 2026-10-29: apply round 12: applied the round-1 drafts of requests, supervision and work-queue (commit deda9fa6); answers on r14/r59, r149, r32/r9/r187, r23/r48 and r105/r188 not held by the drafts
+- 2026-10-29: integrate round 2: requests +1 -1, supervision +2 -4, work-queue +1 -1, no glossary, 0 questions, 0 cut sentences; drafts .shop/scratch/13-integrate/drafts/round-2
