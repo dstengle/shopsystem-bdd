@@ -56,11 +56,47 @@ def two_sessions_change(repo, plan):
                                                                      ".shop/work/i2/initiative.md": i2}}}
 
 
+@given("every round ends and every worker gives DONE, and while i1's researcher works a session of i2 changes "
+       ".shop/work/i2/initiative.md in the repository's own checkout without committing it")
+def i2_session_changes(repo, plan, context):
+    """p2's gate round starts beside i1's researcher, writes the file, and its own end takes the change in (r218 holds
+    for i2's own sessions), so no later round of i2 finds it uncommitted."""
+    plan["default"] = {"status": "DONE"}
+    context["i2"] = (repo / ".shop/work/i2/initiative.md").read_text() + "\nChanged by a session of i2.\n"
+    plan["round:gate:p2"] = {"meet_agents": ["code-scout"], "elsewhere": {
+        "root": str(repo), "commit": {".shop/work/i2/initiative.md": context["i2"]}}}
+
+
 @then(parsers.re(r"nothing recorded of (?P<name>\w+) names (?P<path>\S+)$"))
 def nothing_names(repo, name, path):
     assert path not in (repo / (".shop/work/i1/%s.md" % name)).read_text()
     log = [l for l in (repo / ".shop/work/i1/log.jsonl").read_text().splitlines() if name in l]
     assert not [l for l in log if path in l], log
+
+
+@then(parsers.re(r"(?P<name>\w+) is green, nothing recorded of (?P=name) naming (?P<path>\S+)$"))
+def green_nothing_naming(repo, context, name, path):
+    assert fields(repo / (".shop/work/i1/%s.md" % name))["status"] == "green", (context["done"].stdout, context["done"].stderr)
+    nothing_names(repo, name, path)
+
+
+@then(".shop/work/i2/initiative.md is as i2's session changed it")
+def i2_as_changed(repo, context):
+    assert (repo / ".shop/work/i2/initiative.md").read_text() == context["i2"], (
+        context["done"].stderr, git(repo, "status", "--porcelain"), git(repo, "log", "--format=%s"))
+
+
+@then("no session of i1 or of i2 was taken as a fault")
+def no_session_faulted(repo, context):
+    for path in (repo / ".shop/work").glob("i[12]/*.md"):
+        assert not section(path.read_text(), "Faults").strip(), (path, path.read_text())
+    assert "faulted" not in git(repo, "log", "--format=%s"), git(repo, "log", "--format=%s")
+
+
+@then("w1 is not failed and p2 is not failed")
+def not_failed(repo, context):
+    for path in (".shop/work/i1/w1.md", ".shop/work/i2/p2.md"):
+        assert fields(repo / path)["status"] != "failed", (path, context["done"].stdout, context["done"].stderr)
 
 
 @given("the remote refuses pushes to the initiative branch")
