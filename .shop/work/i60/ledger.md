@@ -8,3 +8,4 @@
 - 2026-10-29: gate round 20: 1 question
 - 2026-10-29: apply round 22: requests r65-r71 applied (commit 186d4789), all 7 answers held
 - 2026-10-29: formulate requests round 1: commit 9172f19e, 6 scenarios added (r65-r68, r70, r71), 1 question (r69)
+- 2026-10-29: formulate round 24: nothing formulated; r69 answer (reading 1) changes a line spec/ does not hold; the other answers are held by r65-r71 formulated in 9172f19e
