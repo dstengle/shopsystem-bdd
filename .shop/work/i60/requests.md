@@ -2,17 +2,17 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i60-requests
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i60
-status: awaiting-answer
+status: drafted
 argues: [requests]
 date: 2026-10-29
-adds: [requests#r65, requests#r66, requests#r67, requests#r68, requests#r69, requests#r70, requests#r71]
+adds: [requests#r72]
 changes: []
-removes: []
+removes: [requests#r69]
 ---
 
 # requests
 
-The drafts of this proposal are in .shop/work/i60/runs/requests/19-integrate/drafts/round-1/.
+The drafts of this proposal are in .shop/work/i60/runs/requests/25-integrate/drafts/round-1/.
 
 ## Questions
 - requests#r60 (added): "**When** `work delegate` writes a delegation in a request, `work` shall commit the request." On which branch is the request committed? Reading A (recommended): "**When** `work delegate` writes a delegation in a request, `work` shall commit the request on the current branch." Reading B: r60 stays as drafted.

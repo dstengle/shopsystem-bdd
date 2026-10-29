@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"requests: removes r69, adds r72 (answer reading 1: the delegation given to work delegate holds the person's words with the date). No glossary change, no questions.","questions":[],"changes":[{"capability":"requests","adds":["requests#r72"],"changes":[],"removes":["requests#r69"]}]}
