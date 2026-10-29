@@ -4,3 +4,4 @@
 - 2026-10-29: apply round 3: supervision r187 applied (answer 2026-10-29, reading a), commit ec944d15; model check not run (approval refused)
 - 2026-10-29: formulate round 1: supervision r187, one scenario added, commit bb2caaeb
 - 2026-10-29: apply round 3: nothing applied; the answer asks to retire work-queue r35 and add r50, which the drafts never held, so an integrate round follows
+- 2026-10-29: integrate round 4: adds work-queue#r59, work-queue#r60, work-queue#r61; removes work-queue#r34, work-queue#r35; 0 questions, 0 cut sentences; drafts .shop/scratch/4-integrate/drafts/round-1
