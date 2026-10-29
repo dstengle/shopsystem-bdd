@@ -1,0 +1,9 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Branch review 4 of i60, ae85edd3..b2554e02 on main. Two findings are to fix now.\nSuite: 1069 passed, 10 failed at b2554e02 in 34.63 s (parallel; scripts run as subprocesses, not in-process).\nThe 10 failures are the requests r65-r71 (work delegate) scenarios: integrate round 25 (commit 1fdab1cc) rewrote i60-requests' adds to [requests#r72] and dropped r65-r71. They are in spec/ and features/, but no proposal or work-item holds them, so their scenarios are no longer expected failures and nothing will be drafted to deliver them.\nCarried over: i54/w232's work show <request> leaves out lines with no outcome; it is still w232's open question.\nw233 (supervision#r211) is sound: it adds steps only, and its scenarios pass (182 passed).\ntools check exits 1 on 5 ruff errors (the same as review 3); tools size, features deprecated and features bindings are clean.\nEvery check was verified from the given runs.",
+  "findings": "/tmp/work-run-i60-wzn42g_j/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": [
+    "Important, i60 (proposal i60-requests, no work-item), .shop/work/i60/requests.md:8-10 (mechanism scripts/supervise_change.py:59-72 rewrite_lists): integrate round 25 replaced adds with [requests#r72], dropping r65-r71, which are applied and formulated. The whole suite fails 10 at b2554e02, and r65-r71 would get no work-item. Restore the ids, and write a line keeping a re-integrated proposal's held ids.",
+    "Important, w232 (i54), scripts/workqueue_list.py:85-88: work show <request> prints no line that has no line outcome, against work-queue r59. Already w232's open question; fix under w232, not in i60."
+  ]
+}
