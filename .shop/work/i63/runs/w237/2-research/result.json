@@ -1,0 +1,8 @@
+{
+  "status": "DONE",
+  "summary": "Research of w237 done; notes in .shop/scratch/2-research/notes.md.\nRun (`python3 -m pytest -q --work-item w237`): 3 failed, 180 passed, 1 skipped. All three accepted scenarios stop at the same undefined Given (StepDefinitionNotFoundError), before any Then.\nThe rule is already in code: commit d8f57cc8 (r218) made Faults.checkout_changes skip other initiatives' .shop/work/<X>/ paths (supervise_faults.py:110, 114). So the red is missing steps only (read; not verified past the Given).\nNeeded: tests/scenarios/supervision_faults_steps.py gets a new Given (the w237 wording, storing i2's text) and four new Thens: r214 'w1 is green, nothing recorded ... naming', r215 'is as i2's session changed it', r216 'no session of i1 or of i2 ... fault', r216 'w1 is not failed and p2 is not failed'.\nNo production file must change under Reading A. The coordinator's answer names scripts/supervise_faults.py, but that rests on stale notes (1-research predates d8f57cc8); I have not included it in fileset.\nOpen conflict (Reading A vs B, notes part 3): an i2 session that ends while its own uncommitted change exists is still put back and faulted. Timing unverified.\nNo existing test asserts another initiative's path is put back (by search). Files over 300 lines: none.",
+  "fileset": [
+    "tests/scenarios/supervision_faults_steps.py"
+  ],
+  "questions": []
+}
