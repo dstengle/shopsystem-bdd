@@ -234,7 +234,10 @@ Workers are still asked for an outcome word; it is kept for reports.
   questions a session may answer in the person's place). The upstream writes each line's outcome with `work outcome`
   and its questions with `work ask`; the asker answers with `work reply`; `work turn` passes the turn; `work resolve`
   writes the requirement and version that hold each accepted line. `work start <request>` writes the initiative an
-  accepted request begins. Requests are kept as `.shop/work/requests/q<n>.md`.
+  accepted request begins. `work delegate <request> <delegation>` writes, replaces and commits a request's delegation
+  (refused for a delivered, refused or withdrawn request); a UserPromptSubmit hook tells a session, in a repository
+  that keeps an open request, to write a delegation the person gives with it, in the same reply. Requests are kept as
+  `.shop/work/requests/q<n>.md`.
 - **The context runs without a coordinator** (decision 0068): `work run` with no initiative takes every open request and
   initiative through every transition it can: the intake round of a request, the initiative of an accepted one, its
   integrate round (drafts kept on the branch, one capability-proposal a capability, ids above those other initiatives'

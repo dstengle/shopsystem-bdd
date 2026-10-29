@@ -2,6 +2,7 @@
 from pytest_bdd import scenarios
 
 from .requests_flow_steps import *
+from .requests_session_steps import *
 from .requests_show_steps import *
 from .requests_steps import *
 from .requests_world_steps import *
