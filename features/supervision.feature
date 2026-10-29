@@ -566,8 +566,9 @@ Feature: Supervision
     And it exits with an error
     And no session of bdd-branch-reviewer was started
 
-  @r28
-  Scenario: a change to .shop/work/ in the repository's own checkout that is not committed when a worker ends is put back, and the work-item's transition is to failed, naming the file
+  @r28 @deprecated
+  Scenario: a change to .shop/work/ in the repository's own checkout that is not committed when a worker ends is put back, and the work-item's transition is to failed, naming the file (deprecated)
+    Deprecated for: removal
     Pins that `.shop/work/` in the main checkout is only what its last commit holds whenever a worker ends, and that a change there is a fault, not a question.
     Given i1's work-item w1 is drafted
     And every worker gives DONE, and while the researcher works another session changes .shop/work/i1/initiative.md in the repository's own checkout without committing it
@@ -1987,3 +1988,31 @@ Feature: Supervision
     And the branch reviewer's brief gives w1 for w1's implementer's commit, the merge of work/w1 and each commit of a transition of w1, and w2 for w2's in the same way
     And the branch reviewer's brief gives none for the commit of notes.txt
     And the branch reviewer's brief gives the change from the initiative branch's base to its head, containing src/w1.py, src/w2.py and notes.txt and nothing under .shop/
+
+  @r214
+  Scenario: what changed in the repository's own checkout while a session of one initiative worked is checked without the paths of another initiative run side by side
+    Pins that a session is answerable only for its own initiative's part of .shop/work/, never for what an initiative beside it changes there.
+    Given i1's work-item w1 is drafted
+    And an initiative i2 under .shop/work/ whose capability-proposal p2 is drafted
+    And every round ends and every worker gives DONE, and while i1's researcher works a session of i2 changes .shop/work/i2/initiative.md in the repository's own checkout without committing it
+    When the person runs `work run`
+    Then w1 is green, nothing recorded of w1 naming .shop/work/i2/initiative.md
+
+  @r215
+  Scenario: a change to another initiative's path under .shop/work/, made by that initiative's session while a session of one initiative worked, is not put back
+    Pins that `work run` never undoes the work of an initiative it is running beside another.
+    Given i1's work-item w1 is drafted
+    And an initiative i2 under .shop/work/ whose capability-proposal p2 is drafted
+    And every round ends and every worker gives DONE, and while i1's researcher works a session of i2 changes .shop/work/i2/initiative.md in the repository's own checkout without committing it
+    When the person runs `work run`
+    Then .shop/work/i2/initiative.md is as i2's session changed it
+
+  @r216
+  Scenario: a change to another initiative's path under .shop/work/, made by that initiative's session while a session of one initiative worked, faults no session
+    Pins that initiatives run side by side do not fail each other's sessions through their own parts of .shop/work/.
+    Given i1's work-item w1 is drafted
+    And an initiative i2 under .shop/work/ whose capability-proposal p2 is drafted
+    And every round ends and every worker gives DONE, and while i1's researcher works a session of i2 changes .shop/work/i2/initiative.md in the repository's own checkout without committing it
+    When the person runs `work run`
+    Then no session of i1 or of i2 was taken as a fault
+    And w1 is not failed and p2 is not failed
