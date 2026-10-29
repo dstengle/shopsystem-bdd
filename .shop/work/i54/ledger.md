@@ -7,3 +7,4 @@
 - 2026-10-29: integrate round 4: adds work-queue#r59, work-queue#r60, work-queue#r61; removes work-queue#r34, work-queue#r35; 0 questions, 0 cut sentences; drafts .shop/scratch/4-integrate/drafts/round-1
 - 2026-10-29: gate round 5: 0 questions (work-queue adds r59 r60 r61, removes r34 r35)
 - 2026-10-29: apply round 7 work-queue: applied r59 r60 r61, retired r34 r35, commit ec30d007
+- 2026-10-29: formulate round 8: work-queue r59 r60 r61 scenarios added, r34 r35 deprecated, commit fe960a7a
