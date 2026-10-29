@@ -1,0 +1,11 @@
+{
+  "status": "DONE",
+  "summary": "Research of w236 (supervision#r218) done. Accepted scenario features/supervision.feature:2021 run once with `python3 -m pytest -q --work-item w236`: 1 failed, 180 passed, 1 skipped. The failure is an undefined Given at line 2025 (two sessions changing i1's and i2's .shop/work/ paths); the Then 'nothing recorded of w1 names .shop/work/i2/initiative.md' has no step definition. Behind it, scripts/supervise_faults.py Faults.checkout_changes puts back every .shop/work/ path except the group's own run directories and log tails, so another initiative's path is put back and named (r214, r218 unmet). Caller: scripts/supervise_worker.py Run.worker raises one Fault naming all changed paths. No map exists, so tests-of and refs were unavailable; counts are by search and read. No existing test asserts the old put-back of another initiative's path. Fileset: supervise_faults.py, supervise_worker.py, tests/scenarios/supervision_faults_steps.py (supervise.py only if needed; room 5). Notes at .shop/scratch/1-research/notes.md.",
+  "fileset": [
+    "scripts/supervise_faults.py",
+    "scripts/supervise_worker.py",
+    "scripts/supervise.py",
+    "tests/scenarios/supervision_faults_steps.py"
+  ],
+  "questions": []
+}
