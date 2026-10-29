@@ -12,3 +12,4 @@
 - 2026-10-29: integrate round 3 of requests q39: requests removes r69, adds r72 (the date in the text given to work delegate), no glossary change, no questions, no cut sentences; drafts .shop/scratch/25-integrate/drafts/round-1
 - 2026-10-29: gate round 26: 1 question (requests r69 replaced by r72)
 - 2026-10-29: apply round 28: requests r69 retired, r72 added (the swap approved 2026-10-29); other answers already held in spec
+- 2026-10-29: formulate requests round 2: commit 64726942, 1 scenario added (r72), none changed or deprecated; no questions
