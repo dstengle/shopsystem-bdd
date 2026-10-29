@@ -1,0 +1,8 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Branch review 2 of i60, ae85edd3..40b081a4 on main.\nSuite: 1069 passed, 0 failed at 40b081a4 in 33.34 s. It runs in parallel (-n auto) and out of process (subprocess); 16 xfailed, 6 xpassed.\nw233 (supervision#r211, a step only, no production code) is sound: its scenarios gave 182 passed. No test was removed or weakened outside a plan's list, and every allowance holds.\ntools check: ruff exits 1 on 2 errors (test_supervision.py:14 I001, work_queue_list_steps.py:134 RUF015). Both predate the range, in files it touched. Vulture is clean and there are no import contracts. tools size, features deprecated and features bindings are clean.\nOne fix-now, outside i60: i54/w232's work show <request> skips lines with no outcome (r59). It is already w232's open question, so fix it under w232.\nSince review 1 there are only .shop commits. i60 cannot be done while i60-requests is awaiting-answer, with one gate question open.",
+  "findings": "/tmp/work-run-i60-4cwide4y/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": [
+    "Important, w232 (i54): scripts/workqueue_list.py:86-88 request_parts prints only lines that have a line outcome, so work show <request> leaves out unsettled lines (work-queue r59). Fix under w232; it is already w232's open question."
+  ]
+}
