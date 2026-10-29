@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i63-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i63
-status: approved
+status: awaiting-answer
 argues: [supervision]
 date: 2026-10-29
 adds: [supervision#r214, supervision#r215, supervision#r216, supervision#r217]
@@ -37,6 +37,7 @@ The drafts of this proposal are in .shop/work/i63/runs/supervision/8-integrate/d
   
   Question 5: r214 says "the repository's own checkout"; r28 and r46 say "the main checkout". Readings: (a) RECOMMENDED: r214 says "the main checkout". (b) r214 keeps the request's wording.
 - Are the lines of supervision approved as drafted? Readings: approve supervision as drafted (recommended), or change its lines.
+- r217: "**If** the main checkout's `.shop/work/`, less each path under `.shop/work/<initiative>/` of another initiative, differs from its last commit when a worker ends, then `work run` shall put it back and transition the work-item to `failed`, naming each file." Reading 1: "another initiative" is any initiative other than the work-item's, so under `work run i1` alone an uncommitted change to `.shop/work/i2/` is left alone and w1 does not fail. Reading 2: "another initiative" is, as in r214 to r216, one that `work run` is running side by side, so under `work run i1` alone such a change is put back and w1 is failed, naming it.
 
 ## Answers
 - 2026-10-29: Reading (a), under the person's delegation of 2026-10-28 ("I take recommendations"): r215 is an exception to r28, and r28 changes to: "**If** the main checkout's `.shop/work/`, less each path under `.shop/work/<initiative>/` of another initiative, differs from its last commit when a worker ends, then `work run` shall put it back and transition the work-item to `failed`, naming each file."
