@@ -97,8 +97,9 @@ Feature: Work queue
     And .shop/work/i1/initiative.md gives i1's status as started
     And it exits successfully
 
-  @r34
-  Scenario: list prints each initiative, each request and each work-item under .shop/work/ with its status
+  @r34 @deprecated
+  Scenario: list prints each initiative, each request and each work-item under .shop/work/ with its status (deprecated)
+    Deprecated for: removal
     Pins that list reads the whole queue, initiatives that have ended among them, and gives every initiative, request and work-item in it with its status.
     Given an initiative i1 under .shop/work/ that is started, whose work-items w1 is drafted and w2 is ready
     And an initiative i2 under .shop/work/ that is done, whose work-item w3 is green
@@ -110,8 +111,9 @@ Feature: Work queue
     And it prints w1 with drafted, w2 with ready, w3 with green and w4 with withdrawn
     And it exits successfully
 
-  @r35
-  Scenario: list with --json prints each initiative, request and work-item with its status as one JSON object
+  @r35 @deprecated
+  Scenario: list with --json prints each initiative, request and work-item with its status as one JSON object (deprecated)
+    Deprecated for: removal
     Pins that list's result, read by a script, is one JSON object giving every initiative, request and work-item with its status, and nothing besides.
     Given an initiative i1 under .shop/work/ that is started, whose work-item w1 is drafted
     And an initiative i2 under .shop/work/ that is done, whose work-item w2 is green
@@ -119,6 +121,27 @@ Feature: Work queue
     When the session runs `work list --json`
     Then work prints one JSON object and nothing else
     And it gives i1 with started, i2 with done, q1 with accepted, w1 with drafted and w2 with green
+    And it exits successfully
+
+  @r60
+  Scenario: list prints each initiative and each work-item under .shop/work/ with its status
+    Pins that list reads the whole queue, initiatives that have ended among them, and gives every initiative and every work-item in it with its status.
+    Given an initiative i1 under .shop/work/ that is started, whose work-items w1 is drafted and w2 is ready
+    And an initiative i2 under .shop/work/ that is done, whose work-item w3 is green
+    And an initiative i3 under .shop/work/ that is abandoned, whose work-item w4 is withdrawn
+    When the session runs `work list`
+    Then work prints i1 with started, i2 with done and i3 with abandoned
+    And it prints w1 with drafted, w2 with ready, w3 with green and w4 with withdrawn
+    And it exits successfully
+
+  @r61
+  Scenario: list with --json prints each initiative and work-item with its status as one JSON object
+    Pins that list's result, read by a script, is one JSON object giving every initiative and work-item with its status, and nothing besides.
+    Given an initiative i1 under .shop/work/ that is started, whose work-item w1 is drafted
+    And an initiative i2 under .shop/work/ that is done, whose work-item w2 is green
+    When the session runs `work list --json`
+    Then work prints one JSON object and nothing else
+    And it gives i1 with started, i2 with done, w1 with drafted and w2 with green
     And it exits successfully
 
   @r39
@@ -157,6 +180,21 @@ Feature: Work queue
     When the session runs `work show w2`
     Then work prints w2's status as awaiting-answer
     And it prints the question "Which reading of r3?"
+    And it exits successfully
+
+  @r59
+  Scenario: show of a request prints its status, whose turn it is, its lines with their line outcomes, its questions, its answers and its resolution
+    Pins what show gives about one request: where it stands, which side writes next, how the upstream answered each line, what was asked and answered on it, and the requirement ids that hold what was accepted.
+    Given a request q1 kept in this context, whose asker is this context, that is delivered and in the asker's turn
+    And its line 1 has the line outcome accepted and its line 2 the line outcome refused
+    And it has on line 2 the question "Is the order kept?" with the answer "No, any order"
+    And its resolution gives line 1 as thing#r7, delivered in version 0.23.0
+    When the session runs `work show q1`
+    Then work prints q1's status as delivered
+    And it prints that it is the asker's turn
+    And it prints line 1 with accepted and line 2 with refused
+    And it prints the question "Is the order kept?" and the answer "No, any order"
+    And it prints its resolution, thing#r7 and 0.23.0
     And it exits successfully
 
   @r38
