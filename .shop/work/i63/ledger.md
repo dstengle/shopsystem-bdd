@@ -1,2 +1,3 @@
 - 2026-10-29: 2026-10-29: q42's two lines were accepted by the coordinator with work outcome under the person's delegation, without an intake round (only a full work run takes in a request, and it runs every initiative side by side, the race q42 fixes); i63 started with work start, kept as it is by the person, 2026-10-29: "Don't undo what you did. Get q42 delivered directly"
 - 2026-10-29: integrate round 1: supervision adds r214, r215, 0 changes, 0 removes, 5 questions, 1 cut sentence; .shop/scratch/1-integrate/drafts/round-1/
+- 2026-10-29: gate round 1: 5 questions
