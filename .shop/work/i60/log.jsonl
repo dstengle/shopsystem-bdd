@@ -153,3 +153,4 @@
 {"time": "2026-10-29T20:28:10+00:00", "work-item": "w234", "stage": "research", "agent": "code-scout", "session": "fb5844b5-746f-4997-8533-3ab8bd5afb74", "event": "start"}
 {"time": "2026-10-29T20:30:10+00:00", "work-item": "w234", "stage": "research", "agent": "code-scout", "session": "fb5844b5-746f-4997-8533-3ab8bd5afb74", "event": "end"}
 {"time": "2026-10-29T20:30:10+00:00", "work-item": "w234", "before": "drafted", "after": "awaiting-answer", "by": "work run"}
+{"time": "2026-10-29T20:30:51+00:00", "work-item": "w234", "before": "awaiting-answer", "after": "withdrawn", "by": "work withdraw"}
