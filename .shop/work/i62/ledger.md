@@ -1,0 +1,1 @@
+- 2026-10-29: integrate round 1: adds supervision#r212, supervision#r213; 6 questions; 2 cut sentences; .shop/scratch/1-integrate/drafts/round-2
