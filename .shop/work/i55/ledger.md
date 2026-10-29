@@ -2,3 +2,4 @@
 - 2026-10-28: gate round 1: 10 questions
 - 2026-10-28: gate round 1: 4 questions on supervision r184, r185, r186
 - 2026-10-28: gate round 1: 2 questions on work-queue r47
+- 2026-10-29: apply round 12: applied the round-1 drafts of requests, supervision and work-queue (commit deda9fa6); answers on r14/r59, r149, r32/r9/r187, r23/r48 and r105/r188 not held by the drafts
