@@ -1,4 +1,4 @@
-"""supervision's steps about the questions `work run` has answered under a request's delegation (r77, r78)."""
+"""supervision's steps about the questions `work run` has answered under a request's delegation (r77, r78, r211)."""
 import json
 import re
 
@@ -14,10 +14,30 @@ ANSWER = "The delegation covers it."
 @given(parsers.re(r'i1 fulfils the request q1, which gives the delegation "(?P<delegation>[^"]+)"$'))
 def fulfils_with_delegation(repo, context, delegation):
     context["delegation"] = delegation
-    write(repo, DIR + "/initiative.md", "---\nid: %s\nkind: initiative\nstatus: started\nfulfils: q1\n---\n" % full("initiative", "i1"))
-    write(repo, ".shop/work/requests/q1.md", "---\nid: %s\nkind: request\nasker: internal\nstatus: accepted\n"
-          'delegation: "%s"\n---\n\n## Lines\n1. Something.\n' % (full("request", "q1"), delegation))
+    start_i1(repo)
+    write_q1(repo, delegation)
     commit_all(repo, "i1 fulfils q1, which gives a delegation")
+
+
+def start_i1(repo):
+    write(repo, DIR + "/initiative.md", "---\nid: %s\nkind: initiative\nstatus: started\nfulfils: q1\n---\n" % full("initiative", "i1"))
+
+
+def write_q1(repo, delegation=None):
+    field = 'delegation: "%s"\n' % delegation if delegation else ""
+    write(repo, ".shop/work/requests/q1.md", "---\nid: %s\nkind: request\nasker: internal\nstatus: accepted\n"
+          '%s---\n\n## Lines\n1. Something.\n' % (full("request", "q1"), field))
+
+
+@given(parsers.re(r'i1 fulfils the request q1, which gives the delegation "(?P<delegation>[^"]+)", given (?P<when>before|after) i1 started$'))
+def fulfils_with_delegation_given(repo, context, delegation, when):
+    context["delegation"] = delegation
+    start_i1(repo)
+    write_q1(repo, delegation if when == "before" else None)
+    commit_all(repo, "i1 started, fulfilling q1")
+    if when == "after":
+        write_q1(repo, delegation)
+        commit_all(repo, "q1 is given a delegation")
 
 
 @given(parsers.re(r'spec/index\.md\'s Glossary holds the term "(?P<term>[^"]+)"$'))
