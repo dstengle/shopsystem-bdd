@@ -7,3 +7,4 @@
 - 2026-10-29: apply round 5 supervision: nothing applied, the 2026-10-29 answer changes lines (glossary-change check replaces the mentions-the-glossary rule, r176 dropped) that the round-3 drafts do not hold
 - 2026-10-29: integrate round 6: q37; supervision adds r209 r210 removes r162 r163, 0 glossary terms, 0 questions, 0 cut sentences; drafts .shop/scratch/6-integrate/drafts/round-6
 - 2026-10-29: gate round 7: 1 question; drafts at .shop/work/i51/runs/supervision/6-integrate/drafts/round-6/
+- 2026-10-29: apply round 8: nothing applied; the 2026-10-29 answer drops the term clause from r209 and r210, which the round-6 drafts hold; new integrate round needed
