@@ -1,3 +1,4 @@
 - 2026-10-29: integrate round 1: requests adds r59-r63, supervision adds r211, no glossary change, 7 questions, no cut sentences; drafts .shop/scratch/1-integrate/drafts/round-1
 - 2026-10-29: gate round 1: 6 questions
 - 2026-10-29: gate round 1: 0 questions (supervision#r211 raises none; the drafts' questions on requests r59-r63 and the glossary are outside the brief's lines)
+- 2026-10-29: apply round 4: supervision r211 applied as approved 2026-10-29, spec committed
