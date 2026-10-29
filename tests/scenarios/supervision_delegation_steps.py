@@ -26,10 +26,11 @@ def glossary_holds_term(repo, term):
     commit_all(repo, "spec/index.md's Glossary holds a term")
 
 
-@given(parsers.re(r"i1's glossary-proposal g1 is awaiting-answer$"))
-def glossary_proposal_awaiting(repo):
+@given(parsers.re(r"i1's glossary-proposal g1 is awaiting-answer(?:, its ## Questions section with \"(?P<question>[^\"]+)\" and no answer)?$"))
+def glossary_proposal_awaiting(repo, question=None):
+    body = "\n## Questions\n\n- %s\n" % question if question else ""
     write(repo, DIR + "/g1.md", "---\nid: %s\nkind: glossary-proposal\npart_of: %s\nstatus: awaiting-answer\nadds: [term/ledger]\n"
-          "changes: []\nremoves: []\ndate: 2026-10-15\n---\n" % (full("glossary-proposal", "g1"), full("initiative", "i1")))
+          "changes: []\nremoves: []\ndate: 2026-10-15\n---\n%s" % (full("glossary-proposal", "g1"), full("initiative", "i1"), body))
     commit_all(repo, "an awaiting-answer glossary-proposal")
 
 
@@ -66,11 +67,11 @@ def sessions_reply(repo, plan, reply):
     plan["delegation-answerer"] = {"fields": {"answer": ANSWER}} if reply == "answers it" else {}
 
 
-@given(parsers.re(r'i1\'s work-item w1 is awaiting-answer, its ## Questions section with "(?P<one>[^"]+)" and "(?P<two>[^"]+)", '
+@given(parsers.re(r'i1\'s work-item (?P<name>w\d+) is awaiting-answer, its ## Questions section with "(?P<one>[^"]+)" and "(?P<two>[^"]+)", '
                   r"each with no answer$"))
-def two_unanswered(repo, one, two):
-    write(repo, DIR + "/w1.md", "---\nid: %s\nkind: work-item\npart_of: %s\nstatus: awaiting-answer\nunder: thing\n"
-          "accepts: [thing#r1]\n---\n\n## Questions\n\n- %s\n- %s\n" % (full("work-item", "w1"), full("initiative", "i1"), one, two))
+def two_unanswered(repo, name, one, two):
+    write(repo, DIR + "/%s.md" % name, "---\nid: %s\nkind: work-item\npart_of: %s\nstatus: awaiting-answer\nunder: thing\n"
+          "accepts: [thing#r1]\n---\n\n## Questions\n\n- %s\n- %s\n" % (full("work-item", name), full("initiative", "i1"), one, two))
     commit_all(repo, "a work-item with two unanswered questions")
 
 
@@ -127,9 +128,9 @@ def session_at_turn_limit(repo, plan, answer):
     plan["delegation-answerer"] = {"fields": {"answer": answer}, "subtype": "error_max_turns", "num_turns": 26}
 
 
-@then(parsers.re(r'w1\'s question "(?P<question>[^"]+)" has no answer$'))
-def question_unanswered(repo, question):
-    text = (repo / (DIR + "/w1.md")).read_text()
+@then(parsers.re(r'(?P<name>w1|g1)\'s question "(?P<question>[^"]+)" has no answer$'))
+def question_unanswered(repo, name, question):
+    text = (repo / (DIR + "/%s.md" % name)).read_text()
     assert question in section(text, "Questions") and not section(text, "Answers").strip(), text
 
 
@@ -206,6 +207,20 @@ def have_answer(repo, context):
 @then("w1's question and p1's question have no answer, w1 and p1 awaiting-answer")
 def have_none(repo, context):
     for name in ("w1", "p1"):
+        text = (repo / (DIR + "/%s.md" % name)).read_text()
+        assert not answers_of(repo, name).strip() and "status: awaiting-answer" in text, (name, text)
+
+
+@then("w1's question, p1's question and each of w2's questions have the session's answer")
+def have_answer_with_w2(repo, context):
+    have_answer(repo, context)
+    assert len(re.findall(r"^- ", answers_of(repo, "w2"), re.MULTILINE)) == 2, answers_of(repo, "w2")
+    assert ANSWER in answers_of(repo, "w2"), context["done"].stderr
+
+
+@then("w1's question, p1's question and w2's questions have no answer, w1, w2 and p1 awaiting-answer")
+def have_none_with_w2(repo, context):
+    for name in ("w1", "w2", "p1"):
         text = (repo / (DIR + "/%s.md" % name)).read_text()
         assert not answers_of(repo, name).strip() and "status: awaiting-answer" in text, (name, text)
 

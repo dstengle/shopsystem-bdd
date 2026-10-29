@@ -1,13 +1,12 @@
 """`work run`'s answers under a delegation (capability supervision r77, r78): when the request an initiative fulfils gives
 a delegation, each open question of its awaiting-answer work-items and capability-proposals goes to a session of its own,
 given the question, the delegation and the files the question names, and nothing else. An answer the session gives is
-written naming the delegation; a question naming a term of the glossary or a glossary-proposal goes to no session and is
-left for the person (r162, r163). Standard library only; a part of supervise.Run."""
+written naming the delegation; a question of a glossary-proposal goes to no session and is left for the person, whatever
+words it uses (r209, r210). Standard library only; a part of supervise.Run."""
 import datetime
 import json
 import re
 
-import supervise_glossary
 import workqueue
 import workqueue_answer
 import workqueue_request
@@ -72,7 +71,7 @@ class Answers:
             before = workqueue.agrees(self.root, self.initiative, name)
             left = False
             for question in self.open_questions(name):
-                answer = None if supervise_glossary.names_one(self.root, question) else self.ask(name, question, delegation)
+                answer = self.ask(name, question, delegation)
                 if answer is None or left:     # the n-th answer answers the n-th question: none is written after a gap
                     left = True
                     continue

@@ -1331,25 +1331,6 @@ Feature: Supervision
       | Please get everything delivered. Do not stop to ask me questions or permission. | answers it               | w1's question and p1's question each have the session's answer            |
       | Answer only the questions on the queue's tests; ask me everything else.          | leaves it for the person | w1's question and p1's question have no answer, w1 and p1 awaiting-answer |
 
-  @r162 @deprecated
-  Scenario Outline: under a delegation, a question of the initiative that names <named> is left for the person and given to no session (deprecated)
-    Deprecated for: r209 and r210
-    Pins that a question touching the glossary is the person's to answer, whatever the delegation's words allow.
-    Given spec/index.md's Glossary holds the term "ledger"
-    And i1 fulfils the request q1, which gives the delegation "Please get everything delivered. Do not stop to ask me questions or permission."
-    And i1's glossary-proposal g1 is awaiting-answer
-    And i1's work-item w1 is awaiting-answer, its ## Questions section with "<question>" and no answer
-    And each session given a question under the delegation answers it, and every round ends and every worker gives DONE
-    When the person runs `work run i1`
-    Then "<question>" was given to no session
-    And w1's question "<question>" has no answer
-    And w1 is awaiting-answer
-
-    Examples:
-      | named                         | question                                       |
-      | the term "ledger"             | Does scripts/log.py write the ledger?          |
-      | the glossary-proposal g1      | Does scripts/log.py wait for g1 to be applied? |
-
   @r209
   Scenario Outline: under a delegation, a question of the initiative's glossary-proposal is left for the person and given to no session, whatever words it uses, here <words>
     Pins that a question the glossary-proposal asks is the person's to answer, whatever the delegation's words allow and whatever the question's words name.

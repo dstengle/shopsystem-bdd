@@ -1,7 +1,6 @@
 """The glossary-proposals of an initiative (spec-integration r55, design decision 0073): a term reaches spec/index.md only
 once the person has approved its glossary-proposal, so an apply round's brief withholds the terms of every glossary-proposal
-that is not `approved`; and a question under a delegation that names a term of the glossary or a glossary-proposal is
-left for the person (supervision r162). Standard library only."""
+that is not `approved`. Standard library only."""
 import re
 
 import workqueue
@@ -55,12 +54,6 @@ def approval_question(path):
     return "Are the terms of %s approved as drafted? It %s." % (path.stem, ", ".join(named))
 
 
-def terms_of(root):
-    """The terms of spec/index.md's `## Glossary`: the bold name of each bullet."""
-    path = root / "spec" / "index.md"
-    return terms_in(path.read_text()) if path.is_file() else []
-
-
 def terms_in(text):
     terms, inside = [], False
     for line in text.splitlines():
@@ -87,23 +80,6 @@ def glossary_only_done(root, directory):
         return False
     return (all(i[len("term/"):] in held for d in kinds for f in ("adds", "changes") for i in d.get(f) or [])
             and not any(i[len("term/"):] in held for d in kinds for i in d.get("removes") or []))
-
-
-def proposals_of(root):
-    """The file stem and the full id of every glossary-proposal under .shop/work/, of any initiative and status."""
-    names = []
-    for path in sorted((root / ".shop" / "work").glob("*/*.md")):
-        data, _ = workqueue.frontmatter(path.read_text())
-        if data.get("kind") == "glossary-proposal":
-            names += [path.stem] + ([data["id"]] if data.get("id") else [])
-    return names
-
-
-def names_one(root, question):
-    """Whether the question names a term of the glossary or a glossary-proposal (supervision r162): as a whole word or
-    phrase, in any case."""
-    return any(re.search(r"(?<![\w-])%s(?![\w-])" % re.escape(n), question, re.IGNORECASE)
-               for n in terms_of(root) + proposals_of(root))
 
 
 def text(directory, applying=None):

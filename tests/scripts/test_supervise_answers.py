@@ -54,18 +54,3 @@ def test_a_reviewers_item_with_every_question_answered_and_no_verdict_from_this_
     assert run.moves == []
     assert run.written == []
     assert run.sessions == []
-
-
-def test_a_question_names_a_term_of_the_glossary_or_a_glossary_proposal_as_a_whole_word_in_any_case(tmp_path):
-    from supervise_glossary import names_one
-    (tmp_path / "spec").mkdir()
-    (tmp_path / "spec" / "index.md").write_text("# Index\n\n## Glossary\n\n- **ledger**: a log. Not: journal.\n")
-    (tmp_path / ".shop" / "work" / "i1").mkdir(parents=True)
-    (tmp_path / ".shop" / "work" / "i1" / "g1.md").write_text("---\nkind: glossary-proposal\nstatus: drafted\n---\n")
-    assert names_one(tmp_path, "Does it write the ledger?")
-    assert names_one(tmp_path, "Is the Ledger kept?")
-    assert names_one(tmp_path, "Does it wait for g1 to be applied?")
-    assert not names_one(tmp_path, "Does the pledger own it?")
-    assert not names_one(tmp_path, "Does it wait for g10?")
-    assert not names_one(tmp_path, "Is a journal kept?")
-    assert not names_one(tmp_path, "Which module owns the log?")
