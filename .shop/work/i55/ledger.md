@@ -14,3 +14,4 @@
 - 2026-10-29: apply round 16: requests r64 and supervision r212 r213 applied (3611f76b); work-queue draft not applied, stale against spec (r59 taken, r34/r35 already retired); nothing else
 - 2026-10-29: integrate round 17 (requests): work-queue +1 -1 (r62 for r23), no glossary, 0 questions, 0 cut sentences; drafts .shop/scratch/17-integrate/drafts/round-1
 - 2026-10-29: gate round 18: 0 questions (requests#r64 added, requests#r14 removed; answers already given under the delegation)
+- 2026-10-29: apply round 10 (supervision): nothing applied; drafts already in spec/ by 3611f76b (r212 added; r149 r32 r9 retired); stale draft would revert r213
