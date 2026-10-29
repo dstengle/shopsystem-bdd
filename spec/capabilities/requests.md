@@ -24,6 +24,13 @@ what using it shows.
 - [r29] **Where** `--raised-for <request>` is given to `work request`, `work` shall write in the upstream's request the request it is raised for.
 - [r19] **Where** `--delegation <text>` is given to `work request`, `work` shall write the delegation in the request.
 - [r22] **If** the delegation given to `work request` is empty, **then** `work request` shall refuse, because the delegation is empty, and change nothing.
+- [r65] **When** `work delegate` is given a request and a delegation, `work` shall write the delegation in the request, replacing any delegation the request has.
+- [r66] **When** `work delegate` writes a delegation in a request, `work` shall commit the request on the current branch.
+- [r67] **If** the delegation given to `work delegate` is empty, **then** `work delegate` shall refuse, because the delegation is empty, and change nothing.
+- [r68] **If** `work delegate` is given a request that is `delivered`, `refused` or `withdrawn`, **then** `work delegate` shall refuse, naming the request's status, and change nothing.
+- [r69] **When** the person gives a session a delegation for a request outside `work request`, the session shall write the delegation in the request with `work delegate` in the same reply, in the person's words and with the date.
+- [r70] **When** `work delegate` is run, `work` shall write the delegation whichever side's turn it is.
+- [r71] **When** `work delegate` writes a delegation in a request, `work` shall keep the request's status and turn.
 - [r2] **If** a line given to `work request` is not in the strict form `model check` holds (v_e1, v_e2), **then** `work request` shall refuse, naming the line, and change nothing.
 - [r45] **If** a request whose asker is the upstream itself is raised with neither `--source` nor `--thread`, **then** `work request` shall refuse, because the request names neither an origin nor a job-thread, and change nothing.
 - [r30] **If** a request whose asker is not the upstream itself is raised with `--source`, **then** `work request` shall refuse, because an origin belongs to an internal request, and change nothing.
@@ -73,6 +80,7 @@ what using it shows.
 - r20, r21: a question is written under `## Questions`, an answer under `## Answers`, the n-th answering the n-th.
 - r57, r42: the asker ids the upstream allows for each asker are a setting of the upstream's repository
   (design-decision/an-asker-is-told-by-its-registered-asker-id).
+- r65, r66: `work delegate` is a command of `scripts/work`; it writes the delegation as the frontmatter field `delegation`, replacing the field's value where the request has one.
 
 ## Not yet
 - The detail of turns, which the person reserved ("the person will ask for more detail later", the Approval of
