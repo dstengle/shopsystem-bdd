@@ -107,7 +107,9 @@ def is_failed(repo, context, name, what):
     faults = section(text, "Faults")
     for words in FAULT_WORDS.get(what, [what]):
         assert words in faults, (words, text)
-    assert git(repo, "status", "--porcelain", "--", ".shop/work") == "", git(repo, "status")
+    # another initiative's path is not this run's to put back (r218): whether i2's own run has put it back by now
+    # depends on when its sessions ended, so it is left out of what must be clean
+    assert git(repo, "status", "--porcelain", "--", ".shop/work", ":(exclude).shop/work/i2") == "", git(repo, "status")
 
 
 @then("the initiative branch has none of the branch work/w1's commits")
