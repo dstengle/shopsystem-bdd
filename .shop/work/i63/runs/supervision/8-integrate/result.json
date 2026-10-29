@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"supervision adds r214, r215, r216, r217; removes r28 (retired, replaced by r217). Gate at drafts/round-1/gate.md.","questions":[],"changes":[{"capability":"supervision","adds":["supervision#r214","supervision#r215","supervision#r216","supervision#r217"],"changes":[],"removes":["supervision#r28"]}]}
