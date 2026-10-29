@@ -1,0 +1,1 @@
+- 2026-10-29: integrate round 1: drafts for 8 capabilities, glossary term/check, decision 0074, 14 questions; analysis-tools draft file not written (hook refused path); gate at .shop/scratch/1-integrate/drafts/round-1/gate.md
