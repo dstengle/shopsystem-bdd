@@ -5,3 +5,4 @@
 - 2026-10-29: apply round 12: applied the round-1 drafts of requests, supervision and work-queue (commit deda9fa6); answers on r14/r59, r149, r32/r9/r187, r23/r48 and r105/r188 not held by the drafts
 - 2026-10-29: integrate round 2: requests +1 -1, supervision +2 -4, work-queue +1 -1, no glossary, 0 questions, 0 cut sentences; drafts .shop/scratch/13-integrate/drafts/round-2
 - 2026-10-29: gate round 2: 1 question (requests r14 retired, r64 added)
+- 2026-10-29: apply round 6: nothing applied; round-1 drafts already in spec (deda9fa6); answers retiring r149, r32, r9 and adding the exit-successfully line (r187 is taken in spec) are not held by the drafts
