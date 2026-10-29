@@ -6,3 +6,4 @@
 - 2026-10-29: apply round 3: nothing applied; the answer asks to retire work-queue r35 and add r50, which the drafts never held, so an integrate round follows
 - 2026-10-29: integrate round 4: adds work-queue#r59, work-queue#r60, work-queue#r61; removes work-queue#r34, work-queue#r35; 0 questions, 0 cut sentences; drafts .shop/scratch/4-integrate/drafts/round-1
 - 2026-10-29: gate round 5: 0 questions (work-queue adds r59 r60 r61, removes r34 r35)
+- 2026-10-29: apply round 7 work-queue: applied r59 r60 r61, retired r34 r35, commit ec30d007
