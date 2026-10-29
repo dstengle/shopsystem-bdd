@@ -16,3 +16,4 @@
 - 2026-10-29: gate round 13: 0 questions (nothing added, changed or removed; r209 and r210 already held in spec/)
 - 2026-10-29: 2026-10-29: hand repair by the coordinator: apply round 11 committed r209 r210 (2c74c3a6), but its result listed superseded answers as unheld, so integrate round 12 redrafted nothing, emptied the proposal's ids and gate 13 asked approval of nothing; supervision set back to approved with adds r209 r210 removes r162 r163, and the empty glossary-proposal from round 9 withdrawn; faults raised as a request
 - 2026-10-29: formulate round 14: supervision r209, r210 formulated, r162, r163 scenarios deprecated; commit af49d7ff
+- 2026-10-29: formulate round 15: nothing changed; r209, r210 already formulated in af49d7ff (round 14), the new answer confirms the reading taken
