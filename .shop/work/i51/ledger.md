@@ -10,3 +10,4 @@
 - 2026-10-29: apply round 8: nothing applied; the 2026-10-29 answer drops the term clause from r209 and r210, which the round-6 drafts hold; new integrate round needed
 - 2026-10-29: integrate round 9: q37; supervision adds r209 r210 removes r162 r163, 0 glossary terms, 0 questions, 0 cut sentences; drafts .shop/scratch/9-integrate/drafts/round-9
 - 2026-10-29: gate round 10: 1 question (supervision r209, r210 replacing r162, r163)
+- 2026-10-29: gate round 1: 1 question (supervision r209, r210 replacing r162, r163)
