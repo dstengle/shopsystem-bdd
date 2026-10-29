@@ -103,12 +103,16 @@ class Faults:
 
     def checkout_changes(self):
         """The paths under .shop/work/ in the repository's own checkout that differ from its last commit, other than
-        what work run itself has written and not yet committed; each put back to its last commit (r28)."""
+        what work run itself has written and not yet committed and the part of each other initiative run side by side
+        (.shop/work/<initiative>/); each put back to its last commit (r214, r218)."""
         out = supervise_worker.git(self.root, "status", "--porcelain", "--untracked-files=all", "--", WORK.as_posix()).stdout
         logs = {run.rel(run.dir / "log.jsonl"): run for run in self.group}     # the runs of the initiatives taken together
+        others = [run.rel(run.dir) + "/" for run in self.group if run is not self]
         changed = []
         for line in out.splitlines():
             path = line[3:].strip('"')
+            if any(path.startswith(other) for other in others):
+                continue
             if any(path.startswith(own + "/") for run in self.group for own in run.own):
                 continue
             if path in logs and (self.root / path).read_text() == self.committed(path) + "".join(logs[path].unlogged):

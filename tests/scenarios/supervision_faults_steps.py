@@ -46,6 +46,23 @@ def another_session_changes(repo, plan):
     plan["code-scout"] = {"elsewhere": {"root": str(repo), "write": {".shop/work/i1/initiative.md": "changed elsewhere\n"}}}
 
 
+@given("every round ends and every worker gives DONE, and while i1's researcher works another session changes "
+       ".shop/work/i1/initiative.md and a session of i2 changes .shop/work/i2/initiative.md, both in the repository's own "
+       "checkout without committing them")
+def two_sessions_change(repo, plan):
+    plan["default"] = {"status": "DONE"}
+    i2 = (repo / ".shop/work/i2/initiative.md").read_text() + "\nChanged by a session of i2.\n"
+    plan["code-scout"] = {"elsewhere": {"root": str(repo), "write": {".shop/work/i1/initiative.md": "changed elsewhere\n",
+                                                                     ".shop/work/i2/initiative.md": i2}}}
+
+
+@then(parsers.re(r"nothing recorded of (?P<name>\w+) names (?P<path>\S+)$"))
+def nothing_names(repo, name, path):
+    assert path not in (repo / (".shop/work/i1/%s.md" % name)).read_text()
+    log = [l for l in (repo / ".shop/work/i1/log.jsonl").read_text().splitlines() if name in l]
+    assert not [l for l in log if path in l], log
+
+
 @given("the remote refuses pushes to the initiative branch")
 def remote_ahead(repo):
     """The remote's initiative branch has a commit the repository does not: git refuses to push over it."""
