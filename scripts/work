@@ -99,6 +99,11 @@ def cmd_resolve(args):
     return 0
 
 
+def cmd_delegate(args):
+    workqueue_request.delegate(args.root, args.request, args.delegation)
+    return 0
+
+
 def cmd_start(args):
     print(workqueue_start.start(args.root, args.request))
     return 0
@@ -167,6 +172,9 @@ def main(argv=None):
     q = sub.add_parser("resolve", help="write which requirement holds each accepted line of a request, and in which version")
     q.add_argument("request")
     q.add_argument("--line", nargs=3, action="append", default=[], metavar=("N", "REQUIREMENT", "VERSION"))
+    q = sub.add_parser("delegate", help="write the delegation of a request, in place of any it had")
+    q.add_argument("request")
+    q.add_argument("delegation")
     q = sub.add_parser("start", help="write the initiative an accepted request begins, proposed")
     q.add_argument("request")
     args = ap.parse_args(argv)
@@ -174,7 +182,7 @@ def main(argv=None):
         return {"add": cmd_add, "show": cmd_show, "list": cmd_list, "run": cmd_run, "retry": cmd_retry, "answer": cmd_answer,
                 "withdraw": cmd_withdraw, "note": cmd_note, "status": cmd_status,
                 "request": cmd_request, "outcome": cmd_outcome, "ask": cmd_ask, "reply": cmd_reply, "turn": cmd_turn, "resolve": cmd_resolve,
-                "start": cmd_start}[args.cmd](args)
+                "delegate": cmd_delegate, "start": cmd_start}[args.cmd](args)
     except workqueue.Refused as refused:
         print("work: %s" % refused, file=sys.stderr)
         return 1

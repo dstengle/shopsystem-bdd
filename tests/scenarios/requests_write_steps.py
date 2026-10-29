@@ -69,6 +69,36 @@ def refused_empty_delegation(context):
     assert "delegation is empty" in context["done"].stderr, context["done"]
 
 
+@given(parsers.parse("{ident} holds no delegation"))
+def holds_no_delegation(repo, ident):
+    assert "delegation:" not in (repo / request_rel(ident)).read_text()
+
+
+@given(parsers.parse('{ident} holds the delegation "{text}"'))
+def holds_delegation(repo, context, ident, text):
+    path = repo / request_rel(ident)
+    path.write_text(path.read_text().replace("\nturn:", "\ndelegation: %s\nturn:" % json.dumps(text), 1))
+    context["written"] = path.read_text()
+
+
+@then(parsers.re(r"(?P<ident>q\d+)'s delegation is (?:\"(?P<dq>.*)\"|'(?P<sq>.*)')"))
+def ident_delegation_is(repo, ident, dq, sq):
+    values = re.findall(r"(?m)^delegation: (.*)$", (repo / request_rel(ident)).read_text())
+    assert values, "no delegation field"
+    value = values[0]
+    assert (json.loads(value) if value.startswith('"') else value) == (dq if dq is not None else sq)
+
+
+@then(parsers.parse("{ident} holds no other delegation"))
+def holds_no_other_delegation(repo, ident):
+    assert len(re.findall(r"(?m)^delegation:", (repo / request_rel(ident)).read_text())) == 1
+
+
+@then(parsers.re(r"the command is refused, naming (?P<status>delivered|refused|withdrawn)"))
+def refused_naming_status(context, status):
+    assert status in context["done"].stderr, context["done"]
+
+
 @then("it exits with an error")
 def exits_with_an_error(context):
     assert context["done"].returncode != 0, context["done"]

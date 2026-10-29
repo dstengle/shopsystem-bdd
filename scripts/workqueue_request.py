@@ -211,6 +211,24 @@ def turn(root, ident):
     _change(root, ident, "turn", edit)
 
 
+def delegate(root, ident, text):
+    """Write `text` as request `ident`'s delegation in place of any it had (r65), committed (r66). An empty one is refused
+    (r67), and so is a delivered, refused or withdrawn request (r68); status and turn stay as they are (r70, r71)."""
+    if not text.strip():
+        raise Refused("the delegation is empty")
+
+    def edit(old):
+        status = field(old, "status")
+        if status in ("delivered", "refused", "withdrawn"):
+            raise Refused("%s is %s; work delegate writes a delegation only in a request whose negotiation has not ended" % (ident, status))
+        value = json.dumps(text)
+        if field(old, "delegation") is not None:
+            return _with_field(old, "delegation", value)
+        end = old.find("\n---", 4)
+        return old[:end] + "\ndelegation: %s" % value + old[end:]
+    _change(root, ident, "delegate", edit)
+
+
 def resolve(root, ident, lines):
     """Write each accepted line's requirement and version, `lines` being (number, requirement, version), and set the
     status to delivered (r10, r11); a request that is not accepted is refused."""

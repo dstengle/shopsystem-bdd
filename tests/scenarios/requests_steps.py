@@ -59,7 +59,10 @@ def a_request_with_a_line_each(repo, context, ident, asker, turn, first, second)
 @when(parsers.re(r"the upstream runs `work (?P<args>[^`]+)`(?P<giving>, giving .*)?"))
 def the_upstream_runs(repo, run, context, args, giving):
     argv = shlex.split(args)
-    if giving:
+    if giving and "the delegation" in giving:
+        ident, text = re.fullmatch(r', giving (q\d+) and the delegation "(.*)"', giving).groups()
+        argv += [ident, text]
+    elif giving:
         version = giving.rsplit("version ", 1)[1]
         for ident, line in re.findall(r"(\S+#r\d+) for line (\d+)", giving):
             argv += ["--line", line, ident, version]
