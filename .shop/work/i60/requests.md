@@ -41,3 +41,4 @@ The drafts of this proposal are in .shop/work/i60/runs/requests/19-integrate/dra
   by: work run, under the delegation "The person, 2026-10-28: "i am delegating to you" and "I take recommendations"; 2026-10-29: answer every question with its recommended reading; questions of a glossary-proposal are the person's."
 - 2026-10-29: Reading A: the delegation belongs to neither side's part, so r16 and r55 do not reach `work delegate`; no line changes (the person, 2026-10-29: answer every question with its recommended reading).
   by: work run, under the delegation "The person, 2026-10-28: "i am delegating to you" and "I take recommendations"; 2026-10-29: answer every question with its recommended reading; questions of a glossary-proposal are the person's."
+- 2026-10-29: r69: reading 1, the session puts the date into the text it gives work delegate, as every delegation is written now (The person, <date>: "<words>") (answered by the person, 2026-10-29)
