@@ -1,0 +1,198 @@
+## frontmatter
+---
+id: capability/missingmass.io/shopsystem/shopsystem-bdd/supervision
+title: Supervision
+narrator: the person who started `work run`
+group: service
+rests_on: [design-decision/a-script-supervises-delivery, design-decision/worker-results-are-files, design-decision/work-item-lifecycle-as-run, design-decision/review-of-work-items, design-decision/the-file-set-is-the-claim, design-decision/the-v3-agents, design-decision/commands-and-agents-answer-in-json, design-decision/a-ruling-returns-to-the-asking-stage, design-decision/answers-not-rulings, design-decision/workflow-capabilities-are-guarantees, design-decision/the-context-runs-without-a-coordinator, design-decision/requests-written-through-work, design-decision/an-answer-to-a-reviewer-returns-to-ready-or-done, design-decision/the-glossary-is-a-target-of-spec-work]
+retired: [r3, r5, r16, r112, r113, r80, r114, r71, r140, r92, r77, r104, r158, r160, r93, r9, r101, r32, r52, r81, r82, r53, r10, r96, r107, r88, r115, r40, r46, r51]
+---
+
+## Behaviour
+- [r1] **When** `work run <initiative>` is started, `work run` shall pull the initiative's work-items through research, plan, implementation and review until no work-item can make a transition.
+- [r66] **When** `work run` is started with no initiative, `work run` shall take every initiative that is neither `done` nor `abandoned` through every transition its nodes can make, the initiatives side by side and, but for the workers r20 and r59 start together, one session of an initiative at a time, and the rounds r95 names one at a time across initiatives.
+- [r111] **When** a transition that `work run` makes leaves a node of an initiative able to make another transition, `work run` shall take the node through that transition before it ends.
+- [r188] `work run` shall give its output as one JSON object on stdout.
+- [r189] The JSON object that `work run` gives shall hold the field `ok`.
+- [r190] **When** `work run` ends without crashing on an error it does not handle, `work run` shall exit successfully.
+- [r191] **If** `work run` crashes on an error it does not handle, **then** `work run` shall exit with an error.
+- [r207] **When** `work run` refuses, `work run` shall give `ok` false in its JSON object, saying why.
+- [r208] **When** `work run` runs a check that a work-item names, `work run` shall take the check as failing unless the JSON object the check gives holds `ok` true.
+- [r128] **If** a session that `work run` started for a work-item, a capability-proposal, an initiative or a question ends in an error or at its turn limit, or leaves no result `work run` can read, **then** `work run` shall take the session's end as a fault, whatever its result says.
+- [r129] **When** a session that `work run` started ends with a result that gives questions, `work run` shall send each question where its stage's questions go: a researcher's into the planner's brief, every other stage's under the node's `## Questions`, transitioning the node to `awaiting-answer`.
+- [r130] **When** a session that `work run` started ends with a result that gives no question and its stage's output, `work run` shall make the node's next transition.
+- [r131] **When** a session that `work run` started ends with a result that gives neither a question nor its stage's output, `work run` shall write under the node's `## Questions` a question naming the output missing and transition the node to `awaiting-answer`.
+- [r132] `work run` shall take as a stage's output: a researcher's file set; a planner's plan and file set; an implementer's commits on which the work-item's scenarios and the whole suite pass; a reviewer's findings; an answering session's answer; an integrate or apply round's change list; a formulate round's scenario for each requirement its proposal adds or changes; an intake round's line outcome or question on each line of its request; a gate round's questions.
+- [r133] `work run` shall make no transition from the outcome a session's result gives.
+- [r95] `work run` shall start the rounds of the kind `integrate`, `apply` and `formulate` of different initiatives one at a time.
+- [r67] **When** a request of which this context is the upstream is `open` or `awaiting-upstream`, `work run` shall start an `initiative-round` session of the kind `intake`, given the request, that writes each line's line outcome or a question on it and passes the turn with `work turn`.
+- [r100] **When** a round of the kind `intake` that `work run` started gives a question on a line of a request, `work run` shall write the question in the request.
+- [r134] **When** a round of the kind `intake` that `work run` started gives a question, `work run` shall leave the request's status as `work turn` writes it.
+- [r103] **When** a request of which this context is the upstream is `accepted` and no initiative fulfils it, `work run` shall start its initiative with `work start`.
+- [r79] **When** an initiative is `proposed`, `work run` shall start a round of the kind `integrate` given the accepted lines of the request it fulfils.
+- [r180] **When** a `started` initiative that fulfils a request has neither a capability-proposal, a glossary-proposal nor a work-item, `work run` shall start a round of the kind `integrate` for it, given the accepted lines of the request it fulfils.
+- [r102] **When** `work run` starts a round of the kind `integrate`, `work run` shall give the round every requirement id that the kept drafts of another initiative, not yet applied, add.
+- [r200] **If** a round of the kind `integrate` that `work run` started ends without a change list, **then** `work run` shall end, giving `ok` false in its JSON object and naming the round.
+- [r84] **When** `work run` starts the round of the kind `integrate` of a `proposed` initiative, `work run` shall transition the initiative to `started`.
+- [r91] **When** a round of the kind `integrate` that `work run` started ends, `work run` shall keep the round's drafts on the initiative branch.
+- [r159] **When** a round of the kind `integrate` that `work run` started ends with a change list, `work run` shall write a `drafted` capability-proposal for each capability the change list names, with the requirement ids it adds, changes and removes on that capability.
+- [r171] **When** a round of the kind `integrate` that `work run` started ends with a change list that names the glossary, `work run` shall write a `drafted` glossary-proposal with the terms the change list adds, changes and removes in the glossary.
+- [r135] **When** a round of the kind `integrate` that `work run` started gives the lines of a request into an upstream, `work run` shall raise them with `work request`, raised for the request the initiative fulfils and with that request's delegation.
+- [r201] **If** a change list that `work run` reads names a capability that neither `spec/capabilities/` nor the round's drafts have, **then** `work run` shall write no capability-proposal for it and end, giving `ok` false in its JSON object and naming the capability.
+- [r68] **When** a capability-proposal is `drafted`, `work run` shall start a round of the kind `gate` whose brief asks for the gate as questions, each a decision with its readings and the recommended reading marked.
+- [r164] **When** a glossary-proposal is `drafted`, `work run` shall start a round of the kind `gate` for it, asking only for the questions on the terms it adds, changes or removes.
+- [r168] **When** `work run` starts a round of the kind `gate` for a capability-proposal, `work run` shall ask the round only for the questions on the lines the proposal adds, changes or removes.
+- [r108] **When** `work run` starts a round of the kind `gate` or `apply` for a capability-proposal, `work run` shall give the round the path of the kept drafts of the round of the kind `integrate` that wrote the proposal.
+- [r170] **When** `work run` starts a round of the kind `gate` or `apply` for a glossary-proposal, `work run` shall give the round the path of the kept drafts of the round of the kind `integrate` that wrote the proposal.
+- [r85] **When** a round of the kind `gate` that `work run` started for a capability-proposal ends, `work run` shall write the questions its result gives under the proposal's `## Questions`.
+- [r117] **When** a round of the kind `gate` that `work run` started for a capability-proposal gives no question, `work run` shall write under the proposal's `## Questions` one question asking for the approval of the proposal's lines as drafted.
+- [r69] **When** a round of the kind `gate` that `work run` started for a capability-proposal ends, `work run` shall transition the proposal to `awaiting-answer`.
+- [r169] **When** a round of the kind `gate` that `work run` started for a glossary-proposal ends, `work run` shall transition the proposal to `awaiting-answer`.
+- [r173] **When** a round of the kind `gate` that `work run` started for a glossary-proposal ends with no question, `work run` shall write one question asking the person to approve the terms the proposal adds, changes and removes.
+- [r70] **When** every question that a round of the kind `gate` gave on a capability-proposal has an answer, `work run` shall start a round of the kind `apply` given the answers.
+- [r165] **When** every question that a round of the kind `gate` gave on a glossary-proposal has an answer, `work run` shall start a round of the kind `apply` given the answers.
+- [r172] **While** a glossary-proposal is `awaiting-answer` and a question that a round of the kind `gate` gave on it has no answer, `work run` shall start no round of the kind `apply` for it.
+- [r116] **When** every question that a round of the kind `formulate` gave on a capability-proposal has an answer, `work run` shall start a round of the kind `formulate` for the proposal, given the answers.
+- [r150] **When** a round of the kind `apply` gives in its result an answer that the drafts it applied do not hold, `work run` shall start a new round of the kind `integrate` for the capability-proposal.
+- [r151] **When** a round of the kind `apply` gives in its result an answer that the drafts it applied do not hold, `work run` shall start no round of the kind `formulate` for the capability-proposal until the new round of the kind `integrate` has been applied.
+- [r141] **When** `work run` starts a round of the kind `integrate` for a capability-proposal that has answers, `work run` shall give the round the capability-proposal's questions and answers and the initiative's ledger, with the accepted lines of the request the initiative fulfils.
+- [r142] **When** a round of the kind `integrate` drafts a capability-proposal anew from its answers, `work run` shall set the capability-proposal `drafted`, its earlier drafts kept in their round's directory.
+- [r143] **When** `work run` starts a round of the kind `integrate` for a capability-proposal, `work run` shall keep the proposal's status until the round ends.
+- [r144] **When** a round of the kind `apply` that `work run` started for a capability-proposal ends having applied its drafts, `work run` shall transition the proposal to `approved`.
+- [r166] **When** a round of the kind `apply` that `work run` started for a glossary-proposal ends having applied its drafts, `work run` shall transition the proposal to `approved`.
+- [r167] **When** a round of the kind `apply` that `work run` started for a glossary-proposal ends having applied its drafts, `work run` shall start no round of the kind `formulate` for the proposal.
+- [r145] **When** a round of the kind `apply` that `work run` started for a capability-proposal ends having applied its drafts, `work run` shall write the proposal's `adds`, `changes` and `removes` from the change list the round applied.
+- [r146] **When** a round of the kind `apply` that `work run` started for a capability-proposal ends having applied its drafts, `work run` shall start a round of the kind `formulate` for the proposal.
+- [r147] **When** a round of the kind `apply` applies nothing because a capability-proposal's answers give what its drafts do not hold, `work run` shall take that as the round's output.
+- [r148] **When** a round of the kind `integrate` drafts a capability-proposal anew from its answers, `work run` shall write no second capability-proposal for that proposal's capability.
+- [r83] **When** a round of the kind `formulate` that `work run` started for a capability-proposal ends without giving a question, `work run` shall transition the proposal to `formulated`.
+- [r149] **When** a round of the kind `formulate` formulates nothing because a capability-proposal's answers change lines not in `spec/`, `work run` shall start a new round of the kind `integrate` for the capability-proposal.
+- [r152] **When** a round of the kind `formulate` formulates nothing because a capability-proposal's answers change lines not in `spec/`, `work run` shall keep the capability-proposal's status.
+- [r153] **When** a round of the kind `formulate` formulates nothing because a capability-proposal's answers change lines not in `spec/`, `work run` shall take that as the round's output.
+- [r86] **If** a round of any kind that `work run` started for a capability-proposal or an initiative ends in an error or at its turn limit, or leaves no result `work run` can read, then `work run` shall keep the proposal's or initiative's status.
+- [r87] **If** a round of any kind that `work run` started for a capability-proposal or an initiative ends in an error or at its turn limit, or leaves no result `work run` can read, then `work run` shall make no transition from the round.
+- [r202] **If** a round of any kind that `work run` started for a capability-proposal or an initiative ends in an error or at its turn limit, or leaves no result `work run` can read, **then** `work run` shall end, giving `ok` false in its JSON object and naming the round and how it ended.
+- [r203] **If** a round of any kind that `work run` started for a capability-proposal or an initiative ends in an error or at its turn limit, or leaves no result `work run` can read, **then** `work run` shall take the initiative's other nodes through their transitions before it ends.
+- [r72] **When** a capability-proposal is `formulated`, `work run` shall draft with `work add` one work-item for each capability the proposal's `adds` and `changes` name, accepting every requirement they name on that capability.
+- [r136] **While** a request that an initiative raised into an upstream is not `delivered`, `work run` shall draft no work-item for the capability-proposal whose lines it raised.
+- [r73] **When** `work run` drafts a work-item, `work run` shall list under the work-item's `## Retires` each deprecated scenario whose `Deprecated for:` line names a scenario of a requirement the work-item accepts.
+- [r123] **When** every work-item of an initiative is `green` or `withdrawn` and a deprecated scenario's replacement's work-item, of any initiative, is `green`, `work run` shall draft one work-item, under the capability-proposal of the last-drafted work-item whose replacement it retires, that retires each deprecated scenario whose replacement's work-item is `green`.
+- [r124] **When** every work-item of an initiative is `green` or `withdrawn`, `work run` shall draft the work-item r123 names before it starts a branch review or runs `measure initiative`.
+- [r74] **When** a kept branch review's result lists findings to fix now, `work run` shall draft one work-item for them, naming the findings file, under the capability-proposal that the work-item the findings concern is part of.
+- [r121] **When** a kept branch review's result gives no question, `work run` shall take the review as listing nothing to fix now, whatever its status.
+- [r110] **When** a work-item drafted for a kept branch review's findings turns `green`, `work run` shall start the next branch review of the initiative before `work run` exits.
+- [r75] **When** every work-item of an initiative is `green` or `withdrawn` and at least one of them is `green` and its kept branch review lists nothing to fix now, `work run` shall run `measure initiative` on the initiative.
+- [r97] **While** an initiative has no work-item, `work run` shall run no `measure initiative` on it.
+- [r76] **When** the `measure initiative` that `work run` ran on an initiative has written its measurement, `work run` shall start a session of `analyzing-a-batch` that writes the initiative's analysis record.
+- [r106] **When** `work run` has written an initiative's measurement and its analysis record, `work run` shall commit them on the initiative branch.
+- [r105] **When** `work run` finds an initiative that is not `done`, that has at least one work-item that is `green`, whose every work-item is `green` or `withdrawn`, whose kept branch review lists nothing to fix now, whose measurement and analysis record `work run` has committed and whose every request kept in this context whose asker is this context and that names the initiative is `delivered`, `work run` shall set the initiative's status to `done`.
+- [r161] **When** an initiative changes only the glossary, its glossary-proposal is `approved` and its terms are committed to `spec/index.md`, `work run` shall set the initiative's status to `done`.
+- [r109] **When** `work run` sets an initiative's status to `done`, `work run` shall commit the initiative on the initiative branch.
+- [r163] **Where** the request an initiative fulfils gives a delegation, `work run` shall give each question of the initiative that names neither a term of the glossary nor a glossary-proposal to a session of its own, given the delegation, the files that one question names and nothing else, which answers the question if the delegation covers it and leaves it for the person otherwise.
+- [r162] **When** a question of an initiative names a term of the glossary or a glossary-proposal, `work run` shall leave the question for the person, giving it to no session under a delegation.
+- [r78] **Where** the request an initiative fulfils gives a delegation, **when** a session `work run` started under it answers a question, `work run` shall write the answer naming the delegation it was given under.
+- [r118] **Where** the request an initiative fulfils gives a delegation, **when** a session that `work run` started under it answers a reviewer's question on a work-item with an answer that asks for a change, `work run` shall transition the work-item to `ready`.
+- [r119] **Where** the request an initiative fulfils gives a delegation, **when** a session that `work run` started under it answers a reviewer's question on a work-item with an answer that accepts the work-item as it is, `work run` shall transition the work-item to `done`.
+- [r120] **Where** the request an initiative fulfils gives a delegation, **when** a session that `work run` started under it answers a reviewer's question on a work-item, the session shall give in its result whether its answer asks for a change or accepts the work-item as it is.
+- [r89] **If** a session that `work run` started under a delegation to answer a question ends in an error or at its turn limit, or leaves no result `work run` can read, then `work run` shall leave the question unanswered for the person.
+- [r90] **If** a session that `work run` started under a delegation to answer a question ends in an error or at its turn limit, or leaves no result `work run` can read, then `work run` shall commit the session's stage directory and log lines.
+- [r59] **When** more than one work-item of the initiative is `drafted` or `researched`, `work run` shall start the research or plan stage of each of them at the same time, within the number of workers r60 gives.
+- [r60] `work run` shall run at most as many workers at the same time as `.shop/delivery.toml`'s number of workers, and 4 where it gives none.
+- [r2] **When** a work-item's status is `drafted`, `researched`, `ready` or `done`, `work run` shall start a new `claude -p` session of that stage's agent (`code-scout`, `bdd-planner`, `bdd-implementer`, `bdd-task-reviewer`), given one brief that names the work-item, the files to read and where its result goes.
+- [r4] **When** an implementer's session ends with a result that gives no question, `work run` shall merge its work-item branch into the initiative branch only if the work-item's scenarios pass on it and the whole suite passes on it but for the failing scenarios r43 counts as expected.
+- [r6] **If** a worker changes a file under `.shop/work/` outside its stage directory, then `work run` shall put the file back as it was.
+- [r7] **When** `work run` makes a work-item's transition, `work run` shall commit the work-item's file, its stage directories and `log.jsonl` on the initiative branch, and nothing else.
+- [r8] **When** a worker starts or ends, `work run` shall append a line to `log.jsonl` with the time, the work-item, the stage, the agent and the session id.
+- [r62] **When** `work run` writes a stage's `session.json`, `work run` shall record in it the path of the transcript of the stage's session.
+- [r192] **When** no work-item can make a transition, every work-item is `green` or `withdrawn` and no request whose asker is this context is in the asker's turn, `work run` shall give `ok` true in its JSON object, with each work-item's status.
+- [r193] **When** `work run` ends while a request kept in this context whose asker is this context is in the asker's turn, `work run` shall give `ok` false in its JSON object, with the request and its open questions.
+- [r194] **When** no work-item can make a transition and a work-item is `awaiting-answer`, `work run` shall give `ok` false in its JSON object, with each work-item's status and each open question.
+- [r195] **When** no work-item can make a transition and a work-item is `failed`, `work run` shall give `ok` false in its JSON object, with each work-item's status and each fault.
+- [r196] **When** `work run` was started with no initiative, no node of an initiative it took can make a transition and one such node is `awaiting-answer` or `failed`, `work run` shall give `ok` false in its JSON object, with the status of each initiative it took.
+- [r197] **When** `work run` was started with no initiative, no node of an initiative it took can make a transition and none is `awaiting-answer` or `failed` and no request whose asker is this context is in the asker's turn, `work run` shall give `ok` true in its JSON object, with the status of each initiative it took.
+- [r198] **If** the push after the branch review's commit fails, **then** `work run` shall end, giving `ok` false in its JSON object and saying why.
+- [r54] **When** `work run` starts and the initiative branch has commits its remote does not have, `work run` shall first push the initiative branch to the remote.
+- [r199] **If** `work run` cannot start the delivery it was asked for, **then** `work run` shall end, giving `ok` false in its JSON object and saying why, and change nothing.
+- [r11] **When** `work run` starts a worker, `work run` shall give the worker this plugin's own directory as its plugin.
+- [r12] **When** `work run` starts a worker whose agent lists skills, `work run` shall allow the worker to load each of those skills.
+- [r13] `work run` shall give no worker a bare Write or Edit tool.
+- [r14] `work run` shall allow a worker's Bash only `python3 -m pytest`, the plugin's scripts its stage runs, by path, and the git commands its stage needs.
+- [r15] **When** `work run` removes a worker's worktree, `work run` shall first copy each file the worker's result names into its stage directory.
+- [r17] **When** `work run` writes a worker's brief, `work run` shall tell the worker that it starts in its worktree and never changes directory.
+- [r18] **When** `work run` merges a work-item branch, `work run` shall delete that branch.
+- [r19] **When** `work run` starts a researcher, `work run` shall give it the work-item's file set and accepted scenarios and a limit of 80 turns.
+- [r20] **While** ready work-items have claims that share no file, `work run` shall have them implemented at the same time, each in its own worktree, within the number of workers r60 gives.
+- [r61] **When** implementers working at the same time end, `work run` shall merge the work-item branches that r4 merges into the initiative branch one at a time, in the order the implementers ended.
+- [r21] **If** `work run` is started by a worker of another `work run`, then `work run` shall refuse, saying so.
+- [r22] `work run` shall give every pytest command it starts, and every worker's, the plugin's option `--work-item <name>`, which selects the scenarios the work-item accepts.
+- [r55] **When** a pytest command given `--work-item <name>` collects a test that is not a scenario, the option shall keep that test.
+- [r56] **If** a pytest command given `--work-item <name>` collects scenarios and none that the work-item accepts, and a requirement the work-item accepts is not of a guarantees capability, then the option shall refuse, saying so.
+- [r64] **When** a pytest command given `--work-item <name>` collects scenarios and none that the work-item accepts, and every requirement the work-item accepts is of a guarantees capability, the option shall deselect each scenario it collects.
+- [r65] **When** a pytest command given `--work-item <name>` for a work-item every requirement of which is of a guarantees capability is left with no test, the command shall exit successfully.
+- [r23] **Where** the repository is inside the plugin's own directory, `work run` shall make each worker's worktree in a temporary directory outside it.
+- [r24] **When** `work run` starts an implementer, `work run` shall first run the whole suite in the implementer's worktree and say in the brief how it ended.
+- [r25] **When** `work run` writes a worker's brief, `work run` shall name in it the plugin's scripts directory, the initiative branch's base, the worker's worktree and its work-item branch.
+- [r57] **When** `work run` writes the brief of a worker for a work-item that has answers, `work run` shall write each of the work-item's answers, with the question it answers, in it.
+- [r98] **When** `work run` starts an implementer for a work-item that an answer to the question of a work-item's reviewer returned to `ready`, `work run` shall give the implementer the reviewer's findings and the answer.
+- [r26] **When** `work run` makes a work-item's transition to `awaiting-answer`, `work run` shall keep the work-item branch.
+- [r58] **When** `work run` starts an implementer for a work-item whose work-item branch it kept, `work run` shall make the implementer's worktree on that branch.
+- [r27] **When** every work-item of the initiative is `green` or `withdrawn` and the initiative branch holds a commit, other than a kept branch review's own commit, that no kept branch review has read, `work run` shall start a `claude -p` session of `bdd-branch-reviewer` over the initiative branch from its base, given one brief.
+- [r154] **When** `work run` starts a branch review, `work run` shall first run, at the initiative branch's head, the whole suite, each work-item's scenarios, each check a work-item names, `tools check`, `tools size`, `features deprecated` and `features bindings`.
+- [r155] **When** `work run` starts a branch review, `work run` shall give the branch reviewer each run r154 names with its command, how it exited and its output, naming the commit they ran at.
+- [r156] **When** `work run` starts a branch review, `work run` shall give the branch reviewer the commits from the initiative branch's base to its head, each with the work-item it belongs to or none, and the change of that range less `.shop/`.
+- [r157] **When** `work run` starts a branch review, `work run` shall give the branch reviewer the files to read: the capabilities the work-items are under, the design-decisions those capabilities rest on, and each work-item's plan, implementer's report and review findings.
+- [r47] **When** the branch reviewer's session ends, `work run` shall copy its directory into `.shop/work/<initiative>/runs/branch-review/<k>/`.
+- [r48] **When** the branch reviewer's session ends, `work run` shall commit `.shop/work/<initiative>/runs/branch-review/<k>/` on the initiative branch.
+- [r49] **When** the branch reviewer's session starts or ends, `work run` shall append a line to `log.jsonl` with the time, the stage `branch-review`, the agent and the session id.
+- [r50] **While** every commit on the initiative branch other than the kept branch reviews' own commits has been read by a kept branch review, `work run` shall start no branch review.
+- [r94] **While** an initiative has no work-item, `work run` shall start no branch review of it.
+- [r206] **If** the push verification before the branch review fails, **then** `work run` shall end, giving `ok` false in its JSON object and saying why, and start no branch review.
+- [r28] **If** the main checkout's `.shop/work/` differs from its last commit when a worker ends, then `work run` shall put it back and transition the work-item to `failed`, naming each file.
+- [r29] **Where** `.shop/delivery.toml` gives `[tests]`, `work run` shall run those commands in place of its own commands for the work-item's scenarios and the suite.
+- [r30] **Where** `.shop/delivery.toml` gives a stage's `[allowed_tools]`, `work run` shall give that stage's worker that list in place of its own, less any bare Write or Edit.
+- [r31] **When** a planner's result gives a `fileset`, `work run` shall write that file set into the work-item as `fileset:` as it makes the work-item's transition to `planned`.
+- [r33] **When** `work run` exits, `work run` shall remove every worktree it made.
+- [r34] **If** a worker changes a file under `.shop/work/` outside its stage directory, then `work run` shall transition the work-item to `failed`, recording the files, its branch unmerged.
+- [r35] **When** `work run` is about to start a worker or the branch reviewer, `work run` shall first verify that it can push the initiative branch to the remote.
+- [r36] **When** `work run` transitions a work-item to `awaiting-answer`, `work run` shall write its question under the work-item's `## Questions`.
+- [r37] **While** a work-item is `awaiting-answer` or `failed`, `work run` shall start no worker for it.
+- [r63] **While** a work-item's `blocked_by` names a work-item that is not `green`, `work run` shall start no worker for it.
+- [r38] **When** `work run` commits on the initiative branch, `work run` shall push the initiative branch to the remote.
+- [r39] **If** the verification before a worker starts fails, then `work run` shall transition the work-item to `failed`, recording the reason, before any worker starts.
+- [r204] **When** `work run` transitions a work-item to `failed`, `work run` shall end, giving `ok` false in its JSON object and naming the work-item and its fault.
+- [r41] **If** a git command, a push included, fails during a work-item's stage, then `work run` shall transition the work-item to `failed`, recording git's reason.
+- [r42] **If** a worker ends without a result file that `work run` can read, then `work run` shall transition the work-item to `failed`, recording how its session ended.
+- [r43] **When** `work run` runs the whole suite before a merge, `work run` shall count as expected each failing scenario whose requirement a work-item other than the one being merged accepts and that is neither `green` nor `withdrawn`.
+- [r122] **When** `work run` checks a work-item against the whole suite, `work run` shall count as expected to fail each scenario whose requirement a capability-proposal that is neither `formulated` nor `withdrawn` adds or changes.
+- [r44] **When** `work run` writes a worker's brief, `work run` shall tell the worker to write its result file first with the outcome `PARTIAL`, and keep it current as it works.
+- [r45] **If** a worker's session ends in an error or at its turn limit, exits with an error, or leaves output that holds no JSON result, then `work run` shall transition the work-item to `failed`, recording how the session ended.
+- [r205] **If** the main checkout's `.shop/work/` has uncommitted changes when `work run` starts, **then** `work run` shall end, giving `ok` false in its JSON object and naming them, and change nothing.
+
+## Implementation, may change
+- The work-item's scenarios and the suite alike run in parallel with pytest-xdist (`-n auto`) (design-decision/plugin-takes-the-dependencies-it-needs).
+- A worker is `claude -p "Read the brief file <brief path> and do what it says." --agent shopsystem-bdd:<agent>
+  --session-id <uuid> --output-format json --permission-mode acceptEdits`; the executable is `$SHOPSYSTEM_WORK_CLAUDE`, else `claude` (the plugin's tests
+  set a stub).
+- `work run` writes the brief in the worker's worktree, as `.shop/scratch/<k>-<stage>/brief.md`, and the worker writes
+  its result and its other files beside it. When the worker ends, `work run` copies that directory into the stage
+  directory `.shop/work/<initiative>/runs/<work-item>/<k>-<stage>/`, which then holds `brief.md`, `result.json`,
+  `session.json` and the worker's notes, plan, report or findings. The implementer works in
+  `.shop/worktrees/<work-item>/`, on its work-item branch from the initiative branch's head, rebased before its
+  scenarios and the suite run.
+- A result's `questions` given as one string is read as one question.
+- The transitions from `planned` to `ready` and from `ready` to `claimed` have no guard beyond the lifecycle's.
+- Commit message `work: <work-item> <before> -> <after>`. Exit code 0, and 1 only on a crash on an error `work run` does not handle (r191); `ok` is a JSON boolean (r189).
+- The commands for the work-item's scenarios and the suite: `python3 -m pytest -q -p work_items --work-item <name>` (the plugin's `scripts/work_items.py` on `PYTHONPATH`) and `python3 -m pytest -q -rfEx -p work_items --work-item <name> --whole-suite`, `-n auto` where pytest-xdist is there; `.shop/delivery.toml`'s `[tests]` replaces them. `--whole-suite` keeps every test and marks as xfail each scenario r43 counts as expected; a worker's pytest gets `--work-item <name>` through `PYTEST_ADDOPTS`.
+- r122: the checks are the whole-suite runs of r24 and r43.
+- r56, r64, r65: a guarantees capability is one whose frontmatter has `group: guarantees` (design-decision/workflow-capabilities-are-guarantees).
+- The push is verified by `git push --dry-run` to the initiative branch's upstream remote, else `origin`; a repository `work run` delivers has that remote. A fault is recorded under the work-item's `## Faults`. The n-th bullet of `## Answers` answers the n-th of `## Questions`.
+- `log.jsonl` also gets a `push verified` line for each push verification, and a `suite` line for each whole-suite run before a merge.
+- A failed commit of a fault's transition ends `work run` as r199 does, with `ok` false saying why, not with a traceback.
+- r67: the `intake` round writes each line outcome with `work outcome` (requests r15), which `work` keeps under the request's `## Outcomes` (design-decision/requests-written-through-work).
+- r79, r68, r70, r71: the `integrate`, `gate` and `apply` rounds are `initiative-round` sessions of spec-integration, the `formulate` round one of formulation.
+- r68, r85: the `gate` round gives its gate in its `result.json` (spec-integration r35) and writes nothing on the capability-proposal; `work run` writes the questions under the proposal's `## Questions`.
+- r78: the answer names the delegation in its `by`.
+- r100: `work run` writes the question with `work`'s question command (requests r20), in the upstream's turn, before the round's `work turn`.
+- r193: a request's asker is this context when its `asker` is `internal` or this context's id; the open questions are every question with no answer under the request's `## Answers`.
+- r98: the brief names the findings file of the work-item's last review stage directory and writes the answer as r57 does.
+- r155: how a run exited is given as its exit code.
