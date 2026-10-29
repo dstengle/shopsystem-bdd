@@ -3,3 +3,4 @@
 - 2026-10-29: gate round 1: 0 questions (supervision#r211 raises none; the drafts' questions on requests r59-r63 and the glossary are outside the brief's lines)
 - 2026-10-29: apply round 4: supervision r211 applied as approved 2026-10-29, spec committed
 - 2026-10-29: formulate round 5: supervision, 1 scenario outline added for r211, commit 698c1d44
+- 2026-10-29: apply round 18 of requests: nothing applied; the answers reword r60 (on the current branch) and add two lines (delegation whichever side's turn it is; keep status and turn) that the drafts never held, and the drafts were made against an older spec/; an integrate round follows
