@@ -11,3 +11,4 @@
 - 2026-10-29: gate round 15: 1 question (approval of r218 replacing r217)
 - 2026-10-29: 2026-10-29: hand repair by the coordinator: integrate round 14 left the proposal with adds r218 and removes r217 only (q34); restored to adds r214 r215 r216 r218, removes r28 r217
 - 2026-10-29: apply round 17: supervision r218 replaces r217 (answers of 2026-10-29 applied), commit 1af90a20
+- 2026-10-29: formulate round 18: supervision r218 scenario added, commit 61c39f01
