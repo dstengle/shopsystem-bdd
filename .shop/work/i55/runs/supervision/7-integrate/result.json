@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Drafted supervision: retire r149, r32, r9; add r212 (the exit-successfully line, r187 being taken). gate.md written.","questions":[],"changes":[{"capability":"supervision","adds":["supervision#r212"],"changes":[],"removes":["supervision#r149","supervision#r32","supervision#r9"]}]}

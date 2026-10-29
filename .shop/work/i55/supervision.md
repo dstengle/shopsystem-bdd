@@ -2,17 +2,17 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i55-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i55
-status: awaiting-answer
+status: drafted
 argues: [supervision]
-adds: [supervision#r184, supervision#r185, supervision#r186, supervision#r212, supervision#r213]
-changes: []
-removes: [supervision#r149, supervision#r32, supervision#r9, supervision#r105]
 date: 2026-10-28
+adds: [supervision#r212]
+changes: []
+removes: [supervision#r149, supervision#r32, supervision#r9]
 ---
 
 # supervision
 
-The drafts of this proposal are in .shop/work/i55/runs/i55/1-integrate/drafts/round-1/.
+The drafts of this proposal are in .shop/work/i55/runs/supervision/7-integrate/drafts/round-1/.
 
 ## Questions
 - supervision r186 repeats r149 word for word. Line: [r186] **When** a round of the kind `formulate` formulates nothing because a capability-proposal's answers change lines not in `spec/`, `work run` shall start a new round of the kind `integrate` for the capability-proposal. Readings: (a, recommended) retire r149 and keep r186, so a work-item is drafted for the fault i39 met; (b) drop r186 and keep r149; (c) keep both. r152 and r153 do not conflict and stay.
