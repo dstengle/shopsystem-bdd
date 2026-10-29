@@ -1,1 +1,2 @@
 - 2026-10-29: integrate round 1: adds spec-integration#r58, spec-integration#r59, supervision#r212, supervision#r213; changes none; removes none; 5 questions; 1 cut sentence; .shop/scratch/1-integrate/drafts/round-1
+- 2026-10-29: gate round 1: 2 questions (spec-integration r58, r59)
