@@ -20,6 +20,7 @@ The drafts of this proposal are in .shop/work/i55/runs/supervision/7-integrate/d
 - supervision r184, the exit code. Line: [r184] **When** `work run` ends with a capability-proposal or a work-item `awaiting-answer`, `work run` shall exit with an error, printing each with its open questions. (q21 asked for exit code 3; drafted as "an error" under design-decision/exits-are-successful-or-errors, the code held by Implementation: "3 awaiting an answer".) Readings: (a, recommended) as drafted, the code in Implementation only; (b) add an Implementation line "r184: the exit code is 3".
 - supervision r185 against r132 and r131. Line: [r185] **When** a researcher's result gives an empty file set, `work run` shall take it as the researcher's file set. Readings: (a, recommended) keep r132 and r131 with r185 beside them; (b) retire r132 for "a researcher's file set, empty or not" and drop r185. For an empty planner's file set: (a, recommended) nothing drafted; (b) add "[r189] **When** a planner's result gives an empty file set, `work run` shall take it as the planner's file set."
 - Are the lines of supervision approved as drafted? Readings: approve supervision as drafted (recommended), or change its lines.
+- The apply round of supervision gave no change list; which capabilities' lines did it apply?
 
 ## Answers
 - 2026-10-29: Reading (a): retire r149 and keep r186, so a work-item is drafted for the fault i39 met (the delegation says to answer with the recommended reading, and r152 and r153 stay).
