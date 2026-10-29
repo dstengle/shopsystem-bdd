@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i55-requests
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i55
-status: drafted
+status: awaiting-answer
 argues: [requests]
 date: 2026-10-28
 adds: [requests#r64]
@@ -25,6 +25,7 @@ The drafts of this proposal are in .shop/work/i55/runs/requests/13-integrate/dra
 - requests r50 vs work-queue r34 (`work list` already prints requests with status). r50 (added, replaces r13): "When `work list` is run, `work` shall print each request with its status and whose turn it is." Readings: (a, RECOMMENDED) keep both; (b) fold r50 into r34 (retire r34).
 - requests r52, "on either side". r52 (added): "While an answer or a turn the asker has sent has not been taken in by the upstream, `work show <request>` shall print the request on either side as awaiting the upstream and not yet taken in." Readings: (a, RECOMMENDED) `work show <request>` run in the asker's and in the upstream's repository both print it; (b) shown as awaiting on both sides of its turn. `--json` for "not yet taken in": (a, RECOMMENDED) nothing drafted.
 - requests r55 vs r16. r55 (added, replaces r34): "If a side writes a part of a request that is the other side's part, and the request's asker is not the upstream itself, then `work` shall refuse, naming the side that writes that part, and change nothing." r55 exempts a request whose asker is the upstream itself; r16 has no exemption. Readings: (a, RECOMMENDED) keep r16; (b) retire r16 for a line with the same exception.
+- requests r14 (work status observations). Concerns: remove r14 "When `work status` is run with no initiative, `work` shall print, with its date, each observation that the `source` of no initiative and of no request names." and add r64 "When `work list` is run, `work` shall print, with its date, each observation that the `source` of no initiative and of no request names." (the answered r59 as numbered in the drafts). Readings: (a, RECOMMENDED) retire r14 and add r64 as worded; (b) retire r14, no replacement; (c) keep r14.
 
 ## Answers
 - 2026-10-29: (a) Retire r14 and add r59 as worded, per the person's 2026-10-27 delegation to answer every question with its recommended reading.
