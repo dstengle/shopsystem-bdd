@@ -4,9 +4,9 @@ kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i55
 status: awaiting-answer
 argues: [supervision]
-adds: [supervision#r184, supervision#r185, supervision#r186]
+adds: [supervision#r184, supervision#r185, supervision#r186, supervision#r212, supervision#r213]
 changes: []
-removes: []
+removes: [supervision#r149, supervision#r32, supervision#r9, supervision#r105]
 date: 2026-10-28
 ---
 
