@@ -100,12 +100,24 @@ def bash(argv, command):
     """Run `command` if --allowedTools allows it as Bash; record that it ran or was refused."""
     line = shlex.join(command)
     if any(fnmatch.fnmatchcase(line, pattern) for pattern in allowed(argv, "Bash")):
-        done = subprocess.run(command, capture_output=True, text=True, check=command[0] == "git")
+        done = (git_retry(command[1:], None) if command[0] == "git"
+                else subprocess.run(command, capture_output=True, text=True))
         record({"event": "ran", "tool": "Bash", "command": line, "code": done.returncode,
                 "output": done.stdout + done.stderr})
         return True
     record({"event": "refused", "tool": "Bash", "command": line})
     return False
+
+
+def git_retry(args, cwd):
+    """A git command in `cwd`, tried again for up to 10 s while git's index.lock is held by another process."""
+    deadline = time.monotonic() + 10
+    while True:
+        done = subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True)
+        if done.returncode == 0 or "index.lock" not in done.stderr or time.monotonic() > deadline:
+            done.check_returncode()
+            return done
+        time.sleep(0.05)
 
 
 def skill(argv, name):
@@ -224,9 +236,8 @@ def main(argv):
             (other / rel).parent.mkdir(parents=True, exist_ok=True)
             (other / rel).write_text(text)
         if "commit" in step["elsewhere"]:
-            subprocess.run(["git", "add", "--", *files], cwd=other, check=True, capture_output=True)
-            subprocess.run(["git", "commit", "-q", "-m", "another session's commit"], cwd=other, check=True,
-                           capture_output=True)
+            git_retry(["add", "--", *files], other)
+            git_retry(["commit", "-q", "-m", "another session's commit"], other)
     for name in step.get("skills", []):
         skill(argv, name)
     for rel, text in step.get("write", {}).items():
