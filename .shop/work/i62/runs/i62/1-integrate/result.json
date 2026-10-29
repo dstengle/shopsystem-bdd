@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Drafted supervision r212 (rerun the failing scenario once, alone, before refusing the merge) and r213 (give both runs in r131's question) from q41 line 2. 6 questions at the gate, 2 cut sentences.","questions":[],"changes":[{"capability":"supervision","adds":["supervision#r212","supervision#r213"],"changes":[],"removes":[]}]}
