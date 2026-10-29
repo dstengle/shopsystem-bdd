@@ -1,0 +1,1 @@
+{"status": "DONE", "summary": "integrate round 6 for q37: supervision adds r209 r210, removes r162 r163; no glossary change, no questions; drafts .shop/scratch/6-integrate/drafts/round-6", "questions": [], "changes": [{"capability": "supervision", "adds": ["supervision#r209", "supervision#r210"], "changes": [], "removes": ["supervision#r162", "supervision#r163"]}]}
