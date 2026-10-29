@@ -14,3 +14,4 @@
 - 2026-10-29: apply round 28: requests r69 retired, r72 added (the swap approved 2026-10-29); other answers already held in spec
 - 2026-10-29: formulate requests round 2: commit 64726942, 1 scenario added (r72), none changed or deprecated; no questions
 - 2026-10-29: 2026-10-29: hand repair by the coordinator: the round-3 redraft left the requests proposal with only r72 (q34), so w234 accepted r72 alone; w234 withdrawn, the proposal's adds restored to r65-r68 r70-r72, i60 set back to started after work withdraw set it done (q38), and one work-item drafted for all seven lines. w234's researcher also gave its file set only in its notes (§4), not in its result
+- 2026-10-29 22:55: compacted

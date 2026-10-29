@@ -9,3 +9,4 @@
 - 2026-10-28: apply round 2 for supervision: nothing applied, answers ask for r4 changed and an Implementation line for r177 that the drafts never held (unheld_answers: Q1, Q2)
 - 2026-10-28: integrate round 3: q33; supervision adds r188 r189 r190 removes r4, 0 glossary terms, 3 questions, 1 cut sentences; drafts .shop/scratch/3-integrate/drafts/round-1
 - 2026-10-28: gate round 4: 3 questions (supervision r188, r189, r190 replacing r4)
+- 2026-10-29 22:55: compacted

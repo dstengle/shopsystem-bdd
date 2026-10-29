@@ -2,3 +2,4 @@
 - 2026-10-28: gate round 1: 8 questions for the person (backlog r1-r8, migration-tools r35/r36)
 - 2026-10-28: gate round 1: 1 question (migration-tools#r36 against r24 and r28)
 - 2026-10-28: gate round 1: 1 question (term/backlog: observation vs observation record)
+- 2026-10-29 22:55: compacted

@@ -8,3 +8,4 @@
 - 2026-10-28: apply round 2: nothing applied; answers Q1 (b) and Q2 (a) are not held by the drafts, so an integrate round follows
 - 2026-10-28: integrate round 3 work-queue: q38; work-queue adds r50 r51 removes r23, 0 glossary terms, 5 questions, 0 cut sentences; drafts .shop/scratch/3-integrate/drafts/round-1
 - 2026-10-28: gate round 4: 3 questions on work-queue r23 removal and r51
+- 2026-10-29 22:55: compacted

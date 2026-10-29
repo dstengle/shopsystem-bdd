@@ -3,3 +3,4 @@
 - 2026-10-28 21:14: compacted
 - 2026-10-28: apply round 2: supervision r180 added, r93 removed; answer r180 reading (a) applied; commit 86104ff4
 - 2026-10-28: formulate round 3 of supervision: commit 6ce69452, r180 scenario added, r93 scenario deprecated for removal, bindings clean
+- 2026-10-29 22:55: compacted

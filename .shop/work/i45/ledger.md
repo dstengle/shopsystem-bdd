@@ -12,3 +12,4 @@
 - 2026-10-28: integrate round 3: q26 spec-integration redrafted from answers: adds r58-r65 removes r13, 6 glossary terms added, 3 questions, 0 cut sentences; drafts .shop/scratch/3-integrate/drafts/round-3
 - 2026-10-28: gate round 4: 3 questions
 - 2026-10-28: gate glossary round 1: 0 questions (six added terms, none open)
+- 2026-10-29 22:55: compacted

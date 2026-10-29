@@ -17,3 +17,4 @@
 - 2026-10-29: apply round 10 (supervision): nothing applied; drafts already in spec/ by 3611f76b (r212 added; r149 r32 r9 retired); stale draft would revert r213
 - 2026-10-29: apply 8: work-queue r62 replaces r23 (draft r59 renumbered, r59 taken); supervision r213 was already in spec; answers applied
 - 2026-10-29: formulate round 9: work-queue r62 formulated, r23's two scenarios deprecated, commit 19c0bc4d; 1 question (initiative with no capability-proposal)
+- 2026-10-29 22:55: compacted
