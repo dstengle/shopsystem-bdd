@@ -5,3 +5,4 @@
 - 2026-10-29: integrate round 8: supervision adds r214, r215, r216, r217, 0 changes, removes r28 (retired, replaced by r217), 0 questions, 0 cut sentences; .shop/scratch/8-integrate/drafts/round-1/
 - 2026-10-29: gate round 9: 0 questions (all answered under delegation); adds r214-r217, removes r28
 - 2026-10-29: apply round 11: supervision r214-r217 added, r28 retired; answers applied under delegation; commit 446d8708
+- 2026-10-29: formulate round 12: commit 566b7302, supervision r214-r216 added, r28 scenario deprecated, r217 returned as a question
