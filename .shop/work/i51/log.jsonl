@@ -57,3 +57,7 @@
 {"time": "2026-10-29T13:48:16+00:00", "work-item": "supervision", "before": "drafted", "after": "awaiting-answer", "by": "work run"}
 {"time": "2026-10-29T13:48:58+00:00", "work-item": "supervision", "before": "awaiting-answer", "after": "approved", "by": "the coordinator, hand repair (apply round 11 committed 2c74c3a6; rounds 12-13 redrafted from superseded answers)"}
 {"time": "2026-10-29T13:48:58+00:00", "work-item": "glossary", "before": "awaiting-answer", "after": "withdrawn", "by": "the coordinator, hand repair (a glossary-proposal with no terms)"}
+{"time": "2026-10-29T13:49:13+00:00", "work-item": "supervision", "stage": "formulate", "event": "push verified"}
+{"time": "2026-10-29T13:49:13+00:00", "work-item": "supervision", "stage": "formulate", "agent": "initiative-round", "session": "b61c516a-0ed7-47e9-b914-e520fbcddde2", "event": "start"}
+{"time": "2026-10-29T13:50:58+00:00", "work-item": "supervision", "stage": "formulate", "agent": "initiative-round", "session": "b61c516a-0ed7-47e9-b914-e520fbcddde2", "event": "end"}
+{"time": "2026-10-29T13:50:58+00:00", "work-item": "supervision", "before": "approved", "after": "awaiting-answer", "by": "work run"}
