@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i61-spec-integration
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i61
-status: drafted
+status: awaiting-answer
 argues: [spec-integration]
 adds: [spec-integration#r58, spec-integration#r59]
 changes: []
@@ -13,3 +13,7 @@ date: 2026-10-29
 # spec-integration
 
 The drafts of this proposal are in .shop/work/i61/runs/i61/1-integrate/drafts/round-1/.
+
+## Questions
+- spec-integration r58 vs r46. Line r58 (added): "When a round of the kind `apply` gives the answers its drafts do not hold, `initiative-round` shall leave out each answer that a later answer of the same proposal replaces." r46 (in spec) says: "When a round of the kind `apply` ends, `initiative-round` shall give in its result each answer of the capability-proposal that the drafts it applied do not hold." The two disagree about a replaced answer. Readings: (a) RECOMMENDED: change r46 to "...each answer of the capability-proposal that the drafts it applied do not hold and that no later answer of the same proposal replaces." and merge r58 into it; (b) keep r46 and r58, r58 an exception to r46.
+- spec-integration r59 vs supervision r164. Line r59 (added): "When a round of the kind `gate` is started for a glossary-proposal, `initiative-round` shall ask only about the terms the glossary-proposal adds, changes and removes." supervision r164 (in spec) has `work run` ask the round only for those questions. Readings: (a) RECOMMENDED: keep r59, the round's side, beside r164, `work run`'s side (r168 and r35 are split the same way for capabilities); (b) drop r59 as given by r164.
