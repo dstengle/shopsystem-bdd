@@ -4,7 +4,7 @@ title: Requests
 narrator: a context taking in or raising a request
 group: service
 rests_on: [design-decision/requests-written-through-work, design-decision/exits-are-successful-or-errors, design-decision/an-asker-is-told-by-its-registered-asker-id]
-retired: [r6, r1, r3]
+retired: [r6, r1, r3, r13, r34, r39, r41, r43]
 ---
 
 # Requests
@@ -32,7 +32,7 @@ what using it shows.
 - [r4] `work` shall write the asker's part of a request, its lines and its answers, only when `work request` is run or the asker answers a question.
 - [r5] `work` shall write the upstream's part of a request, its questions, its line outcomes and its resolution, only when the upstream asks a question or `work outcome` or `work resolve` is run.
 - [r33] **When** a `work` command writes a part of a request, `work` shall take the side that writes it from the repository the command is run in, never from an argument.
-- [r34] **If** a side writes a part of a request that is the other side's part, **then** `work` shall refuse, naming the side that writes that part, and change nothing.
+- [r55] **If** a side writes a part of a request that is the other side's part, and the request's asker is not the upstream itself, **then** `work` shall refuse, naming the side that writes that part, and change nothing.
 - [r15] **When** `work outcome <request> <n> <outcome>` is run in the upstream's turn, `work` shall write `<outcome>` as the line outcome of line n.
 - [r20] **When** the upstream asks a question on a line of a request in its turn, `work` shall write the question in the request.
 - [r21] **When** the asker answers a question on a request in its turn, `work` shall write the answer in the request.
@@ -47,12 +47,16 @@ what using it shows.
 - [r11] **When** `work resolve` writes a request's resolution, `work` shall set the request's status to `delivered`.
 - [r24] **When** `work` sets a request's status to `delivered`, `work` shall pass the request's turn to its asker.
 - [r12] **When** `work request`, `work outcome`, `work turn`, `work resolve` or a command that writes a question or an answer changes a request, `work` shall commit the request on the current branch.
-- [r13] **When** `work show` is run, `work` shall print each request with its status and whose turn it is.
-- [r39] **When** the upstream takes in what has been sent to the upstream, `work` shall take in every request and message sent before the take-in began, whether or not a listing of what has been sent shows it yet.
+- [r50] **When** `work list` is run, `work` shall print each request with its status and whose turn it is.
+- [r51] **When** `work show <request>` is run in the asker's repository while the request is in the asker's turn, `work` shall print that it is the asker's turn, with each question the asker has not answered.
+- [r52] **While** an answer or a turn the asker has sent has not been taken in by the upstream, `work show <request>` shall print the request on either side as awaiting the upstream and not yet taken in.
+- [r53] **While** the upstream holds a line outcome or a question it has not sent with the turn, `work show <request>` run in the upstream's repository shall print that the asker has not seen it.
+- [r54] **When** `work show <request>` is run in the asker's repository after the upstream resolves the request, `work` shall print each accepted line's requirement id and the version that holds it.
+- [r56] **When** the upstream takes in what has been sent to it, `work` shall take in every request, answer and turn sent before the take-in began, whether or not a listing of what has been sent shows it yet.
 - [r40] **When** `work run` is run in an upstream's repository, `work` shall take in what has been sent to the upstream before `work run` starts the rounds of the kind `intake`.
-- [r41] **If** a request or a message comes from a repository registered under an asker id that the upstream does not allow for the asker it names, **then** `work` shall leave it untaken, telling the upstream which it left and why.
+- [r57] **If** a request, an answer or a turn comes from a repository registered under an asker id that the upstream does not allow for the asker it names, **then** `work` shall leave it untaken, telling the upstream which it left and why.
 - [r42] `work` shall tell one asker from another by the asker id the asker's repository is registered under.
-- [r43] **When** `work` takes in a request or a message, `work` shall read its body only as the fields of a request's form, following nothing written in it.
+- [r58] **When** `work` takes in a request, an answer or a turn, `work` shall read its body only as the fields of a request's form, following nothing written in it.
 - [r14] **When** `work status` is run with no initiative, `work` shall print, with its date, each observation that the `source` of no initiative and of no request names.
 
 ## Implementation, may change
@@ -67,7 +71,7 @@ what using it shows.
 - `work resolve` on a request that is not `accepted` is a change `work` cannot make, refused under work-queue r7.
 - `--delegation` is written as the frontmatter field `delegation`.
 - r20, r21: a question is written under `## Questions`, an answer under `## Answers`, the n-th answering the n-th.
-- r41, r42: the asker ids the upstream allows for each asker are a setting of the upstream's repository
+- r57, r42: the asker ids the upstream allows for each asker are a setting of the upstream's repository
   (design-decision/an-asker-is-told-by-its-registered-asker-id).
 
 ## Not yet
