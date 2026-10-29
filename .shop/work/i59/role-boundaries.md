@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i59-role-boundaries
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i59
-status: drafted
+status: awaiting-answer
 argues: [role-boundaries]
 adds: [role-boundaries#r8]
 changes: []
@@ -13,3 +13,6 @@ date: 2026-10-29
 # role-boundaries
 
 The drafts of this proposal are in .shop/work/i59/runs/i59/1-integrate/drafts/round-2/.
+
+## Questions
+- role-boundaries r8 (added): where does the agents' reply shape stand? The line as drafted, under role-boundaries (narrator: the person using the workflow; group guarantees), reads: "[r8] The plugin's agent definitions shall have every session started as one of them reply to the session or script that started it with one JSON object giving its outcome, its summary, the files it names and its questions." It follows r1-r7, which are also about what the agent definitions give, and rests on design-decision/commands-and-agents-answer-in-json. Readings: (a) keep r8 in role-boundaries as drafted [recommended: it is one line about the agent definitions, in the form of r1-r7, and a capability for one line is more than it needs]; (b) move it to a new capability `agent-replies` (narrator: a session or script that started an agent; group guarantees) as "[r1] Every session started as one of the plugin's agents shall reply to the session or script that started it with one JSON object giving its outcome, its summary, the files it names and its questions.", and role-boundaries gets no r8.
