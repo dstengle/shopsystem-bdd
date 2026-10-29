@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i60-requests
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i60
-status: drafted
+status: awaiting-answer
 argues: [requests]
 date: 2026-10-29
 adds: [requests#r72]
@@ -23,6 +23,7 @@ The drafts of this proposal are in .shop/work/i60/runs/requests/25-integrate/dra
 - requests#r63 (added): "**When** the person gives a session a delegation for a request outside `work request`, the session shall write the delegation in the request with `work delegate` in the same reply, in the person's words and with the date." Its narrator is a session; requests' narrator is a context taking in or raising a request. Reading A (recommended): stay in requests. Reading B: move to role-boundaries.
 - Do r16 and r55 reach `work delegate`? Lines concerned: [r70] "**When** `work delegate` is run, `work` shall write the delegation whichever side's turn it is." (added) and the person's answer that either side may run `work delegate`; r16 ("a command other than `work resolve` ... in the other side's turn ... refuse") and r55 (a side writing the other side's part is refused when the asker is not the upstream itself). Reading A (recommended): the delegation belongs to neither side's part, so r16 and r55 do not reach `work delegate`; no line changes. Reading B: r16 and r55 are retired and redrafted with "other than `work resolve` and `work delegate`".
 - requests#r69: "**When** the person gives a session a delegation for a request outside `work request`, the session shall write the delegation in the request with `work delegate` in the same reply, in the person's words and with the date." Reading 1: the session puts the date into the text it gives `work delegate`, so the request holds the person's words followed by the date. Reading 2: the request holds the person's words alone, word for word, and the date is written beside it, apart from the delegation.
+- Replace requests#r69 with r72 (requests capability)? Removed (retired): [r69] "**When** the person gives a session a delegation for a request outside `work request`, the session shall write the delegation in the request with `work delegate` in the same reply, in the person's words and with the date." Added: [r72] "**When** the person gives a session a delegation for a request outside `work request`, the session shall, in the same reply, write the delegation in the request by giving `work delegate` the delegation as the person's words with the date." It follows your answer (reading 1: the session puts the date into the text it gives `work delegate`). Reading A (recommended): approve the swap. Reading B: keep r69 as it is (the date's place stays open). No glossary change, no decision.
 
 ## Faults
 - the session answering requests's question faulted: while its answerer worked, .shop/work/i55/work-queue.md, .shop/work/i55/runs/work-queue/7-answer/brief.md, .shop/work/i55/runs/work-queue/7-answer/result.json, .shop/work/i55/runs/work-queue/7-answer/session.json changed in the repository's own checkout and not committed; work run put them back
