@@ -1,0 +1,1 @@
+- 2026-10-29: 2026-10-29: q42's two lines were accepted by the coordinator with work outcome under the person's delegation, without an intake round (only a full work run takes in a request, and it runs every initiative side by side, the race q42 fixes); i63 started with work start, kept as it is by the person, 2026-10-29: "Don't undo what you did. Get q42 delivered directly"
