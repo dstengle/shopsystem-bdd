@@ -4,7 +4,7 @@ title: Work queue
 narrator: a person, session or script reading work-items or writing their transitions
 group: service
 rests_on: [design-decision/work-file-forms, design-decision/work-item-lifecycle-as-run, design-decision/the-file-set-is-the-claim, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/work-retry-reads-the-log, design-decision/query-commands-answer-in-their-output, design-decision/work-items-named-by-ids, design-decision/a-ruling-returns-to-the-asking-stage, design-decision/answers-not-rulings, design-decision/the-ledger-is-tracked, design-decision/work-list-and-work-show-replace-work-status]
-retired: [r2, r3, r11, r16, r17, r18, r33, r34, r35]
+retired: [r2, r3, r11, r16, r17, r18, r33, r34, r35, r23]
 ---
 
 # Work queue
@@ -23,7 +23,7 @@ work-item's status; `work run` (supervision) takes them through it. It judges no
 - [r32] **If** `work add` is given an initiative that is `done` or `abandoned`, **then** `work add` shall refuse, naming the initiative's status, and change nothing.
 - [r22] **When** `work start <request>` is run on an `accepted` request, `work` shall write `.shop/work/<initiative>/initiative.md` as a `proposed` initiative of kind `capability-change` that fulfils the request, with the request's origins as its source, and print its id.
 - [r25] **When** `work start` writes an initiative, `work` shall commit the initiative on the current branch.
-- [r23] **When** a `work` command's change makes it true that an initiative has at least one work-item that is `green`, that every work-item of it is `green` or `withdrawn` and that every request kept in this context whose asker is this context and that names the initiative is `delivered`, that command shall set the initiative's status to `done`.
+- [r62] **When** a `work` command's change makes it true that an initiative has at least one work-item that is `green`, that every work-item of it is `green` or `withdrawn`, that every capability-proposal of it is `formulated` or `withdrawn` and that every request kept in this context whose asker is this context and that names the initiative is `delivered`, that command shall set the initiative's status to `done`.
 - [r31] **If** every work-item of an initiative is `withdrawn`, **then** `work` shall leave the initiative's status as it is.
 - [r47] **If** every work-item of an initiative is `green` or `withdrawn` while one of its capability-proposals is neither `formulated` nor `withdrawn`, **then** `work` shall keep the initiative `started`.
 - [r60] **When** `work list` is run, `work` shall print each initiative and each work-item under `.shop/work/` with its status.
@@ -61,7 +61,7 @@ work-item's status; `work run` (supervision) takes them through it. It judges no
 - A transition the lifecycle does not allow from the work-item's status is refused under r7.
 - `work answer` on a work-item that is not `awaiting-answer` is a change `work` cannot make, refused under r7.
 - `work retry` and `work withdraw` print `<work-item> <status>`, the status being the one the transition made.
-- r23: a request names the initiative in its `part_of` or its `source`.
+- r62: a request names the initiative in its `part_of` or its `source`.
 - r26, r27: the flag is `--change` for an answer that asks for a change and `--accept` for one that accepts the
   work-item as it is; the answer stays one line of free text.
 
