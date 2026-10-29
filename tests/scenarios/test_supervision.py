@@ -33,6 +33,7 @@ from .supervision_formulate_steps import *
 from .supervision_given import *
 from .supervision_integrate_steps import *
 from .supervision_intake_steps import *
+from .supervision_merge_steps import *
 from .supervision_outputs_steps import *
 from .supervision_parallel_steps import *
 from .supervision_proposal_steps import *
