@@ -4,7 +4,7 @@ title: Requests
 narrator: a context taking in or raising a request
 group: service
 rests_on: [design-decision/requests-written-through-work, design-decision/exits-are-successful-or-errors, design-decision/an-asker-is-told-by-its-registered-asker-id]
-retired: [r6, r1, r3, r13, r34, r39, r41, r43, r14]
+retired: [r6, r1, r3, r13, r34, r39, r41, r43, r14, r69]
 ---
 
 # Requests
@@ -28,7 +28,7 @@ what using it shows.
 - [r66] **When** `work delegate` writes a delegation in a request, `work` shall commit the request on the current branch.
 - [r67] **If** the delegation given to `work delegate` is empty, **then** `work delegate` shall refuse, because the delegation is empty, and change nothing.
 - [r68] **If** `work delegate` is given a request that is `delivered`, `refused` or `withdrawn`, **then** `work delegate` shall refuse, naming the request's status, and change nothing.
-- [r69] **When** the person gives a session a delegation for a request outside `work request`, the session shall write the delegation in the request with `work delegate` in the same reply, in the person's words and with the date.
+- [r72] **When** the person gives a session a delegation for a request outside `work request`, the session shall, in the same reply, write the delegation in the request by giving `work delegate` the delegation as the person's words with the date.
 - [r70] **When** `work delegate` is run, `work` shall write the delegation whichever side's turn it is.
 - [r71] **When** `work delegate` writes a delegation in a request, `work` shall keep the request's status and turn.
 - [r2] **If** a line given to `work request` is not in the strict form `model check` holds (v_e1, v_e2), **then** `work request` shall refuse, naming the line, and change nothing.
