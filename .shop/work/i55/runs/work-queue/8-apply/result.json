@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"work-queue r62 replaces r23 (r23 retired); supervision r213/r105 already in spec.","questions":[],"changes":[{"capability":"work-queue","adds":["work-queue#r62"],"changes":[],"removes":["work-queue#r23"]}],"unheld_answers":[]}
