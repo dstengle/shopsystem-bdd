@@ -49,3 +49,5 @@ The drafts of this proposal are in .shop/work/i63/runs/supervision/8-integrate/d
   by: work run, under the delegation "The person, 2026-10-28: "i am delegating to you", "I take recommendations" and "Please do what is necessary to get the system back into working condition": answer every question with its recommended reading. Questions of a glossary-proposal are the person's."
 - 2026-10-29: (a) r214 says "the main checkout".
   by: work run, under the delegation "The person, 2026-10-28: "i am delegating to you", "I take recommendations" and "Please do what is necessary to get the system back into working condition": answer every question with its recommended reading. Questions of a glossary-proposal are the person's."
+- 2026-10-29: Approve supervision as drafted, under the person's delegation of 2026-10-28 ("I take recommendations"): the recommended reading.
+  by: work run, under the delegation "The person, 2026-10-28: "i am delegating to you", "I take recommendations" and "Please do what is necessary to get the system back into working condition": answer every question with its recommended reading. Questions of a glossary-proposal are the person's."
