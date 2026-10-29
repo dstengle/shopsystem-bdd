@@ -4,3 +4,4 @@
 - 2026-10-29: apply round 4: supervision r211 applied as approved 2026-10-29, spec committed
 - 2026-10-29: formulate round 5: supervision, 1 scenario outline added for r211, commit 698c1d44
 - 2026-10-29: apply round 18 of requests: nothing applied; the answers reword r60 (on the current branch) and add two lines (delegation whichever side's turn it is; keep status and turn) that the drafts never held, and the drafts were made against an older spec/; an integrate round follows
+- 2026-10-29: integrate round 2 of requests q39: requests adds r65-r71, no glossary change, 1 question, no cut sentences; drafts .shop/scratch/19-integrate/drafts/round-1
