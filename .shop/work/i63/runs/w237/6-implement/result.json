@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"r214-r216 scenarios green on every run; flake fixed by git index.lock retry in tests/scripts/stub_claude.py","commits":["see git log: stub_claude: git commands retry while index.lock is held; 482257b0 Steps for r214-r216"],"report":".shop/scratch/6-implement/report.md","questions":[]}
