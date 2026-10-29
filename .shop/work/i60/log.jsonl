@@ -155,3 +155,7 @@
 {"time": "2026-10-29T20:30:10+00:00", "work-item": "w234", "before": "drafted", "after": "awaiting-answer", "by": "work run"}
 {"time": "2026-10-29T20:30:51+00:00", "work-item": "w234", "before": "awaiting-answer", "after": "withdrawn", "by": "work withdraw"}
 {"time": "2026-10-29T20:31:01+00:00", "work-item": "i60", "before": "done", "after": "started", "by": "the coordinator, hand repair (work withdraw set done early, q38; r65-r72 have no work-item yet)"}
+{"time": "2026-10-29T20:31:08+00:00", "work-item": "w235", "stage": "research", "event": "push verified"}
+{"time": "2026-10-29T20:31:08+00:00", "work-item": "w235", "stage": "research", "agent": "code-scout", "session": "61099f0d-baea-4862-8d3c-c839fcb9fd03", "event": "start"}
+{"time": "2026-10-29T20:33:32+00:00", "work-item": "w235", "stage": "research", "agent": "code-scout", "session": "61099f0d-baea-4862-8d3c-c839fcb9fd03", "event": "end"}
+{"time": "2026-10-29T20:33:33+00:00", "work-item": "w235", "before": "drafted", "after": "researched", "by": "work run"}
