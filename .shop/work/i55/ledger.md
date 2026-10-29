@@ -10,3 +10,4 @@
 - 2026-10-29: gate round 8: 0 questions; drafts hold the answers (adds r212, removes r149 r32 r9)
 - 2026-10-29: apply work-queue round 4: nothing applied; r47 was already in spec/ (deda9fa6), and the answer retiring r23 for r48 (and supervision r105) is not in the drafts, so an integrate round follows
 - 2026-10-29: integrate round 5 (work-queue): work-queue +1 -1 (r59 for r23), supervision +1 -1 (r213 for r105), no glossary, 0 questions, 0 cut sentences; drafts .shop/scratch/5-integrate/drafts/round-2
+- 2026-10-29: gate round 1: 0 questions (glossary proposal; no glossary entries drafted)
