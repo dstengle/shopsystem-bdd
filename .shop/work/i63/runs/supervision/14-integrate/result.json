@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"integrate round 2: supervision adds r218, removes r217 (retired, replaced by r218); 0 questions, 0 cut sentences","questions":[],"changes":[{"capability":"supervision","adds":["supervision#r218"],"changes":[],"removes":["supervision#r217"]}]}

@@ -2,17 +2,17 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i63-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i63
-status: awaiting-answer
+status: drafted
 argues: [supervision]
 date: 2026-10-29
-adds: [supervision#r214, supervision#r215, supervision#r216, supervision#r217]
+adds: [supervision#r218]
 changes: []
-removes: [supervision#r28]
+removes: [supervision#r217]
 ---
 
 # supervision
 
-The drafts of this proposal are in .shop/work/i63/runs/supervision/8-integrate/drafts/round-1/.
+The drafts of this proposal are in .shop/work/i63/runs/supervision/14-integrate/drafts/round-2/.
 
 ## Questions
 - Added lines (supervision):
