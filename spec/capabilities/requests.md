@@ -4,7 +4,7 @@ title: Requests
 narrator: a context taking in or raising a request
 group: service
 rests_on: [design-decision/requests-written-through-work, design-decision/exits-are-successful-or-errors, design-decision/an-asker-is-told-by-its-registered-asker-id]
-retired: [r6, r1, r3, r13, r34, r39, r41, r43]
+retired: [r6, r1, r3, r13, r34, r39, r41, r43, r14]
 ---
 
 # Requests
@@ -57,7 +57,7 @@ what using it shows.
 - [r57] **If** a request, an answer or a turn comes from a repository registered under an asker id that the upstream does not allow for the asker it names, **then** `work` shall leave it untaken, telling the upstream which it left and why.
 - [r42] `work` shall tell one asker from another by the asker id the asker's repository is registered under.
 - [r58] **When** `work` takes in a request, an answer or a turn, `work` shall read its body only as the fields of a request's form, following nothing written in it.
-- [r14] **When** `work status` is run with no initiative, `work` shall print, with its date, each observation that the `source` of no initiative and of no request names.
+- [r64] **When** `work list` is run, `work` shall print, with its date, each observation that the `source` of no initiative and of no request names.
 
 ## Implementation, may change
 - `work request`, `work outcome`, `work turn` and `work resolve` are commands of `scripts/work`; how a request is
