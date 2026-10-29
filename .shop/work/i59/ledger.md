@@ -2,3 +2,4 @@
 - 2026-10-29: gate round 1: 5 questions on analysis-tools (draft file absent, content in round-2/writer.reply.md)
 - 2026-10-29: gate round 1: 2 questions for batch-measurement (r69 ok naming, r74 table text)
 - 2026-10-29: gate round 1 delivery: 0 questions (adds r23, removes r6, no open decision on them)
+- 2026-10-29: gate round 1: 4 questions on design-model-check
