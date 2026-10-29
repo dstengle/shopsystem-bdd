@@ -13,3 +13,4 @@
 - 2026-10-29: gate round 1: 1 question (supervision r209, r210 replacing r162, r163)
 - 2026-10-29: apply round 11: supervision r209, r210 applied (replace r162, r163), commit 2c74c3a6; no glossary, no decisions
 - 2026-10-29: integrate round 12: q37; supervision adds none, changes none, removes none (r209, r210 already in spec/ since 2c74c3a6), 0 glossary terms, 0 questions, 0 cut sentences; drafts .shop/scratch/12-integrate/drafts/round-12
+- 2026-10-29: gate round 13: 0 questions (nothing added, changed or removed; r209 and r210 already held in spec/)
