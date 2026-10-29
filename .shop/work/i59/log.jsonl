@@ -6,3 +6,7 @@
 {"time": "2026-10-29T13:34:38+00:00", "work-item": "analysis-tools", "stage": "gate", "agent": "initiative-round", "session": "89a41ce0-207d-4d62-9dc1-f7ca7868d39a", "event": "start"}
 {"time": "2026-10-29T13:35:12+00:00", "work-item": "analysis-tools", "stage": "gate", "agent": "initiative-round", "session": "89a41ce0-207d-4d62-9dc1-f7ca7868d39a", "event": "end"}
 {"time": "2026-10-29T13:35:13+00:00", "work-item": "analysis-tools", "before": "drafted", "after": "awaiting-answer", "by": "work run"}
+{"time": "2026-10-29T13:35:15+00:00", "work-item": "batch-measurement", "stage": "gate", "event": "push verified"}
+{"time": "2026-10-29T13:35:15+00:00", "work-item": "batch-measurement", "stage": "gate", "agent": "initiative-round", "session": "d66dff07-084d-40e5-b90a-076289b0f619", "event": "start"}
+{"time": "2026-10-29T13:35:44+00:00", "work-item": "batch-measurement", "stage": "gate", "agent": "initiative-round", "session": "d66dff07-084d-40e5-b90a-076289b0f619", "event": "end"}
+{"time": "2026-10-29T13:35:44+00:00", "work-item": "batch-measurement", "before": "drafted", "after": "awaiting-answer", "by": "work run"}
