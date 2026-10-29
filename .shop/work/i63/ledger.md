@@ -3,3 +3,4 @@
 - 2026-10-29: gate round 1: 5 questions
 - 2026-10-29: apply round 7: nothing applied; the answers give what the drafts do not hold (r28 changed, r215 reworded and split, r214 wording)
 - 2026-10-29: integrate round 8: supervision adds r214, r215, r216, r217, 0 changes, removes r28 (retired, replaced by r217), 0 questions, 0 cut sentences; .shop/scratch/8-integrate/drafts/round-1/
+- 2026-10-29: gate round 9: 0 questions (all answered under delegation); adds r214-r217, removes r28
