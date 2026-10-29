@@ -1515,6 +1515,18 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the commit that wrote i1's capability-proposals wrote two, each drafted: one for thing, its adds naming thing#r4, its changes thing#r2 and its removes thing#r3, and one for other, its adds naming other#r1 and its changes and removes naming nothing
 
+  @r187
+  Scenario: an integrate round started for a capability-proposal whose change list names another capability the initiative holds a capability-proposal for adds the round's ids for that capability to that proposal, keeping the ids it holds
+    Pins that the ids a proposal's new integration gives on another capability join the initiative's proposal for that capability, without losing the ids it already named.
+    Given i1 is started and fulfils the request q1, whose line 1 has the line outcome accepted
+    And i1's capability-proposal p1, for thing, is awaiting-answer, its ## Questions section with "Is a title given twice one book or two?", given by its gate round, and its Answers section with "One book, and a book's edition is listed with it."
+    And i1's capability-proposal p2, for other, is awaiting-answer, its adds naming other#r1, its changes naming other#r2 and its removes naming nothing
+    And the apply round for p1 applies nothing, giving that p1's answers give what its drafts do not hold
+    And the integrate round for p1 gives DONE with a change list that adds thing#r4 on thing, and adds other#r6, changes other#r3 and removes other#r5 on other
+    And every other round ends
+    When the person runs `work run i1`
+    Then p2's adds name other#r1 and other#r6, its changes name other#r2 and other#r3, and its removes name other#r5
+
   @r171
   Scenario: an integrate round that ends with a change list naming the glossary gives a drafted glossary-proposal with the terms it adds, changes and removes in the glossary
     Pins that the terms an integration proposes for the glossary come to the gate as a glossary-proposal, holding each term the change list adds, changes or removes there.
