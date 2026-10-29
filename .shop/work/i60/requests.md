@@ -24,3 +24,7 @@ The drafts of this proposal are in .shop/work/i60/runs/i60/1-integrate/drafts/ro
 
 ## Faults
 - the session answering requests's question faulted: while its answerer worked, .shop/work/i55/work-queue.md, .shop/work/i55/runs/work-queue/7-answer/brief.md, .shop/work/i55/runs/work-queue/7-answer/result.json, .shop/work/i55/runs/work-queue/7-answer/session.json changed in the repository's own checkout and not committed; work run put them back
+
+## Answers
+- 2026-10-29: Reading A, as the person delegated (2026-10-29: answer every question with its recommended reading): r60 becomes "**When** `work delegate` writes a delegation in a request, `work` shall commit the request on the current branch."
+  by: work run, under the delegation "The person, 2026-10-28: "i am delegating to you" and "I take recommendations"; 2026-10-29: answer every question with its recommended reading; questions of a glossary-proposal are the person's."
