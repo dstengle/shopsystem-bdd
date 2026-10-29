@@ -55,3 +55,5 @@
 {"time": "2026-10-29T13:48:02+00:00", "work-item": "supervision", "stage": "gate", "agent": "initiative-round", "session": "e973fdf0-59ae-48bb-a845-34b28a46d87e", "event": "start"}
 {"time": "2026-10-29T13:48:16+00:00", "work-item": "supervision", "stage": "gate", "agent": "initiative-round", "session": "e973fdf0-59ae-48bb-a845-34b28a46d87e", "event": "end"}
 {"time": "2026-10-29T13:48:16+00:00", "work-item": "supervision", "before": "drafted", "after": "awaiting-answer", "by": "work run"}
+{"time": "2026-10-29T13:48:58+00:00", "work-item": "supervision", "before": "awaiting-answer", "after": "approved", "by": "the coordinator, hand repair (apply round 11 committed 2c74c3a6; rounds 12-13 redrafted from superseded answers)"}
+{"time": "2026-10-29T13:48:58+00:00", "work-item": "glossary", "before": "awaiting-answer", "after": "withdrawn", "by": "the coordinator, hand repair (a glossary-proposal with no terms)"}

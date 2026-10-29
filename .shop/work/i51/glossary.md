@@ -2,7 +2,7 @@
 id: glossary-proposal/missingmass.io/shopsystem/shopsystem-bdd/i51-glossary
 kind: glossary-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i51
-status: awaiting-answer
+status: withdrawn
 adds: []
 changes: []
 removes: []
