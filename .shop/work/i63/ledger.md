@@ -8,3 +8,4 @@
 - 2026-10-29: formulate round 12: commit 566b7302, supervision r214-r216 added, r28 scenario deprecated, r217 returned as a question
 - 2026-10-29: formulate round 13 (supervision): nothing formulated; the r217 answer (reading 2) changes a line not in spec/, integrate round to follow
 - 2026-10-29: 2026-10-29: integrate round 14: supervision adds r218, removes r217 (retired, replaced by r218), 0 changes, 0 questions, 0 cut sentences; .shop/scratch/14-integrate/drafts/round-2/
+- 2026-10-29: gate round 15: 1 question (approval of r218 replacing r217)
