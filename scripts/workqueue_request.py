@@ -29,6 +29,13 @@ def _entries(text, name):
     return [line for line in found.group(1).splitlines() if line.strip()] if found else []
 
 
+def sections(root, ident):
+    """Request `ident`'s Lines, Outcomes, Questions, Answers and Resolution, each as {number: text}."""
+    text = workqueue.read(path_of(root, ident), root)
+    return {name: dict(e.split(". ", 1) for e in _entries(text, name) if ". " in e)
+            for name in ("Lines", "Outcomes", "Questions", "Answers", "Resolution")}
+
+
 def accepted_lines(root, ident):
     """(number, text) of each line of request `ident` whose line outcome is accepted."""
     text = workqueue.read(path_of(root, ident), root)

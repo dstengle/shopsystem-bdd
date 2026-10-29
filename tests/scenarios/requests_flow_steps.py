@@ -96,4 +96,4 @@ def turn_went(context, order):
 def show_prints(context):
     for rows in context["trace"]:
         shown = [row for row in rows if row["command"] == "show"][-1]
-        assert shown["out"].split()[1:] == ["delivered", "asker"], shown
+        assert shown["out"].splitlines()[0].split()[1:] == ["delivered", "asker"], shown

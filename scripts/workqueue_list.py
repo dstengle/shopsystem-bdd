@@ -76,12 +76,32 @@ def work_item(root, target, as_json):
     return 0
 
 
+def request_parts(root, name, turn):
+    """What `work show <request>` prints after its first line (r59): whose turn it is, each line with its line outcome,
+    each question with its answer, the resolution."""
+    import workqueue_request
+    parts = workqueue_request.sections(root, name)
+    print("it is the %s's turn" % turn)
+    for number, text in sorted(parts["Lines"].items(), key=lambda e: int(e[0])):
+        outcome = parts["Outcomes"].get(number)
+        if outcome is not None:
+            print("  line %s: %s - %s" % (number, outcome, text))
+    for number, text in sorted(parts["Questions"].items(), key=lambda e: int(e[0])):
+        print("  question %s: %s" % (number, text))
+        if number in parts["Answers"]:
+            print("  answer %s: %s" % (number, parts["Answers"][number]))
+    for number, text in sorted(parts["Resolution"].items(), key=lambda e: int(e[0])):
+        print("  resolution line %s: %s" % (number, text))
+
+
 def show(root, target, as_json):
     """Print where `target`, an initiative or a work-item, stands; return the exit status."""
     workqueue.entry(target, "target")
     for name, status, turn, _ in workqueue.requests(root):
         if name == target and not (Path(root) / workqueue.WORK / target / "initiative.md").is_file():
             print(json.dumps({"request": name, "status": status, "turn": turn}) if as_json else "%s %s %s" % (name, status, turn))
+            if not as_json:
+                request_parts(root, name, turn)
             return 0
     if (Path(root) / workqueue.WORK / target / "initiative.md").is_file():
         return workqueue_status.status(root, target, as_json)
