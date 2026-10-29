@@ -12,3 +12,4 @@
 - 2026-10-29: integrate round 5 (work-queue): work-queue +1 -1 (r59 for r23), supervision +1 -1 (r213 for r105), no glossary, 0 questions, 0 cut sentences; drafts .shop/scratch/5-integrate/drafts/round-2
 - 2026-10-29: gate round 1: 0 questions (glossary proposal; no glossary entries drafted)
 - 2026-10-29: apply round 16: requests r64 and supervision r212 r213 applied (3611f76b); work-queue draft not applied, stale against spec (r59 taken, r34/r35 already retired); nothing else
+- 2026-10-29: integrate round 17 (requests): work-queue +1 -1 (r62 for r23), no glossary, 0 questions, 0 cut sentences; drafts .shop/scratch/17-integrate/drafts/round-1
