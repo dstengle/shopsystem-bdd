@@ -57,8 +57,9 @@ Feature: Work queue
     And nothing under the new initiative's directory under .shop/work/ differs from main's last commit
     And it exits successfully
 
-  @r23
-  Scenario Outline: a command whose change leaves an initiative with a green work-item, every work-item green or withdrawn, and every request this context asked naming it delivered, sets the initiative to done
+  @r23 @deprecated
+  Scenario Outline: a command whose change leaves an initiative with a green work-item, every work-item green or withdrawn, and every request this context asked naming it delivered, sets the initiative to done (deprecated)
+    Deprecated for: a command whose change leaves an initiative with a green work-item, every work-item green or withdrawn, every capability-proposal formulated or withdrawn, and every request this context asked naming it delivered, sets the initiative to done
     Pins that the command that completes an initiative's work ends the initiative when one of its work-items is green, and that only requests this context asked and keeps, naming the initiative, can hold it open.
     Given an initiative i1 under .shop/work/ that is started, whose work-item w1 is green and whose work-item w2 is ready
     And .shop/work/i1/log.jsonl's last line for w2 is its transition to ready
@@ -75,8 +76,9 @@ Feature: Work queue
       | a request q1 kept in this context, whose asker is another context, names i1 and is accepted |
       | a request q1 kept in this context, whose asker is this context, names i2 and is accepted    |
 
-  @r23
-  Scenario: retry that makes an initiative's last open work-item green again sets the initiative to done
+  @r23 @deprecated
+  Scenario: retry that makes an initiative's last open work-item green again sets the initiative to done (deprecated)
+    Deprecated for: a command whose change leaves an initiative with a green work-item, every work-item green or withdrawn, every capability-proposal formulated or withdrawn, and every request this context asked naming it delivered, sets the initiative to done
     Pins that retry, like withdraw, is a command whose change can complete an initiative, and that it ends the initiative when it does.
     Given an initiative i1 under .shop/work/ that is started, whose work-item w1 is green and whose work-item w2 is failed
     And .shop/work/i1/log.jsonl gives w2's last transitions as from claimed to green, then from green to failed
@@ -85,6 +87,26 @@ Feature: Work queue
     Then .shop/work/i1/w2.md gives w2's status as green
     And .shop/work/i1/initiative.md gives i1's status as done
     And it exits successfully
+
+  @r62
+  Scenario Outline: a command whose change leaves an initiative with a green work-item, every work-item green or withdrawn, every capability-proposal formulated or withdrawn, and every request this context asked naming it delivered, sets the initiative to done
+    Pins that whichever command completes an initiative's work, withdraw or retry, ends the initiative when one of its work-items is green and each of its capability-proposals is formulated or withdrawn, and that only requests this context asked and keeps, naming the initiative, can hold it open.
+    Given an initiative i1 under .shop/work/ that is started, whose work-item w1 is green and whose work-item w2 is <before>
+    And <log>
+    And <proposals>
+    And <request>
+    When the session runs `work <command> w2`
+    Then .shop/work/i1/w2.md gives w2's status as <after>
+    And .shop/work/i1/initiative.md gives i1's status as done
+    And it exits successfully
+
+    Examples:
+      | command  | before | log                                                                                     | after     | proposals                                                                             | request                                                                                     |
+      | withdraw | ready  | .shop/work/i1/log.jsonl's last line for w2 is its transition to ready                   | withdrawn | i1's capability-proposal p1 is formulated                                             | no request kept in this context names i1                                                    |
+      | withdraw | ready  | .shop/work/i1/log.jsonl's last line for w2 is its transition to ready                   | withdrawn | i1's capability-proposal p1 is withdrawn and its capability-proposal p2 is formulated | a request q1 kept in this context, whose asker is this context, names i1 and is delivered   |
+      | withdraw | ready  | .shop/work/i1/log.jsonl's last line for w2 is its transition to ready                   | withdrawn | i1's capability-proposal p1 is formulated                                             | a request q1 kept in this context, whose asker is another context, names i1 and is accepted |
+      | withdraw | ready  | .shop/work/i1/log.jsonl's last line for w2 is its transition to ready                   | withdrawn | i1's capability-proposal p1 is formulated                                             | a request q1 kept in this context, whose asker is this context, names i2 and is accepted    |
+      | retry    | failed | .shop/work/i1/log.jsonl gives w2's last transitions as from claimed to green, then from green to failed | green     | i1's capability-proposal p1 is formulated                                             | no request kept in this context names i1                                                    |
 
   @r31
   Scenario: withdraw that leaves every work-item of an initiative withdrawn leaves the initiative's status as it is
