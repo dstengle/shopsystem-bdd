@@ -2,3 +2,4 @@
 - 2026-10-28: gate round 1: 1 question (supervision r187 wording)
 - 2026-10-28: gate round 1: 1 question (work-queue r35 against r49)
 - 2026-10-29: apply round 3: supervision r187 applied (answer 2026-10-29, reading a), commit ec944d15; model check not run (approval refused)
+- 2026-10-29: formulate round 1: supervision r187, one scenario added, commit bb2caaeb
