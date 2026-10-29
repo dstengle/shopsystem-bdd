@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Applied round 2: supervision r217 retired, r218 added (commit 1af90a20). The draft file was a defective copy (stray header, missing Purpose and tail), so only its two changes were applied by hand.","questions":[],"changes":[{"capability":"supervision","adds":["supervision#r218"],"changes":[],"removes":["supervision#r217"]}],"unheld_answers":[]}
