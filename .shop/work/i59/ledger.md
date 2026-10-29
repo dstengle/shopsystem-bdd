@@ -7,3 +7,4 @@
 - 2026-10-29: gate round 1: 3 questions for migration-tools
 - 2026-10-29: gate round 1 for role-boundaries: 1 question (r8's place)
 - 2026-10-29: gate round 1: 2 questions for supervision (r193-r196 ok on waiting, r189 field ok)
+- 2026-10-29: gate of work-queue: 4 questions
