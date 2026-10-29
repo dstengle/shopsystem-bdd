@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i63-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i63
-status: drafted
+status: awaiting-answer
 argues: [supervision]
 date: 2026-10-29
 adds: [supervision#r214, supervision#r215, supervision#r216, supervision#r217]
@@ -36,6 +36,7 @@ The drafts of this proposal are in .shop/work/i63/runs/supervision/8-integrate/d
   [r214] **When** `work run` checks what changed in the repository's own checkout while a session it started for one initiative worked, `work run` shall leave out each path under `.shop/work/<initiative>/` of another initiative that `work run` is running side by side.
   
   Question 5: r214 says "the repository's own checkout"; r28 and r46 say "the main checkout". Readings: (a) RECOMMENDED: r214 says "the main checkout". (b) r214 keeps the request's wording.
+- Are the lines of supervision approved as drafted? Readings: approve supervision as drafted (recommended), or change its lines.
 
 ## Answers
 - 2026-10-29: Reading (a), under the person's delegation of 2026-10-28 ("I take recommendations"): r215 is an exception to r28, and r28 changes to: "**If** the main checkout's `.shop/work/`, less each path under `.shop/work/<initiative>/` of another initiative, differs from its last commit when a worker ends, then `work run` shall put it back and transition the work-item to `failed`, naming each file."
