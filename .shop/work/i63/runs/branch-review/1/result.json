@@ -1,0 +1,6 @@
+{
+  "status": "DONE",
+  "summary": "Branch review of i63 (db2873b7..331edbd4), covering w236 (r218) and w237 (r214, r215, r216).\nSuite: 1084 passed, 0 failed at 331edbd in 33.36 s (parallel with -n auto; runs work run as a program, not in-process). Also 1 skipped, 16 xfailed, 6 xpassed.\nScenario runs at 331edbd: w236 181 passed, w237 183 passed.\nfeatures bindings is clean. tools size prints nothing. tools check exits 1, on ruff only: a gate round's mk.py committed under .shop/, and pre-existing FURB167 in stub_claude.py.\nNothing is Critical and nothing is triaged fix now. Three Important findings, all triaged observation:\n- w236 loosened is_failed's clean-status assertion; the plan does not list it and its allowance row does not hold.\n- w237's r214-r216 scenarios most likely pass without the leaving-out code in supervise_faults.py:110/114.\n- r215/r216 as worded still contradict the code for an i2 session's own end; the code follows reading A, as answered.\nMinor: w237's fileset omits stub_claude.py; commits of no work-item, including two hand repairs (q34); a stale docstring citing retired r28; the stub's retry depends on git's message wording.",
+  "findings": "/tmp/work-run-i63-dcnr_g9t/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": []
+}
