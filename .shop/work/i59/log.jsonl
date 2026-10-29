@@ -30,3 +30,7 @@
 {"time": "2026-10-29T13:38:41+00:00", "work-item": "role-boundaries", "stage": "gate", "agent": "initiative-round", "session": "4dbad307-7b3d-4610-b68f-c967e7d2f19e", "event": "start"}
 {"time": "2026-10-29T13:39:18+00:00", "work-item": "role-boundaries", "stage": "gate", "agent": "initiative-round", "session": "4dbad307-7b3d-4610-b68f-c967e7d2f19e", "event": "end"}
 {"time": "2026-10-29T13:39:18+00:00", "work-item": "role-boundaries", "before": "drafted", "after": "awaiting-answer", "by": "work run"}
+{"time": "2026-10-29T13:39:20+00:00", "work-item": "supervision", "stage": "gate", "event": "push verified"}
+{"time": "2026-10-29T13:39:20+00:00", "work-item": "supervision", "stage": "gate", "agent": "initiative-round", "session": "4438c241-7905-42b7-b6a5-0d24a820fed8", "event": "start"}
+{"time": "2026-10-29T13:40:31+00:00", "work-item": "supervision", "stage": "gate", "agent": "initiative-round", "session": "4438c241-7905-42b7-b6a5-0d24a820fed8", "event": "end"}
+{"time": "2026-10-29T13:40:31+00:00", "work-item": "supervision", "before": "drafted", "after": "awaiting-answer", "by": "work run"}
