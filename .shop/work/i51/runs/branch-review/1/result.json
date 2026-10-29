@@ -1,0 +1,6 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Branch review of i51 (3c43389a..eadc0790), one work-item: w230 (supervision r209, r210), green.\nSuite: 1066 passed, 0 failed at eadc0790 in 33.22 s. Runs in parallel (-n auto), not in-process (scripts/work runs as a subprocess). The 11 xfails are w212's.\nw230's scenarios: 184 passed, 1 skipped. tools size: nothing over 300. features bindings: clean. tools check: exit 1, but no error is on a line the branch changed (old test-file lints, scratch scripts under .shop/).\nCode does what r209 and r210 ask; nothing contradicts a Behaviour line; no code that no line asks for.\nRemoved tests: the names_one unit test and the @r162 outline, both listed in plan section 4.\nCritical, triaged observation: w230 removed the @r162 scenario with no ## Retires section; only a delegated answer accepts it. The person rules on it.\nImportant, observation: the r163 outline's 'Deprecated for: r209 and r210' names no scenario, so r123 may never retire it.\nMinor: commits with no work-item on the shared main (including the i51 hand repair 73758cad); stale CLAUDE.md:37 row for supervise_glossary.py.\nNothing triaged fix now.",
+  "findings": "/tmp/work-run-i51-n3_38fvc/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": []
+}
