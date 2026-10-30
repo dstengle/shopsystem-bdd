@@ -58,3 +58,4 @@
 {"time": "2026-10-30T12:05:39+00:00", "work-item": "w238", "before": "claimed", "after": "failed", "by": "work run"}
 {"time": "2026-10-30T12:48:45+00:00", "work-item": "w238", "before": "failed", "after": "claimed", "by": "work retry"}
 {"time": "2026-10-30T12:50:39+00:00", "work-item": "w238", "before": "claimed", "after": "ready", "by": "the person (hand edit: work retry restored claimed, which work run does not resume)"}
+{"time": "2026-10-30T12:50:41+00:00", "work-item": "w238", "before": "ready", "after": "claimed", "by": "work run"}
