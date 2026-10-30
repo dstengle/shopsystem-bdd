@@ -475,3 +475,24 @@ date: 2026-10-27
 
 - i39's work-queue proposal, redrafted by a new integrate round (supervision r140-r148, i41), named requests r46 and r47 in its change list. `work run` wrote the requests proposal from that change list (r92), replacing its `adds` and `removes` (r25, r28-r34, r39-r45; r1, r3, applied and formulated earlier) with r46, r47 and r13, r14 alone (commit 2862e7bf). The formulated requests scenarios then lost their xfail and every work-item's whole-suite run failed (14 failures). The coordinator restored the union by hand.
 - The same apply round (8) applied the drafts as they stood and not the gate's answers that add work-queue r48 and retire r34 for r40, with no redraft after it.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-30-log-of-temporary-rules
+about: capability/migration-tools
+by: the person, from q31
+date: 2026-10-30
+
+- q31 lines 6-9 asked for a log of temporary rules the person gives sessions, each given at session start. In the discovery conversation of 2026-10-30 the person called it "a separate idea that doesn't fit well into the above framework" (the board, q45). Withdrawn with q31; kept here for the board's Backlog.
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-30-work-run-misreports-api-error
+about: capability/supervision
+by: a session, from i48
+date: 2026-10-30
+
+- w238's implementer sessions hit `502 credential_not_found` from agent-vault on their first call (terminal_reason api_error, is_error true, 0 tokens). `work run` printed "its implementer's session ended as a success (success, 1 turns, exit code 1)", taking `subtype: success` and not `is_error` or `api_error_status`. Risk: low (misleads on why a worker failed); likelihood: low (API errors only).
+
+## observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-30-retry-restores-claimed
+about: capability/work-queue
+by: a session, from i48
+date: 2026-10-30
+
+- `work retry w238`, failed in implement, restored `claimed` (work-queue r8: the status before `failed`). `work run i48` then took no stage for it and exited 1 printing no `work:` line; no `work` command moves a `claimed` work-item, so the person had it set `ready` by hand. Risk: medium (a run stops and needs a hand edit); likelihood: medium (every failure in implement or review).
