@@ -83,9 +83,7 @@ def request_parts(root, name, turn):
     parts = workqueue_request.sections(root, name)
     print("it is the %s's turn" % turn)
     for number, text in sorted(parts["Lines"].items(), key=lambda e: int(e[0])):
-        outcome = parts["Outcomes"].get(number)
-        if outcome is not None:
-            print("  line %s: %s - %s" % (number, outcome, text))
+        print("  line %s: %s - %s" % (number, parts["Outcomes"].get(number, "unsettled"), text))
     for number, text in sorted(parts["Questions"].items(), key=lambda e: int(e[0])):
         print("  question %s: %s" % (number, text))
         if number in parts["Answers"]:
