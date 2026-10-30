@@ -6,3 +6,4 @@
 - 2026-10-28: gate round 4: 2 questions (supervision r188, r189)
 - 2026-10-29 22:55: compacted
 - 2026-10-30: capability-proposal supervision, both r189 questions: the person answered "A for both" (r189 stands as drafted, no r190; kept terms stay in what work run writes for the glossary-proposal under r171).
+- 2026-10-30: apply round 8 supervision: applied r188 r189 with the answers of 2026-10-28 and 2026-10-30
