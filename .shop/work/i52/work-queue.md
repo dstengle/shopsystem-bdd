@@ -28,3 +28,6 @@ The drafts of this proposal are in .shop/work/i52/runs/work-queue/3-integrate/dr
 - 2026-10-28: Q2, r41's logged line: reading (a), with the time, the initiative, its status before and after, and who set it, as r5's lines do (answered by the coordinator under the person's delegation, 2026-10-28)
 - 2026-10-28: Q3, work start and r41: reading (b), r41 covers only transitions (answered by the coordinator under the person's delegation, 2026-10-28)
 - 2026-10-28: Q4, committing r41's line: reading (b), no line (answered by the coordinator under the person's delegation, 2026-10-28)
+
+## Faults
+- the session answering work-queue's question faulted: while its answerer worked, .shop/work/i61/spec-integration.md, .shop/work/i61/runs/spec-integration/3-answer/brief.md, .shop/work/i61/runs/spec-integration/3-answer/result.json, .shop/work/i61/runs/spec-integration/3-answer/session.json changed in the repository's own checkout and not committed; work run put them back
