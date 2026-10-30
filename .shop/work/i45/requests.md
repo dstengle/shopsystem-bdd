@@ -24,3 +24,5 @@ The drafts of this proposal are in .shop/work/i45/runs/requests/3-integrate/draf
 - 2026-10-28: Q1, r46's check: reading A, a word of a fixed list of implementation details, or a word that is neither a glossary term nor used in a Behaviour line (answered by the person, 2026-10-28)
 - 2026-10-28: Q7, r46's glossary: reading A, the upstream's glossary and spec/capabilities/ (answered by the person, 2026-10-28)
 - 2026-10-28: Q12, r46 refusing a line: reading A, it refuses the whole request and changes nothing, as r2 (answered by the person, 2026-10-28)
+- 2026-10-30: Approve requests as drafted (the recommended reading), per the person's 2026-10-29 delegation to answer every question with its recommended reading.
+  by: work run, under the delegation "The person, 2026-10-28: "i am delegating to you" and "I take recommendations"; 2026-10-29: answer every question with its recommended reading; questions of a glossary-proposal are the person's."
