@@ -1,0 +1,269 @@
+v10a  a source that is not an origin  (18)
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i43, record/2026-10-28-i42-analysis
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i44, request/missingmass.io/shopsystem/shopsystem-bdd/q23
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i45, record/2026-10-28-requirement-checking
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i46, request/missingmass.io/shopsystem/shopsystem-bdd/q28
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i47, person/2026-10-28-i46-faults
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i48, request/missingmass.io/shopsystem/shopsystem-bdd/q33
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i49, request/missingmass.io/shopsystem/shopsystem-bdd/q30
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i50, request/missingmass.io/shopsystem/shopsystem-bdd/q30
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i51, person/2026-10-28-glossary-questions
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i52, request/missingmass.io/shopsystem/shopsystem-bdd/q30
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i56, person/2026-10-28-intention-before-lines
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i57, request/missingmass.io/shopsystem/shopsystem-bdd/q29
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i58, person/2026-10-28-proposals-from-a-session-gate
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i59, person/2026-10-28-json-output
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i60, person/2026-10-29-delegation-after-raising
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i61, person/2026-10-29-i51-redraft-loop
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i62, person/2026-10-29-flaky-maintenance-lock
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i63, person/2026-10-29-answer-race
+v17  a request that is part of no job-thread, cites no origin and is raised for no request  (21)
+    request/missingmass.io/shopsystem/shopsystem-bdd/q23
+    request/missingmass.io/shopsystem/shopsystem-bdd/q24
+    request/missingmass.io/shopsystem/shopsystem-bdd/q25
+    request/missingmass.io/shopsystem/shopsystem-bdd/q26
+    request/missingmass.io/shopsystem/shopsystem-bdd/q27
+    request/missingmass.io/shopsystem/shopsystem-bdd/q28
+    request/missingmass.io/shopsystem/shopsystem-bdd/q29
+    request/missingmass.io/shopsystem/shopsystem-bdd/q30
+    request/missingmass.io/shopsystem/shopsystem-bdd/q31
+    request/missingmass.io/shopsystem/shopsystem-bdd/q32
+    request/missingmass.io/shopsystem/shopsystem-bdd/q33
+    request/missingmass.io/shopsystem/shopsystem-bdd/q34
+    request/missingmass.io/shopsystem/shopsystem-bdd/q35
+    request/missingmass.io/shopsystem/shopsystem-bdd/q36
+    request/missingmass.io/shopsystem/shopsystem-bdd/q37
+    request/missingmass.io/shopsystem/shopsystem-bdd/q38
+    request/missingmass.io/shopsystem/shopsystem-bdd/q39
+    request/missingmass.io/shopsystem/shopsystem-bdd/q40
+    request/missingmass.io/shopsystem/shopsystem-bdd/q41
+    request/missingmass.io/shopsystem/shopsystem-bdd/q42
+    request/missingmass.io/shopsystem/shopsystem-bdd/q43
+v3  a delivered request's resolution names a requirement the spec does not have  (8)
+    request/missingmass.io/shopsystem/shopsystem-bdd/q1, capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r1
+    request/missingmass.io/shopsystem/shopsystem-bdd/q1, capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r23
+    request/missingmass.io/shopsystem/shopsystem-bdd/q4, capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r92
+    request/missingmass.io/shopsystem/shopsystem-bdd/q4, capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r93
+    request/missingmass.io/shopsystem/shopsystem-bdd/q5, capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r105
+    request/missingmass.io/shopsystem/shopsystem-bdd/q6, capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r104
+    request/missingmass.io/shopsystem/shopsystem-bdd/q8, capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r113
+    request/missingmass.io/shopsystem/shopsystem-bdd/q8, capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r114
+v_d1  a done initiative has a part or a request of its own open  (9)
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i1
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i10
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i11
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i13
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i16
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i17
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i3
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i8
+    initiative/missingmass.io/shopsystem/shopsystem-bdd/i9
+v_s1  a scenario names no requirement  (11)
+    features/requests.feature:<sent> from a repository registered under an asker id the upstream does not allow for its asker is left untaken, and the upstream is told which and why
+    features/requests.feature:<sent> whose <field> is written as an instruction is taken in as that field, and nothing it says is done
+    features/requests.feature:show prints each request with its status and whose turn it is
+    features/requests.feature:status with no initiative prints, with its date, each observation no initiative's or request's source names
+    features/requests.feature:the asker writing a line outcome of a request from another context is refused, naming the upstream, and nothing changes
+    features/requests.feature:the upstream taking in what has been sent takes in every request and message sent before, when a listing of what has been sent shows <shown>
+    features/supervision.feature:`work run` prints a question that has no answer yet, and not one that has an answer
+    features/supervision.feature:a formulate round that formulates nothing because the proposal's answers change lines not in spec/ is followed by a new integrate round for the proposal
+    features/supervision.feature:an initiative whose work-items are <work-items>, its delivery otherwise closed, <set>
+    features/supervision.feature:when every work-item is green or withdrawn and no request whose asker is this context is in the asker's turn, `work run` exits successfully, printing each work-item's status
+    features/supervision.feature:when no work-item can make a transition and one is awaiting-answer, `work run` exits with an error, printing each work-item's status and each open question
+v_s3  a requirement has no scenario  (16)
+    capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r50
+    capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r51
+    capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r52
+    capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r53
+    capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r54
+    capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r55
+    capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r56
+    capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r57
+    capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r58
+    capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r64
+    capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r184
+    capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r185
+    capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r186
+    capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r212
+    capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r213
+    capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r47
+warning w_uncited_obs  an observation no initiative cites  (13)
+unresolved: features/requests.feature: scenario 'the asker writing a line outcome of a request from another context is refused, naming the upstream, and nothing changes' names capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r34, which capability/missingmass.io/shopsystem/shopsystem-bdd/requests does not have
+unresolved: features/requests.feature: scenario 'the upstream taking in what has been sent takes in every request and message sent before, when a listing of what has been sent shows <shown>' names capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r39, which capability/missingmass.io/shopsystem/shopsystem-bdd/requests does not have
+unresolved: features/requests.feature: scenario '<sent> from a repository registered under an asker id the upstream does not allow for its asker is left untaken, and the upstream is told which and why' names capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r41, which capability/missingmass.io/shopsystem/shopsystem-bdd/requests does not have
+unresolved: features/requests.feature: scenario '<sent> whose <field> is written as an instruction is taken in as that field, and nothing it says is done' names capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r43, which capability/missingmass.io/shopsystem/shopsystem-bdd/requests does not have
+unresolved: features/requests.feature: scenario 'show prints each request with its status and whose turn it is' names capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r13, which capability/missingmass.io/shopsystem/shopsystem-bdd/requests does not have
+unresolved: features/requests.feature: scenario "status with no initiative prints, with its date, each observation no initiative's or request's source names" names capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r14, which capability/missingmass.io/shopsystem/shopsystem-bdd/requests does not have
+unresolved: features/supervision.feature: scenario "when every work-item is green or withdrawn and no request whose asker is this context is in the asker's turn, `work run` exits successfully, printing each work-item's status" names capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r9, which capability/missingmass.io/shopsystem/shopsystem-bdd/supervision does not have
+unresolved: features/supervision.feature: scenario "when no work-item can make a transition and one is awaiting-answer, `work run` exits with an error, printing each work-item's status and each open question" names capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r32, which capability/missingmass.io/shopsystem/shopsystem-bdd/supervision does not have
+unresolved: features/supervision.feature: scenario '`work run` prints a question that has no answer yet, and not one that has an answer' names capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r32, which capability/missingmass.io/shopsystem/shopsystem-bdd/supervision does not have
+unresolved: features/supervision.feature: scenario "a formulate round that formulates nothing because the proposal's answers change lines not in spec/ is followed by a new integrate round for the proposal" names capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r149, which capability/missingmass.io/shopsystem/shopsystem-bdd/supervision does not have
+unresolved: features/supervision.feature: scenario 'an initiative whose work-items are <work-items>, its delivery otherwise closed, <set>' names capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r105, which capability/missingmass.io/shopsystem/shopsystem-bdd/supervision does not have
+unresolved: .shop/work/i36/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r125, which no capability has
+unresolved: .shop/work/i36/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r126, which no capability has
+unresolved: .shop/work/i36/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r127, which no capability has
+unresolved: .shop/work/i40/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r137, which no capability has
+unresolved: .shop/work/i40/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r138, which no capability has
+unresolved: .shop/work/i40/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r139, which no capability has
+unresolved: .shop/work/i45/requests.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r59, which no capability has
+unresolved: .shop/work/i45/spec-consistency.md: removes capability/missingmass.io/shopsystem/shopsystem-bdd/spec-consistency#r5, which no capability has
+unresolved: .shop/work/i45/spec-integration.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration#r58, which no capability has
+unresolved: .shop/work/i45/spec-integration.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration#r59, which no capability has
+unresolved: .shop/work/i45/spec-integration.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration#r60, which no capability has
+unresolved: .shop/work/i45/spec-integration.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration#r61, which no capability has
+unresolved: .shop/work/i45/spec-integration.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration#r62, which no capability has
+unresolved: .shop/work/i45/spec-integration.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration#r63, which no capability has
+unresolved: .shop/work/i45/spec-integration.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration#r64, which no capability has
+unresolved: .shop/work/i45/spec-integration.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration#r65, which no capability has
+unresolved: .shop/work/i47/requests.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r59, which no capability has
+unresolved: .shop/work/i47/requests.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r60, which no capability has
+unresolved: .shop/work/i47/requests.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r61, which no capability has
+unresolved: .shop/work/i47/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r190, which no capability has
+unresolved: .shop/work/i52/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r190, which no capability has
+unresolved: .shop/work/i52/work-queue.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r50, which no capability has
+unresolved: .shop/work/i52/work-queue.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r51, which no capability has
+unresolved: .shop/work/i52/work-queue.md: removes capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r23, which no capability has
+unresolved: .shop/work/i53/spec-integration.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration#r57, which no capability has
+unresolved: .shop/work/i55/requests.md: removes capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r14, which no capability has
+unresolved: .shop/work/i55/supervision.md: removes capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r149, which no capability has
+unresolved: .shop/work/i55/supervision.md: removes capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r32, which no capability has
+unresolved: .shop/work/i55/supervision.md: removes capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r9, which no capability has
+unresolved: .shop/work/i55/supervision.md: removes capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r105, which no capability has
+unresolved: .shop/work/i55/work-queue.md: removes capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r23, which no capability has
+unresolved: .shop/work/i56/requests.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r49, which no capability has
+unresolved: .shop/work/i56/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r183, which no capability has
+unresolved: .shop/work/i56/work-queue.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r46, which no capability has
+unresolved: .shop/work/i57/backlog.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/backlog#r1, which no capability has
+unresolved: .shop/work/i57/backlog.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/backlog#r2, which no capability has
+unresolved: .shop/work/i57/backlog.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/backlog#r3, which no capability has
+unresolved: .shop/work/i57/backlog.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/backlog#r4, which no capability has
+unresolved: .shop/work/i57/backlog.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/backlog#r5, which no capability has
+unresolved: .shop/work/i57/backlog.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/backlog#r6, which no capability has
+unresolved: .shop/work/i57/backlog.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/backlog#r7, which no capability has
+unresolved: .shop/work/i57/backlog.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/backlog#r8, which no capability has
+unresolved: .shop/work/i57/migration-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/migration-tools#r35, which no capability has
+unresolved: .shop/work/i57/migration-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/migration-tools#r36, which no capability has
+unresolved: .shop/work/i58/spec-integration.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration#r56, which no capability has
+unresolved: .shop/work/i58/work-queue.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r42, which no capability has
+unresolved: .shop/work/i58/work-queue.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r43, which no capability has
+unresolved: .shop/work/i58/work-queue.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r44, which no capability has
+unresolved: .shop/work/i58/work-queue.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r45, which no capability has
+unresolved: .shop/work/i59/analysis-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r59, which no capability has
+unresolved: .shop/work/i59/analysis-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r60, which no capability has
+unresolved: .shop/work/i59/analysis-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r61, which no capability has
+unresolved: .shop/work/i59/analysis-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r62, which no capability has
+unresolved: .shop/work/i59/analysis-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r63, which no capability has
+unresolved: .shop/work/i59/analysis-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r64, which no capability has
+unresolved: .shop/work/i59/analysis-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r65, which no capability has
+unresolved: .shop/work/i59/analysis-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r66, which no capability has
+unresolved: .shop/work/i59/analysis-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r67, which no capability has
+unresolved: .shop/work/i59/analysis-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r68, which no capability has
+unresolved: .shop/work/i59/analysis-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r69, which no capability has
+unresolved: .shop/work/i59/analysis-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r70, which no capability has
+unresolved: .shop/work/i59/analysis-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r71, which no capability has
+unresolved: .shop/work/i59/analysis-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r72, which no capability has
+unresolved: .shop/work/i59/analysis-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r73, which no capability has
+unresolved: .shop/work/i59/analysis-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r74, which no capability has
+unresolved: .shop/work/i59/analysis-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools#r75, which no capability has
+unresolved: .shop/work/i59/batch-measurement.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/batch-measurement#r68, which no capability has
+unresolved: .shop/work/i59/batch-measurement.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/batch-measurement#r69, which no capability has
+unresolved: .shop/work/i59/batch-measurement.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/batch-measurement#r70, which no capability has
+unresolved: .shop/work/i59/batch-measurement.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/batch-measurement#r71, which no capability has
+unresolved: .shop/work/i59/batch-measurement.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/batch-measurement#r72, which no capability has
+unresolved: .shop/work/i59/batch-measurement.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/batch-measurement#r73, which no capability has
+unresolved: .shop/work/i59/batch-measurement.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/batch-measurement#r74, which no capability has
+unresolved: .shop/work/i59/delivery.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/delivery#r23, which no capability has
+unresolved: .shop/work/i59/design-model-check.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/design-model-check#r125, which no capability has
+unresolved: .shop/work/i59/design-model-check.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/design-model-check#r126, which no capability has
+unresolved: .shop/work/i59/design-model-check.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/design-model-check#r127, which no capability has
+unresolved: .shop/work/i59/design-model-check.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/design-model-check#r128, which no capability has
+unresolved: .shop/work/i59/design-model-check.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/design-model-check#r129, which no capability has
+unresolved: .shop/work/i59/design-model-check.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/design-model-check#r130, which no capability has
+unresolved: .shop/work/i59/design-model-check.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/design-model-check#r131, which no capability has
+unresolved: .shop/work/i59/design-model-check.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/design-model-check#r132, which no capability has
+unresolved: .shop/work/i59/design-model-check.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/design-model-check#r133, which no capability has
+unresolved: .shop/work/i59/design-model-check.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/design-model-check#r134, which no capability has
+unresolved: .shop/work/i59/design-model-check.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/design-model-check#r135, which no capability has
+unresolved: .shop/work/i59/design-model-check.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/design-model-check#r136, which no capability has
+unresolved: .shop/work/i59/design-model-check.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/design-model-check#r137, which no capability has
+unresolved: .shop/work/i59/design-model-check.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/design-model-check#r138, which no capability has
+unresolved: .shop/work/i59/design-model-check.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/design-model-check#r139, which no capability has
+unresolved: .shop/work/i59/feature-file-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/feature-file-tools#r63, which no capability has
+unresolved: .shop/work/i59/feature-file-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/feature-file-tools#r64, which no capability has
+unresolved: .shop/work/i59/feature-file-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/feature-file-tools#r65, which no capability has
+unresolved: .shop/work/i59/feature-file-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/feature-file-tools#r66, which no capability has
+unresolved: .shop/work/i59/feature-file-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/feature-file-tools#r67, which no capability has
+unresolved: .shop/work/i59/feature-file-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/feature-file-tools#r68, which no capability has
+unresolved: .shop/work/i59/feature-file-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/feature-file-tools#r69, which no capability has
+unresolved: .shop/work/i59/feature-file-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/feature-file-tools#r70, which no capability has
+unresolved: .shop/work/i59/feature-file-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/feature-file-tools#r71, which no capability has
+unresolved: .shop/work/i59/feature-file-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/feature-file-tools#r72, which no capability has
+unresolved: .shop/work/i59/feature-file-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/feature-file-tools#r73, which no capability has
+unresolved: .shop/work/i59/migration-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/migration-tools#r37, which no capability has
+unresolved: .shop/work/i59/migration-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/migration-tools#r38, which no capability has
+unresolved: .shop/work/i59/migration-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/migration-tools#r39, which no capability has
+unresolved: .shop/work/i59/migration-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/migration-tools#r40, which no capability has
+unresolved: .shop/work/i59/migration-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/migration-tools#r41, which no capability has
+unresolved: .shop/work/i59/migration-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/migration-tools#r42, which no capability has
+unresolved: .shop/work/i59/migration-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/migration-tools#r43, which no capability has
+unresolved: .shop/work/i59/migration-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/migration-tools#r44, which no capability has
+unresolved: .shop/work/i59/migration-tools.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/migration-tools#r45, which no capability has
+unresolved: .shop/work/i59/role-boundaries.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/role-boundaries#r8, which no capability has
+unresolved: .shop/work/i59/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r190, which no capability has
+unresolved: .shop/work/i59/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r191, which no capability has
+unresolved: .shop/work/i59/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r192, which no capability has
+unresolved: .shop/work/i59/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r193, which no capability has
+unresolved: .shop/work/i59/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r194, which no capability has
+unresolved: .shop/work/i59/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r195, which no capability has
+unresolved: .shop/work/i59/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r196, which no capability has
+unresolved: .shop/work/i59/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r197, which no capability has
+unresolved: .shop/work/i59/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r198, which no capability has
+unresolved: .shop/work/i59/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r199, which no capability has
+unresolved: .shop/work/i59/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r200, which no capability has
+unresolved: .shop/work/i59/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r201, which no capability has
+unresolved: .shop/work/i59/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r202, which no capability has
+unresolved: .shop/work/i59/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r203, which no capability has
+unresolved: .shop/work/i59/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r204, which no capability has
+unresolved: .shop/work/i59/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r205, which no capability has
+unresolved: .shop/work/i59/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r206, which no capability has
+unresolved: .shop/work/i59/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r207, which no capability has
+unresolved: .shop/work/i59/supervision.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r208, which no capability has
+unresolved: .shop/work/i59/supervision.md: removes capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r9, which no capability has
+unresolved: .shop/work/i59/supervision.md: removes capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r32, which no capability has
+unresolved: .shop/work/i59/work-queue.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r50, which no capability has
+unresolved: .shop/work/i59/work-queue.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r51, which no capability has
+unresolved: .shop/work/i59/work-queue.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r52, which no capability has
+unresolved: .shop/work/i59/work-queue.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r53, which no capability has
+unresolved: .shop/work/i59/work-queue.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r54, which no capability has
+unresolved: .shop/work/i59/work-queue.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r55, which no capability has
+unresolved: .shop/work/i59/work-queue.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r56, which no capability has
+unresolved: .shop/work/i59/work-queue.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r57, which no capability has
+unresolved: .shop/work/i59/work-queue.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r58, which no capability has
+unresolved: .shop/work/i59/work-queue.md: removes capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r35, which no capability has
+unresolved: .shop/work/i61/spec-integration.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration#r58, which no capability has
+unresolved: .shop/work/i61/spec-integration.md: adds capability/missingmass.io/shopsystem/shopsystem-bdd/spec-integration#r59, which no capability has
+unresolved: spec/decisions/0072-work-list-and-work-show-replace-work-status.md: capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r34 names nothing in this repository
+unresolved: spec/decisions/0072-work-list-and-work-show-replace-work-status.md: capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r35 names nothing in this repository
+unresolved: .shop/work/i43/initiative.md: record/2026-10-28-i42-analysis names nothing in this repository
+unresolved: .shop/work/i45/initiative.md: record/2026-10-28-requirement-checking names nothing in this repository
+unresolved: .shop/work/i47/initiative.md: person/2026-10-28-i46-faults names nothing in this repository
+unresolved: .shop/work/i51/initiative.md: person/2026-10-28-glossary-questions names nothing in this repository
+unresolved: .shop/work/i56/initiative.md: person/2026-10-28-intention-before-lines names nothing in this repository
+unresolved: .shop/work/i57/backlog.md: capability/missingmass.io/shopsystem/shopsystem-bdd/backlog names nothing in this repository
+unresolved: .shop/work/i58/initiative.md: person/2026-10-28-proposals-from-a-session-gate names nothing in this repository
+unresolved: .shop/work/i59/initiative.md: person/2026-10-28-json-output names nothing in this repository
+unresolved: .shop/work/i60/initiative.md: person/2026-10-29-delegation-after-raising names nothing in this repository
+unresolved: .shop/work/i61/initiative.md: person/2026-10-29-i51-redraft-loop names nothing in this repository
+unresolved: .shop/work/i62/initiative.md: person/2026-10-29-flaky-maintenance-lock names nothing in this repository
+unresolved: .shop/work/i63/initiative.md: person/2026-10-29-answer-race names nothing in this repository
+file: .shop/work/i39/w212.md: accepts capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r39, which no scenario names yet
+file: .shop/work/i39/w212.md: accepts capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r41, which no scenario names yet
+file: .shop/work/i39/w212.md: accepts capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r43, which no scenario names yet
+file: .shop/work/i45/glossary.md: needs an id and a kind among capability-proposal, cross-context-request, job-proposal, job-thread, map-escalation, map-proposal, vision-proposal, work-item
+file: .shop/work/i47/glossary.md: needs an id and a kind among capability-proposal, cross-context-request, job-proposal, job-thread, map-escalation, map-proposal, vision-proposal, work-item
+file: .shop/work/i51/glossary.md: needs an id and a kind among capability-proposal, cross-context-request, job-proposal, job-thread, map-escalation, map-proposal, vision-proposal, work-item
+file: .shop/work/i55/glossary.md: needs an id and a kind among capability-proposal, cross-context-request, job-proposal, job-thread, map-escalation, map-proposal, vision-proposal, work-item
+file: .shop/work/i57/glossary.md: needs an id and a kind among capability-proposal, cross-context-request, job-proposal, job-thread, map-escalation, map-proposal, vision-proposal, work-item
+file: .shop/work/i58/glossary.md: needs an id and a kind among capability-proposal, cross-context-request, job-proposal, job-thread, map-escalation, map-proposal, vision-proposal, work-item
+file: .shop/work/i59/glossary.md: needs an id and a kind among capability-proposal, cross-context-request, job-proposal, job-thread, map-escalation, map-proposal, vision-proposal, work-item
+83 violations, 13 warnings, 168 unresolved references, 10 file problems

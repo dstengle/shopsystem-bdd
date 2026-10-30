@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i48-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i48
-status: approved
+status: formulated
 argues: [supervision]
 date: 2026-10-28
 adds: [supervision#r188, supervision#r189]
