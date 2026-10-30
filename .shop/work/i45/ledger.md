@@ -15,3 +15,4 @@
 - 2026-10-29 22:55: compacted
 - 2026-10-30: apply round 6 requests: applied r59 (answers Q1 A, Q7 A, Q12 A, approval 2026-10-30)
 - 2026-10-30: formulate round 7 requests: no commit; r59 left as three questions (implementation detail, word forms, Not: words), no scenario added
+- 2026-10-30: apply round 8 spec-integration: nothing applied; drafts r59 collides with spec r59 added after the drafts base, and the Q1 answer (replace r60) is not held by the drafts; an integrate round is needed
