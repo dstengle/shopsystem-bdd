@@ -1,5 +1,5 @@
-"""work-queue r23 with observation 2026-10-27-done-with-proposal-open: an initiative whose work-items are all green or
-withdrawn is not done while one of its capability-proposals is neither formulated, withdrawn nor merged."""
+"""work-queue r62 and r47: an initiative whose work-items are all green or withdrawn is not done while one of its
+capability-proposals is neither formulated nor withdrawn (merged, a legacy status, holds it too)."""
 import pathlib
 import sys
 
@@ -16,7 +16,7 @@ PROPOSAL = "---\nid: capability-proposal/ex.com/prod/ctx/i1-thing\nkind: capabil
 
 
 @pytest.mark.parametrize("status, done", [("awaiting-answer", False), ("drafted", False), ("approved", False),
-                                          ("formulated", True), ("withdrawn", True), ("merged", True)])
+                                          ("formulated", True), ("withdrawn", True), ("merged", False)])
 def test_an_open_proposal_keeps_the_initiative_from_done(tmp_path, status, done):
     (tmp_path / "spec").mkdir()
     (tmp_path / "spec/index.md").write_text(INDEX)

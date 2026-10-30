@@ -1,8 +1,8 @@
-"""An initiative done (work-queue r23): the condition over its work-items and the requests this context asked naming it,
+"""An initiative done (work-queue r62): the condition over its work-items and the requests this context asked naming it,
 and the rewrite of its initiative.md that a command's commit carries.
 
 An initiative qualifies when it has a work-item, every work-item is green or withdrawn, every capability-proposal is
-formulated, withdrawn or merged, and every request kept under
+formulated or withdrawn (r47: any other status keeps it started), and every request kept under
 .shop/work/requests/ that this context asked and that names the initiative (in its part_of or source) is delivered.
 """
 import re
@@ -10,7 +10,7 @@ from pathlib import Path
 
 import workqueue
 
-CLOSED_PROPOSAL = ("formulated", "withdrawn", "merged")
+CLOSED_PROPOSAL = ("formulated", "withdrawn")
 
 
 def _named(data):

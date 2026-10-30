@@ -19,7 +19,30 @@ def open_with_proposal(repo, ident, state, proposal, pstatus):
     write(repo, ".shop/work/%s/%s.md" % (ident, proposal), item_text(proposal, pstatus, ident, "capability-proposal"))
 
 
-@given(parsers.re(r"an initiative (?P<ident>\w+) under \.shop/work/ that is (?P<state>[^,]+), whose work-items? (?P<items>.+)$"))
+def write_proposal(repo, ident, name, status):
+    from .test_work_queue import item_text, write
+    write(repo, ".shop/work/%s/%s.md" % (ident, name), item_text(name, status, ident, "capability-proposal"))
+
+
+@given(parsers.re(r"(?P<ident>i\d+)'s capability-proposal (?P<name>p\d+) is (?P<status>[\w-]+)$"))
+def one_proposal(repo, ident, name, status):
+    write_proposal(repo, ident, name, status)
+
+
+@given(parsers.re(r"(?P<ident>i\d+)'s capability-proposal (?P<first>p\d+) is (?P<s1>[\w-]+) and its capability-proposal "
+                  r"(?P<second>p\d+) is (?P<s2>[\w-]+)$"))
+def two_proposals(repo, ident, first, s1, second, s2):
+    write_proposal(repo, ident, first, s1)
+    write_proposal(repo, ident, second, s2)
+
+
+@given(parsers.re(r"(?P<ident>i\d+) has no capability-proposal$"))
+def no_proposal(repo, ident):
+    for path in (repo / ".shop/work" / ident).glob("*.md"):
+        assert "kind: capability-proposal" not in path.read_text(), path
+
+
+@given(parsers.re(r"an initiative (?P<ident>\w+) under \.shop/work/ that is (?P<state>[^,]+), whose work-items?(?P<items>.+)$"))
 def with_state(repo, ident, state, items):
     from .test_work_queue import item_text, write
     text = "---\nid: %s\nkind: initiative\nstatus: %s\n---\n" % (full("initiative", ident), state.replace("neither done nor abandoned", "started"))
