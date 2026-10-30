@@ -153,3 +153,9 @@
 {"time": "2026-10-30T21:08:23+00:00", "work-item": "work-queue", "stage": "formulate", "agent": "initiative-round", "session": "e0e82622-7b97-48e0-b9ae-a3bfc6775e88", "event": "start"}
 {"time": "2026-10-30T21:08:52+00:00", "work-item": "work-queue", "stage": "formulate", "agent": "initiative-round", "session": "e0e82622-7b97-48e0-b9ae-a3bfc6775e88", "event": "end"}
 {"time": "2026-10-30T21:08:52+00:00", "work-item": "work-queue", "before": "awaiting-answer", "after": "formulated", "by": "work run"}
+{"time": "2026-10-30T21:08:57+00:00", "work-item": "w239", "stage": "research", "event": "push verified"}
+{"time": "2026-10-30T21:08:58+00:00", "work-item": "w239", "stage": "research", "agent": "code-scout", "session": "3707f3b5-50e2-4278-b6cc-94aedfdf0fbf", "event": "start"}
+{"time": "2026-10-30T21:08:58+00:00", "work-item": "w240", "stage": "research", "event": "push verified"}
+{"time": "2026-10-30T21:08:58+00:00", "work-item": "w240", "stage": "research", "agent": "code-scout", "session": "24a35bed-324d-4d60-81d2-e5d2ff9e29ea", "event": "start"}
+{"time": "2026-10-30T21:10:37+00:00", "work-item": "w240", "stage": "research", "agent": "code-scout", "session": "24a35bed-324d-4d60-81d2-e5d2ff9e29ea", "event": "end"}
+{"time": "2026-10-30T21:10:37+00:00", "work-item": "w240", "before": "drafted", "after": "researched", "by": "work run"}
