@@ -1,0 +1,6 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Branch review 2 of i54, a2a53b36..c25a4c0d on main (644 commits, 22 of them i54's work-items w231 and w232, both green).\nSuite: 1088 passed, 0 failed at c25a4c0d in 35.10 s (parallel, -n auto; work driven as a subprocess; under 60 s).\nw231's scenarios: 182 passed. w232's: 184 passed. tools size: clean. features bindings: clean. tools check: exit 1, ruff only, nothing introduced by w231 or w232. vulture: clean.\ni54's own work has no Critical or fix-now finding. w232's earlier fix-now finding (lines with no outcome left out of work show) is fixed.\nThe status has concerns because of findings outside i54, carried from earlier reviews, none of them fix now:\n- Critical: w230 (i51) removed the r162 outline with no Retires.\n- Important: w236 (i63) loosened is_failed under an allowance that does not hold.\n- Important: r209/r210 contradict decision 0073.\n- Important: 622 commits belong to no i54 work-item, the r180 step among them.\nAlso Important, w232, observation: work show <request> --json lacks r59's parts.\nMinor: r34/r35/r28 deprecated scenarios remain though their successors are green; the CLAUDE.md rows for workqueue_list and supervise_glossary are out of date.",
+  "findings": "/home/vscode/shopsystem-bdd/.shop/worktrees/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": []
+}
