@@ -16,3 +16,4 @@
 - 2026-10-30: apply round 6 requests: applied r59 (answers Q1 A, Q7 A, Q12 A, approval 2026-10-30)
 - 2026-10-30: formulate round 7 requests: no commit; r59 left as three questions (implementation detail, word forms, Not: words), no scenario added
 - 2026-10-30: apply round 8 spec-integration: nothing applied; drafts r59 collides with spec r59 added after the drafts base, and the Q1 answer (replace r60) is not held by the drafts; an integrate round is needed
+- 2026-10-30: integrate round 9: q26 spec-integration redrafted over spec r59: adds r60-r67 removes r13, 6 glossary terms added, 0 questions, 0 cut sentences; drafts .shop/scratch/9-integrate/drafts/round-9
