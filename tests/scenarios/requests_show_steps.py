@@ -46,9 +46,9 @@ def runs_show(run, context):
     context["done"] = run("work", "show")
 
 
-@when("the session runs `work status`")
-def runs_status(run, context):
-    context["done"] = run("work", "status")
+@when("the session runs `work list`")
+def runs_list(run, context):
+    context["done"] = run("work", "list")
 
 
 @then(parsers.re(r"work prints (?P<ident>q\d+) with (?P<status>[\w-]+) and the (?P<turn>asker|upstream)'s turn"))

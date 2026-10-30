@@ -6,6 +6,7 @@ record, .shop/work/<initiative>/raised.jsonl, one JSON object a line (upstream, 
 line of a request giving its last known status; the upstream is never reached.
 """
 import json
+import re
 from pathlib import Path
 
 import workqueue
@@ -37,14 +38,33 @@ def waiting(root, initiative):
     return [(u, r, s) for (u, r), s in last.items() if s != "delivered"]
 
 
+def uncited(root):
+    """(id, date) of each observation in .shop/records/observations.md that no initiative's or request's `source` names."""
+    path = Path(root) / ".shop" / "records" / "observations.md"
+    if not path.is_file():
+        return []
+    cited = set()
+    for other in sorted((Path(root) / workqueue.WORK).glob("*/*.md")):
+        source = workqueue.frontmatter(workqueue.read(other, root))[0].get("source")
+        cited.update(re.findall(r"observation/[\w./-]+", str(source or "")))
+    found = []
+    for heading, body in re.findall(r"(?ms)^## (observation/\S+)\n(.*?)(?=^## |\Z)", workqueue.read(path, root)):
+        date = re.search(r"(?m)^date: (\S+)", body)
+        if heading not in cited and "observation/" + heading.rsplit("/", 1)[-1] not in cited:
+            found.append((heading, date.group(1) if date else None))
+    return found
+
+
 def listing(root, as_json):
     found = list(initiatives(root))
     requests = list(workqueue.requests(root))
     items = list(workqueue.items(root))
+    seen = uncited(root)
     if as_json:
         print(json.dumps({"initiatives": [{"initiative": n, "status": s} for n, s in found],
                           "requests": [{"request": n, "status": s} for n, s, _, _ in requests],
-                          "work-items": [{"work-item": n, "initiative": i, "status": s} for i, n, s in items]}))
+                          "work-items": [{"work-item": n, "initiative": i, "status": s} for i, n, s in items],
+                          "observations": [{"observation": o, "date": d} for o, d in seen]}))
         return 0
     for name, status in found:
         print("initiative %s %s" % (name, status))
@@ -54,6 +74,8 @@ def listing(root, as_json):
         print("request %s %s" % (name, status))
     for initiative, name, status in items:
         print("work-item %s/%s %s" % (initiative, name, status))
+    for observation, date in seen:
+        print("observation %s %s" % (observation, date))
     return 0
 
 

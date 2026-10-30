@@ -109,23 +109,6 @@ def render(found):
     return "\n".join(lines)
 
 
-def uncited(root):
-    """(id, date) of each observation in .shop/records/observations.md that no initiative's or request's `source` names."""
-    path = Path(root) / ".shop" / "records" / "observations.md"
-    if not path.is_file():
-        return []
-    cited = set()
-    for other in sorted((Path(root) / workqueue.WORK).glob("*/*.md")):
-        source = workqueue.frontmatter(workqueue.read(other, root))[0].get("source")
-        cited.update(re.findall(r"observation/[\w./-]+", str(source or "")))
-    found = []
-    for heading, body in re.findall(r"(?ms)^## (observation/\S+)\n(.*?)(?=^## |\Z)", workqueue.read(path, root)):
-        date = re.search(r"(?m)^date: (\S+)", body)
-        if heading not in cited and "observation/" + heading.rsplit("/", 1)[-1] not in cited:
-            found.append((heading, date.group(1) if date else None))
-    return found
-
-
 def open_names(root):
     """The names of the initiatives under .shop/work/ whose initiative.md gives a status other than done or abandoned."""
     work = Path(root) / workqueue.WORK
@@ -138,11 +121,11 @@ def open_text(root):
     """What `work status` prints at `root` for each initiative neither done nor abandoned ('' when there is none)."""
     out = io.StringIO()
     with contextlib.redirect_stdout(out):
-        status(root, None, False, report=False)
+        status(root, None, False)
     return out.getvalue()
 
 
-def status(root, initiative, as_json, report=True):
+def status(root, initiative, as_json):
     """Print where `initiative` stands, or each initiative neither done nor abandoned; return the exit status."""
     work = Path(root) / workqueue.WORK
     if initiative is not None:
@@ -157,14 +140,10 @@ def status(root, initiative, as_json, report=True):
     found = [read(root, n, shared) for n in names]
     if initiative is None:
         found = [f for f in found if f["status"] not in ENDED]
-    seen = uncited(root) if initiative is None and report else []
     if as_json:
-        out = {"initiatives": found}
-        if initiative is None and report:
-            out["observations"] = [{"observation": o, "date": d} for o, d in seen]
-        print(json.dumps(out))
+        print(json.dumps({"initiatives": found}))
     else:
-        blocks = [render(f) for f in found] + (["\n".join("observation %s %s" % (o, d) for o, d in seen)] if seen else [])
+        blocks = [render(f) for f in found]
         if blocks:
             print("\n\n".join(blocks))
     return 0
