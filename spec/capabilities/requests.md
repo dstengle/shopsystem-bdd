@@ -32,6 +32,7 @@ what using it shows.
 - [r70] **When** `work delegate` is run, `work` shall write the delegation whichever side's turn it is.
 - [r71] **When** `work delegate` writes a delegation in a request, `work` shall keep the request's status and turn.
 - [r2] **If** a line given to `work request` is not in the strict form `model check` holds (v_e1, v_e2), **then** `work request` shall refuse, naming the line, and change nothing.
+- [r59] **If** a line given to `work request` names an implementation detail or uses a word that is neither a term of the upstream's glossary nor a word of a Behaviour line under the upstream's `spec/capabilities/`, **then** `work request` shall refuse, naming the word and why it is refused, and change nothing.
 - [r45] **If** a request whose asker is the upstream itself is raised with neither `--source` nor `--thread`, **then** `work request` shall refuse, because the request names neither an origin nor a job-thread, and change nothing.
 - [r30] **If** a request whose asker is not the upstream itself is raised with `--source`, **then** `work request` shall refuse, because an origin belongs to an internal request, and change nothing.
 - [r31] **If** a request whose asker is not the upstream itself is raised with neither `--raised-for` nor `--thread`, **then** `work request` shall refuse, because the request names neither a request it is raised for nor a job-thread, and change nothing.

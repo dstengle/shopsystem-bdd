@@ -13,3 +13,4 @@
 - 2026-10-28: gate round 4: 3 questions
 - 2026-10-28: gate glossary round 1: 0 questions (six added terms, none open)
 - 2026-10-29 22:55: compacted
+- 2026-10-30: apply round 6 requests: applied r59 (answers Q1 A, Q7 A, Q12 A, approval 2026-10-30)
