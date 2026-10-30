@@ -34,7 +34,7 @@ def test_a_round_started_for_one_proposal_merges_its_ids_into_another_held_propo
     found = entries({"changes": [{"capability": "thing", "adds": ["thing#r5"]},
                                  {"capability": "other", "adds": ["other#r1", "other#r2"], "removes": ["other#r8"]}]})
     holder.write_proposals(found, "drafts/", "p1")
-    assert "adds: [thing#r5]\n" in (initiative / "p1.md").read_text()
+    assert "adds: [thing#r1, thing#r5]\n" in (initiative / "p1.md").read_text()
     other = (initiative / "p2.md").read_text()
     assert "adds: [other#r1, other#r2]\n" in other
     assert "removes: [other#r9, other#r8]\n" in other

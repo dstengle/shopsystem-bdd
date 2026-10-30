@@ -43,14 +43,63 @@ def written_from_first_round(repo, path, file):
     commit_all(repo, "p1 is awaiting-answer, written from i1's first integrate round")
 
 
-@given(parsers.re(r'p1\'s ## Questions section holds "(?P<asked>[^"]*)", given by its gate round, and its Answers section '
-                  r'"(?P<answered>[^"]*)"$'))
-def questions_and_answers(repo, asked, answered):
-    file = repo / DIR / "p1.md"
+@given(parsers.re(r'(?P<name>[pg]1)\'s ## Questions section holds "(?P<asked>[^"]*)", given by its gate round, and its Answers '
+                  r'section "(?P<answered>[^"]*)"$'))
+def questions_and_answers(repo, name, asked, answered):
+    file = repo / DIR / (name + ".md")
     file.write_text(file.read_text().rstrip("\n") + "\n\n## Questions\n\n- %s\n\n## Answers\n\n- %s\n" % (asked, answered))
-    write(repo, DIR + "/log.jsonl", json.dumps({"time": "2026-10-15T00:00:00+00:00", "work-item": "p1", "before": "drafted",
+    write(repo, DIR + "/log.jsonl", json.dumps({"time": "2026-10-15T00:00:00+00:00", "work-item": name, "before": "drafted",
                                                 "after": "awaiting-answer", "by": "work run"}) + "\n")
-    commit_all(repo, "p1's questions and answers")
+    commit_all(repo, "%s's questions and answers" % name)
+
+
+@given(parsers.re(r"i1's capability-proposal p1, for thing, is awaiting-answer, its adds naming thing#r4 and thing#r5, its "
+                  r"changes naming thing#r2 and its removes naming thing#r3$"))
+def held_with_all_lists(repo):
+    write(repo, DIR + "/p1.md", "---\nid: %s\nkind: capability-proposal\npart_of: %s\nstatus: awaiting-answer\nargues: [thing]\n"
+          "adds: [thing#r4, thing#r5]\nchanges: [thing#r2]\nremoves: [thing#r3]\ndate: 2026-10-15\n---\n\n# thing\n\n"
+          "The drafts of this proposal are in old/.\n" % (full("capability-proposal", "p1"), full("initiative", "i1")))
+    commit_all(repo, "p1 is awaiting-answer, naming ids in all three lists")
+
+
+@given(parsers.re(r'i1\'s glossary-proposal g1 is awaiting-answer, its adds naming the term "ledger", its changes the term '
+                  r'"shelf" and its removes the term "loan"$'))
+def held_glossary(repo):
+    write(repo, DIR + "/g1.md", "---\nid: %s\nkind: glossary-proposal\npart_of: %s\nstatus: awaiting-answer\nadds: [term/ledger]\n"
+          "changes: [term/shelf]\nremoves: [term/loan]\ndate: 2026-10-15\n---\n\n# glossary\n\n"
+          "The drafts of this proposal are in old/.\n" % (full("glossary-proposal", "g1"), full("initiative", "i1")))
+    commit_all(repo, "g1 is awaiting-answer, naming terms in all three lists")
+
+
+@given('the integrate round for p1 redrafts thing#r5 and gives DONE with a change list that adds thing#r5 on thing')
+def integrate_redrafts_p1(plan):
+    plan["round:integrate:p1"] = {"status": "DONE", "fields": {"changes": [{"capability": "thing", "adds": ["thing#r5"]}]},
+                                  "write": {DRAFTS: DRAFT}}
+
+
+@given('a round of the kind integrate is started for g1, redrafts the term "ledger" and gives DONE with a change list that adds '
+       'the term "ledger" in the glossary')
+def integrate_redrafts_g1(plan):
+    plan["round:integrate:g1"] = {"status": "DONE", "fields": {"changes": [{"glossary": True, "adds": ["term/ledger"]}]},
+                                  "write": {DRAFTS: DRAFT}}
+
+
+@then(parsers.re(r"p1's adds name thing#r4 and thing#r5, its changes name thing#r2, and its removes name thing#r3$"))
+def p1_keeps_lists(repo, context):
+    text = (repo / DIR / "p1.md").read_text()
+    held = lambda field: re.findall(r"\w+#r\d+", next(l for l in text.splitlines() if l.startswith(field + ":")))     # noqa: E731
+    assert (held("adds"), held("changes"), held("removes")) == (["thing#r4", "thing#r5"], ["thing#r2"], ["thing#r3"]), (
+        text, context["done"].stderr)
+
+
+@then(parsers.re(r'g1\'s adds name the term "ledger", its changes the term "shelf", and its removes the term "loan"$'))
+def g1_keeps_terms(repo, context):
+    assert len(rounds(repo, "integrate", "g1")) == 1, (starts(repo), context["done"].stdout, context["done"].stderr)
+    text = (repo / DIR / "g1.md").read_text()
+    held = lambda field: re.findall(r"term/\w+", next(l for l in text.splitlines() if l.startswith(field + ":")))     # noqa: E731
+    assert (held("adds"), held("changes"), held("removes")) == (["term/ledger"], ["term/shelf"], ["term/loan"]), (
+        text, context["done"].stderr)
+    assert not (repo / DIR / "glossary.md").exists()
 
 
 @given(parsers.re(r"the integrate round for p1 (?P<writes>writes spec/capabilities/thing\.md under its drafts path and )?"

@@ -71,6 +71,18 @@ class Changes:
         head = "\n".join(l for l in text[:end].split("\n") if l.split(":")[0] not in FIELDS)
         path.write_text(head + "\n" + "\n".join("%s: [%s]" % (f, ", ".join(lists[f])) for f in FIELDS) + text[end:])
 
+    def redraft_lists(self, name, one):
+        """The round's ids for the capability of the proposal `name`, the one the round was started for (r188): each id the
+        round names is in the list the round gives it, in no other; the ids it does not name stay in the lists they were in."""
+        path = self.dir / (name + ".md")
+        text = path.read_text()
+        held, _ = workqueue.frontmatter(text)
+        named = {i for field in FIELDS for i in one[field]}
+        for field in FIELDS:
+            mine = [i for i in (held.get(field) or []) if i not in named] + one[field]
+            text = re.sub(r"(?m)^%s:.*$" % field, lambda _: "%s: [%s]" % (field, ", ".join(mine)), text, count=1)
+        path.write_text(text)
+
     def proposal_for(self, capability):
         """The initiative's capability-proposal that argues `capability`, as a path, else None."""
         for path in sorted(self.dir.glob("*.md")):
@@ -112,7 +124,7 @@ class Changes:
                     self.merge_lists(held.stem, one)
                     written.append(held)
                     continue
-                self.rewrite_lists(held.stem, [one])
+                self.redraft_lists(held.stem, one)
                 text = held.read_text()
                 said = "The drafts of this proposal are in %s." % stage_dir
                 held.write_text(re.sub(r"The drafts of this proposal are in \S+?\.(?=\s|$)", lambda _: said, text)
