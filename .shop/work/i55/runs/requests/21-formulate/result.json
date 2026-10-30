@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Commit 0e9fa09f: features/requests.feature gains the r64 scenario; the passing r14 scenario is deprecated for it. features bindings clean. model check: 84 violations, none from r64 or this round's scenario. The earlier unresolved rows (r13, r34, r39, r41, r43 scenarios, r59 and others with no scenario) were not in this change list.","questions":[]}
