@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i45-requests
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i45
-status: approved
+status: awaiting-answer
 argues: [requests]
 date: 2026-10-28
 adds: [requests#r59]
@@ -19,6 +19,9 @@ The drafts of this proposal are in .shop/work/i45/runs/requests/3-integrate/draf
 - Q7 (requests r46): Which glossary does `work request` use, since it runs in the asker's repository with no checkout of the upstream's? Line concerned: [r46] **If** a line given to `work request` names an implementation detail or uses a word that is neither a glossary term nor a word of a Behaviour line under `spec/capabilities/`, **then** `work request` shall refuse the line, naming the word and why it is refused. (added). Readings: A (recommended): the upstream's glossary and `spec/capabilities/`: "...a word that is neither a term of the upstream's glossary nor a word of a Behaviour line under the upstream's `spec/capabilities/`..." (replaces r46's wording). B: the glossary and `spec/capabilities/` of the repository it runs in (r46 as drafted). Recommended: A.
 - Q12 (requests r46): Does "refuse the line" refuse the whole request? Line concerned: [r46] **If** a line given to `work request` names an implementation detail or uses a word that is neither a glossary term nor a word of a Behaviour line under `spec/capabilities/`, **then** `work request` shall refuse the line, naming the word and why it is refused. (added). Readings: A (recommended): yes, as r2: "..., **then** `work request` shall refuse, naming the word and why it is refused, and change nothing." (replaces r46's ending). B: only the line; the other lines are written: r46 as drafted, plus "**When** `work request` refuses a line, `work` shall write the request with its other lines." Recommended: A.
 - Are the lines of requests approved as drafted? Readings: approve requests as drafted (recommended), or change its lines.
+- r59 'names an implementation detail': A) a word or phrase from an Implementation, may change section of the upstream's capabilities that no Behaviour line uses; B) anything naming how something is built (file path, module, frontmatter field, data format), judged by work request itself.
+- r59 'a word of a Behaviour line': A) exact form as written; B) any form of the word (raise, raises, raised), case ignored.
+- r59 'a term of the upstream's glossary': A) only the entry's term; a Not: word is allowed if a Behaviour line uses it; B) a Not: word is refused even if a Behaviour line uses it.
 
 ## Answers
 - 2026-10-28: Q1, r46's check: reading A, a word of a fixed list of implementation details, or a word that is neither a glossary term nor used in a Behaviour line (answered by the person, 2026-10-28)
