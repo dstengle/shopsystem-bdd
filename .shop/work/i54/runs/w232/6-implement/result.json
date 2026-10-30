@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"work show <request> now lists every line, a line without an outcome as unsettled. Test added in tests/scripts/test_work_show_request.py (red then green). Work-item scenarios: 184 passed.","commits":["d32ec491 work show of a request lists every line, an unsettled one as unsettled (r59)"],"report":".shop/scratch/6-implement/report.md","questions":[]}
