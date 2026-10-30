@@ -26,3 +26,4 @@ The drafts of this proposal are in .shop/work/i48/runs/supervision/3-integrate/d
 - 2026-10-28: r179's keep: reading A, the ids stay in the adds, changes and removes work run writes for the proposal (answered by the person, 2026-10-28)
 - 2026-10-28: r179's redrafts: reading A, any integrate round started for a capability-proposal that redrafts a subset of its lines (answered by the person, 2026-10-28)
 - 2026-10-30: Reading A for both r189 questions: r189 stands as drafted (no r190), and keeping the terms means they stay in what work run writes for the glossary-proposal under r171, the line as drafted (the person, 2026-10-30).
+- 2026-10-30: r189's keep: reading A, the terms stay in what work run writes for the glossary-proposal under r171, the line as drafted (answered by the person, 2026-10-30)
