@@ -2,3 +2,4 @@
 - 2026-10-29: gate round 1: 2 questions (spec-integration r58, r59)
 - 2026-10-29: gate round 1: 3 questions
 - 2026-10-29 22:55: compacted
+- 2026-10-30: apply round 4 spec-integration: applied r59 under the delegation; r58 not applied, the answer on r46 asks for a changed r46 the drafts do not hold
