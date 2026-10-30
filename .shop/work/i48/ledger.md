@@ -7,3 +7,4 @@
 - 2026-10-29 22:55: compacted
 - 2026-10-30: capability-proposal supervision, both r189 questions: the person answered "A for both" (r189 stands as drafted, no r190; kept terms stay in what work run writes for the glossary-proposal under r171).
 - 2026-10-30: apply round 8 supervision: applied r188 r189 with the answers of 2026-10-28 and 2026-10-30
+- 2026-10-30: formulate round 9 supervision: commit c1927b85; scenario added r188 r189; features bindings clean; model check: 83 violations, none from supervision r188 r189
