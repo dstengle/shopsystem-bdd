@@ -61,3 +61,5 @@ The drafts of this proposal are in .shop/work/i45/runs/spec-integration/3-integr
   by: work run, under the delegation "The person, 2026-10-28: "i am delegating to you" and "I take recommendations"; 2026-10-29: answer every question with its recommended reading; questions of a glossary-proposal are the person's."
 - 2026-10-30: A: no further line; r64's work-item changes the format (the recommended reading, under the person's 2026-10-29 delegation).
   by: work run, under the delegation "The person, 2026-10-28: "i am delegating to you" and "I take recommendations"; 2026-10-29: answer every question with its recommended reading; questions of a glossary-proposal are the person's."
+- 2026-10-30: A: the mapping stands (the person's delegation, 2026-10-29: answer every question with its recommended reading).
+  by: work run, under the delegation "The person, 2026-10-28: "i am delegating to you" and "I take recommendations"; 2026-10-29: answer every question with its recommended reading; questions of a glossary-proposal are the person's."
