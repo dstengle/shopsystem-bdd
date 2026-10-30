@@ -3,3 +3,4 @@
 - 2026-10-29: gate round 1: 3 questions
 - 2026-10-29 22:55: compacted
 - 2026-10-30: apply round 4 spec-integration: applied r59 under the delegation; r58 not applied, the answer on r46 asks for a changed r46 the drafts do not hold
+- 2026-10-30: integrate round 5 spec-integration: adds none; changes spec-integration#r46; removes none; 0 questions; 0 cut sentences; .shop/scratch/5-integrate/drafts/round-1
