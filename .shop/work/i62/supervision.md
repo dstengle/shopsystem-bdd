@@ -25,3 +25,6 @@ The drafts of this proposal are in .shop/work/i62/runs/i62/1-integrate/drafts/ro
 ## Answers
 - 2026-10-30: Reading (a), as recommended and drafted: `work run` gives both runs of the scenario in the question r131 writes under the work-item's `## Questions`, per the person's delegation of 2026-10-28 and 2026-10-29 (answer every question with its recommended reading).
   by: work run, under the delegation "The person, 2026-10-28: "i am delegating to you" and "I take recommendations"; 2026-10-29: answer every question with its recommended reading; questions of a glossary-proposal are the person's."
+
+## Faults
+- the session answering supervision's question faulted: while its answerer worked, .shop/work/i61/spec-integration.md, .shop/work/i61/runs/spec-integration/2-answer/brief.md, .shop/work/i61/runs/spec-integration/2-answer/result.json, .shop/work/i61/runs/spec-integration/2-answer/session.json changed in the repository's own checkout and not committed; work run put them back
