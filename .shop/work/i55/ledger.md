@@ -19,3 +19,4 @@
 - 2026-10-29: formulate round 9: work-queue r62 formulated, r23's two scenarios deprecated, commit 19c0bc4d; 1 question (initiative with no capability-proposal)
 - 2026-10-29 22:55: compacted
 - 2026-10-30: apply round 20 (requests): nothing new to commit, the drafts are already in spec/ (requests r64, r14 retired; supervision r212 r213, r149 r32 r9 r105 retired; work-queue r62, r23 retired); all answers held
+- 2026-10-30: formulate round 1 requests: commit 0e9fa09f; scenario added r64, r14 deprecated; features bindings clean; model check: 84 violations, none from r64 or the scenarios this round wrote
