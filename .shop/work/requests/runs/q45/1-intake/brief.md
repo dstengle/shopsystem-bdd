@@ -1,0 +1,42 @@
+# intake of q45
+
+Request: .shop/work/requests/q45.md
+Agent: initiative-round
+Scripts: /home/vscode/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.28.3/scripts
+Kind: intake
+Worktree: /home/vscode/shopsystem-bdd/.shop/worktrees/q45-1-intake
+Branch: round/q45-1-intake
+Lines of the request:
+- 1. The bounded context shall have a board of items, each item in one of the stages Backlog, Discovered, Groomed, Doing and Done.
+- 2. **When** the person gives a session an idea, an observation or a bug outside an initiative, the session shall add it to the board in Backlog in the same reply, with its date and the person's words.
+- 3. **When** a session finds an idea, an observation or a bug outside an initiative, the session shall add it to the board in Backlog in the same reply, with its date and the session's words.
+- 4. **When** a session adds an item to the board, the session shall give the item a value, an urgency and a size, each low, medium or high, with the session's reason for each.
+- 5. **When** a session adds a bug to the board, the session shall give the item what goes wrong and how badly, and how often it is likely to happen.
+- 6. **When** the person corrects the value, the urgency, the size or a reason of an item, the session shall write the correction on the item.
+- 7. **When** the person names an item that an item depends on, the session shall write the dependency on the item.
+- 8. The board shall order the items of each stage by cost of delay over size, with low as 1, medium as 2 and high as 3, cost of delay as value plus urgency, and ties to the item added first.
+- 9. **While** an item is in Backlog, the plugin shall draft no request, no proposal and no work-item from it.
+- 10. **When** an item in Backlog has the context to be worked from without the person, the session shall recommend to the person that it moves to Discovered, naming the rule of the board's ruleset that it meets.
+- 11. **When** the person agrees that an item moves to Discovered, the session shall move it to Discovered.
+- 12. **When** the person gives a session a rule for when an item has the context to be worked from without the person, the session shall add it to the board's ruleset.
+- 13. **When** `work run` is run, `work run` shall raise a request from the first item of Discovered that depends on no item that is not Done, and start its shaping rounds.
+- 14. **When** a shaping round of an item gives a question for the person, `work run` shall write the question on the item and go on with the rounds of other items.
+- 15. **When** the shaping rounds of an item end with no question open, `work run` shall move the item to Groomed.
+- 16. **When** `work run` has fewer initiatives side by side than its pool holds, `work run` shall move the first item of Groomed that depends on no item that is not Done to Doing and start its initiative.
+- 17. **When** the initiative of an item in Doing is done, `work run` shall move the item to Done.
+- 18. **When** a work-item of an item in Doing gives a question for the person, `work run` shall write the question on the item.
+- 19. **When** the person asks a session for the board, the session shall show each stage as a table of its items in order, each with its kind, its value, urgency and size with their reasons, the items it depends on and its open questions.
+- 20. **When** `work` takes in a request whose asker is not the bounded context itself, `work` shall add no item to the board for it.
+
+Read (paths in your worktree):
+- .shop/work/requests/q45.md
+- spec/index.md
+
+Write the line outcome of each line with `python3 /home/vscode/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.28.3/scripts/work outcome q45 <line> <accepted|refused|withdrawn>`; for a line you cannot judge write no line outcome, and give a question on it in your result's `questions` as `<line>. <question>`, so each line has its line outcome or a question on it. Then pass the turn once with `python3 /home/vscode/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.28.3/scripts/work turn q45`.
+
+Run directory: /home/vscode/shopsystem-bdd/.shop/worktrees/q45-1-intake/.shop/scratch/1-intake
+Result file: /home/vscode/shopsystem-bdd/.shop/worktrees/q45-1-intake/.shop/scratch/1-intake/result.json
+
+You start in your worktree, /home/vscode/shopsystem-bdd/.shop/worktrees/q45-1-intake: run every command from there, as it is, and never change directory (no `cd`, no `git -C`); a command that does is refused.
+
+Write the result file first, with the outcome `PARTIAL`, and keep it current as you work: JSON with `status`, `summary` (under fifteen lines) and `questions` (a list of strings), so that a session that stops part-way still leaves a result, and one that does not claim the work done.
