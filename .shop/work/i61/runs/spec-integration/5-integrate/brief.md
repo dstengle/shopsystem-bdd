@@ -1,0 +1,42 @@
+# integrate of spec-integration
+
+Initiative: .shop/work/i61/spec-integration.md
+Agent: initiative-round
+Scripts: /home/vscode/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.28.3/scripts
+Kind: integrate
+Request: q40
+Accepted lines of the request:
+- 1. **When** a round of the kind `apply` gives the answers its drafts do not hold, `initiative-round` shall leave out each answer that a later answer of the same proposal replaces.
+- 2. **If** a round of the kind `integrate` ends with a change list that adds, changes and removes nothing for a capability-proposal, **then** `work run` shall keep the proposal's status and its requirement ids and start no round of the kind `gate` for it.
+- 3. **If** a round of the kind `integrate` ends with a change list that names the glossary and adds, changes and removes no term, **then** `work run` shall write no glossary-proposal.
+- 4. **When** a round of the kind `gate` is started for a glossary-proposal, `initiative-round` shall ask only about the terms the glossary-proposal adds, changes and removes.
+Ids drafted elsewhere (number added lines above each on the same capability): supervision#r3, supervision#r5, supervision#r9, supervision#r16, supervision#r28, supervision#r32, supervision#r71, supervision#r77, supervision#r80, supervision#r92, supervision#r93, work-queue#r3, work-queue#r11, work-queue#r16, work-queue#r17, work-queue#r18, work-queue#r23, requests#r1, requests#r3, requests#r13, requests#r14, supervision#r99, supervision#r104, supervision#r105, supervision#r112, supervision#r113, supervision#r114, review#r9, supervision#r125, supervision#r126, supervision#r127, design-model-check#r120, design-model-check#r121, requests#r26, requests#r27, requests#r34, requests#r35, requests#r36, requests#r37, requests#r38, requests#r39, requests#r41, requests#r43, spec-integration#r17, work-queue#r33, supervision#r137, supervision#r138, supervision#r139, supervision#r140, supervision#r149, requests#r46, spec-integration#r47, spec-integration#r48, spec-integration#r49, spec-integration#r50, spec-integration#r51, spec-integration#r52, spec-integration#r53, requests#r47, requests#r48, supervision#r162, supervision#r163, supervision#r177, supervision#r178, supervision#r179, supervision#r174, supervision#r175, supervision#r176, supervision#r181, supervision#r182, work-queue#r34, work-queue#r35, work-queue#r40, work-queue#r41, spec-integration#r57, work-queue#r48, work-queue#r49, requests#r49, supervision#r183, work-queue#r46, backlog#r1, backlog#r2, backlog#r3, backlog#r4, backlog#r5, backlog#r6, backlog#r7, backlog#r8, migration-tools#r35, migration-tools#r36, spec-integration#r56, work-queue#r42, work-queue#r43, work-queue#r44, work-queue#r45, batch-measurement#r68, batch-measurement#r69, batch-measurement#r70, batch-measurement#r71, batch-measurement#r72, batch-measurement#r73, batch-measurement#r74, delivery#r23, design-model-check#r125, design-model-check#r126, design-model-check#r127, design-model-check#r128, design-model-check#r129, design-model-check#r130, design-model-check#r131, design-model-check#r132, design-model-check#r133, design-model-check#r134, design-model-check#r135, design-model-check#r136, design-model-check#r137, design-model-check#r138, design-model-check#r139, feature-file-tools#r63, feature-file-tools#r64, feature-file-tools#r65, feature-file-tools#r66, feature-file-tools#r67, feature-file-tools#r68, feature-file-tools#r69, feature-file-tools#r70, feature-file-tools#r71, feature-file-tools#r72, feature-file-tools#r73, migration-tools#r37, migration-tools#r38, migration-tools#r39, migration-tools#r40, migration-tools#r41, migration-tools#r42, migration-tools#r43, migration-tools#r44, migration-tools#r45, role-boundaries#r8, supervision#r190, supervision#r191, supervision#r192, supervision#r193, supervision#r194, supervision#r195, supervision#r196, supervision#r197, supervision#r198, supervision#r199, supervision#r200, supervision#r201, supervision#r202, supervision#r203, supervision#r204, supervision#r205, supervision#r206, supervision#r207, supervision#r208, work-queue#r50, work-queue#r51, work-queue#r52, work-queue#r53, work-queue#r54, work-queue#r55, work-queue#r56, work-queue#r57, work-queue#r58, requests#r60, requests#r61, requests#r62, requests#r63
+Drafts path: /home/vscode/shopsystem-bdd/.shop/worktrees/spec-integration-5-integrate/.shop/scratch/5-integrate/drafts
+Give your change list in your result's `changes`: a list with one entry for each capability, each `{"capability": <name>, "adds": [...], "changes": [...], "removes": [...]}`, the ids as `<capability>#r<n>` or `term/<term>`.
+Ledger: .shop/work/i61/ledger.md
+Earlier drafts path (read only): .shop/work/i61/runs/i61/1-integrate/drafts/round-1/
+Where an answer below asks for lines the request's accepted lines do not, draft those lines under the capabilities the answer names, each quoting the answer it comes from.
+Base: 2b30178d6a0c7fa1a9a62466e6f99ddcaada2805
+Worktree: /home/vscode/shopsystem-bdd/.shop/worktrees/spec-integration-5-integrate
+Branch: round/spec-integration-5-integrate
+Answers the person gave, each with the question it answers:
+- Question: spec-integration r58 vs r46. Line r58 (added): "When a round of the kind `apply` gives the answers its drafts do not hold, `initiative-round` shall leave out each answer that a later answer of the same proposal replaces." r46 (in spec) says: "When a round of the kind `apply` ends, `initiative-round` shall give in its result each answer of the capability-proposal that the drafts it applied do not hold." The two disagree about a replaced answer. Readings: (a) RECOMMENDED: change r46 to "...each answer of the capability-proposal that the drafts it applied do not hold and that no later answer of the same proposal replaces." and merge r58 into it; (b) keep r46 and r58, r58 an exception to r46.
+  Answer: 2026-10-30: Reading (a), the recommended one, per the person's delegation of 2026-10-29 (answer every question with its recommended reading): change r46 to "...each answer of the capability-proposal that the drafts it applied do not hold and that no later answer of the same proposal replaces." and merge r58 into it. by: work run, under the delegation "The person, 2026-10-28: "i am delegating to you" and "I take recommendations"; 2026-10-29: answer every question with its recommended reading; questions of a glossary-proposal are the person's."
+- Question: spec-integration r59 vs supervision r164. Line r59 (added): "When a round of the kind `gate` is started for a glossary-proposal, `initiative-round` shall ask only about the terms the glossary-proposal adds, changes and removes." supervision r164 (in spec) has `work run` ask the round only for those questions. Readings: (a) RECOMMENDED: keep r59, the round's side, beside r164, `work run`'s side (r168 and r35 are split the same way for capabilities); (b) drop r59 as given by r164.
+  Answer: 2026-10-30: Reading (a): keep r59, the round's side, beside supervision r164, `work run`'s side, as r168 and r35 are split for capabilities (the person's delegation: answer with the recommended reading). by: work run, under the delegation "The person, 2026-10-28: "i am delegating to you" and "I take recommendations"; 2026-10-29: answer every question with its recommended reading; questions of a glossary-proposal are the person's."
+
+Read (paths in your worktree):
+- .shop/work/i61/spec-integration.md
+- .shop/work/i61/runs/spec-integration/1-gate
+- .shop/work/i61/runs/spec-integration/2-answer
+- .shop/work/i61/runs/spec-integration/3-answer
+- .shop/work/i61/runs/spec-integration/4-apply
+- .shop/work/i61/ledger.md
+- .shop/work/i61/runs/i61/1-integrate/drafts/round-1/
+
+Run directory: /home/vscode/shopsystem-bdd/.shop/worktrees/spec-integration-5-integrate/.shop/scratch/5-integrate
+Result file: /home/vscode/shopsystem-bdd/.shop/worktrees/spec-integration-5-integrate/.shop/scratch/5-integrate/result.json
+
+You start in your worktree, /home/vscode/shopsystem-bdd/.shop/worktrees/spec-integration-5-integrate: run every command from there, as it is, and never change directory (no `cd`, no `git -C`); a command that does is refused.
+
+Write the result file first, with the outcome `PARTIAL`, and keep it current as you work: JSON with `status`, `summary` (under fifteen lines) and `questions` (a list of strings), so that a session that stops part-way still leaves a result, and one that does not claim the work done. Write your notes, plan, report or findings in the run directory.
