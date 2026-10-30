@@ -1,7 +1,7 @@
 ---
 id: initiative/missingmass.io/shopsystem/shopsystem-bdd/i54
 kind: capability-change
-status: started
+status: done
 fulfils: request/missingmass.io/shopsystem/shopsystem-bdd/q20
 source: [observation/2026-10-27-redraft-overwrites-other-proposal]
 date: 2026-10-28
