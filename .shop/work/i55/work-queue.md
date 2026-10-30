@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i55-work-queue
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i55
-status: awaiting-answer
+status: formulated
 argues: [work-queue]
 date: 2026-10-28
 adds: [work-queue#r62]
