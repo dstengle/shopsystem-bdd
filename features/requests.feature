@@ -465,13 +465,25 @@ Feature: Requests
     Then work prints q1 with open and the upstream's turn
     And it prints q2 with awaiting-asker and the asker's turn
 
-  @r14
-  Scenario: status with no initiative prints, with its date, each observation no initiative's or request's source names
+  @r14 @deprecated
+  Scenario: status with no initiative prints, with its date, each observation no initiative's or request's source names (deprecated)
+    Deprecated for: list prints, with its date, each observation that the source of no initiative and of no request names
     Pins that status shows the observations nothing has taken up yet, and when each was made, and none that an initiative or a request already names.
     Given observations o1, o2 and o3, each with its date
     And an initiative i1 under .shop/work/ that is neither done nor abandoned, whose source is o1
     And a request q1 from the asker ctx-a whose origin is o2
     When the session runs `work status`
+    Then work prints o3 with its date
+    And it gives neither o1 nor o2 as an observation nothing names
+
+  # formulates [r64] of spec/capabilities/requests.md
+  @r64
+  Scenario: list prints, with its date, each observation that the source of no initiative and of no request names
+    Pins that list shows the observations nothing has taken up yet, with the date of each, and leaves out any that an initiative or a request already names.
+    Given observations o1, o2 and o3, each with its date
+    And an initiative i1 under .shop/work/ that is neither done nor abandoned, whose source is o1
+    And a request q1 from the asker ctx-a whose origin is o2
+    When the session runs `work list`
     Then work prints o3 with its date
     And it gives neither o1 nor o2 as an observation nothing names
 
