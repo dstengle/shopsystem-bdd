@@ -5,3 +5,4 @@
 - 2026-10-28: integrate round 3 for supervision: adds r188, r189, 0 glossary terms, 2 questions, 0 cut sentences; drafts .shop/scratch/3-integrate/drafts/round-1
 - 2026-10-28: gate round 4: 2 questions (supervision r188, r189)
 - 2026-10-29 22:55: compacted
+- 2026-10-30: capability-proposal supervision, both r189 questions: the person answered "A for both" (r189 stands as drafted, no r190; kept terms stay in what work run writes for the glossary-proposal under r171).
