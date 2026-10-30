@@ -20,3 +20,4 @@
 - 2026-10-29 22:55: compacted
 - 2026-10-30: apply round 20 (requests): nothing new to commit, the drafts are already in spec/ (requests r64, r14 retired; supervision r212 r213, r149 r32 r9 r105 retired; work-queue r62, r23 retired); all answers held
 - 2026-10-30: formulate round 1 requests: commit 0e9fa09f; scenario added r64, r14 deprecated; features bindings clean; model check: 84 violations, none from r64 or the scenarios this round wrote
+- 2026-10-30: formulate round 11 work-queue: commit 047c6057; r62 row added for an initiative with no capability-proposal; features bindings and model check not run (command refused)
