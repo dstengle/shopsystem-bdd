@@ -3,3 +3,4 @@
 - 2026-10-28: gate round 1: 1 question (migration-tools#r36 against r24 and r28)
 - 2026-10-28: gate round 1: 1 question (term/backlog: observation vs observation record)
 - 2026-10-29 22:55: compacted
+- 2026-10-30: the person, 2026-10-30: a discovery conversation held in place of the 8 questions; approved the design record/2026-10-30-backlog-board-design and said "go ahead and replace q31". q31's backlog lines are replaced by q45; its log of temporary rules is a separate idea, out of q45. i57 abandoned, its proposals withdrawn (hand edit: no work command withdraws a proposal or a request, or abandons an initiative)
