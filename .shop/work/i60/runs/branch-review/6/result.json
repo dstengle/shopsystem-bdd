@@ -1,0 +1,8 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Branch review 6 of i60, ae85edd3..f6ff81c0 on main.\nSuite: 1084 passed, 0 failed at f6ff81c in 51.69 s (parallel, -n auto; subprocesses, not in-process).\ni60's own work-items have no new finding: w233 (supervision r211) and w235 (work delegate and its hook, requests r65-r68 and r70-r72) are green, and w234 is withdrawn.\nGoing to the person for two reasons.\nFirst, a carried fix-now finding: i54/w232's work show <request> leaves out lines with no line outcome (scripts/workqueue_list.py:85-88). w232 is still awaiting-answer.\nSecond, tools check exits 1 with 12 ruff errors, none in i60's files: round helper scripts under .shop/, older errors in touched test files, and stub_claude FURB167.\nNew, Important but an observation: i63/w236 narrowed is_failed's clean-status assertion (supervision_faults_steps.py:148). Its setup/interim allowance does not hold.\nr28 is deprecated for removal while its replacement r218 (w236) is green.\nNo check is unverifiable. tools size, features bindings and features deprecated exit 0.",
+  "findings": "/home/vscode/shopsystem-bdd/.shop/worktrees/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": [
+    "Important, i54/w232, scripts/workqueue_list.py:85-88: work show <request> prints only lines that have a line outcome, so a request not yet settled shows fewer lines or none, against work-queue r59"
+  ]
+}
