@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Applied requests r59 to spec/capabilities/requests.md (draft's other lines were stale, only r59 added). Committed spec alone.","questions":[],"changes":[{"capability":"requests","adds":["requests#r59"],"changes":[],"removes":[]}],"unheld_answers":[]}
