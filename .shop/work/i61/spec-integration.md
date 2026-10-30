@@ -21,3 +21,5 @@ The drafts of this proposal are in .shop/work/i61/runs/i61/1-integrate/drafts/ro
 ## Answers
 - 2026-10-30: Reading (a), the recommended one, per the person's delegation of 2026-10-29 (answer every question with its recommended reading): change r46 to "...each answer of the capability-proposal that the drafts it applied do not hold and that no later answer of the same proposal replaces." and merge r58 into it.
   by: work run, under the delegation "The person, 2026-10-28: "i am delegating to you" and "I take recommendations"; 2026-10-29: answer every question with its recommended reading; questions of a glossary-proposal are the person's."
+- 2026-10-30: Reading (a): keep r59, the round's side, beside supervision r164, `work run`'s side, as r168 and r35 are split for capabilities (the person's delegation: answer with the recommended reading).
+  by: work run, under the delegation "The person, 2026-10-28: "i am delegating to you" and "I take recommendations"; 2026-10-29: answer every question with its recommended reading; questions of a glossary-proposal are the person's."
