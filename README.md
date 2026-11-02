@@ -131,6 +131,29 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 Only `initiative-round` has the Agent tool. A plugin agent's `hooks` and `permissionMode` are ignored, so a role's
 limits are its tools; under `work run` they are also its `--allowedTools`.
 
+## 0.29.0: glossary-proposals, delegations given late, and fewer stops from outside a work-item
+
+- **The glossary is a target of spec work** (i46, i50, i51, i64): an integrate round's glossary entries are written as a
+  drafted glossary-proposal (supervision r171, r172); an apply round withholds the terms of one the person has not
+  approved (spec-integration r55); its gate asks the person to approve its terms even with no question; a question
+  naming a glossary term or a glossary-proposal is left for the person under a delegation (r162, r163); a
+  glossary-proposal whose apply round applied nothing goes back to an integrate round (r221).
+- **A redraft keeps the ids it does not name** (i48, i54; supervision r188, r189): an integrate round that redrafts some
+  of a proposal's lines keeps the proposal's other ids and terms. Before, the other ids were dropped and their scenarios,
+  accepted by no work-item, failed every whole-suite check.
+- **A delegation can be given after a request is raised** (i60): `work delegate` writes it in the request (requests
+  r65), `work run` reads the delegation the request has at that moment (supervision r211), and a new UserPromptSubmit
+  hook tells a session to write a delegation the person gives in conversation (requests r72).
+- **A flaky scenario no longer stops a merge** (i62; supervision r219, r220, r222): a scenario that fails in the
+  whole-suite check gets one more run, alone, and a pass lets the merge go ahead. A run with errors, or a failure that is
+  not a pytest-bdd scenario, is not taken back; a refused merge's question gives each scenario's runs.
+- **An answering session is not faulted for another initiative's changes** under `.shop/work/` (i63; r218).
+- **`work list` and `work show`** show requests and observations no initiative names (i54, i55; requests r64), and
+  `work run`'s exit names what is open (r212, r213).
+
+Upgrading a consuming repository from 0.28.3: update the plugin and start a session. No file is rewritten; the new
+UserPromptSubmit hook comes with the plugin.
+
 ## 0.28.3: a branch review that runs nothing
 
 - **`work run` makes the branch review's runs before it starts** (supervision r154, r155): the whole suite, each
