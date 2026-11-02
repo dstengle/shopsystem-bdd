@@ -2059,6 +2059,16 @@ Feature: Supervision
     And w1 is failed, naming .shop/work/i1/initiative.md
     And nothing recorded of w1 names .shop/work/i2/initiative.md
 
+  @r219
+  Scenario: a scenario whose failure before a merge would keep the work-item branch from being merged is run again once, alone, before the merge is refused
+    Pins that one failing run of a scenario is never enough on its own to refuse a work-item's merge: the scenario gets one more run by itself first, and no more than one.
+    Given i1's work-item w1 is ready, accepting thing#r1
+    And the implementer's result gives no question, the implementer committing feature.txt, and every other worker gives DONE
+    And the work-item's scenario "it closes", tagged @r1, fails on the implementer's branch each time it is run
+    When the person runs `work run i1`
+    Then "it closes" was run once more, alone, after its run with w1's scenarios and before the merge of w1's branch was refused
+    And "it closes" was run no other time
+
   @r220
   Scenario: a scenario that fails again on its second run, alone, has both its runs in the question written for the work-item
     Pins that the person reading the work-item's question sees the scenario's failure in the run before the merge and in its second run, not one of them only.
@@ -2067,6 +2077,15 @@ Feature: Supervision
     And the work-item's scenario "it closes", tagged @r1, fails on the implementer's branch each time it is run
     When the person runs `work run i1`
     Then w1's ## Questions holds a question giving both runs of "it closes": its run with w1's scenarios and its second run, alone
+
+  @r222
+  Scenario: a scenario that fails before a merge and passes on its second run, alone, lets the work-item branch be merged
+    Pins that a scenario that failed once and then passed by itself counts as passing, so the merge goes ahead as if it had passed the first time.
+    Given i1's work-item w1 is ready, accepting thing#r1
+    And the implementer's result gives no question, the implementer committing feature.txt, and every other worker gives DONE
+    And the work-item's scenario "it closes", tagged @r1, fails on the implementer's branch in its run with w1's scenarios and passes there on its second run, alone
+    When the person runs `work run i1`
+    Then the initiative branch has the implementer's commit of feature.txt
 
   @r221
   Scenario: an apply round that gives an answer the drafts it applied do not hold for a glossary-proposal is followed by a new integrate round for the glossary-proposal
