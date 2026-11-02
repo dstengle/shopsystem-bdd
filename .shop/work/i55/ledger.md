@@ -22,3 +22,4 @@
 - 2026-10-30: formulate round 1 requests: commit 0e9fa09f; scenario added r64, r14 deprecated; features bindings clean; model check: 84 violations, none from r64 or the scenarios this round wrote
 - 2026-10-30: formulate round 11 work-queue: commit 047c6057; r62 row added for an initiative with no capability-proposal; features bindings and model check not run (command refused)
 - 2026-11-02: apply round 13 supervision: nothing applied, lines already in spec/ by 3611f76b (r212 r213 added; r149 r32 r9 r105 retired); r212 r213 await formulation
+- 2026-11-02: formulate round 14 supervision: commit a700415c; scenarios added r212 r213, deprecated r9 r105 r32 (two) r149; features bindings clean; model check: 79 violations, none from r212 r213, r184 r185 r186 have no scenario
