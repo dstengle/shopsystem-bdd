@@ -167,10 +167,21 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the session.json in each of w1's four stage directories records the path of the transcript of that stage's session
 
-  @r9
-  Scenario: when every work-item is green or withdrawn and no request whose asker is this context is in the asker's turn, `work run` exits successfully, printing each work-item's status
+  @r9 @deprecated
+  Scenario: when every work-item is green or withdrawn and no request whose asker is this context is in the asker's turn, `work run` exits successfully, printing each work-item's status (deprecated)
+    Deprecated for: when no node can make a transition, every work-item is green or withdrawn, no capability-proposal is awaiting-answer and no request whose asker is this context is in the asker's turn, `work run` exits successfully, printing each work-item's status
     Pins that a delivery whose work-items all ended well, or were set aside, is no failure while no request this context asked waits on it.
     Given i1's work-items w1 is green and w2 is withdrawn
+    And a request q2 whose asker is this context, awaiting-upstream, its turn the upstream's
+    When the person runs `work run i1`
+    Then `work run` prints w1 with green, and w2 with withdrawn
+    And it exits successfully
+
+  @r212
+  Scenario: when no node can make a transition, every work-item is green or withdrawn, no capability-proposal is awaiting-answer and no request whose asker is this context is in the asker's turn, `work run` exits successfully, printing each work-item's status
+    Pins that a delivery whose work-items all ended well, or were set aside, is no failure while no capability-proposal waits on an answer and no request this context asked waits on it.
+    Given i1's work-items w1 is green and w2 is withdrawn
+    And i1's capability-proposal p1 is formulated
     And a request q2 whose asker is this context, awaiting-upstream, its turn the upstream's
     When the person runs `work run i1`
     Then `work run` prints w1 with green, and w2 with withdrawn
@@ -185,8 +196,9 @@ Feature: Supervision
     Then `work run` prints q2 with the question "Which unit is the limit in?"
     And it exits with an error
 
-  @r32
-  Scenario: when no work-item can make a transition and one is awaiting-answer, `work run` exits with an error, printing each work-item's status and each open question
+  @r32 @deprecated
+  Scenario: when no work-item can make a transition and one is awaiting-answer, `work run` exits with an error, printing each work-item's status and each open question (deprecated)
+    Deprecated for: removal
     Pins what the person reads when `work run` stops on a question, and that waiting on the person is an error.
     Given i1's work-items w1 is researched and w2 is green
     And the planner gives QUESTION, asking "Which module owns the log?"
@@ -194,8 +206,9 @@ Feature: Supervision
     Then `work run` prints w1 with awaiting-answer and the question "Which module owns the log?", and w2 with green
     And it exits with an error
 
-  @r32
-  Scenario: `work run` prints a question that has no answer yet, and not one that has an answer
+  @r32 @deprecated
+  Scenario: `work run` prints a question that has no answer yet, and not one that has an answer (deprecated)
+    Deprecated for: removal
     Pins that an open question is one with no answer yet.
     Given i1's work-item w1 is awaiting-answer, its ## Questions section with "Which module owns the log?" and no answer
     And i1's work-item w2 is awaiting-answer, its ## Questions section with "Old question?" and its Answers section "Old answer."
@@ -1604,8 +1617,9 @@ Feature: Supervision
     When the person runs `work run i1`
     Then p1's transition to formulated was made once the formulate round had ended
 
-  @r149
-  Scenario: a formulate round that formulates nothing because the proposal's answers change lines not in spec/ is followed by a new integrate round for the proposal
+  @r149 @deprecated
+  Scenario: a formulate round that formulates nothing because the proposal's answers change lines not in spec/ is followed by a new integrate round for the proposal (deprecated)
+    Deprecated for: removal
     Pins that answers changing lines spec/ does not hold go back to integration, without anyone starting it by hand.
     Given i1 is started and fulfils the request q1, whose line 1 has the line outcome accepted
     And i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a shelf one place or a list?", given by its formulate round, and its Answers section with "A list, and a shelf's books are listed in the order they were shelved."
@@ -1874,8 +1888,9 @@ Feature: Supervision
     Then the initiative branch has a commit of i1's measurement and i1's analysis record
     And nothing under .shop/records/ is left uncommitted
 
-  @r105
-  Scenario Outline: an initiative whose work-items are <work-items>, its delivery otherwise closed, <set>
+  @r105 @deprecated
+  Scenario Outline: an initiative whose work-items are <work-items>, its delivery otherwise closed, <set> (deprecated)
+    Deprecated for: an initiative whose work-items are <work-items> and whose capability-proposal is <p1>, its delivery otherwise closed, <set>
     Pins that an initiative is set done only when at least one of its work-items is green, even with its branch review, measurement, analysis record and requests closed.
     Given i1 is started and its work-items <work-items>
     And i1's kept branch review lists nothing to fix now, and i1's measurement and analysis record are committed on the initiative branch
@@ -1888,6 +1903,24 @@ Feature: Supervision
       | work-items                          | set             | status      |
       | w1 is green and w2 is withdrawn     | is set done     | is done     |
       | w1 is withdrawn and w2 is withdrawn | is not set done | is not done |
+
+  @r213
+  Scenario Outline: an initiative whose work-items are <work-items> and whose capability-proposal is <p1>, its delivery otherwise closed, <set>
+    Pins that an initiative is set done only when at least one of its work-items is green and its every capability-proposal is formulated or withdrawn, even with its branch review, measurement, analysis record and requests closed.
+    Given i1 is started and its work-items <work-items>
+    And i1's capability-proposal p1 is <p1 as it stands>
+    And i1's kept branch review lists nothing to fix now, and i1's measurement and analysis record are committed on the initiative branch
+    And a request q2 kept in this context, whose asker is this context, that names i1 and is delivered
+    And every worker gives DONE
+    When the person runs `work run i1`
+    Then i1 <status>
+
+    Examples:
+      | work-items                          | p1              | p1 as it stands                                                                                       | set             | status      |
+      | w1 is green and w2 is withdrawn     | formulated      | formulated                                                                                            | is set done     | is done     |
+      | w1 is green and w2 is withdrawn     | withdrawn       | withdrawn                                                                                             | is set done     | is done     |
+      | w1 is withdrawn and w2 is withdrawn | formulated      | formulated                                                                                            | is not set done | is not done |
+      | w1 is green and w2 is withdrawn     | awaiting-answer | awaiting-answer, its ## Questions section with "Is a title given twice one book or two?" and no answer | is not set done | is not done |
 
   @r161
   Scenario: an initiative that changes only the glossary, its glossary-proposal approved and its terms committed to spec/index.md, is set done
