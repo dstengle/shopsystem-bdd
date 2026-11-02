@@ -122,6 +122,40 @@ def thing_waits(repo):
     commit_all(repo, "the thing's suite")
 
 
+CLOSES_FEATURE = """Feature: Thing
+
+  @r1
+  Scenario: it closes
+    Given a thing
+    Then it closes
+"""
+CLOSES_STEPS = """from pytest_bdd import given, scenarios, then
+
+scenarios("../features/thing.feature")
+
+
+@given("a thing")
+def a_thing():
+    pass
+
+
+@then("it closes")
+def closes(request):
+    args = request.config.invocation_params.args
+    assert any("::" in str(a) for a in args), "run with other scenarios, not alone: %s" % (args,)
+"""
+
+
+@given("the work-item's scenario \"it closes\", tagged @r1, fails on the implementer's branch in its run with w1's "
+       "scenarios and passes there on its second run, alone")
+def closes_alone(repo):
+    """A pytest-bdd suite whose "it closes" fails unless its run was given its own node id."""
+    write(repo, "features/thing.feature", CLOSES_FEATURE)
+    write(repo, "tests/test_thing.py", CLOSES_STEPS)
+    (repo / ".shop/delivery.toml").unlink()
+    commit_all(repo, "the closing scenario")
+
+
 @given(parsers.parse("thing#r2 is accepted by {who}"))
 def r2_accepted(repo, who):
     names = [] if who == "no work-item" else who.replace(" only", "").split(" and ")

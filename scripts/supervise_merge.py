@@ -113,6 +113,23 @@ class Merge:
         with self.lock:
             git(self.root, "branch", "-q", "-d", "work/" + name)     # merged, so no longer needed; once its worktree is gone (r18)
 
+    def taken_back(self, name, tree, command, runs):
+        """Whether every scenario the failing `runs` name passes on one more run, alone (r219, r222); each is run once,
+        and the run is logged under its own event. A failing run that names no scenario is not taken back."""
+        failing = {}
+        for done in runs:
+            ids = [l.split(" ", 1)[1].split(" - ")[0] for l in (done.stdout + done.stderr).splitlines()
+                   if l.startswith("FAILED ") and "::" in l]
+            if done.returncode != 0 and not ids:
+                return False
+            failing.update(dict.fromkeys(ids))
+        alone = [a for i, a in enumerate(command) if a != "-n" and command[max(i - 1, 0)] != "-n"]
+        for node in failing:
+            again = subprocess.run(alone + [node], cwd=tree, capture_output=True, text=True, env=with_scripts())
+            failing[node] = again.returncode == 0
+            self.log(**{"work-item": name, "stage": "merge", "event": "rerun", "scenario": node, "passed": failing[node]})
+        return all(failing.values())
+
     def merge(self, name, tree, tests):
         """The branch rebased on the initiative branch, put back under .shop/work/, tested and merged (r4, r6); None,
         else the question it gives the person instead of the merge. What the worker left uncommitted is cleaned away
@@ -127,7 +144,7 @@ class Merge:
         self.log(**{"work-item": name, "stage": "merge", "event": "suite", "record": record})
         scenarios = subprocess.run(tests["work_item"], cwd=tree, capture_output=True, text=True, env=with_scripts())
         for done in (scenarios, suite):
-            if done.returncode != 0:
+            if done.returncode != 0 and not self.taken_back(name, tree, tests["work_item"], (scenarios, suite)):
                 return "commits on which %s's scenarios and the whole suite pass are missing: `%s` failed on %s's branch " \
                        "work/%s:\n%s" % (name, " ".join(done.args), name, name, (done.stdout + done.stderr).strip())
         before = git(self.root, "rev-parse", "HEAD").stdout.strip()
