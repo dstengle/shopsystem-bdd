@@ -5,9 +5,9 @@ part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i55
 status: awaiting-answer
 argues: [requests]
 date: 2026-11-02
-adds: [requests#r73]
+adds: [requests#r50, requests#r51, requests#r53, requests#r54, requests#r55, requests#r56, requests#r57, requests#r58, requests#r73]
 changes: []
-removes: [requests#r52]
+removes: [requests#r52, requests#r13, requests#r34, requests#r39, requests#r41, requests#r43]
 ---
 
 # requests: the lines applied in deda9fa6
