@@ -147,11 +147,12 @@ class Merge:
         self.log(**{"work-item": name, "stage": "merge", "event": "suite", "record": record})
         scenarios = subprocess.run(tests["work_item"], cwd=tree, capture_output=True, text=True, env=with_scripts())
         self.second_runs = []
-        for done in (scenarios, suite):
-            if done.returncode != 0 and not self.taken_back(name, tree, tests["work_item"], (scenarios, suite)):
-                return "commits on which %s's scenarios and the whole suite pass are missing: `%s` failed on %s's branch " \
-                       "work/%s:\n%s" % (name, " ".join(done.args), name, name,
-                                         "\n".join([(done.stdout + done.stderr).strip()] + self.second_runs))
+        failed = [done for done in (scenarios, suite) if done.returncode != 0]
+        if failed and not self.taken_back(name, tree, tests["work_item"], (scenarios, suite)):     # once, whatever the runs
+            done = failed[0]
+            return "commits on which %s's scenarios and the whole suite pass are missing: `%s` failed on %s's branch " \
+                   "work/%s:\n%s" % (name, " ".join(done.args), name, name,
+                                     "\n".join([(done.stdout + done.stderr).strip()] + self.second_runs))
         before = git(self.root, "rev-parse", "HEAD").stdout.strip()
         git(self.root, "merge", "--ff-only", "work/" + name)
         commits = git(self.root, "rev-list", "--reverse", "%s..HEAD" % before).stdout.split()
