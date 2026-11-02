@@ -82,6 +82,8 @@ def integrate_redrafts_p1(plan):
 def integrate_redrafts_g1(plan):
     plan["round:integrate:g1"] = {"status": "DONE", "fields": {"changes": [{"glossary": True, "adds": ["term/ledger"]}]},
                                   "write": {DRAFTS: DRAFT}}
+    # r221: g1's apply round gives an answer its drafts do not hold, so an integrate round follows for g1
+    plan["round:apply:g1"] = {"status": "DONE", "fields": {"unheld_answers": ["One line an event."]}}
 
 
 @then(parsers.re(r"p1's adds name thing#r4 and thing#r5, its changes name thing#r2, and its removes name thing#r3$"))
