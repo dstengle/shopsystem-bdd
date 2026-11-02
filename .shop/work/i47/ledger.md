@@ -10,3 +10,4 @@
 - 2026-10-28: integrate round 3: q33; supervision adds r188 r189 r190 removes r4, 0 glossary terms, 3 questions, 1 cut sentences; drafts .shop/scratch/3-integrate/drafts/round-1
 - 2026-10-28: gate round 4: 3 questions (supervision r188, r189, r190 replacing r4)
 - 2026-10-29 22:55: compacted
+- 2026-11-02 20:19: compacted

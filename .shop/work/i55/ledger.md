@@ -32,3 +32,4 @@
 - 2026-11-02: integrate round 4 requests-deda9fa6: adds requests#r73, removes requests#r52 (answer: only a sent turn); drafts .shop/scratch/4-integrate/drafts/round-4
 - 2026-11-02: gate round 5 requests-deda9fa6: 0 questions
 - 2026-11-02: Hand repair (2026-11-02): requests-deda9fa6's adds restored to r50, r51, r53-r58 beside r73 after integrate round 4 cut them; its removes keep r52 and the r13, r34, r39, r41, r43 that deda9fa6 retired.
+- 2026-11-02 20:19: compacted

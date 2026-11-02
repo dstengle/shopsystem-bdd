@@ -1,3 +1,4 @@
 - 2026-10-28: integrate round 1: q17; spec-integration adds r57 changes r44, 0 glossary terms, 0 questions, 0 cut sentences; drafts .shop/scratch/1-integrate/drafts/round-1
 - 2026-10-28: gate round 1 spec-integration: 0 questions
 - 2026-10-29 22:55: compacted
+- 2026-11-02 20:19: compacted
