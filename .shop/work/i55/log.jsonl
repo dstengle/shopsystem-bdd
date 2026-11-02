@@ -262,3 +262,7 @@
 {"time": "2026-11-02T18:14:49+00:00", "work-item": "supervision-deda9fa6", "stage": "formulate", "agent": "initiative-round", "session": "7b3fd327-bd01-470d-97d7-82b181032c07", "event": "start"}
 {"time": "2026-11-02T18:16:35+00:00", "work-item": "supervision-deda9fa6", "stage": "formulate", "agent": "initiative-round", "session": "7b3fd327-bd01-470d-97d7-82b181032c07", "event": "end"}
 {"time": "2026-11-02T18:16:36+00:00", "work-item": "supervision-deda9fa6", "before": "approved", "after": "formulated", "by": "work run"}
+{"time": "2026-11-02T18:16:38+00:00", "work-item": "work-queue-deda9fa6", "stage": "formulate", "event": "push verified"}
+{"time": "2026-11-02T18:16:38+00:00", "work-item": "work-queue-deda9fa6", "stage": "formulate", "agent": "initiative-round", "session": "afeeab63-88d1-4c6d-9560-2fb9f2bd7c40", "event": "start"}
+{"time": "2026-11-02T18:17:44+00:00", "work-item": "work-queue-deda9fa6", "stage": "formulate", "agent": "initiative-round", "session": "afeeab63-88d1-4c6d-9560-2fb9f2bd7c40", "event": "end"}
+{"time": "2026-11-02T18:17:44+00:00", "work-item": "work-queue-deda9fa6", "before": "approved", "after": "formulated", "by": "work run"}
