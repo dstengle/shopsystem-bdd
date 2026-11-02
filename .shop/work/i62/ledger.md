@@ -2,3 +2,4 @@
 - 2026-10-29: gate round 2: 6 questions on supervision r212, r213
 - 2026-10-29 22:55: compacted
 - 2026-11-02: apply round 8 supervision: answers of 2026-10-30 and 2026-11-02 applied, r219 and r220 added (drafted r212 r213 renumbered)
+- 2026-11-02: formulate round 9 supervision: commit ec876396; scenario added r220, r219 left as a question; features bindings clean; model check: 80 violations, none from supervision but r219 v_s3
