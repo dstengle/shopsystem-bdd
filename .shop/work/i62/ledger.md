@@ -7,3 +7,4 @@
 - 2026-11-02: integrate round 1 (q41 line 2, after answers): 1 line added (supervision r222), 0 changed, 0 removed; 0 cut sentences; drafts .shop/scratch/11-integrate/drafts/round-1/
 - 2026-11-02: gate round 12: 1 question (supervision#r222)
 - 2026-11-02: apply round 13 supervision: applied the answers of 2026-10-30 and 2026-11-02, r222 added (r219 and r220 already in spec/); commit c9339765
+- 2026-11-02: formulate round 14 supervision: commit bddb538f; scenarios added r219 r222 (r220 already formulated); features bindings clean; model check: 62 violations, none from supervision
