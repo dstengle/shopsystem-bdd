@@ -28,6 +28,7 @@ The drafts of this proposal are in .shop/work/i62/runs/i62/1-integrate/drafts/ro
 - 2026-11-02: Reading (a), as recommended and drafted, on each open question: (2) both runs, without saying what each gives; (3) no line for a passing second run; (4) every failure that would refuse the merge gets one more run; (5) the second run is of that scenario by itself; (6) scenarios only, in both runs r4 makes. The ids r212 and r213 are already taken in spec/capabilities/supervision.md (it now goes to r218): the two lines take the next free ids, r219 and r220, the references between them renumbered to match (the person, 2026-11-02).
 - 2026-11-02: (3) After a passing second run: reading (a), add no line (the person, 2026-11-02).
 - 2026-11-02: (4) r212's condition: reading (a), every failure that would refuse the merge gets one more run (the person, 2026-11-02).
+- 2026-11-02: (5) r212, alone: reading (a), the second run is of that scenario by itself (the person, 2026-11-02).
 
 ## Faults
 - the session answering supervision's question faulted: while its answerer worked, .shop/work/i61/spec-integration.md, .shop/work/i61/runs/spec-integration/2-answer/brief.md, .shop/work/i61/runs/spec-integration/2-answer/result.json, .shop/work/i61/runs/spec-integration/2-answer/session.json changed in the repository's own checkout and not committed; work run put them back
