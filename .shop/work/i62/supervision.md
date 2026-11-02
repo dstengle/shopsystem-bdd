@@ -2,17 +2,17 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i62-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i62
-status: awaiting-answer
+status: drafted
 argues: [supervision]
 date: 2026-10-29
-adds: [supervision#r219, supervision#r220]
+adds: [supervision#r222]
 changes: []
 removes: []
 ---
 
 # supervision
 
-The drafts of this proposal are in .shop/work/i62/runs/i62/1-integrate/drafts/round-2/.
+The drafts of this proposal are in .shop/work/i62/runs/supervision/11-integrate/drafts/round-1/.
 
 ## Questions
 - r213, "its question". Line (added): [r213] **If** the second run of a scenario that r212 makes also fails, **then** `work run` shall give both runs of the scenario in the question r131 writes for the work-item. Readings: (a, recommended, as drafted) the question r131 writes under the work-item's `## Questions`; (b) a question of its own: "[r213] **If** the second run of a scenario that r212 makes also fails, **then** `work run` shall write under the work-item's `## Questions` a question that gives both runs of the scenario and transition the work-item to `awaiting-answer`."

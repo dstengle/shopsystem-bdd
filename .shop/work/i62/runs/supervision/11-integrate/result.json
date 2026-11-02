@@ -1,0 +1,1 @@
+{"status": "DONE", "summary": "Integrate round for q41 line 2 after the answers: r219 and r220 are already in spec/; one line added, r222 (a passing second run counts as passing for r4's merge). Gate in .shop/scratch/11-integrate/drafts/round-1/gate.md.", "questions": [], "changes": [{"capability": "supervision", "adds": ["supervision#r222"], "changes": [], "removes": []}]}
