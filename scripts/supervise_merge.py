@@ -4,6 +4,7 @@ import re
 import shlex
 import subprocess
 import time
+from pathlib import Path
 
 import workqueue
 from supervise_faults import Fault, fault_of
@@ -113,20 +114,30 @@ class Merge:
         with self.lock:
             git(self.root, "branch", "-q", "-d", "work/" + name)     # merged, so no longer needed; once its worktree is gone (r18)
 
+    @staticmethod
+    def is_scenario(tree, node):
+        """Whether pytest node id `node` is in a test module of `tree` that binds feature scenarios."""
+        path = Path(tree) / node.split("::")[0]
+        return path.is_file() and re.search(r"\bscenarios?\(", path.read_text()) is not None
+
     def taken_back(self, name, tree, command, runs):
         """Whether every scenario the failing `runs` name passes on one more run, alone (r219, r222); each is run once,
-        and the run is logged under its own event. A failing run that names no scenario is not taken back."""
+        and the run is logged under its own event. A failing run is not taken back when it names no scenario, names
+        a failure that is not a scenario (a test module binding feature scenarios), or has an error; a rerun that
+        ran no test failed."""
         failing = {}
         for done in runs:
-            ids = [l.split(" ", 1)[1].split(" - ")[0] for l in (done.stdout + done.stderr).splitlines()
+            out = done.stdout + done.stderr
+            ids = [l.split(" ", 1)[1].split(" - ")[0] for l in out.splitlines()
                    if l.startswith("FAILED ") and "::" in l]
-            if done.returncode != 0 and not ids:
+            if done.returncode != 0 and (not ids or not all(self.is_scenario(tree, i) for i in ids)
+                                         or re.search(r"^ERROR |\b\d+ errors?\b", out, re.M)):
                 return False
             failing.update(dict.fromkeys(ids))
         alone = [a for i, a in enumerate(command) if a != "-n" and command[max(i - 1, 0)] != "-n"]
         for node in failing:
             again = subprocess.run(alone + [node], cwd=tree, capture_output=True, text=True, env=with_scripts())
-            failing[node] = again.returncode == 0
+            failing[node] = again.returncode == 0 and re.search(r"\b\d+ passed\b", again.stdout + again.stderr) is not None
             if not failing[node]:
                 self.second_runs.append("its second run, alone, `%s`:\n%s" % (
                     " ".join(again.args), (again.stdout + again.stderr).strip()))
