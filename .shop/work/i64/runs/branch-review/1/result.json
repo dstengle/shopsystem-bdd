@@ -1,0 +1,6 @@
+{
+  "status": "DONE",
+  "summary": "Branch review of i64 (86582d02..b95f4ce3, work-item w242, supervision#r221).\nSuite: 1090 passed, 0 failed at b95f4ce in 37.69 s (parallel, not in-process; 25 xfailed, 12 xpassed).\nw242 scenarios: 184 passed, 1 skipped. tools size: none over. features bindings: clean.\ntools check: exit 1; ruff findings are already-present lines in files w242 touched, plus i55 and i62 code in the range.\nNo Critical finding, nothing to fix now. Five Minor observations:\n1. supervise_rounds.py:59 skips the answers-held guard for a glossary-proposal.\n2. supervise_brief.py docstring does not cover the brief with no request.\n3. Ruff lines already present in files w242 touched.\n4. The requests r39/r41/r43 scenarios were rewritten in place, and one deprecation names a replacement that does not exist.\n5. The range holds i55 and i62 commits marked 'none'.",
+  "findings": "/tmp/work-run-i64-k7xmcdka/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": []
+}
