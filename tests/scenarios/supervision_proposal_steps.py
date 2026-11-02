@@ -122,6 +122,15 @@ def proposal_in_status(repo, plan, status, field, ids):
     commit_all(repo, "p1 is %s" % status)
 
 
+@given(parsers.re(r"i1's capability-proposal p1 is withdrawn$"))
+def proposal_withdrawn(repo):
+    """p1 withdrawn, with no adds or changes clause: the bare status only (the phrasings above all carry a comma)."""
+    write(repo, DIR + "/p1.md", "---\nid: %s\nkind: capability-proposal\npart_of: %s\nstatus: withdrawn\nargues: [thing]\n"
+          "adds: []\nchanges: []\nremoves: []\ndate: 2026-10-15\n---\n"
+          % (full("capability-proposal", "p1"), full("initiative", "i1")))
+    commit_all(repo, "p1 is withdrawn")
+
+
 @given(parsers.re(r"(?P<name>[pg]1) was written from the change list of i1's integrate round, whose drafts are kept at (?P<path>\S+)$"))
 def written_from_round(repo, name, path):
     file = repo / DIR / (name + ".md")

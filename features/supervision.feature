@@ -167,16 +167,6 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the session.json in each of w1's four stage directories records the path of the transcript of that stage's session
 
-  @r9 @deprecated
-  Scenario: when every work-item is green or withdrawn and no request whose asker is this context is in the asker's turn, `work run` exits successfully, printing each work-item's status (deprecated)
-    Deprecated for: when no node can make a transition, every work-item is green or withdrawn, no capability-proposal is awaiting-answer and no request whose asker is this context is in the asker's turn, `work run` exits successfully, printing each work-item's status
-    Pins that a delivery whose work-items all ended well, or were set aside, is no failure while no request this context asked waits on it.
-    Given i1's work-items w1 is green and w2 is withdrawn
-    And a request q2 whose asker is this context, awaiting-upstream, its turn the upstream's
-    When the person runs `work run i1`
-    Then `work run` prints w1 with green, and w2 with withdrawn
-    And it exits successfully
-
   @r212
   Scenario: when no node can make a transition, every work-item is green or withdrawn, no capability-proposal is awaiting-answer and no request whose asker is this context is in the asker's turn, `work run` exits successfully, printing each work-item's status
     Pins that a delivery whose work-items all ended well, or were set aside, is no failure while no capability-proposal waits on an answer and no request this context asked waits on it.
@@ -1887,22 +1877,6 @@ Feature: Supervision
     When the person runs `work run i1`
     Then the initiative branch has a commit of i1's measurement and i1's analysis record
     And nothing under .shop/records/ is left uncommitted
-
-  @r105 @deprecated
-  Scenario Outline: an initiative whose work-items are <work-items>, its delivery otherwise closed, <set> (deprecated)
-    Deprecated for: an initiative whose work-items are <work-items> and whose capability-proposal is <p1>, its delivery otherwise closed, <set>
-    Pins that an initiative is set done only when at least one of its work-items is green, even with its branch review, measurement, analysis record and requests closed.
-    Given i1 is started and its work-items <work-items>
-    And i1's kept branch review lists nothing to fix now, and i1's measurement and analysis record are committed on the initiative branch
-    And a request q2 kept in this context, whose asker is this context, that names i1 and is delivered
-    And every worker gives DONE
-    When the person runs `work run i1`
-    Then i1 <status>
-
-    Examples:
-      | work-items                          | set             | status      |
-      | w1 is green and w2 is withdrawn     | is set done     | is done     |
-      | w1 is withdrawn and w2 is withdrawn | is not set done | is not done |
 
   @r213
   Scenario Outline: an initiative whose work-items are <work-items> and whose capability-proposal is <p1>, its delivery otherwise closed, <set>
