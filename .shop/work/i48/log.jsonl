@@ -78,3 +78,4 @@
 {"time": "2026-11-02T18:51:40+00:00", "work-item": "w238", "stage": "answer", "agent": "delegation-answerer", "session": "83aff9f6-847f-4c09-84c2-7f1576299975", "event": "start"}
 {"time": "2026-11-02T18:51:50+00:00", "work-item": "w238", "stage": "answer", "agent": "delegation-answerer", "session": "83aff9f6-847f-4c09-84c2-7f1576299975", "event": "end"}
 {"time": "2026-11-02T19:06:21+00:00", "work-item": "w238", "before": "awaiting-answer", "after": "ready", "by": "work answer"}
+{"time": "2026-11-02T19:06:24+00:00", "work-item": "w238", "before": "ready", "after": "claimed", "by": "work run"}
