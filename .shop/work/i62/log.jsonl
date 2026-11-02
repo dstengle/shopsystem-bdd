@@ -156,3 +156,4 @@
 {"time": "2026-11-02T21:15:49+00:00", "stage": "branch-review", "event": "push verified"}
 {"time": "2026-11-02T21:16:46+00:00", "stage": "branch-review", "agent": "bdd-branch-reviewer", "session": "0bbcefd5-7828-4c59-957b-818664ad8862", "event": "start"}
 {"time": "2026-11-02T21:20:36+00:00", "stage": "branch-review", "agent": "bdd-branch-reviewer", "session": "0bbcefd5-7828-4c59-957b-818664ad8862", "event": "end"}
+{"time": "2026-11-02T21:25:00+00:00", "work-item": "i62", "before": "started", "after": "done", "by": "work run"}
