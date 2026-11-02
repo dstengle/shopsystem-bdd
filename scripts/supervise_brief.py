@@ -132,8 +132,9 @@ class Briefs:
         of the change list the result gives (r92)."""
         ident = str(data.get("fulfils") or "").rsplit("/", 1)[-1]
         others = supervise_drafts.added_by_others(self.root, self.initiative)     # r102
-        return ["Request: %s" % ident, "Accepted lines of the request:"] + [
-            "- %d. %s" % line for line in workqueue_request.accepted_lines(self.root, ident)] + [
+        asked = ["Request: %s" % ident, "Accepted lines of the request:"] + [
+            "- %d. %s" % line for line in workqueue_request.accepted_lines(self.root, ident)] if ident else []     # r221: a re-integrated proposal of an initiative that fulfils no request
+        return asked + [
             "Ids drafted elsewhere (number added lines above each on the same capability): %s"
             % (", ".join(others) or "none"),
             "Drafts path: %s" % (here / "drafts"),

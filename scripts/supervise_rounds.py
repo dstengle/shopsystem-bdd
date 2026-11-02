@@ -56,6 +56,8 @@ class Rounds(Changes, Raises):
                                     or len(self.held(name, "Answers")) >= len(self.held(name, "Questions"))):
                 return (name, *self.route(name, status))
         for name, status in supervise_glossary.statuses(self.dir):     # r164, r165, r169
+            if name not in left and status in ("awaiting-answer", "approved") and self.sent_back(name):     # r221: back to integration
+                return (name, "integrate", "drafted")
             one = supervise_glossary.route(status, len(self.held(name, "Questions")), len(self.held(name, "Answers")))
             if name not in left and one:
                 return (name, *one)

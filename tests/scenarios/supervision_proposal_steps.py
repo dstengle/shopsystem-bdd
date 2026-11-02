@@ -140,7 +140,7 @@ def written_from_round(repo, name, path):
 
 
 @given(parsers.re(r"i1's glossary-proposal g1 is awaiting-answer, its ## Questions section with (?P<asked>\"[^,]+?)(?:, given by its "
-                  r"gate round)?,? and its Answers section with (?P<answers>\"[^,]+?)(?: only)?$"))
+                  r"gate round)?,? and its Answers section with (?P<answers>\".+?)(?: only)?$"))
 def glossary_proposal_answered(repo, asked, answers):
     """g1 holds each quoted question as a bullet of its Questions and each quoted answer as a bullet of its Answers."""
     bullets = lambda text: "".join("- %s\n" % q for q in re.findall(r'"([^"]+)"', text))     # noqa: E731

@@ -27,9 +27,9 @@ def ledger_holds(repo, line):
     commit_all(repo, "i1's ledger")
 
 
-@given(parsers.re(r"the apply round for p1 applies nothing, giving that p1's answers give what its drafts do not hold"
+@given(parsers.re(r"the apply round for (?P<name>[pg])1 applies nothing, giving that (?P=name)1's answers give what its drafts do not hold"
                   r"(?:, and no change list)?$"))
-def apply_applies_nothing(plan):
+def apply_applies_nothing(plan, name):
     plan["round:apply"] = {"status": "DONE", "fields": {"nothing_applied": NOTHING}}
 
 
@@ -66,10 +66,10 @@ def integrate_brief(repo, context):
     return found[0]["brief"]
 
 
-@then("a round of the kind integrate was started for p1 after the apply round had ended")
-def integrate_after_apply(repo, context):
-    ended, began = position(repo, stage="apply", event="end"), position(repo, stage="integrate", event="start")
-    assert len(rounds(repo, "integrate", "p1")) == 1, (starts(repo), context["done"].stderr)
+@then(parsers.re(r"a round of the kind integrate was started for (?P<name>[pg]1) after the apply round had ended$"))
+def integrate_after_apply(repo, context, name):
+    ended, began = position(repo, name, stage="apply", event="end"), position(repo, name, stage="integrate", event="start")
+    assert len(rounds(repo, "integrate", name)) == 1, (starts(repo), context["done"].stderr)
     assert ended is not None and began is not None and ended < began, (log_lines(repo), context["done"].stderr)
 
 
