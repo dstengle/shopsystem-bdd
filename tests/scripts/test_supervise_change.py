@@ -53,6 +53,23 @@ def test_a_round_started_for_one_proposal_leaves_another_held_proposals_drafts_p
     assert "The drafts of this proposal are in old/." in (initiative / "p2.md").read_text()
 
 
+def test_a_round_started_for_a_glossary_proposal_keeps_the_terms_its_change_list_does_not_name(tmp_path):
+    initiative = tmp_path / "i1"
+    initiative.mkdir()
+    (initiative / "initiative.md").write_text("---\nid: initiative/a.io/b/c/i1\nkind: initiative\n---\n")
+    (initiative / "g1.md").write_text(
+        "---\nid: glossary-proposal/a.io/b/c/g1\nkind: glossary-proposal\nstatus: awaiting-answer\n"
+        "adds: [term/ledger]\nchanges: [term/shelf]\nremoves: [term/loan]\n---\n\n# glossary\n\nThe drafts of this proposal are in old/.\n")
+    holder = Changes()
+    holder.dir = initiative
+    found = entries({"changes": [{"glossary": True, "adds": ["term/desk"], "changes": ["term/shelf"]}]})
+    written = holder.write_proposals(found, "new/", "g1")
+    text = (initiative / "g1.md").read_text()
+    assert written == [initiative / "g1.md"] and not (initiative / "glossary.md").exists()
+    assert "adds: [term/ledger, term/desk]\n" in text and "changes: [term/shelf]\n" in text and "removes: [term/loan]\n" in text
+    assert "are in new/." in text
+
+
 def test_two_entries_naming_one_capability_give_one_proposal_with_both_entries_ids(tmp_path):
     written = write(tmp_path, [{"capability": "thing", "adds": ["thing#r3"]},
                                {"capability": "thing", "adds": ["thing#r4"], "removes": ["thing#r1"]},

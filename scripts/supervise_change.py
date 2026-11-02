@@ -143,6 +143,15 @@ class Changes:
             for field in FIELDS:
                 terms[field] += [i for i in each[field] if i not in terms[field]]
         if any(e.get("glossary") for e in found):
+            mine = self.dir / ((own or "") + ".md")
+            if own and mine.exists() and workqueue.frontmatter(mine.read_text())[0].get("kind") == "glossary-proposal":     # r189
+                self.redraft_lists(own, terms)     # the glossary-proposal the round was started for keeps the terms the round does not name
+                text = mine.read_text()
+                said = "The drafts of this proposal are in %s." % stage_dir
+                mine.write_text(re.sub(r"The drafts of this proposal are in \S+?\.(?=\s|$)", lambda _: said, text)
+                                if "The drafts of this proposal are in" in text else text.rstrip("\n") + "\n\n" + said + "\n")
+                written.append(mine)
+                return written
             path = self.dir / "glossary.md"
             path.write_text("---\nid: glossary-proposal/%s/%s-glossary\nkind: glossary-proposal\npart_of: %s\nstatus: drafted\n%sdate: %s\n"
                             "---\n\n# glossary\n\nThe drafts of this proposal are in %s.\n" % (
