@@ -465,6 +465,7 @@ Feature: Requests
     Then work prints q1 with open and the upstream's turn
     And it prints q2 with awaiting-asker and the asker's turn
 
+  # formulates [r64] of spec/capabilities/requests.md
   @r64
   Scenario: list prints, with its date, each observation that the source of no initiative and of no request names
     Pins that list shows the observations nothing has taken up yet, with the date of each, and leaves out any that an initiative or a request already names.
