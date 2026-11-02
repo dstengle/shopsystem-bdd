@@ -56,7 +56,7 @@ def merge(monkeypatch, tmp_path):
     for module, body in (("test_thing", 'scenarios("../features/thing.feature")\n'), ("test_y", "def test_y(): ...\n")):
         (tmp_path / "tests/scenarios").mkdir(parents=True, exist_ok=True)
         (tmp_path / "tests/scenarios" / (module + ".py")).write_text(body)
-    tests = {"work_item": ["pytest", "-n", "auto", "--work-item", "w1"], "suite": ["pytest", "--whole-suite"]}
+    tests = {"work_item": ["pytest", "-n", "auto", "--work-item", "w1"], "suite": ["pytest", "-n", "auto", "--work-item", "w1", "--whole-suite"]}
     return Stubbed(tmp_path), tests, alone, alone_passes, rerun_out
 
 
@@ -64,7 +64,9 @@ def test_a_scenario_failing_in_both_runs_gets_one_run_alone_and_a_pass_there_mer
     stubbed, tests, alone, passes, _ = merge
     passes.extend([True, False])     # a second alone run would fail: it must not happen
     assert stubbed.merge("w1", stubbed.root, tests) is None
-    assert len(alone) == 1 and "-n" not in alone[0]
+    assert len(alone) == 1
+    assert "--whole-suite" in alone[0]
+    assert [alone[0][i + 1] for i, a in enumerate(alone[0]) if a == "-n"] == ["0"]     # no other -n value
     assert [l["scenario"] for l in stubbed.logged if l.get("event") == "rerun"] == [NODE]
 
 

@@ -134,7 +134,7 @@ class Merge:
                                          or re.search(r"^ERROR |\b\d+ errors?\b", out, re.M)):
                 return False
             failing.update(dict.fromkeys(ids))
-        alone = [a for i, a in enumerate(command) if a != "-n" and command[max(i - 1, 0)] != "-n"]
+        alone = [a for i, a in enumerate(command) if a != "-n" and command[max(i - 1, 0)] != "-n"] + ["-n", "0"]
         for node in failing:
             again = subprocess.run(alone + [node], cwd=tree, capture_output=True, text=True, env=with_scripts())
             failing[node] = again.returncode == 0 and re.search(r"\b\d+ passed\b", again.stdout + again.stderr) is not None
@@ -159,7 +159,7 @@ class Merge:
         scenarios = subprocess.run(tests["work_item"], cwd=tree, capture_output=True, text=True, env=with_scripts())
         self.second_runs = []
         failed = [done for done in (scenarios, suite) if done.returncode != 0]
-        if failed and not self.taken_back(name, tree, tests["work_item"], (scenarios, suite)):     # once, whatever the runs
+        if failed and not self.taken_back(name, tree, tests["suite"], (scenarios, suite)):     # once, whatever the runs
             done = failed[0]
             return "commits on which %s's scenarios and the whole suite pass are missing: `%s` failed on %s's branch " \
                    "work/%s:\n%s" % (name, " ".join(done.args), name, name,
