@@ -292,3 +292,6 @@
 {"time": "2026-11-02T18:25:59+00:00", "work-item": "w243", "before": "claimed", "after": "awaiting-answer", "by": "work run"}
 {"time": "2026-11-02T18:26:45+00:00", "work-item": "w244", "before": "awaiting-answer", "after": "withdrawn", "by": "work withdraw"}
 {"time": "2026-11-02T18:37:20+00:00", "work-item": "w243", "before": "awaiting-answer", "after": "ready", "by": "work answer"}
+{"time": "2026-11-02T18:46:51+00:00", "work-item": "requests-deda9fa6", "stage": "answer", "event": "push verified"}
+{"time": "2026-11-02T18:46:51+00:00", "work-item": "requests-deda9fa6", "stage": "answer", "agent": "delegation-answerer", "session": "eaadc88d-2404-4991-b986-7d29e15e39d8", "event": "start"}
+{"time": "2026-11-02T18:47:08+00:00", "work-item": "requests-deda9fa6", "stage": "answer", "agent": "delegation-answerer", "session": "eaadc88d-2404-4991-b986-7d29e15e39d8", "event": "end"}
