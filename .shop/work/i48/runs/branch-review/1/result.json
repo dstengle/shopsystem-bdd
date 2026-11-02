@@ -1,0 +1,6 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Branch review of i48 (w238, supervision r188 r189), 6cf63096..85638a50 on main.\nSuite: 1091 passed, 0 failed at 85638a50 in 35.35 s (parallel -n auto; scripts driven by subprocess, not in-process; 23 xfailed, 14 xpassed).\nw238's scenarios: 186 passed, 1 skipped, exit 0. tools size: clean. features bindings: clean. features deprecated: 23 deprecated, r163's names no existing replacement title.\ntools check: exit 1. ruff gives 48 errors; 3 are in w238's lines (supervise_change.py:83 B023, supervision_reintegrate_steps.py:92 and :101 RUF100). vulture gives 1 finding, not in a w238 file. import-linter: no contracts.\nw238 itself is sound: it does what r188, r189 and the plan ask, changes nothing under features/, and its one changed test is the one the plan lists. Every allowance row holds.\nConcern (Critical, triaged observation): main is shared, so Base..HEAD holds 961 commits of no i48 work-item. Among them are other initiatives' features/ changes and removed or loosened tests.\nThere are no fix-now findings and nothing under Cannot verify.",
+  "findings": "/tmp/work-run-i48-56rzytlb/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": []
+}
