@@ -27,3 +27,4 @@
 - 2026-11-02: formulate round 1 requests-deda9fa6: commit 627b4a71; scenarios added r50 r51 r53 r54 r55 r56 r57 r58, deprecated r13 r34, r39 r41 r43 replaced in place; r52 left as a question; features bindings clean; model check: 67 violations, none from requests but r52 v_s3
 - 2026-11-02: formulate round 1 supervision-deda9fa6: commit d968719a; scenarios added r184 r185 r186; features bindings clean; model check: 64 violations, none from r184-r186
 - 2026-11-02: formulate round 1 work-queue-deda9fa6: commit 383ee065; scenario added r47; features bindings clean; model check: 63 violations, none from work-queue r47
+- 2026-11-02: w244 withdrawn (2026-11-02): work-queue r47 is already met by the code (workqueue_done._holds), its scenario passes, and the planner's file set was empty; as with w229, the person's choice of 2026-11-02.
