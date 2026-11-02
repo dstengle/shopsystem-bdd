@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Added step definitions for supervision r184, r185 and r186 (tests only, no production code). The work-item's scenarios now pass: 185 passed, 1 skipped.","questions":[],"commits":["8f8b2d2e w243: step definitions for supervision r184, r185, r186"],"report":".shop/scratch/3-implement/report.md"}
