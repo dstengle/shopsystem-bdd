@@ -1,0 +1,1 @@
+{"status": "DONE", "summary": "Commit a700415c: features/supervision.feature gets scenarios r212 and r213; the passing scenarios of retired r9, r105, r32 (two) and r149 are deprecated. features bindings clean. model check: 79 violations, none from r212/r213; supervision r184, r185, r186 still have no scenario (not in this round's change list).", "questions": []}
