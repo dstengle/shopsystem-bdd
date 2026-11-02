@@ -119,6 +119,18 @@ def test_one_requirement_outside_a_guarantees_capability_refuses_the_run(tmp_pat
     assert done.returncode != 0 and "w1 accepts none of the scenarios it collected" in done.stdout + done.stderr
 
 
+def test_a_failed_scenario_is_named_in_the_summary_and_a_failed_test_that_is_not_one_is_not(tmp_path):
+    repo = consumer(tmp_path, "thing#r1-r2")
+    (repo / "tests/test_thing.py").write_text(STEPS.replace("    pass", "    assert False"))
+    (repo / "test_probe.py").write_text("def test_probe():\n    assert False\n")
+    done = pytest(repo, "--work-item", "w1")
+    lines = (done.stdout + done.stderr).splitlines()
+    named = [l for l in lines if l.startswith("SCENARIO ")]
+    assert sorted(named) == ["SCENARIO tests/test_thing.py::test_it_answers",
+                             "SCENARIO tests/test_thing.py::test_it_waits"], done.stdout
+    assert not [l for l in named if "probe" in l]
+
+
 def test_a_move_to_a_status_outside_the_lifecycle_is_refused(tmp_path):
     sys.path.insert(0, str(SCRIPTS))
     import workqueue

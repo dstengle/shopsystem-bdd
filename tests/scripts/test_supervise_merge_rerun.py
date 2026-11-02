@@ -14,7 +14,7 @@ import supervise_merge
 from supervise_merge import Merge
 
 NODE = "tests/scenarios/test_thing.py::test_it_closes"
-FAILED = "FAILED %s - boom\n" % NODE
+FAILED = "FAILED %s - boom\nSCENARIO %s\n" % (NODE, NODE)     # work_items names the failed tests that are scenarios
 
 
 def ran(args, code, out=""):
@@ -53,9 +53,6 @@ def merge(monkeypatch, tmp_path):
     monkeypatch.setattr(supervise_merge.subprocess, "run", run)
     monkeypatch.setattr(supervise_merge, "git", lambda *a, **k: SimpleNamespace(stdout="x\n", returncode=0))
     monkeypatch.setattr(supervise_merge, "with_scripts", dict)
-    for module, body in (("test_thing", 'scenarios("../features/thing.feature")\n'), ("test_y", "def test_y(): ...\n")):
-        (tmp_path / "tests/scenarios").mkdir(parents=True, exist_ok=True)
-        (tmp_path / "tests/scenarios" / (module + ".py")).write_text(body)
     tests = {"work_item": ["pytest", "-n", "auto", "--work-item", "w1"], "suite": ["pytest", "-n", "auto", "--work-item", "w1", "--whole-suite"]}
     return Stubbed(tmp_path), tests, alone, alone_passes, rerun_out
 
@@ -80,7 +77,7 @@ def test_a_scenario_failing_in_both_runs_and_failing_alone_refuses_the_merge_aft
 
 def test_a_failing_run_with_an_error_line_is_not_taken_back(merge):
     stubbed, tests, alone, passes, _ = merge
-    stubbed.suite_out = FAILED + "ERROR tests/scenarios/test_x.py::t - setup\n"
+    stubbed.suite_out = "=== short test summary info ===\n" + FAILED + "ERROR tests/scenarios/test_x.py::t - setup\n"
     passes.append(True)
     assert stubbed.merge("w1", stubbed.root, tests)
     assert not alone
@@ -88,7 +85,30 @@ def test_a_failing_run_with_an_error_line_is_not_taken_back(merge):
 
 def test_a_failing_node_that_is_not_a_scenario_is_not_taken_back(merge):
     stubbed, tests, alone, passes, _ = merge
-    stubbed.suite_out = "FAILED tests/scenarios/test_y.py::test_y - boom\n"
+    stubbed.suite_out = "FAILED tests/scripts/test_y.py::test_y - boom\n"     # in a module that has scenarios( in it
+    passes.append(True)
+    assert stubbed.merge("w1", stubbed.root, tests)
+    assert not alone
+
+
+def test_a_suite_command_with_no_n_gets_none_for_the_rerun(merge):
+    stubbed, tests, alone, passes, _ = merge
+    tests["suite"] = ["pytest", "--work-item", "w1", "--whole-suite"]
+    passes.append(True)
+    assert stubbed.merge("w1", stubbed.root, tests) is None
+    assert "-n" not in alone[0]
+
+
+def test_an_error_count_in_a_failing_scenarios_captured_output_does_not_keep_it_from_being_taken_back(merge):
+    stubbed, tests, _, passes, _ = merge
+    stubbed.suite_out = FAILED + "Found 2 errors.\n1 failed, 3 passed in 1.0s\n"
+    passes.append(True)
+    assert stubbed.merge("w1", stubbed.root, tests) is None
+
+
+def test_an_error_count_in_the_final_line_keeps_a_run_from_being_taken_back(merge):
+    stubbed, tests, alone, passes, _ = merge
+    stubbed.suite_out = FAILED + "1 failed, 3 passed, 1 error in 1.0s\n"
     passes.append(True)
     assert stubbed.merge("w1", stubbed.root, tests)
     assert not alone

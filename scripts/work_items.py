@@ -153,6 +153,22 @@ def guarantees(config, cap):
     return is_guarantees(path.parent.parent.parent, cap)
 
 
+def pytest_runtest_setup(item):
+    """Note on a scenario's reports that it is one (user properties reach the xdist controller)."""
+    if scenario_of(item) is not None:
+        item.user_properties.append(("scenario", True))
+
+
+def pytest_terminal_summary(terminalreporter, config):
+    """Under --work-item, a line `SCENARIO <node id>` for each failed test that is a scenario, so `work run` knows
+    which failures are scenarios (supervision r219, r222)."""
+    if not config.getoption("--work-item"):
+        return
+    for report in terminalreporter.stats.get("failed", []):
+        if ("scenario", True) in report.user_properties:
+            terminalreporter.write_line("SCENARIO %s" % report.nodeid)
+
+
 def pytest_sessionfinish(session, exitstatus):
     """A work-item all of whose requirements are of guarantees capabilities, left with no test, succeeds. Decided
     from the work-item and the spec, so on the xdist controller as on a worker."""

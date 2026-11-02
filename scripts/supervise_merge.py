@@ -4,7 +4,6 @@ import re
 import shlex
 import subprocess
 import time
-from pathlib import Path
 
 import workqueue
 from supervise_faults import Fault, fault_of
@@ -115,34 +114,38 @@ class Merge:
             git(self.root, "branch", "-q", "-d", "work/" + name)     # merged, so no longer needed; once its worktree is gone (r18)
 
     @staticmethod
-    def is_scenario(tree, node):
-        """Whether pytest node id `node` is in a test module of `tree` that binds feature scenarios."""
-        path = Path(tree) / node.split("::")[0]
-        return path.is_file() and re.search(r"\bscenarios?\(", path.read_text()) is not None
+    def has_error(out):
+        """Whether pytest's output `out` has an ERROR line in its short summary or an error count in its last line."""
+        lines = out.strip().splitlines()
+        short = out.partition("short test summary info")[2].splitlines()
+        return any(l.startswith("ERROR ") for l in short) or re.search(r"\b\d+ errors?\b", lines[-1] if lines else "") is not None
 
     def taken_back(self, name, tree, command, runs):
         """Whether every scenario the failing `runs` name passes on one more run, alone (r219, r222); each is run once,
-        and the run is logged under its own event. A failing run is not taken back when it names no scenario, names
-        a failure that is not a scenario (a test module binding feature scenarios), or has an error; a rerun that
+        and the run is logged under its own event. A failing run is not taken back when it names no failure, names
+        a failure work_items did not name as a scenario (`SCENARIO <node>` lines), or has an error; a rerun that
         ran no test failed."""
         failing = {}
         for done in runs:
             out = done.stdout + done.stderr
             ids = [l.split(" ", 1)[1].split(" - ")[0] for l in out.splitlines()
                    if l.startswith("FAILED ") and "::" in l]
-            if done.returncode != 0 and (not ids or not all(self.is_scenario(tree, i) for i in ids)
-                                         or re.search(r"^ERROR |\b\d+ errors?\b", out, re.M)):
+            scenarios = {l.split(" ", 1)[1] for l in out.splitlines() if l.startswith("SCENARIO ")}
+            if done.returncode != 0 and (not ids or not set(ids) <= scenarios or self.has_error(out)):
                 return False
             failing.update(dict.fromkeys(ids))
-        alone = [a for i, a in enumerate(command) if a != "-n" and command[max(i - 1, 0)] != "-n"] + ["-n", "0"]
+        alone = [a for i, a in enumerate(command) if a != "-n" and command[max(i - 1, 0)] != "-n"]
+        if "-n" in command:
+            alone += ["-n", "0"]     # xdist is on in the command: one process, for the scenario alone
+        passed = []
         for node in failing:
             again = subprocess.run(alone + [node], cwd=tree, capture_output=True, text=True, env=with_scripts())
-            failing[node] = again.returncode == 0 and re.search(r"\b\d+ passed\b", again.stdout + again.stderr) is not None
-            if not failing[node]:
+            passed.append(again.returncode == 0 and re.search(r"\b\d+ passed\b", again.stdout + again.stderr) is not None)
+            if not passed[-1]:
                 self.second_runs.append("its second run, alone, `%s`:\n%s" % (
                     " ".join(again.args), (again.stdout + again.stderr).strip()))
-            self.log(**{"work-item": name, "stage": "merge", "event": "rerun", "scenario": node, "passed": failing[node]})
-        return all(failing.values())
+            self.log(**{"work-item": name, "stage": "merge", "event": "rerun", "scenario": node, "passed": passed[-1]})
+        return all(passed)
 
     def merge(self, name, tree, tests):
         """The branch rebased on the initiative branch, put back under .shop/work/, tested and merged (r4, r6); None,
