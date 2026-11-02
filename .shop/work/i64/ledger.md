@@ -1,2 +1,3 @@
 - 2026-11-02: integrate round 1: adds supervision#r221; 4 questions, 0 cut sentences; drafts .shop/scratch/1-integrate/drafts
 - 2026-11-02: gate round 1 supervision: 1 question
+- 2026-11-02: apply round 2 supervision: commit a4b69ec8; applied r221 as the person answered 2026-11-02 (reading a); no unheld answers
