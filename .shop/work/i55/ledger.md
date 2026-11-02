@@ -30,3 +30,4 @@
 - 2026-11-02: w244 withdrawn (2026-11-02): work-queue r47 is already met by the code (workqueue_done._holds), its scenario passes, and the planner's file set was empty; as with w229, the person's choice of 2026-11-02.
 - 2026-11-02: formulate round 3 requests-deda9fa6: nothing formulated; the answer to the r52 question changes r52, which is not in spec/ as answered; integrate round needed
 - 2026-11-02: integrate round 4 requests-deda9fa6: adds requests#r73, removes requests#r52 (answer: only a sent turn); drafts .shop/scratch/4-integrate/drafts/round-4
+- 2026-11-02: gate round 5 requests-deda9fa6: 0 questions
