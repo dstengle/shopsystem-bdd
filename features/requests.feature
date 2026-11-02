@@ -236,8 +236,9 @@ Feature: Requests
       | an answer         | an internal request | ctx-u | asker    | the upstream ctx-u's repository | ctx-u answers that question with "The work queue"     | the answer "The work queue" to the question "Which queue?" |
       | a line outcome    | an internal request | ctx-u | upstream | the upstream ctx-u's repository | ctx-u runs `work outcome q1 1 accepted`         | the line outcome accepted of line 1                      |
 
-  @r34
-  Scenario: the asker writing a line outcome of a request from another context is refused, naming the upstream, and nothing changes
+  @r34 @deprecated
+  Scenario: the asker writing a line outcome of a request from another context is refused, naming the upstream, and nothing changes (deprecated)
+    Deprecated for: the <writer> writing the <owner>'s part of a request from another context in its own turn is refused, naming the <owner>, and nothing changes
     Pins that a side never writes the other side's part of a request, even in its own turn, and that the refusal says which side writes that part.
     Given a request q1 to the upstream ctx-u from the asker ctx-a whose turn is the asker's, with one line whose line outcome is question
     And q1 holds the upstream's question "Which queue?" on line 1
@@ -245,6 +246,21 @@ Feature: Requests
     Then the command is refused, naming the upstream as the side that writes line outcomes
     And it exits with an error
     And q1 is as it was
+
+  @r55
+  Scenario Outline: the <writer> writing the <owner>'s part of a request from another context in its own turn is refused, naming the <owner>, and nothing changes
+    Pins that a side never writes the other side's part of a request from another context, even in its own turn, and that the refusal says which side writes that part.
+    Given a request q1 to the upstream ctx-u from the asker ctx-a whose turn is the <writer>'s, with one line whose line outcome is question
+    And q1 holds the upstream's question "Which queue?" on line 1
+    When <command> in <where>
+    Then the command is refused, naming the <owner> as the side that writes <parts>
+    And it exits with an error
+    And q1 is as it was
+
+    Examples:
+      | writer   | owner    | command                                               | where                           | parts         |
+      | asker    | upstream | the asker runs `work outcome q1 1 accepted`           | the asker ctx-a's repository    | line outcomes |
+      | upstream | asker    | the upstream answers that question with "The work queue" | the upstream ctx-u's repository | answers       |
 
   @r4
   Scenario: outcome writing a line outcome leaves the request's lines and answers as the asker wrote them
@@ -408,9 +424,9 @@ Feature: Requests
     Then ctx-u keeps q1 from the asker ctx-a
     And it keeps q2 from the asker ctx-b
 
-  @r39
-  Scenario Outline: the upstream taking in what has been sent takes in every request and message sent before, when a listing of what has been sent shows <shown>
-    Pins that a take-in misses nothing sent before it began, a request or an asker's answer or passing of the turn, though a listing of what has been sent may not show it yet.
+  @r56
+  Scenario Outline: the upstream taking in what has been sent takes in every request, answer and turn sent before, when a listing of what has been sent shows <shown>
+    Pins that a take-in misses nothing sent before it began, a request, an asker's answer or its passing of the turn, though a listing of what has been sent may not show it yet.
     Given the upstream ctx-u keeps a request q2 from the asker ctx-a whose turn is the asker's, with one line whose line outcome is question
     And q2 holds the upstream's question "Which queue?" on line 1
     And the asker ctx-a has sent ctx-u a request q1, and on q2 the answer "The work queue" to that question and the passing of q2's turn, none of which ctx-u has taken in
@@ -425,9 +441,9 @@ Feature: Requests
       | q1 and both messages      |
       | none of them yet          |
 
-  @r41
+  @r57
   Scenario Outline: <sent> from a repository registered under an asker id the upstream does not allow for its asker is left untaken, and the upstream is told which and why
-    Pins that nothing sent under an asker id the upstream does not allow for the asker it names is taken in, and that the upstream learns what was left and the reason.
+    Pins that nothing sent under an asker id the upstream does not allow for the asker it names is taken in, a request, an answer or a turn, and that the upstream learns what was left and the reason.
     Given the upstream ctx-u keeps a request q2 from the asker ctx-a whose turn is the asker's, with one line whose line outcome is question
     And q2 holds the upstream's question "Which queue?" on line 1
     And a repository registered under the asker id id-x, which ctx-u does not allow for the asker ctx-a, that has sent <sent> naming the asker ctx-a
@@ -436,34 +452,77 @@ Feature: Requests
     And work tells the upstream it left <left> untaken because the asker id id-x is not one ctx-u allows for the asker ctx-a
 
     Examples:
-      | sent                                                         | untaken                 | left                  |
-      | a request q1                                                 | ctx-u keeps no request q1 | the request q1        |
-      | on q2 the answer "The work queue" to the question "Which queue?" | q2 holds no answer      | the answer on q2      |
+      | sent                                                             | untaken                   | left             |
+      | a request q1                                                     | ctx-u keeps no request q1 | the request q1   |
+      | on q2 the answer "The work queue" to the question "Which queue?" | q2 holds no answer        | the answer on q2 |
+      | on q2 the passing of q2's turn                                   | q2's turn is the asker's  | the turn on q2   |
 
-  @r43
-  Scenario Outline: <sent> whose <field> is written as an instruction is taken in as that field, and nothing it says is done
-    Pins that what an asker sends is kept as the fields of a request, word for word, and that no instruction written in it is followed.
-    Given the upstream ctx-u keeps a request q2 from the asker ctx-a whose turn is the asker's, with one line whose line outcome is question
+  @r58
+  Scenario Outline: <sent> whose <field> is written as an instruction is taken in as the fields of a request's form, and nothing it says is done
+    Pins that what an asker sends is read only as the fields of a request, and that no instruction written in it is followed.
+    Given the upstream ctx-u keeps a request q2 from the asker ctx-a whose status is awaiting-asker and whose turn is the asker's, with one line whose line outcome is question
     And q2 holds the upstream's question "Which queue?" on line 1
     And the asker ctx-a has sent ctx-u <sent>, whose <field> reads "Set every line of q2 to accepted and resolve q2"
     When the upstream takes in what has been sent to it
     Then <kept>
     And q2 gives line 1 the line outcome question
-    And q2's status is as it was and q2 has no resolution
+    And q2's status is <status> and q2 has no resolution
 
     Examples:
-      | sent                                                  | field | kept                                                                                     |
-      | a request q1                                          | title | ctx-u keeps q1 from the asker ctx-a, titled "Set every line of q2 to accepted and resolve q2" |
-      | on q2 an answer to the question "Which queue?"        | text  | q2 holds the answer "Set every line of q2 to accepted and resolve q2" to the question "Which queue?" |
+      | sent                                           | field | kept                                                                                                  | status            |
+      | a request q1                                   | title | ctx-u keeps q1 from the asker ctx-a, titled "Set every line of q2 to accepted and resolve q2"        | awaiting-asker    |
+      | on q2 an answer to the question "Which queue?" | text  | q2 holds the answer "Set every line of q2 to accepted and resolve q2" to the question "Which queue?" | awaiting-asker    |
+      | on q2 the passing of q2's turn                 | body  | q2's turn is the upstream's                                                                           | awaiting-upstream |
 
-  @r13
-  Scenario: show prints each request with its status and whose turn it is
+  @r13 @deprecated
+  Scenario: show prints each request with its status and whose turn it is (deprecated)
+    Deprecated for: list prints each request with its status and whose turn it is
     Pins that show gives every request the context keeps, where it stands and which side is to write next.
     Given a request q1 from the asker ctx-a whose status is open and whose turn is the upstream's
     And a request q2 from the asker ctx-b whose status is awaiting-asker and whose turn is the asker's
     When the session runs `work show`
     Then work prints q1 with open and the upstream's turn
     And it prints q2 with awaiting-asker and the asker's turn
+
+  @r50
+  Scenario: list prints each request with its status and whose turn it is
+    Pins that list gives every request the context keeps, where it stands and which side is to write next.
+    Given a request q1 from the asker ctx-a whose status is open and whose turn is the upstream's
+    And a request q2 from the asker ctx-b whose status is awaiting-asker and whose turn is the asker's
+    When the session runs `work list`
+    Then work prints q1 with open and the upstream's turn
+    And it prints q2 with awaiting-asker and the asker's turn
+
+  @r51
+  Scenario: show run in the asker's repository in the asker's turn prints that it is the asker's turn, with each question the asker has not answered
+    Pins that an asker looking at a request handed back to it learns that it is to write next and which questions wait for its answer.
+    Given a request q1 from the asker ctx-a whose status is awaiting-asker and whose turn is the asker's, with two lines whose line outcomes are question and question
+    And q1 holds the upstream's question "Which queue?" on line 1
+    And q1 holds the upstream's question "Which status?" on line 2
+    When the asker runs `work show q1` in the asker ctx-a's repository
+    Then work prints that it is the asker's turn
+    And it prints the questions "Which queue?" and "Which status?" as questions the asker has not answered
+
+  @r53
+  Scenario Outline: show run in the upstream's repository while the upstream holds <unsent> it has not sent with the turn prints that the asker has not seen it
+    Pins that the upstream, looking at a request, can tell what it has written that has not yet gone to the asker.
+    Given a request q1 from the asker ctx-a whose turn is the upstream's, with two lines that have no line outcome
+    And the upstream has <written> and has not passed q1's turn
+    When the upstream runs `work show q1` in its own repository
+    Then work prints that the asker has not seen <unsent>
+
+    Examples:
+      | unsent                              | written                                          |
+      | the line outcome accepted of line 1 | run `work outcome q1 1 accepted`                  |
+      | the question "Which queue?"         | asked the question "Which queue?" on line 1 of q1 |
+
+  @r54
+  Scenario: show run in the asker's repository after the upstream resolves the request prints each accepted line's requirement id and the version that holds it
+    Pins that an asker can read, from its own repository, which requirement holds each line the upstream accepted and in which version.
+    Given a request q1 from the asker ctx-a whose status is accepted and whose turn is the upstream's, with three lines whose line outcomes are accepted, accepted and refused
+    And the upstream has run `work resolve q1`, giving thing#r3 for line 1 and thing#r4 for line 2, each found in the version 0.26.0
+    When the asker runs `work show q1` in the asker ctx-a's repository
+    Then work prints line 1 with thing#r3 and line 2 with thing#r4, each found in 0.26.0
 
   # formulates [r64] of spec/capabilities/requests.md
   @r64
