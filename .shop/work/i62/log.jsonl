@@ -132,3 +132,7 @@
 {"time": "2026-11-02T21:02:43+00:00", "stage": "branch-review", "event": "push verified"}
 {"time": "2026-11-02T21:03:32+00:00", "stage": "branch-review", "agent": "bdd-branch-reviewer", "session": "1805ac8d-5923-45b3-a23e-d73ac6ce7772", "event": "start"}
 {"time": "2026-11-02T21:08:34+00:00", "stage": "branch-review", "agent": "bdd-branch-reviewer", "session": "1805ac8d-5923-45b3-a23e-d73ac6ce7772", "event": "end"}
+{"time": "2026-11-02T21:08:39+00:00", "work-item": "w246", "stage": "research", "event": "push verified"}
+{"time": "2026-11-02T21:08:39+00:00", "work-item": "w246", "stage": "research", "agent": "code-scout", "session": "5162ce40-6390-469e-b4ac-7bd519bf85f3", "event": "start"}
+{"time": "2026-11-02T21:10:23+00:00", "work-item": "w246", "stage": "research", "agent": "code-scout", "session": "5162ce40-6390-469e-b4ac-7bd519bf85f3", "event": "end"}
+{"time": "2026-11-02T21:10:24+00:00", "work-item": "w246", "before": "drafted", "after": "researched", "by": "work run"}
