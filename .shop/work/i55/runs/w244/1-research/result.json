@@ -1,0 +1,6 @@
+{
+  "status": "DONE",
+  "summary": "w244 (work-queue r47): the accepted scenario is not red on this checkout. `python3 -m pytest -q --work-item w244` gave 182 passed, 1 skipped, 0 failed; the run gives no per-node result, so the scenario's pass is inferred from it and from reading the steps and code. The code path already holds: workqueue_done._holds keeps the initiative started while a capability-proposal is open. No production or test change is needed for r47. No map exists, so tests-of found nothing; the tests were found by search. Notes: .shop/scratch/1-research/notes.md.",
+  "fileset": [],
+  "questions": []
+}
