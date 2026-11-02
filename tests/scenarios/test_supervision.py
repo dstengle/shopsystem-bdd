@@ -41,6 +41,7 @@ from .supervision_raise_steps import *
 from .supervision_review_steps import *
 from .supervision_reintegrate_steps import *
 from .supervision_request_steps import *
+from .supervision_rerun_steps import *
 from .supervision_retire_steps import *
 from .supervision_rounds_steps import *
 from .supervision_session_faults_steps import *
