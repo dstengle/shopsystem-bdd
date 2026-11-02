@@ -1,0 +1,6 @@
+{
+  "status": "DONE",
+  "summary": "Branch review 2 of i62, 955ad466..215cf7c7 on main; work-items w245 and w246 (supervision r219, r220, r222), both green.\nSuite: 1101 passed, 1 failed at 215cf7c in 33.90 s (parallel, work run driven as a subprocess).\nThe one failure is i63's r214 scenario, failing on a held .git/index.lock. The same code passed with 0 failed at 0b306638, so it is a flake; it is an Important observation, not i62's.\nw246 fixes both fix-now findings of review 1: the refused merge's question gives each scenario's first runs (r220), and the rerun log line is gone.\nTwo test assertions were removed (the rerun log line), both listed in w246's plan; both allowances hold.\nw245/w246 scenarios: exit 0, 195 passed each. tools check: ruff and vulture hits, none in i62's files. tools size: clean. features deprecated: 23, none i62's. features bindings: clean.\nNothing Critical, nothing fix now, every check verified. Minor observations: a node matched as a substring (supervise_merge.py:165), and the range holds other initiatives' commits given as none.",
+  "findings": "/tmp/work-run-i62-uz32u3v4/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": []
+}
