@@ -1,0 +1,9 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Branch review of i62 (955ad466..0b5e8470, work-item w245: supervision r219, r220, r222, green).\nSuite: 1101 passed, 0 failed at 0b5e8470 in 35.33 s (parallel -n auto; work run driven as a subprocess).\nw245's scenarios: 194 passed, 1 skipped (exit 0). tools size clean; features bindings clean; features deprecated lists 23, none i62's.\ntools check exits 1: ruff hits in other initiatives' files, plus test_supervision.py:14 I001, which is older than w245; vulture hit is not w245's.\nNo test or feature weakened by w245; its allowances (8-, 9-, 11-implement) hold.\nTwo Important fix-now findings in w245: (1) a refused merge's question can leave out a scenario's first run when both runs fail (r220); (2) the 'rerun' line in log.jsonl is output no line or Implementation entry asks for.\nMinor observations: has_error reads the first summary header; ' - ' in node ids and -nauto forms; [tests] commands without work_items never get a second run.\nThe range holds other initiatives' commits (i48, i54, i55, i60, i61, i63, i64), all attributed none in the brief; reviewed only against i62.",
+  "findings": "/tmp/work-run-i62-uz32u3v4/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": [
+    "Important, w245, scripts/supervise_merge.py:164-169: when both runs before a merge fail, the question gives only failed[0]'s output, so a scenario failing only in the whole-suite run whose second run also fails has just its second run in the question, against r220.",
+    "Important, w245, scripts/supervise_merge.py:147: each second run writes a 'rerun' line to log.jsonl, which no Behaviour line and no Implementation line asks for. Either write the line first through integrating-a-proposal, or drop the log write and the r219 step's log assertion (tests/scenarios/supervision_rerun_steps.py:54-55)."
+  ]
+}
