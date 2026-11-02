@@ -1,0 +1,8 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Branch review 2 of i55, c53a7c25..9e21ad76 on main. Work-items: w239, w240 and w241, all green.\nSuite: 1086 passed, 0 failed at 9e21ad76 in 35.49 s (parallel, not in-process; 13 xfailed, 8 xpassed, which -rfEx does not name).\nAll three work-items' scenario runs exit 0. tools size and features bindings are clean.\ntools check exits 1, but its ruff hits (28) and its one vulture hit were all there already; none is in a line i55 added.\nw241 adds one test step and removes only the deprecated @r9 and @r105 scenarios its Retires section names. It changes no production code and has no allowance rows.\nFix now, carried from review 1 and still open: i55's proposals do not name requests r50-r58, work-queue r47 or supervision r184-r186. Commit deda9fa6 applied them to the spec, but nothing builds them. work list prints no request turn, which r50 asks for (workqueue_list.py:73-74).\nOther findings are Minor: the deprecated r32 and r149 scenarios are not retired by any work-item, an observation with no date is listed as 'None', a vulture hit, and the range holds other initiatives' commits.",
+  "findings": "/tmp/work-run-i55-t2ssiod4/branch-review/.shop/scratch/branch-review/findings.md",
+  "questions": [
+    "Important, i55 (capability-proposals, no work-item), scripts/workqueue_list.py:73-74 and .shop/work/i55/{requests,work-queue,supervision}.md: requests r50-r58, work-queue r47 and supervision r184-r186 were applied in deda9fa6 but are on no proposal and have no scenario, so they are never built. work list prints no request turn, which r50 asks for, and the @r13/@r34/@r39/@r41/@r43 scenarios stay live under retired ids."
+  ]
+}
