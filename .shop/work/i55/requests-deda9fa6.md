@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i55-requests-deda9fa6
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i55
-status: drafted
+status: awaiting-answer
 argues: [requests]
 date: 2026-11-02
 adds: [requests#r73]
@@ -16,6 +16,7 @@ Hand repair by the person's session, 2026-11-02, from branch review 2 of i55 (.s
 
 ## Questions
 - requests r52: "While an answer or a turn the asker has sent has not been taken in by the upstream, `work show <request>` shall print the request on either side as awaiting the upstream and not yet taken in." Reading 1: an answer sent alone, with the turn still the asker's, is enough, so show prints awaiting the upstream even in the asker's turn (clashes with r51). Reading 2: only a sent turn (with any answers sent with it) makes the request await the upstream; an answer sent alone leaves show printing the asker's turn under r51. Also: is 'awaiting the upstream' the status awaiting-upstream or only a description of who acts next?
+- Are the lines of requests-deda9fa6 approved as drafted? Readings: approve requests-deda9fa6 as drafted (recommended), or change its lines.
 
 ## Answers
 - 2026-11-02: Reading 2: only a sent turn (with any answers sent with it) makes the request await the upstream, so an answer sent alone leaves `work show` printing the asker's turn under r51; and 'awaiting the upstream' is only the description printed of who acts next, not a new status named awaiting-upstream. (Under the delegation of The person, 2026-10-27: "I'm delegating this to you. Please get the new version delivered without involving me.")
