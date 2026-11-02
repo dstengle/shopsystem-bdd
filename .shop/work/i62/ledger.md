@@ -5,3 +5,4 @@
 - 2026-11-02: formulate round 9 supervision: commit ec876396; scenario added r220, r219 left as a question; features bindings clean; model check: 80 violations, none from supervision but r219 v_s3
 - 2026-11-02: formulate round 10 supervision: nothing formulated; the answer on r219 (a passing second run lets the merge go ahead) asks for a line that spec/ does not hold
 - 2026-11-02: integrate round 1 (q41 line 2, after answers): 1 line added (supervision r222), 0 changed, 0 removed; 0 cut sentences; drafts .shop/scratch/11-integrate/drafts/round-1/
+- 2026-11-02: gate round 12: 1 question (supervision#r222)
