@@ -327,3 +327,4 @@
 {"time": "2026-11-02T18:51:36+00:00", "work-item": "w243", "stage": "merge", "event": "rerun", "scenario": "tests/scenarios/test_requests.py::test_show_run_in_the_upstreams_repository_while_the_upstream_holds_unsent_it_has_not_sent_with_the_turn_prints_that_the_asker_has_not_seen_it[the question \"Which queue?\"-asked the question \"Which queue?\" on line 1 of q1]", "passed": false}
 {"time": "2026-11-02T18:51:37+00:00", "work-item": "w243", "stage": "merge", "event": "rerun", "scenario": "tests/scenarios/test_requests.py::test_show_run_in_the_askers_repository_after_the_upstream_resolves_the_request_prints_each_accepted_lines_requirement_id_and_the_version_that_holds_it", "passed": false}
 {"time": "2026-11-02T18:51:37+00:00", "work-item": "w243", "before": "claimed", "after": "awaiting-answer", "by": "work run"}
+{"time": "2026-11-02T18:53:04+00:00", "work-item": "w243", "before": "awaiting-answer", "after": "ready", "by": "work answer"}
