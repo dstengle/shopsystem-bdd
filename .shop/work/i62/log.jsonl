@@ -103,3 +103,4 @@
 {"time": "2026-11-02T20:50:09+00:00", "work-item": "w245", "stage": "merge", "event": "rerun", "scenario": "tests/scenarios/test_supervision.py::test_work_run_that_cannot_do_what_it_was_asked_exits_with_an_error_says_why_and_changes_nothing[i1's work-item w1 is drafted, in a directory that is not a git repository-i1-not a git repository]", "passed": false}
 {"time": "2026-11-02T20:50:09+00:00", "work-item": "w245", "before": "claimed", "after": "awaiting-answer", "by": "work run"}
 {"time": "2026-11-02T20:51:10+00:00", "work-item": "w245", "before": "awaiting-answer", "after": "ready", "by": "work answer"}
+{"time": "2026-11-02T20:51:17+00:00", "work-item": "w245", "before": "ready", "after": "claimed", "by": "work run"}
