@@ -1,0 +1,1 @@
+{"status":"DONE","summary":"Findings 1 and 2 fixed: the question gives each failing scenario's first runs and second run; rerun log line removed. w246 scenarios 195 passed.","commits":["0b306638 w246: the refused merge's question gives each scenario's first runs; no rerun log line"],"report":"/tmp/work-run-i62-uz32u3v4/w246/.shop/scratch/3-implement/report.md","questions":[]}
