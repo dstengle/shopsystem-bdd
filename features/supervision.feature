@@ -2076,3 +2076,37 @@ Feature: Supervision
     And every other round ends
     When the person runs `work run i1`
     Then a round of the kind integrate was started for g1 after the apply round had ended
+
+  @r185
+  Scenario: a researcher's result that gives an empty file set is taken as the researcher's file set
+    Pins that a researcher finding no file to touch has still delivered its stage, so the work-item goes on and the person is asked nothing about a missing file set.
+    Given i1's work-item w1 is drafted
+    And the researcher's result gives no question and an empty file set, and every other worker gives DONE
+    When the person runs `work run i1`
+    Then `work run` wrote no question naming the researcher's file set as missing
+    And w1's transition from drafted to researched was made once the researcher's session had ended
+
+  @r186
+  Scenario: a formulate round that formulates nothing because the proposal's answers change lines not in spec/ is followed by a new integrate round for the proposal
+    Pins that answers asking for lines the specification does not hold go back to integration, without anyone starting it by hand.
+    Given i1 is started and fulfils the request q1, whose line 1 has the line outcome accepted
+    And i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Is a shelf one place or a list?", given by its formulate round, and its Answers section with "A list, and a shelf's books are listed in the order they were shelved."
+    And the formulate round for p1 formulates nothing, giving that p1's answers change lines not in spec/
+    And every other round ends
+    When the person runs `work run i1`
+    Then a round of the kind integrate was started for p1 after the formulate round for p1 had ended
+
+  @r184
+  Scenario Outline: when `work run` ends with <node> awaiting-answer, it exits with an error, printing <node> with its open questions
+    Pins that a capability-proposal or a work-item left waiting on the person stops the run as an error, and that the person reads the questions still unanswered, not those already answered.
+    Given i1's work-item w1 is green
+    And <setup>
+    When the person runs `work run i1`
+    Then `work run` prints <node> with the question "Which unit is the limit in?"
+    And it prints neither "Is the old reader kept?" nor "Yes." with <node>
+    And it exits with an error
+
+    Examples:
+      | node | setup                                                                                                                                                                                                  |
+      | p1   | i1's capability-proposal p1 is awaiting-answer, its ## Questions section with "Which unit is the limit in?" and "Is the old reader kept?", given by its gate round, and its Answers section answering only "Is the old reader kept?" with "Yes." |
+      | w2   | i1's work-item w2 is awaiting-answer, its ## Questions section with "Which unit is the limit in?" and "Is the old reader kept?", and its Answers section answering only "Is the old reader kept?" with "Yes."                                   |
