@@ -1,0 +1,25 @@
+# integrate of i64
+
+Initiative: .shop/work/i64/initiative.md
+Agent: initiative-round
+Scripts: /home/vscode/shopsystem-bdd/scripts
+Kind: integrate
+Request: q44
+Accepted lines of the request:
+- 1. **When** a round of the kind `apply` gives in its result an answer that the drafts it applied do not hold for a glossary-proposal, `work run` shall start a new round of the kind `integrate` for the glossary-proposal.
+Ids drafted elsewhere (number added lines above each on the same capability): supervision#r3, supervision#r5, supervision#r9, supervision#r16, supervision#r28, supervision#r32, supervision#r71, supervision#r77, supervision#r80, supervision#r92, supervision#r93, work-queue#r3, work-queue#r11, work-queue#r16, work-queue#r17, work-queue#r18, work-queue#r23, requests#r1, requests#r3, requests#r13, requests#r14, supervision#r99, supervision#r104, supervision#r105, supervision#r112, supervision#r113, supervision#r114, review#r9, supervision#r125, supervision#r126, supervision#r127, design-model-check#r120, design-model-check#r121, requests#r26, requests#r27, requests#r34, requests#r35, requests#r36, requests#r37, requests#r38, requests#r39, requests#r41, requests#r43, spec-integration#r17, work-queue#r33, supervision#r137, supervision#r138, supervision#r139, supervision#r140, supervision#r149, requests#r46, spec-integration#r47, spec-integration#r48, spec-integration#r49, spec-integration#r50, spec-integration#r51, spec-integration#r52, spec-integration#r53, requests#r47, requests#r48, supervision#r162, supervision#r163, supervision#r177, supervision#r178, supervision#r179, supervision#r174, supervision#r175, supervision#r176, supervision#r181, supervision#r182, work-queue#r34, work-queue#r35, work-queue#r40, work-queue#r41, spec-integration#r57, work-queue#r48, work-queue#r49, requests#r49, supervision#r183, work-queue#r46, backlog#r1, backlog#r2, backlog#r3, backlog#r4, backlog#r5, backlog#r6, backlog#r7, backlog#r8, migration-tools#r35, migration-tools#r36, spec-integration#r56, work-queue#r42, work-queue#r43, work-queue#r44, work-queue#r45, batch-measurement#r68, batch-measurement#r69, batch-measurement#r70, batch-measurement#r71, batch-measurement#r72, batch-measurement#r73, batch-measurement#r74, delivery#r23, design-model-check#r125, design-model-check#r126, design-model-check#r127, design-model-check#r128, design-model-check#r129, design-model-check#r130, design-model-check#r131, design-model-check#r132, design-model-check#r133, design-model-check#r134, design-model-check#r135, design-model-check#r136, design-model-check#r137, design-model-check#r138, design-model-check#r139, feature-file-tools#r63, feature-file-tools#r64, feature-file-tools#r65, feature-file-tools#r66, feature-file-tools#r67, feature-file-tools#r68, feature-file-tools#r69, feature-file-tools#r70, feature-file-tools#r71, feature-file-tools#r72, feature-file-tools#r73, migration-tools#r37, migration-tools#r38, migration-tools#r39, migration-tools#r40, migration-tools#r41, migration-tools#r42, migration-tools#r43, migration-tools#r44, migration-tools#r45, role-boundaries#r8, supervision#r190, supervision#r191, supervision#r192, supervision#r193, supervision#r194, supervision#r195, supervision#r196, supervision#r197, supervision#r198, supervision#r199, supervision#r200, supervision#r201, supervision#r202, supervision#r203, supervision#r204, supervision#r205, supervision#r206, supervision#r207, supervision#r208, work-queue#r50, work-queue#r51, work-queue#r52, work-queue#r53, work-queue#r54, work-queue#r55, work-queue#r56, work-queue#r57, work-queue#r58, requests#r60, requests#r61, requests#r62, requests#r63
+Drafts path: /tmp/work-run-i64-phttv8_z/i64-1-integrate/.shop/scratch/1-integrate/drafts
+Give your change list in your result's `changes`: a list with one entry for each capability, each `{"capability": <name>, "adds": [...], "changes": [...], "removes": [...]}`, the ids as `<capability>#r<n>`. Every term you add, change or remove goes in one entry for the glossary, `{"glossary": true, "adds": [...], "changes": [...], "removes": [...]}`, the ids as `term/<term>`, and in no capability's entry.
+Base: 86582d02951f1643d542fd5f162fb3ba5fd7abc2
+Worktree: /tmp/work-run-i64-phttv8_z/i64-1-integrate
+Branch: round/i64-1-integrate
+
+Read (paths in your worktree):
+- .shop/work/i64/initiative.md
+
+Run directory: /tmp/work-run-i64-phttv8_z/i64-1-integrate/.shop/scratch/1-integrate
+Result file: /tmp/work-run-i64-phttv8_z/i64-1-integrate/.shop/scratch/1-integrate/result.json
+
+You start in your worktree, /tmp/work-run-i64-phttv8_z/i64-1-integrate: run every command from there, as it is, and never change directory (no `cd`, no `git -C`); a command that does is refused.
+
+Write the result file first, with the outcome `PARTIAL`, and keep it current as you work: JSON with `status`, `summary` (under fifteen lines) and `questions` (a list of strings), so that a session that stops part-way still leaves a result, and one that does not claim the work done. Write your notes, plan, report or findings in the run directory.
