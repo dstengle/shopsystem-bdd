@@ -183,6 +183,7 @@ from what using it shows.
 - [r122] **When** `work run` checks a work-item against the whole suite, `work run` shall count as expected to fail each scenario whose requirement a capability-proposal that is neither `formulated` nor `withdrawn` adds or changes.
 - [r219] **If** a scenario fails in a run that `work run` makes before a merge and its failure would keep r4 from merging the work-item branch, **then** `work run` shall run that scenario again once, alone, before it refuses the merge.
 - [r220] **If** the second run of a scenario that r219 makes also fails, **then** `work run` shall give both runs of the scenario in the question r131 writes for the work-item.
+- [r222] **When** the second run of a scenario that r219 makes passes, `work run` shall take the scenario as passing in r4's merge of the work-item branch.
 - [r44] **When** `work run` writes a worker's brief, `work run` shall tell the worker to write its result file first with the outcome `PARTIAL`, and keep it current as it works.
 - [r45] **If** a worker's session ends in an error or at its turn limit, exits with an error, or leaves output that holds no JSON result, then `work run` shall transition the work-item to `failed`, recording how the session ended.
 - [r46] **If** the main checkout's `.shop/work/` has uncommitted changes when `work run` starts, then `work run` shall exit with an error, naming them, and change nothing.
