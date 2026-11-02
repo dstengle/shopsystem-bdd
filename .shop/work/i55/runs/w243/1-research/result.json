@@ -1,0 +1,11 @@
+{
+  "status": "DONE",
+  "summary": "Research of w243 (supervision r184, r185, r186) complete; notes.md written in the run directory.\nRun: python3 -m pytest -q --work-item w243 gave 4 failed, 181 passed, 1 skipped. All 4 failures are undefined steps.\nr184: Givens 'answering only ... with ...' (p1 and w2) and Thens 'prints <node> with the question' / 'prints neither ... with <node>' have no step.\nr185: Then 'wrote no question naming the researcher's file set as missing' has no step; the 'empty file set' Given is not parsed, so the stand-in gives a default file set.\nr186: step exists but reads 'after the formulate round had ended'; feature says 'for p1'. Shared with deprecated r149.\nProduction code for all three is present on reading (supervise_outputs.py, supervise_rounds.py, supervise.py show). Map absent: tests-of not run, test lists are by search.\nOpen reading: whether 'exit with an error' means nonzero (show returns 3, stands) or exit 1 (changes show, asked, supervise_all, test_supervise_show).",
+  "fileset": [
+    "tests/scenarios/supervision_outputs_steps.py",
+    "tests/scenarios/supervision_reintegrate_steps.py",
+    "tests/scenarios/supervision_awaiting_steps.py",
+    "tests/scenarios/test_supervision.py"
+  ],
+  "questions": []
+}
