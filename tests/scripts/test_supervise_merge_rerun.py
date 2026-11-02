@@ -64,7 +64,6 @@ def test_a_scenario_failing_in_both_runs_gets_one_run_alone_and_a_pass_there_mer
     assert len(alone) == 1
     assert "--whole-suite" in alone[0]
     assert [alone[0][i + 1] for i, a in enumerate(alone[0]) if a == "-n"] == ["0"]     # no other -n value
-    assert [l["scenario"] for l in stubbed.logged if l.get("event") == "rerun"] == [NODE]
 
 
 def test_a_scenario_failing_in_both_runs_and_failing_alone_refuses_the_merge_after_one_run_alone(merge):
@@ -73,6 +72,18 @@ def test_a_scenario_failing_in_both_runs_and_failing_alone_refuses_the_merge_aft
     question = stubbed.merge("w1", stubbed.root, tests)
     assert question and "boom" in question
     assert len(alone) == 1
+
+
+def test_the_question_gives_the_first_run_of_a_scenario_that_failed_only_in_the_suite_run(merge):
+    stubbed, tests, alone, passes, _ = merge
+    other = "tests/scenarios/test_other.py::test_other"
+    stubbed.suite_out = FAILED + "FAILED %s - bang\nSCENARIO %s\n" % (other, other)
+    passes.extend([True, False])     # NODE passes alone, OTHER does not
+    question = stubbed.merge("w1", stubbed.root, tests)
+    assert "bang" in question and " ".join(tests["suite"]) in question
+    assert "FAILED %s - bang" % other in question.partition("`%s`" % " ".join(alone[1]))[0]
+    assert "boom" in question.partition("`%s`" % " ".join(alone[1]))[2]
+    assert not [l for l in stubbed.logged if l.get("event") == "rerun"]
 
 
 def test_a_failing_run_with_an_error_line_is_not_taken_back(merge):

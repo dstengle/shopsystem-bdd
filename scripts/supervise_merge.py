@@ -121,8 +121,7 @@ class Merge:
         return any(l.startswith("ERROR ") for l in short) or re.search(r"\b\d+ errors?\b", lines[-1] if lines else "") is not None
 
     def taken_back(self, name, tree, command, runs):
-        """Whether every scenario the failing `runs` name passes on one more run, alone (r219, r222); each is run once,
-        and the run is logged under its own event. A failing run is not taken back when it names no failure, names
+        """Whether every scenario the failing `runs` name passes on one more run, alone (r219, r222); each is run once. A failing run is not taken back when it names no failure, names
         a failure work_items did not name as a scenario (`SCENARIO <node>` lines), or has an error; a rerun that
         ran no test failed."""
         failing = {}
@@ -142,9 +141,8 @@ class Merge:
             again = subprocess.run(alone + [node], cwd=tree, capture_output=True, text=True, env=with_scripts())
             passed.append(again.returncode == 0 and re.search(r"\b\d+ passed\b", again.stdout + again.stderr) is not None)
             if not passed[-1]:
-                self.second_runs.append("its second run, alone, `%s`:\n%s" % (
-                    " ".join(again.args), (again.stdout + again.stderr).strip()))
-            self.log(**{"work-item": name, "stage": "merge", "event": "rerun", "scenario": node, "passed": passed[-1]})
+                self.second_runs.append((node, "its second run, alone, `%s`:\n%s" % (
+                    " ".join(again.args), (again.stdout + again.stderr).strip())))
         return all(passed)
 
     def merge(self, name, tree, tests):
@@ -163,10 +161,12 @@ class Merge:
         self.second_runs = []
         failed = [done for done in (scenarios, suite) if done.returncode != 0]
         if failed and not self.taken_back(name, tree, tests["suite"], (scenarios, suite)):     # once, whatever the runs
-            done = failed[0]
-            return "commits on which %s's scenarios and the whole suite pass are missing: `%s` failed on %s's branch " \
-                   "work/%s:\n%s" % (name, " ".join(done.args), name, name,
-                                     "\n".join([(done.stdout + done.stderr).strip()] + self.second_runs))
+            nodes = [node for node, _ in self.second_runs]     # every run that failed on one of these, once (r220)
+            firsts = [done for done in failed if any("FAILED %s" % n in done.stdout + done.stderr for n in nodes)] or failed[:1]
+            return "commits on which %s's scenarios and the whole suite pass are missing: %s failed on %s's branch " \
+                   "work/%s:\n%s" % (name, " and ".join("`%s`" % " ".join(done.args) for done in firsts), name, name,
+                                     "\n".join(["`%s`:\n%s" % (" ".join(done.args), (done.stdout + done.stderr).strip())
+                                                for done in firsts] + [text for _, text in self.second_runs]))
         before = git(self.root, "rev-parse", "HEAD").stdout.strip()
         git(self.root, "merge", "--ff-only", "work/" + name)
         commits = git(self.root, "rev-list", "--reverse", "%s..HEAD" % before).stdout.split()

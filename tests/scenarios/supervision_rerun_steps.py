@@ -51,8 +51,6 @@ def runs_of(repo):
 def closes_run_alone(repo, context):
     runs = runs_of(repo)
     assert runs[-1:] == ["alone"] and "with" in runs, (runs, context["done"].stderr)
-    reruns = [l for l in log_lines(repo) if l.get("event") == "rerun" and l.get("work-item") == "w1"]
-    assert len(reruns) == 1 and "it_closes" in reruns[0]["scenario"] and not reruns[0]["passed"], reruns
     text = (repo / ".shop/work/i1/w1.md").read_text()
     assert "status: awaiting-answer" in text, text
     assert not [l for l in log_lines(repo) if l.get("event") == "merged"], log_lines(repo)
