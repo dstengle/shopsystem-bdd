@@ -2,7 +2,7 @@
 id: capability-proposal/missingmass.io/shopsystem/shopsystem-bdd/i62-supervision
 kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i62
-status: drafted
+status: awaiting-answer
 argues: [supervision]
 date: 2026-10-29
 adds: [supervision#r222]
@@ -22,6 +22,7 @@ The drafts of this proposal are in .shop/work/i62/runs/supervision/11-integrate/
 - r212, "alone". Line (added): r212 as in the previous question. Readings: (a, recommended, as drafted) the second run is of that scenario by itself; (b) the same run is made again: "[r212] **If** a scenario fails in a run that `work run` makes before a merge and its failure would keep r4 from merging the work-item branch, **then** `work run` shall make that run again once before it refuses the merge."
 - r212, reach. Line (added): r212 as above. Readings: (a, recommended, as drafted) scenarios only, in both runs r4 makes; (b) a failing non-scenario test of the suite gets a second run too: "[r212] **If** a scenario or test fails in a run ..."
 - r219: Reading 1: the merge is refused whatever the second run gives; reading 2: refused only if the second run also fails, and a passing second run lets the merge go ahead.
+- r222, the line for a passing second run. Line (added): [r222] **When** the second run of a scenario that r219 makes passes, `work run` shall take the scenario as passing in r4's merge of the work-item branch. (You answered 2026-11-02: reading 2, a passing second run lets the merge go ahead; r219 is to say so itself, or a further line beside it.) Readings: (a, recommended, as drafted) a further line beside r219, r222 as above; r219 and r220, already in spec/, stay as they are; (b) r219 says it itself: r219 is retired and a new line takes its place, "**If** a scenario fails in a run that `work run` makes before a merge and its failure would keep r4 from merging the work-item branch, **then** `work run` shall run that scenario again once, alone, and refuse the merge only if the second run also fails.", with r220 reworded to name the new id.
 
 ## Answers
 - 2026-10-30: Reading (a), as recommended and drafted: `work run` gives both runs of the scenario in the question r131 writes under the work-item's `## Questions`, per the person's delegation of 2026-10-28 and 2026-10-29 (answer every question with its recommended reading).
