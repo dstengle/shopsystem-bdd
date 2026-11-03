@@ -9,3 +9,7 @@ When a work-item becomes `green`, `work run` shall merge the work-item branch.
 `work run` shall hold at most `workers` worker slots at a time.
 When a gate round ends, `work run` shall write a question.
 When a session ends a stage with a result that is `QUESTION`, `work` shall set the status of the work-item to `awaiting-answer`.
+While a work-item is `done`, when the person runs `work run` on an initiative that is `started`, `work run` shall merge the work-item branch and discard the stage.
+When a session ends a stage with a result that is `QUESTION`, `work run` shall write a question, and `work run` shall not merge the work-item branch.
+While a work-item is `done`, when the person runs `work run` on an initiative that is `started`, `work run` shall not merge the work-item branch or discard the stage.
+When `work run` is run, `work run` shall start every open initiative, write a question and exit successfully.

@@ -32,6 +32,10 @@ COMMITTED = {"transition": r"^\.shop/work/i1/log\.jsonl$", "`branch review` stag
 @handler("ThenCommits", "`work run`")
 def then_commits(step):
     np = step.nps[-1]
+    stage = re.fullmatch(r"the stage (s\d+)", np)
+    if stage:     # a stage instance: by the kind its Givens or the Thens before gave it
+        sv = W.sv(step.context)
+        np = "the `%s` stage" % (sv["stages"].get(stage.group(1)) or sv.get("new", {}).get(stage.group(1), {}).get("kind"))
     if np.startswith("the initiative"):
         assert "\nstatus: done\n" in W.git(step.repo, "show", "main:.shop/work/i1/initiative.md"), where(step)
     else:
@@ -53,13 +57,13 @@ def named(step, np):
         return [sv["stages"][name.group(1)]]
     if np.startswith("the remote"):
         return ["push"]
-    if np == "the capability":
+    if np.startswith("the capability"):
         return ["nowhere"] if "strange" in sv["conds"].get("result", set()) else ["thing"]
     if np.startswith("the file"):
-        return [np.split("`")[1]]
+        return [np.split("`")[1]] if "`" in np else [name.group(1)]
     if np.startswith("the worker"):
         return ["worker"]
-    if np == "the reason":
+    if np.startswith("the reason"):
         return []
     return [name.group(1)] if name else []
 
