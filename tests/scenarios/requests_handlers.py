@@ -76,7 +76,13 @@ def given_command(step):
 
 
 @handler("GivenK_C", "bounded context")
-def given_downstream(step):
+def given_context(step):
+    """downstream: the index lists an upstream; unmigrated: a `records/` directory at the root (design-model-check)."""
+    if step.text.endswith(" unmigrated"):
+        (step.repo / "records").mkdir(parents=True, exist_ok=True)
+        (step.repo / "records" / "old.md").write_text("# old\n")
+        says(step, step.names[0], "scripts/migrate")
+        return
     index = step.repo / "spec" / "index.md"
     if not index.is_file():
         index.parent.mkdir(parents=True, exist_ok=True)

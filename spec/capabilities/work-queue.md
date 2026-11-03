@@ -25,7 +25,7 @@ work-item's status; `work run` (supervision) takes them through it. It judges no
 - **form** (attribute of note): Values: `one-line`, `multi-line`.
 - **form** (attribute of answer): Values: `one-line`, `multi-line`.
 - **out of step** (condition of work-item): Means: the last status `log.jsonl` gives it differs from the status in its file.
-- **stage** (attribute of question): the kind of stage that asked the question. Values: `research`, `plan`, `implement`, `review`.
+- **asking stage** (attribute of question): the kind of stage that asked the question. Values: `research`, `plan`, `implement`, `review`.
 - **flag** (attribute of answer): the flag `work answer` is given with an answer to a reviewer's question. Values: `--change`, `--accept`, `unflagged`.
 
 ## Behaviour

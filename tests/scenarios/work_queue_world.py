@@ -90,6 +90,8 @@ def matches(repo, context, np, rel):
     or a transition."""
     path = Path(repo) / rel
     words = np.split()
+    if np == "a decisions index":
+        return rel == "spec/decisions/index.md"
     ledger = re.match(r"the ledger of the initiative (\S+)$", np)
     if ledger:
         return rel == "%s/%s/ledger.md" % (WORK, ledger.group(1))

@@ -48,11 +48,6 @@ def given_thing(step):
     step.context.setdefault("things", {})[step.names[0]] = (step.kind, {step.attribute: bare(step.values[0])})
 
 
-@handler("GivenK_C", "work-item")
-def given_out_of_step(step):
-    step.context.setdefault("out_of_step", set()).add(step.names[0])
-
-
 @handler("GivenR", "kept in")
 def kept_in(step):
     item, initiative = step.names
@@ -103,7 +98,7 @@ def work_note(step):
 def work_answer(step):
     name = step.names[0]
     answer = dict(a for _, attrs in things_of(step, "answer") for a in attrs.items())
-    stage = next((a["stage"] for _, a in things_of(step, "question")), None)
+    stage = next((a["asking stage"] for _, a in things_of(step, "question")), None)
     if stage:
         W.log(step.repo, W.initiative_of(step.context, name), name, ASKED_FROM[stage], "awaiting-answer")
     text = W.LINE_BREAK if answer.get("form") == "multi-line" else "the answer"
@@ -139,7 +134,7 @@ def expected_words(step):
         if np in says:
             words.append(says[np])
         for name in (w for w in np.split() if w in step.names):
-            kind, attrs = W.thing(step, name)
+            kind = W.thing(step, name)[0]
             if name in says:
                 words.append(says[name])
             elif np.startswith("the status of") and W.node_rel(step.context, name):
