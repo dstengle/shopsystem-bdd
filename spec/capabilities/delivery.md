@@ -4,7 +4,8 @@ title: Delivery
 narrator: the person delivering an initiative
 group: guarantees
 rests_on: [design-decision/a-script-supervises-delivery, design-decision/gate-on-behaviour-lines, design-decision/formulation-needs-no-second-approval, design-decision/spec-writers-blind-to-code, design-decision/review-of-work-items, design-decision/workflow-capabilities-are-guarantees, design-decision/the-ledger-is-tracked, design-decision/the-context-runs-without-a-coordinator]
-retired: [r16, r1, r2, r3, r8, r9, r17, r18]
+language: codified-1
+retired: []
 ---
 
 # Delivery
@@ -16,25 +17,73 @@ merges no branch itself, and reads what `work run` ends with, never what its wor
 (design-decision/the-context-runs-without-a-coordinator). A walking skeleton
 (design-decision/behaviour-lines-are-ears): it grows from what using it shows.
 
+## Terms
+
+- **`delivering-an-initiative`** (actor): the skill that has `work run` deliver an initiative and shows the person what it ends with.
+- **disallowed tool** (kind): a tool a worker needs that `work run` does not allow it.
+- **note** (event): a line naming an event is appended to an initiative's ledger with `work note`. Forms: notes, noted.
+
 ## Behaviour
-- [r4] **When** the person asks to deliver an initiative, `delivering-an-initiative` shall start `work run` on the initiative.
-- [r5] **While** a delivery by `work run` lasts, `delivering-an-initiative` shall read nothing its workers write.
-- [r6] **When** `work run` exits, `delivering-an-initiative` shall show the person each work-item's status and each open question, as `work run` printed them.
-- [r7] **If** `delivering-an-initiative` cannot do what it was asked, then `delivering-an-initiative` shall stop, saying why, and change nothing.
-- [r10] **When** a trial finds a fix to code, `delivering-an-initiative` shall draft the fix as a work-item for `work run` to deliver.
-- [r11] `delivering-an-initiative` shall change no code itself.
-- [r19] `delivering-an-initiative` shall start no `claude -p` session itself.
-- [r20] `delivering-an-initiative` shall merge no branch itself.
-- [r21] **When** a worker needs a tool that `work run` does not allow it, `delivering-an-initiative` shall put the tool to the person as a question, naming the stage.
-- [r22] **If** `work run` cannot deliver a change, then `delivering-an-initiative` shall put the change to the person as a question, changing nothing itself.
-- [r12] **When** a fix needs a new scenario or a new row of a scenario's examples, `delivering-an-initiative` shall send it to the `feature-formulator` through a `formulate` round of `initiative-round`, never to the implementer.
-- [r13] **When** `delivering-an-initiative` dispatches an agent, `delivering-an-initiative` shall ask it to reply in a few lines and leave the rest in files.
-- [r14] **When** a dispatch `delivering-an-initiative` started has replied, `delivering-an-initiative` shall read a file the dispatch wrote only to decide what to do next.
-- [r15] **When** the person gives an answer, `delivering-an-initiative` shall append one line naming it to the initiative's ledger with `work note`.
+
+### [g1] Asked to deliver an initiative, the skill starts a delivery
+Restates: r4@0.29.
+- [r1] When the person runs `delivering-an-initiative` on an initiative, `delivering-an-initiative` shall start a delivery.
+
+### [g2] The skill reads nothing a worker writes
+Restates: r5@0.29.
+- [r2] `delivering-an-initiative` shall not read a result.
+- [r3] `delivering-an-initiative` shall not read a report.
+
+### [g3] When the delivery ends, the person sees each status and each question
+Restates: r6@0.29.
+- [r4] When a delivery ends, `delivering-an-initiative` shall show the status of every work-item.
+- [r5] When a delivery ends, `delivering-an-initiative` shall show every question.
+
+### [g4] A refused delivery says why and changes nothing
+Restates: r7@0.29.
+- [r6] If a delivery is refused, then `delivering-an-initiative` shall show the reason.
+- [r7] If a delivery is refused, then `delivering-an-initiative` shall change nothing.
+
+### [g5] A defect a trial finds becomes a drafted work-item
+Restates: r10@0.29.
+- [r8] When a trial finds a defect, `delivering-an-initiative` shall write a work-item that is `drafted`.
+
+### [g6] The skill changes no code, starts no session and merges no branch
+Restates: r11@0.29, r19@0.29, r20@0.29, r12@0.29.
+- [r9] `delivering-an-initiative` shall not change a module.
+- [r10] `delivering-an-initiative` shall not start a session.
+- [r11] `delivering-an-initiative` shall not merge a work-item branch.
+- [r12] `delivering-an-initiative` shall not write a scenario.
+
+### [g7] A tool a worker needs is put to the person
+Restates: r21@0.29.
+- [r13] When a worker finds a disallowed tool, `delivering-an-initiative` shall ask a question.
+- [r14] When a worker finds a disallowed tool, `delivering-an-initiative` shall name a stage.
+
+### [g8] A change `work run` cannot deliver is put to the person
+Restates: r22@0.29.
+- [r15] If `work run` refuses a work-item, then `delivering-an-initiative` shall ask a question.
+- [r16] If `work run` refuses a work-item, then `delivering-an-initiative` shall change nothing.
+
+### [g9] A dispatch is given a brief
+Restates: r13@0.29.
+- [r17] When `delivering-an-initiative` starts a dispatch, `delivering-an-initiative` shall give the dispatch a brief.
+
+### [g10] A dispatch's files are read only to decide what to do next
+Restates: r14@0.29.
+- [r18] When a dispatch ends, `delivering-an-initiative` shall read only a file.
+
+### [g11] An answer is noted in the ledger
+Restates: r15@0.29.
+- [r19] When the person gives an answer, `delivering-an-initiative` shall note the answer.
 
 ## Implementation, may change
 - `skills/delivering-an-initiative/SKILL.md`. It runs `work run` as a background command and is woken when it
-  exits.
+  exits, and shows each work-item's status and each open question as `work run` printed them.
+- A dispatch is asked to reply in a few lines and leave the rest in files. A fix that needs a new scenario goes
+  through a capability-proposal, never to the implementer.
 
 ## Not yet
 - Writing answers and starting `work run` again, budgets (see skeleton-notes.md).
+
+## Dropped
