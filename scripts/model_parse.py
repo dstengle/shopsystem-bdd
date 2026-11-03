@@ -203,9 +203,10 @@ def glossary_entry(bullet):
     """(term, [avoided words]) of a bullet written **<term>** (<category>): <definition>. Not: <word>, <word>.; None
     otherwise. The category is optional here (0.29 entries have none) and, in design model v5's typed form, one of
     actor, kind, event, value, resource (exclusive or counted by `<code>`), attribute or condition of <kind>, or
-    relation <kind> → <kind>. Only the term and Not: are read: an attribute or condition is read as
-    `<term> of <kind>` and a relation as `<term> of <kind> to <kind>`, so one word in several kinds is several terms,
-    and backticks are dropped from the term (spec_lexicon reads the rest of the entry)."""
+    relation <kind> → <kind>. Only the term and Not: are read, backticks dropped (spec_lexicon reads the rest). A word
+    with entries for several kinds is defined once: the entry with a sentence is the term, and an attribute or
+    condition entry that opens with `Values:` or `Means:` is read as `<term> of <kind>`; a relation is always read as
+    `<term> of <kind> to <kind>`. So one word in several kinds has one entry as a term (v_t2)."""
     m = ENTRY.match(bullet)
     if not m or not m.group("rest").endswith("."):
         return None
@@ -218,7 +219,7 @@ def glossary_entry(bullet):
         cat = CATEGORY.match(m.group("cat").strip())
         if not cat:
             return None
-        if cat.group("of"):
+        if cat.group("of") and re.match(r"(?:Values|Means): ", definition):
             word = f"{word} of {cat.group('kind').strip()}"
         elif cat.group("k1"):
             word = f"{word} of {cat.group('k1').strip()} to {cat.group('k2').strip()}"
