@@ -1,7 +1,7 @@
 """migration-tools' handlers (design §14.3): the Givens hold the files of the repository `migrate` runs in, tracked
 (committed before the command runs) or not; every `migrate ...` command of the generated feature runs the real
-script, and the hooks' commands run as hooks/hooks.json has them; the Thens read what it printed and the files it
-left.
+script, and the hooks' commands run as hooks/hooks.json has them, both from the plugin migration_old.plugin gives (a
+copy at 1.0.0 while this one is below it); the Thens read what it printed and the files it left.
 
 What a `relocate`, `rewrite` or `rename` Then looks for in a file is in this module (EXPECTED and the checks under
 it), from the files the scenario's given block holds. A `migrate run` that exits successfully also leaves a
@@ -18,9 +18,9 @@ HERE = pathlib.Path(__file__).resolve().parent
 if str(HERE.parent) not in sys.path:
     sys.path.insert(0, str(HERE.parent))
 
-from vocab import handler
+from vocab import handler, runner
 
-from scenarios.migration_old import CONTEXT, Old
+from scenarios.migration_old import CONTEXT, Old, plugin
 
 PLUGIN = HERE.parents[1]
 FEATURE = PLUGIN / "features" / "migration-tools.feature"
@@ -54,8 +54,9 @@ def given_untracked(step):
 
 
 def hook(step, name):
-    command = json.loads((PLUGIN / "hooks/hooks.json").read_text())["hooks"][name][0]["hooks"][0]["command"]
-    env = dict(os.environ, CLAUDE_PLUGIN_ROOT=str(PLUGIN), PYTHON=sys.executable, **WHO)
+    root = plugin()[0]
+    command = json.loads((root / "hooks/hooks.json").read_text())["hooks"][name][0]["hooks"][0]["command"]
+    env = dict(os.environ, CLAUDE_PLUGIN_ROOT=str(root), PYTHON=sys.executable, **WHO)
     return subprocess.run(command, shell=True, cwd=step.repo, env=env, capture_output=True, text=True)
 
 
@@ -72,8 +73,8 @@ def runs_migrate(step):
     if step.command in HOOKS:
         step.context["done"] = hook(step, HOOKS[step.command])
     else:
-        step.context["done"] = step.run("migrate", *shlex.split(bare(step.command))[1:],
-                                        env=dict(os.environ, **WHO))
+        run = runner(step.repo, step.request, scripts=plugin()[0] / "scripts")
+        step.context["done"] = run("migrate", *shlex.split(bare(step.command))[1:], env=dict(os.environ, **WHO))
 
 
 for _command in sorted(set(re.findall(r"When .* runs (`migrate[^`]*`)", FEATURE.read_text()))):
@@ -147,8 +148,7 @@ def decision(step, rel):
 
 def upgraded(step, rel):
     old = step.context["old"]
-    version = json.loads((PLUGIN / ".claude-plugin/plugin.json").read_text())["version"]
-    assert read(step, rel).strip() == version
+    assert read(step, rel).strip() == plugin()[1]
     assert len(old.git("log", "--oneline").stdout.splitlines()) == step.context["commits"] + 1
     assert old.git("status", "--porcelain").stdout == ""
 
@@ -164,6 +164,12 @@ EXPECTED = {
     ".shop/work/i1/log.jsonl": lambda step, rel: json.loads(read(step, rel))["work-item"] == "w1",
     ".shop/work/i1/w1.md": lambda step, rel: ("status: awaiting-answer" in read(step, rel)
                                               and "## Answers" in read(step, rel)),
+    "spec/capabilities/cart.md": lambda step, rel: ("### [g1] r1@0.29\nRestates: r1@0.29.\n" in read(step, rel)
+                                                    and "- [r1]" not in read(step, rel)
+                                                    and json.loads(read(step, "spec/restated.json"))["cart#r1"]),
+    "features/cart.feature": lambda step, rel: ("@deprecated" not in read(step, rel)
+                                                and read(step, rel).startswith("Feature: Cart")),
+    ".shop/work/i1/w2.md": lambda step, rel: "accepts: [cart#r1@0.29]" in read(step, rel),
 }
 
 
