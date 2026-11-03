@@ -18,7 +18,6 @@ a requirement to why it exists. It does not edit the spec, the work or the recor
 context: product-level artifacts are read only where the files contain them.
 
 ## Terms
-- **violation** (kind): a row of a rule `model check` finds, printed under the rule's code and plain label.
 - **rule** (kind): a relation of `scripts/model.lp`, with its code and its plain label: a violation's or a warning's.
 - **decisions index** (kind): the generated file `spec/decisions/index.md`. Plural: decisions indexes.
 - **interpreter** (kind): a `python3` that `model` runs under or tries.

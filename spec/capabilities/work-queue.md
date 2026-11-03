@@ -18,7 +18,6 @@ stands, for a session to start from, and appends notes to an initiative's ledger
 work-item's status; `work run` (supervision) takes them through it. It judges nothing.
 
 ## Terms
-- **commit** (event): `work` records the files it changed as one git commit on the current branch. Forms: commits, committed.
 - **of** (relation ledger → initiative): the ledger of an initiative is `.shop/work/<initiative>/ledger.md`.
 - **kept in** (relation work-item → initiative): a work-item whose file is in the directory of an initiative.
 - **note** (kind): the one line `work note` appends to a ledger after the date it writes.

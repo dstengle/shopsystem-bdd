@@ -87,11 +87,11 @@ class RestatesTest(CodifiedTest):
 
 
 class LiveRestatesTest(unittest.TestCase):
-    def test_spec_migration_is_not_restated_yet(self):
-        r = subprocess.run([sys.executable, str(SCRIPT), "--root", str(ROOT), "restates", "spec-migration"],
+    def test_supervision_is_not_restated_yet(self):
+        r = subprocess.run([sys.executable, str(SCRIPT), "--root", str(ROOT), "restates", "supervision"],
                            capture_output=True, text=True)
         self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
-        self.assertRegex(r.stdout, r"(?m)^spec-migration#r1\b")
+        self.assertRegex(r.stdout, r"(?m)^supervision#r1\b")
 
 
 if __name__ == "__main__":

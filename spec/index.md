@@ -163,6 +163,11 @@ Tools the skills and agents run:
 - **initiative branch** (kind): the branch `work run` commits each transition on and merges each work-item branch into; its base is the commit it started from. Plural: initiative branches. Not: integration branch.
 - **work-item branch** (kind): the branch an implementer commits a work-item's work on, from the initiative branch's head, merged into the initiative branch and deleted when it is merged. Plural: work-item branches.
 - **commit** (kind): one git commit on a branch.
+- **commit** (event): a session, a tool or `work` records changed files as one git commit on the current branch. Forms: commits, committed.
+- **relocate** (event): a file or directory is moved with git, keeping its history. Forms: relocates, relocated.
+- **use** (event): a session or a tool uses another tool, a model, an interpreter or a file. Forms: uses, used.
+- **test** (kind): one test of the repository's suite, a scenario's or a script's, by its pytest id.
+- **violation** (kind): a row of a rule `model check` finds, printed under the rule's code and plain label.
 - **remote** (kind): the remote `work run` pushes the initiative branch to: the branch's upstream remote, else `origin`.
 - **file set** (kind): the paths, globs or directories a work-item says its work changes: drafted with it, revised by its researcher and fixed by its planner. Not: fileset, scope.
 - **suite** (kind): every test `python3 -m pytest` runs from the root by default. Not: fast suite.

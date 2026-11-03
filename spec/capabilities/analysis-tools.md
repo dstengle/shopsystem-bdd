@@ -32,10 +32,8 @@ file; it prints what the tools found and names a tool that is missing rather tha
 - **function** (kind): a function or method of a Python file.
 - **reference** (kind): a use of a name the project defines, through an import or an alias included, written
   `path:line`; a definition is none.
-- **test** (kind): one test of the suite, by its pytest id.
 - **finding** (kind): what ruff, vulture or import-linter reports.
 - **dependency file** (kind): a file that lists a project's dependencies (`pyproject.toml`, `requirements.txt`, ...).
-- **use** (event): `tools` runs the analysis tools with an interpreter. Forms: uses, used.
 - **install** (event): `tools` puts an analysis tool into the interpreter with pip. Forms: installs, installed.
 - **replace** (event): Forms: replaces, replaced.
 

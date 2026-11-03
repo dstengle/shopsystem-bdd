@@ -11,7 +11,7 @@ import unittest
 from unittest import mock
 
 from test_model import HAVE_CLINGO, SCRIPT, ModelTest, cap, feature
-from test_model_spec import DRAFTED, START, CodifiedTest
+from test_model_spec import DRAFTED, START, CodifiedTest, codified
 
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
@@ -99,6 +99,33 @@ class LanguageCommandsTest(CodifiedTest):
         out = r.stdout.splitlines()
         self.assertTrue(out[0].startswith("1: When (RunsOn"), out)
         self.assertTrue([line for line in out if line.startswith("3: ") and "`drafted`" in line], out)
+
+    def test_parse_a_codified_file_parses_its_statements_only(self):
+        path = self.write("spec/capabilities/wq.md", codified("wq", self.start_group()))
+        r = self.run_model("parse", "--file", str(path))
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        lines = path.read_text().splitlines()
+        out = r.stdout.splitlines()
+        self.assertEqual(len(out), 2, out)
+        for row in out:
+            n, tree = row.split(": ", 1)
+            self.assertTrue(lines[int(n) - 1].startswith("- [r"), (row, lines[int(n) - 1]))
+            self.assertTrue(tree.startswith("When (RunsOn"), row)
+
+    def test_parse_a_codified_file_names_the_line_of_a_refused_statement(self):
+        path = self.write("spec/capabilities/wq.md", codified("wq", self.start_group(f"- [r3] {DRAFTED}")))
+        r = self.run_model("parse", "--file", str(path))
+        self.assertEqual(r.returncode, 1)
+        n = next(i for i, line in enumerate(path.read_text().splitlines(), 1) if line.startswith("- [r3]"))
+        self.assertTrue([line for line in r.stdout.splitlines() if line.startswith(f"{n}: ") and "`drafted`" in line],
+                        r.stdout)
+
+    def test_parse_the_universal_file_parses_its_conditions(self):
+        text = "---\nlanguage: codified-1\n---\n\n# Universal\n\n## Behaviour\n\n- [U1] " + START + "\n"
+        path = self.write("spec/universal.md", text)
+        r = self.run_model("parse", "--file", str(path))
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertTrue(r.stdout.startswith("9: When (RunsOn"), r.stdout)
 
     def test_parse_in_a_grammar_that_is_not_there_exits_2(self):
         r = self.run_model("parse", "--grammar", "Nope", START)

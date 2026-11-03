@@ -113,12 +113,22 @@ def cmd_why(args):
     return 0
 
 
+def _statements(path):
+    """A codified file's statements with their line numbers (spec_read); any other file's non-blank lines."""
+    import spec_read
+    if not spec_read.codified(path):
+        return [(n, line) for n, line in enumerate(path.read_text().splitlines(), 1) if line.strip()]
+    if path.name == "universal.md":
+        return [(u.line_no, u.text) for u in spec_read.read_universal(path.parent.parent).conditions]
+    return [(r.line_no, r.text) for g in spec_read.capability(path).groups for r in g.requirements]
+
+
 def cmd_parse(args):
     """Each line's tree, or its refusal with the longest prefix that parsed and the nearest lexicon words."""
     import spec_grammar
     import spec_tree
     if args.file:
-        lines = [(n, line) for n, line in enumerate(Path(args.file).read_text().splitlines(), 1) if line.strip()]
+        lines = _statements(Path(args.file))
     else:
         lines = [(None, args.line)]
     refused = 0

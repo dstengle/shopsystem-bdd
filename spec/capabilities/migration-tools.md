@@ -25,8 +25,6 @@ what it needs to know at its start and before it is compacted.
 - **tracked file** (kind): a file committed in the repository `migrate` runs in.
 - **untracked file** (kind): a file of the repository's working tree that git does not track, or a change not
   committed.
-- **relocate** (event): `migrate` moves a file or directory with git, keeping its history. Forms: relocates,
-  relocated.
 - **rewrite** (event): `migrate` changes the text of a file in place. Forms: rewrites, rewritten.
 - **rename** (event): `migrate` gives a file another name with git. Forms: renames, renamed.
 - **append** (event): Forms: appends, appended.

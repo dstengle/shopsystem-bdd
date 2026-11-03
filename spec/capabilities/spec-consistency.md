@@ -19,7 +19,6 @@ meaning. It reads nothing but `spec/` and `features/`, and integration and formu
 ## Terms
 
 - **`checking-spec-consistency`** (actor): the skill that checks the spec's consistency, run only when the person asks.
-- **violation** (kind): a row `model check` prints.
 - **consistency finding** (kind): one finding of a consistency pass, naming its ids, written in its findings file.
 - **competing pair** (kind): two requirements that act on one thing, such as one file, one status or one command, without saying which of them wins.
 - **unscoped requirement** (kind): a requirement that leaves to inference which runs, workers or commands it applies to.
