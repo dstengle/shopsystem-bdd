@@ -7,7 +7,7 @@ description: Use when capability files under spec/ have changed and their codifi
 
 ## Overview
 
-A feature file is generated, never written. Each codified service capability `spec/capabilities/<name>.md` gives `features/<name>.feature`, one scenario a group, by `features generate` (`docs/capability-format.md`, The feature file). The requirements were approved at integrating-a-proposal's gate, and the generator is mechanical, so a generated scenario needs no approval and no session.
+A feature file is generated, never written. Each codified service capability `spec/capabilities/<name>.md` gives `features/<name>.feature`, one scenario a group, by `features generate` (`docs/capability-format.md`, The feature file). The scenario is read off the group's minimal trace on `model logic`'s solver: the first state gives the Givens (the statement's Where and While clauses and conditions included), the trigger the When, each verb phrase of the response a Then; a group's `given` block adds only its example data, first. The same spec gives the same bytes. The requirements were approved at integrating-a-proposal's gate, and the generator is mechanical, so a generated scenario needs no approval and no session.
 
 ## Who Does What
 
@@ -24,7 +24,7 @@ By hand, outside `work run`, the same commands do the same: `python3 <scripts>/f
 
 ## When generation refuses
 
-`features generate` exits 1 naming the requirement it has no step for (a `shall not` with a command, an actor holding a resource outside a logic-only group, a condition whose `Means:` is not "its <attribute> is …"). Reword the requirement within the language (integration), or raise the missing construct to the plugin. Exit 2 names a capability that is not codified: run `migrate upgrade` first.
+`features generate` exits 1 naming the group it cannot write: a group whose trace cannot happen (its L1, with the requirements and universal conditions in conflict), a trace that is not determined, or a step the vocabulary has no template for. Reword the requirement within the language (integration), or raise the missing construct to the plugin. A given line that is not example data is not refused: it is left out, with a line on stderr, and `model check` reports it (v15m); its condition belongs in the statement. Exit 2 names a capability that is not codified: run `migrate upgrade` first.
 
 ## Common Mistakes
 

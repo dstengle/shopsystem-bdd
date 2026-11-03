@@ -1,6 +1,9 @@
 # The grammar, formally
 
-Version 5, 2026-11-03. A machine-checkable statement of
+Version 5, 2026-11-03, with the GF conversion's revision 2 (`and`
+between responses, relations as rows, conditions defined in the
+language, the `&tel` translation, scenarios read from traces). A
+machine-checkable statement of
 `design-model.md`, in two parts. The **graph** (§1–§5): the schema, the
 integrity constraints, the lifecycles. Notation: Datalog (clingo
 dialect, as `scripts/model.lp` runs it). A `v_` relation must be empty; a
@@ -65,7 +68,8 @@ unparsed(Q, Why)          % no tree is left; Why names the token and its positio
 ambiguous(Q)              % more than one tree is left after the guards
 logic_only(G)             % every statement of G is a resource statement: G has no scenario
 given_unparsed(G, Line)   % a line of G's given block does not parse in the Steps grammar
-trigger(Q, Tree). cond(Q, Tree).   % the normalised trigger and condition trees of a requirement
+given_condition(G, Line)  % a line of G's given block that is not example data, by its shape (revision 2)
+pre(Q, Key)               % the normalised features, condition and trigger trees of a requirement
 ```
 
 ## 2. Edge schema
@@ -175,8 +179,11 @@ v15g(G1,G2) :- group_id(G1, C, N), group_id(G2, C, N), G1 != G2.
 v15h(U1,U2) :- u_id(U1, N), u_id(U2, N), U1 != U2.                                    % new in v5
 v15i(X)     :- (req_id(X, C, N) ; group_id(X, C, N)), retired_id(C, N).               % new in v5: never reused
 v15j(G, O)  :- restates(G, O), not restated_0_29(O).                                  % new in v5
-v15k(Q1,Q2) :- member_of(Q1, G), member_of(Q2, G), Q1 < Q2,                            % new in v5
-               (trigger(Q1, T1), trigger(Q2, T2), T1 != T2 ; cond(Q1, C1), cond(Q2, C2), C1 != C2).
+v15k(G)     :- member_of(Q1, G), member_of(Q2, G), pre(Q1, K1), pre(Q2, K2), K1 != K2.  % new in v5
+v15l(G)     :- node(G, "requirement-group"), member_of(Q1, G), member_of(Q2, G), Q1 < Q2. % revision 2
+v15m(G, L)  :- given_condition(G, L).                                                 % revision 2
+v15n(G1,G2) :- group_id(G1, C, _), group_id(G2, C, _), member_of(Q1, G1), member_of(Q2, G2), % revision 2
+               pre(Q1, K), pre(Q2, K), G1 < G2.
 
 % 16. one request per initiative, one initiative per request, of its own context
 v16a(I)    :- node(I, "initiative"), not fulfils(I, _).
@@ -226,6 +233,12 @@ v_t5(V)       :- category(V, "value"), not value_of(V, _, _).
 v_t5(V)       :- value_of(V, K1, A1), value_of(V, K2, A2), (K1, A1) != (K2, A2).
 v_t6(T1, T2)  :- lin(T1, X), lin(T2, X), T1 < T2, category(T1, C), category(T2, C).
 ```
+
+The lexicon's own problems, reported by `model lexicon --check` and by
+`model check` *(revision 2)*: **v_t7** a term entry whose gloss is more
+than one sentence (§6.2's count), **v_t8** a relation entry that only
+names a preposition, **v_t9** a `Means` field, **v_t10** two rows of
+`## Relations` with one (from, word, to).
 
 Warnings:
 
@@ -283,19 +296,50 @@ discarded (U6), back by `work retry`; any open status → `withdrawn`.
 ### 6.1 The grammars
 
 - `grammar/Req.gf`, `grammar/ReqEng.gf`: the core requirement grammar,
-  plugin-owned. The six EARS forms (`design-model.md` §2), triggers and
-  conditions not tied to a kind (`Runs`, `RunsOn`, `Happens`, `Holds`,
-  `IsFree`), verb phrases (`Do`, `Print`, `Write`, `Refuse`, `ExitOk`,
-  `ExitErr`, `Commit`, `Hold`, `HoldAtMost`), and untyped noun phrases
-  (codes, quoted strings, numbers, lists, `it`).
+  plugin-owned. The six EARS forms (`design-model.md` §2), each taking
+  `Resps`; triggers and conditions not tied to a kind (`Runs`, `RunsOn`,
+  `IsRun`, `Happens`, `HappensI`, `Undergoes`, `Holds`, `HoldsA`,
+  `IsFree`), verb phrases (`Do`, `DoTo`, `Print`, `ExitOk`, `ExitErr`,
+  `ChangeNothing`, `Hold`, `HoldA`, `HoldAtMost`), and untyped noun
+  phrases (codes, quoted strings, numbers, lists, `only`).
+- The funs of revision 2, each with a corpus line:
+
+  | fun | type | English |
+  |---|---|---|
+  | `Shall` | `Subj -> VPs -> Resp` | `work run` shall A, B and C |
+  | `ShallNot` | `Subj -> VPor -> Resp` | `work run` shall not A or B (neither) |
+  | `OneVP`, `AndVP` | `VP -> VPs`, `VP -> VPs -> VPs` | A / A and B / A, B and C |
+  | `OneVPor`, `OrVP` | `VP -> VPor`, `VP -> VPor -> VPor` | A / A or B |
+  | `OneResp`, `AndResp` | `Resp -> Resps`, `Resp -> Resps -> Resps` | R1, and R2 (responses whose subjects differ) |
+  | `CondOr` | `Atom -> Cond -> Cond` | A or B (beside `CondOne`, `CondAnd`) |
+  | `rel_<k1>_<w>_<k2>` | `<k1>_CN -> <k2>_NP -> <k1>_CN` | a stage for the work-item (generated, one for each relation row) |
+  | `rel_<k1>_<w>_<k2>_Atom` | `<k1>_NP -> <k2>_NP -> Atom` | the stage is for the work-item; the initiative fulfils the request (generated) |
+  | `c_<cond>_<kind>_Def` | `Cond -> Def` | a <kind> is <cond> when C (generated, in `Def`) |
+
+  `RefuseErr` and `CommitPush` are gone: they were `and` written as single
+  funs, and are now `AndVP (ExitErr x) (OneVP ChangeNothing)` ("exit with
+  an error naming X and change nothing") and `AndVP (Do commit x) (OneVP
+  (Do push the_commit))`. Verb phrases are not noun phrases, so "print
+  the file and the line count and exit successfully" has one tree. A
+  response's conjuncts are read in their spoken order.
 - `grammar/Steps.gf`, `grammar/StepsEng.gf`: the step grammar, one
   template for each Gherkin use of a category (Given a kind with a value,
   a relation, a resource held; When a command runs, an event happens, a
   value is reached; Then a value, an action, a print, an exit).
 - `Lex` and `Typed`, generated for each context from its glossary and
-  never tracked: the words, and one typed block for each kind, attribute
-  and relation. The typed slots are what make "an initiative that is
-  `drafted`" fail to parse.
+  its `## Relations` rows, and never tracked: the words, and one typed
+  block for each kind, attribute and relation row. The typed slots are
+  what make "an initiative that is `drafted`" fail to parse.
+- `Def` and `DefEng`, generated beside them: `abstract Def = Req ** {
+  flags startcat = Def ; ... }`, one fun for each (condition, kind) of
+  the lexicon. `model parse --grammar Req|Steps|Def` parses in any of the
+  three. A definition that says "it" is refused: it names its subject as
+  "the <kind>" (`Cond` is not indexed by kind, so `it` would fill any
+  typed atom whose kind has the word).
+- The Steps grammar is additive: each conjunct of a response is its own
+  Then (`SDoes`, `SAtom`, ...), and a relation atom is an `Atom`, so
+  `SAtom` gives "the stage s1 is for the work-item w1". `SCommits` stays
+  until the features are regenerated.
 - `grammar/corpus/*.txt`: sentences that must parse with exactly one tree,
   one file per capability; `grammar/corpus/refused.txt`: sentences that
   must be refused.
@@ -303,21 +347,41 @@ discarded (U6), back by `work retry`; any open status → `withdrawn`.
 ### 6.2 The lexicon
 
 A term entry is
-`- **term** (category): one sentence. Plural: … . Forms: … . Not: … .`
+`- **term** (category): one sentence. Plural: … . Forms: … . Kind of: … . Not: … .`
 The glossary is the union of `spec/index.md`'s `## Glossary` and each
-capability's `## Terms`. For an attribute, condition or relation the
-kinds follow the category (`attribute of initiative`,
-`relation work-item → capability-proposal`). An attribute gives
-`Values:` and `Transitions:`; a condition gives `Means:`, which parses as
-a condition of its kind; a resource is `exclusive` or
-`counted by <code>`. A term maps to a GF identifier by its category's
-letter and its lower-cased spelling (`k_work_item`, `a_work_run`).
+capability's `## Terms`. For an attribute or a condition its kind
+follows the category (`attribute of initiative`). An attribute gives
+`Values:` and `Transitions:`; a kind may give `Kind of:` (its
+supertype); a resource is `exclusive` or `counted by <code>`. A term
+maps to a GF identifier by its category's letter and its lower-cased
+spelling (`k_work_item`, `a_work_run`).
+
+- **One sentence** (v_t7): the gloss is the text after the `:` and before
+  the first field. Code spans, quoted strings, `e.g.`, `i.e.`, `etc.` and
+  `vs.` are blanked; a sentence ends at `.`, `!` or `?` before a space or
+  the end, and at `;`; a `:` ends none. What a thing contains or does is
+  a requirement, never a gloss.
+- **Relations are rows**, not entries: `## Relations` in `spec/index.md`
+  (and a capability's own), `| from kind | word | to kind |` with an
+  optional cardinality. A row on a supertype expands to every subkind
+  and keeps its own fun, under the one relation id. A preposition between
+  two kinds means the one row for that pair; the attachment of a
+  prepositional phrase is typed, so a line where two attachments
+  typecheck is refused and reworded. `Lexicon.relations()` gives the
+  expanded rows `(k1, word, k2, rid)`.
+- **A condition** is a definition or primitive. A definition is one
+  sentence that parses in `Def` (`An initiative is open when the
+  initiative is not `done` and the initiative is not `abandoned`.`); its
+  logic is a rule. A primitive condition's sentence is a gloss; the logic
+  treats it as a fluent, free when its thing is created and inertial
+  after. There is no `Means` field (v_t9).
 
 ### 6.3 Guards and tokens
 
 GF's types alone accept repeated list members and an `it` with no
 antecedent, so the parse is followed by a check on each tree: a value
-list has no repeats, `it` follows a noun phrase of the same sentence, and
+list has no repeats, `it` follows a noun phrase of the same sentence (and
+never stands in a definition), and
 a literal is a literal only when it is no lexicon word (a backticked
 lexicon word parses only as the word). A tree that fails is dropped;
 ambiguity (v_p2) is counted after the guards. The tokeniser splits off
@@ -344,22 +408,40 @@ A line is a sentence of §6.1.
 - **`model check`** reads the facts of §1–§3 and holds §4 with clingo
   (`scripts/model.lp`). It reads the parse facts, and never solves over
   time.
-- **`model logic`** translates each requirement's tree, by its abstract
-  funs, into a telingo program part guarded by `on(<id>)`, adds the
-  background theory (frame axioms, one value per attribute, the resource
-  rules, the transition rows) and the universal conditions, and solves
-  each group's witness at a horizon of 3:
-  - **L1**: no model; the unsatisfiable core names the requirements and
-    U's that conflict;
-  - **L2**: two requirements with equal normalised trees (a warning);
-  - **L3**: a status set by no transition row;
-  - **L4**: a pre-state value no transition path reaches (a warning).
+- **`model logic`** translates each requirement's tree, one translation
+  for each abstract fun, into telingo temporal formulas guarded by
+  `on(<id>)`: `When T, R` is `:- on(id), B, &tel{ T & ~ > R }`, `While C,
+  R` is `&tel{ C & ~ R }`, `shall not` fires when the forbidden response
+  happens, and each conjunct of `and` is its own constraint under the one
+  id. A defined condition is a rule; U1–U10 are statements guarded by
+  `on("U<n>")`. For each group it solves the group's witness with its
+  **cone** (the statements its trigger reaches, over the whole spec, and
+  the trigger-less statements and U's over kinds the cone uses) and the
+  background theory (instances, creation, frame axioms, one value per
+  attribute, the resource rules, the transition rows guarded by
+  `on("T:<attribute>@<kind>")`), by telingo's own incremental loop
+  (`imain`), up to a horizon of the longest trigger chain in the cone
+  plus 2:
+  - **L1** (error): no model; the unsatisfiable core names the
+    requirements and U's that conflict;
+  - **L2** (warning): two requirements with equal normalised trees;
+  - **L3** (error): a status set by no transition row: an L1 whose core
+    holds a transition guard;
+  - **L4** (warning): a value a group's pre-state needs that no trace
+    reaches, asked of the solver for each labelled state-0 value.
 - **`model parse`**, **`model lexicon`** and **`model restates`** report a
   line's tree or refusal (with the longest parsed prefix and the nearest
   lexicon words), the lexicon by category, and the coverage of the 0.29
   ids.
-- **`features generate`** writes one scenario for each group from its
-  tree; `features vocab` reads the step grammar's typed funs as step
-  patterns.
+- **`features generate`** writes one scenario for each group, read off
+  the group's minimal trace on the same solver (fewest instances, then
+  events, then state-0 facts; ties broken by a fixed order, instances
+  named in order of mention): the labelled state-0 atoms and every other
+  state-0 fluent give the Givens, the trigger the When, each response
+  conjunct a Then, each linearised through the Steps grammar. A given
+  block gives only example data, first; a given line that is not example
+  data is left out with a line on stderr (v15m is its error). The same
+  spec gives the same bytes. `features vocab` reads the step grammar's
+  typed funs as step patterns.
 - The grammar tools are GF 3.12 with the pgf runtime, clingo and telingo,
   installed by `tools install`.
