@@ -8,3 +8,5 @@ While a work-item is `claimed`, the implementer shall change only files in the w
 When a session ends an implement stage with a result that is `DONE`, `work` shall set the status of the work-item to `done`.
 The implementer shall not push a commit.
 When the implementer starts an implement stage, the implementer shall read every scenario in the feature.
+If the implementer refuses a plan, then the implementer shall write a result that is `HAND-BACK` and name the plan.
+The implementer shall not change a feature or merge a work-item branch.

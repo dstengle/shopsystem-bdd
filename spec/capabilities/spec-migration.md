@@ -37,76 +37,70 @@ It changes the meaning of no approved scenario.
 
 ### [g1] A claimed work-item stops the migration before any change
 Restates: r1@0.29.
-- [r1] While a work-item is `claimed`, if the person runs `migrating-to-capabilities`, then `migrating-to-capabilities` shall change nothing.
-- [r2] While a work-item is `claimed`, if the person runs `migrating-to-capabilities`, then `migrating-to-capabilities` shall show the reason.
+- [r1] While a work-item is `claimed`, if the person runs `migrating-to-capabilities`, then
+  `migrating-to-capabilities` shall change nothing and show the reason.
 
 ### [g2] A suite that does not pass stops the migration before any change
 Restates: r1@0.29.
-- [r3] While a scenario is not passing, if the person runs `migrating-to-capabilities`, then `migrating-to-capabilities` shall change nothing.
-- [r4] While a scenario is not passing, if the person runs `migrating-to-capabilities`, then `migrating-to-capabilities` shall show the reason.
+- [r2] While a scenario is not passing, if the person runs `migrating-to-capabilities`, then
+  `migrating-to-capabilities` shall change nothing and show the reason.
 
 ### [g3] The gate shows what the migration would do and what it asks
 Restates: r2@0.29, r16@0.29, r26@0.29.
-- [r5] When `migrating-to-capabilities` starts a gate, `migrating-to-capabilities` shall show every capability.
-- [r6] When `migrating-to-capabilities` starts a gate, `migrating-to-capabilities` shall show every scenario.
-- [r7] When `migrating-to-capabilities` starts a gate, `migrating-to-capabilities` shall show every question.
-- [r8] When `migrating-to-capabilities` starts a gate, `migrating-to-capabilities` shall show every glossary bullet.
-- [r9] When `migrating-to-capabilities` starts a gate, `migrating-to-capabilities` shall show every slice.
-- [r10] When `migrating-to-capabilities` starts a gate, `migrating-to-capabilities` shall show every backlog entry.
-- [r11] When `migrating-to-capabilities` starts a gate, `migrating-to-capabilities` shall not commit a file.
+- [r3] When `migrating-to-capabilities` starts a gate, `migrating-to-capabilities` shall show every capability, show
+  every scenario, show every question, show every glossary bullet, show every slice and show every backlog entry, and
+  `migrating-to-capabilities` shall not commit a file.
 
 ### [g4] A migration starts with its mechanical commit on the final layout
-Restates: r22@0.29, r10@0.29, r14@0.29, r15@0.29.
-- [r12] When the person runs `migrating-to-capabilities` on a bounded context, `migrating-to-capabilities` shall write a mechanical commit.
-- [r13] When the person runs `migrating-to-capabilities` on a bounded context, `migrating-to-capabilities` shall write a context id.
-- [r14] When the person runs `migrating-to-capabilities` on a bounded context, `migrating-to-capabilities` shall change every old reference.
-- [r15] When the person runs `migrating-to-capabilities` on a bounded context, `migrating-to-capabilities` shall relocate `docs/superpowers/`.
+Restates: r10@0.29, r14@0.29, r15@0.29, r22@0.29.
+- [r4] When the person runs `migrating-to-capabilities` on a bounded context, `migrating-to-capabilities` shall write
+  a mechanical commit, write a context id, change every old reference and relocate `docs/superpowers/`.
 
 ### [g5] No statement's text changes
 Restates: r22@0.29.
-- [r16] `migrating-to-capabilities` shall not change a requirement.
+- [r5] `migrating-to-capabilities` shall not change a requirement.
 
 ### [g6] A complete migration keeps every scenario and every passing one
-Restates: r4@0.29, r5@0.29, r23@0.29, r8@0.29, r20@0.29.
-- [r17] When `migrating-to-capabilities` ends, `migrating-to-capabilities` shall keep every scenario.
-- [r18] When `migrating-to-capabilities` ends, `migrating-to-capabilities` shall keep every scenario that is passing.
-- [r19] When `migrating-to-capabilities` ends, `migrating-to-capabilities` shall show every rewritten file.
-- [r20] When `migrating-to-capabilities` ends, `migrating-to-capabilities` shall change every design note.
-- [r21] When `migrating-to-capabilities` ends, `model` shall print no violation.
+Restates: r4@0.29, r5@0.29, r8@0.29, r20@0.29, r23@0.29.
+- [r6] When `migrating-to-capabilities` ends, `migrating-to-capabilities` shall keep every scenario, keep every
+  scenario that is passing, show every rewritten file and change every design note, and `model` shall print no
+  violation.
 
 ### [g7] A suite difference stops the migration
 Restates: r6@0.29.
-- [r22] If `migrating-to-capabilities` finds a suite difference, then `migrating-to-capabilities` shall show the suite difference.
-- [r23] If `migrating-to-capabilities` finds a suite difference, then `migrating-to-capabilities` shall not change a scenario.
+- [r7] If `migrating-to-capabilities` finds a suite difference, then `migrating-to-capabilities` shall show the suite
+  difference, and `migrating-to-capabilities` shall not change a scenario.
 
 ### [g8] No step definition changes
 Restates: r7@0.29.
-- [r24] `migrating-to-capabilities` shall not change a step.
+- [r8] `migrating-to-capabilities` shall not change a step.
 
 ### [g9] Ids are given from r1
 Restates: r9@0.29.
-- [r25] When `migrating-to-capabilities` writes a capability, `migrating-to-capabilities` shall give every requirement a fresh id.
+- [r9] When `migrating-to-capabilities` writes a capability, `migrating-to-capabilities` shall give every requirement
+  a fresh id.
 
 ### [g10] Every scenario is tagged with its one statement
 Restates: r11@0.29.
-- [r26] `migrating-to-capabilities` shall tag every scenario.
+- [r10] `migrating-to-capabilities` shall tag every scenario.
 
 ### [g11] A kept slice becomes a work-item
 Restates: r17@0.29.
-- [r27] When `migrating-to-capabilities` finds a slice, `migrating-to-capabilities` shall write a work-item that is `drafted`.
+- [r11] When `migrating-to-capabilities` finds a slice, `migrating-to-capabilities` shall write a work-item that is
+  `drafted`.
 
 ### [g12] A held scenario is deprecated
 Restates: r18@0.29.
-- [r28] When `migrating-to-capabilities` finds a held scenario, `migrating-to-capabilities` shall write `@deprecated`.
+- [r12] When `migrating-to-capabilities` finds a held scenario, `migrating-to-capabilities` shall write `@deprecated`.
 
 ### [g13] A ledger's decisions become decision files
 Restates: r19@0.29.
-- [r29] When `migrating-to-capabilities` finds a decision entry, `migrating-to-capabilities` shall write a design-decision.
-- [r30] When `migrating-to-capabilities` finds a decision entry, `migrating-to-capabilities` shall write a decision source.
+- [r13] When `migrating-to-capabilities` finds a decision entry, `migrating-to-capabilities` shall write a
+  design-decision and write a decision source.
 
 ### [g14] A glossary bullet is put in the glossary's form
 Restates: r21@0.29.
-- [r31] When `migrating-to-capabilities` finds a glossary bullet, `migrating-to-capabilities` shall write a term.
+- [r14] When `migrating-to-capabilities` finds a glossary bullet, `migrating-to-capabilities` shall write a term.
 
 ## Implementation, may change
 - `skills/migrating-to-capabilities/` and `scripts/migrate`. A migration produces the 0.29 format, and `migrate upgrade`

@@ -8,3 +8,4 @@ When `initiative-round` ends a round, `initiative-round` shall append `work note
 When the person approves a glossary-proposal, `work` shall set the status of the glossary-proposal to `approved`.
 While a session holds the spec lock, `work run` shall not start an apply round.
 If the person runs `work run` on a capability-proposal that argues no capability, then `work run` shall exit with an error naming the capability-proposal.
+When `integrating-a-proposal` writes a requirement, `integrating-a-proposal` shall show the requirement and ask a question.

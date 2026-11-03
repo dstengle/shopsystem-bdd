@@ -27,55 +27,50 @@ merges no branch itself, and reads what `work run` ends with, never what its wor
 
 ### [g1] Asked to deliver an initiative, the skill starts a delivery
 Restates: r4@0.29.
-- [r1] When the person runs `delivering-an-initiative` on an initiative, `delivering-an-initiative` shall start a delivery.
+- [r1] When the person runs `delivering-an-initiative` on an initiative, `delivering-an-initiative` shall start a
+  delivery.
 
 ### [g2] The skill reads nothing a worker writes
 Restates: r5@0.29.
-- [r2] `delivering-an-initiative` shall not read a result.
-- [r3] `delivering-an-initiative` shall not read a report.
+- [r2] `delivering-an-initiative` shall not read a result or read a report.
 
 ### [g3] When the delivery ends, the person sees each status and each question
 Restates: r6@0.29.
-- [r4] When a delivery ends, `delivering-an-initiative` shall show the status of every work-item.
-- [r5] When a delivery ends, `delivering-an-initiative` shall show every question.
+- [r3] When a delivery ends, `delivering-an-initiative` shall show the status of every work-item and show every
+  question.
 
 ### [g4] A refused delivery says why and changes nothing
 Restates: r7@0.29.
-- [r6] If a delivery is refused, then `delivering-an-initiative` shall show the reason.
-- [r7] If a delivery is refused, then `delivering-an-initiative` shall change nothing.
+- [r4] If a delivery is refused, then `delivering-an-initiative` shall show the reason and change nothing.
 
 ### [g5] A defect a trial finds becomes a drafted work-item
 Restates: r10@0.29.
-- [r8] When a trial finds a defect, `delivering-an-initiative` shall write a work-item that is `drafted`.
+- [r5] When a trial finds a defect, `delivering-an-initiative` shall write a work-item that is `drafted`.
 
 ### [g6] The skill changes no code, starts no session and merges no branch
-Restates: r11@0.29, r19@0.29, r20@0.29, r12@0.29.
-- [r9] `delivering-an-initiative` shall not change a module.
-- [r10] `delivering-an-initiative` shall not start a session.
-- [r11] `delivering-an-initiative` shall not merge a work-item branch.
-- [r12] `delivering-an-initiative` shall not write a scenario.
+Restates: r11@0.29, r12@0.29, r19@0.29, r20@0.29.
+- [r6] `delivering-an-initiative` shall not change a module, start a session, merge a work-item branch or write a
+  scenario.
 
 ### [g7] A tool a worker needs is put to the person
 Restates: r21@0.29.
-- [r13] When a worker finds a disallowed tool, `delivering-an-initiative` shall ask a question.
-- [r14] When a worker finds a disallowed tool, `delivering-an-initiative` shall name a stage.
+- [r7] When a worker finds a disallowed tool, `delivering-an-initiative` shall ask a question and name a stage.
 
 ### [g8] A change `work run` cannot deliver is put to the person
 Restates: r22@0.29.
-- [r15] If `work run` refuses a work-item, then `delivering-an-initiative` shall ask a question.
-- [r16] If `work run` refuses a work-item, then `delivering-an-initiative` shall change nothing.
+- [r8] If `work run` refuses a work-item, then `delivering-an-initiative` shall ask a question and change nothing.
 
 ### [g9] A dispatch is given a brief
 Restates: r13@0.29.
-- [r17] When `delivering-an-initiative` starts a dispatch, `delivering-an-initiative` shall give the dispatch a brief.
+- [r9] When `delivering-an-initiative` starts a dispatch, `delivering-an-initiative` shall give the dispatch a brief.
 
 ### [g10] A dispatch's files are read only to decide what to do next
 Restates: r14@0.29.
-- [r18] When a dispatch ends, `delivering-an-initiative` shall read only a file.
+- [r10] When a dispatch ends, `delivering-an-initiative` shall read only a file.
 
 ### [g11] An answer is noted in the ledger
 Restates: r15@0.29.
-- [r19] When the person gives an answer, `delivering-an-initiative` shall note the answer.
+- [r11] When the person gives an answer, `delivering-an-initiative` shall note the answer.
 
 ## Implementation, may change
 - `skills/delivering-an-initiative/SKILL.md`. It runs `work run` as a background command and is woken when it

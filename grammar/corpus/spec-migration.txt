@@ -8,3 +8,5 @@ While a scenario is not passing, `migrating-to-capabilities` shall not commit a 
 `migrating-to-capabilities` shall read every design-decision.
 When `migrating-to-capabilities` writes a capability, `migrating-to-capabilities` shall write `language: codified-1`.
 Where `--dry-run` is given, `migrating-to-capabilities` shall change nothing.
+While a work-item is `claimed`, if the person runs `migrating-to-capabilities`, then `migrating-to-capabilities` shall change nothing and show the reason.
+When `migrating-to-capabilities` ends, `migrating-to-capabilities` shall show the number of scenarios, and `model` shall print no violation.

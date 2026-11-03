@@ -8,3 +8,4 @@ If a delivery is refused, then `delivering-an-initiative` shall show the reason.
 When the person runs `delivering-an-initiative` on an initiative that is `proposed`, `delivering-an-initiative` shall exit with an error naming the initiative.
 While a delivery holds the initiative lock, `delivering-an-initiative` shall not start a delivery.
 `delivering-an-initiative` shall not change a file.
+`delivering-an-initiative` shall not change a file or start a stage.

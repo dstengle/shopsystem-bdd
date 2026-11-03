@@ -10,11 +10,13 @@ import spec_grammar
 import spec_lexicon
 import spec_read
 import spec_solve
+import spec_tree
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import toolchain
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
+RECORDS = REPO / ".shop" / "records" / "2026-11-03-gf-conversion"
 GUARANTEES = ("code-research", "delivery", "formulation", "planning", "red-green", "review", "role-boundaries",
               "spec-consistency", "spec-integration", "spec-migration", "trials")
 
@@ -98,3 +100,45 @@ def test_the_spec_integration_steps_are_gone():
 
 def test_the_lexicon_has_no_problem(grammar):
     assert spec_lexicon.problems(spec_lexicon.read(REPO)) == []
+
+
+@pytest.mark.parametrize("cap", GUARANTEES)
+def test_each_group_is_one_statement_numbered_as_its_group(cap):
+    """Revision 2 (design-r2 §9.1): one statement for each group, and g<n> and r<n> share n."""
+    odd = [(g.id, [r.id for r in g.requirements]) for g in spec_read.capability(path(cap)).groups
+           if [r.id for r in g.requirements] != ["r" + g.id[1:]]]
+    assert odd == []
+
+
+@pytest.mark.parametrize("cap", GUARANTEES)
+def test_no_two_groups_share_features_condition_and_trigger(grammar, cap):
+    """v15n: statements that share features, condition and trigger are one statement (design-r2 §9.1)."""
+    seen, shared = {}, []
+    for g in spec_read.capability(path(cap)).groups:
+        for r in g.requirements:
+            clauses = spec_tree.parts(spec_tree.normal(spec_grammar.parse(REPO, r.text).tree))
+            if all(clauses[k] is None for k in ("feat", "cond", "trig")):
+                continue
+            key = tuple("-" if clauses[k] is None else spec_tree.show(clauses[k]) for k in ("feat", "cond", "trig"))
+            if seen.setdefault(key, g.id) != g.id:
+                shared.append((seen[key], g.id))
+    assert shared == []
+
+
+@pytest.mark.parametrize("cap", [c for c in GUARANTEES if c != "formulation"])
+def test_the_id_map_gives_every_id_the_capability_has(cap):
+    """ids-<cap>.tsv (design-r2 §9.1): old codified id, tab, new id; its new ids are exactly the file's."""
+    rows = [line.split("\t") for line in (RECORDS / f"ids-{cap}.tsv").read_text().splitlines()]
+    olds = [old for old, _ in rows]
+    assert len(olds) == len(set(olds))
+    groups = spec_read.capability(path(cap)).groups
+    assert {new for _, new in rows} == {f"{cap}#{x}" for g in groups for x in [g.id] + [r.id for r in g.requirements]}
+
+
+@pytest.mark.parametrize("u, conjuncts", [("U3", ["ExitErr", "ChangeNothing"]), ("U4", ["Do", "Do"])])
+def test_u3_and_u4_are_one_statement_of_joined_verb_phrases(grammar, u, conjuncts):
+    """U3 and U4 by VP coordination (design-r2 §5.6): one `shall`, its verb phrases joined by `and`."""
+    text = {c.id: c.text for c in spec_read.universal(REPO)}[u]
+    resp = spec_tree.parts(spec_grammar.parse(REPO, text).tree)["resp"]
+    assert [vp[0] for _, _, vp in resp] == conjuncts
+    assert len({str(subject) for _, subject, _ in resp}) == 1

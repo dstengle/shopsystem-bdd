@@ -8,3 +8,4 @@ When a session ends a review stage with a result that is `DONE`, `work` shall se
 The reviewer shall give every finding a grade.
 If the reviewer refuses a plan, then the reviewer shall write a result that is `BLOCKED`.
 While a review stage holds a worker slot, the reviewer shall use only the brief.
+When the reviewer ends a review stage, the reviewer shall write a result and write every finding, and the reviewer shall not change a file or merge a work-item branch.

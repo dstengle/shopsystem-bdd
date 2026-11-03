@@ -40,62 +40,61 @@ Restates: r1@0.29.
 
 ### [g3] The implementer changes no feature and writes no status
 Restates: r2@0.29.
-- [r3] The implementer shall not change a feature.
-- [r4] The implementer shall not write a status.
+- [r3] The implementer shall not change a feature or write a status.
 
 ### [g4] A scenario that passes before its work is a hand-back
 Restates: r3@0.29.
-- [r5] If the implementer finds a scenario of the work-item that is passing, then the implementer shall write a result that is `HAND-BACK`.
+- [r4] If the implementer finds a scenario of the work-item that is passing, then the implementer shall write a result
+  that is `HAND-BACK`.
 
 ### [g5] An open decision blocks the work
 Restates: r5@0.29.
-- [r6] If the implementer finds a plan decision settled by no requirement, then the implementer shall write a result that is `BLOCKED`.
-- [r7] If the implementer finds a plan decision settled by no requirement, then the implementer shall name the plan decision.
+- [r5] If the implementer finds a plan decision settled by no requirement, then the implementer shall write a result
+  that is `BLOCKED` and name the plan decision.
 
 ### [g6] A test the work would break blocks the work
 Restates: r5@0.29.
-- [r8] If the implementer finds a test broken by the work-item, then the implementer shall write a result that is `BLOCKED`.
-- [r9] If the implementer finds a test broken by the work-item, then the implementer shall name the test.
+- [r6] If the implementer finds a test broken by the work-item, then the implementer shall write a result that is
+  `BLOCKED` and name the test.
 
 ### [g7] A changed test is named in the report
 Restates: r6@0.29.
-- [r10] When the implementer changes a test, the implementer shall name the test.
+- [r7] When the implementer changes a test, the implementer shall name the test.
 
 ### [g8] A hand-back gives its condition and evidence, with the work so far committed
 Restates: r7@0.29.
-- [r11] When the implementer writes a result that is `HAND-BACK`, the implementer shall write a hand-back.
-- [r12] When the implementer writes a result that is `HAND-BACK`, the implementer shall commit every file changed by the work-item.
+- [r8] When the implementer writes a result that is `HAND-BACK`, the implementer shall write a hand-back and commit
+  every file changed by the work-item.
 
 ### [g9] A large work-item stops at a green commit
 Restates: r9@0.29.
-- [r13] If the implementer finds a work-item that is large, then the implementer shall write a result that is `PARTIAL`.
-- [r14] If the implementer finds a work-item that is large, then the implementer shall name every file changed by the work-item.
+- [r9] If the implementer finds a work-item that is large, then the implementer shall write a result that is `PARTIAL`
+  and name every file changed by the work-item.
 
 ### [g10] A case the scenarios are silent about is named
 Restates: r10@0.29.
-- [r15] When the implementer finds a silent case, the implementer shall name the silent case.
+- [r10] When the implementer finds a silent case, the implementer shall name the silent case.
 
 ### [g11] The plan's code is not pasted
 Restates: r11@0.29.
-- [r16] When the implementer reads a code block, the implementer shall not write the code block.
+- [r11] When the implementer reads a code block, the implementer shall not write the code block.
 
 ### [g12] An implementer that cannot do what its brief asks says why
 Restates: r15@0.29.
-- [r17] If the implementer refuses a brief, then the implementer shall write a result that is `NEEDS_CONTEXT`.
-- [r18] If the implementer refuses a brief, then the implementer shall write a reason.
+- [r12] If the implementer refuses a brief, then the implementer shall write a result that is `NEEDS_CONTEXT` and
+  write a reason.
 
 ### [g13] Every session ends with a result
 Restates: r16@0.29.
-- [r19] When the implementer ends an `implement` stage, the implementer shall write a result.
+- [r13] When the implementer ends an `implement` stage, the implementer shall write a result.
 
 ### [g14] A file outside the file set is named before it is edited
 Restates: r17@0.29.
-- [r20] When the implementer finds a file outside the file set, the implementer shall name the file.
+- [r14] When the implementer finds a file outside the file set, the implementer shall name the file.
 
 ### [g15] The implementer pushes and merges nothing
 Restates: r18@0.29.
-- [r21] The implementer shall not push a commit.
-- [r22] The implementer shall not merge a work-item branch.
+- [r15] The implementer shall not push a commit or merge a work-item branch.
 
 ## Implementation, may change
 - The cycle: run one scenario red, write the step definitions it needs, the least code, run the work-item's

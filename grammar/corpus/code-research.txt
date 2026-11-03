@@ -8,3 +8,4 @@ The researcher shall not push a commit.
 While a research stage holds a worker slot, `work run` shall not start a plan stage.
 When a session ends a research stage with a result that is `DONE`, `work` shall set the status of the work-item to `researched`.
 The researcher shall use only the brief.
+If the researcher refuses a brief, then the researcher shall write a result that is `NEEDS_CONTEXT` and change nothing.
