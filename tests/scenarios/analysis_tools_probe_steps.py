@@ -23,7 +23,24 @@ from .analysis_tools_project import (
 def ruff_pin():
     """The pin in this repository's scripts/tools_env.py, read from the file."""
     source = (pathlib.Path(__file__).resolve().parents[2] / "scripts" / "tools_env.py").read_text()
-    return re.search(r'^RUFF_PIN = "([^"]+)"', source, re.MULTILINE).group(1)
+    return re.search(r'^PINS = \{[^}]*"ruff": "([^"]+)"', source, re.MULTILINE).group(1)
+
+
+def tool_lines(context):
+    """What probe printed before its grammar block: the analysis tools and the interpreter."""
+    printed = lines(context)
+    return printed[:printed.index("grammar:")] if "grammar:" in printed else printed
+
+
+@pytest.fixture(autouse=True)
+def grammar_installed(tmp_path_factory, monkeypatch):
+    """GF stands installed under a fresh XDG_DATA_HOME, so `tools install` never downloads it in a scenario."""
+    data = tmp_path_factory.mktemp("data")
+    (gf := data / "shopsystem-bdd" / "gf-3.12" / "bin" / "gf").parent.mkdir(parents=True)
+    gf.write_text("#!/bin/sh\necho 'Grammatical Framework (GF) version 3.12.0'\n")
+    gf.chmod(0o755)
+    monkeypatch.setenv("XDG_DATA_HOME", str(data))
+    monkeypatch.delenv("SHOPSYSTEM_GF", raising=False)
 
 
 @pytest.fixture
@@ -137,12 +154,12 @@ def prints_interpreter(repo, context, interpreter):
                 "the venv/bin/python under the current directory": lambda: repo / "venv" / "bin" / "python",
                 "/opt/env/bin/python": lambda: context["env_dir"] / "bin" / "python",
                 "the interpreter running the script": lambda: pathlib.Path(sys.executable)}[interpreter]()
-    assert lines(context)[-1].startswith("python: %s (" % expected), lines(context)[-1]
+    assert tool_lines(context)[-1].startswith("python: %s (" % expected), tool_lines(context)[-1]
 
 
 @then(parsers.parse("it says the interpreter came from {source}"))
 def says_source(context, source):
-    last = lines(context)[-1]
+    last = tool_lines(context)[-1]
     assert last.endswith("(%s)" % source) if source != "neither" else "(no virtualenv found" in last, last
 
 
@@ -156,32 +173,32 @@ def no_tools_known(context):
 # r3
 @then("tools prints each tool")
 def line_each(context):
-    assert len(lines(context)) == len(NAMES) + 1
-    assert [line.split()[0] for line in lines(context)[:-1]] == list(NAMES)
+    assert len(tool_lines(context)) == len(NAMES) + 1
+    assert [line.split()[0] for line in tool_lines(context)[:-1]] == list(NAMES)
 
 
 @then("each installed tool is printed with its version")
 def installed_lines(context):
-    for line in lines(context)[:-1]:
+    for line in tool_lines(context)[:-1]:
         if not line.startswith("vulture"):
             assert line == "%s 1.0" % line.split()[0]
 
 
 @then("vulture is printed as missing, with what it is for")
 def vulture_missing(context):
-    assert re.search(r"^vulture missing: \S.+$", "\n".join(lines(context)), re.MULTILINE)
+    assert re.search(r"^vulture missing: \S.+$", "\n".join(tool_lines(context)), re.MULTILINE)
 
 
 @then("the interpreter's path is printed after the tools")
 def interpreter_last(context):
-    assert lines(context)[-1] == "python: %s (--python)" % context["python"]
+    assert tool_lines(context)[-1] == "python: %s (--python)" % context["python"]
 
 
 # r4
 @then("tools prints exactly one line, and it begins `Probe: tools -> `")
 def one_probe_line(context):
-    assert len(lines(context)) == 1
-    assert re.match(r"^Probe: tools -> coverage \S+, pytest-cov \S+, jedi \S+, .*hypothesis \S+$", lines(context)[0])
+    assert len(tool_lines(context)) == 1
+    assert re.match(r"^Probe: tools -> coverage \S+, pytest-cov \S+, jedi \S+, .*hypothesis \S+$", tool_lines(context)[0])
 
 
 # r5
@@ -251,7 +268,6 @@ def explains_not_venv(context, first, second):
 @then("nothing is installed into the interpreter")
 def nothing_installed(context):
     assert pip_calls(context["python"]) == []
-
 
 
 # r21

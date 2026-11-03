@@ -60,15 +60,25 @@ class ToolsTest(unittest.TestCase):
         (self.tmp / "shelf" / "use.py").write_text("from shelf.store import made\n\n\ndef label(kind, slug):\n    return made(kind, slug).upper()\n")
         (self.tmp / "tests" / "test_store.py").write_text(TESTS)
         (self.tmp / "pytest.ini").write_text("[pytest]\ntestpaths = tests\npythonpath = .\n")
+        self.data = pathlib.Path(tempfile.mkdtemp()).resolve()
+        self.addCleanup(shutil.rmtree, self.data)
+        gf = self.data / "shopsystem-bdd" / "gf-3.12" / "bin" / "gf"
+        gf.parent.mkdir(parents=True)
+        gf.write_text("#!/bin/sh\necho 'Grammatical Framework (GF) version 3.12.0'\n")
+        gf.chmod(0o755)
 
     def run_script(self, *args):
-        env = {k: v for k, v in os.environ.items() if k not in ("VIRTUAL_ENV", "PYTEST_ADDOPTS")}
+        env = {k: v for k, v in os.environ.items() if k not in ("VIRTUAL_ENV", "PYTEST_ADDOPTS", "SHOPSYSTEM_GF")}
+        env["XDG_DATA_HOME"] = str(self.data)  # GF stands installed there, so install never downloads it
         return subprocess.run([sys.executable, str(SCRIPT), "--python", sys.executable, *args], cwd=self.tmp,
                               capture_output=True, text=True, env=env)
 
     def test_probe_gives_a_line_a_tool_and_the_interpreter(self):
         done = self.run_script("probe")
         lines = done.stdout.splitlines()
+        grammar = lines.index("grammar:")
+        self.assertEqual([line.split()[0] for line in lines[grammar + 1:]], ["gf", "pgf", "clingo", "telingo"])
+        lines = lines[:grammar]
         self.assertEqual(len(lines), 9)
         for line, name in zip(lines, ("coverage", "pytest-cov", "jedi", "ast-grep", "ruff", "vulture", "import-linter", "hypothesis")):
             self.assertRegex(line, r"^%s (\d[\w.]*|missing: .+)$" % name)
@@ -84,6 +94,8 @@ class ToolsTest(unittest.TestCase):
         self.assertEqual(done.returncode, 1)
         self.assertIn("is not a virtualenv", done.stdout)
         self.assertRegex(done.stdout, r"(?m)^\S+ is missing\.\n  It is for: .+\.\n  Without it: .+\.\n  Tried: ")
+        self.assertIn("gf 3.12 already installed", done.stdout)
+        self.assertNotIn("downloaded", done.stdout)
 
     @unittest.skipUnless(HAVE, "coverage, pytest-cov and jedi are needed")
     def test_the_map_says_which_tests_execute_a_function(self):
