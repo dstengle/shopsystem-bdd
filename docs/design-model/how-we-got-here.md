@@ -215,6 +215,39 @@ later request.
 
 **Result.** version 4.
 
+## 2–3 November: version 4 to version 5, a grammar for the requirements
+
+Behaviour lines were free English, so they admitted two readings: a
+formulation round raised spec questions, rounds looped, and the suite kept
+growing. The domain model (`.shop/records/2026-11-02-domain-model/`) wrote
+the plugin's vocabulary as a typed glossary, each term with a category
+that is its grammar slot, and a spike showed GF parsing codified
+requirements against that lexicon, telingo checking resources and
+exclusivity, and Gherkin generated from the trees.
+
+Version 5 is version 4 fitted to that model, not a rewrite; where version
+4 and the live files disagreed, the grammar tools decided. What changed:
+
+- A requirement is one sentence that parses to one tree; the regex check
+  goes. Requirements sit in **requirement groups**, one group one
+  scenario, and scenarios are **generated**, so a scenario cannot say more
+  than its group.
+- The kind names are requirement and scenario. Terms are a kind with a
+  category, and the glossary is the lexicon.
+- Ten **universal conditions** (U1–U10) say once what about forty lines
+  restated (refusals change nothing, transitions are committed and pushed,
+  a discarded stage, resources).
+- Exclusivity is a resource a stage holds, never "one at a time, except".
+- A fresh spec with fresh ids; the 0.29 ids survive as `Restates:` and in
+  `spec/restated.json`. Retire, never edit, from then on.
+- The lifecycles take the live statuses (`awaiting-answer`, `failed`),
+  `merged` goes, the design-decision and initiative lifecycles get their
+  events, and `argues` is one capability.
+- Rule codes get one meaning each; `cross-context-request` and the rules
+  retired in version 4 leave the code.
+
+Every change is a row of `design-model.md` §10, with its reason.
+
 ## Decisions that were made and unmade
 
 | introduced | replaced by | why |
@@ -242,6 +275,10 @@ later request.
 | request's fulfilment as parts of the requesting initiative | the upstream's own initiative `fulfils` the request | `part_of` across a seam made one context depend on another's work-items |
 | `needs TEXT` on a thread or request | a request's lines in EARS, negotiated | demand is lines the upstream answers one by one, in its own terms |
 | initiative kinds `job`, `job-path` | job-threads at the product level | a context's initiative is never a job |
+| Behaviour lines in free English, checked by a regex for EARS | requirements that parse in a GF grammar whose words are the glossary | a line with two readings is refused before a session reads it |
+| scenarios formulated by a session, one per requirement | scenarios generated, one per requirement group | the scenario is a linearisation of its group |
+| exclusivity written as "one at a time, except …" | resources held by stages, and U2 | the exception list never closed |
+| ids carried across rewrites | a fresh spec, the old ids as `Restates:` | the conversion rewrote every line |
 
 ## Documents
 
@@ -250,7 +287,7 @@ later request.
 | `spec-method.md` | the September method: five parts, learning path, traces, FAQ |
 | `stage-1-capabilities-and-features.md` | the first adoption step |
 | `kb-and-bdd-assessment.md` | the October assessment of the plugin and kb |
-| `design-model.md` | the model, version 4: standing artifacts, requests, initiatives and parts, records, grammar |
-| `grammar.md` | the grammar formally: schema, Datalog constraints, lifecycles, sentence forms |
+| `design-model.md` | the model, version 5: the two languages, standing artifacts, the requirement language, requests, initiatives and parts, records, grammar, the changes from version 4 |
+| `grammar.md` | the grammar formally: schema, constraints, lifecycles, the requirement grammar, the lexicon and the logic check |
 | `ecommerce-example.md` | the model read as sentences |
 | `terms-and-flow.md` | an earlier draft; retired with version 2 |
