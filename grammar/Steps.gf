@@ -19,5 +19,4 @@ abstract Steps = Req ** {
     SExitsOk : Subj -> Step ;                      -- `work` exits successfully
     SExitsErr : Subj -> NP -> Step ;               -- `work` exits with an error naming the reason
     SChangesNothing : Subj -> Step ;               -- `work` changes nothing
-    SCommits : Subj -> NP -> Step ;                -- `work` commits the transition and pushes the commit
 }

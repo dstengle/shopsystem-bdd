@@ -141,8 +141,8 @@ contract:
     are numbered `<n>: `. It exits 2 when the grammar cannot be built.
   - lexicon lists the terms by category; lexicon --check prints v_t4-v_t10
     (`<code>  <term>  <message>`) and exits 1 when there is any: v_t7 a
-    gloss of more than one sentence, v_t8 a relation entry that only names
-    a preposition, v_t9 a meaning given as a field rather than a sentence,
+    gloss of more than one sentence, v_t8 a relation entry (a relation is a
+    row of `## Relations`), v_t9 a meaning given as a field rather than a sentence,
     v_t10 two relation rows with one (from, word, to).
   - logic [--json] [<capability>] runs the temporal check (spec_solve) and
     prints its report, with its exit code.

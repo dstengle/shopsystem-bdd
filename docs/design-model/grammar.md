@@ -201,10 +201,11 @@ v_k4(I) :- ikind(I, "defect"), part_of(P, I), not node(P, "work-item").
 v_k6(P) :- argues(P, A), argues(P, B), A != B, node(P, "capability-proposal").
 
 % scenarios on groups (C28)
-v_s1(S) :- node(S, "scenario"), not generates(_, S).
-v_s2(G) :- in(G, C), not generates(G, _), not logic_only(G), not group(C, "guarantees").
-v_s3(Q) :- node(Q, "requirement"), not member_of(Q, _).
-v_s3(Q) :- member_of(Q, G1), member_of(Q, G2), G1 != G2.
+v_s1(S) :- node(S, "scenario"), not generated(S).
+v_s2(S) :- generates(G1, S), generates(G2, S), G1 != G2.
+v_s3(G) :- node(G, "requirement-group"), in(G, C), not has_scenario(G), not logic_only(G), not group(C, "guarantees").
+v_s4(Q) :- req_id(Q, C, _), codified(C), not grouped(Q).
+v_s4(Q) :- member_of(Q, G1), member_of(Q, G2), G1 != G2.
 
 % work-items
 v_w1(W)      :- blk_tc(W, W).
@@ -236,8 +237,8 @@ v_t6(T1, T2)  :- lin(T1, X), lin(T2, X), T1 < T2, category(T1, C), category(T2, 
 
 The lexicon's own problems, reported by `model lexicon --check` and by
 `model check` *(revision 2)*: **v_t7** a term entry whose gloss is more
-than one sentence (§6.2's count), **v_t8** a relation entry that only
-names a preposition, **v_t9** a `Means` field, **v_t10** two rows of
+than one sentence (§6.2's count), **v_t8** a relation entry (a relation
+is a row of `## Relations`), **v_t9** a `Means` field, **v_t10** two rows of
 `## Relations` with one (from, word, to).
 
 Warnings:
@@ -338,8 +339,8 @@ discarded (U6), back by `work retry`; any open status → `withdrawn`.
   typed atom whose kind has the word).
 - The Steps grammar is additive: each conjunct of a response is its own
   Then (`SDoes`, `SAtom`, ...), and a relation atom is an `Atom`, so
-  `SAtom` gives "the stage s1 is for the work-item w1". `SCommits` stays
-  until the features are regenerated.
+  `SAtom` gives "the stage s1 is for the work-item w1". A commit and its
+  push are two conjuncts, so two Thens (`SDoes`); there is no `SCommits`.
 - `grammar/corpus/*.txt`: sentences that must parse with exactly one tree,
   one file per capability; `grammar/corpus/refused.txt`: sentences that
   must be refused.
@@ -444,7 +445,7 @@ A line is a sentence of §6.1.
   spec gives the same bytes. A group with no trace to read (its L1, a
   trace that is not determined, a step with no template) gets no
   scenario and a line on stderr; `model logic` (L1) and `model check`
-  (v_s2 above; `v_s3` in `model.lp`) are its errors. `features vocab`
+  (v_s3) are its errors. `features vocab`
   reads the step grammar's typed funs as step patterns.
 - The grammar tools are GF 3.12 with the pgf runtime, clingo and telingo,
   installed by `tools install`.

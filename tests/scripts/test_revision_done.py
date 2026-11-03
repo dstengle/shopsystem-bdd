@@ -1,0 +1,110 @@
+"""The revision's "Done means" (design-r2 §2, plan-r2 R14) measured on the live repository, and what R14 deletes."""
+import dataclasses
+import json
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+import spec_lexicon
+
+ROOT = Path(__file__).resolve().parents[2]
+SCRIPTS = ROOT / "scripts"
+
+
+def run(*args, **kw):
+    return subprocess.run([sys.executable, *map(str, args)], cwd=ROOT, capture_output=True, text=True, **kw)
+
+
+@pytest.fixture(scope="module")
+def check():
+    done = run(SCRIPTS / "model", "check", "--json")
+    return json.loads(done.stdout)
+
+
+def rules(found, *codes):
+    return [row for row in found["violations"] + found["warnings"] if row[0] in codes]
+
+
+def test_no_given_line_that_is_not_example_data(check):
+    """Point 1: v15m has no rows."""
+    assert rules(check, "v15m") == []
+
+
+def test_no_two_statements_share_a_trigger_and_a_condition(check):
+    """Point 2: v15k, v15l and v15n have no rows."""
+    assert rules(check, "v15k", "v15l", "v15n") == []
+
+
+def test_the_live_lexicon_has_no_problem_and_the_spec_no_means():
+    """Point 3: v_t4-v_t10 have no rows, and no capability or index says `Means:`."""
+    assert spec_lexicon.problems(spec_lexicon.read(ROOT)) == []
+    assert [p for p in (ROOT / "spec").rglob("*.md") if "Means:" in p.read_text()] == []
+
+
+def test_a_term_has_no_means_field():
+    assert "means" not in {f.name for f in dataclasses.fields(spec_lexicon.Term)}
+
+
+INDEX = """\
+---
+id: bounded-context/ex.com/p/ctx
+language: codified-1
+---
+
+## Glossary
+
+- **work-item** (kind): a unit of work.
+- **capability-proposal** (kind): a proposal of one capability.
+- **under** (relation work-item → capability-proposal): a work-item delivers part of a proposal.
+- **for** (relation work-item → capability-proposal): the proposal a work-item is for.
+"""
+
+
+def test_a_relation_entry_is_v_t8_and_gives_no_relation(tmp_path):
+    """A relation is a row of `## Relations`; an entry, whatever its word, is the legacy form, refused."""
+    (tmp_path / "spec").mkdir()
+    (tmp_path / "spec" / "index.md").write_text(INDEX)
+    lex = spec_lexicon.read(tmp_path)
+    assert lex.relations() == []
+    assert sorted(p[:2] for p in spec_lexicon.problems(lex) if p[0] == "v_t8") == [("v_t8", "for"), ("v_t8", "under")]
+
+
+def test_no_fixed_horizon():
+    """Point 4: telingo's own horizon, no constant."""
+    assert [p.name for p in SCRIPTS.glob("*.py") if "HORIZON = " in p.read_text()] == []
+
+
+def test_no_commits_step():
+    """`SCommits` and its Then are gone: a commit and its push are two conjuncts, two Thens."""
+    files = list((ROOT / "grammar").glob("*.gf")) + list(SCRIPTS.glob("*.py")) + list(
+        (ROOT / "tests" / "scenarios").glob("*.py"))
+    assert [p.name for p in files if re.search(r"SCommits|ThenCommits", p.read_text())] == []
+    assert [p.name for p in (ROOT / "features").glob("*.feature") if "and pushes the commit" in p.read_text()] == []
+
+
+def test_every_script_module_has_a_map_row():
+    """Point 7: every `scripts/*.py` is named in CLAUDE.md's module map, by name or by a `<prefix>*` row."""
+    text = (ROOT / "CLAUDE.md").read_text()
+    missing = [p.name for p in sorted(SCRIPTS.glob("*.py"))
+               if p.name not in text and "%s*" % p.name.split("_")[0] not in text]
+    assert missing == []
+
+
+def test_the_lines_of_q47_parse(tmp_path):
+    """Point 6: a request raised with `work request` is read by the new grammar."""
+    text = (ROOT / ".shop" / "work" / "requests" / "q47.md").read_text()
+    body = text.split("## Lines", 1)[1].split("## Questions", 1)[0]
+    lines = [re.sub(r"^\d+\. ", "", l) for l in body.splitlines() if re.match(r"^\d+\. ", l)]
+    assert len(lines) == 6
+    (tmp_path / "q47.txt").write_text("\n".join(lines) + "\n")
+    done = run(SCRIPTS / "model", "parse", "--file", tmp_path / "q47.txt")
+    assert done.returncode == 0, done.stdout + done.stderr
+
+
+def test_model_logic_finds_no_conflict_in_the_spec():
+    """Point 4 on the live spec: no L1-L3 finding (L4 warnings are listed in gate-r2-done.md)."""
+    done = run(SCRIPTS / "model", "logic", "--json", timeout=600)
+    found = json.loads(done.stdout)["findings"]
+    assert [f for f in found if str(f.get("code", "")).upper() in ("L1", "L2", "L3")] == []

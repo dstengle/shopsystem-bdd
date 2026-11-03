@@ -25,10 +25,10 @@ HOLE_N, HOLE_X, META = "\x01", "\x02", object()
 _loaded = {}
 ALLOWED = {"given": ("SAtom", "SFeat", "_Given", "_HoldsText", "_HoldsBlock"), "when": ("STrig",),
            "then": ("SAtom", "SDoes", "SDoesNot", "SDoesTo", "SPrints", "SPrintsNot", "SExitsOk", "SExitsErr",
-                    "SChangesNothing", "SCommits")}
+                    "SChangesNothing")}
 THEN = {"SDoes": "ThenDoes", "SDoesNot": "ThenDoesNot", "SDoesTo": "ThenDoesTo", "SPrints": "ThenPrints",
         "SPrintsNot": "ThenPrintsNot", "SExitsOk": "ThenExitsOk", "SExitsErr": "ThenExitsErr",
-        "SChangesNothing": "ThenChangesNothing", "SCommits": "ThenCommits"}
+        "SChangesNothing": "ThenChangesNothing"}
 TRIG = {"Runs": "WhenRuns", "RunsOn": "WhenRuns", "IsRun": "WhenRuns", "Happens": "WhenHappens",
         "HappensI": "WhenHappens", "Undergoes": "WhenUndergoes", "_Becomes": "WhenBecomes"}
 BY_EVENT = {"WhenHappens", "WhenUndergoes", "ThenDoes", "ThenDoesNot", "ThenDoesTo"}
@@ -49,8 +49,6 @@ class Vocab:
         for (cat, term, kinds), ident in self.ids.items():
             if cat == "value":
                 self.owner[ident] = ("value", term, kinds[0], kinds[1])
-            elif cat == "relation":
-                self.owner[ident] = (cat, term, kinds[0] if kinds else None, None)
             elif cat in ("actor", "event", "resource", "kind"):
                 self.owner[ident] = (cat, term, term if cat == "kind" else None, None)
             elif cat == "condition":
@@ -199,7 +197,7 @@ def step(vocab, keyword, text):
             call.command = vocab.text(node)
         elif node[0] in ("OneNP", "MoreNP"):
             call.nps.append(vocab.text(node[1]))
-    for i in {"SDoes": (3,), "SDoesNot": (3,), "SDoesTo": (3, 4), "SExitsErr": (2,), "SCommits": (2,)}.get(tree[0], ()):
+    for i in {"SDoes": (3,), "SDoesNot": (3,), "SDoesTo": (3, 4), "SExitsErr": (2,)}.get(tree[0], ()):
         call.nps.append(vocab.text(tree[i]))
     if info and info[0] == "attribute":
         call.attribute = info[3]
@@ -237,7 +235,7 @@ def rows(vocab):
            ("when", "WhenHappens", None, None, ("STrig", ("HappensI", M, M)))]
     for f, template in THEN.items():
         args = {"SDoes": (M, M, NP), "SDoesNot": (M, M, NP), "SDoesTo": (M, M, NP, NP), "SPrints": (M, ("OneNP", NP)),
-                "SPrintsNot": (M, ("OneNP", NP)), "SExitsErr": (M, NP), "SCommits": (M, NP)}.get(f, (M,))
+                "SPrintsNot": (M, ("OneNP", NP)), "SExitsErr": (M, NP)}.get(f, (M,))
         out.append(("then", template, None, None, (f,) + args))
     for kind, kid in sorted(vocab.kind_id.items()):
         inst = (kid + "_toNP", (kid + "_Inst", N))

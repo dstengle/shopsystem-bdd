@@ -24,8 +24,9 @@ def test_relation_resource_condition_and_event_entries():
     assert (t.category, t.kinds) == ("relation", ("work-item", "capability-proposal"))
     t = spec_lexicon.entry("- **worker slot** (resource, counted by `workers`): held by every worker.", "x")
     assert (t.category, t.resource) == ("resource", "counted by `workers`")
-    t = spec_lexicon.entry("- **open** (condition of initiative): Means: its status is not `done`.", "x")
-    assert (t.category, t.kinds, t.means) == ("condition", ("initiative",), "its status is not `done`")
+    t = spec_lexicon.entry("- **open** (condition of initiative): the initiative's status is not `done`.", "x")
+    assert (t.category, t.kinds, spec_lexicon.gloss(t.text)) == ("condition", ("initiative",),
+                                                                 "the initiative's status is not `done`.")
     t = spec_lexicon.entry("- **write** (event): Forms: writes, written.", "x")
     assert t.forms == ("writes", "written")
     t = spec_lexicon.entry("- **`work run`** (actor): the supervisor.", "x")
@@ -62,9 +63,8 @@ def test_colliding_identifiers_are_numbered_in_sorted_order():
     assert ids[("value", "`done`", ("initiative", "status"))] != ids[("value", "`done`", ("work-item", "status"))]
 
 
-def test_the_fixture_glossary_has_no_problems_but_its_legacy_format():
-    """The fixture keeps `Means:` and preposition relation entries (v_t9, v_t8) until the logic stops reading them."""
-    assert [p for p in spec_lexicon.problems(spec_lexicon.read(FIXTURE)) if p[0] not in ("v_t8", "v_t9")] == []
+def test_the_fixture_glossary_has_no_problems():
+    assert spec_lexicon.problems(spec_lexicon.read(FIXTURE)) == []
 
 
 def _lexicon(glossary):
