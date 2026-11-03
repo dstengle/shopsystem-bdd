@@ -1,7 +1,8 @@
 """batch-measurement's handlers (design §14.3): the Givens record on a World (batch_measurement_world.py) what the
-repository is to hold, a canned setup for an initiative log, a transcript or a measurement named with no text; every
-`measure ...` command of the generated feature runs `measure`'s main in-process on the World's day; the Thens read
-what it printed and the measurement it wrote.
+repository is to hold: an initiative log's or a measurement's example rows, or the condition or value a trace gives a
+thing; every `measure ...` command of the generated feature makes the rest of the repository (`made`: the standard
+log when no Given wrote one) and runs `measure`'s main in-process on the World's day; the Thens read what it printed
+and the measurement it wrote.
 
 `include "x"` holds when x is in the measurement's text; `not include "x"` when x is in none of its entries (its
 stages, work-items, sessions and request; its totals are left out, since they always name every figure)."""
@@ -37,13 +38,9 @@ def world(step):
 
 
 def standard(w):
+    """The log a scenario's initiative has when no Given writes one: one research stage, 10:00 to 10:12."""
     w.stage("cart-1", "research", "10:00", "10:12", session="s-1")
     w.session("s-1", "cart-1", "research", 14, 3000, 2000, 50000, 0.42)
-
-
-def transitions(w, first, last):
-    w.log(**{"time": bw.stamp(first), "work-item": "cart-1", "before": "drafted", "after": "researched"})
-    w.log(**{"time": bw.stamp(last), "work-item": "cart-1", "before": "researched", "after": "planned"})
 
 
 def git_moves(w):
@@ -61,34 +58,52 @@ def in_utc_plus_five(step):
     step.request.addfinalizer(time.tzset)
 
 
-def log_named(step, name):
+# --- Givens ---
+
+@handler("GivenCodeText", "initiative log")
+def given_log_rows(step):
+    """The initiative log's rows, one JSON object a line, read in a zone east of UTC; a stage's session is the canned
+    one with a reply, and the work-item branch has one commit for each transition."""
     w = world(step)
-    if name == "i7-cart":
-        standard(w)
-    elif name == "zulu":
-        in_utc_plus_five(step)
-        transitions(w, "2026-10-22T07:55:00Z", "2026-10-22T11:40:00+02:00")
-    elif name == "transitions":
-        standard(w)
-        moves = [("drafted", "researched"), ("researched", "awaiting-answer"), ("awaiting-answer", "researched")]
-        for number, (before, after) in enumerate(moves):
-            w.log(**{"time": bw.stamp("10:%02d" % number), "work-item": "cart-1", "before": before, "after": after})
-        w.moves = [("cart-1", *move) for move in moves]
+    in_utc_plus_five(step)
+    for line in step.docstring.splitlines():
+        row = json.loads(line)
+        w.log(**row)
+        if "before" in row:
+            w.moves.append((row["work-item"], row["before"], row["after"]))
+        elif row.get("event") == "start":
+            w.session(row["session"], row["work-item"], row["stage"], 14, 3000, 2000, 50000, 0.42,
+                      reply="a secret reply")
+    if w.moves:
         w.git_steps.append(lambda: git_moves(w))
-    elif name == "window":
-        transitions(w, "09:55", "11:40")
-    elif name == "secret":
-        w.stage("cart-1", "research", "10:00", "10:12", session="s-1")
-        w.session("s-1", "cart-1", "research", 3, 10, 10, 10, 0.01, reply="a secret reply")
-        transitions(w, "09:00", "23:00")
-        w.transcripts["sessions/s-9.jsonl"] = tr.raw_session("s-9", "11:00", "11:30", "a secret prompt", "a secret tool")
-    else:
-        raise AssertionError("no canned initiative log %s" % name)
 
 
 @handler("GivenK", "initiative log")
-def given_log(step):
-    log_named(step, bare(step.names[0]))
+@handler("GivenK", "measurement")
+def given_thing(step):
+    """A thing a condition is about: the condition's Given says what it is."""
+
+
+@handler("GivenK_C", "initiative log")
+def given_log_condition(step):
+    w, word = world(step), step.text.rsplit(" is ", 1)[1]
+    if word == "unwritten":
+        w.unwritten = True
+    elif word == "overfulfilling":
+        w.requests += [["q1", True, ASKERS["external"][1]], ["q2", True, ASKERS["external"][1]]]
+    else:
+        assert word == "requestless", step.text
+
+
+@handler("GivenK_C", "measurement")
+def given_existing(step):
+    w = world(step)
+    assert step.text.endswith(" is present"), step.text
+    w.existing = w.record()
+    w.existing.parent.mkdir(parents=True, exist_ok=True)
+    w.existing.write_text("an earlier measurement\n")
+    w.before = w.existing.read_text()
+    w.called[step.names[0]] = w.existing.stem
 
 
 @handler("GivenK_A", "logged stage")
@@ -105,19 +120,27 @@ def given_request(step):
     world(step).requests.append([step.names[0], held, asker])
 
 
-@handler("GivenCode", "session file")
 @handler("GivenK_A", "session file")
 def given_session_file(step):
-    w, session = world(step), bare(step.names[0])
-    item, stage, _ = w.sessions[session]
-    w.sessions[session] = (item, stage, step.quoted[0].strip('"') if step.quoted else "")
-    assert not step.values or step.values[0] == "`empty`"
+    w = world(step)
+    w.content = bare(step.values[0])
+    w.called[step.names[0]] = "session.json"
 
 
-@handler("GivenCode", "transcript")
-def given_transcript_text(step):
-    world(step).transcripts[bare(step.names[0])] = step.quoted[0].strip('"') + "\n"
+@handler("GivenK_A", "transcript")
+def given_transcript(step):
+    w = world(step)
+    w.availability = bare(step.values[0])
+    w.called[step.names[0]] = "s-9.jsonl" if w.availability == "unreadable" else "s-1"
 
+
+@handler("GivenCodeText", "measurement")
+def given_measurement(step):
+    path = step.repo / ("%s.md" % bare(step.names[0]))
+    path.write_text("# Measurement\n\n```json\n%s\n```\n" % step.docstring)
+
+
+# --- the world a When runs in ---
 
 def line_break_inside(session):
     rows = [json.loads(line) for line in tr.store_session(session, 3, 3).splitlines()]
@@ -125,62 +148,44 @@ def line_break_inside(session):
     return "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows)
 
 
-@handler("GivenK_A", "transcript")
-def given_transcript(step):
-    w, name = world(step), bare(step.names[0])
-    if step.values[0] == "`found`":
-        w.store["s-1"] = line_break_inside("s-1") if name == "u2028" else tr.store_session("s-1", 4, 2)
-    else:
-        assert "s-1" not in w.store
-
-
 SESSIONS = (("s-7", "09:00", "09:00, 09:20, 12:00", None), ("s-8", "09:30", "09:30, 09:50, 10:05", None),
             ("s-9", "11:00", "11:00, 12:30", None), ("s-11", "12:00", "12:00, 12:20", "s-9"),
             ("s-10", "11:50", "11:50, 12:10", None), ("s-12", "12:05", "12:05, 12:08", "s-10"))
 
 
-@handler("GivenK", "transcript")
-def given_directory(step):
-    """The directory `sessions` of r43's example: s-8, s-9 and s-11 inside the window, s-7, s-10 and s-12 not."""
-    assert bare(step.names[0]) == "sessions"
-    w = world(step)
+def directory(w):
+    """The directory `sessions` of r17's example: s-8, s-9, s-11 and s-13 inside the window, s-7, s-10 and s-12 not;
+    s-13 has a prompt and a tool call whose content is not to be measured."""
     for session, starts, times, parent in SESSIONS:
         where = "sessions/%s/subagents/%s.jsonl" % (parent, session) if parent else "sessions/%s.jsonl" % session
         w.directory[session] = (parent, starts, where)
         w.transcripts[where] = tr.timed_session(session, parent, times.split(", "), 100, 10, 1000)
     w.transcripts["sessions/s-9.jsonl"] += tr.tool_use_rows("s-9", None, "11:00", {"Bash": 2, "Read": 1})
     w.transcripts["sessions/s-9.jsonl"] += tr.compaction_rows("s-9", None, "11:00", 1)
+    w.transcripts["sessions/s-13.jsonl"] = tr.raw_session("s-13", "11:00", "11:30", "a secret prompt", "a secret tool")
 
 
-@handler("GivenCode", "measurement")
-def given_existing(step):
-    w = world(step)
-    w.existing = w.repo / bw.MEASUREMENTS / ("%s.md" % bare(step.names[0]))
-    w.existing.parent.mkdir(parents=True, exist_ok=True)
-    w.existing.write_text(step.quoted[0].strip('"') + "\n")
-    w.before = w.existing.read_text()
-
-
-STAGE = {"work-item": "cart-1", "stage": "research", "agent": "researcher", "session": "s-1", "turns": 14}
-SESSION = {"session": "s-9", "started": None, "dispatched_by": None, "output_tokens": 9000, "new_input_tokens": 4000,
-           "cache_read_tokens": 80000, "round_trips": 6, "tool_uses": {"Bash": 2}, "dispatched": ["s-11"],
-           "compactions": 1}
-MEASUREMENTS = {"m1": {"stages": [dict(STAGE, round_trips=7)], "work_items": [],
-                       "totals": {"stages": 1, "sessions": 1, "turns": 14, "round_trips": 7}},
-                "m2": {"stages": [STAGE], "work_items": [], "totals": {"stages": 1, "sessions": 1, "turns": 14}},
-                "m3": {"stages": [], "work_items": [], "totals": {"stages": 0, "sessions": 0}, "sessions": [SESSION]}}
-
-
-@handler("GivenK", "measurement")
-def given_measurement(step):
-    name = bare(step.names[0])
-    path = step.repo / ("%s.md" % name)
-    path.write_text("# Measurement\n\n```json\n%s\n```\n" % json.dumps(MEASUREMENTS[name]))
+def made(w, sessions):
+    """The repository the Givens describe: the standard log when no Given wrote one, the session.json and transcript
+    as a Given said, and the sessions directory for `--sessions`."""
+    if not w.has_log and not w.unwritten:
+        standard(w)
+    if w.content:
+        item, stage, _ = w.sessions["s-1"]
+        w.sessions["s-1"] = (item, stage, "" if w.content == "empty" else "not a session")
+    if w.availability == "found":
+        w.store["s-1"] = line_break_inside("s-1")
+    if sessions:
+        directory(w)
+    if w.availability == "unreadable":
+        w.transcripts["sessions/s-9.jsonl"] = "this is not a transcript\n"
 
 
 def runs_measure(step):
     w = world(step)
     argv = shlex.split(bare(step.command))[1:] + step.context.get("flags", [])
+    if argv[0] == "initiative":
+        made(w, "--sessions" in argv)
     w.run(step.fixtures("monkeypatch"), step.fixtures("capsys"), *argv)
 
 
@@ -188,14 +193,15 @@ for _command in sorted(set(re.findall(r"When the person runs (`measure[^`]*`)", 
     handler("WhenRuns", _command)(runs_measure)
 
 
-def mentioned(np):
+# --- Thens ---
+
+def mentioned(w, np):
     """What a noun phrase of an error names in measure's refusal."""
     if np.startswith('"'):
         return np.strip('"')
-    if np.startswith("the session file"):
-        return "session.json"
     found = re.search(r"(`[^`]+`|\b[a-z][a-z0-9-]*\d)$", np)
-    return bare(found.group(1)).split("/")[-1] if found else bare(np)
+    name = bare(found.group(1)) if found else bare(np)
+    return w.called.get(name, name.split("/")[-1])
 
 
 @handler("ThenExitsOk", "`measure`")
@@ -208,7 +214,7 @@ def exits_err(step):
     w = world(step)
     assert w.code not in (0, None), w.out
     for np in step.nps:
-        assert mentioned(np) in w.err, (np, w.err)
+        assert mentioned(w, np) in w.err, (np, w.err)
 
 
 @handler("ThenChangesNothing", "`measure`")

@@ -61,6 +61,10 @@ class World:
         self.named = {}             # measurement name -> its path, for `measure compare`
         self.merged = ()            # the commits a work-item's merge brought in
         self.requests = []          # [id, held by the queue, asker] of each request the initiative fulfils
+        self.unwritten = False      # a Given said the initiative has no log.jsonl
+        self.content = None         # what a Given said the stage's session.json holds: `empty` or `garbled`
+        self.availability = None    # what a Given said of the stage's transcript: `found`, `lost` or `unreadable`
+        self.called = {}            # a scenario's name of a thing (`t1`) -> the name measure gives it in a refusal
         self.code = None
         self.err = ""
         self.out = ""

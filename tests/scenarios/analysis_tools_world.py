@@ -26,9 +26,6 @@ class Cart:
     def total(self, items):
         return sum(items)
 """
-TEST_TOTAL = "from cart import Cart, total\n\n\ndef test_total():\n    assert Cart().total([1, 2]) == 3\n    assert total([1]) == 1\n"
-TEST_ONLY_TOTAL = "from cart import total\n\n\ndef test_total():\n    assert total([1]) == 1\n"
-TEST_DISCOUNT = "\n\ndef test_discount():\n    assert Cart().total([4]) == 4\n"
 
 # stands in for an interpreter (and for lint-imports) beside it: answers as the config beside it says
 FAKE = r"""import json, os, runpy, sys

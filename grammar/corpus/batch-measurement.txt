@@ -8,3 +8,9 @@ If the person runs `measure initiative` on an open initiative, then `measure` sh
 When `measure initiative` is run, `measure` shall read every transcript.
 Where `--json` is given, `measure` shall print one JSON object.
 When `measure` writes a measurement, `measure` shall commit the measurement and push the commit.
+# revision 2: a list of verb phrases, a response and a negated one, negated verb phrases joined by or, three
+# conditions with While and If
+When the person runs `measure initiative i7-cart`, `measure` shall print the measurement, write the measurement and exit successfully.
+While a scenario is passing, when the person runs `measure initiative i7-cart`, `measure` shall write the measurement, and `measure` shall not change the transcript.
+When the person runs `measure initiative i7-cart --sessions sessions`, `measure` shall not read the transcript, write the measurement or change the scenario.
+While an initiative is open and a scenario is not passing and a request line is settled, if the person runs `measure initiative i7-cart`, then `measure` shall exit with an error naming the initiative and change nothing.
