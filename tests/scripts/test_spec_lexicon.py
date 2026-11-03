@@ -134,6 +134,18 @@ def test_the_definition_of_a_condition_is_its_gloss():
     assert spec_lexicon.gloss("Values: `a`, `b`.") == ""
 
 
+def test_same_named_conditions_have_their_own_definitions():
+    lex = _lexicon("""
+        - **initiative** (kind): one.
+        - **work-item** (kind): one.
+        - **open** (condition of initiative): An initiative is open when the initiative is not `done`.
+        - **open** (condition of work-item): A work-item is open when the work-item is not `green`.
+    """)
+    initiative, item = sorted(lex.of("condition"), key=lambda t: t.kinds)
+    assert lex.definition(item) == "A work-item is open when the work-item is not `green`."
+    assert lex.definition(initiative) == "An initiative is open when the initiative is not `done`."
+
+
 def test_words_are_every_spelling_a_line_may_use():
     words = spec_lexicon.read(FIXTURE).words()
     assert {"`work run`", "initiative", "`drafted`", "spec lock", "under"} <= words

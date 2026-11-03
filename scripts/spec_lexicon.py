@@ -166,9 +166,9 @@ class Lexicon:
         return spec_relations.expand(self)
 
     def definition(self, term):
-        """The gloss sentence of a condition (a term or its entry), which a `Def` parse reads; "" when none."""
-        name = getattr(term, "term", term)
-        found = [t for t in self.of("condition") if t.term == name]
+        """The gloss sentence of a condition (its entry, or by name the first so named), which a `Def` parse reads;
+        "" when none."""
+        found = [t for t in self.of("condition") if t == term or t.term == term]
         return gloss(found[0].text) if found else ""
 
 

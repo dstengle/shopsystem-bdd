@@ -89,6 +89,22 @@ def test_a_group_that_contradicts_itself_is_l1_with_no_other_id(tmp_path):
     assert l1.text.endswith("it contradicts itself")
 
 
+def test_an_unsat_core_is_confirmed_at_its_own_horizon_bound(tmp_path, monkeypatch):
+    """r20 lengthens g11's cone (g11 -> r20 -> r6: imax 4), but its core r11, r12 is one step from the witness
+    (imax 3): the core's confirmation, whose pools grow with imax, is solved at the core's bound."""
+    root = copy(tmp_path, add=(
+        "### [g20] `work start` starts an integrate round\n"
+        "- [r20] When the person runs `work start` on an initiative that is `proposed`, `work run` shall start an "
+        "integrate round.\n"))
+    calls, real = [], spec_solve.spec_engine.solve
+    monkeypatch.setattr(spec_solve.spec_engine, "solve", lambda t, on, imax, *a, **k: calls.append(
+        (sorted(i for i in on if not i.startswith("T:")), imax)) or real(t, on, imax, *a, **k))
+    [l1] = of(spec_solve.run(root, "supervision", groups=["supervision#g11"]), "L1")
+    assert l1.ids == ["supervision#g11", "supervision#r11", "supervision#r12"]
+    assert calls[0][1] == 4 and "supervision#r20" in calls[0][0]
+    assert calls[1] == (["supervision#r11", "supervision#r12"], 3)
+
+
 def test_a_capability_and_groups_name_what_is_checked(findings):
     assert spec_solve.run(CLUSTER, "supervision") == findings
     assert spec_solve.run(CLUSTER, "no-such-capability") == []

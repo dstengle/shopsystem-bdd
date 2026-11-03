@@ -10,6 +10,7 @@ restate, and a typed glossary (spec_lexicon) the terms with their categories. A 
 names its group by `@g<n>`: generates(G, S)."""
 
 import re
+from collections import Counter
 
 import spec_lexicon
 import spec_read
@@ -19,13 +20,14 @@ import spec_tree
 GRAMMAR_MISSING = object()
 
 
-def term_word(t):
+def term_word(t, shared=False):
     """The word a term's id is made of, as the 0.29 reader keyed it: a relation `<term> of <k1> to <k2>`, an attribute
-    or condition entry with no gloss (it opens with a field) `<term> of <kind>`, any other the term."""
+    or condition entry with no gloss (it opens with a field), or a condition that is `shared` (another entry has its
+    word), `<term> of <kind>`, any other the term."""
     word = t.term.replace("`", "").strip()
     if t.category == "relation" and len(t.kinds) == 2:
         return f"{word} of {t.kinds[0]} to {t.kinds[1]}"
-    if t.category in ("attribute", "condition") and t.kinds and not spec_lexicon.gloss(t.text):
+    if t.category in ("attribute", "condition") and t.kinds and (shared and t.category == "condition" or not spec_lexicon.gloss(t.text)):
         return f"{word} of {', '.join(t.kinds)}"
     return word
 
@@ -45,9 +47,10 @@ class SpecReading:
         for n, bullet in enumerate(spec_lexicon._bullets(index.read_text(), "Glossary"), 1):
             if spec_lexicon.entry(bullet, "spec/index.md") is None:
                 self.problems.append(f"spec/index.md: glossary bullet {n} is not '- **<term>** (<category>): <text>'")
-        cats, n = {}, 0
-        for n, t in enumerate(spec_lexicon.read(self.root).terms, 1):
-            word = " ".join(term_word(t).lower().split())
+        cats, n, terms = {}, 0, spec_lexicon.read(self.root).terms
+        words = Counter(t.term for t in terms)
+        for n, t in enumerate(terms, 1):
+            word = " ".join(term_word(t, words[t.term] > 1).lower().split())
             ident = self.term_id(word)
             if cats.get(ident, t.category) != t.category:
                 word = f"{word} {t.category}"

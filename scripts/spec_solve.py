@@ -141,8 +141,9 @@ def _pooled(parts):
 
 def solve(ctx, group):
     """spec_engine's Result for one group: its cone, horizon bound and pools, with every guard on. An UNSAT cone is
-    confirmed on its core alone, where spec_engine retries each pool at n × imax + 1: the core is UNSAT there, so
-    the whole cone is too. Only when that core is SAT is the whole cone solved with the retry (design-r2 §6.2)."""
+    confirmed on its core alone, at the core's own horizon bound (its edges among the core: UNSAT there is UNSAT at
+    every horizon), where spec_engine retries each pool at n × imax + 1: the core is UNSAT there, so the whole cone
+    is too. Only when that core is SAT is the whole cone solved with the retry (design-r2 §6.2)."""
     wit = spec_logic.witness(ctx.vocab, group.id, group.trees[0], group.statements[0].id)
     own = ["own(%s,%s)." % (_q(group.id), _q(s.id)) for s in group.statements]
     ids, edges = spec_engine.cone(anyone(ctx.sigs + wit.sigs) + own, group.id)
@@ -151,8 +152,9 @@ def solve(ctx, group):
     res = spec_engine.solve(_pooled(parts), on, imax, {})
     if res.sat:
         return res
-    core = ctx.base + [ctx.rules[i] for i in res.core if i in ctx.rules] + [wit]
-    found = spec_engine.solve(spec_logic.program(core), res.core, imax, spec_logic.pool_sizes(core))
+    core, near = ctx.base + [ctx.rules[i] for i in res.core if i in ctx.rules] + [wit], set(res.core) | {group.id}
+    cmax = spec_engine.horizon_bound([e for e in edges if e[0] in near and e[1] in near], group.id)
+    found = spec_engine.solve(spec_logic.program(core), res.core, cmax, spec_logic.pool_sizes(core))
     if not found.sat:
         return found
     return spec_engine.solve(spec_logic.program(parts), on, imax, spec_logic.pool_sizes(parts))
