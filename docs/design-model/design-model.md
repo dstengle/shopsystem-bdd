@@ -137,9 +137,9 @@ under the capability's `## Dropped` with its reason or `moved to <cap>`.
 
 **Universal conditions** U1–U10 (`spec/universal.md`): at most `workers`
 worker slots; a stage starts only when what it needs is free; a refusal
-exits with its reason and changes nothing; commits are pushed; only
-`work` writes a status; a stage without a readable result is discarded;
-a worker changes only its worktree and stage directory; `--json` prints
+exits with its reason and changes nothing; every transition is committed
+and pushed; a session never writes a status; a stage without a result is
+discarded; a worker changes only files in its worktree; `--json` prints
 one object; a delivery changes only its own initiative directories; a
 stage is given its brief and no other input.
 

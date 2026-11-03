@@ -18,9 +18,9 @@ from pathlib import Path
 import spec_lexicon
 import spec_tree
 import spec_typed
+import tools_grammar
 
 GRAMMARS = Path(__file__).resolve().parent.parent / "grammar"
-GF_INSTALL = "shopsystem-bdd/gf-3.12/bin/gf"
 LIMIT = 2000  # trees read from one parse before the guards; a literal slot reads any token
 _loaded = {}
 
@@ -40,21 +40,9 @@ class Parse:
 
 
 def gf_binary():
-    """GF: `$SHOPSYSTEM_GF`, then the install path, then a `gf` on PATH that says it is Grammatical Framework."""
-    if os.environ.get("SHOPSYSTEM_GF"):
-        return os.environ["SHOPSYSTEM_GF"]
-    data = Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local" / "share")
-    if (data / GF_INSTALL).is_file():
-        return str(data / GF_INSTALL)
-    found = shutil.which("gf")
-    if found:
-        try:
-            out = subprocess.run([found, "--version"], capture_output=True, text=True, timeout=30).stdout
-        except (OSError, subprocess.SubprocessError):
-            out = ""
-        if "Grammatical Framework" in out:
-            return found
-    return None
+    """GF's binary, by `tools_grammar.gf_binary`, the one lookup: `$SHOPSYSTEM_GF`, the install path, then a `gf`
+    on PATH that says it is Grammatical Framework."""
+    return tools_grammar.gf_binary()
 
 
 def tokenise(line):

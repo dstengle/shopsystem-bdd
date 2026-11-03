@@ -7,5 +7,5 @@
 [U6] When a session ends a stage with no result, `work run` shall discard the stage.
 [U7] A worker shall change only files in its worktree.
 [U8] Where `--json` is given, a tool shall print one JSON object.
-[U9] A delivery shall change no initiative directory of an initiative outside the delivery.
+[U9] A delivery shall change no file of an initiative outside the delivery.
 [U10] When `work run` starts a stage, `work run` shall give the stage only a brief.

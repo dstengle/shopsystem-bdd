@@ -39,11 +39,6 @@
     request/missingmass.io/shopsystem/shopsystem-bdd/q6, capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r104
     request/missingmass.io/shopsystem/shopsystem-bdd/q8, capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r113
     request/missingmass.io/shopsystem/shopsystem-bdd/q8, capability/missingmass.io/shopsystem/shopsystem-bdd/supervision#r114
-file: .shop/records/2026-11-02-domain-model/domain-model.md: kind 'design' is not a record kind
-file: .shop/records/2026-11-03-gf-conversion/brief.md: kind 'design' is not a record kind
-file: .shop/records/2026-11-03-gf-conversion/builder-check.md: kind 'analysis' is not a record kind
-file: .shop/records/2026-11-03-gf-conversion/design.md: kind 'design' is not a record kind
-file: .shop/records/2026-11-03-gf-conversion/plan.md: kind 'design' is not a record kind
 file: .shop/work/i39/w212.md: accepts capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r39, which no scenario names yet
 file: .shop/work/i39/w212.md: accepts capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r41, which no scenario names yet
 file: .shop/work/i39/w212.md: accepts capability/missingmass.io/shopsystem/shopsystem-bdd/requests#r43, which no scenario names yet
@@ -211,7 +206,7 @@ unresolved: spec/decisions/0072-work-list-and-work-show-replace-work-status.md: 
 unresolved: spec/decisions/0072-work-list-and-work-show-replace-work-status.md: capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r35 names nothing in this repository
 v10a  a source that is not an origin  (19)
 v17  a request that is part of no job-thread, cites no origin and is raised for no request  (24)
-v3  a delivered request's resolution names a requirement the spec does not have  (8)
+v3  a request's resolution names something that is not a requirement of the spec  (8)
 v_d1  a done initiative has a part or a request of its own open  (9)
-v_s3  a requirement has no scenario  (2)
+v_s3  a group or requirement has no scenario  (2)
 warning w_uncited_obs  an observation no initiative cites  (16)

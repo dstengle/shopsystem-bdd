@@ -101,8 +101,8 @@ Tools the skills and agents run:
 - **`measure`** (actor): the tool that measures an initiative's deliveries and shows and compares measurements.
 - **`migrate`** (actor): the tool that migrates a repository to the final layout and upgrades it between plugin releases.
 - **`model`** (actor): the tool that checks a repository against the design model and reads its requirements.
-- **tool** (actor): any of the commands `work`, `work run`, `features`, `tools`, `measure`, `migrate` and `model`.
-- **worker** (actor): a session `work run` starts with `claude -p` for one stage of one work-item, as that stage's agent; the branch reviewer, owning no work-item, is not one.
+- **tool** (kind): any of the commands `work`, `work run`, `features`, `tools`, `measure`, `migrate` and `model`.
+- **worker** (kind): a session `work run` starts with `claude -p` for one stage of one work-item, as that stage's agent; the branch reviewer, owning no work-item, is not one.
 
 - **bounded context** (kind): one repository's spec, with its index, capabilities, decisions and glossary.
 - **capability** (kind): one file under `spec/capabilities/`, with a group and a narrator. Plural: capabilities.
@@ -155,6 +155,11 @@ Tools the skills and agents run:
 - **fact** (kind): one statement `model facts` gives clingo about the repository's files.
 
 - **worktree** (kind): a working tree `work run` makes for one stage.
+- **file** (kind): a file of the repository or of a worktree.
+- **command** (kind): one run of `work`, `work run` or another tool, with its arguments.
+- **reason** (kind): what an error names as the cause of a refused command.
+- **JSON object** (kind): the one object a tool prints on standard output when `--json` is given.
+- **resource** (kind): what a session holds while it runs: a lock, a claim, a worker slot, a turn, an initiative directory or the checkout.
 - **initiative branch** (kind): the branch `work run` commits each transition on and merges each work-item branch into; its base is the commit it started from. Plural: initiative branches. Not: integration branch.
 - **work-item branch** (kind): the branch an implementer commits a work-item's work on, from the initiative branch's head, merged into the initiative branch and deleted when it is merged. Plural: work-item branches.
 - **commit** (kind): one git commit on a branch.
@@ -194,6 +199,7 @@ Tools the skills and agents run:
 - **closed** (condition of glossary-proposal): Means: its status is `approved` or `withdrawn`.
 - **closed** (condition of work-item): Means: its status is `green` or `withdrawn`.
 - **failed** (condition of work-item): a work-item whose stage was discarded; its committed work is kept, and pushed when the remote takes it, and `work retry` returns it once the fault is remedied. Means: its status is `failed`. Not: aborted.
+- **free** (condition of resource): Means: no session holds it, or for a counted resource, fewer than its number.
 - **green check** (condition of work-item branch): Means: the scenarios of its work-item and the suite pass on it, a failing scenario counted after its one rerun alone.
 
 - **fulfils** (relation initiative → request): an initiative fulfils exactly one request.
@@ -221,6 +227,11 @@ Tools the skills and agents run:
 - **for** (relation stage → node): the node a stage is started for.
 - **belongs to** (relation commit → work-item): the work-item a commit is made for.
 - **merges into** (relation work-item branch → initiative branch): the branch a work-item branch is merged into.
+- **needs** (relation stage → resource): a resource a stage must hold to start; it starts when every one is free.
+- **with** (relation stage → result): the result a stage wrote.
+- **in** (relation file → worktree): a file of a worktree.
+- **of** (relation file → initiative): a file under the initiative directory of an initiative.
+- **outside** (relation initiative → delivery): an initiative the delivery does not run.
 
 - **start** (event): a stage begins to run, holding its resources.
 - **end** (event): a stage's session stops, with a result or without one.
@@ -230,6 +241,10 @@ Tools the skills and agents run:
 - **merge** (event): `work run` merges a work-item branch into the initiative branch. Forms: merges, merged.
 - **rerun** (event): `work run` runs a failing scenario once more, alone. Forms: reruns, rerun.
 - **raise** (event): an initiative raises a request into an upstream. Forms: raises, raised.
+- **refuse** (event): a tool declines a command; a refused command changes nothing.
+- **write** (event): a session or a tool writes a file or a field. Forms: writes, written.
+- **change** (event): a session or a tool changes a file or a field.
+- **give** (event): `work run` gives a stage its input. Forms: gives, given.
 
 - **spec lock** (resource, exclusive): one for each bounded context, held by every integrate, apply and formulate round.
 - **initiative lock** (resource, exclusive): one for each initiative, held by every stage of the initiative that is not a worker's.

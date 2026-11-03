@@ -72,6 +72,12 @@ def test_gf_binary_prefers_the_environment(monkeypatch, tmp_path):
     assert spec_grammar.gf_binary() == str(gf)
 
 
+def test_gf_binary_is_the_one_lookup_of_tools_grammar(monkeypatch):
+    import tools_grammar
+    monkeypatch.setattr(tools_grammar, "gf_binary", lambda environ=None: "/the/one/lookup/gf")
+    assert spec_grammar.gf_binary() == "/the/one/lookup/gf"
+
+
 def test_every_capability_has_a_corpus_of_at_least_eight_sentences():
     for name in CAPABILITIES:
         assert len(lines(CORPUS / ("%s.txt" % name))) >= 8, name

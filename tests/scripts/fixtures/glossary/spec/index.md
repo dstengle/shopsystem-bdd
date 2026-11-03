@@ -120,6 +120,7 @@ category, for the tests of the lexicon and the requirement grammar. It is not th
 - **of** (relation work-item → initiative): the initiative a work-item delivers.
 - **of** (relation stage → work-item): the work-item a stage runs.
 - **of** (relation initiative directory → initiative): the directory of an initiative.
+- **of** (relation file → initiative): a file under the initiative directory of an initiative.
 - **of** (relation transcript → session): the transcript of a session.
 - **fulfils** (relation initiative → request): the request an initiative delivers.
 - **argues** (relation capability-proposal → capability): the one capability a proposal changes.
