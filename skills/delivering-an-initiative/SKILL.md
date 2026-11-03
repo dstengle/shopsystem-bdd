@@ -45,7 +45,7 @@ Do not explain, summarise or answer the questions yourself, and do not read the 
 ## Fixes, answers and the ledger
 
 - A fix to code that a trial finds is drafted as a work-item for `work run` to deliver: `python3 <scripts>/work add <initiative> <title> --part-of capability-proposal/<the proposal's file name without .md> --under <capability> --accepts <id>`, one `--accepts` for each requirement id; `work add` prints the work-item's id and commits it. You change no code yourself.
-- A fix that needs a new scenario, or a new row of a scenario's examples, goes to the `feature-formulator` through a `formulate` round of `initiative-round`, never to the implementer.
+- A fix that needs a new scenario is a new or changed requirement: it goes to integration as a request (the `raising-a-request` skill), whose groups `work run` generates as scenarios with `features generate`; never to the implementer, and never written into a feature file.
 - Ask each dispatch to reply in a few lines and leave the rest in files. Read a file a dispatch wrote only to decide what to do next.
 - When the person gives an answer, append one line naming it to the initiative's ledger, `.shop/work/<initiative>/ledger.md`, with `python3 <scripts>/work note <initiative> <line>`; the line names the work-item or question it answers and gives the answer in the person's words, on one line (`work note` refuses a line break). `work note` writes and commits the ledger; never write the ledger by any other means. If `work note` exits non-zero, show its `work: <why>` line and stop.
 - The ledger is tracked with the initiative: do not move or archive it.
