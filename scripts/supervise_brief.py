@@ -1,9 +1,13 @@
 """`work run`'s briefs (capability supervision): the one file a worker is given, naming the work-item, the files to
-read, where it works and where it writes its result. Standard library only; a part of supervise.Run."""
+read, where it works and where it writes its result. Under the GF conversion's design §13 an integrate round drafts
+codified groups, which `work run` checks; a gate round is given the scenarios the drafts would generate; an intake is
+given each line beside its normal form (`normal_form`). Standard library only; a part of supervise.Run."""
 import json
 import re
+from pathlib import Path
 
 import supervise_drafts
+import supervise_formulate
 import supervise_glossary
 import workqueue
 import workqueue_request
@@ -16,16 +20,19 @@ CHANGE_LIST = ("Give your change list in your result's `changes`: a list with on
                "and in no capability's entry.")
 REQUEST_LINES = ("Where a line you draft needs what an upstream above does not yet give, give the lines of a request into "
                  "that upstream in your result's `requests`: a list with one entry for each such upstream, each "
-                 '`{"upstream": <its id>, "lines": [...]}`, the lines in strict form, worded in the terms of the '
-                 "glossary in that upstream's published spec (its index.md), read there; write nothing into it.")
+                 '`{"upstream": <its id>, "lines": [...]}`, the lines as codified requirements that parse in that '
+                 "upstream's grammar, worded in the terms of the glossary in its published spec (its index.md), read "
+                 "there, each checked with `model parse` (`model --root <the upstream's root> parse <line>`); write nothing into it.")
+CODIFIED = ("Draft the Behaviour as codified groups (docs/capability-format.md): `### [g<n>] <title>`, `Restates:` where a "
+            "group replaces 0.29 ids, and `- [r<n>] <statement>` lines in the requirement language, every word from the "
+            "glossary or a `## Terms` entry you draft; a word the glossary lacks is a term you draft, never a synonym. "
+            "When the round ends, `work run` parses every drafted requirement and runs the logic check on spec/ with the "
+            "drafts; what refuses them comes back to the round, at most twice, and then goes to the person.")
 ANSWER_LINES = ("Where an answer below asks for lines the request's accepted lines do not, draft those lines under the "
                 "capabilities the answer names, each quoting the answer it comes from.")
 UNHELD_ANSWERS = ("Compare each answer below with the drafts you applied, and give each answer they do not hold in your "
                   "result's `unheld_answers`, a list of the answers' texts, also when you applied some of the drafts; "
                   "leave out an answer they hold.")
-NOTHING_FORMULATED = ("Where the answers below change lines that are not in spec/, so that you formulate nothing, give in your "
-                      "result `nothing_formulated`, a sentence saying so, and no `questions`: `work run` then starts an "
-                      "integrate round for the proposal.")
 UPSTREAM =re.compile(r"^- (bounded-context/\S+?):\s+(\S.*?)\s*$")
 
 
@@ -84,13 +91,16 @@ class Briefs:
                 lines.append(CHANGE_LIST.replace("Give your change list", "Give the change list of what you applied"))
                 lines.append(UNHELD_ANSWERS)     # spec-integration r46
                 lines += [supervise_glossary.text(self.dir, name)] if supervise_glossary.withheld(self.dir, name) else []     # r55, r165
-            if stage == "formulate":     # r149: the output of a formulation whose answers change lines outside spec/
-                lines.append(NOTHING_FORMULATED)
             if stage in ("gate", "apply"):     # r108: the kept drafts of the integrate round that wrote the proposal
                 kept = re.search(r"The drafts of this proposal are in (\S+?)\.(?:\s|$)", item.read_text())
                 if kept:
                     lines.append("Drafts path: %s" % kept.group(1))
                     read.append(kept.group(1))
+                if kept and stage == "gate":     # design §13: the scenario each drafted group would generate
+                    shown, why = supervise_formulate.preview(self.root, (self.root / kept.group(1)).parent, name,
+                                                             here / "preview")
+                    lines.append("Generated scenarios (preview): %s" % (shown or "none: %s" % why))
+                    read += [str(shown)] if shown else []
         base = self.base()
         if base:
             lines.append("Base: %s" % base)
@@ -138,6 +148,7 @@ class Briefs:
             "Ids drafted elsewhere (number added lines above each on the same capability): %s"
             % (", ".join(others) or "none"),
             "Drafts path: %s" % (here / "drafts"),
+            CODIFIED,
             CHANGE_LIST]
 
     def findings_lines(self, name):
@@ -215,3 +226,20 @@ def accepted_scenarios(root, accepts):
                     found.append((rel, line.split(":", 1)[1].strip()))
                 held = set()
     return found
+
+
+def normal_form(root, line):
+    """An intake's reading of one request line (design §13): `normal form: <its tree linearised>` when it parses in
+    the context's grammar, `does not parse: <why>` when not, and None when the context's index is not codified or
+    there is no grammar to parse with."""
+    import spec_grammar
+    import spec_read
+    if not spec_read.codified(Path(root) / "spec" / "index.md"):
+        return None
+    try:
+        parsed = spec_grammar.parse(root, line)
+        if parsed.tree is None:
+            return "does not parse: %s" % parsed.refusal
+        return "normal form: %s" % spec_grammar.linearise(root, parsed.tree)
+    except spec_grammar.GrammarError:
+        return None

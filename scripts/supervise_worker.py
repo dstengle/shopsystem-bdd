@@ -45,8 +45,8 @@ TOOLS = {
     # The session answering a question under a delegation (supervise_answers.py) reads, and runs nothing.
     "answer": ["Read", "Glob", "Grep"],
 }
-# A capability-proposal's rounds (supervise_rounds.py): they commit spec/ or features/ in a worktree of their own, and
-# dispatch the capability-writer and the feature-formulators.
+# A capability-proposal's rounds (supervise_rounds.py): they commit spec/ (the formulate script features/) in a worktree of their own; the integrate
+# round dispatches the capability-writer. The formulate round is a script with no session (supervise_formulate.py).
 ROUNDS = ("integrate", "gate", "apply", "formulate")
 # The intake round (supervise_intake.py) writes a request's line outcomes and passes its turn: `work outcome`, `work turn`
 # and `work show`, no other `work` command.

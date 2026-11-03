@@ -1,162 +1,97 @@
 ---
 name: checking-spec-consistency
-description: Use when the person asks to check the spec's consistency, its terms or its glossary, or whether its lines and scenarios say the same thing, in a repository with spec/ capability files with [r<n>] ids. Also use when the person asks to fix what such a check found (fix mode). Run on demand only; integration and formulation rounds do not run it.
+description: Use when the person asks to check the spec's consistency, its terms or its glossary, or whether its requirements leave anything to infer, in a repository with codified spec/ capability files. Also use when the person asks to fix what such a check found (fix mode). Run on demand only; integration rounds and work run do not run it.
 ---
 
 # Checking Spec Consistency
 
 ## Overview
 
-A bounded context's spec should agree with itself: one word means one thing, one thing has one word, a line has one reading, the lines leave nothing to infer (docs/capability-format.md, "Lines that leave nothing to infer"), and a scenario says what its line says. This skill checks that and, in fix mode, walks the person through the fixes. `model check` judges the words the glossary avoids (`v_t1` (a word the glossary avoids), `v_t2` (a term has two entries), `v_t3` (an avoided word is a term)); a blind `shopsystem-bdd:spec-checker` agent judges meaning, one dispatch for each capability and one for the whole context.
+A codified spec agrees with itself by construction in most of what this check once judged by hand. Every requirement parses to one tree in the context's grammar, using lexicon words only (`model parse`, rules `v_p*`); `model logic` checks that each group can happen with the universal conditions, that statements do not repeat each other and that every status change follows a transition (L1-L4); scenarios are generated from groups, so they cannot drift from them; `model check` reports avoided words in prose and term problems (`v_t*`) and `model lexicon --check` the glossary's categories and values (v_t4-v_t6). What none of these can judge is meaning: whether a term's definition is clear, whether a response is observable by the narrator, whether a group leaves something to infer. A blind `shopsystem-bdd:spec-checker` judges that, one dispatch for each capability and one for the glossary.
 
-The skill runs when the person asks for it, never otherwise. Integration and formulation rounds do not run it, and no other skill invokes it.
-
-The glossary's form, term ids and `v_t*` rules are in `docs/capability-format.md` in this plugin, "Glossary". Scripts: `<this skill's base directory>/../../scripts/`. `scripts/model check` takes no path or other argument: it reads all of `spec/` and `features/`. It shows the first ten rows of each rule and then `... and <n> more`, so this skill runs it as `scripts/model check --limit 100000`: `--limit` is an option, not a path, and with it every row is shown.
-
-The session reads only `spec/`, `features/`, its drafts path and the dispatches' replies and findings files, never the source or the step definitions. Running one scenario by name, as formulating-features does to deprecate it, is a run, not a reading.
+The skill runs when the person asks for it, never otherwise. Scripts: `<this skill's base directory>/../../scripts/`. The session reads only `spec/`, `features/`, its drafts path and the dispatches' replies and findings files, never the source or the step definitions.
 
 **Findings mode** is the default: it ends with one findings file and changes nothing else. **Fix mode** runs only when the person asks for it, on the findings of a check.
 
-A repository whose Behaviour lines have no `[r<n>]` ids is migrated to ids first (migrating-to-capabilities, "Adding Ids").
+A capability file that is not codified (no `language: codified-1`) is upgraded first (`migrate upgrade`); this check reads codified files only.
 
 ## The Check
 
-Both modes start here. Choose the drafts path `.shop/scratch/drafts/<date>-consistency/`; the check is `round-1/`.
+Choose the drafts path `.shop/scratch/drafts/<date>-consistency/`; the check is `round-1/`.
 
-1. **Run `scripts/model check --limit 100000`** before anything else, with no other argument, and keep its output as `<drafts path>/round-1/model-check.txt`. Its `v_t1`, `v_t2` and `v_t3` rows are findings; rows of any other rule are not this check's findings. Exit 2 with a message that names clingo and `pip install clingo` means clingo is missing: the findings file says that `v_t*` was not checked, and the check goes on. Any other exit 2 is a failed run: stop and tell the person.
-2. **Give the count.** Count the capability files under `spec/capabilities/`. Before dispatching anything, tell the person: "This check has run `model check`, and now dispatches <n + 1> spec-checkers: one for each of the <n> capabilities and one for the whole context." Then note `git status --porcelain`.
-3. **Dispatch** the spec-checkers, all in one message so they run together: the capability template once for each capability, the context template once. Describe each `consistency: check <capability>`, and the context's `consistency: check whole context`. Give them no other paths.
-4. **Wait for your dispatches.** Their finishing is not certain to wake you, and a turn ended while one is active leaves the check unfinished. After dispatching, wait in one shell command for every reply file to exist, looking every few seconds, for up to nine minutes; run it again if it times out with dispatches still working. Do nothing else meanwhile, and do not end your turn. A dispatch with no reply file after two waits is started again, once; after that, the check stops and names it.
+1. **Run the mechanical checks** and keep their output in `<drafts path>/round-1/`: `scripts/model check --limit 100000` (`model-check.txt`; its `v_p*`, `v_t*` and `v15*` rows are findings), `scripts/model logic` (`logic.txt`; every L1-L4 is a finding) and `scripts/model lexicon --check` (`lexicon.txt`). An exit 2 that names a missing tool (gf, clingo, telingo) means that check did not run: the findings file says so, and the check goes on. Any other exit 2 is a failed run: stop and tell the person.
+2. **Give the count.** Before dispatching anything, tell the person: "This check has run the parser and the logic check, and now dispatches <n + 1> spec-checkers: one for each of the <n> capabilities and one for the glossary." Then note `git status --porcelain`.
+3. **Dispatch** the spec-checkers, all in one message so they run together: the capability template once for each capability, the glossary template once. Describe each `consistency: check <capability>`, and the glossary's `consistency: check glossary`. Give them no other paths.
+4. **Wait for your dispatches.** After dispatching, wait in one shell command for every reply file to exist, looking every few seconds, for up to nine minutes; run it again if it times out with dispatches still working. A dispatch with no reply file after two waits is started again, once; after that, the check stops and names it.
 5. **Verify the porcelain.** `git status --porcelain` matches the porcelain noted in step 2, but for entries under the drafts path: a dispatch that wrote outside it goes back with those files removed.
-6. **Write the findings file**, `<drafts path>/findings.md`, from `model-check.txt` and the dispatches' findings files, in this order:
-   - `## Terms`: one `### <word> / <word>` heading per term cluster, the words one thing goes by or the thing one word names, with every finding about them: the `v_t*` rows of its words, one word used for two things, two words used for one thing, a thing with no glossary entry.
-   - `## Lines with two readings`: each line, quoted, with its two readings.
-   - `## Lines in the wrong pattern`: each line, quoted, with the EARS pattern it uses and the one what starts its behaviour asks for.
-   - `## Lines left to infer`: two lines that act on one thing without saying which wins, a line that leaves to inference which runs, workers or commands it applies to, and a status or mode with a way into or out of it that no line gives, each with its lines quoted.
-   - `## Behaviour no line asks for`: each scenario, quoted, with the behaviour it shows.
-   - `## Scenarios showing another line's response`: each scenario, quoted, with the line whose response it shows, or the exit code it gives.
-   - `## Other drift`: each scenario whose wording drifts from its line, and anything else.
+6. **Write the findings file**, `<drafts path>/findings.md`, in this order: `## Mechanical` (each row and finding of step 1, by rule), `## Terms` (unclear terms, by term), `## Unobservable responses`, `## Left to infer`, `## Missing examples`. Number the findings `F1`, `F2` and on, across the file. Each names its ids (`capability/<name>#r<n>`, `capability/<name>#g<n>`, `term/<term>`) and quotes the words. Two dispatches' findings about one thing are one finding.
 
-   An undefined word, one a line depends on that is neither a term nor spelled out in the line, goes under its term cluster.
-
-   A drift finding about a word goes under that word's term cluster. Number the findings `F1`, `F2` and on, across the file. Each finding names its ids (`capability/<name>#r<n>`, `features/<name>.feature:<title>`, `term/<term>`) and quotes the words. Two dispatches' findings about one thing are one finding.
-
-**Findings mode ends here.** Remove `<drafts path>/round-1/`, so the findings file is the one file the check leaves. Reply to the person with the findings file's path and the count in each group. Nothing outside the drafts path changes and nothing is committed. If `.gitignore` lacks `.shop/scratch/`, say so and leave it.
+**Findings mode ends here.** Remove `<drafts path>/round-1/`, so the findings file is the one file the check leaves. Reply to the person with the findings file's path and the count in each group. Nothing outside the drafts path changes and nothing is committed.
 
 ## Fix Mode
 
-Fix mode works through a findings file, in four steps, in this order. It takes the findings file of a check this session ran, or one the person names; with neither, it runs The Check first. Before step 1 the working tree is clean of other work, or fix mode stops and says so; if `.gitignore` lacks `.shop/scratch/`, add it and commit that line alone. A finding's settlement is written beside it in the findings file as it is settled: `applied <commit>`, `rejected` or `deferred`.
+Fix mode works through a findings file, one finding at a time, each answered before the next is asked. Before it starts the working tree is clean of other work, or fix mode stops and says so. A finding's settlement is written beside it as it is settled: `applied <commit>`, `rejected` or `deferred`.
 
-Steps 1 to 3 each begin by running `scripts/model check --limit 100000` and keeping its output as `<drafts path>/fix/step-<k>-before.txt`, and each ends by running it again and comparing the rows with that kept run: a row in both was there before and is not the step's. Tell the person, before the next step, the rows that went and the rows that came. The commits inside a step are guarded by what the skill they go through verifies before each commit; this closing run only informs, and it is the next step's kept run. A new row the step made that its skill does not expect is fixed before the next step begins. Where `model check` exits 2 with a message that names clingo and `pip install clingo`, clingo is missing: say so, and the skills a step goes through verify by hand, as each says. Any other exit 2 is a failed run: stop and tell the person.
+- **A change to a requirement, a group or a term** goes through integrating-a-proposal, as a proposal of its own (in a repository with `.shop/work/`, a request raised with the `raising-a-request` skill, or a capability-proposal). Ask the person one question: the words, quoted with their ids, what is unclear or left open, and the requirement or entry each answer would give, worded in the requirement language and checked with `model parse`. A changed requirement is retired and replaced under a new id; the features follow by `features generate`, never by hand.
+- **A mechanical finding** is settled the same way: the requirement or term it names is reworded, and `model parse`, `model logic` and `model check` run clean on the change before it goes to the gate.
+- A finding the person says to leave is `rejected`; one for later is `deferred`, recorded as an observation in `.shop/records/observations.md` (`## observation/<context id>/<date>-consistency-<F<n>>`, then `about:`, `by: the person`, `date:` and the finding in one paragraph with its ids), committed alone.
 
-1. **Terms.** One term cluster at a time. Propose a glossary entry in the form `- **<term>**: <one-sentence definition>. Not: <word>, <word>.`, with its id `term/<term>`. The term is the word the glossary already has for the thing; where it has none, the word most of the lines use. `Not:` lists the cluster's other words. Where one word is used for two things, propose two entries, one for each thing: at most one of them keeps the shared word, the other thing's lines take a new word, and the shared word goes after `Not:` in the entry that does not keep it. Before showing a proposal, run `grep -rniwE '<word>s?' spec/capabilities` for each word after its `Not:`, so the proposal lists every line that uses it. With the entry, show each line that would change to apply it. Ids are kept: a changed line keeps its id. The entry and its line changes go through integrating-a-proposal, as one gate pass for the term:
-   - At most two lines change: its small-change path, and the proposal is that path's gate. Write the changed lines yourself, from `spec/` alone, and show each in full with its id and what it was. The person's yes to the proposal is the gate's yes. Then apply, verify and commit as that path says, the commit naming the term and each id it changes.
-   - More than two lines change: its full path. The proposal shows each line's id and the words that would change. The person's yes to it is not a gate pass: it chooses the entry the note has, and initiative-round's gate is the term's one gate pass. Write the note `<drafts path>/fix/term-<term>.md`: the entry the person approved, with the date, and one sentence for each line change ("In `capability/<name>#r<n>`, <word> becomes <term>."). Dispatch `initiative-round` with the job `integrate` and that note, as integrating-a-proposal's "Who Does What" says; its gate text is the term's one gate pass, and the person's yes to it goes to a `initiative-round` with the job `apply`.
-
-   In a repository that keeps `.shop/work/`, the term and its line changes ride with a capability-proposal that lists `term/<term>` (integrating-a-proposal, "Terms"). The person may give another word or another definition: the proposal changes and is shown again. A `v_t2` or `v_t3` row is settled by changing the glossary entries it names, through the same gate pass. A `v_t*` row is never rejected or deferred: the proposal for its cluster settles it. A cluster whose entry is in the glossary already and whose lines need no change has no gate pass: its scenarios follow in step 2. Any other cluster the person declines is `rejected`, or `deferred` when they say later. Integrating-a-proposal's hand-off to formulation is step 2 of this skill.
-2. **Scenarios follow.** Every scenario a `v_t1` row of this step's kept run names is reworded to its line through formulating-features' small-change path ("The Small-Change Path"), with no further approval: the line and the term are approved. Where clingo is missing, they are the scenarios `grep -rniwE '<word>s?' features` finds for each word after a `Not:`, those tagged `@deprecated` left out. Write the reworded scenarios yourself, from the line and the glossary, and splice, deprecate, rebind, verify and commit as that path says, the commit containing the feature files and the test files `rebind` changed. A rewording that changes only a title is rebound and goes no further. One that changes a step's text is a changed scenario, as that path says, for a work-item to turn green. Tell the person which scenarios changed their steps.
-3. **One at a time.** First the lines with two readings, then the lines in the wrong pattern, then the lines left to infer, then behaviour no line asks for, then the scenarios showing another line's response, then the other drift, one finding to the person at a time, each answered before the next is asked.
-   - **A line with two readings.** Ask one question: the line, quoted with its id, and its two readings, each with the line it would give. The answer is integrated through integrating-a-proposal's question path: when it changes at most two lines, its small-change path, the lines written by you from the answer and shown at its gate; otherwise a `initiative-round` with the job `integrate`, the question, its readings and the person's answer in their words, whose writer gets the question template, and on the person's yes to its gate text a `initiative-round` with the job `apply`, as that skill's "Who Does What" says. Either path ends in its gate, its commit and its hand-off to formulation.
-   - **A line in the wrong pattern.** Ask one question: the line, quoted with its id, the pattern it uses, and the line it would be in the pattern its trigger asks for. The answer goes through the same path as a line with two readings; a pattern change keeps the line's meaning, and its scenario is reworded only where its wording differs from the new line.
-   - **A line left to infer.** Ask one question: the lines, quoted with their ids, and what they leave open (which wins, which runs, workers or commands a line applies to, or the way into or out of the status), with the line or lines each answer would give. The answer goes through the same path as a line with two readings.
-   - **Behaviour no line asks for.** Ask whether a line should ask for it: the scenario, quoted with its title, and the behaviour. Yes: the line is written first, through the same path as a line with two readings. No: the scenario is reworded to its line through formulating-features' small-change path, with no further approval.
-   - **A scenario showing another line's response.** The scenario is reworded to show its own line's response alone, exits in words, through formulating-features' small-change path, with no further approval; where the other line has no scenario, it gets one in the same pass.
-   - **Other drift.** Ask which side is right: the line, quoted with its id, and the scenario's words, quoted with its title. The line is right: the scenario is reworded to its line through formulating-features' small-change path, with no further approval. The scenario is right: the line changes through integrating-a-proposal's small-change path, at its gate. Neither, or not now: the finding is `deferred`.
-
-   A finding the person says to leave is `rejected`. A `deferred` finding, from this step or step 1, is recorded as an observation: appended to `.shop/records/observations.md` in the form of the entries there (`## observation/<context id>/<date>-consistency-<F<n>>`, then `about:` the capability, `by: the person`, `date:`, and the finding in one paragraph with its ids), and that file is committed alone, `observation: consistency findings`, before step 4. Its settlement in the findings file says `deferred, observation <its id>`.
-4. **End.** Run `scripts/model check --limit 100000`, with no other argument. Fix mode ends when every finding in the findings file is `applied`, `rejected` or `deferred` and this run prints no `v_t1`, `v_t2` or `v_t3` row. A `v_t*` row still there goes back to step 1 as a cluster of its own, and steps 2 to 4 follow it again. Where `model check` exits 2 with a message that names clingo and `pip install clingo`, clingo is missing: verify each word after a `Not:` by hand (`grep -rniwE '<word>s?' spec/capabilities features`, leaving out scenarios tagged `@deprecated`), and say so in the reply. Any other exit 2 is a failed run: stop and tell the person. Reply to the person with the commits, the count of findings applied, rejected and deferred, and each scenario whose steps changed.
+Fix mode ends when every finding is `applied`, `rejected` or `deferred` and step 1's checks show no row the findings file did not settle. Reply with the commits and the count of findings applied, rejected and deferred.
 
 ## The Capability Template
 
 Send this to each dispatch verbatim, with the names and paths filled in.
 
 ```
-Check spec/capabilities/<NAME>.md against features/<NAME>.feature.
-You may read those two files and spec/index.md. Nothing else: not docs/,
-not the source, not the step definitions.
+Check the groups of spec/capabilities/<NAME>.md.
+You may read that file and spec/index.md. Nothing else: not docs/, not the
+source, not the step definitions.
 
-Judge each Behaviour line against the scenario that has its @r<n> tag.
-A scenario tagged @deprecated formulates no line: leave it out. A scenario
-names one line. Find:
-- wrong pattern: a line whose EARS pattern does not fit what starts its
-  behaviour (a response to a command or an event is When ..., a refusal or
-  fault is If ... then, behaviour that lasts for a period is While, one that
-  depends on configuration is Where, and only what is true with no trigger at
-  all has none);
-- drift: a scenario whose wording differs from its line: it names a thing
-  by another word, adds or drops a condition, or pins what the line
-  does not give;
-- two readings: a line that admits two readings;
-- behaviour no line asks for: a scenario showing observable behaviour (an
-  output, a file written, a status) that no Behaviour line here asks for;
-- unstated interaction: two lines here that act on one thing (one file,
-  one status, one command) without saying which of them wins;
-- unstated reach: a line that leaves to inference which runs, workers or
-  commands it applies to (every pytest run, every worker);
-- another line's response: a scenario with several @r<n> tags, or showing
-  the response of a line other than its own, an exit or a refusal of the
-  general failure line included, or giving an exit code rather than
-  exits successfully or with an error.
-Use spec/index.md's Glossary for what its terms mean. Decide nothing: never
-say which side is right, never pick a reading, never rewrite a line or a
-scenario.
+The requirements are codified: they parse, use glossary words only, and
+their scenarios are generated from them. Do not judge their form or
+wording. Find:
+- unobservable response: a requirement whose response the capability's
+  narrator cannot observe;
+- left to infer: two groups that act on one thing without saying which
+  wins, a requirement that leaves to inference which runs, workers or
+  commands it applies to, or a status with a way into or out of it that no
+  requirement gives;
+- missing example: a group whose scenario needs data its requirements do
+  not carry and that has no given block.
+Decide nothing and rewrite nothing.
 
 Write your findings to <DRAFTS PATH>/round-<N>/<NAME>.findings.md, and
-nowhere else, one per finding: its kind (wrong pattern | drift | two
-readings | behaviour no line asks for | unstated interaction | unstated
-reach | another line's response); its ids
-(capability/<NAME>#r<n>, features/<NAME>.feature:<scenario title>); the
-words, quoted; for wrong pattern, the pattern the line uses and the one its trigger asks for; for drift, one line saying what differs; for two readings,
-the two readings, one line each; for the others, one line saying what is
-shown, or left open. Write "none" when you find nothing.
-Reply with the count of each kind and the findings file's path, nothing
-else. Write that same reply, last of all, to
-<DRAFTS PATH>/round-<N>/<NAME>.reply.md.
+nowhere else, one per finding: its kind; its ids (capability/<NAME>#r<n> or
+#g<n>); the words, quoted; one line saying what is not observable or left
+open. Write "none" when you find nothing. Reply with the count of each kind
+and the findings file's path, nothing else. Write that same reply, last of
+all, to <DRAFTS PATH>/round-<N>/<NAME>.reply.md.
 ```
 
-## The Context Template
+## The Glossary Template
 
 ```
-Check the language of this bounded context's spec.
-You may read spec/index.md and every file under spec/capabilities/. Nothing
-else: not features/, not docs/, not the source.
+Check the terms of this bounded context.
+You may read spec/index.md and the ## Terms sections of the files under
+spec/capabilities/. Nothing else.
 
-Read every Behaviour line and spec/index.md's Glossary. Find:
-- one word for two things: a word the lines use for two different things;
-- two words for one thing: two words the lines use for the same thing;
-- a missing term: a thing several lines name that the Glossary has no
-  entry for;
-- an undefined word: a word a line depends on that is neither a Glossary
-  term nor spelled out in the line;
-- unstated interaction: two lines, in one capability or two, that act on
-  one thing (one file, one status, one command) without saying which wins;
-- unstated reach: a line that leaves to inference which runs, workers or
-  commands it applies to (every pytest run, every worker);
-- missing way in or out: a status or mode the lines name, with a way into
-  it or out of it that no line gives, in any capability.
-Decide nothing: never choose which word is the term, never rewrite a line or
-an entry.
+Find each unclear term: a definition that does not say what the word picks
+out, says it in words the glossary lacks, or does not match its Means:.
+Decide nothing and rewrite nothing.
 
-Write your findings to <DRAFTS PATH>/round-<N>/whole-context.findings.md,
-and nowhere else, one per finding: its kind (one word for two things | two
-words for one thing | missing term | undefined word | unstated interaction
-| unstated reach | missing way in or out); the words; each line that uses them,
-by its id (capability/<name>#r<n>) and quoted; any glossary entry they
-concern, by its id (term/<term>); for the last three, one line saying what
-is left open. Write "none" when you find nothing. Reply
-with the count of each kind and the findings file's path, nothing else.
-Write that same reply, last of all, to
-<DRAFTS PATH>/round-<N>/whole-context.reply.md.
+Write your findings to <DRAFTS PATH>/round-<N>/glossary.findings.md, one per
+finding: the term's id (term/<term>), its entry quoted, and one line saying
+what is unclear. Write "none" when you find nothing. Reply with the count and
+the findings file's path, nothing else. Write that same reply, last of all,
+to <DRAFTS PATH>/round-<N>/glossary.reply.md.
 ```
 
 ## Red Flags
 
 - A spec-checker dispatched before the person was told how many there will be
-- The check run because an integration or formulation round finished, not because the person asked
+- The check run because a round finished, not because the person asked
 - Findings mode that edited `spec/`, `features/` or the glossary, or committed anything
 - A finding without its ids
-- A term's entry and its lines approved in two gate passes, or its lines changed before the person's yes
-- A scenario reworded to a term before the terms were settled, or kept back for the person's approval
+- A spec-checker asked to judge a requirement's form, its wording or its scenario: the parser and the generator settle those
+- A feature file edited to settle a finding
 - Two findings asked in one question
-- A `v_t*` row marked rejected or deferred
-- `model check` given a path, or clingo called missing on an exit 2 whose message does not name it

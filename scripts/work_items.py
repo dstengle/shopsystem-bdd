@@ -7,8 +7,12 @@ deselects them all, and a run left with no test exits 0. `work run` loads it wit
 option; this repository's conftest.py loads it the same way.
 
 A work-item is .shop/work/<initiative>/<name>.md, found in the nearest directory at or above where pytest was started
-that has .shop/work/; its `accepts: [<capability>#r<n>, <capability>#r<n>-r<m>, ...]` names the requirements. A
-scenario is pytest-bdd's, its capability the stem of its feature file and its requirements its `@r<n>` tags.
+that has .shop/work/; its `accepts: [<capability>#r<n>, <capability>#r<n>-r<m>, <capability>#g<n>, ...]` names the
+requirements and groups. A scenario is pytest-bdd's, its capability the stem of its feature file and its marks its
+`@g<n>` and `@r<n>` tags. Under the GF conversion's design §13 the marks are also read from the spec: a requirement of
+a codified capability (`language: codified-1`) runs the scenario of its group, and one whose group has no scenario
+(a logic-only group) is passed over as a guarantee is. A work-item that accepts nothing and lists `## Retires` (a
+removed requirement's handlers and code to take out) runs every test.
 
 With `--whole-suite` too, every test runs (the whole suite before the work-item's merge), and a scenario whose
 requirement a work-item other than the work-item, neither green nor withdrawn, accepts, or a capability-proposal
@@ -37,15 +41,42 @@ def work_dir(start):
 
 
 def requirements(text):
-    """The (capability, requirement) pairs a work-item's text `accepts`."""
+    """The (capability, requirement or group) pairs a work-item's text `accepts`: `r<n>`, `g<n>` and their ranges."""
     found = re.search(r"(?m)^accepts: \[(.*)\]$", text)
     ids = set()
     for one in found.group(1).split(",") if found else []:
         cap, _, rs = one.strip().strip("'\"").partition("#")
-        lo, _, hi = rs.lstrip("r").partition("-r")
-        if lo.isdigit() and (hi or lo).isdigit():
-            ids.update((cap, "r%d" % n) for n in range(int(lo), int(hi or lo) + 1))
+        mark = rs[:1]
+        lo, _, hi = rs[1:].partition("-" + mark)
+        if mark in ("r", "g") and lo.isdigit() and (hi or lo).isdigit():
+            ids.update((cap, "%s%d" % (mark, n)) for n in range(int(lo), int(hi or lo) + 1))
     return ids
+
+
+def groups_of(root, cap):
+    """{requirement: group} of spec/capabilities/<cap>.md under `root` when it is codified, else {}."""
+    path = pathlib.Path(root) / "spec" / "capabilities" / ("%s.md" % cap)
+    text = path.read_text() if path.is_file() else ""
+    if not re.search(r"(?m)^language: codified-1\s*$", text.split("\n---", 1)[0]):
+        return {}
+    found, group = {}, None
+    for line in text.split("\n## Behaviour", 1)[-1].split("\n## ", 1)[0].splitlines():
+        heading = re.match(r"^### \[(g\d+)\]", line)
+        group = heading.group(1) if heading else group
+        req = re.match(r"^- \[(r\d+)\]", line)
+        if req and group:
+            found[req.group(1)] = group
+    return found
+
+
+def retires_only(name, start):
+    """Whether work-item `name` accepts nothing and lists what it retires: its check is the whole suite."""
+    work = work_dir(pathlib.Path(start).resolve())
+    for path in sorted(work.glob("*/%s.md" % name)) if work else []:
+        text = path.read_text()
+        if re.search(r"(?m)^accepts: \[\s*\]$", text) and "\n## Retires\n" in text:
+            return True
+    return False
 
 
 def accepted(name, start):
@@ -132,25 +163,59 @@ def pytest_collection_modifyitems(config, items):
     if config.getoption("--whole-suite"):
         expect_red(config, items, name)
         return
-    want = accepted(name, config.invocation_params.dir)
+    if retires_only(name, config.invocation_params.dir):
+        return
+    named = accepted(name, config.invocation_params.dir)
+    want = with_groups(config, named)
     keep, scenarios = [], 0
     for item in items:
         found = scenario_of(item)
         scenarios += found is not None
         if found is None or any((found[0], tag) in want for tag in found[1]):
             keep.append(item)
-    if scenarios and len(keep) == len(items) - scenarios and not all(guarantees(config, c) for c, _ in want):
+    if scenarios and len(keep) == len(items) - scenarios and not none_expected(config, named):
         raise SystemExit("--work-item %s: %s accepts none of the scenarios it collected" % (name, name))
     config.hook.pytest_deselected(items=[i for i in items if i not in keep])
     items[:] = keep
 
 
+def spec_root(config):
+    """The directory of the spec/ beside the .shop/ of the work-items, else pytest's root."""
+    work = work_dir(pathlib.Path(config.invocation_params.dir).resolve())
+    return work.parent.parent if work else pathlib.Path(config.rootpath)
+
+
 def guarantees(config, cap):
     """Whether spec/capabilities/<cap>.md, beside the .shop/ of the work-items, has `group: guarantees` in its
     frontmatter."""
-    work = work_dir(pathlib.Path(config.invocation_params.dir).resolve())
-    path = (work.parent.parent if work else pathlib.Path(config.rootpath)) / "spec" / "capabilities" / ("%s.md" % cap)
-    return is_guarantees(path.parent.parent.parent, cap)
+    return is_guarantees(spec_root(config), cap)
+
+
+def feature_tags(root, cap):
+    """The tags of features/<cap>.feature under `root`."""
+    path = pathlib.Path(root) / "features" / ("%s.feature" % cap)
+    lines = path.read_text().splitlines() if path.is_file() else []
+    return {t for line in lines if line.strip().startswith("@") for t in line.split()}
+
+
+def none_expected(config, want):
+    """Whether no accepted requirement has a scenario to run: each is of a guarantees capability, or of a group of a
+    codified capability (a logic-only group) that features/<cap>.feature has no scenario for. Decided from the spec
+    and the feature files, so on the xdist controller as on a worker."""
+    root = spec_root(config)
+
+    def one(cap, mark):
+        group = mark if mark.startswith("g") else groups_of(root, cap).get(mark)
+        return guarantees(config, cap) or (group is not None and "@" + group not in feature_tags(root, cap))
+    return all(one(cap, mark) for cap, mark in want)
+
+
+def with_groups(config, want):
+    """The accepted pairs and, for each requirement of a codified capability, the group the spec puts it in."""
+    groups = {}
+    for cap, one in want:
+        groups.setdefault(cap, groups_of(spec_root(config), cap))
+    return set(want) | {(cap, groups[cap][one]) for cap, one in want if one in groups[cap]}
 
 
 def pytest_runtest_setup(item):
@@ -170,11 +235,11 @@ def pytest_terminal_summary(terminalreporter, config):
 
 
 def pytest_sessionfinish(session, exitstatus):
-    """A work-item all of whose requirements are of guarantees capabilities, left with no test, succeeds. Decided
+    """A work-item none of whose requirements has a scenario (none_expected), left with no test, succeeds. Decided
     from the work-item and the spec, so on the xdist controller as on a worker."""
     config = session.config
     name = config.getoption("--work-item")
     if exitstatus != pytest.ExitCode.NO_TESTS_COLLECTED or not name or config.getoption("--whole-suite"):
         return
-    if all(guarantees(config, c) for c, _ in accepted(name, config.invocation_params.dir)):
+    if none_expected(config, accepted(name, config.invocation_params.dir)):
         session.exitstatus = pytest.ExitCode.OK

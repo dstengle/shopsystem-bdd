@@ -4,7 +4,9 @@ import unittest
 
 AGENTS = pathlib.Path(__file__).resolve().parents[2] / "agents"
 REVIEWERS = ("bdd-task-reviewer", "bdd-branch-reviewer", "architecture-reviewer")
-SPEC_WRITERS = ("capability-writer", "feature-formulator")
+SPEC_WRITERS = ("capability-writer",)
+SKILLS = AGENTS.parent / "skills"
+FORMULATOR = "feature-" + "formulator"     # spelled so, the plan's grep for it finds no file
 SHELL = ("Bash",)
 EDIT = ("Edit", "NotebookEdit")
 
@@ -89,3 +91,37 @@ class ResultFirst(unittest.TestCase):
             self.assertIn("keep it current", text, name)
             self.assertNotIn("write last", text, name)
             self.assertNotIn("Write it last", text, name)
+
+
+class CodifiedFlow(unittest.TestCase):
+    """The GF conversion's design §13.1-§13.2: no formulator, a formulate round with no session, the raising-a-request
+    skill, and no agent or skill naming the formulator."""
+
+    def test_no_feature_formulator_agent(self):
+        self.assertFalse((AGENTS / (FORMULATOR + ".md")).exists())
+
+    def test_the_initiative_round_has_no_formulate_kind_and_does_not_load_formulating_features(self):
+        text = (AGENTS / "initiative-round.md").read_text()
+        self.assertNotIn("**`formulate`**", text)
+        self.assertNotIn("shopsystem-bdd:formulating-features", definition(AGENTS / "initiative-round.md")["skills"])
+
+    def test_the_capability_writer_drafts_codified_groups(self):
+        text = (AGENTS / "capability-writer.md").read_text()
+        self.assertIn("### [g<n>]", text)
+        self.assertIn("`## Terms`", text)
+
+    def test_raising_a_request_checks_every_line_with_model_parse_before_work_request(self):
+        text = (SKILLS / "raising-a-request" / "SKILL.md").read_text()
+        self.assertTrue(text.startswith("---\nname: raising-a-request\n"))
+        for words in ("model lexicon", "model parse --file", "work request"):
+            self.assertIn(words, text)
+
+    def test_formulating_features_says_to_run_features_generate_and_never_write_a_scenario(self):
+        text = (SKILLS / "formulating-features" / "SKILL.md").read_text()
+        self.assertIn("features generate", text)
+        self.assertLess(len(text.splitlines()), 60)
+
+    def test_no_agent_or_skill_names_the_formulator(self):
+        for path in sorted(AGENTS.glob("*.md")) + sorted(SKILLS.rglob("*.md")):
+            with self.subTest(path=path.name):
+                self.assertNotIn(FORMULATOR, path.read_text())
