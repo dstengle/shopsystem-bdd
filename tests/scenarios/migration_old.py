@@ -1,5 +1,5 @@
-"""What migration-tools' step modules share: the repository on the old system a Given builds (`Old`, the `old`
-fixture conftest gives), migrate's one run, and model's reading of what it left."""
+"""What migration-tools' handlers share: the repository `migrate` runs in (`Old`, also the `old` fixture conftest
+gives), migrate's one run, and model's reading of what it left."""
 import pathlib
 import subprocess
 
