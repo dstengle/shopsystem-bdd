@@ -4,10 +4,19 @@ import spec_tree
 
 WORDS = {"`drafted`", "`work run`", "initiative"}
 WORK = ("ActorSubj", ("a_work",))
+RUN = ("ActorSubj", ("a_work_run",))
 
 
-def ubiq(vp):
-    return ("Ubiq", ("Shall", ("ActorSubj", ("a_work_run",)), vp))
+def shall(subject, *vps):
+    """`subject shall vp1, vp2 and vpn` as one response of a Resps."""
+    tree = ("OneVP", vps[-1])
+    for vp in reversed(vps[:-1]):
+        tree = ("AndVP", vp, tree)
+    return ("OneResp", ("Shall", subject, tree))
+
+
+def ubiq(*vps):
+    return ("Ubiq", shall(("ActorSubj", ("a_work_run",)), *vps))
 
 
 def values(*vs):
@@ -37,13 +46,13 @@ def test_it_needs_an_earlier_noun_phrase_of_its_kind():
     dangling = ubiq(("Do", ("e_start",), it))
     assert "it" in spec_tree.guard(dangling, WORDS)
     other = ("When", ("Happens", ("NPSubj", ("k_session_toNP", ("k_session_An", ("k_session",)))), ("e_end",),
-                      ("k_stage_toNP", ("k_stage_An", ("k_stage",)))), ("Shall", WORK, ("Do", ("e_start",), it)))
+                      ("k_stage_toNP", ("k_stage_An", ("k_stage",)))), shall(WORK, ("Do", ("e_start",), it)))
     assert spec_tree.guard(other, WORDS)
-    kept = ("When", ("Runs", ("ActorSubj", ("a_the_person",)), ("CmdCode", ("CodeLit", "`work start`"))), (
-        "Shall", WORK, ("Do", ("e_start",), ("k_initiative_toNP", ("k_initiative_An", ("k_initiative",))))))
+    kept = ("When", ("Runs", ("ActorSubj", ("a_the_person",)), ("CmdCode", ("CodeLit", "`work start`"))), shall(
+        WORK, ("Do", ("e_start",), ("k_initiative_toNP", ("k_initiative_An", ("k_initiative",))))))
     assert spec_tree.guard(kept, WORDS) is None
     anaphor = ("When", ("Happens", ("ActorSubj", ("a_the_person",)), ("e_start",),
-                        ("k_initiative_toNP", ("k_initiative_An", ("k_initiative",)))), ("Shall", WORK, (
+                        ("k_initiative_toNP", ("k_initiative_An", ("k_initiative",)))), shall(WORK, (
                             "Do", ("e_end",), it)))
     assert spec_tree.guard(anaphor, WORDS) is None
 
@@ -78,22 +87,54 @@ def test_normal_sorts_value_lists_and_conjunctions():
     c1 = ("CondAnd", free, ("CondOne", holds))
     c2 = ("CondAnd", holds, ("CondOne", free))
     assert spec_tree.normal(c1) == spec_tree.normal(c2)
+    assert spec_tree.normal(("CondOr", free, ("CondOne", holds))) == spec_tree.normal(("CondOr", holds, (
+        "CondOne", free)))
+
+
+def test_normal_keeps_the_order_of_a_list_mixing_and_with_or():
+    a, b, c = (("IsFree", ("s_%s" % x,)) for x in "cba")
+    mixed = ("CondAnd", a, ("CondOr", b, ("CondOne", c)))
+    assert spec_tree.normal(mixed) == ("CondAnd", a, ("CondOr", c, ("CondOne", b)))
+
+
+def test_a_step_saying_a_relation_between_two_instances_is_left_to_the_relations_given_step():
+    inst = ("k_stage_Inst", ("NameLit", "s1")), ("k_work_item_Inst", ("NameLit", "w1"))
+    assert "Given" in spec_tree.guard(("SAtom", ("rel_stage_for_work_item_Atom",) + inst), WORDS)
+    assert spec_tree.guard(("r_for_7_Given", ("NameLit", "s1"), ("NameLit", "w1")), WORDS) is None
 
 
 def test_parts_split_a_requirement_into_its_clauses():
     trig = ("IsRun", ("CmdCode", ("CodeLit", "`tools size`")))
-    resp = ("Shall", WORK, ("ExitOk",))
-    assert spec_tree.parts(("When", trig, resp)) == {"feat": None, "cond": None, "trig": trig, "resp": resp}
+    resp = shall(WORK, ("ExitOk",))
+    assert spec_tree.parts(("When", trig, resp)) == {"feat": None, "cond": None, "trig": trig,
+                                                     "resp": [("Shall", WORK, ("ExitOk",))]}
     cond = ("CondOne", ("IsFree", ("s_spec_lock",)))
     assert spec_tree.parts(("WhileIf", cond, trig, resp))["cond"] == cond
     assert spec_tree.parts(("Ubiq", resp))["trig"] is None
 
 
+def test_parts_give_two_conjuncts_for_shall_a_and_b():
+    commit = ("Do", ("e_commit",), ("k_transition_toNP", ("k_transition_Every", ("k_transition",))))
+    push = ("Do", ("e_push",), ("k_commit_toNP", ("k_commit_The", ("k_commit",))))
+    assert spec_tree.parts(ubiq(commit, push))["resp"] == [("Shall", RUN, commit), ("Shall", RUN, push)]
+
+
+def test_parts_give_each_response_and_each_forbidden_verb_phrase_in_spoken_order():
+    merge, push = ("Do", ("e_merge",), ("CodeNP", ("CodeLit", "`a`"))), ("Do", ("e_push",), ("CodeNP", (
+        "CodeLit", "`b`")))
+    forbid = ("ShallNot", RUN, ("OrVP", merge, ("OneVPor", push)))
+    resps = ("AndResp", forbid, shall(WORK, ("ExitOk",)))
+    assert spec_tree.parts(("Ubiq", resps))["resp"] == [
+        ("ShallNot", RUN, merge), ("ShallNot", RUN, push), ("Shall", WORK, ("ExitOk",))]
+
+
 def test_logic_only_is_a_group_of_ubiquitous_resource_statements():
     hold = ubiq(("Hold", ("s_spec_lock",)))
     most = ubiq(("HoldAtMost", ("CountCode", ("CodeLit", "`workers`")), ("s_worker_slot",)))
-    other = ("When", ("IsRun", ("CmdCode", ("CodeLit", "`work run`"))), ("Shall", WORK, ("Hold", ("s_spec_lock",))))
+    other = ("When", ("IsRun", ("CmdCode", ("CodeLit", "`work run`"))), shall(WORK, ("Hold", ("s_spec_lock",))))
     assert spec_tree.logic_only([hold, most])
+    assert spec_tree.logic_only([ubiq(("Hold", ("s_spec_lock",)), ("HoldA", ("s_worker_slot",)))])
+    assert not spec_tree.logic_only([ubiq(("Hold", ("s_spec_lock",)), ("ExitOk",))])
     assert not spec_tree.logic_only([hold, other])
     assert not spec_tree.logic_only([ubiq(("ExitOk",))])
     assert not spec_tree.logic_only([])
@@ -101,5 +142,5 @@ def test_logic_only_is_a_group_of_ubiquitous_resource_statements():
 
 def test_show_writes_a_tree_as_gf_does():
     tree = ubiq(("Print", ("OneNP", ("CodeNP", ("CodeLit", '`a "b"`')))))
-    assert spec_tree.show(tree) == ('Ubiq (Shall (ActorSubj a_work_run) (Print (OneNP (CodeNP (CodeLit '
-                                    '"`a \\"b\\"`")))))')
+    assert spec_tree.show(tree) == ('Ubiq (OneResp (Shall (ActorSubj a_work_run) (OneVP (Print (OneNP (CodeNP '
+                                    '(CodeLit "`a \\"b\\"`")))))))')

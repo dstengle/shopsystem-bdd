@@ -1,5 +1,9 @@
 """The generated GF modules of a lexicon (design §9.1, §9.2): `Lex` (actors, events, resources) and `Typed` (one
-block of slots per kind, attribute, condition and relation), each with its English.
+block of slots per kind, attribute, condition and relation row), each with its English.
+
+A relation row (from kind, word, to kind) gives a modifier fun `rel_<k1>_<word>_<k2>` and a clause fun of the same
+name with `_Atom` (design-r2 §4.2): a preposition between two kinds is the one row given for that pair, so PP
+attachment is typed and a line where two attachments typecheck has two trees and is refused.
 
 A typed slot is what makes "an initiative that is `drafted`" fail to parse: a value is a fun of its own
 attribute's category only. Names come from `spec_lexicon.Lexicon.ids`; the suffixes are the ones `spec_tree` reads
@@ -132,13 +136,30 @@ def _condition(t, kind, cid, ids):
     return funs, lins
 
 
-def _relation(t, rid, ids):
-    k1, k2 = ids[("kind", t.kinds[0], ())], ids[("kind", t.kinds[1], ())]
-    fun = "%s : %s_CN -> %s_NP -> %s_CN ;" % (rid, k1, k2, k1)
-    if t.term.split()[-1] in PREPOSITIONS:
-        return fun, "%s cn x = post cn (same (%s ++ x.s)) ;" % (rid, gf_str(t.term))
-    inf = t.term.removesuffix("s")
-    return fun, "%s cn x = post cn (verbal %s %s x) ;" % (rid, gf_str(t.term), gf_str(inf))
+def rows(lex):
+    """The relation rows `(from kind, word, to kind, relation id)` of a lexicon: `Lexicon.relations()` (design-r2
+    §8), else (a lexicon without the `## Relations` table) one row for each relation entry naming two kinds."""
+    if hasattr(lex, "relations"):
+        return list(lex.relations())
+    ids = lex.ids()
+    return [(t.kinds[0], t.term, t.kinds[1], ids[t.key]) for t in lex.of("relation") if len(t.kinds) == 2]
+
+
+def relation_fun(kid1, word, kid2):
+    """`k_stage`, `for`, `k_work_item` -> rel_stage_for_work_item: the modifier fun of a row; `_Atom` its clause."""
+    return "rel_%s_%s_%s" % (kid1[2:], spec_lexicon.ident(word, "relation")[2:], kid2[2:])
+
+
+def _relation(word, k1, k2, fun):
+    """The modifier ("a stage for the work-item") and the clause ("the stage is for the work-item") of one row."""
+    funs = ["%s : %s_CN -> %s_NP -> %s_CN ;" % (fun, k1, k2, k1), "%s_Atom : %s_NP -> %s_NP -> Atom ;" % (fun, k1, k2)]
+    w = gf_str(word)
+    if word.split()[-1] in PREPOSITIONS:
+        return funs, ["%s cn x = post cn (same (%s ++ x.s)) ;" % (fun, w), "%s_Atom x y = x.s ++ be x ++ %s ++ y.s ;" % (
+            fun, w)]
+    inf = gf_str(word.removesuffix("s"))
+    return funs, ["%s cn x = post cn (verbal %s %s x) ;" % (fun, w, inf),
+                  "%s_Atom x y = x.s ++ (case x.n of {Sg => %s ; Pl => %s}) ++ y.s ;" % (fun, w, inf)]
 
 
 def modules(lex):
@@ -172,11 +193,16 @@ def modules(lex):
             f, li = _condition(t, kind, cid, ids)
             funs += f
             lins += li
-    for t in lex.of("relation"):
-        if len(t.kinds) == 2 and all(k in kinds for k in t.kinds):
-            f, li = _relation(t, ids[t.key], ids)
-            funs.append(f)
-            lins.append(li)
+    seen_rels = set()
+    for k1, word, k2, _ in rows(lex):
+        if k1 in kinds and k2 in kinds:
+            kid1, kid2 = ids[("kind", k1, ())], ids[("kind", k2, ())]
+            fun = relation_fun(kid1, word, kid2)
+            if fun not in seen_rels:
+                seen_rels.add(fun)
+                f, li = _relation(word, kid1, kid2, fun)
+                funs += f
+                lins += li
 
     def block(head, *sections):
         body = "".join("  %s\n%s" % (kw, "".join("    %s\n" % x for x in xs)) for kw, xs in sections if xs)
