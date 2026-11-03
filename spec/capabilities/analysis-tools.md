@@ -3,8 +3,9 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/analysis-tools
 title: Analysis tools
 narrator: a session researching or reviewing a project's code
 group: service
+language: codified-1
 rests_on: [design-decision/plugin-takes-the-dependencies-it-needs, design-decision/query-commands-answer-in-their-output]
-retired: [r2, r12, r15, r18, r19, r20, r21, r22, r23, r24, r25, r26, r27, r28, r29, r30, r31, r32, r33, r34, r35]
+retired: []
 ---
 
 # Analysis tools
@@ -15,35 +16,306 @@ interface to them: a coverage map of which tests execute which code, the functio
 references to a name, and the lint tools of `tools check`. It is not a test runner for the suite and edits no dependency
 file; it prints what the tools found and names a tool that is missing rather than skipping it.
 
+## Terms
+- **Python interpreter** (kind): the Python `tools` runs the analysis tools with: the one `--python` gives, else
+  `.venv/bin/python` or `venv/bin/python` under the current directory, else `$VIRTUAL_ENV/bin/python`, else the one
+  running the script, the first of these whose file exists.
+- **environment** (attribute of Python interpreter): whether pip installs into a virtualenv. Values: `virtualenv`, `system`.
+- **analysis tool** (kind): a package `tools` probes and installs: coverage, pytest-cov, jedi, ast-grep, ruff,
+  vulture, import-linter and hypothesis.
+- **presence** (attribute of analysis tool): whether the interpreter has the tool, and whether pip can install it.
+  Values: `installed`, `missing`, `uninstallable`.
+- **coverage map** (kind): what `tools map` writes under `.shop/scratch/tools/coverage`: which test executed which
+  line, made at one commit.
+- **map commit** (kind): the commit the coverage map was made at.
+- **Python file** (kind): a tracked file with a `.py` extension or a `python` shebang, tests included.
+- **function** (kind): a function or method of a Python file.
+- **reference** (kind): a use of a name the project defines, through an import or an alias included, written
+  `path:line`; a definition is none.
+- **test** (kind): one test of the suite, by its pytest id.
+- **finding** (kind): what ruff, vulture or import-linter reports.
+- **dependency file** (kind): a file that lists a project's dependencies (`pyproject.toml`, `requirements.txt`, ...).
+- **use** (event): `tools` runs the analysis tools with an interpreter. Forms: uses, used.
+- **install** (event): `tools` puts an analysis tool into the interpreter with pip. Forms: installs, installed.
+- **replace** (event): Forms: replaces, replaced.
+
 ## Behaviour
-- [r1] **When** `tools` needs an interpreter, `tools` shall use the first of these, in this order: the one `--python` gives, used as given; `.venv/bin/python` under the current directory, if that file exists; `venv/bin/python` under the current directory, if that file exists; `$VIRTUAL_ENV/bin/python`, if that file exists, wherever `$VIRTUAL_ENV` points; and else the interpreter running the script.
-- [r49] **If** `tools` cannot do what it was asked, then `tools` shall exit with an error, say why, and change nothing.
-- [r17] **If** a tool that `tools check`, `tools tests-of`, `tools untested` or `tools refs` needs is missing, then `tools` shall name it as missing rather than skip it, and exit with an error.
 
-### Tools
-- [r3] **When** `tools probe` is run, `tools` shall print each tool with its version, or as missing with what it is for, then the interpreter's path and whether it came from `--python`, the project's virtualenv or neither, and exit with an error when any tool is missing.
-- [r4] **When** `tools probe --log` is run, `tools` shall print one line, `Probe: tools -> ...`, naming every tool with its version or `missing`, for a researcher's notes.
-- [r5] **When** `tools install` is run, `tools` shall install each missing tool into the interpreter with pip and edit no dependency file.
-- [r58] **When** `tools install` installs ruff, `tools` shall install the one version of ruff the plugin pins.
-- [r6] **If** `tools install` has a missing tool to install and the interpreter is not a virtualenv, then `tools` shall install nothing, say so for each missing tool, and exit with an error.
-- [r7] **If** a tool is still missing after `tools install`, then `tools` shall print the tool, what it is for, what the workflow does without it, and the command that failed with the end of its error, and exit with an error.
+### [g1] `--python` gives the Python interpreter
+Restates: r1@0.29.
+- [r1] Where `--python` is given, when the person runs `tools probe`, `tools` shall print the Python interpreter `--python`.
 
-### `map`, `tests-of`, `untested`, `refs`, `check`
-- [r8] **When** `tools map` is run, `tools` shall run the suite once under coverage with a context per test, passing arguments after `--` to pytest, replace any earlier map in `.shop/scratch/tools/coverage`, and exit successfully whether or not the tests passed.
-- [r56] **Where** `--json` is given, `tools map` shall print its result, the map's commit and its test count, as one JSON object.
-- [r9] **When** `tools tests-of <file>[:<function, Class.method or line range>]` is run, `tools` shall print each test that executed it in the last map, one a line, and how many of the map's tests that is, with the commit the map was made at.
-- [r10] **Where** `--by-file` is given, **when** `tools tests-of` is run, `tools` shall print a count for each test file instead of each test.
-- [r11] **When** no test in the map executed the target of `tools tests-of`, `tools` shall print that no test of the map executed it, with the commit the map was made at, and exit successfully.
-- [r53] **Where** `--json` is given, `tools tests-of` shall print its result, the tests, their count and the map's commit, as one JSON object.
-- [r57] **If** the file given to `tools tests-of` has no function by the name given, then `tools` shall exit with an error, saying the target cannot be read.
-- [r13] **When** `tools untested <file>...` is run, `tools` shall print each function in the files that no test in the last map executed, how many they are and the commit the map was made at, and exit successfully however many there are.
-- [r54] **Where** `--json` is given, `tools untested` shall print its result, the functions, their count and the map's commit, as one JSON object.
-- [r14] **When** `tools refs <name>` is run on a name the project defines, `tools` shall print every reference to it as `path:line`, including uses through an import or an alias and counting no definition as a reference, then one summary line with the number of references, the number of production files and, apart, of test files that contain them, and where the name is defined.
-- [r55] **Where** `--json` is given, `tools refs` shall print its result, the references and the summary, as one JSON object.
-- [r16] **When** `tools check` is run, `tools` shall run ruff and vulture over the paths given, or in their place the Python files changed since `--base` and not deleted, and, where the project has import contracts, import-linter over the project, each under its own heading, and exit with an error when any finds something.
-- [r50] **When** `tools size` is run, `tools` shall print each tracked Python file over the size limit in the working tree, a Python file being one with a `.py` extension or a `python` shebang, tests included, with its line count.
-- [r51] **If** any tracked Python file is over the size limit, then `tools size` shall exit with an error.
-- [r52] **Where** `tools size --limit <n>` is given, `tools size` shall use `<n>` lines as the size limit, and 300 lines otherwise.
+### [g2] `.venv/bin/python` is the Python interpreter when it exists
+Restates: r1@0.29.
+- [r2] When the person runs `tools probe`, `tools` shall print the Python interpreter.
+
+```given
+a Python interpreter `.venv/bin/python`
+```
+
+### [g3] `venv/bin/python` is the Python interpreter when it exists and `.venv/bin/python` does not
+Restates: r1@0.29.
+- [r3] When the person runs `tools probe`, `tools` shall print the Python interpreter.
+
+```given
+a Python interpreter `venv/bin/python`
+```
+
+### [g4] `$VIRTUAL_ENV/bin/python` is the Python interpreter when there is no project virtualenv
+Restates: r1@0.29.
+- [r4] When the person runs `tools probe`, `tools` shall print the Python interpreter.
+
+```given
+a Python interpreter `$VIRTUAL_ENV/bin/python`
+```
+
+### [g5] the Python interpreter running the script is the Python interpreter when there is no other
+Restates: r1@0.29.
+- [r5] When the person runs `tools probe`, `tools` shall print the Python interpreter `sys.executable`.
+
+### [g6] `.venv/bin/python` comes before `venv/bin/python`
+Restates: r1@0.29.
+- [r6] When the person runs `tools probe`, `tools` shall print the Python interpreter `.venv/bin/python`.
+- [r7] When the person runs `tools probe`, `tools` shall not print the Python interpreter `venv/bin/python`.
+
+```given
+a Python interpreter `venv/bin/python`
+a Python interpreter `.venv/bin/python`
+```
+
+### [g7] `tools probe` prints each analysis tool and the Python interpreter
+Restates: r3@0.29.
+- [r8] When the person runs `tools probe`, `tools` shall print every analysis tool and the Python interpreter.
+- [r9] When the person runs `tools probe`, `tools` shall exit successfully.
+
+### [g8] `tools probe` exits with an error naming a missing analysis tool
+Restates: r3@0.29.
+- [r10] While an analysis tool is `missing`, when the person runs `tools probe`, `tools` shall exit with an error naming the analysis tool.
+
+```given
+an analysis tool `vulture` that is `missing`
+```
+
+### [g9] `tools probe --log` prints one line for a researcher's notes
+Restates: r4@0.29.
+- [r11] When the person runs `tools probe --log`, `tools` shall print "Probe: tools ->" and every analysis tool.
+
+### [g10] `tools install` installs a missing analysis tool and changes no dependency file
+Restates: r5@0.29.
+- [r12] While a Python interpreter is `virtualenv`, when the person runs `tools install`, `tools` shall install every analysis tool that is `missing`.
+- [r13] While a Python interpreter is `virtualenv`, when the person runs `tools install`, `tools` shall change nothing.
+
+```given
+a Python interpreter `.venv/bin/python` that is `virtualenv`
+the dependency file `requirements.txt` holds "pytest"
+```
+
+### [g11] `tools install` installs the one version of ruff the plugin pins
+Restates: r58@0.29.
+- [r14] While an analysis tool is `missing` and a Python interpreter is `virtualenv`, when the person runs `tools install`, `tools` shall install `ruff==0.17.0`.
+
+```given
+an analysis tool `ruff` that is `missing`
+a Python interpreter `.venv/bin/python` that is `virtualenv`
+```
+
+### [g12] `tools install` installs nothing into a Python interpreter that is not a virtualenv
+Restates: r6@0.29.
+- [r15] While an analysis tool is `missing` and a Python interpreter is `system`, when the person runs `tools install`, `tools` shall not install `jedi`.
+- [r16] While an analysis tool is `missing` and a Python interpreter is `system`, when the person runs `tools install`, `tools` shall exit with an error naming the analysis tool.
+
+```given
+an analysis tool `jedi` that is `missing`
+a Python interpreter `.venv/bin/python` that is `system`
+```
+
+### [g13] an analysis tool still missing after `tools install` is printed with the failed command
+Restates: r7@0.29.
+- [r17] While an analysis tool is `uninstallable` and a Python interpreter is `virtualenv`, when the person runs `tools install`, `tools` shall exit with an error naming the analysis tool.
+- [r44] While an analysis tool is `uninstallable` and a Python interpreter is `virtualenv`, when the person runs `tools install`, `tools` shall print `pip install`.
+
+```given
+an analysis tool `jedi` that is `uninstallable`
+a Python interpreter `.venv/bin/python` that is `virtualenv`
+```
+
+### [g14] `tools map` writes the coverage map whether or not the tests pass
+Restates: r8@0.29.
+- [r18] When the person runs `tools map`, `tools` shall replace `.shop/scratch/tools/coverage`.
+- [r19] When the person runs `tools map`, `tools` shall exit successfully.
+
+```given
+a test `test_fails`
+```
+
+### [g15] `tools map` replaces the coverage map made before
+Restates: r8@0.29.
+- [r20] When the person runs `tools map`, `tools` shall replace the coverage map.
+
+```given
+a coverage map m1
+```
+
+### [g16] `tools map --json` prints the map commit and the number of tests
+Restates: r56@0.29.
+- [r21] Where `--json` is given, when the person runs `tools map`, `tools` shall print the map commit and the number of tests.
+
+### [g17] `tools tests-of` prints each test that executed its target
+Restates: r9@0.29.
+- [r22] When the person runs `tools tests-of src/cart.py:total`, `tools` shall print every test, the number of tests and the map commit.
+
+```given
+a coverage map m1
+```
+
+### [g18] `tools tests-of --by-file` prints a count for each test file
+Restates: r10@0.29.
+- [r23] Where `--by-file` is given, when the person runs `tools tests-of src/cart.py:total`, `tools` shall print the Python file and the number of tests.
+
+```given
+a coverage map m1
+a Python file `tests/test_cart.py`
+```
+
+### [g19] `tools tests-of` says that no test executed its target, and exits successfully
+Restates: r11@0.29.
+- [r24] When the person runs `tools tests-of src/cart.py:refund`, `tools` shall print "no test of the map executed" and the map commit.
+- [r25] When the person runs `tools tests-of src/cart.py:refund`, `tools` shall exit successfully.
+
+```given
+a coverage map m1
+```
+
+### [g20] `tools tests-of --json` prints the tests, their number and the map commit
+Restates: r53@0.29.
+- [r26] Where `--json` is given, when the person runs `tools tests-of src/cart.py:total`, `tools` shall print every test, the number of tests and the map commit.
+
+```given
+a coverage map m1
+```
+
+### [g21] `tools tests-of` refuses a function its file does not have
+Restates: r57@0.29, r49@0.29.
+- [r27] If the person runs `tools tests-of src/cart.py:absent`, then `tools` shall exit with an error naming `src/cart.py:absent` and change nothing.
+
+```given
+a coverage map m1
+```
+
+### [g22] `tools tests-of` refuses when there is no coverage map
+Restates: r49@0.29.
+- [r28] If the person runs `tools tests-of src/cart.py:total`, then `tools` shall exit with an error naming `tools map` and change nothing.
+
+### [g23] `tools untested` prints each function no test executed
+Restates: r13@0.29.
+- [r29] When the person runs `tools untested src/cart.py`, `tools` shall print the function, the number of functions and the map commit.
+- [r30] When the person runs `tools untested src/cart.py`, `tools` shall exit successfully.
+
+```given
+a coverage map m1
+a function `refund`
+```
+
+### [g24] `tools untested --json` prints the functions, their number and the map commit
+Restates: r54@0.29.
+- [r31] Where `--json` is given, when the person runs `tools untested src/cart.py`, `tools` shall print the function, the number of functions and the map commit.
+
+```given
+a coverage map m1
+a function `refund`
+```
+
+### [g25] `tools refs` prints each reference and a summary
+Restates: r14@0.29.
+- [r32] When the person runs `tools refs total`, `tools` shall print the reference and the number of references.
+
+```given
+a reference `src/shop.py:4`
+```
+
+### [g26] `tools refs --json` prints the references and the summary
+Restates: r55@0.29.
+- [r33] Where `--json` is given, when the person runs `tools refs total`, `tools` shall print the reference and the number of references.
+
+```given
+a reference `src/shop.py:4`
+```
+
+### [g27] `tools refs` refuses a name the project does not define
+Restates: r49@0.29.
+- [r34] If the person runs `tools refs nowhere`, then `tools` shall exit with an error naming `nowhere` and change nothing.
+
+### [g28] `tools check` prints each finding under its tool's heading
+Restates: r16@0.29.
+- [r35] When the person runs `tools check src`, `tools` shall print the finding and "== ruff ==".
+- [r36] When the person runs `tools check src`, `tools` shall exit with an error naming the finding.
+
+```given
+a finding `F401`
+```
+
+### [g29] `tools check` names a missing analysis tool
+Restates: r17@0.29.
+- [r37] While an analysis tool is `missing`, when the person runs `tools check src`, `tools` shall exit with an error naming the analysis tool.
+
+```given
+an analysis tool `vulture` that is `missing`
+```
+
+### [g30] `tools tests-of` names a missing coverage as missing
+Restates: r17@0.29.
+- [r38] While an analysis tool is `missing`, when the person runs `tools tests-of src/cart.py:total`, `tools` shall exit with an error naming the analysis tool.
+- [r45] While an analysis tool is `missing`, when the person runs `tools tests-of src/cart.py:total`, `tools` shall print `tools install`.
+
+```given
+an analysis tool `coverage` that is `missing`
+```
+
+### [g31] `tools refs` names a missing jedi as missing
+Restates: r17@0.29.
+- [r39] While an analysis tool is `missing`, when the person runs `tools refs total`, `tools` shall exit with an error naming the analysis tool.
+- [r46] While an analysis tool is `missing`, when the person runs `tools refs total`, `tools` shall print `tools install`.
+
+```given
+an analysis tool `jedi` that is `missing`
+```
+
+### [g32] `tools size` prints each tracked Python file over the limit and exits with an error
+Restates: r50@0.29, r51@0.29, r52@0.29.
+- [r40] When the person runs `tools size --limit 3`, `tools` shall print the Python file.
+- [r41] When the person runs `tools size --limit 3`, `tools` shall exit with an error naming the Python file.
+
+```given
+the Python file `big.py` holds:
+  a = 1
+  b = 2
+  c = 3
+  d = 4
+```
+
+### [g33] `tools size` counts a file with a `python` shebang as a Python file
+Restates: r50@0.29.
+- [r42] When the person runs `tools size --limit 3`, `tools` shall exit with an error naming the Python file.
+
+```given
+the Python file `bin/tool` holds:
+  #!/usr/bin/env python3
+  a = 1
+  b = 2
+  c = 3
+```
+
+### [g34] `tools size` takes 300 lines as the limit when none is given
+Restates: r52@0.29.
+- [r43] When the person runs `tools size`, `tools` shall exit successfully.
+
+```given
+the Python file `big.py` holds:
+  a = 1
+  b = 2
+  c = 3
+  d = 4
+```
 
 ## Implementation, may change
 - A reviewer passes the repository's own limit from its `CLAUDE.md` as `--limit`.
@@ -79,3 +351,5 @@ file; it prints what the tools found and names a tool that is missing rather tha
 
 ## Not yet
 - Only Python projects are known; in any other, agents search by text and say that they did — trigger: a project in another language asks for its analysis tools.
+
+## Dropped

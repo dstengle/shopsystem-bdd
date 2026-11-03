@@ -3,54 +3,284 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/batch-measurement
 title: Measurement of an initiative's deliveries
 narrator: a session measuring an initiative's deliveries
 group: service
+language: codified-1
 rests_on: [design-decision/measure-an-initiative, design-decision/measure-refuses-unknown-shapes, design-decision/plugin-takes-the-dependencies-it-needs]
-retired: [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r26, r27, r28, r29, r30, r31, r32, r33, r34, r35, r36, r37, r38]
+retired: []
 ---
 
 # Measurement of an initiative's deliveries
 
 ## Purpose
-`scripts/measure` writes one measurement of an initiative's deliveries from what `work run` already records: its
-work-items, the stages `work run` ran for them, the sessions of those stages and the commits that landed them. It
-also prints a measurement, or two measurements' totals side by side. It is not a judgement of the delivery, writes
-no prompt, reply or tool content, and refuses rather than guesses when its inputs are not of a shape it knows.
+`scripts/measure` writes one measurement of an initiative's deliveries from what `work run` already records: the
+initiative's `log.jsonl`, each stage's `session.json` and the sessions' transcripts. It reads measurements back as
+tables and compares two of them. It writes no prompt, reply or tool content, and refuses a file of a shape it does
+not know rather than guessing at it.
+
+## Terms
+- **initiative log** (kind): the `log.jsonl` of an initiative: its transitions and each stage's start and end.
+- **session file** (kind): a stage's `session.json`, what `claude -p --output-format json` printed for its session.
+- **transcript** (kind): a session's JSONL transcript: Claude Code's own rows or the slim export's.
+- **fulfilled request** (kind): a request the measured initiative fulfils, named by its id.
+- **standing** (attribute of fulfilled request): whether the queue holds the request with an asker, and whether that
+  asker is this bounded context. Values: `internal`, `external`, `unheld`, `askerless`.
+- **logged stage** (kind): a stage the initiative log gives a start for, run in one session.
+- **ending** (attribute of logged stage): whether the initiative log gives the stage an end. Values: `ended`, `unended`.
+- **content** (attribute of session file): Values: `filled`, `empty`.
+- **availability** (attribute of transcript): whether `measure` finds the session's transcript. Values: `found`, `lost`.
+- **include** (event): `measure` puts a figure or a name into the measurement it writes. Forms: includes, included.
 
 ## Behaviour
 
-### The initiative
-- [r39] **When** `measure initiative <initiative>` is run, `measure` shall write one measurement for the initiative at `.shop/records/measurements/<date>-<initiative>.md`, the date being the day it is run.
-- [r46] **If** the initiative has no `log.jsonl`, **then** `measure initiative` shall refuse, writing nothing, because the initiative has no `log.jsonl`.
-- [r65] **If** the initiative fulfils a request that the queue does not hold, **then** `measure initiative` shall refuse, writing no measurement, because the queue does not hold that request.
-- [r66] **If** the request the initiative fulfils has no asker, **then** `measure initiative` shall refuse, writing no measurement, because the request has no asker.
-- [r67] **If** the initiative fulfils more than one request, **then** `measure initiative` shall refuse, writing no measurement, because the initiative fulfils more than one request.
-- [r47] **If** a `session.json` that is not empty, or a transcript, is not of a shape `measure` knows, **then** `measure` shall refuse, writing nothing, naming that file.
-- [r58] **When** a line of a transcript holds U+2028 or another Unicode line break inside a JSON string, `measure` shall read it as one line.
-- [r59] **When** a time in `log.jsonl` or in a transcript ends in `Z`, `measure` shall read it as a time in UTC.
-- [r48] **If** the measurement exists and `--replace` is not given, **then** `measure initiative` shall refuse, writing nothing, because the measurement exists.
-- [r52] **Where** `--replace` is given, `measure initiative` shall write the measurement over the one that exists.
-- [r50] **If** `measure` refuses, **then** `measure` shall exit with an error.
+### [g1] `measure initiative` writes one measurement named by the day and the initiative
+Restates: r39@0.29.
+- [r1] When the person runs `measure initiative i7-cart`, `measure` shall print `.shop/records/measurements/2026-10-22-i7-cart.md`.
+- [r2] When the person runs `measure initiative i7-cart`, `measure` shall exit successfully.
 
-### What the measurement holds
-- [r40] `measure initiative` shall give, for each stage `log.jsonl` gives a start and an end for, the work-item, the stage, the agent, the session id, how long the stage took, and the session's turns, output tokens, new input tokens, cache-read tokens and cost.
-- [r51] `measure initiative` shall give each stage `log.jsonl` gives a start and no end for, without how long it took.
-- [r57] **If** a stage's `session.json` is empty, **then** `measure initiative` shall give the stage without its session's figures, named as a stage whose `session.json` is empty.
-- [r53] `measure initiative` shall give, for each stage it gives, its session's round trips, the number of assistant messages with distinct request ids in the session's transcript.
-- [r55] **If** a stage's session has no transcript `measure` can find, **then** `measure initiative` shall give the stage without its round trips.
-- [r41] `measure initiative` shall give, for each work-item, its transitions, how many times it went to `awaiting-answer` and to `failed`, and the commits merged into the initiative branch for it.
-- [r42] `measure initiative` shall give the totals over the initiative: stages, sessions, turns, round trips, tokens of each kind, cost, and the time from the first transition to the last.
-- [r63] `measure initiative` shall give whether the request the initiative fulfils is internal, its asker being this bounded context, or external.
-- [r64] **If** the initiative fulfils no request, **then** `measure initiative` shall give the measurement without whether the request is internal or external.
-- [r43] **Where** `--sessions <dir>` names a directory of transcripts, `measure initiative` shall also give each session found there that is active inside the initiative's window, starting inside it or starting before it with a message inside it, and each session it dispatched, with its tokens of each kind.
-- [r60] **Where** `--sessions <dir>` is given, `measure initiative` shall give, for each session it gives, its round trips, its tool uses by tool name, the sessions it dispatched, and the number of compactions its transcript holds.
-- [r49] `measure` shall write no prompt, reply or tool content into the measurement.
+```given
+an initiative log `i7-cart`
+```
 
-### Reading measurements
-- [r44] **When** `measure show <record>` is run, `measure` shall print the measurement's figures as tables.
-- [r54] **When** `measure show <record>` is run, `measure` shall print each stage's round trips beside its turns.
-- [r56] **When** `measure show <record>` is run on a measurement that gives no round trips, `measure` shall print its stages without them.
-- [r61] **When** `measure show <record>` is run on a measurement that gives sessions, `measure` shall print, beside each session's tokens, its round trips, its tool uses by tool name, the sessions it dispatched, and the number of compactions its transcript holds.
-- [r45] **When** `measure compare <a> <b>` is run, `measure` shall print the two measurements' totals side by side with the ratio of the second to the first.
-- [r62] **When** `measure compare <a> <b>` is run on measurements that give sessions, `measure` shall print, side by side, each measurement's total over its sessions of round trips, of tool uses of all tools together, and of compactions, each total with one ratio of the second measurement's to the first's.
+### [g2] `measure initiative` refuses an initiative with no `log.jsonl`
+Restates: r46@0.29, r50@0.29.
+- [r3] If the person runs `measure initiative i7-cart`, then `measure` shall exit with an error naming `log.jsonl` and change nothing.
+
+### [g3] `measure initiative` refuses an initiative fulfilling a request the queue does not hold
+Restates: r65@0.29.
+- [r4] If the person runs `measure initiative i7-cart`, then `measure` shall exit with an error naming the fulfilled request and change nothing.
+
+```given
+an initiative log `i7-cart`
+a fulfilled request q1 that is `unheld`
+```
+
+### [g4] `measure initiative` refuses an initiative fulfilling a request with no asker
+Restates: r66@0.29.
+- [r5] If the person runs `measure initiative i7-cart`, then `measure` shall exit with an error naming the fulfilled request and change nothing.
+
+```given
+an initiative log `i7-cart`
+a fulfilled request q1 that is `askerless`
+```
+
+### [g5] `measure initiative` refuses an initiative fulfilling more than one request
+Restates: r67@0.29.
+- [r6] If the person runs `measure initiative i7-cart`, then `measure` shall exit with an error naming "more than one request" and change nothing.
+
+```given
+an initiative log `i7-cart`
+a fulfilled request q1 that is `external`
+a fulfilled request q2 that is `external`
+```
+
+### [g6] `measure initiative` refuses a `session.json` of a shape it does not know, naming it
+Restates: r47@0.29.
+- [r7] If the person runs `measure initiative i7-cart`, then `measure` shall exit with an error naming the session file and change nothing.
+
+```given
+an initiative log `i7-cart`
+the session file `s-1` holds "not a session"
+```
+
+### [g7] `measure initiative --sessions` refuses a transcript of a shape it does not know, naming it
+Restates: r47@0.29.
+- [r8] If the person runs `measure initiative i7-cart --sessions sessions`, then `measure` shall exit with an error naming the transcript and change nothing.
+
+```given
+an initiative log `i7-cart`
+the transcript `sessions/s-9.jsonl` holds "this is not a transcript"
+```
+
+### [g8] a line break inside a transcript's JSON string does not split its line
+Restates: r58@0.29.
+- [r9] While a transcript is `found`, when the person runs `measure initiative i7-cart`, `measure` shall include "round_trips".
+- [r10] While a transcript is `found`, when the person runs `measure initiative i7-cart`, `measure` shall exit successfully.
+
+```given
+an initiative log `i7-cart`
+a transcript `u2028` that is `found`
+```
+
+### [g9] a time ending in `Z` is read as a time in UTC
+Restates: r59@0.29.
+- [r11] When the person runs `measure initiative i7-cart`, `measure` shall include "1 hour 45 minutes".
+
+```given
+an initiative log `zulu`
+```
+
+### [g10] `measure initiative` does not write over a measurement without `--replace`
+Restates: r48@0.29.
+- [r12] If the person runs `measure initiative i7-cart`, then `measure` shall exit with an error naming the measurement and change nothing.
+
+```given
+an initiative log `i7-cart`
+the measurement `2026-10-22-i7-cart` holds "an earlier measurement"
+```
+
+### [g11] `measure initiative --replace` writes over the measurement
+Restates: r52@0.29.
+- [r13] Where `--replace` is given, when the person runs `measure initiative i7-cart`, `measure` shall print `.shop/records/measurements/2026-10-22-i7-cart.md`.
+- [r14] Where `--replace` is given, when the person runs `measure initiative i7-cart`, `measure` shall include "12 minutes".
+
+```given
+an initiative log `i7-cart`
+the measurement `2026-10-22-i7-cart` holds "an earlier measurement"
+```
+
+### [g12] each stage with a start and an end is given with how long it took and its session's figures
+Restates: r40@0.29.
+- [r15] While a logged stage is `ended`, when the person runs `measure initiative i7-cart`, `measure` shall include "12 minutes".
+- [r16] While a logged stage is `ended`, when the person runs `measure initiative i7-cart`, `measure` shall include "output_tokens".
+- [r17] While a logged stage is `ended`, when the person runs `measure initiative i7-cart`, `measure` shall include "cache_read_tokens".
+- [r18] While a logged stage is `ended`, when the person runs `measure initiative i7-cart`, `measure` shall include "cost".
+
+```given
+a logged stage `cart-1` that is `ended`
+```
+
+### [g13] a stage with a start and no end is given without how long it took
+Restates: r51@0.29.
+- [r19] While a logged stage is `unended`, when the person runs `measure initiative i7-cart`, `measure` shall include "turns".
+- [r20] While a logged stage is `unended`, when the person runs `measure initiative i7-cart`, `measure` shall not include "took".
+
+```given
+a logged stage `cart-1` that is `unended`
+```
+
+### [g14] a stage whose `session.json` is empty is given without its session's figures, named as such
+Restates: r57@0.29.
+- [r21] While a session file is `empty`, when the person runs `measure initiative i7-cart`, `measure` shall include "session_json".
+- [r22] While a session file is `empty`, when the person runs `measure initiative i7-cart`, `measure` shall not include "turns".
+
+```given
+an initiative log `i7-cart`
+a session file `s-1` that is `empty`
+```
+
+### [g15] each stage is given with its session's round trips
+Restates: r53@0.29.
+- [r23] While a transcript is `found`, when the person runs `measure initiative i7-cart`, `measure` shall include "round_trips".
+
+```given
+an initiative log `i7-cart`
+a transcript `s-1` that is `found`
+```
+
+### [g16] a stage whose session has no transcript is given without its round trips
+Restates: r55@0.29.
+- [r24] While a transcript is `lost`, when the person runs `measure initiative i7-cart`, `measure` shall not include "round_trips".
+
+```given
+an initiative log `i7-cart`
+a transcript `s-1` that is `lost`
+```
+
+### [g17] each work-item is given with its transitions, its counts of `awaiting-answer` and `failed`, and its commits
+Restates: r41@0.29.
+- [r25] When the person runs `measure initiative i7-cart`, `measure` shall include "transitions".
+- [r26] When the person runs `measure initiative i7-cart`, `measure` shall include "awaiting_answer".
+- [r27] When the person runs `measure initiative i7-cart`, `measure` shall include "commits".
+
+```given
+an initiative log `transitions`
+```
+
+### [g18] the totals are over the stages' sessions and span the first transition to the last
+Restates: r42@0.29.
+- [r28] When the person runs `measure initiative i7-cart`, `measure` shall include "totals".
+- [r29] When the person runs `measure initiative i7-cart`, `measure` shall include "time_seconds".
+
+```given
+an initiative log `transitions`
+```
+
+### [g19] the request an initiative fulfils is given as internal or external
+Restates: r63@0.29.
+- [r30] When the person runs `measure initiative i7-cart`, `measure` shall include "internal".
+
+```given
+an initiative log `i7-cart`
+a fulfilled request q1 that is `internal`
+```
+
+### [g20] an initiative that fulfils no request is measured without an origin
+Restates: r64@0.29.
+- [r31] When the person runs `measure initiative i7-cart`, `measure` shall not include "origin".
+
+```given
+an initiative log `i7-cart`
+```
+
+### [g21] `--sessions` gives the sessions active inside the window, and the sessions they dispatched
+Restates: r43@0.29.
+- [r32] When the person runs `measure initiative i7-cart --sessions sessions`, `measure` shall include "s-9".
+- [r33] When the person runs `measure initiative i7-cart --sessions sessions`, `measure` shall include "s-11".
+- [r34] When the person runs `measure initiative i7-cart --sessions sessions`, `measure` shall not include "s-7".
+
+```given
+an initiative log `window`
+a transcript `sessions`
+```
+
+### [g22] each session `--sessions` gives is given with its round trips, tool uses, dispatches and compactions
+Restates: r60@0.29.
+- [r35] When the person runs `measure initiative i7-cart --sessions sessions`, `measure` shall include "tool_uses".
+- [r36] When the person runs `measure initiative i7-cart --sessions sessions`, `measure` shall include "compactions".
+
+```given
+an initiative log `window`
+a transcript `sessions`
+```
+
+### [g23] the measurement holds no prompt, reply or tool content
+Restates: r49@0.29.
+- [r37] When the person runs `measure initiative i7-cart --sessions sessions`, `measure` shall not include "a secret reply".
+- [r38] When the person runs `measure initiative i7-cart --sessions sessions`, `measure` shall not include "a secret prompt".
+
+```given
+an initiative log `secret`
+```
+
+### [g24] `measure show` prints a measurement's figures as tables, a stage's round trips beside its turns
+Restates: r44@0.29, r54@0.29.
+- [r39] When the person runs `measure show m1.md`, `measure` shall print "stages", "totals" and "round trips".
+
+```given
+a measurement `m1`
+```
+
+### [g25] `measure show` prints the stages of a measurement that gives no round trips without them
+Restates: r56@0.29.
+- [r40] When the person runs `measure show m2.md`, `measure` shall not print "round trips".
+
+```given
+a measurement `m2`
+```
+
+### [g26] `measure show` prints each session's round trips, tool uses, dispatches and compactions
+Restates: r61@0.29.
+- [r41] When the person runs `measure show m3.md`, `measure` shall print "tool uses", "dispatched" and "compactions".
+
+```given
+a measurement `m3`
+```
+
+### [g27] `measure compare` prints two measurements' totals side by side with the ratio of the second to the first
+Restates: r45@0.29.
+- [r42] When the person runs `measure compare m1.md m3.md`, `measure` shall print "ratio".
+
+```given
+a measurement `m1`
+a measurement `m3`
+```
+
+### [g28] `measure compare` prints the totals over the sessions side by side with their ratio
+Restates: r62@0.29.
+- [r43] When the person runs `measure compare m3.md m3.md`, `measure` shall print "tool uses" and "compactions".
+
+```given
+a measurement `m3`
+```
 
 ## Implementation, may change
 - A measurement is a record whose frontmatter id is of kind `measurement`; its figures are one JSON block in its
@@ -78,3 +308,5 @@ no prompt, reply or tool content, and refuses rather than guesses when its input
 - Figures beyond what `work run` already records: the skeleton grows from the measurements of 0.21.0's, 0.22.0's
   and 0.23.0's deliveries; a line is added when one of those measurements needs a figure the measurement does not
   give.
+
+## Dropped

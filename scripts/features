@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read and edit Gherkin feature files without the test runner."""
+"""Read Gherkin feature files without the test runner, and generate them from codified capabilities."""
 import argparse
 import importlib.util
 import os
@@ -9,10 +9,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import features_generate
 import features_vocab
 import spec_read
-from features_bindings import cmd_bindings, cmd_rebind
-from features_edit import cmd_deprecate, cmd_move, cmd_retire, cmd_tag
+from features_bindings import cmd_bindings
 from features_gherkin import Refused, load
-from features_report import cmd_count, cmd_deprecated, cmd_list, cmd_verify
+from features_report import cmd_count, cmd_deprecated, cmd_list
 from model_parse import frontmatter
 
 CONTRACT = """\
@@ -26,49 +25,19 @@ contract:
     the file; tags above an Examples: apply to that table's rows. A Scenario
     Outline counts once per Examples row, header excluded, as pytest-bdd
     collects it.
-  - tag finds the scenario by its exact title, refuses unless exactly one file
-    has it (naming every file that does), and changes only its tag lines: the
-    new @r<n> tag is added to the scenario's tags and every tag it has
-    stays, other @r<n> tags included; the new one joins the last tag line,
-    or gets a tag line of its own at the scenario's indentation. A tag the
-    scenario already has is left as it is.
-  - move (like deprecate and retire) finds the scenario by its exact title and
-    refuses unless exactly one file has it, unless --file names the file.
-  - move takes a scenario's block verbatim (trailing blank lines dropped) to
-    the end of an existing file; with --inline-background, the source
-    Background's steps are inserted before the scenario's first step at the
-    scenario's step indentation; with --keep-feature-tags, the source file's
-    feature tags the destination's feature tags lack go on a tag line of their
-    own above the Scenario: line, at its indentation.
-  - tag, deprecate, retire and move take --file <path>: the command works in that
-    file only, whatever other files have the title. It refuses, naming the
-    file and changing no file, a file that does not have the title, a file
-    that has it twice, and a file outside --dir. Without --file a title in
-    several files is refused, as above.
-  - verify-moved compares, by title, each scenario's effective tags, its
-    description, and its Background steps followed by its own steps, all
-    stripped of indentation, blanks and comments.
-
-  - deprecate marks a scenario that passes today in the suite when its line
-    is re-worded or removed: it gains the tag @deprecated, " (deprecated)" at
-    the end of its title, and a description line 'Deprecated for: <the title
-    that replaces it>' or 'Deprecated for: removal'. Nothing else in it
-    changes, and the replacement need not be written yet. retire removes one
-    scenario's block and refuses any scenario not tagged @deprecated.
+  - Feature files are written by `generate`, never edited by hand or by
+    this script: tag, move, deprecate, retire, rebind and verify-moved are
+    gone. A deprecated scenario (tagged @deprecated, with a description line
+    'Deprecated for: <title>' or 'Deprecated for: removal') is only read.
     deprecated lists each deprecated scenario with what it is deprecated for
     and, for a replacement, the file and @r<n> tag of the scenario with that
     title; its line says when there is no Deprecated for: line, no scenario
     has the title, or the replacement has no @r<n> tag.
   - bindings reads every *.py under --tests (default: tests) and reports each
     scenario(<feature>, "<title>") call whose title no feature file has: a
-    binding like that stops its whole module collecting. rebind rewrites the
-    title in those calls from one title to another, which must be a scenario
-    in a feature file, and changes nothing else in the file. Only a title
+    binding like that stops its whole module collecting. Only a title
     written as a plain string in the call is read; a feature given as a name
-    is looked up among the module's own assignments. With --file <feature
-    path>, rebind rewrites only the bindings whose feature argument names that
-    file, both paths resolved (the argument against --dir); without it, every
-    binding of the old title.
+    is looked up among the module's own assignments.
   - bindings also reads scenarios(<path>, ...) calls: each path names a
     feature file by base name, or a directory (resolved against --dir) whose
     feature files it binds. With --unbound [<feature file>...] it then lists,
@@ -94,12 +63,8 @@ contract:
     generated feature files (all of them when none is named) that does not
     parse or has no handler, and each key two handlers claim.
 
-exit status: 0 success, 1 a check failed or an edit was refused, 2 bad usage.
-An edit that would leave its file invalid is refused and the file left as it was.
+exit status: 0 success, 1 a check failed or a file was refused, 2 bad usage.
 """
-
-FILE_HELP = "work in this file only, whatever other files have the title"
-
 
 def read(path):
     with open(path) as f:
@@ -224,48 +189,15 @@ def main():
     group.add_argument("--title")
     lst.add_argument("--json", action="store_true", help="print the matching scenarios as one JSON object")
     lst.set_defaults(run=cmd_list)
-    tag = sub.add_parser("tag")
-    tag.add_argument("title")
-    tag.add_argument("tag", help="r<n>")
-    tag.add_argument("--file", help=FILE_HELP)
-    tag.set_defaults(run=cmd_tag)
-    move = sub.add_parser("move")
-    move.add_argument("title")
-    move.add_argument("--to", required=True)
-    move.add_argument("--inline-background", action="store_true")
-    move.add_argument("--keep-feature-tags", action="store_true")
-    move.add_argument("--file", help=FILE_HELP)
-    move.set_defaults(run=cmd_move)
-    verify = sub.add_parser("verify-moved")
-    verify.add_argument("--from", dest="from_dir", required=True)
-    verify.set_defaults(run=cmd_verify)
-    deprecate = sub.add_parser("deprecate")
-    deprecate.add_argument("title")
-    what = deprecate.add_mutually_exclusive_group(required=True)
-    what.add_argument("--for", dest="deprecated_for")
-    what.add_argument("--for-removal", dest="removal", action="store_true")
-    deprecate.add_argument("--file", help=FILE_HELP)
-    deprecate.set_defaults(run=cmd_deprecate)
-    retire = sub.add_parser("retire")
-    retire.add_argument("title")
-    retire.add_argument("--file", help=FILE_HELP)
-    retire.set_defaults(run=cmd_retire)
     dep = sub.add_parser("deprecated")
     dep.add_argument("--json", action="store_true", help="print each deprecated scenario as one JSON object")
     dep.set_defaults(run=cmd_deprecated)
-    for name, run in (("bindings", cmd_bindings), ("rebind", cmd_rebind)):
-        one = sub.add_parser(name)
-        if name == "rebind":
-            one.add_argument("old")
-            one.add_argument("new")
-            one.add_argument("--file", help="rewrite only the bindings whose feature argument names this feature file")
-        one.add_argument("--tests", default="tests")
-        if name == "bindings":
-            one.add_argument("--unbound", nargs="*", metavar="FEATURE",
-                             help="also list each scenario (of these feature files, default all) bound by no call or by several")
-        if name == "bindings":
-            one.add_argument("--json", action="store_true", help="print the wrong and unbound bindings as one JSON object")
-        one.set_defaults(run=run)
+    one = sub.add_parser("bindings")
+    one.add_argument("--tests", default="tests")
+    one.add_argument("--unbound", nargs="*", metavar="FEATURE",
+                     help="also list each scenario (of these feature files, default all) bound by no call or by several")
+    one.add_argument("--json", action="store_true", help="print the wrong and unbound bindings as one JSON object")
+    one.set_defaults(run=cmd_bindings)
     gen = sub.add_parser("generate")
     gen.add_argument("names", nargs="*", metavar="CAPABILITY")
     gen.add_argument("--check", action="store_true")
