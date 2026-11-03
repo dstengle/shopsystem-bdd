@@ -1,12 +1,10 @@
-"""features/requests.feature, bound to scripts/work and its library scripts/workqueue_request.py: every scenario."""
+"""features/requests.feature, generated from spec/capabilities/requests.md and bound by the step vocabulary: every
+scenario, by `scenarios()`. Its handlers are in requests_handlers.py (and work_queue_handlers.py for `work`'s
+output, its errors and the files it writes and commits)."""
 from pytest_bdd import scenarios
 
-from .requests_flow_steps import *
-from .requests_session_steps import *
-from .requests_show_steps import *
-from .requests_steps import *
-from .requests_world_steps import *
-from .requests_write_steps import *
-from .work_queue_git_steps import *
+from .conftest import ROOT
+from .work_queue_world import bind_all
 
+bind_all(globals(), ROOT)
 scenarios("requests.feature")

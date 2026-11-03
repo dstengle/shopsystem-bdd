@@ -132,12 +132,17 @@ def then_commits(step):
 
 
 def expected_words(step):
-    """What an error or an output must name, for each noun phrase of the step."""
-    words = []
+    """What an error or an output must name, for each noun phrase of the step: what a Given said an instance or a
+    noun phrase is named by (`says`), else a node's status or the instance's name."""
+    words, says = [], step.context.get("says", {})
     for np in step.nps:
+        if np in says:
+            words.append(says[np])
         for name in (w for w in np.split() if w in step.names):
             kind, attrs = W.thing(step, name)
-            if np.startswith("the status of") and W.node_rel(step.context, name):
+            if name in says:
+                words.append(says[name])
+            elif np.startswith("the status of") and W.node_rel(step.context, name):
                 words.append(W.field(step.repo / W.node_rel(step.context, name), "status"))
             elif np.startswith("the flag of"):
                 words += ["--change", "--accept"]

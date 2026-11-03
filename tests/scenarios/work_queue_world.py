@@ -96,8 +96,9 @@ def matches(repo, context, np, rel):
     if words[0] == "the" and len(words) == 3:
         return rel == node_rel(context, words[2])
     kind = next((k for k in sorted(PATHS, key=len, reverse=True) if " %s" % k in " " + np), None)
-    if np in ("an answer", "a question", "a delegation", "a resolution"):
-        section = {"an answer": "## Answers", "a question": "## Questions", "a resolution": "## Resolution"}
+    if np in ("an answer", "a question", "a delegation", "a resolution", "a line outcome"):
+        section = {"an answer": "## Answers", "a question": "## Questions", "a resolution": "## Resolution",
+                   "a line outcome": "## Outcomes"}
         if not path.is_file():
             return False
         text = path.read_text()
