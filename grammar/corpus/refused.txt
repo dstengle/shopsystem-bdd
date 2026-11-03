@@ -1,0 +1,17 @@
+# Sentences the grammar must refuse: no tree is left after the guards.
+# free phrasing
+The supervisor should probably start things when it feels ready.
+`work run` shall run every initiative.
+# a value in the wrong attribute slot
+When the person runs `work start` on an initiative that is `drafted`, `work` shall exit successfully.
+When the person runs `work start`, `work` shall set the status of a work-item to `started`.
+# repeated list members
+`work` shall print every work-item whose status is not `green` or `green`.
+`work` shall print `a` and `a`.
+# a dangling "it"
+`work run` shall start it.
+When the person runs `work list`, `work` shall print it.
+# a code without backticks, two verbs, no full stop
+`work` shall print drafted.
+When a session ends a stage, `work run` shall discard the stage and start the stage.
+The person shall exit successfully
