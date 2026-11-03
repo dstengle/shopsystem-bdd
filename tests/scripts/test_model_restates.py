@@ -87,12 +87,11 @@ class RestatesTest(CodifiedTest):
 
 
 class LiveRestatesTest(unittest.TestCase):
-    def test_supervision_is_not_restated_yet(self):
-        r = subprocess.run([sys.executable, str(SCRIPT), "--root", str(ROOT), "restates", "supervision"],
+    def test_the_whole_spec_is_restated_with_nothing_pending(self):
+        r = subprocess.run([sys.executable, str(SCRIPT), "--root", str(ROOT), "restates"],
                            capture_output=True, text=True)
-        self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
-        self.assertRegex(r.stdout, r"(?m)^supervision#r1\b")
-
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertRegex(r.stdout, r"\b0 pending, 0 missing\b")
 
 if __name__ == "__main__":
     unittest.main()

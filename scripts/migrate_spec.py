@@ -2,12 +2,10 @@
 file or a renamed id (migration-tools r3, r4, r5, r10)."""
 import posixpath
 import re
-import subprocess
-import sys
-import tempfile
 from pathlib import Path
 
 from migrate_layout import load_model, reid, tracked
+from migrate_upgrade_codified import without_tagged
 
 BULLET_ID = re.compile(r"^- \[r(\d+)\]")
 
@@ -42,38 +40,16 @@ def plan_capabilities(plan):
             plan.texts[rel] = reid(plan, number_behaviour(text, retired), full)     # an id in another form follows (r9, r5)
 
 
-def drop_holding(text):
-    out = []
-    for line in text.split("\n"):
-        if line.strip().startswith("@") and "@holding" in line.split():
-            indent = line[:len(line) - len(line.lstrip())]
-            line = indent + " ".join(t for t in line.split() if t != "@holding")
-        out.append(line)
-    return "\n".join(out)
-
-
 def plan_holding(plan):
-    """Deprecate each @holding scenario as `features deprecate` does (on a copy outside the repository), then drop
-    its @holding tag."""
-    model = load_model()
-    features_script = str(Path(__file__).resolve().with_name("features"))
+    """Delete each @holding scenario: `features deprecate` is removed and the generator owns the feature files
+    (migration-tools r3@0.29, dropped)."""
     for rel in tracked(plan.root):
         if not (rel.startswith("features/") and rel.endswith(".feature")):
             continue
         text = plan.read(rel)
-        held = [title for title, tags, _ in model.scenarios(text) if "@holding" in tags]
-        if not held:
-            continue
-        with tempfile.TemporaryDirectory() as scratch:
-            copy = Path(scratch) / rel
-            copy.parent.mkdir(parents=True)
-            copy.write_text(text)
-            for title in held:
-                done = subprocess.run([sys.executable, features_script, "deprecate", title, "--for-removal", "--file", rel],
-                                      cwd=scratch, capture_output=True, text=True)
-                if done.returncode != 0:
-                    plan.failures.append("could not deprecate %r in %s: %s" % (title, rel, (done.stdout + done.stderr).strip()))
-            plan.texts[rel] = drop_holding(copy.read_text())
+        kept = without_tagged(text, "@holding")
+        if kept != text:
+            plan.texts[rel] = kept
 
 
 def plan_index(plan):
