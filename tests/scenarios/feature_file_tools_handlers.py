@@ -1,14 +1,19 @@
-"""feature-file-tools' handlers (design §14.3): the Givens write feature files and test modules into the scenario's
-repository, as the given block holds them or, for a feature file named with no text, as FEATURES below has it; the
-command runs through world_run's `WhenRuns`; the Thens read what `features` printed.
+"""feature-file-tools' handlers (design-r2 §4.3, §9.1): the example data writes feature files, test modules and a
+capability into the scenario's repository as the given block holds them; a feature file's primitive condition
+(`the feature file `features/notes.feature` is nested`) writes the canned file CANNED gives that condition, unless the
+example data wrote the file already, when it checks that the file has the condition; a test module's condition checks
+the module the example data wrote. The command runs through world_run's `WhenRuns`; the Thens read what `features`
+printed.
 
 Each canned feature file comes with the number of scenarios `features count --by-tag` gives it."""
+import re
 import textwrap
 
 from vocab import handler
 
-FEATURES = {
-    "features/notes.feature": (1, """\
+INDEX = "---\nid: bounded-context/ex.com/prod/ctx\n---\n# ctx\n\n## Glossary\n\n"
+CANNED = {
+    "nested": (1, """\
         Feature: Notes
           Scenario: Nested
             Given a note
@@ -17,7 +22,7 @@ FEATURES = {
               Scenario: Phantom
               \"\"\"
         """),
-    "features/outline.feature": (3, """\
+    "outlined": (3, """\
         @cart
         Feature: Outline
           Scenario Outline: Adding several
@@ -33,21 +38,16 @@ FEATURES = {
               | n  |
               | 10 |
         """),
-    "features/rule.feature": (1, """\
+    "sectioned": (1, """\
         Feature: Rules
           Rule: one rule
             Scenario: Under a rule
               Given a step
         """),
-    "features/shelf.feature": (1, """\
-        # generated from spec/capabilities/shelf.md by features generate; do not edit
-        Feature: shelf
-          Narrator: a client
-
-          @g1 @r1
-          Scenario: Lending
-            When the person lends a book
-        """),
+}
+FEATURE_IS = {
+    "deprecating": lambda text: "@deprecated" in text and "Deprecated for: " in text,
+    "undeprecated": lambda text: "@deprecated" not in text,
 }
 
 
@@ -55,18 +55,20 @@ def bare(word):
     return word.strip("`")
 
 
-def write(step, rel, text, scenarios):
+def write(step, rel, text, scenarios=None):
     path = step.repo / rel
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text)
-    step.context.setdefault("scenarios", {})[rel] = scenarios
+    if scenarios is not None:
+        step.context.setdefault("scenarios", {})[rel] = scenarios
 
 
-@handler("GivenK", "feature file")
-def given_canned(step):
-    rel = bare(step.names[0])
-    count, text = FEATURES[rel]
-    write(step, rel, textwrap.dedent(text), count)
+def condition(step):
+    return step.text.rsplit(" is ", 1)[1]
+
+
+def titles(text, pattern):
+    return set(re.findall(pattern, text, re.MULTILINE))
 
 
 @handler("GivenCodeText", "feature file")
@@ -75,11 +77,47 @@ def given_feature(step):
     write(step, bare(step.names[0]), text, sum(line.strip().startswith("Scenario") for line in text.splitlines()))
 
 
+@handler("GivenK_C", "feature file")
+def feature_is(step):
+    rel, word = bare(step.names[0]), condition(step)
+    if (step.repo / rel).is_file():
+        assert FEATURE_IS[word]((step.repo / rel).read_text()), (rel, word)
+    else:
+        count, text = CANNED[word]
+        write(step, rel, textwrap.dedent(text), count)
+
+
 @handler("GivenCodeText", "test module")
 def given_module(step):
-    path = step.repo / bare(step.names[0])
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(step.docstring + "\n")
+    write(step, bare(step.names[0]), step.docstring + "\n")
+
+
+def has(step):
+    """Every scenario title of the scenario's feature files."""
+    return {t for p in (step.repo / "features").rglob("*.feature")
+            for t in titles(p.read_text(), r"^\s*Scenario(?: Outline)?: (.*)$")}
+
+
+MODULE_IS = {
+    "resolving": lambda step, text: titles(text, r'scenario\("[^"]+", "([^"]+)"\)') <= has(step),
+    "dangling": lambda step, text: bool(titles(text, r'scenario\("[^"]+", "([^"]+)"\)') - has(step)),
+    "sweeping": lambda step, text: "scenarios(" in text,
+    "partial": lambda step, text: "scenarios(" not in text and bool(
+        has(step) - titles(text, r'scenario\("[^"]+", "([^"]+)"\)')),
+}
+
+
+@handler("GivenK_C", "test module")
+def module_is(step):
+    rel, word = bare(step.names[0]), condition(step)
+    assert MODULE_IS[word](step, (step.repo / rel).read_text()), (rel, word)
+
+
+@handler("GivenCodeText", "capability")
+def given_capability(step):
+    if not (step.repo / "spec" / "index.md").is_file():
+        write(step, "spec/index.md", INDEX)
+    write(step, "spec/capabilities/%s.md" % bare(step.names[0]), step.docstring + "\n")
 
 
 def result(step):
