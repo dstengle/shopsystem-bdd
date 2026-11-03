@@ -1,21 +1,30 @@
--- The requirement grammar: one EARS statement, one `shall`. Words and typed slots come from the generated Lex and
--- Typed modules (a context's glossary); this module holds the forms and the slots tied to no kind. A core fun is
--- added only for a construct that recurs in at least two capabilities (design §9.5), with a corpus line.
+-- The requirement grammar: one EARS statement, its responses and verb phrases joined by `and` (design-r2 §4.1).
+-- Words and typed slots come from the generated Lex and Typed modules (a context's glossary); this module holds the
+-- forms and the slots tied to no kind. A core fun is added only for a construct that recurs in at least two
+-- capabilities (design §9.5), with a corpus line.
 abstract Req = Typed ** {
   flags startcat = Req ;
+  cat VPs ; VPor ; Resps ;
   fun
     -- the six EARS forms, clauses in a fixed order
-    Ubiq : Resp -> Req ;                         -- R.
-    When : Trig -> Resp -> Req ;                 -- When T, R.
-    While : Cond -> Resp -> Req ;                -- While C, R.
-    Where : Feat -> Resp -> Req ;                -- Where F, R.
-    IfThen : Trig -> Resp -> Req ;               -- If T, then R.
-    WhileWhen : Cond -> Trig -> Resp -> Req ;    -- While C, when T, R.
-    WhereWhen : Feat -> Trig -> Resp -> Req ;    -- Where F, when T, R.
-    WhereWhile : Feat -> Cond -> Resp -> Req ;   -- Where F, while C, R.
-    WhileIf : Cond -> Trig -> Resp -> Req ;      -- While C, if T, then R.
-    WhereIf : Feat -> Trig -> Resp -> Req ;      -- Where F, if T, then R.
-    Shall, ShallNot : Subj -> VP -> Resp ;
+    Ubiq : Resps -> Req ;                         -- R.
+    When : Trig -> Resps -> Req ;                 -- When T, R.
+    While : Cond -> Resps -> Req ;                -- While C, R.
+    Where : Feat -> Resps -> Req ;                -- Where F, R.
+    IfThen : Trig -> Resps -> Req ;               -- If T, then R.
+    WhileWhen : Cond -> Trig -> Resps -> Req ;    -- While C, when T, R.
+    WhereWhen : Feat -> Trig -> Resps -> Req ;    -- Where F, when T, R.
+    WhereWhile : Feat -> Cond -> Resps -> Req ;   -- Where F, while C, R.
+    WhileIf : Cond -> Trig -> Resps -> Req ;      -- While C, if T, then R.
+    WhereIf : Feat -> Trig -> Resps -> Req ;      -- Where F, if T, then R.
+    Shall : Subj -> VPs -> Resp ;               -- `work run` shall A, B and C
+    ShallNot : Subj -> VPor -> Resp ;           -- `work run` shall not A or B (neither)
+    OneVP : VP -> VPs ;
+    AndVP : VP -> VPs -> VPs ;                   -- A and B / A, B and C
+    OneVPor : VP -> VPor ;
+    OrVP : VP -> VPor -> VPor ;                  -- A or B
+    OneResp : Resp -> Resps ;
+    AndResp : Resp -> Resps -> Resps ;           -- R1, and R2: responses whose subjects differ
     ActorSubj : Actor -> Subj ;
     NPSubj : NP -> Subj ;
     -- triggers and conditions tied to no kind
@@ -27,6 +36,7 @@ abstract Req = Typed ** {
     Undergoes : NP -> Event -> Trig ;            -- a command is refused
     CondOne : Atom -> Cond ;
     CondAnd : Atom -> Cond -> Cond ;             -- A and B
+    CondOr : Atom -> Cond -> Cond ;              -- A or B
     Holds : NP -> Resource -> Atom ;             -- a session holds the spec lock
     HoldsA : NP -> Resource -> Atom ;            -- a stage holds a worker slot
     IsFree : Resource -> Atom ;                  -- the spec lock is free
@@ -38,8 +48,6 @@ abstract Req = Typed ** {
     Print : NPs -> VP ;                          -- print X, Y and Z
     ExitOk : VP ;                                -- exit successfully
     ExitErr : NP -> VP ;                         -- exit with an error naming X
-    RefuseErr : NP -> VP ;                       -- exit with an error naming X and change nothing
-    CommitPush : NP -> VP ;                      -- commit X and push the commit
     ChangeNothing : VP ;                         -- change nothing
     Hold : Resource -> VP ;                      -- hold the spec lock
     HoldA : Resource -> VP ;                     -- hold a worker slot

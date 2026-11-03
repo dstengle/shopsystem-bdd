@@ -1,13 +1,18 @@
 """spec_grammar: tokenising (design §9.4), parsing with the guards (§9.3), linearising, the corpus, and the
 compile cache with its atomic rename (§11.3)."""
+import contextlib
+import dataclasses
 import os
 import pathlib
+import re
 import subprocess
 import sys
 
 import pytest
 import spec_grammar
+import spec_lexicon
 import spec_tree
+import spec_typed
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import toolchain
@@ -37,6 +42,46 @@ def lines(path):
     return [x.strip() for x in path.read_text().splitlines() if x.strip() and not x.startswith("#")]
 
 
+@dataclasses.dataclass
+class StubLexicon(spec_lexicon.Lexicon):
+    """A lexicon with the member R2 adds (design-r2 §8): `relations()`, the expanded rows (k1, word, k2, id)."""
+    rows: list = dataclasses.field(default_factory=list)
+
+    def relations(self):
+        return list(self.rows)
+
+    def words(self):
+        return super().words() | {w for _, w, _, _ in self.rows}
+
+
+@contextlib.contextmanager
+def stubbed(root, rows=(), terms=()):
+    """spec_lexicon.read of `root` gives its lexicon with `terms` and the relation rows (k1, word, k2) added."""
+    real = spec_lexicon.read
+    lex = real(root)
+    extra = [(a, w, b, "r_stub_%d" % i) for i, (a, w, b) in enumerate(rows)]
+    stub = StubLexicon(list(lex.terms) + list(terms), spec_typed.rows(lex) + extra)
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(spec_lexicon, "read", lambda r: stub if pathlib.Path(r) == pathlib.Path(root) else real(r))
+        yield stub
+
+
+def core():
+    """grammar/corpus/core.txt as (rows, [(grammar, line, expected tree, guard row or None)])."""
+    rows, out, guard = [], [], None
+    for raw in (CORPUS / "core.txt").read_text().splitlines():
+        if raw.startswith("# row: ") or raw.startswith("# guard: "):
+            row = tuple(x.strip() for x in raw.split(": ", 1)[1].split("|"))
+            rows, guard = (rows + [row], guard) if raw.startswith("# row") else (rows, row)
+        elif raw.startswith("= "):
+            out[-1] = out[-1][:2] + (raw[2:].strip(), out[-1][3])
+        elif raw.strip() and not raw.startswith("#"):
+            grammar, line = ("Def", raw[6:]) if raw.startswith("[Def] ") else ("Req", raw)
+            out.append((grammar, line.strip(), None, guard))
+            guard = None
+    return rows, out
+
+
 def corpus():
     out = []
     for name in CAPABILITIES + ["universal"]:
@@ -52,6 +97,7 @@ def test_tokenise_keeps_backticked_and_quoted_spans_and_splits_punctuation():
     assert spec_grammar.tokenise("`work run` shall hold at most 4 worker slots.")[5] == "4"
     assert spec_grammar.normalise("When  the person runs `x` ,`work` shall exit successfully .") == (
         "When the person runs `x`, `work` shall exit successfully.")
+    assert spec_grammar.tokenise("A worker shall exit successfully.")[0] == "a"       # a one-letter first word
 
 
 def test_require_fails_naming_tools_install_when_a_tool_is_missing(monkeypatch):
@@ -59,10 +105,6 @@ def test_require_fails_naming_tools_install_when_a_tool_is_missing(monkeypatch):
     with pytest.raises(pytest.fail.Exception) as failed:
         toolchain.require()
     assert "gf" in str(failed.value) and "python3 scripts/tools install" in str(failed.value)
-
-
-def test_a_sentence_may_start_with_a_one_letter_word():
-    assert spec_grammar.tokenise("A worker shall exit successfully.")[0] == "a"
 
 
 def test_gf_binary_prefers_the_environment(monkeypatch, tmp_path):
@@ -134,8 +176,92 @@ def test_hint_gives_the_parsed_prefix_and_the_nearest_words(root):
 
 
 def test_linearise_writes_a_tree_back_as_a_sentence(root):
-    tree = ("Ubiq", ("Shall", ("ActorSubj", ("a_work_run",)), ("Hold", ("s_spec_lock",))))
+    tree = ("Ubiq", ("OneResp", ("Shall", ("ActorSubj", ("a_work_run",)), ("OneVP", ("Hold", ("s_spec_lock",))))))
     assert spec_grammar.linearise(root, tree) == "`work run` shall hold the spec lock."
+
+
+def unnumbered(tree):
+    """A tree as core.txt writes it: the generated ids' numbers left out (t_status_6 -> t_status)."""
+    return re.sub(r"_\d+(?=[_ )]|$)", "", spec_tree.show(tree))
+
+
+@pytest.fixture(scope="module")
+def live():
+    toolchain.require()
+    return REPO
+
+
+def test_every_core_line_has_its_expected_tree_and_linearises_back(live):
+    rows, items = core()
+    failures = []
+    with stubbed(live, rows):
+        for grammar, line, want, _ in items:
+            p = spec_grammar.parse(live, line, grammar)
+            got = unnumbered(p.tree) if p.tree else p.refusal
+            if want.startswith("refused: ") and p.tree is None and want[9:] in p.refusal:
+                continue
+            if got != want:
+                failures.append("%s\n    got  %s\n    want %s" % (line, got, want))
+            elif spec_grammar.linearise(live, p.tree, grammar) != spec_grammar.normalise(line):
+                failures.append("%s\n    linearises as %s" % (line, spec_grammar.linearise(live, p.tree, grammar)))
+    assert not failures, "\n".join(failures)
+
+
+def test_core_has_a_line_for_each_new_fun_and_the_three_definitions():
+    _, items = core()
+    text = " ".join(want for _, _, want, _ in items)
+    for fun in ("AndVP", "OrVP", "OneVPor", "AndResp", "CondOr", "_Atom", "rel_stage_for_node ",
+                "rel_stage_for_work_item ", "_Def "):
+        assert fun in text, fun
+    assert len([g for g, _, _, _ in items if g == "Def"]) == 3 and "the line count and exit" in str(items)
+
+
+def test_a_guarded_core_line_is_refused_as_ambiguous_once_its_row_is_added(live):
+    rows, items = core()
+    guarded = [(g, line, row) for g, line, _, row in items if row]
+    assert {row for _, _, row in guarded} == {("work-item", "with", "result"), ("initiative", "with", "result")}
+    for grammar, line, row in guarded:
+        with stubbed(live, rows + [row]):
+            p = spec_grammar.parse(live, line, grammar)
+        assert p.tree is None and p.refusal == "ambiguous: 2 trees", (line, p.refusal)
+
+
+def test_the_and_coordinations_replace_refuse_err_and_commit_push(live):
+    p = spec_grammar.parse(live, "If a command is refused, then `work` shall exit with an error naming the reason "
+                                 "and change nothing.")
+    assert p.tree and {n[0] for n in spec_tree.nodes(p.tree)} >= {"AndVP", "ExitErr", "ChangeNothing"}
+    gf = (spec_grammar.GRAMMARS / "Req.gf").read_text() + (spec_grammar.GRAMMARS / "ReqEng.gf").read_text()
+    assert "RefuseErr" not in gf and "CommitPush" not in gf
+
+
+PP = """## Glossary
+
+- **`work run`** (actor): the supervisor.
+- **session** (kind): one conversation.
+- **stage** (kind): one session's part.
+- **work-item** (kind): a unit of delivery.
+- **result** (kind): what a stage writes.
+- **stage kind** (attribute of stage): Values: `plan`, `research`.
+- **end** (event): a stage stops.
+- **discard** (event): a stage's work is dropped.
+"""
+PP_LINE = ("When a session ends a `plan` stage for a work-item with the result, `work run` shall discard the "
+           "stage.")
+
+
+def test_a_preposition_resolves_by_the_relation_rows_the_lexicon_gives(tmp_path):
+    toolchain.require()
+    (tmp_path / "spec").mkdir()
+    (tmp_path / "spec" / "index.md").write_text(PP)
+    rows = [("stage", "for", "work-item"), ("stage", "with", "result")]
+    with stubbed(tmp_path, rows):
+        p = spec_grammar.parse(tmp_path, PP_LINE)
+    assert p.tree and "rel_stage_with_result (rel_stage_for_work_item" in spec_tree.show(p.tree)
+    with stubbed(tmp_path, rows + [("work-item", "with", "result")]):
+        p = spec_grammar.parse(tmp_path, PP_LINE)
+    assert p.tree is None and p.refusal == "ambiguous: 2 trees"
+    with stubbed(tmp_path, rows[:1]):
+        assert spec_grammar.parse(tmp_path, PP_LINE).tree is None
 
 
 def _tiny(tmp_path):

@@ -18,6 +18,7 @@ from pathlib import Path
 import spec_lexicon
 import spec_tree
 import spec_typed
+import spec_typed_def
 import tools_grammar
 
 GRAMMARS = Path(__file__).resolve().parent.parent / "grammar"
@@ -76,8 +77,10 @@ def _cache():
 
 def sources(root):
     """{file name: text} of every GF source of the context's grammars: the core files and the generated ones."""
+    lex = spec_lexicon.read(root)
     out = {p.name: p.read_text() for p in sorted(GRAMMARS.glob("*.gf"))}
-    out.update(spec_typed.modules(spec_lexicon.read(root)))
+    out.update(spec_typed.modules(lex))
+    out.update(spec_typed_def.modules(lex))
     return out
 
 
@@ -112,7 +115,7 @@ def _compile(srcs, sha, grammar):
 
 
 def load(root, grammar="Req"):
-    """The context's compiled grammar (`"Req"` or `"Steps"`) as a `pgf.PGF`, compiled once per set of sources."""
+    """The context's compiled grammar (`"Req"`, `"Steps"` or `"Def"`) as a `pgf.PGF`, compiled once per set of sources."""
     import pgf
     srcs = sources(root)
     if "%sEng.gf" % grammar not in srcs:
@@ -174,17 +177,19 @@ def _raw(root, tokens, grammar):
 
 
 def parse(root, line, grammar="Req"):
-    """One line parsed in the context's grammar, the guards applied."""
+    """One line parsed in the context's grammar (`"Req"`, `"Steps"` or `"Def"`), the guards applied. A definition
+    (`"Def"`) whose tree says "it" is refused: it names its subject as "the <kind>" (design-r2 §4.3)."""
     tokens = tokenise(line)
     trees, at = _raw(root, tokens, grammar)
     if at is not None:
         if at >= len(tokens):
             return Parse(refusal="the line ends before its sentence does (after %d tokens)" % len(tokens))
         return Parse(refusal="does not parse at %s (token %d of %d)" % (tokens[at], at + 1, len(tokens)))
-    words = spec_lexicon.read(root).words()
+    lex = spec_lexicon.read(root)
+    words = lex.words()
     kept, reasons = [], []
     for tree in trees:
-        reason = spec_tree.guard(tree, words)
+        reason = (grammar == "Def" and spec_typed_def.refusal(tree, lex)) or spec_tree.guard(tree, words)
         if reason:
             reasons.append(reason)
         elif tree not in kept:

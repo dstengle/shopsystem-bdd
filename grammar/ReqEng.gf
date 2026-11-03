@@ -1,19 +1,26 @@
 -- English of the requirement grammar. A sentence's first word is lower case here: spec_grammar.tokenise lowers it
 -- and spec_grammar.linearise raises it again.
 concrete ReqEng of Req = TypedEng ** {
+  lincat VPs, VPor, Resps = Vs ;
   lin
-    Ubiq r = r ++ "." ;
-    When t r = "when" ++ t ++ "," ++ r ++ "." ;
-    While c r = "while" ++ c ++ "," ++ r ++ "." ;
-    Where f r = "where" ++ f ++ "," ++ r ++ "." ;
-    IfThen t r = "if" ++ t ++ "," ++ "then" ++ r ++ "." ;
-    WhileWhen c t r = "while" ++ c ++ "," ++ "when" ++ t ++ "," ++ r ++ "." ;
-    WhereWhen f t r = "where" ++ f ++ "," ++ "when" ++ t ++ "," ++ r ++ "." ;
-    WhereWhile f c r = "where" ++ f ++ "," ++ "while" ++ c ++ "," ++ r ++ "." ;
-    WhileIf c t r = "while" ++ c ++ "," ++ "if" ++ t ++ "," ++ "then" ++ r ++ "." ;
-    WhereIf f t r = "where" ++ f ++ "," ++ "if" ++ t ++ "," ++ "then" ++ r ++ "." ;
-    Shall s v = s ++ "shall" ++ v ;
-    ShallNot s v = s ++ "shall" ++ "not" ++ v ;
+    Ubiq r = r.s ++ "." ;
+    When t r = "when" ++ t ++ "," ++ r.s ++ "." ;
+    While c r = "while" ++ c ++ "," ++ r.s ++ "." ;
+    Where f r = "where" ++ f ++ "," ++ r.s ++ "." ;
+    IfThen t r = "if" ++ t ++ "," ++ "then" ++ r.s ++ "." ;
+    WhileWhen c t r = "while" ++ c ++ "," ++ "when" ++ t ++ "," ++ r.s ++ "." ;
+    WhereWhen f t r = "where" ++ f ++ "," ++ "when" ++ t ++ "," ++ r.s ++ "." ;
+    WhereWhile f c r = "where" ++ f ++ "," ++ "while" ++ c ++ "," ++ r.s ++ "." ;
+    WhileIf c t r = "while" ++ c ++ "," ++ "if" ++ t ++ "," ++ "then" ++ r.s ++ "." ;
+    WhereIf f t r = "where" ++ f ++ "," ++ "if" ++ t ++ "," ++ "then" ++ r.s ++ "." ;
+    Shall s v = s ++ "shall" ++ v.s ;
+    ShallNot s v = s ++ "shall" ++ "not" ++ v.s ;
+    OneVP v = {s = v ; m = One} ;
+    AndVP v l = {s = v ++ (case l.m of {One => "and" ; More => ","}) ++ l.s ; m = More} ;
+    OneVPor v = {s = v ; m = One} ;
+    OrVP v l = {s = v ++ (case l.m of {One => "or" ; More => ","}) ++ l.s ; m = More} ;
+    OneResp r = {s = r ; m = One} ;
+    AndResp r l = {s = r ++ (case l.m of {One => "," ++ "and" ; More => ","}) ++ l.s ; m = More} ;
     ActorSubj a = a ;
     NPSubj x = x.s ;
     Runs s c = s ++ "runs" ++ c ;
@@ -24,6 +31,7 @@ concrete ReqEng of Req = TypedEng ** {
     Undergoes x e = x.s ++ be x ++ e.part ;
     CondOne a = a ;
     CondAnd a c = a ++ "and" ++ c ;
+    CondOr a c = a ++ "or" ++ c ;
     Holds x r = x.s ++ (case x.n of {Sg => "holds" ; Pl => "hold"}) ++ "the" ++ r.s ! Sg ;
     HoldsA x r = x.s ++ (case x.n of {Sg => "holds" ; Pl => "hold"}) ++ art ++ r.s ! Sg ;
     IsFree r = "the" ++ r.s ! Sg ++ "is" ++ "free" ;
@@ -34,8 +42,6 @@ concrete ReqEng of Req = TypedEng ** {
     Print l = "print" ++ l.s ;
     ExitOk = "exit" ++ "successfully" ;
     ExitErr x = "exit" ++ "with" ++ "an" ++ "error" ++ "naming" ++ x.s ;
-    RefuseErr x = "exit" ++ "with" ++ "an" ++ "error" ++ "naming" ++ x.s ++ "and" ++ "change" ++ "nothing" ;
-    CommitPush x = "commit" ++ x.s ++ "and" ++ "push" ++ "the" ++ "commit" ;
     ChangeNothing = "change" ++ "nothing" ;
     Hold r = "hold" ++ "the" ++ r.s ! Sg ;
     HoldA r = "hold" ++ art ++ r.s ! Sg ;

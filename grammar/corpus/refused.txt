@@ -11,7 +11,10 @@ When the person runs `work start`, `work` shall set the status of a work-item to
 # a dangling "it"
 `work run` shall start it.
 When the person runs `work list`, `work` shall print it.
-# a code without backticks, two verbs, no full stop
+# a code without backticks, no full stop
 `work` shall print drafted.
-When a session ends a stage, `work run` shall discard the stage and start the stage.
 The person shall exit successfully
+# verb phrases: a list with no `and`, `and` under `shall not` (it takes `or`), a repeated verb phrase
+When a session ends a stage, `work run` shall discard the stage, start the stage.
+When a session ends a stage, `work run` shall not discard the stage and start the stage.
+When a session ends a stage, `work run` shall discard the stage and discard the stage.
