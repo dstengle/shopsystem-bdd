@@ -8,7 +8,7 @@ import unittest
 from test_model import CONTEXT, HAVE_CLINGO, ROOT, THING, ModelTest, cap, full
 
 sys.path.insert(0, str(ROOT / "scripts"))
-import model_facts  # noqa: E402
+import model_facts
 
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")

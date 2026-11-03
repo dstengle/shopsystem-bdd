@@ -124,7 +124,7 @@ class FactsTest(CodifiedTest):
         f = self.facts()
         self.assertIn('uncodified("spec/capabilities/old.md").', f)
         self.assertFalse([x for x in f if "old#r1" in x or x.startswith(("has_req(", "has_sc(", "ears_"))])
-        found, r = self.check()
+        found, _ = self.check()
         self.assertEqual(self.rows(found, "v_p0"), [["spec/capabilities/old.md"]])
         self.assertIn("migrate upgrade", found["labels"]["v_p0"])
 
