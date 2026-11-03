@@ -20,7 +20,9 @@ from vocab import handler
 from scenarios import analysis_tools_world as w
 
 FEATURE = HERE.parents[1] / "features" / "analysis-tools.feature"
-TEST_FAILS = "def test_fails():\n    assert False\n"
+TESTS = ("test_total", "test_sum")
+TEST_CART = "".join("\n\ndef %s():\n    assert total([1]) == 1\n" % t for t in TESTS)
+FINDING = "src/cart.py:1:1: F401 unused import"
 
 
 def bare(word):
@@ -47,17 +49,18 @@ def stand_in(step):
 
 # --- Givens ---
 
-@handler("GivenK", "Python interpreter")
 @handler("GivenK_A", "Python interpreter")
 def given_interpreter(step):
+    stand_in(step).update(venv=step.values[0] == "`virtualenv`")
+
+
+@handler("GivenK_C", "Python interpreter")
+def given_interpreter_present(step):
+    """`the Python interpreter <path> is [not] present`: <path>'s file is made, or is left out; `tools` finds it."""
     name, ctx = bare(step.names[0]), step.context
-    if step.values:
-        stand_in(step).update(venv=step.values[0] == "`virtualenv`")
-        return
-    if name == "--python":
-        ctx["python"] = w.fake(outside(step) / "py")
-        return
     ctx["discover"] = True
+    if step.text.endswith(" is not present"):
+        return
     if name in (".venv/bin/python", "venv/bin/python") and not (step.repo / name).exists():
         w.fake(step.repo / name.split("/")[0])
     elif name == "$VIRTUAL_ENV/bin/python" and "env_dir" not in ctx:
@@ -66,11 +69,10 @@ def given_interpreter(step):
         ctx.setdefault("env", {})["VIRTUAL_ENV"] = str(ctx["env_dir"])
 
 
-@handler("GivenK", "analysis tool")
 @handler("GivenK_A", "analysis tool")
 def given_tool(step):
     config, tool = stand_in(step), tool_of(step.names[0])
-    presence = bare(step.values[0]) if step.values else "installed"
+    presence = bare(step.values[0])
     if presence in ("missing", "uninstallable"):
         config.setdefault("missing", []).append(tool)
         config.setdefault("block", []).append(tool)
@@ -80,21 +82,25 @@ def given_tool(step):
 
 @handler("GivenK", "coverage map")
 def given_map(step):
-    step.context["map"] = True
+    """A coverage map is made only when it is present (GivenK_C)."""
+
+
+@handler("GivenK_C", "coverage map")
+def given_map_present(step):
+    step.context["map"] = not step.text.endswith(" is not present")
 
 
 @handler("GivenK", "test")
 def given_test(step):
+    files(step)["tests/test_%s.py" % bare(step.names[0])] = (
+        "from cart import total\n\n\ndef test_%s():\n    assert total([1]) == 1\n" % bare(step.names[0]))
+
+
+@handler("GivenK_C", "test")
+def given_failing(step):
     name = bare(step.names[0])
-    if name == "test_fails":
-        files(step)["tests/test_fails.py"] = TEST_FAILS
-    else:
-        files(step)["tests/test_%s.py" % name] = "from cart import total\n\n\ndef test_%s():\n    assert total([1]) == 1\n" % name
-
-
-@handler("GivenK", "Python file")
-def given_test_file(step):
-    files(step)[bare(step.names[0])] = w.TEST_TOTAL + w.TEST_DISCOUNT
+    assert step.text.endswith(" is failing"), step.text
+    files(step)["tests/test_%s.py" % name] = "def test_%s():\n    assert False\n" % name
 
 
 @handler("GivenCodeText", "Python file")
@@ -105,22 +111,6 @@ def given_python_file(step):
 @handler("GivenCode", "dependency file")
 def given_dependency_file(step):
     files(step)[bare(step.names[0])] = step.quoted[0].strip('"') + "\n"
-
-
-@handler("GivenK", "function")
-def given_function(step):
-    assert "def %s" % bare(step.names[0]) in w.CART
-
-
-@handler("GivenK", "reference")
-def given_reference(step):
-    path, line = bare(step.names[0]).split(":")
-    files(step)[path] = "from cart import total\n" + "\n" * (int(line) - 2) + "print(total([1]))\n"
-
-
-@handler("GivenK", "finding")
-def given_finding(step):
-    stand_in(step)["ruff"] = "src/cart.py:1:1: %s unused import" % bare(step.names[0])
 
 
 # --- the command ---
@@ -137,16 +127,21 @@ def grammar_stub(step):
 
 def runs_tools(step):
     ctx, repo = step.context, step.repo
-    tests = {} if any(k.startswith("tests/") for k in files(step)) else {"tests/test_cart.py": w.TEST_ONLY_TOTAL}
+    tests = {} if any(k.startswith("tests/") for k in files(step)) else {
+        "tests/test_cart.py": "from cart import total" + TEST_CART}
     w.started(repo, {**tests, **files(step)})
     grammar_stub(step)
+    flags = ctx.get("flags", [])
+    argv = shlex.split(bare(step.command))[1:] + [f for f in flags if f != "--python"]
+    if "--python" in flags and "python" not in ctx:
+        ctx["python"] = w.fake(outside(step) / "py")
+    if argv[0] == "check":
+        stand_in(step).setdefault("ruff", FINDING)
     if ctx.get("map"):
         w.mapped(step.run, repo, ctx, lambda: outside(step))
         ctx["first_map"] = ctx["map_commit"]
         w.put(repo, {"src/later.py": "def later():\n    return 2\n"})
-    flags = [f for f in ctx.get("flags", []) if f != "--python"]
-    argv = shlex.split(bare(step.command))[1:] + flags
-    ctx["json"] = "--json" in flags
+    ctx["json"] = "--json" in argv
     ctx["result"] = w.invoke(step.run, repo, ctx, argv, lambda: outside(step))
     ctx["head"] = w.git(repo, "rev-parse", "--short", "HEAD")
 
@@ -163,34 +158,38 @@ def output(step, err=False):
 
 
 def expected(step, np):
-    """What one noun phrase of a Then names in the output, or None when it names nothing to look for."""
-    ctx, name = step.context, re.search(r"(`[^`]+`|\b[a-z]+[1-9]\d*)$", np)
+    """What one noun phrase of a Then names in the output, as a list (empty when it names nothing to look for)."""
+    ctx, name = step.context, re.search(r"(`[^`]+`|\b[A-Za-z]+[1-9]\d*)$", np)
     name = name.group(1) if name else None
+    interpreters = {"`--python`": ctx.get("python"), "`sys.executable`": sys.executable,
+                    "`$VIRTUAL_ENV/bin/python`": ctx.get("env_dir", pathlib.Path("/")) / "bin" / "python"}
+    if name in interpreters or name in ("`.venv/bin/python`", "`venv/bin/python`"):
+        return [str(interpreters.get(name) or step.repo / bare(name))]
     if np.startswith("the Python interpreter"):
-        paths = {"`--python`": ctx.get("python"), "`sys.executable`": sys.executable,
-                 "`$VIRTUAL_ENV/bin/python`": ctx.get("env_dir", pathlib.Path("/")) / "bin" / "python"}
-        return str(paths.get(name) or (step.repo / bare(name) if name else "python: "))
+        return ["python: "]
     if np.startswith("the analysis tool"):
-        return tool_of(name)
+        return [tool_of(name)]
     if np.startswith("the test"):
-        return "test_" + bare(name) if not bare(name).startswith("test_") else bare(name)
-    if np == "the map commit":
-        return ctx.get("map_commit") or ctx["head"]
+        return [TESTS[int(name[1:]) - 1]]
+    if np.startswith("the Python file") and not name.startswith("`"):
+        return [f for f in files(step) if not f.startswith("tests/")]
+    if np.startswith("the map commit"):
+        return [ctx.get("map_commit") or ctx["head"]]
     if np.startswith("the number of"):
-        return None
+        return []
     if np.startswith('"'):
-        return np.strip('"')
-    return bare(name) if name else bare(np)
+        return [np.strip('"')]
+    return [bare(name) if name else bare(np)]
 
 
 @handler("ThenPrints", "`tools`")
 def prints(step):
     out = output(step, err=True)
     for np in step.nps:
-        want = expected(step, np)
-        if want and step.context.get("json") and re.fullmatch(r"\S+\.py:\d+", want):
-            want = '"path": "%s", "line": %s' % tuple(want.split(":"))
-        assert want is None or want in out, (np, want, out)
+        for want in expected(step, np):
+            if step.context.get("json") and re.fullmatch(r"\S+\.py:\d+", want):
+                want = '"path": "%s", "line": %s' % tuple(want.split(":"))
+            assert want in out, (np, want, out)
         if np.startswith("the number of") and step.context.get("json"):
             assert any(isinstance(v, int) for v in _values(json.loads(step.context["result"].stdout))), out
         elif np.startswith("the number of"):
@@ -212,7 +211,7 @@ def _values(data):
 def prints_not(step):
     out = [line for line in output(step).splitlines() if line.startswith("python: ")]
     for np in step.nps:
-        assert expected(step, np) not in " ".join(out), (np, out)
+        assert all(want not in " ".join(out) for want in expected(step, np)), (np, out)
 
 
 @handler("ThenExitsOk", "`tools`")
@@ -228,8 +227,8 @@ def exits_err(step):
     assert done.returncode == 1, done.stdout + done.stderr
     assert "Traceback" not in done.stderr
     for np in step.nps:
-        want = expected(step, np)
-        assert want is None or want in output(step, err=True), (np, want, output(step, err=True))
+        for want in expected(step, np):
+            assert want in output(step, err=True), (np, want, output(step, err=True))
 
 
 @handler("ThenDoes", "install")
@@ -250,5 +249,5 @@ def replaces_map(step):
     at = step.repo / (w.MAP + ".at")
     assert (step.repo / w.MAP).is_file() and at.is_file(), output(step, err=True)
     assert at.read_text().strip() == step.context["head"]
-    if step.names:
+    if "first_map" in step.context:
         assert step.context["head"] != step.context["first_map"]
