@@ -9,9 +9,9 @@ import json
 import re
 from pathlib import Path
 
-import model_parse
 import workqueue
 import workqueue_done
+import workqueue_lines
 from workqueue import Refused
 
 SETTLED = ("accepted", "refused", "withdrawn")
@@ -130,8 +130,9 @@ def _refuse_upstream_part(root, text, ident, part):
 def request(root, title, asker, lines_file, sources, thread, delegation=None, raised_for=None):
     """Write a new open request in the upstream's turn, `q<n>` one above the highest kept; return q<n> (r1).
 
-    A request that names neither an origin nor a job-thread is refused (r3), and so is one with a line not in the strict
-    form `model check` holds (r2); a refusal writes nothing.
+    A request that names neither an origin nor a job-thread is refused (r3), and so is one with a line the upstream
+    would not read (r2): one that does not parse in its requirement grammar, or, where its index is not codified, one
+    not in the strict form `model check` holds (workqueue_lines); a refusal writes nothing.
     """
     if delegation is not None and not delegation.strip():
         raise Refused("the delegation is empty")
@@ -140,9 +141,7 @@ def request(root, title, asker, lines_file, sources, thread, delegation=None, ra
     if not Path(lines_file).is_file():
         raise Refused("the file %s does not exist" % lines_file)
     lines = [line.strip() for line in workqueue.read(Path(lines_file), Path(lines_file).parent).splitlines() if line.strip()]
-    for number, line in enumerate(lines, 1):
-        if not all(model_parse.ears(line)):
-            raise Refused("line %d is not in the strict form model check holds: %s" % (number, line))
+    workqueue_lines.check(root, lines)
     directory = Path(root) / workqueue.WORK / "requests"
     taken = [int(m.group(1)) for p in directory.glob("q*.md") if (m := re.fullmatch(r"q(\d+)\.md", p.name))]
     name = "q%d" % (max(taken, default=0) + 1)
