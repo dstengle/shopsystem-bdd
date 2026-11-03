@@ -2,11 +2,11 @@
 
 Tools: `tools` at the plugin path (probe: coverage, ruff, vulture, import-linter, hypothesis present). No coverage map: `tests-of` says `no map`; making one runs the suite, so tests are found `by search`. `refs workqueue.add` gave 0 references (not trusted; `scripts/work:16` found by search).
 
-Work-item accepts delivery#r17, delivery#r18. The brief gives no `Accepted scenarios:` line and no fileset; the work-item has no `## Retires` section and no `fileset:`.
+Work-item accepts delivery#r17@0.29, delivery#r18@0.29. The brief gives no `Accepted scenarios:` line and no fileset; the work-item has no `## Retires` section and no `fileset:`.
 
 ## 1. Why each scenario is red today
 
-No accepted scenario exists. Search: `grep @r17|@r18` in `features/` gives 13 hits, none under delivery: `features/supervision.feature`, `design-model-check.feature`, `migration-tools.feature`, `analysis-tools.feature`, `feature-file-tools.feature` (by search). There is no `features/delivery.feature` (glob, by search; `git log -- features/delivery.feature` empty). Formulation commit e4ee75b (`git show --stat`) adds scenarios for other capabilities only; the proposal `drafting-retires` (status `formulated`, `adds: [delivery#r17-r18]`) has none. Nothing to run red. `none`.
+No accepted scenario exists. Search: `grep @r17|@r18` in `features/` gives 13 hits, none under delivery: `features/supervision.feature`, `design-model-check.feature`, `migration-tools.feature`, `analysis-tools.feature`, `feature-file-tools.feature` (by search). There is no `features/delivery.feature` (glob, by search; `git log -- features/delivery.feature` empty). Formulation commit e4ee75b (`git show --stat`) adds scenarios for other capabilities only; the proposal `drafting-retires` (status `formulated`, `adds: [delivery#r17@0.29, delivery#r18@0.29]`) has none. Nothing to run red. `none`.
 
 ## 2. What the system answers today
 
@@ -15,7 +15,7 @@ Scratch repo probe, run: `python3 -m pytest -q -s -n 0 .shop/scratch/w111-1-rese
 - `features deprecated --json` on a file with `@r17 @deprecated` "Old way (deprecated)" and `Deprecated for: New way`, plus `@r17` "New way":
   `{"deprecated": [{"file": "features/f.feature", "title": "Old way (deprecated)", "deprecated_for": "New way", "replacement": {"file": "features/f.feature", "tags": ["r17"]}}]}` (run).
   It gives the replacement's tags, not the deprecated scenario's own `@r<n>`. r17 needs the latter: read the file's tags (run).
-- `work add i1 "Retire probe" --part-of capability-proposal/p1 --under delivery --accepts delivery#r17` with `spec/index.md` present: prints `w1`, writes `.shop/work/i1/w1.md` as frontmatter (`status: drafted`, `accepts: [delivery#r17]`) plus `# Retire probe`, and commits it itself: `437fe71 work add: i1/w1 drafted`; `git status --porcelain` empty afterwards (run).
+- `work add i1 "Retire probe" --part-of capability-proposal/p1 --under delivery --accepts delivery#r17@0.29` with `spec/index.md` present: prints `w1`, writes `.shop/work/i1/w1.md` as frontmatter (`status: drafted`, `accepts: [delivery#r17@0.29]`) plus `# Retire probe`, and commits it itself: `437fe71 work add: i1/w1 drafted`; `git status --porcelain` empty afterwards (run).
 - `work add` without `spec/index.md`: `work: spec/index.md, which names the context, is missing`, exit 1 (run, first attempt).
 - `work add` with `--retires x`: argparse `unrecognized arguments`, exit 2 (run). `work add --help` lists only `--part-of --under --accepts` (run).
 - `work add` without `--accepts`: exit 2, `the following arguments are required: --accepts` (run).

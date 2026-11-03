@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Check a repository's files against design model v5: the graph's rules, and the requirement language's parse."""
 # The command; its parts are the sibling modules model_parse (the files' forms), model_facts, model_spec (codified
-# files), model_legacy (0.29 files) and model_work (the facts), model_check (check and rules), model_report
+# files) and model_work (the facts), model_check (check and rules), model_report
 # (decisions, why, parse, lexicon, logic) and model_restates (restates).
 
 import argparse
@@ -38,7 +38,9 @@ contract:
     groups `### [g<n>] <title>`, each with an optional
     `Restates: r<n>@0.29, <cap>#r<n>@0.29.` line, `- [r<n>] <statement>`
     bullets and an optional fenced `given` block; its `## Dropped` lists the
-    0.29 ids no group restates. Any other file is read as 0.29 bullets;
+    0.29 ids no group restates. A capability file, spec/index.md or
+    spec/universal.md without that marker is not read: it is v_p0, which
+    `migrate upgrade` converts;
     spec/universal.md, the universal conditions `- [U<n>] <statement>`;
     spec/restated.json, the 0.29 ids `<cap>#r<n>` with their text;
     features/**/*.feature, the containers of scenarios, a capability
@@ -65,30 +67,30 @@ contract:
   - A requirement is <capability>#r<n>, a group <capability>#g<n>, a
     universal condition universal-condition/<context path>/u<n>. A
     requirement of a codified file is a member of its group (member_of; the
-    capability's has_req is derived); a 0.29 bullet is a requirement of its
-    capability, and one with no [r<n>] has no id. `retired: [r4, g2, ...]`
+    capability's has_req is derived); a statement with no [r<n>] has no id
+    (v15a), and one whose id came before is a second id (v15b), each beside
+    its file problem. `retired: [r4, g2, ...]`
     lists ids the capability used and retired. A reference is written
     <capability>#r<n> (a list may write <capability>#r<a>-r<b>);
-    <capability>#r<n>@0.29 names a 0.29 id and resolves through
-    spec/restated.json, never against the live spec.
+    <capability>#r<n>@0.29 names a 0.29 id: it is history, never read
+    against the live spec, and `why` finds its text in spec/restated.json.
   - Every statement of a codified file and of spec/universal.md is parsed in
     the context's requirement grammar (spec_grammar): parsed, unparsed (v_p1)
     or ambiguous (v_p2); a group's statements share their trigger and
     condition (v15k); a group whose every statement holds a resource is
     logic_only and has no scenario. A scenario of a codified capability names
-    its group by a tag @g<n> (generates); a scenario of a 0.29 capability
-    names its requirement by @r<n>. A scenario tagged @deprecated is no
+    its group by a tag @g<n> (generates). A scenario tagged @deprecated is no
     scenario; one tagged @holding is a file problem.
   - facts prints the facts it read, one a line, in clingo's syntax, under
     grammar.md's relation names. A term gives node(T, "term"),
     term_of(T, <bounded-context>), avoid(T, <word>) for each word after its
     `Not:`, glossary_entry(T, <entry number>, <word>) and, typed,
     category(T, <category>), value_of(V, K, A) and linearises(T, <text>);
-    each 0.29 requirement and scenario gives mentions(X, <word>) for each term
-    or avoided word it contains, as a whole word in any case, with a plural
-    "s" allowed (a codified statement uses lexicon words, so gives none).
-    Reading a 0.29 repository needs nothing beyond the standard library; a
-    codified statement needs the grammar tools (`tools install`).
+    a statement that does not parse, and a scenario of a feature file that
+    is no capability's, gives mentions(X, <word>) for each term or avoided
+    word it contains, as a whole word in any case, with a plural "s" allowed
+    (a parsed statement and a generated scenario use lexicon words, so give
+    none). A codified statement needs the grammar tools (`tools install`).
   - Every rule of model.lp has one plain label, label("<code>", "<label>"),
     written beside it. check prints `<code>  <label>  (<count>)` above each
     non-empty v_ relation's rows; `rules` prints every `<code>  <label>`,

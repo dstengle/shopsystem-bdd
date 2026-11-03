@@ -5,8 +5,8 @@ part_of: initiative/i9
 status: merged
 date: 2026-10-17
 argues: [spec-integration]
-adds: [spec-integration#r17-r19]
-changes: [spec-integration#r16]
+adds: [spec-integration#r17@0.29, spec-integration#r18@0.29, spec-integration#r19@0.29]
+changes: [spec-integration#r16@0.29]
 ---
 
 # Spec integration: a term rides with a change

@@ -1,11 +1,11 @@
-# Plan of w175: requests#r22, the empty delegation refused
+# Plan of w175: requests#r22@0.29, the empty delegation refused
 
 This plan replaces the 2-plan's, which stopped on one question (whether a whitespace-only delegation is empty). The
 work-item's Answers settle it: reading B (see D-c).
 
 ## 1. What goes green
 
-- `requests#r22`: scenario "request with an empty delegation is refused, and nothing changes"
+- `requests#r22@0.29`: scenario "request with an empty delegation is refused, and nothing changes"
   (features/requests.feature:33).
   Red today (notes §1): the Then "the command is refused because the delegation is empty" has no step definition
   (StepDefinitionNotFoundError). Behind it, `request()` in `scripts/workqueue_request.py` has no check for an empty
@@ -31,15 +31,15 @@ No decision adds or removes a file. Both edited files have room under the 300-li
 
 - D-a. The refusal is in the library, in `request()`, not in argument parsing in `scripts/work`. It sits with the r2
   and r3 refusals, so "change nothing" holds the same way: no file written, no commit, no q-number taken (notes §5).
-  Rests on requests#r22 and design-decision/requests-written-through-work.
+  Rests on requests#r22@0.29 and design-decision/requests-written-through-work.
 - D-b. A refused run exits with an error, the same exit as the other refusals of `work request`. Rests on
-  design-decision/exits-are-successful-or-errors and requests#r22.
+  design-decision/exits-are-successful-or-errors and requests#r22@0.29.
 - D-c. "Empty" means empty after stripping whitespace: `--delegation ""` and `--delegation "   "` are both refused,
-  exactly alike. Taken by the work-item's Answer of 2026-10-25 (reading B), resting on requests#r22.
-- D-d. A delegation that has text is written as given, its whitespace not stripped. Rests on requests#r19 ("write the
+  exactly alike. Taken by the work-item's Answer of 2026-10-25 (reading B), resting on requests#r22@0.29.
+- D-d. A delegation that has text is written as given, its whitespace not stripped. Rests on requests#r19@0.29 ("write the
   delegation") and its scenario's Pins line ("as they were given").
 - D-e. Only a delegation that is given is checked; no `--delegation` at all stays a request with no delegation (probe
-  P3). Rests on requests#r19 ("Where `--delegation <text>` is given") and r22 ("the delegation given").
+  P3). Rests on requests#r19@0.29 ("Where `--delegation <text>` is given") and r22 ("the delegation given").
 
 ## 4. Tests the decisions break
 

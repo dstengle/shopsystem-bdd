@@ -1,6 +1,6 @@
 # w138 research notes
 
-Work-item w138 (`under: supervision`), accepts supervision#r72, r73, r74. Scenarios: features/supervision.feature lines 889-912.
+Work-item w138 (`under: supervision`), accepts supervision#r72@0.29, r73, r74. Scenarios: features/supervision.feature lines 889-912.
 Tools: `tools tests-of` and `untested` answer "no map" (no map made; not run: the whole suite). Every count below is `by search` or `refs`. `refs` gave 2 uses of `workqueue.add` (tests only) and 0 for `Reviews.branch_review` (method, not seen by refs).
 Scripts used: `/home/vscode/shopsystem-bdd/scripts` (the brief's Scripts). Probes ran there, in scratch repositories, with `tests/scripts/stub_claude.py` as the stand-in claude.
 

@@ -2,7 +2,7 @@
 
 **Verdict: DONE_WITH_CONCERNS.** The whole suite passes at the head, and i60's own work-items have no new finding:
 
-- w233 (supervision#r211) is `green`.
+- w233 (supervision#r211@0.29) is `green`.
 - w235 (`work delegate` and its hook, requests r65–r68 and r70–r72) is `green`.
 - w234 is `withdrawn`.
 
@@ -17,7 +17,7 @@ New since review 5 (`dfd35e16`): this range now holds i63's w236 and w237, i48's
 
 - **Range:** `ae85edd3a2ce3488f4d930ac5814845eea5e6178..f6ff81c0925b69fbe09318de1c2ec94ab05ad52c` on `main`.
 - **i60** is `started` and fulfils q39. It holds:
-  - **w233:** `green`, under supervision, accepts supervision#r211.
+  - **w233:** `green`, under supervision, accepts supervision#r211@0.29.
     - Transitions: `6b7926df` to `91d43216`.
     - Change: `4e206ec4` (steps only).
   - **w234:** `withdrawn` (`9602238a`).

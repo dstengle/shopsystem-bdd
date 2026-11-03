@@ -6,7 +6,7 @@ status: formulated
 date: 2026-10-22
 argues: [supervision]
 adds: []
-changes: [supervision#r19]
+changes: [supervision#r19@0.29]
 removes: []
 ---
 

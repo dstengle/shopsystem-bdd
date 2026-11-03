@@ -4,7 +4,7 @@
 
 The previous review's one fix-now finding was that r102 reads kept drafts at the wrong path. It has been answered under the person's delegation:
 - r102's scenario was reformulated in 7636eb12 with the real `drafts/round-<m>/` layout.
-- Fix work-item **w171** (drafted, accepts supervision#r102) delivers the code change.
+- Fix work-item **w171** (drafted, accepts supervision#r102@0.29) delivers the code change.
 
 It is carried below as answered and is no longer triaged fix now for w170. r103 and r104 hold.
 

@@ -29,9 +29,9 @@ class CheckOutputTest(ModelTest):
                 self.reset()
                 self.write("spec/capabilities/thing.md", cap("thing", [f"- [r{n}] Req {n}." for n in range(1, rows + 1)]))
                 lines = self.run_model("check", *args).stdout.splitlines()
-                at = lines.index(f"v_s3  a group or requirement has no scenario  ({rows})")
+                at = lines.index(f"v_s3  a group has no scenario  ({rows})")
                 block = [line for line in lines[at + 1:at + 1 + shown + 1]]
-                self.assertEqual(len([line for line in block if "thing#r" in line]), shown, lines)
+                self.assertEqual(len([line for line in block if "thing#g" in line]), shown, lines)
                 self.assertEqual(block[-1], f"    ... and {more} more", lines)
 
     def test_exit_codes_of_check(self):
@@ -152,7 +152,7 @@ class LanguageCommandsTest(CodifiedTest):
         import model_report
         calls = []
         fake = types.SimpleNamespace(run=lambda root, capability=None, extra=None: calls.append((root, capability)) or ["F"],
-                                     report=lambda findings, as_json: ("L1 r1 r2\n" if findings == ["F"] else "", 1))
+                                     report=lambda findings, _as_json: ("L1 r1 r2\n" if findings == ["F"] else "", 1))
         args = types.SimpleNamespace(root=str(self.tmp), capability="wq", json=False)
         out = io.StringIO()
         with mock.patch.dict(sys.modules, {"spec_solve": fake}), contextlib.redirect_stdout(out):

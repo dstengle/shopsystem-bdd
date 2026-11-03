@@ -5,8 +5,8 @@ part_of: initiative/i23
 status: formulated
 date: 2026-10-23
 argues: [batch-measurement]
-adds: [batch-measurement#r57-r58, batch-measurement#r59]
-changes: [batch-measurement#r47]
+adds: [batch-measurement#r57@0.29, batch-measurement#r58@0.29, batch-measurement#r59@0.29]
+changes: [batch-measurement#r47@0.29]
 removes: []
 ---
 

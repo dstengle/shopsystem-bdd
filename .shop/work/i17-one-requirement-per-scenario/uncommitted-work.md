@@ -5,7 +5,7 @@ part_of: initiative/i17
 status: formulated
 date: 2026-10-22
 argues: [work-queue]
-adds: [work-queue#r9]
+adds: [work-queue#r9@0.29]
 ---
 
 # work-queue: `work` commits what it changes

@@ -1,6 +1,6 @@
 # Branch review of i60 (review 5)
 
-**Verdict: DONE_WITH_CONCERNS.** The whole suite passes at the head, and i60's two delivered work-items, w233 (supervision#r211) and w235 (`work delegate` and its UserPromptSubmit hook, requests r65–r68, r70–r72), have no finding to fix now. Two things still need attention:
+**Verdict: DONE_WITH_CONCERNS.** The whole suite passes at the head, and i60's two delivered work-items, w233 (supervision#r211@0.29) and w235 (`work delegate` and its UserPromptSubmit hook, requests r65–r68, r70–r72), have no finding to fix now. Two things still need attention:
 
 - **Finding 1 (carried over from reviews 2–4, Important, fix now):** i54/w232's `work show <request>` still leaves out every line that has no line outcome. The commit is in this range. w232 is `awaiting-answer` on this very question. Fix it under w232, and do not draft it again in i60.
 - **`tools check` exits 1** on eight ruff errors (Finding 4, Finding 5). None of them is in a file w233 or w235 wrote.
@@ -11,7 +11,7 @@ Review 4's data-loss finding (i60-requests lost r65–r71) was repaired by hand 
 
 - **Range:** `ae85edd3a2ce3488f4d930ac5814845eea5e6178..dfd35e160395d06871b12d900c10508980511ba3` on `main`.
 - **i60** is `started` and fulfils q39. It holds:
-  - **w233:** `green`, under supervision, accepts supervision#r211. Its transition commits are `6b7926df` to `91d43216`. Its only change is `4e206ec4` (steps).
+  - **w233:** `green`, under supervision, accepts supervision#r211@0.29. Its transition commits are `6b7926df` to `91d43216`. Its only change is `4e206ec4` (steps).
   - **w234:** `withdrawn` (`9602238a`). It accepted r72 alone, after the proposal's lists were cut.
   - **w235:** `green`, under requests, accepts requests r65, r66, r67, r68, r70, r71 and r72. Its transition commits are `0a215b99` to `dfd35e16`. Its changes are `ed25c279` and `ab71c3fc`.
   - **Capability-proposals:** i60-supervision is `formulated`. i60-requests is `formulated`, with adds r65–r68 and r70–r72, and removes r69.
@@ -176,7 +176,7 @@ None. Every check comes from a run at `dfd35e16`.
 
 ### Risks checked, no finding
 
-- **The delegate field round-trip.** `work delegate` writes `json.dumps(text)` (`workqueue_request.py:1001`). `supervise_answers.py:44-48` reads `delegation` and decodes it with `json.loads` when it is quoted. So r72's text, with its inner double quotes, is read back word for word, and supervision#r211's live read picks it up.
+- **The delegate field round-trip.** `work delegate` writes `json.dumps(text)` (`workqueue_request.py:1001`). `supervise_answers.py:44-48` reads `delegation` and decodes it with `json.loads` when it is quoted. So r72's text, with its inner double quotes, is read back word for word, and supervision#r211@0.29's live read picks it up.
 - **Insert when absent.** The field goes before the closing `\n---` of the frontmatter, the same boundary that `field` and `_with_field` use (`workqueue_request.py:71-78`).
 - **Refusals change nothing.** `Refused` is raised inside `edit`, before `workqueue.committed` writes anything (`_change`, `:81-86`).
 - **The hook stays at exit 0.**

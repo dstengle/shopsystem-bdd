@@ -8,9 +8,9 @@
   - The branch is shared with i25–i28, i30 and i31, so most commits are their work-items, rounds and reviews.
   - Review 1 covered `4640ef08..8ae0e927`. The 29 commits since then are i30's (w184, w186, w187, w180), i25's note, q9, review 1's own commit and `e37050ea`, i29's records.
 - i29's work-items, all `green`. No i29 work-item commit came after review 1.
-  - **w175** (requests#r22): `959cba20`, between `a39bb7a0` (ready → claimed) and `c2ea4a21` (claimed → done).
-  - **w179** (supervision#r15): `0c654848`, between `eca9d404` and `7c3b0a9a`.
-  - **w181** (supervision#r105–r109): `4d3113e1` (r107), `5048b72e` (r108), `c482f4f8` (r106), `07d5c24c` (r105, r109) and `d87a295b` (the r92 scenario's setup), between `307f8496` and `a7102a44`.
+  - **w175** (requests#r22@0.29): `959cba20`, between `a39bb7a0` (ready → claimed) and `c2ea4a21` (claimed → done).
+  - **w179** (supervision#r15@0.29): `0c654848`, between `eca9d404` and `7c3b0a9a`.
+  - **w181** (supervision#r105@0.29, supervision#r106@0.29, supervision#r107@0.29, supervision#r108@0.29, supervision#r109@0.29): `4d3113e1` (r107), `5048b72e` (r108), `c482f4f8` (r106), `07d5c24c` (r105, r109) and `d87a295b` (the r92 scenario's setup), between `307f8496` and `a7102a44`.
 - i29 commits that belong to no work-item:
   - the round merges and their spec and features commits (`7c548d23`, `6cd77b2b`, `3bfdba68`, `d073c518`);
   - `work add`, `work answer` and `work note` commits;

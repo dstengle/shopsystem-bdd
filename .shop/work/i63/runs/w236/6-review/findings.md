@@ -1,4 +1,4 @@
-# Review of w236 (supervision#r218)
+# Review of w236 (supervision#r218@0.29)
 
 **Verdict: DONE.** The code change does what r218 says, and nothing more. One Important finding: a shared assertion in `is_failed` is loosened, the plan does not list it, and the allowance the report claims for it does not hold. It is triaged as an observation: it gives no wrong answer, crash or data loss, and what it now asserts is r218's own wording. No finding is Critical or fix now.
 

@@ -5,7 +5,7 @@ part_of: initiative/i22
 status: formulated
 date: 2026-10-23
 argues: [migration-tools]
-adds: [migration-tools#r29]
+adds: [migration-tools#r29@0.29]
 changes: []
 removes: []
 ---

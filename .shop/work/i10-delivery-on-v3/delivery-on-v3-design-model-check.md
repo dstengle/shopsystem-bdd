@@ -6,13 +6,13 @@ status: formulated
 date: 2026-10-19
 argues: [design-model-check]
 adds: []
-changes: [design-model-check#r6, design-model-check#r22-r24, design-model-check#r43]
-removes: [design-model-check#r42]
+changes: [design-model-check#r6@0.29, design-model-check#r22@0.29, design-model-check#r23@0.29, design-model-check#r24@0.29, design-model-check#r43@0.29]
+removes: [design-model-check#r42@0.29]
 ---
 
 # Design model check: one requirement form, and fix work-items
 
-What the gate approves: added `design-model-check#r67`, changed `#r6`, `#r22`, `#r23`, `#r24`, `#r43`, removed `#r42`.
+What the gate approves: added `design-model-check#r67@0.29`, changed `#r6`, `#r22`, `#r23`, `#r24`, `#r43`, removed `#r42`.
 
 `model check` accepts a requirement only as `capability/<name>#r<n>` and its short forms
 (design-decision/one-requirement-form): `#behaviour/r<n>` is unresolved (r22, r67), and the line that read it as the
@@ -21,4 +21,4 @@ proposal retires them, without a report (r6, r23): retiring r42 here would other
 v15e, and every removal unresolved once merged. The
 Not yet entry for a work-queue view is done by `work show` and `work next` (work-queue).
 
-Re-synced 2026-10-19 to the EARS lines (initiative/i13, approved by the person): design-model-check#r67 -> r22. The ids in the text above are the drafted ones.
+Re-synced 2026-10-19 to the EARS lines (initiative/i13, approved by the person): design-model-check#r67@0.29 -> r22. The ids in the text above are the drafted ones.

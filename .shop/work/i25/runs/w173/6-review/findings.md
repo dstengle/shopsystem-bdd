@@ -1,4 +1,4 @@
-# Review of w173 (supervision#r98)
+# Review of w173 (supervision#r98@0.29)
 
 **Verdict: DONE.** No finding is Critical and none is to be fixed now. There are two Minor observations about hardening.
 
@@ -38,7 +38,7 @@ The report says "none", and I found no test change that would need an allowance.
 
 ### Behaviour and lines
 
-- The new line `Reviewer's findings: <path>` is written only in implement briefs, and only on the r98 route: the last move into `ready` is from `awaiting-answer`, and the move before it is `done -> awaiting-answer`. This is what supervision#r98 and its Implementation line ask for. No other route's brief changes.
+- The new line `Reviewer's findings: <path>` is written only in implement briefs, and only on the r98 route: the last move into `ready` is from `awaiting-answer`, and the move before it is `done -> awaiting-answer`. This is what supervision#r98@0.29 and its Implementation line ask for. No other route's brief changes.
 - The answer is still written by `answer_lines` (r57).
 - I found no code whose behaviour no line asks for.
 - Risk I checked: whether the implementer, planner or researcher question routes could trigger the line. They cannot, because they move `claimed`, `researched` or `drafted` into `awaiting-answer`, not `done`.

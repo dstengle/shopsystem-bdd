@@ -5,14 +5,14 @@ part_of: initiative/i13
 status: merged
 date: 2026-10-19
 argues: [spec-integration]
-adds: [spec-integration#r33]
-changes: [spec-integration#r1-r4, spec-integration#r6-r8, spec-integration#r10-r17, spec-integration#r19-r22]
-removes: [spec-integration#r5, spec-integration#r9, spec-integration#r18]
+adds: [spec-integration#r33@0.29]
+changes: [spec-integration#r1@0.29, spec-integration#r2@0.29, spec-integration#r3@0.29, spec-integration#r4@0.29, spec-integration#r6@0.29, spec-integration#r7@0.29, spec-integration#r8@0.29, spec-integration#r10@0.29, spec-integration#r11@0.29, spec-integration#r12@0.29, spec-integration#r13@0.29, spec-integration#r14@0.29, spec-integration#r15@0.29, spec-integration#r16@0.29, spec-integration#r17@0.29, spec-integration#r19@0.29, spec-integration#r20@0.29, spec-integration#r21@0.29, spec-integration#r22@0.29]
+removes: [spec-integration#r5@0.29, spec-integration#r9@0.29, spec-integration#r18@0.29]
 ---
 
 # Spec integration: Behaviour lines in EARS
 
-What the gate approves (the person, 2026-10-19: "I approve"): added `spec-integration#r33`; changed `spec-integration#r1-r4`, `spec-integration#r6-r8`, `spec-integration#r10-r17`, `spec-integration#r19-r22`; removed `spec-integration#r5`, `spec-integration#r9`, `spec-integration#r18` (now under `retired:`).
+What the gate approves (the person, 2026-10-19: "I approve"): added `spec-integration#r33@0.29`; changed `spec-integration#r1@0.29, spec-integration#r2@0.29, spec-integration#r3@0.29, spec-integration#r4@0.29`, `spec-integration#r6@0.29, spec-integration#r7@0.29, spec-integration#r8@0.29`, `spec-integration#r10@0.29, spec-integration#r11@0.29, spec-integration#r12@0.29, spec-integration#r13@0.29, spec-integration#r14@0.29, spec-integration#r15@0.29, spec-integration#r16@0.29, spec-integration#r17@0.29`, `spec-integration#r19@0.29, spec-integration#r20@0.29, spec-integration#r21@0.29, spec-integration#r22@0.29`; removed `spec-integration#r5@0.29`, `spec-integration#r9@0.29`, `spec-integration#r18@0.29` (now under `retired:`).
 
 Each line is one EARS requirement, its pattern chosen by what starts the behaviour, with "shall", one response and one sentence; `If` lines only where design-decision/behaviour-lines-are-ears allows them. A line whose meaning is unchanged keeps its id; a retired line's meaning is in the line named below, or in "Implementation, may change".
 

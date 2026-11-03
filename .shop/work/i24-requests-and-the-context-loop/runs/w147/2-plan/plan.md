@@ -4,8 +4,8 @@ Work-item `.shop/work/i24-requests-and-the-context-loop/w147.md`, under `supervi
 
 ## 1. What goes green
 
-- **supervision#r77**, outline "under a delegation, each question of the initiative goes to a session of its own, given only the delegation and the files it names, that <reply>", examples "answers it" and "leaves it for the person". Both are red today at the first Given (feature line 943, `StepDefinitionNotFoundError`). The Given at 946, the Thens at 948-949 and `<after>` at 950 have no steps either. No code in `scripts/` reads a delegation. `Run.run` has no answer pass, and `pull(MOVABLE)` skips `awaiting-answer`. The probe showed that `work run i1` with a delegation behaves exactly as it does without one: exit 3, the question printed, no session.
-- **supervision#r78**, "an answer given by a session started under a delegation is written naming that delegation". Red at the Given on line 960. The Given at 962 and the Then at 964 have no steps. Nothing in `supervise*.py` writes an answer, and `work answer` writes `- <date>: <text>` with no `by`.
+- **supervision#r77@0.29**, outline "under a delegation, each question of the initiative goes to a session of its own, given only the delegation and the files it names, that <reply>", examples "answers it" and "leaves it for the person". Both are red today at the first Given (feature line 943, `StepDefinitionNotFoundError`). The Given at 946, the Thens at 948-949 and `<after>` at 950 have no steps either. No code in `scripts/` reads a delegation. `Run.run` has no answer pass, and `pull(MOVABLE)` skips `awaiting-answer`. The probe showed that `work run i1` with a delegation behaves exactly as it does without one: exit 3, the question printed, no session.
+- **supervision#r78@0.29**, "an answer given by a session started under a delegation is written naming that delegation". Red at the Given on line 960. The Given at 962 and the Then at 964 have no steps. Nothing in `supervise*.py` writes an answer, and `work answer` writes `- <date>: <text>` with no `by`.
 - Deprecated scenarios retired: none. The work-item has no `## Retires`.
 
 ## 2. Where the change lands
@@ -45,7 +45,7 @@ Removed from the researcher's set, and why:
 
   The session runs as `work run`'s stage `answer`, through `Workers.worker`. That gives it the push verification (r35), the log lines (r8), the session record (r62), the check that the main checkout was not changed (r28) and the faults of r45. It runs in a detached worktree of the initiative branch, like a researcher's.
   - `initiative-round` does not fit. It reads the spec, the ledger and the drafts, which r77's "nothing else" forbids.
-  - Rests on design-decision/the-v3-agents (each role is an agent whose tool list is exactly its role's) and supervision#r13 and r14.
+  - Rests on design-decision/the-v3-agents (each role is an agent whose tool list is exactly its role's) and supervision#r13@0.29 and r14.
   - `test_agents.py` r1 and r5 still pass: no Agent tool, and the agent names its model.
 - **D3. What the session is given.** The answer brief holds:
   - the question;
@@ -56,13 +56,13 @@ Removed from the researcher's set, and why:
   It holds no work-item or proposal file, no capability, no run directories, no other question and no answers.
   - "The files a question names" means each token of the question text, with surrounding punctuation, quotes and backticks stripped, that is a relative path with a `/` and a file suffix. They are given in order of appearance, each once, whether or not the file exists.
   - The Thens at 948-949 read "given ... and nothing else" as this content: the Read list is exactly those files, and the brief names no other question, no `.shop/work/` file and no `spec/` file.
-  - Rests on supervision#r77 together with r17, r25 and r44, which hold for every brief `work run` writes. Only this reading keeps all four. It is not a choice between readings of r77, because what the narrator observes (answer or none) is the same.
+  - Rests on supervision#r77@0.29 together with r17, r25 and r44, which hold for every brief `work run` writes. Only this reading keeps all four. It is not a choice between readings of r77, because what the narrator observes (answer or none) is the same.
 - **D4. How an answer names its delegation.** It is a bullet of `## Answers` in the person's form, `- <date>: <text>`, followed by one indented continuation line: `by: work run, under the delegation "<delegation>"`. It is written with `Run.section`.
   - `held()` keeps the continuation inside the bullet, so the n-th answer still answers the n-th question (r32, the Implementation note).
   - `answer_lines` joins the continuation into the brief line, so later workers and the `apply` round see the answer with its `by` (r57). The `apply` round needs that `by` for spec-integration r21.
   - The person's `work answer` line is unchanged.
   - The Then at 964 reads the bullet's text and its `by` line apart.
-  - Rests on supervision#r78 and its Implementation note ("the answer names the delegation in its `by`").
+  - Rests on supervision#r78@0.29 and its Implementation note ("the answer names the delegation in its `by`").
 - **D5. What an answer moves.**
   - On a work-item: the answer is written, and `work run` moves the item from `awaiting-answer` to the status `workqueue_answer.asked_from` gives. It commits through `Run.move`, so the log line, commit and push follow r7 and r38. Rests on design-decision/a-ruling-returns-to-the-asking-stage.
   - On a capability-proposal: the answer is written and committed with its run directory and log, with no transition, as `work answer` does. Once every question has an answer, `due()` starts the `apply` round (r70).
@@ -71,8 +71,8 @@ Removed from the researcher's set, and why:
   - It runs first in `run()`, before `rounds()`, so an answered proposal's `apply` round runs in the same `work run`. It runs again after each `pull` that leaves an open question not yet given in this run, followed by `rounds`, `draft` and `pull`, until no new question is open.
   - Each open question goes to a session once per `work run`. Sessions run one at a time, like rounds.
   - Every open question of a node is given (r77, "each question"). Answers are written only up to the node's first question left for the person. A later answer would land in the left question's position, which the n-th-answers-n-th rule forbids.
-  - Rests on supervision#r77, r1 and the Implementation note on `## Answers`.
-- **D7. What the session gives back.** Its result `status: DONE` with a non-empty one-line string `answer` is an answer. Any other result means the question is left for the person: `DONE` without an answer, any other outcome, or an `answer` holding a line break. Rests on supervision#r77 and design-decision/worker-results-are-files.
+  - Rests on supervision#r77@0.29, r1 and the Implementation note on `## Answers`.
+- **D7. What the session gives back.** Its result `status: DONE` with a non-empty one-line string `answer` is an answer. Any other result means the question is left for the person: `DONE` without an answer, any other outcome, or an `answer` holding a line break. Rests on supervision#r77@0.29 and design-decision/worker-results-are-files.
 
 ## 4. Tests the decisions break
 

@@ -1,13 +1,13 @@
 # Plan of w155: an answering session that ends other than DONE
 
-Work-item w155 accepts supervision#r89 and supervision#r90. Planned from the research notes (`runs/w155/1-research/notes.md`). The probes in those notes are cited by letter (A to G).
+Work-item w155 accepts supervision#r89@0.29 and supervision#r90@0.29. Planned from the research notes (`runs/w155/1-research/notes.md`). The probes in those notes are cited by letter (A to G).
 
 ## 1. What goes green
 
-- **supervision#r89**: "when a session started under a delegation to answer a question ends at its turn limit, the question is left unanswered for the person" (features/supervision.feature:997).
+- **supervision#r89@0.29**: "when a session started under a delegation to answer a question ends at its turn limit, the question is left unanswered for the person" (features/supervision.feature:997).
   - Red today with `StepDefinitionNotFoundError`. No step matches the Given "the session answering under the delegation ends at its turn limit, its result file answering "The queue module.", and every worker gives DONE". The only step near it is `session_answers` in `supervision_delegation_steps.py`, and it matches only "answers "X", and every worker gives DONE".
   - The production code already gives both Thens (probe A): w1 stays awaiting-answer and gets no Answers section. This scenario needs only the step.
-- **supervision#r90**: "when a session started under a delegation to answer a question ends in an error, its stage directory and log lines are committed" (features/supervision.feature:1007).
+- **supervision#r90@0.29**: "when a session started under a delegation to answer a question ends in an error, its stage directory and log lines are committed" (features/supervision.feature:1007).
   - Red today with `StepDefinitionNotFoundError`. Nothing matches the Given (ends in an error, having written notes.md beside its brief) or the two Thens: the commit of the stage directory with notes.md and of the log lines, then nothing left uncommitted.
   - With the steps in place, the code would still fail (probe B). `supervise_answers.ask` raises `Refused` on the fault before anything is committed. `answers` commits only after its loop. `supervise.run` calls `answers()` with no handler, so the run exits with `runs/w1/1-answer/` and `log.jsonl` uncommitted. The next `work run` is then refused by the r46 guard (probe C).
 - Retires: none. The work-item has no `## Retires` section.
@@ -25,18 +25,18 @@ The research set is kept as it is. `supervise_worker.py`, `supervise_faults.py`,
 
 1. **Keep a faulted answering session's record the way a faulted round's record is kept.**
    - Commit the session's stage directory and its `log.jsonl` lines, with no transition of the work-item, and push the commit. Clear the run's pending `own`/`unlogged` entries for that directory, as `keep_round` does.
-   - Rests on: supervision#r90 (the commit), supervision#r89 (no answer written and no transition), supervision#r38 (every commit on the initiative branch is pushed) and supervision#r7 (a transition's commit; here there is no transition, so the work-item file is not touched).
+   - Rests on: supervision#r90@0.29 (the commit), supervision#r89@0.29 (no answer written and no transition), supervision#r38@0.29 (every commit on the initiative branch is pushed) and supervision#r7@0.29 (a transition's commit; here there is no transition, so the work-item file is not touched).
    - Reuse `keep_round`'s way of doing it. Do not write a second commit routine. Lifting it into a shared helper is allowed if rounds do not change.
 2. **The run still exits with an error after the record is committed, as it does today.**
    - r89 and r90 do not say whether the run goes on. Today's exit is kept, so the person sees no change beyond the commit.
-   - This matches supervision#r88 for rounds and design-decision/exits-are-successful-or-errors: the stop is an error, and stderr names the session and how it ended, as the message in probes A and B already does.
+   - This matches supervision#r88@0.29 for rounds and design-decision/exits-are-successful-or-errors: the stop is an error, and stderr names the session and how it ended, as the message in probes A and B already does.
    - Going on to the next question, or to other nodes, would be a new behaviour. It is not taken here.
 3. **The commit covers all of r89/r90's endings**: an error, the turn limit, no readable result (probe F), and a result with an outcome other than `DONE`.
    - Each one leaves the session's stage directory and log lines committed and writes no answer.
-   - Rests on the text of supervision#r89 and supervision#r90, which name all four.
+   - Rests on the text of supervision#r89@0.29 and supervision#r90@0.29, which name all four.
    - The first three are faults and take Decision 2's exit. The plan changes nothing about whether a non-DONE outcome without a fault ends the run.
 4. **A failed commit or push on this path** ends `work run` with an error saying why, not with a traceback.
-   - Rests on the capability's Implementation note, "A failed commit of a fault's transition ends `work run` as r10's exit does", and on supervision#r41's spirit.
+   - Rests on the capability's Implementation note, "A failed commit of a fault's transition ends `work run` as r10's exit does", and on supervision#r41@0.29's spirit.
    - There is no work-item transition to make.
 
 ## 4. Tests the decisions break

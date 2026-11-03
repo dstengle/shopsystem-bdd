@@ -5,7 +5,7 @@ part_of: initiative/i16
 status: merged
 date: 2026-10-22
 argues: [trials]
-adds: [trials#r1-r5]
+adds: [trials#r1@0.29, trials#r2@0.29, trials#r3@0.29, trials#r4@0.29, trials#r5@0.29]
 source: [design-decision/the-session-keeps-the-gate]
 ---
 

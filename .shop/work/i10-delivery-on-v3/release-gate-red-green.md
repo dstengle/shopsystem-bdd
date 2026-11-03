@@ -5,8 +5,8 @@ part_of: initiative/i10
 status: merged
 date: 2026-10-21
 argues: [red-green]
-changes: [red-green#r17]
-removes: [red-green#r37]
+changes: [red-green#r17@0.29]
+removes: [red-green#r37@0.29]
 ---
 
 # red-green: a file outside the set named in the report

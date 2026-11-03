@@ -4,11 +4,11 @@
 
 All from the research notes, section 1 (runs of the node ids in `tests/scenarios/test_requests.py`).
 
-- **requests#r20**: "the upstream asking a question on a line in its turn writes the question in the request". Red: the When `the upstream asks the question "Which queue?" on line 1 of q1` has no step definition, `scripts/work` has no question subcommand, and `workqueue_request.py` has nothing that writes `## Questions`.
-- **requests#r21**: "the asker answering a question in its turn writes the answer in the request". Red: the Given `q1 holds the upstream's question ...`, the When `the asker answers that question with ...` and the Then `q1 holds the answer ... to the question ...` are all undefined, and nothing writes an answer. `work answer q1` is the work-item command and refuses.
-- **requests#r4**: "outcome writing a line outcome leaves the request's lines and answers as the asker wrote them". Red: the Given with a question and an answer, and the Then `q1's answers are as they were`, are undefined. The production side already holds: probe 3 shows `work outcome` leaves hand-written Questions and Answers alone.
-- **requests#r5**: "the asker answering a question leaves the request's questions and line outcomes as they were and writes no resolution". Red: the Given with a question, the answer When and the Then `q1's questions are as they were` are undefined, and there is no answer writer.
-- **requests#r12**: "a change to a request commits the request on the current branch". Red: the ask When is undefined. The commit itself exists (`_change` → `workqueue.committed`).
+- **requests#r20@0.29**: "the upstream asking a question on a line in its turn writes the question in the request". Red: the When `the upstream asks the question "Which queue?" on line 1 of q1` has no step definition, `scripts/work` has no question subcommand, and `workqueue_request.py` has nothing that writes `## Questions`.
+- **requests#r21@0.29**: "the asker answering a question in its turn writes the answer in the request". Red: the Given `q1 holds the upstream's question ...`, the When `the asker answers that question with ...` and the Then `q1 holds the answer ... to the question ...` are all undefined, and nothing writes an answer. `work answer q1` is the work-item command and refuses.
+- **requests#r4@0.29**: "outcome writing a line outcome leaves the request's lines and answers as the asker wrote them". Red: the Given with a question and an answer, and the Then `q1's answers are as they were`, are undefined. The production side already holds: probe 3 shows `work outcome` leaves hand-written Questions and Answers alone.
+- **requests#r5@0.29**: "the asker answering a question leaves the request's questions and line outcomes as they were and writes no resolution". Red: the Given with a question, the answer When and the Then `q1's questions are as they were` are undefined, and there is no answer writer.
+- **requests#r12@0.29**: "a change to a request commits the request on the current branch". Red: the ask When is undefined. The commit itself exists (`_change` → `workqueue.committed`).
 
 Retired. The work-item's Retires list removes these deprecated scenarios. All three pass today.
 - "outcome writing a line outcome leaves the request's lines as the asker wrote them (deprecated)" (@r4, features/requests.feature:70)
@@ -43,15 +43,15 @@ Not in the set:
    - Overloading `work answer` by the form of the id would change what the existing work-item command returns for a `q<n>` argument. That command belongs to work-queue's requirements, not this item's.
    - The command's name is not something the narrator sees come back, stored or refused. The scenarios speak only of "asks" and "answers".
 2. **Questions are numbered in the order asked, and each entry names its line.** The n-th answer answers the n-th question and is written under the same number.
-   - Rests on: requests#r20 ("on a line"), requests#r21, and the Implementation line on r20 and r21 ("the n-th answering the n-th").
+   - Rests on: requests#r20@0.29 ("on a line"), requests#r21@0.29, and the Implementation line on r20 and r21 ("the n-th answering the n-th").
    - So two questions on one line do not overwrite each other, which keying by line number would do (notes section 3, `_numbered`).
 3. **The entry form follows the request's other sections, `<n>. <text>`.** A question's text carries its line number before the question's words. An answer's text is the asker's words only.
    - Rests on: the capability's Implementation (sections `## Questions` and `## Answers`) and `model_requests.SECTIONS`, which already accepts both sections, so `model check` holds.
    - The implementer names the exact separator, and the steps read the same form.
 4. **Ask is refused in the asker's turn and reply in the upstream's turn.** Each refusal names whose turn it is and changes nothing. The turn is read from the request's `turn` field, as `outcome` does it (no command takes a side).
-   - Rests on: requests#r16 and 0067 ("in its side's turn only").
+   - Rests on: requests#r16@0.29 and 0067 ("in its side's turn only").
 5. **Asking writes only the question.** It does not set the line's outcome to `question`, and replying does not touch Outcomes, Questions or Resolution.
-   - Rests on: 0067 ("each part is written by its own command") and requests#r5. The r21 and r5 scenarios give the `question` outcome in their Given, and `work outcome` writes it.
+   - Rests on: 0067 ("each part is written by its own command") and requests#r5@0.29. The r21 and r5 scenarios give the `question` outcome in their Given, and `work outcome` writes it.
 
 ## 4. Tests the decisions break
 

@@ -6,7 +6,7 @@ status: formulated
 date: 2026-10-24
 argues: [spec-integration]
 adds: []
-changes: [spec-integration#r40]
+changes: [spec-integration#r40@0.29]
 removes: []
 ---
 

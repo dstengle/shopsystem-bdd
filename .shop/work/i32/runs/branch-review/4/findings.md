@@ -3,14 +3,14 @@
 **Verdict: DONE_WITH_CONCERNS.**
 - No finding is triaged fix now, and none is Critical.
 - No code, agent, test, feature, spec, hook or `CLAUDE.md` file has changed since branch review 3 (`935c2ee0`). `git diff 935c2ee0 HEAD -- scripts agents tests features spec hooks` is empty, and `git log 935c2ee0..HEAD` over those paths and `CLAUDE.md` lists nothing.
-- The status is DONE_WITH_CONCERNS because the two checks that reviews 1 to 3 could not verify still cannot be verified (see Cannot verify). Under review#r31 those stay out of `questions`, so `questions` is empty.
+- The status is DONE_WITH_CONCERNS because the two checks that reviews 1 to 3 could not verify still cannot be verified (see Cannot verify). Under review#r31@0.29 those stay out of `questions`, so `questions` is empty.
 - As in review 3: r75 counts only `DONE` as "nothing to fix now", so i32 will not be set done from this result. q10's line 4 names that gap.
 
 ## Range and work-items
 
 - **Range:** `d3d3839d..80506ab1`.
-- **w189** (review#r31): `ee81efd0`, between `6fa7dc00` (claimed) and `72e77945` (done). It changes `agents/bdd-branch-reviewer.md:74,76`.
-- **w190** (supervision#r118, r119): `6622133a` (steps) and `31c86e3c` (`scripts/supervise_answers.py`, `scripts/workqueue_answer.py`). Both lie between `2c448d35` (claimed) and `0a9226a6` (done).
+- **w189** (review#r31@0.29): `ee81efd0`, between `6fa7dc00` (claimed) and `72e77945` (done). It changes `agents/bdd-branch-reviewer.md:74,76`.
+- **w190** (supervision#r118@0.29, r119): `6622133a` (steps) and `31c86e3c` (`scripts/supervise_answers.py`, `scripts/workqueue_answer.py`). Both lie between `2c448d35` (claimed) and `0a9226a6` (done).
 - **w191** (the fix of branch review 1): `32b5f1fa`, between `25a106bd` (claimed) and `4bb8f10d` (done).
 - **Commits that belong to no i32 work-item:** none of them touches code, tests, `features/` or `spec/`.
   - **Carried from review 3:** the proposal rounds `cb357911`, `57be6d74`, `f33c07a6` and `bc00efae` (r91, r96); the `work`, `work note` and `work add` commits; the branch-review records `0716bebe` and `4e5cb0cd`; `3e1cb8bb` (finding 1); `d05108fe`; and request q10, `2759e6b6`..`935c2ee0`.
@@ -66,7 +66,7 @@ Every implementer report (w189 3-implement, w190 3-implement and 5-implement, w1
 
 ## Cannot verify
 
-- **review#r31 on a real batch.** w189's plan names `measure` of a later initiative as the check.
+- **review#r31@0.29 on a real batch.** w189's plan names `measure` of a later initiative as the check.
   - The latest analysis in `.shop/records/` is still `2026-10-25-i30-analysis.md`; no measure of a later initiative exists.
   - I checked the agent text (`agents/bdd-branch-reviewer.md:74,76`), and this review follows it.
 - **That a real `delegation-answerer` session gives `verdict`.**

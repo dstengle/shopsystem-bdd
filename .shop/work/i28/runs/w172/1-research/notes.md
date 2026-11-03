@@ -1,6 +1,6 @@
 # Research notes, w172 (fix the findings of branch review 1 of i28)
 
-Accepts supervision#r102, r103, r104. Tools: `tools refs` ran; `tools tests-of` and `untested` had no map (`tools: no map`), and `tools map` would write into the checkout, so tests were found by search (`by search`). Checkout clean after my runs (`git status --porcelain` empty).
+Accepts supervision#r102@0.29, r103, r104. Tools: `tools refs` ran; `tools tests-of` and `untested` had no map (`tools: no map`), and `tools map` would write into the checkout, so tests were found by search (`by search`). Checkout clean after my runs (`git status --porcelain` empty).
 
 ## 1. Why each scenario is red today
 

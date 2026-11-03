@@ -46,7 +46,7 @@ limit, split by concern … each `requests_*_steps.py`"), and the report names i
 (`scripts/workqueue.py:48-53`). That function catches only `UnicodeDecodeError`. `scripts/work:128` catches only
 `workqueue.Refused`. So `work request t --from a --lines no-such-file --source o1` ends on an uncaught
 `FileNotFoundError` traceback (and a directory raises `IsADirectoryError`). Nothing is written, because the read comes
-before every write. But work-queue#r7 asks that `work` "exit with an error, say why, and change nothing" when it cannot
+before every write. But work-queue#r7@0.29 asks that `work` "exit with an error, say why, and change nothing" when it cannot
 do what it was asked. Every other refusal of `work` goes through `Refused`, and a mistyped `--lines` path is an ordinary
 input from an asker.
 **Fix:** in `request`, refuse a `--lines` path that is not a readable file (`Refused("the lines file %s is missing" …)`),
@@ -80,7 +80,7 @@ Verified by reading.
 
 ### 6. Minor, drop: the plan said no commit, and the code commits
 Plan decision 2 says `work request` does not commit in w126. The code commits through `workqueue.committed`. The commit
-serves requests#r12, a line of the capability, and w128, which adds the commit to the other request commands, is
+serves requests#r12@0.29, a line of the capability, and w128, which adds the commit to the other request commands, is
 already done. The report says so ("commits it (as the other request commands do)"). This is consistent with the
 capability, so it is not code no line asks for. I note it only as a departure from the plan.
 

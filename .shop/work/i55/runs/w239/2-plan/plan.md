@@ -2,7 +2,7 @@
 
 ## 1. What goes green
 
-- **requests#r64**: "list prints, with its date, each observation that the source of no initiative and of no request names"
+- **requests#r64@0.29**: "list prints, with its date, each observation that the source of no initiative and of no request names"
   (features/requests.feature, @r64). It is red today for two reasons (notes §1). First, the When step "the session runs
   `work list`" has no definition in the steps the requests scenarios load (tests/scenarios/requests_show_steps.py has
   only `runs_show` and `runs_status`), so the run stops at StepDefinitionNotFound. Second, behind that, `workqueue_list.listing`
@@ -47,7 +47,7 @@ scripts/workqueue.py (294 lines) is not touched.
      of `work list`. This work does not retire `work status` itself; other work-items under work-queue do that.
 2. **`work list --json` carries the observations**, under an `observations` key: a list of objects, each with the
    observation's id and its date. This is the form `work status --json` used, so a JSON reader loses nothing in the
-   move. It rests on requests#r64: "When `work list` is run" names no output form, so the JSON form of `work list` is
+   move. It rests on requests#r64@0.29: "When `work list` is run" names no output form, so the JSON form of `work list` is
    also bound to give each uncited observation with its date. Adding a key leaves
    test_workqueue_list.py's JSON test sound (notes §3).
 3. **Text form**: one line per observation, giving the observation's id and its date, after the work-items. This is

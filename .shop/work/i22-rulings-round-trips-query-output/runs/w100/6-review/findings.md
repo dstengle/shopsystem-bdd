@@ -41,7 +41,7 @@ The report's `## Tests changed under an allowance` says "none". That holds: ever
 ### Checked, no finding
 - **The put-back (migrate_upgrade.py:149).** It catches `Exception`, with `# noqa: BLE001` and its reason (r15, r20), as the ruling asks. Ruff is clean.
 - **measure_read.py:16.** Dropping `.replace("Z", "+00:00")` gives the same result on Python 3.11, which the scripts require (they use `datetime.UTC`).
-- **The r15 steps.** They match features/work-queue.feature:217-218 and the line work-queue#r15 (spec/capabilities/work-queue.md:31). They check for "an error", not a particular exit code. The refusal already exists in workqueue_answer.py, so no new behaviour is added.
+- **The r15 steps.** They match features/work-queue.feature:217-218 and the line work-queue#r15@0.29 (spec/capabilities/work-queue.md:31). They check for "an error", not a particular exit code. The refusal already exists in workqueue_answer.py, so no new behaviour is added.
 - **features/.** Only the two blocks the Retires section names were removed. No other "(deprecated)" r42 or r9 block remains.
 
 ## Commands run

@@ -6,27 +6,27 @@ for the r84 step that a decision breaks.
 
 ## 1. What goes green
 
-- **supervision#r93**: "a started initiative with neither a capability-proposal nor a work-item is given to an integrate
+- **supervision#r93@0.29**: "a started initiative with neither a capability-proposal nor a work-item is given to an integrate
   round with the accepted lines of the request it fulfils". Red: its Given is undefined, and `due` gives an integrate
   round only to a `proposed` initiative (probe c7: no round, exit 0).
-- **supervision#r96**: "an integrate round that ends DONE without a change list ends `work run` with an error naming the
+- **supervision#r96@0.29**: "an integrate round that ends DONE without a change list ends `work run` with an error naming the
   round". Red: Given, the "gives DONE with no change list" step and the Then are undefined, and `round` takes any DONE
   integrate (probe c3: exit 0).
-- **supervision#r91**: "the drafts of an integrate round that <ending> are kept on the initiative branch" (both rows: DONE
+- **supervision#r91@0.29**: "the drafts of an integrate round that <ending> are kept on the initiative branch" (both rows: DONE
   with a change list naming thing; ends at its turn limit). Red: the drafts step, "every other round ends" and the Then
   are undefined, and the drafts are in no commit on either ending (probes c5, c6).
-- **supervision#r92**: "an integrate round's change list gives one drafted capability-proposal for each capability it
+- **supervision#r92@0.29**: "an integrate round's change list gives one drafted capability-proposal for each capability it
   names, with what it adds, changes and removes on that capability". Red: the change-list Given, "every other round
   ends" and the Then are undefined, and no code writes a capability-proposal (probe c4).
-- **supervision#r94**: "an initiative with no work-item gets no branch review, though its branch holds a commit no kept
+- **supervision#r94@0.29**: "an initiative with no work-item gets no branch review, though its branch holds a commit no kept
   branch review has read". Red: its two Givens are undefined, and `pull_through`'s all-green test is true over no
   work-items, so a review starts (probes c1, c2).
-- **supervision#r97**: "an initiative with no work-item is not measured". Red: the Given (r94's) and the Then are
+- **supervision#r97@0.29**: "an initiative with no work-item is not measured". Red: the Given (r94's) and the Then are
   undefined, and `analyse` runs on the same empty test (probe c1).
-- **supervision#r95**: "`work run` started with no initiative runs the integrate, apply and formulate rounds of different
+- **supervision#r95@0.29**: "`work run` started with no initiative runs the integrate, apply and formulate rounds of different
   initiatives one at a time". Red: the i2/i3 Givens, the slow-rounds Given and both Thens are undefined, and nothing
   serialises rounds across initiatives (`run_all` threads, only the worker semaphore).
-- **supervision#r66** (changed): "`work run` started with no initiative takes every initiative that is neither done nor
+- **supervision#r66@0.29** (changed): "`work run` started with no initiative takes every initiative that is neither done nor
   abandoned through its transitions, ...". Passes today and must stay green: its gate rounds stay side by side.
 - Retired: none (the work-item has no `Retires` section).
 
@@ -74,7 +74,7 @@ in the new step module).
    limit, no result), before its worktree is removed, `work run` copies that tree into the stage directory's `drafts/`,
    each file at the same path relative to the drafts root, and commits it with the stage directory: in the round's
    closing commit on DONE, in `keep_round`'s commit otherwise. The drafts go under `.shop/work/`, never into `spec/`
-   (the gate is not passed). Rests on supervision#r91, r15 and design-decision/worker-results-are-files (the worker
+   (the gate is not passed). Rests on supervision#r91@0.29, r15 and design-decision/worker-results-are-files (the worker
    writes into its stage's directory).
 2. **The change list's form.** It is the result field `changes`: a list with one entry for each capability, each entry
    naming the `capability` and its `adds`, `changes` and `removes`, each a list of ids in the proposal's frontmatter
@@ -83,27 +83,27 @@ in the new step module).
 3. **"Without a change list."** A DONE integrate result whose `changes` is missing or empty ends without a change list
    (r96's scenario: "an integration that names no capability to change"). A `changes` that is not of decision 2's form
    is a result `work run` cannot read: an error naming the round and how it ended, the status kept, nothing written
-   (supervision#r86-r88, design-decision/worker-results-are-files: "a malformed result is a failed stage").
+   (supervision#r86@0.29, supervision#r87@0.29, supervision#r88@0.29, design-decision/worker-results-are-files: "a malformed result is a failed stage").
 4. **The r96 ending.** The round's commits are merged as for any DONE; the stage directory and drafts are committed
    (decision 1), no capability-proposal is written, the initiative keeps its status, and `work run` exits with an error
-   naming the round by its stage directory, as the other round errors do. Rests on supervision#r96, r91,
+   naming the round by its stage directory, as the other round errors do. Rests on supervision#r96@0.29, r91,
    design-decision/exits-are-successful-or-errors.
 5. **The proposals written.** For each entry, one file in the initiative's directory named after the capability, with
    the id `capability-proposal/<the initiative id's prefix>/<capability>`, `kind: capability-proposal`, `part_of` the
    initiative, `status: drafted`, the day's `date`, `argues: [<capability>]`, and the entry's `adds`, `changes` and
    `removes` (empty lists where it gives none), its body a title naming the capability and the stage directory that
    holds the drafts. All of one round's proposals are written in one commit: the round's closing commit. Rests on
-   supervision#r92, design-decision/one-capability-per-proposal, design-decision/work-file-forms.
+   supervision#r92@0.29, design-decision/one-capability-per-proposal, design-decision/work-file-forms.
 6. **The r93 round.** `due` gives the integrate round to a `started` initiative with no capability-proposal and no
    work-item whose request is in the queue, the same accepted lines as r79. Its start writes no status, logs no
    transition and makes no commit (r84 is for a `proposed` initiative only); its ending is r91/r92/r96's. Rests on
-   supervision#r93, r84.
+   supervision#r93@0.29, r84.
 7. **No work-item, no review, no measure.** `pull_through` tests that the initiative has a work-item before both the
-   branch review and `analyse`. Rests on supervision#r94, r97.
+   branch review and `analyse`. Rests on supervision#r94@0.29, r97.
 8. **The round lock.** One lock across the initiatives of a `work run`, taken by a round of the kind `integrate`, `apply`
    or `formulate` before its session starts and released after its last commit; `gate`, `intake` and answering
    sessions do not take it. It is always taken before the initiative's own git lock and before a worker slot, never
-   while holding either, so no two waits cross. Rests on supervision#r95, r66 (the gate rounds stay side by side).
+   while holding either, so no two waits cross. Rests on supervision#r95@0.29, r66 (the gate rounds stay side by side).
 
 ## 4. Tests the decisions break
 

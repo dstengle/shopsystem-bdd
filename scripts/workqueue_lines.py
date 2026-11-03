@@ -1,21 +1,27 @@
 """The check `work request` makes of a request's lines before it writes anything (the GF conversion's design §13,
-§13.4): where the upstream's `spec/index.md` is codified, each line parses in the upstream's requirement grammar, and a
-refusal names the line, the refusal and `model parse`'s hint; otherwise each line keeps the 0.29 shape `model check`
-held. `root` is the upstream's repository, where the request is written."""
+§13.4): each line parses in the upstream's requirement grammar, and a refusal names the line, the refusal and
+`model parse`'s hint. An upstream whose `spec/index.md` or a capability file is not codified is refused, naming
+`migrate upgrade`. `root` is the upstream's repository, where the request is written."""
 from pathlib import Path
 
-import model_legacy
 import spec_read
 from workqueue import Refused
 
 
+def uncodified(root):
+    """The upstream's first spec file without `language: codified-1`, as a path from its root, or None."""
+    spec = Path(root) / "spec"
+    for path in [spec / "index.md", *sorted((spec / "capabilities").glob("*.md"))]:
+        if not spec_read.codified(path):
+            return path.relative_to(root).as_posix()
+    return None
+
+
 def check(root, lines):
     """Refuse the first line the upstream would not read; return None when every line passes."""
-    if not spec_read.codified(Path(root) / "spec" / "index.md"):
-        for number, line in enumerate(lines, 1):
-            if not all(model_legacy.ears(line)):
-                raise Refused("line %d is not in the strict form model check holds: %s" % (number, line))
-        return
+    old = uncodified(root)
+    if old:
+        raise Refused("the upstream's %s is not codified: run `migrate upgrade`" % old)
     import spec_grammar
     for number, line in enumerate(lines, 1):
         try:

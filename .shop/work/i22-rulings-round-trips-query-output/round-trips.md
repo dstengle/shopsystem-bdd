@@ -5,8 +5,8 @@ part_of: initiative/i22
 status: formulated
 date: 2026-10-23
 argues: [batch-measurement]
-adds: [batch-measurement#r53-r56, term/round-trip]
-changes: [batch-measurement#r41, batch-measurement#r42]
+adds: [batch-measurement#r53@0.29, batch-measurement#r54@0.29, batch-measurement#r55@0.29, batch-measurement#r56@0.29, term/round-trip]
+changes: [batch-measurement#r41@0.29, batch-measurement#r42@0.29]
 removes: []
 ---
 

@@ -1,6 +1,6 @@
 # w98 research: tools check is clean
 
-Accepted: analysis-tools#r16. Tools run as `python3 /home/vscode/shopsystem-bdd/scripts/tools` (the brief's Scripts). `tools map` never run (whole suite), so `tests-of` refused (no map); test coverage below is `by search`. Probes: `.shop/scratch/w98-1-research/` (git-ignored). Ruff and pytest caches written in the worktree (git-ignored; `git status --porcelain` clean).
+Accepted: analysis-tools#r16@0.29. Tools run as `python3 /home/vscode/shopsystem-bdd/scripts/tools` (the brief's Scripts). `tools map` never run (whole suite), so `tests-of` refused (no map); test coverage below is `by search`. Probes: `.shop/scratch/w98-1-research/` (git-ignored). Ruff and pytest caches written in the worktree (git-ignored; `git status --porcelain` clean).
 
 ## 1. Why each scenario is red today
 

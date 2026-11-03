@@ -5,7 +5,7 @@ Scripts: /home/vscode/shopsystem-bdd/scripts
 Base: none
 Worktree: /tmp/work-run-i60-f1a4jpu_/requests-2-answer
 Branch: none (a detached checkout)
-Question: requests#r60 (added): "**When** `work delegate` writes a delegation in a request, `work` shall commit the request." On which branch is the request committed? Reading A (recommended): "**When** `work delegate` writes a delegation in a request, `work` shall commit the request on the current branch." Reading B: r60 stays as drafted.
+Question: requests#r60@0.29 (added): "**When** `work delegate` writes a delegation in a request, `work` shall commit the request." On which branch is the request committed? Reading A (recommended): "**When** `work delegate` writes a delegation in a request, `work` shall commit the request on the current branch." Reading B: r60 stays as drafted.
 Delegation: The person, 2026-10-28: "i am delegating to you" and "Please do what is necessary to get the system back into working condition"; 2026-10-29: "the delegation problem needs to be fixed". Glossary changes are never delegated.
 
 Read (paths in your worktree):

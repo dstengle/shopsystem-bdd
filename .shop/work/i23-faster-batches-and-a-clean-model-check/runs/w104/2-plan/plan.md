@@ -4,11 +4,11 @@ Work-item `w104`, under `design-model-check`, accepts r27, r106, r111. It retire
 
 ## 1. What goes green
 
-- **design-model-check#r111**
+- **design-model-check#r111@0.29**
   - Scenario: "a bounded context with no job gets no unserved-capability warning".
   - Red today on the test side: the step "a bounded context with one capability and no job" is missing, and so is the Then step "the output does not give w_unserved_cap" (no step has that text).
   - Red today in the code: `w_unserved_cap` in `model.lp` fires for every capability, because `serves/2` is never produced (probe P1, defect D1).
-- **design-model-check#r27**
+- **design-model-check#r27@0.29**
   - "a malformed work directory or work file is a file problem": the row "the part p1.md has the kind capability-proposal and the status built" is red on the test side only. `malformed_work` has no branch for it and falls to its final assert. The code already prints the file problem (P12).
   - "a work-item accepting a requirement no scenario names is a file problem": green today. It stays green and guards the service case (P3).
   - "a work-item accepting a requirement of a guarantees capability that no scenario names is no file problem": red.
@@ -17,7 +17,7 @@ Work-item `w104`, under `design-model-check`, accepts r27, r106, r111. It retire
   - "a green work-item accepting a retired id is no file problem": red.
     - Steps missing: "a capability thing whose frontmatter lists r2 as retired", and "a work-item in .shop/work/i1/w1.md with status green that accepts thing#r2". The Then step is the one above.
     - Code: `read_part` checks neither whether the id is retired nor whether the work-item is green (P4, D3).
-- **design-model-check#r106**
+- **design-model-check#r106@0.29**
   - "a work-item with no accepts and no check is v_w4, unless it is withdrawn": all 4 rows are green today and stay green.
   - "a work-item accepting a requirement no scenario names yet, with no check, is not v_w4": red.
     - Test side: `FIELDS` in `design_model_check_one_each.py` has no key "accepts thing#r2 and no check", so the step raises a KeyError.
@@ -57,11 +57,11 @@ On the path but not edited: `scripts/model`, `scripts/model_check.py`, `scripts/
    - `model.lp`'s `has_accepts` and `v_w4` stay as they are. Nothing else in `model.lp` or `scripts/` reads `accepts/2`; I searched for this.
    - This answers the researcher's question 1.
 2. **When an accepted requirement no scenario names is a file problem**
-   - It is one only when all four hold: the work-item is not `withdrawn`; the capability is known and its group is not guarantees; the id is not in the capability's `retired` list while the work-item's status is `green`; and no scenario names the requirement. This rests on design-model-check#r27, read as written.
+   - It is one only when all four hold: the work-item is not `withdrawn`; the capability is known and its group is not guarantees; the id is not in the capability's `retired` list while the work-item's status is `green`; and no scenario names the requirement. This rests on design-model-check#r27@0.29, read as written.
    - A retired id accepted by a work-item that is not green stays a file problem (P5, correct under r27).
    - The retired id is read from the ledger, as design-decision `retired-ids-in-capability-frontmatter` says.
 3. **The r111 guard is on job nodes, not a fixed silence**
-   - `w_unserved_cap` fires only when the context has at least one node of kind job. This rests on design-model-check#r111 ("While the bounded context has no job").
+   - `w_unserved_cap` fires only when the context has at least one node of kind job. This rests on design-model-check#r111@0.29 ("While the bounded context has no job").
    - Under r19 and the capability's "Not yet" section, no job is ever read today. So the narrator sees no `w_unserved_cap` under either reading, and choosing between them changes nothing the narrator observes.
    - The guard keeps the rule alive for the day jobs are read. This answers the researcher's question 3.
 4. **D5: accepting a requirement of a capability that does not exist stays as it is today**
@@ -72,7 +72,7 @@ On the path but not edited: `scripts/model`, `scripts/model_check.py`, `scripts/
 5. **The test whose warning r111 removes**
    - `test_check_ends_with_the_four_counts` keeps its expected line, "1 violations, 1 warnings, 1 unresolved references, 1 file problems".
    - Its setup gains one observation that no initiative cites, using the same `observation` helper as `test_exit_codes_of_check`, where that observation alone is one `w_uncited_obs` warning.
-   - Why: the test checks that all four counts are printed, so a nonzero warning count is the better check. This decision rests on design-model-check#r111 and on the Implementation section's "ends with the counts". It answers the researcher's question 4.
+   - Why: the test checks that all four counts are printed, so a nonzero warning count is the better check. This decision rests on design-model-check#r111@0.29 and on the Implementation section's "ends with the counts". It answers the researcher's question 4.
 
 ## 4. Tests the decisions break
 

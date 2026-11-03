@@ -17,7 +17,7 @@
 
 Frontmatter: r13 added to `retired`; `rests_on` unchanged. No decision file (answer: "reading B, no decision; r52 and r53 are the rule").
 
-Change list as ids: spec-integration adds [spec-integration#r58, spec-integration#r59, spec-integration#r60, spec-integration#r61, spec-integration#r62, spec-integration#r63, spec-integration#r64, spec-integration#r65], changes [], removes [spec-integration#r13].
+Change list as ids: spec-integration adds [spec-integration#r58@0.29, spec-integration#r59@0.29, spec-integration#r60@0.29, spec-integration#r61@0.29, spec-integration#r62@0.29, spec-integration#r63@0.29, spec-integration#r64@0.29, spec-integration#r65@0.29], changes [], removes [spec-integration#r13@0.29].
 
 ### Glossary
 

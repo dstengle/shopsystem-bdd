@@ -17,12 +17,12 @@ Every work-item was renamed by the repository's upgrade 9170f7a. The commits use
 
 | Work-item (old name) | Accepts | Code commits | How it landed |
 |---|---|---|---|
-| w87 (supervision-6) | supervision#r19 | 36dd883 | direct bdd-implementer; never claimed; withdrawn |
-| w85 (design-model-check-3) | design-model-check#r110 | 3c4f259 (in `work run`), 8869d09 (direct) | merged 7b4a237; withdrawn |
-| w86 (migration-tools-1) | migration-tools#r15, r18-r20, r22-r28 | ff22a77 (in `work run`), 234e5c9 (direct) | merged ec98ce6; withdrawn |
-| w90 (work-queue-5) | work-queue#r1, r12 | 8ca001d, 92e6f65 (direct) | merged 4456bb7; withdrawn; Retires recorded 8022157 |
-| w88 (w1 before the upgrade) | migration-tools#r26 | 36ad963, between ec2bbb9 `ready -> claimed` and f3b75af `claimed -> done` | `work run`, task-reviewed, **green** |
-| w89 (w2 before the upgrade) | work-queue#r1, r7 | d8012dc (direct, after `researched -> awaiting-ruling` 83a2cd0) | merged 196fb93; withdrawn |
+| w87 (supervision-6) | supervision#r19@0.29 | 36dd883 | direct bdd-implementer; never claimed; withdrawn |
+| w85 (design-model-check-3) | design-model-check#r110@0.29 | 3c4f259 (in `work run`), 8869d09 (direct) | merged 7b4a237; withdrawn |
+| w86 (migration-tools-1) | migration-tools#r15@0.29, r18-r20, r22-r28 | ff22a77 (in `work run`), 234e5c9 (direct) | merged ec98ce6; withdrawn |
+| w90 (work-queue-5) | work-queue#r1@0.29, r12 | 8ca001d, 92e6f65 (direct) | merged 4456bb7; withdrawn; Retires recorded 8022157 |
+| w88 (w1 before the upgrade) | migration-tools#r26@0.29 | 36ad963, between ec2bbb9 `ready -> claimed` and f3b75af `claimed -> done` | `work run`, task-reviewed, **green** |
+| w89 (w2 before the upgrade) | work-queue#r1@0.29, r7 | d8012dc (direct, after `researched -> awaiting-ruling` 83a2cd0) | merged 196fb93; withdrawn |
 
 Commits that belong to no work-item, all made by the coordinator:
 
@@ -151,7 +151,7 @@ No skip or xfail was added, no parametrize case was dropped, and no test functio
 
 ### N5. Minor (w88; observation): the widened token pattern rewrites any token that equals a work-item's name
 - **Where:** `scripts/migrate_upgrade_ids.py:50`.
-- **What happens:** the task review's finding 3 is still open. Given `for: migration-tools#r26` beside a work-item `migration-tools.md`, the upgrade writes `w2#r26`.
+- **What happens:** the task review's finding 3 is still open. Given `for: migration-tools#r26@0.29` beside a work-item `migration-tools.md`, the upgrade writes `w2#r26`.
 - **I probed further:**
   - A comment in a block list is rewritten too: `- work-item/item # item` became `- work-item/w2 # w2`.
   - A qualified id of another context, `for: work-item/other.org/x/y/example`, is correctly left alone.

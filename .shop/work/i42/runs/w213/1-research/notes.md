@@ -1,4 +1,4 @@
-# w213 research: spec-integration#r46
+# w213 research: spec-integration#r46@0.29
 
 How made: no coverage map (`tools tests-of` answers "no map: make one with tools map"), so every test list below is `by search`. `tools refs` on the module `supervise_rounds` gave 0 references; function uses are `read`.
 

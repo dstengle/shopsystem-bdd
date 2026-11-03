@@ -5,9 +5,9 @@ part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i38
 status: formulated
 argues: [supervision]
 date: 2026-10-26
-adds: [supervision#r128, supervision#r129, supervision#r130, supervision#r131, supervision#r132, supervision#r133, supervision#r134]
-changes: [supervision#r4, supervision#r31, supervision#r45, supervision#r61, supervision#r86, supervision#r87, supervision#r88, supervision#r89, supervision#r90, supervision#r115, term/fault, term/outcome, term/stage]
-removes: [supervision#r3, supervision#r5, supervision#r16, supervision#r112, supervision#r113]
+adds: [supervision#r128@0.29, supervision#r129@0.29, supervision#r130@0.29, supervision#r131@0.29, supervision#r132@0.29, supervision#r133@0.29, supervision#r134@0.29]
+changes: [supervision#r4@0.29, supervision#r31@0.29, supervision#r45@0.29, supervision#r61@0.29, supervision#r86@0.29, supervision#r87@0.29, supervision#r88@0.29, supervision#r89@0.29, supervision#r90@0.29, supervision#r115@0.29, term/fault, term/outcome, term/stage]
+removes: [supervision#r3@0.29, supervision#r5@0.29, supervision#r16@0.29, supervision#r112@0.29, supervision#r113@0.29]
 ---
 
 # supervision

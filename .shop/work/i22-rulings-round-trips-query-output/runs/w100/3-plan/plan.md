@@ -4,7 +4,7 @@ This plan replaces the plan in runs/w100/2-plan, which stopped on the Retires qu
 
 ## 1. What goes green
 
-- **work-queue#r15**: "answer with a newline in it is refused, and nothing changes" (features/work-queue.feature, @r15).
+- **work-queue#r15@0.29**: "answer with a newline in it is refused, and nothing changes" (features/work-queue.feature, @r15).
   - Why it is red today: two steps have no definition (notes §1).
     - The When "the session runs `work answer w1` with an answer of two lines" (the run gives StepDefinitionNotFoundError).
     - The Then "work exits with an error, saying that an answer is one line" (read).
@@ -36,7 +36,7 @@ Rulings from the work-item body (the coordinator, under the person's delegation,
 1. **The r15 steps go in work_queue_answer_steps.py.** test_work_queue.py has only 18 lines of room (CLAUDE.md size limit; notes §7).
    - The When runs `work answer w1` with an answer of two lines joined by a newline. It records `context["before"]` the way `run_work` does.
    - The Then asserts an error exit and that stderr says an answer is one line.
-   - Rests on: work-queue#r15, and design-decision/exits-are-successful-or-errors (the step checks for "an error", not a particular exit code).
+   - Rests on: work-queue#r15@0.29, and design-decision/exits-are-successful-or-errors (the step checks for "an error", not a particular exit code).
 2. **What counts as a newline.** Only the `\n` and `\r` that the code refuses today. The U+2028 and form-feed defect (notes D1) is left as it is. Rests on the work-item's "Change no other behaviour".
 3. **Retiring.**
    - Each retirement uses `features retire` with the exact deprecated title, never a hand edit. Rests on decision 0006 and the work-item's Retires section.
@@ -44,7 +44,7 @@ Rulings from the work-item body (the coordinator, under the person's delegation,
 4. **Strict `gives_totals`.**
    - Every column of the totals is asserted against the table, with none skipped when the table lacks it: stages, sessions, turns, round trips, output, new input and cache-read tokens, cost and time.
    - A table without a column is then a failure, not a pass.
-   - This is how it was before w94. Rests on the I2 ruling and batch-measurement#r42.
+   - This is how it was before w94. Rests on the I2 ruling and batch-measurement#r42@0.29.
    - The only remaining user is the live @r42 scenario (lines 134-136), which gives every column.
 5. **The put-back.**
    - It catches every `Exception` raised while the steps are applied or the version commit is made.

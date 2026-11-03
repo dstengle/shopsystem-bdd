@@ -1,6 +1,6 @@
 # Review of w222 (supervision r171, r172), round 6
 
-**Verdict: DONE.** Nothing is Critical and nothing is triaged fix now. The commit writes one `drafted` glossary-proposal from an integrate round's glossary entries and includes it in the round's commit (r171). r172 holds because no apply route exists for a glossary-proposal. Review 5 raised one fix-now finding, the contradiction with supervision#r93 at `scripts/supervise_rounds.py:47`. It was answered on 2026-10-28: the code is accepted as it is, and r93's retirement is raised as a request. It is recorded below as an observation. The other findings are hardening and polish.
+**Verdict: DONE.** Nothing is Critical and nothing is triaged fix now. The commit writes one `drafted` glossary-proposal from an integrate round's glossary entries and includes it in the round's commit (r171). r172 holds because no apply route exists for a glossary-proposal. Review 5 raised one fix-now finding, the contradiction with supervision#r93@0.29 at `scripts/supervise_rounds.py:47`. It was answered on 2026-10-28: the code is accepted as it is, and r93's retirement is raised as a request. It is recorded below as an observation. The other findings are hardening and polish.
 
 ## Commits reviewed
 
@@ -12,7 +12,7 @@
 
 What I searched for: in the `-` lines of `git show 606654ee`, removed `def`s, `assert`s, parametrize cases, skip or xfail markers, and rewritten steps.
 
-- `tests/scenarios/spec_integration_steps.py:113` (old line), step `drafts_glossary_change`, the Then of spec-integration#r54's scenario. The commit removes `assert not (repo / ".shop/work/i1/glossary.md").exists()`. Before, the step also proved that the integrate round wrote no `glossary.md`. Plan §4 does not list it ("None"). It is claimed under an allowance, and the allowance holds (see Allowances).
+- `tests/scenarios/spec_integration_steps.py:113` (old line), step `drafts_glossary_change`, the Then of spec-integration#r54@0.29's scenario. The commit removes `assert not (repo / ".shop/work/i1/glossary.md").exists()`. Before, the step also proved that the integrate round wrote no `glossary.md`. Plan §4 does not list it ("None"). It is claimed under an allowance, and the allowance holds (see Allowances).
 
 Nothing else was removed or weakened. The other `-` lines are two import lines that were widened, the module docstring, the CLAUDE.md row, and the r93 condition in production code.
 
@@ -27,7 +27,7 @@ Nothing else was removed or weakened. The other `-` lines are two import lines t
 
 ## Findings
 
-### 1. Important, w222, observation (ruled): `scripts/supervise_rounds.py:47` departs from supervision#r93's text
+### 1. Important, w222, observation (ruled): `scripts/supervise_rounds.py:47` departs from supervision#r93@0.29's text
 r93 says a `started` initiative "has neither a capability-proposal nor a work-item" is given an integrate round. The commit adds `and not self.glossary_proposals()`, so an initiative that holds only a glossary-proposal gets none. On 2026-10-28 this was answered as accepted as it is: r93's wording is out of date, and its retirement for a line that names the glossary-proposal is raised as a request. No new question is needed. The contradiction stays until that request is delivered.
 
 ### 2. Important, w222, observation: `scripts/supervise_change.py:133-139` overwrites an existing `glossary.md`

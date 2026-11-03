@@ -1,6 +1,6 @@
 # w116 research notes
 
-Work-item w116 accepts design-model-check#r27. Four accepted scenarios, all in features/design-model-check.feature:
+Work-item w116 accepts design-model-check#r27@0.29. Four accepted scenarios, all in features/design-model-check.feature:
 malformed work directory or file (outline, @r27); work-item accepting an unnamed requirement (file problem);
 guarantees requirement accepted, no scenario (no file problem); green work-item accepting a retired id (no file problem).
 No tool map exists (`tools tests-of` answered "no map"); `tools map` runs the suite, not run. Test lists below are `by search`.

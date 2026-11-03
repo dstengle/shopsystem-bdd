@@ -4,7 +4,7 @@ Brief: no `Accepted scenarios:` line. Searched `features/` and the whole tree (o
 
 ## 1. Why each scenario is red today
 
-No accepted scenario exists: `supervision#r98` has no `@r98` tag in `features/supervision.feature` (its `@r91`-`@r97`, `@r102`-`@r104` only). Spec line added by apply commit `112fe1b6`; the formulate round did not write the scenario (1-research notes; ledger: r98 returned as a question). Nothing can be run for r98 until it exists, so no run of an r98 scenario is possible.
+No accepted scenario exists: `supervision#r98@0.29` has no `@r98` tag in `features/supervision.feature` (its `@r91`-`@r97`, `@r102`-`@r104` only). Spec line added by apply commit `112fe1b6`; the formulate round did not write the scenario (1-research notes; ledger: r98 returned as a question). Nothing can be run for r98 until it exists, so no run of an r98 scenario is possible.
 
 Command run: `python3 -m pytest -q -n 0 --collect-only -k brief_of_a_worker tests/scenarios` is not repeated here; 1-research ran it (read from its notes): `INTERNALERROR ... SystemExit: --work-item w173: w173 accepts none of the scenarios it collected` (r56 refusal printed as a traceback). Not re-run by me.
 

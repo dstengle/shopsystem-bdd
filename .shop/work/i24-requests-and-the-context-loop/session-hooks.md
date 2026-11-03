@@ -5,8 +5,8 @@ part_of: initiative/i24
 status: formulated
 date: 2026-10-24
 argues: [migration-tools]
-adds: [migration-tools#r32-r34]
-changes: [migration-tools#r24]
+adds: [migration-tools#r32@0.29, migration-tools#r33@0.29, migration-tools#r34@0.29]
+changes: [migration-tools#r24@0.29]
 removes: []
 ---
 

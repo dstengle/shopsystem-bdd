@@ -1,6 +1,6 @@
 # w246 research notes
 
-Accepted: supervision#r219, r220, r222. Capability: spec/capabilities/supervision.md. Tools: `tools map` absent (no map), so `tests-of` and `untested` not used; test lists are `by search`. `refs` not run.
+Accepted: supervision#r219@0.29, r220, r222. Capability: spec/capabilities/supervision.md. Tools: `tools map` absent (no map), so `tests-of` and `untested` not used; test lists are `by search`. `refs` not run.
 
 ## 1. Why each scenario is red today
 

@@ -5,9 +5,9 @@ Agent: initiative-round
 Scripts: /home/vscode/shopsystem-bdd/scripts
 Kind: gate
 Give the gate as questions in your result's `questions`, one string each: every question a decision, with its readings and the recommended reading marked.
-Adds: supervision#r188, supervision#r189, supervision#r190, supervision#r191, supervision#r192, supervision#r193, supervision#r194, supervision#r195, supervision#r196, supervision#r197, supervision#r198, supervision#r199, supervision#r200, supervision#r201, supervision#r202, supervision#r203, supervision#r204, supervision#r205, supervision#r206, supervision#r207, supervision#r208
+Adds: supervision#r188@0.29, supervision#r189@0.29, supervision#r190@0.29, supervision#r191@0.29, supervision#r192@0.29, supervision#r193@0.29, supervision#r194@0.29, supervision#r195@0.29, supervision#r196@0.29, supervision#r197@0.29, supervision#r198@0.29, supervision#r199@0.29, supervision#r200@0.29, supervision#r201@0.29, supervision#r202@0.29, supervision#r203@0.29, supervision#r204@0.29, supervision#r205@0.29, supervision#r206@0.29, supervision#r207@0.29, supervision#r208@0.29
 Changes: none
-Removes: supervision#r9, supervision#r101, supervision#r32, supervision#r52, supervision#r81, supervision#r82, supervision#r53, supervision#r10, supervision#r96, supervision#r107, supervision#r88, supervision#r115, supervision#r40, supervision#r46, supervision#r51
+Removes: supervision#r9@0.29, supervision#r101@0.29, supervision#r32@0.29, supervision#r52@0.29, supervision#r81@0.29, supervision#r82@0.29, supervision#r53@0.29, supervision#r10@0.29, supervision#r96@0.29, supervision#r107@0.29, supervision#r88@0.29, supervision#r115@0.29, supervision#r40@0.29, supervision#r46@0.29, supervision#r51@0.29
 Ask questions only on the lines and terms listed above as adds, changes or removes, and on no other line or term.
 Drafts path: .shop/work/i59/runs/i59/1-integrate/drafts/round-2/
 Base: 3be48327e94e2ec17ea63d9334f33dd184b148e0

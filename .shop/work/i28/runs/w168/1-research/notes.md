@@ -1,4 +1,4 @@
-# w168 research: answer named by its initiative (work-queue#r30)
+# w168 research: answer named by its initiative (work-queue#r30@0.29)
 
 Method: no `tools map` in this checkout, so `tools tests-of` and `tools untested` refuse; every test list is `by search`. `tools refs` takes a dotted name; callers were found `by search` (grep over scripts/, tests/, features/, spec/).
 

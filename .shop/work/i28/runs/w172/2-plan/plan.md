@@ -1,18 +1,18 @@
 # Plan of w172: fix the findings of branch review 1 of i28
 
-Work-item `.shop/work/i28/w172.md` accepts supervision#r102, r103 and r104, under supervision. It names the findings file `.shop/work/i28/runs/branch-review/1/findings.md`. It has no `## Retires` and no `## Rulings`.
+Work-item `.shop/work/i28/w172.md` accepts supervision#r102@0.29, r103 and r104, under supervision. It names the findings file `.shop/work/i28/runs/branch-review/1/findings.md`. It has no `## Retires` and no `## Rulings`.
 
 The review triaged one finding as fix now: finding 1, the label of the integrate brief. Findings 2 and 3 are observations, and findings 4 and 5 are drops. This plan does the fix-now finding. It also does the ruff part of finding 4, but only on the lines of the two files the fix touches anyway.
 
 ## 1. What goes green
 
-- **supervision#r102:**
+- **supervision#r102@0.29:**
   - "an integrate round is given every requirement id another initiative's kept drafts add that spec/ on the branch it starts from does not hold, whatever that initiative's capability-proposal's status"
   - its `@deprecated` twin, which stays in place.
   - Both pass today (notes part 1, run: 4 passed). They go red once the step `integrate_given_ids` also asserts the label the round reads (decision D2).
   - Today's brief line is "Requirement ids other initiatives' kept drafts add, which spec/ does not hold yet; take none of them: …" (`scripts/supervise_brief.py:79`). The label the round is told to look for is "Ids drafted elsewhere" (`agents/initiative-round.md:27`, `skills/integrating-a-proposal/SKILL.md:23`). So the label assertion fails until D1 is made.
-- **supervision#r103:** "an accepted request this context is the upstream of, that no initiative fulfils, has its initiative started with `work start`". It passes today. This plan does not change it, and it stays green.
-- **supervision#r104:** "the gate round of a capability-proposal is asked only for the questions on the lines and terms that proposal adds, changes or removes". It passes today. This plan does not change it, and it stays green.
+- **supervision#r103@0.29:** "an accepted request this context is the upstream of, that no initiative fulfils, has its initiative started with `work start`". It passes today. This plan does not change it, and it stays green.
+- **supervision#r104@0.29:** "the gate round of a capability-proposal is asked only for the questions on the lines and terms that proposal adds, changes or removes". It passes today. This plan does not change it, and it stays green.
 - **Deprecated scenarios retired:** none. The work-item has no `## Retires`. So the deprecated r102 scenario (`features/supervision.feature:1239-1250`) and its step `other_initiative` stay (finding 3 is an observation and is left for later).
 
 ## 2. Where the change lands
@@ -37,12 +37,12 @@ The researcher's set had more files. These are left out, and why:
   - The brief takes over the words the instructions already use. `agents/initiative-round.md` and `skills/integrating-a-proposal/SKILL.md` stay as they are.
   - The line reads as an instruction to number above every listed id on the same capability, not "take none of them".
   - When there are no ids, the line still appears and lists none. The instructions say "A brief that lists none leaves the numbering as it was".
-  - Rests on: spec-integration#r43 (the round numbers its added lines "above every id it is given on the same capability") and supervision#r102 (`work run` gives the round those ids).
+  - Rests on: spec-integration#r43@0.29 (the round numbers its added lines "above every id it is given on the same capability") and supervision#r102@0.29 (`work run` gives the round those ids).
   - Why the code side: the instruction text is w169's delivered guarantee for r43 (design-decision/workflow-capabilities-are-guarantees). One line of code changes, and no guarantee text is reopened.
   - This does not change what the narrator observes: the ids given and not given are the same, and only the brief's wording to the round changes.
 - **D2. The r102 scenario checks the label.**
   - `integrate_given_ids` asserts that the brief has the "Ids drafted elsewhere" label with the given ids on it.
-  - Rests on: supervision#r102 ("give the round" the ids, which counts only when the ids are given where the round reads them, under r43). The branch review's fix also asks for this step to assert the label.
+  - Rests on: supervision#r102@0.29 ("give the round" the ids, which counts only when the ids are given where the round reads them, under r43). The branch review's fix also asks for this step to assert the label.
 
 ## 4. Tests the decisions break
 

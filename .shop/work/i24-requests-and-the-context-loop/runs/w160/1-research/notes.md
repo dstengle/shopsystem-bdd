@@ -1,6 +1,6 @@
 # w160 research notes
 
-Work-item: `.shop/work/i24-requests-and-the-context-loop/w160.md`, accepts `work-queue#r23`, retry fix of branch review 1 F5.
+Work-item: `.shop/work/i24-requests-and-the-context-loop/w160.md`, accepts `work-queue#r23@0.29`, retry fix of branch review 1 F5.
 Accepted scenarios (`features/work-queue.feature`):
 - A: the Outline "a command whose change leaves every work-item ... sets the initiative to done" (4 Examples).
 - B: "retry that makes an initiative's last open work-item green again sets the initiative to done".

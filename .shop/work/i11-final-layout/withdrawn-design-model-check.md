@@ -5,7 +5,7 @@ part_of: initiative/i11
 status: formulated
 date: 2026-10-19
 argues: [design-model-check]
-adds: [design-model-check#r58-r59]
+adds: [design-model-check#r58@0.29, design-model-check#r59@0.29]
 ---
 
 # Design model check: withdrawn parts and abandoned initiatives

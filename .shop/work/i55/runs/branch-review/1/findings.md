@@ -6,8 +6,8 @@
 
 - Range: `c53a7c25e23b..3d02f4a1f41f` on `main` (the initiative branch is `main`, so the range also holds the work of i45, i47–i54, i56–i64).
 - i55's work-items, both `green`:
-  - **w239** (requests#r64, under requests). Commits: 386cf9f2 (add), b7a8d60c, 22701db3, 595e0603, 558fcc6a, **cae12e0c** (code), c3e61a3c, 7a38e59f, 33bc15e8, 2a17f3b1, **fce410f4** (fix of 4-review's Critical), 4f7fee4c, b2456bcc.
-  - **w240** (work-queue#r62, under work-queue). Commits: fd189cea (add), 5aaa3919, 1f355881, 7a71427c, 5d18f340, d373345d, 1e3fab75, 3c1de94d, **8b68f278** (code), **aff8ddf1** (retire), 4db47633, 3d02f4a1.
+  - **w239** (requests#r64@0.29, under requests). Commits: 386cf9f2 (add), b7a8d60c, 22701db3, 595e0603, 558fcc6a, **cae12e0c** (code), c3e61a3c, 7a38e59f, 33bc15e8, 2a17f3b1, **fce410f4** (fix of 4-review's Critical), 4f7fee4c, b2456bcc.
+  - **w240** (work-queue#r62@0.29, under work-queue). Commits: fd189cea (add), 5aaa3919, 1f355881, 7a71427c, 5d18f340, d373345d, 1e3fab75, 3c1de94d, **8b68f278** (code), **aff8ddf1** (retire), 4db47633, 3d02f4a1.
 - i55's proposals: requests `formulated` (adds r64, removes r14); work-queue `formulated` (adds r62, removes r23); supervision `awaiting-answer` (adds r212, r213; removes r149, r32, r9, r105; open question "The apply round of supervision gave no change list; which capabilities' lines did it apply?").
 
 ## Suite
@@ -68,12 +68,12 @@ Other initiatives' commits in the range (not i55's; each initiative's own branch
   - spec/capabilities/requests.md:58-67 (r50–r58)
   - spec/capabilities/work-queue.md:28 (r47)
   - spec/capabilities/supervision.md:34, :81, :122 (r185, r186, r184)
-  - `.shop/work/i55/requests.md` frontmatter (`adds: [requests#r64]`, `removes: [requests#r14]`)
+  - `.shop/work/i55/requests.md` frontmatter (`adds: [requests#r64@0.29]`, `removes: [requests#r14@0.29]`)
   - scripts/workqueue_list.py:73-74 and :65
   - scripts/work:35-43
   - features/requests.feature:239 (@r34), :411 (@r39), :428 (@r41), :443 (@r43), :459 (@r13)
 - **What is wrong**:
-  - Commit deda9fa6 ("spec: requests (i55) … adds requests#r50 … r58, supervision#r184, r185, r186, work-queue#r47; removes requests#r13, r34, r39, r41, r43") applied these lines to the spec.
+  - Commit deda9fa6 ("spec: requests (i55) … adds requests#r50@0.29 … r58, supervision#r184@0.29, r185, r186, work-queue#r47@0.29; removes requests#r13@0.29, r34, r39, r41, r43") applied these lines to the spec.
   - The requests proposal was then redrafted (13-integrate, round 2). It now names only r64 and r14. The work-queue proposal names only r62 and r23, and the supervision proposal only r212, r213 and the four it removes.
   - No feature file has a scenario tagged r50–r58, r47, r184, r185 or r186, and no i55 work-item accepts them.
   - **r50 is contradicted in the code**: "When `work list` is run, `work` shall print each request with its status and whose turn it is". But `listing` prints `request <name> <status>` with no turn (workqueue_list.py:74), and its JSON gives `{"request", "status"}` with no turn (:65).

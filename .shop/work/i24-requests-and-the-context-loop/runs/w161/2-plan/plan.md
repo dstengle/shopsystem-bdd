@@ -5,16 +5,16 @@ Under batch-measurement; accepts r65, r66, r67. No Retires section, no Rulings. 
 
 ## 1. What goes green
 
-- **batch-measurement#r65**: "an initiative fulfilling a request the queue does not hold is refused"
+- **batch-measurement#r65@0.29**: "an initiative fulfilling a request the queue does not hold is refused"
   (features/batch-measurement.feature:23). Red today: its first Given, `i7-cart fulfils the request q3`, is undefined
   (StepDefinitionNotFoundError); `the queue does not hold the request q3`, the Then `measure initiative refuses because
   the queue does not hold that request` and `no measurement is written` are undefined too. The code already refuses
   (exit 1, nothing written) but its text is "there is no request q3 under .shop/work/requests", which does not say the
   reason r65 gives.
-- **batch-measurement#r66**: "an initiative fulfilling a request with no asker is refused" (:33). Red: undefined
+- **batch-measurement#r66@0.29**: "an initiative fulfilling a request with no asker is refused" (:33). Red: undefined
   `i7-cart fulfils the request q3, which the queue holds`, `the request q3 has no asker`, the Then `... because the
   request has no asker`, and `no measurement is written`. The code already refuses with "<path> has no asker".
-- **batch-measurement#r67**: "an initiative fulfilling more than one request is refused" (:43). Red: undefined
+- **batch-measurement#r67@0.29**: "an initiative fulfilling more than one request is refused" (:43). Red: undefined
   `i7-cart fulfils the requests q3 and q4, which the queue holds, each with an asker`, the Then `... because the
   initiative fulfils more than one request`, and `no measurement is written`. The code refuses a single `fulfils:`
   holding several ids, but with "fulfils must hold one request id, not ..."; and two `fulfils:` lines pass silently,

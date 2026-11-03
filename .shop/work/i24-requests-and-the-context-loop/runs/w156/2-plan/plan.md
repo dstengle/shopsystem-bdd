@@ -1,11 +1,11 @@
-# Plan of w156: fix branch review 1's F1 (supervision#r77, supervision#r78)
+# Plan of w156: fix branch review 1's F1 (supervision#r77@0.29, supervision#r78@0.29)
 
-The work-item accepts supervision#r77 and #r78 and names the findings file of branch review 1. Of that file's five fix-now findings, only F1 falls under these two requirements: delegated answers fail on a node with two or more open questions. F2 to F5 are under other requirements or capabilities (r10/r46, design-model-check r27, batch-measurement, work-queue r23), and this work-item does not accept them (see 5).
+The work-item accepts supervision#r77@0.29 and #r78 and names the findings file of branch review 1. Of that file's five fix-now findings, only F1 falls under these two requirements: delegated answers fail on a node with two or more open questions. F2 to F5 are under other requirements or capabilities (r10/r46, design-model-check r27, batch-measurement, work-queue r23), and this work-item does not accept them (see 5).
 
 ## 1. What goes green
 
-- **supervision#r77**: the Scenario Outline "under a delegation, each question of the initiative goes to a session of its own, given only the delegation and the files it names, that <reply>" (features/supervision.feature:957-972). It has two rows, "answers it" and "leaves it for the person".
-- **supervision#r78**: "an answer given by a session started under a delegation is written naming that delegation" (features/supervision.feature:974-981).
+- **supervision#r77@0.29**: the Scenario Outline "under a delegation, each question of the initiative goes to a session of its own, given only the delegation and the files it names, that <reply>" (features/supervision.feature:957-972). It has two rows, "answers it" and "leaves it for the person".
+- **supervision#r78@0.29**: "an answer given by a session started under a delegation is written naming that delegation" (features/supervision.feature:974-981).
 - **Why red today:** neither is red. The notes (section 1) ran all three tests and each passed. Each gives one question per node, so `Answers.answers` commits the node before the next session starts. The defect is in the case these scenarios do not show: two or more open questions on one node. The notes reproduced it (section 2, "two questions, one node"; D1):
   - `work run` exits 1 with "the session answering w1's question faulted: … .shop/work/i1/w1.md changed in the repository's own checkout and not committed; work run put it back".
   - The first answer is reverted, and w1.md has no `## Answers`.
@@ -31,8 +31,8 @@ No module on the path goes over 300 lines: supervise_answers.py has room for 179
 ## 3. Decisions
 
 - **D1. Each answer is committed before the next session starts.** Answers are not held back until all of the node's sessions have ended.
-  - Rests on supervision#r28: the main checkout's `.shop/work/` must equal its last commit when a worker ends. Today's uncommitted answer breaks that for the next answerer.
-  - Rests on supervision#r78: when a session answers a question, its answer is written. A later session on the same node that faults (r89) must not take away an answer already given. Holding answers until the node's end would lose them on a fault.
+  - Rests on supervision#r28@0.29: the main checkout's `.shop/work/` must equal its last commit when a worker ends. Today's uncommitted answer breaks that for the next answerer.
+  - Rests on supervision#r78@0.29: when a session answers a question, its answer is written. A later session on the same node that faults (r89) must not take away an answer already given. Holding answers until the node's end would lose them on a fault.
   - The commit carries the node's file only. It makes no status transition (r7's "work-item's file … and nothing else"). The node's move to its asked-from status, when all its questions are answered, is unchanged.
 - **D2. The two-question case is pinned by a test in `tests/scripts/`, not by a feature row.**
   - The implementer cannot add the row (the agents/bdd-implementer.md commit rule), and the review's fix needs a red test.

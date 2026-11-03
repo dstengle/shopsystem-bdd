@@ -2,11 +2,11 @@
 
 ## 1. What goes green
 
-- **requests#r13**: "show prints each request with its status and whose turn it is" (features/requests.feature:148).
+- **requests#r13@0.29**: "show prints each request with its status and whose turn it is" (features/requests.feature:148).
   It is red today because no step module binds requests.feature (StepDefinitionNotFoundError on the first Given). Under
   that, `work show` prints work-items only: `scripts/work:cmd_show` prints `workqueue.items()`, which yields
   `kind: work-item` files only (probe P1).
-- **requests#r14**: "status with no initiative prints, with its date, each observation no initiative's or request's
+- **requests#r14@0.29**: "status with no initiative prints, with its date, each observation no initiative's or request's
   source names" (requests.feature:157). It is red today for the same missing steps. Under that,
   `workqueue_status.status()` reads only initiative directories and prints no observation (probes P2 to P4), and no
   `workqueue*` module reads `.shop/records/observations.md`.
@@ -41,7 +41,7 @@ Removed from the researcher's set:
 ## 3. Decisions
 
 - **D1. The observations are added to `work status`'s output; they do not replace the initiative blocks.** This
-  settles the researcher's first question, and requirements settle it, not a reading. requests#r14 and work-queue#r17
+  settles the researcher's first question, and requirements settle it, not a reading. requests#r14@0.29 and work-queue#r17@0.29
   both say what `work status` with no initiative "shall print", and neither is retired. Only output that holds both is
   allowed: the r16 blocks of each initiative that is neither done nor abandoned, then the uncited observations. When
   there are no open initiatives, only the observations are printed. When there is nothing to print, the output is
@@ -50,26 +50,26 @@ Removed from the researcher's set:
   requests (name, status, turn) and `work status --json` with no initiative adds the observations (id, date). The
   existing `work-items` and `initiatives` keys stay as they are. This rests on
   design-decision/query-commands-answer-in-their-output ("prints its whole result as one JSON object"; "the keys …
-  are Implementation"), work-queue#r11, work-queue#r18, and requests#r13 and #r14, which apply whenever the command is
+  are Implementation"), work-queue#r11@0.29, work-queue#r18@0.29, and requests#r13@0.29 and #r14, which apply whenever the command is
   run.
 - **D3. The SessionStart hook's text stays per initiative.** `open_text` prints only the initiative blocks, not the
-  observation lines. migration-tools#r32 asks the hook for "what `work status` prints for each such initiative", which
+  observation lines. migration-tools#r32@0.29 asks the hook for "what `work status` prints for each such initiative", which
   means the r16 blocks and not the r14 observations. The narrator of requests is not the hook's audience. Splitting
   `status()` into the initiative part, which `open_text` uses, and the observation part, which only the
   no-initiative `status` command adds, satisfies both lines.
 - **D4. A request file that is not UTF-8 makes `work show` refuse, naming the file.** The same goes for `work status`
   with no initiative, because that command reads request sources. This settles the researcher's second question. It
-  rests on work-queue#r7 and on design-decision/query-commands-answer-in-their-output: the command cannot answer
+  rests on work-queue#r7@0.29 and on design-decision/query-commands-answer-in-their-output: the command cannot answer
   without reading the file. It is the same refusal work-queue's "show refuses a file … not UTF-8 text" scenario pins
   for work-items, and probe P6 shows `show` already does it. A `.shop/records/observations.md` that is not UTF-8
   likewise makes `work status` with no initiative refuse. `open_text` reads neither file, so the hook is unaffected.
 - **D5. Which sources count as naming an observation.** An observation is named when the `source` of any initiative
   under `.shop/work/`, of any status including done and abandoned, or of any request, of any status, gives its id.
   That id may be the full `observation/<context path>/<slug>` or the short `observation/<slug>` that the decisions'
-  `source` lines use. This rests on requests#r14 ("the `source` of no initiative and of no request"). A request with
+  `source` lines use. This rests on requests#r14@0.29 ("the `source` of no initiative and of no request"). A request with
   `part_of` and no `source` names no observation.
 - **D6. Each request line of `show` names the request, its status and whose turn it is (`asker` or `upstream`), from
-  the request's frontmatter.** This rests on requests#r13 and the capability's Implementation section (the file's
+  the request's frontmatter.** This rests on requests#r13@0.29 and the capability's Implementation section (the file's
   `status` and `turn`).
 
 ## 4. Tests the decisions break

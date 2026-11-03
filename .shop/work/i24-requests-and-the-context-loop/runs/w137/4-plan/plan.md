@@ -10,10 +10,10 @@ Each scenario is in `features/supervision.feature` and bound in `tests/scenarios
 - No brief or session exists for an `initiative-round` round.
 
 The four requirements and their scenarios:
-- supervision#r70, "a capability-proposal whose every question has an answer is given to an apply round with its answers" (feature line 866).
-- supervision#r80, "when the apply round `work run` started for a capability-proposal ends, the proposal is approved" (line 874).
-- supervision#r71, "when the apply round `work run` started for a capability-proposal ends, a formulate round is started for the proposal" (line 882).
-- supervision#r83, "when the formulate round `work run` started for a capability-proposal ends, the proposal is formulated" (line 996).
+- supervision#r70@0.29, "a capability-proposal whose every question has an answer is given to an apply round with its answers" (feature line 866).
+- supervision#r80@0.29, "when the apply round `work run` started for a capability-proposal ends, the proposal is approved" (line 874).
+- supervision#r71@0.29, "when the apply round `work run` started for a capability-proposal ends, a formulate round is started for the proposal" (line 882).
+- supervision#r83@0.29, "when the formulate round `work run` started for a capability-proposal ends, the proposal is formulated" (line 996).
 
 There are no scenarios to retire: w137 has no `## Retires`.
 
@@ -52,12 +52,12 @@ Kept out, as in the earlier plan:
 
 ## 3. Decisions
 
-1. **r70 applies only to an `awaiting-answer` proposal.** A `drafted` proposal goes to its gate (r68), and an `approved` one goes to formulate (r71). If r70 were read on other statuses it would start apply again after r80, and the run would never end. Rests on supervision#r70, #r80, #r71 and #r68.
+1. **r70 applies only to an `awaiting-answer` proposal.** A `drafted` proposal goes to its gate (r68), and an `approved` one goes to formulate (r71). If r70 were read on other statuses it would start apply again after r80, and the run would never end. Rests on supervision#r70@0.29, #r80, #r71 and #r68.
 2. **When "every question has an answer".** The n-th bullet of `## Answers` answers the n-th bullet of `## Questions` (supervision's Implementation).
    - A proposal with fewer answers than questions gets no round. Probes P2 and P3 behave as they do today.
    - A proposal with no question at all has every question answered, so its apply round starts with no answers given (probe P4 changes: apply runs, then approved, formulate, formulated).
 
-   Rests on supervision#r70 and the answer to Q2 (reading A).
+   Rests on supervision#r70@0.29 and the answer to Q2 (reading A).
 3. **A round runs as a worker.** Each apply and formulate round is a fresh `claude -p` session of `initiative-round`, started through `Workers.worker`. So it gets everything the notes' part 5 lists:
    - the push check (r35);
    - the start and end lines (r8);
@@ -66,12 +66,12 @@ Kept out, as in the earlier plan:
    - the r45 checks of how the session ended;
    - `keep_named` (r15).
 
-   Its stage directory is `runs/p1/<k>-apply/` or `runs/p1/<k>-formulate/`, and its brief carries `Result file:`. Rests on design-decision/worker-results-are-files, design-decision/a-script-supervises-delivery, supervision#r8 and #r35, and the Implementation line on r70 and r71.
-4. **What "ends" means in r80, r71 and r83.** A round ends when its session leaves a result file `work run` can read, whatever outcome the file gives. These lines say "ends", where r3 says "gives the outcome DONE". A session r45 counts as cut short, or one with no readable result, is a fault (decision 10): no merge, no transition, no next round. Rests on supervision#r80, #r71, #r83 and design-decision/worker-results-are-files.
-5. **Apply and formulate run in one `work run`.** The order in `log.jsonl` is: apply start, apply end, the merge of apply's branch, the move to approved, formulate start, formulate end, the merge, the move to formulated. Rests on supervision#r80, #r71, #r83 and r1's "until no transition can be made".
-6. **Each proposal transition is committed and pushed through `Run.move` and `Run.commit`.** The commit holds p1's file, its stage directories and `log.jsonl`, with the message `work: p1 <before> -> <after>`. Rests on supervision#r38 and #r28, and the Implementation's commit message.
-7. **`workqueue.move` checks the status against the node's kind.** A capability-proposal takes drafted, awaiting-answer, approved, formulated, merged and withdrawn. The work-item lifecycle and its refusals do not change. `items` still yields work-items only, so `work show` still prints nothing about p1. Rests on supervision#r80 and #r83.
-8. **Round tools.** A round gets the tools of `initiative-round`'s definition, with no bare Write or Edit (r13). Write and Edit are scoped to the paths its job writes, and Bash is as r14 gives it. The implementer sets the turn limit and names it in the report. Rests on supervision#r13, #r14 and #r30.
+   Its stage directory is `runs/p1/<k>-apply/` or `runs/p1/<k>-formulate/`, and its brief carries `Result file:`. Rests on design-decision/worker-results-are-files, design-decision/a-script-supervises-delivery, supervision#r8@0.29 and #r35, and the Implementation line on r70 and r71.
+4. **What "ends" means in r80, r71 and r83.** A round ends when its session leaves a result file `work run` can read, whatever outcome the file gives. These lines say "ends", where r3 says "gives the outcome DONE". A session r45 counts as cut short, or one with no readable result, is a fault (decision 10): no merge, no transition, no next round. Rests on supervision#r80@0.29, #r71, #r83 and design-decision/worker-results-are-files.
+5. **Apply and formulate run in one `work run`.** The order in `log.jsonl` is: apply start, apply end, the merge of apply's branch, the move to approved, formulate start, formulate end, the merge, the move to formulated. Rests on supervision#r80@0.29, #r71, #r83 and r1's "until no transition can be made".
+6. **Each proposal transition is committed and pushed through `Run.move` and `Run.commit`.** The commit holds p1's file, its stage directories and `log.jsonl`, with the message `work: p1 <before> -> <after>`. Rests on supervision#r38@0.29 and #r28, and the Implementation's commit message.
+7. **`workqueue.move` checks the status against the node's kind.** A capability-proposal takes drafted, awaiting-answer, approved, formulated, merged and withdrawn. The work-item lifecycle and its refusals do not change. `items` still yields work-items only, so `work show` still prints nothing about p1. Rests on supervision#r80@0.29 and #r83.
+8. **Round tools.** A round gets the tools of `initiative-round`'s definition, with no bare Write or Edit (r13). Write and Edit are scoped to the paths its job writes, and Bash is as r14 gives it. The implementer sets the turn limit and names it in the report. Rests on supervision#r13@0.29, #r14 and #r30.
 9. **A round's commits reach the initiative branch.** The round works on a branch of its own, made from the initiative branch's head. When the round ends (decision 4), `work run` merges that branch into the initiative branch and deletes it, before the proposal's transition. This merge has no scenario or suite check, because r4 is about an implementer's `DONE`. Rests on the answer to Q1 (reading A), with r18's deletion of a merged branch by analogy.
 10. **A round that faults leaves the proposal as it was.** A round faults when its session ends in an error or at its turn limit, exits with an error, or leaves no JSON result. Then:
     - p1 keeps its status: no move to `failed`, nothing under its `## Faults`, no merge;

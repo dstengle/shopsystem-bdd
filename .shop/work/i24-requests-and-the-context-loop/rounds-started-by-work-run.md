@@ -6,8 +6,8 @@ status: formulated
 date: 2026-10-24
 argues: [spec-integration]
 adds: [term/round, term/result]
-changes: [spec-integration#r35, spec-integration#r39, term/status, term/answer]
-removes: [spec-integration#r8, spec-integration#r10, spec-integration#r11, spec-integration#r34, spec-integration#r36-r38, spec-integration#r41, spec-integration#r42]
+changes: [spec-integration#r35@0.29, spec-integration#r39@0.29, term/status, term/answer]
+removes: [spec-integration#r8@0.29, spec-integration#r10@0.29, spec-integration#r11@0.29, spec-integration#r34@0.29, spec-integration#r36@0.29, spec-integration#r37@0.29, spec-integration#r38@0.29, spec-integration#r41@0.29, spec-integration#r42@0.29]
 ---
 
 # integrating-a-proposal without a small-change path or a coordinator

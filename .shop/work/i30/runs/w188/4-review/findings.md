@@ -1,6 +1,6 @@
 # Review of w188: fix the findings of branch review 1 of i30
 
-**Verdict: DONE.** There are no findings. The one commit changes `agents/code-scout.md:24` from 40 turns (`--max-turns 40`) to 80 turns (`--max-turns 80`). This is branch review 1's finding 1 (the one triaged fix now), which plan §2 and decision 1 ask for. It now matches supervision#r19 and `scripts/supervise_worker.py:54` (`MAX_TURNS = {"research": 80}`). No code, test or `features/` file was touched.
+**Verdict: DONE.** There are no findings. The one commit changes `agents/code-scout.md:24` from 40 turns (`--max-turns 40`) to 80 turns (`--max-turns 80`). This is branch review 1's finding 1 (the one triaged fix now), which plan §2 and decision 1 ask for. It now matches supervision#r19@0.29 and `scripts/supervise_worker.py:54` (`MAX_TURNS = {"research": 80}`). No code, test or `features/` file was touched.
 
 ## Commits reviewed
 

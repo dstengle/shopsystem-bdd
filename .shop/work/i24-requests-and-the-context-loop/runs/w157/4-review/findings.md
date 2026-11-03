@@ -1,4 +1,4 @@
-# Review of w157 (supervision#r77, branch review 1 F1)
+# Review of w157 (supervision#r77@0.29, branch review 1 F1)
 
 **Verdict: DONE.** The change does what the plan's D1 and D2 say. Nothing under `features/` changed. No test was removed or weakened. The focused scenarios pass. There are two Minor findings, neither triaged fix now.
 

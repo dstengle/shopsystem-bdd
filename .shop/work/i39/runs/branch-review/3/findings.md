@@ -20,9 +20,9 @@ No change under `features/` comes from i39's work-items, and no test was removed
   - Reviews 1 (`..d3079697`) and 2 (`..e4c0b40f`) covered the earlier part. I re-ran every check on the whole range.
   - I read in full only what changed after `e4c0b40f`.
   - `git diff --stat e4c0b40f HEAD -- scripts tests features` shows only w206's five files.
-- **w202** (spec-integration#r44, `green`): `6e3c4f04` and `fe844bb3`. Unchanged since review 1.
-- **w205** (work-queue#r34-r39, `green`): `a033c460` and `bf231ddc`. Unchanged since review 2, except where w206 changes `scripts/workqueue_list.py`.
-- **w206** (fix of branch review 2, accepts work-queue#r34-r39, `green`):
+- **w202** (spec-integration#r44@0.29, `green`): `6e3c4f04` and `fe844bb3`. Unchanged since review 1.
+- **w205** (work-queue#r34@0.29, work-queue#r35@0.29, work-queue#r36@0.29, work-queue#r37@0.29, work-queue#r38@0.29, work-queue#r39@0.29, `green`): `a033c460` and `bf231ddc`. Unchanged since review 2, except where w206 changes `scripts/workqueue_list.py`.
+- **w206** (fix of branch review 2, accepts work-queue#r34@0.29, work-queue#r35@0.29, work-queue#r36@0.29, work-queue#r37@0.29, work-queue#r38@0.29, work-queue#r39@0.29, `green`):
   - Its commits run from `694a5f8e work: w206 ready -> claimed` to `85589330 work: w206 claimed -> done`.
   - Leaving out `work run`'s own commits, that is `e4e61321` "Fix branch review 2 findings…". It touches `scripts/supervise_change.py`, `scripts/supervise_rounds.py`, `scripts/workqueue_list.py`, `tests/scripts/test_supervise_change.py` and `tests/scripts/test_workqueue_list.py` (new). All five are in its fileset.
   - After `85589330`, the commits are `work` commands only: `61fb5d8d`, `b5bf81a4` (`work request: q20`), `7abd1e9e` and `ba907c58`.
@@ -165,12 +165,12 @@ None.
 - **Carried from review 2:**
   - `workqueue_status.py`'s row becomes `work show <initiative>` when `work status` is retired.
   - `spec_integration_steps.py` holds two concerns (r44, r45).
-  - The no-target `show` goes dead when requests#r13, work-queue r3 and r11 are retired.
+  - The no-target `show` goes dead when requests#r13@0.29, work-queue r3 and r11 are retired.
 - **Reachability:** w206 adds no step definitions. `merge_lists` is reached only by the unit test and by a real redraft round (finding 1).
 
 ## Coupling
 
-- **`raised.jsonl`:** as in review 2. Nothing writes it yet. The writers would be requests#r29 and supervision#r135, both xfail.
+- **`raised.jsonl`:** as in review 2. Nothing writes it yet. The writers would be requests#r29@0.29 and supervision#r135@0.29, both xfail.
   - Its form is given only in `workqueue_list.py`. w206 now refuses a line that lacks `upstream`, `request` or `status`, which narrows the form a future writer must meet.
   - What would make it stable: state the form in the Implementation section of work-queue or requests.
 - **q20:** w206's behaviour is promised by an open request (finding 1), and q20 also carries work-queue r48 and r40 (the gate's answers that apply round 8 dropped).

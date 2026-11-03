@@ -5,7 +5,7 @@ part_of: initiative/i11
 status: merged
 date: 2026-10-19
 argues: [formulation]
-changes: [formulation#r1, formulation#r4, formulation#r6, formulation#r11]
+changes: [formulation#r1@0.29, formulation#r4@0.29, formulation#r6@0.29, formulation#r11@0.29]
 ---
 
 # Formulation: deprecated scenarios
@@ -17,4 +17,4 @@ r6 (holds → contains), r11 (carries → has). The proposed file is `capabiliti
 
 r10 (slicing hands back a scenario) is left to initiative i10.
 
-Re-synced 2026-10-19 to the EARS lines (initiative/i13, approved by the person): formulation#r12 -> r4. The ids in the text above are the drafted ones.
+Re-synced 2026-10-19 to the EARS lines (initiative/i13, approved by the person): formulation#r12@0.29 -> r4. The ids in the text above are the drafted ones.

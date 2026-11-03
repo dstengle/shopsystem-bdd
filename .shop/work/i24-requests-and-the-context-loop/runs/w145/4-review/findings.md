@@ -1,4 +1,4 @@
-# Review of w145 (formulation#r14): formulating-features without a small-change path
+# Review of w145 (formulation#r14@0.29): formulating-features without a small-change path
 
 **Verdict: DONE.** No Critical finding, none triaged fix now. The commit does what r14 and decision 0068 ask of the two files in its fileset. Two observations, one Important and one Minor, cover references this commit leaves dangling or in conflict. Both lie outside w145's fileset.
 
@@ -27,7 +27,7 @@ The report's `## Tests changed under an allowance` says "none". There are no row
 
 ## Findings
 
-### 1. Important, triage observation: `checking-spec-consistency` and spec-consistency#r6 still route rewording through a path that no longer exists (w145)
+### 1. Important, triage observation: `checking-spec-consistency` and spec-consistency#r6@0.29 still route rewording through a path that no longer exists (w145)
 
 - **Where:**
   - `skills/checking-spec-consistency/SKILL.md:57`, which names the heading "The Small-Change Path". That heading is gone, now "A Word the Glossary Avoids".
@@ -37,7 +37,7 @@ The report's `## Tests changed under an allowance` says "none". There are no row
 - **Why it matters:** a session following fix mode has no path to follow. Spec and skill now disagree with formulation's Purpose and with 0068.
 - **Why it is not w145's to fix:** the plan (Decision 3) kept it out of scope, and the implementer named it in the report. r6 changes only through integrating-a-proposal's gate, and no i24 work-item owns the file. `skills/integrating-a-proposal/SKILL.md:33,43,48-57` has the same dangling path; w143 owns that.
 - **Reproduction:** `grep -n -i "small-change" skills/checking-spec-consistency/SKILL.md spec/capabilities/spec-consistency.md` prints l.53, 57, 59, 62, 63, 64 and r6.
-- **Fix:** a capability-proposal that changes spec-consistency#r6 to "in a round of the kind `formulate`", then the work-item that rewrites the skill's fix mode.
+- **Fix:** a capability-proposal that changes spec-consistency#r6@0.29 to "in a round of the kind `formulate`", then the work-item that rewrites the skill's fix mode.
 
 ### 2. Minor, triage observation: the Hand-back Template still has a session write the feature file (w145)
 

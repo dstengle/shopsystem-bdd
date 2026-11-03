@@ -12,7 +12,7 @@ The whole suite at HEAD has **1 failure**: r214's scenario, which is i63's, not 
 ## Range reviewed
 
 - **Range:** `955ad466..215cf7c7` on `main`, the initiative branch.
-- **w245** (`under: supervision`, accepts supervision#r219, r220, r222): green. Its commits:
+- **w245** (`under: supervision`, accepts supervision#r219@0.29, r220, r222): green. Its commits:
   - b274fa52, 83e3b8ee, 58879782, f968f32a, 7f37149d, fa1b6eea
   - its `work:` transition commits
 - **w246** (fix work-item for branch review 1, same accepts): green. Its commits:

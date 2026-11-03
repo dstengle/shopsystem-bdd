@@ -4,9 +4,9 @@ kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i59
 status: awaiting-answer
 argues: [analysis-tools]
-adds: [analysis-tools#r59, analysis-tools#r60, analysis-tools#r61, analysis-tools#r62, analysis-tools#r63, analysis-tools#r64, analysis-tools#r65, analysis-tools#r66, analysis-tools#r67, analysis-tools#r68, analysis-tools#r69, analysis-tools#r70, analysis-tools#r71, analysis-tools#r72, analysis-tools#r73, analysis-tools#r74, analysis-tools#r75]
+adds: [analysis-tools#r59@0.29, analysis-tools#r60@0.29, analysis-tools#r61@0.29, analysis-tools#r62@0.29, analysis-tools#r63@0.29, analysis-tools#r64@0.29, analysis-tools#r65@0.29, analysis-tools#r66@0.29, analysis-tools#r67@0.29, analysis-tools#r68@0.29, analysis-tools#r69@0.29, analysis-tools#r70@0.29, analysis-tools#r71@0.29, analysis-tools#r72@0.29, analysis-tools#r73@0.29, analysis-tools#r74@0.29, analysis-tools#r75@0.29]
 changes: []
-removes: [analysis-tools#r49, analysis-tools#r17, analysis-tools#r3, analysis-tools#r4, analysis-tools#r6, analysis-tools#r7, analysis-tools#r56, analysis-tools#r53, analysis-tools#r54, analysis-tools#r55, analysis-tools#r57, analysis-tools#r16, analysis-tools#r51]
+removes: [analysis-tools#r49@0.29, analysis-tools#r17@0.29, analysis-tools#r3@0.29, analysis-tools#r4@0.29, analysis-tools#r6@0.29, analysis-tools#r7@0.29, analysis-tools#r56@0.29, analysis-tools#r53@0.29, analysis-tools#r54@0.29, analysis-tools#r55@0.29, analysis-tools#r57@0.29, analysis-tools#r16@0.29, analysis-tools#r51@0.29]
 date: 2026-10-29
 ---
 

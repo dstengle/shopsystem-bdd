@@ -2,7 +2,7 @@
 Feature: Supervision
   Narrator: the person who started `work run`
 
-  # supervision#r135: **When** a round of the kind `integrate` that `work run` started gives the lines of a request into an upstream, `work run` shall raise them with `work request`, raised for the request the initiative fulfils and with that request's delegation.
+  # supervision#r135@0.29: **When** a round of the kind `integrate` that `work run` started gives the lines of a request into an upstream, `work run` shall raise them with `work request`, raised for the request the initiative fulfils and with that request's delegation.
   # Placed after @r92 and before @r107.
   @r135
   Scenario: the lines an integrate round gives into an upstream are raised with `work request`, raised for the request the initiative fulfils and with its delegation

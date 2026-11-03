@@ -35,7 +35,7 @@
 | `features bindings` | "every binding names a scenario" |
 | Dry run against real run, randomized | Not applicable. No operation this branch touches has a dry-run mode next to a real one. The only `--dry-run` in `scripts/` is `git push --dry-run` (`supervise_faults.py:71`, `supervise_review.py:41`), a check before a push that git provides, not a mode of this system. |
 
-Also run: `model check` gives 12 violations. One of them, v3 on q8 for `supervision#r113`, comes from this branch (Finding 8). The rest are about other initiatives and requests.
+Also run: `model check` gives 12 violations. One of them, v3 on q8 for `supervision#r113@0.29`, comes from this branch (Finding 8). The rest are about other initiatives and requests.
 
 ## Removed and weakened tests
 
@@ -158,7 +158,7 @@ This was 10-review finding 1. Report 8 called it fixed, but only line 121 change
 
 ### 8. Minor, the proposal (apply round 4be48031), observation: request q8's resolution now names a removed requirement
 
-`model check` reports `v3 a delivered request's resolution names a requirement the spec does not have: q8, supervision#r113`. r113 was removed by this branch's apply round. At Base it was in the capability.
+`model check` reports `v3 a delivered request's resolution names a requirement the spec does not have: q8, supervision#r113@0.29`. r113 was removed by this branch's apply round. At Base it was in the capability.
 
 **Reproduction.** `python3 <Scripts>/model check` prints this v3 line.
 

@@ -5,9 +5,9 @@ part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i54
 status: formulated
 argues: [work-queue]
 date: 2026-10-28
-adds: [work-queue#r59, work-queue#r60, work-queue#r61]
+adds: [work-queue#r59@0.29, work-queue#r60@0.29, work-queue#r61@0.29]
 changes: []
-removes: [work-queue#r34, work-queue#r35]
+removes: [work-queue#r34@0.29, work-queue#r35@0.29]
 ---
 
 # work-queue

@@ -1,4 +1,4 @@
-# Report of w195 (supervision#r122)
+# Report of w195 (supervision#r122@0.29)
 
 ## Budget
 scripts/work_items.py, tests/scenarios/supervision_proposal_steps.py, tests/scenarios/supervision_tests_steps.py (3 files).

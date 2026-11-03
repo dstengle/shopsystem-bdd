@@ -5,14 +5,14 @@ part_of: initiative/i10
 status: formulated
 date: 2026-10-19
 argues: [supervision]
-adds: [supervision#r1-r10]
+adds: [supervision#r1@0.29, supervision#r2@0.29, supervision#r3@0.29, supervision#r4@0.29, supervision#r5@0.29, supervision#r6@0.29, supervision#r7@0.29, supervision#r8@0.29, supervision#r9@0.29, supervision#r10@0.29]
 changes: []
 removes: []
 ---
 
 # Supervision: a new capability
 
-What the gate approves: `supervision#r1-r35`, a new capability, as written in `capabilities/supervision.md`.
+What the gate approves: `supervision#r1@0.29, supervision#r2@0.29, supervision#r3@0.29, supervision#r4@0.29, supervision#r5@0.29, supervision#r6@0.29, supervision#r7@0.29, supervision#r8@0.29, supervision#r9@0.29, supervision#r10@0.29, supervision#r11@0.29, supervision#r12@0.29, supervision#r13@0.29, supervision#r14@0.29, supervision#r15@0.29, supervision#r16@0.29, supervision#r17@0.29, supervision#r18@0.29, supervision#r19@0.29, supervision#r20@0.29, supervision#r21@0.29, supervision#r22@0.29, supervision#r23@0.29, supervision#r24@0.29, supervision#r25@0.29, supervision#r26@0.29, supervision#r27@0.29, supervision#r28@0.29, supervision#r29@0.29, supervision#r30@0.29, supervision#r31@0.29, supervision#r32@0.29, supervision#r33@0.29, supervision#r34@0.29, supervision#r35@0.29`, a new capability, as written in `capabilities/supervision.md`.
 
 `work run` is the supervisor the design model names ("workers; a script supervises"). It replaces the controller
 session of subagent-driven-development and the plan's execution rules: fresh agents, paths in and results out,

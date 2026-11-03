@@ -3,8 +3,8 @@
 - 2026-10-25: integrate round 2 (q6): 1 line added (spec-integration r43), 0 questions, 0 cut; gate at /home/vscode/shopsystem-bdd/.shop/scratch/drafts/2026-10-25-q6/round-2/gate.md
 - 2026-10-25: initiative-round apply, rounds 1-2 of q6: applied r30, r102, r103, r104, r43 (answers 1 No, 2 Separate, 3 add line, 4 Both); committed f85f0d23
 - 2026-10-25: formulate q6: commit 7e6266ca; work-queue r30, supervision r103 r104 + r92 case; r102 question open
-- 2026-10-25: formulate round 2 (q6): supervision#r102 formulated, commit 79f4b429
+- 2026-10-25: formulate round 2 (q6): supervision#r102@0.29 formulated, commit 79f4b429
 - 2026-10-25: integrate round 1 (re-run, q6): no writer dispatched; all 4 accepted lines already in spec/ (work-queue r30, supervision r102 r103 r104) since apply commit f85f0d23; 0 added, 0 changed, 0 removed, 0 questions; no gate.md written
 - 2026-10-25: The first work run of i28 started an integrate round because the hand bootstrap left i28 proposed with its capability-proposals already written; r96 stopped it (no change list), as it should. i28 is now started; work run is run again.
 - 2026-10-25: w167 (added by hand, supervision r92) kept work run from drafting the supervision work-item for r102-r104 (r72 drafts one a capability-proposal and capability); added with work add as w170. w169's researcher hit its turn limit; retried.
-- 2026-10-25: formulate round 3: supervision#r102 scenario changed (old deprecated), commit 7636eb12
+- 2026-10-25: formulate round 3: supervision#r102@0.29 scenario changed (old deprecated), commit 7636eb12

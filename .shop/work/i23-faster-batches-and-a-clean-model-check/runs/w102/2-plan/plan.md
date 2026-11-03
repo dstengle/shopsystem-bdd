@@ -67,7 +67,7 @@ path, but no decision requires editing them. Every file stays under 300 lines (l
    - Non-empty files keep matching by `session_id`, as today.
    - This answers the notes' question A. Under it the narrator sees the stage that actually ran in that directory,
      which is what r57 asks.
-   - Rests on: batch-measurement#r57, and the Implementation note that a stage's figures are read from its stage
+   - Rests on: batch-measurement#r57@0.29, and the Implementation note that a stage's figures are read from its stage
      directory's `session.json`.
 2. **"Empty" means zero bytes.** A session.json that holds only whitespace is not empty and stays refused, naming the
    file. This answers question D.

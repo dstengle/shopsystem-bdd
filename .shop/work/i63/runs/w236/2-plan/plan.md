@@ -1,8 +1,8 @@
-# Plan of w236 (supervision#r218)
+# Plan of w236 (supervision#r218@0.29)
 
 ## 1. What goes green
 
-- **supervision#r218**: "a change to .shop/work/ in the repository's own checkout, less another initiative's path run side by side, that is not committed when a worker ends is put back, and the work-item's transition is to failed, naming the file" (features/supervision.feature:2021).
+- **supervision#r218@0.29**: "a change to .shop/work/ in the repository's own checkout, less another initiative's path run side by side, that is not committed when a worker ends is put back, and the work-item's transition is to failed, naming the file" (features/supervision.feature:2021).
   Red today, from the notes:
   - its Given at :2025 (i1's researcher at work while another session changes `.shop/work/i1/initiative.md` and a session of i2 changes `.shop/work/i2/initiative.md`, neither committed) has no step definition (`StepDefinitionNotFoundError`, run);
   - its last Then, "nothing recorded of w1 names .shop/work/i2/initiative.md", has no step definition (search);
@@ -20,7 +20,7 @@ Taken out of the researcher's set:
 
 ## 3. Decisions
 
-1. **What counts as "another initiative that work run is running side by side".** It is every run in the `group` other than the run whose worker ended, and the path left out is the part under that run's initiative directory, `.shop/work/<initiative>/`. This rests on supervision#r214 and #r218: the requirements define the part by initiative and by being run side by side, and the group is how `work run` with no initiative takes initiatives together (supervise_all). A single-initiative run has a group of one, so it leaves nothing extra out.
+1. **What counts as "another initiative that work run is running side by side".** It is every run in the `group` other than the run whose worker ended, and the path left out is the part under that run's initiative directory, `.shop/work/<initiative>/`. This rests on supervision#r214@0.29 and #r218: the requirements define the part by initiative and by being run side by side, and the group is how `work run` with no initiative takes initiatives together (supervise_all). A single-initiative run has a group of one, so it leaves nothing extra out.
 2. **The exclusion applies whoever made the change.** A path is left out because of where it is, not because of which session wrote it. r218 words the exclusion by path ("less each path under ..."); the "by a session of that initiative" condition belongs to r215/r216, which this work-item does not accept. `work run` cannot see who wrote a file, so a path test is the only reading available. In the scenario's fake, i1's researcher worker writes the i2 file; that is the test's double for "a session of i2".
 3. **A left-out path is neither put back nor named.** It is skipped before the put-back and the returned list, the same way own run directories are skipped today (r218 "less ...", r214 "leave out").
 4. **The new Given** sets every worker to DONE and has the code-scout's "elsewhere" write both files in the main checkout, the way `another_session_changes` (supervision_faults_steps.py:42) does for one file. The i2 text is its committed text plus an added line, as supervision_given.py:172 does, so that i2's run can still read its initiative fields. "Every round ends" is already set for the group by the steps before it (supervision_all_steps.py). Rests on r218's scenario.

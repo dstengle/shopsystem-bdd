@@ -5,8 +5,8 @@ part_of: initiative/i19
 status: formulated
 date: 2026-10-22
 argues: [feature-file-tools]
-adds: [feature-file-tools#r60-r62]
-changes: [feature-file-tools#r7]
+adds: [feature-file-tools#r60@0.29, feature-file-tools#r61@0.29, feature-file-tools#r62@0.29]
+changes: [feature-file-tools#r7@0.29]
 source: [design-decision/query-commands-answer-in-their-output]
 ---
 

@@ -5,8 +5,8 @@ part_of: initiative/i17
 status: formulated
 date: 2026-10-21
 argues: [supervision]
-adds: [supervision#r32]
-changes: [supervision#r9, supervision#r10]
+adds: [supervision#r32@0.29]
+changes: [supervision#r9@0.29, supervision#r10@0.29]
 removes: []
 ---
 

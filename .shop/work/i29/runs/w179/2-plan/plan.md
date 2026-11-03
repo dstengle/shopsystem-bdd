@@ -1,8 +1,8 @@
-# plan of w179: a result field too long to be a file name is taken as no file (supervision#r15)
+# plan of w179: a result field too long to be a file name is taken as no file (supervision#r15@0.29)
 
 ## 1. What goes green
 
-supervision#r15: "When `work run` removes a worker's worktree, `work run` shall first copy each file the worker's result names into its stage directory."
+supervision#r15@0.29: "When `work run` removes a worker's worktree, `work run` shall first copy each file the worker's result names into its stage directory."
 
 - "a file the worker's result names is copied into the stage directory before its worktree is removed" (features/supervision.feature:352). Passes today (notes §1): `Workers.keep_named` already copies before `Supervisor.step` removes the worktree. Must stay green.
 - "a field of a worker's result giving a sentence longer than a file name may be is taken as no file" (features/supervision.feature:360). Red today for two reasons, in order (notes §1, §2):
@@ -20,9 +20,9 @@ Unchanged and not in the set: `tests/scenarios/test_supervision.py` (already bin
 
 ## 3. Decisions
 
-- **D1. How a value is judged "no file": by the file system's refusal, not by a length count.** `keep_named` treats a value as no file when resolving it or checking it as a file raises `OSError` or `ValueError`, besides the cases it already skips (empty values, `status`, `summary`, paths outside the worktree, paths that are not files). Not a guard by character count: the notes show the limit is per byte and per file system (a 203-byte accented name fails with errno 95, P11; a 255-char ASCII name passes, P3), so a count would both miss refusals and depend on the file system. Rests on supervision#r15 (only what the result *names* is copied; text that the system cannot take as a name names nothing) and design-decision/worker-results-are-files (a result's stage fields are what `work run` reads; its prose fields are not paths to fail on).
-- **D2. The refusal is per value, not per result.** A refused value is skipped and the remaining fields are still tried, so files named after or before the sentence are still copied (P10 shows report.md is copied before the sentence in the stub's order; the scenario's Then needs it either way). Rests on supervision#r15 ("each file the worker's result names").
-- **D3. No new outcome for the narrator.** A refused value writes nothing to the log, the stage directory or the work-item; the work-item's transition proceeds from the outcome as for any other result (supervision#r3). The scenario's "w1 is green" is all the narrator sees; no requirement asks for a warning, so none is added.
+- **D1. How a value is judged "no file": by the file system's refusal, not by a length count.** `keep_named` treats a value as no file when resolving it or checking it as a file raises `OSError` or `ValueError`, besides the cases it already skips (empty values, `status`, `summary`, paths outside the worktree, paths that are not files). Not a guard by character count: the notes show the limit is per byte and per file system (a 203-byte accented name fails with errno 95, P11; a 255-char ASCII name passes, P3), so a count would both miss refusals and depend on the file system. Rests on supervision#r15@0.29 (only what the result *names* is copied; text that the system cannot take as a name names nothing) and design-decision/worker-results-are-files (a result's stage fields are what `work run` reads; its prose fields are not paths to fail on).
+- **D2. The refusal is per value, not per result.** A refused value is skipped and the remaining fields are still tried, so files named after or before the sentence are still copied (P10 shows report.md is copied before the sentence in the stub's order; the scenario's Then needs it either way). Rests on supervision#r15@0.29 ("each file the worker's result names").
+- **D3. No new outcome for the narrator.** A refused value writes nothing to the log, the stage directory or the work-item; the work-item's transition proceeds from the outcome as for any other result (supervision#r3@0.29). The scenario's "w1 is green" is all the narrator sees; no requirement asks for a warning, so none is added.
 
 ## 4. Tests the decisions break
 

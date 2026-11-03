@@ -2,7 +2,7 @@
 
 Tools: `tools refs` and `tools size` ran from the Scripts path. `tools tests-of` has no map (`no map: make one with tools map`), so test lists are `by search`. Probes are in `.shop/scratch/w93-1-research/` (`probe_upgrade_today.py`, `probe_sequence.py`), ignored by git.
 
-Accepted: `migration-tools#r29`, scenario `features/migration-tools.feature` line 524.
+Accepted: `migration-tools#r29@0.29`, scenario `features/migration-tools.feature` line 524.
 
 ## 1. Why each scenario is red today
 

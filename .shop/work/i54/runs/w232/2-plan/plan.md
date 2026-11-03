@@ -1,10 +1,10 @@
-# Plan of w232 (work-queue#r59, #r60, #r61)
+# Plan of w232 (work-queue#r59@0.29, #r60, #r61)
 
 ## 1. What goes green
 
-- **work-queue#r60**, "list prints each initiative and each work-item under .shop/work/ with its status" (features/work-queue.feature:127): already green in the research run (notes part 1). Under decision D1 below nothing changes for it. It must stay green.
-- **work-queue#r61**, "list with --json prints each initiative and work-item with its status as one JSON object" (:138): already green in the run, and it must stay green. D1 leaves the `requests` key in place, so `gives_pairs` keeps working.
-- **work-queue#r59**, "show of a request prints its status, whose turn it is, its lines with their line outcomes, its questions, its answers and its resolution" (:186): **red**. The notes give these reasons:
+- **work-queue#r60@0.29**, "list prints each initiative and each work-item under .shop/work/ with its status" (features/work-queue.feature:127): already green in the research run (notes part 1). Under decision D1 below nothing changes for it. It must stay green.
+- **work-queue#r61@0.29**, "list with --json prints each initiative and work-item with its status as one JSON object" (:138): already green in the run, and it must stay green. D1 leaves the `requests` key in place, so `gives_pairs` keeps working.
+- **work-queue#r59@0.29**, "show of a request prints its status, whose turn it is, its lines with their line outcomes, its questions, its answers and its resolution" (:186): **red**. The notes give these reasons:
   - Steps that are undefined, or that nothing matches: the Given at line 188 (request kept in this context, asker this context, delivered, asker's turn). The Givens at lines 189 to 191: outcomes, a question with its answer, a resolution. The `requests_steps.py:78` step needs "each found in", so it does not match line 191. The Thens at lines 194, 195, 196 and 197. At line 195, `prints_pairs` cannot match "line 1 with ...", because its `\S+` takes one word.
   - The code: `scripts/workqueue_list.py:show` (lines 82-85) prints one line, `<name> <status> <turn>`, for a request. It reads none of the sections `## Lines`, `## Outcomes`, `## Questions`, `## Answers` or `## Resolution`.
 - Deprecated scenarios retired: none. The work-item has no `## Retires` section, so the @r34 and @r35 deprecated scenarios (:101 and :115) stay. Under D1 they still pass.
@@ -28,7 +28,7 @@ The research gave these three as changing only under reading (b), and D1 takes r
 ## 3. Decisions
 
 - **D1. Requests stay in `work list`, as text and as the JSON `requests` key.** The research left this open between (a) and (b). It is settled elsewhere:
-  - **requests#r50** says "When `work list` is run, `work` shall print each request with its status and whose turn it is". The listing of requests moved to the requests capability; it was not dropped.
+  - **requests#r50@0.29** says "When `work list` is run, `work` shall print each request with its status and whose turn it is". The listing of requests moved to the requests capability; it was not dropped.
   - **design-decision/work-list-and-work-show-replace-work-status** says `work list` lists initiatives, requests and work-items.
   - r60/r61 are silent on requests, and do not forbid them.
   - So `listing`, the `cmd_list` help text, `gives_pairs` and `test_list_json_gives_each_request...` all stay as they are.
@@ -37,7 +37,7 @@ The research gave these three as changing only under reading (b), and D1 takes r
   - `workqueue_list.py` holds `work show <target>`.
   - No module outside it calls a private `_entries`.
 - **D3. The first line of `work show <request>` keeps its present form, the request's name, its status and whose turn it is.** The parts r59 adds follow on lines of their own: the lines with their outcomes, the questions with their answers, and the resolution.
-  - This rests on **work-queue#r59**, which names what is printed but not the layout (the layout is Implementation).
+  - This rests on **work-queue#r59@0.29**, which names what is printed but not the layout (the layout is Implementation).
   - It also keeps every reader of that first line working.
   - The turn is said as the asker's or the upstream's turn, so that "that it is the asker's turn" can be read from it.
 - **D4. `work show <request> --json` is left as it is (the object with `request`, `status` and `turn`).** r38 is not accepted by this work-item, and r59 is about text. Widening the JSON is left to r38's work.
@@ -58,5 +58,5 @@ The research gave these three as changing only under reading (b), and D1 takes r
 - A question with no answer yet.
 - A request with no resolution, or one whose resolution gives only some lines.
 - A request whose file lacks one of the sections altogether.
-- In the upstream's repository, outcomes or questions not yet sent with the turn (requests#r53). This is not accepted here; say whether show prints them as they are.
+- In the upstream's repository, outcomes or questions not yet sent with the turn (requests#r53@0.29). This is not accepted here; say whether show prints them as they are.
 - Where a request is kept in this context: `.shop/work/requests/q<n>.md`, as `request_with_status` writes it. The new Given at line 188 should write the same form, with the asker set to this context's name.

@@ -5,8 +5,8 @@ part_of: initiative/i8
 status: merged
 date: 2026-10-19
 argues: [spec-migration]
-adds: [spec-migration#r15-r23, spec-migration#r26]
-changes: [spec-migration#r4-r5, spec-migration#r9, spec-migration#r11, spec-migration#r14]
+adds: [spec-migration#r15@0.29, spec-migration#r16@0.29, spec-migration#r17@0.29, spec-migration#r18@0.29, spec-migration#r19@0.29, spec-migration#r20@0.29, spec-migration#r21@0.29, spec-migration#r22@0.29, spec-migration#r23@0.29, spec-migration#r26@0.29]
+changes: [spec-migration#r4@0.29, spec-migration#r5@0.29, spec-migration#r9@0.29, spec-migration#r11@0.29, spec-migration#r14@0.29]
 ---
 
 # Spec migration: to the final layout, in one pass
@@ -27,4 +27,4 @@ Migration ends on the final layout whatever the repository had of the old system
 The mechanical half is a new script capability, capability/migration-tools
 (capability-proposal/model-in-consumers-migration-tools); these lines are the person's view of it.
 
-Re-synced 2026-10-19 to the EARS lines (initiative/i13, approved by the person): spec-migration#r16 -> r16, r26; spec-migration#r13 -> r5. The ids in the text above are the drafted ones.
+Re-synced 2026-10-19 to the EARS lines (initiative/i13, approved by the person): spec-migration#r16@0.29 -> r16, r26; spec-migration#r13@0.29 -> r5. The ids in the text above are the drafted ones.

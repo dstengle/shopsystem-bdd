@@ -11,10 +11,10 @@
 ## Range and work-items
 
 - Range: `db2873b7..331edbd4` (Base `db2873b73a08e86a12a10f8de97aae3b22914af6`, Head `331edbd40721c1a35432dbdda0f46b46d915832f`), branch `main`.
-- **w236** (green), accepts supervision#r218. Code commits:
+- **w236** (green), accepts supervision#r218@0.29. Code commits:
   - d8f57cc8: `scripts/supervise_faults.py`, `tests/scenarios/supervision_faults_steps.py`
   - 94f0a748: `tests/scenarios/supervision_faults_steps.py`
-- **w237** (green), accepts supervision#r214, #r215, #r216. Code commits:
+- **w237** (green), accepts supervision#r214@0.29, #r215, #r216. Code commits:
   - a9cb7536: `tests/scenarios/supervision_faults_steps.py`
   - fd8364d1: `tests/scripts/stub_claude.py`
 - **Commits of no work-item:** the capability-proposal's rounds, notes, a request and two hand repairs (finding 6).

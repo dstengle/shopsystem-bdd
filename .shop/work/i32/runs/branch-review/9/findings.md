@@ -3,14 +3,14 @@
 **Verdict: DONE.**
 - No finding is triaged fix now, and none is Critical.
 - Every check that i32's work-items name was run and passes.
-- Reviews 1 to 8 ended DONE_WITH_CONCERNS because review#r31 could not be checked on a real batch. It can be now. i33's and i34's branch reviews were run by this agent and measured in this range (`51925236`, `6064c949`), and they follow r31 (see Cannot verify).
+- Reviews 1 to 8 ended DONE_WITH_CONCERNS because review#r31@0.29 could not be checked on a real batch. It can be now. i33's and i34's branch reviews were run by this agent and measured in this range (`51925236`, `6064c949`), and they follow r31 (see Cannot verify).
 - Since branch review 8 (`7b81607b`), none of i32's agent, script or test files has changed in a way that touches its scenarios. The new code is i33's w194 (`919e4510`, `6ef3162b`) and i34's w195 (`f682b013`, with its formulate round `e8f5572a`).
 
 ## Range and work-items
 
 - **Range:** `d3d3839d..b774a91b` (202 commits).
-- **w189** (review#r31): `ee81efd0`, at `agents/bdd-branch-reviewer.md:74,76`.
-- **w190** (supervision#r118, r119): `6622133a`, `31c86e3c`.
+- **w189** (review#r31@0.29): `ee81efd0`, at `agents/bdd-branch-reviewer.md:74,76`.
+- **w190** (supervision#r118@0.29, r119): `6622133a`, `31c86e3c`.
 - **w191** (the fix of branch review 1): `32b5f1fa`.
 - **Commits that belong to no i32 work-item:**
   - Carried from reviews 1 to 8: i31's w185 and w193, i33's w192, i33's and i34's rounds, records and queue moves.
@@ -81,7 +81,7 @@ None in i32's work-items.
 
 None.
 
-- **review#r31 on a real batch: now verified.**
+- **review#r31@0.29 on a real batch: now verified.**
   - w189's plan names `measure` of a later initiative as the check.
   - i33 and i34 were each measured in this range (`51925236`, `6064c949`).
   - Their kept branch reviews (`.shop/work/i33/runs/branch-review/1/result.json` and `.shop/work/i34/runs/branch-review/1/result.json`) each give `DONE` with `questions: []`. Their findings triage nothing as fix now, so this is what r31 asks.
@@ -136,11 +136,11 @@ None.
 - **Fix:** for the I001, a `noqa: I001` that gives the reason. For the RUF100, drop the `noqa`.
 - **Reproduction:** `tools check --base d3d3839d`.
 
-### 13. Minor, no i32 work-item (supervision#r121, i33), observation (new): a review that "fails" now closes the initiative
+### 13. Minor, no i32 work-item (supervision#r121@0.29, i33), observation (new): a review that "fails" now closes the initiative
 - **What:**
-  - review#r6 says a check the branch reviewer cannot verify fails the review, and the agent text says DONE_WITH_CONCERNS "goes to the person".
-  - Under i32's review#r31, such a review's `questions` is empty.
-  - Under i33's supervision#r121 (`scripts/supervise_analysis.py:19-26`), a kept review with no question lists nothing to fix now, whatever its status. So `work run` measures the initiative and sets it done, and nothing routes the concern to the person.
+  - review#r6@0.29 says a check the branch reviewer cannot verify fails the review, and the agent text says DONE_WITH_CONCERNS "goes to the person".
+  - Under i32's review#r31@0.29, such a review's `questions` is empty.
+  - Under i33's supervision#r121@0.29 (`scripts/supervise_analysis.py:19-26`), a kept review with no question lists nothing to fix now, whatever its status. So `work run` measures the initiative and sets it done, and nothing routes the concern to the person.
   - w189's plan, decision 2, relied on `lists_nothing` requiring `DONE`, and that no longer holds.
 - **Why it matters:** an unverified check or a Critical finding that is not fix now reaches the person only through `findings.md` and the measurement. This follows the lines as written, so it is no wrong answer.
 - **Fix:** if the person wants the status to stop the close, a line through integrating-a-proposal, for example in r121 or r75.

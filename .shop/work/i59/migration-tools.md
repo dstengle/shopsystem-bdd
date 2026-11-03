@@ -4,9 +4,9 @@ kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i59
 status: awaiting-answer
 argues: [migration-tools]
-adds: [migration-tools#r37, migration-tools#r38, migration-tools#r39, migration-tools#r40, migration-tools#r41, migration-tools#r42, migration-tools#r43, migration-tools#r44, migration-tools#r45]
+adds: [migration-tools#r37@0.29, migration-tools#r38@0.29, migration-tools#r39@0.29, migration-tools#r40@0.29, migration-tools#r41@0.29, migration-tools#r42@0.29, migration-tools#r43@0.29, migration-tools#r44@0.29, migration-tools#r45@0.29]
 changes: []
-removes: [migration-tools#r7, migration-tools#r30]
+removes: [migration-tools#r7@0.29, migration-tools#r30@0.29]
 date: 2026-10-29
 ---
 

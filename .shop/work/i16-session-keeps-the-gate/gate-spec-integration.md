@@ -5,7 +5,7 @@ part_of: initiative/i16
 status: merged
 date: 2026-10-22
 argues: [spec-integration]
-adds: [spec-integration#r34-r42]
+adds: [spec-integration#r34@0.29, spec-integration#r35@0.29, spec-integration#r36@0.29, spec-integration#r37@0.29, spec-integration#r38@0.29, spec-integration#r39@0.29, spec-integration#r40@0.29, spec-integration#r41@0.29, spec-integration#r42@0.29]
 source: [design-decision/the-session-keeps-the-gate]
 ---
 

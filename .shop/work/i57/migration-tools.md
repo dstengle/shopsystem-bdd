@@ -4,7 +4,7 @@ kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i57
 status: withdrawn
 argues: [migration-tools]
-adds: [migration-tools#r35, migration-tools#r36]
+adds: [migration-tools#r35@0.29, migration-tools#r36@0.29]
 changes: []
 removes: []
 date: 2026-10-28

@@ -4,7 +4,7 @@ kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i36
 status: withdrawn
 argues: [supervision]
-adds: [supervision#r125, supervision#r126, supervision#r127]
+adds: [supervision#r125@0.29, supervision#r126@0.29, supervision#r127@0.29]
 changes: []
 removes: []
 date: 2026-10-26

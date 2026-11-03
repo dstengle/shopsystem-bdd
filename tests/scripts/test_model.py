@@ -1,7 +1,8 @@
 """Unit tests of scripts/model. The scenarios of features/design-model-check.feature are bound in
 tests/scenarios/test_design_model_check.py. A test here that shares a scenario's subject usually checks what its steps do
 not; test_r5 and test_r20 repeat their scenarios and stay until a later cleanup removes them. ModelTest and the file
-builders here serve test_model_reading.py and test_model_glossary.py too."""
+builders here serve test_model_reading.py and test_model_glossary.py too. Every fixture is codified (design model v5):
+the index carries the typed glossary of tests/scripts/fixtures/glossary/, and `cap()` writes one group a requirement."""
 
 import json
 import pathlib
@@ -14,6 +15,24 @@ import textwrap
 import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "tests"))
+import toolchain
+from model_fixture import (  # noqa: F401 -- the builders, imported from here by the other model tests
+    CONTEXT,
+    HEAD,
+    I1,
+    INDEX,
+    OBS1,
+    P1,
+    PATH,
+    STATEMENT,
+    THING,
+    W1,
+    cap,
+    feature,
+    full,
+)
+
 SCRIPT = ROOT / "scripts" / "model"
 LP = ROOT / "scripts" / "model.lp"
 
@@ -23,53 +42,9 @@ try:
 except ImportError:
     HAVE_CLINGO = False
 
-PATH = "ex.com/prod/ctx"
-CONTEXT = f"bounded-context/{PATH}"
-INDEX = f"---\nid: {CONTEXT}\n---\n# ctx\n"
-
-
-def full(kind, name):
-    """A node's id in full: <kind>/<context path>/<name>."""
-    return f"{kind}/{PATH}/{name}"
-
-
-THING = full("capability", "thing")
-P1 = full("capability-proposal", "p1")
-I1 = full("initiative", "i1")
-W1 = full("work-item", "w1")
-OBS1 = full("observation", "obs-1")
-
-
-def cap(name, reqs, group="service", retired="[]", rests_on="[]"):
-    lines = "\n".join(reqs)
-    return textwrap.dedent(f"""\
-        ---
-        id: capability/{PATH}/{name}
-        title: {name}
-        narrator: a client
-        group: {group}
-        rests_on: {rests_on}
-        retired: {retired}
-        ---
-
-        # {name}
-
-        ## Purpose
-        Something.
-
-        ## Behaviour
-        """) + lines + "\n\n## Not yet\n- None.\n"
-
-
-def feature(name, *scenarios):
-    out = [f"# formulated from spec/capabilities/{name}.md", f"Feature: {name}", "  Narrator: a client", ""]
-    for tag, title in scenarios:
-        out += [f"  {tag}", f"  Scenario: {title}", "    Given a thing", "    Then it holds", ""]
-    return "\n".join(out)
-
-
 class ModelTest(unittest.TestCase):
     def setUp(self):
+        toolchain.require()
         self.tmp = pathlib.Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, self.tmp)
         self.write("spec/index.md", INDEX)
@@ -145,9 +120,11 @@ class ModelTest(unittest.TestCase):
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
 class CheckTest(ModelTest):
     def test_r3(self):
+        """A statement with no id: v15a, and the reader reports its line."""
         self.write("spec/capabilities/thing.md", cap("thing", ["- **When** asked, `thing` shall answer."], group="guarantees"))
         r = self.run_model("check")
         self.assertIn("v15a", r.stdout)
+        self.assertIn("a requirement is not '- [r<n>] <statement>'", r.stdout)
         self.assertEqual(r.returncode, 1)
 
     def test_r5(self):

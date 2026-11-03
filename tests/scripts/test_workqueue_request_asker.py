@@ -8,14 +8,20 @@ import sys
 
 import pytest
 
-SCRIPTS = pathlib.Path(__file__).resolve().parents[2] / "scripts"
+ROOT = pathlib.Path(__file__).resolve().parents[2]
+SCRIPTS = ROOT / "scripts"
 sys.path.insert(0, str(SCRIPTS))
+sys.path.insert(0, str(ROOT / "tests"))
+import toolchain
 import workqueue
 import workqueue_request
 
 CONTEXT = "ex.com/prod/ctx"
-INDEX = "---\nid: bounded-context/%s\nkind: bounded-context\n---\n\n# ctx\n" % CONTEXT
-LINE = "**When** `work list` is run, `work` shall print each request with its status.\n"
+GLOSSARY = (ROOT / "tests" / "scripts" / "fixtures" / "glossary" / "spec" / "index.md").read_text()
+INDEX = ("---\nid: bounded-context/%s\nkind: bounded-context\nlanguage: codified-1\n---\n\n# ctx\n\n" % CONTEXT
+         + GLOSSARY[GLOSSARY.index("## Glossary"):])
+LINE = ("When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to "
+        "`started`.\n")
 
 
 def git(repo, *args):
@@ -25,6 +31,7 @@ def git(repo, *args):
 
 @pytest.fixture
 def repo(tmp_path):
+    toolchain.require()
     (tmp_path / "spec").mkdir()
     (tmp_path / "spec/index.md").write_text(INDEX)
     (tmp_path / "lines.md").write_text(LINE)

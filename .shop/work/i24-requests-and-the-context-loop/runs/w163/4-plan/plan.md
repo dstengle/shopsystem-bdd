@@ -1,4 +1,4 @@
-# Plan of w163 (accepts supervision#r79, supervision#r84)
+# Plan of w163 (accepts supervision#r79@0.29, supervision#r84@0.29)
 
 Finding: branch review 3's R3-F1 (`runs/branch-review/3/findings.md`). An integrate round that ends DONE leaves its stage directory `.shop/work/<init>/runs/<init>/<k>-integrate/` uncommitted, so the next `work run` is refused under r46.
 
@@ -41,8 +41,8 @@ Dropped from the notes' set:
 
 1. **The failing scenario goes into `features/supervision.feature` as part of this work-item.** The work-item says to take the keep-as-test "as a scenario of r84 in features/supervision.feature if the formulation is needed, else ask". The formulation is needed, because the scenario is not in the file. So the instruction applies, and asking does not. This is the coordinator's direction under the person's delegation, and it counts as a ruling. The implementer adds the scenario first and sees it red before it changes code.
 2. **On DONE, an integrate round commits its stage directory and `log.jsonl` in its own commit, after the round's merge, on the initiative branch.** `start_initiative`'s commit stays where it is, before the session.
-   - It rests on supervision#r84 and the `:1056` scenario, which pins the `started` transition before the round's start in the log. Moving that commit after the round would put this at risk.
-   - It rests on supervision#r46: a `work run` that exits 0 does not leave `.shop/work/` changes that refuse the next run.
+   - It rests on supervision#r84@0.29 and the `:1056` scenario, which pins the `started` transition before the round's start in the log. Moving that commit after the round would put this at risk.
+   - It rests on supervision#r46@0.29: a `work run` that exits 0 does not leave `.shop/work/` changes that refuse the next run.
    - It rests on r7: the commit takes the shape r7 gives a transition, stage directories and `log.jsonl` and nothing else, the shape `keep_round` gives on the fault path.
 3. **The fault and non-DONE paths are not touched** (`keep_round`, r86–r88). The work-item says to research narrowly, on the one finding.
 

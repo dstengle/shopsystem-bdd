@@ -1,6 +1,6 @@
 # w110 research notes
 
-Work-item `w110` accepts batch-measurement#r47, #r57, #r58, #r59. Accepted scenarios: 10 tests in `tests/scenarios/test_batch_measurement.py` (deprecated ×2, r47 ×2, r58 ×3, r59 ×2, r57 ×1). Tools: `Scripts:` plugin 0.24.0. `tools refs` used for names. `tools tests-of` and `untested` refuse: no map, and making one runs the whole suite (not run). So every "tests" column below is `by search` or `read`.
+Work-item `w110` accepts batch-measurement#r47@0.29, #r57, #r58, #r59. Accepted scenarios: 10 tests in `tests/scenarios/test_batch_measurement.py` (deprecated ×2, r47 ×2, r58 ×3, r59 ×2, r57 ×1). Tools: `Scripts:` plugin 0.24.0. `tools refs` used for names. `tools tests-of` and `untested` refuse: no map, and making one runs the whole suite (not run). So every "tests" column below is `by search` or `read`.
 
 Probe script: `.shop/scratch/w110-1-research/probe_measure.py`, run as `python3 -m pytest -q -s -n0 -p no:cacheprovider .shop/scratch/w110-1-research/probe_measure.py`. Each case is a scratch repo under `repos/`, driven through `scripts/measure` (worktree copy) as a subprocess.
 
@@ -48,7 +48,7 @@ Probes (run, `-n0`):
 
 Searched by name and by text (`tools tests-of` not available). Found by search: no test in `tests/scripts/` imports or drives `measure_read`, `measure_build`, `measure_show` or `measure_write` (grep for those names and `scripts/measure` returned no files). Everything measure-related is in `tests/scenarios/batch_measurement_*` and `test_batch_measurement.py`.
 
-- `tests/scenarios/test_batch_measurement.py`, the two `...(deprecated)` tests: pass today and would pass under r47 (their input is non-empty). Retired by the work-item (`Retires`: delivery#r17), so the plan removes them with the feature's Scenario Outline (features/batch-measurement.feature lines 22-35). Verified by run and by reading their Givens.
+- `tests/scenarios/test_batch_measurement.py`, the two `...(deprecated)` tests: pass today and would pass under r47 (their input is non-empty). Retired by the work-item (`Retires`: delivery#r17@0.29), so the plan removes them with the feature's Scenario Outline (features/batch-measurement.feature lines 22-35). Verified by run and by reading their Givens.
 - `batch_measurement_then_steps.py:gives_totals` (139-147): cannot pass the r59 table (`| time |` only) — KeyError `stages`. Read. Must accept a table without stages/sessions (plan's choice how).
 - `batch_measurement_given_steps.py:transitions_between` (88-91): wrong with the r59 ISO examples (see part 1). Read.
 - Expected test of empty session.json refusal: none found (by search: the r47 steps write non-empty JSON; `then_steps.refuses_naming` only checks the name). Nothing to keep or drop beyond the deprecated pair.

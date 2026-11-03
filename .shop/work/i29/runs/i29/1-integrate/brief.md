@@ -11,7 +11,7 @@ Accepted lines of the request:
 - 3. **If** a change list that `work run` reads names a capability that `spec/capabilities/` does not have, **then** `work run` shall write no capability-proposal for it and exit with an error naming the capability.
 - 4. **When** `work run` starts a round of the kind `gate` or `apply` for a capability-proposal, `work run` shall give the round the path of the kept drafts of the integrate round that wrote the proposal.
 - 5. **If** the delegation given to `work request` is empty, **then** `work request` shall refuse, because the delegation is empty, and change nothing.
-Ids drafted elsewhere (number added lines above each on the same capability): work-queue#r26, work-queue#r27, supervision#r99
+Ids drafted elsewhere (number added lines above each on the same capability): work-queue#r26@0.29, work-queue#r27@0.29, supervision#r99@0.29
 Drafts path: /tmp/work-run-i29-wjhtu4f_/i29-1-integrate/.shop/scratch/1-integrate/drafts
 Give your change list in your result's `changes`: a list with one entry for each capability, each `{"capability": <name>, "adds": [...], "changes": [...], "removes": [...]}`, the ids as `<capability>#r<n>` or `term/<term>`.
 Base: 4640ef08c740b5867638a4ae1f92e94d586c297c

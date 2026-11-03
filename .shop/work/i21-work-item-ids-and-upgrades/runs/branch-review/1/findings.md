@@ -14,10 +14,10 @@
 
 | Work-item | Accepts | Code commits | How it landed |
 |---|---|---|---|
-| supervision-6 | supervision#r19 | 36dd883 | direct bdd-implementer, merged fb24896; never claimed |
-| design-model-check-3 | design-model-check#r110 | 3c4f259 (in `work run`: ready→claimed 6fa418f, then claimed→awaiting-ruling 7fe72a2), 8869d09 (direct) | merged 7b4a237 |
-| migration-tools-1 | migration-tools#r15, r18-r20, r22-r28 | ff22a77 (in `work run`: b4a211e…0a46dcb), 234e5c9 (direct fix of its task review's F1/F2) | merged ec98ce6 |
-| work-queue-5 | work-queue#r1, r12 | 8ca001d, 92e6f65 (direct; never claimed) | merged 4456bb7 |
+| supervision-6 | supervision#r19@0.29 | 36dd883 | direct bdd-implementer, merged fb24896; never claimed |
+| design-model-check-3 | design-model-check#r110@0.29 | 3c4f259 (in `work run`: ready→claimed 6fa418f, then claimed→awaiting-ruling 7fe72a2), 8869d09 (direct) | merged 7b4a237 |
+| migration-tools-1 | migration-tools#r15@0.29, r18-r20, r22-r28 | ff22a77 (in `work run`: b4a211e…0a46dcb), 234e5c9 (direct fix of its task review's F1/F2) | merged ec98ce6 |
+| work-queue-5 | work-queue#r1@0.29, r12 | 8ca001d, 92e6f65 (direct; never claimed) | merged 4456bb7 |
 
 Commits of formulation and of the coordinator, which belong to no work-item:
 

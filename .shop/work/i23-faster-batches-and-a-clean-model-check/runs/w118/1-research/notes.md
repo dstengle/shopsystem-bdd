@@ -1,6 +1,6 @@
 # Research of w118: no w_unserved_cap while the context has no job
 
-Scope: accepts `design-model-check#r111`. One accepted scenario. `tools tests-of` has no map (not made, per brief): every test list is `by search` or `run`. `tools refs w_unserved_cap` found no Python name (a label in `scripts/model.lp`).
+Scope: accepts `design-model-check#r111@0.29`. One accepted scenario. `tools tests-of` has no map (not made, per brief): every test list is `by search` or `run`. `tools refs w_unserved_cap` found no Python name (a label in `scripts/model.lp`).
 
 ## 1. Why each scenario is red today
 

@@ -2,7 +2,7 @@
 
 ## 1. What goes green
 
-The work-item accepts supervision#r154 to #r157. Every scenario tagged for them is green today (research notes part 1: `python3 -m pytest -q --work-item w217 -rfEx`, 187 passed, 0 failed). They stay green:
+The work-item accepts supervision#r154@0.29 to #r157. Every scenario tagged for them is green today (research notes part 1: `python3 -m pytest -q --work-item w217 -rfEx`, 187 passed, 0 failed). They stay green:
 
 - r154, "before the branch review starts, <run> is run at the initiative branch's head" (seven rows): green, untouched.
 - r155, "the branch reviewer is given each run made before it, with its command, how it exited and its output, and the commit they ran at": green, untouched.
@@ -32,10 +32,10 @@ This is the researcher's file set, unchanged. Neither file is near the 300-line 
 
 ## 3. Decisions
 
-1. **Which commits belong to a work-item.** Commits made by `work answer`, `work withdraw`, `work retry` and `work add` belong to the work-item they name, when that name is one of the initiative's work-items. Rests on supervision#r156 ("each with the work-item it belongs to"): each of these commits changes or creates that work-item's file and status. The fix-now triage of finding 1 supports it.
-2. **A proposal's answer stays `none`.** `work answer: <name>` with no transition (workqueue_answer.py:74, written only for a capability-proposal) is still given as `none`. Its name is a proposal, not a work-item, so it fails the owner check. Rests on supervision#r156: the commit belongs to no work-item.
+1. **Which commits belong to a work-item.** Commits made by `work answer`, `work withdraw`, `work retry` and `work add` belong to the work-item they name, when that name is one of the initiative's work-items. Rests on supervision#r156@0.29 ("each with the work-item it belongs to"): each of these commits changes or creates that work-item's file and status. The fix-now triage of finding 1 supports it.
+2. **A proposal's answer stays `none`.** `work answer: <name>` with no transition (workqueue_answer.py:74, written only for a capability-proposal) is still given as `none`. Its name is a proposal, not a work-item, so it fails the owner check. Rests on supervision#r156@0.29: the commit belongs to no work-item.
 3. **Unit cases, not a scenario row.** The new cases go in `tests/scripts/test_supervise_review_read.py`. `features/supervision.feature` is not changed: a scenario changes only through a formulate round, and the file is outside the file set. This is reading A in the research notes. Rests on design-decision/the-file-set-is-the-claim.
-4. **No shared pattern with measure.** `scripts/measure_build.py:81,88` reads transitions by a similar subject pattern, but it is not changed and does not share the new pattern. supervision#r156 does not ask for it, and the file is outside the file set (design-decision/the-file-set-is-the-claim). If it is still wanted, it is a later work-item.
+4. **No shared pattern with measure.** `scripts/measure_build.py:81,88` reads transitions by a similar subject pattern, but it is not changed and does not share the new pattern. supervision#r156@0.29 does not ask for it, and the file is outside the file set (design-decision/the-file-set-is-the-claim). If it is still wanted, it is a later work-item.
 5. **Other findings left alone.** Findings 2 to 9 are not fixed here: none of them is triaged fix now. Finding 2 (the "run every command" line in supervise_review.py) belongs to review r32, which w217 does not accept. Finding 4 (the agent's exception for `work`'s own commits) and finding 7 (`Head:` read from the root) are outside the file set.
 
 ## 4. Tests the decisions break

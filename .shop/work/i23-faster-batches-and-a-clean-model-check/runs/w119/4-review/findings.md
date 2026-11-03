@@ -1,4 +1,4 @@
-# Review of w119 (supervision#r63: blocked_by read across initiatives)
+# Review of w119 (supervision#r63@0.29: blocked_by read across initiatives)
 
 **Verdict: DONE.** No Critical finding, none triaged fix now. One Minor observation.
 
@@ -30,7 +30,7 @@ The report's `## Tests changed under an allowance` says "none". The commits agre
 - **Work-item:** w119
 - **Where:** scripts/supervise_pool.py:62
 - **What's wrong:** `{name: status for _, name, status in workqueue.items(self.root)}` keeps the status of the last initiative in sorted path order when more than one *other* initiative holds a blocker's name. Line 63 makes this initiative's reading win, as plan D1 says. Among other initiatives, though, the result depends on directory order.
-- **Why it matters:** Only legacy names can be shared (work-queue#r12 makes new `w<n>` ids unique; migration-tools#r26 renames legacy ones). No client sends this input today, and no line or scenario names the case. That makes it hardening, not a wrong answer.
+- **Why it matters:** Only legacy names can be shared (work-queue#r12@0.29 makes new `w<n>` ids unique; migration-tools#r26@0.29 renames legacy ones). No client sends this input today, and no line or scenario names the case. That makes it hardening, not a wrong answer.
 - **Reproduction:** found by reading, not by a run. `workqueue.items` yields in `sorted(glob("*/*.md"))` order (scripts/workqueue.py:102). The dict comprehension overwrites on a repeated key. Example: i2/w2 green and i3/w2 drafted, with i1/w1 blocked_by [w2], gives w2 → drafted, so w1 is held back. With i3/w2 green and i2/w2 drafted, w1 starts.
 - **Fix (if wanted):** treat a name held by several other initiatives as green only when every holder is green, or refuse it as ambiguous. Either one needs a line first.
 

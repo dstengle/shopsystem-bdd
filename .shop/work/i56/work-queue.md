@@ -4,7 +4,7 @@ kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i56
 status: awaiting-answer
 argues: [work-queue]
-adds: [work-queue#r46]
+adds: [work-queue#r46@0.29]
 changes: []
 removes: []
 date: 2026-10-28

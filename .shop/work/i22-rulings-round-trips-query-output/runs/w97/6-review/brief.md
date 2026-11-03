@@ -8,7 +8,7 @@ Worktree: /tmp/work-run-i22-rulings-round-trips-query-output-aawfn3s_/w97-6-revi
 Branch: none (a detached checkout)
 Work-item branch: work/w97
 Answers the person gave, each with the question it answers:
-- Question: Beside work-item .shop/work/i1/w1.md sits a plain note .shop/work/i1/w2.md (no work-item frontmatter); what does `work add i1 ...` do? Reading A (work-queue#r12 and r7 as written: one above the highest work-item is w2, whose file exists): work add exits with an error, writes nothing, and the refusal names .shop/work/i1/w2.md as a file that is not a work-item, instead of today's 'the work-item w2 already exists'. Reading B (the work-item's finding N9 F10, 'number it past every w<n>.md'): work add prints w3 and writes .shop/work/i1/w3.md as a drafted work-item with id w3, one above the highest w<n>.md file rather than one above the highest work-item.
+- Question: Beside work-item .shop/work/i1/w1.md sits a plain note .shop/work/i1/w2.md (no work-item frontmatter); what does `work add i1 ...` do? Reading A (work-queue#r12@0.29 and r7 as written: one above the highest work-item is w2, whose file exists): work add exits with an error, writes nothing, and the refusal names .shop/work/i1/w2.md as a file that is not a work-item, instead of today's 'the work-item w2 already exists'. Reading B (the work-item's finding N9 F10, 'number it past every w<n>.md'): work add prints w3 and writes .shop/work/i1/w3.md as a drafted work-item with id w3, one above the highest w<n>.md file rather than one above the highest work-item.
   Answer: 2026-10-23: Reading A: work-queue r12 and r7 as written. work add refuses, writing nothing, naming .shop/work/<initiative>/w<n>.md as a file that is not a work-item.
 
 Read (paths in your worktree):

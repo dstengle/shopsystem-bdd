@@ -6,8 +6,8 @@ status: formulated
 date: 2026-10-24
 argues: [delivery]
 adds: [term/compaction, term/tool-use, term/guarantees-capability]
-changes: [delivery#r15, term/ledger, term/work-item]
-removes: [delivery#r16]
+changes: [delivery#r15@0.29, term/ledger, term/work-item]
+removes: [delivery#r16@0.29]
 ---
 
 # delivering-an-initiative writes the ledger with work note

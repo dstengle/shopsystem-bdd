@@ -108,10 +108,10 @@ def test_editing_one_group_changes_only_that_scenarios_lines(repo):
 
 
 def test_check_exits_1_after_a_hand_edit_and_0_when_every_file_matches(repo):
+    (repo / "spec" / "capabilities" / "legacy.md").unlink()
     assert features(repo, "generate", "work-queue", "supervision").returncode == 0
     clean = features(repo, "generate", "--check")
     assert clean.returncode == 0, clean.stdout + clean.stderr
-    assert "skipped legacy: not codified" in clean.stdout
     path = repo / "features" / "work-queue.feature"
     path.write_text(path.read_text().replace("exits successfully", "exits happily"))
     edited = features(repo, "generate", "--check")
@@ -125,6 +125,13 @@ def test_naming_an_uncodified_capability_exits_2_and_writes_nothing(repo):
     assert "spec/capabilities/legacy.md is not codified: run `migrate upgrade`" in done.stderr
     assert not (repo / "features").exists() or not list((repo / "features").iterdir())
     assert features(repo, "generate", "--check", "legacy").returncode == 2
+
+
+def test_check_with_no_names_refuses_an_uncodified_service_capability(repo):
+    assert features(repo, "generate", "work-queue", "supervision").returncode == 0
+    done = features(repo, "generate", "--check")
+    assert done.returncode == 2, done.stdout + done.stderr
+    assert "spec/capabilities/legacy.md is not codified: run `migrate upgrade`" in done.stderr
 
 
 def test_the_spikes_g1_gives_the_four_initiative_witness(repo):
@@ -170,13 +177,8 @@ def test_a_requirement_that_does_not_parse_is_refused_naming_it(tmp_path):
     assert not (tmp_path / "broken" / "features").exists()
 
 
-def test_check_on_the_live_repo_skips_each_uncodified_service_capability():
+def test_check_on_the_live_repo_matches_every_capability():
     toolchain.require()
     done = features(REPO, "generate", "--check")
     assert done.returncode == 0, done.stdout + done.stderr
-    import spec_read
-    from model_parse import frontmatter
-    service = [p.stem for p in sorted((REPO / "spec" / "capabilities").glob("*.md"))
-               if frontmatter(p.read_text())[0].get("group") == "service" and not spec_read.codified(p)]
-    assert [line for line in done.stdout.splitlines() if line.startswith("skipped ")] == [
-        "skipped %s: not codified" % name for name in service]
+    assert "skipped" not in done.stdout

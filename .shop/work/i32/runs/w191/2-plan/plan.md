@@ -1,12 +1,12 @@
 # Plan of w191: fix the findings of branch review 1 of i32
 
 w191 was drafted from branch review 1's fix-now finding 1 (`.shop/work/i32/runs/branch-review/1/findings.md`).
-It accepts supervision#r118 and #r119, the requirements whose path the finding breaks.
+It accepts supervision#r118@0.29 and #r119, the requirements whose path the finding breaks.
 
 ## 1. What goes green
 
-- supervision#r118: "under a delegation, an answer to a reviewer's question that asks for a change makes the work-item ready again".
-- supervision#r119: "under a delegation, an answer to a reviewer's question that accepts the work-item as it is transitions the work-item to done".
+- supervision#r118@0.29: "under a delegation, an answer to a reviewer's question that asks for a change makes the work-item ready again".
+- supervision#r119@0.29: "under a delegation, an answer to a reviewer's question that accepts the work-item as it is transitions the work-item to done".
 
 Neither scenario is red today. The notes (part 1) record 2 passed, both run plainly and with `--work-item w191`. They must stay green.
 
@@ -44,7 +44,7 @@ All three stay under 300 lines; the notes give 142 and 202 lines for the first t
 1. **D1 is fixed as a defect, with no new requirement (the researcher's reading b).**
    - The planner adds no line. The finding was triaged fix now and drafted into this work-item, under r118 and r119.
    - The fix is that a run with no verdict for the item makes no move.
-   - Rests on: supervision#r118, #r119, and decision 0069 (an-answer-to-a-reviewer-returns-to-ready-or-done). Under 0069, `work run` makes the reviewer's transition only when the answer asks for a change (ready) or accepts the work-item (done). An answer whose verdict this run does not know meets neither guard, so no transition is made.
+   - Rests on: supervision#r118@0.29, #r119, and decision 0069 (an-answer-to-a-reviewer-returns-to-ready-or-done). Under 0069, `work run` makes the reviewer's transition only when the answer asks for a change (ready) or accepts the work-item (done). An answer whose verdict this run does not know meets neither guard, so no transition is made.
    - It also rests on r77, "leaves it for the person otherwise". The path where a session gives no verdict (`supervise_answers.py:119-121`) already leaves the question this way, and branch review 1 found that path sound.
    - Refusing, so that the whole run stops naming the item, is not taken: no line asks `work run` to refuse here.
 2. **The verdict is not kept with the answer.**

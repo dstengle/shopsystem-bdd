@@ -5,7 +5,7 @@ part_of: initiative/i17
 status: merged
 date: 2026-10-22
 argues: [spec-consistency]
-adds: [spec-consistency#r22, spec-consistency#r23, spec-consistency#r24, spec-consistency#r25, spec-consistency#r26, spec-consistency#r27]
+adds: [spec-consistency#r22@0.29, spec-consistency#r23@0.29, spec-consistency#r24@0.29, spec-consistency#r25@0.29, spec-consistency#r26@0.29, spec-consistency#r27@0.29]
 changes: []
 removes: []
 ---

@@ -9,7 +9,7 @@ Branch: none (a detached checkout)
 Work-item branch: work/w126
 Answers the person gave, each with the question it answers:
 - Question: Important, scripts/workqueue_request.py:67 (with scripts/workqueue.py:48-53, scripts/work:128): work request with a --lines file that does not exist ends on an uncaught FileNotFoundError traceback instead of a refusal saying why (work-queue r7)
-  Answer: 2026-10-24: Accept the work-item as it stands (the coordinator, under the person's delegation): the refusal of a --lines file that does not exist is a case no scenario of this work-item pins; it gets an examples row of work-queue#r7 through a formulate round and is delivered by its own fix work-item, drafted after that round.
+  Answer: 2026-10-24: Accept the work-item as it stands (the coordinator, under the person's delegation): the refusal of a --lines file that does not exist is a case no scenario of this work-item pins; it gets an examples row of work-queue#r7@0.29 through a formulate round and is delivered by its own fix work-item, drafted after that round.
 
 Read (paths in your worktree):
 - .shop/work/i24-requests-and-the-context-loop/w126.md

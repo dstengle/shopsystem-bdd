@@ -5,8 +5,8 @@ part_of: initiative/i23
 status: formulated
 date: 2026-10-23
 argues: [supervision]
-adds: [supervision#r59-r63]
-changes: [supervision#r1, supervision#r20]
+adds: [supervision#r59@0.29, supervision#r60@0.29, supervision#r61@0.29, supervision#r62@0.29, supervision#r63@0.29]
+changes: [supervision#r1@0.29, supervision#r20@0.29]
 removes: []
 ---
 

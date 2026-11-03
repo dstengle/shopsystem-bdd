@@ -2,7 +2,7 @@
 
 ## 1. What goes green
 
-- analysis-tools#r7, scenario "a tool still missing after install is printed with the failed command" (features/analysis-tools.feature:89).
+- analysis-tools#r7@0.29, scenario "a tool still missing after install is printed with the failed command" (features/analysis-tools.feature:89).
   - Red today only in the whole suite (`python3 -m pytest -q -n auto`). Alone it passes (notes part 1, run).
   - Cause (notes part 1): the Then "it prints the command that failed with the end of its error" (tests/scenarios/analysis_tools_probe_steps.py, `failed_command`) checks that the substring `e1` is nowhere in stdout. Stdout's `Tried:` line holds the stand-in interpreter's path. That path sits under pytest's tmp directory, whose name is the test name cut to 30 characters plus a counter (`test_a_tool_still_missing_afte<N>`). When N = 1 the path holds `e1` and the check fails. The production output already meets r7 (notes part 2, case 1): the four last lines of pip's error are printed, and `e1`/`e2` are dropped.
 - Retired scenarios: none; the work-item has no Retires section.
@@ -17,7 +17,7 @@ Taken out of the researcher's set, and why:
 
 ## 3. Decisions
 
-- **D-a. The step checks pip's error lines, not stdout as one string.** This is the researcher's option (a). The proof that only the end of pip's error is printed becomes: no stdout line is pip's dropped head line `e1` as printed (indented under the tool, like the kept lines `e3`..`e5` and `error: no matching distribution`). The path in the `Tried:` line can then hold any digits without changing the result. Optionally, the step also checks that the kept tail lines are present as lines of their own. The `Tried:` regex, the `error: no matching distribution` check and the pip-calls check stay as they are. Rests on analysis-tools#r7 ("the command that failed with the end of its error"): r7 is about the error's lines, not the interpreter's path.
+- **D-a. The step checks pip's error lines, not stdout as one string.** This is the researcher's option (a). The proof that only the end of pip's error is printed becomes: no stdout line is pip's dropped head line `e1` as printed (indented under the tool, like the kept lines `e3`..`e5` and `error: no matching distribution`). The path in the `Tried:` line can then hold any digits without changing the result. Optionally, the step also checks that the kept tail lines are present as lines of their own. The `Tried:` regex, the `error: no matching distribution` check and the pip-calls check stay as they are. Rests on analysis-tools#r7@0.29 ("the command that failed with the end of its error"): r7 is about the error's lines, not the interpreter's path.
   - Option (b), making pytest's tmp path free of digits, is rejected. It changes a fixture that many scenarios share, for a fault in one assertion. Any other test's tmp name could also collide with stub text.
 - This plan changes nothing the narrator sees, so no question is needed.
 

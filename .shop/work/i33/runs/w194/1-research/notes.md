@@ -1,6 +1,6 @@
 # research of w194
 
-Accepted: supervision#r120 (scenario "under a delegation, the session answering ... says whether ... change or accepts"), supervision#r121 (Outline "a kept branch review whose result gives <outcome> and no question ...", 4 rows).
+Accepted: supervision#r120@0.29 (scenario "under a delegation, the session answering ... says whether ... change or accepts"), supervision#r121@0.29 (Outline "a kept branch review whose result gives <outcome> and no question ...", 4 rows).
 Scripts used: worktree `scripts/` (conftest's SCRIPTS). `tools` has no map: `tests-of` says "no map", so every test list below is `by search`; `refs` reports 0 for `self.method` calls (it missed `self.lists_nothing`, `self.answer_brief`), so those are `by search`.
 Shell env carries `--work-item w194` (PYTEST_ADDOPTS), so default collection keeps only the 5 accepted tests; the deprecated/other tests were run with `--whole-suite`.
 

@@ -4,7 +4,7 @@ kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i29
 status: formulated
 argues: [requests]
-adds: [requests#r22]
+adds: [requests#r22@0.29]
 changes: []
 removes: []
 date: 2026-10-25

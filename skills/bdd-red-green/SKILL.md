@@ -57,7 +57,7 @@ A project whose suite cannot do one of these says why in its `CLAUDE.md`.
 
 This skill never edits a `.feature` file. Not to fix a typo, not to correct arithmetic, not to align wording.
 
-Feature files are generated from the codified requirements by `features generate` (their header says so), and a removed requirement's scenario leaves with the regeneration. A work-item's `## Retires` names what it takes out: a requirement removed from `spec/` (`(<capability> @r<n>)`) means the handlers (`tests/scenarios/<cap>_handlers*.py`) and the code only that requirement used, and the whole suite is its check; a scenario tagged `@deprecated` in a feature file not yet generated is taken out with `python3 <scripts>/features retire "<title> (deprecated)"`, in the commit that turns its replacement green. You remove nothing else.
+Feature files are generated from the codified requirements by `features generate` (their header says so), and a removed requirement's scenario leaves with the regeneration. A work-item's `## Retires` names what it takes out: a requirement removed from `spec/` (`(<capability> @r<n>)`) means the handlers (`tests/scenarios/<cap>_handlers*.py`) and the code only that requirement used, and the whole suite is its check. You remove nothing else, and you never edit a `.feature` file.
 
 A step of a generated scenario is matched by the step vocabulary, not by a regex of your own: you write a **handler** for a vocabulary use the suite has no handler for, `@handler("<template>", "<term>")` in `tests/scenarios/<cap>_handlers*.py`, and `python3 <scripts>/features vocab --check` lists the ones missing.
 
@@ -130,7 +130,7 @@ When every scenario the work-item accepts (or the check) passes and the test mod
 
 ## Red Flags
 
-- Any diff touching a `.feature` file, other than `features retire` of a scenario the work-item lists under Retires
+- Any diff touching a `.feature` file
 - `sed -i` or an editor on anything under `features/`, or a commit touching `.shop/work/`
 - Writing a second step definition before the first scenario is green
 - The phrase "typo", "obviously meant", or "arithmetically impossible" about a Then line

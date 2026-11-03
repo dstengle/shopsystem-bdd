@@ -5,15 +5,15 @@ From the research notes `runs/w131/1-research/notes.md`.
 
 ## 1. What goes green
 
-- **design-model-check#r19**, "model reads the repository's files under its root" (outline, 14 rows). Red today
+- **design-model-check#r19@0.29**, "model reads the repository's files under its root" (outline, 14 rows). Red today
   because the row `.shop/work/requests/q1.md ... include` hits a KeyError in the step data's files-read table
   (`tests/scenarios/design_model_check_reading.py`, which has no entry or marker for a request). Behind that,
   `Model.read` has no request reader, and `read_work` treats `.shop/work/requests/` as an initiative folder. The
   other 13 rows pass.
-- **design-model-check#r112**, "a request not of the form `work request` writes is a file problem". Red because the
+- **design-model-check#r112@0.29**, "a request not of the form `work request` writes is a file problem". Red because the
   Givens "a request in .shop/work/requests/q1.md with no asker" and "... that `work request` wrote" are not defined.
   Today's code also prints only `.shop/work/requests: no initiative.md`, which names no request file.
-- **design-model-check#r118**, "an initiative of kind job or job-path is a file problem" (3 rows). Red because the
+- **design-model-check#r118@0.29**, "an initiative of kind job or job-path is a file problem" (3 rows). Red because the
   Given "a repository with an initiative in .shop/work/i1/initiative.md of kind <kind>" is not defined, and
   `read_work` writes the `ikind` fact for any kind without a file problem. The capability-change row already gets
   what it expects from today's code.
@@ -46,11 +46,11 @@ Removed from the researcher's set: `scripts/model.lp`. Decision D4 leaves `v_k1`
 ## 3. Decisions
 
 - **D1. r19's marker is the request's `node` fact of kind `request`**, with id `request/<context path>/q<n>`. This
-  rests on design-model-check#r19, #r43 (a node written `<kind>/<context path>/<name>`),
+  rests on design-model-check#r19@0.29, #r43 (a node written `<kind>/<context path>/<name>`),
   design-decision/references-are-ids, and the id form in the requests capability's Implementation. The asker,
   part_of and source facts that v17, v_d1 and v_d3 need are left to the work-items of r114, r115 and r119. This
   reader emits node and status only.
-- **D2. "The form `work request` writes" is what requests#r1 says `work request` writes, spelled as requests'
+- **D2. "The form `work request` writes" is what requests#r1@0.29 says `work request` writes, spelled as requests'
   Implementation spells it.** A request file is of the form when all of the following hold:
   - its `id` is `request/<context path>/<file name>` and the file name is `q<n>.md`;
   - `kind` is `request`;
@@ -65,26 +65,26 @@ Removed from the researcher's set: `scripts/model.lp`. Decision D4 leaves `v_k1`
   A file that fails any of these gets one file problem naming the file. The folded or literal block refusal of
   #r29 applies too.
 
-  This rests on design-model-check#r112, which names capability/requests as the authority, and on requests#r1:
+  This rests on design-model-check#r112@0.29, which names capability/requests as the authority, and on requests#r1@0.29:
   "an open request with ... its lines, the asker, the origins ... or the job-thread, and the turn". The Outcomes,
-  Questions, Answers and Resolution sections are written by later commands (requests#r5), so a just-written
+  Questions, Answers and Resolution sections are written by later commands (requests#r5@0.29), so a just-written
   request lacks them and is still of the form.
 
   The value of `asker` (a context id, `internal` or the product level) is not checked beyond being present. The
   Implementation does not spell the product level, and the scenario pins only absence. The researcher's reading B
   (asker alone) is narrower than r112's pointer to the requests form, so it is not taken.
 - **D3. The request lifecycle is `open`, `awaiting-asker`, `awaiting-upstream`, `accepted`, `refused`,
-  `delivered`**, entered where the part statuses are kept. This rests on requests#r1 (open), #r17, #r18, #r8, #r9
+  `delivered`**, entered where the part statuses are kept. This rests on requests#r1@0.29 (open), #r17, #r18, #r8, #r9
   and #r11 (delivered). `withdrawn` is not in it: withdrawing a request is in requests' Not yet.
 - **D4. `v_k1` and `v_k2` in `scripts/model.lp` stay as they are.** No accepted requirement or ruling removes
   them, and removing them would change what `model rules` prints (#r65). r118 needs only the file problem. The
   `ikind` fact is still written for a job or job-path initiative, as today.
 - **D5. The `requests/` directory is never an initiative folder**, whether it is empty or not. This rests on
-  design-model-check#r19, which reads `.shop/work/<initiative>/*.md` and `.shop/work/requests/*.md` as distinct
+  design-model-check#r19@0.29, which reads `.shop/work/<initiative>/*.md` and `.shop/work/requests/*.md` as distinct
   paths.
 - **D6. The "that `work request` wrote" fixture is built to D2's form**, since `work request` is not built yet.
   The fixture has id, kind request, an asker, a `source` naming an observation that exists in the fixture, status
-  `open`, turn `upstream`, and a `## Lines` section with one line. This rests on requests#r1 and the
+  `open`, turn `upstream`, and a `## Lines` section with one line. This rests on requests#r1@0.29 and the
   Implementation. The "with no asker" fixture is the same file without `asker`.
 
 ## 4. Tests the decisions break

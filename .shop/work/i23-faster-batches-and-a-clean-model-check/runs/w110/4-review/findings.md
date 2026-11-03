@@ -24,7 +24,7 @@ I searched the diff for deleted `@scenario`, `def test_`, step functions and `as
 - **features/batch-measurement.feature: the "(deprecated)" @r47 Scenario Outline (2 examples) was removed.** It
   proved that a non-empty session.json or transcript of an unknown shape is refused, naming the file, and that
   nothing is written. The plan lists it under "Tests the decisions break". The work-item lists it under Retires
-  (delivery#r17). Its binding is the `scenarios(...)` call, so removing the outline removes the binding. The live
+  (delivery#r17@0.29). Its binding is the `scenarios(...)` call, so removing the outline removes the binding. The live
   @r47 outline, which this commit leaves unchanged, still covers the refusal. **Allowed.**
 - **batch_measurement_then_steps.py:152 `gives_totals`.** Before, it asserted stages, sessions, every token column,
   round trips, cost and time, and any table missing one of those raised KeyError. Now it asserts only the columns
@@ -58,7 +58,7 @@ two test changes above are covered by the plan's list.
 `stages_of` then marks every start the log gives for `(work-item, stage)` with `session_json: "empty"`. A
 work-item that ran a stage twice, where only one run's session.json is empty, gets both stages marked. The stage
 that has its turns, tokens and cost is then also named as a stage whose session.json is empty. That contradicts
-batch-measurement#r57, and the measurement gives a wrong answer.
+batch-measurement#r57@0.29, and the measurement gives a wrong answer.
 
 **Why it matters:** repeated stages are common in real data. Plan stages are re-run, and reviews and implements
 are re-run after a failure. Examples: w95 has 3-implement and 4-implement; w97 has 2-plan and 3-plan, and

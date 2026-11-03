@@ -5,7 +5,7 @@ part_of: initiative/i11
 status: formulated
 date: 2026-10-21
 argues: [feature-file-tools]
-changes: [feature-file-tools#r35]
+changes: [feature-file-tools#r35@0.29]
 ---
 
 # feature-file-tools: `--to` outside `--dir` refused

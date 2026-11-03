@@ -5,9 +5,9 @@ Agent: initiative-round
 Scripts: /home/vscode/shopsystem-bdd/.shop/scratch/runner/scripts
 Kind: gate
 Give the gate as questions in your result's `questions`, one string each: every question a decision, with its readings and the recommended reading marked.
-Adds: supervision#r140, supervision#r141, supervision#r142, supervision#r143, supervision#r144, supervision#r145, supervision#r146, supervision#r147, supervision#r148
+Adds: supervision#r140@0.29, supervision#r141@0.29, supervision#r142@0.29, supervision#r143@0.29, supervision#r144@0.29, supervision#r145@0.29, supervision#r146@0.29, supervision#r147@0.29, supervision#r148@0.29
 Changes: none
-Removes: supervision#r80, supervision#r114, supervision#r71
+Removes: supervision#r80@0.29, supervision#r114@0.29, supervision#r71@0.29
 Ask questions only on the lines and terms listed above as adds, changes or removes, and on no other line or term.
 Drafts path: .shop/work/i41/runs/i41/1-integrate/drafts/round-1/
 Base: c2cbb99c64349b57b8c56ef45808f0c7537b3861

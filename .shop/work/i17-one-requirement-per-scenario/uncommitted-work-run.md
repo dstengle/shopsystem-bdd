@@ -5,7 +5,7 @@ part_of: initiative/i17
 status: formulated
 date: 2026-10-22
 argues: [supervision]
-adds: [supervision#r46]
+adds: [supervision#r46@0.29]
 ---
 
 # supervision: no run over uncommitted work

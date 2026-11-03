@@ -5,7 +5,7 @@ import datetime
 import re
 from pathlib import Path
 
-from model_legacy import LegacyReading
+import spec_read
 from model_parse import as_list, frontmatter, mention, scenarios
 from model_requests import RequestReading
 from model_spec import SpecReading
@@ -24,7 +24,7 @@ NOT_PROSE = re.compile(r'`[^`]*`|"[^"]*"|(?<!\w)@[\w-]+')
 OLD_LAYOUT = ("spec/decisions.md", "decisions/", "work/", "records/")    # what scripts/migrate moves (r61)
 
 
-class Model(SpecReading, LegacyReading, WorkReading, RequestReading):
+class Model(SpecReading, WorkReading, RequestReading):
     def __init__(self, root, today=None):
         self.root = Path(root)
         self.today = today or datetime.date.today()
@@ -106,11 +106,7 @@ class Model(SpecReading, LegacyReading, WorkReading, RequestReading):
         q = f"{cap}#r{m.group('n')}"
         if not m.group("old"):
             return q
-        key = f"{cap.rsplit('/', 1)[-1]}#r{m.group('n')}"      # a 0.29 id: resolved through spec/restated.json (§13.4)
-        if key not in self.restated:
-            self.dangling.append(f"{where}: {ref!r} names no 0.29 id of spec/restated.json")
-            return None
-        q += "@0.29"
+        q += "@0.29"     # a 0.29 id is history (§13.4): `why` reads it in spec/restated.json, which lacks those retired before
         self.nodes.setdefault(q, "0.29 id")       # looked up, never a node: no fact is written for it
         self.fact("old_ref", q)
         return q
@@ -168,7 +164,7 @@ class Model(SpecReading, LegacyReading, WorkReading, RequestReading):
         if not path.exists():
             self.problems.append("spec/index.md is missing: no bounded-context is named")
             return
-        data, body = frontmatter(path.read_text())
+        data, _ = frontmatter(path.read_text())
         ident = data.get("id")
         if not ident:
             self.problems.append("spec/index.md has no frontmatter id naming the bounded-context")
@@ -179,10 +175,10 @@ class Model(SpecReading, LegacyReading, WorkReading, RequestReading):
             return
         self.context, self.path = m.group(0), m.group(1)
         self.node(self.context, "bounded-context")
-        if str(data.get("language", "")).strip() == "codified-1":
+        if spec_read.codified(path):
             self.read_lexicon()         # the typed glossary (§10.1)
         else:
-            self.read_glossary_legacy(body)
+            self.fact("uncodified", "spec/index.md")    # v_p0: run `migrate upgrade`
 
     def read_mentions(self):
         """mentions(X, W) for each requirement and scenario X and each term or avoided word W it contains."""
@@ -199,7 +195,7 @@ class Model(SpecReading, LegacyReading, WorkReading, RequestReading):
         for path in sorted((self.root / "spec" / "capabilities").glob("*.md")):
             data, body = frontmatter(path.read_text())
             name = path.stem
-            codified = str(data.get("language", "")).strip() == "codified-1"      # read as groups (§13.4)
+            codified = spec_read.codified(path)      # read as groups (§13.4); else v_p0
             expected = f"capability/{self.path}/{name}" if self.path else None
             cap = data.get("id") or expected or name
             if expected and cap != expected:
@@ -217,13 +213,6 @@ class Model(SpecReading, LegacyReading, WorkReading, RequestReading):
                 d = self.qualify(d, "design-decision")
                 self.fact("rests_on", cap, d)
                 self.want(d, "design-decision", self.rel(path))
-            for r in [] if codified else as_list(data.get("retired")):      # model_spec reads a codified one
-                m = re.fullmatch(r"r?(\d+)", str(r))
-                if m:
-                    self.retired.add((cap, int(m.group(1))))
-                    self.fact("retired_id", cap, int(m.group(1)))
-                else:
-                    self.problems.append(f"{self.rel(path)}: retired {r!r} is not r<n>")
             self.unread(data, path)
             if "formulated_as" in data:
                 self.problems.append(f"{self.rel(path)}: formulated_as is not read; the feature file is "
@@ -235,7 +224,7 @@ class Model(SpecReading, LegacyReading, WorkReading, RequestReading):
             if codified:
                 self.read_codified(cap, path, entry)
             else:
-                self.read_legacy_behaviour(cap, entry, body)
+                self.fact("uncodified", self.rel(path))
             self.caps[cap] = entry
 
     def read_features(self):
@@ -261,8 +250,6 @@ class Model(SpecReading, LegacyReading, WorkReading, RequestReading):
                 self.sc_text[s] = "\n".join([title] + steps)
                 if cap is not None and self.caps[cap]["codified"]:
                     self.codified_scenario(cap, key, title, tags, s)
-                else:
-                    self.legacy_scenario(cap, key, title, tags, s)
 
     def want(self, ident, kind, where):
         self._wanted = getattr(self, "_wanted", [])

@@ -5,15 +5,15 @@ From the research notes `.shop/work/i25/runs/w176/2-research/notes.md` (stage 1'
 
 ## 1. What goes green
 
-- **work-queue#r14**: "answer to a researcher's, a planner's or an implementer's question transitions the work-item
+- **work-queue#r14@0.29**: "answer to a researcher's, a planner's or an implementer's question transitions the work-item
   to the status that stage started from" (outline, 3 rows). Green today (run); it must stay green. The reviewer
   branch below must not reach these three askers.
-- **work-queue#r26**: "answer that asks for a change, to a reviewer's question, transitions the work-item to ready".
+- **work-queue#r26@0.29**: "answer that asks for a change, to a reviewer's question, transitions the work-item to ready".
   Red: StepDefinitionNotFoundError for the When "…, saying that the answer asks for a change"; `scripts/work`'s
   `answer` has no `--change` (P2: argparse rc 2); `workqueue_answer.answer` would send it to `done` via `asked_from`.
-- **work-queue#r27**: "answer that accepts the work-item as it is, to a reviewer's question, transitions the work-item
+- **work-queue#r27@0.29**: "answer that accepts the work-item as it is, to a reviewer's question, transitions the work-item
   to done". Red: no When step "…, saying that the answer accepts the work-item as it is"; no `--accept` (P3).
-- **work-queue#r28**: "answer to a reviewer's question that says neither whether it asks for a change nor whether it
+- **work-queue#r28@0.29**: "answer to a reviewer's question that says neither whether it asks for a change nor whether it
   accepts the work-item is refused, and nothing changes". Red: no When step "…, saying neither …", no Then step
   "work exits with an error, saying that the answer must say whether it asks for a change or accepts the work-item
   as it is"; and today the answer lands `done`, rc 0 (P1, defect D1). The Then "… and … are as they were" exists.
@@ -43,22 +43,22 @@ No file goes over 300 lines (work 169, workqueue_answer.py 59, steps 41).
 - **D1 (Q1) both `--change` and `--accept` given: refused, nothing changed.** r26 and r27 would ask for two
   transitions at once, `ready` and `done`; that is a change `work` cannot make, so r7 (exit with an error, say why,
   change nothing) settles it. The flags are one mutually exclusive choice; the refusal says the two flags cannot be
-  given together. Rests on work-queue#r7, #r26, #r27 and the Implementation note naming the two flags.
+  given together. Rests on work-queue#r7@0.29, #r26, #r27 and the Implementation note naming the two flags.
 - **D2 (Q2) the delegated answer path is left as it is.** r26-r28 name `work answer` only; the delegated path
   (`supervise_answers.py:79`, moving by `asked_from`) is supervision's behaviour (r77, r78) and w176 accepts no
   supervision requirement. So the reviewer branch is put in `answer`, not in `asked_from`, and `asked_from` keeps
   returning the asked-from status, `done` for a reviewer: the delegated path observes no change. Rests on
-  work-queue#r26-#r28 (their scope) and supervision#r77/#r78 (not accepted here). The gap is in part 5.
+  work-queue#r26-#r28 (their scope) and supervision#r77@0.29/#r78 (not accepted here). The gap is in part 5.
 - **D3 (Q3) the deprecated outline is retired, not rewritten.** Its "Deprecated for:" line names the r14 outline
   (feature 300) that w176 accepts; r14 as changed names only researcher, planner and implementer, and r28 refuses
   what its reviewer row expects, so its reviewer row cannot pass and its three stage rows are the r14 outline's.
-  Rewriting a deprecated scenario's expectation would make it a fifth scenario for r28. Rests on work-queue#r14
+  Rewriting a deprecated scenario's expectation would make it a fifth scenario for r28. Rests on work-queue#r14@0.29
   (changed), #r28; the same retirement w174 listed. Done with `features retire` on its exact title.
 - **D4 r28's message** says that an answer to a reviewer's question must say whether it asks for a change (`--change`)
   or accepts the work-item as it is (`--accept`): the scenario's Then checks the stderr for that sense, the flags
-  named so the person can act. Rests on work-queue#r28 and its Implementation note.
+  named so the person can act. Rests on work-queue#r28@0.29 and its Implementation note.
 - **D5 (Q4) r27 as written: `--accept` gives `done`.** That `work run` then starts a review of a `done` item again
-  is supervision's (STAGES in `supervise.py`), outside the accepted lines. Rests on work-queue#r27.
+  is supervision's (STAGES in `supervise.py`), outside the accepted lines. Rests on work-queue#r27@0.29.
 - **D6 the reviewer test is the log's `before` = `done`**, read the way `asked_from` already reads it (notes part 2:
   no other stage starts from `done`). A non-reviewer asker given `--change` or `--accept`: see part 5.
 

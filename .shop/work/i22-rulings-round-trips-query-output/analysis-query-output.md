@@ -5,8 +5,8 @@ part_of: initiative/i22
 status: formulated
 date: 2026-10-23
 argues: [analysis-tools]
-adds: [analysis-tools#r53-r57]
-changes: [analysis-tools#r11]
+adds: [analysis-tools#r53@0.29, analysis-tools#r54@0.29, analysis-tools#r55@0.29, analysis-tools#r56@0.29, analysis-tools#r57@0.29]
+changes: [analysis-tools#r11@0.29]
 removes: []
 ---
 

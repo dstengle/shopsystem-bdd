@@ -23,7 +23,7 @@ The report's `## Tests changed under an allowance` says "none"; no test changed,
 
 ## Cannot verify
 
-- delivery#r21 (put a refused tool to the person, naming the stage): the skill text (SKILL.md:42) acts on work run's
+- delivery#r21@0.29 (put a refused tool to the person, naming the stage): the skill text (SKILL.md:42) acts on work run's
   printout, but work run prints no refused tool today (research D3; a refusal becomes a `failed` work-item with a
   fault). The line is written but cannot fire until supervision prints it. Not a defect of these commits; it is a
   supervision gap (the plan's Open cases, the report's Open questions).
@@ -66,7 +66,7 @@ SKILL.md:36. supervise.py exits 0 when every work-item is green *or withdrawn*, 
 
 ### F4 Minor, drop: the work-item's title promises the ledger with `work note`, the text still writes it by hand
 w141's title says "writes the ledger with work note", but it accepts no r15; SKILL.md:50-51 still give
-`.shop/scratch/run/ledger-<initiative>.md` and an archive move, contrary to decision 0066. w142 (accepts delivery#r15,
+`.shop/scratch/run/ledger-<initiative>.md` and an archive move, contrary to decision 0066. w142 (accepts delivery#r15@0.29,
 `researched`) owns that change; it should take :51 (the archive move) along with :50. Not this work-item's to fix.
 
 Also outside the file set: README.md lines 57, 149, 206, 229, 250 still describe the drafting skill (report names them).

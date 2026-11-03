@@ -6,7 +6,7 @@ status: formulated
 date: 2026-10-21
 argues: [batch-measurement]
 adds: []
-changes: [batch-measurement#r38]
+changes: [batch-measurement#r38@0.29]
 removes: []
 ---
 

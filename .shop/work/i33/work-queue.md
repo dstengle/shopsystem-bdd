@@ -4,8 +4,8 @@ kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i33
 status: formulated
 argues: [work-queue]
-adds: [work-queue#r31, work-queue#r32]
-changes: [work-queue#r23]
+adds: [work-queue#r31@0.29, work-queue#r32@0.29]
+changes: [work-queue#r23@0.29]
 removes: []
 date: 2026-10-25
 ---

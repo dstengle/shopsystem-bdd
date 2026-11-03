@@ -5,7 +5,7 @@ part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i45
 status: awaiting-answer
 argues: [requests]
 date: 2026-10-28
-adds: [requests#r59]
+adds: [requests#r59@0.29]
 changes: []
 removes: []
 ---

@@ -57,6 +57,6 @@ A. Retires bullet 1 names the r163 outline (supervision.feature:1302). Its repla
 
 B. features/supervision.feature:1484 (@r92, "Deprecated for: removal") is not named by Retires. Reading 1: leave it (as drafted). Reading 2: add it to Retires; r123/r73 name only replacement scenarios, so it is outside them.
 
-C. Duplicate: `.shop/work/i46/w224.md:7` also accepts supervision#r159 and supervision#r168, the same accepted requirements as w226. Both would draft the same retirements.
+C. Duplicate: `.shop/work/i46/w224.md:7` also accepts supervision#r159@0.29 and supervision#r168@0.29, the same accepted requirements as w226. Both would draft the same retirements.
 
 Scratch directory `.shop/scratch/1-research/` is untracked in the checkout but `git status --porcelain` printed nothing at the end (ignored).

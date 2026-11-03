@@ -6,13 +6,13 @@ status: formulated
 date: 2026-10-19
 argues: [role-boundaries]
 adds: []
-changes: [role-boundaries#r1-r6]
+changes: [role-boundaries#r1@0.29, role-boundaries#r2@0.29, role-boundaries#r3@0.29, role-boundaries#r4@0.29, role-boundaries#r5@0.29, role-boundaries#r6@0.29]
 removes: []
 ---
 
 # Role boundaries: Behaviour lines in EARS
 
-What the gate approves (the person, 2026-10-19: "I approve"): changed `role-boundaries#r1-r6`.
+What the gate approves (the person, 2026-10-19: "I approve"): changed `role-boundaries#r1@0.29, role-boundaries#r2@0.29, role-boundaries#r3@0.29, role-boundaries#r4@0.29, role-boundaries#r5@0.29, role-boundaries#r6@0.29`.
 
 Each line is one EARS requirement, its pattern chosen by what starts the behaviour, with "shall", one response and one sentence; `If` lines only where design-decision/behaviour-lines-are-ears allows them. A line whose meaning is unchanged keeps its id; a retired line's meaning is in the line named below, or in "Implementation, may change".
 

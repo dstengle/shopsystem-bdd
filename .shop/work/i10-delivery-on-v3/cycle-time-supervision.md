@@ -5,7 +5,7 @@ part_of: initiative/i10
 status: formulated
 date: 2026-10-20
 argues: [supervision]
-adds: [supervision#r19-r20]
+adds: [supervision#r19@0.29, supervision#r20@0.29]
 ---
 
 # supervision: cycle time

@@ -5,9 +5,9 @@ part_of: initiative/i11
 status: formulated
 date: 2026-10-19
 argues: [design-model-check]
-adds: [design-model-check#r61, design-model-check#r64-r66]
-changes: [design-model-check#r2-r8, design-model-check#r10-r11, design-model-check#r14-r15, design-model-check#r19-r20, design-model-check#r23, design-model-check#r25-r26, design-model-check#r29, design-model-check#r33-r35, design-model-check#r37, design-model-check#r51-r54, design-model-check#r59]
-removes: [design-model-check#r45]
+adds: [design-model-check#r61@0.29, design-model-check#r64@0.29, design-model-check#r65@0.29, design-model-check#r66@0.29]
+changes: [design-model-check#r2@0.29, design-model-check#r3@0.29, design-model-check#r4@0.29, design-model-check#r5@0.29, design-model-check#r6@0.29, design-model-check#r7@0.29, design-model-check#r8@0.29, design-model-check#r10@0.29, design-model-check#r11@0.29, design-model-check#r14@0.29, design-model-check#r15@0.29, design-model-check#r19@0.29, design-model-check#r20@0.29, design-model-check#r23@0.29, design-model-check#r25@0.29, design-model-check#r26@0.29, design-model-check#r29@0.29, design-model-check#r33@0.29, design-model-check#r34@0.29, design-model-check#r35@0.29, design-model-check#r37@0.29, design-model-check#r51@0.29, design-model-check#r52@0.29, design-model-check#r53@0.29, design-model-check#r54@0.29, design-model-check#r59@0.29]
+removes: [design-model-check#r45@0.29]
 ---
 
 # Design model check: the final layout, ids for references, labels for rules
@@ -25,7 +25,7 @@ What the gate sees, by id:
 - References: r64 (a decision's `source` is ids, `by` is not read). r24 is unchanged: `source` was already in
   its list, and now covers a decision's too.
 - Proposals' lists: r66 reads `term/<term>` in `adds`, `changes` and `removes`, as docs/capability-format.md
-  and spec-integration#r17 already tell a writer to list a term (today `model check` reports every such entry
+  and spec-integration#r17@0.29 already tell a writer to list a term (today `model check` reports every such entry
   as "not a requirement reference"); r23 lets a merged or formulated proposal's `removes` name the id it
   retired (today a proposal that removed a line is unresolved for ever once it merges, so this proposal's own
   removal of r45 would be).
@@ -108,4 +108,4 @@ Formulation follows: the scenarios of the changed lines are reworded; steps that
 ("a directory holding", "one JSON object holding") are reworded with their lines, since the new glossary
 entry avoids "holding".
 
-Re-synced 2026-10-19 to the EARS lines (initiative/i13, approved by the person): design-model-check#r60 -> r25; design-model-check#r62 -> r26; design-model-check#r63 -> r29; design-model-check#r44 -> r20. The ids in the text above are the drafted ones.
+Re-synced 2026-10-19 to the EARS lines (initiative/i13, approved by the person): design-model-check#r60@0.29 -> r25; design-model-check#r62@0.29 -> r26; design-model-check#r63@0.29 -> r29; design-model-check#r44@0.29 -> r20. The ids in the text above are the drafted ones.

@@ -5,8 +5,8 @@ part_of: initiative/i27
 status: formulated
 date: 2026-10-25
 argues: [supervision]
-adds: [supervision#r91-r97]
-changes: [supervision#r66]
+adds: [supervision#r91@0.29, supervision#r92@0.29, supervision#r93@0.29, supervision#r94@0.29, supervision#r95@0.29, supervision#r96@0.29, supervision#r97@0.29]
+changes: [supervision#r66@0.29]
 removes: []
 ---
 

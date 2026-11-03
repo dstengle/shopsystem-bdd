@@ -1,10 +1,10 @@
-# Plan of w114: tools install pins ruff (analysis-tools#r58)
+# Plan of w114: tools install pins ruff (analysis-tools#r58@0.29)
 
 From the research notes, `runs/w114/1-research/notes.md`.
 
 ## 1. What goes green
 
-- **analysis-tools#r58**: `features/analysis-tools.feature`, "install puts in the version of ruff the plugin pins" (line 73).
+- **analysis-tools#r58@0.29**: `features/analysis-tools.feature`, "install puts in the version of ruff the plugin pins" (line 73).
   - It is red because there is no step definition for the Given "the plugin pins one version of ruff" (line 76). The run stops there with `StepDefinitionNotFoundError`. The Then "ruff is installed into the interpreter at the version the plugin pins" (line 78) has no definition either. The existing install Then, `{tools} are installed into the interpreter with pip`, does not match it.
   - Once the steps exist, the When still hands pip the bare `ruff`: `scripts/tools_env.py:cmd_install` line 93 passes the TOOLS row's package field, and no pin exists anywhere in the repository (notes §1, probe a). So the Then would fail.
 - Retired scenarios: none. The work-item has no Retires section.
@@ -23,22 +23,22 @@ Not in the set:
 
 - **D1. The pin is ruff 0.17.0.**
   - Why: r58 says the plugin pins "the one version". The repository's own rules, `ruff.toml:2`, are written for ruff 0.17, and 0.17.0 is the version the plugin's interpreter has today (notes, `probe --log`).
-  - Rests on: analysis-tools#r58.
+  - Rests on: analysis-tools#r58@0.29.
 - **D2. The Given and the Then read the pin from the constant in `scripts/tools_env.py`, never from a literal of their own.**
   - The Then asserts that the interpreter's pip calls hold exactly one call for ruff, with the pinned requirement as its argument. It reads them through the existing `pip_calls` helper.
   - Why: a later change of the pin then needs one edit and no test edit.
   - The Given states the plugin's pin and sets nothing up. The project from the first Given is already missing ruff.
-  - Rests on: analysis-tools#r58 ("the version the plugin pins").
+  - Rests on: analysis-tools#r58@0.29 ("the version the plugin pins").
 - **D3. A ruff already present at another version is left alone, and install still says every tool is present.**
   - This is what happens today (notes §5, probe b).
   - Why: r58 applies only "when `tools install` installs ruff", and r5 installs only missing tools.
-  - Rests on: analysis-tools#r5 and #r58. Nothing is added for this case.
+  - Rests on: analysis-tools#r5@0.29 and #r58. Nothing is added for this case.
 - **D4. Only ruff is pinned. jedi, vulture and the other tools keep the bare package name.**
   - Why: r58 names ruff alone. This keeps the r5 and r7 scenarios' assertions on jedi and vulture as they are.
-  - Rests on: analysis-tools#r58 and #r5.
+  - Rests on: analysis-tools#r58@0.29 and #r5.
 - **D5. The refusal for an interpreter that is not a virtualenv, and the failure report, stay as they are.**
   - The refusal comes before the pinned call. The failure report prints the command it ran, so it will show the pinned requirement for ruff (notes §5).
-  - Rests on: analysis-tools#r6 and #r7.
+  - Rests on: analysis-tools#r6@0.29 and #r7.
 - **D6. The `Tried:` label on the not-a-virtualenv refusal (notes §6) is not fixed here.**
   - Why: it is outside r58, and the work-item accepts only r58. It is left as a defect for a later work-item.
 

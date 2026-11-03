@@ -129,7 +129,7 @@ For a guarantees capability, a range id is now skipped by its capability.
 ### 8. Minor, w199 / the proposal, observation, carried from review 2 findings 8 and 9
 
 - `features deprecated` lists 5 "for: removal" scenarios, and nothing retires them.
-- q8's resolution names the removed `supervision#r113`.
+- q8's resolution names the removed `supervision#r113@0.29`.
 - There is no intake or implementer-commit output check.
 
 ## Shape
@@ -167,4 +167,4 @@ CLAUDE.md is checked rule by rule and module-map row by row, for what w201 touch
 6. 0039 still guards on DONE (Finding 6). `grep -c DONE spec/decisions/0039-work-item-lifecycle-as-run.md` gives 6.
 7. Ranges, synonyms and changed requirements (Finding 7). See review 2's reproduction.
 8. Deprecated-for-removal scenarios, q8, and no intake output check (Finding 8). `features deprecated` lists 5.
-9. Review 2's fix-now is verified fixed. At HEAD, `unformulated(root, ["planning#r1", "review#r2", "supervision#r132", "supervision#r3", "supervision#r999", "term/x", "nosuch#r1"])` gave `['supervision#r3', 'supervision#r999', 'nosuch#r1']`. The code before the fix gave `['steady#r4']` on a guarantees `steady`.
+9. Review 2's fix-now is verified fixed. At HEAD, `unformulated(root, ["planning#r1@0.29", "review#r2@0.29", "supervision#r132@0.29", "supervision#r3@0.29", "supervision#r999@0.29", "term/x", "nosuch#r1"])` gave `['supervision#r3@0.29', 'supervision#r999@0.29', 'nosuch#r1']`. The code before the fix gave `['steady#r4']` on a guarantees `steady`.

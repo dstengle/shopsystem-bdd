@@ -1,6 +1,6 @@
 # w229 research: supervision r180
 
-Accepted: supervision#r180 (scenario in features/supervision.feature:1414, test in tests/scenarios/test_supervision.py). No coverage map: `tools tests-of` refused (`no map`), so every test list below is `by search`.
+Accepted: supervision#r180@0.29 (scenario in features/supervision.feature:1414, test in tests/scenarios/test_supervision.py). No coverage map: `tools tests-of` refused (`no map`), so every test list below is `by search`.
 
 ## 1. Why each scenario is red today
 

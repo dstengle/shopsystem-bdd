@@ -280,3 +280,12 @@ def generate(root, path):
         text = scenario_text(v, cap, group)
         out += ["", text] if text else []
     return "\n".join(out) + "\n"
+
+
+def uncodified(root, paths):
+    """The refusal of the first capability file of `paths` without `language: codified-1` (§13.4), or None: the 0.29
+    reader is gone, so `migrate upgrade` converts it."""
+    for path in paths:
+        if not spec_read.codified(path):
+            return "%s is not codified: run `migrate upgrade`" % Path(path).relative_to(root).as_posix()
+    return None

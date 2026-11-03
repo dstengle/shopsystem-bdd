@@ -1,6 +1,6 @@
 # w134 research notes
 
-Brief: `.shop/work/i24-requests-and-the-context-loop/w134.md`. Accepts supervision#r66, r81, r82.
+Brief: `.shop/work/i24-requests-and-the-context-loop/w134.md`. Accepts supervision#r66@0.29, r81, r82.
 Scenarios: features/supervision.feature:957 (r66), :1003 (r81 outline, 3 rows), :1018 (r82).
 Tools: `tools` ran (`--help`, `refs`, `tests-of`, `size`). No coverage map (`tools: no map`), so
 `tests-of` and `untested` give nothing; test lists below are `by search`. `refs` misses `scripts/work`

@@ -7,7 +7,7 @@
 Nothing this stage. The change is the earlier commit a4fd9482 (rebased as be7b9477 on this branch): step 4 of skills/formulating-features/SKILL.md runs an old scenario alone with `python3 -m pytest -q "<node id>"` or `-k <underscored name>`, checked with `--collect-only`.
 
 ## Red and green
-formulation#r23 has no scenario (guarantees capability), so no red run exists.
+formulation#r23@0.29 has no scenario (guarantees capability), so no red run exists.
 Final run: `python3 -m pytest -q --work-item w180` gave 142 passed, 1 skipped, 56 subtests passed.
 
 ## Suite
@@ -24,4 +24,4 @@ Scenario outlines, a title carried by several feature files, and a deselected `f
 
 ## Other
 The plan contained no code. Nothing was pasted. Outside the file set: none.
-Commits: be7b9477 formulating-features: run an old scenario alone with python3 -m pytest, selected by test name (formulation#r23)
+Commits: be7b9477 formulating-features: run an old scenario alone with python3 -m pytest, selected by test name (formulation#r23@0.29)

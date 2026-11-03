@@ -5,9 +5,9 @@ part_of: initiative/i24
 status: formulated
 date: 2026-10-24
 argues: [delivery]
-adds: [delivery#r19-r22, term/delegation]
-changes: [delivery#r4, delivery#r10]
-removes: [delivery#r1-r3, delivery#r8, delivery#r9, delivery#r17, delivery#r18]
+adds: [delivery#r19@0.29, delivery#r20@0.29, delivery#r21@0.29, delivery#r22@0.29, term/delegation]
+changes: [delivery#r4@0.29, delivery#r10@0.29]
+removes: [delivery#r1@0.29, delivery#r2@0.29, delivery#r3@0.29, delivery#r8@0.29, delivery#r9@0.29, delivery#r17@0.29, delivery#r18@0.29]
 ---
 
 # delivering-an-initiative only starts work run

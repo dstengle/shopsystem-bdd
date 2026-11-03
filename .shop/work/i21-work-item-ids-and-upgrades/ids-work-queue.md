@@ -5,9 +5,9 @@ part_of: initiative/i21
 status: formulated
 date: 2026-10-22
 argues: [work-queue]
-adds: [work-queue#r12]
-changes: [work-queue#r1, term/work-item]
-removes: [work-queue#r2]
+adds: [work-queue#r12@0.29]
+changes: [work-queue#r1@0.29, term/work-item]
+removes: [work-queue#r2@0.29]
 ---
 
 # work-queue: a work-item is named by its id w<n>

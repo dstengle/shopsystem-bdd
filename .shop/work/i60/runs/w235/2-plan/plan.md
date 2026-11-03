@@ -10,13 +10,13 @@ Why most of them are red, from the notes:
 
 | Requirement | Scenario | Red today because |
 |---|---|---|
-| requests#r65 | "delegate given a request that holds <before> writes the delegation given in the request, in place of any it had" (no delegation; the delegation "answer any question on line 2") | (a), (b); also undefined steps: the Givens "q1 holds no delegation" and "q1 holds the delegation …", and the Thens "q1's delegation is …" and "q1 holds no other delegation". |
-| requests#r66 | "delegate writing a delegation in a request commits the request on the current branch" | (a), (b) (run). |
-| requests#r67 | "delegate given an empty delegation is refused, and nothing changes" | the Given "q1 holds the delegation …" is undefined; (a). |
-| requests#r68 | "delegate given a request that is <status> is refused, naming <status>, and nothing changes" (delivered, refused, withdrawn) | (a), (b); the Then "the command is refused, naming <status>" is undefined. |
-| requests#r72 | "a session the person gives a delegation for a request writes it, in the same reply, through delegate as the person's words with the date" | undefined session steps (the When, and both Thens); nothing tells a session to do it; (a). |
-| requests#r70 | "delegate run in the <side>'s turn writes the delegation" (upstream, asker) | (a), (b) (run). |
-| requests#r71 | "delegate writing a delegation in a request keeps the request's status and turn" | (a), (b) (run). |
+| requests#r65@0.29 | "delegate given a request that holds <before> writes the delegation given in the request, in place of any it had" (no delegation; the delegation "answer any question on line 2") | (a), (b); also undefined steps: the Givens "q1 holds no delegation" and "q1 holds the delegation …", and the Thens "q1's delegation is …" and "q1 holds no other delegation". |
+| requests#r66@0.29 | "delegate writing a delegation in a request commits the request on the current branch" | (a), (b) (run). |
+| requests#r67@0.29 | "delegate given an empty delegation is refused, and nothing changes" | the Given "q1 holds the delegation …" is undefined; (a). |
+| requests#r68@0.29 | "delegate given a request that is <status> is refused, naming <status>, and nothing changes" (delivered, refused, withdrawn) | (a), (b); the Then "the command is refused, naming <status>" is undefined. |
+| requests#r72@0.29 | "a session the person gives a delegation for a request writes it, in the same reply, through delegate as the person's words with the date" | undefined session steps (the When, and both Thens); nothing tells a session to do it; (a). |
+| requests#r70@0.29 | "delegate run in the <side>'s turn writes the delegation" (upstream, asker) | (a), (b) (run). |
+| requests#r71@0.29 | "delegate writing a delegation in a request keeps the request's status and turn" | (a), (b) (run). |
 
 The work-item has no Retires section, so it retires no deprecated scenario.
 
@@ -46,21 +46,21 @@ These are added to the researcher's set: `scripts/migrate`, `scripts/migrate_pro
 
 ## 3. Decisions
 
-1. **The refusal set is new.** `work delegate` refuses exactly delivered, refused and withdrawn. `SETTLED` (accepted, refused, withdrawn) is not reused: that would refuse an `accepted` request, which r68 does not name. Rests on requests#r68.
-2. **No side or turn check, and no status or turn change.** `work delegate` takes no other-side refusal under r16 or r55, and it changes neither status nor turn. The scenarios run it as the upstream in the asker's turn. Rests on requests#r70 and requests#r71. A delegation is not among the parts r4 and r5 give to a side, so r55 does not apply.
+1. **The refusal set is new.** `work delegate` refuses exactly delivered, refused and withdrawn. `SETTLED` (accepted, refused, withdrawn) is not reused: that would refuse an `accepted` request, which r68 does not name. Rests on requests#r68@0.29.
+2. **No side or turn check, and no status or turn change.** `work delegate` takes no other-side refusal under r16 or r55, and it changes neither status nor turn. The scenarios run it as the upstream in the asker's turn. Rests on requests#r70@0.29 and requests#r71@0.29. A delegation is not among the parts r4 and r5 give to a side, so r55 does not apply.
 3. **The same field, kept JSON-quoted.** The delegation goes in the frontmatter field `delegation`, JSON-quoted as `request` writes it at take-in. That way `supervise_answers.delegation` reads it with no change and picks up the new value at its next read. Rests on the Implementation note for r65 and r66, and on design-decision/requests-written-through-work (how `work` keeps a request is its own).
-4. **Insert when absent.** When the request has no `delegation` field, it is added to the frontmatter. Whether `_with_field` is extended or a helper is added beside it is the implementer's choice, inside `workqueue_request.py`. The take-in path must still write the field as it does today. Rests on requests#r65 (the "no delegation" example).
+4. **Insert when absent.** When the request has no `delegation` field, it is added to the frontmatter. Whether `_with_field` is extended or a helper is added beside it is the implementer's choice, inside `workqueue_request.py`. The take-in path must still write the field as it does today. Rests on requests#r65@0.29 (the "no delegation" example).
 5. **r72's instruction is carried by a new UserPromptSubmit hook, not the SessionStart hook.**
-   - The SessionStart hook is ruled out. migration-tools#r24 says it tells the session nothing in a repository with no pending upgrade step and no open initiative. A repository that keeps a request may be one of those.
+   - The SessionStart hook is ruled out. migration-tools#r24@0.29 says it tells the session nothing in a repository with no pending upgrade step and no open initiative. A repository that keeps a request may be one of those.
    - The new hook runs a `migrate` subcommand, alongside the hook commands `status --hook` and `compacting`. It reads the harness's prompt JSON on stdin and always exits 0.
    - It tells the session only when the repository keeps at least one request that is not delivered, refused or withdrawn. Its text says: when the person gives a delegation for a request outside `work request`, in that same reply, run `work delegate <request>` with the delegation as `The person, <date>: "<the person's words>"`. It names the scripts path, as `compacting`'s text does.
    - Keying on the repository's requests rather than on the prompt's wording keeps r72 independent of how the person phrases it.
-   - Rests on requests#r72 and migration-tools#r24 and #r28. The narrator observes only q1's delegation, so this is implementation.
-6. **How r72 is shown.** The precedent is supervision#r120, which is shown by the instruction a session is given.
+   - Rests on requests#r72@0.29 and migration-tools#r24@0.29 and #r28. The narrator observes only q1's delegation, so this is implementation.
+6. **How r72 is shown.** The precedent is supervision#r120@0.29, which is shown by the instruction a session is given.
    - The When step runs the UserPromptSubmit command of hooks/hooks.json in the repository, as the harness does, with the person's message as the prompt. The message names q1, the date and the words.
    - A session double then acts only on what the hook gave it. If the hook's text holds the instruction (it names `work delegate`, the same reply, and the form `The person, <date>: "<words>"`), the double runs `work delegate q1` with the delegation formed from the person's words and the message's date, and records the command it ran. If not, it runs nothing, so the scenario is red until the hook is written.
    - The first Then asserts the recorded command: `work delegate`, q1, and the delegation exactly as given. The second asserts q1's delegation read from the request.
-   - Rests on requests#r72.
+   - Rests on requests#r72@0.29.
 
 ## 4. Tests the decisions break
 

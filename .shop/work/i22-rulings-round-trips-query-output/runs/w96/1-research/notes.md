@@ -34,7 +34,7 @@ could not rename the reference a of .shop/work/i3-z/d.md: initiatives i1-x and i
 ```
 `git status` empty. Refusal is correct; wording says "reference" for all three fields; line repeats.
 
-**N5 qualified token**: i1-x/migration-tools.md and i1-x/b.md with `for: migration-tools#r26`;
+**N5 qualified token**: i1-x/migration-tools.md and i1-x/b.md with `for: migration-tools#r26@0.29`;
 `migrate upgrade` exit 0; b's w1.md reads `for: w2#r26` (rewritten).
 **N5 comment**: i1-x/item.md and b.md with block item `  - work-item/item # item`; w1.md reads
 `  - work-item/w2 # w2` (comment rewritten).
@@ -137,7 +137,7 @@ Each reproduced by the probe named; output in section 2.
 - Repro in section 2 (N4). Wording only; the refusal itself is right.
 
 ### 6.5 Qualified and commented tokens are rewritten (N5)
-- Repro in section 2: `for: migration-tools#r26` -> `for: w2#r26`; `# item` comment -> `# w2`.
+- Repro in section 2: `for: migration-tools#r26@0.29` -> `for: w2#r26`; `# item` comment -> `# w2`.
 
 ### 6.6 Initiatives with one number are numbered by directory order (F9)
 - Repro in section 2 (F9 a, b): the same tree shape gives different numbering by which directory the OS lists first.

@@ -5,7 +5,7 @@ part_of: initiative/i15
 status: formulated
 date: 2026-10-20
 argues: [analysis-tools]
-adds: [analysis-tools#r50-r52]
+adds: [analysis-tools#r50@0.29, analysis-tools#r51@0.29, analysis-tools#r52@0.29]
 ---
 
 # analysis-tools: tools size

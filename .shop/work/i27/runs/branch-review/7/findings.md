@@ -186,7 +186,7 @@ One line each, with its reproduction:
 - **F3-F5:** read at `scripts/supervise_change.py:23-30,45`. Not probed, because chained commands are refused.
 - **F6:** read at `scripts/supervise_rounds.py:107-109`.
 - **F7:** `grep -n drafts scripts/supervise_brief.py` finds only the integrate brief. r108 is in `spec/capabilities/supervision.md` (3bfdba68).
-- **F8:** read at `workqueue_request.py:87-88`. `.shop/work/i29/w175.md` is `status: claimed` with `accepts: [requests#r22]`.
+- **F8:** read at `workqueue_request.py:87-88`. `.shop/work/i29/w175.md` is `status: claimed` with `accepts: [requests#r22@0.29]`.
 - **F10:** `git log --format=%s -1 cebadf9d` says "(left uncommitted; q5)".
 - **N1:** `python3 <Scripts>/tools check --base 3cbd0c52` lists the five helper files above, 14 errors in all.
 - **N2:** `features deprecated` lists supervision @r102 and work-queue @r9.

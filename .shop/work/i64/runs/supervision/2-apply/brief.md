@@ -11,7 +11,7 @@ Base: 86582d02951f1643d542fd5f162fb3ba5fd7abc2
 Worktree: /tmp/work-run-i64-fow6jpdp/supervision-2-apply
 Branch: round/supervision-2-apply
 Answers the person gave, each with the question it answers:
-- Question: Add supervision#r221 as drafted? Line (added, from q44 line 1): "[r221] **When** a round of the kind `apply` gives in its result an answer that the drafts it applied do not hold for a glossary-proposal, `work run` shall start a new round of the kind `integrate` for the glossary-proposal." Readings: (a) Add it as drafted (recommended); (b) Do not add it; (c) Add it with different wording, which the person gives.
+- Question: Add supervision#r221@0.29 as drafted? Line (added, from q44 line 1): "[r221] **When** a round of the kind `apply` gives in its result an answer that the drafts it applied do not hold for a glossary-proposal, `work run` shall start a new round of the kind `integrate` for the glossary-proposal." Readings: (a) Add it as drafted (recommended); (b) Do not add it; (c) Add it with different wording, which the person gives.
   Answer: 2026-11-02: Reading (a): add supervision r221 as drafted (the person, 2026-11-02).
 
 Read (paths in your worktree):

@@ -1,6 +1,6 @@
 # Plan of w134: `work run` with no initiative
 
-Work-item: `.shop/work/i24-requests-and-the-context-loop/w134.md`, under supervision, accepts supervision#r66, #r81
+Work-item: `.shop/work/i24-requests-and-the-context-loop/w134.md`, under supervision, accepts supervision#r66@0.29, #r81
 and #r82. It is `blocked_by` w146, w151 and w152, and all three are now green. No `## Retires`. Its `## Answers`
 (2026-10-24) answers the two questions of the plan before this one (`runs/w134/2-plan/plan.md`). Those two questions
 were written as one `## Questions` bullet, and that bullet gets one answer: "Reading A". This plan reads that answer
@@ -15,7 +15,7 @@ r82 at :1045.
 
 ## 1. What goes green
 
-- **supervision#r66**: "`work run` started with no initiative takes every initiative that is neither done nor
+- **supervision#r66@0.29**: "`work run` started with no initiative takes every initiative that is neither done nor
   abandoned through its transitions, the initiatives side by side and one session of an initiative at a time"
   (:984). Red today: its first Given, "i1's capability-proposal p1 is drafted and i1's work-item w1 is drafted",
   has no step. The steps after it have none either: the i2-with-a-proposal Given, the i3-done and i4-abandoned
@@ -23,13 +23,13 @@ r82 at :1045.
   same-time gate rounds, on no two sessions of i1 at once, on no session for i3 or i4, and on "w1 is green, and p1
   and p2 are awaiting-answer". Beneath that, `work run` with no initiative is a usage error (notes P1: exit 2), and
   `Run` takes exactly one initiative. The gate rounds and the move to awaiting-answer now exist (w146, w152).
-- **supervision#r81**: the outline "`work run` started with no initiative, ending with <node> <status>, exits with
+- **supervision#r81@0.29**: the outline "`work run` started with no initiative, ending with <node> <status>, exits with
   an error, printing the status of each initiative it took" (:1030). Its rows are work-item w1 awaiting-answer,
   capability-proposal p1 awaiting-answer, and work-item w1 failed. Red today: every row stops at the missing step
   "i1 is started, and i1's <node> is <status>". The i2 Given and the Then "`work run` prints i1 with started and i2
   with started" are undefined too: `prints_statuses` needs ", and " before the second name. The run itself is a
   usage error, and today's output prints work-item lines only, never an initiative's status.
-- **supervision#r82**: "`work run` started with no initiative, ending with no node awaiting-answer or failed, exits
+- **supervision#r82@0.29**: "`work run` started with no initiative, ending with no node awaiting-answer or failed, exits
   successfully, printing the status of each initiative it took" (:1045). Red today: its three Givens and its print
   Then ("... and does not print i3") are undefined. "it exits successfully" exists. The run is a usage error (P1).
 - Deprecated scenarios retired: none.
@@ -77,35 +77,35 @@ Added to the set: `scripts/supervise_all.py` and `tests/scenarios/supervision_al
    first question).
 2. **Selection.** With no initiative, `work run` takes each initiative whose `initiative.md` status is neither
    `done` nor `abandoned`, as `workqueue_status.open_names` gives them, and no other. An ended initiative gets no
-   session and is not printed (supervision#r66; #r82 "does not print i3"). A `proposed` initiative is taken: its
+   session and is not printed (supervision#r66@0.29; #r82 "does not print i3"). A `proposed` initiative is taken: its
    integrate round is one of the transitions its nodes can make (r66, r79, r84).
 3. **Checks once, before anything moves.** These run once for the whole run: the refusal when started by a worker
    (r21), reading `.shop/delivery.toml` and its limit (r60, r10), the refusal on a detached HEAD, the refusal of
    uncommitted `.shop/work` (r46), and the push of unpushed commits (r54). The `agrees` check runs for each taken
-   initiative before any of them moves. A refusal changes nothing (supervision#r10). With no open initiative, the
-   run prints nothing and exits successfully, since no node is awaiting-answer or failed (supervision#r82).
+   initiative before any of them moves. A refusal changes nothing (supervision#r10@0.29). With no open initiative, the
+   run prints nothing and exits successfully, since no node is awaiting-answer or failed (supervision#r82@0.29).
 4. **Side by side, sharing one checkout.** Each taken initiative is pulled in a thread of its own by its own `Run`,
-   all of them at the same time (supervision#r66). They share four things:
+   all of them at the same time (supervision#r66@0.29). They share four things:
    - one lock over every change to the main checkout, its commits and pushes included, because there is one
      checkout and one index;
    - one worker limit for the whole run, so at most `.shop/delivery.toml`'s number of `claude -p` sessions run at
-     the same time, round sessions included (supervision#r60);
-   - one registry of what any of them wrote and has not committed, which r28's check leaves alone (supervision#r28
+     the same time, round sessions included (supervision#r60@0.29);
+   - one registry of what any of them wrote and has not committed, which r28's check leaves alone (supervision#r28@0.29
      and #r6 are about a worker's changes, not `work run`'s own);
-   - the run's worktrees, all removed when the run exits (supervision#r33).
+   - the run's worktrees, all removed when the run exits (supervision#r33@0.29).
 
    Within one initiative, the order stays as `Run.run` has it: delegated answers, then rounds one at a time, then
    drafting, then the pool. So one session of an initiative runs at a time, but for the workers that r20 and r59
-   start together (supervision#r66).
+   start together (supervision#r66@0.29).
 5. **Print.** For each taken initiative, in `open_names` order, a line names the initiative and its
    `initiative.md` status as it stands when the run ends. Under that line come its work-items' statuses, with each
    open question and each fault, as r9, r32 and r52 already require. A proposal that is awaiting-answer gets its
    open questions printed as well. The one-initiative output is unchanged (notes part 4: `prints_end`,
-   `prints_statuses` and `prints_question` stay sound). This rests on supervision#r81 and #r82 ("printing the
+   `prints_statuses` and `prints_question` stay sound). This rests on supervision#r81@0.29 and #r82 ("printing the
    status of each initiative it took").
 6. **Exit.** With no initiative given, the run exits with an error when a node of a taken initiative (a work-item
    or a capability-proposal) is `awaiting-answer` or `failed`, or when any initiative's run raised a refusal, such
-   as a faulted round (r88) or a failed push (r53). Otherwise it exits successfully (supervision#r81, #r82). The
+   as a faulted round (r88) or a failed push (r53). Otherwise it exits successfully (supervision#r81@0.29, #r82). The
    codes follow the Implementation rule (design-decision/exits-are-successful-or-errors): 1 when a node is failed
    or a refusal ended an initiative's run, 3 when a node is awaiting-answer and nothing is failed, and 0 otherwise.
    A refusal is said on stderr with its initiative's name, after the other initiatives have ended. One initiative's

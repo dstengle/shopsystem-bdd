@@ -7,7 +7,7 @@
 % `model check` and `model rules` read them from the solve (design-model-check r2, r65).
 % The requirement language (GF parse, telingo) is outside this file: it joins the graph by the facts parsed/unparsed/
 % ambiguous, member_of, in(G, C), generates and restates (C29). Rules over facts the codified reader emits are
-% `#defined` and silent until it emits them. A clause marked LEGACY reads the 0.29 facts of an uncodified capability.
+% `#defined` and silent until it emits them. A file without `language: codified-1` is not read: it is v_p0.
 
 % ---------------------------------------------------------------- inputs
 #defined node/2.      #defined narrator/2.   #defined group/2.     #defined external/1.
@@ -15,7 +15,7 @@
 #defined summary/2.   #defined revisit_signal/2.   #defined fileset/2.   #defined escalation/2.
 #defined req_id/3.    #defined retired_id/2.
 #defined orders/2.    #defined in/2.         #defined seam/3.      #defined pattern/2.
-#defined pins/3.      #defined has_req/2.    #defined has_sc/2.    #defined rests_on/2.
+#defined pins/3.      #defined has_req/2.    #defined rests_on/2.
 #defined supersedes/2.   #defined serves/2.  #defined using/3.     #defined source/2.
 #defined part_of/2.   #defined of_job/2.     #defined enters/2.    #defined crosses/2.
 #defined resolution/2.   #defined at/2.
@@ -46,6 +46,7 @@
 #defined retired_group/2.         % retired_group(C, N): g<n> is in C's retired:
 #defined u_id/2.                  % u_id(U, N): universal condition U is [U<n>]
 #defined codified/1.              % codified(C): C's file is language: codified-1
+#defined uncodified/1.            % uncodified(F): spec file F has no language: codified-1
 #defined logic_only/1.            % logic_only(G): G has no Steps linearisation, so no scenario
 #defined pre/2.                   % pre(Q, Key): Q's trigger and condition trees, normalised (none when ubiquitous)
 #defined parsed/1.  #defined unparsed/2.  #defined ambiguous/1.
@@ -84,9 +85,8 @@ has_about(R)    :- about(R, _).          has_narrator(C) :- narrator(C, _).
 has_cap(W)      :- cap_of_wi(W, _).      has_check(W)   :- check(W, _).
 has_accepts(W)  :- accepts(W, _).        % C17: a requirement or a group (a group means its members)
 has_summary(D)  :- summary(D, _).        has_req_id(Q)  :- req_id(Q, _, _).
-has_sc_of(S)    :- has_sc(_, S).         has_sc_q(Q)    :- has_sc(Q, _).
 generated(S)    :- generates(_, S).      has_scenario(G) :- generates(G, _).
-grouped(Q)      :- member_of(Q, _).      legacy_req(C, Q) :- has_req(C, Q), not grouped(Q).
+grouped(Q)      :- member_of(Q, _).
 has_any(X)      :- has_req(_, X).        has_any(G)     :- node(G, "requirement-group"), in(G, _).
 group_of(Q, G)  :- member_of(Q, G).      group_of(G, G) :- node(G, "requirement-group").
 has_group_id(G) :- group_id(G, _, _).    has_u_id(U)    :- u_id(U, _).
@@ -104,7 +104,6 @@ v2(C, J) :- serves(C, J),       nonstanding(C).    v2(C, J) :- serves(C, J),    
 v2(C, D) :- using(C, _, D),     nonstanding(C).    v2(C, D) :- using(C, _, D),     nonstanding(D).
 v2(C, D) :- rests_on(C, D),     nonstanding(C).    v2(C, D) :- rests_on(C, D),     nonstanding(D).
 v2(C, Q) :- has_req(C, Q),      nonstanding(C).    v2(C, Q) :- has_req(C, Q),      nonstanding(Q).
-v2(Q, S) :- has_sc(Q, S),       nonstanding(Q).    v2(Q, S) :- has_sc(Q, S),       nonstanding(S).
 v2(Q, G) :- member_of(Q, G),    nonstanding(Q).    v2(Q, G) :- member_of(Q, G),    nonstanding(G).
 v2(G, S) :- generates(G, S),    nonstanding(G).    v2(G, S) :- generates(G, S),    nonstanding(S).
 v2(A, B) :- supersedes(A, B),   nonstanding(A).    v2(A, B) :- supersedes(A, B),   nonstanding(B).
@@ -200,7 +199,6 @@ label("v15f", "a formulated proposal leaves a group without a scenario").
 named(P, X) :- adds(P, X).   named(P, X) :- changes(P, X).
 v15f(P)     :- status(P, "formulated"), named(P, X), group_of(X, G), in(G, C), not has_scenario(G), not logic_only(G),
                not group(C, "guarantees").
-v15f(P)     :- status(P, "formulated"), named(P, Q), legacy_req(C, Q), not has_sc_q(Q), not group(C, "guarantees").   % LEGACY
 label("v15g", "a group has no id, or shares one").
 v15g(G)     :- node(G, "requirement-group"), not has_group_id(G).
 v15g(G)     :- group_id(G, C, N), group_id(G2, C, N), G != G2.
@@ -235,13 +233,11 @@ v_b3(T) :- node(T, "job-thread"), part_of(P, T), node(P, K), K = ("capability-pr
 
 % scenarios: one per group, generated (C4, C6, C28)
 label("v_s1", "a scenario names no group").
-v_s1(S) :- node(S, "scenario"), not generated(S), not has_sc_of(S).
-label("v_s2", "a scenario is generated from more than one group, or names more than one requirement").
+v_s1(S) :- node(S, "scenario"), not generated(S).
+label("v_s2", "a scenario is generated from more than one group").
 v_s2(S) :- generates(G1, S), generates(G2, S), G1 != G2.
-v_s2(S) :- has_sc(Q1, S), has_sc(Q2, S), Q1 != Q2.                                         % LEGACY
-label("v_s3", "a group or requirement has no scenario").
+label("v_s3", "a group has no scenario").
 v_s3(G) :- node(G, "requirement-group"), in(G, C), not has_scenario(G), not logic_only(G), not group(C, "guarantees").
-v_s3(Q) :- legacy_req(C, Q), not has_sc_q(Q), not group(C, "guarantees").                  % LEGACY
 label("v_s4", "a requirement of a codified capability is in no group, or in two").
 v_s4(Q) :- req_id(Q, C, _), codified(C), not grouped(Q).
 v_s4(Q) :- member_of(Q, G1), member_of(Q, G2), G1 != G2.
@@ -300,9 +296,8 @@ v18d(X) :- foreign(X), not raised_for_any(X).
 % A requirement is in its capability's context; a scenario in its group's or requirement's. A scenario that names
 % neither (v_s1 reports it) is read in the repository's own, the one bounded-context.
 ctx_of(Q, X) :- has_req(C, Q), in(C, X).
-ctx_of(S, X) :- has_sc(Q, S), ctx_of(Q, X).
 ctx_of(S, X) :- generates(G, S), in(G, C), in(C, X).
-ctx_of(S, X) :- node(S, "scenario"), not has_sc_of(S), not generated(S), node(X, "bounded-context").
+ctx_of(S, X) :- node(S, "scenario"), not generated(S), node(X, "bounded-context").
 label("v_t1", "a word the glossary avoids").
 v_t1(X, W, T) :- mentions(X, W), avoid(T, W), term_of(T, Ctx), ctx_of(X, Ctx).
 label("v_t2", "a term has two entries").
@@ -318,6 +313,9 @@ label("v_t6", "two terms are written the same").
 v_t6(T1, T2)  :- linearises(T1, L), linearises(T2, L), T1 < T2.
 
 % ---------------------------------------------------------------- the parse (C2, C25)
+% Every file of the spec is codified (§13.4): the 0.29 reader is gone, so `migrate upgrade` converts one that is not.
+label("v_p0", "a spec file is not codified (no `language: codified-1`): run `migrate upgrade`").
+v_p0(F)      :- uncodified(F).
 % `model` parses every statement of a codified capability and of spec/universal.md in the context's grammar.
 label("v_p1", "a requirement does not parse").
 v_p1(Q, Why) :- unparsed(Q, Why).
@@ -325,15 +323,6 @@ label("v_p2", "a requirement parses to more than one tree").
 v_p2(Q)      :- ambiguous(Q).
 label("v_p3", "a line of a group's given block does not parse in the step grammar").
 v_p3(G, L)   :- given_unparsed(G, L).
-
-% ---------------------------------------------------------------- EARS lines (LEGACY: an uncodified capability, C25)
-% scripts/model matches each Behaviour line (a table row by its lead sentence) and gives ears_other(Q) for a line
-% in none of EARS's patterns and ears_many(Q) for one with more than one "shall" or more than one sentence.
-#defined ears_other/1.  #defined ears_many/1.
-label("v_e1", "a Behaviour line is not in one of EARS's patterns").
-label("v_e2", "a Behaviour line has more than one \"shall\" or more than one sentence").
-v_e1(Q) :- ears_other(Q).
-v_e2(Q) :- ears_many(Q).
 
 % ---------------------------------------------------------------- warnings
 label("w_unserved_cap", "a capability serves no job").
@@ -366,7 +355,6 @@ w_stale_proposed(I) :- status(I, "proposed"), node(I, "initiative"), age(I, Days
 #show v_d1/1. #show v_d2/1. #show v_d3/1. #show v_d4/2. #show v_d5/1.
 #show v16a/1. #show v17/1. #show v18a/2. #show v18b/2. #show v18c/2. #show v18d/1.
 #show v_t1/3. #show v_t2/1. #show v_t3/1. #show v_t4/1. #show v_t5/1. #show v_t6/2.
-#show v_p1/2. #show v_p2/1. #show v_p3/2.
-#show v_e1/1. #show v_e2/1.
+#show v_p0/1. #show v_p1/2. #show v_p2/1. #show v_p3/2.
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
 #show w_many_requests/1. #show w_stale_intake/1. #show w_stale_proposed/1.

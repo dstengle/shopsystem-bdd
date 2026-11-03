@@ -1,6 +1,6 @@
-# Research of w135: supervision#r67, intake round for an upstream request
+# Research of w135: supervision#r67@0.29, intake round for an upstream request
 
-Brief: `.shop/work/i24-requests-and-the-context-loop/w135.md`, accepts supervision#r67, under supervision, blocked_by w127.
+Brief: `.shop/work/i24-requests-and-the-context-loop/w135.md`, accepts supervision#r67@0.29, under supervision, blocked_by w127.
 Accepted scenario (1 outline, 2 examples): features/supervision.feature:834-846, "a request this context is the upstream of that is <status> is given to an intake round".
 Tools: `tools refs` ran (names only); `tools tests-of` refused, no map (`tools map` not built): every "tests that execute" below is `by search`. `tools untested` not run.
 Scripts used for probes: the worktree's `scripts/work` (same code as base). This session is itself a worker of w135's run: `SHOPSYSTEM_WORK_RUN_WORKER` is set, so probes clear it.
@@ -12,7 +12,7 @@ Command: `python3 -m pytest -q -n 0 -rfEx "tests/scenarios/test_supervision.py::
 - Failure, both examples: `StepDefinitionNotFoundError` for the first Given, `a request q1 of which this context is the upstream, <status>, its turn the upstream's, with two lines` (feature line 837).
 - Missing: no step text in `tests/scenarios/` matches it (search by text: "of which this context" and "upstream, " find nothing). The Given, the intake round's "writes a line outcome ... passes the turn" step (line 838), and the Then "an `initiative-round` session of the kind intake was started, given q1" (line 840) and "each of q1's lines has a line outcome" (line 841) are all unbound. Search for "initiative-round" in tests/scenarios finds none.
 - Code behind it, missing: `scripts/supervise.py:run` (and `Run.run`, line 182) starts only work-item stages of one initiative. Nothing in `scripts/supervise*.py` reads requests (search: `request|upstream|intake` in `scripts/supervise*.py` finds only `supervise_faults.py:21`, "upstream's remote"). No intake kind exists: `agents/initiative-round.md` jobs are `integrate`, `gate`, `apply`, `formulate` only (read).
-- Second red cause, not in the scenario's first failure but on its When: `scripts/work:147` (`r.add_argument("initiative")`) makes `work run` with no initiative a usage error (probe P3). The When "the person runs `work run`" is the r66 path, owned by w134 (accepts supervision#r66, r81, r82; status researched). See Questions.
+- Second red cause, not in the scenario's first failure but on its When: `scripts/work:147` (`r.add_argument("initiative")`) makes `work run` with no initiative a usage error (probe P3). The When "the person runs `work run`" is the r66 path, owned by w134 (accepts supervision#r66@0.29, r81, r82; status researched). See Questions.
 
 ## 2. What the system answers today
 

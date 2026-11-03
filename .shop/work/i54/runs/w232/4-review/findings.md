@@ -1,4 +1,4 @@
-# Review of w232 (work-queue#r59, #r60, #r61)
+# Review of w232 (work-queue#r59@0.29, #r60, #r61)
 
 **Verdict: DONE_WITH_CONCERNS.** One Important finding is triaged fix now: `work show <request>` leaves out every line of the request that has no line outcome yet, so a request still waiting on outcomes is shown with none of its lines. No change under `features/`, and no test was removed or weakened outside the plan's list.
 
@@ -34,8 +34,8 @@ The report's `## Tests changed under an allowance` says "none", and none is need
 - **What is wrong:** `outcome = parts["Outcomes"].get(number); if outcome is not None: print(...)` prints a line only when it has an outcome.
   - A request whose lines do not all have outcomes yet is shown with only some of its lines.
   - A request with no outcomes at all is shown with none.
-  - requests#r17 names this state: a turn passed to the asker "with a line that has no line outcome" (`awaiting-asker`). So does every request before the upstream writes its outcomes.
-- **Why it matters:** work-queue#r59 says `work show <request>` "shall print ... its lines with their line outcomes". `show` is how a session finds out where a request stands, and here it gives a wrong answer: a request with lines appears to have none. The report gives this as an open case it decided ("Line with no outcome (not printed)"). The plan left that case to be named, not chosen.
+  - requests#r17@0.29 names this state: a turn passed to the asker "with a line that has no line outcome" (`awaiting-asker`). So does every request before the upstream writes its outcomes.
+- **Why it matters:** work-queue#r59@0.29 says `work show <request>` "shall print ... its lines with their line outcomes". `show` is how a session finds out where a request stands, and here it gives a wrong answer: a request with lines appears to have none. The report gives this as an open case it decided ("Line with no outcome (not printed)"). The plan left that case to be named, not chosen.
 - **Fix:** print every line under `## Lines`, with its outcome where it has one and a stated "no line outcome" where it has none (for example `line 2: (no outcome) - <text>`). Add a test with a line that has no outcome.
 - **Reproduction (by reading):** take a request file with `## Lines` 1. and 2. and `## Outcomes` holding only `1. accepted`. `request_parts` iterates the Lines, finds `parts["Outcomes"].get("2")` is None, and prints nothing for line 2.
 

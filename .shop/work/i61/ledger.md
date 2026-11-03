@@ -1,9 +1,9 @@
-- 2026-10-29: integrate round 1: adds spec-integration#r58, spec-integration#r59, supervision#r212, supervision#r213; changes none; removes none; 5 questions; 1 cut sentence; .shop/scratch/1-integrate/drafts/round-1
+- 2026-10-29: integrate round 1: adds spec-integration#r58@0.29, spec-integration#r59@0.29, supervision#r212@0.29, supervision#r213@0.29; changes none; removes none; 5 questions; 1 cut sentence; .shop/scratch/1-integrate/drafts/round-1
 - 2026-10-29: gate round 1: 2 questions (spec-integration r58, r59)
 - 2026-10-29: gate round 1: 3 questions
 - 2026-10-29 22:55: compacted
 - 2026-10-30: apply round 4 spec-integration: applied r59 under the delegation; r58 not applied, the answer on r46 asks for a changed r46 the drafts do not hold
-- 2026-10-30: integrate round 5 spec-integration: adds none; changes spec-integration#r46; removes none; 0 questions; 0 cut sentences; .shop/scratch/5-integrate/drafts/round-1
+- 2026-10-30: integrate round 5 spec-integration: adds none; changes spec-integration#r46@0.29; removes none; 0 questions; 0 cut sentences; .shop/scratch/5-integrate/drafts/round-1
 - 2026-10-30: gate round 6: 1 question
 - 2026-11-02 20:19: compacted
 - 2026-11-03 00:20: compacted

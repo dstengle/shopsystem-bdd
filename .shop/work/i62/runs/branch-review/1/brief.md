@@ -389,7 +389,7 @@ Output:
     7cf948c9d6c2632b117ccf847ba8c936d0a89db8 none spec: supervision r211 (delegation read at the moment), approved 2026-10-29 under the person's delegation (work run answered the recommended reading)
     aaf27a1938317ea3f381a9d700d818ab40f881b1 none work note: i60
     9d33b055bbb4826ddcf90128240f49d79b292ed6 none work: supervision awaiting-answer -> approved
-    698c1d4401e85ac6709bcb371db90da94baafe6c none Formulate supervision#r211: the delegation read as the request has it at that moment
+    698c1d4401e85ac6709bcb371db90da94baafe6c none Formulate supervision#r211@0.29: the delegation read as the request has it at that moment
     89bced6c6079bcc9d97ad3bf2d6153196c5a2421 none work note: i60
     2d27c7184660b74ea0d495e84b2227bb358d6887 none work: supervision approved -> formulated
     6b7926df135a5da0951201f6cb9a724210fde131 none work add: i60/w233 drafted
