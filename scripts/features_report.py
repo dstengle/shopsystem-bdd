@@ -1,7 +1,7 @@
-"""scripts/features' reports on feature files: count, list, verify-moved and deprecated."""
+"""scripts/features' reports on feature files: count, list and deprecated."""
 import json
 
-from features_gherkin import REQ_TAG, load, natural
+from features_gherkin import REQ_TAG, natural
 
 
 def cmd_count(args, files):
@@ -27,45 +27,6 @@ def cmd_list(args, files):
         return 0
     for path, title in hits:
         print("%s: %s" % (path, title))
-    return 0
-
-
-def summarise(files):
-    by_title = {}
-    for _, f in files:
-        for sc in f.scenarios:
-            by_title.setdefault(sc.title, []).append((f, sc))
-    return by_title
-
-
-def cmd_verify(args, files):
-    before = summarise(load(args.from_dir))
-    after = summarise(files)
-    out = []
-    for label, side in (("before", before), ("after", after)):
-        out += ["duplicate title %s: %s" % (label, t) for t in sorted(side) if len(side[t]) > 1]
-    out += ["missing: " + t for t in sorted(set(before) - set(after))]
-    out += ["added: " + t for t in sorted(set(after) - set(before))]
-    matched = 0
-    for title in sorted(set(before) & set(after)):
-        if len(before[title]) > 1 or len(after[title]) > 1:
-            continue
-        (bf, bs), (af, a_s) = before[title][0], after[title][0]
-        differs = []
-        if bf.effective_tags(bs) != af.effective_tags(a_s):
-            differs.append("tags")
-        if bf.description(bs) != af.description(a_s):
-            differs.append("description")
-        if bf.background_steps() + bf.steps(bs) != af.background_steps() + af.steps(a_s):
-            differs.append("steps")
-        if differs:
-            out.append("changed: %s (%s)" % (title, ", ".join(differs)))
-        else:
-            matched += 1
-    if out:
-        print("\n".join(out))
-        return 1
-    print("%d scenarios match" % matched)
     return 0
 
 

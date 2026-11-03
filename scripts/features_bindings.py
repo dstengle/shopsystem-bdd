@@ -1,9 +1,9 @@
-"""scripts/features' reading of the tests that bind scenarios: bindings (with --unbound) and rebind."""
+"""scripts/features' reading of the tests that bind scenarios: bindings (with --unbound)."""
 import ast
 import json
 import os
 
-from features_gherkin import Refused, locate
+from features_gherkin import Refused
 
 
 def test_modules(tests):
@@ -143,28 +143,3 @@ def cmd_bindings(args, files):
         print(unbound_line(*one))
     return 1 if lost or unbound else 0
 
-
-def cmd_rebind(args, files):
-    locate(files, args.new, args)
-    edits = {}
-    only = os.path.realpath(args.file) if args.file else None
-    for path, source, feature, title in binding_calls(args.tests):
-        if title.value != args.old:
-            continue
-        if only and (feature is None or os.path.realpath(os.path.join(args.dir, feature)) != only):
-            continue
-        if title.lineno != title.end_lineno:
-            raise Refused("%s:%d: the title is written over several lines" % (path, title.lineno))
-        edits.setdefault(path, (source, []))[1].append(title)
-    literal = ('"%s"' % args.new.replace("\\", "\\\\").replace('"', '\\"')).encode()
-    count = 0
-    for path, (source, nodes) in edits.items():
-        lines = source.split(b"\n")
-        for node in sorted(nodes, key=lambda n: (n.lineno, n.col_offset), reverse=True):
-            line = lines[node.lineno - 1]
-            lines[node.lineno - 1] = line[:node.col_offset] + literal + line[node.end_col_offset:]
-            count += 1
-        with open(path, "wb") as handle:
-            handle.write(b"\n".join(lines))
-    print("%d binding%s rebound" % (count, "" if count == 1 else "s"))
-    return 0
