@@ -144,3 +144,74 @@ def test_a_move_to_a_status_outside_the_lifecycle_is_refused(tmp_path):
     else:
         raise AssertionError("moved to finished")
     assert "status: drafted" in item.read_text() and not (item.parent / "log.jsonl").exists()
+
+
+GENERATED = """# generated from spec/capabilities/thing.md by features generate; do not edit
+Feature: Thing
+
+  @g1 @r1
+  Scenario: it answers
+    Given nothing
+
+  @g2
+  Scenario: it waits
+    Given nothing
+"""
+CODIFIED = """---
+id: capability/example.org/fixture/thing
+group: service
+language: codified-1
+---
+
+# Thing
+
+## Behaviour
+
+### [g1] it answers
+- [r1] `thing` shall answer.
+
+### [g2] it waits
+- [r2] `thing` shall wait.
+- [r3] `thing` shall wait again.
+
+### [g3] it holds
+- [r4] `thing` shall hold at most `workers` worker slots at a time.
+"""
+
+
+def codified(tmp_path, accepts, retires=False):
+    repo = consumer(tmp_path, accepts)
+    (repo / "features" / "thing.feature").write_text(GENERATED)
+    (repo / "spec" / "capabilities").mkdir(parents=True)
+    (repo / "spec" / "capabilities" / "thing.md").write_text(CODIFIED)
+    if retires:
+        item = repo / ".shop/work/i1/w1.md"
+        item.write_text(item.read_text() + "\n# thing: retire thing\n\n## Retires\n\n- \"the code\" (thing @r9)\n")
+    return repo
+
+
+def test_a_group_accepted_runs_its_scenario(tmp_path):
+    done = pytest(codified(tmp_path, "thing#g2"), "--work-item", "w1")
+    assert done.returncode == 0 and "1 passed, 1 deselected" in done.stdout, done.stdout + done.stderr
+
+
+def test_a_range_of_groups_runs_each_scenario(tmp_path):
+    done = pytest(codified(tmp_path, "thing#g1-g2"), "--work-item", "w1")
+    assert done.returncode == 0 and "2 passed" in done.stdout, done.stdout + done.stderr
+
+
+def test_a_requirement_runs_the_scenario_of_its_group_in_the_spec(tmp_path):
+    done = pytest(codified(tmp_path, "thing#r3"), "--work-item", "w1")
+    assert done.returncode == 0 and "1 passed, 1 deselected" in done.stdout, done.stdout + done.stderr
+
+
+def test_a_requirement_of_a_group_with_no_scenario_is_like_a_guarantee(tmp_path):
+    done = pytest(codified(tmp_path, "thing#r4"), "--work-item", "w1")
+    assert done.returncode == 0 and "2 deselected" in done.stdout, done.stdout + done.stderr
+
+
+def test_a_work_item_that_only_retires_runs_the_whole_suite(tmp_path):
+    repo = codified(tmp_path, "", retires=True)
+    (repo / "test_probe.py").write_text("def test_probe():\n    pass\n")
+    done = pytest(repo, "--work-item", "w1")
+    assert done.returncode == 0 and "3 passed" in done.stdout, done.stdout + done.stderr

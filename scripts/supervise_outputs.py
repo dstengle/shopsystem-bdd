@@ -1,7 +1,14 @@
 """What a stage's result must give for `work run` to take its work as done (supervision r131, r132, design-decision
 0038): the stage's output, and the question that says it is missing. The one word a result's status gives decides no
-transition (r133). Standard library only."""
+transition (r133). An integrate round's output is codified drafts: `uncodified` parses each drafted requirement and
+runs the logic check on the spec with the drafts (the GF conversion's design §13). Standard library, and the grammar
+modules once drafts are checked."""
 import re
+import shutil
+import tempfile
+from pathlib import Path
+
+UNCODIFIED = "The drafted requirements are refused by the grammar or the logic check"
 
 
 def given(data, field):
@@ -38,38 +45,14 @@ def gives_nothing(data):
     return says(data, "nothing_applied") and data.get("changes") in (None, [])
 
 
-def formulated_nothing(data):
-    """Whether a formulate round's result gives that it formulated nothing, because the proposal's answers change lines not
-    in spec/: its `nothing_formulated` field, with no question (r149, r153)."""
-    return says(data, "nothing_formulated")
-
-
 def sent_back(kind, data):
     """Whether the result `data` of a round of `kind` sends the proposal back to integration: an apply round that gives
-    an answer its drafts do not hold, as `unheld_answers` or as `nothing_applied` (r150), or a formulate round that
-    formulated nothing (r149)."""
-    if kind == "formulate":
-        return formulated_nothing(data)
+    an answer its drafts do not hold, as `unheld_answers` or as `nothing_applied` (r150). A formulate round is a script
+    and sends nothing back (design §13.1)."""
     if kind == "apply":
         unheld = data.get("unheld_answers") if isinstance(data, dict) else None
         return gives_nothing(data) or (isinstance(unheld, list) and bool(unheld))
     return False
-
-
-def scenario_ids(text):
-    """The requirement ids (`r4`) the non-deprecated scenarios of the feature file `text` are tagged with."""
-    found, tags = set(), []
-    for line in text.splitlines():
-        line = line.strip()
-        if line.startswith("@"):
-            tags += line.split()
-        elif line.startswith(("Scenario:", "Scenario Outline:")):
-            if "@deprecated" not in tags:
-                found.update(t[1:] for t in tags)
-            tags = []
-        elif line and not line.startswith("#"):
-            tags = []
-    return found
 
 
 def is_guarantees(root, capability):
@@ -79,25 +62,95 @@ def is_guarantees(root, capability):
     return bool(head) and re.search(r"(?m)^group: guarantees$", head[0]) is not None
 
 
-def unformulated(root, ids):
-    """The ids (`thing#r4`) of `ids` with no non-deprecated scenario in features/<capability>.feature under `root`: a
-    formulate round's output is a scenario for each requirement its proposal adds or changes (r132), except those of a
-    guarantees capability, which has no scenarios (design-decision 0065)."""
-    lacking, read = [], {}
-    for each in ids:
-        if "#r" not in each:     # a term/<term> id is no requirement
-            continue
-        capability, _, number = each.partition("#")
-        if is_guarantees(root, capability):
-            continue
-        if capability not in read:
-            path = root / "features" / (capability + ".feature")
-            read[capability] = scenario_ids(path.read_text()) if path.is_file() else set()
-        if number not in read[capability]:
-            lacking.append(each)
-    return lacking
-
-
 def question(role, what):
     """The question that names `what` as missing from the result of the stage of `role`, which gave no question."""
     return "%s is missing: the %s's result gave no question and does not give it" % (what, role)
+
+
+def overlay(live, draft):
+    """The text of a spec file `live` with the drafted sections of `draft` in place: a drafted frontmatter replaces
+    the file's, a drafted `## <heading>` section replaces the one of that heading or is added after the last. A draft
+    with a frontmatter and a `# ` title is a whole file."""
+    def split(text):
+        head, body = "", text
+        if text.startswith("---\n") and "\n---\n" in text[4:]:
+            end = text.index("\n---\n", 4) + 5
+            head, body = text[:end], text[end:]
+        parts = re.split(r"(?m)^(?=## )", body)
+        return head, parts[0], {p.split("\n", 1)[0].strip(): p for p in parts[1:]}, [p.split("\n", 1)[0].strip() for p in parts[1:]]
+    d_head, d_lead, d_secs, d_order = split(draft)
+    if not live or (d_head and re.search(r"(?m)^# ", d_lead)):
+        return draft
+    head, lead, secs, order = split(live)
+    for name in d_order:
+        if name not in secs:
+            order.append(name)
+        secs[name] = d_secs[name]
+    body = "".join(secs[n].rstrip("\n") + "\n\n" for n in order)
+    return (d_head or head) + lead.rstrip("\n") + "\n\n" + body.rstrip("\n") + "\n"
+
+
+def drafted(root, drafts, into):
+    """`spec/` of `root` copied to `into`, each round's drafts under `drafts` (`round-<n>/spec/...`) laid over it in
+    round order; the capability names drafted."""
+    root, into = Path(root), Path(into)
+    shutil.copytree(root / "spec", into / "spec", dirs_exist_ok=True)
+    rounds = sorted((p for p in Path(drafts).glob("round-*") if p.name[6:].isdigit()), key=lambda p: int(p.name[6:]))
+    names = []
+    for rnd in rounds:
+        for path in sorted((rnd / "spec").rglob("*.md")):
+            target = into / path.relative_to(rnd)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(overlay(target.read_text() if target.is_file() else "", path.read_text()))
+            if path.parent.name == "capabilities" and path.stem not in names:
+                names.append(path.stem)
+    return names
+
+
+def uncodified(root, drafts):
+    """What refuses the codified drafts under `drafts` (an integrate round's drafts path): a file problem
+    (`<cap>.md: ...`), a requirement that does not parse in the context's grammar with the drafted terms
+    (`<cap>#r<n>: ...` with the hint), and each L1 or L3 of the logic check on the spec with the drafts. A draft of a
+    capability that is not codified is not checked. Empty when nothing refuses them."""
+    if not Path(drafts).is_dir():
+        return []
+    import spec_grammar
+    import spec_read
+    import spec_solve
+    tmp = Path(tempfile.mkdtemp(prefix="uncodified-"))
+    try:
+        names = drafted(root, drafts, tmp)
+        caps = [n for n in names if spec_read.codified(tmp / "spec" / "capabilities" / ("%s.md" % n))]
+        refused = []
+        for name in caps:
+            cap = spec_read.capability(tmp / "spec" / "capabilities" / ("%s.md" % name))
+            refused += ["%s.md: %s" % (name, p) for p in cap.problems]
+            for req in (r for g in cap.groups for r in g.requirements):
+                parsed = spec_grammar.parse(tmp, req.text)
+                if parsed.tree is None:
+                    hint = spec_grammar.hint(tmp, req.text)
+                    refused.append("%s#%s: %s; parsed up to: %s; nearest words: %s" % (
+                        name, req.id, parsed.refusal, hint["prefix"] or "nothing", ", ".join(hint["near"]) or "none"))
+        if refused:
+            return refused
+        return ["%s %s" % (f.code, f.text) for name in caps for f in spec_solve.run(tmp, name)
+                if f.code in spec_solve.ERRORS]
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def uncodified_question(refused, send_backs):
+    """The question on drafts still refused after `send_backs` send-backs, else None; its answer goes back to
+    integration."""
+    if not refused:
+        return None
+    return ("%s after %d send-backs: %s. Readings: reword the refused requirements as your answer says, and integration "
+            "drafts them again (recommended); or drop them from the proposal." % (UNCODIFIED, send_backs, "; ".join(refused)))
+
+
+def refused_proposals(paths, refused):
+    """The names of the capability-proposals among `paths` that a refusal names, else of all of them."""
+    mine = [p.stem for p in map(Path, paths) if p.suffix == ".md" and p.is_file()
+            and re.search(r"(?m)^kind: capability-proposal$", p.read_text())]
+    named = [m for m in mine if any(r.startswith((m + "#", m + ".md")) or (" %s#" % m) in r for r in refused)]
+    return named or mine

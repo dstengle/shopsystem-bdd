@@ -1,8 +1,10 @@
 """`work run`'s rounds for a capability-proposal (capability supervision r70, r71, r80, r83, r91, r95, r96): an
 `awaiting-answer` proposal whose every question has an answer is given to an apply round and, once that has ended,
-approved; an approved one is given to a formulate round and, once that has ended, formulated. The integrate round of a
-started initiative with neither proposal nor work-item ends in its change list's drafted proposals (r91; r96 refuses a
-result with no change list). Integrate, apply and formulate rounds run one at a time across initiatives, under the lock
+approved; an approved one is given to a formulate round, a script with no session (supervise_formulate), and once that
+has ended, formulated. The integrate round of a started initiative with neither proposal nor work-item ends in its
+change list's drafted proposals (r91; r96 refuses a result with no change list), once its codified drafts parse and
+pass the logic check: what refuses them is sent back to the round at most twice, then asked on the proposals (the GF
+conversion's design §13). Integrate, apply and formulate rounds run one at a time across initiatives, under the lock
 `round_lock` (r95). Standard library only; a part of supervise.Run."""
 import json
 import shutil
@@ -15,15 +17,17 @@ import workqueue_done
 import workqueue_request
 from supervise_change import BadChanges, Changes, entries
 from supervise_faults import Fault, ended_of, fault_of
+from supervise_formulate import Formulate
 from supervise_raise import Raises
 from supervise_worker import GitFailed, git
 from workqueue import Refused
 
 SERIAL = ("integrate", "apply", "formulate")     # the rounds one at a time across initiatives (r95)
+SEND_BACKS = 2     # an integrate round's drafts sent back for what refuses them, then asked (design §13)
 AFTER ={"drafted": ("gate", "awaiting-answer"), "awaiting-answer": ("apply", "approved"), "approved": ("formulate", "formulated")}
 
 
-class Rounds(Changes, Raises):
+class Rounds(Changes, Raises, Formulate):
     """The part of supervise.Run that runs a capability-proposal's rounds, one session at a time."""
 
     def proposals(self):
@@ -64,21 +68,19 @@ class Rounds(Changes, Raises):
         return None
 
     def route(self, name, status):
-        """(round, status after) of a proposal at `status`. An answered proposal goes back to the round that asked: its
-        last move into awaiting-answer from approved is a formulate round's question (r116), from drafted a gate round's
-        (r70), and with no such move, a gate round's."""
-        if status in ("awaiting-answer", "approved") and self.sent_back(name):     # r149, r150: back to integration
+        """(round, status after) of a proposal at `status`. An answered proposal goes back to the round that asked: a
+        question on drafts the grammar or the logic check refused goes back to integration (design §13), as does an
+        apply round's result that sends it back (r150); any other answered question is a gate round's (r70)."""
+        if status in ("awaiting-answer", "approved") and self.sent_back(name):     # r150: back to integration
             return ("integrate", "drafted")
-        if status == "awaiting-answer":
-            moves = [l for l in workqueue.logged(self.dir / "log.jsonl", self.root)
-                     if l.get("work-item") == name and l.get("after") == "awaiting-answer"]
-            if moves and moves[-1].get("before") == "approved":
-                return ("formulate", "formulated")
+        asked = self.held(name, "Questions") if status == "awaiting-answer" else []
+        if asked and " ".join(l.strip() for l in asked[-1])[2:].startswith(supervise_outputs.UNCODIFIED):
+            return ("integrate", "drafted")
         return AFTER[status]
 
     def sent_back(self, name):
-        """Whether the proposal's latest round, integrate rounds that failed aside, is an apply or formulate round whose
-        result sends the proposal back to integration (r149, r150)."""
+        """Whether the proposal's latest round, integrate rounds that failed aside, is an apply round whose result sends
+        the proposal back to integration (r150)."""
         runs = self.dir / "runs" / name
         stages = sorted((p for p in runs.iterdir() if p.is_dir() and p.name.split("-")[0].isdigit()),
                         key=lambda p: int(p.name.split("-")[0])) if runs.is_dir() else []
@@ -125,10 +127,14 @@ class Rounds(Changes, Raises):
             before = workqueue.agrees(self.root, self.initiative, name)
         label, _ = self.run_dir(name, kind)
         branch = "round/%s-%s" % (name, label)
-        tree, record = None, ""
+        tree, record, refused = None, "", []
         try:
             tree = self.worktree(name, "%s-%s" % (name, label), branch)
-            data, failure = self.worker(name, kind, "initiative-round", tree, branch)
+            if kind == "formulate":     # design §13: a script, no session
+                data, failure = self.formulate_script(name, tree, label)
+            else:
+                data, failure = self.worker(name, kind, "initiative-round", tree, branch)
+            label, data, failure, refused = self.codified(name, kind, label, tree, branch, data, failure)
             if failure:
                 raise Fault(failure)
             self.remove(tree)
@@ -182,19 +188,7 @@ class Rounds(Changes, Raises):
                 return
             if not asked and not applied:     # r131: neither questions nor its output; the missing output is asked
                 asked = ["The apply round of %s gave no change list; which capabilities' lines did it apply?" % name]
-        if kind == "formulate" and supervise_outputs.formulated_nothing(data):     # r149, r153: its output; r152: no move
-            with self.lock:
-                self.commit(name, before, before)
-            return
-        if kind == "formulate":     # r112, r113: what the formulation could not decide is asked; with nothing, r83
-            asked = [q if isinstance(q, str) else json.dumps(q) for q in data.get("questions") or []]
-            if not asked:     # r131, r132: no question and no scenario for a requirement it adds or changes is asked
-                lists, _ = workqueue.frontmatter((self.dir / (name + ".md")).read_text())
-                lacking = supervise_outputs.unformulated(self.root, list(lists.get("adds") or []) + list(lists.get("changes") or []))
-                if lacking:
-                    asked = [supervise_outputs.question("formulate round", "the formulate round's scenario for %s" % ", ".join(lacking))]
-        if kind in ("apply", "formulate"):     # r129: asked on a proposal already awaiting-answer, it stays so (r116)
-            if asked and before == "awaiting-answer":     # it stays so, its route to formulate kept by its log (r116)
+            if asked and before == "awaiting-answer":     # r129: asked on a proposal already awaiting-answer, it stays so
                 with self.lock:
                     for each in asked:
                         self.section(name, "Questions", each)
@@ -207,15 +201,39 @@ class Rounds(Changes, Raises):
             with self.lock:
                 proposals = self.write_proposals(found, self.kept_path(self.dir / "runs" / name / label), name)
                 proposals = proposals + [self.root / p for p in self.write_record(record)]
+                asked = supervise_outputs.uncodified_question(refused, SEND_BACKS)     # design §13: still refused after the send-backs, asked
                 if name != self.initiative:     # r142: the proposal drafted anew is drafted, in one commit with its new lists
-                    self.move(name, before, after, also=[self.rel(p) for p in proposals])
+                    self.move(name, before, "awaiting-answer" if asked else after, asked, also=[self.rel(p) for p in proposals])
                 else:
                     self.commit(name, after, after, also=[self.rel(p) for p in proposals])
+                    for each in supervise_outputs.refused_proposals(proposals, refused) if asked else []:
+                        self.move(each, "drafted", "awaiting-answer", asked)
             if absent:     # r107: the known capabilities' proposals are written; the unknown ones are an error
                 raise Refused("the integrate round of %s (%s) named %s, which neither spec/capabilities/ nor its drafts have; "
                               "no capability-proposal was written for %s" % (
                                   name, self.rel(self.dir / "runs" / name / label), ", ".join(absent),
                                   "it" if len(absent) == 1 else "them"))
+
+    def codified(self, name, kind, label, tree, branch, data, failure):
+        """An integrate round's codified drafts parsed and logic-checked (design §13): what refuses them is sent back to
+        the round, as a new session in its worktree, at most SEND_BACKS times. (label of its last stage, its result, its
+        failure, what still refuses its drafts.)"""
+        from spec_grammar import GrammarError
+        sent = 0
+        while kind == "integrate" and not failure:
+            try:
+                refused = supervise_outputs.uncodified(self.root, self.dir / "runs" / name / label / "drafts")
+            except GrammarError as why:     # no grammar to check them with: the round's fault, not the writer's
+                raise Fault("its drafts could not be checked: %s" % why) from None
+            if not refused or sent == SEND_BACKS:
+                return label, data, failure, refused
+            sent += 1
+            earlier = tree / ".shop" / "scratch" / label / "drafts"
+            label, _ = self.run_dir(name, kind)
+            data, failure = self.worker(name, kind, "initiative-round", tree, branch, extra=[
+                ("Refused drafts (send-back %d of %d)" % (sent, SEND_BACKS), " | ".join(refused)),
+                ("Earlier drafts path (copy them into your drafts path, then reword or drop each refused line)", earlier)])
+        return label, data, failure, []
 
     def raise_before_merge(self, name, kind, label, data, before):
         """r135: an integrate round's lines are raised into their upstreams before its merge, so a raise that fails leaves
