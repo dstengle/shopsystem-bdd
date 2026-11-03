@@ -1,17 +1,25 @@
-"""supervision's scenarios: the repository work run runs in, the stand-in claude's record and the helpers the
-step modules (supervision_given.py, supervision_then_workers.py, test_supervision.py) share."""
+"""What supervision's handlers share (not a handler module itself, so the glob does not load it; the handler modules
+load it by path, as `vocab.load_handlers` loads them): the repository `work run` runs in, built from what the Givens
+recorded, the stand-in claude, the run, and the readings of the stand-in's record, log.jsonl and git.
+
+The Givens write the nodes (world_nodes.py) and record the rest under `context["sv"]`; the When builds the repository
+around them (`build`): a git repository on main with a remote, the tests `.shop/delivery.toml` names, the capability
+`thing`, each node rewritten in the form `work run` reads, and the stand-in first on PATH and as
+$SHOPSYSTEM_WORK_CLAUDE, told what to do by supervision_plans.py; then it runs `work run` once (`deliver`)."""
 import json
 import os
 import re
+import shlex
 import subprocess
+import sys
+from pathlib import Path
 
-import pytest
-
-from .conftest import ROOT, SCRIPTS, full
-
+ROOT = Path(__file__).resolve().parents[2]
+SCRIPTS = ROOT / "scripts"
 STUB = ROOT / "tests" / "scripts" / "stub_claude.py"
-AGENTS = ["code-scout", "bdd-planner", "bdd-implementer", "bdd-task-reviewer"]
-ROLES = dict(zip(["researcher", "planner", "implementer", "reviewer"], AGENTS))
+GENERATE = ROOT / "tests" / "scripts" / "fixtures" / "generate" / "repo" / "spec"
+PATH = "ex.com/prod/ctx"
+WORK = ".shop/work"
 TESTS_PY = """import json, os, sys
 if os.environ.get("STUB_CLAUDE_CALLS"):
     with open(os.environ["STUB_CLAUDE_CALLS"], "a") as out:
@@ -22,43 +30,52 @@ if os.path.exists(which + "-fail"):
     sys.exit(1)
 print("1 passed in 0.01s")
 """
-NEEDS_FEATURE = """import os, sys
-if "--work-item" in sys.argv and not os.path.exists("feature.txt"):
-    print("FAILED: no feature.txt")
-    sys.exit(1)
-print("passed")
-"""
-# The repository's conftest.py records each pytest run in it (not an xdist worker's) to the stand-in's record: its
-# arguments, the --work-item it was given (with the plugin loaded) and where it ran.
-CONFTEST_PY = """import json, os
-def pytest_configure(config):
-    if os.environ.get("STUB_CLAUDE_CALLS") and not hasattr(config, "workerinput"):
-        with open(os.environ["STUB_CLAUDE_CALLS"], "a") as out:
-            out.write(json.dumps({"event": "pytest", "args": list(config.invocation_params.args), "cwd": os.getcwd(),
-                                  "work_item": getattr(config.option, "work_item", None)}) + "\\n")
-"""
-# The environment a worker of another `work run` starts a program in.
-BY_WORKER = {"SHOPSYSTEM_WORK_RUN_WORKER": "w0"}
 DELIVERY = '[tests]\nwork_item = "python3 tests.py --work-item {work_item}"\nsuite = "python3 tests.py"\n'
+BY_WORKER = {"SHOPSYSTEM_WORK_RUN_WORKER": "w0"}
+PRE_RECEIVE = '#!/bin/sh\nif [ -e "$GIT_DIR/refuse" ]; then echo "the remote refuses pushes to this branch" >&2; exit 1; fi\n'
+POST_RECEIVE = '#!/bin/sh\ncat >> "$GIT_DIR/pushed"\n'
+CAP = """---
+id: capability/%s/thing
+title: thing
+narrator: a client
+group: service
+rests_on: []
+retired: []
+---
+
+# thing
+
+## Purpose
+Something.
+
+## Behaviour
+- [r1] **When** asked, `thing` shall answer.
+
+## Not yet
+- None.
+""" % PATH
 
 
-@pytest.fixture
-def repo(tmp_path):
-    """The repository work run runs in; the stand-in's script and record live beside it, outside it."""
-    path = tmp_path / "repo"
-    path.mkdir()
-    return path
+def full(kind, name):
+    return "%s/%s/%s" % (kind, PATH, name)
 
 
-def git(repo, *args):
-    return subprocess.run(["git", *args], cwd=repo, capture_output=True, text=True, check=True).stdout
+def sv(context):
+    """What the Givens of a supervision scenario recorded."""
+    return context.setdefault("sv", {"stages": {}, "results": {}, "sessions": {}, "conds": {}, "for": {}, "with": {},
+                                     "on": {}, "blocked": {}, "questions": {}, "inst": {},
+                                     "dirty": [], "things": {}})
+
+
+def git(repo, *args, check=True):
+    return subprocess.run(["git", *args], cwd=repo, capture_output=True, text=True, check=check).stdout
 
 
 def write(repo, rel, text):
-    p = repo / rel
-    p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(text)
-    return p
+    path = Path(repo) / rel
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text)
+    return path
 
 
 def commit_all(repo, message):
@@ -66,13 +83,34 @@ def commit_all(repo, message):
     git(repo, "commit", "-q", "--allow-empty", "-m", message)
 
 
-PRE_RECEIVE = '#!/bin/sh\nif [ -e "$GIT_DIR/refuse" ]; then echo "the remote refuses pushes to this branch" >&2; exit 1; fi\n'
-POST_RECEIVE = '#!/bin/sh\ncat >> "$GIT_DIR/pushed"\n'
+def field(text, name):
+    found = re.search(r"^%s: (.*)$" % re.escape(name), text, re.MULTILINE)
+    return found.group(1).strip() if found else None
+
+
+def set_field(text, name, value):
+    if field(text, name) is not None:
+        return re.sub(r"^%s: .*$" % re.escape(name), "%s: %s" % (name, value), text, count=1, flags=re.MULTILINE)
+    return text.replace("\n---\n", "\n%s: %s\n---\n" % (name, value), 1)
+
+
+def nodes(context, kind=None):
+    """{name: rel} of the nodes the Givens wrote, of one kind or all."""
+    return {n: rel for n, (k, rel) in context.get("nodes", {}).items() if kind in (None, k)}
+
+
+def item_text(name, status, initiative, fileset=None, blocked_by=None):
+    extra = "fileset: [%s]\n" % ", ".join(fileset) if fileset else ""
+    extra += "blocked_by: [%s]\n" % ", ".join(blocked_by) if blocked_by else ""
+    return ("---\nid: %s\nkind: work-item\npart_of: %s\nstatus: %s\nunder: thing\naccepts: [thing#r1]\n%s---\n\n# %s\n"
+            % (full("work-item", name), full("capability-proposal", "p1"), status, extra, name))
+
+
+def remote_dir(repo):
+    return Path(repo).parent / "remote.git"
 
 
 def remote(repo):
-    """A bare repository beside `repo`, its `origin`, with main pushed to it: its pre-receive hook refuses every push
-    while the file `refuse` is in it, and its post-receive hook appends each pushed `<old> <new> <ref>` to `pushed`."""
     bare = remote_dir(repo)
     subprocess.run(["git", "init", "-q", "--bare", str(bare)], check=True, capture_output=True)
     for name, text in (("pre-receive", PRE_RECEIVE), ("post-receive", POST_RECEIVE)):
@@ -80,66 +118,36 @@ def remote(repo):
         (bare / "hooks" / name).chmod(0o755)
     git(repo, "remote", "add", "origin", str(bare))
     git(repo, "push", "-q", "-u", "origin", "main")
-    return bare
 
 
-def remote_dir(repo):
-    return repo.parent / "remote.git"
-
-
-def item_text(name, status, under="thing", fileset=None, blocked_by=None, check=None):
-    """A work-item's file; with `fileset` (a list of paths), its `fileset:` too, with `blocked_by`, its `blocked_by:`
-    and with `check`, its `check:`."""
-    files = "fileset: [%s]\n" % ", ".join(fileset) if fileset else ""
-    files += "blocked_by: [%s]\n" % ", ".join(blocked_by) if blocked_by else ""
-    files += "check: %s\n" % check if check else ""
-    return "---\nid: %s\nkind: work-item\npart_of: capability-proposal/p1\nstatus: %s\nunder: %s\naccepts: [%s#r1]\n%s---\n\n# %s\n" % (
-        full("work-item", name), status, under, under, files, name)
-
-
-def fields(path):
-    head = path.read_text().split("---\n")[1]
-    return dict(line.split(": ", 1) for line in head.splitlines() if ": " in line)
+def stub(repo):
+    """The stand-in claude in a directory beside the repository; its record and its plan beside it."""
+    there = Path(repo).parent / "stub"
+    (there / "bin").mkdir(parents=True, exist_ok=True)
+    claude = there / "bin" / "claude"
+    claude.write_text("#!/bin/sh\nexec %s %s \"$@\"\n" % (shlex.quote(sys.executable), shlex.quote(str(STUB))))
+    claude.chmod(0o755)
+    return there
 
 
 def calls(repo, events=("start", "end")):
-    """The stand-in's record: its starts and ends, or with `events` the Bash commands it ran or refused."""
-    path = repo.parent / "stub" / "calls.jsonl"
+    path = Path(repo).parent / "stub" / "calls.jsonl"
     lines = [json.loads(line) for line in path.read_text().splitlines()] if path.exists() else []
     return [c for c in lines if c["event"] in events]
 
 
 def starts(repo):
-    return [c for c in calls(repo) if c["event"] == "start"]
+    return calls(repo, ("start",))
 
 
-def work_item_of(call):
-    """The work-item a worker's brief names; None for a brief that names none (the branch reviewer's)."""
-    found = re.search(r"^Work-item: \.shop/work/i1/(\S+)\.md$", call["brief"], re.MULTILINE)
-    return found.group(1) if found else None
-
-
-def option(argv, name):
-    return argv[argv.index(name) + 1] if name in argv else None
-
-
-def log_lines(repo):
-    path = repo / ".shop/work/i1/log.jsonl"
+def log_lines(repo, initiative="i1"):
+    path = Path(repo) / WORK / initiative / "log.jsonl"
     return [json.loads(line) for line in path.read_text().splitlines()] if path.exists() else []
 
 
-def moves(repo, name="w1"):
-    return [(l["before"], l["after"]) for l in log_lines(repo) if l.get("work-item") == name and "after" in l]
-
-
-def work_commits(repo):
-    """(sha, subject) of each commit work run made on the initiative branch for a transition, oldest first."""
-    lines = [l.split(" ", 1) for l in git(repo, "log", "--reverse", "main", "--format=%H %s").splitlines()]
-    return [(sha, subject) for sha, subject in lines if subject.startswith("work: ")]
-
-
 def state(repo):
-    """The repository as files (outside .git/), its commits and branches, and what git says is not committed."""
+    """The repository as files (outside .git/), its HEAD and branches, and what git says is not committed."""
+    repo = Path(repo)
     files = {str(p.relative_to(repo)): p.read_bytes() for p in repo.rglob("*")
              if p.is_file() and ".git" not in p.relative_to(repo).parts}
     if not (repo / ".git").exists():
@@ -147,29 +155,43 @@ def state(repo):
     return files, git(repo, "rev-parse", "HEAD"), git(repo, "branch", "-a"), git(repo, "status", "--porcelain")
 
 
-def committed(what):
-    """What the implementer commits, for one part of "committing feature.txt and ...": {path: text, or None to delete}."""
-    m = re.match(r"setting (\S+?)'s status to (\S+)$", what) or re.match(r"(\S+?)'s status set to (\S+)$", what)
-    if m:
-        name = os.path.basename(m.group(1))[:-3]
-        return {m.group(1): item_text(name, m.group(2))}
-    for word in ("deleting ", "the deletion of "):
-        if what.startswith(word):
-            return {what[len(word):]: None}
-    for word in ("adding ", "a new "):
-        if what.startswith(word):
-            return {what[len(word):]: "added by a worker\n"}
-    return {what: "\n" if what.endswith("-fail") else "the feature\n"}
+def run_work(repo, context, plan, args):
+    """`work run <args>` as a program, with the stand-in; its completed process kept as context["result"]."""
+    there = stub(repo)
+    (there / "plan.json").write_text(json.dumps(plan))
+    env = dict({k: v for k, v in os.environ.items() if k != "SHOPSYSTEM_WORK_RUN_WORKER"},
+               PATH="%s%s%s" % (there / "bin", os.pathsep, os.environ.get("PATH", "")),
+               SHOPSYSTEM_WORK_CLAUDE=str(there / "bin" / "claude"), STUB_CLAUDE_PLAN=str(there / "plan.json"),
+               STUB_CLAUDE_CALLS=str(there / "calls.jsonl"), PYTEST_XDIST_AUTO_NUM_WORKERS="2",
+               CLAUDE_CONFIG_DIR=str(there / "claude"), **context.get("env", {}))
+    env["PYTHONPATH"] = os.pathsep.join(p for p in env.get("PYTHONPATH", "").split(os.pathsep)
+                                        if p and not (Path(p) / "work_items.py").exists())
+    context["before"] = state(repo)
+    context["result"] = subprocess.run([sys.executable, str(SCRIPTS / "work"), "run", *args], cwd=repo, env=env,
+                                       capture_output=True, text=True, timeout=300)
+    done = context["result"]     # beside the repository, for whoever reads a failed scenario's directory
+    (Path(repo).parent / "run.txt").write_text("exit %d\n%s\n%s" % (done.returncode, done.stdout, done.stderr))
+    return done
 
 
-def scripts_in(text):
-    """`text` with `{scripts}` read as the directory of work run's own scripts."""
-    return text.replace("{scripts}", str(SCRIPTS))
+def init(repo):
+    git(repo, "init", "-q", "-b", "main")
+    init_identity(repo)
 
 
-def tree_has(repo, rel):
-    return subprocess.run(["git", "cat-file", "-e", "main:" + rel], cwd=repo).returncode == 0
+def init_identity(repo):
+    for key, value in (("user.name", "Someone"), ("user.email", "someone@example.com"), ("commit.gpgsign", "false")):
+        git(repo, "config", key, value)
 
 
-def section(text, heading):
-    return text.split("\n## %s\n" % heading, 1)[1].split("\n## ", 1)[0] if "\n## %s\n" % heading in text else ""
+def base(repo, codified):
+    """The files every scenario's repository has; `codified`: the generation fixture's codified spec beside them."""
+    if codified:
+        for rel in ("index.md", "capabilities/work-queue.md"):
+            write(repo, "spec/" + rel, (GENERATE / rel).read_text())
+    elif not (Path(repo) / "spec" / "index.md").is_file():
+        write(repo, "spec/index.md", "---\nid: bounded-context/%s\n---\n# ctx\n\n## Glossary\n\n" % PATH)
+    write(repo, "spec/capabilities/thing.md", CAP)
+    write(repo, ".shop/delivery.toml", DELIVERY)
+    write(repo, "tests.py", TESTS_PY)
+    write(repo, "README.md", "# repo\n")
