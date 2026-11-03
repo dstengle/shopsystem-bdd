@@ -5,7 +5,6 @@ read what it printed and what the stand-in was asked to do.
 
 An analysis tool named `a<n>` stands for the n-th of analysis_tools_world.NAMES; one named with a code is that tool.
 """
-import hashlib
 import json
 import pathlib
 import re
@@ -126,11 +125,6 @@ def given_finding(step):
 
 # --- the command ---
 
-def digest(repo, rel):
-    path = repo / rel
-    return hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None
-
-
 def grammar_stub(step):
     """GF stands installed under a fresh XDG_DATA_HOME, so `tools install` never downloads it in a scenario."""
     data = outside(step)
@@ -145,7 +139,6 @@ def runs_tools(step):
     ctx, repo = step.context, step.repo
     tests = {} if any(k.startswith("tests/") for k in files(step)) else {"tests/test_cart.py": w.TEST_ONLY_TOTAL}
     w.started(repo, {**tests, **files(step)})
-    ctx["digests"] = {rel: digest(repo, rel) for rel in files(step)}
     grammar_stub(step)
     if ctx.get("map"):
         w.mapped(step.run, repo, ctx, lambda: outside(step))
@@ -252,16 +245,10 @@ def installs(step):
             assert tool_of(np.split()[-1]) in done, (np, done)
 
 
-@handler("ThenDoesNot", "change")
-def changes_not(step):
-    for np in step.nps:
-        assert digest(step.repo, bare(np)) == step.context["digests"][bare(np)], np
-
-
-@handler("ThenDoes", "write")
 @handler("ThenDoes", "replace")
-def writes_map(step):
+def replaces_map(step):
     at = step.repo / (w.MAP + ".at")
     assert (step.repo / w.MAP).is_file() and at.is_file(), output(step, err=True)
-    if step.event == "replace":
-        assert at.read_text().strip() == step.context["head"] != step.context["first_map"]
+    assert at.read_text().strip() == step.context["head"]
+    if step.names:
+        assert step.context["head"] != step.context["first_map"]

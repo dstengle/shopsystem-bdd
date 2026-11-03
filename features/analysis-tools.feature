@@ -71,7 +71,7 @@ Feature: Analysis tools
     When the person runs `tools install`
     Then `tools` installs the analysis tool a1
     And `tools` does not install the analysis tool a2
-    And `tools` does not change `requirements.txt`
+    And `tools` changes nothing
 
   @g11 @r14
   Scenario: `tools install` installs the one version of ruff the plugin pins
@@ -100,7 +100,7 @@ Feature: Analysis tools
   Scenario: `tools map` writes the coverage map whether or not the tests pass
     Given a test `test_fails`
     When the person runs `tools map`
-    Then `tools` writes `.shop/scratch/tools/coverage`
+    Then `tools` replaces `.shop/scratch/tools/coverage`
     And `tools` exits successfully
 
   @g15 @r20

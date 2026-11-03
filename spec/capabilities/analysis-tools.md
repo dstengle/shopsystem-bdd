@@ -103,7 +103,7 @@ Restates: r4@0.29.
 ### [g10] `tools install` installs a missing analysis tool and changes no dependency file
 Restates: r5@0.29.
 - [r12] While an interpreter is `virtualenv`, when the person runs `tools install`, `tools` shall install every analysis tool that is `missing`.
-- [r13] While an interpreter is `virtualenv`, when the person runs `tools install`, `tools` shall not change `requirements.txt`.
+- [r13] While an interpreter is `virtualenv`, when the person runs `tools install`, `tools` shall change nothing.
 
 ```given
 an interpreter `.venv/bin/python` that is `virtualenv`
@@ -141,7 +141,7 @@ an interpreter `.venv/bin/python` that is `virtualenv`
 
 ### [g14] `tools map` writes the coverage map whether or not the tests pass
 Restates: r8@0.29.
-- [r18] When the person runs `tools map`, `tools` shall write `.shop/scratch/tools/coverage`.
+- [r18] When the person runs `tools map`, `tools` shall replace `.shop/scratch/tools/coverage`.
 - [r19] When the person runs `tools map`, `tools` shall exit successfully.
 
 ```given
