@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 """Read and edit Gherkin feature files without the test runner."""
 import argparse
+import importlib.util
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from features_bindings import cmd_bindings, cmd_rebind  # noqa: E402
-from features_edit import cmd_deprecate, cmd_move, cmd_retire, cmd_tag  # noqa: E402
-from features_gherkin import Refused, load  # noqa: E402
-from features_report import cmd_count, cmd_deprecated, cmd_list, cmd_verify  # noqa: E402
+import features_generate
+import features_vocab
+import spec_read
+from features_bindings import cmd_bindings, cmd_rebind
+from features_edit import cmd_deprecate, cmd_move, cmd_retire, cmd_tag
+from features_gherkin import Refused, load
+from features_report import cmd_count, cmd_deprecated, cmd_list, cmd_verify
+from model_parse import frontmatter
 
 CONTRACT = """\
 contract:
@@ -72,11 +77,136 @@ contract:
     by several calls as '<feature path>: <title> | bound by <module>:<line>,
     ...'; exit 1 when any. A Scenario Outline is one scenario, by title.
 
+  - generate [<capability>...] writes features/<capability>.feature from each
+    named codified service capability (all of them when none is named), one
+    scenario a requirement group, deterministically: the header
+    '# generated from spec/capabilities/<c>.md by features generate; do not
+    edit', the group's given block, Givens, the When, one Then a requirement.
+    A named capability that is not codified exits 2 ('... is not codified: run
+    `migrate upgrade`') and nothing is written; a requirement that does not
+    parse exits 1 naming <capability>#r<n>. --check regenerates in memory and
+    exits 1 naming each file that differs; with no names it prints 'skipped
+    <c>: not codified' for each other service capability. --preview <file>
+    prints the feature of a draft capability file and writes nothing.
+  - vocab prints the step vocabulary: each (template, kind) pattern of the
+    Steps grammar. vocab --check [--tests DIR] [<feature>...] imports DIR's
+    world_*.py and *_handlers*.py and exits 1 naming each step of the
+    generated feature files (all of them when none is named) that does not
+    parse or has no handler, and each key two handlers claim.
+
 exit status: 0 success, 1 a check failed or an edit was refused, 2 bad usage.
 An edit that would leave its file invalid is refused and the file left as it was.
 """
 
 FILE_HELP = "work in this file only, whatever other files have the title"
+
+
+def read(path):
+    with open(path) as f:
+        return f.read()
+
+
+def cmd_generate(args):
+    """`features generate`: write, check or preview the features of codified service capabilities (§13.4)."""
+    root = args.root
+    caps = os.path.join(root, "spec", "capabilities")
+    out_dir = args.dir if os.path.isabs(args.dir) else os.path.join(root, args.dir)
+    def service(path):
+        return frontmatter(read(path))[0].get("group") == "service"
+    try:
+        if args.preview:
+            sys.stdout.write(features_generate.generate(root, args.preview))
+            return 0
+        for name in args.names:
+            path = os.path.join(caps, "%s.md" % name)
+            if not spec_read.codified(path) or not service(path):
+                sys.stderr.write("features: %s\n" % ("spec/capabilities/%s.md is not codified: run `migrate upgrade`"
+                                                     % name if not spec_read.codified(path) else
+                                                     "%s is a guarantees capability: it has no scenarios" % name))
+                return 2
+        paths = [os.path.join(caps, "%s.md" % n) for n in args.names] or [
+            os.path.join(caps, f) for f in sorted(os.listdir(caps)) if f.endswith(".md") and service(
+                os.path.join(caps, f))]
+        texts = {}
+        for path in paths:
+            name = os.path.basename(path)[:-3]
+            if spec_read.codified(path):
+                texts[name] = features_generate.generate(root, path)
+            else:
+                print("skipped %s: not codified" % name)
+    except (features_generate.GenerateError, features_vocab.StepError) as err:
+        sys.stderr.write("features: %s\n" % err)
+        return 1
+    differs = 0
+    for name, text in texts.items():
+        target = os.path.join(out_dir, "%s.feature" % name)
+        shown = os.path.relpath(target, root)
+        if not args.check:
+            os.makedirs(out_dir, exist_ok=True)
+            with open(target, "w") as f:
+                f.write(text)
+            print("wrote %s" % shown)
+        elif not os.path.isfile(target) or read(target) != text:
+            print("differs: %s" % shown)
+            differs = 1
+    return differs
+
+
+def registry():
+    """The handler registry: the plugin's tests/scenarios/vocab.py, loaded once as `vocab`."""
+    if "vocab" not in sys.modules:
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "tests", "scenarios", "vocab.py")
+        spec = importlib.util.spec_from_file_location("vocab", path)
+        sys.modules["vocab"] = module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+    return sys.modules["vocab"]
+
+
+def steps_of(path):
+    """(line number, keyword, text) of each step of a feature file; docstrings and tables skipped."""
+    out, last, in_doc = [], None, False
+    with open(path) as f:
+        for n, line in enumerate(f.read().splitlines(), 1):
+            word, _, rest = line.strip().partition(" ")
+            if line.strip() in ('"""', "```"):
+                in_doc = not in_doc
+            elif not in_doc and word in ("Given", "When", "Then", "And", "But"):
+                last = word.lower() if word in ("Given", "When", "Then") else last
+                out.append((n, last, rest))
+    return out
+
+
+def cmd_vocab(args):
+    """`features vocab [--check]`: the vocabulary, or the steps of generated features with no handler."""
+    root = os.path.abspath(args.root)
+    vocab = features_vocab.load(root)
+    if not args.check:
+        for row in features_vocab.rows(vocab):
+            print("%s %s %s: %s" % (row.keyword, row.template, row.kind or "-", row.pattern))
+        return 0
+    handlers = registry()
+    handlers.load_handlers(os.path.join(root, args.tests))
+    problems = handlers.duplicates()
+    directory = args.dir if os.path.isabs(args.dir) else os.path.join(root, args.dir)
+    files = args.features or (sorted(os.path.join(directory, f) for f in os.listdir(directory)
+                                     if f.endswith(".feature")) if os.path.isdir(directory) else [])
+    for path in files:
+        full = path if os.path.isabs(path) else os.path.join(root, path)
+        with open(full) as f:
+            generated = f.readline().startswith("# generated from ")
+        if not generated:
+            problems += ["%s: not generated by `features generate`" % path] if args.features else []
+            continue
+        for n, keyword, text in steps_of(full):
+            try:
+                call = features_vocab.step(vocab, keyword, text)
+            except features_vocab.StepError as err:
+                problems.append("%s:%d: %s | %s" % (path, n, text, err))
+                continue
+            if not handlers.lookup(call.template, call.term):
+                problems.append("%s:%d: %s | no handler for %s %s" % (path, n, text, call.template, call.term))
+    print("\n".join(problems) if problems else "every step has one handler")
+    return 1 if problems else 0
 
 
 def main():
@@ -136,7 +266,21 @@ def main():
         if name == "bindings":
             one.add_argument("--json", action="store_true", help="print the wrong and unbound bindings as one JSON object")
         one.set_defaults(run=run)
+    gen = sub.add_parser("generate")
+    gen.add_argument("names", nargs="*", metavar="CAPABILITY")
+    gen.add_argument("--check", action="store_true")
+    gen.add_argument("--preview", metavar="FILE")
+    gen.add_argument("--root", default=".")
+    gen.set_defaults(run=cmd_generate, raw=True)
+    voc = sub.add_parser("vocab")
+    voc.add_argument("features", nargs="*", metavar="FEATURE")
+    voc.add_argument("--check", action="store_true")
+    voc.add_argument("--tests", default="tests/scenarios")
+    voc.add_argument("--root", default=".")
+    voc.set_defaults(run=cmd_vocab, raw=True)
     args = parser.parse_args()
+    if getattr(args, "raw", False):
+        return args.run(args)
     try:
         return args.run(args, load(args.dir))
     except Refused as why:

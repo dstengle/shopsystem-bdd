@@ -22,6 +22,16 @@ BOUND_BY_PYTEST_BDD = [
 
 
 class BoundTest(unittest.TestCase):
+    def test_every_step_of_a_generated_feature_has_one_handler(self):
+        """A generated feature's steps are bound by the vocabulary (design §14.3): `features vocab --check` replaces
+        the file list below as each capability is converted."""
+        sys.path.insert(0, str(ROOT / "tests"))
+        import toolchain
+        toolchain.require()
+        done = subprocess.run([sys.executable, str(SCRIPT), "vocab", "--check", "--tests", "tests/scenarios"], cwd=ROOT,
+                              capture_output=True, text=True)
+        self.assertEqual(done.returncode, 0, done.stdout + done.stderr)
+
     def test_every_scenario_has_exactly_one_test(self):
         done = subprocess.run([sys.executable, str(SCRIPT), "--dir", "features", "bindings", "--tests", "tests", "--unbound",
                                *BOUND_BY_PYTEST_BDD], cwd=ROOT, capture_output=True, text=True)
