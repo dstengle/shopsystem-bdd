@@ -114,10 +114,12 @@ def cmd_why(args):
 
 
 def _statements(path):
-    """A codified file's statements with their line numbers (spec_read); any other file's non-blank lines."""
+    """A codified file's statements with their line numbers (spec_read); any other file's non-blank lines that are not
+    `#` comments (a corpus file's)."""
     import spec_read
     if not spec_read.codified(path):
-        return [(n, line) for n, line in enumerate(path.read_text().splitlines(), 1) if line.strip()]
+        return [(n, line) for n, line in enumerate(path.read_text().splitlines(), 1)
+                if line.strip() and not line.startswith("#")]
     if path.name == "universal.md":
         return [(u.line_no, u.text) for u in spec_read.read_universal(path.parent.parent).conditions]
     return [(r.line_no, r.text) for g in spec_read.capability(path).groups for r in g.requirements]

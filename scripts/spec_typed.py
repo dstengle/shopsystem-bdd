@@ -137,12 +137,8 @@ def _condition(t, kind, cid, ids):
 
 
 def rows(lex):
-    """The relation rows `(from kind, word, to kind, relation id)` of a lexicon: `Lexicon.relations()` (design-r2
-    §8), else (a lexicon without the `## Relations` table) one row for each relation entry naming two kinds."""
-    if hasattr(lex, "relations"):
-        return list(lex.relations())
-    ids = lex.ids()
-    return [(t.kinds[0], t.term, t.kinds[1], ids[t.key]) for t in lex.of("relation") if len(t.kinds) == 2]
+    """The relation rows `(from kind, word, to kind, relation id)` of a lexicon: `Lexicon.relations()` (design-r2 §8)."""
+    return list(lex.relations())
 
 
 def relation_fun(kid1, word, kid2):

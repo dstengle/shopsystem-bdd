@@ -1,7 +1,6 @@
 """spec_grammar: tokenising (design §9.4), parsing with the guards (§9.3), linearising, the corpus, and the
 compile cache with its atomic rename (§11.3)."""
 import contextlib
-import dataclasses
 import os
 import pathlib
 import re
@@ -11,6 +10,7 @@ import sys
 import pytest
 import spec_grammar
 import spec_lexicon
+import spec_relations
 import spec_tree
 import spec_typed
 
@@ -42,25 +42,14 @@ def lines(path):
     return [x.strip() for x in path.read_text().splitlines() if x.strip() and not x.startswith("#")]
 
 
-@dataclasses.dataclass
-class StubLexicon(spec_lexicon.Lexicon):
-    """A lexicon with the member R2 adds (design-r2 §8): `relations()`, the expanded rows (k1, word, k2, id)."""
-    rows: list = dataclasses.field(default_factory=list)
-
-    def relations(self):
-        return list(self.rows)
-
-    def words(self):
-        return super().words() | {w for _, w, _, _ in self.rows}
-
-
 @contextlib.contextmanager
 def stubbed(root, rows=(), terms=()):
-    """spec_lexicon.read of `root` gives its lexicon with `terms` and the relation rows (k1, word, k2) added."""
+    """spec_lexicon.read of `root` gives its lexicon with `terms` and the relation rows (k1, word, k2) added, as
+    rows of a `## Relations` table would be."""
     real = spec_lexicon.read
     lex = real(root)
-    extra = [(a, w, b, "r_stub_%d" % i) for i, (a, w, b) in enumerate(rows)]
-    stub = StubLexicon(list(lex.terms) + list(terms), spec_typed.rows(lex) + extra)
+    stub = spec_lexicon.Lexicon(list(lex.terms) + list(terms),
+                                list(lex.rows) + [spec_relations.Row(a, w, b, "", "stub") for a, w, b in rows])
     with pytest.MonkeyPatch.context() as patch:
         patch.setattr(spec_lexicon, "read", lambda r: stub if pathlib.Path(r) == pathlib.Path(root) else real(r))
         yield stub

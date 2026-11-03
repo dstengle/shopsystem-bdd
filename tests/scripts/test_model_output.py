@@ -100,6 +100,12 @@ class LanguageCommandsTest(CodifiedTest):
         self.assertTrue(out[0].startswith("1: When (RunsOn"), out)
         self.assertTrue([line for line in out if line.startswith("3: ") and "`drafted`" in line], out)
 
+    def test_parse_a_file_skips_its_comment_lines(self):
+        path = self.write("corpus.txt", "# a corpus: sentences that parse\n" + START + "\n")
+        r = self.run_model("parse", "--file", str(path))
+        self.assertEqual(r.returncode, 0, r.stdout)
+        self.assertTrue(r.stdout.startswith("2: When (RunsOn"), r.stdout)
+
     def test_parse_a_codified_file_parses_its_statements_only(self):
         path = self.write("spec/capabilities/wq.md", codified("wq", self.start_group()))
         r = self.run_model("parse", "--file", str(path))
