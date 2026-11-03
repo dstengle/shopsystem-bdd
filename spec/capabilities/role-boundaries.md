@@ -31,10 +31,8 @@ Bash can still write files through the shell, which is why `work run` verifies t
 - **show** (event): a session shows the person a thing. Forms: shows, shown.
 - **name** (event): a message or a file names a thing. Forms: names, named.
 - **list** (event): a session or a file lists things. Forms: lists, listed.
-- **stop** (event): a session ends without doing what it was asked. Forms: stops, stopped.
 - **keep** (event): a session leaves a thing as it was. Forms: keeps, kept.
 - **commit** (event): a session or a tool commits a change. Forms: commits, committed.
-- **append** (event): a line is added at the end of a file. Forms: appends, appended.
 - **delete** (event): a file or a scenario is removed. Forms: deletes, deleted.
 
 ## Behaviour

@@ -4,8 +4,8 @@ restates` finds every 0.29 id restated, dropped or moved, and none of them has a
 import pathlib
 import sys
 
-import pytest
 import model_restates
+import pytest
 import spec_grammar
 import spec_lexicon
 import spec_read
@@ -39,7 +39,7 @@ def test_the_capability_is_codified_and_well_formed(cap):
     assert spec_read.codified(path(cap)), f"{cap} has no `language: codified-1`"
     doc = spec_read.capability(path(cap))
     assert doc.problems == []
-    assert doc.groups, f"{cap} has no group"
+    assert doc.groups or cap == "formulation", f"{cap} has no group"
     assert doc.frontmatter.get("group") == "guarantees"
 
 
@@ -77,8 +77,9 @@ def test_formulation_keeps_no_line_of_its_own():
     doc = spec_read.capability(path("formulation"))
     reasons = [why for cap, _, why in doc.dropped if cap == "formulation"]
     assert len(reasons) == 14
-    restated = {n for g in doc.groups for cap, n in g.restates if cap == "formulation"}
-    assert restated == set()
+    assert doc.groups == []
+    moved = sorted(n for cap, n, why in doc.dropped if why.startswith("moved to supervision"))
+    assert moved == [1, 2, 6, 7, 11, 22]
 
 
 def test_spec_integration_moves_its_script_lines():
