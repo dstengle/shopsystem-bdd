@@ -58,7 +58,7 @@ def repository_with_initiative_of_kind(world, path, kind):
     world.initiative(kind=kind)
 
 
-# --- the request rules: r113 v16a, r114 v_d1, r119 v_d3, r115 v17, r116 v3, r117 v18 ------------------------------
+# --- the request rules: r113 v16a, r114 v_d1, r119 v_d3, r115 v17, r116 v3, r117 v18d ----------------------------
 
 @given(parsers.re(r"an initiative (?P<ident>i\d) dated (?P<date>[\d-]+) that fulfils no request$"))
 def initiative_dated_fulfilling_nothing(world, ident, date):

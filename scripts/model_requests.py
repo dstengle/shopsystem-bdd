@@ -1,5 +1,7 @@
-"""The reading of requests by scripts/model: .shop/work/requests/q<n>.md, in the form `work request` writes (r19, r112)."""
+"""The reading of requests by scripts/model: .shop/work/requests/q<n>.md, in the form `work request` writes (r19, r112).
+Its lines, their outcomes and its upstream are facts (design model v5, C20): line/3, outcome/3, upstream/2."""
 
+import datetime
 import re
 
 from model_parse import as_list, frontmatter, section
@@ -39,11 +41,29 @@ class RequestReading:
             if str(ref).startswith("request/"):     # the kind is judged from the id
                 self.fact("req_raised_for", ident, self.qualify(ref))
         for line in section(body, "Resolution"):
-            m = re.match(r"^\d+\.\s+(\S+)", line)
+            m = re.match(r"^(\d+)\.\s+(\S+)", line)
             if m:
-                req = self.resolve_req(m.group(1), where)
+                self.fact("resolution_of_line", ident, int(m.group(1)))     # entry n resolves line n
+                req = self.resolve_req(m.group(2), where)
                 if req:
                     self.fact("resolution", ident, req)
+        self.request_lines(ident, data, body)
+
+    def request_lines(self, ident, data, body):
+        """line(Q, N, Text), outcome(Q, N, O) with O the outcome's first word, upstream(Q, X) with X this context, and
+        the request's age when it is dated."""
+        for name, fact in (("Lines", "line"), ("Outcomes", "outcome")):
+            for entry in section(body, name):
+                m = re.match(r"^(\d+)\.\s+(.+)$", entry.strip())
+                if m:
+                    text = m.group(2).strip()
+                    self.fact(fact, ident, int(m.group(1)), re.split(r"[\s:]", text)[0] if fact == "outcome" else text)
+        if self.context:
+            self.fact("upstream", ident, self.context)
+        try:
+            self.fact("age", ident, (self.today - datetime.date.fromisoformat(str(data["date"]))).days)
+        except (KeyError, ValueError):
+            pass
 
     def request_form(self, data, body, path):
         """What keeps a request from being of the form requests' Implementation gives, or None."""

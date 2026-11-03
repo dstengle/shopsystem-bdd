@@ -146,7 +146,7 @@ def requirement_no_scenario_names(world):
 @then("the output names v_s3 with its plain label and the requirement's id")
 def output_names_v_s3(context):
     out = context["result"].stdout
-    assert re.search(r"v_s3  a requirement has no scenario  \(1\)\n\s+" + re.escape(THING + "#r1"), out), out
+    assert re.search(r"v_s3  a group or requirement has no scenario  \(1\)\n\s+" + re.escape(THING + "#r1"), out), out
 
 
 @given("a capability whose Behaviour has a bullet with no [r<n>]")
@@ -170,7 +170,7 @@ def proposal_changing_r9(world):
 @then("the output names v15e with the proposal and the requirement")
 def output_names_v15e(context):
     out = context["result"].stdout
-    assert re.search(r"v15e  a proposal changes a requirement no capability has  \(1\)\n\s+" + re.escape("%s, %s#r9" % (P1, THING)), out), out
+    assert re.search(r"v15e  a proposal changes a requirement no capability has, or a requirement of a group  \(1\)\n\s+" + re.escape("%s, %s#r9" % (P1, THING)), out), out
 
 
 @given("a capability-proposal with status formulated that adds a requirement no scenario names")
@@ -184,7 +184,7 @@ def formulated_proposal_unscenarioed(world):
 @then("the output names v15f with the proposal")
 def output_names_v15f(context):
     out = context["result"].stdout
-    assert re.search(r"v15f  a formulated proposal leaves a requirement without a scenario  \(1\)\n\s+" + re.escape(P1), out), out
+    assert re.search(r"v15f  a formulated proposal leaves a group without a scenario  \(1\)\n\s+" + re.escape(P1), out), out
 
 
 @given("a capability in the guarantees group whose requirements no scenario names")
@@ -208,7 +208,7 @@ def work_item_reaching_nothing(world):
 @then("the output names v9c with the work-item")
 def output_names_v9c(context):
     out = context["result"].stdout
-    assert re.search(r"v9c  a part reaches no initiative  \(1\)\n\s+" + re.escape(full("work-item", "w1")), out), out
+    assert re.search(r"v9c  a part reaches no root  \(1\)\n\s+" + re.escape(full("work-item", "w1")), out), out
 
 
 @given("a bounded context the grammar accepts, with an observation no initiative cites")

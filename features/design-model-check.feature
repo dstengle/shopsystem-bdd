@@ -659,11 +659,11 @@ Feature: Design model check
     Then no violation names the initiative
 
   @r59
-  Scenario: an abandoned initiative with an open part is v_d2
+  Scenario: an abandoned initiative with an open part is v_d5
     Given an abandoned capability-change initiative
     And under it a capability-proposal with status withdrawn, and under that a work-item with status drafted
     When `model check` is run
-    Then v_d2 names the initiative
+    Then v_d5 names the initiative
     And once the work-item is withdrawn too, no violation names the initiative
 
   @r3
@@ -877,14 +877,14 @@ Feature: Design model check
     And v3 does not name q2
 
   @r117 @deprecated
-  Scenario Outline: an id of a kind kept in .shop/work/ with another context's path is v18 (deprecated)
+  Scenario Outline: an id of a kind kept in .shop/work/ with another context's path is v18d (deprecated)
     Deprecated for: removal
     Pins that this context's files name work only of their own context, judged from the id whether or not anything in the repository has it.
     Given a repository whose bounded context is bounded-context/missingmass.io/shopsystem/shopsystem-bdd
     And an initiative i1 whose source names <id>
     And nothing in the repository has the id <id>
     When `model check` is run
-    Then v18 <names> <id>
+    Then v18d <names> <id>
 
     Examples:
       | id                                                      | names         |
@@ -896,14 +896,14 @@ Feature: Design model check
       | request/missingmass.io/shopsystem/shopsystem-bdd/q3     | does not name |
 
   @r121
-  Scenario Outline: an id of a kind kept in .shop/work/ with another context's path is v18 unless a request is raised for it
+  Scenario Outline: an id of a kind kept in .shop/work/ with another context's path is v18d unless a request is raised for it
     Pins that this context's files name work only of their own context, judged from the id alone, except a request of another context that some request is raised for, which any of this context's files may name.
     Given a repository whose bounded context is bounded-context/missingmass.io/shopsystem/shopsystem-bdd
     And an initiative i1 whose source names <id>
     And nothing in the repository has the id <id>
     And <raised>
     When `model check` is run
-    Then v18 <names> <id>
+    Then v18d <names> <id>
 
     Examples:
       | id                                                       | raised                                                                   | names         |
