@@ -1,7 +1,7 @@
 {
   "name": "shopsystem-bdd",
-  "description": "BDD workflow for the shopsystem harness: keep one spec of capability files, formulate one Gherkin feature per capability, deliver an initiative's work-items with work run, implement red-green, and migrate existing repositories.",
-  "version": "0.29.0",
+  "description": "BDD workflow for the shopsystem harness: keep one spec of capability files, write requirements in a controlled language (GF), logic-check them, generate one Gherkin feature per capability, deliver an initiative's work-items with work run, implement red-green, and migrate existing repositories.",
+  "version": "1.0.0",
   "author": {
     "name": "David Stenglein"
   },
@@ -10,6 +10,7 @@
     "gherkin",
     "pytest-bdd",
     "ears",
+    "grammatical-framework",
     "shopsystem"
   ]
 }
