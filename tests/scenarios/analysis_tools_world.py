@@ -1,16 +1,12 @@
 """analysis-tools' project and stand-in interpreter, for analysis_tools_handlers.py: the files a Given writes, the FAKE
 interpreter that answers as its config says and logs what it is asked to run, and how a handler runs `tools` in the
 project."""
-import importlib.util
 import json
 import os
 import pathlib
 import subprocess
 import sys
 
-import pytest
-
-HAVE = all(importlib.util.find_spec(name) for name in ("coverage", "pytest_cov", "jedi", "pytest"))
 MAP = ".shop/scratch/tools/coverage"
 NAMES = ("coverage", "pytest-cov", "jedi", "ast-grep", "ruff", "vulture", "import-linter", "hypothesis")
 
@@ -30,12 +26,9 @@ class Cart:
     def total(self, items):
         return sum(items)
 """
-CART_ALL = "def total(items):\n    return sum(items)\n"
-OTHER = "def other():\n    return 1\n"
 TEST_TOTAL = "from cart import Cart, total\n\n\ndef test_total():\n    assert Cart().total([1, 2]) == 3\n    assert total([1]) == 1\n"
 TEST_ONLY_TOTAL = "from cart import total\n\n\ndef test_total():\n    assert total([1]) == 1\n"
 TEST_DISCOUNT = "\n\ndef test_discount():\n    assert Cart().total([4]) == 4\n"
-TEST_CHECKOUT = "from cart import Cart\n\n\ndef test_checkout():\n    assert Cart().total([5]) == 5\n"
 
 # stands in for an interpreter (and for lint-imports) beside it: answers as the config beside it says
 FAKE = r"""import json, os, runpy, sys
@@ -116,11 +109,6 @@ def started(root, files=None):
     return put(root, files or {})
 
 
-def real():
-    if not HAVE:
-        pytest.skip("coverage, pytest-cov and jedi are needed")
-
-
 # --- the interpreter ---
 
 def fake(where, **config):
@@ -141,11 +129,6 @@ def interpreter(context):
     return context.setdefault("fake", {})
 
 
-def missing_tools(context, tools, venv=True):
-    names = tools.split(" and ")
-    interpreter(context).update(missing=names, block=names, venv=venv)
-
-
 def calls(python):
     log = pathlib.Path(python).parent.parent / "calls.log"
     return [json.loads(line) for line in log.read_text().splitlines()] if log.exists() else []
@@ -153,10 +136,6 @@ def calls(python):
 
 def pip_calls(python):
     return [call[3] for call in calls(python) if call[:3] == ["python", "pip", "install"]]
-
-
-def under_heading(stdout, name):
-    return stdout.split("== %s ==\n" % name)[1].split("== ")[0].strip()
 
 
 # --- running tools ---
@@ -179,5 +158,3 @@ def mapped(run, repo, context, outside=None):
     context["map_commit"] = git(repo, "rev-parse", "--short", "HEAD")
 
 
-def lines(context):
-    return context["result"].stdout.splitlines()
