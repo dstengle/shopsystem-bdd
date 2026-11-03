@@ -17,7 +17,7 @@ codified language, for the tests of `model logic` (`scripts/spec_solve.py`). It 
 - **initiative** (kind): the delivery of one request's accepted lines.
 - **status** (attribute of initiative): Values: `proposed`, `started`, `done`, `abandoned`.
   Transitions: `proposed` → `started`: `work start`; `started` → `abandoned`: `work abandon`; `started` → `done`: complete.
-- **open** (condition of initiative): Means: its status is not `done` and not `abandoned`.
+- **open** (condition of initiative): An initiative is open when the initiative is not `done` and the initiative is not `abandoned`.
 - **request** (kind): what brings work into the context.
 - **status** (attribute of request): Values: `open`, `accepted`, `delivered`, `awaiting-asker`, `awaiting-upstream`.
   Transitions: `open` → `accepted`: accept; `accepted` → `delivered`: deliver; `awaiting-asker` → `awaiting-upstream`:
@@ -29,15 +29,30 @@ codified language, for the tests of `model logic` (`scripts/spec_solve.py`). It 
 - **round** (kind): a session of the kinds integrate, apply or formulate.
 - **round kind** (attribute of round): Values: integrate, apply, formulate.
 - **question** (kind): an open point.
+- **work-item** (kind): one unit of delivery.
+- **status** (attribute of work-item): Values: `drafted`, `ready`, `awaiting-answer`.
+- **result** (kind): what a session ends a stage with.
+- **outputless** (condition of result): A result is outputless when the result gives no question.
+- **session** (kind): a run of a worker.
 - **resource** (kind): what a session holds while it runs.
-- **free** (condition of resource): Means: no session holds it.
-- **for** (relation stage → initiative): the initiative a stage runs.
-- **for** (relation round → initiative): the initiative a round runs.
-- **needs** (relation stage → resource): what a stage must hold to start.
+- **free** (condition of resource): a resource no running session holds.
 - **start** (event): a stage or a round begins.
 - **end** (event): a stage or a round stops.
+- **ask** (event): Forms: asks, asked.
 - **take** (event): Forms: takes, taken.
 - **write** (event): Forms: writes, written.
 - **spec lock** (resource, exclusive): held by every integrate, apply and formulate round.
 - **initiative lock** (resource, exclusive): held by every round of an initiative.
 - **worker slot** (resource, counted by `workers`): held by every research stage.
+
+## Relations
+
+| from | word | to |
+|---|---|---|
+| stage | for | initiative |
+| round | for | initiative |
+| stage | needs | resource |
+| stage | for | work-item |
+| stage | with | result |
+| question | on | work-item |
+| result | gives | question |

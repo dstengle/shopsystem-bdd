@@ -11,10 +11,10 @@ retired: []
 
 ## Purpose
 
-The spike's cluster of supervision lines, codified. g2 is the old "one stage of an initiative at a time" written as a
-resource every stage holds, so it cannot hold with g5's research stages starting together (L1). g6–g8 are the same
-pacing written as the resources rounds and research stages hold (no finding). g3 and g4 restate r66 and r95 with one
-statement (L2). g9 sets a status off the transition table (L3), and g10's pre-state cannot be reached (L4).
+The spike's cluster of supervision lines, codified, for the tests of `model logic` on fixed ids. g11 and g12 say
+opposite things of one trigger (L1, each naming the other). g2 and g6–g8 are the old pacing written as the resources
+stages and rounds hold (no finding). g3 and g4 restate r66 and r95 with one statement (L2). g9 sets a status off the
+transition table (L3, through the transition guard), and g10's pre-state cannot be reached (L4).
 
 ## Behaviour
 
@@ -58,5 +58,8 @@ Restates: r20@0.29.
 
 ### [g11] `work start` starts a proposed initiative
 - [r11] When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to `started`.
+
+### [g12] `work start` leaves a proposed initiative as it is
+- [r12] When the person runs `work start` on an initiative that is `proposed`, `work` shall not set its status to `started`.
 
 ## Dropped

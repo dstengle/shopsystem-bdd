@@ -1,286 +1,298 @@
-"""Requirement trees as telingo program parts (design §12.1): one translation per core and typed fun.
+"""Requirement trees as telingo `&tel` formulas (design-r2 §5): one translation per fun, the only reading of a
+requirement's meaning in the plugin.
 
-A statement becomes one integrity constraint guarded by `on("<id>")`, so an unsatisfiable core names statements.
-A trigger is read at the step before its response (`'` in a `dynamic` part); a statement with no trigger holds in
-every state (`always`). Noun phrases are variables bound by their kind and modifiers, read universally, except an
-existential object of a response (`write a question`), which is a new thing `n("<id>",k)`. A group's witness
-(`witness`) makes its pre-state true at step 0 and its trigger at step 1 with things `w("<g>",k)`, two for a plural
-or `every`. The atoms are those `grammar/background.lp` reads: `kind/2`, `attr/3`, `rel/3`, `cond/2`, `does/3`,
-`ran/3`, `holds/2`, `given/1`.
+`translate(vocab, ident, tree)` gives a statement's constraints, one for each response conjunct, guarded by
+`on(<id>)`: `When T, S shall R` is `:- on(id), B, &tel{ T & ~ > (R) }` (the response at the next state), a statement
+with no trigger is `&tel{ C & ~ R }` in the same state, `shall not` drops the `~`. Beside them it gives a choice of
+each trigger and response pattern, the labels of its responses (`lab(Id, resp(i)|mod(i,j)|no(i), Atom)`, fired
+by the statement) and its signature facts (`trig/4`, `eff/4`, `uses/2`, `untriggered/1`, read by `grammar/cone.lp`).
+`witness(vocab, gid, tree, sid)` makes a group's features, condition and trigger hold at state 0 for bound instances
+(`bind/3`), labels them (`feat(i)`, `cond(i)`, `trig`, and `mod(0,j)` for the trigger's and the subject's
+restrictions), and asks for a contrast of each `every … that …` response object. `definition(vocab, tree)` is a
+condition's rule from its `Def` sentence. `program(parts)` puts `grammar/background.lp` first.
 """
 import re
+from collections import Counter, namedtuple
 from pathlib import Path
 
+import spec_logic_np as lnp
 import spec_tree
-from spec_logic_vocab import AMOUNT, Vocab, facts, means_values
+from spec_logic_np import Scope, atom, conj, const, neg, tel
+from spec_logic_vocab import AMOUNT, Vocab, facts, pools
 
 BACKGROUND = Path(__file__).resolve().parent.parent / "grammar" / "background.lp"
-ACTIONS = {"ExitOk": [("exit_ok", None)], "ExitErr": [("exit_error", 1)], "ChangeNothing": [("change_nothing", None)],
-           "RefuseErr": [("exit_error", 1), ("change_nothing", None)], "CommitPush": [("commit", 1), ("push", 1)]}
-__all__ = ["Vocab", "facts", "means_values", "program", "translate", "witness"]
+MINIMAL = "% --- the minimal trace"
+AUX = ("some(", "resp(", "obj(")
+Rules = namedtuple("Rules", "always initial dynamic sigs pools l3")
+__all__ = ["Rules", "Vocab", "definition", "facts", "pool_sizes", "program", "translate", "witness"]
 
 
-def _const(text):
-    return '"%s"' % str(text).replace("\\", "\\\\").replace('"', '\\"')
+class Translation(Scope):
+    """The clause and verb-phrase funs (§5.3, §5.5) over the noun phrases of `Scope`."""
 
-
-class Sentence:
-    """One statement's translation. In "rule" mode a noun phrase is a variable; in "witness" mode it is a thing."""
-
-    def __init__(self, vocab, ident, mode="rule"):
-        self.v, self.ident, self.mode = vocab, ident, mode
-        self.n, self.k, self.bound, self.facts, self.negated, self.skolem = 0, 0, {}, [], False, True
-
-    def fresh(self):
-        self.n += 1
-        if self.mode == "rule":
-            return "X%d" % self.n
-        name = "w(%s,%d)" % (_const(self.ident), self.n)
-        self.facts.append("thing(%s)." % name)
-        return name
-
-    def new_thing(self, kid):
-        self.k += 1
-        name = "n(%s,%d)" % (_const(self.ident), self.k)
-        self.facts += ["thing(%s)." % name, "kind(%s,%s)." % (name, kid)]
-        return name
-
-    # --- noun phrases ------------------------------------------------------------------------------------------
-    def np(self, t, skolem=False):
-        """(terms, literals) of a noun phrase: one term, or two for a plural in a witness."""
-        fun = t[0]
-        if fun in ("Only",) or fun.endswith("_toNP"):
-            return self.np(t[1], skolem)
-        if fun in ("CodeNP", "QuotedNP"):
-            return [_const(t[1][1])], []
-        cat, base, part = self.v.decode(fun)
-        if cat == "attribute" and part == "Of":
-            terms, lits = self.np(t[1])
-            return ["value(%s,%s)" % (base, terms[0])], lits
-        if cat == "attribute_word":
-            return [base], []
-        if cat != "kind":
-            return ["none"], []
-        if part == "Named":
-            name = _const(t[1][1])
-            if self.mode == "witness":
-                self.facts.append("thing(%s)." % name)
-            self.bound[base] = name
-            return [name], ["kind(%s,%s)" % (name, base)]
-        if part == "NumberOf":
-            return ["number(%s)" % base], []
-        if part in ("It", "The", "Its") and base in self.bound:
-            term = self.bound[base]
-            return [term], (self.cn(t[1], [term], top=False) if part != "It" else [])
-        if part == "No" and self.mode == "witness":
-            return ["none"], []
-        if part == "No" and skolem:
-            self.negated = True
-            skolem = False
-        if skolem and part in ("An", "One", "AtMostOne"):
-            return [self.new_thing(base)], []
-        many = self.mode == "witness" and part in ("Pl", "Every")
-        terms = [self.fresh() for _ in range(2 if many else 1)]
-        self.bound[base] = terms[0]
-        lits = self.cn(t[1], terms) if part != "It" else ["kind(%s,%s)" % (terms[0], base)]
-        return terms, lits
-
-    def cn(self, t, terms, top=True):
-        """The literals a common noun gives each of its terms."""
-        fun = t[0]
-        cat, base, part = self.v.decode(fun)
-        if cat == "kind" and part is None:
-            return ["kind(%s,%s)" % (x, base) for x in terms] if top else []
-        if cat == "relation":
-            inner = self.cn(t[1], terms, top)
-            others, lits = self.np(t[2])
-            return inner + ["rel(%s,%s,%s)" % (self.v.rels[base], x, others[0]) for x in terms] + lits
-        if cat == "attribute":
-            kid = self.v.attrs[base][0]
-            if part == "Pre":
-                head = ["kind(%s,%s)" % (x, kid) for x in terms] if top else []
-                return head + ["attr(%s,%s,%s)" % (x, base, self.v.value(t[1])) for x in terms]
-            inner = self.cn(t[1], terms, top)
-            return inner + [lit for x in terms for lit in self.values(x, base, t[2], part.endswith("Not"))]
-        if cat == "condition":
-            kid = self.v.conds[base]
-            if part == "Pre":
-                head = ["kind(%s,%s)" % (x, kid) for x in terms] if top else []
-                return head + ["cond(%s,%s)" % (base, x) for x in terms]
-            neg = "not " if part == "ThatIsNot" else ""
-            return self.cn(t[1], terms, top) + ["%scond(%s,%s)" % (neg, base, x) for x in terms]
-        return []
-
-    def values(self, x, tid, t, negated):
-        """`that is v`, `whose A is v1 or v2` (one of the values), and their negations (none of them)."""
-        vals = [self.v.value(m) for m in self.v.members(t)]
-        if negated:
-            return ["not attr(%s,%s,%s)" % (x, tid, v) for v in vals]
-        if len(vals) == 1:
-            return ["attr(%s,%s,%s)" % (x, tid, vals[0])]
-        key = "%s_%d" % (re.sub(r"\W", "_", self.ident).lower(), len(self.facts))
-        self.facts += ["vals(%s,%s)." % (key, v) for v in vals]
-        var = "V%s" % key
-        return ["attr(%s,%s,%s)" % (x, tid, var) if self.mode == "rule" else "attr(%s,%s,%s)" % (
-            x, tid, vals[0]), "vals(%s,%s)" % (key, var if self.mode == "rule" else vals[0])]
-
-    # --- clauses -----------------------------------------------------------------------------------------------
     def subject(self, t):
-        if t[0] == "ActorSubj":
-            return t[1][0], []
-        terms, lits = self.np(t[1])
-        return terms[0], lits
+        return (t[1][0], []) if t[0] == "ActorSubj" else self.np(t[1])
 
-    def command(self, t):
-        return _const(t[1][1]) if t[0] == "CmdCode" else t[1][0]
+    @staticmethod
+    def command(t):
+        return const(t[1][1]) if t[0] == "CmdCode" else t[1][0]
 
-    def trig(self, t):
+    def trigger(self, t):
+        """(formulas, the trigger's atom, its signature (P, E, term), the atom its choice is of)."""
         fun = t[0]
         if fun in ("Runs", "RunsOn"):
-            subj, lits = self.subject(t[1])
-            obj, more = self.np(t[3]) if fun == "RunsOn" else (["none"], [])
-            return lits + more + ["ran(%s,%s,%s)" % (subj, self.command(t[2]), obj[0])]
+            s, fs = self.subject(t[1])
+            x, gs = self.np(t[3]) if fun == "RunsOn" else ("none", [])
+            main = "ran(%s,%s,%s)" % (s, self.command(t[2]), x)
+            return fs + gs + [atom(main)], main, ("ran", self.command(t[2]), x), main
         if fun == "IsRun":
-            return ["ran(%s,%s,none)" % ("_" if self.mode == "rule" else "anyone", self.command(t[1]))]
+            c = self.command(t[1])
+            return [atom("ran_any(%s,none)" % c)], "ran_any(%s,none)" % c, ("ran", c, "none"), "ran(anyone,%s,none)" % c
         if fun in ("Happens", "HappensI"):
-            subj, lits = self.subject(t[1])
-            obj, more = self.np(t[3]) if fun == "Happens" else (["none"], [])
-            return lits + more + ["does(%s,%s,%s)" % (subj, t[2][0], o) for o in obj]
+            s, fs = self.subject(t[1])
+            x, gs = self.np(t[3]) if fun == "Happens" else ("none", [])
+            main = "does(%s,%s,%s)" % (s, t[2][0], x)
+            return fs + gs + [atom(main)], main, ("does(%s)" % self.who(s), t[2][0], x), main
         if fun == "Undergoes":
-            obj, lits = self.np(t[1])
-            who = "_" if self.mode == "rule" else "anyone"
-            return lits + ["does(%s,%s,%s)" % (who, t[2][0], o) for o in obj]
+            x, gs = self.np(t[1])
+            main = "done_to(%s,%s)" % (t[2][0], x)
+            return gs + [atom(main)], main, ("does(anyone)", t[2][0], x), "does(anyone,%s,%s)" % (t[2][0], x)
         cat, base, part = self.v.decode(fun)
         if cat == "attribute" and part == "Becomes":
-            terms, lits = self.np(t[1])
-            return lits + ["attr(%s,%s,%s)" % (x, base, self.v.value(t[2])) for x in terms]
-        return []
+            x, gs = self.np(t[1])
+            event = "set(%s,%s)" % (base, self.v.value(t[2]))
+            main = "set_to(%s,%s,%s)" % (x, base, self.v.value(t[2]))
+            return gs + [atom(main)], main, ("does(anyone)", event, x), "does(anyone,%s,%s)" % (event, x)
+        raise ValueError("no translation of the trigger %s" % fun)
 
-    def cond(self, t):
-        fun = t[0]
-        if fun == "CondOne":
-            return self.atom(t[1])
-        if fun == "CondAnd":
-            return self.atom(t[1]) + self.cond(t[2])
-        if fun == "FeatGiven":
-            self.facts.append("feature(%s)." % _const(t[1][1]))
-            return ["given(%s)" % _const(t[1][1])]
-        if fun == "FeatAtom":
-            return self.atom(t[1])
-        return []
+    def feature(self, t):
+        if t[0] == "FeatGiven":
+            self.facts.append("feature(%s)." % const(t[1][1]))
+            return [[atom("given(%s)" % const(t[1][1]))]]
+        return [self.atom_(t[1])]
 
-    def atom(self, t):
+    def clause(self, t):
+        """The items of a condition, one for each atom of its `and` (an `or` is one item)."""
+        if t[0] == "CondOne":
+            return [self.atom_(t[1])]
+        if t[0] == "CondAnd":
+            return [self.atom_(t[1])] + self.clause(t[2])
+        rest = self.clause(t[2])
+        return [[("|", [conj(self.atom_(t[1])), conj([f for item in rest for f in item])])]]
+
+    def atom_(self, t):
         fun = t[0]
         if fun in ("Holds", "HoldsA"):
-            terms, lits = self.np(t[1])
-            return lits + ["holds(%s,%s)" % (x, t[2][0]) for x in terms] + ["active(%s)" % x for x in terms]
+            return self.arg(t[1], lambda x: [atom("holds(%s,%s)" % (x, t[2][0])), atom("active(%s)" % x)])
         if fun == "IsFree":
-            return ["not over(%s)" % t[1][0]]
+            return [neg(atom("over(%s)" % t[1][0]))]
         cat, base, part = self.v.decode(fun)
-        terms, lits = self.np(t[1])
         if cat == "attribute":
-            neg = "not " if part == "IsNot" else ""
-            return lits + ["%sattr(%s,%s,%s)" % (neg, x, base, self.v.value(t[2])) for x in terms]
+            v = self.v.value(t[2])
+            return self.arg(t[1], lambda x: [neg(atom("attr(%s,%s,%s)" % (x, base, v))) if part == "IsNot"
+                                             else self.test(x, base, [v])])
         if cat == "condition":
-            neg = "not " if part == "IsNot" else ""
-            return lits + ["%scond(%s,%s)" % (neg, base, x) for x in terms]
-        return lits
+            return self.arg(t[1], lambda x: [(neg if part == "IsNot" else lambda f: f)(
+                atom("cond(%s,%s)" % (base, x)))])
+        if cat == "relation":
+            return self.arg(t[1], lambda x: self.arg(t[2], lambda y: [atom("rel(%s,%s,%s)" % (base, x, y))]))
+        raise ValueError("no translation of the clause %s" % fun)
 
-    def vp(self, t, subj):
-        """(heads, literals of the response's own noun phrases, count) of a verb phrase."""
-        fun = t[0]
-        if fun in ("Do", "DoTo"):
-            objs, lits = self.np(t[2], skolem=self.skolem)
-            if fun == "DoTo":
-                more, extra = self.np(t[3], skolem=self.skolem)
-                return ["does(%s,%s,%s)" % (subj, t[1][0], "pair(%s,%s)" % (objs[0], more[0]))], lits + extra, None
-            return ["does(%s,%s,%s)" % (subj, t[1][0], objs[0])], lits, None
+    def vp(self, t, s):
+        """The conjuncts of one verb phrase (`print X and Y` is one for each member). An effect's signature names
+        its doer (an actor, or the kind of the noun phrase), as a trigger's does: two never meet otherwise."""
+        fun, d = t[0], "does(%s)" % self.who(s)
+        if fun == "Do":
+            return [self.objects([t[2]], lambda x: ["does(%s,%s,%s)" % (s, t[1][0], x)], (d, t[1][0]))]
+        if fun == "DoTo":
+            return [self.objects([t[2], t[3]], lambda x, y: ["does(%s,%s,pair(%s,%s))" % (s, t[1][0], x, y)],
+                                 (d, t[1][0]))]
         if fun == "Print":
-            heads, lits = [], []
-            for member in self.v.members(t[1]):
-                objs, more = self.np(member, skolem=self.skolem)
-                heads.append("does(%s,print,%s)" % (subj, objs[0]))
-                lits += more
-            return heads, lits, None
-        if fun in ACTIONS:
-            objs, lits = self.np(t[1], skolem=self.skolem) if len(t) > 1 else (["none"], [])
-            return ["does(%s,%s,%s)" % (subj, act, objs[0] if arg else "none") for act, arg in ACTIONS[fun]], lits, None
+            return [self.objects([m], lambda x: ["does(%s,print,%s)" % (s, x)], (d, "print"))
+                    for m in self.v.members(t[1])]
+        if fun == "ExitErr":
+            return [self.objects([t[1]], lambda x: ["does(%s,exit_error,%s)" % (s, x)], (d, "exit_error"))]
+        if fun in ("ExitOk", "ChangeNothing"):
+            event = "exit_ok" if fun == "ExitOk" else "change_nothing"
+            return [lnp.plain(["does(%s,%s,none)" % (s, event)], eff=(d, event, "none"))]
         if fun in ("Hold", "HoldA"):
-            return ["holds(%s,%s)" % (subj, t[1][0])], [], None
+            return [lnp.plain(["holds(%s,%s)" % (s, t[1][0])], eff=("holds", t[1][0], self.who(s)))]
         if fun == "HoldAtMost":
-            count = t[1][1] if t[1][0] == "CountNum" else AMOUNT
-            return [], [], "#count{ Y : holds(Y,%s), active(Y) } > %s" % (t[2][0], count)
+            n = t[1][1] if t[1][0] == "CountNum" else AMOUNT
+            return [lnp.plain([], count="#count{ Y : holds(Y,%s), active(Y) } > %s" % (t[2][0], n))]
         cat, base, part = self.v.decode(fun)
         if cat == "attribute" and part == "Set":
-            terms, lits = self.np(t[1])
-            vid = self.v.value(t[2])
-            return ["attr(%s,%s,%s)" % (x, base, vid) for x in terms], lits, None
-        return [], [], None
+            x, fs = self.np(t[1])
+            v = self.v.value(t[2])
+            return [lnp.plain(["does(%s,set(%s,%s),%s)" % (s, base, v, x)], fs, [(base, v, x)],
+                           (d, "set(%s,%s)" % (base, v), x))]
+        raise ValueError("no translation of the verb phrase %s" % fun)
 
 
-def _prime(lit):
-    return lit[4:].join(("not '", "")) if lit.startswith("not ") else "'" + lit
+def _choice(text, kinds):
+    """`{ atom : kind(V1,K1), … }.` with the atom's lnp.variables renamed in order, so equal patterns are one rule."""
+    order = sorted(lnp.variables(text), key=lambda x: re.search(r"\b%s\b" % x, text).start())
+    out = re.sub(r"\b[XC]\d+\b", lambda m: "V%d" % (order.index(m.group()) + 1), text)
+    bound = ["kind(V%d,%s)" % (i, kinds[x]) if kinds[x] else "thing(V%d)" % i for i, x in enumerate(order, 1)]
+    return "{ %s%s }." % (out, " : " + ", ".join(bound) if bound else "")
 
 
-CHOOSABLE = ("does(", "ran(", "holds(")
+def _read(s, tree):
+    """(feature items, condition items, trigger or None, [(polarity, subject term, its restrictions, conjunct)])."""
+    p = spec_tree.parts(tree)
+    feat = s.feature(p["feat"]) if p["feat"] else []
+    cond = s.clause(p["cond"]) if p["cond"] else []
+    trig = s.trigger(p["trig"]) if p["trig"] else None
+    out = []
+    for polarity, subj, vp in p["resp"]:
+        term, smods = s.subject(subj)
+        out += [(polarity, term, smods, c) for c in s.vp(vp, term)]
+    return feat, cond, trig, out
+
+
+def _flat(items):
+    return [f for item in items for f in item]
 
 
 def translate(vocab, ident, tree):
-    """{"always", "dynamic"}: the constraint of one statement guarded by on(ident), a choice of each response it
-    asks for (so that only a constraint can refuse it), and the facts it needs."""
-    s = Sentence(vocab, ident)
-    parts = spec_tree.parts(tree)
-    pre = s.cond(parts["feat"]) if parts["feat"] else []
-    pre += s.cond(parts["cond"]) if parts["cond"] else []
-    trig = s.trig(parts["trig"]) if parts["trig"] else []
-    resp = parts["resp"]
-    subj, slits = s.subject(resp[1])
-    s.skolem = resp[0] == "Shall"
-    heads, olits, count = s.vp(resp[2], subj)
-    shall = resp[0] == "Shall" and not s.negated
-    body = pre + trig + slits + (olits if shall else [])
-    if parts["trig"]:
-        body = [_prime(x) for x in body]
-        olits = [_prime(x) for x in olits]
-    guard = ":- on(%s)" % _const(ident)
-    if count:
-        rules = [", ".join([guard] + body + [count]) + "."] if shall else []
-    elif shall:
-        rules = [", ".join([guard] + body + ["not " + h]) + "." for h in heads]
-        rules = ["{ %s }%s." % (h, " :- " + ", ".join(body) if body else "") for h in heads] + rules
+    """The Rules of one statement: its constraints, choices, response labels, signature and pool counts."""
+    s = Translation(vocab, ident)
+    feat, cond, trig, conjuncts = _read(s, tree)
+    tf, lid = (trig[0] if trig else []), const(ident)
+    always, sigs, l3 = ["#external on(%s)." % lid], [], []
+    if trig:
+        always.append(_choice(trig[3], s.kinds))
+        sigs.append("trig(%s,%s,%s,%s)." % (lid, trig[2][0], trig[2][1], s.kind_of(trig[2][2])))
     else:
-        rules = [", ".join([guard] + body + heads + olits) + "."] if heads else []
-    out = {"always": ["#external on(%s)." % _const(ident)] + s.facts, "dynamic": [], "initial": []}
-    out["dynamic" if parts["trig"] else "always"] += rules
-    return out
+        sigs.append("untriggered(%s)." % lid)
+    for i, (polarity, subj, smods, c) in enumerate(conjuncts, 1):
+        positive = (polarity == "Shall") != c.negate
+        pre = _flat(feat) + _flat(cond) + smods + c.pre
+        used = ["used(%s)" % subj] if tree[0] == "Ubiq" and subj in s.kinds else []
+        if c.count:
+            always += [", ".join([":- on(%s)" % lid] + used + [c.count]) + "."] if positive else []
+            continue
+        if c.locals:
+            head, shared = s.define("obj", [atom(h) for h in c.heads] + c.mods, c.locals, label=i)
+            resp = atom("resp(%s,%d,%s)" % (lid, i, lnp.tup(shared)))
+        else:
+            head, resp = None, conj([atom(h) for h in c.heads])
+        core = (">", resp) if trig else resp
+        formula = conj(pre + tf + [neg(core) if positive else core])
+        bound = s.binding(x for x in lnp.variables(tel(formula)) if x not in s.local)
+        always.append(", ".join([":- on(%s)" % lid] + bound + used + ["&tel{ %s }" % tel(formula)]) + ".")
+        always += [_choice(h, s.kinds) for h in c.heads]
+        always += _labels(s, lid, i, c, positive, conj(pre + tf), bool(trig), used, head)
+        if c.eff:
+            sigs.append("eff(%s,%s,%s,%s)." % (lid, c.eff[0], c.eff[1], s.kind_of(c.eff[2])))
+        for tid, v, x in c.sets:
+            l3.append((tid, v, sorted({w for y, t2, vals in s.tests if y == x and t2 == tid for w in vals})))
+    sigs += ["uses(%s,%s)." % (lid, k) for k in s.used_kinds()]
+    return Rules(always + s.aux + s.facts, [], [], sigs, s.counts(), l3)
 
 
-def witness(vocab, group, trees):
-    """The parts that make a group's pre-state true at step 0 and its trigger at step 1 (its responses are then due
-    at step 2): static facts for kinds and relations, a choice of each event it needs, and `wit(0)`/`wit(1)`."""
-    s = Sentence(vocab, group, mode="witness")
-    first = spec_tree.parts(trees[0]) if trees else dict.fromkeys(("feat", "cond", "trig", "resp"))
-    pre = []
-    for key in ("feat", "cond"):
-        pre += s.cond(first[key]) if first[key] else []
-    trig = s.trig(first["trig"]) if first["trig"] else []
-    if trees and trees[0][0] == "Ubiq":
-        pre += s.subject(first["resp"][1])[1]
-    static = [x + "." for x in pre + trig if x.startswith(("kind(", "rel("))]
-    pre, trig = ([x for x in lits if not x.startswith(("kind(", "rel(", "active("))] for lits in (pre, trig))
-    out = {"always": list(dict.fromkeys(s.facts + static)), "initial": ["__w0.", ":- not wit(0)."],
-           "dynamic": [":- '__w0, not wit(1)."]}
-    out["always"] += ["{ %s }." % x for x in dict.fromkeys(pre + trig) if x.startswith(CHOOSABLE)]
-    out["always"].append("wit(0)%s." % (" :- " + ", ".join(pre) if pre else ""))
-    out["always"].append("wit(1)%s." % (" :- " + ", ".join(pre + trig) if pre + trig else ""))
-    return out
+def _labels(s, lid, i, c, positive, fire, trig, used, head):
+    """The label rules of one response conjunct, fired when the statement fires (at the next state for a trigger)."""
+    firing = ["not &tel{ %s }" % tel(neg(("<", fire) if trig else fire))] if fire else []
+    fvars = [x for x in lnp.variables(tel(fire)) if x not in s.local] if fire else []
+    if head:
+        if not positive:
+            return []
+        body = ", ".join([head] + s.binding(x for x in fvars if x not in lnp.variables(head)) + used + firing)
+        out = ["lab(%s,resp(%d),%s) :- %s." % (lid, i, h, body) for h in c.heads]
+        mods = [x for x in lnp.leaves(conj(c.mods)) if not x[1].startswith(AUX)]
+        return out + ["lab(%s,mod(%d,%d),%s) :- %s." % (lid, i, j, a if pos else "neg(%s)" % a, body)
+                      for j, (pos, a) in enumerate(mods, 1)]
+    part = "resp" if positive else "no"
+    sign = "" if positive else "not "
+    return ["lab(%s,%s(%d),%s) :- %s." % (lid, part, i, h, ", ".join(
+        s.binding(set(fvars) | set(lnp.variables(h))) + used + [sign + h] + firing)) for h in c.heads]
 
 
-def program(parts):
-    """The telingo program text: the background theory, then each {part: rules} in order."""
-    text = [BACKGROUND.read_text()]
+def witness(vocab, gid, tree, sid=None):
+    """The Rules that make a group's clauses hold at state 0 for bound instances, with their labels and the contrast
+    of each `every … that …` object; `sid` is the statement whose `no(i)` labels the contrasts give."""
+    s = Translation(vocab, gid)
+    feat, cond, trig, conjuncts = _read(s, tree)
+    g = const(gid)
+    extra = [f for _, _, smods, c in conjuncts for f in smods + c.pre]
+    whole = conj(_flat(feat) + _flat(cond) + extra + (trig[0] if trig else []))
+    subjects = [subj for _, subj, _, _ in conjuncts if subj in s.kinds] if not trig else []
+    names = sorted(set((lnp.variables(tel(whole)) if whole else []) + subjects) - s.local, key=lnp.varkey)
+
+    def binds(xs):
+        return ["bind(%s,%s,%s)" % (g, const(x), x) for x in sorted(set(xs), key=lnp.varkey)]
+    init = ["1 { bind(%s,%s,V) : kind(V,%s) } 1." % (g, const(x), s.kinds[x]) for x in names]
+    init += [":- %s." % ", ".join(binds(names) + ["not &tel{ %s }" % tel(whole)])] if whole else []
+    init += [":- %s, not used(%s)." % (binds([x])[0], x) for x in subjects]
+    items = [("feat(%d)" % n, item) for n, item in enumerate(feat, 1)]
+    items += [("cond(%d)" % n, item) for n, item in enumerate(cond, 1)]
+    items += [("trig", [atom(trig[1])])] if trig else []
+    mods = [x for f in (trig[0][:-1] if trig else []) + extra for x in lnp.leaves(f) if not x[1].startswith(AUX)]
+    labelled = [(part, x) for part, item in items for x in lnp.leaves(conj(item)) if not x[1].startswith(AUX)]
+    labelled += [("mod(0,%d)" % n, x) for n, x in enumerate(mods, 1)]
+    for part, (pos, a) in labelled:
+        init.append("lab(%s,%s,%s) :- %s." % (g, part, a if pos else "neg(%s)" % a,
+                                             ", ".join(binds(lnp.variables(a)) + [a if pos else "not " + a])))
+    dynamic, counts = [], s.counts()
+    for i, (_, _, _, c) in enumerate(conjuncts, 1):
+        if c.universal and c.universal[2]:
+            counts[c.universal[1]] += 1
+            out = _contrast(s, g, const(sid or gid), i, c, names, binds, bool(trig))
+            init += out[0]
+            dynamic += out[1]
+    sigs = ["uses(%s,%s)." % (g, k) for k in s.used_kinds()]
+    if trig:
+        sigs.append("trig(%s,%s,%s,%s)." % (g, trig[2][0], trig[2][1], s.kind_of(trig[2][2])))
+        s.aux.append(_choice(trig[3], s.kinds))
+    return Rules(s.aux + s.facts, init, dynamic, sigs, counts, [])
+
+
+def _contrast(s, g, lid, i, c, names, binds, trig):
+    """(initial, dynamic) rules of one contrast: an instance of the object's kind that fails its restriction at state
+    0, and the `no(i)` label of the response it is not given (design-r2 §5.7's `not(i)`; `not` is clingo's)."""
+    y, kid, restriction = c.universal
+    name = "C%d" % i
+    fails = lnp.subst(conj(restriction), y, name)
+    others = [x for x in lnp.variables(tel(fails)) if x != name]
+    init = ["1 { bind(%s,%s,V) : kind(V,%s) } 1." % (g, const(name), kid),
+            ":- bind(%s,%s,V), bind(%s,%s,V)." % (g, const(name), g, const(y)),
+            ":- %s, &tel{ %s }." % (", ".join(binds([name] + [x for x in others if x in names])
+                                             + s.binding(x for x in others if x not in names)), tel(fails)),
+            "contrast(%s,%d,%s) :- bind(%s,%s,%s)." % (g, i, name, g, const(name), name)]
+    prime = "'" if trig else ""
+    labels = []
+    for h in (lnp.subst(atom(h), y, name)[1] for h in c.heads):
+        labels.append("lab(%s,no(%d),%s) :- %s." % (lid, i, h, ", ".join(
+            ["%scontrast(%s,%d,%s)" % (prime, g, i, name)]
+            + [prime + b for b in binds(x for x in lnp.variables(h) if x in names)] + ["not " + h])))
+    return (init, labels) if trig else (init + labels, [])
+
+
+def definition(vocab, tree):
+    """The rule of a condition defined by its `Def` sentence: `cond(c,X0) :- kind(X0,K), <the sentence's body>.`"""
+    cid, kid = vocab.def_funs[tree[0]]
+    s = Translation(vocab, "def:" + cid, bound={kid: "X0"})
+    out = []
+    for body in lnp.asp(conj(_flat(s.clause(tree[1])))):
+        names = [x for x in lnp.variables(" ".join(body)) if x not in s.local]
+        out.append("cond(%s,X0) :- %s." % (cid, ", ".join(s.binding(["X0"] + names) + body)))
+    return Rules(out + s.aux + s.facts, [], [], [], Counter(), [])
+
+
+def program(parts, optimise=False):
+    """The telingo program text: the background theory (its minimisation only when `optimise`), then each part."""
+    background = BACKGROUND.read_text()
+    text = [background if optimise else background.split(MINIMAL)[0]]
     for name in ("always", "initial", "dynamic"):
-        rules = [r for p in parts for r in p.get(name, [])]
+        rules = [r for p in parts for r in (getattr(p, name) if isinstance(p, Rules) else p.get(name, []))]
         if rules:
             text.append("#program %s.\n%s\n" % (name, "\n".join(dict.fromkeys(rules))))
     return "\n".join(text)
+
+
+def pool_sizes(parts):
+    """The pool of each kind for a program of these parts (spec_logic_vocab.pools): the most noun phrases of the kind
+    in any one part, so a cone of many statements does not multiply its instances (spec_engine retries larger)."""
+    return pools(Counter({k: max(p.pools[k] for p in parts if isinstance(p, Rules)) for k in
+                          {k for p in parts if isinstance(p, Rules) for k in p.pools}}))
