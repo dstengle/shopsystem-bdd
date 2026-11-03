@@ -48,6 +48,40 @@ class GlossaryFactsTest(ModelTest):
             'mentions("features/thing.feature:one", "shelf").',
             'mentions("features/thing.feature:the store answers", "store").']))
 
+    def test_a_typed_entry_is_read_by_its_term_and_its_not_words(self):
+        """The typed glossary of design model v5 (a category after the term), read by the 0.29 reader."""
+        self.write("spec/index.md", index(
+            "- **initiative** (kind): the delivery of one request's accepted lines. Plural: initiatives. Not: epic.",
+            "- **`work run`** (actor): the supervisor that runs nodes through their transitions.",
+            "- **status** (attribute of initiative): a node's place in its lifecycle. Values: `proposed`, `started`.",
+            "  Transitions: `proposed` → `started`: `work start`. Not: state.",
+            "- **status** (attribute of work-item): Values: `drafted`, `ready`. Not: state.",
+            "- **under** (relation work-item → capability-proposal): a work-item delivers part of a proposal.",
+            "- **spec lock** (resource, exclusive): held by every integrate, apply and formulate round."))
+        lines = self.facts()
+        entries = sorted(line.split(", ", 2)[2] for line in lines if line.startswith("glossary_entry("))
+        self.assertEqual(entries, sorted(['"initiative").', '"work run").', '"status").', '"status of work-item").',
+                                          '"under of work-item to capability-proposal").',
+                                          '"spec lock").']))
+        self.assertIn(f'avoid("{term("initiative")}", "epic").', lines)
+        self.assertIn(f'avoid("{term("status")}", "state").', lines)
+        self.assertIn(f'avoid("{term("status-of-work-item")}", "state").', lines)
+        self.assertEqual(len([e for e in entries if e.startswith('"status')]), 2)
+        self.assertIn(f'node("{term("work-run")}", "term").', lines)
+
+    def test_glossary_entry_reads_the_term_and_its_not_words(self):
+        from model_parse import glossary_entry
+        self.assertEqual(glossary_entry("**open** (condition of initiative): Means: its status is not `done`."),
+                         ("open of initiative", []))
+        self.assertEqual(glossary_entry("**failed** (condition of work-item): a stopped work-item. Means: its status "
+                                        "is `failed`. Not: aborted."), ("failed", ["aborted"]))
+        self.assertEqual(glossary_entry("**start** (event): Forms: starts, started. Not: begin, kick off."),
+                         ("start", ["begin", "kick off"]))
+        self.assertEqual(glossary_entry("**store**: a place. Not: shelf."), ("store", ["shelf"]))
+        self.assertIsNone(glossary_entry("**store** (): a place."))
+        self.assertIsNone(glossary_entry("**store** (kind) a place."))
+        self.assertIsNone(glossary_entry("**status** (attribute): no kind."))
+
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
 class GlossaryCheckTest(ModelTest):
