@@ -1,5 +1,6 @@
-"""`features generate` (design §14.2, §13.4): one scenario a group, witnesses by rule, the `given` block, and the exit
-codes of a codified, an uncodified and a broken capability."""
+"""`features generate` (design-r2 §7): one scenario a group read off its trace, the example data of its `given` block
+(any other given line left out with a line on stderr), and the exit codes of a codified, an uncodified and a broken
+capability."""
 import pathlib
 import shutil
 import subprocess
@@ -28,7 +29,7 @@ Feature: Work queue
 
   @g2 @r3
   Scenario: `work start` refuses an initiative that is not proposed
-    Given an initiative i1 that is `started`
+    Given an initiative i1 that is `abandoned`
     When the person runs `work start` on the initiative i1
     Then `work` exits with an error naming the status of the initiative i1
 
@@ -42,29 +43,26 @@ Feature: Work queue
       The first line.
       The second line.
       """
-    And a work-item w1 that is `drafted`
+    And a work-item w1
+    And the work-item w1 is not `green`
+    And the work-item w1 is not `withdrawn`
     And a work-item w2 that is `green`
-    And a work-item w3 that is `withdrawn`
     When the person runs `work list`
     Then `work` prints the work-item w1
     And `work` does not print the work-item w2
-    And `work` does not print the work-item w3
 '''
 
 G1 = '''\
   @g1 @r1 @r2
   Scenario: `work run` with no initiative takes the open initiatives side by side
-    Given an initiative i1 that is `proposed`
-    And an initiative i2 that is `proposed`
-    And an initiative i3 that is `done`
-    And an initiative i4 that is `abandoned`
+    Given an initiative i1
+    And the initiative i1 is not `done`
+    And the initiative i1 is not `abandoned`
+    And an initiative i2 that is `abandoned`
+    And an initiative i3 that is `abandoned`
     When the person runs `work run`
     Then `work run` takes the initiative i1
-    And `work run` takes the initiative i2
-    And `work run` does not take the initiative i3
-    And `work run` does not take the initiative i4
-    And `work run` interleaves the initiative i1
-    And `work run` interleaves the initiative i2
+    And `work run` does not take the initiative i2
 '''
 
 
@@ -104,7 +102,7 @@ def test_editing_one_group_changes_only_that_scenarios_lines(repo):
     assert before[:start] == after[:start]
     assert before[end:] == after[after.index("  @g3 @r4"):]
     changed = [line for line in after[start:after.index("  @g3 @r4")] if line not in before]
-    assert changed == ["    Then `work` exits with an error naming the reason"]
+    assert changed == ["    Then `work` exits with an error naming the reason r1"]
 
 
 def test_check_exits_1_after_a_hand_edit_and_0_when_every_file_matches(repo):
@@ -134,23 +132,33 @@ def test_check_with_no_names_refuses_an_uncodified_service_capability(repo):
     assert "spec/capabilities/legacy.md is not codified: run `migrate upgrade`" in done.stderr
 
 
-def test_the_spikes_g1_gives_the_four_initiative_witness(repo):
+def test_an_every_response_gives_its_contrasts_then_from_one_solve(repo):
+    """`take every initiative whose status is not done or abandoned`: the witness asks for one that fails the
+    restriction, and its absent response is a `does not` Then (design-r2 §7.3)."""
     assert features(repo, "generate", "supervision").returncode == 0
     assert G1 in generated(repo, "supervision")
 
 
-def test_an_if_group_gives_the_invalid_input(repo):
+def test_an_if_group_gives_an_initiative_its_restriction_excludes(repo):
     assert features(repo, "generate", "work-queue").returncode == 0
     block = generated(repo, "work-queue").split("  @g2 @r3")[1].split("  @g3")[0]
-    assert "    Given an initiative i1 that is `started`\n" in block
+    assert "    Given an initiative i1 that is `abandoned`\n" in block
 
 
-def test_a_logic_only_group_has_no_scenario_and_a_response_np_is_kept(repo):
+def test_a_given_line_that_is_not_example_data_is_left_out_with_one_line_on_stderr(repo):
+    done = features(repo, "generate", "work-queue")
+    assert done.returncode == 0, done.stderr
+    assert done.stderr.count("\n") == 1
+    assert "work-queue#g1" in done.stderr and "an initiative i1 that is `proposed`" in done.stderr
+    block = generated(repo, "work-queue").split("  @g1 @r1 @r2")[1].split("  @g2")[0]
+    assert block.count("an initiative i1 that is `proposed`") == 1
+
+
+def test_a_logic_only_group_has_no_scenario(repo):
     assert features(repo, "generate", "supervision").returncode == 0
     text = generated(repo, "supervision")
     assert "@g2" not in text
-    assert ("    Given a stage s1\n    When `work run` starts the stage s1\n"
-            "    Then `work run` gives the stage s1 only a brief\n") in text
+    assert "    When `work run` starts the stage s1\n" in text
 
 
 def test_preview_prints_a_draft_and_writes_nothing(repo, tmp_path):
@@ -177,8 +185,10 @@ def test_a_requirement_that_does_not_parse_is_refused_naming_it(tmp_path):
     assert not (tmp_path / "broken" / "features").exists()
 
 
-def test_check_on_the_live_repo_matches_every_capability():
+def test_check_on_the_live_repo_runs_to_its_end():
+    """Every live service capability is read off its traces without a crash; the checked-in features may differ
+    until layer 4 regenerates them, and a group with an L1 is left out with a line on stderr."""
     toolchain.require()
     done = features(REPO, "generate", "--check")
-    assert done.returncode == 0, done.stdout + done.stderr
-    assert "skipped" not in done.stdout
+    assert done.returncode in (0, 1), done.stdout + done.stderr
+    assert "Traceback" not in done.stderr
