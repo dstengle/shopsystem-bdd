@@ -47,8 +47,8 @@ def stand_in(step):
 
 # --- Givens ---
 
-@handler("GivenK", "interpreter")
-@handler("GivenK_A", "interpreter")
+@handler("GivenK", "Python interpreter")
+@handler("GivenK_A", "Python interpreter")
 def given_interpreter(step):
     name, ctx = bare(step.names[0]), step.context
     if step.values:
@@ -166,7 +166,7 @@ def expected(step, np):
     """What one noun phrase of a Then names in the output, or None when it names nothing to look for."""
     ctx, name = step.context, re.search(r"(`[^`]+`|\b[a-z]+[1-9]\d*)$", np)
     name = name.group(1) if name else None
-    if np.startswith("the interpreter"):
+    if np.startswith("the Python interpreter"):
         paths = {"`--python`": ctx.get("python"), "`sys.executable`": sys.executable,
                  "`$VIRTUAL_ENV/bin/python`": ctx.get("env_dir", pathlib.Path("/")) / "bin" / "python"}
         return str(paths.get(name) or (step.repo / bare(name) if name else "python: "))

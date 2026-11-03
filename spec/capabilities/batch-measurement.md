@@ -21,7 +21,7 @@ not know rather than guessing at it.
 - **session file** (kind): a stage's `session.json`, what `claude -p --output-format json` printed for its session.
 - **transcript** (kind): a session's JSONL transcript: Claude Code's own rows or the slim export's.
 - **fulfilled request** (kind): a request the measured initiative fulfils, named by its id.
-- **origin** (attribute of fulfilled request): whether the queue holds the request with an asker, and whether that
+- **standing** (attribute of fulfilled request): whether the queue holds the request with an asker, and whether that
   asker is this bounded context. Values: `internal`, `external`, `unheld`, `askerless`.
 - **logged stage** (kind): a stage the initiative log gives a start for, run in one session.
 - **ending** (attribute of logged stage): whether the initiative log gives the stage an end. Values: `ended`, `unended`.

@@ -17,10 +17,10 @@ references to a name, and the lint tools of `tools check`. It is not a test runn
 file; it prints what the tools found and names a tool that is missing rather than skipping it.
 
 ## Terms
-- **interpreter** (kind): the Python `tools` runs the analysis tools with: the one `--python` gives, else
+- **Python interpreter** (kind): the Python `tools` runs the analysis tools with: the one `--python` gives, else
   `.venv/bin/python` or `venv/bin/python` under the current directory, else `$VIRTUAL_ENV/bin/python`, else the one
   running the script, the first of these whose file exists.
-- **environment** (attribute of interpreter): whether pip installs into a virtualenv. Values: `virtualenv`, `system`.
+- **environment** (attribute of Python interpreter): whether pip installs into a virtualenv. Values: `virtualenv`, `system`.
 - **analysis tool** (kind): a package `tools` probes and installs: coverage, pytest-cov, jedi, ast-grep, ruff,
   vulture, import-linter and hypothesis.
 - **presence** (attribute of analysis tool): whether the interpreter has the tool, and whether pip can install it.
@@ -41,51 +41,51 @@ file; it prints what the tools found and names a tool that is missing rather tha
 
 ## Behaviour
 
-### [g1] `--python` gives the interpreter
+### [g1] `--python` gives the Python interpreter
 Restates: r1@0.29.
-- [r1] Where `--python` is given, when the person runs `tools probe`, `tools` shall print the interpreter `--python`.
+- [r1] Where `--python` is given, when the person runs `tools probe`, `tools` shall print the Python interpreter `--python`.
 
-### [g2] `.venv/bin/python` is the interpreter when it exists
+### [g2] `.venv/bin/python` is the Python interpreter when it exists
 Restates: r1@0.29.
-- [r2] When the person runs `tools probe`, `tools` shall print the interpreter.
+- [r2] When the person runs `tools probe`, `tools` shall print the Python interpreter.
 
 ```given
-an interpreter `.venv/bin/python`
+a Python interpreter `.venv/bin/python`
 ```
 
-### [g3] `venv/bin/python` is the interpreter when it exists and `.venv/bin/python` does not
+### [g3] `venv/bin/python` is the Python interpreter when it exists and `.venv/bin/python` does not
 Restates: r1@0.29.
-- [r3] When the person runs `tools probe`, `tools` shall print the interpreter.
+- [r3] When the person runs `tools probe`, `tools` shall print the Python interpreter.
 
 ```given
-an interpreter `venv/bin/python`
+a Python interpreter `venv/bin/python`
 ```
 
-### [g4] `$VIRTUAL_ENV/bin/python` is the interpreter when there is no project virtualenv
+### [g4] `$VIRTUAL_ENV/bin/python` is the Python interpreter when there is no project virtualenv
 Restates: r1@0.29.
-- [r4] When the person runs `tools probe`, `tools` shall print the interpreter.
+- [r4] When the person runs `tools probe`, `tools` shall print the Python interpreter.
 
 ```given
-an interpreter `$VIRTUAL_ENV/bin/python`
+a Python interpreter `$VIRTUAL_ENV/bin/python`
 ```
 
-### [g5] the interpreter running the script is the interpreter when there is no other
+### [g5] the Python interpreter running the script is the Python interpreter when there is no other
 Restates: r1@0.29.
-- [r5] When the person runs `tools probe`, `tools` shall print the interpreter `sys.executable`.
+- [r5] When the person runs `tools probe`, `tools` shall print the Python interpreter `sys.executable`.
 
 ### [g6] `.venv/bin/python` comes before `venv/bin/python`
 Restates: r1@0.29.
-- [r6] When the person runs `tools probe`, `tools` shall print the interpreter `.venv/bin/python`.
-- [r7] When the person runs `tools probe`, `tools` shall not print the interpreter `venv/bin/python`.
+- [r6] When the person runs `tools probe`, `tools` shall print the Python interpreter `.venv/bin/python`.
+- [r7] When the person runs `tools probe`, `tools` shall not print the Python interpreter `venv/bin/python`.
 
 ```given
-an interpreter `venv/bin/python`
-an interpreter `.venv/bin/python`
+a Python interpreter `venv/bin/python`
+a Python interpreter `.venv/bin/python`
 ```
 
-### [g7] `tools probe` prints each analysis tool and the interpreter
+### [g7] `tools probe` prints each analysis tool and the Python interpreter
 Restates: r3@0.29.
-- [r8] When the person runs `tools probe`, `tools` shall print every analysis tool and the interpreter.
+- [r8] When the person runs `tools probe`, `tools` shall print every analysis tool and the Python interpreter.
 - [r9] When the person runs `tools probe`, `tools` shall exit successfully.
 
 ### [g8] `tools probe` exits with an error naming a missing analysis tool
@@ -102,41 +102,41 @@ Restates: r4@0.29.
 
 ### [g10] `tools install` installs a missing analysis tool and changes no dependency file
 Restates: r5@0.29.
-- [r12] While an interpreter is `virtualenv`, when the person runs `tools install`, `tools` shall install every analysis tool that is `missing`.
-- [r13] While an interpreter is `virtualenv`, when the person runs `tools install`, `tools` shall change nothing.
+- [r12] While a Python interpreter is `virtualenv`, when the person runs `tools install`, `tools` shall install every analysis tool that is `missing`.
+- [r13] While a Python interpreter is `virtualenv`, when the person runs `tools install`, `tools` shall change nothing.
 
 ```given
-an interpreter `.venv/bin/python` that is `virtualenv`
+a Python interpreter `.venv/bin/python` that is `virtualenv`
 the dependency file `requirements.txt` holds "pytest"
 ```
 
 ### [g11] `tools install` installs the one version of ruff the plugin pins
 Restates: r58@0.29.
-- [r14] While an analysis tool is `missing` and an interpreter is `virtualenv`, when the person runs `tools install`, `tools` shall install `ruff==0.17.0`.
+- [r14] While an analysis tool is `missing` and a Python interpreter is `virtualenv`, when the person runs `tools install`, `tools` shall install `ruff==0.17.0`.
 
 ```given
 an analysis tool `ruff` that is `missing`
-an interpreter `.venv/bin/python` that is `virtualenv`
+a Python interpreter `.venv/bin/python` that is `virtualenv`
 ```
 
-### [g12] `tools install` installs nothing into an interpreter that is not a virtualenv
+### [g12] `tools install` installs nothing into a Python interpreter that is not a virtualenv
 Restates: r6@0.29.
-- [r15] While an analysis tool is `missing` and an interpreter is `system`, when the person runs `tools install`, `tools` shall not install `jedi`.
-- [r16] While an analysis tool is `missing` and an interpreter is `system`, when the person runs `tools install`, `tools` shall exit with an error naming the analysis tool.
+- [r15] While an analysis tool is `missing` and a Python interpreter is `system`, when the person runs `tools install`, `tools` shall not install `jedi`.
+- [r16] While an analysis tool is `missing` and a Python interpreter is `system`, when the person runs `tools install`, `tools` shall exit with an error naming the analysis tool.
 
 ```given
 an analysis tool `jedi` that is `missing`
-an interpreter `.venv/bin/python` that is `system`
+a Python interpreter `.venv/bin/python` that is `system`
 ```
 
 ### [g13] an analysis tool still missing after `tools install` is printed with the failed command
 Restates: r7@0.29.
-- [r17] While an analysis tool is `uninstallable` and an interpreter is `virtualenv`, when the person runs `tools install`, `tools` shall exit with an error naming the analysis tool.
-- [r44] While an analysis tool is `uninstallable` and an interpreter is `virtualenv`, when the person runs `tools install`, `tools` shall print `pip install`.
+- [r17] While an analysis tool is `uninstallable` and a Python interpreter is `virtualenv`, when the person runs `tools install`, `tools` shall exit with an error naming the analysis tool.
+- [r44] While an analysis tool is `uninstallable` and a Python interpreter is `virtualenv`, when the person runs `tools install`, `tools` shall print `pip install`.
 
 ```given
 an analysis tool `jedi` that is `uninstallable`
-an interpreter `.venv/bin/python` that is `virtualenv`
+a Python interpreter `.venv/bin/python` that is `virtualenv`
 ```
 
 ### [g14] `tools map` writes the coverage map whether or not the tests pass

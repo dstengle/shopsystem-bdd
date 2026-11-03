@@ -3,51 +3,51 @@ Feature: Analysis tools
   Narrator: a session researching or reviewing a project's code
 
   @g1 @r1
-  Scenario: `--python` gives the interpreter
+  Scenario: `--python` gives the Python interpreter
     Given `--python` is given
-    And an interpreter `--python`
+    And a Python interpreter `--python`
     When the person runs `tools probe`
-    Then `tools` prints the interpreter `--python`
+    Then `tools` prints the Python interpreter `--python`
 
   @g2 @r2
-  Scenario: `.venv/bin/python` is the interpreter when it exists
-    Given an interpreter `.venv/bin/python`
+  Scenario: `.venv/bin/python` is the Python interpreter when it exists
+    Given a Python interpreter `.venv/bin/python`
     When the person runs `tools probe`
-    Then `tools` prints the interpreter `.venv/bin/python`
+    Then `tools` prints the Python interpreter `.venv/bin/python`
 
   @g3 @r3
-  Scenario: `venv/bin/python` is the interpreter when it exists and `.venv/bin/python` does not
-    Given an interpreter `venv/bin/python`
+  Scenario: `venv/bin/python` is the Python interpreter when it exists and `.venv/bin/python` does not
+    Given a Python interpreter `venv/bin/python`
     When the person runs `tools probe`
-    Then `tools` prints the interpreter `venv/bin/python`
+    Then `tools` prints the Python interpreter `venv/bin/python`
 
   @g4 @r4
-  Scenario: `$VIRTUAL_ENV/bin/python` is the interpreter when there is no project virtualenv
-    Given an interpreter `$VIRTUAL_ENV/bin/python`
+  Scenario: `$VIRTUAL_ENV/bin/python` is the Python interpreter when there is no project virtualenv
+    Given a Python interpreter `$VIRTUAL_ENV/bin/python`
     When the person runs `tools probe`
-    Then `tools` prints the interpreter `$VIRTUAL_ENV/bin/python`
+    Then `tools` prints the Python interpreter `$VIRTUAL_ENV/bin/python`
 
   @g5 @r5
-  Scenario: the interpreter running the script is the interpreter when there is no other
-    Given an interpreter `sys.executable`
+  Scenario: the Python interpreter running the script is the Python interpreter when there is no other
+    Given a Python interpreter `sys.executable`
     When the person runs `tools probe`
-    Then `tools` prints the interpreter `sys.executable`
+    Then `tools` prints the Python interpreter `sys.executable`
 
   @g6 @r6 @r7
   Scenario: `.venv/bin/python` comes before `venv/bin/python`
-    Given an interpreter `venv/bin/python`
-    And an interpreter `.venv/bin/python`
-    And an interpreter `.venv/bin/python`
-    And an interpreter `venv/bin/python`
+    Given a Python interpreter `venv/bin/python`
+    And a Python interpreter `.venv/bin/python`
+    And a Python interpreter `.venv/bin/python`
+    And a Python interpreter `venv/bin/python`
     When the person runs `tools probe`
-    Then `tools` prints the interpreter `.venv/bin/python`
-    And `tools` does not print the interpreter `venv/bin/python`
+    Then `tools` prints the Python interpreter `.venv/bin/python`
+    And `tools` does not print the Python interpreter `venv/bin/python`
 
   @g7 @r8 @r9
-  Scenario: `tools probe` prints each analysis tool and the interpreter
+  Scenario: `tools probe` prints each analysis tool and the Python interpreter
     Given an analysis tool a1
     When the person runs `tools probe`
-    Then `tools` prints the analysis tool a1 and the interpreter
+    Then `tools` prints the analysis tool a1 and the Python interpreter
     And `tools` exits successfully
 
   @g8 @r10
@@ -64,7 +64,7 @@ Feature: Analysis tools
 
   @g10 @r12 @r13
   Scenario: `tools install` installs a missing analysis tool and changes no dependency file
-    Given an interpreter `.venv/bin/python` that is `virtualenv`
+    Given a Python interpreter `.venv/bin/python` that is `virtualenv`
     And the dependency file `requirements.txt` holds "pytest"
     And an analysis tool a1 that is `missing`
     And an analysis tool a2 that is `installed`
@@ -76,14 +76,14 @@ Feature: Analysis tools
   @g11 @r14
   Scenario: `tools install` installs the one version of ruff the plugin pins
     Given an analysis tool `ruff` that is `missing`
-    And an interpreter `.venv/bin/python` that is `virtualenv`
+    And a Python interpreter `.venv/bin/python` that is `virtualenv`
     When the person runs `tools install`
     Then `tools` installs `ruff==0.17.0`
 
   @g12 @r15 @r16
-  Scenario: `tools install` installs nothing into an interpreter that is not a virtualenv
+  Scenario: `tools install` installs nothing into a Python interpreter that is not a virtualenv
     Given an analysis tool `jedi` that is `missing`
-    And an interpreter `.venv/bin/python` that is `system`
+    And a Python interpreter `.venv/bin/python` that is `system`
     When the person runs `tools install`
     Then `tools` does not install `jedi`
     And `tools` exits with an error naming the analysis tool `jedi`
@@ -91,7 +91,7 @@ Feature: Analysis tools
   @g13 @r17 @r44
   Scenario: an analysis tool still missing after `tools install` is printed with the failed command
     Given an analysis tool `jedi` that is `uninstallable`
-    And an interpreter `.venv/bin/python` that is `virtualenv`
+    And a Python interpreter `.venv/bin/python` that is `virtualenv`
     When the person runs `tools install`
     Then `tools` exits with an error naming the analysis tool `jedi`
     And `tools` prints `pip install`
