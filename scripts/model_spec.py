@@ -89,14 +89,17 @@ class SpecReading:
         return p.tree
 
     def given(self, gid, lines):
-        """given_unparsed(G, Line) for a given line the Steps grammar refuses, once that grammar exists (plan P7)."""
+        """given_unparsed(G, Line) for a given line the typed Steps grammar (features_vocab) refuses as a Given."""
+        import features_vocab
         import spec_grammar
         try:
-            spec_grammar.load(self.root, "Steps")
-        except (ImportError, spec_grammar.GrammarError):    # no Steps grammar yet, or no tools: parsed() says which
+            vocab = features_vocab.load(self.root)
+        except (ImportError, spec_grammar.GrammarError):    # no tools: parsed() says which
             return
         for line, _ in lines:
-            if spec_grammar.parse(self.root, line, "Steps").tree is None:
+            try:
+                features_vocab.parse(vocab, "given", line)
+            except features_vocab.StepError:
                 self.fact("given_unparsed", gid, line)
 
     def read_codified(self, cap, path, entry):

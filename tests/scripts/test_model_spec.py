@@ -176,6 +176,12 @@ class FactsTest(CodifiedTest):
         self.assertIn(f'retired_group("{WQ}", 4).', f)
         self.assertIn(f'retired_id("{WQ}", 9).', f)
 
+    def test_a_given_line_is_read_by_the_typed_steps_grammar(self):
+        given = ["", "```given", "an initiative i1 that is `proposed`", "the initiative i1 frobs widgets", "```"]
+        self.write("spec/capabilities/wq.md", codified("wq", self.start_group(*given)))
+        unparsed = [x for x in self.facts() if x.startswith("given_unparsed(")]
+        self.assertEqual(unparsed, [f'given_unparsed("{WQ}#g1", "the initiative i1 frobs widgets").'])
+
 
 class CheckTest(CodifiedTest):
     def test_a_line_that_does_not_parse_is_v_p1(self):
