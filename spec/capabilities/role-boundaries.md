@@ -26,7 +26,6 @@ Bash can still write files through the shell, which is why `work run` verifies t
 - **`spec-checker`** (actor): the agent `checking-spec-consistency` dispatches to read the spec for findings.
 - **`trial-runner`** (actor): the agent that runs one trial.
 - **read** (event): a session or a tool reads a file. Forms: reads, read.
-- **push** (event): a commit is pushed to a remote. Forms: pushes, pushed.
 - **show** (event): a session shows the person a thing. Forms: shows, shown.
 - **name** (event): a message or a file names a thing. Forms: names, named.
 - **list** (event): a session or a file lists things. Forms: lists, listed.

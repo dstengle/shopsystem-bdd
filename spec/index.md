@@ -164,6 +164,7 @@ Tools the skills and agents run:
 - **work-item branch** (kind): the branch an implementer commits a work-item's work on, from the initiative branch's head, merged into the initiative branch and deleted when it is merged. Plural: work-item branches.
 - **commit** (kind): one git commit on a branch.
 - **commit** (event): a session, a tool or `work` records changed files as one git commit on the current branch. Forms: commits, committed.
+- **push** (event): a commit is pushed to a remote. Forms: pushes, pushed.
 - **relocate** (event): a file or directory is moved with git, keeping its history. Forms: relocates, relocated.
 - **use** (event): a session or a tool uses another tool, a model, an interpreter or a file. Forms: uses, used.
 - **test** (kind): one test of the repository's suite, a scenario's or a script's, by its pytest id.
