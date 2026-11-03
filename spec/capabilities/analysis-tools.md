@@ -31,7 +31,7 @@ file; it prints what the tools found and names a tool that is missing rather tha
 - **Python file** (kind): a tracked file with a `.py` extension or a `python` shebang, tests included.
 - **function** (kind): a function or method of a Python file.
 - **reference** (kind): a use of a name the project defines, through an import or an alias included, written
-  `path:line`; a definition is none.
+  `path:line`.
 - **finding** (kind): what ruff, vulture or import-linter reports.
 - **dependency file** (kind): a file that lists a project's dependencies (`pyproject.toml`, `requirements.txt`, ...).
 - **install** (event): `tools` puts an analysis tool into the interpreter with pip. Forms: installs, installed.

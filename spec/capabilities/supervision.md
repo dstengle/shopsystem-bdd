@@ -23,57 +23,61 @@ and analysis and commits them, and sets the initiative `done`, committing it, wh
 decide goes to the person as a question.
 
 ## Terms
-- **for** (relation stage → work-item): the work-item a worker's stage is started for.
-- **for** (relation stage → initiative): the initiative an `integrate` round, a branch review or an analysis is started for.
-- **for** (relation stage → capability-proposal): the capability-proposal a round is started for.
-- **for** (relation stage → glossary-proposal): the glossary-proposal a round is started for.
-- **for** (relation stage → request): the request an `intake` round is started for.
-- **for** (relation stage → question): the question an `answer` stage is started for.
-- **on** (relation question → work-item): the work-item a question is written in, under its `## Questions`.
+- **on** (relation question → work-item): the work-item a question is written in.
 - **on** (relation question → capability-proposal): the capability-proposal a question is written in.
 - **on** (relation question → glossary-proposal): the glossary-proposal a question is written in.
-- **on** (relation question → request): the request a question is written in.
-- **on** (relation stage → work-item branch): the branch an `implement` stage works on.
 - **draft** (event): `work run` writes a node with `work add` or from a change list. Forms: drafts, drafted.
 - **take** (event): `work run` takes an initiative through the transitions its nodes can make. Forms: takes, took, taken.
-- **log** (event): `work run` appends a line to `.shop/work/<initiative>/log.jsonl` with the time, the node, the stage, the agent and the session id. Forms: logs, logged.
+- **log** (event): `work run` appends a line to `.shop/work/<initiative>/log.jsonl`. Forms: logs, logged.
 - **restore** (event): `work run` puts a file back as its last commit has it, or removes it where that commit has none. Forms: restores, restored.
 - **remove** (event): `work run` removes a worktree it made. Forms: removes, removed.
-- **output** (kind): what a stage's result gives as its stage's work: a researcher's file set, empty or not; a planner's plan and file set; an implementer's commits on which the work-item's scenarios and the suite pass; a reviewer's findings; an answering session's answer; an `integrate` or `apply` round's change list, or an `apply` round's answers its drafts do not hold; an `intake` round's line outcome or question on each line of its request; a `gate` round's questions.
-- **change list** (kind): the list an `integrate` or `apply` round's result gives of the requirement ids and the terms it adds, changes and removes, under each capability and the glossary.
+- **output** (kind): what a stage's result gives as its stage's work.
+- **change list** (kind): the list an `integrate` or `apply` round's result gives of what it adds, changes and removes.
 - **draft** (kind): a file an `integrate` round writes under its drafts path, kept on the initiative branch. Plural: drafts.
-- **tool list** (kind): what `work run` gives a worker to work with: this plugin's own directory as its plugin; the tools of its agent less any bare Write or Edit, or the stage's `[allowed_tools]` of `.shop/delivery.toml` less any bare Write or Edit; Bash only for `python3 -m pytest`, the plugin's scripts its stage runs, by path, and the git commands its stage needs; and `Skill` for each skill its agent lists.
-- **worker brief** (kind): the brief of a worker: it names the work-item, the files to read, where its result goes, the plugin's scripts directory, the initiative branch's base, the worker's worktree and its work-item branch; it tells the worker that it starts in its worktree and never changes directory, and to write its result first with the outcome `PARTIAL` and keep it current; it holds each answer of the work-item with the question it answers; a researcher's gives the work-item's file set and accepted scenarios and a limit of 80 turns; an implementer's says how the suite ended in its worktree before it started and, for a work-item an answer to its reviewer's question returned to `ready`, the reviewer's findings and the answer.
-- **round brief** (kind): the brief of a round: an `integrate` round's gives the accepted lines of the request its initiative fulfils, every requirement id that the kept drafts of another initiative, not yet applied, add, and, for a proposal that has answers, its questions and answers and the initiative's ledger; a `gate` round's asks only for the questions on what its proposal adds, changes or removes, each a decision with its readings and the recommended reading marked; a `gate` or `apply` round's gives the path of the kept drafts of the `integrate` round that wrote its proposal, and an `apply` round's the answers.
-- **review brief** (kind): the brief of a branch review: each run made at the initiative branch's head before it starts (the suite, each work-item's scenarios, each check a work-item names, `tools check`, `tools size`, `features deprecated` and `features bindings`) with its command, its exit code and its output and the commit they ran at; the commits from the initiative branch's base to its head, each with the work-item it belongs to or none; the change of that range less `.shop/`; and the files to read: the capabilities the work-items are under, the design-decisions those rest on, and each work-item's plan, implementer's report and review findings.
-- **faulty** (condition of session): Means: it ends in an error or at its turn limit, or leaves output that holds no JSON result.
-- **meddling** (condition of session): Means: it changes a file under `.shop/work/` outside its stage directory.
-- **littering** (condition of session): Means: while it works, a file under `.shop/work/` of the checkout changes and is left uncommitted.
-- **crossing** (condition of session): Means: while it works, a session of another initiative that `work run` runs side by side commits a file of that other initiative and a change to a file of its own.
-- **outputless** (condition of result): Means: it gives neither a question nor its stage's output.
-- **setless** (condition of result): Means: it gives an empty file set.
-- **listless** (condition of result): Means: it gives no change list.
-- **glossarial** (condition of result): Means: its change list names the glossary.
-- **raising** (condition of result): Means: it gives the lines of a request into an upstream.
-- **awaited** (condition of result): Means: it gave the lines of a request into an upstream, and that request is not `delivered`.
-- **strange** (condition of result): Means: its change list names a capability that neither `spec/capabilities/` nor its drafts have.
-- **unheld** (condition of result): Means: it gives an answer that the drafts its stage applied do not hold.
-- **fixing** (condition of result): Means: it gives a question listing review findings to fix now.
-- **unparsing** (condition of result): Means: a requirement its drafts hold does not parse, or the logic check on the spec with its drafts finds an L1 or an L3.
-- **naming** (condition of result): Means: it names a report the session wrote in its worktree.
-- **unpushable** (condition of remote): Means: it refuses every push.
-- **ahead** (condition of initiative branch): Means: it has commits its remote does not have.
-- **reviewed** (condition of initiative branch): Means: a kept branch review has read every commit on it but the kept branch reviews' own.
-- **gitless** (condition of initiative branch): Means: the repository it would be in is not a git repository.
-- **lost** (condition of work-item branch): Means: its implementer deleted it before `work run` merged it.
-- **kept** (condition of work-item branch): Means: `work run` kept it when its work-item became `awaiting-answer`.
-- **flaky** (condition of work-item branch): Means: a scenario fails on it once and passes on its second run alone.
-- **dirty** (condition of file): Means: it is under `.shop/work/` and differs from its last commit.
-- **answered** (condition of question): Means: an answer to it is written under its node's `## Answers`.
-- **bare** (condition of initiative): Means: it fulfils a request and has no capability-proposal, no glossary-proposal and no work-item.
-- **itemless** (condition of initiative): Means: no work-item is kept in it.
-- **codified** (condition of change list): Means: every capability it names has `language: codified-1` in its file.
-- **uncodified** (condition of change list): Means: a service capability it names has no `language: codified-1` in its file.
+- **tool list** (kind): what `work run` gives a worker to work with.
+- **worker brief** (kind): the brief `work run` gives a worker.
+- **round brief** (kind): the brief `work run` gives a round.
+- **review brief** (kind): the brief `work run` gives a branch review.
+- **faulty** (condition of session): a session that ends in an error or at its turn limit, or leaves output that holds no JSON result.
+- **meddling** (condition of session): a session that changes a file under `.shop/work/` outside its stage directory.
+- **littering** (condition of session): a session during whose work a file under `.shop/work/` of the checkout changes and is left uncommitted.
+- **crossing** (condition of session): a session during whose work a session of another initiative that `work run` runs side by side commits a file of that other initiative and a change to a file of its own.
+- **outputless** (condition of result): A result is outputless when the result gives no question and the result gives no output.
+- **setless** (condition of result): a result that gives an empty file set.
+- **listless** (condition of result): A result is listless when the result gives no change list.
+- **glossarial** (condition of result): a result whose change list names the glossary.
+- **raising** (condition of result): a result that gives the lines of a request into an upstream.
+- **awaited** (condition of result): a result that gave the lines of a request into an upstream, where that request is not `delivered`.
+- **strange** (condition of result): a result whose change list names a capability that neither `spec/capabilities/` nor its drafts have.
+- **unheld** (condition of result): a result that gives an answer the drafts its stage applied do not hold.
+- **fixing** (condition of result): a result that gives a question listing review findings to fix now.
+- **unparsing** (condition of result): a result whose drafts hold a requirement that does not parse, or with whose drafts the logic check on the spec finds an L1 or an L3.
+- **naming** (condition of result): a result that names a report its session wrote in its worktree.
+- **unpushable** (condition of remote): a remote that refuses every push.
+- **ahead** (condition of initiative branch): an initiative branch with commits its remote does not have.
+- **reviewed** (condition of initiative branch): an initiative branch whose every commit but the kept branch reviews' own a kept branch review has read.
+- **gitless** (condition of initiative branch): an initiative branch whose repository would not be a git repository.
+- **lost** (condition of work-item branch): a work-item branch its implementer deleted before `work run` merged it.
+- **kept** (condition of work-item branch): a work-item branch `work run` kept when its work-item became `awaiting-answer`.
+- **flaky** (condition of work-item branch): a work-item branch on which a scenario fails once and passes on its second run alone.
+- **dirty** (condition of file): a file under `.shop/work/` that differs from its last commit.
+- **answered** (condition of question): a question with an answer written under its node's `## Answers`.
+- **bare** (condition of initiative): an initiative that fulfils a request and has no capability-proposal, no glossary-proposal and no work-item.
+- **itemless** (condition of initiative): an initiative in which no work-item is kept.
+- **codified** (condition of change list): a change list whose every capability has `language: codified-1` in its file.
+- **uncodified** (condition of change list): a change list that names a service capability with no `language: codified-1` in its file.
+
+## Relations
+
+| from | word | to | cardinality |
+|---|---|---|---|
+| stage | for | request |  |
+| stage | for | question |  |
+| question | on | request |  |
+| stage | on | work-item branch |  |
+| result | gives | question |  |
+| result | gives | output |  |
+| result | gives | change list |  |
 
 ## Behaviour
 

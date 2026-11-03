@@ -18,14 +18,19 @@ stands, for a session to start from, and appends notes to an initiative's ledger
 work-item's status; `work run` (supervision) takes them through it. It judges nothing.
 
 ## Terms
-- **of** (relation ledger → initiative): the ledger of an initiative is `.shop/work/<initiative>/ledger.md`.
 - **kept in** (relation work-item → initiative): a work-item whose file is in the directory of an initiative.
 - **note** (kind): the one line `work note` appends to a ledger after the date it writes.
 - **form** (attribute of note): Values: `one-line`, `multi-line`.
 - **form** (attribute of answer): Values: `one-line`, `multi-line`.
-- **out of step** (condition of work-item): Means: the last status `log.jsonl` gives it differs from the status in its file.
+- **out of step** (condition of work-item): a work-item whose last status in `log.jsonl` differs from the status in its file.
 - **asking stage** (attribute of question): the kind of stage that asked the question. Values: `research`, `plan`, `implement`, `review`.
 - **flag** (attribute of answer): the flag `work answer` is given with an answer to a reviewer's question. Values: `--change`, `--accept`, `unflagged`.
+
+## Relations
+
+| from | word | to | cardinality |
+|---|---|---|---|
+| ledger | of | initiative | one |
 
 ## Behaviour
 

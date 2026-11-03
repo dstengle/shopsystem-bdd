@@ -24,11 +24,16 @@ nothing and changes nothing in the checkout.
 - **skipped effect** (kind): a refusal or an effect that only a step of today's processing produces, where a work-item adds a path that skips the step.
 - **module** (kind): a Python file of the repository's code or tests.
 - **line count** (kind): the number of lines of a module and its room under the size limit `CLAUDE.md` gives.
-- **of** (relation scenario → work-item): a scenario of a requirement the work-item accepts.
-- **of** (relation line count → module): the line count of a module.
-- **broken by** (relation test → work-item): an existing test the work-item's accepted requirements make impossible to keep.
-- **changed by** (relation file → work-item): a production or test file the work-item must change for its scenarios to pass and for everything that passes today to keep passing.
-- **in** (relation probe → worktree): a probe run on a worktree's files.
+
+## Relations
+
+| from | word | to | cardinality |
+|---|---|---|---|
+| scenario | of | work-item |  |
+| line count | of | module | one |
+| test | broken by | work-item |  |
+| file | changed by | work-item |  |
+| probe | in | worktree |  |
 
 ## Behaviour
 
