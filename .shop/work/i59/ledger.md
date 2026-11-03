@@ -12,3 +12,4 @@
 - 2026-10-29 22:55: compacted
 - 2026-11-02: Parked by the person (2026-11-02): not to be run until the fault initiatives (i62, q44/r190, the supervision consolidation) have landed; then redrafted once against the settled spec. Run work run with a named initiative only, so i59 is not taken.
 - 2026-11-02 20:19: compacted
+- 2026-11-03 00:20: compacted

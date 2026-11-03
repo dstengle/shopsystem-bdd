@@ -6,3 +6,4 @@
 - 2026-10-30: integrate round 5 spec-integration: adds none; changes spec-integration#r46; removes none; 0 questions; 0 cut sentences; .shop/scratch/5-integrate/drafts/round-1
 - 2026-10-30: gate round 6: 1 question
 - 2026-11-02 20:19: compacted
+- 2026-11-03 00:20: compacted
