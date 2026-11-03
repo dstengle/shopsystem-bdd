@@ -258,11 +258,13 @@ class Rounds(Changes, Raises, Formulate):
                 name, self.rel(here), name, before, why)) from None
 
     def undo_round(self, name, kind, here, branch):
-        """Take back a round that committed nothing: its branch dropped, its uncommitted stage directory removed, and
-        log.jsonl as committed plus the lines of the runs' other sessions, not the round's own."""
+        """Take back a round that committed nothing: its branch dropped, its uncommitted stage directory removed (and
+        runs/<name> with it when that leaves it empty), and log.jsonl as committed plus the lines of the runs' other sessions, not the round's own."""
         git(self.root, "branch", "-q", "-D", branch)
         with self.lock:
             shutil.rmtree(here, ignore_errors=True)
+            if here.parent.is_dir() and not any(here.parent.iterdir()):
+                here.parent.rmdir()     # an empty runs/<name> fails a commit naming it ("pathspec")
             self.own.discard(self.rel(here))
             self.unlogged = [l for l in self.unlogged
                              if (json.loads(l).get("work-item"), json.loads(l).get("stage")) != (name, kind)]
