@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 
-import spec_read  # noqa: E402
+import spec_read
 
 HEAD = """---
 id: capability/ex.com/prod/ctx/work-queue
