@@ -39,38 +39,30 @@ nothing and changes nothing in the checkout.
 
 ### [g1] Research ends with a result naming the file set
 Restates: r1@0.29, r10@0.29, r11@0.29.
-- [r1] When the researcher ends a `research` stage, the researcher shall write a result.
-- [r2] When the researcher ends a `research` stage, the researcher shall write a file set.
-- [r3] When the researcher ends a `research` stage, the researcher shall name every file changed by the work-item.
-- [r4] When the researcher ends a `research` stage, the researcher shall write the line count of every module.
+- [r1] When the researcher ends a `research` stage, the researcher shall write a result, write a file set, name every
+  file changed by the work-item and write the line count of every module.
 
 ### [g2] The researcher changes nothing in the worktree
 Restates: r1@0.29.
-- [r5] The researcher shall not change a file in a worktree.
+- [r2] The researcher shall not change a file in a worktree.
 
-### [g3] Research reruns every scenario the work-item accepts
-Restates: r4@0.29.
-- [r6] When `work run` starts a `research` stage, the researcher shall rerun every scenario of the work-item.
+### [g3] Research reruns the work-item's scenarios and lists what its requirements break
+Restates: r3@0.29, r4@0.29, r5@0.29, r6@0.29.
+- [r3] When `work run` starts a `research` stage, the researcher shall rerun every scenario of the work-item, list
+  every old assumption, list every test broken by the work-item and list every skipped effect.
 
-### [g4] Research lists what the work-item's requirements break
-Restates: r3@0.29, r5@0.29, r6@0.29.
-- [r7] When `work run` starts a `research` stage, the researcher shall list every old assumption.
-- [r8] When `work run` starts a `research` stage, the researcher shall list every test broken by the work-item.
-- [r9] When `work run` starts a `research` stage, the researcher shall list every skipped effect.
-
-### [g5] A defect a probe finds is written down
+### [g4] A defect a probe finds is written down
 Restates: r8@0.29.
-- [r10] When a probe finds a defect, the researcher shall write the defect.
+- [r4] When a probe finds a defect, the researcher shall write the defect.
 
-### [g6] Probes run outside the checkout's data
+### [g5] Probes run outside the checkout's data
 Restates: r9@0.29.
-- [r11] The researcher shall not start a probe in a worktree.
+- [r5] The researcher shall not start a probe in a worktree.
 
-### [g7] A researcher that cannot do what its brief asks changes nothing
+### [g6] A researcher that cannot do what its brief asks changes nothing
 Restates: r12@0.29.
-- [r12] If the researcher refuses a brief, then the researcher shall write a result that is `NEEDS_CONTEXT`.
-- [r13] If the researcher refuses a brief, then the researcher shall write a reason.
-- [r14] If the researcher refuses a brief, then the researcher shall change nothing.
+- [r6] If the researcher refuses a brief, then the researcher shall write a result that is `NEEDS_CONTEXT`, write a
+  reason and change nothing.
 
 ## Implementation, may change
 - Haiku at low effort; the notes are `notes.md` in its stage directory; probe files under `.shop/scratch/<stage directory>/`.

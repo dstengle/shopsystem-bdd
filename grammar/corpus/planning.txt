@@ -7,3 +7,4 @@ When a session ends a plan stage with a result that is `DONE`, `work` shall set 
 The planner shall use only the brief.
 The planner shall not commit a plan.
 While a plan stage holds a worker slot, the planner shall read the file set.
+When the planner ends a plan stage, the planner shall write a result that is `DONE` and write a plan.

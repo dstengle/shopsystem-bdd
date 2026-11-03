@@ -36,78 +36,84 @@ It is not formulation and not planning; it writes nothing a client can run.
 | requirement | quotes | design note |  |
 | requirement | added by | capability-proposal |  |
 | question | on | term |  |
+| term | added by | glossary-proposal |  |
+| term | changed by | glossary-proposal |  |
+| term | removed by | glossary-proposal |  |
 
 ## Behaviour
 
 ### [g1] A drafted statement is shown with a fresh id
 Restates: r1@0.29, r12@0.29.
-- [r1] When `integrating-a-proposal` writes a requirement, `integrating-a-proposal` shall show the requirement.
-- [r2] When `integrating-a-proposal` writes a requirement, `integrating-a-proposal` shall give the requirement a fresh id.
+- [r1] When `integrating-a-proposal` writes a requirement, `integrating-a-proposal` shall show the requirement and
+  give the requirement a fresh id.
 
 ### [g2] Every open question is shown
 Restates: r1@0.29.
-- [r3] When `integrating-a-proposal` ends, `integrating-a-proposal` shall show every question.
+- [r2] When `integrating-a-proposal` ends, `integrating-a-proposal` shall show every question.
 
 ### [g3] A statement that quotes no sentence of the note is a question
 Restates: r2@0.29.
-- [r4] When `integrating-a-proposal` writes a requirement that quotes no design note, `integrating-a-proposal` shall ask a question.
+- [r3] When `integrating-a-proposal` writes a requirement that quotes no design note, `integrating-a-proposal` shall
+  ask a question.
 
 ### [g4] Nothing is committed before the person approves
 Restates: r3@0.29.
-- [r5] While a capability-proposal is not `approved`, `integrating-a-proposal` shall not commit a requirement.
+- [r4] While a capability-proposal is not `approved`, `integrating-a-proposal` shall not commit a requirement.
 
 ### [g5] An answer shows the statements again
 Restates: r4@0.29.
-- [r6] When the person gives an answer, `integrating-a-proposal` shall show every requirement.
+- [r5] When the person gives an answer, `integrating-a-proposal` shall show every requirement.
 
 ### [g6] The approved drafts are committed, naming what they add
 Restates: r6@0.29, r15@0.29.
-- [r7] When the person approves a capability-proposal, `integrating-a-proposal` shall commit the capability-proposal.
-- [r8] When the person approves a capability-proposal, `integrating-a-proposal` shall name every requirement added by the capability-proposal.
+- [r6] When the person approves a capability-proposal, `integrating-a-proposal` shall commit the capability-proposal
+  and name every requirement added by the capability-proposal.
 
 ### [g7] No second spec
 Restates: r7@0.29.
-- [r9] `integrating-a-proposal` shall not write a second spec.
+- [r7] `integrating-a-proposal` shall not write a second spec.
 
 ### [g8] A removed statement's id is retired
 Restates: r14@0.29.
-- [r10] When `integrating-a-proposal` deletes a requirement, `integrating-a-proposal` shall retire the requirement.
+- [r8] When `integrating-a-proposal` deletes a requirement, `integrating-a-proposal` shall retire the requirement.
 
 ### [g9] A gate on a glossary-proposal asks only about its terms
 Restates: r59@0.29.
-- [r11] While a glossary-proposal is `drafted`, when `work run` starts a `gate` stage, `initiative-round` shall ask only a question on a term.
+- [r9] While a glossary-proposal is `drafted`, when `work run` starts a `gate` stage, `initiative-round` shall ask
+  only a question on a term.
 
-### [g10] A glossary change goes through the gate
+### [g10] A glossary change goes through the gate, naming each term it adds, changes or removes
 Restates: r19@0.29.
-- [r12] When `integrating-a-proposal` writes a glossary-proposal, `integrating-a-proposal` shall show the glossary-proposal.
+- [r10] When `integrating-a-proposal` writes a glossary-proposal, `integrating-a-proposal` shall show the
+  glossary-proposal, name every term added by the glossary-proposal, name every term changed by the glossary-proposal
+  and name every term removed by the glossary-proposal.
 
 ### [g11] A decision is shown as one numbered file with its source
 Restates: r20@0.29, r21@0.29.
-- [r13] When `integrating-a-proposal` writes a design-decision, `integrating-a-proposal` shall show the design-decision.
-- [r14] When `integrating-a-proposal` writes a design-decision, `integrating-a-proposal` shall give the design-decision a fresh id.
-- [r15] When `integrating-a-proposal` writes a design-decision, `integrating-a-proposal` shall write a decision source.
+- [r11] When `integrating-a-proposal` writes a design-decision, `integrating-a-proposal` shall show the
+  design-decision, give the design-decision a fresh id and write a decision source.
 
 ### [g12] A gate asks one question for each decision, with its recommended reading
 Restates: r35@0.29.
-- [r16] When `work run` starts a `gate` stage, `initiative-round` shall ask a question.
-- [r17] When `work run` starts a `gate` stage, `initiative-round` shall name a recommended reading.
+- [r12] When `work run` starts a `gate` stage, `initiative-round` shall ask a question and name a recommended reading.
 
 ### [g13] An apply round applies exactly the approved drafts
 Restates: r39@0.29.
-- [r18] When `work run` starts an `apply` stage, `initiative-round` shall apply only a capability-proposal that is `approved`.
+- [r13] When `work run` starts an `apply` stage, `initiative-round` shall apply only a capability-proposal that is
+  `approved`.
 
 ### [g14] Every round is noted in the ledger
 Restates: r40@0.29.
-- [r19] When `initiative-round` ends a round, `initiative-round` shall note the round.
+- [r14] When `initiative-round` ends a round, `initiative-round` shall note the round.
 
 ### [g15] A round numbers its statements above every id it is given
 Restates: r43@0.29.
-- [r20] When `initiative-round` writes a requirement, `initiative-round` shall give the requirement a fresh id.
+- [r15] When `initiative-round` writes a requirement, `initiative-round` shall give the requirement a fresh id.
 
 ### [g16] A skill that cannot do what it is asked changes nothing
 Restates: r33@0.29.
-- [r21] If `integrating-a-proposal` refuses a design note, then `integrating-a-proposal` shall show the reason.
-- [r22] If `integrating-a-proposal` refuses a design note, then `integrating-a-proposal` shall change nothing.
+- [r16] If `integrating-a-proposal` refuses a design note, then `integrating-a-proposal` shall show the reason and
+  change nothing.
 
 ## Implementation, may change
 - `skills/integrating-a-proposal/`, and `agents/initiative-round.md` with `agents/capability-writer.md` for the rounds

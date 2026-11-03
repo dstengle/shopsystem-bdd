@@ -36,12 +36,11 @@ Restates: r3@0.29.
 
 ### [g4] A trial ends with a measurement record naming its target
 Restates: r4@0.29.
-- [r4] When `trial-runner` ends a trial, `trial-runner` shall write a measurement.
-- [r5] When `trial-runner` ends a trial, `trial-runner` shall name the target.
+- [r4] When `trial-runner` ends a trial, `trial-runner` shall write a measurement and name the target.
 
 ### [g5] The reply names the record
 Restates: r5@0.29.
-- [r6] When `trial-runner` writes a measurement, `trial-runner` shall name the measurement.
+- [r5] When `trial-runner` writes a measurement, `trial-runner` shall name the measurement.
 
 ## Implementation, may change
 - `agents/trial-runner.md`; its model (Sonnet) and its having no dispatch are guaranteed by role-boundaries.

@@ -8,3 +8,4 @@ A worker shall not merge a work-item branch.
 A session shall not write a status.
 The analyst shall not change a file in a worktree.
 Every agent definition shall name `opus`.
+The researcher shall not start a session, and the planner shall not start a session.

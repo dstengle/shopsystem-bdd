@@ -33,18 +33,24 @@ to parse.
 
 ## Reading
 
-Each statement has one `shall` (design model v5's grammar.md §6), in the wording of the grammar's corpus
-(`grammar/corpus/universal.txt`). Where the domain model's §7 said more, the rest is carried by the lexicon and the
-background theory of `model logic`, not by a second statement:
+Each is one statement (design-r2 §4.1): what one condition asks is written as verb phrases joined by `and` under one
+`shall` (U3 "exit with an error naming the reason and change nothing", U4 "commit every transition and push the
+commit"), and `model logic` reads each conjunct as its own constraint under the one U id. The wording is the
+grammar's corpus (`grammar/corpus/universal.txt`). Where the domain model's §7 said more, the rest is carried by the
+lexicon and the background theory of `model logic`, not by a second statement:
 
 - U2: a stage starts only when every resource it needs is free (domain model §11). "Free" for a counted resource
   (a worker slot) means fewer than its number are held.
-- U4: the push of each commit on the initiative branch is the second half of the statement; which remote it goes to is
-  the meaning of *remote* in the glossary.
+- U3: a refused command changes nothing, whatever refused it (the glossary's *refuse* said so until revision 2).
+- U4: the push of each commit on the initiative branch is the second conjunct of the statement; which remote it goes
+  to is the meaning of *remote* in the glossary.
+- U5: `work` is the only writer of a status (the glossary's *`work`* said so until revision 2): a session writes
+  none, and `work run` has `work` write each one.
 - U6: a round's node keeps its status and a work-item becomes `failed`. That is the meaning of *discard*, given by the
   `discard` transitions of each status attribute in the glossary.
-- U7: narrowed to the worktree. The domain model also lets a worker change its stage directory; the grammar does not
-  coordinate noun phrases of two kinds, and a worker's stage directory holds only what `work run` reads back from it
-  (its result and report). Carried forward: a core fun for "X or Y" of two kinds, if two capabilities need it.
+- U7: narrowed to the worktree. The domain model also lets a worker change its stage directory. `or` now joins
+  conditions (`CondOr`) and the verb phrases under `shall not`, but not noun phrases, so "files in its worktree or its
+  stage directory" has no tree; a worker's stage directory holds only what `work run` reads back from it (its result
+  and report). Carried forward to R14: a core fun for "X or Y" of two noun phrases.
 - U1, U2 and U9 follow from the resources of the glossary: a stage holds what it needs while it runs, an exclusive
   resource is held by one session at a time, and a counted one by at most its number.

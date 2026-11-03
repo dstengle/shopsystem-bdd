@@ -36,43 +36,30 @@ Bash can still write files through the shell, which is why `work run` verifies t
 
 ### [g1] Only `initiative-round` dispatches
 Restates: r1@0.29.
-- [r1] The researcher shall not start a dispatch.
-- [r2] The planner shall not start a dispatch.
-- [r3] The implementer shall not start a dispatch.
-- [r4] The reviewer shall not start a dispatch.
-- [r5] `trial-runner` shall not start a dispatch.
+- [r1] The researcher shall not start a dispatch, the planner shall not start a dispatch, the implementer shall not
+  start a dispatch, the reviewer shall not start a dispatch, and `trial-runner` shall not start a dispatch.
 
 ### [g2] No reviewer, researcher or planner has the Edit tool
 Restates: r2@0.29.
-- [r6] The reviewer shall not use `Edit`.
-- [r7] The researcher shall not use `Edit`.
-- [r23] The planner shall not use `Edit`.
+- [r2] The reviewer shall not use `Edit`, the researcher shall not use `Edit`, and the planner shall not use `Edit`.
 
 ### [g3] `capability-writer` has no edit and no shell tool
 Restates: r3@0.29.
-- [r9] `capability-writer` shall not use `Edit`.
-- [r10] `capability-writer` shall not use `Bash`.
+- [r3] `capability-writer` shall not use `Edit` or use `Bash`.
 
 ### [g4] The implementer loads `bdd-red-green` with the Skill tool
 Restates: r4@0.29.
-- [r11] The implementer shall use `bdd-red-green`.
-- [r12] The implementer shall use `Skill`.
+- [r4] The implementer shall use `bdd-red-green` and use `Skill`.
 
 ### [g5] Each agent's model
 Restates: r5@0.29.
-- [r13] `capability-writer` shall use `opus`.
-- [r14] The planner shall use `opus`.
-- [r15] The reviewer shall use `opus`.
-- [r16] The implementer shall use `sonnet`.
-- [r17] `initiative-round` shall use `sonnet`.
-- [r18] `spec-checker` shall use `sonnet`.
-- [r19] `trial-runner` shall use `sonnet`.
-- [r20] The researcher shall use `haiku`.
+- [r5] `capability-writer` shall use `opus`, the planner shall use `opus`, the reviewer shall use `opus`, the
+  implementer shall use `sonnet`, `initiative-round` shall use `sonnet`, `spec-checker` shall use `sonnet`,
+  `trial-runner` shall use `sonnet`, and the researcher shall use `haiku`.
 
 ### [g6] The planner and the branch reviewer have no shell tool
 Restates: r6@0.29, r7@0.29.
-- [r21] The planner shall not use `Bash`.
-- [r22] The branch reviewer shall not use `Bash`.
+- [r6] The planner shall not use `Bash`, and the branch reviewer shall not use `Bash`.
 
 ## Implementation, may change
 - Tool lists and `model:` in `agents/*.md`; `skills:` names a skill, which a `claude -p --agent` session does not

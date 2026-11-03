@@ -37,31 +37,30 @@ Restates: r1@0.29.
 
 ### [g2] The plan names its decisions and the tests they break
 Restates: r2@0.29, r3@0.29.
-- [r2] When the planner writes a plan, the planner shall name every plan decision.
-- [r3] When the planner writes a plan, the planner shall list every test broken by a plan decision.
+- [r2] When the planner writes a plan, the planner shall name every plan decision and list every test broken by a plan
+  decision.
 
 ### [g3] A plan holds no code
 Restates: r4@0.29.
-- [r4] The planner shall not write a code block.
+- [r3] The planner shall not write a code block.
 
 ### [g4] Planning ends with a result and the final file set
 Restates: r5@0.29.
-- [r5] When the planner ends a `plan` stage, the planner shall write a result.
-- [r6] When the planner ends a `plan` stage, the planner shall write a file set.
+- [r4] When the planner ends a `plan` stage, the planner shall write a result and write a file set.
 
 ### [g5] A decision no requirement settles is a question
 Restates: r6@0.29.
-- [r7] If the planner finds a plan decision settled by no requirement, then the planner shall write a result that is `QUESTION`.
-- [r8] If the planner finds a plan decision settled by no requirement, then the planner shall ask a question.
+- [r5] If the planner finds a plan decision settled by no requirement, then the planner shall write a result that is
+  `QUESTION` and ask a question.
 
 ### [g6] The planner changes no file of the worktree
 Restates: r7@0.29.
-- [r9] The planner shall not change a file in a worktree.
+- [r6] The planner shall not change a file in a worktree.
 
 ### [g7] A planner that cannot do what it is asked says why
 Restates: r8@0.29.
-- [r10] If the planner refuses a brief, then the planner shall write a result that is `NEEDS_CONTEXT`.
-- [r11] If the planner refuses a brief, then the planner shall write a reason.
+- [r7] If the planner refuses a brief, then the planner shall write a result that is `NEEDS_CONTEXT` and write a
+  reason.
 
 ## Implementation, may change
 - `agents/bdd-planner.md`: tools Read, Glob, Grep, Write. The plan is `plan.md` in its stage directory, and the plan
