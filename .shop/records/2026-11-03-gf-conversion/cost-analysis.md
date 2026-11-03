@@ -159,7 +159,7 @@ JSON of each). Their costs are Claude Code's `total_cost_usd` for each stage ses
 | unit | value | basis |
 |---|---|---|
 | spec rounds per request line | $1.02 | $29.45 over the 29 lines of q20, q22–q24, q30, q34, q36, q37, q42 and q44 |
-| spec rounds, fitted | $0.65 per proposal + $0.56 per gate stop | least squares over the 10 initiatives' (proposals, proposal stops, spec $). Fits within ±$0.6 except i63 (2.89 against 4.06) |
+| spec rounds, fitted | $0.65 per proposal + $0.56 per gate stop | least squares over the 10 initiatives' (proposals, proposal stops, spec $). Residuals $0.00–1.17; the largest are i63 (2.89 fitted against 4.06) and i48 (1.77 against 2.77) |
 | gate stops (proposal `awaiting-answer`) per line | 1.10 | 32 stops / 29 lines, 16 proposals |
 | work-items per request line | 0.79 | 23 work-items / 29 lines |
 | work-item stops (awaiting-answer and failed) per work-item | 1.13 | 24 + 2 over 23 (the efficiency record: 26 stops / 24) |
