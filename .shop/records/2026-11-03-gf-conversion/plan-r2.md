@@ -454,7 +454,8 @@ for every package".
   5. **Gherkin from traces, byte-stable:**
      - `PYTHONHASHSEED=1 python3 scripts/features generate --check && PYTHONHASHSEED=2 python3 scripts/features generate --check`;
      - `git diff --exit-code features/`;
-     - `python3 -m pytest -q tests/scripts/test_features_generate.py -k 'byte_stable or related_while'`.
+     - `python3 -m pytest -q tests/scripts/test_spec_trace.py -k 'byte_stable or related_while'` (amended at the layer 5
+       gate: R6 put those tests in test_spec_trace.py, not test_features_generate.py).
   6. **New requests go through it:**
      - `python3 -m pytest -q tests/scripts/test_e2e_codified.py`;
      - q47's lines parse (the R5 command).
