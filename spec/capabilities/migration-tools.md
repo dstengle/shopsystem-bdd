@@ -317,7 +317,7 @@ Restates: r27@0.29.
 - [r29] When the person runs `migrate upgrade`, `migrate` shall change nothing.
 
 ```given
-the tracked file `.shop/plugin-version` holds "0.29.0"
+the tracked file `.shop/plugin-version` holds "1.0.0"
 ```
 
 ### [g19] `migrate status` refuses a `.shop/plugin-version` that holds no version, naming what it holds
@@ -393,7 +393,7 @@ Restates: r24@0.29.
 - [r47] When the SessionStart hook runs `migrate status --hook`, `migrate` shall not print "i1".
 
 ```given
-the tracked file `.shop/plugin-version` holds "0.29.0"
+the tracked file `.shop/plugin-version` holds "1.0.0"
 the tracked file `.shop/work/i1/initiative.md` holds:
   ---
   id: initiative/example.org/acme/shop/i1
@@ -424,7 +424,7 @@ Restates: r32@0.29.
 - [r50] When the SessionStart hook runs `migrate status --hook`, `migrate` shall print "initiative i1".
 
 ```given
-the tracked file `.shop/plugin-version` holds "0.29.0"
+the tracked file `.shop/plugin-version` holds "1.0.0"
 the tracked file `.shop/work/i1/initiative.md` holds:
   ---
   id: initiative/example.org/acme/shop/i1
@@ -448,6 +448,43 @@ the tracked file `.shop/work/i1/initiative.md` holds:
   ---
   # i1
 the tracked file `.shop/work/i1/ledger.md` holds "- 2026-01-02: began"
+```
+
+### [g29] the upgrade step "codified requirements" writes `spec/restated.json`, scaffolds each uncodified capability, deletes deprecated scenarios and writes old references with their release
+- [r53] When the person runs `migrate upgrade`, `migrate` shall print "spec/restated.json" and "spec/capabilities/cart.md".
+- [r54] When the person runs `migrate upgrade`, `migrate` shall rewrite `spec/capabilities/cart.md`.
+- [r55] When the person runs `migrate upgrade`, `migrate` shall rewrite `features/cart.feature`.
+- [r56] When the person runs `migrate upgrade`, `migrate` shall rewrite `.shop/work/i1/w2.md`.
+
+```given
+the tracked file `.shop/plugin-version` holds "0.29.0"
+the tracked file `spec/index.md` holds:
+  ---
+  id: bounded-context/example.org/acme/shop
+  title: shop
+  ---
+  # shop
+the tracked file `spec/capabilities/cart.md` holds:
+  ---
+  id: capability/example.org/acme/shop/cart
+  title: Cart
+  retired: []
+  ---
+  # Cart
+  ## Behaviour
+  - [r1] **When** the shopper applies a code, `cart` shall take ten percent off.
+the tracked file `features/cart.feature` holds:
+  Feature: Cart
+    @r1 @deprecated
+    Scenario: a code takes ten percent off (deprecated)
+      Given a cart
+the tracked file `.shop/work/i1/w2.md` holds:
+  ---
+  id: work-item/example.org/acme/shop/w2
+  kind: work-item
+  accepts: [cart#r1]
+  ---
+  # w2
 ```
 
 ## Implementation, may change
@@ -481,6 +518,16 @@ the tracked file `.shop/work/i1/ledger.md` holds "- 2026-01-02: began"
   `work-item/<context path>/w<n>`, keeps or writes the heading, and rewrites the old name in `log.jsonl` and in every
   `blocked_by`, `depends_on` and `for`; free text in records is left as it is. The 0.25.0 step renames
   `awaiting-ruling` to `awaiting-answer` and `## Rulings` to `## Answers`.
+- The 1.0.0 step "codified requirements" (`migrate_upgrade_codified.py`): when `spec/restated.json` is missing, it
+  writes it from the live `[r<n>]` lines of each capability without `language: codified-1`, keyed `<cap>#r<n>` with the
+  line's text (a table row's lead sentence and cells) and line number. Each such capability's Behaviour becomes one
+  `### [g<n>]` group for each old line with `Restates: r<n>@0.29.` and the old text as an HTML comment, no requirement
+  bullets and no marker; its `retired:` becomes `[]` and it gains `## Dropped`. A codified capability is left as it
+  is. Every scenario tagged `@deprecated` in `features/` is deleted (a docstring's lines are text). Every
+  `<cap>#r<n>` (bare, or `capability/[<context path>/]<cap>`) of a tracked file under `.shop/work/` becomes
+  `<cap>#r<n>@0.29`, a range id by id: in every file when the step writes `spec/restated.json`, else in the lines a
+  file had at the commit that added `spec/restated.json`. It prints, and the commit message lists, what is left for
+  a session to write: each scaffolded capability, and the glossary of an index without `language: codified-1`.
 - `migrate status` and `migrate upgrade` refuse a `.shop/plugin-version` that holds no version, naming an empty file
   as empty and otherwise what it holds; the SessionStart hook tells the session the same.
 - The PreCompact hook appends `compacted` with the time to the ledger of each initiative that is neither `done` nor

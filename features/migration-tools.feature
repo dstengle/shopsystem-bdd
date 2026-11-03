@@ -299,7 +299,7 @@ Feature: Migration tools
 
   @g18 @r28 @r29
   Scenario: `migrate upgrade` with no pending step says so and changes nothing
-    Given the tracked file `.shop/plugin-version` holds "0.29.0"
+    Given the tracked file `.shop/plugin-version` holds "1.0.0"
     When the person runs `migrate upgrade`
     Then `migrate` prints "no upgrade step is pending"
     And `migrate` changes nothing
@@ -372,7 +372,7 @@ Feature: Migration tools
 
   @g24 @r46 @r47
   Scenario: the SessionStart hook tells a session nothing when nothing is pending and no initiative is open
-    Given the tracked file `.shop/plugin-version` holds "0.29.0"
+    Given the tracked file `.shop/plugin-version` holds "1.0.0"
     And the tracked file `.shop/work/i1/initiative.md` holds:
       """
       ---
@@ -400,7 +400,7 @@ Feature: Migration tools
 
   @g27 @r50
   Scenario: the SessionStart hook gives a session what `work status` prints for each open initiative
-    Given the tracked file `.shop/plugin-version` holds "0.29.0"
+    Given the tracked file `.shop/plugin-version` holds "1.0.0"
     And the tracked file `.shop/work/i1/initiative.md` holds:
       """
       ---
@@ -428,3 +428,47 @@ Feature: Migration tools
     When the PreCompact hook runs `migrate compacting`
     Then `migrate` appends "compacted"
     And `migrate` prints "work note" and "instead of being compacted"
+
+  @g29 @r53 @r54 @r55 @r56
+  Scenario: the upgrade step "codified requirements" writes `spec/restated.json`, scaffolds each uncodified capability, deletes deprecated scenarios and writes old references with their release
+    Given the tracked file `.shop/plugin-version` holds "0.29.0"
+    And the tracked file `spec/index.md` holds:
+      """
+      ---
+      id: bounded-context/example.org/acme/shop
+      title: shop
+      ---
+      # shop
+      """
+    And the tracked file `spec/capabilities/cart.md` holds:
+      """
+      ---
+      id: capability/example.org/acme/shop/cart
+      title: Cart
+      retired: []
+      ---
+      # Cart
+      ## Behaviour
+      - [r1] **When** the shopper applies a code, `cart` shall take ten percent off.
+      """
+    And the tracked file `features/cart.feature` holds:
+      """
+      Feature: Cart
+        @r1 @deprecated
+        Scenario: a code takes ten percent off (deprecated)
+          Given a cart
+      """
+    And the tracked file `.shop/work/i1/w2.md` holds:
+      """
+      ---
+      id: work-item/example.org/acme/shop/w2
+      kind: work-item
+      accepts: [cart#r1]
+      ---
+      # w2
+      """
+    When the person runs `migrate upgrade`
+    Then `migrate` prints "spec/restated.json" and "spec/capabilities/cart.md"
+    And `migrate` rewrites `spec/capabilities/cart.md`
+    And `migrate` rewrites `features/cart.feature`
+    And `migrate` rewrites `.shop/work/i1/w2.md`
