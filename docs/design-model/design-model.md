@@ -71,9 +71,9 @@ its contract.
 | **context-index** | purpose; constraints carried (cited, not re-argued); composition; testing; the glossary (typed terms) | `spec/index.md`, `language: codified-1` |
 | **capability** | one narrator; group (model, service, operations, guarantees); Purpose; Terms; Behaviour (requirement groups); Implementation-may-change; Not yet; Dropped; `rests_on`; `serves`; `retired` | `spec/capabilities/<name>.md`, `language: codified-1` |
 | **requirement** | one statement that parses to exactly one tree in the requirement grammar, its response observable by the narrator. A stable id `[r<n>]`, unique within its capability and never reused; referenced as `<capability>#r<n>`. Everything that points at a requirement points by id, never by text. A changed requirement is retired and replaced under a new id, never edited | `- [r3] When …` |
-| **requirement group** | the requirements that make one scenario: they share a pre-state (Where, While) and a trigger (When, If). A stable id `[g<n>]`, a title (free English, the scenario's title), an optional `Restates:` line and an optional `given` example block | `### [g1] <title>` |
+| **requirement group** | the one statement that makes one scenario: its pre-state (Where, While), its trigger (When, If) and its responses joined by `and`. A stable id `[g<n>]` with the number of its requirement, a title (free English, the scenario's title), an optional `Restates:` line and an optional `given` block of example data only | `### [g1] <title>` |
 | **universal condition** | a statement true in every state of every trace, in the requirement grammar; never restated in a requirement | `- [U1] …` in `spec/universal.md` |
-| **term** | one glossary entry, with a **category** (actor, kind, attribute, value, relation, event, resource, condition), which is the grammar slot it fills | `- **term** (category): …` |
+| **term** | one glossary entry of one sentence, with a **category** (actor, kind, attribute, value, event, resource, condition), which is the grammar slot it fills; a relation is a row of `## Relations` | `- **term** (category): …` |
 | **scenario** | **generated**: one for each requirement group that is not logic-only, its title the group's, tagged `@g<n>` and each member's `@r<n>`. Evidence, never demand | Gherkin, in the capability's feature file |
 | **design-decision** | one file, ADR form. Frontmatter: `id`, `summary`, `date`, `status`, `supersedes`, `revisit_when`, `source`. `## Decision` standing; the rest record | `spec/decisions/<n>-<slug>.md`; `index.md` there is generated |
 
@@ -110,9 +110,11 @@ the two is the request's `resolution`.
 
 ### The requirement language
 
-A requirement is one sentence, with one `shall`, in one of the six EARS
-forms, the clauses in a fixed order. The actor is a lexicon actor, and
-the response is `shall` (or `shall not`) and one verb phrase:
+A requirement is one sentence in one of the six EARS forms, the clauses
+in a fixed order. The actor is a lexicon actor, and the response is
+`shall` and verb phrases joined by `and`, or `shall not` and verb
+phrases joined by `or` (neither); responses whose subjects differ are
+joined by `, and`:
 
 | form | shape | logic | Gherkin |
 |---|---|---|---|
@@ -123,12 +125,29 @@ the response is `shall` (or `shall not`) and one verb phrase:
 | unwanted behaviour | `If T, then Actor shall V.` | as event-driven, T an unwanted input | Given or When the input, Then V |
 | complex | `[Where F,] [While C,] When/If T, Actor shall V.` | the conjunction | in clause order |
 
-A list response ("shall print X and Y") is one verb phrase with a
-coordinated object. Two verbs are two requirements in one group. A
-value is accepted only in its own attribute's slot: "an initiative that
-is `drafted`" does not parse, because `drafted` is a value of a
-work-item's status. The grammar, its guards and its growth rule are
-`grammar.md` §6.
+What happens under one pre-state and trigger is one statement: "When a
+session ends a `plan` stage for a work-item with the result, `work run`
+shall set the status of the work-item to `awaiting-answer` and ask a
+question on the work-item." Each verb phrase is a conjunct of the logic
+and a Then of the scenario, under one id. A list response ("shall print
+X and Y") is one verb phrase with a coordinated object. A value is
+accepted only in its own attribute's slot: "an initiative that is
+`drafted`" does not parse, because `drafted` is a value of a work-item's
+status. A preposition between two kinds means the one relation the
+`## Relations` table gives for that pair. A condition is defined by a
+sentence of the language ("An initiative is open when the initiative is
+not `done` and the initiative is not `abandoned`."), or is primitive.
+The grammar, its guards and its growth rule are `grammar.md` §6.
+
+**The logic.** Each grammar fun has one translation into telingo
+temporal formulas (`&tel`): `When T, R` as always (T → next R), `While
+C, R` as always (C → R), `shall not` as a constraint, U1–U10 as always
+formulas. `model logic` solves each group on telingo's incremental
+horizon, and an unsatisfiable core names the requirement and U ids in
+conflict. `features generate` reads each scenario off the group's
+minimal trace on the same solver: the first state gives the Givens, the
+trigger the When, the responses the Thens. A `given` block gives only
+example data (file contents, tables).
 
 **Restates.** `Restates: r66@0.29, formulation#r5@0.29` lists the 0.29
 ids a group replaces (frozen in `spec/restated.json`); a bare id is of the
@@ -319,9 +338,9 @@ never a source. Every record is `about` a standing artifact.
 17. Every request is part of a job-thread or cites an origin, or is raised for a request that is.
 18. `part_of` never crosses a seam.
 19. An initiative is done only when it is complete and every request it raised is delivered.
-20. *(New in v5.)* Every requirement parses to exactly one tree (v_p1, v_p2); every `given` line parses in the Steps grammar (v_p3); the statements of a group share their trigger and condition (v15k).
+20. *(New in v5.)* Every requirement parses to exactly one tree (v_p1, v_p2); every `given` line parses in the Steps grammar (v_p3) and is example data (v15m); a group has one statement (v15k, v15l), and no two groups of a capability share features, condition and trigger (v15n).
 21. *(New in v5.)* Every requirement is in exactly one group; every group that is not logic-only generates exactly one scenario; a scenario is generated by exactly one group.
-22. *(New in v5.)* Every term has a category; a value names one attribute of one kind; no two terms linearise the same.
+22. *(New in v5.)* Every term has a category; a value names one attribute of one kind; no two terms linearise the same. A term entry is one sentence (v_t7); a relation is a row, never an entry that names a preposition (v_t8, v_t10); no `Means` field (v_t9).
 
 The codes are `grammar.md` §4; a code has one meaning (§10.2).
 
@@ -385,7 +404,9 @@ asks and what it cites.
 
 - **requirement group**: the requirements that make one scenario (§2).
 - **universal condition**: a statement true on every trace, `U<n>` (§2).
-- **term category**: the grammar slot a term fills (actor, kind, attribute, value, relation, event, resource, condition).
+- **term category**: the grammar slot a term fills (actor, kind, attribute, value, event, resource, condition).
+- **relation row**: a row `| from kind | word | to kind |` of `## Relations`, the one meaning of its word between those kinds.
+- **definition**: a condition's sentence that parses in the `Def` grammar; its logic is a rule. A condition without one is primitive.
 - **lexicon**: the glossary read as the grammar's words.
 - **resource**: what a session holds while it runs, exclusive or counted.
 - **step**, **feature**: the generated Gherkin line and file.
@@ -445,6 +466,11 @@ glossary, and never tracked.
 | C30 | G §6 sentence forms stay as a non-normative reading form; `LINE = EARS` and "formulated as" go | no parser was ever written for them; the requirement grammar is the GF grammar |
 | C31 | v4's layout section is fitted to the live layout: `spec/decisions/`, `.shop/work`, `.shop/records`, plus `spec/universal.md`, `spec/restated.json`, `grammar/` (the plugin's core grammars) and the grammar cache (§11.3) | live files |
 | C32 | `under(W,C)` stays work-item → capability. DOM's reading (work-item → proposal) is `part_of` | v4 and the live code agree |
+| C33 | A response is verb phrases joined by `and` (`shall not`: by `or`); a group is one statement, its number its requirement's (v15l, v15n) | revision 2, point C: statements that repeated a trigger are one sentence with `and` |
+| C34 | A `given` block holds example data only, known by its shape (v15m); the Givens come from the statement | revision 2, point B: a While clause gives its Given |
+| C35 | Relations are rows of `## Relations` with `Kind of:` expansion; a preposition means the row for its kind pair (v_t8, v_t10) | revision 2, point D: no entry for each meaning of "on" or "for" |
+| C36 | A condition is a `Def` sentence or primitive; a term entry is one sentence (v_t7); the `Means` field goes (v_t9) | revision 2, points E and F |
+| C37 | `model logic` translates each fun into `&tel` formulas, solves on telingo's incremental horizon over each group's cone, and names conflicts by unsat cores; L3 is a core holding a transition guard; L4 is asked of the solver. `features generate` reads scenarios off minimal traces | revision 2, points A and B: one translation |
 
 ### 10.2 Rule codes with one meaning each
 

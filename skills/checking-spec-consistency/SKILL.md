@@ -7,7 +7,7 @@ description: Use when the person asks to check the spec's consistency, its terms
 
 ## Overview
 
-A codified spec agrees with itself by construction in most of what this check once judged by hand. Every requirement parses to one tree in the context's grammar, using lexicon words only (`model parse`, rules `v_p*`); `model logic` checks that each group can happen with the universal conditions, that statements do not repeat each other and that every status change follows a transition (L1-L4); scenarios are generated from groups, so they cannot drift from them; `model check` reports avoided words in prose and term problems (`v_t*`) and `model lexicon --check` the glossary's categories and values (v_t4-v_t6). What none of these can judge is meaning: whether a term's definition is clear, whether a response is observable by the narrator, whether a group leaves something to infer. A blind `shopsystem-bdd:spec-checker` judges that, one dispatch for each capability and one for the glossary.
+A codified spec agrees with itself by construction in most of what this check once judged by hand. Every requirement parses to one tree in the context's grammar, using lexicon words only (`model parse`, rules `v_p*`); `model logic` translates each requirement into telingo temporal formulas and checks that each group can happen with the universal conditions (an unsatisfiable core names the ids in conflict), that statements do not repeat each other, that every status change follows a transition and that every pre-state is reachable (L1-L4); scenarios are read off each group's trace, so they cannot drift from it; `model check` reports a group with more than one statement or two groups with one trigger and condition (v15l, v15n), a given line that is not example data (v15m), avoided words in prose and term problems (`v_t*`), and `model lexicon --check` the glossary's own: categories and values (v_t4-v_t6), an entry of more than one sentence (v_t7), a relation entry that only names a preposition (v_t8), a `Means` field (v_t9) and a duplicate relation row (v_t10). What none of these can judge is meaning: whether a term's definition is clear, whether a response is observable by the narrator, whether a group leaves something to infer. A blind `shopsystem-bdd:spec-checker` judges that, one dispatch for each capability and one for the glossary.
 
 The skill runs when the person asks for it, never otherwise. Scripts: `<this skill's base directory>/../../scripts/`. The session reads only `spec/`, `features/`, its drafts path and the dispatches' replies and findings files, never the source or the step definitions.
 
@@ -56,8 +56,9 @@ wording. Find:
   wins, a requirement that leaves to inference which runs, workers or
   commands it applies to, or a status with a way into or out of it that no
   requirement gives;
-- missing example: a group whose scenario needs data its requirements do
-  not carry and that has no given block.
+- missing example: a group whose scenario needs example data (a file's
+  contents, a table, a text) its requirement does not carry and that has
+  no given block.
 Decide nothing and rewrite nothing.
 
 Write your findings to <DRAFTS PATH>/round-<N>/<NAME>.findings.md, and
@@ -72,11 +73,13 @@ all, to <DRAFTS PATH>/round-<N>/<NAME>.reply.md.
 
 ```
 Check the terms of this bounded context.
-You may read spec/index.md and the ## Terms sections of the files under
-spec/capabilities/. Nothing else.
+You may read spec/index.md and the ## Terms and ## Relations sections of
+the files under spec/capabilities/. Nothing else.
 
-Find each unclear term: a definition that does not say what the word picks
-out, says it in words the glossary lacks, or does not match its Means:.
+Find each unclear term: a sentence that does not say what the word picks
+out or says it in words the glossary lacks, a condition's definition that
+does not pick out what its word says, or a primitive condition whose
+sentence could be a definition in the language.
 Decide nothing and rewrite nothing.
 
 Write your findings to <DRAFTS PATH>/round-<N>/glossary.findings.md, one per

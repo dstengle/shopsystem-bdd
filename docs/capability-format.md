@@ -66,16 +66,18 @@ One paragraph: what this is, and what it isn't.
 ## Terms
 - **ledger** (kind): the tracked file `.shop/work/<initiative>/ledger.md` of one initiative.
 
+## Relations
+
+| from | word | to |
+|---|---|---|
+| ledger | of | initiative |
+
 ## Behaviour
 
 ### [g1] `work start` starts a proposed initiative
 Restates: r3@0.29, r4@0.29.
-- [r1] When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to `started`.
-- [r2] When the person runs `work start` on an initiative that is `proposed`, `work` shall commit the transition.
-
-```given
-an initiative i1 that is `proposed`
-```
+- [r1] When the person runs `work start` on an initiative that is `proposed`, `work` shall set the status of the
+  initiative to `started` and print the initiative.
 
 ## Implementation, may change
 Mechanism. Non-binding. Nothing here gets a scenario.
@@ -93,7 +95,7 @@ Every sentence in the file is one of five kinds, and the section it sits in says
 | kind | section | falsified by |
 |---|---|---|
 | decision | `spec/decisions/`, cited by `rests_on` | argument, or its `revisit_when` |
-| term | Terms (or the index's Glossary) | a line that needs another word |
+| term | Terms (or the index's Glossary), and the rows of Relations | a line that needs another word |
 | requirement | Behaviour | its group's scenario, or `model logic` |
 | implementation | Implementation, may change | measurement |
 | scope | Not yet | its trigger firing |
@@ -104,8 +106,9 @@ conversion and kept: each 0.29 id that no group restates, with its reason or `mo
 
 ## Writing requirements
 
-**The forms.** One sentence, one `shall`, the clauses in this order. The actor is a glossary actor, and the
-response is `shall` (or `shall not`) and one verb phrase:
+**The forms.** One sentence, the clauses in this order. The actor is a glossary actor, and the response is
+`shall` and its verb phrases joined by `and` (`shall A and B`, `shall A, B and C`), or `shall not` and verb
+phrases joined by `or` (`shall not A or B`: neither):
 
 | form | shape | its scenario |
 |---|---|---|
@@ -120,8 +123,12 @@ response is `shall` (or `shall not`) and one verb phrase:
 A refusal is unwanted behaviour. Behaviour that lasts for a period is state-driven. Behaviour that depends on an
 option or configuration is optional. Only what is true with no trigger at all is ubiquitous.
 
-**One verb.** A list response ("shall print the id and the title") is one verb phrase with a coordinated object.
-Two verbs are two requirements in one group, each written in full with the same trigger and condition.
+**One statement for each trigger and condition.** Everything that happens under one Where, While and When/If is
+one statement: its verb phrases are joined by `and` (`work run` shall set the status of the work-item to
+`awaiting-answer` and ask a question on the work-item), and responses whose subjects differ by `, and` (`R1, and
+R2`). Each verb phrase is its own Then in the scenario and its own conjunct in the logic, under the one requirement
+id. A list response ("shall print the id and the title") is one verb phrase with a coordinated object. A condition
+may join its clauses by `and` or by `or`.
 
 **Only lexicon words.** Every word of a requirement is a glossary word, a grammar word (the forms, `shall`, the
 articles, `and`, `or`, `not`, `every`, `at most`), a backticked code (`` `work start` ``, `` `.shop/work/` ``), a
@@ -147,16 +154,23 @@ status set. If you can't write the response that way, the sentence is implementa
 
 ## Groups
 
-A group is the requirements that make one scenario. They share a pre-state (Where, While) and a trigger (When,
-If), written in full in each statement; `model check` holds that they agree (v15k). A group has a title in free
-English, not parsed, which is the scenario's title, and two optional parts:
+A group is the one statement that makes one scenario: its pre-state (Where, While), its trigger (When, If) and
+its responses joined by `and`. A group has one statement (v15l), and two groups of one capability never share
+their features, condition and trigger (v15n): they are one group, with `and` between their responses. With one
+statement in each group, a group `[g<n>]` and its requirement `[r<n>]` share their number. A group has a title in
+free English, not parsed, which is the scenario's title, and two optional parts:
 
-- `Restates:` the 0.29 ids it replaces, `r<n>@0.29` for its own capability's and `<capability>#r<n>@0.29` for
-  another's. Only a converted repository has them; `model restates` checks that every 0.29 id is restated,
-  dropped or moved.
-- a fenced `given` block of step-grammar lines: example data the requirement does not carry (file contents,
-  question texts), put before the generated Givens. A line ending in `:` takes the lines indented two spaces
-  under it: lines starting with `|` are its data table, any other lines its docstring.
+- `Restates:` the 0.29 ids it replaces, one line, sorted, `r<n>@0.29` for its own capability's and
+  `<capability>#r<n>@0.29` for another's. Only a converted repository has them; `model restates` checks that every
+  0.29 id is restated, dropped or moved.
+- a fenced `given` block of **example data** only: the contents of a file, a table, a text the requirement names
+  but does not carry, put before the generated Givens. Everything else a scenario starts from (an instance, a
+  value, a condition) comes from the statement itself: "While a work-item is `drafted`" gives the Given "a
+  work-item w1 that is `drafted`". A given line is example data by its shape alone: `the <words> <name> holds:`
+  followed by a docstring or a table (the lines indented two spaces under it: lines starting with `|` are its
+  data table, any other lines its docstring), or `the <words> <name> holds` followed by exactly one code span or
+  quoted string. `model check` reports any other given line (v15m); a condition it states belongs in the
+  statement, as a While or a Where.
 
 ````markdown
 ```given
@@ -164,9 +178,7 @@ the file `spec/index.md` holds:
   ---
   id: bounded-context/ex.com/prod/ctx
   ---
-the work-items:
-  | id | status |
-  | w1 | `ready` |
+the question q1 holds "Which branch wins?"
 ```
 ````
 
@@ -176,7 +188,8 @@ logic-only, checked by `model logic` alone.
 ## Ids
 
 - Requirements are numbered `[r1]` on across the file, groups `[g1]` on, universal conditions `[U1]` on. A new
-  one takes the number one above every number the file has used or retired.
+  one takes the number one above every number the file has used or retired. A group has one statement, so a new
+  group and its requirement take one number: `[g7]` holds `[r7]`.
 - **Retire, never edit.** A changed requirement is a removal and an addition: the old id goes into the
   frontmatter's `retired: [r<n>, g<n>, ...]` and the new statement takes a new id. A group's title and membership
   may change; its id stays.
@@ -199,13 +212,14 @@ A context's terms are its words. The glossary is the union of `spec/index.md`'s 
 capability's `## Terms`, in one entry form, each entry with a **category** — the grammar slot the word fills:
 
 ```markdown
-- **initiative** (kind): the delivery of one request's accepted lines. Plural: initiatives. Not: epic.
+- **node** (kind): a root or a part of the work queue.
+- **initiative** (kind): the delivery of one request's accepted lines. Plural: initiatives. Kind of: node. Not: epic.
 - **status** (attribute of initiative): an initiative's place in its lifecycle. Values: `proposed`, `started`, `done`, `abandoned`.
   Transitions: `proposed` → `started`: `work start`; `started` → `abandoned`: `work abandon`; `started` → `done`: complete.
-- **open** (condition of initiative): Means: its status is not `done` and not `abandoned`.
-- **under** (relation work-item → capability-proposal): a work-item delivers part of a proposal.
-- **start** (event): Forms: starts, started.
-- **spec lock** (resource, exclusive): held by every integrate, apply and formulate round.
+- **open** (condition of initiative): An initiative is open when the initiative is not `done` and the initiative is not `abandoned`.
+- **unfixed** (condition of initiative): an initiative whose kept branch review lists a finding to fix now.
+- **start** (event): the beginning of a stage. Forms: starts, started.
+- **spec lock** (resource, exclusive): the lock every integrate, apply and formulate round holds.
 - **worker slot** (resource, counted by `workers`): one of the workers `.shop/delivery.toml` allows.
 - **`work run`** (actor): the supervisor that runs nodes through their transitions.
 ```
@@ -216,29 +230,77 @@ capability's `## Terms`, in one entry form, each entry with a **category** — t
 | kind | a sort of thing with an identity | a noun: `an initiative`, `every work-item` |
 | attribute | a property of a kind with closed values | `whose status is …`, `that is `started`` |
 | value | one value of one attribute of one kind | only in its attribute's slot |
-| relation | a typed link between two kinds | `a work-item under p1` |
 | event | something that happens at one step | a trigger or a response |
 | resource | what a session holds while it runs | `holds`, `is free` |
 | condition | a named clause | one word for a long condition: `an open initiative` |
 
-- The category is required (v_t4). An attribute, condition or relation names its kinds: `of <kind>`, or
-  `<kind> → <kind>`.
+A relation is no term entry: it is a row of `## Relations` (below).
+
+- **One sentence for each entry** (v_t7). The gloss is the text after the entry's `:` and before its first field.
+  Code spans, quoted strings, `e.g.`, `i.e.`, `etc.` and `vs.` are not counted; a sentence ends at `.`, `!` or `?`
+  before a space or the end, and at `;`; a `:` does not end one. The gloss says what the word picks out, never what
+  the thing contains or does: "**worker brief** (kind): the brief `work run` gives a worker." What a brief, a list
+  or a log holds, and what happens to it, are requirements of the capability ("When `work run` starts a stage for
+  a work-item, `work run` shall give the stage a worker brief that names the work-item.").
+- The fields are data, not sentences: `Values:` and `Transitions:` (an attribute), `Forms:` and `Plural:` (only
+  where English is irregular), `Not:` (avoided words) and `Kind of:` (a kind's supertype). There is no other field.
+- The category is required (v_t4). An attribute or condition names its kind: `of <kind>`.
 - A value belongs to exactly one attribute of one kind (v_t5); the same word in two attributes is two values, which
   the typed slots keep apart. No two terms of one category linearise the same (v_t6).
 - `Values:` and `Transitions:` (each `from → to: <event, command or condition>`) give an attribute's lifecycle;
-  `model logic` allows a status to change only along a row. `Means:` of a condition parses as a condition of its
-  kind. `Forms:` and `Plural:` are written only where English is irregular.
+  `model logic` allows a status to change only along a row.
 - A word with entries for several kinds (`status` of each kind with a lifecycle) is defined once: one entry
-  carries the sentence, and the entries for the other kinds open with `Values:` or `Means:`.
+  carries the sentence, and the entries for the other kinds give their own fields.
 - `Not:` lists the words the context avoids for that thing; `model check` reports one in a prose section (v_t1).
   Once every capability is codified, a requirement can only use lexicon words anyway.
+
+**Conditions.** A condition's entry is one sentence, and it is either a definition or primitive:
+
+- **A definition** is a sentence in the language: `A <kind> is <condition> when <clauses>.`, its clauses joined by
+  `and` or `or`, naming its subject as "the <kind>", never "it" (`open` above). It parses in the `Def` grammar
+  (`model parse --grammar Def "<sentence>"`), and `model logic` reads it as the condition's rule. A condition that
+  tests a value is always a definition. A coordination across two kinds is two clauses: "A result is outputless
+  when the result gives no question and the result gives no output."
+- **A primitive** condition is one whose sentence does not parse as a definition, because its words (a bullet, a
+  bracket) are not lexicon words (`unfixed` above). Its sentence is a gloss, like a kind's; the logic treats it as
+  a fact of the thing, chosen when the thing is created and kept after, and a step definition builds it.
+
+A condition is defined when every word of its sentence is a lexicon word and the sentence parses; otherwise it is
+primitive. There is no prose `Means` field (v_t9).
 
 A term is standing, approved at the gate like a requirement. Its id is `term/<context path>/<term>`, lowercased
 with spaces as hyphens. A term change rides with the proposal that needs it: a glossary-proposal lists it in
 `adds`, `changes` or `removes`, and adds to `spec/index.md` unless it names a capability.
 
 The grammar itself — the EARS forms, the verb phrases, the typed slots — is the plugin's (`grammar/`), and grows
-only in the plugin. A context grows its language by glossary entries only.
+only in the plugin. A context grows its language by glossary entries and relation rows only.
+
+## Relations
+
+The relations of a context are one table, `## Relations` in `spec/index.md`; a capability may add its own local
+rows under its own `## Relations`. A row is `| from kind | word | to kind |`, with an optional fourth cell for
+cardinality (`one`), and nothing else: no gloss. The word is a preposition (`for`, `on`, `with`, `of`) or a verb
+written as the clause says it (`fulfils`, `rests on`).
+
+```markdown
+| from | word | to | cardinality |
+|---|---|---|---|
+| stage | for | node | one |
+| work-item | under | capability-proposal | one |
+| initiative | fulfils | request | one |
+```
+
+- **A preposition means the one relation its row gives for the two kinds it joins.** "a stage for the work-item w1"
+  is the row (stage, for, node), since a work-item is a kind of node; there is no entry that says what `for` or
+  `on` means. Two rows with the same from, word and to are a problem (v_t10), and a relation entry in Terms that
+  only names a preposition is one too (v_t8). Two relations between one pair of kinds take two words.
+- **A row on a supertype** (a kind whose subkinds say `Kind of: <it>`) holds for every subkind, at any depth, and
+  for the supertype itself: one row (stage, for, node), not one for each kind of node.
+- **Attachment is typed.** In "a `plan` stage for a work-item with the result", `with the result` attaches to the
+  stage because (work-item, with, result) is no row. Where both attachments are rows, the line has two trees and is
+  refused; it is reworded.
+- A relation is used as a modifier ("a stage for the work-item") or as a clause ("the stage is for the work-item",
+  "the initiative fulfils the request").
 
 ## Universal conditions
 
@@ -265,9 +327,18 @@ is written in the upstream's lexicon, and `work request` parses its lines with t
 Generated, never edited: `features generate <capability>` writes it, and `features generate --check` fails when a
 feature differs from what the spec generates. The file starts with the header
 `# generated from spec/capabilities/<name>.md by features generate; do not edit`, then `Feature: <title>`, then one
-scenario per group in group order, tagged `@g<n>` and each member's `@r<n>`. Instances are named by their kind's
-first letter and a number in order of first mention (`i1`, `w1`), and every step names the kind: `an initiative
-i1 that is `proposed`` where it is introduced, `the initiative i1` after.
+scenario per group in group order, tagged `@g<n>` and each member's `@r<n>`.
+
+A scenario is read off a trace. `features generate` asks the same solver `model logic` uses for the smallest trace
+in which the group's statement fires (fewest instances, then fewest events, then fewest facts at the start), and
+reads it: the state the trace starts in gives the Givens (the statement's Where and While clauses, its defined
+conditions and whatever else a statement the trigger reaches needs), the trigger gives the When, and each verb
+phrase of the response gives its own Then. A group's example data comes first, from its `given` block. Every step
+is a sentence of the step grammar. Among equal traces the least by a fixed order is taken, so the same spec gives
+the same bytes, and a requirement the group's trace cannot reach changes nothing in it. Instances are named by
+their kind's first letter and a number in order of first mention (`i1`, `w1`), and every step names the kind: `an
+initiative i1 that is `proposed`` where it is introduced, `the initiative i1` after. A group whose trace cannot
+happen is refused with its L1.
 
 A scenario that looks wrong is a wrong requirement (back to the spec, at the gate) or a defect of the plugin's
 grammar or generator (a request to the plugin) — never an edit to the feature file. Step definitions are
@@ -321,12 +392,21 @@ The only delete rule is `refuse`.
 ## Verifying
 
 - `scripts/model check` reads the final layout and prints each rule by its code and label: ids (v15a–v15k), the
-  parse (`v_p1` a requirement does not parse, `v_p2` it has more than one tree, `v_p3` a `given` line does not
-  parse), groups and scenarios (v_s1–v_s3), terms (v_t1–v_t6), and references that name nothing. It exits 0 when
-  it finds nothing.
-- `scripts/model logic [<capability>]` checks the requirements together: L1 a group that cannot happen (the
-  requirements and universal conditions in conflict named), L2 duplicates, L3 a status set by no transition, L4
-  an unreachable pre-state.
+  groups' shape (v15l a group with more than one statement, v15m a given line that is not example data, v15n two
+  groups of a capability that share features, condition and trigger), the parse (`v_p1` a requirement does not
+  parse, `v_p2` it has more than one tree, `v_p3` a `given` line does not parse), groups and scenarios
+  (v_s1–v_s3), terms (v_t1–v_t10: v_t7 an entry of more than one sentence, v_t8 a relation entry that only names a
+  preposition, v_t9 a `Means` field, v_t10 two relation rows with one from, word and to), and references that
+  name nothing. It exits 0 when it finds nothing. `scripts/model lexicon --check` prints the term problems alone.
+- `scripts/model logic [<capability>]` checks the requirements together. Each statement is translated, fun by fun,
+  into telingo temporal formulas (`&tel`), and each group is solved with the statements its trigger can reach and
+  the universal conditions, at a horizon telingo raises step by step up to the longest chain of triggers:
+  - L1 (error): a group that cannot happen; the unsatisfiable core names the requirements and universal conditions
+    in conflict;
+  - L2 (warning): two statements that say the same thing;
+  - L3 (error): a status set where no transition row allows it (an L1 whose core holds a transition);
+  - L4 (warning): a value a group's pre-state needs that no trace from an initial state reaches, asked of the
+    solver.
 - `scripts/model restates [<capability>]`, in a converted repository: every 0.29 id restated, dropped or moved.
 - `features generate --check`: every feature file is what its capability generates.
 
@@ -339,10 +419,12 @@ For a new context:
 
 1. List the capabilities: clusters of behaviour with one narrator.
 2. Write `spec/index.md`: frontmatter `id: bounded-context/<context path>`, `title` and `language: codified-1`;
-   then purpose, constraints, composition, testing, and the glossary — the actors, kinds, attributes with their
-   values and transitions, relations, events, resources and conditions the behaviour needs.
+   then purpose, constraints, composition, testing, the glossary — the actors, kinds, attributes with their
+   values and transitions, events, resources and conditions the behaviour needs, one sentence each — and the
+   `## Relations` table.
 3. One file per capability, `language: codified-1`. Put each sentence in its section; cut what fits none.
-4. Write Behaviour as groups of requirements, checking each with `model parse`. A sentence you cannot give an
+4. Write Behaviour as groups, one statement each, checking each with `model parse` (a condition's definition with
+   `model parse --grammar Def`); write the relations as rows of `## Relations`. A sentence you cannot give an
    observable response to goes to Implementation. A word you lack becomes a glossary entry; a condition nobody
    gave becomes a requirement or a question.
 5. Run `model check` and `model logic`, then `features generate` for each service capability.
