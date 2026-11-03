@@ -2,10 +2,10 @@
 
 A row of a `## Relations` table, in `spec/index.md` or in a capability for its own local relations, is
 `| from kind | word | to kind |`, with an optional fourth cell for cardinality; the table's header and its rule are
-not rows. A relation entry of the legacy form (`- **fulfils** (relation initiative → request): ...`) is a row too,
-until the glossary is rewritten. A row whose kind is a supertype (a kind entry's `Kind of:`) expands to each of its
-subkinds, at any depth, and keeps its own: (stage, for, node) gives (stage, for, node), (stage, for, work-item), ...,
-all with the one relation id of the row. spec_lexicon calls `read` and gives `expand` as `Lexicon.relations()` and
+not rows. A relation entry (`- **fulfils** (relation initiative → request): ...`) is no row: it is v_t8. A row
+whose kind is a supertype (a kind entry's `Kind of:`) expands to each of its subkinds, at any depth, and keeps its
+own: (stage, for, node) gives (stage, for, node), (stage, for, work-item), ..., all with the one relation id of the
+row. spec_lexicon calls `read` and gives `expand` as `Lexicon.relations()` and
 `problems` among its own.
 """
 import re
@@ -50,12 +50,6 @@ def slug(word):
     return re.sub(r"[^a-z0-9]+", "_", word.lower()).strip("_") or "x"
 
 
-def sources(lexicon):
-    """Every row before expansion: the table rows, then the legacy relation entries naming two kinds."""
-    legacy = [Row(t.kinds[0], t.term, t.kinds[1], "", t.where) for t in lexicon.of("relation") if len(t.kinds) == 2]
-    return list(lexicon.rows) + legacy
-
-
 def subkinds(lexicon):
     """{kind: every kind under it, at any depth}."""
     direct = defaultdict(set)
@@ -82,7 +76,7 @@ def expansion(lexicon):
     """(k1, word, k2, rid, source row) for every row expanded to its subkinds, the supertype's own kept."""
     subs = subkinds(lexicon)
     out = []
-    for row in sources(lexicon):
+    for row in lexicon.rows:
         for a in sorted({row.k1} | subs.get(row.k1, set())):
             for b in sorted({row.k2} | subs.get(row.k2, set())):
                 out.append((a, row.word, b, rid(row), row))
@@ -95,17 +89,16 @@ def expand(lexicon):
 
 
 def problems(lexicon):
-    """v_t4 (a row or a `Kind of:` naming no kind), v_t8 (a relation entry that only names a preposition) and v_t10
+    """v_t4 (a row or a `Kind of:` naming no kind), v_t8 (a relation entry: a relation is a row) and v_t10
     (two rows giving one (from, word, to)), as (code, term, message)."""
-    from spec_typed import PREPOSITIONS
     kinds = lexicon.kind_names()
     out = [("v_t4", t.term, "%s: Kind of: %s is not a kind" % (t.where, t.supertype))
            for t in lexicon.of("kind") if t.supertype and t.supertype not in kinds]
     for row in lexicon.rows:
         out += [("v_t4", row.word, "%s: the relation row %s %s %s names %s, which is not a kind"
                  % (row.where, row.k1, row.word, row.k2, k)) for k in (row.k1, row.k2) if k not in kinds]
-    out += [("v_t8", t.term, "%s: the relation %s (%s) only names a preposition; write it as a row of ## Relations"
-             % (t.where, t.term, " → ".join(t.kinds))) for t in lexicon.of("relation") if t.term in PREPOSITIONS]
+    out += [("v_t8", t.term, "%s: the relation %s (%s) is an entry; write it as a row of ## Relations"
+             % (t.where, t.term, " → ".join(t.kinds))) for t in lexicon.of("relation")]
     given = defaultdict(set)
     for a, word, b, _, row in expansion(lexicon):
         given[(a, word, b)].add(row)

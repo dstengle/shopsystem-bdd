@@ -14,5 +14,4 @@ concrete StepsEng of Steps = ReqEng ** {
     SExitsOk s = s ++ "exits" ++ "successfully" ;
     SExitsErr s x = s ++ "exits" ++ "with" ++ "an" ++ "error" ++ "naming" ++ x.s ;
     SChangesNothing s = s ++ "changes" ++ "nothing" ;
-    SCommits s x = s ++ "commits" ++ x.s ++ "and" ++ "pushes" ++ "the" ++ "commit" ;
 }

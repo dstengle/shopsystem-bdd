@@ -35,8 +35,6 @@ id: capability/ex.com/p/ctx/sup
 
 ## Terms
 
-- **gives** (relation result → question): a question the result gives.
-
 ## Relations
 
 | from | word | to |
@@ -73,12 +71,15 @@ def test_a_row_naming_a_supertype_expands_to_each_subkind_and_keeps_its_own(tmp_
     assert ("question", "on", "work-item") in {r[:3] for r in rels}
 
 
-def test_a_legacy_relation_entry_is_a_row_too(tmp_path):
-    rels = {r[:3] for r in repo(tmp_path).relations()}
-    assert ("result", "gives", "question") in rels and ("result", "asks", "question") in rels
+def test_a_relation_entry_is_no_row_and_is_v_t8(tmp_path):
+    cap = CAP.replace("## Terms\n", "## Terms\n\n- **gives** (relation result → question): a question the result gives.\n")
+    lex = repo(tmp_path, cap=cap)
+    rels = {r[:3] for r in lex.relations()}
+    assert ("result", "gives", "question") not in rels and ("result", "asks", "question") in rels
+    assert [p[:2] for p in spec_lexicon.problems(lex) if p[0] == "v_t8"] == [("v_t8", "gives")]
 
 
-def test_v_t8_a_relation_entry_that_names_a_preposition(tmp_path):
+def test_v_t8_a_relation_entry_that_names_a_preposition_too(tmp_path):
     cap = CAP.replace("## Terms\n", "## Terms\n\n- **for** (relation stage → result): the result a stage is for.\n")
     found = spec_lexicon.problems(repo(tmp_path / "a", cap=cap))
     assert [p[:2] for p in found if p[0] == "v_t8"] == [("v_t8", "for")]

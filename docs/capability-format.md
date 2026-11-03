@@ -292,8 +292,8 @@ written as the clause says it (`fulfils`, `rests on`).
 
 - **A preposition means the one relation its row gives for the two kinds it joins.** "a stage for the work-item w1"
   is the row (stage, for, node), since a work-item is a kind of node; there is no entry that says what `for` or
-  `on` means. Two rows with the same from, word and to are a problem (v_t10), and a relation entry in Terms that
-  only names a preposition is one too (v_t8). Two relations between one pair of kinds take two words.
+  `on` means. Two rows with the same from, word and to are a problem (v_t10), and a relation entry in Terms is one
+  too, whatever its word (v_t8). Two relations between one pair of kinds take two words.
 - **A row on a supertype** (a kind whose subkinds say `Kind of: <it>`) holds for every subkind, at any depth, and
   for the supertype itself: one row (stage, for, node), not one for each kind of node.
 - **Attachment is typed.** In "a `plan` stage for a work-item with the result", `with the result` attaches to the
@@ -398,8 +398,8 @@ The only delete rule is `refuse`.
   groups' shape (v15l a group with more than one statement, v15m a given line that is not example data, v15n two
   groups of a capability that share features, condition and trigger), the parse (`v_p1` a requirement does not
   parse, `v_p2` it has more than one tree, `v_p3` a `given` line does not parse), groups and scenarios
-  (v_s1–v_s3), terms (v_t1–v_t10: v_t7 an entry of more than one sentence, v_t8 a relation entry that only names a
-  preposition, v_t9 a `Means` field, v_t10 two relation rows with one from, word and to), and references that
+  (v_s1–v_s4), terms (v_t1–v_t10: v_t7 an entry of more than one sentence, v_t8 a relation entry (a relation is a row),
+  v_t9 a `Means` field, v_t10 two relation rows with one from, word and to), and references that
   name nothing. It exits 0 when it finds nothing. `scripts/model lexicon --check` prints the term problems alone.
 - `scripts/model logic [<capability>]` checks the requirements together. Each statement is translated, fun by fun,
   into telingo temporal formulas (`&tel`), and each group is solved with the statements its trigger can reach and

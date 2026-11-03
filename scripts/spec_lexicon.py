@@ -7,7 +7,8 @@ A term entry is a bullet of `spec/index.md`'s `## Glossary` or of a capability's
 Its category is the grammar slot the term fills (actor, kind, attribute, relation, event, resource, condition).
 Values belong to one attribute of one kind. `ident` names a term in GF (§9.6); `problems` gives v_t4–v_t10.
 The gloss is the text after the entry's `:` and before its first field, one sentence (v_t7, design-r2 §8); a kind's
-`Kind of:` names its supertype. Relations are rows (spec_relations), and `Means:` is read only to be a problem (v_t9).
+`Kind of:` names its supertype. Relations are rows (spec_relations): a relation entry is read only to be a problem
+(v_t8), and so is a `Means:` field (v_t9).
 """
 import re
 from collections import defaultdict
@@ -36,7 +37,6 @@ class Term:
     where: str = ""
     values: tuple = ()
     transitions: tuple = ()
-    means: str = ""
     forms: tuple = ()
     plural: str = ""
     nots: tuple = ()
@@ -88,7 +88,7 @@ def entry(bullet, where):
         if step:
             transitions.append(step.groups())
     return Term(term=found.group("term").strip(), category=category, kinds=kinds, text=text, where=where,
-                values=_list(_field(text, "Values")), transitions=tuple(transitions), means=_field(text, "Means"),
+                values=_list(_field(text, "Values")), transitions=tuple(transitions),
                 forms=_list(_field(text, "Forms")), plural=_field(text, "Plural"), nots=_list(_field(text, "Not")),
                 resource=resource, supertype=_field(text, "Kind of"))
 
