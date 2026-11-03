@@ -1,5 +1,6 @@
-"""decisions and why of scripts/model: the generated index of spec/decisions/, and a requirement's trace to its
-initiative's sources."""
+"""decisions, why, parse, lexicon and logic of scripts/model: the generated index of spec/decisions/, a requirement's
+trace to its initiative's sources and to the 0.29 ids its group restates, and the requirement language's tools (the GF
+conversion's design §15)."""
 
 import json
 import os
@@ -48,13 +49,34 @@ def cmd_decisions(args):
     return 0
 
 
+def why_old(model, q, as_json):
+    """The trace of a 0.29 id: its text in spec/restated.json and the groups that restate it."""
+    key = q.rsplit("/", 1)[-1]
+    text = model.restated[key[:-len("@0.29")]]["text"]
+    by = model.restated_by.get(key, [])
+    if as_json:
+        print(json.dumps({"requirement": q, "text": text, "restated_by": by}, indent=1))
+        return 0
+    print(f"{key}: {text}")
+    for g in by:
+        print(f"  restated by {g}: {model.groups[g].title}")
+    if not by:
+        print("  restated by no group")
+    return 0
+
+
 def cmd_why(args):
     model = Model(args.root).read()
     q = model.resolve_req(args.ref, "why")
     if not q:
         print("\n".join(model.dangling))
         return 2
+    if q.endswith("@0.29"):
+        return why_old(model, q, getattr(args, "json", False))
     text = model.req_text.get(q)
+    group = model.group_of.get(q)
+    restates = [{"id": f"{c}#r{n}@0.29", "text": model.restated.get(f"{c}#r{n}", {}).get("text")}
+                for c, n in (model.groups[group].restates if group else [])]
     traced = []
     for p, data in sorted(model.proposals.items(), key=lambda t: str(t[1].get("date", ""))):
         rels = [rel for rel in ("adds", "changes", "removes")
@@ -62,11 +84,15 @@ def cmd_why(args):
         if rels:
             traced.append((p, data, rels))
     if getattr(args, "json", False):
-        print(json.dumps({"requirement": q, "text": text, "proposals": [
+        print(json.dumps({"requirement": q, "text": text, "group": group, "restates": restates, "proposals": [
             {"id": p, "relation": rels, "status": data.get("status"), "date": str(data["date"]) if data.get("date") else None}
             for p, data, rels in traced]}, indent=1))
         return 0
     print(f"{q}: {text}" if text is not None else f"{q}: no capability has this requirement now")
+    if group:
+        print(f"  in group {group}: {model.groups[group].title}")
+    for old in restates:
+        print(f"  restates {old['id']}: {old['text']}")
     found = False
     for p, data, rels in traced:
         found = found or bool(set(rels) & {"adds", "changes"})
@@ -85,3 +111,68 @@ def cmd_why(args):
     if not found:
         print("  no capability-proposal adds or changes it")
     return 0
+
+
+def cmd_parse(args):
+    """Each line's tree, or its refusal with the longest prefix that parsed and the nearest lexicon words."""
+    import spec_grammar
+    import spec_tree
+    if args.file:
+        lines = [(n, line) for n, line in enumerate(Path(args.file).read_text().splitlines(), 1) if line.strip()]
+    else:
+        lines = [(None, args.line)]
+    refused = 0
+    for n, line in lines:
+        head = f"{n}: " if n is not None else ""
+        try:
+            p = spec_grammar.parse(args.root, line, args.grammar)
+        except (ImportError, spec_grammar.GrammarError) as err:
+            print(f"the {args.grammar} grammar could not be built: {err}")
+            return 2
+        if p.tree is not None:
+            print(head + spec_tree.show(p.tree))
+            continue
+        refused += 1
+        print(head + p.refusal)
+        for tree in p.trees:
+            print("  tree: " + spec_tree.show(tree))
+        if not p.trees:
+            h = spec_grammar.hint(args.root, line, args.grammar)
+            print(f"  parsed up to: {h['prefix']}")
+            print(f"  nearest words: {', '.join(h['near']) or '(none)'}")
+    return 1 if refused else 0
+
+
+def cmd_lexicon(args):
+    """The terms by category; with --check, v_t4-v_t6 as a report, exit 1 when there is any."""
+    import spec_lexicon
+    lexicon = spec_lexicon.read(args.root)
+    if args.check:
+        found = spec_lexicon.problems(lexicon)
+        for code, term, message in found:
+            print(f"{code}  {term}  {message}")
+        print(f"{len(lexicon.terms)} terms, {len(found)} problems")
+        return 1 if found else 0
+    for cat in spec_lexicon.CATEGORIES + ("",):
+        terms = [t for t in lexicon.terms if t.category == cat or (not cat and t.category not in spec_lexicon.CATEGORIES)]
+        if terms:
+            print(f"{cat or 'no category'} ({len(terms)})")
+        for t in terms:
+            more = {"attribute": f" (of {', '.join(t.kinds)}): {', '.join(t.values)}",
+                    "condition": f" (of {', '.join(t.kinds)})", "relation": f" ({' → '.join(t.kinds)})",
+                    "resource": f" ({t.resource})" if t.resource else ""}.get(t.category, "")
+            print(f"  {t.term}{more}")
+    return 0
+
+
+def cmd_logic(args):
+    """The temporal check: spec_solve's findings and its report."""
+    try:
+        import spec_solve
+    except ImportError:
+        print("model logic needs scripts/spec_solve.py (the logic check), which this plugin lacks")
+        return 2
+    findings = spec_solve.run(args.root, capability=args.capability)
+    text, code = spec_solve.report(findings, args.json)
+    print(text, end="" if text.endswith("\n") else "\n")
+    return code

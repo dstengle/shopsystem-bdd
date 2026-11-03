@@ -5,26 +5,18 @@ import datetime
 import re
 from pathlib import Path
 
-from model_parse import (
-    RID,
-    as_list,
-    behaviour_items,
-    bullets,
-    ears,
-    frontmatter,
-    glossary_entry,
-    mention,
-    scenarios,
-    section,
-)
+from model_legacy import LegacyReading
+from model_parse import as_list, frontmatter, mention, scenarios
 from model_requests import RequestReading
+from model_spec import SpecReading
 from model_work import PART_KINDS, WorkReading
 
-REF = re.compile(r"^(?P<cap>[\w.-]+(?:/[\w.-]+)*)#r(?P<n>\d+)$")
-KINDS = {"bounded-context", "capability", "design-decision", "acceptance-scenario", "term", "initiative",
-         "capability-proposal", "job-proposal", "map-proposal", "vision-proposal", "job-thread",
-         "cross-context-request", "map-escalation", "work-item", "observation", "measurement", "review-finding",
-         "decision-argument", "initiative-archive", "job", "context-seam", "product-vision", "request"}
+REF = re.compile(r"^(?P<cap>[\w.-]+(?:/[\w.-]+)*)#r(?P<n>\d+)(?P<old>@0\.29)?$")
+KINDS = {"bounded-context", "capability", "design-decision", "requirement", "requirement-group", "scenario", "term",
+         "universal-condition", "initiative", "capability-proposal", "glossary-proposal", "job-proposal",
+         "map-proposal", "vision-proposal", "job-thread", "map-escalation", "work-item", "observation", "measurement",
+         "review-finding", "decision-argument", "initiative-archive", "job", "context-seam", "product-vision",
+         "request"}
 WORK_KINDS = PART_KINDS | {"initiative", "request"}      # the kinds kept in .shop/work/
 NAME = r"[a-z0-9]+(?:-[a-z0-9]+)*"
 CONTEXT_PATH =rf"{NAME}(?:\.{NAME})*/{NAME}/{NAME}"     # <owner>/<product>/<context name>; the owner may be a domain
@@ -32,7 +24,7 @@ NOT_PROSE = re.compile(r'`[^`]*`|"[^"]*"|(?<!\w)@[\w-]+')
 OLD_LAYOUT = ("spec/decisions.md", "decisions/", "work/", "records/")    # what scripts/migrate moves (r61)
 
 
-class Model(WorkReading, RequestReading):
+class Model(SpecReading, LegacyReading, WorkReading, RequestReading):
     def __init__(self, root, today=None):
         self.root = Path(root)
         self.today = today or datetime.date.today()
@@ -47,9 +39,15 @@ class Model(WorkReading, RequestReading):
         self.parents = {}       # part id -> part_of
         self.sources = {}       # initiative id -> [record ids]
         self.req_text = {}
-        self.sc_text = {}       # acceptance-scenario id -> its title and steps
+        self.sc_text = {}       # scenario id -> its title and steps
         self.retired = set()    # (capability id, n)
         self.words = set()      # each term and avoided word, lowercased
+        self.unmentioned = set()    # the codified statements and scenarios: a parsed line uses lexicon words (C27)
+        self.groups = {}        # group id -> spec_read.Group
+        self.group_of = {}      # requirement id -> its group id
+        self.restated = {}      # <cap>#r<n> -> {"text", "line"}, spec/restated.json
+        self.restated_by = {}   # <cap>#r<n>@0.29 -> [group ids that restate it]
+        self._grammar = None
 
     def fact(self, name, *args):
         self.facts.append((name, args))
@@ -105,11 +103,49 @@ class Model(WorkReading, RequestReading):
                                  "(<capability>#r<n>, or #r<a>-r<b> with a <= b, the capability written "
                                  "capability/<context path>/<name>, capability/<name> or <name>)")
             return None
-        return f"{cap}#r{m.group('n')}"
+        q = f"{cap}#r{m.group('n')}"
+        if not m.group("old"):
+            return q
+        key = f"{cap.rsplit('/', 1)[-1]}#r{m.group('n')}"      # a 0.29 id: resolved through spec/restated.json (§13.4)
+        if key not in self.restated:
+            self.dangling.append(f"{where}: {ref!r} names no 0.29 id of spec/restated.json")
+            return None
+        q += "@0.29"
+        self.nodes.setdefault(q, "0.29 id")       # looked up, never a node: no fact is written for it
+        self.fact("old_ref", q)
+        return q
+
+    def read_accepts(self, w, ref, status, where):
+        """accepts(W, <cap>#r<n>@0.29): a 0.29 id is history, so no scenario need name it."""
+        m = REF.match(str(ref).strip())
+        if not (m and m.group("old")):
+            return super().read_accepts(w, ref, status, where)
+        q = self.resolve_req(ref, where)
+        if q:
+            self.fact("accepts", w, q)
+
+    def term(self, word, n, avoided):
+        """A glossary entry: the term node term/<path>/<word, spaces as hyphens>, its entry number and its Not: words."""
+        word = " ".join(word.lower().split())
+        t = self.term_id(word)
+        self.check_id(t, "term", "spec/index.md")
+        self.node(t, "term")
+        self.fact("term_of", t, self.context)
+        self.fact("glossary_entry", t, n, word)
+        self.words.add(word)
+        for w in avoided:
+            self.fact("avoid", t, w)
+            self.words.add(w)
+        return t
+
+    def term_id(self, word):
+        return f"term/{self.path}/{'-'.join(word.lower().split())}"
 
     def read(self):
         self.read_layout()
         self.read_index()
+        self.read_restated()
+        self.read_universal()
         self.read_capabilities()
         self.read_features()
         self.read_decisions()
@@ -143,30 +179,17 @@ class Model(WorkReading, RequestReading):
             return
         self.context, self.path = m.group(0), m.group(1)
         self.node(self.context, "bounded-context")
-        self.read_glossary(body)
-
-    def read_glossary(self, body):
-        for n, bullet in enumerate(bullets(section(body, "Glossary")), 1):
-            entry = glossary_entry(bullet)
-            if entry is None:
-                self.problems.append(f"spec/index.md: glossary bullet {n} is not "
-                                     "'- **<term>**: <definition>. Not: <word>, <word>.' (Not: optional)")
-                continue
-            word, avoided = entry
-            t = f"term/{self.path}/{'-'.join(word.lower().split())}"
-            self.check_id(t, "term", "spec/index.md")
-            self.node(t, "term")
-            self.fact("term_of", t, self.context)
-            self.fact("glossary_entry", t, n, " ".join(word.lower().split()))
-            self.words.add(" ".join(word.lower().split()))
-            for w in avoided:
-                self.fact("avoid", t, w)
-                self.words.add(w)
+        if str(data.get("language", "")).strip() == "codified-1":
+            self.read_lexicon()         # the typed glossary (§10.1)
+        else:
+            self.read_glossary_legacy(body)
 
     def read_mentions(self):
         """mentions(X, W) for each requirement and scenario X and each term or avoided word W it contains."""
         found = [(w, mention(w)) for w in sorted(self.words)]
         for x, text in list(self.req_text.items()) + list(self.sc_text.items()):
+            if x in self.unmentioned:
+                continue
             text = NOT_PROSE.sub(" ", text)        # code spans, double-quoted strings and @ tags are no mentions (r51)
             for w, pattern in found:
                 if pattern.search(text):
@@ -176,6 +199,7 @@ class Model(WorkReading, RequestReading):
         for path in sorted((self.root / "spec" / "capabilities").glob("*.md")):
             data, body = frontmatter(path.read_text())
             name = path.stem
+            codified = str(data.get("language", "")).strip() == "codified-1"      # read as groups (§13.4)
             expected = f"capability/{self.path}/{name}" if self.path else None
             cap = data.get("id") or expected or name
             if expected and cap != expected:
@@ -193,11 +217,9 @@ class Model(WorkReading, RequestReading):
                 d = self.qualify(d, "design-decision")
                 self.fact("rests_on", cap, d)
                 self.want(d, "design-decision", self.rel(path))
-            retired = set()
-            for r in as_list(data.get("retired")):
+            for r in [] if codified else as_list(data.get("retired")):      # model_spec reads a codified one
                 m = re.fullmatch(r"r?(\d+)", str(r))
                 if m:
-                    retired.add(int(m.group(1)))
                     self.retired.add((cap, int(m.group(1))))
                     self.fact("retired_id", cap, int(m.group(1)))
                 else:
@@ -209,27 +231,11 @@ class Model(WorkReading, RequestReading):
             if not any(l.startswith("## ") and l[3:].strip().lower() == "behaviour" for l in body.splitlines()):
                 self.problems.append(f"{self.rel(path)}: no '## Behaviour' section")
             entry = {"name": name, "reqs": {}, "group": data.get("group"), "path": path,
-                     "feature": f"features/{name}.feature"}
-            for i, (text, lead) in enumerate(behaviour_items(section(body, "Behaviour")), 1):
-                m = RID.match(text)
-                if m:
-                    n = int(m.group(1))
-                    q = f"{cap}#r{n}"
-                    if n in entry["reqs"]:
-                        q = f"{cap}#r{n}~{i}"   # a second bullet with the same id: its own node, so v15b sees both
-                    self.fact("req_id", q, cap, n)
-                    entry["reqs"].setdefault(n, q)
-                    self.req_text[q] = text[m.end():]
-                else:
-                    q = f"{cap}#line{i}"
-                    self.req_text[q] = text
-                self.node(q, "capability-requirement")
-                self.fact("has_req", cap, q)
-                shaped, single = ears(lead if lead is not None else text)
-                if not shaped:
-                    self.fact("ears_other", q)
-                if not single:
-                    self.fact("ears_many", q)
+                     "feature": f"features/{name}.feature", "codified": False}
+            if codified:
+                self.read_codified(cap, path, entry)
+            else:
+                self.read_legacy_behaviour(cap, entry, body)
             self.caps[cap] = entry
 
     def read_features(self):
@@ -251,18 +257,12 @@ class Model(WorkReading, RequestReading):
                 if s in seen:
                     self.problems.append(f"{key}: two scenarios are titled {title!r}")
                 seen.add(s)
-                self.node(s, "acceptance-scenario")
+                self.node(s, "scenario")
                 self.sc_text[s] = "\n".join([title] + steps)
-                for tag in tags:
-                    m = re.fullmatch(r"@r(\d+)", tag)
-                    if not m or cap is None:
-                        continue
-                    q = f"{cap}#r{m.group(1)}"
-                    if q in self.nodes:
-                        self.fact("has_sc", q, s)
-                    else:
-                        self.dangling.append(f"{key}: scenario {title!r} names {q}, which {cap} does not have")
-
+                if cap is not None and self.caps[cap]["codified"]:
+                    self.codified_scenario(cap, key, title, tags, s)
+                else:
+                    self.legacy_scenario(cap, key, title, tags, s)
 
     def want(self, ident, kind, where):
         self._wanted = getattr(self, "_wanted", [])

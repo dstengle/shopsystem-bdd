@@ -49,6 +49,8 @@
 #defined logic_only/1.            % logic_only(G): G has no Steps linearisation, so no scenario
 #defined pre/2.                   % pre(Q, Key): Q's trigger and condition trees, normalised (none when ubiquitous)
 #defined parsed/1.  #defined unparsed/2.  #defined ambiguous/1.
+#defined given_unparsed/2.        % given_unparsed(G, Line): a line of G's given block does not parse in Steps
+#defined old_ref/1.               % old_ref(R): R is a 0.29 id <cap>#r<n>@0.29, resolved through spec/restated.json
 
 % ---------------------------------------------------------------- §1 kinds (C1, C3, C7, C8, C10, C21, C23)
 standing("product-vision").  standing("job").  standing("bounded-context").  standing("context-seam").
@@ -61,10 +63,6 @@ proposal("capability-proposal").  proposal("glossary-proposal").                
 record("observation").  record("measurement").  record("review-finding").
 record("decision-argument").  record("initiative-archive").  record("design").  record("analysis").   % C21
 origin("observation").  origin("measurement").  origin("review-finding").
-% LEGACY: the reader of an uncodified capability still names v4's kinds; they are v5's (C1).
-standing("capability-requirement").  standing("acceptance-scenario").
-node(Q, "requirement") :- node(Q, "capability-requirement").
-node(S, "scenario")    :- node(S, "acceptance-scenario").
 
 % ---------------------------------------------------------------- §3 derivations
 has_req(C, Q)         :- member_of(Q, G), in(G, C), node(G, "requirement-group").          % C5
@@ -118,7 +116,7 @@ v2(R, X) :- seam(R, _, X),      nonstanding(X).
 
 % 3. a resolution names a requirement (never a scenario), and the spec has it (§7.2: v4's and the live clause, one rule)
 label("v3", "a request's resolution names something that is not a requirement of the spec").
-v3(Q, R) :- resolution(Q, R), not node(R, "requirement").
+v3(Q, R) :- resolution(Q, R), not node(R, "requirement"), not old_ref(R).      % a 0.29 id is history (§13.4)
 
 label("v4", "a depends_on that no using gives").
 v4(C, D) :- authored_depends_on(C, D), not using_any(C, D).
@@ -319,7 +317,16 @@ v_t5(V)       :- value_of(V, K1, A1), value_of(V, K2, A2), (K1, A1) < (K2, A2).
 label("v_t6", "two terms are written the same").
 v_t6(T1, T2)  :- linearises(T1, L), linearises(T2, L), T1 < T2.
 
-% ---------------------------------------------------------------- EARS lines (LEGACY until the parse rules, C25)
+% ---------------------------------------------------------------- the parse (C2, C25)
+% `model` parses every statement of a codified capability and of spec/universal.md in the context's grammar.
+label("v_p1", "a requirement does not parse").
+v_p1(Q, Why) :- unparsed(Q, Why).
+label("v_p2", "a requirement parses to more than one tree").
+v_p2(Q)      :- ambiguous(Q).
+label("v_p3", "a line of a group's given block does not parse in the step grammar").
+v_p3(G, L)   :- given_unparsed(G, L).
+
+% ---------------------------------------------------------------- EARS lines (LEGACY: an uncodified capability, C25)
 % scripts/model matches each Behaviour line (a table row by its lead sentence) and gives ears_other(Q) for a line
 % in none of EARS's patterns and ears_many(Q) for one with more than one "shall" or more than one sentence.
 #defined ears_other/1.  #defined ears_many/1.
@@ -359,6 +366,7 @@ w_stale_proposed(I) :- status(I, "proposed"), node(I, "initiative"), age(I, Days
 #show v_d1/1. #show v_d2/1. #show v_d3/1. #show v_d4/2. #show v_d5/1.
 #show v16a/1. #show v17/1. #show v18a/2. #show v18b/2. #show v18c/2. #show v18d/1.
 #show v_t1/3. #show v_t2/1. #show v_t3/1. #show v_t4/1. #show v_t5/1. #show v_t6/2.
+#show v_p1/2. #show v_p2/1. #show v_p3/2.
 #show v_e1/1. #show v_e2/1.
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
 #show w_many_requests/1. #show w_stale_intake/1. #show w_stale_proposed/1.
