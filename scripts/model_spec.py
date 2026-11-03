@@ -4,7 +4,8 @@ Model (model_facts).
 A capability file with `language: codified-1` is read by spec_read into groups `<cap>#g<n>`, each requirement
 `<cap>#r<n>` a member of one, and every requirement parsed in the context's grammar (spec_grammar): parsed(Q),
 unparsed(Q, Why) or ambiguous(Q), its trigger and condition trees normalised as pre(Q, Key) (v15k), and logic_only(G)
-from spec_tree. `spec/universal.md` gives the universal conditions, `spec/restated.json` the 0.29 ids a group may
+from spec_tree; given_condition(G, Line) for a given line that is not example data (spec_read_given, v15m).
+`spec/universal.md` gives the universal conditions, `spec/restated.json` the 0.29 ids a group may
 restate, and a typed glossary (spec_lexicon) the terms with their categories. A scenario of a codified capability
 names its group by `@g<n>`: generates(G, S)."""
 
@@ -12,6 +13,7 @@ import re
 
 import spec_lexicon
 import spec_read
+import spec_read_given
 import spec_tree
 
 GRAMMAR_MISSING = object()
@@ -19,11 +21,11 @@ GRAMMAR_MISSING = object()
 
 def term_word(t):
     """The word a term's id is made of, as the 0.29 reader keyed it: a relation `<term> of <k1> to <k2>`, an attribute
-    or condition entry that opens with `Values:` or `Means:` `<term> of <kind>`, any other the term."""
+    or condition entry with no gloss (it opens with a field) `<term> of <kind>`, any other the term."""
     word = t.term.replace("`", "").strip()
     if t.category == "relation" and len(t.kinds) == 2:
         return f"{word} of {t.kinds[0]} to {t.kinds[1]}"
-    if t.category in ("attribute", "condition") and t.kinds and re.match(r"(?:Values|Means): ", t.text):
+    if t.category in ("attribute", "condition") and t.kinds and not spec_lexicon.gloss(t.text):
         return f"{word} of {', '.join(t.kinds)}"
     return word
 
@@ -153,6 +155,9 @@ class SpecReading:
                 self.req_text[qid] = text
             if g.given:
                 self.given(gid, g.given)
+            for line, block in g.given:     # v15m: a condition the statement has, not example data
+                if not spec_read_given.example(line, block):
+                    self.fact("given_condition", gid, line)
 
     def pre(self, qid, tree):
         clauses = spec_tree.parts(spec_tree.normal(tree))

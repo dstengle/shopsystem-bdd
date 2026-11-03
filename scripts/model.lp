@@ -51,6 +51,7 @@
 #defined pre/2.                   % pre(Q, Key): Q's trigger and condition trees, normalised (none when ubiquitous)
 #defined parsed/1.  #defined unparsed/2.  #defined ambiguous/1.
 #defined given_unparsed/2.        % given_unparsed(G, Line): a line of G's given block does not parse in Steps
+#defined given_condition/2.       % given_condition(G, Line): a line of G's given block that is not example data
 #defined old_ref/1.               % old_ref(R): R is a 0.29 id <cap>#r<n>@0.29, resolved through spec/restated.json
 
 % ---------------------------------------------------------------- §1 kinds (C1, C3, C7, C8, C10, C21, C23)
@@ -212,6 +213,13 @@ label("v15j", "a group restates an id 0.29 did not have").
 v15j(G, O)  :- restates(G, O), not restated_id(O).
 label("v15k", "the statements of a group differ in trigger or condition").
 v15k(G)     :- member_of(Q1, G), member_of(Q2, G), pre(Q1, K1), pre(Q2, K2), K1 != K2.
+label("v15l", "a group has more than one statement").
+v15l(G)     :- node(G, "requirement-group"), member_of(Q1, G), member_of(Q2, G), Q1 < Q2.
+label("v15m", "a given line is not example data").
+v15m(G, L)  :- given_condition(G, L).
+label("v15n", "two groups of a capability share features, condition and trigger").
+v15n(G1, G2) :- group_id(G1, C, _), group_id(G2, C, _), member_of(Q1, G1), member_of(Q2, G2), pre(Q1, K),
+                pre(Q2, K), G1 < G2.
 
 % initiative kinds fix the first part (the rules of the job and job-path kinds are gone: C22)
 label("v_k3", "a capability-change initiative's first part is not a proposal").
@@ -349,6 +357,7 @@ w_stale_proposed(I) :- status(I, "proposed"), node(I, "initiative"), age(I, Days
 #show v10a/2. #show v10b/1. #show v10c/1. #show v11/1. #show v12a/1. #show v12b/1. #show v13/1.
 #show v15a/1. #show v15b/2. #show v15c/1. #show v15d/2. #show v15e/2. #show v15f/1.
 #show v15g/1. #show v15h/1. #show v15i/1. #show v15j/2. #show v15k/1.
+#show v15l/1. #show v15m/2. #show v15n/2.
 #show v_k3/1. #show v_k4/1. #show v_k5/1. #show v_k6/1. #show v_b1/1. #show v_b3/1.
 #show v_s1/1. #show v_s2/1. #show v_s3/1. #show v_s4/1.
 #show v_w1/1. #show v_w2/1. #show v_w3/2. #show v_w4/1.

@@ -27,17 +27,21 @@ contract:
     read by spec_lexicon, every capability's `## Terms` too; otherwise each
     bullet is `- **<term>**: <definition>. Not: <word>, <word>.`. A term is
     term/<context path>/<term lowercased, spaces as hyphens> (an attribute or
-    condition entry opening with Values: or Means: is `<term> of <kind>`, a
-    relation `<term> of <kind> to <kind>`, a word given in a second category
-    `<term> <category>`, a value `<value> of <kind>`); a bullet of that
-    section in no such form is a file problem;
+    condition entry with no gloss, opening with a field such as Values:, is
+    `<term> of <kind>`, a relation `<term> of <kind> to <kind>`, a word given
+    in a second category `<term> <category>`, a value `<value> of <kind>`); a
+    bullet of that section in no such form is a file problem. A
+    `## Relations` table, in spec/index.md or a capability, gives the
+    relations as rows `| from kind | word | to kind |`, and a kind's
+    `Kind of: <kind>` its supertype (spec_relations);
     spec/capabilities/*.md, each a capability with frontmatter (id, narrator,
     group, rests_on, retired) and a `## Behaviour` section; a `formulated_as`
     key is a file problem. A file whose own frontmatter has
     `language: codified-1` is codified (design model v5): its Behaviour is
     groups `### [g<n>] <title>`, each with an optional
     `Restates: r<n>@0.29, <cap>#r<n>@0.29.` line, `- [r<n>] <statement>`
-    bullets and an optional fenced `given` block; its `## Dropped` lists the
+    bullets and an optional fenced `given` block of example data; its
+    `## Dropped` lists the
     0.29 ids no group restates. A capability file, spec/index.md or
     spec/universal.md without that marker is not read: it is v_p0, which
     `migrate upgrade` converts;
@@ -77,7 +81,11 @@ contract:
   - Every statement of a codified file and of spec/universal.md is parsed in
     the context's requirement grammar (spec_grammar): parsed, unparsed (v_p1)
     or ambiguous (v_p2); a group's statements share their trigger and
-    condition (v15k); a group whose every statement holds a resource is
+    condition (v15k), and a group has one statement (v15l); a given line is
+    example data, `the <words> <name> holds:` with a docstring or table
+    under it or `the <words> <name> holds` and one code span or quoted
+    string (v15m); no two groups of a capability share features, condition
+    and trigger (v15n); a group whose every statement holds a resource is
     logic_only and has no scenario. A scenario of a codified capability names
     its group by a tag @g<n> (generates). A scenario tagged @deprecated is no
     scenario; one tagged @holding is a file problem.
@@ -126,13 +134,16 @@ contract:
     "restates" and "proposals", each with its "id", "relation", "status" and
     "date". rules --json prints one object, "rules", each {"code", "label",
     "kind": "violation" or "warning"}.
-  - parse <line> | --file F [--grammar Req|Steps] prints the line's tree in
+  - parse <line> | --file F [--grammar Req|Steps|Def] prints the line's tree in
     the context's grammar and exits 0; a refused line prints the refusal (the
     token and its position, or the guard), the longest prefix that parsed and
     the lexicon words nearest the refused token, and exits 1. A file's lines
     are numbered `<n>: `. It exits 2 when the grammar cannot be built.
-  - lexicon lists the terms by category; lexicon --check prints v_t4-v_t6
-    (`<code>  <term>  <message>`) and exits 1 when there is any.
+  - lexicon lists the terms by category; lexicon --check prints v_t4-v_t10
+    (`<code>  <term>  <message>`) and exits 1 when there is any: v_t7 a
+    gloss of more than one sentence, v_t8 a relation entry that only names
+    a preposition, v_t9 a meaning given as a field rather than a sentence,
+    v_t10 two relation rows with one (from, word, to).
   - logic [--json] [<capability>] runs the temporal check (spec_solve) and
     prints its report, with its exit code.
   - restates [--json] [<capability>] exits 0 when every 0.29 id (of the
@@ -175,8 +186,8 @@ def main(argv=None):
     p = sub.add_parser("parse", help="parse a line in the context's grammar: its tree, or its refusal with a hint")
     p.add_argument("line", nargs="?")
     p.add_argument("--file")
-    p.add_argument("--grammar", default="Req", choices=["Req", "Steps"])
-    x = sub.add_parser("lexicon", help="list the terms by category; --check gives v_t4-v_t6")
+    p.add_argument("--grammar", default="Req", choices=["Req", "Steps", "Def"])
+    x = sub.add_parser("lexicon", help="list the terms by category; --check gives v_t4-v_t10")
     x.add_argument("--check", action="store_true")
     g = sub.add_parser("logic", help="the temporal check of the codified requirements")
     g.add_argument("capability", nargs="?")

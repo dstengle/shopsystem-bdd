@@ -231,3 +231,15 @@ def test_the_live_restated_file_is_keyed_by_capability_and_id():
     assert len(found) == 581
     assert all(set(v) == {"text", "line"} for v in found.values())
     assert found["work-queue#r1"]["line"] > 0
+
+
+def test_example_data_is_known_by_its_shape():
+    """v15m's shape test (design-r2 §9.1): no grammar, only the line and whether data follows it."""
+    from spec_read_given import Block, example
+    assert example("the file `a.md` holds:", Block("docstring", ["# ctx"]))
+    assert example('the file `a.md` holds "x"') and example("the Python file `big.py` holds `x = 1`")
+    assert example('the session file s-1 holds "not a session"')
+    assert not example("the file `a.md` holds:")                      # nothing after it
+    assert not example('the file `a.md` holds "x" and "y"')
+    assert not example("a result r1") and not example("the result r1 is outputless")
+    assert not example("the work-items:", Block("table", ["| id |"]))
