@@ -1,0 +1,61 @@
+"""The fixture's handlers (copied to tests/scenarios/work_queue_handlers.py by the end-to-end test): a toy queue
+kept in the scenario's context, enough to run the generated work-queue feature."""
+from vocab import handler
+
+
+@handler("GivenK_A", "initiative")
+@handler("GivenK_A", "work-item")
+def given_status(step):
+    step.context.setdefault("status", {})[step.names[0]] = step.values[0]
+
+
+@handler("GivenCodeText", "file")
+def given_file(step):
+    body = step.docstring if step.docstring is not None else "\n".join(" | ".join(r) for r in step.datatable)
+    path = step.repo / step.names[0].strip("`")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(body)
+
+
+@handler("WhenRuns", "`work start`")
+def work_start(step):
+    status = step.context["status"]
+    name = step.names[0]
+    if status[name] == "`proposed`":
+        status[name] = "`started`"
+        step.context["exit"] = (0, "")
+    else:
+        step.context["exit"] = (1, "work: the status of %s is %s" % (name, status[name]))
+
+
+@handler("WhenRuns", "`work list`")
+def work_list(step):
+    assert (step.repo / "notes.md").read_text().startswith("The first line.")
+    shown = [n for n, s in step.context["status"].items() if s not in ("`green`", "`withdrawn`")]
+    step.context["exit"] = (0, "\n".join(shown))
+
+
+@handler("ThenK_A", "initiative")
+def then_status(step):
+    assert step.context["status"][step.names[0]] == step.values[0]
+
+
+@handler("ThenExitsOk")
+def exits_ok(step):
+    assert step.context["exit"][0] == 0
+
+
+@handler("ThenExitsErr")
+def exits_err(step):
+    code, out = step.context["exit"]
+    assert code != 0 and step.context["status"][step.names[0]] in out
+
+
+@handler("ThenPrints")
+def prints(step):
+    assert step.names[0] in step.context["exit"][1].split()
+
+
+@handler("ThenPrintsNot")
+def prints_not(step):
+    assert step.names[0] not in step.context["exit"][1].split()
