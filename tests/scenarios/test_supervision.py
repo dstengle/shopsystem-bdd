@@ -18,5 +18,11 @@ def repo(tmp_path):
     return path
 
 
+@pytest.fixture(autouse=True)
+def steps(request, context):
+    """The texts of the scenario's steps, for what a Then needs that its Givens do not build (supervision_build)."""
+    context["steps"] = [s.name for s in request.function.__scenario__.steps]
+
+
 bind_all(globals(), ROOT)
 scenarios("supervision.feature")

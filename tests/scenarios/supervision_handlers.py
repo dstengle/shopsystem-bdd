@@ -75,8 +75,8 @@ for _kind in OWN:
         sv, name, word = W.sv(step.context), step.names[0], condition(step)
         sv.setdefault("inst", {}).setdefault(name, set()).add(word)
         sv["conds"].setdefault(step.kind, set()).add(word)
-        if step.kind == "file" and word == "dirty":
-            sv.setdefault("dirty", []).append(bare(name))
+        if step.kind == "file" and word == "dirty":     # a file instance is one under the initiative's directory
+            sv.setdefault("dirty", []).append(bare(name) if "/" in bare(name) else W.WORK + "/i1/%s.md" % name)
         if step.kind == "question":
             on, _ = sv["questions"].get(name, (None, False))
             sv["questions"][name] = (on, word == "answered")
@@ -101,7 +101,8 @@ def question_on(step):
 
 @handler("GivenR", "blocked by")
 def blocked_by(step):
-    W.sv(step.context)["blocked"][step.names[0]] = step.names[1]
+    if step.names[0] != step.names[1]:     # a trace may block a work-item by itself; nothing builds that
+        W.sv(step.context)["blocked"][step.names[0]] = step.names[1]
 
 
 def deliver(step, args, stage=None):
@@ -110,7 +111,10 @@ def deliver(step, args, stage=None):
     sv.setdefault("inst", {})
     B.build(step.repo, step.context)
     plan = P.plan_for(step.repo, step.context, stage)
-    return W.run_work(step.repo, step.context, plan, args)
+    args = [sv.get("alias", {}).get(a, a) for a in args]
+    done = W.run_work(step.repo, step.context, plan, args)
+    B.committed_names(step.repo, step.context)
+    return done
 
 
 def initiative_args(step, node):
@@ -128,11 +132,30 @@ def runs_work_run(step):
     return deliver(step, [n for n in step.names if n.startswith("i")])
 
 
+FROM = {"research": "drafted", "plan": "researched", "implement": "ready", "review": "done"}
+
+
+def due(step, stage, node):
+    """For `work run` starts a stage: its work-item set to the status that stage is started from; for `work run`
+    merges a work-item branch: a `ready` work-item w1 whose implementer commits on its branch."""
+    nodes = step.context.setdefault("nodes", {})
+    if " merges " in step.text and not W.nodes(step.context, "work-item"):
+        rel = W.WORK + "/i1/w1.md"
+        W.write(step.repo, rel, W.item_text("w1", "ready", "i1"))
+        nodes["w1"] = ("work-item", rel)
+        W.sv(step.context)["things"]["b0"] = "work-item branch"
+    kind = W.sv(step.context)["stages"].get(stage)
+    if " starts " in step.text and kind in FROM and nodes.get(node, (None,))[0] == "work-item":
+        path = step.repo / nodes[node][1]
+        path.write_text(W.set_field(path.read_text(), "status", FROM[kind]))
+
+
 @handler("WhenHappens")
 def happens(step):
     sv = W.sv(step.context)
     stage = next((n for n in step.names if n in sv["stages"]), None)
     node = sv["for"].get(stage, "w1") if stage else "w1"
+    due(step, stage, node)
     if sv["questions"].get(node):
         node = sv["questions"][node][0] or "w1"
     return deliver(step, initiative_args(step, node), stage)

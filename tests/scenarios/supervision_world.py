@@ -167,6 +167,7 @@ def run_work(repo, context, plan, args):
     env["PYTHONPATH"] = os.pathsep.join(p for p in env.get("PYTHONPATH", "").split(os.pathsep)
                                         if p and not (Path(p) / "work_items.py").exists())
     context["before"] = state(repo)
+    context["head"] = (context["before"][1] or "").strip() or None     # the commit the When starts at
     context["result"] = subprocess.run([sys.executable, str(SCRIPTS / "work"), "run", *args], cwd=repo, env=env,
                                        capture_output=True, text=True, timeout=300)
     done = context["result"]     # beside the repository, for whoever reads a failed scenario's directory

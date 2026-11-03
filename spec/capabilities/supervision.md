@@ -32,9 +32,9 @@ decide goes to the person as a question.
 - **change list** (kind): the list an `integrate` or `apply` round's result gives of what it adds, changes and removes.
 - **draft** (kind): a file an `integrate` round writes under its drafts path, kept on the initiative branch. Plural: drafts.
 - **tool list** (kind): what `work run` gives a worker to work with.
-- **worker brief** (kind): the brief `work run` gives a worker.
-- **round brief** (kind): the brief `work run` gives a round.
-- **review brief** (kind): the brief `work run` gives a branch review.
+- **worker brief** (kind): the brief `work run` gives a worker. Kind of: brief.
+- **round brief** (kind): the brief `work run` gives a round. Kind of: brief.
+- **review brief** (kind): the brief `work run` gives a branch review. Kind of: brief.
 - **faulty** (condition of session): a session that ends in an error or at its turn limit, or leaves output that holds no JSON result.
 - **meddling** (condition of session): a session that changes a file under `.shop/work/` outside its stage directory.
 - **littering** (condition of session): a session during whose work a file under `.shop/work/` of the checkout changes and is left uncommitted.
@@ -60,6 +60,8 @@ decide goes to the person as a question.
 - **dirty** (condition of file): a file under `.shop/work/` that differs from its last commit.
 - **answered** (condition of question): a question with an answer written under its node's `## Answers`.
 - **bare** (condition of initiative): an initiative that fulfils a request and has no capability-proposal, no glossary-proposal and no work-item.
+- **waiting** (condition of work-item): A work-item is waiting when the work-item is blocked by a work-item that is not closed.
+- **unfulfilled** (condition of request): A request is unfulfilled when no initiative fulfils the request.
 - **itemless** (condition of initiative): an initiative in which no work-item is kept.
 - **codified** (condition of change list): a change list whose every capability has `language: codified-1` in its file.
 - **uncodified** (condition of change list): a change list that names a service capability with no `language: codified-1` in its file.
@@ -75,735 +77,387 @@ decide goes to the person as a question.
 | result | gives | question |  |
 | result | gives | output |  |
 | result | gives | change list |  |
+| worker brief | for | work-item |  |
+| worker brief | with | work-item branch |  |
+| review brief | with | commit |  |
+| round brief | with | request |  |
 
 ## Behaviour
 
 ### [g1] `work run` takes every open work-item to green
 Restates: r1@0.29, r111@0.29.
-- [r1] While a remote is not unpushable, when the person runs `work run` on an initiative, `work run` shall set the status of every open work-item to `green`.
-
-```given
-a remote r1
-the remote r1 is not unpushable
-```
+- [r1] While a remote is not unpushable, when the person runs `work run` on a `started` initiative, `work run` shall take every open work-item.
 
 ### [g2] A drafted work-item gets a research stage
 Restates: r2@0.29.
-- [r2] While a work-item is `drafted`, when the person runs `work run` on an initiative, `work run` shall start a `research` stage for the work-item.
-
-```given
-a work-item w1 that is `drafted`
-```
+- [r2] While a work-item is `drafted` and the work-item is not waiting and a remote is not unpushable, when the person runs `work run` on a `started` initiative, `work run` shall start a `research` stage for the work-item.
 
 ### [g3] A researched work-item gets a plan stage
 Restates: r2@0.29.
-- [r3] While a work-item is `researched`, when the person runs `work run` on an initiative, `work run` shall start a `plan` stage for the work-item.
-
-```given
-a work-item w1 that is `researched`
-```
+- [r3] While a work-item is `researched`, when the person runs `work run` on a `started` initiative, `work run` shall start a `plan` stage for the work-item.
 
 ### [g4] A ready work-item gets an implement stage
 Restates: r2@0.29.
-- [r4] While a work-item is `ready`, when the person runs `work run` on an initiative, `work run` shall start an `implement` stage for the work-item.
-
-```given
-a work-item w1 that is `ready`
-```
+- [r4] While a work-item is `ready`, when the person runs `work run` on a `started` initiative, `work run` shall start an `implement` stage for the work-item.
 
 ### [g5] A done work-item gets a review stage
 Restates: r2@0.29.
-- [r5] While a work-item is `done`, when the person runs `work run` on an initiative, `work run` shall start a `review` stage for the work-item.
+- [r5] While a work-item is `done`, when the person runs `work run` on a `started` initiative, `work run` shall start a `review` stage for the work-item.
 
-```given
-a work-item w1 that is `done`
-```
+### [g6] A worker's stage is logged and starts with a worker brief
+Restates: r8@0.29, r11@0.29, r12@0.29, r13@0.29, r14@0.29, r17@0.29, r19@0.29, r25@0.29, r30@0.29, r44@0.29, r57@0.29, r62@0.29.
+- [r6] When `work run` starts a `research` stage for a work-item, `work run` shall log the stage, name a transcript and give the stage a worker brief for the work-item.
 
-### [g6] A worker's stage starts with a worker brief and a tool list
-Restates: r11@0.29, r12@0.29, r13@0.29, r14@0.29, r17@0.29, r19@0.29, r25@0.29, r30@0.29, r44@0.29, r57@0.29.
-- [r6] While a work-item is `drafted`, when the person runs `work run` on an initiative, `work run` shall give a `research` stage for the work-item a worker brief.
-- [r7] While a work-item is `drafted`, when the person runs `work run` on an initiative, `work run` shall give a `research` stage for the work-item a tool list.
-
-```given
-a work-item w1 that is `drafted`
-```
-
-### [g7] A worker's start and end are logged
-Restates: r8@0.29, r62@0.29.
-- [r8] When `work run` starts a `research` stage for a work-item, `work run` shall log the stage.
-- [r9] When `work run` starts a `research` stage for a work-item, `work run` shall name a transcript.
-
-### [g8] A stage that gives its output makes the next transition
+### [g7] A stage that gives its output makes the next transition
 Restates: r130@0.29, r132@0.29.
-- [r10] When a session ends a `research` stage for a work-item with a result that is `DONE`, `work run` shall start a `plan` stage for the work-item.
+- [r7] When a session ends a `research` stage for a work-item with a result that is `DONE`, `work run` shall start a `plan` stage for the work-item.
 
-### [g9] An empty file set is a researcher's output
+### [g8] An empty file set is a researcher's output
 Restates: r185@0.29.
-- [r11] While a result is setless, when a session ends a `research` stage for a work-item with the result, `work run` shall start a `plan` stage for the work-item.
+- [r8] While a result is setless, when a session ends a `research` stage for a work-item with the result, `work run` shall start a `plan` stage for the work-item.
 
-```given
-a result r1
-the result r1 is setless
-```
-### [g10] The outcome a result gives makes no transition
+### [g9] The outcome a result gives makes no transition
 Restates: r133@0.29.
-- [r12] When a session ends a `research` stage for a work-item with a result that is `BLOCKED`, `work run` shall start a `plan` stage for the work-item.
+- [r9] When a session ends a `research` stage for a work-item with a result that is `BLOCKED`, `work run` shall start a `plan` stage for the work-item.
 
-### [g11] A planner's questions make the work-item await an answer
-Restates: r129@0.29, r36@0.29.
-- [r13] When a session ends a `plan` stage for a work-item with a result that is `QUESTION`, `work run` shall set the status of the work-item to `awaiting-answer`.
-- [r14] When a session ends a `plan` stage for a work-item with a result that is `QUESTION`, `work run` shall ask a question on the work-item.
+### [g10] A planner's questions make the work-item await an answer
+Restates: r36@0.29, r129@0.29.
+- [r10] When a session ends a `plan` stage for a work-item with a result that is `QUESTION`, `work run` shall set the status of the work-item to `awaiting-answer` and ask a question on the work-item.
 
-### [g12] A researcher's questions go into the planner's brief
+### [g11] A researcher's questions go into the planner's brief
 Restates: r129@0.29.
-- [r15] When a session ends a `research` stage for a work-item with a result that is `QUESTION`, `work run` shall give a `plan` stage for the work-item a question.
+- [r11] When a session ends a `research` stage for a work-item with a result that is `QUESTION`, `work run` shall give a `plan` stage for the work-item a question.
 
-### [g13] A result with no output makes the work-item await an answer
+### [g12] A result with no output makes the work-item await an answer
 Restates: r131@0.29, r132@0.29.
-- [r16] While a result is outputless, when a session ends a `plan` stage for a work-item with the result, `work run` shall set the status of the work-item to `awaiting-answer`.
-- [r17] While a result is outputless, when a session ends a `plan` stage for a work-item with the result, `work run` shall ask a question on the work-item.
+- [r12] While a result is outputless, when a session ends a `plan` stage for a work-item with the result, `work run` shall set the status of the work-item to `awaiting-answer` and ask a question on the work-item.
 
-```given
-a result r1
-the result r1 is outputless
-```
-### [g14] A faulty worker's session fails its work-item
-Restates: r128@0.29, r45@0.29, r40@0.29.
-- [r18] While a session is faulty, when the session ends a `research` stage for a work-item, `work run` shall set the status of the work-item to `failed`.
-- [r19] While a session is faulty, when the session ends a `research` stage for a work-item, `work run` shall exit with an error naming the work-item.
+### [g13] A faulty worker's session fails its work-item
+Restates: r40@0.29, r45@0.29, r128@0.29.
+- [r13] While a session is faulty, when the session ends a `research` stage for a work-item, `work run` shall set the status of the work-item to `failed` and exit with an error naming the work-item.
 
-```given
-a session s1
-the session s1 is faulty
-```
-### [g15] An implementer's branch with a green check is merged
+### [g14] An implementer's branch with a green check is merged
 Restates: r4@0.29, r15@0.29, r24@0.29.
-- [r20] While a work-item branch is green check and a result is naming, when a session ends an `implement` stage for a work-item with the result, `work run` shall merge the work-item branch.
-- [r21] While a work-item branch is green check and a result is naming, when a session ends an `implement` stage for a work-item with the result, `work run` shall keep a report.
+- [r14] While a work-item branch is green check and a result is naming, when a session ends an `implement` stage for a work-item with the result, `work run` shall merge the work-item branch and keep a report.
 
-```given
-a result r1
-the result r1 is naming
-a work-item branch w2
-the work-item branch w2 is green check
-```
-
-### [g16] An implementer's branch without a green check is not merged
+### [g15] An implementer's branch without a green check is not merged
 Restates: r4@0.29.
-- [r22] While a work-item branch is not green check, when a session ends an `implement` stage for a work-item, `work run` shall not merge the work-item branch.
+- [r15] While a work-item branch is not green check, when a session ends an `implement` stage for a work-item, `work run` shall not merge the work-item branch.
 
-```given
-a work-item branch w2
-the work-item branch w2 is not green check
-```
-
-### [g17] A merged work-item branch is deleted
+### [g16] A merged work-item branch is deleted
 Restates: r18@0.29.
-- [r23] When `work run` merges a work-item branch, `work run` shall delete the work-item branch.
+- [r16] When `work run` merges a work-item branch, `work run` shall delete the work-item branch.
 
-```given
-a work-item w1 that is `ready`
-```
-### [g18] A work-item that awaits an answer keeps its branch
+### [g17] A work-item that awaits an answer keeps its branch
 Restates: r26@0.29.
-- [r24] When a session ends an `implement` stage for a work-item with a result that is `QUESTION`, `work run` shall keep the work-item branch.
+- [r17] When a session ends an `implement` stage for a work-item with a result that is `QUESTION`, `work run` shall keep the work-item branch.
 
-### [g19] An implementer starts on its kept branch
+### [g18] An implementer starts on its kept branch
 Restates: r58@0.29, r98@0.29.
-- [r25] While a work-item branch is kept, when the person runs `work run` on an initiative, `work run` shall start an `implement` stage on the work-item branch.
+- [r18] While a work-item is `ready` and a work-item branch is kept, when the person runs `work run` on a `started` initiative, `work run` shall start an `implement` stage on the work-item branch.
 
-```given
-a work-item w1 that is `ready`
-a work-item branch w2
-the work-item branch w2 is kept
-```
-
-### [g20] A branch the implementer lost fails the work-item
+### [g19] A branch the implementer lost fails the work-item
 Restates: r41@0.29.
-- [r26] While a work-item branch is lost, when a session ends an `implement` stage for a work-item, `work run` shall set the status of the work-item to `failed`.
+- [r19] While a work-item branch is lost, when a session ends an `implement` stage for a work-item, `work run` shall set the status of the work-item to `failed`.
 
-```given
-a work-item branch w2
-the work-item branch w2 is lost
-```
-
-### [g21] A flaky scenario is run again before the merge
+### [g20] A flaky scenario is run again before the merge
 Restates: r219@0.29, r222@0.29.
-- [r27] While a work-item branch is flaky, when a session ends an `implement` stage for a work-item, `work run` shall rerun the scenario.
-- [r28] While a work-item branch is flaky, when a session ends an `implement` stage for a work-item, `work run` shall merge the work-item branch.
+- [r20] While a work-item branch is flaky, when a session ends an `implement` stage for a work-item, `work run` shall rerun the scenario and merge the work-item branch.
 
-```given
-a work-item branch w2
-the work-item branch w2 is flaky
-```
-
-### [g22] A worker that changes `.shop/work/` outside its stage directory fails its work-item
+### [g21] A worker that changes `.shop/work/` outside its stage directory fails its work-item
 Restates: r6@0.29, r34@0.29.
-- [r29] While a session is meddling, when the session ends a `research` stage for a work-item, `work run` shall set the status of the work-item to `failed`.
-- [r30] While a session is meddling, when the session ends a `research` stage for a work-item, `work run` shall restore the file.
+- [r21] While a session is meddling, when the session ends a `research` stage for a work-item, `work run` shall set the status of the work-item to `failed` and restore the file.
 
-```given
-a session s1
-the session s1 is meddling
-```
-### [g23] A change left uncommitted in the checkout fails the work-item
+### [g22] A change left uncommitted in the checkout fails the work-item
 Restates: r218@0.29.
-- [r31] While a session is littering, when the session ends a `research` stage for a work-item, `work run` shall set the status of the work-item to `failed`.
+- [r22] While a session is littering, when the session ends a `research` stage for a work-item, `work run` shall set the status of the work-item to `failed`.
 
-```given
-a session s1
-the session s1 is littering
-```
-### [g24] Another initiative's changes are left to it
+### [g23] Another initiative's changes are left to it
 Restates: r214@0.29, r215@0.29, r216@0.29.
-- [r32] While a session is crossing, when the session ends a `research` stage for a work-item, `work run` shall start a `plan` stage for the work-item.
+- [r23] While a session is crossing, when the session ends a `research` stage for a work-item, `work run` shall start a `plan` stage for the work-item.
 
-```given
-a session s1
-the session s1 is crossing
-```
-### [g25] Every transition is committed and pushed
-Restates: r7@0.29, r38@0.29.
-- [r33] When the person runs `work run` on an initiative, `work run` shall commit every transition and push the commit.
+### [g24] Every transition is committed and pushed, and the worktrees are removed
+Restates: r7@0.29, r23@0.29, r33@0.29, r38@0.29.
+- [r24] When the person runs `work run` on a `started` initiative, `work run` shall commit every transition, push the commit and remove every worktree.
 
-```given
-a work-item w1 that is `drafted`
-```
-### [g26] A planner's file set is written into the work-item
+### [g25] A planner's file set is written into the work-item
 Restates: r31@0.29.
-- [r34] When a session ends a `plan` stage for a work-item with a result that is `DONE`, `work run` shall give the work-item the file set.
+- [r25] When a session ends a `plan` stage for a work-item with a result that is `DONE`, `work run` shall give the work-item the file set.
 
-### [g27] `work run` exits successfully when the initiative's work is closed
+### [g26] `work run` exits successfully when the initiative's work is closed
 Restates: r212@0.29.
-- [r35] While a work-item is closed, when the person runs `work run` on an initiative, `work run` shall exit successfully.
-- [r36] While a work-item is closed, when the person runs `work run` on an initiative, `work run` shall print the status of the work-item.
+- [r26] While a work-item is closed, when the person runs `work run` on a `started` initiative, `work run` shall exit successfully and print the status of the work-item.
 
-```given
-a work-item w1 that is `green`
-```
+### [g27] A work-item awaiting an answer gets no worker, and `work run` exits with an error
+Restates: r37@0.29, r184@0.29.
+- [r27] While a work-item is `awaiting-answer` and no delegation is `written`, when the person runs `work run` on a `started` initiative, `work run` shall exit with an error naming the work-item, and `work run` shall not start a stage for the work-item.
 
-### [g28] `work run` exits with an error while a work-item awaits an answer
-Restates: r184@0.29.
-- [r37] While a work-item is `awaiting-answer`, when the person runs `work run` on an initiative, `work run` shall exit with an error naming the work-item.
+### [g28] `work run` exits with an error while a failed work-item is left
+Restates: r37@0.29, r52@0.29.
+- [r28] While a work-item is `failed`, when the person runs `work run` on a `started` initiative, `work run` shall exit with an error naming the work-item, and `work run` shall not start a stage for the work-item.
 
-```given
-a work-item w1 that is `awaiting-answer`
-```
-
-### [g29] `work run` exits with an error while a failed work-item is left
-Restates: r52@0.29, r37@0.29.
-- [r38] While a work-item is `failed`, when the person runs `work run` on an initiative, `work run` shall exit with an error naming the work-item.
-- [r39] While a work-item is `failed`, when the person runs `work run` on an initiative, `work run` shall not start a stage for the work-item.
-
-```given
-a work-item w1 that is `failed`
-```
-
-### [g30] `work run` exits with an error while a request is in its asker's turn
+### [g29] `work run` exits with an error while a request is in its asker's turn
 Restates: r101@0.29.
-- [r40] While a request is `asker`, when the person runs `work run` on an initiative, `work run` shall exit with an error naming the request.
+- [r29] While a request is `asker`, when the person runs `work run` on a `started` initiative, `work run` shall exit with an error naming the request.
 
-```given
-a request q1 that is `asker`
-```
-
-### [g31] `work run` with no initiative takes every open initiative
+### [g30] `work run` with no initiative takes every open initiative
 Restates: r66@0.29, r82@0.29.
-- [r41] When the person runs `work run`, `work run` shall take every open initiative.
-- [r42] When the person runs `work run`, `work run` shall exit successfully.
+- [r30] While no work-item is `awaiting-answer`, when the person runs `work run`, `work run` shall take every open initiative and exit successfully.
 
-### [g32] `work run` with no initiative exits with an error while a node awaits an answer
+### [g31] `work run` with no initiative exits with an error while a node awaits an answer
 Restates: r81@0.29.
-- [r43] While a work-item is `awaiting-answer`, when the person runs `work run`, `work run` shall exit with an error naming the initiative.
+- [r31] While a work-item is `awaiting-answer` and an initiative is `started`, when the person runs `work run`, `work run` shall exit with an error naming the initiative.
 
-```given
-a work-item w1 that is `awaiting-answer`
-an initiative i1
-```
-
-### [g33] An initiative branch ahead of its remote is pushed first
+### [g32] An initiative branch ahead of its remote is pushed first
 Restates: r54@0.29.
-- [r44] While an initiative branch is ahead, when the person runs `work run` on an initiative, `work run` shall push the initiative branch.
+- [r32] While a work-item is `drafted` and an initiative branch is ahead, when the person runs `work run` on a `started` initiative, `work run` shall push the initiative branch.
 
-```given
-a work-item w1 that is `drafted`
-an initiative branch i2
-the initiative branch i2 is ahead
-```
-
-### [g34] A remote that refuses the push fails the work-item before its worker starts
+### [g33] A remote that refuses the push fails the work-item before its worker starts
 Restates: r35@0.29, r39@0.29.
-- [r45] While a work-item is `drafted` and a remote is unpushable, when the person runs `work run` on an initiative, `work run` shall set the status of the work-item to `failed`.
-- [r46] While a work-item is `drafted` and a remote is unpushable, when the person runs `work run` on an initiative, `work run` shall not start a stage for the work-item.
+- [r33] While a work-item is `drafted` and a remote is unpushable, when the person runs `work run` on a `started` initiative, `work run` shall set the status of the work-item to `failed`, and `work run` shall not start a stage for the work-item.
 
-```given
-a work-item w1 that is `drafted`
-a remote r1
-the remote r1 is unpushable
-```
-
-### [g35] A remote that refuses the push starts no branch review
+### [g34] A remote that refuses the push starts no branch review
 Restates: r51@0.29, r53@0.29.
-- [r47] While a work-item is `green` and a remote is unpushable, when the person runs `work run` on an initiative, `work run` shall not start a `branch review` stage for the initiative.
-- [r48] While a work-item is `green` and a remote is unpushable, when the person runs `work run` on an initiative, `work run` shall exit with an error naming the remote.
+- [r34] While a work-item is `green` and a remote is unpushable, when the person runs `work run` on a `started` initiative, `work run` shall exit with an error naming the remote, and `work run` shall not start a `branch review` stage for the initiative.
 
-```given
-a work-item w1 that is `green`
-a remote r1
-the remote r1 is unpushable
-```
-
-### [g36] `work run` refuses while `.shop/work/` has uncommitted changes
+### [g35] `work run` refuses while `.shop/work/` has uncommitted changes
 Restates: r46@0.29.
-- [r49] While a file is dirty, if the person runs `work run` on an initiative, then `work run` shall exit with an error naming the file and change nothing.
+- [r35] While a file is dirty, if the person runs `work run` on a `started` initiative, then `work run` shall exit with an error naming the file and change nothing.
 
-```given
-a file `.shop/work/i1/notes.md`
-the file `.shop/work/i1/notes.md` is dirty
-```
-
-### [g37] `work run` refuses to be started by a worker
+### [g36] `work run` refuses to be started by a worker
 Restates: r21@0.29.
-- [r50] If a worker runs `work run`, then `work run` shall exit with an error naming the worker and change nothing.
+- [r36] If a worker runs `work run`, then `work run` shall exit with an error naming the worker and change nothing.
 
-### [g38] `work run` refuses a delivery it cannot start
+### [g37] `work run` refuses a delivery it cannot start
 Restates: r10@0.29.
-- [r51] While an initiative branch is gitless, if the person runs `work run` on an initiative, then `work run` shall exit with an error naming the reason and change nothing.
+- [r37] While an initiative branch is gitless, if the person runs `work run` on a `started` initiative, then `work run` shall exit with an error naming the reason and change nothing.
 
-```given
-an initiative branch i2
-the initiative branch i2 is gitless
-```
-
-### [g39] A work-item awaiting an answer gets no worker
-Restates: r37@0.29.
-- [r52] While a work-item is `awaiting-answer`, when the person runs `work run` on an initiative, `work run` shall not start a stage for the work-item.
-
-```given
-a work-item w1 that is `awaiting-answer`
-```
-
-### [g40] A work-item blocked by an unfinished work-item gets no worker
+### [g38] A work-item blocked by an unfinished work-item gets no worker
 Restates: r63@0.29.
-- [r53] While a work-item is `drafted`, when the person runs `work run` on an initiative, `work run` shall not start a stage for the work-item.
+- [r38] While a work-item is `drafted` and the work-item is waiting, when the person runs `work run` on a `started` initiative, `work run` shall not start a stage for the work-item.
 
-```given
-a work-item w2 that is `awaiting-answer`
-a work-item w1 that is `drafted`
-the work-item w1 is blocked by the work-item w2
-```
+### [g39] A green initiative branch gets a branch review
+Restates: r27@0.29, r47@0.29, r48@0.29, r49@0.29, r110@0.29, r154@0.29, r155@0.29, r156@0.29, r157@0.29.
+- [r39] While a work-item is `green` and a remote is not unpushable and an initiative branch is not reviewed, when the person runs `work run` on a `started` initiative, `work run` shall start a `branch review` stage for the initiative, give the stage a review brief with a commit, commit the stage, push the commit and log the stage.
 
-### [g41] A green initiative branch gets a branch review
-Restates: r27@0.29, r110@0.29, r154@0.29, r155@0.29, r156@0.29, r157@0.29, r47@0.29, r48@0.29, r49@0.29.
-- [r54] While a work-item is `green`, when the person runs `work run` on an initiative, `work run` shall start a `branch review` stage for the initiative.
-- [r55] While a work-item is `green`, when the person runs `work run` on an initiative, `work run` shall give the `branch review` stage a review brief.
-- [r56] While a work-item is `green`, when the person runs `work run` on an initiative, `work run` shall commit the `branch review` stage and push the commit.
-- [r57] While a work-item is `green`, when the person runs `work run` on an initiative, `work run` shall log the `branch review` stage.
-
-```given
-a work-item w1 that is `green`
-```
-
-### [g42] A branch read by a kept review gets no branch review
+### [g40] A branch read by a kept review gets no branch review
 Restates: r50@0.29.
-- [r58] While a work-item is `green` and an initiative branch is reviewed, when the person runs `work run` on an initiative, `work run` shall not start a `branch review` stage for the initiative.
+- [r40] While a work-item is `green` and an initiative branch is reviewed, when the person runs `work run` on a `started` initiative, `work run` shall not start a `branch review` stage for the initiative.
 
-```given
-a work-item w1 that is `green`
-an initiative branch i2
-the initiative branch i2 is reviewed
-```
-
-### [g43] An initiative with no work-item is neither reviewed nor measured
+### [g41] An initiative with no work-item is neither reviewed nor measured
 Restates: r94@0.29, r97@0.29.
-- [r59] While an initiative is itemless, when the person runs `work run` on the initiative, `work run` shall not start a `branch review` stage for the initiative.
-- [r60] While an initiative is itemless, when the person runs `work run` on the initiative, `work run` shall not start an `analysis` stage for the initiative.
+- [r41] While a `started` initiative is itemless, when the person runs `work run` on the initiative, `work run` shall not start a `branch review` stage for the initiative or start an `analysis` stage for the initiative.
 
-```given
-an initiative i1
-the initiative i1 is itemless
-```
-### [g44] A branch review's findings to fix now get a work-item
+### [g42] A branch review's findings to fix now get a work-item
 Restates: r74@0.29.
-- [r61] While a result is fixing, when a session ends a `branch review` stage for an initiative with the result, `work run` shall draft a work-item.
+- [r42] While a work-item is `green` and a result is fixing, when a session ends a `branch review` stage for a `started` initiative with the result, `work run` shall draft a work-item.
 
-```given
-a work-item w1 that is `green`
-a result r1
-the result r1 is fixing
-```
-### [g45] A branch review that lists nothing to fix is followed by the analysis
-Restates: r121@0.29, r75@0.29, r76@0.29, r106@0.29.
-- [r62] When a session ends a `branch review` stage for an initiative with a result that is `DONE`, `work run` shall not draft a work-item.
-- [r63] When a session ends a `branch review` stage for an initiative with a result that is `DONE`, `work run` shall start an `analysis` stage for the initiative.
-- [r64] When a session ends a `branch review` stage for an initiative with a result that is `DONE`, `work run` shall commit a measurement and push the commit.
+### [g43] A branch review that lists nothing to fix is followed by the analysis
+Restates: r75@0.29, r76@0.29, r106@0.29, r121@0.29.
+- [r43] While a work-item is `green`, when a session ends a `branch review` stage for a `started` initiative with a result that is `DONE`, `work run` shall start an `analysis` stage for the initiative, commit a measurement and push the commit, and `work run` shall not draft a work-item.
 
-```given
-a work-item w1 that is `green`
-```
-### [g46] An initiative whose delivery is closed is set done
-Restates: r213@0.29, r109@0.29, r111@0.29.
-- [r65] While a work-item is `green` and a capability-proposal is `formulated`, when the person runs `work run` on an initiative, `work run` shall set the status of the initiative to `done`.
-- [r66] While a work-item is `green` and a capability-proposal is `formulated`, when the person runs `work run` on an initiative, `work run` shall commit the initiative and push the commit.
+### [g44] An initiative whose delivery is closed is set done
+Restates: r109@0.29, r111@0.29, r213@0.29.
+- [r44] While a work-item is `green` and a capability-proposal is `formulated`, when the person runs `work run` on a `started` initiative, `work run` shall set the status of the initiative to `done`, commit the initiative and push the commit.
 
-```given
-a work-item w1 that is `green`
-a capability-proposal p1 that is `formulated`
-```
-
-### [g47] An initiative that changes only the glossary is set done
+### [g45] An initiative that changes only the glossary is set done
 Restates: r161@0.29.
-- [r67] While a glossary-proposal is `approved`, when the person runs `work run` on an initiative, `work run` shall set the status of the initiative to `done`.
+- [r45] While a glossary-proposal is `approved`, when the person runs `work run` on a `started` initiative, `work run` shall set the status of the initiative to `done`.
 
-```given
-a glossary-proposal p1 that is `approved`
-```
+### [g46] Under a delegation, a question goes to a session of its own
+Restates: r78@0.29, r210@0.29, r211@0.29.
+- [r46] While a delegation is `written` and a work-item is `awaiting-answer`, when the person runs `work run` on a `started` initiative, `work run` shall start an `answer` stage for a question on the work-item and name the delegation.
 
-### [g48] Under a delegation, a question goes to a session of its own
-Restates: r210@0.29, r211@0.29, r78@0.29.
-- [r68] While a delegation is `written` and a work-item is `awaiting-answer`, when the person runs `work run` on an initiative, `work run` shall start an `answer` stage for the question.
-- [r69] While a delegation is `written` and a work-item is `awaiting-answer`, when the person runs `work run` on an initiative, `work run` shall name the delegation.
-
-```given
-a delegation d1 that is `written`
-a work-item w1 that is `awaiting-answer`
-a question q1 that is `plan`
-the question q1 is on the work-item w1
-```
-
-### [g49] Under a delegation, a glossary-proposal's question is left for the person
+### [g47] Under a delegation, a glossary-proposal's question is left for the person
 Restates: r209@0.29.
-- [r70] While a delegation is `written` and a glossary-proposal is `awaiting-answer`, when the person runs `work run` on an initiative, `work run` shall not start an `answer` stage for the question.
+- [r47] While a delegation is `written` and a glossary-proposal is `awaiting-answer`, when the person runs `work run` on a `started` initiative, `work run` shall not start an `answer` stage for a question on the glossary-proposal.
 
-```given
-a delegation d1 that is `written`
-a glossary-proposal p1 that is `awaiting-answer`
-a question q1
-the question q1 is on the glossary-proposal p1
-the question q1 is not answered
-```
-
-### [g50] Under a delegation, an answer asking for a change makes the work-item ready
+### [g48] Under a delegation, an answer asking for a change makes the work-item ready
 Restates: r118@0.29, r120@0.29.
-- [r72] While a delegation is `written` and an answer is `--change` and a work-item is `awaiting-answer`, when the person runs `work run` on an initiative, `work run` shall start an `implement` stage for the work-item.
+- [r48] While a delegation is `written` and a work-item is `awaiting-answer` and a question on the work-item is `review` and an answer is `--change`, when the person runs `work run` on a `started` initiative, `work run` shall start an `implement` stage for the work-item.
 
-```given
-a delegation d1 that is `written`
-an answer a1 that is `--change`
-a work-item w1 that is `awaiting-answer`
-a question q1 that is `review`
-the question q1 is on the work-item w1
-```
-
-### [g51] Under a delegation, an answer accepting the work-item makes it done
+### [g49] Under a delegation, an answer accepting the work-item makes it done
 Restates: r119@0.29, r120@0.29.
-- [r73] While a delegation is `written` and an answer is `--accept` and a work-item is `awaiting-answer`, when the person runs `work run` on an initiative, `work run` shall start a `review` stage for the work-item.
+- [r49] While a delegation is `written` and a work-item is `awaiting-answer` and a question on the work-item is `review` and an answer is `--accept`, when the person runs `work run` on a `started` initiative, `work run` shall start a `review` stage for the work-item.
 
-```given
-a delegation d1 that is `written`
-an answer a1 that is `--accept`
-a work-item w1 that is `awaiting-answer`
-a question q1 that is `review`
-the question q1 is on the work-item w1
-```
-
-### [g52] Under a delegation, a faulty answering session leaves the question for the person
+### [g50] Under a delegation, a faulty answering session leaves the question for the person
 Restates: r89@0.29, r90@0.29.
-- [r74] While a delegation is `written` and a session is faulty, when the session ends an `answer` stage for a question on a work-item, `work run` shall set the status of the work-item to `awaiting-answer`.
-- [r75] While a delegation is `written` and a session is faulty, when the session ends an `answer` stage for a question on a work-item, `work run` shall commit the `answer` stage and push the commit.
+- [r50] While a delegation is `written` and a session is faulty, when the session ends an `answer` stage for a question on a work-item, `work run` shall set the status of the work-item to `awaiting-answer`, commit the `answer` stage and push the commit.
 
-```given
-a session s1
-the session s1 is faulty
-a delegation d1 that is `written`
-```
-
-### [g53] A request this context is the upstream of gets an intake round
+### [g51] A request this context is the upstream of gets an intake round
 Restates: r67@0.29.
-- [r76] While a request is `open`, when the person runs `work run`, `work run` shall start an `intake` stage for the request.
+- [r51] While a request is `open`, when the person runs `work run`, `work run` shall start an `intake` stage for the request.
 
-```given
-a request q1 that is `open`
-```
-
-### [g54] An intake round's question is written in the request
+### [g52] An intake round's question is written in the request
 Restates: r100@0.29, r134@0.29.
-- [r77] When a session ends an `intake` stage for a request with a result that is `QUESTION`, `work run` shall ask a question on the request.
-- [r78] When a session ends an `intake` stage for a request with a result that is `QUESTION`, `work run` shall set the status of the request to `awaiting-asker`.
+- [r52] When a session ends an `intake` stage for a request with a result that is `QUESTION`, `work run` shall ask a question on the request and set the status of the request to `awaiting-asker`.
 
-### [g55] An accepted request gets its initiative
+### [g53] An accepted request gets its initiative
 Restates: r103@0.29.
-- [r79] While a request is `accepted`, when the person runs `work run`, `work run` shall start an initiative that fulfils the request.
+- [r53] While a request is `accepted` and the request is unfulfilled, when the person runs `work run`, `work run` shall start an initiative.
 
-```given
-a request q1 that is `accepted`
-```
+### [g54] A proposed initiative gets an integrate round
+Restates: r79@0.29, r84@0.29, r102@0.29, r141@0.29.
+- [r54] When the person runs `work run` on an initiative that is `proposed`, `work run` shall start an `integrate` stage for the initiative, give the stage a round brief with a request and set the status of the initiative to `started`.
 
-### [g56] A proposed initiative gets an integrate round
-Restates: r79@0.29, r84@0.29, r141@0.29, r102@0.29.
-- [r80] When the person runs `work run` on an initiative that is `proposed`, `work run` shall start an `integrate` stage for the initiative.
-- [r81] When the person runs `work run` on an initiative that is `proposed`, `work run` shall give the `integrate` stage a round brief.
-- [r82] When the person runs `work run` on an initiative that is `proposed`, `work run` shall set the status of the initiative to `started`.
-
-```given
-an initiative i1 that is `proposed`
-a request q1 that is `accepted`
-the initiative i1 fulfils the request q1
-```
-### [g57] A started initiative with nothing drafted gets an integrate round
+### [g55] A started initiative with nothing drafted gets an integrate round
 Restates: r180@0.29.
-- [r83] While an initiative is bare, when the person runs `work run` on the initiative, `work run` shall start an `integrate` stage for the initiative.
+- [r55] While a `started` initiative is bare, when the person runs `work run` on the initiative, `work run` shall start an `integrate` stage for the initiative.
 
-```given
-an initiative i1 that is `started`
-the initiative i1 is bare
-a request q1 that is `accepted`
-the initiative i1 fulfils the request q1
-```
-### [g58] An integrate round with no change list ends `work run` with an error
+### [g56] An integrate round with no change list ends `work run` with an error
 Restates: r96@0.29.
-- [r84] While a result is listless, when a session ends an `integrate` stage for an initiative with the result, `work run` shall exit with an error naming the stage.
+- [r56] While a result is listless, when a session ends an `integrate` stage for a `started` initiative with the result, `work run` shall exit with an error naming the stage.
 
-```given
-an initiative i1
-a request q1 that is `accepted`
-the initiative i1 fulfils the request q1
-a result r1
-the result r1 is listless
-```
-### [g59] An integrate round's change list drafts a capability-proposal
-Restates: r159@0.29, r91@0.29.
-- [r85] When a session ends an `integrate` stage for an initiative with a result that is `DONE`, `work run` shall draft a capability-proposal.
-- [r86] When a session ends an `integrate` stage for an initiative with a result that is `DONE`, `work run` shall commit every draft and push the commit.
+### [g57] An integrate round's change list drafts a capability-proposal
+Restates: r91@0.29, r159@0.29.
+- [r57] When a session ends an `integrate` stage for a `started` initiative with a result that is `DONE`, `work run` shall draft a capability-proposal, commit every draft and push the commit.
 
-```given
-an initiative i1
-a request q1 that is `accepted`
-the initiative i1 fulfils the request q1
-```
-### [g60] An integrate round's change to the glossary drafts a glossary-proposal
+### [g58] An integrate round's change to the glossary drafts a glossary-proposal
 Restates: r171@0.29, spec-integration#r54@0.29.
-- [r87] While a result is glossarial, when a session ends an `integrate` stage for an initiative with the result, `work run` shall draft a glossary-proposal.
+- [r58] While a result is glossarial, when a session ends an `integrate` stage for a `started` initiative with the result, `work run` shall draft a glossary-proposal.
 
-```given
-an initiative i1
-a request q1 that is `accepted`
-the initiative i1 fulfils the request q1
-a result r1
-the result r1 is glossarial
-```
-### [g61] An integrate round's lines into an upstream are raised
+### [g59] An integrate round's lines into an upstream are raised
 Restates: r135@0.29, spec-integration#r44@0.29.
-- [r88] While a result is raising, when a session ends an `integrate` stage for an initiative with the result, `work run` shall raise a request.
+- [r59] While a result is raising, when a session ends an `integrate` stage for a `started` initiative with the result, `work run` shall raise a request.
 
-```given
-an initiative i1
-a request q1 that is `accepted`
-the initiative i1 fulfils the request q1
-a result r1
-the result r1 is raising
-```
-### [g62] A proposal whose raised request is not delivered gets no work-item
+### [g60] A proposal whose raised request is not delivered gets no work-item
 Restates: r136@0.29.
-- [r89] While a capability-proposal is `formulated` and a result is awaited, when the person runs `work run` on an initiative, `work run` shall not draft a work-item.
+- [r60] While a capability-proposal is `formulated` and a result is awaited, when the person runs `work run` on a `started` initiative, `work run` shall not draft a work-item.
 
-```given
-a capability-proposal p1 that is `formulated`
-a result r1
-the result r1 is awaited
-```
-
-### [g63] A change list naming an unknown capability ends `work run` with an error
+### [g61] A change list naming an unknown capability ends `work run` with an error
 Restates: r107@0.29.
-- [r90] While a result is strange, when a session ends an `integrate` stage for an initiative with the result, `work run` shall not draft a capability-proposal.
-- [r91] While a result is strange, when a session ends an `integrate` stage for an initiative with the result, `work run` shall exit with an error naming the capability.
+- [r61] While a result is strange, when a session ends an `integrate` stage for a `started` initiative with the result, `work run` shall exit with an error naming the capability, and `work run` shall not draft a capability-proposal.
 
-```given
-an initiative i1
-a request q1 that is `accepted`
-the initiative i1 fulfils the request q1
-a result r1
-the result r1 is strange
-```
-### [g64] Drafts that do not parse are sent back, then asked about
-- [r92] While a result is unparsing, when a session ends an `integrate` stage for a capability-proposal with the result, `work run` shall start an `integrate` stage for the capability-proposal.
-- [r93] While a result is unparsing, when a session ends an `integrate` stage for a capability-proposal with the result, `work run` shall set the status of the capability-proposal to `awaiting-answer`.
+### [g62] Drafts that do not parse are sent back, then asked about
+- [r62] While a result is unparsing, when a session ends an `integrate` stage for a capability-proposal with the result, `work run` shall start an `integrate` stage for the capability-proposal and set the status of the capability-proposal to `awaiting-answer`.
 
-```given
-a result r1
-the result r1 is unparsing
-```
-### [g65] A redrafted capability-proposal is drafted again
+### [g63] A redrafted capability-proposal is drafted again
 Restates: r142@0.29, r143@0.29, r148@0.29, r187@0.29, r188@0.29, spec-integration#r45@0.29.
-- [r94] When a session ends an `integrate` stage for a capability-proposal with a result that is `DONE`, `work run` shall set the status of the capability-proposal to `drafted`.
-- [r95] When a session ends an `integrate` stage for a capability-proposal with a result that is `DONE`, `work run` shall not draft a capability-proposal.
+- [r63] When a session ends an `integrate` stage for a capability-proposal with a result that is `DONE`, `work run` shall set the status of the capability-proposal to `drafted`, and `work run` shall not draft a capability-proposal.
 
-### [g66] A redrafted glossary-proposal is drafted again
+### [g64] A redrafted glossary-proposal is drafted again
 Restates: r189@0.29.
-- [r96] When a session ends an `integrate` stage for a glossary-proposal with a result that is `DONE`, `work run` shall set the status of the glossary-proposal to `drafted`.
+- [r64] When a session ends an `integrate` stage for a glossary-proposal with a result that is `DONE`, `work run` shall set the status of the glossary-proposal to `drafted`.
 
-### [g67] A drafted capability-proposal gets a gate round
-Restates: r68@0.29, r168@0.29, r108@0.29.
-- [r97] While a capability-proposal is `drafted`, when the person runs `work run` on an initiative, `work run` shall start a `gate` stage for the capability-proposal.
-- [r98] While a capability-proposal is `drafted`, when the person runs `work run` on an initiative, `work run` shall give the `gate` stage a round brief.
+### [g65] A drafted capability-proposal gets a gate round
+Restates: r68@0.29, r108@0.29, r168@0.29.
+- [r65] While a capability-proposal is `drafted`, when the person runs `work run` on a `started` initiative, `work run` shall start a `gate` stage for the capability-proposal and give the stage a round brief.
 
-```given
-a capability-proposal p1 that is `drafted`
-```
-
-### [g68] A drafted glossary-proposal gets a gate round
+### [g66] A drafted glossary-proposal gets a gate round
 Restates: r164@0.29, r170@0.29.
-- [r99] While a glossary-proposal is `drafted`, when the person runs `work run` on an initiative, `work run` shall start a `gate` stage for the glossary-proposal.
-- [r100] While a glossary-proposal is `drafted`, when the person runs `work run` on an initiative, `work run` shall give the `gate` stage a round brief.
+- [r66] While a glossary-proposal is `drafted`, when the person runs `work run` on a `started` initiative, `work run` shall start a `gate` stage for the glossary-proposal and give the stage a round brief.
 
-```given
-a glossary-proposal p1 that is `drafted`
-```
+### [g67] A gate round's questions make the capability-proposal await an answer
+Restates: r69@0.29, r85@0.29.
+- [r67] When a session ends a `gate` stage for a capability-proposal with a result that is `QUESTION`, `work run` shall set the status of the capability-proposal to `awaiting-answer` and ask a question on the capability-proposal.
 
-### [g69] A gate round's questions make the capability-proposal await an answer
-Restates: r85@0.29, r69@0.29.
-- [r101] When a session ends a `gate` stage for a capability-proposal with a result that is `QUESTION`, `work run` shall set the status of the capability-proposal to `awaiting-answer`.
-- [r102] When a session ends a `gate` stage for a capability-proposal with a result that is `QUESTION`, `work run` shall ask a question on the capability-proposal.
-
-### [g70] A gate round with no question asks for the approval of the lines
+### [g68] A gate round with no question asks for the approval of the lines
 Restates: r117@0.29.
-- [r103] When a session ends a `gate` stage for a capability-proposal with a result that is `DONE`, `work run` shall ask a question on the capability-proposal.
+- [r68] When a session ends a `gate` stage for a capability-proposal with a result that is `DONE`, `work run` shall ask a question on the capability-proposal.
 
-### [g71] A gate round with no question asks for the approval of the terms
+### [g69] A gate round with no question asks for the approval of the terms
 Restates: r169@0.29, r173@0.29.
-- [r104] When a session ends a `gate` stage for a glossary-proposal with a result that is `DONE`, `work run` shall set the status of the glossary-proposal to `awaiting-answer`.
-- [r105] When a session ends a `gate` stage for a glossary-proposal with a result that is `DONE`, `work run` shall ask a question on the glossary-proposal.
+- [r69] When a session ends a `gate` stage for a glossary-proposal with a result that is `DONE`, `work run` shall set the status of the glossary-proposal to `awaiting-answer` and ask a question on the glossary-proposal.
 
-### [g72] An answered capability-proposal gets an apply round
+### [g70] An answered capability-proposal gets an apply round
 Restates: r70@0.29, r108@0.29.
-- [r106] While a capability-proposal is `awaiting-answer` and a question is answered, when the person runs `work run` on an initiative, `work run` shall start an `apply` stage for the capability-proposal.
-- [r107] While a capability-proposal is `awaiting-answer` and a question is answered, when the person runs `work run` on an initiative, `work run` shall give the `apply` stage a round brief.
+- [r70] While a capability-proposal is `awaiting-answer` and a question on the capability-proposal is answered, when the person runs `work run` on a `started` initiative, `work run` shall start an `apply` stage for the capability-proposal and give the stage a round brief.
 
-```given
-a capability-proposal p1 that is `awaiting-answer`
-a question q1
-the question q1 is on the capability-proposal p1
-the question q1 is answered
-```
-
-### [g73] An answered glossary-proposal gets an apply round
+### [g71] An answered glossary-proposal gets an apply round
 Restates: r165@0.29, r170@0.29.
-- [r108] While a glossary-proposal is `awaiting-answer` and a question is answered, when the person runs `work run` on an initiative, `work run` shall start an `apply` stage for the glossary-proposal.
+- [r71] While a glossary-proposal is `awaiting-answer` and a question on the glossary-proposal is answered, when the person runs `work run` on a `started` initiative, `work run` shall start an `apply` stage for the glossary-proposal.
 
-```given
-a glossary-proposal p1 that is `awaiting-answer`
-a question q1
-the question q1 is on the glossary-proposal p1
-the question q1 is answered
-```
-
-### [g74] A glossary-proposal with a question unanswered gets no apply round
+### [g72] A glossary-proposal with a question unanswered gets no apply round
 Restates: r172@0.29, spec-integration#r55@0.29.
-- [r109] While a glossary-proposal is `awaiting-answer` and a question is not answered, when the person runs `work run` on an initiative, `work run` shall not start an `apply` stage for the glossary-proposal.
+- [r72] While a glossary-proposal is `awaiting-answer` and a question on the glossary-proposal is not answered, when the person runs `work run` on a `started` initiative, `work run` shall not start an `apply` stage for the glossary-proposal.
 
-```given
-a glossary-proposal p1 that is `awaiting-answer`
-a question q1
-the question q1 is on the glossary-proposal p1
-the question q1 is not answered
-```
+### [g73] An apply round's answers its drafts do not hold go back to integration
+Restates: r147@0.29, r150@0.29, r151@0.29, spec-integration#r46@0.29.
+- [r73] While a result is unheld, when a session ends an `apply` stage for a capability-proposal with the result, `work run` shall start an `integrate` stage for the capability-proposal, and `work run` shall not start a `formulate` stage for the capability-proposal.
 
-### [g75] An apply round's answers its drafts do not hold go back to integration
-Restates: r150@0.29, r151@0.29, r147@0.29, spec-integration#r46@0.29.
-- [r110] While a result is unheld, when a session ends an `apply` stage for a capability-proposal with the result, `work run` shall start an `integrate` stage for the capability-proposal.
-- [r111] While a result is unheld, when a session ends an `apply` stage for a capability-proposal with the result, `work run` shall not start a `formulate` stage for the capability-proposal.
-
-```given
-a result r1
-the result r1 is unheld
-```
-### [g76] A glossary apply round's answers its drafts do not hold go back to integration
+### [g74] A glossary apply round's answers its drafts do not hold go back to integration
 Restates: r221@0.29.
-- [r112] While a result is unheld, when a session ends an `apply` stage for a glossary-proposal with the result, `work run` shall start an `integrate` stage for the glossary-proposal.
+- [r74] While a result is unheld, when a session ends an `apply` stage for a glossary-proposal with the result, `work run` shall start an `integrate` stage for the glossary-proposal.
 
-```given
-a result r1
-the result r1 is unheld
-```
-### [g77] An applied glossary-proposal is approved
+### [g75] An applied glossary-proposal is approved
 Restates: r166@0.29, r167@0.29.
-- [r113] When a session ends an `apply` stage for a glossary-proposal with a result that is `DONE`, `work run` shall set the status of the glossary-proposal to `approved`.
-- [r114] When a session ends an `apply` stage for a glossary-proposal with a result that is `DONE`, `work run` shall not start a `formulate` stage for the glossary-proposal.
+- [r75] When a session ends an `apply` stage for a glossary-proposal with a result that is `DONE`, `work run` shall set the status of the glossary-proposal to `approved`, and `work run` shall not start a `formulate` stage for the glossary-proposal.
 
-### [g78] An applied capability-proposal is formulated by `features generate`
-Restates: r144@0.29, r145@0.29, r146@0.29, r83@0.29, formulation#r1@0.29, formulation#r2@0.29, formulation#r6@0.29, formulation#r7@0.29, formulation#r11@0.29.
-- [r115] While a change list is codified, when a session ends an `apply` stage for a capability-proposal with a result that is `DONE`, `work run` shall start a `formulate` stage for the capability-proposal.
-- [r116] While a change list is codified, when a session ends an `apply` stage for a capability-proposal with a result that is `DONE`, `work run` shall set the status of the capability-proposal to `formulated`.
-- [r117] While a change list is codified, when a session ends an `apply` stage for a capability-proposal with a result that is `DONE`, `work run` shall commit the feature and push the commit.
+### [g76] An applied capability-proposal is formulated by `features generate`
+Restates: r83@0.29, r144@0.29, r145@0.29, r146@0.29, formulation#r1@0.29, formulation#r2@0.29, formulation#r6@0.29, formulation#r7@0.29, formulation#r11@0.29.
+- [r76] While a change list is codified, when a session ends an `apply` stage for a capability-proposal with a result that is `DONE`, `work run` shall start a `formulate` stage for the capability-proposal, set the status of the capability-proposal to `formulated`, commit the feature and push the commit.
 
-```given
-a change list c1
-the change list c1 is codified
-```
-
-### [g79] A capability that is not codified is the formulate round's fault
+### [g77] A capability that is not codified is the formulate round's fault
 Restates: formulation#r22@0.29.
-- [r118] While a change list is uncodified, when a session ends an `apply` stage for a capability-proposal with a result that is `DONE`, `work run` shall set the status of the capability-proposal to `approved`.
-- [r119] While a change list is uncodified, when a session ends an `apply` stage for a capability-proposal with a result that is `DONE`, `work run` shall exit with an error naming the capability.
+- [r77] While a change list is uncodified, when a session ends an `apply` stage for a capability-proposal with a result that is `DONE`, `work run` shall set the status of the capability-proposal to `approved` and exit with an error naming the capability.
 
-```given
-a change list c1
-the change list c1 is uncodified
-```
-
-### [g80] A faulty round makes no transition and the initiative's other nodes go on
+### [g78] A faulty round makes no transition and the initiative's other nodes go on
 Restates: r86@0.29, r87@0.29, r88@0.29, r115@0.29.
-- [r120] While a session is faulty, when the session ends a `gate` stage for a capability-proposal, `work run` shall set the status of the capability-proposal to `drafted`.
-- [r121] While a session is faulty, when the session ends a `gate` stage for a capability-proposal, `work run` shall exit with an error naming the stage.
-- [r122] While a session is faulty, when the session ends a `gate` stage for a capability-proposal, `work run` shall set the status of every open work-item to `green`.
+- [r78] While a session is faulty, when the session ends a `gate` stage for a capability-proposal, `work run` shall set the status of the capability-proposal to `drafted`, exit with an error naming the stage and take every open work-item.
 
-```given
-a session s1
-the session s1 is faulty
-```
-### [g81] A formulated capability-proposal gets its work-items
+### [g79] A formulated capability-proposal gets its work-items
 Restates: r72@0.29.
-- [r123] While a capability-proposal is `formulated` and a result is not awaited, when the person runs `work run` on an initiative, `work run` shall draft a work-item.
+- [r79] While a capability-proposal is `formulated` and a result is not awaited, when the person runs `work run` on a `started` initiative, `work run` shall draft a work-item.
 
-```given
-a capability-proposal p1 that is `formulated`
-a result r1
-the result r1 is not awaited
-```
-
-### [g82] The rounds that change the spec hold the spec lock
+### [g80] The rounds that change the spec hold the spec lock
 Restates: r95@0.29.
-- [r124] Every `integrate` stage shall hold the spec lock.
-- [r125] Every `apply` stage shall hold the spec lock.
-- [r126] Every `formulate` stage shall hold the spec lock.
+- [r80] Every stage whose kind is `integrate`, `apply` or `formulate` shall hold the spec lock.
 
-### [g83] A stage that is no worker's holds its initiative
+### [g81] A stage that is no worker's holds its initiative
 Restates: r66@0.29.
-- [r127] Every `integrate` stage shall hold the initiative lock.
-- [r128] Every `gate` stage shall hold the initiative lock.
-- [r129] Every `apply` stage shall hold the initiative lock.
-- [r130] Every `formulate` stage shall hold the initiative lock.
-- [r131] Every `answer` stage shall hold the initiative lock.
-- [r132] Every `branch review` stage shall hold the initiative lock.
-- [r133] Every `analysis` stage shall hold the initiative lock.
+- [r81] Every stage whose kind is `integrate`, `gate`, `apply`, `formulate`, `answer`, `branch review` or `analysis` shall hold the initiative lock.
 
-### [g84] A worker's stage holds a worker slot
+### [g82] A worker's stage holds a worker slot
 Restates: r20@0.29, r59@0.29, r60@0.29.
-- [r134] Every `research` stage shall hold a worker slot.
-- [r135] Every `plan` stage shall hold a worker slot.
-- [r136] Every `implement` stage shall hold a worker slot.
-- [r137] Every `review` stage shall hold a worker slot.
+- [r82] Every stage whose kind is `research`, `plan`, `implement` or `review` shall hold a worker slot.
 
-### [g85] An implementer holds the claim of its work-item, and a merge the merge lock
+### [g83] An implementer holds the claim of its work-item, and a merge the merge lock
 Restates: r20@0.29, r61@0.29.
-- [r138] Every `implement` stage shall hold a claim.
-- [r139] `work run` shall hold the merge lock.
+- [r83] Every `implement` stage shall hold a claim, and `work run` shall hold the merge lock.
 
-### [g86] A delivery removes the worktrees it made
-Restates: r33@0.29, r23@0.29.
-- [r140] When the person runs `work run` on an initiative, `work run` shall remove every worktree.
+### [g84] An implementer's brief gives its work-item branch
+- [r84] When `work run` starts an `implement` stage for a work-item, `work run` shall give the stage a worker brief with a work-item branch.
 
 ## Implementation, may change
+- A worker brief names the work-item, the files to read, where its result goes, the plugin's scripts directory, the
+  initiative branch's base, the worker's worktree and its work-item branch; it tells the worker that it starts in its
+  worktree and never changes directory, and to write its result first with the outcome `PARTIAL` and keep it current;
+  it holds each answer of the work-item with the question it answers. A researcher's gives the work-item's file set
+  and accepted scenarios and a limit of 80 turns; an implementer's says how the suite ended in its worktree before it
+  started and, for a work-item an answer to its reviewer's question returned to `ready`, the reviewer's findings and
+  the answer.
+- A round brief: an `integrate` round's gives the accepted lines of the request its initiative fulfils, every
+  requirement id that the kept drafts of another initiative, not yet applied, add, and, for a proposal that has
+  answers, its questions and answers and the initiative's ledger; a `gate` round's asks only for the questions on what
+  its proposal adds, changes or removes, each a decision with its readings and the recommended reading marked; a
+  `gate` or `apply` round's gives the path of the kept drafts of the `integrate` round that wrote its proposal, and an
+  `apply` round's the answers.
+- A review brief gives each run made at the initiative branch's head before it starts (the suite, each work-item's
+  scenarios, each check a work-item names, `tools check`, `tools size`, `features deprecated` and `features bindings`)
+  with its command, its exit code, its output and the commit they ran at; the commits from the initiative branch's
+  base to its head, each with the work-item it belongs to or none; the change of that range less `.shop/`; and the
+  files to read: the capabilities the work-items are under, the design-decisions those rest on, and each work-item's
+  plan, implementer's report and review findings.
+- A worker's tool list (its `--allowedTools`, beside its brief, U10): this plugin's own directory as its plugin; the
+  tools of its agent less any bare Write or Edit, or the stage's `[allowed_tools]` of `.shop/delivery.toml` less any
+  bare Write or Edit; Bash only for `python3 -m pytest`, the plugin's scripts its stage runs, by path, and the git
+  commands its stage needs; and `Skill` for each skill its agent lists.
+- A stage's output: a researcher's file set, empty or not; a planner's plan and file set; an implementer's commits on
+  which the work-item's scenarios and the suite pass; a reviewer's findings; an answering session's answer; an
+  `integrate` or `apply` round's change list, or an `apply` round's answers its drafts do not hold; an `intake`
+  round's line outcome or question on each line of its request; a `gate` round's questions. A change list lists the
+  requirement ids and the terms it adds, changes and removes, under each capability and the glossary.
+- A log line holds the time, the node, the stage, the agent and the session id; a work-item's transitions are logged
+  in `log.jsonl`.
+- A stage is for its node: a worker's stage for a work-item; an `integrate` round, a branch review or an analysis for
+  an initiative; a round for a capability-proposal or a glossary-proposal; an `intake` round for a request; an
+  `answer` stage for a question. A question on a work-item is written under its `## Questions`; an `implement` stage
+  is on the work-item branch it works on.
+- A work-item is complete when the scenarios it accepts or its check pass, or, where every requirement it accepts is
+  of a guarantees capability, when its review passes. A `failed` work-item's committed work is kept, and pushed when
+  the remote takes it, and `work retry` returns it once the fault is remedied. A stage starts when every resource it
+  needs is free. The branch reviewer owns no work-item and is not a worker. A file set is drafted with its work-item,
+  revised by its researcher and fixed by its planner.
 - The work-item's scenarios and the suite alike run in parallel with pytest-xdist (`-n auto`) (design-decision/plugin-takes-the-dependencies-it-needs).
 - A worker is `claude -p "Read the brief file <brief path> and do what it says." --agent shopsystem-bdd:<agent>
   --session-id <uuid> --output-format json --permission-mode acceptEdits`; the executable is `$SHOPSYSTEM_WORK_CLAUDE`, else `claude` (the plugin's tests

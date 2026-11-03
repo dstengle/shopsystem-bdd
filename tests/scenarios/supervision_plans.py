@@ -125,10 +125,10 @@ def session_entry(conds, repo):
     return entry
 
 
-def branch_entry(conds, branch):
+def branch_entry(conds, branch, name="w1"):
     """The implementer's work: a commit of feature.txt where the Givens name a work-item branch."""
     if "lost" in conds:
-        return {"run": [["git", "checkout", "-q", "--detach"], ["git", "branch", "-q", "-D", "work/w1"]]}
+        return {"run": [["git", "checkout", "-q", "--detach"], ["git", "branch", "-q", "-D", "work/" + name]]}
     commit = {"feature.txt": "the feature\n"}
     if "not green check" in conds:
         commit["scenarios-fail"] = "\n"
@@ -143,8 +143,8 @@ def plan_for(repo, context, stage=None):
     if "awaited" in sv["conds"].get("result", set()):
         catalogue(repo)
         awaited(repo)
-    implementer = branch_entry(sv["conds"].get("work-item branch", set()),
-                               "work-item branch" in sv["things"].values())
+    implementer = branch_entry(sv["conds"].get("work-item branch", set()), "work-item branch" in sv["things"].values(),
+                               next(iter(W.nodes(context, "work-item")), "w1"))
     if implementer:
         plan["bdd-implementer"] = implementer
     if stage is None:
