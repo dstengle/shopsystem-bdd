@@ -169,9 +169,10 @@ Feature: Supervision
 
   @g17 @r23
   Scenario: A merged work-item branch is deleted
-    Given a work-item branch w1
-    When `work run` merges the work-item branch w1
-    Then `work run` deletes the work-item branch w1
+    Given a work-item w1 that is `ready`
+    And a work-item branch w2
+    When `work run` merges the work-item branch w2
+    Then `work run` deletes the work-item branch w2
 
   @g18 @r24
   Scenario: A work-item that awaits an answer keeps its branch
@@ -186,7 +187,8 @@ Feature: Supervision
 
   @g19 @r25
   Scenario: An implementer starts on its kept branch
-    Given a work-item branch w2
+    Given a work-item w1 that is `ready`
+    And a work-item branch w2
     And the work-item branch w2 is kept
     And an initiative i1
     When the person runs `work run` on the initiative i1
@@ -248,7 +250,8 @@ Feature: Supervision
 
   @g25 @r33
   Scenario: Every transition is committed and pushed
-    Given an initiative i1
+    Given a work-item w1 that is `drafted`
+    And an initiative i1
     And a transition t1
     When the person runs `work run` on the initiative i1
     Then `work run` commits the transition t1 and pushes the commit
@@ -314,7 +317,8 @@ Feature: Supervision
 
   @g33 @r44
   Scenario: An initiative branch ahead of its remote is pushed first
-    Given an initiative branch i2
+    Given a work-item w1 that is `drafted`
+    And an initiative branch i2
     And the initiative branch i2 is ahead
     And an initiative i1
     When the person runs `work run` on the initiative i1
@@ -410,7 +414,8 @@ Feature: Supervision
 
   @g44 @r61
   Scenario: A branch review's findings to fix now get a work-item
-    Given a result r1
+    Given a work-item w1 that is `green`
+    And a result r1
     And the result r1 is fixing
     And a session s1
     And a stage s2 that is `branch review`
@@ -422,7 +427,8 @@ Feature: Supervision
 
   @g45 @r62 @r63 @r64
   Scenario: A branch review that lists nothing to fix is followed by the analysis
-    Given a session s1
+    Given a work-item w1 that is `green`
+    And a session s1
     And a stage s2 that is `branch review`
     And a result r1 that is `DONE`
     And an initiative i1
@@ -452,54 +458,46 @@ Feature: Supervision
   @g48 @r68 @r69
   Scenario: Under a delegation, a question goes to a session of its own
     Given a delegation d1 that is `written`
-    And a session s1
-    And a stage s2 that is `plan`
-    And a result r1 that is `QUESTION`
-    And a work-item w1
-    And the stage s2 is with the result r1
-    And the stage s2 is for the node w1
-    When the session s1 ends the stage s2
-    Then `work run` starts an `answer` stage for the question
+    And a work-item w1 that is `awaiting-answer`
+    And a question q1 that is `plan`
+    And the question q1 is on the work-item w1
+    And an initiative i1
+    When the person runs `work run` on the initiative i1
+    Then `work run` starts an `answer` stage for the question q1
     And `work run` names the delegation d1
 
-  @g49 @r70 @r71
+  @g49 @r70
   Scenario: Under a delegation, a glossary-proposal's question is left for the person
     Given a delegation d1 that is `written`
-    And a session s1
-    And a stage s2 that is `gate`
-    And a result r1 that is `QUESTION`
-    And a glossary-proposal p1
-    And the stage s2 is with the result r1
-    And the stage s2 is for the node p1
-    When the session s1 ends the stage s2
-    Then `work run` does not start an `answer` stage for the question
-    And the glossary-proposal p1 is `awaiting-answer`
+    And a glossary-proposal p1 that is `awaiting-answer`
+    And a question q1
+    And the question q1 is on the glossary-proposal p1
+    And the question q1 is not answered
+    And an initiative i1
+    When the person runs `work run` on the initiative i1
+    Then `work run` does not start an `answer` stage for the question q1
 
   @g50 @r72
   Scenario: Under a delegation, an answer asking for a change makes the work-item ready
     Given a delegation d1 that is `written`
     And an answer a1 that is `--change`
-    And a session s1
-    And a stage s2 that is `review`
-    And a result r1 that is `QUESTION`
-    And a work-item w1
-    And the stage s2 is with the result r1
-    And the stage s2 is for the node w1
-    When the session s1 ends the stage s2
+    And a work-item w1 that is `awaiting-answer`
+    And a question q1 that is `review`
+    And the question q1 is on the work-item w1
+    And an initiative i1
+    When the person runs `work run` on the initiative i1
     Then `work run` starts an `implement` stage for the work-item w1
 
   @g51 @r73
   Scenario: Under a delegation, an answer accepting the work-item makes it done
     Given a delegation d1 that is `written`
     And an answer a1 that is `--accept`
-    And a session s1
-    And a stage s2 that is `review`
-    And a result r1 that is `QUESTION`
-    And a work-item w1
-    And the stage s2 is with the result r1
-    And the stage s2 is for the node w1
-    When the session s1 ends the stage s2
-    Then the work-item w1 is `green`
+    And a work-item w1 that is `awaiting-answer`
+    And a question q1 that is `review`
+    And the question q1 is on the work-item w1
+    And an initiative i1
+    When the person runs `work run` on the initiative i1
+    Then `work run` starts a `review` stage for the work-item w1
 
   @g52 @r74 @r75
   Scenario: Under a delegation, a faulty answering session leaves the question for the person
@@ -618,8 +616,8 @@ Feature: Supervision
   @g62 @r89
   Scenario: A proposal whose raised request is not delivered gets no work-item
     Given a capability-proposal p1 that is `formulated`
-    And the capability-proposal p1 is held
-    And a request q1 that is `open`
+    And a result r1
+    And the result r1 is awaited
     And an initiative i1
     When the person runs `work run` on the initiative i1
     Then `work run` does not draft a work-item
@@ -729,7 +727,9 @@ Feature: Supervision
   @g72 @r106 @r107
   Scenario: An answered capability-proposal gets an apply round
     Given a capability-proposal p1 that is `awaiting-answer`
-    And the capability-proposal p1 is answered
+    And a question q1
+    And the question q1 is on the capability-proposal p1
+    And the question q1 is answered
     And an initiative i1
     When the person runs `work run` on the initiative i1
     Then `work run` starts an `apply` stage for the capability-proposal p1
@@ -738,7 +738,9 @@ Feature: Supervision
   @g73 @r108
   Scenario: An answered glossary-proposal gets an apply round
     Given a glossary-proposal p1 that is `awaiting-answer`
-    And the glossary-proposal p1 is answered
+    And a question q1
+    And the question q1 is on the glossary-proposal p1
+    And the question q1 is answered
     And an initiative i1
     When the person runs `work run` on the initiative i1
     Then `work run` starts an `apply` stage for the glossary-proposal p1
@@ -746,7 +748,9 @@ Feature: Supervision
   @g74 @r109
   Scenario: A glossary-proposal with a question unanswered gets no apply round
     Given a glossary-proposal p1 that is `awaiting-answer`
-    And the glossary-proposal p1 is not answered
+    And a question q1
+    And the question q1 is on the glossary-proposal p1
+    And the question q1 is not answered
     And an initiative i1
     When the person runs `work run` on the initiative i1
     Then `work run` does not start an `apply` stage for the glossary-proposal p1
@@ -837,7 +841,8 @@ Feature: Supervision
   @g81 @r123
   Scenario: A formulated capability-proposal gets its work-items
     Given a capability-proposal p1 that is `formulated`
-    And the capability-proposal p1 is not held
+    And a result r1
+    And the result r1 is not awaited
     And an initiative i1
     When the person runs `work run` on the initiative i1
     Then `work run` drafts a work-item

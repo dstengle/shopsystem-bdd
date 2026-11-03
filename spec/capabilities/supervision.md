@@ -55,6 +55,7 @@ decide goes to the person as a question.
 - **listless** (condition of result): Means: it gives no change list.
 - **glossarial** (condition of result): Means: its change list names the glossary.
 - **raising** (condition of result): Means: it gives the lines of a request into an upstream.
+- **awaited** (condition of result): Means: it gave the lines of a request into an upstream, and that request is not `delivered`.
 - **strange** (condition of result): Means: its change list names a capability that neither `spec/capabilities/` nor its drafts have.
 - **unheld** (condition of result): Means: it gives an answer that the drafts its stage applied do not hold.
 - **fixing** (condition of result): Means: it gives a question listing review findings to fix now.
@@ -68,9 +69,7 @@ decide goes to the person as a question.
 - **kept** (condition of work-item branch): Means: `work run` kept it when its work-item became `awaiting-answer`.
 - **flaky** (condition of work-item branch): Means: a scenario fails on it once and passes on its second run alone.
 - **dirty** (condition of file): Means: it is under `.shop/work/` and differs from its last commit.
-- **held** (condition of capability-proposal): Means: a request an `integrate` round raised with its lines is not `delivered`.
-- **answered** (condition of capability-proposal): Means: every question a `gate` round gave on it has an answer.
-- **answered** (condition of glossary-proposal): Means: every question a `gate` round gave on it has an answer.
+- **answered** (condition of question): Means: an answer to it is written under its node's `## Answers`.
 - **bare** (condition of initiative): Means: it fulfils a request and has no capability-proposal, no glossary-proposal and no work-item.
 - **itemless** (condition of initiative): Means: no work-item is kept in it.
 - **codified** (condition of change list): Means: every capability it names has `language: codified-1` in its file.
@@ -201,6 +200,9 @@ the work-item branch w2 is not green check
 Restates: r18@0.29.
 - [r23] When `work run` merges a work-item branch, `work run` shall delete the work-item branch.
 
+```given
+a work-item w1 that is `ready`
+```
 ### [g18] A work-item that awaits an answer keeps its branch
 Restates: r26@0.29.
 - [r24] When a session ends an `implement` stage for a work-item with a result that is `QUESTION`, `work run` shall keep the work-item branch.
@@ -210,6 +212,7 @@ Restates: r58@0.29, r98@0.29.
 - [r25] While a work-item branch is kept, when the person runs `work run` on an initiative, `work run` shall start an `implement` stage on the work-item branch.
 
 ```given
+a work-item w1 that is `ready`
 a work-item branch w2
 the work-item branch w2 is kept
 ```
@@ -262,6 +265,9 @@ the session s1 is crossing
 Restates: r7@0.29, r38@0.29.
 - [r33] When the person runs `work run` on an initiative, `work run` shall commit every transition and push the commit.
 
+```given
+a work-item w1 that is `drafted`
+```
 ### [g26] A planner's file set is written into the work-item
 Restates: r31@0.29.
 - [r34] When a session ends a `plan` stage for a work-item with a result that is `DONE`, `work run` shall give the work-item the file set.
@@ -319,6 +325,7 @@ Restates: r54@0.29.
 - [r44] While an initiative branch is ahead, when the person runs `work run` on an initiative, `work run` shall push the initiative branch.
 
 ```given
+a work-item w1 that is `drafted`
 an initiative branch i2
 the initiative branch i2 is ahead
 ```
@@ -420,6 +427,7 @@ Restates: r74@0.29.
 - [r61] While a result is fixing, when a session ends a `branch review` stage for an initiative with the result, `work run` shall draft a work-item.
 
 ```given
+a work-item w1 that is `green`
 a result r1
 the result r1 is fixing
 ```
@@ -429,6 +437,9 @@ Restates: r121@0.29, r75@0.29, r76@0.29, r106@0.29.
 - [r63] When a session ends a `branch review` stage for an initiative with a result that is `DONE`, `work run` shall start an `analysis` stage for the initiative.
 - [r64] When a session ends a `branch review` stage for an initiative with a result that is `DONE`, `work run` shall commit a measurement and push the commit.
 
+```given
+a work-item w1 that is `green`
+```
 ### [g46] An initiative whose delivery is closed is set done
 Restates: r213@0.29, r109@0.29, r111@0.29.
 - [r65] While a work-item is `green` and a capability-proposal is `formulated`, when the person runs `work run` on an initiative, `work run` shall set the status of the initiative to `done`.
@@ -449,38 +460,50 @@ a glossary-proposal p1 that is `approved`
 
 ### [g48] Under a delegation, a question goes to a session of its own
 Restates: r210@0.29, r211@0.29, r78@0.29.
-- [r68] While a delegation is `written`, when a session ends a `plan` stage for a work-item with a result that is `QUESTION`, `work run` shall start an `answer` stage for the question.
-- [r69] While a delegation is `written`, when a session ends a `plan` stage for a work-item with a result that is `QUESTION`, `work run` shall name the delegation.
+- [r68] While a delegation is `written` and a work-item is `awaiting-answer`, when the person runs `work run` on an initiative, `work run` shall start an `answer` stage for the question.
+- [r69] While a delegation is `written` and a work-item is `awaiting-answer`, when the person runs `work run` on an initiative, `work run` shall name the delegation.
 
 ```given
 a delegation d1 that is `written`
+a work-item w1 that is `awaiting-answer`
+a question q1 that is `plan`
+the question q1 is on the work-item w1
 ```
 
 ### [g49] Under a delegation, a glossary-proposal's question is left for the person
 Restates: r209@0.29.
-- [r70] While a delegation is `written`, when a session ends a `gate` stage for a glossary-proposal with a result that is `QUESTION`, `work run` shall not start an `answer` stage for the question.
-- [r71] While a delegation is `written`, when a session ends a `gate` stage for a glossary-proposal with a result that is `QUESTION`, `work run` shall set the status of the glossary-proposal to `awaiting-answer`.
+- [r70] While a delegation is `written` and a glossary-proposal is `awaiting-answer`, when the person runs `work run` on an initiative, `work run` shall not start an `answer` stage for the question.
 
 ```given
 a delegation d1 that is `written`
+a glossary-proposal p1 that is `awaiting-answer`
+a question q1
+the question q1 is on the glossary-proposal p1
+the question q1 is not answered
 ```
 
 ### [g50] Under a delegation, an answer asking for a change makes the work-item ready
 Restates: r118@0.29, r120@0.29.
-- [r72] While a delegation is `written` and an answer is `--change`, when a session ends a `review` stage for a work-item with a result that is `QUESTION`, `work run` shall start an `implement` stage for the work-item.
+- [r72] While a delegation is `written` and an answer is `--change` and a work-item is `awaiting-answer`, when the person runs `work run` on an initiative, `work run` shall start an `implement` stage for the work-item.
 
 ```given
 a delegation d1 that is `written`
 an answer a1 that is `--change`
+a work-item w1 that is `awaiting-answer`
+a question q1 that is `review`
+the question q1 is on the work-item w1
 ```
 
 ### [g51] Under a delegation, an answer accepting the work-item makes it done
 Restates: r119@0.29, r120@0.29.
-- [r73] While a delegation is `written` and an answer is `--accept`, when a session ends a `review` stage for a work-item with a result that is `QUESTION`, `work run` shall set the status of the work-item to `green`.
+- [r73] While a delegation is `written` and an answer is `--accept` and a work-item is `awaiting-answer`, when the person runs `work run` on an initiative, `work run` shall start a `review` stage for the work-item.
 
 ```given
 a delegation d1 that is `written`
 an answer a1 that is `--accept`
+a work-item w1 that is `awaiting-answer`
+a question q1 that is `review`
+the question q1 is on the work-item w1
 ```
 
 ### [g52] Under a delegation, a faulty answering session leaves the question for the person
@@ -581,12 +604,12 @@ the result r1 is raising
 ```
 ### [g62] A proposal whose raised request is not delivered gets no work-item
 Restates: r136@0.29.
-- [r89] While a capability-proposal is `formulated` and the capability-proposal is held, when the person runs `work run` on an initiative, `work run` shall not draft a work-item.
+- [r89] While a capability-proposal is `formulated` and a result is awaited, when the person runs `work run` on an initiative, `work run` shall not draft a work-item.
 
 ```given
 a capability-proposal p1 that is `formulated`
-the capability-proposal p1 is held
-a request q1 that is `open`
+a result r1
+the result r1 is awaited
 ```
 
 ### [g63] A change list naming an unknown capability ends `work run` with an error
@@ -652,30 +675,36 @@ Restates: r169@0.29, r173@0.29.
 
 ### [g72] An answered capability-proposal gets an apply round
 Restates: r70@0.29, r108@0.29.
-- [r106] While a capability-proposal is answered, when the person runs `work run` on an initiative, `work run` shall start an `apply` stage for the capability-proposal.
-- [r107] While a capability-proposal is answered, when the person runs `work run` on an initiative, `work run` shall give the `apply` stage a round brief.
+- [r106] While a capability-proposal is `awaiting-answer` and a question is answered, when the person runs `work run` on an initiative, `work run` shall start an `apply` stage for the capability-proposal.
+- [r107] While a capability-proposal is `awaiting-answer` and a question is answered, when the person runs `work run` on an initiative, `work run` shall give the `apply` stage a round brief.
 
 ```given
 a capability-proposal p1 that is `awaiting-answer`
-the capability-proposal p1 is answered
+a question q1
+the question q1 is on the capability-proposal p1
+the question q1 is answered
 ```
 
 ### [g73] An answered glossary-proposal gets an apply round
 Restates: r165@0.29, r170@0.29.
-- [r108] While a glossary-proposal is answered, when the person runs `work run` on an initiative, `work run` shall start an `apply` stage for the glossary-proposal.
+- [r108] While a glossary-proposal is `awaiting-answer` and a question is answered, when the person runs `work run` on an initiative, `work run` shall start an `apply` stage for the glossary-proposal.
 
 ```given
 a glossary-proposal p1 that is `awaiting-answer`
-the glossary-proposal p1 is answered
+a question q1
+the question q1 is on the glossary-proposal p1
+the question q1 is answered
 ```
 
 ### [g74] A glossary-proposal with a question unanswered gets no apply round
 Restates: r172@0.29, spec-integration#r55@0.29.
-- [r109] While a glossary-proposal is not answered, when the person runs `work run` on an initiative, `work run` shall not start an `apply` stage for the glossary-proposal.
+- [r109] While a glossary-proposal is `awaiting-answer` and a question is not answered, when the person runs `work run` on an initiative, `work run` shall not start an `apply` stage for the glossary-proposal.
 
 ```given
 a glossary-proposal p1 that is `awaiting-answer`
-the glossary-proposal p1 is not answered
+a question q1
+the question q1 is on the glossary-proposal p1
+the question q1 is not answered
 ```
 
 ### [g75] An apply round's answers its drafts do not hold go back to integration
@@ -733,11 +762,12 @@ the session s1 is faulty
 ```
 ### [g81] A formulated capability-proposal gets its work-items
 Restates: r72@0.29.
-- [r123] While a capability-proposal is `formulated` and the capability-proposal is not held, when the person runs `work run` on an initiative, `work run` shall draft a work-item.
+- [r123] While a capability-proposal is `formulated` and a result is not awaited, when the person runs `work run` on an initiative, `work run` shall draft a work-item.
 
 ```given
 a capability-proposal p1 that is `formulated`
-the capability-proposal p1 is not held
+a result r1
+the result r1 is not awaited
 ```
 
 ### [g82] The rounds that change the spec hold the spec lock
