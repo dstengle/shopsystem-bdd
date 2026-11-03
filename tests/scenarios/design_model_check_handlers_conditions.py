@@ -201,3 +201,26 @@ def interpreter(step):
     step.context["interpreter"] = condition(step)
     if condition(step) == "unfound":
         H.says(step, step.names[0], "pip install clingo")
+
+
+@handler("GivenK", "requirement group")
+def given_group(step):
+    """A requirement group of the capability `thing`, which base() writes; a condition rewrites it."""
+
+
+@handler("GivenK_C", "requirement group")
+def group(step):
+    word, line = condition(step), "- [r%d] " + H.STATEMENT
+    groups = {"compound": ["### [g1] two\n%s\n%s" % (line % 1, line % 2)],
+              "repeating": ["### [g1] one\n%s" % (line % 1), "### [g2] two\n%s" % (line % 2)],
+              "unexampled": ["### [g1] one\n%s\n\n```given\na work-item w1\n```" % (line % 1)]}[word]
+    text = H.cap("thing", ["- [r1] **When** asked, `thing` shall answer."])
+    text = text.replace("### [g1] line 1\n- [r1] %s" % H.STATEMENT, "\n\n".join(groups))
+    H.write(step.repo, "spec/capabilities/thing.md", text)
+    tags = ("@r1 @r2",) if word == "compound" else ("@r1", "@r2") if word == "repeating" else ("@r1",)
+    H.write(step.repo, "features/thing.feature", H.feature("thing", *tags))
+
+
+@handler("GivenK_C", "observation")
+def uncited(step):
+    """An observation a Given writes is cited by nothing unless another Given cites it: uncited needs no change."""
