@@ -88,7 +88,6 @@ A term entry is written: `- **term** (category): one sentence. Values: … . Not
 - **session** (kind): one Claude Code conversation with an id and a transcript; every stage is one.
 - **result** (kind): the `result.json` a stage writes. Attribute: outcome (§3).
 - **brief** (kind): the input data of one stage.
-- **fault** (kind): a failure outside a session's work that stops it (§7, U6).
 
 ### 2.4 Files and git
 
@@ -115,7 +114,7 @@ requirement names the row rather than restating it.
 | initiative | `proposed`, `started`, `done`, `abandoned` | proposed → started: `work start`; started → done: the initiative is complete (§8); started → abandoned: `work abandon` |
 | capability-proposal | `drafted`, `awaiting-answer`, `approved`, `formulated`, `withdrawn` | drafted → awaiting-answer: gate with questions; awaiting-answer → drafted: answers change lines; → approved: the person approves; approved → formulated: formulate round; any open → withdrawn |
 | glossary-proposal | `drafted`, `awaiting-answer`, `approved`, `withdrawn` | as capability-proposal, with no formulated |
-| work-item | `drafted`, `researched`, `planned`, `ready`, `claimed`, `done`, `green`, `awaiting-answer`, `failed`, `withdrawn` | drafted → researched → planned → ready → claimed → done → green: each stage's result; any stage → awaiting-answer: a question; awaiting-answer → the stage's starting status: `work answer`; any → failed: a fault; failed → its status before: `work retry`; any open → withdrawn |
+| work-item | `drafted`, `researched`, `planned`, `ready`, `claimed`, `done`, `green`, `awaiting-answer`, `failed`, `withdrawn` | drafted → researched → planned → ready → claimed → done → green: each stage's result; any stage → awaiting-answer: a question; awaiting-answer → the stage's starting status: `work answer`; any → failed: the stage discarded (U6); failed → its status before: `work retry`; any open → withdrawn |
 | request | `open`, `awaiting-asker`, `awaiting-upstream`, `accepted`, `delivered`, `refused`, `withdrawn` | (requests capability; the turn is §6) |
 | design-decision | `proposed`, `accepted`, `rejected`, `superseded` | |
 
@@ -169,7 +168,7 @@ Other closed sets:
 |---|---|---|---|---|
 | transition | `work` | node | the from status (§3) | the to status, committed (U4) |
 | start | `work run` | stage | every resource it holds is free (U2) | the stage runs; it holds its resources |
-| end | a session | stage | it runs | it writes a result, or a fault (U6) |
+| end | a session | stage | it runs | it writes a result, or it is discarded (U6) |
 | commit | `work`, `work run`, a worker | change | — | a commit on its branch; pushed (U4) |
 | merge | `work run` | work-item branch | the suite passes on it (§8 green check) | it is in the initiative branch |
 | rerun | `work run` | failing scenario | it failed in the suite | it is run once more, alone (supervision r219, r222) |
@@ -207,11 +206,11 @@ scenario rather than by a scenario of their own (with one scenario each to show 
 | id | statement | today restated in |
 |---|---|---|
 | U1 | `work run` shall hold at most `workers` worker slots at a time. | r59, r20 (and implied by r60) |
-| U2 | `work run` shall start a stage only when every exclusive resource it holds is free and its counted resources are not exhausted. | r20, r59, r61, r66, r95, r21 |
+| U2 | `work run` shall start a stage only when every resource the stage needs is free. | r20, r59, r61, r66, r95, r21 |
 | U3 | Where an actor refuses a command, it shall exit with an error naming the reason and change nothing. | ~20 queue lines, ~16 tool lines, 12 supervision lines (seven wordings of "change nothing", four of the reason; ex-queue-build §5, ex-tools §2–3) |
 | U4 | Every transition shall be committed; every commit on the initiative branch shall be pushed to its remote. | ~14 queue lines, ~20 supervision lines, r38, r54 |
 | U5 | Only `work` shall write a status. | work-queue, role-boundaries |
-| U6 | When a stage ends in an error, at its turn limit or without a result `work run` can read, `work run` shall take it as a fault: a round's node keeps its status, a work-item becomes `failed`. | r128, r86–r90, r115, r42, r45 (seven restatements) |
+| U6 | When a stage's session ends without a readable result, `work run` shall discard the stage: a round's node keeps its status, and a work-item becomes `failed`. | r128, r86–r90, r115, r42, r45 (seven restatements) |
 | U7 | A worker shall change files only in its worktree and its stage directory. | r6, r17, r34, r218 |
 | U8 | Where `--json` is given, a tool shall print one JSON object. | 7 tool lines |
 | U9 | A delivery shall change no initiative directory but those of the initiatives it runs. | r214–r218 |
@@ -263,3 +262,16 @@ These are the person's to decide:
    conversation's working assumption; it ends the retire-and-renumber rule's cost for the migration.
 5. **Universal conditions as requirements.** Are U1–U10 requirements of a capability (with ids), or a section of
    their own in the index? This draft gives them their own ids, `U<n>`.
+
+## 11. Decided since the draft
+
+- 2026-11-03: U2 reworded: a stage starts when every resource it **needs** is free (it cannot hold them before it
+  starts). U6 reworded as a rule, "discard the stage"; the term **fault** is dropped from the model (the person).
+- "Free" for a counted resource (worker slot) means one of its number is not held.
+
+## 12. Where this stands (hand-off)
+
+The brainstorming on the codified requirement language (GF parser, telingo logic, generated Gherkin; a major version
+migrated by hand, outside `work run`) has: the spike (`.shop/scratch/spike-cnl/`, throwaway, gitignored: lexicon from
+the glossary, GF grammars Ears and Steps, `run.py`, `resources.lp`) and this model. Next: the person reviews the new
+terms and answers §10; then the written design (superpowers:brainstorming, then writing-plans).
