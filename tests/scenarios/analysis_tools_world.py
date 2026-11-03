@@ -1,5 +1,6 @@
-"""analysis-tools' project and stand-in interpreter: the files a Given writes, the FAKE interpreter that answers
-as its config says and logs what it is asked to run, and how a step runs `tools` in the project."""
+"""analysis-tools' project and stand-in interpreter, for analysis_tools_handlers.py: the files a Given writes, the FAKE
+interpreter that answers as its config says and logs what it is asked to run, and how a handler runs `tools` in the
+project."""
 import importlib.util
 import json
 import os
@@ -167,13 +168,13 @@ def invoke(run, repo, context, argv, outside=None):
     option = []
     if "python" in context or not context.get("discover"):
         option = ["--python", str(context.get("python", sys.executable))]
-    env = {k: v for k, v in os.environ.items() if k not in ("VIRTUAL_ENV", "PYTEST_ADDOPTS")}
+    env = {k: v for k, v in os.environ.items() if k not in ("VIRTUAL_ENV", "PYTEST_ADDOPTS", "SHOPSYSTEM_GF")}
     env.update(context.get("env", {}))
     return run("tools", *option, *argv, cwd=repo, env=env)
 
 
-def mapped(run, repo, context):
-    done = invoke(run, repo, context, ["map"])
+def mapped(run, repo, context, outside=None):
+    done = invoke(run, repo, context, ["map"], outside)
     assert done.returncode == 0, done.stderr
     context["map_commit"] = git(repo, "rev-parse", "--short", "HEAD")
 

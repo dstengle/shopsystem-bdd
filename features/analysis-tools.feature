@@ -1,456 +1,258 @@
-# formulated from spec/capabilities/analysis-tools.md
+# generated from spec/capabilities/analysis-tools.md by features generate; do not edit
 Feature: Analysis tools
   Narrator: a session researching or reviewing a project's code
 
-  @r1
-  Scenario Outline: the interpreter is the first of --python, .venv, venv, $VIRTUAL_ENV and the running one
-    Pins the order in which tools picks its interpreter.
-    Given a Python project in the current directory
-    And <setting>
-    When the session runs `tools probe <option>`
-    Then tools prints the path of <interpreter>
+  @g1 @r1
+  Scenario: `--python` gives the interpreter
+    Given `--python` is given
+    And an interpreter `--python`
+    When the person runs `tools probe`
+    Then `tools` prints the interpreter `--python`
 
-    Examples:
-      | setting                                                                                                                                      | option                      | interpreter                                      |
-      | the project has .venv/bin/python and venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python                              | --python /opt/py/bin/python | /opt/py/bin/python                               |
-      | the project has .venv/bin/python and venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python                              |                             | the .venv/bin/python under the current directory |
-      | the project has venv/bin/python and no .venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python                           |                             | the venv/bin/python under the current directory  |
-      | the project has neither .venv/bin/python nor venv/bin/python, and $VIRTUAL_ENV points at /opt/env, outside the project, which has bin/python |                             | /opt/env/bin/python                              |
-      | the project has neither .venv/bin/python nor venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has no bin/python                   |                             | the interpreter running the script               |
+  @g2 @r2
+  Scenario: `.venv/bin/python` is the interpreter when it exists
+    Given an interpreter `.venv/bin/python`
+    When the person runs `tools probe`
+    Then `tools` prints the interpreter `.venv/bin/python`
 
-  @r3
-  Scenario Outline: probe says whether its interpreter came from --python, the project's virtualenv or neither
-    Pins that probe says where the interpreter it picked came from.
-    Given a Python project in the current directory
-    And <setting>
-    When the session runs `tools probe <option>`
-    Then it says the interpreter came from <source>
+  @g3 @r3
+  Scenario: `venv/bin/python` is the interpreter when it exists and `.venv/bin/python` does not
+    Given an interpreter `venv/bin/python`
+    When the person runs `tools probe`
+    Then `tools` prints the interpreter `venv/bin/python`
 
-    Examples:
-      | setting                                                                                                                                      | option                      | source                   |
-      | the project has .venv/bin/python and venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python                              | --python /opt/py/bin/python | --python                 |
-      | the project has .venv/bin/python and venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python                              |                             | the project's virtualenv |
-      | the project has venv/bin/python and no .venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has bin/python                           |                             | the project's virtualenv |
-      | the project has neither .venv/bin/python nor venv/bin/python, and $VIRTUAL_ENV points at /opt/env, outside the project, which has bin/python |                             | the project's virtualenv |
-      | the project has neither .venv/bin/python nor venv/bin/python, and $VIRTUAL_ENV points at /opt/env, which has no bin/python                   |                             | neither                  |
+  @g4 @r4
+  Scenario: `$VIRTUAL_ENV/bin/python` is the interpreter when there is no project virtualenv
+    Given an interpreter `$VIRTUAL_ENV/bin/python`
+    When the person runs `tools probe`
+    Then `tools` prints the interpreter `$VIRTUAL_ENV/bin/python`
 
-  @r49
-  Scenario: a project that is not a Python project has no known analysis tools
-    Pins that tools names the gap and fails rather than guessing at another language's tools.
-    Given a project with no Python in it
-    When the session runs `tools probe`
-    Then tools says that no analysis tools are known for its language
-    And it exits with an error
+  @g5 @r5
+  Scenario: the interpreter running the script is the interpreter when there is no other
+    Given an interpreter `sys.executable`
+    When the person runs `tools probe`
+    Then `tools` prints the interpreter `sys.executable`
 
-  @r3
-  Scenario: probe lists each tool, its version or that it is missing, and the interpreter
-    Pins the probe's output and that one missing tool fails it.
-    Given a Python project whose interpreter has every tool but vulture
-    When the session runs `tools probe`
-    Then tools prints each tool
-    And each installed tool is printed with its version
-    And vulture is printed as missing, with what it is for
-    And the interpreter's path is printed after the tools
-    And it exits with an error
+  @g6 @r6 @r7
+  Scenario: `.venv/bin/python` comes before `venv/bin/python`
+    Given an interpreter `venv/bin/python`
+    And an interpreter `.venv/bin/python`
+    And an interpreter `.venv/bin/python`
+    And an interpreter `venv/bin/python`
+    When the person runs `tools probe`
+    Then `tools` prints the interpreter `.venv/bin/python`
+    And `tools` does not print the interpreter `venv/bin/python`
 
-  @r4
-  Scenario: probe with --log prints the one line for a researcher's notes
-    Pins that the log form is a single Probe line and nothing else.
-    Given a Python project
-    When the session runs `tools probe --log`
-    Then tools prints exactly one line, and it begins `Probe: tools -> `
+  @g7 @r8 @r9
+  Scenario: `tools probe` prints each analysis tool and the interpreter
+    Given an analysis tool a1
+    When the person runs `tools probe`
+    Then `tools` prints the analysis tool a1 and the interpreter
+    And `tools` exits successfully
 
-  @r5
-  Scenario: install puts each missing tool into the interpreter and leaves dependency files alone
-    Pins that install changes the interpreter only, never the project's declared dependencies.
-    Given a Python project with a pyproject.toml and a requirements.txt
-    And its interpreter is a virtualenv missing jedi and vulture
-    When the session runs `tools install`
-    Then jedi and vulture are installed into the interpreter with pip
-    And pyproject.toml and requirements.txt are unchanged
+  @g8 @r10
+  Scenario: `tools probe` exits with an error naming a missing analysis tool
+    Given an analysis tool `vulture` that is `missing`
+    When the person runs `tools probe`
+    Then `tools` exits with an error naming the analysis tool `vulture`
 
-  @r58
-  Scenario: install puts in the version of ruff the plugin pins
-    Pins that every project gets the same ruff, never whichever release pip finds newest.
-    Given a Python project whose interpreter is a virtualenv missing ruff
-    And the plugin pins one version of ruff
-    When the session runs `tools install`
-    Then ruff is installed into the interpreter at the version the plugin pins
+  @g9 @r11
+  Scenario: `tools probe --log` prints one line for a researcher's notes
+    Given an analysis tool a1
+    When the person runs `tools probe --log`
+    Then `tools` prints "Probe: tools ->" and the analysis tool a1
 
-  @r6
-  Scenario: install refuses an interpreter that is not a virtualenv
-    Pins that install never puts tools into an interpreter outside a virtualenv.
-    Given a Python project whose interpreter is not a virtualenv and is missing jedi
-    When the session runs `tools install`
-    Then the install is refused because the interpreter is not a virtualenv
-    And jedi is still missing from the interpreter
+  @g10 @r12 @r13
+  Scenario: `tools install` installs a missing analysis tool and changes no dependency file
+    Given an interpreter `.venv/bin/python` that is `virtualenv`
+    And the dependency file `requirements.txt` holds "pytest"
+    And an analysis tool a1 that is `missing`
+    And an analysis tool a2 that is `installed`
+    When the person runs `tools install`
+    Then `tools` installs the analysis tool a1
+    And `tools` does not install the analysis tool a2
+    And `tools` does not change `requirements.txt`
 
-  @r7
-  Scenario: a tool still missing after install is printed with the failed command
-    Pins what the session is told when an install attempt does not take.
-    Given a Python project whose interpreter is a virtualenv missing jedi
-    And installing jedi with pip fails
-    When the session runs `tools install`
-    Then tools prints jedi, what it is for and what the workflow does without it
-    And it prints the command that failed with the end of its error
-    And it exits with an error
+  @g11 @r14
+  Scenario: `tools install` installs the one version of ruff the plugin pins
+    Given an analysis tool `ruff` that is `missing`
+    And an interpreter `.venv/bin/python` that is `virtualenv`
+    When the person runs `tools install`
+    Then `tools` installs `ruff==0.17.0`
 
-  @r8
-  Scenario: map runs the suite once under coverage and keeps the map
-    Pins that one map keeps which test executed which code, with the session's pytest arguments honoured.
-    Given a Python project with the tests test_total and test_discount
-    When the session runs `tools map -- -k test_total`
-    Then the suite is run once under coverage with a context for each test
-    And only test_total is run
-    And the map is kept in `.shop/scratch/tools/coverage`
+  @g12 @r15 @r16
+  Scenario: `tools install` installs nothing into an interpreter that is not a virtualenv
+    Given an analysis tool `jedi` that is `missing`
+    And an interpreter `.venv/bin/python` that is `system`
+    When the person runs `tools install`
+    Then `tools` does not install `jedi`
+    And `tools` exits with an error naming the analysis tool `jedi`
 
-  @r9
-  Scenario Outline: tests-of lists the tests that executed a target in the last map
-    Pins the answer for each form of target, with the share of the map's tests and the map's commit.
-    Given a map of 5 tests made at commit abc1234
-    And test_total and test_checkout executed <target> and no other test did
-    When the session runs `tools tests-of <argument>`
-    Then tools prints test_total and test_checkout, one a line
-    And it says that is 2 of the map's 5 tests
-    And it gives commit abc1234
+  @g13 @r17 @r44
+  Scenario: an analysis tool still missing after `tools install` is printed with the failed command
+    Given an analysis tool `jedi` that is `uninstallable`
+    And an interpreter `.venv/bin/python` that is `virtualenv`
+    When the person runs `tools install`
+    Then `tools` exits with an error naming the analysis tool `jedi`
+    And `tools` prints `pip install`
 
-    Examples:
-      | target                           | argument                     |
-      | the file src/cart.py             | src/cart.py                  |
-      | the function total               | src/cart.py:total            |
-      | the method Cart.total            | src/cart.py:Cart.total       |
-      | lines 10 to 20 of src/cart.py    | src/cart.py:10-20            |
+  @g14 @r18 @r19
+  Scenario: `tools map` writes the coverage map whether or not the tests pass
+    Given a test `test_fails`
+    When the person runs `tools map`
+    Then `tools` writes `.shop/scratch/tools/coverage`
+    And `tools` exits successfully
 
-  @r10
-  Scenario: tests-of with --by-file counts tests per test file
-    Pins that --by-file groups the answer by test file in place of listing tests.
-    Given a map in which two tests in tests/test_cart.py and one test in tests/test_checkout.py executed src/cart.py
-    When the session runs `tools tests-of --by-file src/cart.py`
-    Then tools prints tests/test_cart.py with 2 and tests/test_checkout.py with 1
-    And it prints no test names
+  @g15 @r20
+  Scenario: `tools map` replaces the coverage map made before
+    Given a coverage map m1
+    When the person runs `tools map`
+    Then `tools` replaces the coverage map m1
 
-  @r11
-  Scenario: tests-of says that no test of the map executed the target and exits successfully
-    Pins that an empty answer is printed with the map's commit and is not a failure.
-    Given a map of 5 tests made at commit abc1234
-    And no test in the map executed the function unused in src/cart.py
-    When the session runs `tools tests-of src/cart.py:unused`
-    Then tools prints that no test of the map executed it
-    And it gives commit abc1234
-    And it exits successfully
+  @g16 @r21
+  Scenario: `tools map --json` prints the map commit and the number of tests
+    Given `--json` is given
+    When the person runs `tools map`
+    Then `tools` prints the map commit and the number of tests
 
-  @r49
-  Scenario: tests-of without a map is refused
-    Pins that tests-of does not answer before a map exists.
-    Given a Python project for which no map has been made
-    When the session runs `tools tests-of src/cart.py`
-    Then the command is refused because no map has been made
+  @g17 @r22
+  Scenario: `tools tests-of` prints each test that executed its target
+    Given a coverage map m1
+    And a test t1
+    When the person runs `tools tests-of src/cart.py:total`
+    Then `tools` prints the test t1, the number of tests and the map commit
 
-  @r13
-  Scenario: untested lists the functions no test executed
-    Pins that untested prints, across every file given, the functions the last map shows no test ran.
-    Given a map in which no test executed the function refund in src/cart.py or the function export in src/report.py
-    And every other function in those files was executed by a test
-    When the session runs `tools untested src/cart.py src/report.py`
-    Then tools prints refund and export
-    And it prints no other function
+  @g18 @r23
+  Scenario: `tools tests-of --by-file` prints a count for each test file
+    Given a coverage map m1
+    And a Python file `tests/test_cart.py`
+    And `--by-file` is given
+    When the person runs `tools tests-of src/cart.py:total`
+    Then `tools` prints the Python file `tests/test_cart.py` and the number of tests
 
-  @r14
-  Scenario: refs prints each reference as path:line, through imports and aliases, then one summary line
-    Pins that a use under another file's import or an alias is still found, and that the summary keeps production and test files apart.
-    Given a Python project that defines the function total in src/cart.py
-    And src/checkout.py imports total and calls it
-    And src/report.py imports total under the alias cart_total and calls cart_total
-    And tests/test_cart.py imports total and calls it
-    When the session runs `tools refs total`
-    Then tools prints each reference as `path:line`
-    And the references printed include the calls in src/checkout.py, src/report.py and tests/test_cart.py
-    And then it prints one summary line giving the number of references printed, 2 production files, 1 test file, and src/cart.py as where total is defined
+  @g19 @r24 @r25
+  Scenario: `tools tests-of` says that no test executed its target, and exits successfully
+    Given a coverage map m1
+    When the person runs `tools tests-of src/cart.py:refund`
+    Then `tools` prints "no test of the map executed" and the map commit
+    And `tools` exits successfully
 
-  @r49
-  Scenario: refs fails for a name the project does not define
-    Pins that a name with no definition in the project fails.
-    Given a Python project in which nothing is defined as `nowhere`
-    When the session runs `tools refs nowhere`
-    Then it exits with an error
-    And it says nothing in the project is defined as nowhere
+  @g20 @r26
+  Scenario: `tools tests-of --json` prints the tests, their number and the map commit
+    Given a coverage map m1
+    And `--json` is given
+    And a test t1
+    When the person runs `tools tests-of src/cart.py:total`
+    Then `tools` prints the test t1, the number of tests and the map commit
 
-  @r16
-  Scenario Outline: `tools check` runs each tool under its own heading and fails when any finds something
-    Pins which tools `tools check` runs, over what, and that a finding from any one fails it.
-    Given a Python project with import contracts
-    And <tool> prints a finding and the other tools print nothing
-    When the session runs `tools check src/cart.py`
-    Then tools prints a heading for ruff, for vulture and for import-linter
-    And ruff and vulture are run over src/cart.py and import-linter over the project
-    And <tool>'s finding is under <tool>'s heading
-    And it exits with an error
+  @g21 @r27
+  Scenario: `tools tests-of` refuses a function its file does not have
+    Given a coverage map m1
+    When the person runs `tools tests-of src/cart.py:absent`
+    Then `tools` exits with an error naming `src/cart.py:absent`
+    And `tools` changes nothing
 
-    Examples:
-      | tool          |
-      | ruff          |
-      | vulture       |
-      | import-linter |
+  @g22 @r28
+  Scenario: `tools tests-of` refuses when there is no coverage map
+    When the person runs `tools tests-of src/cart.py:total`
+    Then `tools` exits with an error naming `tools map`
+    And `tools` changes nothing
 
-  @r17
-  Scenario: `tools check` names a missing tool
-    Pins that a missing tool is named, not silently skipped.
-    Given a Python project whose interpreter is missing vulture
-    When the session runs `tools check src/cart.py`
-    Then tools names vulture as missing
-    And it exits with an error
+  @g23 @r29 @r30
+  Scenario: `tools untested` prints each function no test executed
+    Given a coverage map m1
+    And a function `refund`
+    When the person runs `tools untested src/cart.py`
+    Then `tools` prints the function `refund`, the number of functions and the map commit
+    And `tools` exits successfully
 
-  @r6
-  Scenario: install outside a virtualenv says so for each missing tool and installs nothing
-    Pins what the session is told about each missing tool when the interpreter cannot be installed into.
-    Given a Python project whose interpreter is not a virtualenv and is missing jedi and vulture
-    When the session runs `tools install`
-    Then nothing is installed into the interpreter
-    And for jedi and for vulture tools says that the interpreter is not a virtualenv
-    And it exits with an error
+  @g24 @r31
+  Scenario: `tools untested --json` prints the functions, their number and the map commit
+    Given a coverage map m1
+    And a function `refund`
+    And `--json` is given
+    When the person runs `tools untested src/cart.py`
+    Then `tools` prints the function `refund`, the number of functions and the map commit
 
-  @r49
-  Scenario Outline: an interpreter that does not start is refused
-    Pins that probe, install and `tools check` stop at an interpreter that fails, and say why.
-    Given a Python project
-    And `--python` names an interpreter that fails when run
-    When the session runs `tools <command>`
-    Then the command is refused because the interpreter does not start
-    And it names the interpreter and the end of its error
+  @g25 @r32
+  Scenario: `tools refs` prints each reference and a summary
+    Given a reference `src/shop.py:4`
+    When the person runs `tools refs total`
+    Then `tools` prints the reference `src/shop.py:4` and the number of references
 
-    Examples:
-      | command             |
-      | probe               |
-      | install             |
-      | check src/cart.py   |
+  @g26 @r33
+  Scenario: `tools refs --json` prints the references and the summary
+    Given a reference `src/shop.py:4`
+    And `--json` is given
+    When the person runs `tools refs total`
+    Then `tools` prints the reference `src/shop.py:4` and the number of references
 
-  @r4
-  Scenario: the probe log line names every tool with its version or missing
-    Pins the content of the Probe line.
-    Given a Python project whose interpreter has every tool but vulture
-    When the session runs `tools probe --log`
-    Then the line names each installed tool with its version
-    And it names vulture as `missing`
+  @g27 @r34
+  Scenario: `tools refs` refuses a name the project does not define
+    When the person runs `tools refs nowhere`
+    Then `tools` exits with an error naming `nowhere`
+    And `tools` changes nothing
 
-  @r8
-  Scenario Outline: map replaces the earlier map and succeeds whether or not the tests pass
-    Pins that a failing suite still yields a map.
-    Given a Python project with a map made at an earlier commit
-    And the project is at commit def5678 and its suite <ending>
-    When the session runs `tools map`
-    Then the earlier map is replaced by one made at commit def5678
-    And it exits successfully
+  @g28 @r35 @r36
+  Scenario: `tools check` prints each finding under its tool's heading
+    Given a finding `F401`
+    When the person runs `tools check src`
+    Then `tools` prints the finding `F401` and "== ruff =="
+    And `tools` exits with an error naming the finding `F401`
 
-    Examples:
-      | ending          |
-      | passes          |
-      | has a failure   |
+  @g29 @r37
+  Scenario: `tools check` names a missing analysis tool
+    Given an analysis tool `vulture` that is `missing`
+    When the person runs `tools check src`
+    Then `tools` exits with an error naming the analysis tool `vulture`
 
-  @r49
-  Scenario: map that makes no map is refused
-    Pins that a `tools map` leaving no map is not shown as success.
-    Given a Python project in which running the suite under coverage leaves no map
-    When the session runs `tools map`
-    Then the command is refused because no map was made
+  @g30 @r38 @r45
+  Scenario: `tools tests-of` names a missing coverage as missing
+    Given an analysis tool `coverage` that is `missing`
+    When the person runs `tools tests-of src/cart.py:total`
+    Then `tools` exits with an error naming the analysis tool `coverage`
+    And `tools` prints `tools install`
 
-  @r49
-  Scenario: map that makes no map keeps the map made before
-    Pins that a refused map changes nothing: the last map and its commit stay.
-    Given a Python project with a map made at commit abc1234
-    And running the suite under coverage now leaves no map
-    When the session runs `tools map`
-    Then it exits with an error
-    And the map made at commit abc1234 is as it was
+  @g31 @r39 @r46
+  Scenario: `tools refs` names a missing jedi as missing
+    Given an analysis tool `jedi` that is `missing`
+    When the person runs `tools refs total`
+    Then `tools` exits with an error naming the analysis tool `jedi`
+    And `tools` prints `tools install`
 
-  @r13
-  Scenario Outline: untested prints each function, the count and the commit
-    Pins untested's output and that finding untested functions is not a failure.
-    Given a map made at commit abc1234 in which no test executed <count> functions in src/cart.py
-    When the session runs `tools untested src/cart.py`
-    Then tools prints each of those functions
-    And it says <count> functions no test executed and gives commit abc1234
-    And it exits successfully
+  @g32 @r40 @r41
+  Scenario: `tools size` prints each tracked Python file over the limit and exits with an error
+    Given the Python file `big.py` holds:
+      """
+      a = 1
+      b = 2
+      c = 3
+      d = 4
+      """
+    When the person runs `tools size --limit 3`
+    Then `tools` prints the Python file `big.py`
+    And `tools` exits with an error naming the Python file `big.py`
 
-    Examples:
-      | count |
-      | 0     |
-      | 2     |
+  @g33 @r42
+  Scenario: `tools size` counts a file with a `python` shebang as a Python file
+    Given the Python file `bin/tool` holds:
+      """
+      #!/usr/bin/env python3
+      a = 1
+      b = 2
+      c = 3
+      """
+    When the person runs `tools size --limit 3`
+    Then `tools` exits with an error naming the Python file `bin/tool`
 
-  @r49
-  Scenario: untested without a map is refused
-    Pins that untested does not answer before a map exists.
-    Given a Python project for which no map has been made
-    When the session runs `tools untested src/cart.py`
-    Then the command is refused because no map has been made
-
-  @r17
-  Scenario Outline: without coverage tests-of and untested name it as missing
-    Pins that the map readers stop and name coverage when it is missing.
-    Given a Python project whose interpreter is missing coverage
-    When the session runs `tools <command>`
-    Then tools names coverage as missing from the interpreter
-    And it exits with an error
-
-    Examples:
-      | command                |
-      | tests-of src/cart.py   |
-      | untested src/cart.py   |
-
-  @r17
-  Scenario: without jedi refs names it as missing
-    Pins that refs stops and names jedi when it is missing.
-    Given a Python project whose interpreter is missing jedi
-    When the session runs `tools refs total`
-    Then tools names jedi as missing from the interpreter
-    And it exits with an error
-
-  @r1
-  Scenario: a .venv whose python links to the running interpreter is still the one used
-    Pins that tools runs under the project's virtualenv, and so reads its packages, even when its python is a link to the interpreter running the script.
-    Given a Python project whose .venv is a virtualenv made from the interpreter running the script, without jedi
-    When the session runs `tools refs total`
-    Then tools names jedi as missing from the interpreter
-
-  @r49
-  Scenario: tests-of on a file that does not exist is refused
-    Pins that an absent file is named, not treated as untested.
-    Given a map has been made
-    And the project has no file src/gone.py
-    When the session runs `tools tests-of src/gone.py`
-    Then the command is refused
-    And it names src/gone.py
-
-  @r49
-  Scenario: untested on a file that does not exist is refused
-    Pins that an absent file is named, not read as a file with no functions.
-    Given a map has been made
-    And the project has no file src/gone.py
-    When the session runs `tools untested src/gone.py`
-    Then the command is refused
-    And it names src/gone.py
-
-  @r14
-  Scenario Outline: refs on a defined name gives its definition apart from its references
-    Pins that the definition is named but not counted, whatever the number of references.
-    Given a Python project that defines the function total in src/cart.py and refers to it <count> times
-    When the session runs `tools refs total`
-    Then tools names src/cart.py as where total is defined
-    And the definition is not counted as a reference
-    And <count> references are printed
-
-    Examples:
-      | count |
-      | 0     |
-      | 3     |
-
-  @r16
-  Scenario: `tools check` with --base examines the changed Python files that remain, in place of the paths given
-    Pins which files --base selects: Python, changed since the base, not deleted.
-    Given a Python project in git with base commit abc1234
-    And since abc1234 src/cart.py and README.md have changed and src/old.py has been deleted
-    When the session runs `tools check --base abc1234 src/report.py`
-    Then tools examines src/cart.py
-    And it does not examine README.md, src/old.py or src/report.py
-
-  @r49
-  Scenario: `tools check` with a base git cannot compare is refused with git's error
-    Pins that a bad base stops `tools check` and passes git's own reason on.
-    Given a Python project in git with no ref named nosuchref
-    When the session runs `tools check --base nosuchref`
-    Then the command is refused because git cannot compare the working tree with nosuchref
-    And it prints git's error
-
-  @r16
-  Scenario: `tools check` with no file to examine does not fail for ruff and vulture
-    Pins that an empty selection is not a finding.
-    Given a Python project in git whose Python files are unchanged since base commit abc1234
-    When the session runs `tools check --base abc1234`
-    Then neither ruff nor vulture makes it exit with an error
-
-  @r16
-  Scenario: `tools check` without import contracts does not run import-linter
-    Pins that import-linter runs only where the project declares contracts.
-    Given a Python project that declares no import contracts
-    When the session runs `tools check src/cart.py`
-    Then import-linter is not run
-
-  @r50
-  Scenario: size prints each tracked Python file over the limit in the working tree, with its line count
-    Pins which files count as Python, that tests are included, that the working tree is counted, and that no other file is printed.
-    Given a Python project in git
-    And it tracks src/cart.py of 301 lines, tests/test_cart.py of 320 lines, src/total.py of 300 lines and README.md of 900 lines
-    And it tracks bin/reprice, with no extension, a python shebang and 400 lines
-    And it tracks src/report.py, committed at 200 lines and edited in the working tree to 350 lines
-    And it has an untracked src/draft.py of 500 lines
-    When the session runs `tools size`
-    Then tools prints src/cart.py with 301 lines, tests/test_cart.py with 320 lines, bin/reprice with 400 lines and src/report.py with 350 lines
-    And it prints no other file
-
-  # [r51] **If** any tracked Python file is over the size limit, then `tools size` shall exit with an error.
-  @r51
-  Scenario: size fails when one tracked Python file is over the limit
-    Pins that a single file over the limit fails the command.
-    Given a Python project in git
-    And it tracks src/cart.py of 301 lines and src/total.py of 120 lines
-    When the session runs `tools size`
-    Then it exits with an error
-
-  # [r52] **Where** `tools size --limit <n>` is given, `tools size` shall use `<n>` lines as the size limit, and 300 lines otherwise.
-  @r52
-  Scenario Outline: size uses the limit --limit gives, and 300 lines without it
-    Pins the limit at its edge: a file of exactly the limit is within it, one line more is over.
-    Given a Python project in git
-    And it tracks src/total.py of <within> lines and src/cart.py of <over> lines
-    When the session runs `tools size <option>`
-    Then tools prints src/cart.py with <over> lines
-    And it does not print src/total.py
-
-    Examples:
-      | option      | within | over |
-      | --limit 250 | 250    | 251  |
-      |             | 300    | 301  |
-
-  @r53
-  Scenario: tests-of with --json prints the tests, their count and the map's commit as one JSON object
-    Pins that --json replaces the lines with one object holding the same three facts.
-    Given a map of 5 tests made at commit abc1234
-    And test_total and test_checkout executed src/cart.py and no other test did
-    When the session runs `tools tests-of --json src/cart.py`
-    Then tools prints one JSON object
-    And the object gives the tests test_total and test_checkout, their count 2 and commit abc1234
-
-  @r54
-  Scenario: untested with --json prints the functions, their count and the map's commit as one JSON object
-    Pins that --json replaces the lines with one object holding the same three facts.
-    Given a map made at commit abc1234 in which no test executed the functions refund and export in src/cart.py
-    When the session runs `tools untested --json src/cart.py`
-    Then tools prints one JSON object
-    And the object gives the functions refund and export, their count 2 and commit abc1234
-
-  @r55
-  Scenario: refs with --json prints the references and the summary as one JSON object
-    Pins that --json replaces the lines with one object holding the references and the summary.
-    Given a Python project that defines the function total in src/cart.py
-    And src/checkout.py imports total and calls it
-    And tests/test_cart.py imports total and calls it
-    When the session runs `tools refs --json total`
-    Then tools prints one JSON object
-    And the object gives the references in src/checkout.py and tests/test_cart.py
-    And the object gives the summary: the number of references it gives, 1 production file, 1 test file, and src/cart.py as where total is defined
-
-  @r56
-  Scenario: map with --json prints the map's commit and its test count as one JSON object
-    Pins that --json prints the result of the map as one object.
-    Given a Python project with the tests test_total and test_discount at commit def5678
-    When the session runs `tools map --json`
-    Then tools prints one JSON object
-    And the object gives commit def5678 and the test count 2
-
-  @r57
-  Scenario: tests-of fails when the file has no function by the name given
-    Pins that an unknown function is an error saying the target cannot be read, not an empty answer.
-    Given a map has been made
-    And src/cart.py has no function named missing
-    When the session runs `tools tests-of src/cart.py:missing`
-    Then it exits with an error
-    And it says the target cannot be read
+  @g34 @r43
+  Scenario: `tools size` takes 300 lines as the limit when none is given
+    Given the Python file `big.py` holds:
+      """
+      a = 1
+      b = 2
+      c = 3
+      d = 4
+      """
+    When the person runs `tools size`
+    Then `tools` exits successfully
