@@ -9,6 +9,15 @@ language: codified-1
 A small codified context for the tests of `features generate` and `features vocab` (design §14). It is not this
 repository's spec.
 
+## Relations
+
+| from | word | to | cardinality |
+|---|---|---|---|
+| work-item | under | capability-proposal | one |
+| capability-proposal | part of | initiative | one |
+| initiative | fulfils | request | one |
+| stage | for | work-item | one |
+
 ## Glossary
 
 - **the person** (actor): the human who runs the commands.
@@ -44,12 +53,3 @@ repository's spec.
 
 - **spec lock** (resource, exclusive): held by every integrate round.
 - **worker slot** (resource, counted by `workers`): held by every worker.
-
-## Relations
-
-| from | word | to | cardinality |
-|---|---|---|---|
-| work-item | under | capability-proposal | one |
-| capability-proposal | part of | initiative | one |
-| initiative | fulfils | request | one |
-| stage | for | work-item | one |
