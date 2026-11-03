@@ -370,7 +370,7 @@ Feature: Migration tools
     When the SessionStart hook runs `migrate status --hook`
     Then `migrate` prints "update the plugin"
 
-  @g24 @r37 @r38
+  @g24 @r46 @r47
   Scenario: the SessionStart hook tells a session nothing when nothing is pending and no initiative is open
     Given the tracked file `.shop/plugin-version` holds "0.29.0"
     And the tracked file `.shop/work/i1/initiative.md` holds:
@@ -386,19 +386,19 @@ Feature: Migration tools
     Then `migrate` does not print "migrate upgrade"
     And `migrate` does not print "i1"
 
-  @g25 @r39
+  @g25 @r48
   Scenario: the SessionStart hook tells a session nothing in a repository without `.shop/`
     Given the tracked file `README.md` holds "No shop here."
     When the SessionStart hook runs `migrate status --hook`
     Then `migrate` exits successfully
 
-  @g26 @r40
+  @g26 @r49
   Scenario: the SessionStart hook tells a session that `.shop/plugin-version` holds no version
     Given the tracked file `.shop/plugin-version` holds "banana"
     When the SessionStart hook runs `migrate status --hook`
     Then `migrate` prints "holds no version" and "banana"
 
-  @g27 @r41
+  @g27 @r50
   Scenario: the SessionStart hook gives a session what `work status` prints for each open initiative
     Given the tracked file `.shop/plugin-version` holds "0.29.0"
     And the tracked file `.shop/work/i1/initiative.md` holds:
@@ -413,7 +413,7 @@ Feature: Migration tools
     When the SessionStart hook runs `migrate status --hook`
     Then `migrate` prints "initiative i1"
 
-  @g28 @r42 @r43
+  @g28 @r51 @r52
   Scenario: the PreCompact hook appends `compacted` to the ledger of each open initiative and tells the session to hand off
     Given the tracked file `.shop/work/i1/initiative.md` holds:
       """

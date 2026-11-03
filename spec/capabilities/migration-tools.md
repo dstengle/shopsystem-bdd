@@ -391,8 +391,8 @@ the tracked file `.shop/plugin-version` holds "9.0.0"
 
 ### [g24] the SessionStart hook tells a session nothing when nothing is pending and no initiative is open
 Restates: r24@0.29.
-- [r37] When the SessionStart hook runs `migrate status --hook`, `migrate` shall not print "migrate upgrade".
-- [r38] When the SessionStart hook runs `migrate status --hook`, `migrate` shall not print "i1".
+- [r46] When the SessionStart hook runs `migrate status --hook`, `migrate` shall not print "migrate upgrade".
+- [r47] When the SessionStart hook runs `migrate status --hook`, `migrate` shall not print "i1".
 
 ```given
 the tracked file `.shop/plugin-version` holds "0.29.0"
@@ -407,7 +407,7 @@ the tracked file `.shop/work/i1/initiative.md` holds:
 
 ### [g25] the SessionStart hook tells a session nothing in a repository without `.shop/`
 Restates: r28@0.29.
-- [r39] When the SessionStart hook runs `migrate status --hook`, `migrate` shall exit successfully.
+- [r48] When the SessionStart hook runs `migrate status --hook`, `migrate` shall exit successfully.
 
 ```given
 the tracked file `README.md` holds "No shop here."
@@ -415,7 +415,7 @@ the tracked file `README.md` holds "No shop here."
 
 ### [g26] the SessionStart hook tells a session that `.shop/plugin-version` holds no version
 Restates: r31@0.29.
-- [r40] When the SessionStart hook runs `migrate status --hook`, `migrate` shall print "holds no version" and "banana".
+- [r49] When the SessionStart hook runs `migrate status --hook`, `migrate` shall print "holds no version" and "banana".
 
 ```given
 the tracked file `.shop/plugin-version` holds "banana"
@@ -423,7 +423,7 @@ the tracked file `.shop/plugin-version` holds "banana"
 
 ### [g27] the SessionStart hook gives a session what `work status` prints for each open initiative
 Restates: r32@0.29.
-- [r41] When the SessionStart hook runs `migrate status --hook`, `migrate` shall print "initiative i1".
+- [r50] When the SessionStart hook runs `migrate status --hook`, `migrate` shall print "initiative i1".
 
 ```given
 the tracked file `.shop/plugin-version` holds "0.29.0"
@@ -438,8 +438,8 @@ the tracked file `.shop/work/i1/initiative.md` holds:
 
 ### [g28] the PreCompact hook appends `compacted` to the ledger of each open initiative and tells the session to hand off
 Restates: r33@0.29, r34@0.29.
-- [r42] When the PreCompact hook runs `migrate compacting`, `migrate` shall append "compacted".
-- [r43] When the PreCompact hook runs `migrate compacting`, `migrate` shall print "work note" and "instead of being compacted".
+- [r51] When the PreCompact hook runs `migrate compacting`, `migrate` shall append "compacted".
+- [r52] When the PreCompact hook runs `migrate compacting`, `migrate` shall print "work note" and "instead of being compacted".
 
 ```given
 the tracked file `.shop/work/i1/initiative.md` holds:

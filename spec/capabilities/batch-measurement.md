@@ -26,7 +26,7 @@ not know rather than guessing at it.
 - **logged stage** (kind): a stage the initiative log gives a start for, run in one session.
 - **ending** (attribute of logged stage): whether the initiative log gives the stage an end. Values: `ended`, `unended`.
 - **content** (attribute of session file): Values: `filled`, `empty`.
-- **presence** (attribute of transcript): whether `measure` finds the session's transcript. Values: `found`, `lost`.
+- **availability** (attribute of transcript): whether `measure` finds the session's transcript. Values: `found`, `lost`.
 - **include** (event): `measure` puts a figure or a name into the measurement it writes. Forms: includes, included.
 
 ## Behaviour
