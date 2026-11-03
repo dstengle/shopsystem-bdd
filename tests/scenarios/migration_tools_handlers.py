@@ -48,11 +48,6 @@ def given_tracked(step):
     held(step)[bare(step.names[0])] = text + "\n"
 
 
-@handler("GivenCode", "untracked file")
-def given_untracked(step):
-    step.context.setdefault("untracked", {})[bare(step.names[0])] = step.quoted[0][1:-1] + "\n"
-
-
 def hook(step, name):
     root = plugin()[0]
     command = json.loads((root / "hooks/hooks.json").read_text())["hooks"][name][0]["hooks"][0]["command"]
@@ -106,6 +101,7 @@ def exits_err(step):
     assert step.context["done"].returncode != 0, said(step)
     for np in step.nps:
         want = np.strip('"') if np.startswith('"') else bare(np.split()[-1])
+        want = step.context.get("says", {}).get(want, want)
         assert want in said(step), (want, said(step))
 
 

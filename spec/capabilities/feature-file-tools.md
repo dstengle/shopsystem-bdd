@@ -22,37 +22,37 @@ and runs no test; it edits no feature file by hand, since the generator owns the
   line.
 - **test module** (kind): a Python file under the directory `--tests` names (default `tests`) that binds scenarios
   with `scenario(<feature>, "<title>")` or `scenarios(<path>, ...)` calls.
+- **nested** (condition of feature file): a feature file with a docstring whose text has a tag and a `Scenario:` line.
+- **outlined** (condition of feature file): a feature file with a Scenario Outline of several Examples tables.
+- **sectioned** (condition of feature file): a feature file with a `Rule:` block.
+- **deprecating** (condition of feature file): a feature file with a scenario tagged `@deprecated` and its replacement.
+- **undeprecated** (condition of feature file): a feature file with no scenario tagged `@deprecated`.
+- **resolving** (condition of test module): a test module each of whose bindings names a scenario a feature file has.
+- **dangling** (condition of test module): a test module with a binding whose title no feature file has.
+- **sweeping** (condition of test module): a test module that binds every scenario of a feature file with one `scenarios(...)` call.
+- **partial** (condition of test module): a test module that leaves a scenario of the feature file it binds unbound.
 
 ## Behaviour
 
 ### [g1] `features count --by-tag` counts every scenario, and a docstring's text is none
 Restates: r1@0.29, r4@0.29.
-- [r1] When the person runs `features count --by-tag`, `features` shall print the number of scenarios.
-
-```given
-a feature file `features/notes.feature`
-```
+- [r1] While the feature file `features/notes.feature` is nested, when the person runs `features count --by-tag`,
+  `features` shall print the number of scenarios.
 
 ### [g2] `features count --by-tag` counts a Scenario Outline once for each Examples row
 Restates: r4@0.29.
-- [r2] When the person runs `features count --by-tag`, `features` shall print the number of scenarios.
-
-```given
-a feature file `features/outline.feature`
-```
+- [r2] While the feature file `features/outline.feature` is outlined, when the person runs `features count --by-tag`,
+  `features` shall print the number of scenarios.
 
 ### [g3] a docstring's text is no tag
 Restates: r1@0.29, r7@0.29.
-- [r3] When the person runs `features list --tag slice-9`, `features` shall not print the feature file.
-- [r4] When the person runs `features list --tag slice-9`, `features` shall exit successfully.
-
-```given
-a feature file `features/notes.feature`
-```
+- [r3] While the feature file `features/notes.feature` is nested, when the person runs `features list --tag slice-9`,
+  `features` shall exit successfully, and `features` shall not print the feature file `features/notes.feature`.
 
 ### [g4] every feature file under the directory is read, however deep
 Restates: r1@0.29.
-- [r5] When the person runs `features list --title Deep`, `features` shall print the feature file.
+- [r4] When the person runs `features list --title Deep`, `features` shall print the feature file
+  `features/sub/deep.feature`.
 
 ```given
 the feature file `features/sub/deep.feature` holds:
@@ -63,7 +63,8 @@ the feature file `features/sub/deep.feature` holds:
 
 ### [g5] `features list --tag` prints each scenario whose tags, its feature's included, have the tag
 Restates: r5@0.29.
-- [r6] When the person runs `features list --tag cart`, `features` shall print the feature file and "Adding".
+- [r5] When the person runs `features list --tag cart`, `features` shall print the feature file
+  `features/cart.feature` and "Adding".
 
 ```given
 the feature file `features/cart.feature` holds:
@@ -75,7 +76,8 @@ the feature file `features/cart.feature` holds:
 
 ### [g6] `features list --title` prints each scenario whose title holds the text
 Restates: r5@0.29.
-- [r7] When the person runs `features list --title Add`, `features` shall print the feature file and "Adding".
+- [r6] When the person runs `features list --title Add`, `features` shall print the feature file
+  `features/cart.feature` and "Adding".
 
 ```given
 the feature file `features/cart.feature` holds:
@@ -88,7 +90,8 @@ the feature file `features/cart.feature` holds:
 
 ### [g7] `features list --json` prints the scenarios it found as one JSON object
 Restates: r60@0.29.
-- [r8] Where `--json` is given, when the person runs `features list --title Add`, `features` shall print the feature file and "Adding".
+- [r7] Where `--json` is given, when the person runs `features list --title Add`, `features` shall print the feature
+  file `features/cart.feature` and "Adding".
 
 ```given
 the feature file `features/cart.feature` holds:
@@ -99,15 +102,13 @@ the feature file `features/cart.feature` holds:
 
 ### [g8] a feature file with a `Rule:` block is refused
 Restates: r2@0.29, r46@0.29.
-- [r9] If the person runs `features count --by-tag`, then `features` shall exit with an error naming the feature file and change nothing.
-
-```given
-a feature file `features/rule.feature`
-```
+- [r8] While the feature file `features/rule.feature` is sectioned, if the person runs `features count --by-tag`,
+  then `features` shall exit with an error naming the feature file `features/rule.feature` and change nothing.
 
 ### [g9] `features deprecated` prints each deprecated scenario with what replaces it
 Restates: r21@0.29.
-- [r10] When the person runs `features deprecated`, `features` shall print "Lending" and "@r4".
+- [r9] While the feature file `features/shelf.feature` is deprecating, when the person runs `features deprecated`,
+  `features` shall print "Lending" and "@r4".
 
 ```given
 the feature file `features/shelf.feature` holds:
@@ -123,7 +124,8 @@ the feature file `features/shelf.feature` holds:
 
 ### [g10] `features deprecated` says when nothing is deprecated
 Restates: r21@0.29.
-- [r11] When the person runs `features deprecated`, `features` shall print "none deprecated".
+- [r10] While the feature file `features/shelf.feature` is undeprecated, when the person runs `features deprecated`,
+  `features` shall print "none deprecated".
 
 ```given
 the feature file `features/shelf.feature` holds:
@@ -134,7 +136,7 @@ the feature file `features/shelf.feature` holds:
 
 ### [g11] `features deprecated --json` prints the deprecated scenarios as one JSON object
 Restates: r61@0.29.
-- [r12] Where `--json` is given, when the person runs `features deprecated`, `features` shall print "Lending".
+- [r11] Where `--json` is given, when the person runs `features deprecated`, `features` shall print "Lending".
 
 ```given
 the feature file `features/shelf.feature` holds:
@@ -147,8 +149,8 @@ the feature file `features/shelf.feature` holds:
 
 ### [g12] `features bindings` says so when every binding names a scenario
 Restates: r26@0.29.
-- [r13] When the person runs `features bindings`, `features` shall print "every binding names a scenario".
-- [r14] When the person runs `features bindings`, `features` shall exit successfully.
+- [r12] While the test module `tests/test_cart.py` is resolving, when the person runs `features bindings`,
+  `features` shall print "every binding names a scenario" and exit successfully.
 
 ```given
 the feature file `features/cart.feature` holds:
@@ -164,7 +166,8 @@ the test module `tests/test_cart.py` holds:
 
 ### [g13] `features bindings` names a binding whose title no feature file has
 Restates: r25@0.29.
-- [r15] If the person runs `features bindings`, then `features` shall exit with an error naming the test module and change nothing.
+- [r13] While the test module `tests/test_cart.py` is dangling, if the person runs `features bindings`, then
+  `features` shall exit with an error naming the test module `tests/test_cart.py` and change nothing.
 
 ```given
 the feature file `features/cart.feature` holds:
@@ -180,7 +183,8 @@ the test module `tests/test_cart.py` holds:
 
 ### [g14] a `scenarios(...)` call binds every scenario of the feature file it names
 Restates: r57@0.29.
-- [r16] When the person runs `features bindings --unbound`, `features` shall exit successfully.
+- [r14] While the test module `tests/test_cart.py` is sweeping, when the person runs `features bindings --unbound`,
+  `features` shall exit successfully.
 
 ```given
 the feature file `features/cart.feature` holds:
@@ -196,7 +200,8 @@ the test module `tests/test_cart.py` holds:
 
 ### [g15] `features bindings --unbound` names a scenario no test binds
 Restates: r58@0.29.
-- [r17] If the person runs `features bindings --unbound`, then `features` shall exit with an error naming "Paying" and change nothing.
+- [r15] While the test module `tests/test_cart.py` is partial, if the person runs `features bindings --unbound`, then
+  `features` shall exit with an error naming "Paying" and change nothing.
 
 ```given
 the feature file `features/cart.feature` holds:
@@ -214,7 +219,7 @@ the test module `tests/test_cart.py` holds:
 
 ### [g16] `features bindings --json` prints what it found wrong as one JSON object
 Restates: r62@0.29.
-- [r18] Where `--json` is given, when the person runs `features bindings --unbound`, `features` shall print "Paying".
+- [r16] Where `--json` is given, when the person runs `features bindings --unbound`, `features` shall print "Paying".
 
 ```given
 the feature file `features/cart.feature` holds:
@@ -231,21 +236,53 @@ the test module `tests/test_cart.py` holds:
 ```
 
 ### [g17] `features generate` writes the feature file of a codified service capability
-- [r19] When the person runs `features generate`, `features` shall print the feature file.
-- [r20] When the person runs `features generate`, `features` shall exit successfully.
+- [r17] When the person runs `features generate`, `features` shall print the feature file `features/shelf.feature`
+  and exit successfully.
 
 ```given
-a term `book`
-a capability `shelf`
-a feature file `features/shelf.feature`
+the capability `shelf` holds:
+  ---
+  id: capability/ex.com/prod/ctx/shelf
+  title: shelf
+  narrator: a client
+  group: service
+  language: codified-1
+  rests_on: []
+  retired: []
+  ---
+  # shelf
+  ## Purpose
+  Something.
+  ## Terms
+  - **book** (kind): a thing.
+  ## Behaviour
+  ## Not yet
+  ## Dropped
 ```
 
 ### [g18] `features generate --check` names a feature file that differs from its capability
-- [r21] Where `--check` is given, if the person runs `features generate`, then `features` shall exit with an error naming the feature file and change nothing.
+- [r18] Where `--check` is given, if the person runs `features generate`, then `features` shall exit with an error
+  naming the feature file `features/shelf.feature` and change nothing.
 
 ```given
-a term `book`
-a capability `shelf`
+the capability `shelf` holds:
+  ---
+  id: capability/ex.com/prod/ctx/shelf
+  title: shelf
+  narrator: a client
+  group: service
+  language: codified-1
+  rests_on: []
+  retired: []
+  ---
+  # shelf
+  ## Purpose
+  Something.
+  ## Terms
+  - **book** (kind): a thing.
+  ## Behaviour
+  ## Not yet
+  ## Dropped
 the feature file `features/shelf.feature` holds:
   Feature: Shelf
     Scenario: Edited by hand
@@ -253,12 +290,35 @@ the feature file `features/shelf.feature` holds:
 ```
 
 ### [g19] `features vocab --check` names a step with no handler
-- [r23] If the person runs `features vocab --check`, then `features` shall exit with an error naming the feature file and change nothing.
+- [r19] If the person runs `features vocab --check`, then `features` shall exit with an error naming the feature file
+  `features/shelf.feature` and change nothing.
 
 ```given
-a term `book`
-a capability `shelf`
-a feature file `features/shelf.feature`
+the capability `shelf` holds:
+  ---
+  id: capability/ex.com/prod/ctx/shelf
+  title: shelf
+  narrator: a client
+  group: service
+  language: codified-1
+  rests_on: []
+  retired: []
+  ---
+  # shelf
+  ## Purpose
+  Something.
+  ## Terms
+  - **book** (kind): a thing.
+  ## Behaviour
+  ## Not yet
+  ## Dropped
+the feature file `features/shelf.feature` holds:
+  # generated from spec/capabilities/shelf.md by features generate; do not edit
+  Feature: shelf
+    Narrator: a client
+    @g1 @r1
+    Scenario: Lending
+      When the person lends a book
 ```
 
 ## Implementation, may change
