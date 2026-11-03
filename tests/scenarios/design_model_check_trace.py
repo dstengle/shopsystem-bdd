@@ -204,7 +204,7 @@ def rules_printed(context):
     assert all(len(row) == 2 and row[1] for row in rows), out
     codes = [c for c, _ in rows]
     assert codes == _lp_labels(), out
-    assert ["v_s3", "a requirement has no scenario"] in rows
+    assert ["v_s3", "a group or requirement has no scenario"] in rows
     firstw = min(i for i, c in enumerate(codes) if c.startswith("w_"))
     assert all(c.startswith("w_") for c in codes[firstw:]), codes
     assert all(c.startswith("v") for c in codes[:firstw]), codes

@@ -126,7 +126,7 @@ def _is_named(given, rows):
     return any(a == given or a.endswith("/" + given) for a in rows)
 
 
-@then(parsers.re(r"(?P<code>v16a|v_d1|v_d3|v17|v3|v18) (?P<how>names|does not name) (?P<ids>[^\s,]+(?:(?:, | and | or )[^\s,]+)*)$"))
+@then(parsers.re(r"(?P<code>v16a|v_d1|v_d3|v17|v3|v18d) (?P<how>names|does not name) (?P<ids>[^\s,]+(?:(?:, | and | or )[^\s,]+)*)$"))
 def request_rule_names(world, context, code, how, ids):
     """r113-r119: a name is an id whole or its last part (i1, q1, thing#r9)."""
     rows = _row_ids(world, context, code)

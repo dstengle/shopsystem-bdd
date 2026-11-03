@@ -141,9 +141,9 @@ def abandoned_initiative(world):
     world.initiative(status="abandoned")
 
 
-@then("v_d2 names the initiative")
-def v_d2_names_initiative(world, context):
-    assert [a for name, a in found(world, context)["violations"] if name == "v_d2"] == [[I1]], found(world, context)
+@then("v_d5 names the initiative")
+def v_d5_names_initiative(world, context):
+    assert [a for name, a in found(world, context)["violations"] if name == "v_d5"] == [[I1]], found(world, context)
 
 
 @then("once the work-item is withdrawn too, no violation names the initiative")
