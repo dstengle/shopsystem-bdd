@@ -337,8 +337,11 @@ phrase of the response gives its own Then. A group's example data comes first, f
 is a sentence of the step grammar. Among equal traces the least by a fixed order is taken, so the same spec gives
 the same bytes, and a requirement the group's trace cannot reach changes nothing in it. Instances are named by
 their kind's first letter and a number in order of first mention (`i1`, `w1`), and every step names the kind: `an
-initiative i1 that is `proposed`` where it is introduced, `the initiative i1` after. A group whose trace cannot
-happen is refused with its L1.
+initiative i1 that is `proposed`` where it is introduced, `the initiative i1` after. A group with no trace to read
+(its trace cannot happen, which is its L1; the trace is not determined; or a step of it has no template) gets no
+scenario: `features generate` names the group and the reason on stderr and writes the rest. The errors are `model
+logic`'s L1 and `model check`'s row for a group with no scenario (v_s3). `features generate` exits 1 on a requirement
+that does not parse or an example-data line the step grammar refuses.
 
 A scenario that looks wrong is a wrong requirement (back to the spec, at the gate) or a defect of the plugin's
 grammar or generator (a request to the plugin) — never an edit to the feature file. Step definitions are

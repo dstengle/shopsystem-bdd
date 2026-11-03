@@ -23,9 +23,6 @@ and analysis and commits them, and sets the initiative `done`, committing it, wh
 decide goes to the person as a question.
 
 ## Terms
-- **on** (relation question → work-item): the work-item a question is written in.
-- **on** (relation question → capability-proposal): the capability-proposal a question is written in.
-- **on** (relation question → glossary-proposal): the glossary-proposal a question is written in.
 - **draft** (event): `work run` writes a node with `work add` or from a change list. Forms: drafts, drafted.
 - **take** (event): `work run` takes an initiative through the transitions its nodes can make. Forms: takes, took, taken.
 - **log** (event): `work run` appends a line to `.shop/work/<initiative>/log.jsonl`. Forms: logs, logged.

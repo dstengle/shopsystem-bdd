@@ -114,8 +114,6 @@ def _guard(vocab, tree):
             return "a named code is no instance"
         if node[0] == "NameLit" and (not NAME.match(node[1]) or node[1] in vocab.words):
             return "%s is no instance name" % node[1]
-    if tree[0] == "SAtom":   # a relation's clause is its own step: past spec_tree.guard's rule for the old GivenR fun
-        return spec_tree.guard(("Step", tree[1]), vocab.words)
     return spec_tree.guard(tree, vocab.words)
 
 

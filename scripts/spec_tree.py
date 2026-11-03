@@ -103,10 +103,7 @@ def _anaphora(tree):
 def guard(tree, words):
     """Why the tree is dropped (a reason), or None when it passes: literals (§9.4), no repeated list member, and
     "it" only after a noun phrase of its kind (§9.3), and a code after a noun phrase is its name, not a second
-    object. `words` are the lexicon's spellings. A step that is a relation's clause ("the stage s1 is for the
-    work-item w1") is the relation's `<relation>_Given` step while the Steps grammar has one (design-r2 §4.4)."""
-    if tree[0] == "SAtom" and tree[1][0].startswith("rel_") and tree[1][0].endswith("_Atom"):
-        return "a relation between two instances is its relation's Given step"
+    object. `words` are the lexicon's spellings."""
     return _literals(tree, words) or _repeats(tree) or _anaphora(tree) or _second_object(tree)
 
 

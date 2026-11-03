@@ -18,7 +18,6 @@ lines (the upstream's gate judges the capability-proposal they become) and does 
 that fulfils a request (work-queue).
 
 ## Terms
-- **proposed in** (relation request line → request): a line of a request, under its `## Lines`.
 - **resolution** (kind): the requirement id and version of each accepted line, under a request's `## Resolution`.
 - **wording** (attribute of delegation): Values: `empty`, `written`.
 - **closed** (condition of request): A request is closed when the request is `delivered` or the request is `refused` or the request is `withdrawn`.

@@ -97,10 +97,10 @@ def test_normal_keeps_the_order_of_a_list_mixing_and_with_or():
     assert spec_tree.normal(mixed) == ("CondAnd", a, ("CondOr", c, ("CondOne", b)))
 
 
-def test_a_step_saying_a_relation_between_two_instances_is_left_to_the_relations_given_step():
+def test_a_step_saying_a_relation_between_two_instances_is_kept_as_its_rows_clause():
+    """A relation step is the SAtom of its row's clause (design-r2 §4.4): no guard drops it."""
     inst = ("k_stage_Inst", ("NameLit", "s1")), ("k_work_item_Inst", ("NameLit", "w1"))
-    assert "Given" in spec_tree.guard(("SAtom", ("rel_stage_for_work_item_Atom",) + inst), WORDS)
-    assert spec_tree.guard(("r_for_7_Given", ("NameLit", "s1"), ("NameLit", "w1")), WORDS) is None
+    assert spec_tree.guard(("SAtom", ("rel_stage_for_work_item_Atom",) + inst), WORDS) is None
 
 
 def test_parts_split_a_requirement_into_its_clauses():

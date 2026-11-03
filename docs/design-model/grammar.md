@@ -441,7 +441,10 @@ A line is a sentence of §6.1.
   conjunct a Then, each linearised through the Steps grammar. A given
   block gives only example data, first; a given line that is not example
   data is left out with a line on stderr (v15m is its error). The same
-  spec gives the same bytes. `features vocab` reads the step grammar's
-  typed funs as step patterns.
+  spec gives the same bytes. A group with no trace to read (its L1, a
+  trace that is not determined, a step with no template) gets no
+  scenario and a line on stderr; `model logic` (L1) and `model check`
+  (v_s2 above; `v_s3` in `model.lp`) are its errors. `features vocab`
+  reads the step grammar's typed funs as step patterns.
 - The grammar tools are GF 3.12 with the pgf runtime, clingo and telingo,
   installed by `tools install`.

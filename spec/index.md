@@ -209,12 +209,6 @@ Tools the skills and agents run:
 - **free** (condition of resource): a resource that no session holds, or a counted resource that fewer sessions hold than its number.
 - **green check** (condition of work-item branch): a work-item branch on which the scenarios of its work-item and the suite pass.
 
-- **fulfils** (relation initiative → request): an initiative fulfils exactly one request.
-- **adds** (relation capability-proposal → requirement): a requirement the proposal adds.
-- **blocked by** (relation work-item → work-item): a work-item waits for another.
-- **on** (relation question → node): the node a question is asked on.
-- **for** (relation stage → node): the node a stage is started for.
-- **with** (relation stage → result): the result a stage wrote.
 
 - **start** (event): a stage begins to run, holding its resources.
 - **end** (event): a stage's session stops, with a result or without one.
@@ -267,6 +261,13 @@ Tools the skills and agents run:
 | file | in | worktree |  |
 | file | of | initiative |  |
 | initiative | outside | delivery |  |
+| initiative | fulfils | request | one |
+| capability-proposal | adds | requirement |  |
+| work-item | blocked by | work-item |  |
+| question | on | node |  |
+| stage | for | node |  |
+| stage | with | result |  |
+| request line | proposed in | request | one |
 
 ## Where things live
 

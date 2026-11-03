@@ -9,6 +9,37 @@ language: codified-1
 A glossary from the domain model's §1–§8 (`.shop/records/2026-11-02-domain-model/domain-model.md`), typed by
 category, for the tests of the lexicon and the requirement grammar. It is not this repository's spec.
 
+## Relations
+
+| from | word | to | cardinality |
+|---|---|---|---|
+| work-item | under | capability-proposal |  |
+| capability-proposal | part of | initiative |  |
+| glossary-proposal | part of | initiative |  |
+| work-item | of | initiative |  |
+| stage | of | work-item |  |
+| initiative directory | of | initiative |  |
+| file | of | initiative |  |
+| transcript | of | session |  |
+| initiative | fulfils | request |  |
+| capability-proposal | argues | capability |  |
+| work-item | accepts | requirement |  |
+| work-item | blocked by | work-item |  |
+| round | for | capability-proposal |  |
+| stage | for | initiative |  |
+| question | on | work-item |  |
+| question | on | request line |  |
+| requirement | in | capability |  |
+| request line | in | request |  |
+| file | in | worktree |  |
+| scenario | in | feature |  |
+| stage | with | result |  |
+| stage | needs | resource |  |
+| file | outside | worktree |  |
+| initiative | outside | delivery |  |
+| capability-proposal | adds | requirement |  |
+| measurement | under | initiative |  |
+
 ## Glossary
 
 ### Actors
@@ -112,35 +143,6 @@ category, for the tests of the lexicon and the requirement grammar. It is not th
 - **upgrade step** (kind): the change between two plugin releases.
 - **trial** (kind): one run of a plugin tool on a target.
 
-### Relations
-
-- **under** (relation work-item → capability-proposal): a work-item delivers part of a proposal.
-- **part of** (relation capability-proposal → initiative): a proposal of an initiative.
-- **part of** (relation glossary-proposal → initiative): a proposal of an initiative.
-- **of** (relation work-item → initiative): the initiative a work-item delivers.
-- **of** (relation stage → work-item): the work-item a stage runs.
-- **of** (relation initiative directory → initiative): the directory of an initiative.
-- **of** (relation file → initiative): a file under the initiative directory of an initiative.
-- **of** (relation transcript → session): the transcript of a session.
-- **fulfils** (relation initiative → request): the request an initiative delivers.
-- **argues** (relation capability-proposal → capability): the one capability a proposal changes.
-- **accepts** (relation work-item → requirement): the requirements a work-item delivers.
-- **blocked by** (relation work-item → work-item): a work-item that must be `green` first.
-- **for** (relation round → capability-proposal): the proposal a round runs.
-- **for** (relation stage → initiative): the initiative a stage runs.
-- **on** (relation question → work-item): the work-item a question stops.
-- **on** (relation question → request line): the line a question is about.
-- **in** (relation requirement → capability): the capability a requirement belongs to.
-- **in** (relation request line → request): the request a line belongs to.
-- **in** (relation file → worktree): a file of a worktree.
-- **in** (relation scenario → feature): a scenario of a feature.
-- **with** (relation stage → result): the result a stage wrote.
-- **needs** (relation stage → resource): what a stage must hold to start.
-- **outside** (relation file → worktree): a file of no worktree of the stage.
-- **outside** (relation initiative → delivery): an initiative the delivery does not run.
-- **adds** (relation capability-proposal → requirement): a requirement the proposal adds.
-- **under** (relation measurement → initiative): the initiative a measurement measures.
-
 ### Events
 
 - **start** (event): a stage or a delivery begins.
@@ -181,9 +183,9 @@ category, for the tests of the lexicon and the requirement grammar. It is not th
 
 ### Conditions
 
-- **open** (condition of initiative): Means: its status is not `done` and not `abandoned`.
-- **complete** (condition of initiative): Means: every work-item of it is `green` or `withdrawn`.
-- **settled** (condition of request line): Means: its line outcome is `accepted`, `refused` or `withdrawn`.
-- **closed** (condition of capability-proposal): Means: its status is `formulated` or `withdrawn`.
-- **free** (condition of resource): Means: no session holds it.
-- **passing** (condition of scenario): Means: it passes in the suite.
+- **open** (condition of initiative): its status is not `done` and not `abandoned`.
+- **complete** (condition of initiative): every work-item of it is `green` or `withdrawn`.
+- **settled** (condition of request line): its line outcome is `accepted`, `refused` or `withdrawn`.
+- **closed** (condition of capability-proposal): its status is `formulated` or `withdrawn`.
+- **free** (condition of resource): no session holds it.
+- **passing** (condition of scenario): it passes in the suite.

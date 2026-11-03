@@ -24,7 +24,7 @@ By hand, outside `work run`, the same commands do the same: `python3 <scripts>/f
 
 ## When generation refuses
 
-`features generate` exits 1 naming the group it cannot write: a group whose trace cannot happen (its L1, with the requirements and universal conditions in conflict), a trace that is not determined, or a step the vocabulary has no template for. Reword the requirement within the language (integration), or raise the missing construct to the plugin. A given line that is not example data is not refused: it is left out, with a line on stderr, and `model check` reports it (v15m); its condition belongs in the statement. Exit 2 names a capability that is not codified: run `migrate upgrade` first.
+`features generate` writes no scenario for a group it cannot read a trace for, and names the group and the reason on stderr: a trace that cannot happen (its L1, with the requirements and universal conditions in conflict; `model logic` reports it), a trace that is not determined, or a step the vocabulary has no template for. `model check` reports the group with no scenario (v_s3), so the formulate round's check fails on it. It exits 1 on a requirement that does not parse or an example-data line the step grammar refuses. Reword the requirement within the language (integration), or raise the missing construct to the plugin. A given line that is not example data is not refused: it is left out, with a line on stderr, and `model check` reports it (v15m); its condition belongs in the statement. Exit 2 names a capability that is not codified: run `migrate upgrade` first.
 
 ## Common Mistakes
 
