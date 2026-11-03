@@ -2,7 +2,7 @@
 
 `capability(path)` reads a capability file whose frontmatter has `language: codified-1`: the groups of its
 `## Behaviour` (`### [g<n>] <title>`, an optional `Restates:` line, `- [r<n>] <statement>` bullets and an optional
-fenced `given` block), its `## Dropped` bullets and its `retired:` ids. A statement kept out of a group's requirements (no id,
+fenced `given` block, read by spec_read_given), its `## Dropped` bullets and its `retired:` ids. A statement kept out of a group's requirements (no id,
 or an id used before) is in the group's `odd`, beside its problem. `## Terms` is not read here: spec_lexicon is the
 one reader of term entries. `universal(root)` reads `spec/universal.md`, `restated(root)` reads `spec/restated.json`.
 Nothing is refused: what is malformed is a problem `<line>: <what>`, with the file's own line number.
@@ -13,6 +13,7 @@ from collections import namedtuple
 from pathlib import Path
 
 from model_parse import frontmatter
+from spec_read_given import Block, GivenLines  # noqa: F401  (Block: what readers of `given` meet)
 
 MARKER = "codified-1"
 
@@ -21,14 +22,6 @@ Group = namedtuple("Group", "id title restates given requirements line_no odd") 
 Requirement = namedtuple("Requirement", "id text line_no")
 Universal = namedtuple("Universal", "id text line_no")
 UniversalFile = namedtuple("UniversalFile", "path frontmatter conditions problems")
-
-
-class Block(namedtuple("Block", "kind lines")):
-    """The data indented under a given line ending in ':': a docstring's lines, or a table's `|` rows."""
-
-    @property
-    def rows(self):
-        return [[c.strip() for c in line.strip().strip("|").split("|")] for line in self.lines]
 
 
 GROUP = re.compile(r"^### \[(g[1-9]\d*)\] (\S.*)$")
@@ -71,7 +64,7 @@ def items(lines):
     return [tuple(i) for i in out if i is not None]
 
 
-class Reader:
+class Reader(GivenLines):
     """One capability file's Behaviour read line by line into groups."""
 
     def __init__(self, name, retired):
@@ -147,31 +140,6 @@ class Reader:
             self.group.requirements.append(Requirement(m.group(1), m.group(2).strip(), n))
         else:
             self.group.odd.append((n, m.group(1), m.group(2).strip()))     # an id used a second time (v15b)
-
-    def given_line(self, n, line):
-        given = self.group.given if self.group is not None else []
-        if line.strip() == "```":
-            self.fence = self.data_under = None
-        elif line.startswith("## "):
-            self.problem(self.fence, "a given block is not closed")
-            self.fence = self.data_under = None
-        elif not line.strip():
-            return
-        elif line.startswith("  "):
-            if self.data_under is None:
-                self.problem(n, "an indented line is under no given line ending in ':'")
-                return
-            text, kind = line[2:], "table" if line.strip().startswith("|") else "docstring"
-            step, block = given[self.data_under]
-            if block is None:
-                given[self.data_under] = (step, Block(kind, [text.strip() if kind == "table" else text]))
-            elif block.kind != kind:
-                self.problem(n, "a given block mixes table rows and text")
-            else:
-                block.lines.append(text.strip() if kind == "table" else text)
-        else:
-            given.append((line.strip(), None))
-            self.data_under = len(given) - 1 if line.rstrip().endswith(":") else None
 
 
 def dropped(name, lines):

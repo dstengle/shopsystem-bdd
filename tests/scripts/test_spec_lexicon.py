@@ -62,8 +62,9 @@ def test_colliding_identifiers_are_numbered_in_sorted_order():
     assert ids[("value", "`done`", ("initiative", "status"))] != ids[("value", "`done`", ("work-item", "status"))]
 
 
-def test_the_fixture_glossary_has_no_problems():
-    assert spec_lexicon.problems(spec_lexicon.read(FIXTURE)) == []
+def test_the_fixture_glossary_has_no_problems_but_its_legacy_format():
+    """The fixture keeps `Means:` and preposition relation entries (v_t9, v_t8) until the logic stops reading them."""
+    assert [p for p in spec_lexicon.problems(spec_lexicon.read(FIXTURE)) if p[0] not in ("v_t8", "v_t9")] == []
 
 
 def _lexicon(glossary):
@@ -87,6 +88,50 @@ def test_problems_give_v_t4_v_t5_and_v_t6():
     assert ("v_t4", "colour") in codes and ("v_t4", "status") in codes
     assert ("v_t5", "`b`") in codes
     assert ("v_t6", "initiative") in codes and ("v_t6", "a session") in codes and ("v_t6", "print") in codes
+
+
+def _codes(glossary, code):
+    return [p[1] for p in spec_lexicon.problems(_lexicon(glossary)) if p[0] == code]
+
+
+def test_v_t7_a_gloss_is_one_sentence():
+    """design-r2 §8's counting rule: code spans, quotes and e.g./i.e./etc./vs. are blanked first; `.!?` before a space
+    or the end, and `;`, end a sentence; `:` does not; fields after the gloss are not counted."""
+    passing = """
+        - **index** (kind): the file `spec/index.md. x` of a context.
+        - **brief** (kind): what a worker reads, e.g. the work-item and its tests.
+        - **ledger** (kind): the record of an initiative: its runs and their costs.
+        - **initiative** (kind): the delivery of one request. Plural: initiatives. Not: epic.
+        - **quoted** (kind): a line "that says. this" of a file.
+        - **status** (attribute of initiative): Values: `proposed`, `done`.
+    """
+    assert _codes(passing, "v_t7") == []
+    failing = """
+        - **brief** (kind): what a worker reads. It names the work-item.
+        - **log** (kind): what a round writes; one line a step.
+        - **pool** (kind): the workers! Every one.
+    """
+    assert sorted(_codes(failing, "v_t7")) == ["brief", "log", "pool"]
+
+
+def test_v_t9_a_means_field():
+    assert _codes("- **open** (condition of initiative): Means: its status is not `done`.\n"
+                  "- **initiative** (kind): one.", "v_t9") == ["open"]
+    assert _codes("- **open** (condition of initiative): an initiative is open when the initiative is not `done`.\n"
+                  "- **initiative** (kind): one.", "v_t9") == []
+
+
+def test_the_definition_of_a_condition_is_its_gloss():
+    lex = _lexicon("""
+        - **initiative** (kind): one. Kind of: node.
+        - **node** (kind): a thing.
+        - **open** (condition of initiative): An initiative is open when the initiative is not `done`.
+    """)
+    assert lex.definition("open") == "An initiative is open when the initiative is not `done`."
+    assert lex.definition(lex.of("condition")[0]) == lex.definition("open")
+    assert lex.definition("initiative") == "" and lex.definition("nothing") == ""
+    assert lex.of("kind")[0].supertype == "node"
+    assert spec_lexicon.gloss("Values: `a`, `b`.") == ""
 
 
 def test_words_are_every_spelling_a_line_may_use():

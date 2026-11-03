@@ -229,6 +229,21 @@ class CheckTest(CodifiedTest):
         found, _ = self.check()
         self.assertEqual(self.rows(found, "v15k"), [[f"{WQ}#g1"]], found)
 
+    def test_a_group_of_more_than_one_statement_is_v15l(self):
+        self.write("spec/capabilities/wq.md", codified("wq", self.start_group() + ["### [g2] One", f"- [r3] {LOCK}"]))
+        self.assertEqual(self.rows(self.check()[0], "v15l"), [[f"{WQ}#g1"]])
+
+    def test_a_given_line_that_is_not_example_data_is_v15m(self):
+        given = ["```given", "an initiative i1 that is `proposed`", "the file `a.md` holds:", "  # a",
+                 'the file `b.md` holds "x"', "```"]
+        self.write("spec/capabilities/wq.md", codified("wq", ["### [g1] Start", f"- [r1] {START}", *given]))
+        self.assertEqual(self.rows(self.check()[0], "v15m"), [[f"{WQ}#g1", "an initiative i1 that is `proposed`"]])
+
+    def test_two_groups_sharing_features_condition_and_trigger_are_v15n(self):
+        self.write("spec/capabilities/wq.md", codified("wq", ["### [g1] A", f"- [r1] {START}", "### [g2] B",
+                                                              f"- [r2] {COMMIT}", "### [g3] C", f"- [r3] {ABANDON}"]))
+        self.assertEqual(self.rows(self.check()[0], "v15n"), [[f"{WQ}#g1", f"{WQ}#g2"]])
+
     def test_a_group_with_a_scenario_or_logic_only_is_no_v_s3(self):
         self.write("spec/capabilities/wq.md", codified("wq", self.start_group() + [
             "", "### [g2] Abandon", f"- [r3] {ABANDON}", "", "### [g3] Lock", f"- [r4] {LOCK}"]))
