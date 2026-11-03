@@ -96,6 +96,7 @@ def given_context(step):
 
 @handler("GivenK", "observation")
 def given_observation(step):
+    step.context.setdefault("observations", set()).add(step.names[0])
     path = step.repo / ".shop" / "records" / "observations.md"
     path.parent.mkdir(parents=True, exist_ok=True)
     head = path.read_text() if path.is_file() else "# Observations\n"
@@ -186,3 +187,26 @@ def then_changes(step):
 @handler("ThenDoesNot", "change")
 def then_changes_not(step):
     assert not changed(step), step.text
+
+
+@handler("GivenR", "raised for")
+def given_raised_for(step):
+    """A request raised for another: its `raised_for`; a request the trace says is raised for itself, nothing."""
+    request, other = step.names
+    if request != other:
+        path = step.repo / W.node_rel(step.context, request)
+        path.write_text(path.read_text().replace("\n---\n", "\nraised_for: request/ex.com/prod/ctx/%s\n---\n" % other, 1))
+
+
+@handler("ThenR", "raised for")
+def then_raised_for(step):
+    """The request's file (the one the command wrote, where it wrote one) names the other in its `raised_for`."""
+    request, other = step.names
+    raised = W.field(step.repo / W.node_rel(step.context, request), "raised_for") or ""
+    assert raised.endswith("/%s" % other), (step.text, raised)
+
+
+@handler("GivenK_C", "observation")
+def given_uncited(step):
+    """uncited: the observation as its Given wrote it, which no node's `source` names."""
+    step.context.setdefault("observations", set()).add(step.names[0])

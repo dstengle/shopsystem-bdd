@@ -2,7 +2,7 @@
 Feature: Work queue
   Narrator: the person
 
-  @g1 @r1 @r2
+  @g1 @r1
   Scenario: `work start` starts a proposed initiative
     Given an initiative i1 that is `proposed`
     When the person runs `work start` on the initiative i1

@@ -25,7 +25,7 @@ FIXTURE = Path(__file__).resolve().parent / "fixtures" / "e2e"
 ORIGIN = "observation/example.org/fixture/e2e/obs-1"
 BAD = "When asked, frobnicate the widgets wholesale."
 GOOD = ("When the person runs `work abandon` on an initiative that is `started`, `work` shall set its status to "
-        "`abandoned`.")
+        "`abandoned` and exit successfully.")
 
 
 def git(root, *args):
@@ -118,12 +118,10 @@ def drafted(group):
     return text.replace("\n## Not yet", "\n" + group + "\n## Not yet")
 
 
-REFUSED = drafted("### [g2] `work abandon` abandons a proposed initiative\n- [r3] When the person runs `work abandon` on "
+REFUSED = drafted("### [g2] `work abandon` abandons a proposed initiative\n- [r2] When the person runs `work abandon` on "
                   "an initiative that is `proposed`, `work` shall set its status to `abandoned`.\n")
-CLEAN = drafted("### [g2] `work abandon` abandons a started initiative\n- [r3] %s\n- [r4] When the person runs "
-                "`work abandon` on an initiative that is `started`, `work` shall exit successfully.\n\n"
-                "```given\nan initiative i1 that is `started`\n```\n" % GOOD)
-CHANGES = [{"capability": "work-queue", "adds": ["work-queue#r3", "work-queue#r4"], "changes": [], "removes": []}]
+CLEAN = drafted("### [g2] `work abandon` abandons a started initiative\n- [r2] %s\n" % GOOD)
+CHANGES = [{"capability": "work-queue", "adds": ["work-queue#r2"], "changes": [], "removes": []}]
 
 
 def integrate_plan():
@@ -164,6 +162,10 @@ def deliver_plan():
 
 
 def test_a_request_goes_through_the_requirements_system_into_delivery(repo, tmp_path):
+    # 0. the fixture context is in the new format: one statement a group, no given block that is not example data
+    checked = tool(repo, tmp_path, "model", "check")
+    assert checked.returncode == 0 and "\n0 violations, " in "\n" + checked.stdout, checked.stdout
+    assert tool(repo, tmp_path, "model", "lexicon", "--check").stdout.rstrip().endswith("0 problems")
     # 1. a line that does not parse refuses the request, with the hint
     done = tool(repo, tmp_path, "work", "request", "--from", "internal", "--source", ORIGIN, "--lines",
                 lines_file(tmp_path, GOOD, BAD), "Abandon a started initiative")
@@ -186,9 +188,9 @@ def test_a_request_goes_through_the_requirements_system_into_delivery(repo, tmp_
     done = tool(repo, tmp_path, "work", "run", "i1", phase="integrate", plan=integrate_plan())
     assert done.returncode == 3, done.stdout + done.stderr
     resent = (repo / ".shop/work/i1/runs/i1/2-integrate/brief.md").read_text()
-    assert ("Refused drafts (send-back 1 of 2): L3 work-queue#r3 sets the status of an initiative from `proposed` to "
+    assert ("Refused drafts (send-back 1 of 2): L3 work-queue#r2 sets the status of an initiative from `proposed` to "
             "`abandoned`, which no transition allows") in resent
-    assert "[r3] %s" % GOOD in (repo / ".shop/work/i1/runs/i1/2-integrate/drafts/round-1/spec/capabilities/work-queue.md"
+    assert "[r2] %s" % GOOD in (repo / ".shop/work/i1/runs/i1/2-integrate/drafts/round-1/spec/capabilities/work-queue.md"
                                 ).read_text()
     # 5. the gate, shown the scenario the drafts would generate, asked the person, who approves through `work answer`
     gate = briefs(tmp_path, "integrate")
@@ -205,8 +207,8 @@ def test_a_request_goes_through_the_requirements_system_into_delivery(repo, tmp_
     assert [line.split()[-1] for line in done.stdout.splitlines()] == ["green", "formulated"]
     log = git(repo, "log", "--format=%s")
     assert "features: work-queue generated from work-queue" in log and "work: work-queue approved -> formulated" in log
-    assert "@g2 @r3 @r4\n  Scenario: `work abandon` abandons a started initiative" in feature(repo)
-    assert "accepts: [work-queue#r3, work-queue#r4]" in (repo / ".shop/work/i1/w1.md").read_text()
+    assert "@g2 @r2\n  Scenario: `work abandon` abandons a started initiative" in feature(repo)
+    assert "accepts: [work-queue#r2]" in (repo / ".shop/work/i1/w1.md").read_text()
     logged = [json.loads(line) for line in (repo / ".shop/work/i1/log.jsonl").read_text().splitlines()]
     before = next(e["record"] for e in logged if e.get("event") == "suite")
     assert "failing: tests/scenarios/test_work_queue.py::test_work_abandon_abandons_a_started_initiative" in before
@@ -216,10 +218,10 @@ def test_a_request_goes_through_the_requirements_system_into_delivery(repo, tmp_
         "# branch review of i1", "# analysis of i1"]
     # 10. the request resolved by the requirement that holds its line
     head = git(repo, "rev-parse", "--short", "HEAD").strip()
-    done = tool(repo, tmp_path, "work", "resolve", "q1", "--line", "1", "work-queue#r3", head)
+    done = tool(repo, tmp_path, "work", "resolve", "q1", "--line", "1", "work-queue#r2", head)
     assert done.returncode == 0, done.stderr
     assert status(repo, request) == "delivered" and status(repo, ".shop/work/i1/initiative.md") == "done"
-    assert "1. work-queue#r3 %s" % head in (repo / request).read_text()
+    assert "1. work-queue#r2 %s" % head in (repo / request).read_text()
     assert tool(repo, tmp_path, "features", "generate", "--check").returncode == 0
     checked = tool(repo, tmp_path, "model", "check")
     assert checked.returncode == 0 and checked.stdout.startswith("0 violations, 0 warnings"), checked.stdout
