@@ -80,11 +80,29 @@ def test_every_row_names_its_template_kind_and_fun(vocab):
     ("given", "the file `notes.md` holds:", {"template": "GivenCodeText", "kind": "file", "names": ["`notes.md`"]}),
     ("given", "the work-item w1 is under the capability-proposal p1",
      {"template": "GivenR", "kind": "work-item", "term": "under", "names": ["w1", "p1"]}),
+    ("given", "the stage s1 is for the work-item w1",
+     {"template": "GivenR", "kind": "stage", "term": "for", "names": ["s1", "w1"]}),
+    ("then", "the stage s1 is for the work-item w1", {"template": "ThenR", "kind": "stage", "term": "for"}),
+    ("given", "the initiative i1 fulfils the request q1", {"template": "GivenR", "term": "fulfils"}),
 ])
 def test_a_step_is_read_back_into_its_template_and_arguments(vocab, keyword, text, expected):
     call = features_vocab.step(vocab, keyword, text)
     for field, value in expected.items():
         assert getattr(call, field) == value, (field, call)
+
+
+def test_a_relation_step_is_its_rows_clause_and_no_given_fun_of_its_own(vocab):
+    """A relation between two instances is the `SAtom` of its `## Relations` row's clause (design-r2 §4.4): the
+    StepsTyped module has no relation fun, and the vocabulary has one GivenR and one ThenR row for each row."""
+    import features_vocab_gf
+    import spec_lexicon
+    typed = features_vocab_gf.modules(spec_lexicon.read(FIXTURES / "repo"))["StepsTyped.gf"]
+    assert "r_" not in typed and "rel_" not in typed
+    tree = features_vocab.parse(vocab, "given", "the stage s1 is for the work-item w1")
+    assert tree[0] == "SAtom" and tree[1][0] == "rel_stage_for_work_item_Atom"
+    rows = {(r.template, r.pattern) for r in features_vocab.rows(vocab) if r.template in ("GivenR", "ThenR")}
+    assert ("GivenR", "the stage {n1} is for the work-item {n2}") in rows
+    assert ("ThenR", "the initiative {n1} fulfils the request {n2}") in rows
 
 
 def test_a_step_that_does_not_parse_is_refused(vocab):

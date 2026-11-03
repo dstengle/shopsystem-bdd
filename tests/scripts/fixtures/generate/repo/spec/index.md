@@ -9,6 +9,15 @@ language: codified-1
 A small codified context for the tests of `features generate` and `features vocab` (design §14). It is not this
 repository's spec.
 
+## Relations
+
+| from | word | to | cardinality |
+|---|---|---|---|
+| work-item | under | capability-proposal | one |
+| capability-proposal | part of | initiative | one |
+| initiative | fulfils | request | one |
+| stage | for | work-item | one |
+
 ## Glossary
 
 - **the person** (actor): the human who runs the commands.
@@ -33,11 +42,7 @@ repository's spec.
 - **status** (attribute of capability-proposal): Values: `drafted`, `approved`, `withdrawn`.
 - **status** (attribute of request): Values: `open`, `accepted`, `refused`.
 
-- **open** (condition of initiative): Means: its status is not `done` and not `abandoned`.
-
-- **under** (relation work-item → capability-proposal): a work-item delivers part of a proposal.
-- **part of** (relation capability-proposal → initiative): a proposal is part of one initiative.
-- **fulfils** (relation initiative → request): an initiative fulfils one request.
+- **open** (condition of initiative): An initiative is open when the initiative is not `done` and the initiative is not `abandoned`.
 
 - **start** (event): a stage begins.
 - **end** (event): a session stops.

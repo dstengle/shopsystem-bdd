@@ -153,16 +153,21 @@ class VocabParser:
         self.root, self.keyword, self.key, self.own, self.catch_all = root, row.keyword, (row.template, row.kind), \
             own, catch_all
         self.name = "vocab %s %s %s" % (row.keyword, row.template, row.kind)
-        self.words = [] if catch_all else [w for w in re.split(r"\{[nx]\d+\}", row.pattern) if w.strip()]
+        self.words = [] if catch_all else [_words(row)]
 
     def is_matching(self, name):
-        if not all(w.strip() in name for w in self.words):
+        if self.words and not any(all(w.strip() in name for w in words) for words in self.words):
             return False
         got = read(self.root, self.keyword, name)
         return got is not None and (got == self.key or (self.catch_all and (self.keyword,) + got not in self.own))
 
     def parse_arguments(self, name):
         return {"text": name}
+
+
+def _words(row):
+    """The fixed words of a row's pattern: a quick test before the grammar reads a step."""
+    return [w for w in re.split(r"\{[nx]\d+\}", row.pattern) if w.strip()]
 
 
 def _step_function(root, keyword):
@@ -191,7 +196,10 @@ def register(namespace, root):
     own = {(r.keyword, r.template, r.kind) for r in rows}
     chosen = {}
     for row in rows:
-        chosen.setdefault((row.keyword, row.template, row.kind), VocabParser(root, row, own))
+        key = (row.keyword, row.template, row.kind)
+        if key in chosen:   # one definition for each key, matching the text of any of its rows
+            chosen[key].words.append(_words(row))
+        chosen.setdefault(key, VocabParser(root, row, own))
     for row in rows:
         if row.kind is None:
             chosen.setdefault((row.keyword, "*"), VocabParser(root, row, own, catch_all=True))

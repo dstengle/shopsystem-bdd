@@ -3,10 +3,20 @@ kept in the scenario's context, enough to run the generated work-queue feature."
 from vocab import handler
 
 
+@handler("GivenK", "initiative")
+@handler("GivenK", "work-item")
+def given_thing(step):
+    step.context.setdefault("status", {})[step.names[0]] = None
+
+
 @handler("GivenK_A", "initiative")
 @handler("GivenK_A", "work-item")
 def given_status(step):
-    step.context.setdefault("status", {})[step.names[0]] = step.values[0]
+    status = step.context.setdefault("status", {})
+    if " is not " not in step.text:
+        status[step.names[0]] = step.values[0]
+    elif status.get(step.names[0]) == step.values[0]:
+        status[step.names[0]] = None
 
 
 @handler("GivenCodeText", "file")
