@@ -33,174 +33,131 @@ that fulfils a request (work-queue).
 ## Behaviour
 
 ### [g1] `work request` takes in an open request
-Restates: r44@0.29, r4@0.29, r12@0.29.
-- [r1] When the person runs `work request`, `work` shall write a request that is `open`.
-- [r2] When the person runs `work request`, `work` shall commit a request.
+Restates: r12@0.29, r4@0.29, r44@0.29.
+- [r1] When the person runs `work request`, `work` shall write a request that is `open` and commit the request.
 
 ### [g2] `work request` writes the request it is raised for
 Restates: r29@0.29.
-- [r3] Where `--raised-for` is given, when the person runs `work request` on a request, `work` shall write a request raised for the request.
+- [r2] Where `--raised-for` is given, when the person runs `work request` on a request, `work` shall write a request
+  raised for the request.
 
 ### [g3] `work request` writes a delegation it is given
 Restates: r19@0.29.
-- [r4] Where `--delegation` is given, when the person runs `work request`, `work` shall write a delegation.
+- [r3] Where `--delegation` is given, when the person runs `work request`, `work` shall write a delegation.
 
 ### [g4] `work request` refuses an empty delegation
 Restates: r22@0.29.
-- [r5] While a delegation is `empty`, if the person runs `work request`, then `work` shall exit with an error naming the delegation and change nothing.
-
-```given
-a delegation d1 that is `empty`
-```
+- [r4] While a delegation is `empty`, if the person runs `work request`, then `work` shall exit with an error naming
+  the delegation and change nothing.
 
 ### [g5] `work request` refuses a line that does not parse
 Restates: r2@0.29, r59@0.29.
-- [r6] While a request line is unparsed, if the person runs `work request`, then `work` shall exit with an error naming the request line and change nothing.
-
-```given
-a request line r1
-the request line r1 is unparsed
-```
+- [r5] While a request line is unparsed, if the person runs `work request`, then `work` shall exit with an error
+  naming the request line and change nothing.
 
 ### [g6] An internal request names an origin
 Restates: r45@0.29.
-- [r7] While a command is originless, if the person runs `work request`, then `work` shall exit with an error naming an origin and change nothing.
-
-```given
-a command c1
-the command c1 is originless
-```
+- [r6] While a command is originless, if the person runs `work request`, then `work` shall exit with an error naming
+  an origin and change nothing.
 
 ### [g7] A request to an upstream cites no observation
 Restates: r30@0.29.
-- [r8] While a bounded context is downstream and a command is sourced, if the person runs `work request`, then `work` shall exit with an error naming an origin and change nothing.
-
-```given
-a bounded context b1
-the bounded context b1 is downstream
-a command c1
-the command c1 is sourced
-```
+- [r7] While a bounded context is downstream and a command is sourced, if the person runs `work request`, then
+  `work` shall exit with an error naming an origin and change nothing.
 
 ### [g8] A request to an upstream names the request it is raised for or a job-thread
 Restates: r31@0.29.
-- [r9] While a bounded context is downstream and a command is originless, if the person runs `work request`, then `work` shall exit with an error naming an origin and change nothing.
-
-```given
-a bounded context b1
-the bounded context b1 is downstream
-a command c1
-the command c1 is originless
-```
+- [r8] While a bounded context is downstream and a command is originless, if the person runs `work request`, then
+  `work` shall exit with an error naming an origin and change nothing.
 
 ### [g9] A repository raises requests only as itself
 Restates: r32@0.29.
-- [r10] While a command is foreign, if the person runs `work request`, then `work` shall exit with an error naming a bounded context and change nothing.
-
-```given
-a command c1
-the command c1 is foreign
-```
+- [r9] While a command is foreign, if the person runs `work request`, then `work` shall exit with an error naming a
+  bounded context and change nothing.
 
 ### [g10] `work delegate` writes a delegation in place of any
 Restates: r65@0.29, r66@0.29, r71@0.29.
-- [r11] When the person runs `work delegate` on a request that is `open`, `work` shall write a delegation.
-- [r12] When the person runs `work delegate` on a request that is `open`, `work` shall commit the request.
-- [r13] When the person runs `work delegate` on a request that is `open`, `work` shall not change the status of the request.
-- [r14] When the person runs `work delegate` on a request that is `open`, `work` shall not change the side of the request.
+- [r10] When the person runs `work delegate` on a request that is `open`, `work` shall write a delegation and commit
+  the request, and `work` shall not change the status of the request or change the side of the request.
 
 ### [g11] `work delegate` writes a delegation in the asker's turn
 Restates: r70@0.29.
-- [r15] When the person runs `work delegate` on a request that is `awaiting-asker`, `work` shall write a delegation.
+- [r11] When the person runs `work delegate` on a request that is `awaiting-asker`, `work` shall write a delegation.
 
 ### [g12] `work delegate` refuses an empty delegation
 Restates: r67@0.29.
-- [r16] While a delegation is `empty`, if the person runs `work delegate` on a request that is `open`, then `work` shall exit with an error naming the delegation and change nothing.
-
-```given
-a delegation d1 that is `empty`
-```
+- [r12] While a delegation is `empty`, if the person runs `work delegate` on a request that is `open`, then `work`
+  shall exit with an error naming the delegation and change nothing.
 
 ### [g13] `work delegate` refuses a closed request
 Restates: r68@0.29.
-- [r17] If the person runs `work delegate` on a request that is closed, then `work` shall exit with an error naming the status of the request and change nothing.
+- [r13] If the person runs `work delegate` on a request that is closed, then `work` shall exit with an error naming
+  the status of the request and change nothing.
 
 ### [g14] `work outcome` writes a line outcome in the upstream's turn
-Restates: r15@0.29, r5@0.29, r12@0.29.
-- [r18] When the person runs `work outcome` on a request that is `open`, `work` shall write a line outcome.
-- [r19] When the person runs `work outcome` on a request that is `open`, `work` shall commit the request.
+Restates: r12@0.29, r15@0.29, r5@0.29.
+- [r14] When the person runs `work outcome` on a request that is `open`, `work` shall write a line outcome and commit
+  the request.
 
 ### [g15] A side writes nothing in the other side's turn
 Restates: r16@0.29.
-- [r20] If the person runs `work outcome` on a request that is `awaiting-asker`, then `work` shall exit with an error naming the request and change nothing.
+- [r15] If the person runs `work outcome` on a request that is `awaiting-asker`, then `work` shall exit with an error
+  naming the request and change nothing.
 
 ### [g16] The asker's repository does not write the upstream's part
-Restates: r55@0.29, r33@0.29.
-- [r21] While a bounded context is downstream, if the person runs `work outcome` on a request that is `open`, then `work` shall exit with an error naming the request and change nothing.
-
-```given
-a bounded context b1
-the bounded context b1 is downstream
-```
+Restates: r33@0.29, r55@0.29.
+- [r16] While a bounded context is downstream, if the person runs `work outcome` on a request that is `open`, then
+  `work` shall exit with an error naming the request and change nothing.
 
 ### [g17] `work ask` writes the upstream's question
 Restates: r20@0.29, r5@0.29.
-- [r22] When the person runs `work ask` on a request that is `open`, `work` shall write a question.
-- [r23] When the person runs `work ask` on a request that is `open`, `work` shall commit the request.
+- [r17] When the person runs `work ask` on a request that is `open`, `work` shall write a question and commit the
+  request.
 
 ### [g18] `work reply` writes the asker's answer
 Restates: r21@0.29, r4@0.29.
-- [r24] When the person runs `work reply` on a request that is `awaiting-asker`, `work` shall write an answer.
-- [r25] When the person runs `work reply` on a request that is `awaiting-asker`, `work` shall commit the request.
+- [r18] When the person runs `work reply` on a request that is `awaiting-asker`, `work` shall write an answer and
+  commit the request.
 
 ### [g19] `work turn` passes the asker's turn to the upstream
-Restates: r7@0.29, r18@0.29.
-- [r26] When the person runs `work turn` on a request that is `awaiting-asker`, `work` shall set its status to `awaiting-upstream`.
-- [r27] When the person runs `work turn` on a request that is `awaiting-asker`, `work` shall change the side of the request.
+Restates: r18@0.29, r7@0.29.
+- [r19] When the person runs `work turn` on a request that is `awaiting-asker`, `work` shall set its status to
+  `awaiting-upstream` and change the side of the request.
 
 ### [g20] The upstream's turn ends with a line not settled
 Restates: r17@0.29.
-- [r28] While a request line is not settled, when the person runs `work turn` on a request that is `open`, `work` shall set the status of the request to `awaiting-asker`.
+- [r20] While a request line is not settled, when the person runs `work turn` on a request that is `open`, `work`
+  shall set the status of the request to `awaiting-asker`.
 
 ### [g21] The upstream's turn ends with every line settled and one accepted
-Restates: r8@0.29, r23@0.29.
-- [r29] While a request line is `accepted`, when the person runs `work turn` on a request that is `open`, `work` shall set the status of the request to `accepted`.
-- [r30] While a request line is `accepted`, when the person runs `work turn` on a request that is `open`, `work` shall not change the side of the request.
-
-```given
-a request line r1 that is `accepted`
-```
+Restates: r23@0.29, r8@0.29.
+- [r21] While a request line is `accepted`, when the person runs `work turn` on a request that is `open`, `work`
+  shall set the status of the request to `accepted`, and `work` shall not change the side of the request.
 
 ### [g22] The upstream's turn ends with every line refused
 Restates: r9@0.29.
-- [r31] While a request line is `refused`, when the person runs `work turn` on a request that is `open`, `work` shall set the status of the request to `refused`.
-
-```given
-a request line r1 that is `refused`
-```
+- [r22] While a request line is `refused`, when the person runs `work turn` on a request that is `open`, `work` shall
+  set the status of the request to `refused`.
 
 ### [g23] `work resolve` delivers an accepted request
-Restates: r10@0.29, r11@0.29, r24@0.29, r12@0.29.
-- [r32] When the person runs `work resolve` on a request that is `accepted`, `work` shall set its status to `delivered`.
-- [r33] When the person runs `work resolve` on a request that is `accepted`, `work` shall write a resolution.
-- [r34] When the person runs `work resolve` on a request that is `accepted`, `work` shall change the side of the request.
-- [r35] When the person runs `work resolve` on a request that is `accepted`, `work` shall commit the request.
+Restates: r10@0.29, r11@0.29, r12@0.29, r24@0.29.
+- [r23] When the person runs `work resolve` on a request that is `accepted`, `work` shall set its status to
+  `delivered`, write a resolution, change the side of the request and commit the request.
 
 ### [g24] `work resolve` refuses a request that is not accepted
 Restates: r10@0.29.
-- [r36] If the person runs `work resolve` on a request that is not `accepted`, then `work` shall exit with an error naming the status of the request and change nothing.
+- [r24] If the person runs `work resolve` on a request that is not `accepted`, then `work` shall exit with an error
+  naming the status of the request and change nothing.
 
-### [g25] `work list` prints every request with its status
-Restates: r50@0.29.
-- [r37] When the person runs `work list`, `work` shall print every request and its status.
+### [g25] `work list` prints every request with its status and every observation no node cites
+Restates: r50@0.29, r64@0.29.
+- [r25] When the person runs `work list`, `work` shall print every request and the status of the request and print
+  every observation that is uncited.
 
-### [g26] `work list` prints every observation no node cites
-Restates: r64@0.29.
-- [r38] When the person runs `work list`, `work` shall print every observation that is uncited.
-
-### [g27] `work show` on a request prints its status and its lines
+### [g26] `work show` on a request prints its status and its lines
 Restates: work-queue#r59@0.29.
-- [r39] When the person runs `work show` on a request, `work` shall print the status of the request and every request line proposed in the request.
+- [r26] When the person runs `work show` on a request, `work` shall print the status of the request and every
+  request line proposed in the request.
 
 ## Implementation, may change
 - `work request`, `work outcome`, `work ask`, `work reply`, `work turn`, `work resolve` and `work delegate` are

@@ -9,3 +9,7 @@ Where `--json` is given, `work show` shall print one JSON object.
 When the person runs `work outcome` on a request line in a request that is `delivered`, `work` shall exit with an error naming the request.
 When `work resolve` is run, `work` shall set the line outcome of every request line in the request to `withdrawn`.
 While a request holds the turn, `work` shall not change the request.
+When the person runs `work request`, `work` shall write a request that is `open` and commit the request.
+When the person runs `work outcome` on a request that is `open`, `work` shall write a line outcome and commit the request.
+When the person runs `work delegate` on a request that is `open`, `work` shall write a delegation and commit the request, and `work` shall not change the status of the request.
+When the person runs `work delegate` on a request that is `open`, `work` shall not change the status of the request or commit the request.

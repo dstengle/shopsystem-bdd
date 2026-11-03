@@ -26,8 +26,8 @@ def init(repo):
                            ("commit.gpgsign", "false")):
             git(repo, "config", key, value)
     git(repo, "add", "-A")
-    if git(repo, "status", "--porcelain").strip():
-        git(repo, "commit", "-q", "-m", "the scenario's repository")
+    if git(repo, "status", "--porcelain").strip() or head(repo) is None:
+        git(repo, "commit", "-q", "--allow-empty", "-m", "the scenario's repository")
     return git(repo, "rev-parse", "HEAD").strip()
 
 
@@ -84,34 +84,124 @@ PATHS = {"work-item": r"\.shop/work/[^/]+/w\d+\.md", "initiative": r"\.shop/work
          "ledger": r"\.shop/work/[^/]+/ledger\.md"}
 
 
+SECTIONS = {"answer": "## Answers", "question": "## Questions", "resolution": "## Resolution",
+            "line outcome": "## Outcomes", "delegation": None}
+KINDS = sorted(set(PATHS) | set(SECTIONS), key=len, reverse=True)
+
+
+def named(np):
+    """(kind, name) of a noun phrase that names an instance of a kind the world keeps (`the work-item w1`)."""
+    found = re.fullmatch(r"the (.+) (\S+)", np)
+    return (found.group(1), found.group(2)) if found and found.group(1) in KINDS else None
+
+
 def matches(repo, context, np, rel):
-    """Whether the file `rel` is what the noun phrase `np` names: an instance (`the work-item w1`), a ledger of an
-    instance, or any node of a kind with an optional value (`a work-item that is `drafted``), an answer, a delegation
-    or a transition."""
+    """Whether the file `rel` is what the noun phrase `np` names: an instance the scenario wrote (`the work-item
+    w1`), a ledger of an instance, or any node of a kind with an optional value (`a work-item that is `drafted``),
+    an answer, a delegation or a transition. An instance the scenario has not written yet (the trace's name for what
+    the command writes) is matched as any of its kind."""
     path = Path(repo) / rel
-    words = np.split()
     if np == "a decisions index":
         return rel == "spec/decisions/index.md"
     ledger = re.match(r"the ledger of the initiative (\S+)$", np)
     if ledger:
         return rel == "%s/%s/ledger.md" % (WORK, ledger.group(1))
-    if words[0] == "the" and len(words) == 3:
-        return rel == node_rel(context, words[2])
-    kind = next((k for k in sorted(PATHS, key=len, reverse=True) if " %s" % k in " " + np), None)
-    if np in ("an answer", "a question", "a delegation", "a resolution", "a line outcome"):
-        section = {"an answer": "## Answers", "a question": "## Questions", "a resolution": "## Resolution",
-                   "a line outcome": "## Outcomes"}
+    instance = named(np)
+    if instance and node_rel(context, instance[1]):
+        return rel == node_rel(context, instance[1])
+    kind = instance[0] if instance else next((k for k in KINDS if " %s" % k in " " + np), None)
+    if kind in SECTIONS:
         if not path.is_file():
             return False
         text = path.read_text()
-        return field(path, "delegation") is not None if np == "a delegation" else (
-            section[np] in text and bool(text.split(section[np], 1)[1].split("\n## ", 1)[0].strip()))
+        if SECTIONS[kind] is None:
+            return field(path, "delegation") is not None
+        return SECTIONS[kind] in text and bool(text.split(SECTIONS[kind], 1)[1].split("\n## ", 1)[0].strip())
     if kind is None or not re.fullmatch(PATHS[kind], rel) or not path.is_file():
         return False
     if kind in ("capability-proposal", "glossary-proposal") and field(path, "kind") != kind:
         return False
     value = re.search(r"that is `([^`]+)`", np)
     return value is None or field(path, "status") == value.group(1)
+
+
+def scenario_texts(step):
+    """The texts of every step of the scenario that is running."""
+    found = getattr(getattr(step.request.node, "function", None), "__scenario__", None)
+    return [s.name for s in found.steps] if found is not None else []
+
+
+DEFAULT = {"initiative": "started", "request": "open", "work-item": "drafted", "capability-proposal": "drafted"}
+ELSEWHERE = "i9"
+
+
+def ensure_named(step, write_node):
+    """Write every node the scenario names that no Given wrote, before its command runs: the trace names an instance
+    with no fluent at its first mention in a When or a Then (`work` prints the work-item w2). A work-item no Given
+    keeps in an initiative is kept in an initiative of its own, so that it is in no initiative the scenario shows."""
+    nodes = step.context.setdefault("nodes", {})
+    for text in scenario_texts(step):
+        for kind, name in re.findall(r"\bthe (%s) ([a-z]+\d+)\b" % "|".join(map(re.escape, DEFAULT)), text):
+            if name in nodes or name in step.context.get("things", {}):
+                continue
+            if kind != "initiative" and kind != "request":
+                step.context.setdefault("part_of", {}).setdefault(name, ELSEWHERE)
+                if ELSEWHERE not in nodes:
+                    write_node(step, "initiative", ELSEWHERE, "started")
+            write_node(step, kind, name, DEFAULT[kind])
+        for name in re.findall(r"\bthe observation ([a-z]+\d+)\b", text):
+            if name not in step.context.setdefault("observations", set()):
+                cite(step, name, write_node)
+
+
+def observation(repo, name):
+    """Add the observation `name` to .shop/records/observations.md; return its id."""
+    path = Path(repo) / ".shop" / "records" / "observations.md"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    head = path.read_text() if path.is_file() else "# Observations\n"
+    ident = "observation/ex.com/prod/ctx/%s" % name
+    path.write_text(head + "\n## %s\nabout: bounded-context/ex.com/prod/ctx\nby: someone\ndate: 2026-10-15\n\n"
+                    "Seen.\n" % ident)
+    return ident
+
+
+def cite(step, name, write_node):
+    """An observation the scenario names that no Given wrote, cited by the `source` of an initiative of its own."""
+    step.context["observations"].add(name)
+    ident = observation(step.repo, name)
+    rel = write_node(step, "initiative", ELSEWHERE, "started")
+    rel.write_text(rel.read_text().replace("source: [", "source: [%s, " % ident, 1))
+
+
+# Handlers of these features only, tried before the registry's (template, term) handler: a (template, kind) whose
+# registry handler is another capability's (design-model-check's condition Givens of an initiative) or a shared one
+# that does not read a negated Given (world_nodes' `the request q1 is not `accepted``). Each returns False to pass
+# the step on to the registry's handler.
+LOCAL = {}
+
+
+def local(template, kind=None):
+    def mark(fn):
+        LOCAL[(template, kind)] = fn
+        return fn
+    return mark
+
+
+def _local_first(vocab, root, keyword):
+    import sys
+
+    import features_vocab
+    registry = vocab._step_function(root, keyword)
+
+    def step_function(text, request, docstring=None, datatable=None):
+        call = features_vocab.step(features_vocab.load(root), keyword, text)
+        call.docstring, call.datatable, call.fixtures = docstring, datatable, request.getfixturevalue
+        table = getattr(sys.modules.get("shop_work_queue_world"), "LOCAL", LOCAL)   # the handlers' copy of this module
+        found = table.get((call.template, call.kind)) or table.get((call.template, None))
+        if found is not None and found(call) is not False:
+            return None
+        return registry(text, request, docstring, datatable)
+    return step_function
 
 
 class Reads:
@@ -138,7 +228,7 @@ def bind_all(namespace, root):
     from pytest_bdd.steps import StepFunctionContext
     vocab = sys.modules["vocab"]
     for keyword in ("given", "when", "then"):
-        context = StepFunctionContext(type=keyword, step_func=vocab._step_function(root, keyword),
+        context = StepFunctionContext(type=keyword, step_func=_local_first(vocab, root, keyword),
                                       parser=Reads(vocab, root, keyword))
         name = "pytestbdd_stepdef_%s_reads_any" % keyword
         namespace[name] = pytest.fixture(name=name)(vocab._marker(context))

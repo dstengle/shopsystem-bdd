@@ -36,168 +36,131 @@ work-item's status; `work run` (supervision) takes them through it. It judges no
 
 ### [g1] `work add` drafts a work-item
 Restates: r1@0.29, r9@0.29.
-- [r1] When the person runs `work add` on an initiative that is `started`, `work` shall write a work-item that is `drafted`.
-- [r2] When the person runs `work add` on an initiative that is `started`, `work` shall commit a work-item.
+- [r1] When the person runs `work add` on an initiative that is `started`, `work` shall write a work-item that is
+  `drafted` and commit the work-item.
 
 ### [g2] `work add` refuses an initiative that is not open
 Restates: r32@0.29.
-- [r3] If the person runs `work add` on an initiative that is not open, then `work` shall exit with an error naming the status of the initiative and change nothing.
+- [r2] If the person runs `work add` on an initiative that is not open, then `work` shall exit with an error naming
+  the status of the initiative and change nothing.
 
 ### [g3] `work start` begins an initiative for an accepted request
 Restates: r22@0.29, r25@0.29.
-- [r4] When the person runs `work start` on a request that is `accepted`, `work` shall write an initiative that is `proposed`.
-- [r5] When the person runs `work start` on a request that is `accepted`, `work` shall commit an initiative.
+- [r3] When the person runs `work start` on a request that is `accepted`, `work` shall write an initiative that fulfils
+  the request and commit the initiative.
 
 ### [g4] `work start` refuses a request that is not accepted
 Restates: r7@0.29.
-- [r6] If the person runs `work start` on a request that is not `accepted`, then `work` shall exit with an error naming the request and change nothing.
+- [r4] If the person runs `work start` on a request that is not `accepted`, then `work` shall exit with an error
+  naming the request and change nothing.
 
 ### [g5] An initiative whose work is closed becomes done
 Restates: r62@0.29.
-- [r7] While an initiative is complete, when the person runs `work withdraw` on a work-item that is `ready`, `work` shall set the status of the initiative to `done`.
-
-```given
-a work-item w2 that is `green`
-```
+- [r5] While an initiative is `started` and the initiative is complete, when the person runs `work withdraw` on a
+  work-item that is `ready`, `work` shall set the status of the initiative to `done`.
 
 ### [g6] An initiative whose every work-item is withdrawn stays as it is
 Restates: r31@0.29.
-- [r8] While an initiative is `started`, when the person runs `work withdraw` on a work-item that is `ready`, `work` shall not set the status of the initiative to `done`.
-
-```given
-an initiative i1 that is `started`
-```
+- [r6] While an initiative is `started` and the initiative is not complete, when the person runs `work withdraw` on
+  a work-item that is `ready`, `work` shall not set the status of the initiative to `done`.
 
 ### [g7] An open capability-proposal keeps its initiative started
 Restates: r47@0.29.
-- [r9] While an initiative is `started` and a capability-proposal is not closed, when the person runs `work withdraw` on a work-item that is `ready`, `work` shall not set the status of the initiative to `done`.
-
-```given
-an initiative i1 that is `started`
-a work-item w2 that is `green`
-```
+- [r7] While an initiative is `started` and a capability-proposal part of the initiative is not closed, when the
+  person runs `work withdraw` on a work-item that is `ready`, `work` shall not set the status of the initiative to
+  `done`.
 
 ### [g8] `work list` prints every node with its status
 Restates: r60@0.29.
-- [r10] When the person runs `work list`, `work` shall print every initiative and its status.
-- [r11] When the person runs `work list`, `work` shall print every work-item and its status.
+- [r8] When the person runs `work list`, `work` shall print every initiative and the status of the initiative and
+  print every work-item and the status of the work-item.
 
 ### [g9] `work list --json` prints one JSON object
 Restates: r61@0.29.
-- [r12] Where `--json` is given, when the person runs `work list`, `work` shall print one JSON object.
+- [r9] Where `--json` is given, when the person runs `work list`, `work` shall exit successfully.
 
 ### [g10] `work show` on an initiative prints where it stands
 Restates: r36@0.29.
-- [r13] When the person runs `work show` on an initiative, `work` shall print the status of the initiative and every work-item kept in the initiative.
+- [r10] When the person runs `work show` on an initiative, `work` shall print the status of the initiative and every
+  work-item kept in the initiative.
 
 ### [g11] `work show` on a work-item prints its status
 Restates: r37@0.29.
-- [r14] When the person runs `work show` on a work-item, `work` shall print the status of the work-item.
+- [r11] When the person runs `work show` on a work-item, `work` shall print the status of the work-item.
 
 ### [g12] `work show --json` prints one JSON object
 Restates: r38@0.29.
-- [r15] Where `--json` is given, when the person runs `work show` on an initiative, `work` shall print one JSON object.
+- [r12] Where `--json` is given, when the person runs `work show` on an initiative, `work` shall exit
+  successfully.
 
 ### [g13] `work note` appends a note to the ledger
 Restates: r19@0.29, r20@0.29.
-- [r16] When the person runs `work note` on an initiative, `work` shall write the ledger of the initiative.
-- [r17] When the person runs `work note` on an initiative, `work` shall commit the ledger of the initiative.
+- [r13] When the person runs `work note` on an initiative, `work` shall write the ledger of the initiative and commit
+  the ledger.
 
 ### [g14] `work note` refuses a note of more than one line
 Restates: r21@0.29.
-- [r18] While a note is `multi-line`, if the person runs `work note` on an initiative, then `work` shall exit with an error naming the note and change nothing.
-
-```given
-a note n1 that is `multi-line`
-```
+- [r14] While a note is `multi-line`, if the person runs `work note` on an initiative, then `work` shall exit with an
+  error naming the note and change nothing.
 
 ### [g15] `work withdraw` withdraws a work-item that is not claimed or green
 Restates: r10@0.29, r4@0.29, r5@0.29.
-- [r19] When the person runs `work withdraw` on a work-item that is `ready`, `work` shall set its status to `withdrawn`.
-- [r20] When the person runs `work withdraw` on a work-item that is `ready`, `work` shall write a transition.
-- [r21] When the person runs `work withdraw` on a work-item that is `ready`, `work` shall commit the work-item.
+- [r15] When the person runs `work withdraw` on a work-item that is `ready`, `work` shall set its status to
+  `withdrawn`, write a transition and commit the work-item.
 
 ### [g16] `work withdraw` refuses a green work-item
 Restates: r10@0.29.
-- [r22] If the person runs `work withdraw` on a work-item that is `green`, then `work` shall exit with an error naming the status of the work-item and change nothing.
+- [r16] If the person runs `work withdraw` on a work-item that is `green`, then `work` shall exit with an error
+  naming the status of the work-item and change nothing.
 
 ### [g17] A transition the log does not agree with is refused
 Restates: r6@0.29.
-- [r23] If the person runs `work withdraw` on a work-item that is out of step, then `work` shall exit with an error naming the work-item and change nothing.
-
-```given
-a work-item w1 that is `ready`
-the work-item w1 is out of step
-```
+- [r17] If the person runs `work withdraw` on a work-item that is out of step, then `work` shall exit with an error
+  naming the work-item and change nothing.
 
 ### [g18] `work retry` returns a failed work-item
 Restates: r8@0.29.
-- [r24] When the person runs `work retry` on a work-item that is `failed`, `work` shall set its status to `claimed`.
+- [r18] When the person runs `work retry` on a work-item that is `failed`, `work` shall set its status to `claimed`.
 
 ### [g19] `work answer` writes an answer
 Restates: r13@0.29, r24@0.29, r30@0.29.
-- [r25] When the person runs `work answer` on a capability-proposal that is `awaiting-answer`, `work` shall write an answer.
-- [r26] When the person runs `work answer` on a capability-proposal that is `awaiting-answer`, `work` shall commit the capability-proposal.
+- [r19] When the person runs `work answer` on a capability-proposal that is `awaiting-answer`, `work` shall write an
+  answer and commit the capability-proposal.
 
 ### [g20] `work answer` returns a work-item to the research stage that asked
-Restates: r14@0.29, r13@0.29.
-- [r27] While a question is `research`, when the person runs `work answer` on a work-item that is `awaiting-answer`, `work` shall set its status to `drafted`.
-- [r28] While a question is `research`, when the person runs `work answer` on a work-item that is `awaiting-answer`, `work` shall write an answer.
+Restates: r13@0.29, r14@0.29.
+- [r20] While a question is `research`, when the person runs `work answer` on a work-item that is `awaiting-answer`,
+  `work` shall set its status to `drafted` and write an answer.
 
-```given
-a question q1 that is `research`
-```
-
-### [g25] `work answer` returns a work-item to the plan stage that asked
+### [g21] `work answer` returns a work-item to the plan stage that asked
 Restates: r14@0.29.
-- [r33] While a question is `plan`, when the person runs `work answer` on a work-item that is `awaiting-answer`, `work` shall set its status to `researched`.
+- [r21] While a question is `plan`, when the person runs `work answer` on a work-item that is `awaiting-answer`,
+  `work` shall set its status to `researched`.
 
-```given
-a question q1 that is `plan`
-```
-
-### [g26] `work answer` returns a work-item to the implement stage that asked
+### [g22] `work answer` returns a work-item to the implement stage that asked
 Restates: r14@0.29.
-- [r34] While a question is `implement`, when the person runs `work answer` on a work-item that is `awaiting-answer`, `work` shall set its status to `ready`.
+- [r22] While a question is `implement`, when the person runs `work answer` on a work-item that is
+  `awaiting-answer`, `work` shall set its status to `ready`.
 
-```given
-a question q1 that is `implement`
-```
-
-### [g21] An answer to a reviewer's question that asks for a change
+### [g23] An answer to a reviewer's question that asks for a change
 Restates: r26@0.29.
-- [r29] While a question is `review` and an answer is `--change`, when the person runs `work answer` on a work-item that is `awaiting-answer`, `work` shall set its status to `ready`.
+- [r23] While a question is `review` and an answer is `--change`, when the person runs `work answer` on a work-item
+  that is `awaiting-answer`, `work` shall set its status to `ready`.
 
-```given
-a question q1 that is `review`
-an answer a1 that is `--change`
-```
-
-### [g22] An answer to a reviewer's question that accepts the work-item
+### [g24] An answer to a reviewer's question that accepts the work-item
 Restates: r27@0.29.
-- [r30] While a question is `review` and an answer is `--accept`, when the person runs `work answer` on a work-item that is `awaiting-answer`, `work` shall set its status to `done`.
+- [r24] While a question is `review` and an answer is `--accept`, when the person runs `work answer` on a work-item
+  that is `awaiting-answer`, `work` shall set its status to `done`.
 
-```given
-a question q1 that is `review`
-an answer a1 that is `--accept`
-```
-
-### [g23] An answer to a reviewer's question must say which
+### [g25] An answer to a reviewer's question must say which
 Restates: r28@0.29.
-- [r31] While a question is `review` and an answer is `unflagged`, if the person runs `work answer` on a work-item that is `awaiting-answer`, then `work` shall exit with an error naming the flag of the answer and change nothing.
+- [r25] While a question is `review` and an answer is `unflagged`, if the person runs `work answer` on a work-item
+  that is `awaiting-answer`, then `work` shall exit with an error naming the flag of the answer and change nothing.
 
-```given
-a question q1 that is `review`
-an answer a1 that is `unflagged`
-```
-
-### [g24] `work answer` refuses an answer of more than one line
+### [g26] `work answer` refuses an answer of more than one line
 Restates: r15@0.29.
-- [r32] While an answer is `multi-line`, if the person runs `work answer` on a work-item that is `awaiting-answer`, then `work` shall exit with an error naming the answer and change nothing.
-
-```given
-an answer a1 that is `multi-line`
-```
+- [r26] While an answer is `multi-line`, if the person runs `work answer` on a work-item that is `awaiting-answer`,
+  then `work` shall exit with an error naming the answer and change nothing.
 
 ## Implementation, may change
 - `scripts/work` with its library `scripts/workqueue.py`, standard library only; the frontmatter subset
