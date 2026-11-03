@@ -19,7 +19,7 @@ and runs no test; it edits no feature file by hand, since the generator owns the
 
 ## Terms
 - **feature file** (kind): a `*.feature` file under the directory `--dir` names (default `features`), read line by
-  line; text inside a docstring is never a scenario, keyword or tag.
+  line.
 - **test module** (kind): a Python file under the directory `--tests` names (default `tests`) that binds scenarios
   with `scenario(<feature>, "<title>")` or `scenarios(<path>, ...)` calls.
 

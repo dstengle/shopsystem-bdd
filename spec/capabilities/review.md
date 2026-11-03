@@ -18,7 +18,7 @@ fixed now becomes a fix work-item, and the rest an observation.
 
 ## Terms
 
-- **the branch reviewer** (actor): the session of a `branch review` stage, started as the agent `bdd-branch-reviewer`; it owns no work-item.
+- **the branch reviewer** (actor): the session of a `branch review` stage, started as the agent `bdd-branch-reviewer`.
 - **the architecture reviewer** (actor): the agent `architecture-reviewer`, started when the person asks.
 - **find** (event): a review finds a thing in what it reads. Forms: finds, found.
 - **unrequested behaviour** (kind): observable behaviour of code, such as an output, a file written, a status or a refusal, that no requirement asks for.
@@ -30,12 +30,17 @@ fixed now becomes a fix work-item, and the rest an observation.
 - **agreement test** (kind): a randomized test that the dry-run mode and the real mode of one operation agree.
 - **triage** (attribute of review finding): Values: `fix now`, `observation`, `drop`.
 - **reproduction** (attribute of review finding): Values: `reproduced`, `not run`.
-- **changes** (relation commit → feature): a commit that changes a feature file.
-- **weakens** (relation commit → test): a commit that removes, loosens, skips or rewrites a test.
-- **contradicts** (relation commit → requirement): a commit whose behaviour contradicts a requirement.
-- **deletes** (relation commit → scenario): a commit that removes a scenario.
-- **of** (relation work-item → initiative): a work-item under a capability-proposal of the initiative.
-- **of** (relation commit → work-item): a commit made on the work-item's branch for the work-item.
+
+## Relations
+
+| from | word | to | cardinality |
+|---|---|---|---|
+| commit | changes | feature |  |
+| commit | weakens | test |  |
+| commit | contradicts | requirement |  |
+| commit | deletes | scenario |  |
+| work-item | of | initiative | one |
+| commit | of | work-item |  |
 
 ## Behaviour
 

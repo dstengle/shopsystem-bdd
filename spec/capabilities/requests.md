@@ -21,15 +21,15 @@ that fulfils a request (work-queue).
 - **proposed in** (relation request line → request): a line of a request, under its `## Lines`.
 - **resolution** (kind): the requirement id and version of each accepted line, under a request's `## Resolution`.
 - **wording** (attribute of delegation): Values: `empty`, `written`.
-- **closed** (condition of request): Means: its status is `delivered`, `refused` or `withdrawn`.
-- **unparsed** (condition of request line): Means: it does not parse in the requirement grammar of the upstream.
+- **closed** (condition of request): A request is closed when the request is `delivered` or the request is `refused` or the request is `withdrawn`.
+- **unparsed** (condition of request line): a request line that does not parse in the requirement grammar of the upstream.
 - **observation** (kind): an entry of `.shop/records/observations.md`, with its id and its date.
-- **uncited** (condition of observation): Means: the `source` of no initiative and of no request names it.
+- **uncited** (condition of observation): an observation that the `source` of no initiative and of no request names.
 - **origin** (kind): what a request is raised from: an observation `--source` names, a job-thread `--thread` names, or a request `--raised-for` names.
-- **originless** (condition of command): Means: it gives none of `--source`, `--thread` and `--raised-for`.
-- **sourced** (condition of command): Means: it gives `--source` with `--thread` or `--raised-for`.
-- **foreign** (condition of command): Means: it gives `--from` an asker other than the bounded context it is run in.
-- **downstream** (condition of bounded context): Means: its `spec/index.md` lists an upstream under `## Upstreams`.
+- **originless** (condition of command): a command that gives none of `--source`, `--thread` and `--raised-for`.
+- **sourced** (condition of command): a command that gives `--source` with `--thread` or `--raised-for`.
+- **foreign** (condition of command): a command that gives `--from` an asker other than the bounded context it is run in.
+- **downstream** (condition of bounded context): a bounded context whose `spec/index.md` lists an upstream under `## Upstreams`.
 
 ## Behaviour
 

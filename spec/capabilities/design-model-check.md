@@ -21,46 +21,46 @@ context: product-level artifacts are read only where the files contain them.
 - **rule** (kind): a relation of `scripts/model.lp`, with its code and its plain label: a violation's or a warning's.
 - **decisions index** (kind): the generated file `spec/decisions/index.md`. Plural: decisions indexes.
 - **interpreter** (kind): a `python3` that `model` runs under or tries.
-- **clingoless** (condition of interpreter): Means: it cannot import clingo, and a `python3` on `PATH` can.
-- **unfound** (condition of interpreter): Means: it cannot import clingo, and no interpreter `model` tries can.
-- **stale** (condition of decisions index): Means: it is not what `model decisions` would write.
-- **sound** (condition of bounded context): Means: `model check` finds no violation, unresolved reference or file problem in it.
-- **unmigrated** (condition of bounded context): Means: it has `spec/decisions.md`, or a `decisions/`, `work/` or `records/` directory at its root.
-- **unnumbered** (condition of capability): Means: a requirement bullet of its Behaviour has no `[r<n>]`.
-- **renumbered** (condition of capability): Means: two of its requirements have the same id.
-- **reusing** (condition of capability): Means: it uses an id it lists as retired.
-- **misnamed** (condition of capability): Means: its `id` is not `capability/<context path>/<file name>`, or it has no `## Behaviour`.
-- **untested** (condition of requirement): Means: no scenario names it, and its capability is not of the group `guarantees`.
-- **avoiding** (condition of requirement): Means: it mentions a word its context's glossary lists after `Not:`.
-- **unparsed** (condition of requirement): Means: it does not parse in the requirement grammar of its context.
-- **overtagged** (condition of scenario): Means: it is not tagged `@deprecated` and has more than one `@r<n>` tag.
-- **misreferring** (condition of scenario): Means: it names a requirement its capability does not have.
-- **misfiled** (condition of feature): Means: it is not `features/<name>.feature` for a capability `<name>`.
-- **duplicated** (condition of term): Means: two glossary entries have it as their term.
-- **selfavoiding** (condition of term): Means: a word it lists after `Not:` is a term of the context, or the term itself.
-- **malformed** (condition of term): Means: its bullet in the `## Glossary` of `spec/index.md` is in no form of a term entry.
-- **reaching** (condition of capability-proposal): Means: it is `drafted` or `approved` and changes a requirement no capability has.
-- **unformulated** (condition of capability-proposal): Means: it is `formulated` and adds a requirement with no scenario, of a capability that is not of the group `guarantees`.
-- **plural** (condition of capability-proposal): Means: it argues more than one capability.
-- **dangling** (condition of capability-proposal): Means: it adds or removes an id its capability neither has nor lists as retired.
-- **termless** (condition of capability-proposal): Means: its `adds`, `changes` or `removes` names `term/<term>` the glossary does not have.
-- **termless** (condition of glossary-proposal): Means: its `adds`, `changes` or `removes` names `term/<term>` the glossary does not have.
-- **parentless** (condition of work-item): Means: it has no `part_of`.
-- **uncommitted** (condition of work-item): Means: it is not `withdrawn` and has no `accepts` and no `check`.
-- **misnumbered** (condition of work-item): Means: its file name is not `w<n>.md`.
-- **alien** (condition of work-item): Means: its `part_of` has another context's path, on a kind kept in `.shop/work/`.
-- **misreferenced** (condition of work-item): Means: its `accepts` names a reference that is not `<capability>#r<n>`.
-- **unresolving** (condition of work-item): Means: its `under` names nothing in the repository.
-- **misidentified** (condition of work-item): Means: its `id` is not `<kind>/<context path>/<name>` with its own kind.
-- **homeless** (condition of work-item): Means: its directory has no `initiative.md`.
-- **crowded** (condition of initiative): Means: it is not a capability-change and has more than one part directly under it.
-- **unrequested** (condition of initiative): Means: it is dated after 2026-10-23 and fulfils no request.
-- **unwaiting** (condition of initiative): Means: it is `done` while a request whose asker is its context and that names it is not `delivered`.
-- **jobbed** (condition of initiative): Means: its kind is `job` or `job-path`.
-- **unanchored** (condition of request): Means: it is part of no job-thread, cites no origin and is raised for no request.
-- **misresolved** (condition of request): Means: it is `delivered` and its resolution names a requirement the spec does not have.
-- **misformed** (condition of request): Means: it is not of the form `work request` writes.
-- **headless** (condition of design-decision): Means: it has no `id` or no `## Decision` section.
+- **clingoless** (condition of interpreter): an interpreter that cannot import clingo, where a `python3` on `PATH` can.
+- **unfound** (condition of interpreter): an interpreter that cannot import clingo, where no interpreter `model` tries can.
+- **stale** (condition of decisions index): a decisions index that is not what `model decisions` would write.
+- **sound** (condition of bounded context): a bounded context in which `model check` finds no violation, unresolved reference or file problem.
+- **unmigrated** (condition of bounded context): a bounded context with `spec/decisions.md`, or with a `decisions/`, `work/` or `records/` directory at its root.
+- **unnumbered** (condition of capability): a capability with a requirement bullet in its Behaviour that has no `[r<n>]`.
+- **renumbered** (condition of capability): a capability two of whose requirements have the same id.
+- **reusing** (condition of capability): a capability that uses an id it lists as retired.
+- **misnamed** (condition of capability): a capability whose `id` is not `capability/<context path>/<file name>`, or that has no `## Behaviour`.
+- **untested** (condition of requirement): a requirement that no scenario names, of a capability that is not of the group `guarantees`.
+- **avoiding** (condition of requirement): a requirement that mentions a word its context's glossary lists after `Not:`.
+- **unparsed** (condition of requirement): a requirement that does not parse in the requirement grammar of its context.
+- **overtagged** (condition of scenario): a scenario not tagged `@deprecated` that has more than one `@r<n>` tag.
+- **misreferring** (condition of scenario): a scenario that names a requirement its capability does not have.
+- **misfiled** (condition of feature): a feature that is not `features/<name>.feature` for a capability `<name>`.
+- **duplicated** (condition of term): a term that two glossary entries have as their term.
+- **selfavoiding** (condition of term): a term with a word after `Not:` that is a term of the context, or the term itself.
+- **malformed** (condition of term): a term whose bullet in the `## Glossary` of `spec/index.md` is in no form of a term entry.
+- **reaching** (condition of capability-proposal): a `drafted` or `approved` capability-proposal that changes a requirement no capability has.
+- **unformulated** (condition of capability-proposal): a `formulated` capability-proposal that adds a requirement with no scenario, of a capability that is not of the group `guarantees`.
+- **plural** (condition of capability-proposal): a capability-proposal that argues more than one capability.
+- **dangling** (condition of capability-proposal): a capability-proposal that adds or removes an id its capability neither has nor lists as retired.
+- **termless** (condition of capability-proposal): a capability-proposal whose `adds`, `changes` or `removes` names a `term/<term>` the glossary does not have.
+- **termless** (condition of glossary-proposal): a glossary-proposal whose `adds`, `changes` or `removes` names a `term/<term>` the glossary does not have.
+- **parentless** (condition of work-item): a work-item with no `part_of`.
+- **uncommitted** (condition of work-item): a work-item that is not `withdrawn` and has no `accepts` and no `check`.
+- **misnumbered** (condition of work-item): a work-item whose file name is not `w<n>.md`.
+- **alien** (condition of work-item): a work-item whose `part_of` has another context's path, on a kind kept in `.shop/work/`.
+- **misreferenced** (condition of work-item): a work-item whose `accepts` names a reference that is not `<capability>#r<n>`.
+- **unresolving** (condition of work-item): a work-item whose `under` names nothing in the repository.
+- **misidentified** (condition of work-item): a work-item whose `id` is not `<kind>/<context path>/<name>` with its own kind.
+- **homeless** (condition of work-item): a work-item whose directory has no `initiative.md`.
+- **crowded** (condition of initiative): an initiative that is not a capability-change and has more than one part directly under it.
+- **unrequested** (condition of initiative): an initiative dated after 2026-10-23 that fulfils no request.
+- **unwaiting** (condition of initiative): a `done` initiative while a request whose asker is its context and that names it is not `delivered`.
+- **jobbed** (condition of initiative): an initiative whose kind is `job` or `job-path`.
+- **unanchored** (condition of request): a request that is part of no job-thread, cites no origin and is raised for no request.
+- **misresolved** (condition of request): a `delivered` request whose resolution names a requirement the spec does not have.
+- **misformed** (condition of request): a request that is not of the form `work request` writes.
+- **headless** (condition of design-decision): a design-decision with no `id` or no `## Decision` section.
 
 ## Behaviour
 

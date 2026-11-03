@@ -21,8 +21,13 @@ work-item; it plans from the researcher's notes and gives intent, never code. A 
 - **plan** (kind): the file `plan.md` a planner writes in its stage directory: intent, never code.
 - **plan decision** (kind): a decision a plan makes that the capability's requirements leave open, named with the requirement or design-decision it rests on.
 - **code block** (kind): code, file contents, a diff or a step-definition body written out in a plan.
-- **broken by** (relation test → plan decision): a test a decision of the plan makes impossible to keep, with what becomes of it.
-- **settled by** (relation plan decision → requirement): the requirement or design-decision that settles a decision.
+
+## Relations
+
+| from | word | to | cardinality |
+|---|---|---|---|
+| test | broken by | plan decision |  |
+| plan decision | settled by | requirement |  |
 
 ## Behaviour
 
