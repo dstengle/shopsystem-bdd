@@ -1,7 +1,7 @@
 """The transcripts batch-measurement's scenarios write: Claude Code's raw rows and the slim export's rows."""
 import json
 
-from .batch_measurement_world import DAY, stamp
+from scenarios.batch_measurement_world import DAY, stamp
 
 
 def usage(out, new, read):
