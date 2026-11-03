@@ -340,7 +340,7 @@ Feature: Supervision
   @g31 @r31
   Scenario: `work run` with no initiative exits with an error while a node awaits an answer
     Given a work-item w1 that is `awaiting-answer`
-    And an initiative i1 that is `abandoned`
+    And an initiative i1 that is `started`
     When the person runs `work run`
     Then `work run` exits with an error naming the initiative i1
 
@@ -446,10 +446,9 @@ Feature: Supervision
     And a result r1
     And the result r1 is fixing
     And a stage s1 that is `branch review`
-    And an initiative i1
+    And an initiative i1 that is `started`
     And the stage s1 is for the initiative i1
     And the stage s1 is with the result r1
-    And the initiative i1 is `abandoned`
     And the stage s1 holds the initiative lock
     When the session s2 ends the stage s1
     Then `work run` drafts the work-item w1
@@ -458,11 +457,10 @@ Feature: Supervision
   Scenario: A branch review that lists nothing to fix is followed by the analysis
     Given a work-item w1 that is `green`
     And a stage s1 that is `branch review`
-    And an initiative i1
+    And an initiative i1 that is `started`
     And the stage s1 is for the initiative i1
     And a result r1 that is `DONE`
     And the stage s1 is with the result r1
-    And the initiative i1 is `abandoned`
     And the stage s1 holds the initiative lock
     When the session s2 ends the stage s1
     Then `work run` starts the stage s3
@@ -572,11 +570,10 @@ Feature: Supervision
   @g53 @r53
   Scenario: An accepted request gets its initiative
     Given a request q1 that is `accepted`
+    And the request q1 is unfulfilled
     And an initiative i1 that is `abandoned`
-    And the initiative i1 fulfils the request q1
     When the person runs `work run`
     Then `work run` starts the initiative i1
-    And the initiative i1 fulfils the request q1
 
   @g54 @r54
   Scenario: A proposed initiative gets an integrate round
@@ -587,6 +584,7 @@ Feature: Supervision
     And the stage s1 is for the initiative i1
     And `work run` gives the stage s1 the round brief r1
     And the round brief r1 is with the request q1
+    And the round brief r1 is with the request q2
     And the initiative i1 is `started`
 
   @g55 @r55
@@ -603,10 +601,9 @@ Feature: Supervision
     Given a result r1
     And the result r1 is listless
     And a stage s1 that is `integrate`
-    And an initiative i1
+    And an initiative i1 that is `started`
     And the stage s1 is for the initiative i1
     And the stage s1 is with the result r1
-    And the initiative i1 is `abandoned`
     And the stage s1 holds the initiative lock
     And the stage s1 holds the spec lock
     When the session s2 ends the stage s1
@@ -615,11 +612,10 @@ Feature: Supervision
   @g57 @r57
   Scenario: An integrate round's change list drafts a capability-proposal
     Given a stage s1 that is `integrate`
-    And an initiative i1
+    And an initiative i1 that is `started`
     And the stage s1 is for the initiative i1
     And a result r1 that is `DONE`
     And the stage s1 is with the result r1
-    And the initiative i1 is `abandoned`
     And the stage s1 holds the initiative lock
     And the stage s1 holds the spec lock
     When the session s2 ends the stage s1
@@ -633,10 +629,9 @@ Feature: Supervision
     Given a result r1
     And the result r1 is glossarial
     And a stage s1 that is `integrate`
-    And an initiative i1
+    And an initiative i1 that is `started`
     And the stage s1 is for the initiative i1
     And the stage s1 is with the result r1
-    And the initiative i1 is `abandoned`
     And the stage s1 holds the initiative lock
     And the stage s1 holds the spec lock
     When the session s2 ends the stage s1
@@ -647,10 +642,9 @@ Feature: Supervision
     Given a result r1
     And the result r1 is raising
     And a stage s1 that is `integrate`
-    And an initiative i1
+    And an initiative i1 that is `started`
     And the stage s1 is for the initiative i1
     And the stage s1 is with the result r1
-    And the initiative i1 is `abandoned`
     And the stage s1 holds the initiative lock
     And the stage s1 holds the spec lock
     When the session s2 ends the stage s1
@@ -669,10 +663,9 @@ Feature: Supervision
     Given a result r1
     And the result r1 is strange
     And a stage s1 that is `integrate`
-    And an initiative i1
+    And an initiative i1 that is `started`
     And the stage s1 is for the initiative i1
     And the stage s1 is with the result r1
-    And the initiative i1 is `abandoned`
     And the stage s1 holds the initiative lock
     And the stage s1 holds the spec lock
     When the session s2 ends the stage s1

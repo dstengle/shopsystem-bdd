@@ -61,6 +61,7 @@ decide goes to the person as a question.
 - **answered** (condition of question): a question with an answer written under its node's `## Answers`.
 - **bare** (condition of initiative): an initiative that fulfils a request and has no capability-proposal, no glossary-proposal and no work-item.
 - **waiting** (condition of work-item): A work-item is waiting when the work-item is blocked by a work-item that is not closed.
+- **unfulfilled** (condition of request): A request is unfulfilled when no initiative fulfils the request.
 - **itemless** (condition of initiative): an initiative in which no work-item is kept.
 - **codified** (condition of change list): a change list whose every capability has `language: codified-1` in its file.
 - **uncodified** (condition of change list): a change list that names a service capability with no `language: codified-1` in its file.
@@ -205,7 +206,7 @@ Restates: r66@0.29, r82@0.29.
 
 ### [g31] `work run` with no initiative exits with an error while a node awaits an answer
 Restates: r81@0.29.
-- [r31] While a work-item is `awaiting-answer`, when the person runs `work run`, `work run` shall exit with an error naming the initiative.
+- [r31] While a work-item is `awaiting-answer` and an initiative is `started`, when the person runs `work run`, `work run` shall exit with an error naming the initiative.
 
 ### [g32] An initiative branch ahead of its remote is pushed first
 Restates: r54@0.29.
@@ -249,11 +250,11 @@ Restates: r94@0.29, r97@0.29.
 
 ### [g42] A branch review's findings to fix now get a work-item
 Restates: r74@0.29.
-- [r42] While a work-item is `green` and a result is fixing, when a session ends a `branch review` stage for an initiative with the result, `work run` shall draft a work-item.
+- [r42] While a work-item is `green` and a result is fixing, when a session ends a `branch review` stage for a `started` initiative with the result, `work run` shall draft a work-item.
 
 ### [g43] A branch review that lists nothing to fix is followed by the analysis
 Restates: r75@0.29, r76@0.29, r106@0.29, r121@0.29.
-- [r43] While a work-item is `green`, when a session ends a `branch review` stage for an initiative with a result that is `DONE`, `work run` shall start an `analysis` stage for the initiative, commit a measurement and push the commit, and `work run` shall not draft a work-item.
+- [r43] While a work-item is `green`, when a session ends a `branch review` stage for a `started` initiative with a result that is `DONE`, `work run` shall start an `analysis` stage for the initiative, commit a measurement and push the commit, and `work run` shall not draft a work-item.
 
 ### [g44] An initiative whose delivery is closed is set done
 Restates: r109@0.29, r111@0.29, r213@0.29.
@@ -293,7 +294,7 @@ Restates: r100@0.29, r134@0.29.
 
 ### [g53] An accepted request gets its initiative
 Restates: r103@0.29.
-- [r53] While a request is `accepted`, when the person runs `work run`, `work run` shall start an initiative that fulfils the request.
+- [r53] While a request is `accepted` and the request is unfulfilled, when the person runs `work run`, `work run` shall start an initiative.
 
 ### [g54] A proposed initiative gets an integrate round
 Restates: r79@0.29, r84@0.29, r102@0.29, r141@0.29.
@@ -305,19 +306,19 @@ Restates: r180@0.29.
 
 ### [g56] An integrate round with no change list ends `work run` with an error
 Restates: r96@0.29.
-- [r56] While a result is listless, when a session ends an `integrate` stage for an initiative with the result, `work run` shall exit with an error naming the stage.
+- [r56] While a result is listless, when a session ends an `integrate` stage for a `started` initiative with the result, `work run` shall exit with an error naming the stage.
 
 ### [g57] An integrate round's change list drafts a capability-proposal
 Restates: r91@0.29, r159@0.29.
-- [r57] When a session ends an `integrate` stage for an initiative with a result that is `DONE`, `work run` shall draft a capability-proposal, commit every draft and push the commit.
+- [r57] When a session ends an `integrate` stage for a `started` initiative with a result that is `DONE`, `work run` shall draft a capability-proposal, commit every draft and push the commit.
 
 ### [g58] An integrate round's change to the glossary drafts a glossary-proposal
 Restates: r171@0.29, spec-integration#r54@0.29.
-- [r58] While a result is glossarial, when a session ends an `integrate` stage for an initiative with the result, `work run` shall draft a glossary-proposal.
+- [r58] While a result is glossarial, when a session ends an `integrate` stage for a `started` initiative with the result, `work run` shall draft a glossary-proposal.
 
 ### [g59] An integrate round's lines into an upstream are raised
 Restates: r135@0.29, spec-integration#r44@0.29.
-- [r59] While a result is raising, when a session ends an `integrate` stage for an initiative with the result, `work run` shall raise a request.
+- [r59] While a result is raising, when a session ends an `integrate` stage for a `started` initiative with the result, `work run` shall raise a request.
 
 ### [g60] A proposal whose raised request is not delivered gets no work-item
 Restates: r136@0.29.
@@ -325,7 +326,7 @@ Restates: r136@0.29.
 
 ### [g61] A change list naming an unknown capability ends `work run` with an error
 Restates: r107@0.29.
-- [r61] While a result is strange, when a session ends an `integrate` stage for an initiative with the result, `work run` shall exit with an error naming the capability, and `work run` shall not draft a capability-proposal.
+- [r61] While a result is strange, when a session ends an `integrate` stage for a `started` initiative with the result, `work run` shall exit with an error naming the capability, and `work run` shall not draft a capability-proposal.
 
 ### [g62] Drafts that do not parse are sent back, then asked about
 - [r62] While a result is unparsing, when a session ends an `integrate` stage for a capability-proposal with the result, `work run` shall start an `integrate` stage for the capability-proposal and set the status of the capability-proposal to `awaiting-answer`.
