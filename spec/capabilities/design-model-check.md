@@ -60,453 +60,225 @@ context: product-level artifacts are read only where the files contain them.
 - **unanchored** (condition of request): a request that is part of no job-thread, cites no origin and is raised for no request.
 - **misresolved** (condition of request): a `delivered` request whose resolution names a requirement the spec does not have.
 - **misformed** (condition of request): a request that is not of the form `work request` writes.
+- **compound** (condition of requirement group): a requirement group with more than one statement.
+- **repeating** (condition of requirement group): a requirement group whose statement has the features, condition and trigger of another group's statement in its capability.
+- **unexampled** (condition of requirement group): a requirement group with a given line that is not example data.
 - **headless** (condition of design-decision): a design-decision with no `id` or no `## Decision` section.
 
 ## Behaviour
 
 ### [g1] `model check` exits successfully on a sound context
 Restates: r1@0.29.
-- [r1] When the person runs `model check` on a bounded context that is sound, `model` shall print "0 violations".
-- [r2] When the person runs `model check` on a bounded context that is sound, `model` shall exit successfully.
+- [r1] When the person runs `model check` on a bounded context that is sound, `model` shall print "0 violations" and exit successfully.
 
 ### [g2] `model check` prints a violation under its rule's code
 Restates: r2@0.29, r3@0.29, spec-integration#r16@0.29.
-- [r3] If the person runs `model check` on a capability that is unnumbered, then `model` shall exit with an error naming `v15a`.
-
-```given
-a capability c1
-the capability c1 is unnumbered
-```
+- [r2] If the person runs `model check` on a capability that is unnumbered, then `model` shall exit with an error naming `v15a`.
 
 ### [g3] Two requirements with one id
 Restates: r4@0.29.
-- [r4] If the person runs `model check` on a capability that is renumbered, then `model` shall exit with an error naming `v15b`.
-
-```given
-a capability c1
-the capability c1 is renumbered
-```
+- [r3] If the person runs `model check` on a capability that is renumbered, then `model` shall exit with an error naming `v15b`.
 
 ### [g4] A retired id used again
 Restates: r5@0.29.
-- [r5] If the person runs `model check` on a capability that is reusing, then `model` shall exit with an error naming `v15c`.
+- [r4] If the person runs `model check` on a capability that is reusing, then `model` shall exit with an error naming `v15c`.
 
-```given
-a capability c1
-the capability c1 is reusing
-```
+### [g5] A group with more than one statement
+- [r5] If the person runs `model check` on a requirement group that is compound, then `model` shall exit with an error naming `v15l`.
 
-### [g5] A proposal that changes a requirement no capability has
+### [g6] Two groups of a capability that share their features, condition and trigger
+- [r6] If the person runs `model check` on a requirement group that is repeating, then `model` shall exit with an error naming `v15n`.
+
+### [g7] A given line that is not example data
+- [r7] If the person runs `model check` on a requirement group that is unexampled, then `model` shall exit with an error naming `v15m`.
+
+### [g8] A proposal that changes a requirement no capability has
 Restates: r6@0.29.
-- [r6] If the person runs `model check` on a capability-proposal that is reaching, then `model` shall exit with an error naming `v15e`.
+- [r8] If the person runs `model check` on a capability-proposal that is reaching, then `model` shall exit with an error naming `v15e`.
 
-```given
-a capability-proposal p1
-the capability-proposal p1 is reaching
-```
-
-### [g6] A formulated proposal that leaves a requirement with no scenario
+### [g9] A formulated proposal that leaves a requirement with no scenario
 Restates: r7@0.29.
-- [r7] If the person runs `model check` on a capability-proposal that is unformulated, then `model` shall exit with an error naming `v15f`.
+- [r9] If the person runs `model check` on a capability-proposal that is unformulated, then `model` shall exit with an error naming `v15f`.
 
-```given
-a capability-proposal p1
-the capability-proposal p1 is unformulated
-```
-
-### [g7] A requirement with no scenario
+### [g10] A requirement with no scenario
 Restates: r8@0.29.
-- [r8] If the person runs `model check` on a requirement that is untested, then `model` shall exit with an error naming `v_s3`.
+- [r10] If the person runs `model check` on a requirement that is untested, then `model` shall exit with an error naming `v_s3`.
 
-```given
-a requirement r1
-the requirement r1 is untested
-```
-
-### [g8] A scenario that names more than one requirement
+### [g11] A scenario that names more than one requirement
 Restates: r107@0.29.
-- [r9] If the person runs `model check` on a scenario that is overtagged, then `model` shall exit with an error naming `v_s2`.
+- [r11] If the person runs `model check` on a scenario that is overtagged, then `model` shall exit with an error naming `v_s2`.
 
-```given
-a scenario s1
-the scenario s1 is overtagged
-```
-
-### [g9] A part with no part_of
+### [g12] A part with no part_of
 Restates: r10@0.29.
-- [r10] If the person runs `model check` on a work-item that is parentless, then `model` shall exit with an error naming `v9a`.
+- [r12] If the person runs `model check` on a work-item that is parentless, then `model` shall exit with an error naming `v9a`.
 
-```given
-a work-item w1
-the work-item w1 is parentless
-```
-
-### [g10] An initiative with more than one first part
+### [g13] An initiative with more than one first part
 Restates: r34@0.29.
-- [r11] If the person runs `model check` on an initiative that is crowded, then `model` shall exit with an error naming `v_k5`.
+- [r13] If the person runs `model check` on a `started` initiative that is crowded, then `model` shall exit with an error naming `v_k5`.
 
-```given
-an initiative i1
-the initiative i1 is crowded
-```
-
-### [g11] A capability-proposal that argues more than one capability
+### [g14] A capability-proposal that argues more than one capability
 Restates: r35@0.29.
-- [r12] If the person runs `model check` on a capability-proposal that is plural, then `model` shall exit with an error naming `v_k6`.
+- [r14] If the person runs `model check` on a capability-proposal that is plural, then `model` shall exit with an error naming `v_k6`.
 
-```given
-a capability-proposal p1
-the capability-proposal p1 is plural
-```
-
-### [g12] An abandoned initiative with an open part
+### [g15] An abandoned initiative with an open part
 Restates: r59@0.29.
-- [r13] While an initiative is `abandoned` and a work-item is open, if the person runs `model check`, then `model` shall exit with an error naming `v_d5`.
+- [r15] While an initiative is `abandoned` and a work-item is open, if the person runs `model check`, then `model` shall exit with an error naming `v_d5`.
 
-```given
-an initiative i1 that is `abandoned`
-```
-
-### [g13] An initiative that fulfils no request
+### [g16] An initiative that fulfils no request
 Restates: r113@0.29.
-- [r14] If the person runs `model check` on an initiative that is unrequested, then `model` shall exit with an error naming `v16a`.
+- [r16] If the person runs `model check` on a `started` initiative that is unrequested, then `model` shall exit with an error naming `v16a`.
 
-```given
-an initiative i1
-the initiative i1 is unrequested
-```
-
-### [g14] A done initiative with a request of its own not delivered
+### [g17] A done initiative with a request of its own not delivered
 Restates: r114@0.29.
-- [r15] If the person runs `model check` on an initiative that is unwaiting, then `model` shall exit with an error naming `v_d1`.
+- [r17] If the person runs `model check` on a `done` initiative that is unwaiting, then `model` shall exit with an error naming `v_d1`.
 
-```given
-an initiative i1
-the initiative i1 is unwaiting
-```
-
-### [g15] A delivered request whose initiative is not done
+### [g18] A delivered request whose initiative is not done
 Restates: r119@0.29.
-- [r16] While a request is `delivered` and an initiative is `started`, if the person runs `model check`, then `model` shall exit with an error naming `v_d3`.
+- [r18] While a request is `delivered` and an initiative that fulfils the request is `started`, if the person runs `model check`, then `model` shall exit with an error naming `v_d3`.
 
-```given
-a request q1 that is `delivered`
-an initiative i1 that is `started`
-the initiative i1 fulfils the request q1
-```
-
-### [g16] A request with no origin
+### [g19] A request with no origin
 Restates: r120@0.29.
-- [r17] If the person runs `model check` on a request that is unanchored, then `model` shall exit with an error naming `v17`.
+- [r19] If the person runs `model check` on a request that is unanchored, then `model` shall exit with an error naming `v17`.
 
-```given
-a request q1
-the request q1 is unanchored
-```
-
-### [g17] A delivered request resolved by no requirement of the spec
+### [g20] A delivered request resolved by no requirement of the spec
 Restates: r116@0.29.
-- [r18] If the person runs `model check` on a request that is misresolved, then `model` shall exit with an error naming `v3`.
+- [r20] If the person runs `model check` on a request that is misresolved, then `model` shall exit with an error naming `v3`.
 
-```given
-a request q1
-the request q1 is misresolved
-```
-
-### [g18] An id with another context's path
+### [g21] An id with another context's path
 Restates: r121@0.29.
-- [r19] If the person runs `model check` on a work-item that is alien, then `model` shall exit with an error naming `v18d`.
+- [r21] If the person runs `model check` on a work-item that is alien, then `model` shall exit with an error naming `v18d`.
 
-```given
-a work-item w1
-the work-item w1 is alien
-```
-
-### [g19] A requirement that uses an avoided word
+### [g22] A requirement that uses an avoided word
 Restates: r52@0.29.
-- [r20] If the person runs `model check` on a requirement that is avoiding, then `model` shall exit with an error naming `v_t1`.
+- [r22] If the person runs `model check` on a requirement that is avoiding, then `model` shall exit with an error naming `v_t1`.
 
-```given
-a requirement r1
-the requirement r1 is avoiding
-```
-
-### [g20] Two glossary entries with one term
+### [g23] Two glossary entries with one term
 Restates: r53@0.29.
-- [r21] If the person runs `model check` on a term that is duplicated, then `model` shall exit with an error naming `v_t2`.
+- [r23] If the person runs `model check` on a term that is duplicated, then `model` shall exit with an error naming `v_t2`.
 
-```given
-a term t1
-the term t1 is duplicated
-```
-
-### [g21] An avoided word that is a term
+### [g24] An avoided word that is a term
 Restates: r54@0.29.
-- [r22] If the person runs `model check` on a term that is selfavoiding, then `model` shall exit with an error naming `v_t3`.
+- [r24] If the person runs `model check` on a term that is selfavoiding, then `model` shall exit with an error naming `v_t3`.
 
-```given
-a term t1
-the term t1 is selfavoiding
-```
-
-### [g22] A requirement that does not parse
+### [g25] A requirement that does not parse
 Restates: r103@0.29, r104@0.29.
-- [r23] If the person runs `model check` on a requirement that is unparsed, then `model` shall exit with an error naming `v_p1`.
+- [r25] If the person runs `model check` on a requirement that is unparsed, then `model` shall exit with an error naming `v_p1`.
 
-```given
-a requirement r1
-the requirement r1 is unparsed
-```
-
-### [g23] A work-item with no acceptance and no check
+### [g26] A work-item with no acceptance and no check
 Restates: r106@0.29.
-- [r24] If the person runs `model check` on a work-item that is uncommitted, then `model` shall exit with an error naming `v_w4`.
+- [r26] If the person runs `model check` on a work-item that is uncommitted, then `model` shall exit with an error naming `v_w4`.
 
-```given
-a work-item w1
-the work-item w1 is uncommitted
-```
-
-### [g24] A work-item file not named by its id
+### [g27] A work-item file not named by its id
 Restates: r110@0.29.
-- [r25] If the person runs `model check` on a work-item that is misnumbered, then `model` shall exit with an error naming the work-item.
+- [r27] If the person runs `model check` on a work-item that is misnumbered, then `model` shall exit with an error naming the work-item.
 
-```given
-a work-item w1
-the work-item w1 is misnumbered
-```
-
-### [g25] A request not of the form `work request` writes
+### [g28] A request not of the form `work request` writes
 Restates: r112@0.29.
-- [r26] If the person runs `model check` on a request that is misformed, then `model` shall exit with an error naming the request.
+- [r28] If the person runs `model check` on a request that is misformed, then `model` shall exit with an error naming the request.
 
-```given
-a request q1
-the request q1 is misformed
-```
-
-### [g26] An initiative of a job's kind
+### [g29] An initiative of a job's kind
 Restates: r118@0.29.
-- [r27] If the person runs `model check` on an initiative that is jobbed, then `model` shall exit with an error naming the initiative.
+- [r29] If the person runs `model check` on a `started` initiative that is jobbed, then `model` shall exit with an error naming the initiative.
 
-```given
-an initiative i1
-the initiative i1 is jobbed
-```
-
-### [g27] A scenario that names a requirement its capability does not have
+### [g30] A scenario that names a requirement its capability does not have
 Restates: r9@0.29.
-- [r28] If the person runs `model check` on a scenario that is misreferring, then `model` shall exit with an error naming the scenario.
+- [r30] If the person runs `model check` on a scenario that is misreferring, then `model` shall exit with an error naming the scenario.
 
-```given
-a scenario s1
-the scenario s1 is misreferring
-```
-
-### [g28] A reference not written as a requirement id
+### [g31] A reference not written as a requirement id
 Restates: r22@0.29.
-- [r29] If the person runs `model check` on a work-item that is misreferenced, then `model` shall exit with an error naming the work-item.
+- [r31] If the person runs `model check` on a work-item that is misreferenced, then `model` shall exit with an error naming the work-item.
 
-```given
-a work-item w1
-the work-item w1 is misreferenced
-```
-
-### [g29] A proposal that adds an id its capability does not have
+### [g32] A proposal that adds an id its capability does not have
 Restates: r23@0.29.
-- [r30] If the person runs `model check` on a capability-proposal that is dangling, then `model` shall exit with an error naming the capability-proposal.
+- [r32] If the person runs `model check` on a capability-proposal that is dangling, then `model` shall exit with an error naming the capability-proposal.
 
-```given
-a capability-proposal p1
-the capability-proposal p1 is dangling
-```
-
-### [g30] A field that names nothing
+### [g33] A field that names nothing
 Restates: r24@0.29.
-- [r31] If the person runs `model check` on a work-item that is unresolving, then `model` shall exit with an error naming the work-item.
+- [r33] If the person runs `model check` on a work-item that is unresolving, then `model` shall exit with an error naming the work-item.
 
-```given
-a work-item w1
-the work-item w1 is unresolving
-```
-
-### [g31] A capability-proposal that names a term the glossary does not have
+### [g34] A capability-proposal that names a term the glossary does not have
 Restates: r66@0.29.
-- [r32] If the person runs `model check` on a capability-proposal that is termless, then `model` shall exit with an error naming the capability-proposal.
+- [r34] If the person runs `model check` on a capability-proposal that is termless, then `model` shall exit with an error naming the capability-proposal.
 
-```given
-a capability-proposal p1
-the capability-proposal p1 is termless
-```
-
-### [g32] A glossary-proposal that names a term the glossary does not have
+### [g35] A glossary-proposal that names a term the glossary does not have
 Restates: r122@0.29.
-- [r33] If the person runs `model check` on a glossary-proposal that is termless, then `model` shall exit with an error naming the glossary-proposal.
+- [r35] If the person runs `model check` on a glossary-proposal that is termless, then `model` shall exit with an error naming the glossary-proposal.
 
-```given
-a glossary-proposal p1
-the glossary-proposal p1 is termless
-```
-
-### [g33] A capability not named by its file
+### [g36] A capability not named by its file
 Restates: r25@0.29.
-- [r34] If the person runs `model check` on a capability that is misnamed, then `model` shall exit with an error naming the capability.
+- [r36] If the person runs `model check` on a capability that is misnamed, then `model` shall exit with an error naming the capability.
 
-```given
-a capability c1
-the capability c1 is misnamed
-```
-
-### [g34] A node whose id is not of its kind
+### [g37] A node whose id is not of its kind
 Restates: r46@0.29.
-- [r35] If the person runs `model check` on a work-item that is misidentified, then `model` shall exit with an error naming the work-item.
+- [r37] If the person runs `model check` on a work-item that is misidentified, then `model` shall exit with an error naming the work-item.
 
-```given
-a work-item w1
-the work-item w1 is misidentified
-```
-
-### [g35] A feature file of no capability
+### [g38] A feature file of no capability
 Restates: r26@0.29.
-- [r36] If the person runs `model check` on a feature that is misfiled, then `model` shall exit with an error naming the feature.
+- [r38] If the person runs `model check` on a feature that is misfiled, then `model` shall exit with an error naming the feature.
 
-```given
-a feature f1
-the feature f1 is misfiled
-```
-
-### [g36] A work directory with no initiative
+### [g39] A work directory with no initiative
 Restates: r124@0.29.
-- [r37] If the person runs `model check` on a work-item that is homeless, then `model` shall exit with an error naming the work-item.
+- [r39] If the person runs `model check` on a work-item that is homeless, then `model` shall exit with an error naming the work-item.
 
-```given
-a work-item w1
-the work-item w1 is homeless
-```
-
-### [g37] A decision with no id or no Decision section
+### [g40] A decision with no id or no Decision section
 Restates: r29@0.29.
-- [r38] If the person runs `model check` on a design-decision that is headless, then `model` shall exit with an error naming the design-decision.
+- [r40] If the person runs `model check` on a design-decision that is headless, then `model` shall exit with an error naming the design-decision.
 
-```given
-a design-decision d1
-the design-decision d1 is headless
-```
+### [g41] A glossary bullet in no form of a term entry
+Restates: r48@0.29, r49@0.29.
+- [r41] If the person runs `model check` on a term that is malformed, then `model` shall exit with an error naming the term.
 
-### [g38] A glossary bullet in no form of a term entry
-Restates: r49@0.29, r48@0.29.
-- [r39] If the person runs `model check` on a term that is malformed, then `model` shall exit with an error naming the term.
-
-```given
-a term t1
-the term t1 is malformed
-```
-
-### [g39] A repository not on the final layout
+### [g42] A repository not on the final layout
 Restates: r61@0.29.
-- [r40] If the person runs `model check` on a bounded context that is unmigrated, then `model` shall exit with an error naming `scripts/migrate`.
+- [r42] If the person runs `model check` on a bounded context that is unmigrated, then `model` shall exit with an error naming `scripts/migrate`.
 
-```given
-a bounded context b1
-the bounded context b1 is unmigrated
-```
-
-### [g40] A warning leaves the exit as it is
+### [g43] A warning leaves the exit as it is
 Restates: r11@0.29.
-- [r41] When the person runs `model check` on an observation that is uncited, `model` shall print `w_uncited_obs`.
-- [r42] When the person runs `model check` on an observation that is uncited, `model` shall exit successfully.
+- [r43] When the person runs `model check` on an observation that is uncited, `model` shall print `w_uncited_obs` and exit successfully.
 
-```given
-an observation o1
-```
-
-### [g41] A context with no job has no unserved capability
+### [g44] A context with no job has no unserved capability
 Restates: r111@0.29.
-- [r43] When the person runs `model check`, `model` shall not print `w_unserved_cap`.
+- [r44] When the person runs `model check`, `model` shall not print `w_unserved_cap`.
 
-### [g42] `model check --json` prints one JSON object
-Restates: r33@0.29.
-- [r44] Where `--json` is given, when the person runs `model check`, `model` shall print one JSON object.
-
-### [g43] A formulated capability-proposal is closed for a done initiative
+### [g45] A formulated capability-proposal is closed for a done initiative
 Restates: r36@0.29.
-- [r45] While an initiative is `done` and a capability-proposal is `formulated`, when the person runs `model check`, `model` shall not print `v_d1`.
+- [r45] While an initiative is `done` and a capability-proposal part of the initiative is `formulated`, when the person runs `model check`, `model` shall not print `v_d1`.
 
-```given
-an initiative i1 that is `done`
-```
-
-### [g44] An approved glossary-proposal is closed for a done initiative
+### [g46] An approved glossary-proposal is closed for a done initiative
 Restates: r123@0.29.
-- [r46] While an initiative is `done` and a glossary-proposal is `approved`, when the person runs `model check`, `model` shall not print `v_d1`.
+- [r46] While an initiative is `done` and a glossary-proposal part of the initiative is `approved`, when the person runs `model check`, `model` shall not print `v_d1`.
 
-```given
-an initiative i1 that is `done`
-```
-
-### [g45] `model check` tries again under an interpreter that has clingo
+### [g47] `model check` tries again under an interpreter that has clingo
 Restates: r55@0.29.
 - [r47] While an interpreter is clingoless, when the person runs `model check`, `model` shall print "0 violations".
 
-```given
-an interpreter i1
-the interpreter i1 is clingoless
-```
-
-### [g46] No interpreter has clingo
+### [g48] No interpreter has clingo
 Restates: r12@0.29.
 - [r48] While an interpreter is unfound, if the person runs `model check`, then `model` shall exit with an error naming "pip install clingo".
 
-```given
-an interpreter i1
-the interpreter i1 is unfound
-```
-
-### [g47] `model facts` prints the facts
+### [g49] `model facts` prints the facts
 Restates: r13@0.29.
 - [r49] When the person runs `model facts`, `model` shall print every fact.
 
-### [g48] `model decisions` writes the decisions index
+### [g50] `model decisions` writes the decisions index
 Restates: r14@0.29, spec-integration#r22@0.29.
 - [r50] When the person runs `model decisions`, `model` shall write a decisions index.
 
-```given
-a design-decision d1
-```
-
-### [g49] `model decisions --check` refuses a stale index
+### [g51] `model decisions --check` refuses a stale index
 Restates: r15@0.29.
 - [r51] Where `--check` is given, if the person runs `model decisions` on a decisions index that is stale, then `model` shall exit with an error naming the decisions index and change nothing.
 
-```given
-a decisions index d1
-the decisions index d1 is stale
-```
-
-### [g50] `model decisions --check` passes a current index
+### [g52] `model decisions --check` passes a current index
 Restates: r37@0.29.
 - [r52] Where `--check` is given, when the person runs `model decisions` on a decisions index, `model` shall exit successfully.
 
-### [g51] `model why` traces a requirement to the proposals that add it
-Restates: r16@0.29.
-- [r53] When the person runs `model why` on a requirement, `model` shall print the requirement and every capability-proposal that adds the requirement.
-
-### [g52] `model why` of a requirement no proposal adds
-Restates: r17@0.29.
-- [r54] When the person runs `model why` on a requirement, `model` shall exit successfully.
-
-### [g53] `model why --json` prints one JSON object
-Restates: r108@0.29.
-- [r55] Where `--json` is given, when the person runs `model why` on a requirement, `model` shall print one JSON object.
+### [g53] `model why` traces a requirement to the proposals that add it
+Restates: r16@0.29, r17@0.29.
+- [r53] When the person runs `model why` on a requirement, `model` shall print the requirement and every capability-proposal that adds the requirement and exit successfully.
 
 ### [g54] `model rules` prints every rule
 Restates: r65@0.29.
-- [r56] When the person runs `model rules`, `model` shall print every rule.
-- [r57] When the person runs `model rules`, `model` shall exit successfully.
-
-### [g55] `model rules --json` prints one JSON object
-Restates: r109@0.29.
-- [r58] Where `--json` is given, when the person runs `model rules`, `model` shall print one JSON object.
+- [r54] When the person runs `model rules`, `model` shall print every rule and exit successfully.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a
@@ -558,3 +330,6 @@ Restates: r109@0.29.
 - r51@0.29: what counts as a mention is `model`'s implementation, kept under Implementation, may change.
 - r64@0.29: the reading of a decision's source is `model`'s implementation, kept under Implementation, may change.
 - r105@0.29: restated U3 (a refused command exits with an error and changes nothing).
+- r33@0.29: restated U8 (`--json` prints one JSON object), for `model check`.
+- r108@0.29: restated U8 (`--json` prints one JSON object), for `model why`.
+- r109@0.29: restated U8 (`--json` prints one JSON object), for `model rules`.

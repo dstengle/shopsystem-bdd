@@ -128,6 +128,9 @@ def model_facts(step):
 
 @handler("WhenRuns", "`model decisions`")
 def model_decisions(step):
+    for name in step.names:     # a decisions index the When names exists, current unless a Given made it stale
+        if name not in step.context.get("says", {}):
+            given_index(step)
     run_model(step, "decisions", *flag(step, "--check"))
 
 
@@ -141,13 +144,23 @@ def model_why(step):
     run_model(step, "why", step.context.get("says", {}).get(step.names[0], step.names[0]), *flag(step, "--json"))
 
 
+# What an instance no Given named is printed as, by its kind and number: `model facts` and `model rules` print every
+# one, so a trace's f1 and f2 (r1 and r2) are two of them.
+PRINTED = {"fact": ['node("capability/', 'node("bounded-context/'], "rule": ["v15a", "w_uncited_obs"]}
+
+
+def unsaid(step, word):
+    printed = PRINTED.get(step.kind)
+    return printed[(int(re.sub(r"\D", "", word) or 1) - 1) % len(printed)] if printed else word
+
+
 def named(step):
     """What the step's noun phrases name in output: codes without backticks, quoted texts, and for an instance what a
-    Given said it is named by (else its name)."""
+    Given said it is named by (else what its kind prints, else its name)."""
     out = [q.strip('"') for q in step.quoted]
     for np in step.nps:
         out += [w.strip("`") for w in np.split() if w.startswith("`")]
-        out += [step.context.get("says", {}).get(w, w) for w in np.split() if w in step.names]
+        out += [step.context.get("says", {}).get(w) or unsaid(step, w) for w in np.split() if w in step.names]
     return out
 
 
@@ -169,16 +182,6 @@ def model_refused(step):
 @handler("GivenK", "requirement")
 def given_requirement(step):
     says(step, step.names[0], "thing#r1")
-
-
-@handler("GivenK", "fact")
-def given_fact(step):
-    says(step, step.names[0], 'node("capability/')
-
-
-@handler("GivenK", "rule")
-def given_rule(step):
-    says(step, step.names[0], "v15a")
 
 
 @handler("GivenK", "decisions index")
