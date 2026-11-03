@@ -67,7 +67,7 @@ class ReadingTest(ModelTest):
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] `thing` shall answer."]).replace(
             "rests_on: []", "rests_on:\n- x").replace("group: service", "group: service   # a comment"))
         self.write("spec/decisions/0001-x.md", f'---\nid: {full("design-decision", "x")}\nsummary: "X."\ndate: 2026-01-01\nstatus: accepted\n---\n\n## Decision\nWe do it.\n')
-        self.write("features/thing.feature", "@r1\nFeature: thing\n\n  Example: one\n    Given a\n")
+        self.write("features/thing.feature", "@g1 @r1\nFeature: thing\n\n  Example: one\n    Given a\n")
         r = self.run_model("check")
         self.assertEqual(r.returncode, 0, r.stdout)
         facts = self.run_model("facts").stdout
@@ -78,9 +78,9 @@ class ReadingTest(ModelTest):
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] `thing` shall answer."], retired="[r2]"))
         self.write("features/thing.feature", "\n".join([  # noqa: FLY002 -- lines kept as a list, one a row
             "Feature: thing", "",
-            "  @r1", "  Scenario: one", "    Given a", "",
-            "  @r1 @deprecated", "  Scenario: one as it was (deprecated)", "    Given a", "",
-            "  @r2 @deprecated", "  Scenario: two as it was (deprecated)", "    Given a", ""]))
+            "  @g1 @r1", "  Scenario: one", "    Given a", "",
+            "  @g1 @r1 @deprecated", "  Scenario: one as it was (deprecated)", "    Given a", "",
+            "  @g2 @r2 @deprecated", "  Scenario: two as it was (deprecated)", "    Given a", ""]))
         r = self.run_model("check")
         self.assertEqual(r.returncode, 0, r.stdout)
         facts = self.run_model("facts").stdout
@@ -209,8 +209,8 @@ class FilesReadTest(ModelTest):
     """Which files are read, and how references and file shapes are judged (r19-r30)."""
 
     def test_r20(self):
-        scenario_tag = "Feature: thing\n\n  @r2\n  Scenario: two\n    Given a\n"
-        feature_tag = "@r2\nFeature: thing\n\n  Scenario: two\n    Given a\n"
+        scenario_tag = "Feature: thing\n\n  @g2 @r2\n  Scenario: two\n    Given a\n"
+        feature_tag = "@g2 @r2\nFeature: thing\n\n  Scenario: two\n    Given a\n"
         rows = [
             ("features/thing.feature", scenario_tag, False),
             ("features/thing.feature", feature_tag, False),
@@ -223,7 +223,7 @@ class FilesReadTest(ModelTest):
                 self.write("spec/capabilities/thing.md", cap("thing", ["- [r2] Two."]))
                 self.write(path, text)
                 found, _ = self.check_json()
-                self.assertEqual([THING + "#r2"] in self.violated(found, "v_s3"), reported, found)
+                self.assertEqual([THING + "#g2"] in self.violated(found, "v_s3"), reported, found)
 
     def test_r26(self):
         one = feature("thing", ("@r1", "one"))
@@ -249,9 +249,9 @@ class DeprecatedAndLedgerTest(ModelTest):
 
     def test_r44(self):
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r2] Two."]))
-        self.write("features/thing.feature", "Feature: thing\n\n  @r2 @deprecated\n  Scenario: two as it was\n    Given a\n")
+        self.write("features/thing.feature", "Feature: thing\n\n  @g2 @r2 @deprecated\n  Scenario: two as it was\n    Given a\n")
         found, _ = self.check_json()
-        self.assertEqual(self.violated(found, "v_s3"), [[THING + "#r2"]], found)
+        self.assertEqual(self.violated(found, "v_s3"), [[THING + "#g2"]], found)
 
 
 if __name__ == "__main__":

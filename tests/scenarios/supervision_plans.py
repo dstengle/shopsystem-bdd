@@ -6,6 +6,7 @@ keeps the status the named stage left it in (U6) and the Thens read that status.
 The plan's keys are the stand-in's (tests/scripts/stub_claude.py): an agent, `round:<kind>:<node>`, or `default`."""
 import json
 import subprocess
+from pathlib import Path
 
 W = None     # supervision_world, set by the handler module that loads this one
 AGENTS = {"research": "code-scout", "plan": "bdd-planner", "implement": "bdd-implementer", "review": "bdd-task-reviewer",
@@ -15,6 +16,9 @@ QUESTION = "Which module owns the log?"
 ANSWER = "The delegation covers it."
 FIX_NOW = ["Fix now: w1 leaves the log unclosed.", "Fix now: w1 names the wrong file."]
 CATALOGUE = "bounded-context/ex.com/prod/catalogue"
+FIXTURE = (Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "glossary" / "spec" / "index.md").read_text()
+# A line the catalogue's grammar parses: its index is codified, with the typed glossary of the fixture.
+RAISED = "When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to `started`."
 BAD = ("\n### [g9] A line the grammar refuses\n- [r9] When asked, frobnicate the widgets wholesale.\n")
 
 
@@ -30,7 +34,8 @@ def defaults(context):
 def catalogue(repo):
     """The upstream catalogue beside the repository, named by its spec/index.md's `## Upstreams`."""
     there = repo.parent / "catalogue-ctx"
-    W.write(there, "spec/index.md", "---\nid: %s\n---\n# catalogue\n" % CATALOGUE)
+    W.write(there, "spec/index.md", "---\nid: %s\nlanguage: codified-1\n---\n# catalogue\n\n%s"
+            % (CATALOGUE, FIXTURE[FIXTURE.index("## Glossary"):]))
     for args in (("init", "-q", "-b", "main"), ("config", "user.name", "Someone"),
                  ("config", "user.email", "someone@example.com"), ("config", "commit.gpgsign", "false"),
                  ("add", "-A"), ("commit", "-q", "-m", "catalogue")):
@@ -86,7 +91,7 @@ def outcome_entry(kind, outcome, conds, repo, codified, k=1):
             entry.pop("fields")
         if "raising" in conds:
             catalogue(repo)
-            entry["fields"]["requests"] = [{"upstream": CATALOGUE, "lines": ["When a book is listed, the catalogue shall give its edition."]}]
+            entry["fields"]["requests"] = [{"upstream": CATALOGUE, "lines": [RAISED]}]
         if "unparsing" in conds:
             text = (W.GENERATE / "capabilities" / "work-queue.md").read_text().replace("\n## Not yet", BAD + "\n## Not yet")
             return [dict(entry, write=drafts("work-queue.md", text, n), result="file") for n in range(k, k + 3)]

@@ -136,14 +136,21 @@ class SpecReading:
                 self.fact("member_of", qid, gid)
                 entry["reqs"][n] = qid
                 self.req_text[qid] = q.text
-                self.unmentioned.add(qid)
                 self.group_of[qid] = gid
                 tree = self.parsed(qid, q.text)
                 if tree is not None:
+                    self.unmentioned.add(qid)       # a parsed statement uses lexicon words (C27)
                     trees.append(tree)
                     self.pre(qid, tree)
             if trees and len(trees) == len(g.requirements) and spec_tree.logic_only(trees):
                 self.fact("logic_only", gid)
+            for n, rid, text in g.odd:      # v15a with no id, v15b with an id used before
+                qid = f"{cap}#line{n}" if rid is None else f"{cap}#{rid}~{n}"
+                self.node(qid, "requirement")
+                self.fact("member_of", qid, gid)
+                if rid is not None:
+                    self.fact("req_id", qid, cap, int(rid[1:]))
+                self.req_text[qid] = text
             if g.given:
                 self.given(gid, g.given)
 
@@ -156,6 +163,9 @@ class SpecReading:
     def read_universal(self):
         doc = spec_read.read_universal(self.root)
         if not doc.path.is_file():
+            return
+        if not spec_read.codified(doc.path):
+            self.fact("uncodified", "spec/universal.md")
             return
         self.problems += [f"spec/universal.md: {p}" for p in doc.problems]
         for u in doc.conditions:

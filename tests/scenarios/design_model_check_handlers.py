@@ -1,18 +1,23 @@
 """Handlers of features/design-model-check.feature (design §14.3): `model` run on the repository the Givens build,
 and what it printed read back.
 
-A repository starts from what a model check needs to be clean: `spec/index.md`, the capability `thing` with one
-requirement and its scenario, the observation the initiatives cite, and an initiative for each work directory. The
+A repository starts from what a model check needs to be clean: a codified `spec/index.md` with the typed glossary of
+tests/scripts/fixtures/glossary/, the capability `thing` with one requirement group and its scenario, the observation the initiatives cite, and an initiative for each work directory. The
 Givens of a condition (design_model_check_handlers_conditions.py) change it so that one rule fires, and keep in
 `says` what the output names an instance by (a file, a reference, a code)."""
 import os
 import re
 import sys
+from pathlib import Path
 
 from vocab import handler
 
 PATH = "ex.com/prod/ctx"
-INDEX = "---\nid: bounded-context/%s\n---\n# ctx\n\n## Glossary\n\n" % PATH
+FIXTURE = (Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "glossary" / "spec" / "index.md").read_text()
+TERMS = FIXTURE[FIXTURE.index("## Glossary") + len("## Glossary\n"):].strip() + "\n\n### This repository's\n\n"
+INDEX = "---\nid: bounded-context/%s\nlanguage: codified-1\n---\n# ctx\n\n## Glossary\n\n%s" % (PATH, TERMS)
+# A statement that parses in the fixture glossary: `cap()` writes it for each requirement a Given gives in 0.29 words.
+STATEMENT = "When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to `started`."
 HIDE_CLINGO = 'raise ImportError("clingo is hidden for this test")\n'
 
 
@@ -28,16 +33,23 @@ def write(repo, rel, text):
 
 
 def cap(name, reqs, retired="[]", ident=None):
-    """A 0.29 capability file whose Behaviour has the lines `reqs`."""
-    return ("---\nid: %s\ntitle: %s\nnarrator: a client\ngroup: service\nrests_on: []\nretired: %s\n---\n\n# %s\n\n"
-            "## Purpose\nSomething.\n\n## Behaviour\n%s\n\n## Not yet\n- None.\n"
-            % (ident or full("capability", name), name, retired, name, "\n".join(reqs)))
+    """A codified capability file: each line of `reqs` in a group [g<k>] of its own, k its place; a line written as
+    `**When** asked, ...` is STATEMENT under its id (or under none), any other line is kept as written."""
+    body = []
+    for k, line in enumerate(reqs, 1):
+        m = re.match(r"- (\[r\d+\] )?\*\*When\*\*", line)
+        body += ["### [g%d] line %d" % (k, k), "- %s%s" % (m.group(1) or "", STATEMENT) if m else line]
+    return ("---\nid: %s\ntitle: %s\nnarrator: a client\ngroup: service\nlanguage: codified-1\nrests_on: []\n"
+            "retired: %s\n---\n\n# %s\n\n## Purpose\nSomething.\n\n## Behaviour\n\n%s\n\n## Not yet\n- None.\n"
+            % (ident or full("capability", name), name, retired, name, "\n".join(body)))
 
 
 def feature(name, *tags):
-    """A feature file of the capability `name`, one scenario for each tag line."""
-    out = ["# formulated from spec/capabilities/%s.md" % name, "Feature: %s" % name, "  Narrator: a client", ""]
+    """A feature file of the capability `name`, one scenario for each tag line; a tag @r<n> names group g<n> too."""
+    out = ["# generated from spec/capabilities/%s.md by features generate; do not edit" % name, "Feature: %s" % name,
+           "  Narrator: a client", ""]
     for n, tag in enumerate(tags, 1):
+        tag = re.sub(r"@r(\d+)", r"@g\1 @r\1", tag)
         out += ["  " + tag, "  Scenario: it answers %d" % n, "    Given a thing", "    Then it is so", ""]
     return "\n".join(out)
 
@@ -52,8 +64,12 @@ def flag(step, name):
 
 def base(repo, context):
     """What a model check needs to be clean, wherever a Given has not written it."""
-    if not (repo / "spec" / "index.md").is_file():
+    index = repo / "spec" / "index.md"
+    if not index.is_file():
         write(repo, "spec/index.md", INDEX)
+    elif "language: codified-1" not in index.read_text():       # world_nodes' index: codified, the fixture terms added
+        text = index.read_text().replace("\n---\n", "\nlanguage: codified-1\n---\n", 1)
+        index.write_text(text.replace("## Glossary\n\n", "## Glossary\n\n" + TERMS, 1))
     if not (repo / "spec" / "capabilities" / "thing.md").is_file():
         write(repo, "spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, `thing` shall answer."]))
         if not (repo / "features" / "thing.feature").is_file():

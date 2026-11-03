@@ -185,7 +185,7 @@ class WorkReading:
                     if not q:
                         continue
                     self.fact(rel, p, q)
-                    if q in self.nodes:
+                    if q.endswith("@0.29") or q in self.nodes:      # a 0.29 id is history (§13.4)
                         continue
                     cap, n = q.rsplit("#r", 1)
                     if (cap, int(n)) in self.retired and data.get("status") in SETTLED:

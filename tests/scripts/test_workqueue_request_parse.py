@@ -1,5 +1,6 @@
 """`work request` parses each line in the upstream's requirement grammar when the upstream's index is codified (the
-GF conversion's design §13, §13.4), and keeps the 0.29 shape check otherwise; a refusal writes nothing."""
+GF conversion's design §13, §13.4), and refuses an upstream whose spec is not codified, naming `migrate upgrade`; a
+refusal writes nothing."""
 import pathlib
 import shutil
 import subprocess
@@ -19,6 +20,7 @@ GLOSSARY = ROOT / "tests" / "scripts" / "fixtures" / "glossary" / "spec" / "inde
 GOOD = "When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to `started`."
 BAD = "When the person runs `work start` on an initiative that is `drafted`, `work` shall set its status to `started`."
 LEGACY = "**When** `work list` is run, `work` shall print each request with its status."
+UNCODIFIED = "---\nid: capability/example.org/fixture/glossary/old\nnarrator: the person\n---\n\n## Behaviour\n\n- [r1] x\n"
 
 
 def git(repo, *args):
@@ -81,11 +83,20 @@ def test_the_command_exits_1_and_writes_no_file(codified):
     assert written(codified) == []
 
 
-def test_the_legacy_shape_holds_where_the_index_is_not_codified(legacy):
-    workqueue_request.request(legacy, "t", "internal", lines(legacy, LEGACY), ["observation/o1"], None)
-    with pytest.raises(workqueue.Refused, match="line 1 is not in the strict form"):
-        workqueue_request.request(legacy, "t", "internal", lines(legacy, "Things happen."), ["observation/o1"], None)
-    assert len(written(legacy)) == 1
+def test_an_upstream_whose_index_is_not_codified_is_refused_naming_migrate_upgrade(legacy):
+    with pytest.raises(workqueue.Refused) as refused:
+        workqueue_request.request(legacy, "t", "internal", lines(legacy, LEGACY), ["observation/o1"], None)
+    assert "spec/index.md is not codified: run `migrate upgrade`" in str(refused.value)
+    assert written(legacy) == []
+
+
+def test_an_upstream_with_an_uncodified_capability_is_refused_naming_it(codified):
+    (codified / "spec/capabilities").mkdir()
+    (codified / "spec/capabilities/old.md").write_text(UNCODIFIED)
+    with pytest.raises(workqueue.Refused) as refused:
+        workqueue_request.request(codified, "t", "internal", lines(codified, GOOD), ["observation/o1"], None)
+    assert "spec/capabilities/old.md is not codified: run `migrate upgrade`" in str(refused.value)
+    assert written(codified) == []
 
 
 def test_no_grammar_tools_refuses_naming_tools_install(codified, monkeypatch):

@@ -23,7 +23,10 @@ def shared():
 
 W = shared()
 OWN = "bounded-context/ex.com/prod/ctx"
-GOOD = "When `work list` is run, `work` shall print each work-item."
+FIXTURE = (Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "glossary" / "spec" / "index.md").read_text()
+# The context's index is codified, with the typed glossary of tests/scripts/fixtures/glossary/, so GOOD parses.
+INDEX = "---\nid: %s\nlanguage: codified-1\n---\n# ctx\n\n%s" % (OWN, FIXTURE[FIXTURE.index("## Glossary"):])
+GOOD = "When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to `started`."
 BAD = "the queue is nice and quick"
 FOREIGN = "ctx-elsewhere"
 SIDE = {"awaiting-asker": "asker", "delivered": "asker", "refused": "asker"}
@@ -86,7 +89,7 @@ def given_context(step):
     index = step.repo / "spec" / "index.md"
     if not index.is_file():
         index.parent.mkdir(parents=True, exist_ok=True)
-        index.write_text("---\nid: %s\n---\n# ctx\n" % OWN)
+        index.write_text(INDEX)
     index.write_text(index.read_text() + "\n## Upstreams\n- bounded-context/ex.com/prod/up: the upstream.\n")
     step.context["downstream"] = True
 
@@ -120,7 +123,9 @@ def run_work(step, *args):
     index = step.repo / "spec" / "index.md"
     if not index.is_file():
         index.parent.mkdir(parents=True, exist_ok=True)
-        index.write_text("---\nid: %s\n---\n# ctx\n" % OWN)
+        index.write_text(INDEX)
+    elif "language: codified-1" not in index.read_text():      # world_nodes' index: the fixture glossary instead
+        index.write_text(INDEX + index.read_text().partition("## Glossary\n")[2])
     step.context["head"] = W.init(step.repo)
     step.context["result"] = step.run("work", *args)
 

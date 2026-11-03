@@ -2,7 +2,8 @@
 
 `capability(path)` reads a capability file whose frontmatter has `language: codified-1`: the groups of its
 `## Behaviour` (`### [g<n>] <title>`, an optional `Restates:` line, `- [r<n>] <statement>` bullets and an optional
-fenced `given` block), its `## Dropped` bullets and its `retired:` ids. `## Terms` is not read here: spec_lexicon is the
+fenced `given` block), its `## Dropped` bullets and its `retired:` ids. A statement kept out of a group's requirements (no id,
+or an id used before) is in the group's `odd`, beside its problem. `## Terms` is not read here: spec_lexicon is the
 one reader of term entries. `universal(root)` reads `spec/universal.md`, `restated(root)` reads `spec/restated.json`.
 Nothing is refused: what is malformed is a problem `<line>: <what>`, with the file's own line number.
 """
@@ -16,7 +17,7 @@ from model_parse import frontmatter
 MARKER = "codified-1"
 
 Capability = namedtuple("Capability", "path name frontmatter groups dropped retired problems")
-Group = namedtuple("Group", "id title restates given requirements line_no")
+Group = namedtuple("Group", "id title restates given requirements line_no odd")   # odd: (line, r<n> or None, text)
 Requirement = namedtuple("Requirement", "id text line_no")
 Universal = namedtuple("Universal", "id text line_no")
 UniversalFile = namedtuple("UniversalFile", "path frontmatter conditions problems")
@@ -120,7 +121,7 @@ class Reader:
         if not m:
             self.problem(n, "a group heading is not '### [g<n>] <title>'")
         else:
-            self.group = Group(m.group(1), m.group(2).strip(), [], [], [], n)
+            self.group = Group(m.group(1), m.group(2).strip(), [], [], [], n, [])
             if self.fresh(m.group(1), n):           # a second g<n> is read for its problems, and kept out
                 self.groups.append(self.group)
 
@@ -141,8 +142,11 @@ class Reader:
             self.problem(n, "a requirement outside a group")
         elif not m:
             self.problem(n, "a requirement is not '- [r<n>] <statement>'")
+            self.group.odd.append((n, None, line[2:].strip()))      # a statement with no id (v15a)
         elif self.fresh(m.group(1), n):
             self.group.requirements.append(Requirement(m.group(1), m.group(2).strip(), n))
+        else:
+            self.group.odd.append((n, m.group(1), m.group(2).strip()))     # an id used a second time (v15b)
 
     def given_line(self, n, line):
         given = self.group.given if self.group is not None else []

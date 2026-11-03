@@ -85,8 +85,8 @@ def requirement(step):
         H.write(repo, "spec/capabilities/thing.md", H.cap("thing", ["- [r1] **When** asked, `thing` shall answer."]))
         H.write(repo, "features/thing.feature", H.feature("thing"))
     elif word == "avoiding":
-        H.write(repo, "spec/index.md", H.INDEX + "- **answer**: what `thing` gives back. Not: reply.\n")
-        H.write(repo, "spec/capabilities/thing.md", H.cap("thing", ["- [r1] **When** asked, `thing` shall reply."]))
+        H.write(repo, "spec/index.md", H.INDEX + "- **answer** (kind): what `thing` gives back. Not: reply.\n")
+        H.write(repo, "spec/capabilities/thing.md", H.cap("thing", ["- [r1] When asked, `thing` shall reply."]))
         H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))
     elif word == "unparsed":
         shutil.copytree(BROKEN, repo / "spec", dirs_exist_ok=True)
@@ -103,7 +103,7 @@ def scenario(step):
                                                                  "- [r2] **When** told, `thing` shall nod."]))
     tags = ("@r1 @r2", "@r2") if word == "overtagged" else ("@r1", "@r2", "@r9")
     H.write(repo, "features/thing.feature", H.feature("thing", *tags))
-    H.says(step, name, "r9" if word == "misreferring" else "@r1")
+    H.says(step, name, "g9" if word == "misreferring" else "@r1")
 
 
 @handler("GivenK_C", "feature")
@@ -117,9 +117,9 @@ def term(step):
     name, word, path = step.names[0], condition(step), step.repo / "spec" / "index.md"
     text = path.read_text()
     if word == "duplicated":
-        path.write_text(text + "- **%s**: a thing again.\n" % name)
+        path.write_text(text + "- **%s** (kind): a thing again.\n" % name)
     elif word == "selfavoiding":
-        path.write_text(text.replace("- **%s** (kind): a thing.\n" % name, "- **%s**: a thing. Not: %s.\n" % (name, name)))
+        path.write_text(text.replace("- **%s** (kind): a thing.\n" % name, "- **%s** (kind): a thing. Not: %s.\n" % (name, name)))
     elif word == "malformed":
         path.write_text(text + "- %s, written with no bold term\n" % name)
         H.says(step, name, "glossary bullet")

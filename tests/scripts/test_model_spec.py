@@ -117,13 +117,23 @@ class FactsTest(CodifiedTest):
         self.assertEqual(len(pre), 2)
         self.assertEqual(pre[0], pre[1], "both statements share the trigger")
 
-    def test_the_legacy_kinds_are_gone(self):
+    def test_an_uncodified_capability_is_v_p0_and_its_lines_are_not_read(self):
         self.write("spec/capabilities/old.md", codified("old", ["- [r1] **When** asked, `old` shall answer."],
                                                         marker=False))
+        self.write("features/old.feature", "Feature: old\n\n  @r1\n  Scenario: asked\n    Then it answers\n")
         f = self.facts()
-        self.assertIn(f'node("capability/{PATH}/old#r1", "requirement").', f)
-        self.assertIn(f'has_req("capability/{PATH}/old", "capability/{PATH}/old#r1").', f)
-        self.assertFalse([x for x in f if "capability-requirement" in x or "acceptance-scenario" in x])
+        self.assertIn('uncodified("spec/capabilities/old.md").', f)
+        self.assertFalse([x for x in f if "old#r1" in x or x.startswith(("has_req(", "has_sc(", "ears_"))])
+        found, r = self.check()
+        self.assertEqual(self.rows(found, "v_p0"), [["spec/capabilities/old.md"]])
+        self.assertIn("migrate upgrade", found["labels"]["v_p0"])
+
+    def test_an_index_that_is_not_codified_is_v_p0(self):
+        index = GLOSSARY.read_text().replace("language: codified-1\n", "")
+        self.write("spec/index.md", index)
+        found, _ = self.check()
+        self.assertEqual(self.rows(found, "v_p0"), [["spec/index.md"]])
+        self.assertFalse([d for d in found["problems"] if "glossary bullet" in d], found["problems"])
 
     def test_a_universal_condition_is_a_node_that_parses(self):
         self.write("spec/universal.md", "---\nid: capability/%s/universal\nlanguage: codified-1\n---\n\n"
@@ -184,6 +194,20 @@ class FactsTest(CodifiedTest):
 
 
 class CheckTest(CodifiedTest):
+    def test_a_statement_with_no_id_is_v15a_and_a_repeated_id_v15b(self):
+        self.write("spec/capabilities/wq.md", codified("wq", self.start_group() + [
+            "### [g2] Again", f"- {START}", f"- [r1] {COMMIT}"]))
+        found, _ = self.check()
+        self.assertEqual(self.rows(found, "v15a"), [[f"{WQ}#line23"]])
+        self.assertEqual(len(self.rows(found, "v15b")), 1, found)
+
+    def test_an_unparsed_statement_is_read_for_avoided_words(self):
+        self.write("spec/capabilities/wq.md", codified("wq", ["### [g1] Start",
+                                                              "- [r1] When the person runs `work start`, the user is told."]))
+        found, _ = self.check()
+        self.assertTrue(self.rows(found, "v_p1"), found)
+        self.assertIn("user", [row[1] for row in self.rows(found, "v_t1")], found)
+
     def test_a_line_that_does_not_parse_is_v_p1(self):
         self.write("spec/capabilities/wq.md", codified("wq", ["### [g1] Start", f"- [r1] {DRAFTED}"]))
         found, r = self.check()
@@ -244,25 +268,17 @@ class CheckTest(CodifiedTest):
         self.write(".shop/work/i1/wq.md", f"---\nid: capability-proposal/{PATH}/p1\nkind: capability-proposal\n"
                    "part_of: initiative/i1\nargues: wq\nstatus: formulated\nadds: [wq#r3@0.29, wq#r9@0.29]\n---\n")
         found, _ = self.check()
-        named = [d for d in found["unresolved"] if "@0.29" in d]
-        self.assertEqual(len(named), 1, found)
-        self.assertIn("wq#r9@0.29", named[0])
+        self.assertFalse([d for d in found["unresolved"] if "@0.29" in d], found)
+        self.assertFalse(self.rows(found, "v3"))
 
 
 class LiveTest(unittest.TestCase):
-    def test_the_lexicon_keys_the_live_glossary_as_the_legacy_reader_did(self):
-        """No term id of the live glossary changes when `model` reads it through spec_lexicon."""
+    def test_every_file_of_the_live_spec_is_codified(self):
         sys.path.insert(0, str(ROOT / "scripts"))
-        import model_facts
-        from model_parse import frontmatter
-        new = model_facts.Model(ROOT)
-        new.read_index()
-        old = model_facts.Model(ROOT)
-        old.context, old.path = new.context, new.path
-        old.read_glossary_legacy(frontmatter((ROOT / "spec" / "index.md").read_text())[1])
-        ids = lambda m: {i for i, k in m.nodes.items() if k == "term"}
-        self.assertTrue(ids(old))
-        self.assertLessEqual(ids(old), ids(new))
+        import spec_read
+        files = [ROOT / "spec" / "index.md", ROOT / "spec" / "universal.md",
+                 *sorted((ROOT / "spec" / "capabilities").glob("*.md"))]
+        self.assertEqual([p.name for p in files if not spec_read.codified(p)], [])
 
 if __name__ == "__main__":
     unittest.main()

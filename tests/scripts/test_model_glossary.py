@@ -1,15 +1,17 @@
 """Unit tests of scripts/model's glossary, read into facts (r48, r50, r51) and checked. ModelTest and the file
-builders are in test_model.py."""
+builders are in test_model.py. The glossary is typed (design model v5): spec_lexicon reads its entries, and a codified
+requirement and every scenario of a capability's feature use lexicon words by their parse, so only a scenario of a
+feature file that is no capability's is read for the words the glossary avoids."""
 
 import sys
 import unittest
 
-from test_model import HAVE_CLINGO, INDEX, THING, ModelTest, cap, feature, full
+from test_model import HAVE_CLINGO, HEAD, THING, ModelTest, cap, feature, full
 
 
 def index(*glossary):
-    """spec/index.md with a ## Glossary section with these bullets."""
-    return INDEX + "\n## Glossary\n\n" + "\n".join(glossary) + "\n\n## Where things live\n\n- Here.\n"
+    """A codified spec/index.md with a ## Glossary section with these bullets."""
+    return HEAD + "\n## Glossary\n\n" + "\n".join(glossary) + "\n\n## Where things live\n\n- Here.\n"
 
 
 def term(name):
@@ -25,31 +27,22 @@ class GlossaryFactsTest(ModelTest):
         return r.stdout.splitlines()
 
     def test_a_definition_with_a_period_is_one_definition(self):
-        self.write("spec/index.md", index("- **store**: where things are kept, e.g. a shelf."))
+        self.write("spec/index.md", index("- **store** (kind): where things are kept, e.g. a shelf."))
         lines = self.facts()
         self.assertIn(f'node("{term("store")}", "term").', lines)
         self.assertEqual([l for l in lines if l.startswith("avoid(")], [])
 
     def test_r51(self):
-        self.write("spec/index.md", index("- **store**: where things are kept. Not: shelf."))
-        self.write("spec/capabilities/thing.md", cap("thing", [
-            "- [r1] **When** asked, the Store answers.",
-            "- [r2] **When** asked, it lists the stores.",
-            "- [r3] **When** asked, it can restore a backup.",
-            "- [r4] **When** asked, it reads a shelf and a store-front."]))
-        self.write("features/thing.feature", "Feature: thing\n\n  @r1\n  Scenario: one\n    Given SHELVES\n    When a shelf is read\n    Then it answers\n\n"
-                                             "  @r2\n  Scenario: the store answers\n    Given a thing\n    Then it holds\n")
-        lines = self.facts()
-        mentions = sorted(l for l in lines if l.startswith("mentions("))
-        self.assertEqual(mentions, sorted([
-            f'mentions("{THING}#r1", "store").',
-            f'mentions("{THING}#r2", "store").',
-            f'mentions("{THING}#r4", "shelf").',
-            'mentions("features/thing.feature:one", "shelf").',
-            'mentions("features/thing.feature:the store answers", "store").']))
+        """Only a scenario of no capability's feature is read for words; code spans and tags are no mentions."""
+        self.write("spec/index.md", index("- **store** (kind): where things are kept. Not: shelf."))
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] x"]))
+        self.write("features/thing.feature", "Feature: thing\n\n  @g1 @r1\n  Scenario: one\n    Given a shelf\n")
+        self.write("features/stray.feature", "Feature: stray\n\n  Scenario: the store answers\n"
+                                             "    Given a `shelf` and a store-front\n")
+        mentions = sorted(l for l in self.facts() if l.startswith("mentions("))
+        self.assertEqual(mentions, ['mentions("features/stray.feature:the store answers", "store").'])
 
     def test_a_typed_entry_is_read_by_its_term_and_its_not_words(self):
-        """The typed glossary of design model v5 (a category after the term), read by the 0.29 reader."""
         self.write("spec/index.md", index(
             "- **initiative** (kind): the delivery of one request's accepted lines. Plural: initiatives. Not: epic.",
             "- **`work run`** (actor): the supervisor that runs nodes through their transitions.",
@@ -66,21 +59,7 @@ class GlossaryFactsTest(ModelTest):
         self.assertIn(f'avoid("{term("initiative")}", "epic").', lines)
         self.assertIn(f'avoid("{term("status")}", "state").', lines)
         self.assertIn(f'avoid("{term("status-of-work-item")}", "state").', lines)
-        self.assertEqual(len([e for e in entries if e.startswith('"status')]), 2)
         self.assertIn(f'node("{term("work-run")}", "term").', lines)
-
-    def test_glossary_entry_reads_the_term_and_its_not_words(self):
-        from model_parse import glossary_entry
-        self.assertEqual(glossary_entry("**open** (condition of initiative): Means: its status is not `done`."),
-                         ("open of initiative", []))
-        self.assertEqual(glossary_entry("**failed** (condition of work-item): a stopped work-item. Means: its status "
-                                        "is `failed`. Not: aborted."), ("failed", ["aborted"]))
-        self.assertEqual(glossary_entry("**start** (event): Forms: starts, started. Not: begin, kick off."),
-                         ("start", ["begin", "kick off"]))
-        self.assertEqual(glossary_entry("**store**: a place. Not: shelf."), ("store", ["shelf"]))
-        self.assertIsNone(glossary_entry("**store** (): a place."))
-        self.assertIsNone(glossary_entry("**store** (kind) a place."))
-        self.assertIsNone(glossary_entry("**status** (attribute): no kind."))
 
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
@@ -89,41 +68,29 @@ class GlossaryCheckTest(ModelTest):
 
     def test_a_term_in_a_proposal_list_is_read_as_the_glossary_writes_its_id(self):
         self.good()
-        self.write("spec/index.md", index("- **store**: a place."))
         self.observation()
         self.initiative()
-        self.proposal(adds="[term/Store]")
+        self.proposal(adds="[term/Initiative]")
         r = self.run_model("check")
         self.assertNotIn("which the glossary does not have", r.stdout)
 
     def test_a_good_glossary_passes(self):
-        self.write("spec/index.md", index("- **slice**: a unit of work, e.g. a scenario. Not: chunk.",
-                                          "- **batch**: the slices one session plans."))
         self.good()
         found, r = self.check_json()
         self.assertEqual((found["violations"], found["problems"], found["unresolved"]), ([], [], []), found)
         self.assertEqual(r.returncode, 0)
 
     def test_r52(self):
-        self.write("spec/index.md", index("- **slice**: a unit of work. Not: chunk."))
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, it plans each chunk.", "- [r2] It plans a slice."]))
-        self.write("features/thing.feature", feature("thing", ("@r1", "it plans"), ("@r2", "chunks are planned"),
-                                                     ("@r2 @deprecated", "a chunk as it was")))
+        self.write("spec/index.md", index("- **slice** (kind): a unit of work. Not: chunk."))
+        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] x"]))
+        self.write("features/thing.feature", feature("thing", ("@r1", "a chunk is planned"), ("@r1 @deprecated", "a chunk as it was")))
+        self.write("features/stray.feature", "Feature: stray\n\n  Scenario: chunks are planned\n    Given a thing\n")
         found, r = self.check_json()
-        self.assertEqual(sorted(self.violated(found, "v_t1")), sorted([
-            [THING + "#r1", "chunk", term("slice")],
-            ["features/thing.feature:chunks are planned", "chunk", term("slice")]]), found)
-        self.assertFalse([a for a in self.violated(found, "v_t1") if "as it was" in a[0]], found)
+        self.assertEqual(self.violated(found, "v_t1"), [["features/stray.feature:chunks are planned", "chunk",
+                                                         term("slice")]], found)
         self.assertEqual(r.returncode, 1)
-        text = self.run_model("check").stdout
-        self.assertIn("v_t1  a word the glossary avoids  (2)", text)
-
-    def test_a_restore_is_no_store(self):
-        self.write("spec/index.md", index("- **depot**: where things are kept. Not: store."))
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] **When** asked, it can restore a backup."]))
-        self.write("features/thing.feature", feature("thing", ("@r1", "a restore")))
-        found, _ = self.check_json()
-        self.assertEqual(self.violated(found, "v_t1"), [], found)
+        self.assertIn("v_t1  a word the glossary avoids  (1)", self.run_model("check").stdout)
+        self.assertNotIn(THING, str(self.violated(found, "v_t1")))
 
 
 if __name__ == "__main__":
