@@ -101,14 +101,15 @@ def matches(repo, context, np, rel):
     an answer, a delegation or a transition. An instance the scenario has not written yet (the trace's name for what
     the command writes) is matched as any of its kind."""
     path = Path(repo) / rel
-    if np == "a decisions index":
+    if re.fullmatch(r"(a|the) decisions index( \S+)?", np):
         return rel == "spec/decisions/index.md"
     ledger = re.match(r"the ledger of the initiative (\S+)$", np)
     if ledger:
         return rel == "%s/%s/ledger.md" % (WORK, ledger.group(1))
     instance = named(np)
-    if instance and node_rel(context, instance[1]):
-        return rel == node_rel(context, instance[1])
+    written = re.fullmatch(r"the .+ (\S+)", np)     # any kind another world wrote into the nodes (supervision's)
+    if written and node_rel(context, written.group(1)):
+        return rel == node_rel(context, written.group(1))
     kind = instance[0] if instance else next((k for k in KINDS if " %s" % k in " " + np), None)
     if kind in SECTIONS:
         if not path.is_file():

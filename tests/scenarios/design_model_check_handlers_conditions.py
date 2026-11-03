@@ -219,8 +219,3 @@ def group(step):
     H.write(step.repo, "spec/capabilities/thing.md", text)
     tags = ("@r1 @r2",) if word == "compound" else ("@r1", "@r2") if word == "repeating" else ("@r1",)
     H.write(step.repo, "features/thing.feature", H.feature("thing", *tags))
-
-
-@handler("GivenK_C", "observation")
-def uncited(step):
-    """An observation a Given writes is cited by nothing unless another Given cites it: uncited needs no change."""

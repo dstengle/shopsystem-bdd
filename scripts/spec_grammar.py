@@ -165,12 +165,30 @@ def _position(tokens, offset):
     return len(tokens)
 
 
+def _literal(root, text):
+    """GF's String callback: a literal slot reads one token, but not a lexicon word, which the guard would refuse
+    there anyway; so a line of many backticked words is not read 3^n ways past LIMIT."""
+    import pgf
+    words = {w.replace(" ", spec_typed.PLACEHOLDER) for w in spec_lexicon.read(root).words()}
+
+    def read(_, start):  # offsets count characters
+        while start < len(text) and text[start] == " ":
+            start += 1
+        end = text.find(" ", start)
+        end = len(text) if end < 0 else end
+        token = text[start:end]
+        return None if not token or token in words else (pgf.Expr(token), 0.0, end)
+    return read
+
+
 def _raw(root, tokens, grammar):
     """(trees, error index or None) of the parse before the guards."""
     import pgf
     gram = load(root, grammar)
+    text = _gf_text(tokens)
     try:
-        parses = islice(gram.languages["%sEng" % grammar].parse(_gf_text(tokens)), LIMIT)
+        parses = islice(gram.languages["%sEng" % grammar].parse(text, callbacks=[("String", _literal(root, text))]),
+                        LIMIT)
         return [_tree(e, gram) for _, e in parses], None
     except pgf.ParseError as err:
         return [], (len(tokens) if err.incomplete else _position(tokens, err.offset))

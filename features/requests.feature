@@ -4,6 +4,7 @@ Feature: Requests
 
   @g1 @r1
   Scenario: `work request` takes in an open request
+    Given a request q1 that is `open`
     When the person runs `work request`
     Then `work` writes the request q1
     And the request q1 is `open`

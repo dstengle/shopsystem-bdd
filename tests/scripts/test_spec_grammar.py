@@ -154,8 +154,14 @@ def test_a_guard_refusal_names_its_reason(root):
 
 def test_a_backticked_lexicon_word_parses_only_as_the_word(root):
     p = spec_grammar.parse(root, "When the person runs `work run`, `work run` shall exit successfully.")
-    assert p.tree is not None and p.before > 1
+    assert p.tree is not None and p.before == 1     # a literal slot does not read a lexicon word
     assert "CodeLit" not in {n[0] for n in spec_tree.nodes(p.tree)}
+
+
+def test_a_literal_slot_does_not_read_a_lexicon_word_so_long_coordinations_are_read_whole(root):
+    line = ", ".join("`%s` shall print `v%d`" % ("work run" if i % 2 else "work", i) for i in range(7))
+    p = spec_grammar.parse(root, line + ", and `features` shall print `v7`.")
+    assert p.tree is not None and p.before < spec_grammar.LIMIT
 
 
 def test_hint_gives_the_parsed_prefix_and_the_nearest_words(root):

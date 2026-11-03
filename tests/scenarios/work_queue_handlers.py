@@ -144,7 +144,7 @@ def then_writes(step):
 @handler("ThenDoes", "commit")
 def then_commits(step):
     assert W.head(step.repo) != step.context.get("head"), "no commit was made: %s" % step.text
-    files = W.committed(step.repo)
+    files = W.git(step.repo, "diff", "--name-only", step.context["head"], "HEAD").split() if step.context.get("head") else W.committed(step.repo)
     assert matched(step, files), (step.text, files)
 
 

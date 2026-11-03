@@ -1,6 +1,6 @@
 ---
-id: record/missingmass.io/shopsystem/shopsystem-bdd/2026-11-03-gf-conversion-report-R2
-kind: report
+id: record/missingmass.io/shopsystem/shopsystem-bdd/2026-11-03-gf-conversion-report-r2
+kind: analysis
 about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
 date: 2026-11-03
 status: done

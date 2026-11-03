@@ -2,7 +2,6 @@
 `and` between responses as separate Thens, one solve for a contrast, and the same spec giving the same bytes."""
 import os
 import pathlib
-import re
 import shutil
 import subprocess
 import sys
@@ -14,8 +13,6 @@ import toolchain
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
 FEATURES = REPO / "scripts" / "features"
-G13 = ("- [r16] While a result is outputless, when a session ends a `plan` stage for a work-item with the result, "
-       "`work run` shall set the status of the work-item to `awaiting-answer` and ask a question on the work-item.\n")
 
 
 def copy_spec(tmp_path, name):
@@ -51,21 +48,10 @@ def steps(root, gid):
 
 @pytest.fixture(scope="module")
 def edited(tmp_path_factory):
-    """The live spec with supervision g2's given block deleted (and r53, whose L1 against r2 layer 4 removes), g13's
-    two statements merged with `and`."""
+    """A copy of the live spec, which layer 4 rewrote: no given block, supervision g12's and g24's statements merged
+    with `and`."""
     toolchain.require()
     root = copy_spec(tmp_path_factory.mktemp("trace"), "spec-copy")
-    sup = root / "spec" / "capabilities" / "supervision.md"
-    text = sup.read_text()
-    g2 = text[text.index("### [g2]"):text.index("### [g3]")]
-    sup.write_text(text.replace(g2, re.sub(r"```given\n.*?```\n", "", g2, flags=re.DOTALL)))
-    edit(sup, "- [r53] While a work-item is `drafted`, when the person runs `work run` on an initiative, `work run` "
-         "shall not start a stage for the work-item.\n", "")
-    edit(sup, "- [r1] While a remote is not unpushable, when the person runs `work run` on an initiative, `work run` "
-         "shall set the status of every open work-item to `green`.\n", "")
-    text = sup.read_text()
-    g13 = text[text.index("- [r16]"):text.index("```given", text.index("- [r16]"))]
-    sup.write_text(text.replace(g13, G13 + "\n"))
     return root
 
 
@@ -76,13 +62,13 @@ def test_a_while_clause_gives_its_given_with_no_given_block(edited):
 
 
 def test_a_merged_statement_gives_one_then_for_each_response(edited):
-    thens = [t for k, t in steps(edited, "supervision#g13") if k == "then"]
+    thens = [t for k, t in steps(edited, "supervision#g12") if k == "then"]
     assert "the work-item w1 is `awaiting-answer`" in thens
     assert "`work run` asks the question q1" in thens
 
 
 def test_commit_and_push_gives_two_thens(edited):
-    thens = [t for k, t in steps(edited, "supervision#g25") if k == "then"]
+    thens = [t for k, t in steps(edited, "supervision#g24") if k == "then"]
     assert "`work run` commits the transition t1" in thens
     assert "`work run` pushes the commit c1" in thens
 

@@ -1,5 +1,5 @@
 ---
-id: record/missingmass.io/shopsystem/shopsystem-bdd/2026-11-03-gf-conversion-gate-r2-L3
+id: record/missingmass.io/shopsystem/shopsystem-bdd/2026-11-03-gf-conversion-gate-r2-l3
 kind: design
 about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
 date: 2026-11-03
