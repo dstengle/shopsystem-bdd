@@ -152,7 +152,7 @@ class LanguageCommandsTest(CodifiedTest):
         import model_report
         calls = []
         fake = types.SimpleNamespace(run=lambda root, capability=None, extra=None: calls.append((root, capability)) or ["F"],
-                                     report=lambda findings, as_json: ("L1 r1 r2\n" if findings == ["F"] else "", 1))
+                                     report=lambda findings, _as_json: ("L1 r1 r2\n" if findings == ["F"] else "", 1))
         args = types.SimpleNamespace(root=str(self.tmp), capability="wq", json=False)
         out = io.StringIO()
         with mock.patch.dict(sys.modules, {"spec_solve": fake}), contextlib.redirect_stdout(out):
