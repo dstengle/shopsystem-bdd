@@ -9,7 +9,7 @@ import pytest
 
 SCRIPTS = pathlib.Path(__file__).resolve().parents[2] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
-import supervise_worker  # noqa: F401  (supervise_faults is loaded through it, as supervise loads it)
+import supervise  # noqa: F401  (its import order settles the modules' circular imports)
 import workqueue
 from supervise_draft import Drafts
 

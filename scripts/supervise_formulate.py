@@ -6,13 +6,15 @@ committed. The round still runs under the round lock, one at a time across initi
 library only; a part of supervise.Run."""
 import json
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import workqueue
 from supervise_faults import Fault
-from supervise_outputs import is_guarantees
+from supervise_outputs import drafted, is_guarantees
 
 SCRIPTS = Path(__file__).resolve().parent
 REQUIREMENT = re.compile(r"^([a-z0-9]+(?:-[a-z0-9]+)*)#[rg]\d+")
@@ -119,3 +121,31 @@ class Formulate:
             (kept / "result.json").write_text(json.dumps(data, indent=2) + "\n")
             self.own.add(self.rel(kept))
         return data, None
+
+
+def preview(root, drafts, cap, out):
+    """The gate's preview (design §13): the feature `features generate` would write for capability `cap` with the
+    drafts under `drafts` laid over `root`'s spec/, written to `out`/<cap>.feature. (its path, None), or (None, why
+    there is none)."""
+    import features_generate
+    import features_vocab
+    import spec_grammar
+    import spec_read
+    tmp = Path(tempfile.mkdtemp(prefix="preview-"))
+    try:
+        drafted(root, drafts, tmp)
+        path = tmp / "spec" / "capabilities" / ("%s.md" % cap)
+        if not spec_read.codified(path):
+            return None, "spec/capabilities/%s.md is not codified" % cap
+        if is_guarantees(tmp, cap):
+            return None, "%s is a guarantees capability: it has no scenarios" % cap
+        try:
+            text = features_generate.generate(tmp, path)
+        except (features_generate.GenerateError, features_vocab.StepError, spec_grammar.GrammarError) as why:
+            return None, "it cannot be generated: %s" % why
+        Path(out).mkdir(parents=True, exist_ok=True)
+        shown = Path(out) / ("%s.feature" % cap)
+        shown.write_text(text)
+        return shown, None
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)

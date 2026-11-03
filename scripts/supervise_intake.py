@@ -8,6 +8,7 @@ import subprocess
 import workqueue
 import workqueue_request
 from supervise import Run
+from supervise_brief import normal_form
 from supervise_faults import Fault, fault_of
 from supervise_worker import SCRIPTS, WORKER, GitFailed, git
 from workqueue import WORK, Refused
@@ -68,7 +69,7 @@ class Intake(Run):
             "Write the result file first, with the outcome `PARTIAL`, and keep it current as you work: JSON with `status`, "
             "`summary` (under fifteen lines) and `questions` (a list of strings), so that a session that stops part-way "
             "still leaves a result, and one that does not claim the work done.\n"
-            % (name, path, agent, SCRIPTS, tree, branch, "\n".join("- " + l for l in held), path, work, name, work, name,
+            % (name, path, agent, SCRIPTS, tree, branch, "\n".join("- " + l + read_as(self.root, l) for l in held), path, work, name, work, name,
                here, here / "result.json", tree))
         return brief
 
@@ -116,3 +117,10 @@ class Intake(Run):
             self.unlogged = []
             self.own = {d for d in self.own if not d.startswith(self.rel(self.dir / "runs" / name) + "/")}
             self.git_push()
+
+
+def read_as(root, line):
+    """A request line's normal form in the brief, on the line under it (design §13), where the context's grammar reads
+    it; else nothing."""
+    said = normal_form(root, line.split(". ", 1)[1] if line.split(". ", 1)[0].isdigit() else line)
+    return "\n  %s" % said if said else ""

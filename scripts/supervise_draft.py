@@ -1,5 +1,6 @@
 """`work run`'s drafting (capability supervision): the work-items of a formulated capability-proposal, one a capability
-with the deprecated scenarios it retires, and the work-item for the findings a kept branch review lists to fix now.
+with the requirements its `removes` retires there (and any deprecated scenario a 0.29 feature still holds), and the
+work-item for the findings a kept branch review lists to fix now.
 Standard library only; a part of supervise.Run. Drafting goes through workqueue.add, the function behind `work add`."""
 import json
 import re

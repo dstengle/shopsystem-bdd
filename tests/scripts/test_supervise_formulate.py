@@ -13,7 +13,7 @@ import pytest
 SCRIPTS = pathlib.Path(__file__).resolve().parents[2] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
-import supervise_worker  # noqa: F401  (supervise_faults is loaded through it, as supervise loads it)
+import supervise  # noqa: F401  (its import order settles the modules' circular imports)
 import supervise_formulate
 import toolchain
 from supervise_faults import Fault
@@ -120,3 +120,22 @@ def test_the_round_gives_a_result_in_its_stage_directory_and_starts_no_session(r
     assert failure is None and json.loads((kept / "result.json").read_text()) == data
     assert data["generated"] == ["features/work-queue.feature"] and not (kept / "session.json").exists()
     assert run.rel(kept) in run.own
+
+
+def test_the_gate_previews_the_scenarios_the_drafts_would_generate(repo, tmp_path):
+    drafts = tmp_path / "stage" / "drafts"
+    path = drafts / "round-1" / "spec" / "capabilities" / "work-queue.md"
+    path.parent.mkdir(parents=True)
+    path.write_text((repo / "spec" / "capabilities" / "work-queue.md").read_text().replace(
+        "## Not yet", "### [g4] `work abandon` abandons a started initiative\n- [r5] When the person runs `work abandon` "
+        "on an initiative that is `started`, `work` shall set its status to `abandoned`.\n\n## Not yet"))
+    shown, why = supervise_formulate.preview(repo, drafts, "work-queue", tmp_path / "out")
+    assert why is None and shown == tmp_path / "out" / "work-queue.feature"
+    assert "@g4 @r5\n  Scenario: `work abandon` abandons a started initiative" in shown.read_text()
+
+
+def test_a_capability_with_no_scenarios_to_preview_says_why(repo, tmp_path):
+    assert supervise_formulate.preview(repo, tmp_path / "none", "legacy", tmp_path / "out") == (
+        None, "spec/capabilities/legacy.md is not codified")
+    assert supervise_formulate.preview(repo, tmp_path / "none", "review", tmp_path / "out") == (
+        None, "review is a guarantees capability: it has no scenarios")
