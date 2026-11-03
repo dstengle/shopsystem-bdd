@@ -16,12 +16,8 @@ The queue's command, a toy for the end-to-end test.
 ## Behaviour
 
 ### [g1] `work start` starts a proposed initiative
-- [r1] When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to `started`.
-- [r2] When the person runs `work start` on an initiative that is `proposed`, `work` shall exit successfully.
-
-```given
-an initiative i1 that is `proposed`
-```
+- [r1] When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to `started`
+  and exit successfully.
 
 ## Not yet
 ## Dropped

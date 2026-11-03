@@ -24,7 +24,7 @@ A small codified context for the end-to-end test of a request through the requir
 - **status** (attribute of initiative): Values: `proposed`, `started`, `done`, `abandoned`.
   Transitions: `proposed` → `started`: `work start`; `started` → `done`: complete; `started` → `abandoned`: `work abandon`.
 
-- **open** (condition of initiative): Means: its status is not `done` and not `abandoned`.
+- **open** (condition of initiative): An initiative is open when the initiative is not `done` and the initiative is not `abandoned`.
 
 - **start** (event): a stage begins.
 - **give** (event): Forms: gives, given.
