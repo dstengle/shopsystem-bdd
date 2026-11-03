@@ -5,7 +5,7 @@ part_of: initiative/i16
 status: merged
 date: 2026-10-22
 argues: [delivery]
-adds: [delivery#r10-r16]
+adds: [delivery#r10@0.29, delivery#r11@0.29, delivery#r12@0.29, delivery#r13@0.29, delivery#r14@0.29, delivery#r15@0.29, delivery#r16@0.29]
 source: [design-decision/the-session-keeps-the-gate]
 ---
 

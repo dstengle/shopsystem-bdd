@@ -3,7 +3,7 @@
 Search: `tools refs` ran (0 refs for `workqueue_request.request`, a dispatch by name in `scripts/work`). `tools tests-of` and `untested` could not run: no map (`tools map` not made). Counts below are `by search` unless marked.
 Scripts: `/home/vscode/shopsystem-bdd/scripts/tools`. Probes: `.shop/scratch/w175-1-research/probe_delegation.py`, run `-n 0`.
 
-Accepted: `requests#r22` (spec/capabilities/requests.md:23), scenario `features/requests.feature:33`.
+Accepted: `requests#r22@0.29` (spec/capabilities/requests.md:23), scenario `features/requests.feature:33`.
 
 ## 1. Why the scenario is red today
 

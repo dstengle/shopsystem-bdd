@@ -5,7 +5,7 @@ part_of: initiative/i16
 status: formulated
 date: 2026-10-22
 argues: [role-boundaries]
-changes: [role-boundaries#r5]
+changes: [role-boundaries#r5@0.29]
 source: [design-decision/the-session-keeps-the-gate]
 ---
 

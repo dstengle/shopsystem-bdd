@@ -1,6 +1,6 @@
 # Review of w222 (supervision r171, r172)
 
-**Verdict: DONE_WITH_CONCERNS.** The code does what r171 asks: one `drafted` glossary-proposal written from the change list's glossary entries and committed with the integrate round. r172 holds because no route exists for it to break. One Important finding is triaged fix now. Plan D3 makes `Rounds.due` skip an integrate round that supervision#r93's text asks for. The code is defensible, since taking r93 literally would loop on a glossary-only initiative, but the line has to be reworded first so it agrees with the code.
+**Verdict: DONE_WITH_CONCERNS.** The code does what r171 asks: one `drafted` glossary-proposal written from the change list's glossary entries and committed with the integrate round. r172 holds because no route exists for it to break. One Important finding is triaged fix now. Plan D3 makes `Rounds.due` skip an integrate round that supervision#r93@0.29's text asks for. The code is defensible, since taking r93 literally would loop on a glossary-only initiative, but the line has to be reworded first so it agrees with the code.
 
 ## Commits reviewed
 
@@ -12,13 +12,13 @@
 
 What I searched for in the diff: removed `def`s, `assert` lines, parametrize cases, skip/xfail, and rewritten steps. Commands: `git show 606654ee` (I read the whole diff), then a grep of its `-` lines.
 
-- `tests/scenarios/spec_integration_steps.py` `drafts_glossary_change` (the Then of spec-integration#r54's scenario "the round drafts a change to the glossary"). The diff removes `assert not (repo / ".shop/work/i1/glossary.md").exists()`. Before, the step also proved that no glossary.md was written. Now it proves only that the brief and the change list carry the glossary entry. Plan §4 says "None" and does not list it. The report claims it under an allowance (see below).
+- `tests/scenarios/spec_integration_steps.py` `drafts_glossary_change` (the Then of spec-integration#r54@0.29's scenario "the round drafts a change to the glossary"). The diff removes `assert not (repo / ".shop/work/i1/glossary.md").exists()`. Before, the step also proved that no glossary.md was written. Now it proves only that the brief and the change list carry the glossary entry. Plan §4 says "None" and does not list it. The report claims it under an allowance (see below).
 
 Nothing else was removed or weakened. The other `-` lines are an import line and the r93 condition line in production code.
 
 ## Allowances
 
-- `interim`, `tests/scenarios/spec_integration_steps.py` `drafts_glossary_change`: **holds.** The assertion was first committed in `085527d8` ("spec-integration r54: ..."), and `git merge-base --is-ancestor 134745663 085527d8` confirms that commit comes after the base. spec-integration#r54 says nothing about whether a glossary-proposal file exists. The step now asserts what plan D1/D2 says, namely that glossary.md is written by `work run` (supervision#r171). Plan §4 was wrong to say no test breaks, and the report says so.
+- `interim`, `tests/scenarios/spec_integration_steps.py` `drafts_glossary_change`: **holds.** The assertion was first committed in `085527d8` ("spec-integration r54: ..."), and `git merge-base --is-ancestor 134745663 085527d8` confirms that commit comes after the base. spec-integration#r54@0.29 says nothing about whether a glossary-proposal file exists. The step now asserts what plan D1/D2 says, namely that glossary.md is written by `work run` (supervision#r171@0.29). Plan §4 was wrong to say no test breaks, and the report says so.
 
 ## Cannot verify
 
@@ -27,7 +27,7 @@ Nothing else was removed or weakened. The other `-` lines are an import line and
 
 ## Findings
 
-### 1. Important, w222, fix now: `scripts/supervise_rounds.py:47` contradicts supervision#r93
+### 1. Important, w222, fix now: `scripts/supervise_rounds.py:47` contradicts supervision#r93@0.29
 r93: "**When** an initiative is `started` and has neither a capability-proposal nor a work-item, `work run` shall start a round of the kind `integrate` ...". The commit adds `and not self.glossary_proposals()`. A started initiative that holds only a glossary-proposal gets no integrate round, which is the opposite of what r93's text says. The plan (D3) justifies this with decision 0073 ("an initiative that changes only the glossary is delivered with no capability-proposal"), with r93's intent ("left nothing behind"), and with the loop that taking r93 literally would cause under r171. The reasoning is sound, but the behaviour now rests on a reading of r93, not on a line. Why it matters: r93's scenario and any later reader of r93 will expect the literal behaviour, and `model check` cannot see the discrepancy. Fix: keep the code and retire r93 for a new line through integrating-a-proposal, e.g. "... has neither a capability-proposal, a glossary-proposal nor a work-item ...", with its scenario moved onto the new id.
 
 ### 2. Important, w222, observation: `scripts/supervise_change.py:132-138` overwrites an existing glossary-proposal

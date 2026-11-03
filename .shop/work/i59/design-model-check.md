@@ -4,9 +4,9 @@ kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i59
 status: awaiting-answer
 argues: [design-model-check]
-adds: [design-model-check#r125, design-model-check#r126, design-model-check#r127, design-model-check#r128, design-model-check#r129, design-model-check#r130, design-model-check#r131, design-model-check#r132, design-model-check#r133, design-model-check#r134, design-model-check#r135, design-model-check#r136, design-model-check#r137, design-model-check#r138, design-model-check#r139]
+adds: [design-model-check#r125@0.29, design-model-check#r126@0.29, design-model-check#r127@0.29, design-model-check#r128@0.29, design-model-check#r129@0.29, design-model-check#r130@0.29, design-model-check#r131@0.29, design-model-check#r132@0.29, design-model-check#r133@0.29, design-model-check#r134@0.29, design-model-check#r135@0.29, design-model-check#r136@0.29, design-model-check#r137@0.29, design-model-check#r138@0.29, design-model-check#r139@0.29]
 changes: []
-removes: [design-model-check#r2, design-model-check#r11, design-model-check#r33, design-model-check#r12, design-model-check#r15, design-model-check#r108, design-model-check#r65, design-model-check#r109, design-model-check#r105, design-model-check#r13]
+removes: [design-model-check#r2@0.29, design-model-check#r11@0.29, design-model-check#r33@0.29, design-model-check#r12@0.29, design-model-check#r15@0.29, design-model-check#r108@0.29, design-model-check#r65@0.29, design-model-check#r109@0.29, design-model-check#r105@0.29, design-model-check#r13@0.29]
 date: 2026-10-29
 ---
 

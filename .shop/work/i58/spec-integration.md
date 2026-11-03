@@ -4,7 +4,7 @@ kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i58
 status: awaiting-answer
 argues: [spec-integration]
-adds: [spec-integration#r56]
+adds: [spec-integration#r56@0.29]
 changes: []
 removes: []
 date: 2026-10-28

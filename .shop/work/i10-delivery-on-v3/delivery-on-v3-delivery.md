@@ -5,14 +5,14 @@ part_of: initiative/i10
 status: merged
 date: 2026-10-19
 argues: [delivery]
-adds: [delivery#r1-r7]
+adds: [delivery#r1@0.29, delivery#r2@0.29, delivery#r3@0.29, delivery#r4@0.29, delivery#r5@0.29, delivery#r6@0.29, delivery#r7@0.29]
 changes: []
 removes: []
 ---
 
 # Delivery: a new capability
 
-What the gate approves: `delivery#r1-r17`, a new capability, as written in `capabilities/delivery.md`.
+What the gate approves: `delivery#r1@0.29, delivery#r2@0.29, delivery#r3@0.29, delivery#r4@0.29, delivery#r5@0.29, delivery#r6@0.29, delivery#r7@0.29, delivery#r8@0.29, delivery#r9@0.29, delivery#r10@0.29, delivery#r11@0.29, delivery#r12@0.29, delivery#r13@0.29, delivery#r14@0.29, delivery#r15@0.29, delivery#r16@0.29, delivery#r17@0.29`, a new capability, as written in `capabilities/delivery.md`.
 
 `delivering-an-initiative` is the session's part of delivery: formulated capability-proposals become drafted
 work-items, `work run` is started, and the person is asked only the questions it ends with. It replaces

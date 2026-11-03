@@ -5,9 +5,9 @@ Agent: initiative-round
 Scripts: /home/vscode/shopsystem-bdd/scripts
 Kind: gate
 Give the gate as questions in your result's `questions`, one string each: every question a decision, with its readings and the recommended reading marked.
-Adds: analysis-tools#r59, analysis-tools#r60, analysis-tools#r61, analysis-tools#r62, analysis-tools#r63, analysis-tools#r64, analysis-tools#r65, analysis-tools#r66, analysis-tools#r67, analysis-tools#r68, analysis-tools#r69, analysis-tools#r70, analysis-tools#r71, analysis-tools#r72, analysis-tools#r73, analysis-tools#r74, analysis-tools#r75
+Adds: analysis-tools#r59@0.29, analysis-tools#r60@0.29, analysis-tools#r61@0.29, analysis-tools#r62@0.29, analysis-tools#r63@0.29, analysis-tools#r64@0.29, analysis-tools#r65@0.29, analysis-tools#r66@0.29, analysis-tools#r67@0.29, analysis-tools#r68@0.29, analysis-tools#r69@0.29, analysis-tools#r70@0.29, analysis-tools#r71@0.29, analysis-tools#r72@0.29, analysis-tools#r73@0.29, analysis-tools#r74@0.29, analysis-tools#r75@0.29
 Changes: none
-Removes: analysis-tools#r49, analysis-tools#r17, analysis-tools#r3, analysis-tools#r4, analysis-tools#r6, analysis-tools#r7, analysis-tools#r56, analysis-tools#r53, analysis-tools#r54, analysis-tools#r55, analysis-tools#r57, analysis-tools#r16, analysis-tools#r51
+Removes: analysis-tools#r49@0.29, analysis-tools#r17@0.29, analysis-tools#r3@0.29, analysis-tools#r4@0.29, analysis-tools#r6@0.29, analysis-tools#r7@0.29, analysis-tools#r56@0.29, analysis-tools#r53@0.29, analysis-tools#r54@0.29, analysis-tools#r55@0.29, analysis-tools#r57@0.29, analysis-tools#r16@0.29, analysis-tools#r51@0.29
 Ask questions only on the lines and terms listed above as adds, changes or removes, and on no other line or term.
 Drafts path: .shop/work/i59/runs/i59/1-integrate/drafts/round-2/
 Base: 3be48327e94e2ec17ea63d9334f33dd184b148e0

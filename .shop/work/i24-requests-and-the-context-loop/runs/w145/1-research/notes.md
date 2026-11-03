@@ -1,10 +1,10 @@
-# Notes for w145 (formulation#r14, formulating-features without a small-change path)
+# Notes for w145 (formulation#r14@0.29, formulating-features without a small-change path)
 
 Tools: `tools tests-of` refused (no map; not made, `map` runs the suite). Searches by text otherwise. `tools size --limit 300` printed nothing: no tracked Python file over 300.
 
 ## 1. Why each scenario is red today
 
-None: formulation#r14 has no scenario. `features/formulation.feature` does not exist (ls, by search). The work-item says "no scenario". The `@r14` tags in `features/` (10 hits, by search) belong to other capabilities. Nothing run.
+None: formulation#r14@0.29 has no scenario. `features/formulation.feature` does not exist (ls, by search). The work-item says "no scenario". The `@r14` tags in `features/` (10 hits, by search) belong to other capabilities. Nothing run.
 
 ## 2. What the system answers today
 

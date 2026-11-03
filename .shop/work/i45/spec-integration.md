@@ -5,9 +5,9 @@ part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i45
 status: drafted
 argues: [spec-integration]
 date: 2026-10-28
-adds: [spec-integration#r60, spec-integration#r61, spec-integration#r62, spec-integration#r63, spec-integration#r64, spec-integration#r65, spec-integration#r66, spec-integration#r67]
+adds: [spec-integration#r60@0.29, spec-integration#r61@0.29, spec-integration#r62@0.29, spec-integration#r63@0.29, spec-integration#r64@0.29, spec-integration#r65@0.29, spec-integration#r66@0.29, spec-integration#r67@0.29]
 changes: []
-removes: [spec-integration#r13]
+removes: [spec-integration#r13@0.29]
 ---
 
 # spec-integration

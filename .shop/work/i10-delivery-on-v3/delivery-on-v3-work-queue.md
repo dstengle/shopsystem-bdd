@@ -5,14 +5,14 @@ part_of: initiative/i10
 status: formulated
 date: 2026-10-19
 argues: [work-queue]
-adds: [work-queue#r1-r7]
+adds: [work-queue#r1@0.29, work-queue#r2@0.29, work-queue#r3@0.29, work-queue#r4@0.29, work-queue#r5@0.29, work-queue#r6@0.29, work-queue#r7@0.29]
 changes: []
 removes: []
 ---
 
 # Work queue: a new capability
 
-What the gate approves: `work-queue#r1-r24`, a new capability, as written in `capabilities/work-queue.md`.
+What the gate approves: `work-queue#r1@0.29, work-queue#r2@0.29, work-queue#r3@0.29, work-queue#r4@0.29, work-queue#r5@0.29, work-queue#r6@0.29, work-queue#r7@0.29, work-queue#r8@0.29, work-queue#r9@0.29, work-queue#r10@0.29, work-queue#r11@0.29, work-queue#r12@0.29, work-queue#r13@0.29, work-queue#r14@0.29, work-queue#r15@0.29, work-queue#r16@0.29, work-queue#r17@0.29, work-queue#r18@0.29, work-queue#r19@0.29, work-queue#r20@0.29, work-queue#r21@0.29, work-queue#r22@0.29, work-queue#r23@0.29, work-queue#r24@0.29`, a new capability, as written in `capabilities/work-queue.md`.
 
 The design model's work-queue (design-model.md v3, section 3, "Three structures") as a script, `scripts/work`,
 over `.shop/work/`: drafting, the queue view, the guards of the lifecycle, claims, rulings and the move log. It

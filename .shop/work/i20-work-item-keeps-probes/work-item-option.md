@@ -5,7 +5,7 @@ part_of: initiative/i20
 status: formulated
 date: 2026-10-22
 argues: [supervision]
-adds: [supervision#r55, supervision#r56]
+adds: [supervision#r55@0.29, supervision#r56@0.29]
 changes: []
 ---
 

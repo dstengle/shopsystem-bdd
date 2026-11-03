@@ -15,7 +15,7 @@ Every check a work-item names was run here and passed. The suite is red at HEAD 
     - `2f3698be` (i30 formulate)
     - `a30cfe25` (i31 formulate)
 - i25's work-items:
-  - **w173** (supervision#r98), green. One commit, `b6c4feb1`, between `906706f0` (ready -> claimed) and `9e50678a` (claimed -> done).
+  - **w173** (supervision#r98@0.29), green. One commit, `b6c4feb1`, between `906706f0` (ready -> claimed) and `9e50678a` (claimed -> done).
   - **w174** (work-queue r14, r26, r27), withdrawn. Its branch `work/w174` is still there and is not merged. Nothing of it is on the branch.
   - **w176** (work-queue r14, r26-r28), green. One commit, `a2d1083e`, between `9c79765c` (ready -> claimed) and `e0ce90ce` (claimed -> done).
 - i25's round commits:

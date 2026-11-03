@@ -1,11 +1,11 @@
 # Plan of w139: work run measures a finished initiative and starts its analysis
 
-Work-item `.shop/work/i24-requests-and-the-context-loop/w139.md`, under `supervision`, accepting supervision#r75 and supervision#r76. No `## Retires`, no `## Rulings`. The stage-1 researcher stopped at its turn limit. Stage 2's notes (`runs/w139/2-research/notes.md`) are the ones this plan works from.
+Work-item `.shop/work/i24-requests-and-the-context-loop/w139.md`, under `supervision`, accepting supervision#r75@0.29 and supervision#r76@0.29. No `## Retires`, no `## Rulings`. The stage-1 researcher stopped at its turn limit. Stage 2's notes (`runs/w139/2-research/notes.md`) are the ones this plan works from.
 
 ## 1. What goes green
 
-- **supervision#r75**, "when every work-item is green or withdrawn and the kept branch review lists nothing to fix now, `measure initiative` is run on the initiative". It is red today because the Given "every worker gives DONE, and the branch reviewer's result lists nothing to fix now" has no step. The only reviewer Given (`supervision_review_steps.py:21`) accepts `ends` or `writes findings.md beside its brief`. The Then "`work run` ran `measure initiative` on i1 after the branch review was kept" has no step either. In the code, `Run.run` (`supervise.py` 189-195) stops after the branch review and the r74 fix step, and nothing in `scripts/supervise*.py` runs `measure` (notes §1).
-- **supervision#r76**, "once `measure initiative` has written the initiative's measurement, a session of analyzing-a-batch writes its analysis record". It is red today because its Given (line 926) and both Thens (lines 928 and 929) have no steps. Also, `analyzing-a-batch` is a skill, not an agent, and `Workers.session` starts only `--agent` sessions of an existing `agents/<agent>.md`. The stand-in `claude` refuses any other (notes §1, §3).
+- **supervision#r75@0.29**, "when every work-item is green or withdrawn and the kept branch review lists nothing to fix now, `measure initiative` is run on the initiative". It is red today because the Given "every worker gives DONE, and the branch reviewer's result lists nothing to fix now" has no step. The only reviewer Given (`supervision_review_steps.py:21`) accepts `ends` or `writes findings.md beside its brief`. The Then "`work run` ran `measure initiative` on i1 after the branch review was kept" has no step either. In the code, `Run.run` (`supervise.py` 189-195) stops after the branch review and the r74 fix step, and nothing in `scripts/supervise*.py` runs `measure` (notes §1).
+- **supervision#r76@0.29**, "once `measure initiative` has written the initiative's measurement, a session of analyzing-a-batch writes its analysis record". It is red today because its Given (line 926) and both Thens (lines 928 and 929) have no steps. Also, `analyzing-a-batch` is a skill, not an agent, and `Workers.session` starts only `--agent` sessions of an existing `agents/<agent>.md`. The stand-in `claude` refuses any other (notes §1, §3).
 - Deprecated scenarios retired: none. The work-item has no `## Retires`.
 
 ## 2. Where the change lands
@@ -41,16 +41,16 @@ Dropped from the researcher's set: `scripts/supervise_review.py`, `tests/scenari
 1. **"Lists nothing to fix now" means the kept review's `result.json` is readable and its `questions` list is empty or absent.**
    - It is the field r74's `fix_work_item` reads the fix-now list from. r74 and r75 then read one list: a list with lines drafts a fix (r74), and an empty one measures (r75). A result whose questions name no work-item still lists something, so it is not measured.
    - A kept review with no readable result lists nothing at all. It is not "nothing to fix now", so there is no measure. design-decision/worker-results-are-files makes a missing or malformed result a failed stage, not a result that lists nothing.
-   - Rests on supervision#r74, supervision#r75 and design-decision/worker-results-are-files.
+   - Rests on supervision#r74@0.29, supervision#r75@0.29 and design-decision/worker-results-are-files.
 2. **The measure is triggered by a review kept in this run.** `branch_review()` returns that review's directory. A later `work run` with nothing unread keeps no review, so it does not measure again.
    - r75 is an event ("When … its kept branch review lists nothing"). 0068 starts the measurement "when the initiative's work is done", once.
    - `analyzing-a-batch` counts running `measure initiative` again over an existing measurement as a mistake, because the transcripts may be gone. So `work run` never passes `--replace` or `--sessions`. A same-day measurement that already exists is refused, and then there is no analysis (r76 needs "has written").
-   - Rests on supervision#r75, supervision#r76 and design-decision/the-context-runs-without-a-coordinator.
+   - Rests on supervision#r75@0.29, supervision#r76@0.29 and design-decision/the-context-runs-without-a-coordinator.
 3. **The analysis session is a `claude -p --agent shopsystem-bdd:batch-analyst` session.**
    - The new agent lists `skills: [shopsystem-bdd:analyzing-a-batch]`. Its tools are Read, Glob, Grep, Bash, Write and Skill: no Edit and no Agent. Its model is opus, as for the other judging roles. Its text tells it to write its result file first, with `PARTIAL`, and keep it current.
    - r12 already lets it load its skill, by `Skill(shopsystem-bdd:analyzing-a-batch)`.
    - The stand-in's plan key for "the analyzing-a-batch session" is `batch-analyst`.
-   - Rests on design-decision/the-v3-agents (each role is an agent with its own tools and model; only `initiative-round` has Agent), supervision#r11, supervision#r12 and supervision#r76.
+   - Rests on design-decision/the-v3-agents (each role is an agent with its own tools and model; only `initiative-round` has Agent), supervision#r11@0.29, supervision#r12@0.29 and supervision#r76@0.29.
 4. **What the session is given.** It is started through `Workers.session` with stage `analysis`, in a detached worktree at the initiative branch's head, like the reviewer's.
    - Its tools are r14's: `measure` by path, and no git command, because it commits nothing (decision 5).
    - Its brief is one file in the worktree's `.shop/scratch/analysis/`. The brief:
@@ -59,7 +59,7 @@ Dropped from the researcher's set: `scripts/supervise_review.py`, `tests/scenari
      - says the measurement is already written, so the session reads it with `measure show` and does not run `measure initiative`;
      - asks for the analysis record as `analysis.md` in the run directory, and says not to commit it;
      - has no `Work-item:` line.
-   - Rests on supervision#r2, supervision#r11, supervision#r14, supervision#r17, supervision#r44 and design-decision/worker-results-are-files. `skills/analyzing-a-batch/SKILL.md` is left as it is: the brief overrides its Process steps 1 and 4 for this session.
+   - Rests on supervision#r2@0.29, supervision#r11@0.29, supervision#r14@0.29, supervision#r17@0.29, supervision#r44@0.29 and design-decision/worker-results-are-files. `skills/analyzing-a-batch/SKILL.md` is left as it is: the brief overrides its Process steps 1 and 4 for this session.
 5. **Where the record goes, and what is committed.**
    - When the session ends, `work run` copies the `analysis.md` from its run directory, if it wrote one, to the main checkout's `.shop/records/<date>-<initiative>-analysis.md`. The date is the measurement's date, and the place is the one the i22 analysis record has.
    - The measurement and the record stay uncommitted, as `measure` leaves its record today. The analysis session logs no line to `log.jsonl` and leaves no directory under `.shop/work/`. Its worktree and scratch are removed with the run's (r33).
@@ -67,12 +67,12 @@ Dropped from the researcher's set: `scripts/supervise_review.py`, `tests/scenari
      - r27 and r50 would start a new branch review for any commit on the initiative branch other than a review's own commit. A committed record would therefore set off a review, a measure and an analysis on every later `work run`.
      - r46 refuses the next run if `log.jsonl` under `.shop/work/` is left uncommitted.
      - r8 and r49 log the workers of work-items and the branch reviewer, and neither is this session.
-   - Rests on supervision#r27, supervision#r50, supervision#r46, supervision#r8, supervision#r49 and supervision#r33.
+   - Rests on supervision#r27@0.29, supervision#r50@0.29, supervision#r46@0.29, supervision#r8@0.29, supervision#r49@0.29 and supervision#r33@0.29.
 6. **A refused measure or a failed analysis session is not a fault.** The work-items are all green or withdrawn, so `work run` exits as r9 says (0).
    - It writes to stderr why the measure was refused (its message) or what the analysis session ended with, and that no record was kept. Stdout stays r9's statuses.
    - The same holds for the branch reviewer's session today. A failed analysis is not a work-item's stage, so r42 and r45 do not apply.
-   - Rests on supervision#r9.
-7. **No push verification before the analysis session.** r35 names the work-items' workers and the branch reviewer, and this session pushes and commits nothing. Rests on supervision#r35 and decision 5.
+   - Rests on supervision#r9@0.29.
+7. **No push verification before the analysis session.** r35 names the work-items' workers and the branch reviewer, and this session pushes and commits nothing. Rests on supervision#r35@0.29 and decision 5.
 
 ## 4. Tests the decisions break
 

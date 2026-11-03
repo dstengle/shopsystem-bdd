@@ -1,6 +1,6 @@
 # Review of w143
 
-**Verdict: DONE.** No Critical finding and nothing to fix now. The commit does what spec-integration#r35 and #r39 ask, and it removes the small-change path and the "If the person is talking to you" section, as design-decision/the-context-runs-without-a-coordinator requires. There are one Important observation (pointers in other skills to the removed path) and four Minor ones.
+**Verdict: DONE.** No Critical finding and nothing to fix now. The commit does what spec-integration#r35@0.29 and #r39 ask, and it removes the small-change path and the "If the person is talking to you" section, as design-decision/the-context-runs-without-a-coordinator requires. There are one Important observation (pointers in other skills to the removed path) and four Minor ones.
 
 ## Commits reviewed
 
@@ -20,7 +20,7 @@ The report's `## Tests changed under an allowance` is "none". That matches the c
 ## Cannot verify
 
 - The report's test run ("tests/scripts/test_agents.py and the supervision brief/round tests: 8 passed") and its suite record (798 passed). By the brief, I did not run them.
-- That a `gate` round really gives its questions in result.json and that `work run` writes them on the proposal. No code starts a `gate` round yet, and the round path drops `questions` (scripts/supervise_rounds.py:49-55, per the plan). This is w146's work (supervision#r68, #r85, status drafted), not w143's.
+- That a `gate` round really gives its questions in result.json and that `work run` writes them on the proposal. No code starts a `gate` round yet, and the round path drops `questions` (scripts/supervise_rounds.py:49-55, per the plan). This is w146's work (supervision#r68@0.29, #r85, status drafted), not w143's.
 
 ## Findings
 
@@ -56,7 +56,7 @@ The report's `## Tests changed under an allowance` is "none". That matches the c
 - `grep -rn "Job:\|\"Job\|'Job\|Kind:" scripts tests agents skills hooks`: only supervise_brief.py:33 and initiative-round.md:25
 - `grep -rn -i "small-change\|small change" skills agents docs scripts tests`: finding 1
 - `grep -rn "job" ...`, `grep -rn "session" ...` on the two changed prose files: findings 2 and 5
-- `grep -ln "r68\|r85" .shop/work/i24-.../w*.md`: w146 accepts supervision#r68, #r85 (drafted)
+- `grep -ln "r68\|r85" .shop/work/i24-.../w*.md`: w146 accepts supervision#r68@0.29, #r85 (drafted)
 - `python3 /home/vscode/shopsystem-bdd/scripts/tools check --base c86cd6a...`:
   - ruff: All checks passed!
   - vulture: clean

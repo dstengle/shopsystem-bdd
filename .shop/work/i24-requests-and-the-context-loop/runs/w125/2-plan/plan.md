@@ -2,9 +2,9 @@
 
 ## 1. What goes green
 
-- supervision#r56: scenario "refused ..." (`tests/scenarios/test_supervision.py`).
-- supervision#r64: scenario "deselects ...".
-- supervision#r65: scenario "left with no test ...".
+- supervision#r56@0.29: scenario "refused ..." (`tests/scenarios/test_supervision.py`).
+- supervision#r64@0.29: scenario "deselects ...".
+- supervision#r65@0.29: scenario "left with no test ...".
 
 None of the three is red today: the notes ran them (`3 passed` serial, and with `-n auto`). They stay green. What the work-item adds is the case the scenarios do not reach: r65 under xdist. A `--work-item` run for a guarantees-only work-item that is left with no test exits 5 under `-n 2` (notes, part 6 D1, probes 2 and 9). The cause is that the exit-0 decision reads a stash set in `pytest_collection_modifyitems`, and the xdist controller never runs that hook. So `work run`'s merge check (`-n auto`, `scripts/supervise_merge.py`) refuses such a work-item. The new test in part 4 is red today for that reason.
 
@@ -19,9 +19,9 @@ This is the researcher's set, unchanged. These files are read but not edited, an
 
 ## 3. Decisions
 
-- **D-a: r65 is decided at session end from the work-item and the spec alone, in every process.** No state is carried over from collection. Rests on supervision#r65 ("the command shall exit successfully") and on the work-item's own text, which asks for exactly this. It also rests on design-decision/workflow-capabilities-are-guarantees, which gives "guarantees" as `group: guarantees` in the capability's frontmatter; the capability's notes say the same for r56, r64 and r65.
-- **D-b: session end changes only an exit of "no tests collected" (5), and changes it to success, only when the option is given and every accepted requirement's capability is guarantees.** Any other exit is left alone. In particular, the exit-3 refusals raised in collection (no such work-item; r56's "accepts none") are not re-raised or re-read at session end, so nothing is refused twice (notes, part 5). Rests on supervision#r65 and supervision#r56, and on design-decision/exits-are-successful-or-errors.
-- **D-c: a mixed work-item that is left with no test still exits 5** (notes, case 11). r65 covers only work-items whose every requirement is of a guarantees capability. Rests on supervision#r65.
+- **D-a: r65 is decided at session end from the work-item and the spec alone, in every process.** No state is carried over from collection. Rests on supervision#r65@0.29 ("the command shall exit successfully") and on the work-item's own text, which asks for exactly this. It also rests on design-decision/workflow-capabilities-are-guarantees, which gives "guarantees" as `group: guarantees` in the capability's frontmatter; the capability's notes say the same for r56, r64 and r65.
+- **D-b: session end changes only an exit of "no tests collected" (5), and changes it to success, only when the option is given and every accepted requirement's capability is guarantees.** Any other exit is left alone. In particular, the exit-3 refusals raised in collection (no such work-item; r56's "accepts none") are not re-raised or re-read at session end, so nothing is refused twice (notes, part 5). Rests on supervision#r65@0.29 and supervision#r56@0.29, and on design-decision/exits-are-successful-or-errors.
+- **D-c: a mixed work-item that is left with no test still exits 5** (notes, case 11). r65 covers only work-items whose every requirement is of a guarantees capability. Rests on supervision#r65@0.29.
 - **D-d: an accepted capability with no capability file counts as not guarantees** (today's behaviour of `guarantees`, case 6). It stays that way. Rests on design-decision/workflow-capabilities-are-guarantees: the frontmatter is the only source.
 
 ## 4. Tests the decisions break

@@ -1,20 +1,20 @@
-# Review of w189 (review#r31)
+# Review of w189 (review#r31@0.29)
 
-**Verdict: DONE.** No findings. The one commit narrows the branch reviewer's `questions` to the findings it triages fix now, which is what review#r31 says. It changes nothing else.
+**Verdict: DONE.** No findings. The one commit narrows the branch reviewer's `questions` to the findings it triages fix now, which is what review#r31@0.29 says. It changes nothing else.
 
 ## Commits reviewed
 
 The branch `work/w189` is gone, so the commits are those between `6fa7dc00` (`work: w189 ready -> claimed`) and `72e77945` (`work: w189 claimed -> done`) on the checked-out history, less `work run`'s own `work:` commits:
 
-- `ee81efd0` bdd-branch-reviewer: questions hold only fix-now findings (review#r31). It changes `agents/bdd-branch-reviewer.md`: 2 lines added, 2 removed.
+- `ee81efd0` bdd-branch-reviewer: questions hold only fix-now findings (review#r31@0.29). It changes `agents/bdd-branch-reviewer.md`: 2 lines added, 2 removed.
 
 This matches the implementer's `result.json` `commits` list and its report ("Commit: ee81efd0. Files changed: 1."). It is also the work-item's `fileset`.
 
 ## What changed, against the plan and the capability
 
-- Line 74, `questions`: it was "each fix-now or Critical finding, and each check you could not verify". It is now "only the findings you triaged fix now". Critical findings not triaged fix now, and checks that could not be verified, stay in `findings.md` and in `status`. This is plan decision 1 and review#r31.
-- Line 71, `status` rule: unchanged. That is plan decision 2. The review#r6 "fail the review" is still carried by `DONE_WITH_CONCERNS`.
-- Line 76, `NEEDS_CONTEXT`: the reason now goes in the summary, and `questions` is left empty. This is plan decision 3. review#r28's "stop, saying why" is still met by the summary.
+- Line 74, `questions`: it was "each fix-now or Critical finding, and each check you could not verify". It is now "only the findings you triaged fix now". Critical findings not triaged fix now, and checks that could not be verified, stay in `findings.md` and in `status`. This is plan decision 1 and review#r31@0.29.
+- Line 71, `status` rule: unchanged. That is plan decision 2. The review#r6@0.29 "fail the review" is still carried by `DONE_WITH_CONCERNS`.
+- Line 76, `NEEDS_CONTEXT`: the reason now goes in the summary, and `questions` is left empty. This is plan decision 3. review#r28@0.29's "stop, saying why" is still met by the summary.
 - Risk I checked: whether some other text still tells the branch reviewer to put Critical or unverified lines in `questions`. `scripts/supervise_review.py:52-57`, the brief text, names `questions` but gives no rule for what goes in it, so it does not contradict the agent file. In the agent file itself, only lines 74 and 76 mention `questions`, and both are consistent.
 - Nothing in the change goes beyond a Behaviour line. It is prompt text that serves r31 and r28. No code was changed.
 

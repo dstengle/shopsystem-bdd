@@ -1,4 +1,4 @@
-# Plan: migrate-kb-2 (migration-tools#r1-r17)
+# Plan: migrate-kb-2 (migration-tools#r1@0.29, migration-tools#r2@0.29, migration-tools#r3@0.29, migration-tools#r4@0.29, migration-tools#r5@0.29, migration-tools#r6@0.29, migration-tools#r7@0.29, migration-tools#r8@0.29, migration-tools#r9@0.29, migration-tools#r10@0.29, migration-tools#r11@0.29, migration-tools#r12@0.29, migration-tools#r13@0.29, migration-tools#r14@0.29, migration-tools#r15@0.29, migration-tools#r16@0.29, migration-tools#r17@0.29)
 
 From research notes `.shop/work/i8-model-in-consumers/runs/migrate-kb-2/1-research/notes.md` (base 31e9ed3).
 Today `tests/scenarios/test_migration_tools.py` collects 43 tests: 37 pass and 6 fail. These 6 are all this work turns green.
@@ -6,18 +6,18 @@ The work-item adds a limit: every module stays under 300 lines.
 
 ## 1. What goes green
 
-- **migration-tools#r2**: "run keeps both decisions an entry's supersedes names, each by its new id, and supersedes both".
+- **migration-tools#r2@0.29**: "run keeps both decisions an entry's supersedes names, each by its new id, and supersedes both".
   This is red today because its three-entry Given and its "supersedes naming X and Y" Given have no step.
   Under those, the code has defect D1: `supersedes_of` keeps only the first target. The second target lands in `by`, and 0004-c stays accepted.
   Its last Then ("0003-b.md's and 0004-c.md's status is `superseded`") can't pass as written. The status step captures a wrong name and keeps the backticks.
-- **migration-tools#r2**: "run gives a decision file its entry's supersedes and revisit_when, and the entry it supersedes the status `superseded`".
+- **migration-tools#r2@0.29**: "run gives a decision file its entry's supersedes and revisit_when, and the entry it supersedes the status `superseded`".
   This is red only because of the status step: its `{status}` keeps the backticks, so it compares `superseded` with `` `superseded` ``. The code is already right.
-- **migration-tools#r5**: "run rewrites a frontmatter id and a supersedes that name a ledger entry it numbered".
+- **migration-tools#r5@0.29**: "run rewrites a frontmatter id and a supersedes that name a ledger entry it numbered".
   Same cause, the same status step. Its earlier Thens pass.
-- **migration-tools#r5**: "run rewrites a decision file's by that names <old>, a path it moved", for both rows: adrs/0001-use-x.md and docs/superpowers/specs/s1.md.
+- **migration-tools#r5@0.29**: "run rewrites a decision file's by that names <old>, a path it moved", for both rows: adrs/0001-use-x.md and docs/superpowers/specs/s1.md.
   This is red because two Givens have no step: the source Given ("whose source is \"alice, from <old>\"") and the plain "with docs/superpowers/specs/s1.md" Given.
   Under those, the code has defect D2: `plan_references` walks only tracked files. The decision files that `plan_ledger` creates never reach the rewrite, so `by` keeps the old path.
-- **migration-tools#r9**: "run gives a moved README.md no id, kind or about".
+- **migration-tools#r9@0.29**: "run gives a moved README.md no id, kind or about".
   This is red because neither its Given (records/logs/README.md) nor its Then ("has the content … had, with no id, no kind and no about") has a step.
   The code is already right: a probe showed the moved README gets no frontmatter.
 

@@ -5,9 +5,9 @@ Agent: initiative-round
 Scripts: /home/vscode/shopsystem-bdd/scripts
 Kind: gate
 Give the gate as questions in your result's `questions`, one string each: every question a decision, with its readings and the recommended reading marked.
-Adds: batch-measurement#r68, batch-measurement#r69, batch-measurement#r70, batch-measurement#r71, batch-measurement#r72, batch-measurement#r73, batch-measurement#r74
+Adds: batch-measurement#r68@0.29, batch-measurement#r69@0.29, batch-measurement#r70@0.29, batch-measurement#r71@0.29, batch-measurement#r72@0.29, batch-measurement#r73@0.29, batch-measurement#r74@0.29
 Changes: none
-Removes: batch-measurement#r50
+Removes: batch-measurement#r50@0.29
 Ask questions only on the lines and terms listed above as adds, changes or removes, and on no other line or term.
 Drafts path: .shop/work/i59/runs/i59/1-integrate/drafts/round-2/
 Base: 3be48327e94e2ec17ea63d9334f33dd184b148e0

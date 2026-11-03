@@ -44,7 +44,7 @@ Risks I checked outside the diff:
 - **Do r74 and r121 read the same field?** A review with findings but an empty `questions` might be measured and set done while a fix is drafted. They agree: `fix_work_item` (scripts/supervise_draft.py:65-67) drafts only from a non-empty `questions` list, and `lists_nothing` now reads only `questions`.
   - A `questions` that is a non-empty string drafts nothing and is not taken as listing nothing, the same as before this change.
 - **Is there another path to `analyse` or `set_done` that skips the r75 guard?** No. `grep` finds only scripts/supervise.py:223-224, behind the new condition at :222.
-- **Does r105's code path hold?** The plan's claim that `workqueue_done.holds` already requires a green work-item (w192, work-queue#r23) is consistent with the report. The new guard repeats it in front of `set_done`, with no behaviour a narrator sees.
+- **Does r105's code path hold?** The plan's claim that `workqueue_done.holds` already requires a green work-item (w192, work-queue#r23@0.29) is consistent with the report. The new guard repeats it in front of `set_done`, with no behaviour a narrator sees.
 - **Is there code that no Behaviour line asks for?** No. The `lists_nothing` change is r121 ("whatever its status"), and the guard is r75's "at least one of them is green". Neither adds behaviour beyond those lines.
 - **Do the changes go against the Behaviour lines or the Purpose?** None found.
 

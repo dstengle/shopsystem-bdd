@@ -13,11 +13,11 @@
 ## Range and work-items
 
 - **Range:** `4b7dca6c..125b2ad1` on `i25-review-findings-to-implementation`. Head is `125b2ad1` ("work: w174 ready -> claimed", an i25 work-item).
-- **w167** (supervision#r92): `12f0b295`
-- **w168** (work-queue#r30): `fa6929fb`
-- **w169** (spec-integration#r43, a guarantee): `50788670`
-- **w170** (supervision#r102, r103, r104): `bcc41527`, `55eea183`, `2e0f2555`
-- **w171** (supervision#r102, the fix of w170's task-review finding): `a414d2bd`
+- **w167** (supervision#r92@0.29): `12f0b295`
+- **w168** (work-queue#r30@0.29): `fa6929fb`
+- **w169** (spec-integration#r43@0.29, a guarantee): `50788670`
+- **w170** (supervision#r102@0.29, r103, r104): `bcc41527`, `55eea183`, `2e0f2555`
+- **w171** (supervision#r102@0.29, the fix of w170's task-review finding): `a414d2bd`
 - **w172** (the fix of branch review 1): `a1ff989a`
 - **Commits that belong to no work-item of i28:**
   - those that review 3 listed;
@@ -58,7 +58,7 @@
 | w171 | 144 passed, 1 skipped |
 | w172 | 146 passed, 1 skipped |
 
-w169's spec-integration#r43 is a guarantee, so no scenario covers it. The four instruction files that carry it are unchanged since review 3, which read them against the line. They still match the brief's label at `scripts/supervise_brief.py:79`.
+w169's spec-integration#r43@0.29 is a guarantee, so no scenario covers it. The four instruction files that carry it are unchanged since review 3, which read them against the line. They still match the brief's label at `scripts/supervise_brief.py:79`.
 
 **`tools check --base 4b7dca6c`:**
 
@@ -125,7 +125,7 @@ No check is unverified.
 ### 3. Minor, w171, observation: the deprecated @r102 scenario remains, though its replacement's work-item is green
 - **Where:** `features/supervision.feature`, the deprecated @r102 scenario, with its step `other_initiative` (`tests/scenarios/supervision_integrate_steps.py:157-167`).
 - **What is wrong:** w171 and w172, which deliver the replacement, are green. Neither has a `## Retires`.
-- **Fix:** a work-item accepting supervision#r102 that retires the deprecated scenario, its binding and `other_initiative`.
+- **Fix:** a work-item accepting supervision#r102@0.29 that retires the deprecated scenario, its binding and `other_initiative`.
 - **Triage:** observation.
 
 ### 4. Minor, w167, w170 and w172, drop: the 5 ruff errors under Checks
@@ -151,7 +151,7 @@ No check is unverified.
 - **Why it matters:** this is the red-first state of in-flight work, not a regression of i28. But anyone who runs the whole suite on this branch, or merges it to main, gets 8 failures until i25 and i26 deliver.
 - **Fix:** none in i28. Do not release or merge this branch until those work-items are green, and give r28 a work-item in i25.
 - **Triage:** observation.
-- **Reproduction:** `python3 -m pytest -q` at `125b2ad1` gives "8 failed, 870 passed". Each failure's `E` line is `StepDefinitionNotFoundError`. `grep accepts .shop/work/i25/w174.md` gives `[work-queue#r26, work-queue#r27, work-queue#r14]`.
+- **Reproduction:** `python3 -m pytest -q` at `125b2ad1` gives "8 failed, 870 passed". Each failure's `E` line is `StepDefinitionNotFoundError`. `grep accepts .shop/work/i25/w174.md` gives `[work-queue#r26@0.29, work-queue#r27@0.29, work-queue#r14@0.29]`.
 
 ## Shape
 

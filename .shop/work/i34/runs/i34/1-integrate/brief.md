@@ -7,7 +7,7 @@ Kind: integrate
 Request: q11
 Accepted lines of the request:
 - 1. **When** `work run` checks a work-item against the whole suite, `work run` shall count as expected to fail each scenario whose requirement a capability-proposal that is neither `formulated` nor `withdrawn` adds or changes.
-Ids drafted elsewhere (number added lines above each on the same capability): supervision#r99
+Ids drafted elsewhere (number added lines above each on the same capability): supervision#r99@0.29
 Drafts path: /tmp/work-run-i34-_okpayqm/i34-1-integrate/.shop/scratch/1-integrate/drafts
 Give your change list in your result's `changes`: a list with one entry for each capability, each `{"capability": <name>, "adds": [...], "changes": [...], "removes": [...]}`, the ids as `<capability>#r<n>` or `term/<term>`.
 Base: c7f6d2f71b0d2438e60d21651997f4e47262a3a7

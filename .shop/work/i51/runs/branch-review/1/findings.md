@@ -5,7 +5,7 @@
 ## Range and work-items
 
 - Range: `3c43389a5a12ce6f84d8556d2d86945c5fd901aa..eadc07902810f1f79cb7ad2cba621fbf1635c787` on `main`.
-- Work-items of i51: **w230** (`under: supervision`, accepts supervision#r209 and #r210), now `green`. Its commits are 67f24af1 to eadc0790; the implementation commit is `998966626` (`051b2b9d` before the merge).
+- Work-items of i51: **w230** (`under: supervision`, accepts supervision#r209@0.29 and #r210), now `green`. Its commits are 67f24af1 to eadc0790; the implementation commit is `998966626` (`051b2b9d` before the merge).
 - The initiative branch is `main`, which other initiatives share. The range therefore also holds the work of i45, i47 to i50 and i52 to i59. Every commit outside w230 is marked `none` (see Finding 3).
 
 ## Suite

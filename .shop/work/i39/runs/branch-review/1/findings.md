@@ -15,7 +15,7 @@ One check could not be verified (a real round reading the upstream's spec outsid
 ## Range and work-items
 
 - Range: `b4c4ad5e..d3079697` on `main`, 135 commits.
-- i39 has one work-item, **w202** (spec-integration#r44, `green`). Its commits, between `work: w202 ready -> claimed` and `work: w202 claimed -> done` (twice, after an answer), less `work run`'s `work:` commits:
+- i39 has one work-item, **w202** (spec-integration#r44@0.29, `green`). Its commits, between `work: w202 ready -> claimed` and `work: w202 claimed -> done` (twice, after an answer), less `work run`'s `work:` commits:
   - `6e3c4f04` spec-integration r44: the integrate round is told its upstreams and gives the lines of a request into them
   - `fe844bb3` the writer's question template no longer asks for request lines in the upstream's terms; lint in the new tests
 - i39's spec rounds' own commits (attributed by the ledger, not by any work-item):
@@ -107,8 +107,8 @@ The later commits of i40 and i41 to w202's `spec_integration_steps.py` only add 
 - `write_proposals` replaces the lists and the drafts path of every proposal the initiative holds for any capability the change list names, through `rewrite_lists(held.stem, [one])`.
 - Supervision r142 and r148 ask for that only for the proposal that is being drafted anew from its answers.
 - In i39, work-queue's integrate round 5 (`2862e7bf`) gave a change list naming both work-queue and requests. So `.shop/work/i39/requests.md` went:
-  - adds: from `[requests#r25, requests#r28 … r34, r39 … r45]` to `[requests#r46, requests#r47]`
-  - removes: from `[requests#r1, requests#r3]` to `[requests#r13, requests#r14]`
+  - adds: from `[requests#r25@0.29, requests#r28@0.29 … r34, r39 … r45]` to `[requests#r46@0.29, requests#r47@0.29]`
+  - removes: from `[requests#r1@0.29, requests#r3@0.29]` to `[requests#r13@0.29, requests#r14@0.29]`
   - its drafts pointer moved to work-queue's round. Its old `## Questions` were left in place.
 - The old lists were the lines the apply round `e3d62661` had already committed to `spec/`, and the formulate round `bc58e42e` had already formulated.
 
@@ -120,8 +120,8 @@ The later commits of i40 and i41 to w202's `spec_integration_steps.py` only add 
 **Fix:**
 1. In `write_proposals`, merge (union) the round's ids into a held proposal that is not the one being drafted anew, keeping its earlier drafts path beside the new one. Rewrite in place only the proposal the round was started for, as r142 and r148 say.
 2. Restore `.shop/work/i39/requests.md` to:
-   - adds: `[requests#r25, requests#r28 … r34, requests#r39 … r45, requests#r46, requests#r47]`
-   - removes: `[requests#r1, requests#r3, requests#r13, requests#r14]`
+   - adds: `[requests#r25@0.29, requests#r28@0.29 … r34, requests#r39@0.29 … r45, requests#r46@0.29, requests#r47@0.29]`
+   - removes: `[requests#r1@0.29, requests#r3@0.29, requests#r13@0.29, requests#r14@0.29]`
 3. Add a scenario: a re-integrate round for p1 whose change list also names a capability with an applied proposal p2 leaves p2's applied ids in its lists.
 
 **Reproduction:**
@@ -187,7 +187,7 @@ The later commits of i40 and i41 to w202's `spec_integration_steps.py` only add 
   - The `## Upstreams` section in `docs/capability-format.md` is the format the Implementation section points to (`docs/capability-format.md`).
   - With no `## Upstreams` section, the brief is unchanged.
 - **Behaviour against the lines:**
-  - Nothing contradicts spec-integration's Purpose, r44 or requests#r28. w202 only reads a configured path and checks nothing out.
+  - Nothing contradicts spec-integration's Purpose, r44 or requests#r28@0.29. w202 only reads a configured path and checks nothing out.
   - The person's answer to w202 (lines in the downstream's own terms, corrected by the upstream) contradicts r44's "in the upstream's terms". It is raised as q17 to replace r44. Until then, r44 stands, and the brief asks for it.
 
 ## Coupling

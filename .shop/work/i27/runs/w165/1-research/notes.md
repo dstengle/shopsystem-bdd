@@ -1,4 +1,4 @@
-# Research of w165: requests#r19, `work request --delegation`
+# Research of w165: requests#r19@0.29, `work request --delegation`
 
 Tools: `scripts/tools` ran (`/home/vscode/shopsystem-bdd/scripts`). No coverage map exists (`tools: no map`), so no
 `tests-of` or `untested` answers; every test list below is `by search`. `tools refs workqueue_request.request` gave 0

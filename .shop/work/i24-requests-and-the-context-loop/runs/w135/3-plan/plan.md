@@ -1,6 +1,6 @@
 # Plan of w135: the intake round of an upstream request (third plan)
 
-Work-item: `.shop/work/i24-requests-and-the-context-loop/w135.md`, under supervision, accepts supervision#r67,
+Work-item: `.shop/work/i24-requests-and-the-context-loop/w135.md`, under supervision, accepts supervision#r67@0.29,
 blocked_by w127 and w134 (both green). No `## Retires`, no `## Rulings`. It has two answers, dated 2026-10-25, given by the
 coordinator under the person's delegation:
 - **Answer 1 (reading A):** w135 builds on w134's no-initiative driver.
@@ -17,7 +17,7 @@ Outcome: QUESTION. Two cases the narrator would see are not settled (end of part
 
 ## 1. What goes green
 
-- **supervision#r67.** The outline "a request this context is the upstream of that is <status> is given to an intake
+- **supervision#r67@0.29.** The outline "a request this context is the upstream of that is <status> is given to an intake
   round" (features/supervision.feature:834-846), with the examples `open` and `awaiting-upstream`.
   - Why it is red today, in both examples: the first Given (:837) has no step definition (notes part 1). The second
     Given and the two Thens have none either.
@@ -66,18 +66,18 @@ Outcome: QUESTION. Two cases the narrator would see are not settled (end of part
 ## 3. Decisions
 
 1. **Which requests.** The pass takes each request that `workqueue.requests` lists whose status is `open` or
-   `awaiting-upstream`, in the order `requests` gives them, and no other request (supervision#r67).
+   `awaiting-upstream`, in the order `requests` gives them, and no other request (supervision#r67@0.29).
    - Every request `work` keeps is one this context is the upstream of: the requests capability's Implementation says
      a request is kept in its upstream's repository. So `asker` does not filter the selection, and `internal` requests
      are included.
    - The request's `turn` is not checked: r67 names only the status.
 2. **Only a run with no initiative, and the pass goes first.** The pass is part of `run_all` only (answer 2). It runs
    after every initiative's `check` and before the initiatives' threads start.
-   - Requests are taken one at a time, each round holding one of the shared slots (supervision#r60).
+   - Requests are taken one at a time, each round holding one of the shared slots (supervision#r60@0.29).
    - The order does not change what the narrator sees in the end, because no initiative node reads a request that is
      `open` or `awaiting-upstream`.
 3. **Brief.** The brief follows the stage briefs:
-   - it starts in the worktree and never changes directory (supervision#r17);
+   - it starts in the worktree and never changes directory (supervision#r17@0.29);
    - it writes the result file first, as `PARTIAL` (#r44);
    - it names the scripts directory, the base, the worktree and the round's branch (#r25). There is no work-item
      branch.
@@ -85,7 +85,7 @@ Outcome: QUESTION. Two cases the narrator would see are not settled (end of part
    It gives `Kind: intake`, the request's path, its lines, and the commands the round writes with: `work outcome <q>
    <n> <outcome>` and `work turn <q>`, each by the plugin's path (design-decision/requests-written-through-work). What
    it says about a line the round cannot judge waits on question 2.
-4. **The session.** It is a `claude -p` session of `shopsystem-bdd:initiative-round` (supervision#r67), run through the
+4. **The session.** It is a `claude -p` session of `shopsystem-bdd:initiative-round` (supervision#r67@0.29), run through the
    existing worker. That gives it:
    - the push verification (#r35);
    - the start and end log lines;
@@ -103,7 +103,7 @@ Outcome: QUESTION. Two cases the narrator would see are not settled (end of part
    - It gets no `--work-item` (no work-item), and its environment marks it as a worker, so a `work run` it starts
      refuses (#r21).
 5. **Where the round's writes go.** `work outcome` and `work turn` commit on the round's branch in its worktree
-   (requests#r12). When the round ends with no fault and `DONE`, `work run`:
+   (requests#r12@0.29). When the round ends with no fault and `DONE`, `work run`:
    - merges that branch onto the checked-out branch and deletes it (as for rounds, #r18 by its sense);
    - commits the round's stage directory `.shop/work/requests/runs/<q>/<k>-intake/` and its log lines in
      `.shop/work/requests/log.jsonl`;
@@ -149,9 +149,9 @@ Outcome: QUESTION. Two cases the narrator would see are not settled (end of part
   has no command for the upstream's questions yet (its "Not yet"), and design-decision/requests-written-through-work
   wants each part written by its own command.
   - Reading A: the round writes the question's text as that line's outcome with `work outcome`. The narrator sees the
-    question under q1's `## Outcomes` on that line, and after `work turn` q1 is `awaiting-asker` (requests#r17).
+    question under q1's `## Outcomes` on that line, and after `work turn` q1 is `awaiting-asker` (requests#r17@0.29).
   - Reading B: the round writes no outcome on that line and gives the question in its result. The narrator sees no
-    outcome on that line. q1 is `awaiting-asker` after `work turn` (requests#r17), and the question is only in the
+    outcome on that line. q1 is `awaiting-asker` after `work turn` (requests#r17@0.29), and the question is only in the
     round's record, `.shop/work/requests/runs/q1/<k>-intake/result.json`.
 
 ## 4. Tests the decisions break

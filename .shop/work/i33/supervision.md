@@ -4,8 +4,8 @@ kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i33
 status: formulated
 argues: [supervision]
-adds: [supervision#r120, supervision#r121]
-changes: [supervision#r75, supervision#r105]
+adds: [supervision#r120@0.29, supervision#r121@0.29]
+changes: [supervision#r75@0.29, supervision#r105@0.29]
 removes: []
 date: 2026-10-25
 ---

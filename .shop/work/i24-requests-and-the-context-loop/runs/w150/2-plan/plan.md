@@ -1,8 +1,8 @@
-# Plan of w150: Retires covers a requirement named through a range (supervision#r73)
+# Plan of w150: Retires covers a requirement named through a range (supervision#r73@0.29)
 
 ## 1. What goes green
 
-**supervision#r73**: when `work run` drafts a work-item for a formulated capability-proposal, its `## Retires` lists each `@deprecated` scenario whose `@r<n>` names a requirement the work-item accepts.
+**supervision#r73@0.29**: when `work run` drafts a work-item for a formulated capability-proposal, its `## Retires` lists each `@deprecated` scenario whose `@r<n>` names a requirement the work-item accepts.
 
 - "a work-item drafted for a formulated capability-proposal lists under its Retires each deprecated scenario of a requirement it accepts" (features/supervision.feature:898). **Passes today** (notes §1). It must stay green.
 - "a work-item drafted for a formulated capability-proposal whose changes name a range lists under its Retires each deprecated scenario of a requirement in the range" (features/supervision.feature:907). **Red today.** It fails at the Then in tests/scenarios/supervision_proposal_steps.py:72 because "it used to wait" is missing from Retires. There are two causes (notes §1, D1 and D3):
@@ -20,8 +20,8 @@ This is the researcher's set, unchanged. The modules on the path (supervise.py, 
 
 ## 3. Decisions
 
-- **D-a. A range in accepts means every requirement from its first id to its last, both included.** `retires` reads it the same way the other readers already do (`model_parse.expand`, `supervise_brief.accepted_scenarios`, `work_items.requirements`; notes §3 and §5). Reuse the existing expansion, `model_parse.expand`, instead of writing a third copy. It is imported, not edited. This rests on supervision#r73 ("a requirement the work-item accepts", where accepts holds ranges), and the range scenario pins the reading.
-- **D-b. Only the requirement-id part of each accepted entry is matched against tags.** The entry is the part after `#`, expanded. This is the same scoping `retires` already uses: it reads only `features/<capability>.feature` of the work-item's own capability. Rests on supervision#r73.
+- **D-a. A range in accepts means every requirement from its first id to its last, both included.** `retires` reads it the same way the other readers already do (`model_parse.expand`, `supervise_brief.accepted_scenarios`, `work_items.requirements`; notes §3 and §5). Reuse the existing expansion, `model_parse.expand`, instead of writing a third copy. It is imported, not edited. This rests on supervision#r73@0.29 ("a requirement the work-item accepts", where accepts holds ranges), and the range scenario pins the reading.
+- **D-b. Only the requirement-id part of each accepted entry is matched against tags.** The entry is the part after `#`, expanded. This is the same scoping `retires` already uses: it reads only `features/<capability>.feature` of the work-item's own capability. Rests on supervision#r73@0.29.
 - **D-c. The fixture's Given keeps the range text exactly as the scenario states it.** It is a fixture fix (D3), not product behaviour. The r72 Givens that share `named` keep their single-id output. Rests on the range scenario's own Given.
 - **Duplicate listing (notes D2) stays as it is.** A scenario tagged for two accepted ids is still listed once per matching tag. No scenario covers this case, and the work-item does not ask for it. Changing it would change the Retires lines the narrator sees, so it is left as an open case, not decided here.
 

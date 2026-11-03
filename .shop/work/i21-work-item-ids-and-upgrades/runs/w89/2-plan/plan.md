@@ -1,14 +1,14 @@
-# Plan of w2: work add, a title is free text (work-queue#r1, #r7)
+# Plan of w2: work add, a title is free text (work-queue#r1@0.29, #r7)
 
 ## 1. What goes green
 
 None of the accepted scenarios is red today: the research ran all 14 accepted tests of `features/work-queue.feature` (through `tests/scenarios/test_work_queue.py`) and all passed. No accepted scenario covers the title rule, which is where the defects are (notes, parts 1 and 6).
 
-- work-queue#r1
+- work-queue#r1@0.29
   - "add with --part-of, --under and --accepts writes a drafted work-item with the fields given (deprecated)" (`@r1 @deprecated`): passes. `add i1 w1` now writes the title `w1` to `w1.md`, since w1 is the first id. It stays green; this work-item retires nothing.
   - "add with a title, --part-of, --under and --accepts writes a drafted work-item named by its id and prints the id": passes.
   - Defect D1, which no scenario covers: a title containing `/` (`Show a/b`) is refused with `the name Show a/b is not a file name`. Under r1 a title is free text and is written as the heading.
-- work-queue#r7
+- work-queue#r7@0.29
   - "a command that cannot be done exits with an error, says why and changes nothing" (outline), "a transition of a work-item that does not exist is refused…", "add refuses an initiative that is not one directory entry under .shop/work/…", "add refuses a field value with a newline in it…", "show refuses a file under an initiative that is not UTF-8 text…", "a transition of a work-item whose file <lacks> is refused…" (outline) and "a transition whose log.jsonl <fault> is refused…" (outline): all pass.
   - Defects D2 and D3, which no scenario covers: a title with a newline (`Show\nstatus: ready`) or a carriage return (`Show\rthing`) is written. The program exits 0 and the file gets a heading `# Show` followed by a second body line.
 
@@ -30,9 +30,9 @@ Because nothing is red, the implementer first writes a test of the title rules (
 
 ## 3. Decisions
 
-- **D-a. A title may hold any character except a newline or a carriage return.** `/`, `\`, `.` and `..` are written as given. Rests on work-queue#r1: the title is free text and the file is named by the id (design-decision/work-items-named-by-ids), so the file-name rule has no object.
-- **D-b. A carriage return counts as a newline in a title, so a title with one is refused under r7.** Rests on work-queue#r1 and #r7. r1 requires the title to be the file's `# ` heading, and a heading is one line. A CR breaks that line when the file is read back: the probe shows the heading `# Show` and a body line `thing`. Writing it would therefore break r1. The work can't be done as asked, so r7 refuses it and changes nothing. This settles the researcher's second question.
-- **D-c. The refusal's reason names the title and says it has a newline in it**, worded like the field refusal ("the value of --part-of has a newline in it"). Rests on work-queue#r7 ("say why").
+- **D-a. A title may hold any character except a newline or a carriage return.** `/`, `\`, `.` and `..` are written as given. Rests on work-queue#r1@0.29: the title is free text and the file is named by the id (design-decision/work-items-named-by-ids), so the file-name rule has no object.
+- **D-b. A carriage return counts as a newline in a title, so a title with one is refused under r7.** Rests on work-queue#r1@0.29 and #r7. r1 requires the title to be the file's `# ` heading, and a heading is one line. A CR breaks that line when the file is read back: the probe shows the heading `# Show` and a body line `thing`. Writing it would therefore break r1. The work can't be done as asked, so r7 refuses it and changes nothing. This settles the researcher's second question.
+- **D-c. The refusal's reason names the title and says it has a newline in it**, worded like the field refusal ("the value of --part-of has a newline in it"). Rests on work-queue#r7@0.29 ("say why").
 - **Empty title: not taken; see the question below.**
 
 ## 4. Tests the decisions break

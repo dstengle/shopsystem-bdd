@@ -1,6 +1,6 @@
 # Branch review of i60 (review 2)
 
-**Verdict: DONE_WITH_CONCERNS.** i60's own work is sound. That is w233 (supervision#r211, a step definition only, no production code): it has no Critical finding and nothing to fix now. But i60's branch is `main`, so `Base..HEAD` also holds other initiatives' code. One of their commits, i54/w232's `a5d6b59b`, gives a wrong answer for `work show <request>`. That is triaged fix now and goes to the person. It is already w232's own open question, so fix it under w232 and do not draft it again in i60. `tools check` exits 1 on two ruff errors. Both are in files the range touched, but both predate it.
+**Verdict: DONE_WITH_CONCERNS.** i60's own work is sound. That is w233 (supervision#r211@0.29, a step definition only, no production code): it has no Critical finding and nothing to fix now. But i60's branch is `main`, so `Base..HEAD` also holds other initiatives' code. One of their commits, i54/w232's `a5d6b59b`, gives a wrong answer for `work show <request>`. That is triaged fix now and goes to the person. It is already w232's own open question, so fix it under w232 and do not draft it again in i60. `tools check` exits 1 on two ruff errors. Both are in files the range touched, but both predate it.
 
 Since branch review 1 (head `91d43216`), the range has gained only workflow commits under `.shop/` (`ff632c3a`..`40b081a4`: the i60-requests proposal's answer, apply, integrate and gate rounds, and ledger notes). The change outside `.shop/` is the same as in review 1.
 
@@ -8,9 +8,9 @@ Since branch review 1 (head `91d43216`), the range has gained only workflow comm
 
 - Range: `ae85edd3a2ce3488f4d930ac5814845eea5e6178..40b081a4e82d1f2370e922bfdff1b0a9e6383381`, on branch `main`.
 - i60 (started, fulfils q39) holds:
-  - work-item **w233** (green, under supervision, accepts supervision#r211, fileset `tests/scenarios/supervision_delegation_steps.py`). Its commits are `6b7926df`, `864da987`, `4aa66cd4`, `129a247c`, `9b49a82a`, `de6a60b1` and `91d43216` (the transitions) and `4e206ec4` (its only change, steps only).
-  - capability-proposal **i60-supervision**: formulated, adds supervision#r211.
-  - capability-proposal **i60-requests**: **awaiting-answer**, adds requests#r65–r71 (`work delegate`), with one gate question still open.
+  - work-item **w233** (green, under supervision, accepts supervision#r211@0.29, fileset `tests/scenarios/supervision_delegation_steps.py`). Its commits are `6b7926df`, `864da987`, `4aa66cd4`, `129a247c`, `9b49a82a`, `de6a60b1` and `91d43216` (the transitions) and `4e206ec4` (its only change, steps only).
+  - capability-proposal **i60-supervision**: formulated, adds supervision#r211@0.29.
+  - capability-proposal **i60-requests**: **awaiting-answer**, adds requests#r65@0.29, requests#r66@0.29, requests#r67@0.29, requests#r68@0.29, requests#r69@0.29, requests#r70@0.29, requests#r71@0.29 (`work delegate`), with one gate question still open.
 - Every other commit in the range is marked `none` (Finding 1).
 
 ## Suite

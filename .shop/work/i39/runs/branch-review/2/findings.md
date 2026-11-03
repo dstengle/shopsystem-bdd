@@ -14,8 +14,8 @@ Otherwise w205 does what r34-r39 and the reading-A ruling ask. Its fix of review
 - **Range:** `b4c4ad5e..e4c0b40f` on `main`.
   - Branch review 1 covered the range up to `d3079697` (`.shop/work/i39/runs/branch-review/1/findings.md`). I re-ran every check on the whole range.
   - I read in full only the code that changed after `d3079697`: w205 and `2ae8e313`. I confirmed that no commit after `d3079697` touches w202's files.
-- **w202** (spec-integration#r44, `green`): commits `6e3c4f04` and `fe844bb3`. Unchanged since review 1.
-- **w205** (work-queue#r34-r39, `green`). Its commits are those between `work: w205 ready -> claimed` and `work: w205 claimed -> done`, less `work run`'s own commits:
+- **w202** (spec-integration#r44@0.29, `green`): commits `6e3c4f04` and `fe844bb3`. Unchanged since review 1.
+- **w205** (work-queue#r34@0.29, work-queue#r35@0.29, work-queue#r36@0.29, work-queue#r37@0.29, work-queue#r38@0.29, work-queue#r39@0.29, `green`). Its commits are those between `work: w205 ready -> claimed` and `work: w205 claimed -> done`, less `work run`'s own commits:
   - `a033c460` "work list and work show <target> (work-queue r34-r39)". The implementer's `bc517d85`, rebased onto main; it touches 7 files.
   - `bf231ddc` "work show refuses a file that is not a work-item, naming its kind (review F1)".
 - **i39's spec rounds since review 1:**
@@ -111,7 +111,7 @@ None by i39's work-items.
 - **Where:** `scripts/workqueue_list.py:42`.
 - **What is wrong:**
   - `"requests": [{"request": n, "status": s, "turn": t} ...]`. r34 and r35 ask for each request "with its status", and r35's scenario pins "and nothing besides".
-  - The request's turn is asked for only by requests#r13, and only of `work show`.
+  - The request's turn is asked for only by requests#r13@0.29, and only of `work show`.
   - The text form of `work list` does not print the turn (`:51`), so the two forms disagree.
 - **Why it matters:** behaviour reaches code only through a line. A script reading `list --json` will come to rely on a key that no line keeps.
 - **Fix:** drop `"turn"` from `list --json`. Alternatively, write a line for it first, through integrating-a-proposal. Decision 0072 moves the listing of requests to `work list`, and the gate's answer of 2026-10-27 (ledger) retires r34 for r40 (`work list` without requests), so a line is unlikely.
@@ -148,7 +148,7 @@ None by i39's work-items.
   - Carried from review 1: `spec_integration_steps.py` holds two concerns, r44 and r45 (i40). Observation: split it. A check that shows it complete: `ls tests/scenarios/spec_integration*_steps.py` lists two modules.
 - **Reachability:**
   - Every step in `work_queue_list_steps.py` is reached by r34-r39.
-  - The no-target `show` path (`scripts/work:38-45`) is still reached by requests#r13 and the deprecated r3 and r11 scenarios. It goes dead when those are retired.
+  - The no-target `show` path (`scripts/work:38-45`) is still reached by requests#r13@0.29 and the deprecated r3 and r11 scenarios. It goes dead when those are retired.
   - Vulture's `notes` hit is older than base.
 - **Behaviour against the lines:**
   - r34: holds, ended initiatives included.
@@ -167,12 +167,12 @@ None by i39's work-items.
   - the waiting line's `(in ctx-up, accepted)`: r39
   - the `question:` lines: r37
   - the kind refusal: r7, ruled
-  - the kept no-target `show`: requests#r13
+  - the kept no-target `show`: requests#r13@0.29
 
 ## Coupling
 
 - **`raised.jsonl`, between w205 and the work that will write it:**
-  - `work list` relies on a record that nothing writes yet. The writers would be requests#r29 `--raised-for` and supervision#r135, both still xfail.
+  - `work list` relies on a record that nothing writes yet. The writers would be requests#r29@0.29 `--raised-for` and supervision#r135@0.29, both still xfail.
   - Its format is given only in `workqueue_list.py`'s docstring and in a test Given: one JSON object a line with `upstream`, `request`, `initiative` and `status`, the last line of a request winning. No capability's Implementation gives it.
   - If the writer's work-item writes another shape or place, r39 stays silently empty, or crashes (finding 3).
   - What would make it stable: state the record's form in work-queue's (or requests') Implementation section, and have the writer's scenario then run `work list`.

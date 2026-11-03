@@ -4,7 +4,7 @@ Brief: no `Accepted scenarios:` line; searched `features/` for `@r98` (none). No
 
 ## 1. Why each scenario is red today
 
-No accepted scenario exists. `grep @r98 features/` finds nothing; `features/supervision.feature` has `@r91`-`@r97`, `@r102`-`@r104` and no `@r98`. Commit `112fe1b6` (apply, i25) added spec line r98 only; no features commit followed. The proposal `.shop/work/i25/supervision.md` is `formulated` with `adds: [supervision#r98]`, so the formulate round's scenario is missing.
+No accepted scenario exists. `grep @r98 features/` finds nothing; `features/supervision.feature` has `@r91`-`@r97`, `@r102`-`@r104` and no `@r98`. Commit `112fe1b6` (apply, i25) added spec line r98 only; no features commit followed. The proposal `.shop/work/i25/supervision.md` is `formulated` with `adds: [supervision#r98@0.29]`, so the formulate round's scenario is missing.
 
 Run: none. No scenario can be run in this worker's environment. `PYTEST_ADDOPTS` carries `--work-item w173` (run: `python3 -m pytest -q -n 0 --collect-only -k brief_of_a_worker tests/scenarios` gave `INTERNALERROR ... SystemExit: --work-item w173: w173 accepts none of the scenarios it collected`, the r56 refusal). Dropping the plugin with `-p no:work_items` fails at argparse (`unrecognized arguments: --work-item`). A node id therefore cannot be run.
 

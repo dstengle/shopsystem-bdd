@@ -1,6 +1,6 @@
 # w242 research: supervision r221
 
-Accepted: supervision#r221, scenario `features/supervision.feature:2072`. No `tools map` exists, so every tests-of count is by search. `tools refs` misses calls through a module attribute (`supervise_glossary.route` is called at `supervise_rounds.py:59`, refs says 0).
+Accepted: supervision#r221@0.29, scenario `features/supervision.feature:2072`. No `tools map` exists, so every tests-of count is by search. `tools refs` misses calls through a module attribute (`supervise_glossary.route` is called at `supervise_rounds.py:59`, refs says 0).
 
 ## 1. Why each scenario is red today
 

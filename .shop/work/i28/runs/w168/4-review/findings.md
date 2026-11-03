@@ -1,4 +1,4 @@
-# Review of w168 (answer-by-initiative: work-queue, accepts work-queue#r30)
+# Review of w168 (answer-by-initiative: work-queue, accepts work-queue#r30@0.29)
 
 **Verdict: DONE.** No Critical finding and none triaged fix now. The change does what r30 asks, the bare form is unchanged, and every `work answer` scenario passes.
 

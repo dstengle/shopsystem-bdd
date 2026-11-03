@@ -5,7 +5,7 @@ part_of: initiative/i11
 status: formulated
 date: 2026-10-19
 argues: [analysis-tools]
-changes: [analysis-tools#r8, analysis-tools#r14]
+changes: [analysis-tools#r8@0.29, analysis-tools#r14@0.29]
 ---
 
 # Analysis tools: the map under .shop/scratch

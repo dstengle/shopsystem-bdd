@@ -8,12 +8,12 @@ end) to fit the r135 answer, and adds decisions 9 and 10.
 
 ## 1. What goes green
 
-- **supervision#r135**, "the lines an integrate round gives into an upstream are raised with `work request`, raised for
+- **supervision#r135@0.29**, "the lines an integrate round gives into an upstream are raised with `work request`, raised for
   the request the initiative fulfils and with its delegation" (features/supervision.feature:1445). It is red today
   because the step at line 1448 has no definition, and nor do lines 1451 and 1452. In the code, the integrate branch of
   `Rounds.run_round` never reads the result's `requests`, and `work request` has no `--raised-for`: it is refused with
   exit 2 (notes, probe row 1, defect D1).
-- **supervision#r136**, "a formulated capability-proposal whose integrate round raised the lines of a request into an
+- **supervision#r136@0.29**, "a formulated capability-proposal whose integrate round raised the lines of a request into an
   upstream gets no work-item while that request is not delivered" (features/supervision.feature:1163). It is red today
   because the Given at 1165 (two formulated proposals) has no definition, and nor do 1166, 1167 or the Then at 1170. In
   the code, `Drafts.draft_proposals` drafts every formulated proposal, and nothing writes or reads a record of raised
@@ -52,7 +52,7 @@ Removed from the researcher's set, as in the first plan:
 ## 3. Decisions
 
 1. **w210 builds `--raised-for` (requests r29).** The Then at 1452 cannot pass without it, and no other work-item
-   accepts requests#r29. Its behaviour comes from requests r29, r31 and r44. The value is written as `work run` gives
+   accepts requests#r29@0.29. Its behaviour comes from requests r29, r31 and r44. The value is written as `work run` gives
    it.
 2. **Where the lines come from.** They come from the integrate result's `requests`: one entry per upstream, with an
    `upstream` id and its `lines`, in the form `supervise_brief.REQUEST_LINES` asks for (spec-integration r44). An

@@ -1,6 +1,6 @@
 # w191 research notes
 
-Scope: supervision#r118, supervision#r119 (two scenarios, features/supervision.feature:1458-1474).
+Scope: supervision#r118@0.29, supervision#r119@0.29 (two scenarios, features/supervision.feature:1458-1474).
 Checkout: HEAD 0764d6ca, `git status --porcelain` empty. Ignored: `.shop/scratch/`, `__pycache__/`.
 Tools: `tools map` never made (no map), so `tests-of` and `untested` were not run; every list below says `search`
 or `refs`. `refs` undercounts: `refs asked_by_reviewer` gives 1, search gives 4 (see part 3).

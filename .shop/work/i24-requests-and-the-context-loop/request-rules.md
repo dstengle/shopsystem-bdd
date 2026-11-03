@@ -5,8 +5,8 @@ part_of: initiative/i24
 status: formulated
 date: 2026-10-24
 argues: [design-model-check]
-adds: [design-model-check#r112-r119]
-changes: [design-model-check#r19]
+adds: [design-model-check#r112@0.29, design-model-check#r113@0.29, design-model-check#r114@0.29, design-model-check#r115@0.29, design-model-check#r116@0.29, design-model-check#r117@0.29, design-model-check#r118@0.29, design-model-check#r119@0.29]
+changes: [design-model-check#r19@0.29]
 removes: []
 ---
 

@@ -1,14 +1,14 @@
 # Plan of w91: `work answer`, and the status awaiting-answer
 
-Accepts work-queue#r9, #r13, #r14. Rests on decisions 0039 (work-item-lifecycle-as-run), 0063 (a-ruling-returns-to-the-asking-stage), 0064 (answers-not-rulings), work-retry-reads-the-log. The work-item has no `Retires` section and no `## Rulings`/`## Answers`.
+Accepts work-queue#r9@0.29, #r13, #r14. Rests on decisions 0039 (work-item-lifecycle-as-run), 0063 (a-ruling-returns-to-the-asking-stage), 0064 (answers-not-rulings), work-retry-reads-the-log. The work-item has no `Retires` section and no `## Rulings`/`## Answers`.
 
 One question is open (see the result's `questions`): whether this work-item renames `awaiting-ruling` in `work run` (supervise) now. The plan below gives what both readings share, and what each one adds.
 
 ## 1. What goes green
 
-- **work-queue#r9**, "`work <command>` commits the change it makes to a work-item on the current branch": the `answer` example is red. Its Given fails with a ValueError at test_work_queue.py:70, because `with_items` cannot read the clause "its question asked by an implementer". There is also no `work answer` subcommand: argparse rejects it with exit 2. The add, retry and withdraw examples pass today and must keep passing.
-- **work-queue#r13**, "answer on an awaiting-answer work-item writes the answer with the date under the work-item's Answers": red. Its Then (feature line 213) has no step definition, and `work answer` does not exist.
-- **work-queue#r14**, "answer on an awaiting-answer work-item transitions it to the status the asking stage started from" (researcher, planner, implementer, reviewer): all 4 examples are red in the same Given (test_work_queue.py:70). The transition also does not exist, and `awaiting-answer` is in neither status set.
+- **work-queue#r9@0.29**, "`work <command>` commits the change it makes to a work-item on the current branch": the `answer` example is red. Its Given fails with a ValueError at test_work_queue.py:70, because `with_items` cannot read the clause "its question asked by an implementer". There is also no `work answer` subcommand: argparse rejects it with exit 2. The add, retry and withdraw examples pass today and must keep passing.
+- **work-queue#r13@0.29**, "answer on an awaiting-answer work-item writes the answer with the date under the work-item's Answers": red. Its Then (feature line 213) has no step definition, and `work answer` does not exist.
+- **work-queue#r14@0.29**, "answer on an awaiting-answer work-item transitions it to the status the asking stage started from" (researcher, planner, implementer, reviewer): all 4 examples are red in the same Given (test_work_queue.py:70). The transition also does not exist, and `awaiting-answer` is in neither status set.
 - **Deprecated**: the r9 outline "`work <command>` commits … (deprecated)" passes today and must keep passing. This work-item retires no scenario (it has no Retires section).
 
 ## 2. Where the change lands
@@ -26,15 +26,15 @@ Reading A only (rename in `work run` now): `scripts/supervise.py` (lines 156, 23
 
 Reading B only (`work run` keeps the old name until w92): both status sets keep `awaiting-ruling` next to `awaiting-answer`, and no supervise file changes.
 
-Out of the set under both readings: `scripts/measure_build.py`, `scripts/measure_show.py` and `scripts/measure`. The measure rename is batch-measurement#r41, which belongs to w94. The researcher listed them; I removed them.
+Out of the set under both readings: `scripts/measure_build.py`, `scripts/measure_show.py` and `scripts/measure`. The measure rename is batch-measurement#r41@0.29, which belongs to w94. The researcher listed them; I removed them.
 
 ## 3. Decisions
 
-1. **The asker is read from the log.** `work answer` takes the `before` of the work-item's last log.jsonl line, which must be its transition into `awaiting-answer`. It returns the work-item to that status, with one mapping: `claimed` returns to `ready`. Researcher, planner and reviewer questions leave from `drafted`, `researched` and `done`. An implementer's question leaves from `claimed`, and the implementer's stage starts at `ready` (0039: ready → claimed by the implementer). This rests on work-queue#r14, decision 0063 and design-decision/work-retry-reads-the-log (r8 reads `before` the same way). Nothing is added to the work-item's file.
-2. **No asker means a refusal.** If there is no log line into `awaiting-answer`, or its `before` is none of `drafted`, `researched`, `claimed`, `done`, `work answer` refuses and changes nothing. This rests on work-queue#r7, since the r14 transition cannot be made.
-3. **Status and agreement are checked before any write.** `work answer` on a work-item that is not `awaiting-answer` is refused before anything is written (work-queue Implementation, r7). The r6 agreement check runs before any write too (work-queue#r6).
-4. **One commit.** The answer and the transition land in one commit holding the work-item's file and its log line, made through `workqueue.committed` (work-queue#r9). The section is written before the log line, as the Implementation note says ("the log line last"). A failure restores the file, as `move` and `committed` already do.
-5. **Each new answer is added to the end of `## Answers`.** If the work-item has no such section, it is created at the end of the file (work-queue#r13, decision 0064 for the heading). `work answer` does not import supervise: the section writer lives in the new module.
+1. **The asker is read from the log.** `work answer` takes the `before` of the work-item's last log.jsonl line, which must be its transition into `awaiting-answer`. It returns the work-item to that status, with one mapping: `claimed` returns to `ready`. Researcher, planner and reviewer questions leave from `drafted`, `researched` and `done`. An implementer's question leaves from `claimed`, and the implementer's stage starts at `ready` (0039: ready → claimed by the implementer). This rests on work-queue#r14@0.29, decision 0063 and design-decision/work-retry-reads-the-log (r8 reads `before` the same way). Nothing is added to the work-item's file.
+2. **No asker means a refusal.** If there is no log line into `awaiting-answer`, or its `before` is none of `drafted`, `researched`, `claimed`, `done`, `work answer` refuses and changes nothing. This rests on work-queue#r7@0.29, since the r14 transition cannot be made.
+3. **Status and agreement are checked before any write.** `work answer` on a work-item that is not `awaiting-answer` is refused before anything is written (work-queue Implementation, r7). The r6 agreement check runs before any write too (work-queue#r6@0.29).
+4. **One commit.** The answer and the transition land in one commit holding the work-item's file and its log line, made through `workqueue.committed` (work-queue#r9@0.29). The section is written before the log line, as the Implementation note says ("the log line last"). A failure restores the file, as `move` and `committed` already do.
+5. **Each new answer is added to the end of `## Answers`.** If the work-item has no such section, it is created at the end of the file (work-queue#r13@0.29, decision 0064 for the heading). `work answer` does not import supervise: the section writer lives in the new module.
 6. **Test data for r13.** The r13 Given ("w1 is awaiting-answer", no asker) is still matched by `with_items`, so it writes no log line. Under decision 2 that would be refused. So for an `awaiting-answer` item, `with_items` also writes a log line into `awaiting-answer` from `researched`. This only makes the Given consistent with the lifecycle (0039) and asserts nothing the scenario does not say.
 7. **The supervise rename is a QUESTION** (see the result's `questions`). It touches the status `work run` writes and the section `questions()` reads.
 

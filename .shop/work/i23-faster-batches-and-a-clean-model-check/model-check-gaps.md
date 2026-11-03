@@ -5,8 +5,8 @@ part_of: initiative/i23
 status: formulated
 date: 2026-10-23
 argues: [design-model-check]
-adds: [design-model-check#r111]
-changes: [design-model-check#r27, term/suite, term/session, design-model-check#r106, term/status]
+adds: [design-model-check#r111@0.29]
+changes: [design-model-check#r27@0.29, term/suite, term/session, design-model-check#r106@0.29, term/status]
 removes: []
 ---
 

@@ -1,8 +1,8 @@
-# Plan of w203: spec-integration#r45
+# Plan of w203: spec-integration#r45@0.29
 
 ## 1. What goes green
 
-- **spec-integration#r45**: "When a round of the kind `integrate` is given answers that ask for lines the request's accepted lines do not, `initiative-round` shall draft those lines under the capabilities the answers name."
+- **spec-integration#r45@0.29**: "When a round of the kind `integrate` is given answers that ask for lines the request's accepted lines do not, `initiative-round` shall draft those lines under the capabilities the answers name."
   - Scenario (features/spec-integration.feature, @r45): "a round of the kind integrate given answers that ask for a line the request's accepted lines do not drafts that line under the capability the answers name".
   - Red today: `StepDefinitionNotFoundError` at its first Given ("a request whose accepted lines ask that the customer sees the status of an order"). None of its six steps has a definition (notes §1). Even with steps, nothing tells the round that an answer's extra lines are to be drafted. The integrate brief gives the accepted lines, the drafted ids and the change-list form, but nothing about answers beyond the accepted lines. The agent's and the skill's integrate text name the answers only "from round 2" and require every line to quote the note (notes §1, §3).
 - Retired scenarios: none. The work-item has no Retires section and no Rulings.

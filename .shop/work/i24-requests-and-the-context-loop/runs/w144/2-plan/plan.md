@@ -2,7 +2,7 @@
 
 ## 1. What goes green
 
-- **spec-integration#r40**: when `initiative-round` finishes a round, it appends one line to the initiative's
+- **spec-integration#r40@0.29**: when `initiative-round` finishes a round, it appends one line to the initiative's
   ledger with `work note`, naming the kind, the round, and what the round ended with or the answers it applied.
   - Scenarios: none. w144 is a guarantees work-item (spec-integration is `group: guarantees`,
     design-decision/workflow-capabilities-are-guarantees). Its review judges it.
@@ -36,7 +36,7 @@ which is historical.
 ## 3. Decisions
 
 1. **A round may run `work note` and no other `work` subcommand.** The allowance names the `note` subcommand,
-   so it does not cover all of `work`. Rests on spec-integration#r40 (the round writes with `work note`),
+   so it does not cover all of `work`. Rests on spec-integration#r40@0.29 (the round writes with `work note`),
    design-decision/the-ledger-is-tracked (`initiative-round` writes the ledger with `work note`) and
    design-decision/the-context-runs-without-a-coordinator (`work run` alone moves nodes through their transitions,
    so a worker that could run `work` broadly could move statuses).
@@ -45,13 +45,13 @@ which is historical.
      line (notes §2, supervise_brief.py), and the initiative is that path's directory. supervise_brief.py does not
      change.
    - Rounds the skills dispatch: the dispatch names the initiative.
-   - Rests on spec-integration#r40 ("the initiative's ledger") and the-ledger-is-tracked.
+   - Rests on spec-integration#r40@0.29 ("the initiative's ledger") and the-ledger-is-tracked.
 3. **The ledger line is written after the round's own commit, as a separate commit.** `work note` commits only the
    ledger, by pathspec (notes §2: other staged files stay staged), so `apply` still commits `spec/` alone
-   (spec-integration#r6) and `formulate` still commits its feature files with their test files. The line goes on the
+   (spec-integration#r6@0.29) and `formulate` still commits its feature files with their test files. The line goes on the
    branch the round runs on, which is the round's worktree branch under `work run` (notes §2 probe).
 4. **The line is a single line.** `work note` refuses a line break (notes §2). The round collapses its summary to one
-   line. Rests on spec-integration#r40 ("one line").
+   line. Rests on spec-integration#r40@0.29 ("one line").
 
 ## 4. Tests the decisions break
 

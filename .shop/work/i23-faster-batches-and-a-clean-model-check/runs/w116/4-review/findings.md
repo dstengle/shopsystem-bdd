@@ -1,4 +1,4 @@
-# Review of w116 (design-model-check#r27)
+# Review of w116 (design-model-check#r27@0.29)
 
 **Verdict: DONE.** No Critical finding and nothing to fix now. There is one Minor observation and one Minor drop.
 

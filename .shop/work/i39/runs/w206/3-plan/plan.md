@@ -6,12 +6,12 @@ The work-item accepts work-queue r34-r39. It has no Retires section and no Rulin
 
 None of the accepted scenarios is red today. At fb9cc6d3 the researcher ran all 7 by node id, and all 7 passed (notes §1):
 
-- work-queue#r34, "list prints each initiative, each request and each work-item under .shop/work/ with its status": passes.
-- work-queue#r35, "list with --json prints each initiative, request and work-item with its status as one JSON object": passes. Its step `gives_pairs` checks only the name/status pairs. It does not check "and nothing besides", so the extra request key `turn` goes unseen (finding 2, probe p6).
-- work-queue#r39, "list prints an initiative as waiting on a request it raised into an upstream while that request is not delivered": passes. A malformed `raised.jsonl` line still crashes `work list` with a traceback (notes D1 and D2, finding 3), and no scenario covers that.
-- work-queue#r36, "show of an initiative prints where it stands, for a session to start from": passes.
-- work-queue#r37, "show of a work-item prints its status and its open questions": passes.
-- work-queue#r38, "show of <target> with --json prints its result as one JSON object" (i1 and w1): passes.
+- work-queue#r34@0.29, "list prints each initiative, each request and each work-item under .shop/work/ with its status": passes.
+- work-queue#r35@0.29, "list with --json prints each initiative, request and work-item with its status as one JSON object": passes. Its step `gives_pairs` checks only the name/status pairs. It does not check "and nothing besides", so the extra request key `turn` goes unseen (finding 2, probe p6).
+- work-queue#r39@0.29, "list prints an initiative as waiting on a request it raised into an upstream while that request is not delivered": passes. A malformed `raised.jsonl` line still crashes `work list` with a traceback (notes D1 and D2, finding 3), and no scenario covers that.
+- work-queue#r36@0.29, "show of an initiative prints where it stands, for a session to start from": passes.
+- work-queue#r37@0.29, "show of a work-item prints its status and its open questions": passes.
+- work-queue#r38@0.29, "show of <target> with --json prints its result as one JSON object" (i1 and w1): passes.
 
 The tests that start red are the new or added unit tests in part 2:
 - one for `turn` being absent from `list --json`;
@@ -49,19 +49,19 @@ Removed from the researcher's set, and why:
 ## 3. Decisions
 
 - **D-a: `work list --json` drops `turn` from each request.**
-  - Rests on work-queue#r35 ("each initiative, request and work-item with its status"), whose scenario pins "and nothing besides".
-  - The text form already leaves the turn out. No line asks `work list` for the turn; requests#r13 asks it only of `work show`.
+  - Rests on work-queue#r35@0.29 ("each initiative, request and work-item with its status"), whose scenario pins "and nothing besides".
+  - The text form already leaves the turn out. No line asks `work list` for the turn; requests#r13@0.29 asks it only of `work show`.
   - Under design-decision/query-commands-answer-in-their-output, the other keys stay as they are.
   - This is finding 2.
-- **D-b: a `raised.jsonl` line that `work list` cannot read is refused under work-queue#r7.**
+- **D-b: a `raised.jsonl` line that `work list` cannot read is refused under work-queue#r7@0.29.**
   - The command exits with an error, its message names the file and the line, it changes nothing, and it prints no traceback.
   - Rests on r7, on r39's path. This is finding 3.
 - **D-c: the branch that r36 prints stays the checkout's branch** (notes Q-5). The r36 scenario passes as it is.
 - **D-d: the old forms stay.** Bare `work show`, `work status`, the SessionStart hook text, requests r13/r14 and migration-tools r32 all stay as they are (notes Q-2, Q-3). w206 has no Retires section. Their retirement belongs to the work-item that retires r3, r11 and r16-r18 under design-decision/work-list-and-work-show-replace-work-status.
 - **D-e: a redraft integrate round merges its ids into another held proposal's lists, as a union** (finding 1).
-  - Rests on the answer of 2026-10-27 in the work-item: reading B, "as the coordinator restored i39-requests by hand". It is bounded by supervision#r142 and #r148, which rewrite in place only the proposal being drafted anew.
+  - Rests on the answer of 2026-10-27 in the work-item: reading B, "as the coordinator restored i39-requests by hand". It is bounded by supervision#r142@0.29 and #r148, which rewrite in place only the proposal being drafted anew.
   - "Another" means any held proposal other than the one the round was started for. When the round is the initiative's own first integrate round (`name` is the initiative), every held proposal is another, so it is merged into and never replaced.
-  - The round's own proposal keeps today's in-place rewrite (r148). No second proposal is written for a capability that already has one, so supervision#r92's scenarios keep their meaning for a capability with no held proposal.
+  - The round's own proposal keeps today's in-place rewrite (r148). No second proposal is written for a capability that already has one, so supervision#r92@0.29's scenarios keep their meaning for a capability with no held proposal.
 - **D-f: the other proposal's drafts sentence and status.**
   - Its status is left as it is: only the round's own proposal moves (r142, `supervise_rounds.py:196-197`).
   - Its drafts sentence ("The drafts of this proposal are in …") is replaced by the round's kept drafts path, as today.

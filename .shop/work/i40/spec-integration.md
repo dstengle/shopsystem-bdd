@@ -5,7 +5,7 @@ part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i40
 status: formulated
 argues: [spec-integration]
 date: 2026-10-27
-adds: [spec-integration#r45]
+adds: [spec-integration#r45@0.29]
 changes: []
 removes: []
 ---

@@ -1,4 +1,4 @@
-# Review of w1 (migration-tools#r26: references from another initiative and `for:` follow the rename)
+# Review of w1 (migration-tools#r26@0.29: references from another initiative and `for:` follow the rename)
 
 **Verdict: DONE.** Nothing is Critical and nothing is triaged fix now. The commit does what the plan says for Decisions 1, 2, 3 and 5. Decision 4, the move check, works when probed but has no unit test, though the plan said it would get one. There are four Minor findings: two observations and two drops.
 
@@ -38,7 +38,7 @@ The report's `## Tests changed under an allowance` says "none". The diff agrees:
    - **Fix:** pass the field matched in `rewrite_item` into the failure text, and de-duplicate `refused` in `upgrade`.
 3. **Minor · observation: scripts/migrate_upgrade_ids.py:50 (token pattern widened to `[\w-]+`).**
    - Any token in a `blocked_by`, `depends_on` or `for:` line that equals the name of some work-item is now rewritten, in any initiative, including tokens that are not work-item references.
-   - Reproduction: i1-x/migration-tools.md, and i1-x/b.md with `for: migration-tools#r26`. The upgrade gave `for: w2#r26`.
+   - Reproduction: i1-x/migration-tools.md, and i1-x/b.md with `for: migration-tools#r26@0.29`. The upgrade gave `for: w2#r26`.
    - No repository sends this today: every `for:` in this repository is `work-item/<name>`. So this is hardening, not a wrong answer for any current input.
    - **Fix (optional):** require the token to be the whole list element, i.e. followed by `,`, `]` or the end of the line.
 4. **Minor · drop: scripts/migrate_upgrade.py:84-88 (redundant duplicate-destination count).**

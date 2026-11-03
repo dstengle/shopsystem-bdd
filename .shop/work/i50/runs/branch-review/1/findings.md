@@ -5,7 +5,7 @@
 ## Range reviewed
 
 - `2c461ed7..837a59ee` on `main`. The base is the commit that added `.shop/work/i50/initiative.md`.
-- i50 holds one work-item: **w228** (supervision#r173, `green`). Its file set is `scripts/supervise_glossary.py`, `scripts/supervise_rounds.py` and `tests/scenarios/supervision_proposal_steps.py`.
+- i50 holds one work-item: **w228** (supervision#r173@0.29, `green`). Its file set is `scripts/supervise_glossary.py`, `scripts/supervise_rounds.py` and `tests/scenarios/supervision_proposal_steps.py`.
 - Its commits are 829bd273, 2bd22e33, 09c07229, 5773b8b8, c7a1994d, a807b5b7 (the code), a42dfc63 and 837a59ee.
 - The range also holds about 245 commits that belong to no work-item. They are the workflow's own commits for i47–i58 and q17–q38: intake, integrate, gate, apply and formulate rounds, notes, answers and starts. Among them are spec and features commits: 78f23fac and 86104ff4 (spec, r173 and r180), and e4e58445 and 6ce69452 (features). See finding 3.
 

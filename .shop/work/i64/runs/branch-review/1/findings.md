@@ -5,7 +5,7 @@
 ## Range and work-items
 
 - Range: `86582d02..b95f4ce3` on `main`, 133 commits.
-- i64 has one work-item, **w242** (supervision#r221, `green`). Its commits are `6b8591215`..`b95f4ce3`, the ones marked `w242` in the brief. Its one code commit is `4fa77b43` "supervision r221: a sent-back glossary-proposal gets a new integrate round". The implementers' reports name `79b36ae5` and `5960964a`; those are the same change before `work run` rebased it, as the stage review checked.
+- i64 has one work-item, **w242** (supervision#r221@0.29, `green`). Its commits are `6b8591215`..`b95f4ce3`, the ones marked `w242` in the brief. Its one code commit is `4fa77b43` "supervision r221: a sent-back glossary-proposal gets a new integrate round". The implementers' reports name `79b36ae5` and `5960964a`; those are the same change before `work run` rebased it, as the stage review checked.
 - i64's own non-work-item commits are its integrate, gate, apply and formulate rounds and its notes: `5f0ec7e3`..`c571078f`, `a4b69ec8` (spec r221) and `2fb83d16` (r221 scenario formulated).
 - Every other commit in the range belongs to other initiatives that work on `main` at the same time: i55 (w239, w240, w241, w243, w244, requests-deda9fa6) and i62 (w245). Finding 5 covers them.
 

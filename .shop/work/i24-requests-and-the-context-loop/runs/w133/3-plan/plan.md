@@ -1,18 +1,18 @@
 # Plan of w133: measure gives whether the initiative's request is internal or external
 
-Accepts batch-measurement#r63 and #r64. Planned from the research notes of stages 1 and 2
+Accepts batch-measurement#r63@0.29 and #r64. Planned from the research notes of stages 1 and 2
 (`runs/w133/1-research/notes.md`, `runs/w133/2-research/notes.md`). Stage 1's session ended at its turn limit. Its
 notes are used only where stage 2 or the spec confirms them.
 
 ## 1. What goes green
 
-- **batch-measurement#r63**, the outline "the request an initiative fulfils is given as <origin> when its asker is
+- **batch-measurement#r63@0.29**, the outline "the request an initiative fulfils is given as <origin> when its asker is
   <asker>", in two examples: `this bounded context` gives `internal`, `another bounded context` gives `external`.
   Red today with StepDefinitionNotFoundError at the Given "i7-cart fulfils the request q3, whose asker is …" (feature
   line 174). Behind that step, the Then "the measurement gives the request q3 as <origin>" has no step either. In
   code, `measure_build.figures_of` gives no request figure, and nothing in `measure` reads an initiative's link to a
   request. Probes P1–P3 and A–C show exit 0 with no origin given.
-- **batch-measurement#r64**, "an initiative that fulfils no request is measured without saying internal or external".
+- **batch-measurement#r64@0.29**, "an initiative that fulfils no request is measured without saying internal or external".
   Red today with StepDefinitionNotFoundError at the Given "i7-cart fulfils no request" (line 189). The Thens "the
   measurement gives the stage of cart-1's research" (line 192) and "the measurement gives no request as internal or
   external" (line 193) also match no step. The code already gives this measurement (probe P4/D), so only the steps
@@ -49,7 +49,7 @@ implementer puts the Thens there instead; they fit in its 98 lines of room.
    rests on design-decision/plugin-adopts-the-design-model. The design model's initiative table
    (`docs/design-model/design-model.md`, "fulfils: exactly one request, of this context, accepted") and grammar.md's
    `fulfils(I, Q)` edge (initiative → request) settle stage 2's question 1. The request's `part_of` is a job-thread
-   and its `source` is its origins (requests.md Implementation), so neither names an initiative. work-queue#r22
+   and its `source` is its origins (requests.md Implementation), so neither names an initiative. work-queue#r22@0.29
    (`work start`, a drafted work-item not yet built) writes the same field. Whichever of the two lands second follows
    the first.
 2. **The form of the value.** `fulfils` holds the request's id in the reference form the work files already use
@@ -62,7 +62,7 @@ implementer puts the Thens there instead; they fit in its 98 lines of room.
    design-decision/plugin-takes-the-dependencies-it-needs (0035) supersedes the stdlib-only rule that stage 2
    believed blocked using the model's reader. `model_requests.py` is still not used, because its form checks belong
    to `model check`.
-4. **Internal or external** (batch-measurement#r63 "its asker being this bounded context"):
+4. **Internal or external** (batch-measurement#r63@0.29 "its asker being this bounded context"):
    - The request is internal when its `asker` is `internal`, or is this context's own id as `spec/index.md` gives it
      (read the way `workqueue.context_path` reads it).
    - It is external for any other asker: another context's id, or the product level.
@@ -72,7 +72,7 @@ implementer puts the Thens there instead; they fit in its 98 lines of room.
    - The context id is read only when a request is linked and its asker is not `internal`. That keeps
      `tests/scripts/test_measure_runs.py`, which has no `spec/index.md`, off that path.
 5. **A link that cannot be read is refused.** `measure initiative` refuses, writing nothing, naming the file, and
-   exits with an error (batch-measurement#r50) in these cases:
+   exits with an error (batch-measurement#r50@0.29) in these cases:
    - `fulfils` names a request that `work`'s reader cannot find;
    - the request has no `asker`;
    - `fulfils` holds more than one id.
@@ -83,7 +83,7 @@ implementer puts the Thens there instead; they fit in its 98 lines of room.
    initiative cannot arise once the link is on the initiative (decision 1); a list in `fulfils` is the one form left,
    and it is refused here.
 6. **`measure show` prints the origin.** It prints the request's id and origin when the measurement gives them,
-   because batch-measurement#r44 says show prints "the measurement's figures", and the origin is now one of them. It
+   because batch-measurement#r44@0.29 says show prints "the measurement's figures", and the origin is now one of them. It
    prints nothing for a measurement without one, which also covers every measurement written before this change.
 7. **The scenario steps.**
    - "this bounded context" writes the request's asker as `internal`. "another bounded context" writes
@@ -91,7 +91,7 @@ implementer puts the Thens there instead; they fit in its 98 lines of room.
    - The request file has the frontmatter requests.md gives (id, `kind: request`, `asker`, `source`,
      `status: accepted`, `turn`). The initiative's `initiative.md` names it in `fulfils`.
    - "i7-cart fulfils no request" writes no `fulfils` (and no request).
-   - Basis: batch-measurement#r63 and #r64, and decisions 1, 2 and 4.
+   - Basis: batch-measurement#r63@0.29 and #r64, and decisions 1, 2 and 4.
 
 ## 4. Tests the decisions break
 

@@ -5,7 +5,7 @@ part_of: initiative/i19
 status: formulated
 date: 2026-10-22
 argues: [work-queue]
-adds: [work-queue#r11]
+adds: [work-queue#r11@0.29]
 source: [design-decision/query-commands-answer-in-their-output]
 ---
 

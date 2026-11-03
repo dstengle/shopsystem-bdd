@@ -5,7 +5,7 @@ part_of: initiative/i10
 status: merged
 date: 2026-10-20
 argues: [delivery]
-adds: [delivery#r8]
+adds: [delivery#r8@0.29]
 ---
 
 # delivery: from the skeleton's proof runs

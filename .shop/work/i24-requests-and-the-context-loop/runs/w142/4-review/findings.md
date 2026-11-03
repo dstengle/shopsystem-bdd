@@ -1,12 +1,12 @@
-# Review of w142: delivering-an-initiative appends answers to the ledger with work note (delivery#r15)
+# Review of w142: delivering-an-initiative appends answers to the ledger with work note (delivery#r15@0.29)
 
-**Verdict: DONE.** No Critical, Important or fix-now finding. The one commit does what delivery#r15 and the plan ask for. It conforms to design-decision/the-ledger-is-tracked (0066) and design-decision/answers-not-rulings (0064), and it drops the archive step of the retired r16.
+**Verdict: DONE.** No Critical, Important or fix-now finding. The one commit does what delivery#r15@0.29 and the plan ask for. It conforms to design-decision/the-ledger-is-tracked (0066) and design-decision/answers-not-rulings (0064), and it drops the archive step of the retired r16.
 
 ## Commits reviewed
 
 The branch `work/w142` is gone. The commits came from the checked-out branch, between `a39dd6e work: w142 ready -> claimed` and `97766aa work: w142 claimed -> done`, less `work run`'s own `work:` commits (`1d91732`, `49c92b7`, which are w144/w145 transitions):
 
-- `9b306a9` delivering-an-initiative appends answers to the ledger with work note (delivery#r15): `skills/delivering-an-initiative/SKILL.md`, +4 −4.
+- `9b306a9` delivering-an-initiative appends answers to the ledger with work note (delivery#r15@0.29): `skills/delivering-an-initiative/SKILL.md`, +4 −4.
 
 The implementer's result lists `1fed48e` (parent `a39dd6e`). `git diff 1fed48e 9b306a9 -- skills` is empty, so `9b306a9` is the same change rebased by `work run` when it merged. Same content: not a finding.
 
@@ -20,7 +20,7 @@ The report's `## Tests changed under an allowance` is "none". There is nothing t
 
 ## Cannot verify
 
-- delivery#r15 is a guarantees line with no scenario. A run cannot show whether a session following the skill actually calls `work note` when the person answers. The review judges the skill's text only.
+- delivery#r15@0.29 is a guarantees line with no scenario. A run cannot show whether a session following the skill actually calls `work note` when the person answers. The review judges the skill's text only.
 - The report says "Suite at start: 798 passed". It was not re-run, as the review rules say. No Python changed.
 
 ## Findings

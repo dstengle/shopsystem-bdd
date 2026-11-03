@@ -1,14 +1,14 @@
 # Plan of w188: fix the findings of branch review 1 of i30
 
-Work-item `.shop/work/i30/w188.md`, under `supervision`, accepts supervision#r110, #r117, #r19. Its findings file is `.shop/work/i30/runs/branch-review/1/findings.md`; one finding there is triaged fix now (finding 1). Planned from the research notes `.shop/work/i30/runs/w188/1-research/notes.md`.
+Work-item `.shop/work/i30/w188.md`, under `supervision`, accepts supervision#r110@0.29, #r117, #r19. Its findings file is `.shop/work/i30/runs/branch-review/1/findings.md`; one finding there is triaged fix now (finding 1). Planned from the research notes `.shop/work/i30/runs/w188/1-research/notes.md`.
 
 ## 1. What goes green
 
 None of the three accepted scenarios is red today. The researcher ran all three and they pass (notes §1, "3 passed"). This work-item exists to fix the branch review's fix-now finding, and that finding does not show up as a red scenario.
 
-- **supervision#r19**: "a researcher is given the work-item's file set and accepted scenarios and a limit of 80 turns". Green today: `supervise_worker.py` gives `--max-turns 80`. The defect is in what the researcher is *told*: `agents/code-scout.md:24` still says 40 turns (finding 1, notes D2). No scenario reads the agent text, so the fix shows up in no scenario.
-- **supervision#r117**: the scenario where a gate that gives no question gets the approval question written under `## Questions`. Green today (notes §1 and probe case a).
-- **supervision#r110**: the scenario where a green fix work-item from a kept branch review starts the next branch review. Green today (notes §1).
+- **supervision#r19@0.29**: "a researcher is given the work-item's file set and accepted scenarios and a limit of 80 turns". Green today: `supervise_worker.py` gives `--max-turns 80`. The defect is in what the researcher is *told*: `agents/code-scout.md:24` still says 40 turns (finding 1, notes D2). No scenario reads the agent text, so the fix shows up in no scenario.
+- **supervision#r117@0.29**: the scenario where a gate that gives no question gets the approval question written under `## Questions`. Green today (notes §1 and probe case a).
+- **supervision#r110@0.29**: the scenario where a green fix work-item from a kept branch review starts the next branch review. Green today (notes §1).
 
 Deprecated scenarios retired: none. The work-item has no Retires section. The r19 "40 turns (deprecated)" scenario was already retired by w184 (`cd134f29`).
 
@@ -25,7 +25,7 @@ That is the whole set, the same as the researcher's. Files left out on purpose:
 
 ## 3. Decisions
 
-1. **The agent text states the limit `work run` gives.** The researcher's instruction file must state the limit r19 sets: 80 turns, given as `--max-turns 80`. Rests on supervision#r19 and on branch review 1's finding 1 (fix now). Only the number and the flag value in that sentence change. The sentence's advice to write notes well before the last turn stays.
+1. **The agent text states the limit `work run` gives.** The researcher's instruction file must state the limit r19 sets: 80 turns, given as `--max-turns 80`. Rests on supervision#r19@0.29 and on branch review 1's finding 1 (fix now). Only the number and the flag value in that sentence change. The sentence's advice to write notes well before the last turn stays.
 2. **Findings 2 to 4 are not fixed here.** Finding 2 is triaged "observation", finding 3 "drop", and finding 4 "observation" (and finding 4 is w180's, under formulation, not this capability). The work-item's findings link marks only finding 1 as fix now. Rests on the findings file's triage.
 
 ## 4. Tests the decisions break

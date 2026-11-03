@@ -39,7 +39,7 @@ The report's `## Tests changed under an allowance` says "none". The commits agre
   - `.shop/work/i25/runs/i25/2-integrate/drafts/round-1/spec/capabilities/supervision.md`
   - `.shop/work/i26/runs/i26/2-integrate/drafts/round-1/spec/capabilities/supervision.md`
 
-  The glob finds neither, so `added_by_others` returns `[]`. i1's integrate brief then says "none", although both drafts hold `[r98]` and `spec/capabilities/supervision.md` does not (`grep -c "\[r98\]"` gives 0). The scenario passes only because its Given writes the drafts at the shallower path the code reads. This is a wrong answer for supervision#r102, and it is the collision the ledger names (observation 2026-10-25-loop-collisions).
+  The glob finds neither, so `added_by_others` returns `[]`. i1's integrate brief then says "none", although both drafts hold `[r98]` and `spec/capabilities/supervision.md` does not (`grep -c "\[r98\]"` gives 0). The scenario passes only because its Given writes the drafts at the shallower path the code reads. This is a wrong answer for supervision#r102@0.29, and it is the collision the ledger names (observation 2026-10-25-loop-collisions).
 - **Fix:**
   - Read every `drafts/**/spec/capabilities/*.md` under the last integrate stage, or the last `round-<n>` under `drafts/`.
   - Make the scenario's Given in `tests/scenarios/supervision_integrate_steps.py` (`other_initiative`) write the `round-<n>/` layout the rounds produce, so it fails on today's code.

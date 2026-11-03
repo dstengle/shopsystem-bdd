@@ -5,7 +5,7 @@ part_of: initiative/i28
 status: formulated
 date: 2026-10-25
 argues: [spec-integration]
-adds: [spec-integration#r43]
+adds: [spec-integration#r43@0.29]
 changes: []
 removes: []
 ---

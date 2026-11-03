@@ -39,7 +39,7 @@ The report's `## Tests changed under an allowance` says "none". The commit chang
 
 ## Findings
 
-1. **Minor, drop.** Work-item w226 (scope, not code). The work-item accepts r159 and r168 only, yet it also retires the scenario deprecated for r163, which is w223's line. The plan's D1 rests this on supervision#r123. It is consistent with r123, since r163's work-item w223 is green. Noted only so the person can see that the retiring work-item's `accepts:` does not list every replacement it retires for.
+1. **Minor, drop.** Work-item w226 (scope, not code). The work-item accepts r159 and r168 only, yet it also retires the scenario deprecated for r163, which is w223's line. The plan's D1 rests this on supervision#r123@0.29. It is consistent with r123, since r163's work-item w223 is green. Noted only so the person can see that the retiring work-item's `accepts:` does not list every replacement it retires for.
 2. **Minor, drop.** tests/scenarios/supervision_integrate_steps.py:185 and supervision_proposal_steps.py:156. The removed r92 and r104 scenarios may have been the only users of the "and the term" parts of these step patterns; their regexes may now keep options no scenario uses. This is polish and was not in the file set. I did not check it further.
 
 ## Checks

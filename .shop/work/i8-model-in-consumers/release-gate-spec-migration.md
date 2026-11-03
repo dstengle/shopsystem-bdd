@@ -5,7 +5,7 @@ part_of: initiative/i8
 status: merged
 date: 2026-10-21
 argues: [spec-migration]
-changes: [spec-migration#r15]
+changes: [spec-migration#r15@0.29]
 ---
 
 # spec-migration: the final layout checked with model check

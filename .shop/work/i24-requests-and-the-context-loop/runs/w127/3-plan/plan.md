@@ -1,12 +1,12 @@
 # Plan of w127: work outcome and work turn (third plan, after the r17 answer)
 
-Accepts requests#r7, r15, r16, r17, r18. Rests on design-decision/requests-written-through-work and
+Accepts requests#r7@0.29, r15, r16, r17, r18. Rests on design-decision/requests-written-through-work and
 design-decision/exits-are-successful-or-errors. Planned from `runs/w127/1-research/notes.md` and the second plan
 (`runs/w127/2-plan/plan.md`), checked against the branch as it is now at the base.
 
 **The branch has moved since the research.** w126 and w128 have landed. `scripts/work` already has the `request`,
 `outcome`, `turn` and `resolve` subcommands. `scripts/workqueue_request.py` exists and commits every change through
-`workqueue.committed`, so requests#r12 holds and the second plan's D1 ("no commit yet") is gone. `tests/scenarios/test_requests.py`
+`workqueue.committed`, so requests#r12@0.29 holds and the second plan's D1 ("no commit yet") is gone. `tests/scenarios/test_requests.py`
 binds the whole of `requests.feature`, and three step modules exist: `requests_steps.py`, `requests_write_steps.py`
 and `requests_show_steps.py`. So the notes' "no binding, invalid choice" reasons for red are out of date. The reasons
 below come from reading those files, in the few places where the notes could not give them.
@@ -16,24 +16,24 @@ with two rows, "no line outcome" and "the line outcome question". Both rows are 
 
 ## 1. What goes green
 
-- requests#r15, "outcome in the upstream's turn writes the outcome given as the line outcome of the line named". Two
+- requests#r15@0.29, "outcome in the upstream's turn writes the outcome given as the line outcome of the line named". Two
   reasons it is red:
   - The shared request Given in `requests_steps.py` only knows the singular text "that has no line outcome". The
     plural "with two lines that have no line outcome" falls through to its outcome-list branch and writes a bogus
     line outcome for line 1.
   - The Then "q1 gives line 1 no line outcome" has no step.
-- requests#r16, "a side writing a part of a request in the other side's turn is refused, and nothing changes". Red
+- requests#r16@0.29, "a side writing a part of a request in the other side's turn is refused, and nothing changes". Red
   because `workqueue_request.outcome` never checks whose turn it is, so `work outcome q1 1 accepted` in the asker's
   turn writes the outcome and exits 0. The two Thens also have no steps: "the command is refused because it is the
   asker's turn" and "q1 is as it was".
-- requests#r7, "turn passes the request's turn from the <side> to the <other side>", both rows (upstream→asker,
+- requests#r7@0.29, "turn passes the request's turn from the <side> to the <other side>", both rows (upstream→asker,
   asker→upstream). `turn` already flips the turn, but the Then "q1's turn is the <other side>'s" has no step.
-- requests#r17, "turn passing a request to its asker with a line that has <line 2> sets the request's status to
+- requests#r17@0.29, "turn passing a request to its asker with a line that has <line 2> sets the request's status to
   awaiting-asker", both rows ("no line outcome", "the line outcome question"). Two reasons it is red:
   - The Given "…with two lines, line 1 with the line outcome accepted and line 2 with …" matches no step. The shared
     Given's pattern expects a space after "lines", not a comma.
   - `turn` never sets `awaiting-asker`.
-- requests#r18, "turn passing a request to its upstream sets the request's status to awaiting-upstream". Its Given
+- requests#r18@0.29, "turn passing a request to its upstream sets the request's status to awaiting-upstream". Its Given
   already matches the shared Given. It is red because `turn`, passing to the upstream, only flips `turn` and never
   sets `awaiting-upstream`.
 
@@ -69,19 +69,19 @@ Removed from the second plan's set:
 ## 3. Decisions
 
 - **D1. `work outcome` is the upstream's command, refused in the asker's turn.** The upstream writes line outcomes
-  only through `outcome` and `resolve` (requests#r5), and a part written in the other side's turn is refused, with
-  nothing changed (requests#r16). The refusal goes through `Refused`, which `work` turns into exit 1 with the message
+  only through `outcome` and `resolve` (requests#r5@0.29), and a part written in the other side's turn is refused, with
+  nothing changed (requests#r16@0.29). The refusal goes through `Refused`, which `work` turns into exit 1 with the message
   on stderr (design-decision/exits-are-successful-or-errors). The message says it is the asker's turn.
 - **D2. `work turn` is never refused on whose turn it is.** It writes neither side's part, only the turn
-  (requests#r7, design-decision/requests-written-through-work). The r5 and r18 scenarios show the asker running it in
+  (requests#r7@0.29, design-decision/requests-written-through-work). The r5 and r18 scenarios show the asker running it in
   the asker's turn.
-- **D3. `work outcome` writes any word, on the named line only.** This is already so in the code (requests#r15). It
-  is kept, and the other lines' outcomes and `## Lines` are left as they were (requests#r4).
+- **D3. `work outcome` writes any word, on the named line only.** This is already so in the code (requests#r15@0.29). It
+  is kept, and the other lines' outcomes and `## Lines` are left as they were (requests#r4@0.29).
 - **D4. Statuses `turn` sets.**
-  - Passing to the upstream always sets `awaiting-upstream` (requests#r18).
+  - Passing to the upstream always sets `awaiting-upstream` (requests#r18@0.29).
   - Passing to the asker sets `awaiting-asker` when any line has no line outcome, or an outcome other than accepted,
-    refused or withdrawn (requests#r17). This holds whatever the status was before.
-  - Passing to the asker when every line is settled keeps the existing accepted/refused branch (requests#r8, r9,
+    refused or withdrawn (requests#r17@0.29). This holds whatever the status was before.
+  - Passing to the asker when every line is settled keeps the existing accepted/refused branch (requests#r8@0.29, r9,
     w128's).
 - **D5. r17's cases.** Both Examples rows are pinned, per the work-item's Answer of 2026-10-24 (Reading A). The new
   Given maps "no line outcome" to no `## Outcomes` entry for line 2, and "the line outcome question" to entry

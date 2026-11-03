@@ -4,14 +4,14 @@
 
 | id | line | scenario |
 |---|---|---|
-| supervision#r135 | "**When** a round of the kind `integrate` that `work run` started gives the lines of a request into an upstream, `work run` shall raise them with `work request`, raised for the request the initiative fulfils and with that request's delegation." | the lines an integrate round gives into an upstream are raised with `work request`, raised for the request the initiative fulfils and with its delegation |
-| supervision#r136 | "**While** a request that an initiative raised into an upstream is not `delivered`, `work run` shall draft no work-item for the capability-proposal whose lines it raised." | none: returned as a question below |
+| supervision#r135@0.29 | "**When** a round of the kind `integrate` that `work run` started gives the lines of a request into an upstream, `work run` shall raise them with `work request`, raised for the request the initiative fulfils and with that request's delegation." | the lines an integrate round gives into an upstream are raised with `work request`, raised for the request the initiative fulfils and with its delegation |
+| supervision#r136@0.29 | "**While** a request that an initiative raised into an upstream is not `delivered`, `work run` shall draft no work-item for the capability-proposal whose lines it raised." | none: returned as a question below |
 
 Every other line is already formulated and stays as it is.
 
 ## Questions
 
-- supervision#r136: "**While** a request that an initiative raised into an upstream is not `delivered`, `work run` shall draft no work-item for the capability-proposal whose lines it raised." When the initiative has more than one capability-proposal, which ones are held?
+- supervision#r136@0.29: "**While** a request that an initiative raised into an upstream is not `delivered`, `work run` shall draft no work-item for the capability-proposal whose lines it raised." When the initiative has more than one capability-proposal, which ones are held?
   - Reading 1: every capability-proposal the initiative's integrate round wrote is held, because the raised lines came from that round and not from one proposal.
   - Reading 2: only the capability-proposal the raised lines belong to is held, and the initiative's other proposals get their work-items. r135 does not say how raised lines are tied to one proposal, so this reading needs that link stated.
 

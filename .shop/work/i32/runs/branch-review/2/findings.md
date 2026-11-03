@@ -10,8 +10,8 @@ This is the re-review after a fix work-item (w191). Under the re-review triage, 
 ## Range and work-items
 
 - **Range:** `d3d3839d..5d72991d`, from `work: start i32` to `work: w191 done -> green`.
-- **w189** (review#r31): one commit, `ee81efd0`, which changes `agents/bdd-branch-reviewer.md`. It lies between `6fa7dc00` (claimed) and `72e77945` (done).
-- **w190** (supervision#r118, r119): two commits between `2c448d35` (claimed) and `0a9226a6` (done):
+- **w189** (review#r31@0.29): one commit, `ee81efd0`, which changes `agents/bdd-branch-reviewer.md`. It lies between `6fa7dc00` (claimed) and `72e77945` (done).
+- **w190** (supervision#r118@0.29, r119): two commits between `2c448d35` (claimed) and `0a9226a6` (done):
   - `6622133a`: steps;
   - `31c86e3c`: `scripts/supervise_answers.py` and `scripts/workqueue_answer.py`.
 - **w191** (the fix of branch review 1's findings, under r118 and r119): one commit, `32b5f1fa`, between `25a106bd` (claimed) and `4bb8f10d` (done). It changes:
@@ -80,7 +80,7 @@ Every implementer report gives `## Tests changed under an allowance: none`: w189
 
 ## Cannot verify
 
-- **review#r31 on a real batch.** review is a guarantees capability with no scenario, and w189's plan names `measure` of a later initiative as the check. I verified the agent text (`agents/bdd-branch-reviewer.md:74,76`), not a run's result. This review itself follows it: `questions` holds only fix-now findings.
+- **review#r31@0.29 on a real batch.** review is a guarantees capability with no scenario, and w189's plan names `measure` of a later initiative as the check. I verified the agent text (`agents/bdd-branch-reviewer.md:74,76`), not a run's result. This review itself follows it: `questions` holds only fix-now findings.
 - **That a real `delegation-answerer` session gives `verdict`.**
   - The scenarios use the stand-in.
   - `agents/delegation-answerer.md` still does not mention `verdict` (`grep -c` gives 0); only the brief's `VERDICT` sentence (`supervise_answers.py:17`) asks for it.

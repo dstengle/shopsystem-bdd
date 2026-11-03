@@ -5,7 +5,7 @@ part_of: initiative/i3
 status: merged
 date: 2026-10-16
 argues: [formulation]
-adds: [formulation#r11-r13]
+adds: [formulation#r11@0.29, formulation#r12@0.29, formulation#r13@0.29]
 ---
 
 # Formulation: requirement ids

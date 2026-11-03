@@ -5,7 +5,7 @@ part_of: initiative/i21
 status: formulated
 date: 2026-10-22
 argues: [design-model-check]
-adds: [design-model-check#r110]
+adds: [design-model-check#r110@0.29]
 changes: []
 removes: []
 ---

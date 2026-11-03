@@ -9,7 +9,7 @@ Accepted lines of the request:
 - 1. **When** `work run` writes the brief of a round of the kind `formulate`, `work run` shall tell the round that a round that has formulated every line with one reading and gives each other line as a question has done its work, with the outcome `DONE`.
 - 2. **When** a round of the kind `formulate` that `work run` started for a capability-proposal gives a question with the outcome `PARTIAL`, `work run` shall write each question its result gives under the proposal's `## Questions`.
 - 3. **When** a round of the kind `formulate` that `work run` started for a capability-proposal gives a question with the outcome `PARTIAL`, `work run` shall transition the proposal to `awaiting-answer`.
-Ids drafted elsewhere (number added lines above each on the same capability): supervision#r99
+Ids drafted elsewhere (number added lines above each on the same capability): supervision#r99@0.29
 Drafts path: /home/vscode/shopsystem-bdd/.shop/worktrees/i36-1-integrate/.shop/scratch/1-integrate/drafts
 Give your change list in your result's `changes`: a list with one entry for each capability, each `{"capability": <name>, "adds": [...], "changes": [...], "removes": [...]}`, the ids as `<capability>#r<n>` or `term/<term>`.
 Base: 977e30e08f113241f73181f29ad1b2acf7fc5b26

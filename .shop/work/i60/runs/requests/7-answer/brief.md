@@ -5,7 +5,7 @@ Scripts: /home/vscode/shopsystem-bdd/scripts
 Base: none
 Worktree: /tmp/work-run-i60-f1a4jpu_/requests-7-answer
 Branch: none (a detached checkout)
-Question: requests#r63 (added): "**When** the person gives a session a delegation for a request outside `work request`, the session shall write the delegation in the request with `work delegate` in the same reply, in the person's words and with the date." Its narrator is a session; requests' narrator is a context taking in or raising a request. Reading A (recommended): stay in requests. Reading B: move to role-boundaries.
+Question: requests#r63@0.29 (added): "**When** the person gives a session a delegation for a request outside `work request`, the session shall write the delegation in the request with `work delegate` in the same reply, in the person's words and with the date." Its narrator is a session; requests' narrator is a context taking in or raising a request. Reading A (recommended): stay in requests. Reading B: move to role-boundaries.
 Delegation: The person, 2026-10-28: "i am delegating to you" and "Please do what is necessary to get the system back into working condition"; 2026-10-29: "the delegation problem needs to be fixed". Glossary changes are never delegated.
 
 Read (paths in your worktree):

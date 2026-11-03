@@ -1,20 +1,20 @@
 # plan of w194
 
-Work-item: .shop/work/i33/w194.md, under supervision. It accepts supervision#r120, r121, r75 and r105, and its `## Retires` names the deprecated @r75 PARTIAL scenario (the answer to its first question, reading (a)).
+Work-item: .shop/work/i33/w194.md, under supervision. It accepts supervision#r120@0.29, r121, r75 and r105, and its `## Retires` names the deprecated @r75 PARTIAL scenario (the answer to its first question, reading (a)).
 Sources: for r120 and r121, the research notes (.shop/work/i33/runs/w194/1-research/notes.md). For r75 and r105 there are no notes. The second answer told me to plan them from the code, so I read scripts/supervise.py `pull_through`, scripts/supervise_analysis.py, scripts/supervise_done.py, scripts/workqueue_done.py, scripts/measure_write.py and the step modules named below. Earlier plan: 2-plan/plan.md.
 
 ## 1. What goes green
 
-- **supervision#r121**: the Outline "a kept branch review whose result gives <outcome> and no question is taken as listing nothing to fix now" (feature:1023), with rows DONE, PARTIAL, BLOCKED and NEEDS_CONTEXT. Every row is red today because its Given "every worker gives DONE, and the branch reviewer's result gives <outcome>, with no question" has no step. Once that step exists, PARTIAL, BLOCKED and NEEDS_CONTEXT stay red: `Analyses.lists_nothing` counts a review as listing nothing only when its status is DONE (notes §1, the §2 probe).
-- **supervision#r120**: the scenario "under a delegation, the session answering a reviewer's question is asked to say in its result whether its answer asks for a change or accepts the work-item as it is" (feature:1515). It is red only because its Then has no step. `Answers.answer_brief` already asks for the verdict (probed, notes §2).
-- **supervision#r75**: the Outline "an initiative whose work-items are <work-items> and whose kept branch review lists nothing to fix now <measured>" (feature:1058).
+- **supervision#r121@0.29**: the Outline "a kept branch review whose result gives <outcome> and no question is taken as listing nothing to fix now" (feature:1023), with rows DONE, PARTIAL, BLOCKED and NEEDS_CONTEXT. Every row is red today because its Given "every worker gives DONE, and the branch reviewer's result gives <outcome>, with no question" has no step. Once that step exists, PARTIAL, BLOCKED and NEEDS_CONTEXT stay red: `Analyses.lists_nothing` counts a review as listing nothing only when its status is DONE (notes §1, the §2 probe).
+- **supervision#r120@0.29**: the scenario "under a delegation, the session answering a reviewer's question is asked to say in its result whether its answer asks for a change or accepts the work-item as it is" (feature:1515). It is red only because its Then has no step. `Answers.answer_brief` already asks for the verdict (probed, notes §2).
+- **supervision#r75@0.29**: the Outline "an initiative whose work-items are <work-items> and whose kept branch review lists nothing to fix now <measured>" (feature:1058).
   - The row "w1 is green and w2 is withdrawn / is measured" has all its steps defined and the behaviour already exists. It turns green once the stages it runs through are in.
   - The row "w1 is withdrawn and w2 is withdrawn / is not measured" is red in the code. `pull_through` (scripts/supervise.py, line 214) starts the branch review whenever every work-item is green or withdrawn. At line 222 it runs `analyse` (and so `measure initiative`) whenever the review lists nothing. No check anywhere asks for a green work-item. `measure initiative` has no such guard either: no script named measure* mentions green or withdrawn.
-- **supervision#r105**: the Outline "an initiative whose work-items are <work-items>, its delivery otherwise closed, <set>" (feature:1454), rows "is set done / is done" and "is not set done / is not done". Both rows are red because of missing steps:
+- **supervision#r105@0.29**: the Outline "an initiative whose work-items are <work-items>, its delivery otherwise closed, <set>" (feature:1454), rows "is set done / is done" and "is not set done / is not done". Both rows are red because of missing steps:
   - the Given "i1 is started and its work-items <work-items>": only the fixed text for "w1 is green and w2 is withdrawn" exists (supervision_done_steps.py:11);
   - the Given "i1's kept branch review lists nothing to fix now, and i1's measurement and analysis record are committed on the initiative branch";
   - the Then "i1 is not done" (only "i1 is done" exists).
-  The code already satisfies r105. `set_done` (scripts/supervise_done.py) checks `workqueue_done.holds`, and that function already requires at least one green work-item (scripts/workqueue_done.py line 31). That is w192's work-queue#r23 change, and it is in this base.
+  The code already satisfies r105. `set_done` (scripts/supervise_done.py) checks `workqueue_done.holds`, and that function already requires at least one green work-item (scripts/workqueue_done.py line 31). That is w192's work-queue#r23@0.29 change, and it is in this base.
 - **Retired** (the work-item's `## Retires`): "a kept branch review that ended PARTIAL, with no question and no finding, does not list nothing to fix now, and no `measure initiative` is run (deprecated)" (feature:1050, @r75). It passes today and fails once r121 is in.
 - These deprecated scenarios stay, because w194 does not retire them: the r75 DONE scenario (feature:1040) and the r105 scenario (feature:1444). Both still pass under this plan, since their initiative has a green work-item.
 
@@ -37,14 +37,14 @@ These were checked and are not changed: scripts/supervise_answers.py, supervise_
 
 ## 3. Decisions
 
-1. **The status of a kept review no longer counts.** A kept branch review lists nothing to fix now when its result gives no question, whatever its status. Rests on supervision#r121.
-2. **No new path for non-DONE reviews.** A PARTIAL, BLOCKED or NEEDS_CONTEXT review with no question goes on to `measure initiative`, the analysis and `set_done` through the existing path. Rests on supervision#r121 ("taken as listing nothing"), with r75 and r105.
-3. **r75 gets its own guard in `pull_through`.** The at-least-one-green condition for `measure initiative` is checked in `pull_through`, on the work-item statuses, in front of `analyse`. It is not taken from `workqueue_done.holds`. That function also requires every request naming the initiative to be delivered, which r75 does not ask for. Using it would hold back the measurement of an initiative whose request is not yet delivered, and the r75 Outline and the r76/r106 scenarios would then depend on requests. Rests on supervision#r75.
+1. **The status of a kept review no longer counts.** A kept branch review lists nothing to fix now when its result gives no question, whatever its status. Rests on supervision#r121@0.29.
+2. **No new path for non-DONE reviews.** A PARTIAL, BLOCKED or NEEDS_CONTEXT review with no question goes on to `measure initiative`, the analysis and `set_done` through the existing path. Rests on supervision#r121@0.29 ("taken as listing nothing"), with r75 and r105.
+3. **r75 gets its own guard in `pull_through`.** The at-least-one-green condition for `measure initiative` is checked in `pull_through`, on the work-item statuses, in front of `analyse`. It is not taken from `workqueue_done.holds`. That function also requires every request naming the initiative to be delivered, which r75 does not ask for. Using it would hold back the measurement of an initiative whose request is not yet delivered, and the r75 Outline and the r76/r106 scenarios would then depend on requests. Rests on supervision#r75@0.29.
    - The second answer calls the shared done condition "measure initiative's guard". The code has no such guard: `analyse` runs `measure initiative` without one. r75's condition is therefore placed beside the existing r94/r97 check, which repeats the same statuses.
    - The same guard sits in front of `set_done`. That changes nothing a narrator sees, because `holds` already refuses an initiative with no green work-item (r105).
-4. **The branch review still runs when every work-item is withdrawn.** It is not gated on a green work-item. The r75 Outline's "is not measured" Then asserts that one branch review ended. Rests on supervision#r75 and its scenario.
-5. **r105 needs no production change.** Its condition is already in `set_done`, through `workqueue_done.holds` (work-queue#r23, w192). Rests on supervision#r105.
-6. **r120 needs no production change.** Rests on supervision#r120 (notes §2).
+4. **The branch review still runs when every work-item is withdrawn.** It is not gated on a green work-item. The r75 Outline's "is not measured" Then asserts that one branch review ended. Rests on supervision#r75@0.29 and its scenario.
+5. **r105 needs no production change.** Its condition is already in `set_done`, through `workqueue_done.holds` (work-queue#r23@0.29, w192). Rests on supervision#r105@0.29.
+6. **r120 needs no production change.** Rests on supervision#r120@0.29 (notes §2).
 7. **The PARTIAL scenario is retired here.** The deprecated scenario at feature:1050 and its step are removed with `features retire`. Rests on the work-item's `## Retires` (answer 1, reading (a)) and design-decision/held-scenarios (0011).
 
 ## 4. Tests the decisions break

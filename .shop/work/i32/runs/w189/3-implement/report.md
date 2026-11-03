@@ -1,7 +1,7 @@
 ## Budget
 - agents/bdd-branch-reviewer.md
 
-# Report w189 (review#r31)
+# Report w189 (review#r31@0.29)
 
 ## Changed
 `agents/bdd-branch-reviewer.md`, "The result": `questions` now holds only findings triaged fix now; Critical-not-fix-now findings and unverifiable checks stay in findings.md and the status. On `NEEDS_CONTEXT`, the reason goes in the summary and `questions` is empty. The `status` rule is unchanged.

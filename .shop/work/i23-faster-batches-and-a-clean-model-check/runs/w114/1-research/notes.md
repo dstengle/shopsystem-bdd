@@ -1,4 +1,4 @@
-# Notes of w114: tools install pins ruff (analysis-tools#r58)
+# Notes of w114: tools install pins ruff (analysis-tools#r58@0.29)
 
 Tools: plugin 0.24.0 `scripts/tools` (run). `probe --log` run: ruff 0.17.0 installed in the interpreter.
 `refs cmd_install`: 0 references (refs, the dispatch at `scripts/tools:82` is not counted; read).

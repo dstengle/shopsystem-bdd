@@ -1,1 +1,1 @@
-{"status":"DONE","summary":"Redrafted requests r52 as r73 (only a sent turn makes show print the upstream as acting next); r52 retired.","questions":[],"changes":[{"capability":"requests","adds":["requests#r73"],"changes":[],"removes":["requests#r52"]}]}
+{"status":"DONE","summary":"Redrafted requests r52 as r73 (only a sent turn makes show print the upstream as acting next); r52 retired.","questions":[],"changes":[{"capability":"requests","adds":["requests#r73@0.29"],"changes":[],"removes":["requests#r52@0.29"]}]}

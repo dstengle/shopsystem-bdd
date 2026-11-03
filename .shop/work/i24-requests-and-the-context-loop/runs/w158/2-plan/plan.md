@@ -1,8 +1,8 @@
-# Plan of w158: a proposed initiative that fulfils no request gets no integrate round (supervision#r79)
+# Plan of w158: a proposed initiative that fulfils no request gets no integrate round (supervision#r79@0.29)
 
 ## 1. What goes green
 
-supervision#r79, two scenarios (features/supervision.feature:848-867):
+supervision#r79@0.29, two scenarios (features/supervision.feature:848-867):
 
 - "a proposed initiative is given to an integrate round with the accepted lines of the request it fulfils". It passes today (notes, section 1). It has to stay green.
 - "a proposed initiative that fulfils no request is given no integrate round, stays proposed and leaves nothing behind". It is red today for two reasons:
@@ -25,8 +25,8 @@ The notes list four more files that are only needed for one choice or another: `
 
 ## 3. Decisions
 
-1. A `proposed` initiative with no `fulfils` gets no integrate round and is not moved to `started`. It rests on supervision#r79: the round is given "the accepted lines of the request it fulfils", and with no request there are no lines to give. It also rests on the work-item's ruling of 2026-10-25: the first run has nothing to do for r79. r84 does not apply, because it holds only when an integrate round is started.
-2. The check goes in `Rounds.due`, not in `Briefs.integrate_lines` or `Rounds.round`. That way nothing is written, logged, branched or pushed before the decision is taken, which is what r10 asks for. It rests on supervision#r10 and on the scenario's Thens "i1 is proposed" and "no branch is made for a round".
+1. A `proposed` initiative with no `fulfils` gets no integrate round and is not moved to `started`. It rests on supervision#r79@0.29: the round is given "the accepted lines of the request it fulfils", and with no request there are no lines to give. It also rests on the work-item's ruling of 2026-10-25: the first run has nothing to do for r79. r84 does not apply, because it holds only when an integrate round is started.
+2. The check goes in `Rounds.due`, not in `Briefs.integrate_lines` or `Rounds.round`. That way nothing is written, logged, branched or pushed before the decision is taken, which is what r10 asks for. It rests on supervision#r10@0.29 and on the scenario's Thens "i1 is proposed" and "no branch is made for a round".
 3. The run's exit is the one r9, r32 and r52 give. The work-item's ruling says so. The initiative has no work-items, so `show` prints none and the run exits 0. That is what "the second `work run` was not refused" asserts, and the first run is expected to exit the same way.
 4. "Fulfils no request" means no `fulfils` field, which is the scenario's Given. Two nearby cases are left as they behave today, with neither reading chosen (section 5): a `fulfils` that names a request that is not kept (probe case B), and a request with no accepted lines (probe case C).
 

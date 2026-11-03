@@ -1,6 +1,6 @@
 # w97 research notes
 
-Accepted: design-model-check#r110, work-queue#r12. Base dc9ece7. Worktree clean at start and end (`git status --porcelain` empty; `.shop/` ignored).
+Accepted: design-model-check#r110@0.29, work-queue#r12@0.29. Base dc9ece7. Worktree clean at start and end (`git status --porcelain` empty; `.shop/` ignored).
 Tools: `python3 /home/vscode/shopsystem-bdd/scripts/tools` (refs, check size work). `tools tests-of`/`untested`: no map, not made (a map runs the whole suite). Test lists below are `by search`.
 Probe files: `.shop/scratch/w97-1-research/probe_r110_add.py`, `probe_r12_env.py`, `probe_dup_id.py`.
 
@@ -58,10 +58,10 @@ Found by `tools refs` (highest: 3 refs, production only; check_work_item_name: 1
 
 Each is a probe above (run). Reproductions are the commands in section 2.
 
-- D1 (work-queue#r12): `work add` refuses, naming `w2.md`, when `w2.md` is a plain note beside a work-item `w1.md`. Repro: r12 note w2. Expected by the requirement's wording: numbering over work-items, so w2 should be free. (Reading: the requirement could mean any `w<n>.md` file. Both readings are given in the plan's file set.)
-- D2 (work-queue#r12): `work add` refuses on a non-UTF-8 `.md` note under `.shop/work/i1/`. Repro: r12 non-UTF-8. Judgement left to the plan: a note that is not a work-item should not block numbering.
-- D3 (design-model-check#r110): `model check` prints no problem for two work-items holding one id when their stems differ. Repro: r110 held id, two stems; and id differs from stem (w3.md with id w9 prints nothing).
-- D4 (work-queue#r12 with design-model-check#r110): `work add` gives a work-item the id a work-item named `fix-login.md` already holds. Repro: r12 fix-login id w7 (w7 is held, add prints w2) and the dup-id probe (add prints w2 while fix-login holds w2).
+- D1 (work-queue#r12@0.29): `work add` refuses, naming `w2.md`, when `w2.md` is a plain note beside a work-item `w1.md`. Repro: r12 note w2. Expected by the requirement's wording: numbering over work-items, so w2 should be free. (Reading: the requirement could mean any `w<n>.md` file. Both readings are given in the plan's file set.)
+- D2 (work-queue#r12@0.29): `work add` refuses on a non-UTF-8 `.md` note under `.shop/work/i1/`. Repro: r12 non-UTF-8. Judgement left to the plan: a note that is not a work-item should not block numbering.
+- D3 (design-model-check#r110@0.29): `model check` prints no problem for two work-items holding one id when their stems differ. Repro: r110 held id, two stems; and id differs from stem (w3.md with id w9 prints nothing).
+- D4 (work-queue#r12@0.29 with design-model-check#r110@0.29): `work add` gives a work-item the id a work-item named `fix-login.md` already holds. Repro: r12 fix-login id w7 (w7 is held, add prints w2) and the dup-id probe (add prints w2 while fix-login holds w2).
 
 Reading left open (not a defect by my judgement): "one above the highest work-item" can mean the highest file `w<n>` (current) or the highest id. With fix-login.md holding w7, the current code prints w2; the id reading prints w8.
 

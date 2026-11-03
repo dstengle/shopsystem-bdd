@@ -1,4 +1,4 @@
-# Review of w114: tools install pins ruff (analysis-tools#r58)
+# Review of w114: tools install pins ruff (analysis-tools#r58@0.29)
 
 **Verdict: DONE.** Nothing is Critical and nothing is to fix now. There is one Minor observation.
 
@@ -6,7 +6,7 @@
 
 The branch `work/w114` is gone. The commits are those between `91fb2a1 work: w114 ready -> claimed` and `2248e89 work: w114 claimed -> done` on HEAD, less `work:` commits:
 
-- `8f76e50 tools install pins ruff (analysis-tools#r58)`: `scripts/tools`, `scripts/tools_env.py`, `tests/scenarios/analysis_tools_probe_steps.py` (+22/-5).
+- `8f76e50 tools install pins ruff (analysis-tools#r58@0.29)`: `scripts/tools`, `scripts/tools_env.py`, `tests/scenarios/analysis_tools_probe_steps.py` (+22/-5).
 
 This matches the implementer's `result.json` `commits` list exactly. All three files are in the work-item's `fileset`.
 

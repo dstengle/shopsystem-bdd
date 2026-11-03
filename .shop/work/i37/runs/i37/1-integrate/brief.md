@@ -8,7 +8,7 @@ Request: q15
 Accepted lines of the request:
 - 1. **When** the upstream ends its turn on a request and `work` sets the request to `accepted`, `work` shall keep the request's turn the upstream's.
 - 2. **When** `work` sets a request to `delivered`, `work` shall pass the request's turn to its asker.
-Ids drafted elsewhere (number added lines above each on the same capability): supervision#r99, supervision#r125, supervision#r126, supervision#r127
+Ids drafted elsewhere (number added lines above each on the same capability): supervision#r99@0.29, supervision#r125@0.29, supervision#r126@0.29, supervision#r127@0.29
 Drafts path: /home/vscode/shopsystem-bdd/.shop/worktrees/i37-1-integrate/.shop/scratch/1-integrate/drafts
 Give your change list in your result's `changes`: a list with one entry for each capability, each `{"capability": <name>, "adds": [...], "changes": [...], "removes": [...]}`, the ids as `<capability>#r<n>` or `term/<term>`.
 Base: 94be81b4c7efa16e4b751858da00db485be242d1

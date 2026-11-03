@@ -1,14 +1,14 @@
 # Plan of w246: fix the findings of branch review 1 of i62
 
-Work-item: .shop/work/i62/w246.md, under supervision, accepts supervision#r219, r220, r222, findings .shop/work/i62/runs/branch-review/1/findings.md. No `Retires` section, no `## Rulings`.
+Work-item: .shop/work/i62/w246.md, under supervision, accepts supervision#r219@0.29, r220, r222, findings .shop/work/i62/runs/branch-review/1/findings.md. No `Retires` section, no `## Rulings`.
 
 ## 1. What goes green
 
 All three scenarios already pass (research run: `python3 -m pytest -q --work-item w246`, 194 passed, exit 0). The work is the two findings triaged **fix now**: 1 and 2. Each gets a red test before its change.
 
-- supervision#r219, "run again once, alone, before the merge is refused" (features/supervision.feature:2062): green today, and stays green. Its step stops reading the `rerun` log line (decision 2).
-- supervision#r220, "both runs in the question" (features/supervision.feature:2072): green today. It covers only a scenario that fails in both first runs. The gap is finding 1: the question holds the output of `failed[0]` (the work-item's scenario run) and then the second runs. So a scenario that fails only in the whole-suite run, and fails again alone, has its first run missing from the question. That goes against r220. A new unit test shows this red (part 2).
-- supervision#r222, "passes on its second run lets the merge go" (features/supervision.feature:2081): green today, and stays green.
+- supervision#r219@0.29, "run again once, alone, before the merge is refused" (features/supervision.feature:2062): green today, and stays green. Its step stops reading the `rerun` log line (decision 2).
+- supervision#r220@0.29, "both runs in the question" (features/supervision.feature:2072): green today. It covers only a scenario that fails in both first runs. The gap is finding 1: the question holds the output of `failed[0]` (the work-item's scenario run) and then the second runs. So a scenario that fails only in the whole-suite run, and fails again alone, has its first run missing from the question. That goes against r220. A new unit test shows this red (part 2).
+- supervision#r222@0.29, "passes on its second run lets the merge go" (features/supervision.feature:2081): green today, and stays green.
 
 Deprecated scenarios retired: none.
 
@@ -37,7 +37,7 @@ All files stay under 300 lines.
      - then that scenario's second run, with its command and output.
    - A run before the merge that names no such scenario is not added just for that.
    - The header no longer names only the first failing command.
-   - Rests on supervision#r220 ("both runs of the scenario in the question r131 writes") and r131. A scenario's first run is whichever run before the merge failed on it, which can be the whole-suite run that r43 and r4 make.
+   - Rests on supervision#r220@0.29 ("both runs of the scenario in the question r131 writes") and r131. A scenario's first run is whichever run before the merge failed on it, which can be the whole-suite run that r43 and r4 make.
 2. **The `rerun` line in `log.jsonl` is removed (finding 2, reading b).**
    - The Behaviour lines that write to `log.jsonl` are r8 and r49. The Implementation section (supervision.md, "`log.jsonl` also gets a `push verified` line … and a `suite` line …") names only those lines, and no line names a `rerun` line.
    - Keeping the line would first need a new Implementation line through integrating-a-proposal. That is outside this work-item, which accepts only r219, r220 and r222 and can change no spec.

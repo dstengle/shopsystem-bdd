@@ -1,6 +1,6 @@
 # w137 research notes
 
-Work-item w137 (`under: supervision`), accepts supervision#r70, r80, r71, r83. Accepted scenarios (features/supervision.feature): the four below. No `## Retires`. No `tools map`, so `tests-of` and `untested` are unavailable: every test list here is `by search`. `refs` used for names. Probes ran `work`, `model` by the brief's Scripts path (/home/vscode/shopsystem-bdd/scripts) against scratch repositories; pytest ran from the worktree.
+Work-item w137 (`under: supervision`), accepts supervision#r70@0.29, r80, r71, r83. Accepted scenarios (features/supervision.feature): the four below. No `## Retires`. No `tools map`, so `tests-of` and `untested` are unavailable: every test list here is `by search`. `refs` used for names. Probes ran `work`, `model` by the brief's Scripts path (/home/vscode/shopsystem-bdd/scripts) against scratch repositories; pytest ran from the worktree.
 
 Accepted scenarios and node ids (`tests/scenarios/test_supervision.py::`):
 - a capability-proposal whose every question has an answer is given to an apply round with its answers (r70): `test_a_capabilityproposal_whose_every_question_has_an_answer_is_given_to_an_apply_round_with_its_answers`

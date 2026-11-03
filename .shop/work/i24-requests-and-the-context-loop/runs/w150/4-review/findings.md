@@ -1,4 +1,4 @@
-# Review of w150: Retires covers a requirement named through a range (supervision#r73)
+# Review of w150: Retires covers a requirement named through a range (supervision#r73@0.29)
 
 **Verdict: DONE.** No finding is Critical and none is fix now. The change does what r73 asks for a range, and the range scenario is green.
 
@@ -6,7 +6,7 @@
 
 The branch `work/w150` is gone, so I used the commits on the checked-out history between `b7da917 work: w150 ready -> claimed` and `f9253c8 work: w150 claimed -> done`, leaving out `work run`'s own `work:` commits:
 
-- `6cee628 work run's Retires covers a requirement named through a range (supervision#r73)`: `scripts/supervise_draft.py` (+2/-1) and `tests/scenarios/supervision_proposal_steps.py` (+1/-1).
+- `6cee628 work run's Retires covers a requirement named through a range (supervision#r73@0.29)`: `scripts/supervise_draft.py` (+2/-1) and `tests/scenarios/supervision_proposal_steps.py` (+1/-1).
 
 This is the one commit the implementer's `result.json` lists. The files changed match the work-item's `fileset`.
 
@@ -32,7 +32,7 @@ The report's `## Tests changed under an allowance` says "none". It calls the `na
 
 1. **Minor, observation**: `scripts/supervise_draft.py:31-34`, from w150's commits (a defect that was already there, now also reachable through a range). If a `@deprecated` scenario has two `@r` tags and both fall in the accepted set, `retires()` returns it once per tag, so `## Retires` lists it twice. With ranges this is now more likely: `thing#r2-r3` covers both tags of a scenario tagged `@r2 @r3`. The research reproduced it: `retires("thing", ["thing#r2","thing#r3"])` → `[('it used to do both','r2'), ('it used to do both','r3')]` (notes §2, D2). It matters because r73 says "each scenario", and a duplicated line is noise for the narrator, not a wrong retirement. The plan left this as an open case on purpose. The fix: deduplicate by title, but only once a line or scenario decides whether one line per scenario is the intended output.
 2. **Minor, observation**: `scripts/model_parse.py:100-104`, reached from `supervise_draft.py:31`. A reversed range (`thing#r6-r3`) is left unexpanded, so it matches no tag, and `retires()` silently lists nothing. No client writes a reversed range today. I found this by reading `expand`: the `int(a) <= int(b)` guard keeps the raw ref. The fix, if it is ever needed: a line that refuses a reversed range when the proposal is read.
-3. **Minor, drop**: `tests/scenarios/supervision_proposal_steps.py:17`. `named()` still uses `\w+`, so a hyphenated capability name such as `work-queue#r3` would be read as `queue#r3`. This was already there and is fixture only. Today's scenarios use only `thing`.
+3. **Minor, drop**: `tests/scenarios/supervision_proposal_steps.py:17`. `named()` still uses `\w+`, so a hyphenated capability name such as `work-queue#r3@0.29` would be read as `queue#r3`. This was already there and is fixture only. Today's scenarios use only `thing`.
 
 Risks I named and checked:
 - Does `expand` take the full `<cap>#r<a>-r<b>` refs that `retires` passes it, and return `<cap>#r<n>` refs that the `split("#")` that follows still handles? I read `model_parse.py:96-105`: yes.

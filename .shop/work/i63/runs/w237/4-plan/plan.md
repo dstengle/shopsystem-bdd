@@ -6,9 +6,9 @@ This plan replaces 3-plan. The question 3-plan left open is answered (work-item,
 
 The researcher ran `python3 -m pytest -q --work-item w237`: 3 failed, 180 passed, 1 skipped. All three scenarios stop at the same undefined Given (`StepDefinitionNotFoundError`, notes part 1), "every round ends and every worker gives DONE, and while i1's researcher works a session of i2 changes .shop/work/i2/initiative.md in the repository's own checkout without committing it". Their Thens have no step definitions either.
 
-- supervision#r214, "what changed in the repository's own checkout while a session of one initiative worked is checked without the paths of another initiative run side by side". Red on the Given and on the missing Then "w1 is green, nothing recorded of w1 naming .shop/work/i2/initiative.md". The rule has been in `Faults.checkout_changes` since d8f57cc8: it leaves out each other initiative's `.shop/work/<X>/`.
-- supervision#r215, "a change to another initiative's path under .shop/work/, made by that initiative's session while a session of one initiative worked, is not put back". Red on the Given and on the missing Then ".shop/work/i2/initiative.md is as i2's session changed it".
-- supervision#r216, "... faults no session". Red on the Given and on the missing Thens "no session of i1 or of i2 was taken as a fault" and "w1 is not failed and p2 is not failed".
+- supervision#r214@0.29, "what changed in the repository's own checkout while a session of one initiative worked is checked without the paths of another initiative run side by side". Red on the Given and on the missing Then "w1 is green, nothing recorded of w1 naming .shop/work/i2/initiative.md". The rule has been in `Faults.checkout_changes` since d8f57cc8: it leaves out each other initiative's `.shop/work/<X>/`.
+- supervision#r215@0.29, "a change to another initiative's path under .shop/work/, made by that initiative's session while a session of one initiative worked, is not put back". Red on the Given and on the missing Then ".shop/work/i2/initiative.md is as i2's session changed it".
+- supervision#r216@0.29, "... faults no session". Red on the Given and on the missing Thens "no session of i1 or of i2 was taken as a fault" and "w1 is not failed and p2 is not failed".
 
 Deprecated scenarios retired: none. The work-item has no Retires section.
 
@@ -30,10 +30,10 @@ On the path and unchanged (notes part 4): scripts/supervise_worker.py, whose sta
   - The Given stores the written text in the scenario's `context` for r215's Then.
   - Rests on: the answer (reading A, gate question 2 (a)); r215 and r216 ("by a session of that initiative, while a session of one initiative worked"); r218 still holding for i2's own check.
 - D2. The Thens. Each is a regex or parse Then in the faults steps module, reusing that module's and supervision_world's helpers:
-  - r214: w1's status is `green`, read as `is_green` reads it. Neither w1's file nor any line of i1's log.jsonl about w1 names the path, the same check `nothing_names` makes. The Then is worded "naming", so it is a step of its own, not `nothing_names`. Rests on supervision#r214.
-  - r215: at the end of `work run`, the file's text equals the text the Given stored. Rests on supervision#r215.
-  - r216, first Then: no node file of i1 or of i2 (work-items, capability-proposals, initiative.md) has a `## Faults` section that holds an entry. No commit on the initiative branch is a round's "faulted" keep (`keep_round`'s message). Rests on supervision#r216, with r128/r86/r88 for what being taken as a fault records.
-  - r216, second Then: w1's frontmatter status and p2's are each not `failed`. Rests on supervision#r216.
+  - r214: w1's status is `green`, read as `is_green` reads it. Neither w1's file nor any line of i1's log.jsonl about w1 names the path, the same check `nothing_names` makes. The Then is worded "naming", so it is a step of its own, not `nothing_names`. Rests on supervision#r214@0.29.
+  - r215: at the end of `work run`, the file's text equals the text the Given stored. Rests on supervision#r215@0.29.
+  - r216, first Then: no node file of i1 or of i2 (work-items, capability-proposals, initiative.md) has a `## Faults` section that holds an entry. No commit on the initiative branch is a round's "faulted" keep (`keep_round`'s message). Rests on supervision#r216@0.29, with r128/r86/r88 for what being taken as a fault records.
+  - r216, second Then: w1's frontmatter status and p2's are each not `failed`. Rests on supervision#r216@0.29.
 - D3. Production code. None changes in behaviour. This was settled by the answer (reading A: r215/r216 cover a change made by another initiative's session; r6, r34 and r218 still apply to a session's own initiative).
 
 ## 4. Tests the decisions break

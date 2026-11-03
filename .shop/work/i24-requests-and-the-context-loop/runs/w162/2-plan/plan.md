@@ -1,10 +1,10 @@
-# Plan of w162: fix branch review 2's R2-F1 (supervision#r79)
+# Plan of w162: fix branch review 2's R2-F1 (supervision#r79@0.29)
 
-The work-item accepts supervision#r79 and names branch review 2's findings. One finding is to fix now: R2-F1. A `proposed` initiative whose `fulfils` names a request the queue does not hold is moved to `started`. A round branch is made, the log is left uncommitted, and every later `work run` is refused.
+The work-item accepts supervision#r79@0.29 and names branch review 2's findings. One finding is to fix now: R2-F1. A `proposed` initiative whose `fulfils` names a request the queue does not hold is moved to `started`. A round branch is made, the log is left uncommitted, and every later `work run` is refused.
 
 ## 1. What goes green
 
-supervision#r79. Its accepted scenarios in `features/supervision.feature`:
+supervision#r79@0.29. Its accepted scenarios in `features/supervision.feature`:
 - "a proposed initiative is given to an integrate round with the accepted lines of the request it fulfils". It is not red today: the notes ran it and it passed.
 - "a proposed initiative that fulfils no request is given no integrate round, stays proposed and leaves nothing behind". It is not red today either: it was run and passed.
 
@@ -37,13 +37,13 @@ Removed from the researcher's set, and why:
 ## 3. Decisions
 
 1. **A `fulfils` the queue does not hold is a refusal under r10, made before anything moves.**
-   - `work run` cannot give the integrate round "the accepted lines of the request it fulfils" (supervision#r79).
-   - So it cannot start that delivery. supervision#r10 then says: exit with an error, say why, change nothing.
+   - `work run` cannot give the integrate round "the accepted lines of the request it fulfils" (supervision#r79@0.29).
+   - So it cannot start that delivery. supervision#r10@0.29 then says: exit with an error, say why, change nothing.
    - In practice this means: no move to `started`, no `log.jsonl` line, no round branch and no commit.
-   - supervision#r84 moves the initiative only when the round starts, and here it does not start.
-   - supervision#r46 is why nothing may be left uncommitted: otherwise every later run is refused.
+   - supervision#r84@0.29 moves the initiative only when the round starts, and here it does not start.
+   - supervision#r46@0.29 is why nothing may be left uncommitted: otherwise every later run is refused.
    - Of the review's two fixes, this takes "check before anything moves" over "catch `Refused`, put the status back and run `keep_round`". With this one there is nothing to undo.
-2. **The new scenario is tagged `@r79`, not `@r10`.** It pins how r79's integrate round behaves when the request is missing. Under supervision#r22 the option `--work-item w162` selects only scenarios of the requirements the work-item accepts, which is r79 alone. Tagged `@r10`, the scenario would not be in w162's check.
+2. **The new scenario is tagged `@r79`, not `@r10`.** It pins how r79's integrate round behaves when the request is missing. Under supervision#r22@0.29 the option `--work-item w162` selects only scenarios of the requirements the work-item accepts, which is r79 alone. Tagged `@r10`, the scenario would not be in w162's check.
 3. **The message is the one the queue already gives**: there is no request q9 under `.shop/work/requests`, from `workqueue_request.accepted_lines`. That is r10's "say why". The review's wording ("saying the queue does not hold q9") is a paraphrase, not a requirement.
 4. **A held request with no accepted line (notes D2) keeps today's behaviour**: a round with an empty list of lines. R2-F1 does not name this case and this work does not change it. See Open cases.
 

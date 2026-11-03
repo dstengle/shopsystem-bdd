@@ -1,8 +1,8 @@
-# Plan of w228 (supervision#r173)
+# Plan of w228 (supervision#r173@0.29)
 
 ## 1. What goes green
 
-- **supervision#r173**: scenario "when the gate round `work run` started for a glossary-proposal ends with no question, one question asking the person to approve the terms it adds, changes and removes is written" (`features/supervision.feature:1838`).
+- **supervision#r173@0.29**: scenario "when the gate round `work run` started for a glossary-proposal ends with no question, one question asking the person to approve the terms it adds, changes and removes is written" (`features/supervision.feature:1838`).
   - Red today (notes §1): its last Then, `one question was written for g1, asking the person to approve the terms "ledger", "shelf" and "loan"`, has no step definition (`StepDefinitionNotFoundError`). Were it defined it would still fail: `run_round` in `scripts/supervise_rounds.py` (lines 158-161) writes the capability wording "Are the lines of g1 approved as drafted?" for every gate that gives no question, and that names no term.
   - Its Givens and the first Then are defined already: `glossary_drafted` (`supervision_proposal_steps.py:169`, which writes adds `term/ledger`, changes `term/shelf`, removes `term/loan`), the no-question gate result (`supervision_rounds_steps.py:66`), and the gate round started for g1 (`supervision_rounds_steps.py:97`).
 - No deprecated scenarios: the work-item has no Retires section.
@@ -17,9 +17,9 @@ The researcher also listed `scripts/supervise.py`, `scripts/workqueue.py` and `s
 
 ## 3. Decisions
 
-1. **The question is written as r117's is**: one bullet under the proposal's `## Questions`, through the existing `move`. The proposal then has the same status as after a capability gate with no question. Rests on supervision#r173 ("write one question"), with supervision#r117 as the existing form of a gate's no-question default, and on design-decision/the-glossary-is-a-target-of-spec-work (glossary-proposals go through the same gate-and-approve path).
-2. **The proposal is told apart by its kind.** It is a glossary-proposal when its front matter's `kind` is `glossary-proposal`, the same test `supervise_glossary` already uses. Any other gate keeps the r117 wording unchanged. Rests on supervision#r117 and #r173, which are two branches of one default.
-3. **The question names every term the proposal lists and what the proposal does with it.** It gives the bare term (`ledger`, not `term/ledger`) and says whether the proposal adds, changes or removes it. It asks the person to approve them. Rests on supervision#r173: it asks for approval of "the terms the proposal adds, changes and removes", and the person reads the question in the proposal file.
+1. **The question is written as r117's is**: one bullet under the proposal's `## Questions`, through the existing `move`. The proposal then has the same status as after a capability gate with no question. Rests on supervision#r173@0.29 ("write one question"), with supervision#r117@0.29 as the existing form of a gate's no-question default, and on design-decision/the-glossary-is-a-target-of-spec-work (glossary-proposals go through the same gate-and-approve path).
+2. **The proposal is told apart by its kind.** It is a glossary-proposal when its front matter's `kind` is `glossary-proposal`, the same test `supervise_glossary` already uses. Any other gate keeps the r117 wording unchanged. Rests on supervision#r117@0.29 and #r173, which are two branches of one default.
+3. **The question names every term the proposal lists and what the proposal does with it.** It gives the bare term (`ledger`, not `term/ledger`) and says whether the proposal adds, changes or removes it. It asks the person to approve them. Rests on supervision#r173@0.29: it asks for approval of "the terms the proposal adds, changes and removes", and the person reads the question in the proposal file.
 
 ## 4. Tests the decisions break
 

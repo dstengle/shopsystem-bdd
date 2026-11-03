@@ -5,7 +5,7 @@ part_of: initiative/i10
 status: formulated
 date: 2026-10-21
 argues: [role-boundaries]
-changes: [role-boundaries#r4-r5]
+changes: [role-boundaries#r4@0.29, role-boundaries#r5@0.29]
 ---
 
 # role-boundaries: the implementer's Skill tool and the spec-checker's model

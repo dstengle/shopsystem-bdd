@@ -1,4 +1,4 @@
-# Review of w166 (work-queue#r25): work start commits the initiative
+# Review of w166 (work-queue#r25@0.29): work start commits the initiative
 
 **Verdict: DONE.** No Critical finding and nothing to fix now. There is one Minor observation (the commit message's form).
 

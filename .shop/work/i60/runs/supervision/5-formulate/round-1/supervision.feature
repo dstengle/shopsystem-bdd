@@ -1,4 +1,4 @@
-# supervision#r211: **When** `work run` reads the delegation of an initiative's request, `work run` shall read the delegation the request has at that moment, given before or after the initiative started.
+# supervision#r211@0.29: **When** `work run` reads the delegation of an initiative's request, `work run` shall read the delegation the request has at that moment, given before or after the initiative started.
   @r211
   Scenario Outline: `work run` reads the delegation the request has when it reads it, the delegation given <when> the initiative started
     Pins that a question is answered under the delegation the request holds now, whether the person gave it with the request or after the initiative was already under way.

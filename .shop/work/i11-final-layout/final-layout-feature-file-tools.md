@@ -5,8 +5,8 @@ part_of: initiative/i11
 status: formulated
 date: 2026-10-19
 argues: [feature-file-tools]
-adds: [feature-file-tools#r57-r58, term/deprecated-scenario]
-changes: [feature-file-tools#r2, feature-file-tools#r4-r5, feature-file-tools#r17, feature-file-tools#r19, feature-file-tools#r21, feature-file-tools#r23-r24, feature-file-tools#r29, feature-file-tools#r35, feature-file-tools#r46, feature-file-tools#r51, term/requirement]
+adds: [feature-file-tools#r57@0.29, feature-file-tools#r58@0.29, term/deprecated-scenario]
+changes: [feature-file-tools#r2@0.29, feature-file-tools#r4@0.29, feature-file-tools#r5@0.29, feature-file-tools#r17@0.29, feature-file-tools#r19@0.29, feature-file-tools#r21@0.29, feature-file-tools#r23@0.29, feature-file-tools#r24@0.29, feature-file-tools#r29@0.29, feature-file-tools#r35@0.29, feature-file-tools#r46@0.29, feature-file-tools#r51@0.29, term/requirement]
 ---
 
 # Feature file tools: deprecate, and every scenario bound once
@@ -35,4 +35,4 @@ retires r8 or r10, their rewording here is dropped.
 Formulation follows: the deprecate scenarios are rewritten from the changed lines, and every scenario whose
 title or steps say held, holding or superseded is reworded, since v_t1 reads titles and steps.
 
-Re-synced 2026-10-19 to the EARS lines (initiative/i13, approved by the person): feature-file-tools#r59 -> r58; feature-file-tools#r3 -> r2; feature-file-tools#r10 -> r35; feature-file-tools#r18 -> r17; feature-file-tools#r20 -> r46; feature-file-tools#r22 -> r21; feature-file-tools#r39 -> r19; feature-file-tools#r40 -> r21; feature-file-tools#r41 -> r29; feature-file-tools#r53 -> r35; feature-file-tools#r54 -> r35. The ids in the text above are the drafted ones.
+Re-synced 2026-10-19 to the EARS lines (initiative/i13, approved by the person): feature-file-tools#r59@0.29 -> r58; feature-file-tools#r3@0.29 -> r2; feature-file-tools#r10@0.29 -> r35; feature-file-tools#r18@0.29 -> r17; feature-file-tools#r20@0.29 -> r46; feature-file-tools#r22@0.29 -> r21; feature-file-tools#r39@0.29 -> r19; feature-file-tools#r40@0.29 -> r21; feature-file-tools#r41@0.29 -> r29; feature-file-tools#r53@0.29 -> r35; feature-file-tools#r54@0.29 -> r35. The ids in the text above are the drafted ones.

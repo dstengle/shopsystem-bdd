@@ -1,6 +1,6 @@
 # Plan of w92: work run carries a work-item's answers and keeps going on its branch
 
-Accepts supervision#r5, r26, r32, r36, r37, r57, r58. Rests on decisions 0063 (a-ruling-returns-to-the-asking-stage), 0064 (answers-not-rulings), 0011 (held-scenarios), 0006 (feature-files-read-only-in-red-green) and the capability's rests_on. The work-item has no `## Rulings`/`## Answers` and no Retires section; part 1 gives what decision 0011 retires.
+Accepts supervision#r5@0.29, r26, r32, r36, r37, r57, r58. Rests on decisions 0063 (a-ruling-returns-to-the-asking-stage), 0064 (answers-not-rulings), 0011 (held-scenarios), 0006 (feature-files-read-only-in-red-green) and the capability's rests_on. The work-item has no `## Rulings`/`## Answers` and no Retires section; part 1 gives what decision 0011 retires.
 
 ## 1. What goes green
 
@@ -44,17 +44,17 @@ Removed from the researcher's set:
 - `agents/bdd-planner.md` and `agents/bdd-task-reviewer.md`: no accepted requirement observes the agents' text. Under r57 the brief carries the answers.
 - `tests/scenarios/supervision_tests_steps.py`: its `w2 is awaiting-ruling` Given serves only r4's rows, which are not w92's. It survives the rename.
 
-Out of the set (measure_build.py, measure_show.py): batch-measurement#r41 is w94's.
+Out of the set (measure_build.py, measure_show.py): batch-measurement#r41@0.29 is w94's.
 
 ## 3. Decisions
 
-1. **w92 makes the rename in `work run`** (researcher's Q1). work run writes awaiting-answer and reads `## Answers` wherever supervise*.py wrote awaiting-ruling or read `## Rulings`. This rests on supervision#r5, r26, r32, r36 and 0064: only w92 accepts the scenarios that observe it. If w91 has already merged a part of it when the implementer starts, that part stays as it is. w92 adds awaiting-answer to workqueue STATUSES if it is missing, because move() refuses any status not listed there (r5 cannot be met otherwise). w92 does not remove awaiting-ruling from STATUSES. That set, and how work-items still on disk with awaiting-ruling are treated, are w91's (its open question) and w93's (migration-tools#r29).
+1. **w92 makes the rename in `work run`** (researcher's Q1). work run writes awaiting-answer and reads `## Answers` wherever supervise*.py wrote awaiting-ruling or read `## Rulings`. This rests on supervision#r5@0.29, r26, r32, r36 and 0064: only w92 accepts the scenarios that observe it. If w91 has already merged a part of it when the implementer starts, that part stays as it is. w92 adds awaiting-answer to workqueue STATUSES if it is missing, because move() refuses any status not listed there (r5 cannot be met otherwise). w92 does not remove awaiting-ruling from STATUSES. That set, and how work-items still on disk with awaiting-ruling are treated, are w91's (its open question) and w93's (migration-tools#r29@0.29).
 2. **The deprecated rows are retired, not kept** (researcher's Q2): decisions 0011 and 0006, as listed in part 1. If they were kept they would contradict r5, r26, r32, r36 and r37, and under r4 `--work-item w92` would never let w92 merge.
 3. **Answers pair with questions by position**: the n-th bullet of `## Answers` answers the n-th bullet of `## Questions` (supervision Implementation, design-decision/answers-not-rulings). Run.questions prints a question that has no n-th answer (r32), and Briefs.brief writes each answer with its question (r57). This holds for the brief of every stage's worker (0063: "the brief of every worker it starts for it").
 4. **A kept branch is reused, not re-created** (r58, 0063). When work/<name> exists, the implementer's worktree is made on it with its commits. Otherwise the worktree is made as today.
 5. **The scenarios' `work run` does not inherit the worker guard** (researcher's Q3, defect D1). The scenario harness builds its env without SHOPSYSTEM_WORK_RUN_WORKER. The r21 scenario still sets it itself, through BY_WORKER in supervision_world.py. Workers keep setting it: r21 needs it in production. This rests on the capability's narrator, the person who started `work run`, who is not a worker. The scenario world is that person's world.
 6. **The exit code is not asserted** (researcher's Q5). r32 says only "exit with an error" (design-decision/exits-are-successful-or-errors). Exit 3 is Implementation, which "may change". The code keeps 3, now for awaiting-answer. No scenario is added for it.
-7. **Measure is not w92's** (researcher's Q4): batch-measurement#r41 is accepted by w94.
+7. **Measure is not w92's** (researcher's Q4): batch-measurement#r41@0.29 is accepted by w94.
 
 ## 4. Tests the decisions break
 

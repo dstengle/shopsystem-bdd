@@ -1,10 +1,10 @@
 # Plan of w120: work answer's step module passes ruff
 
-Accepts work-queue#r15. A fix of branch review 1's F2 (w113): `tools check` exits 1 on ruff I001 in `tests/scenarios/work_queue_answer_steps.py`.
+Accepts work-queue#r15@0.29. A fix of branch review 1's F2 (w113): `tools check` exits 1 on ruff I001 in `tests/scenarios/work_queue_answer_steps.py`.
 
 ## 1. What goes green
 
-- **work-queue#r15**, scenarios in `features/work-queue.feature`:
+- **work-queue#r15@0.29**, scenarios in `features/work-queue.feature`:
   - "answer with a line break in it is refused, and nothing changes" (Scenario Outline, seven rows: LF, VT, FF, CR, NEL, U+2028, U+2029);
   - "an answer of two lines to a work-item not awaiting-answer is refused as more than one line first".
 

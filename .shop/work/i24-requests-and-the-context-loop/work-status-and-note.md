@@ -5,7 +5,7 @@ part_of: initiative/i24
 status: formulated
 date: 2026-10-24
 argues: [work-queue]
-adds: [work-queue#r16-r21]
+adds: [work-queue#r16@0.29, work-queue#r17@0.29, work-queue#r18@0.29, work-queue#r19@0.29, work-queue#r20@0.29, work-queue#r21@0.29]
 changes: []
 removes: []
 ---

@@ -1,16 +1,16 @@
 # Plan of w128: a request accepted, refused or resolved to delivered, each change committed
 
-Accepts requests#r8, r9, r10, r11, r12. No Retires section, no Rulings. Planned from `runs/w128/1-research/notes.md`; the sibling notes of w126 were read to keep names and forms the same.
+Accepts requests#r8@0.29, r9, r10, r11, r12. No Retires section, no Rulings. Planned from `runs/w128/1-research/notes.md`; the sibling notes of w126 were read to keep names and forms the same.
 
 ## 1. What goes green
 
 All five are red today for the same reasons. No `tests/scenarios/test_requests.py` binds `features/requests.feature`, and no step module defines its Givens, so each scenario fails `StepDefinitionNotFoundError` on its first Given. Also, `scripts/work` has no `turn`, `outcome` or `resolve` command: argparse refuses each as `invalid choice`.
 
-- **requests#r8**, "the upstream ending its turn with every line accepted, refused or withdrawn and one accepted sets the status to accepted": the Given is undefined and `work turn` is missing.
-- **requests#r9**, "the upstream ending its turn with every line refused or withdrawn sets the status to refused": the Given is undefined and `work turn` is missing.
-- **requests#r10**, "resolve on an accepted request in the asker's turn writes each accepted line's requirement id and version as the resolution": the Given is undefined and `work resolve` is missing.
-- **requests#r11**, "resolve writing a request's resolution sets the request's status to delivered": the Given is undefined and `work resolve` is missing.
-- **requests#r12**, "a command that changes a request commits the request on the current branch": the Given is undefined and `work outcome` is missing. Its first Then matches the path step `new_commit_holds` (`tests/scenarios/work_queue_git_steps.py:47`) only with `q1` taken as a path, so `git show main:q1` fails. Its second Then matches no step.
+- **requests#r8@0.29**, "the upstream ending its turn with every line accepted, refused or withdrawn and one accepted sets the status to accepted": the Given is undefined and `work turn` is missing.
+- **requests#r9@0.29**, "the upstream ending its turn with every line refused or withdrawn sets the status to refused": the Given is undefined and `work turn` is missing.
+- **requests#r10@0.29**, "resolve on an accepted request in the asker's turn writes each accepted line's requirement id and version as the resolution": the Given is undefined and `work resolve` is missing.
+- **requests#r11@0.29**, "resolve writing a request's resolution sets the request's status to delivered": the Given is undefined and `work resolve` is missing.
+- **requests#r12@0.29**, "a command that changes a request commits the request on the current branch": the Given is undefined and `work outcome` is missing. Its first Then matches the path step `new_commit_holds` (`tests/scenarios/work_queue_git_steps.py:47`) only with `q1` taken as a path, so `git show main:q1` fails. Its second Then matches no step.
 
 No deprecated scenarios are retired.
 
@@ -55,7 +55,7 @@ Changed from the researcher's set:
   - when the turn passes from the upstream with every line settled, `work turn` sets `accepted` (r8) or `refused` (r9);
   - in any other case `work turn` leaves the status as it was.
 
-  Rests on requests#r8, r9 and r12. The names are the ones w126 used, so whichever work-item merges second reuses what the first one built rather than adding a second copy.
+  Rests on requests#r8@0.29, r9 and r12. The names are the ones w126 used, so whichever work-item merges second reuses what the first one built rather than adding a second copy.
 - **D2. How a request is kept.** It is the file form of the capability's Implementation section, at `.shop/work/requests/<id>.md`.
   - "Line n" is the nth entry of `## Lines`, counting from 1.
   - `## Outcomes` holds one entry per line, numbered as in `## Lines`, with the outcome word, or no entry when the line has no outcome.
@@ -63,9 +63,9 @@ Changed from the researcher's set:
   - Lines that were not accepted get no entry in the resolution.
 
   Rests on design-decision/requests-written-through-work: how `work` keeps a request is its own business. The id is kept verbatim because design-model-check r116 reads the requirement a resolution names.
-- **D3. How `work resolve` takes its input.** It is `work resolve <request>` with one `--line <n> <requirement> <version>` per accepted line. The scenario's When maps onto it directly ("thing#r3 for line 1 … found in the version 0.26.0"), and r10 gives each line "the version that holds it". `resolve` does not check whose turn it is. Rests on requests#r10 ("whichever side's turn it is"). What the narrator gets back (the resolution stored, the status `delivered`) does not depend on this argument form, so it is not a question.
+- **D3. How `work resolve` takes its input.** It is `work resolve <request>` with one `--line <n> <requirement> <version>` per accepted line. The scenario's When maps onto it directly ("thing#r3 for line 1 … found in the version 0.26.0"), and r10 gives each line "the version that holds it". `resolve` does not check whose turn it is. Rests on requests#r10@0.29 ("whichever side's turn it is"). What the narrator gets back (the resolution stored, the status `delivered`) does not depend on this argument form, so it is not a question.
 - **D4. `resolve` on a request that is not `accepted`** is refused with an error exit and changes nothing. Rests on the capability's Implementation (work-queue r7) and design-decision/exits-are-successful-or-errors.
-- **D5. Each of `outcome`, `turn` and `resolve` commits only the request file, through `workqueue.committed`.** That function refuses outside a git work tree, restores the file when the commit fails, and leaves other staged files alone. Rests on requests#r12. The research notes' section 5 lists the effects this step gives.
+- **D5. Each of `outcome`, `turn` and `resolve` commits only the request file, through `workqueue.committed`.** That function refuses outside a git work tree, restores the file when the commit fails, and leaves other staged files alone. Rests on requests#r12@0.29. The research notes' section 5 lists the effects this step gives.
 - **D6. The defects are not fixed here.**
   - Notes D1: `work withdraw` takes a request for a work-item.
   - Notes D2: `model check` reports `.shop/work/requests` as having no initiative.md.

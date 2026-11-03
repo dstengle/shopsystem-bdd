@@ -5,7 +5,7 @@ part_of: initiative/i10
 status: merged
 date: 2026-10-20
 argues: [red-green]
-changes: [red-green#r1]
+changes: [red-green#r1@0.29]
 ---
 
 # red-green: the whole suite is work run's

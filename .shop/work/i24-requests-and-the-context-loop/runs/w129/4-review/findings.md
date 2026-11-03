@@ -34,7 +34,7 @@ The report's `## Tests changed under an allowance` is "none". There is no row to
 
 ### 1. Minor (observation): `uncited` counts the `source` of every file one level under `.shop/work/`, not only initiatives and requests
 `scripts/workqueue_status.py:117-120`: the glob `.shop/work/*/*.md` also reads capability-proposals and work-items.
-requests#r14 asks only for observations that "the `source` of no initiative and of no request names". An observation
+requests#r14@0.29 asks only for observations that "the `source` of no initiative and of no request names". An observation
 named only by a capability-proposal's `source` would be left out of `work status`. A file at that level that is not
 UTF-8 (a proposal, say) would also make `work status` refuse, which plan D4 does not name.
 
@@ -52,14 +52,14 @@ open case. In the real file, every one of the 28 observations has a `date:` line
 Fix, if it is wanted: print the observation without a date, or refuse, naming the observation.
 
 ### Risks checked, no finding
-- The hook text (migration-tools#r32): `open_text` passes `report=False`, so the hook still gets only the initiative
+- The hook text (migration-tools#r32@0.29): `open_text` passes `report=False`, so the hook still gets only the initiative
   blocks (plan D3). `scripts/migrate_session.py` is unchanged.
 - The existing `work status` and `work show` outputs and JSON keys (`initiatives`, `work-items`) are unchanged. The
   observation lines come after the initiative blocks (D1), and `requests` and `observations` are new keys (D2).
 - A request file that is not UTF-8 is read through `workqueue.read`, which refuses (D4).
 - Short and full observation ids both count as cited (`uncited` tries the heading and `observation/<slug>`) (D5).
 - Code no line asks for: none. Request lines serve r13, observation lines serve r14, the JSON keys follow
-  design-decision/query-commands-answer-in-their-output, and `report=False` keeps migration-tools#r32 as it is.
+  design-decision/query-commands-answer-in-their-output, and `report=False` keeps migration-tools#r32@0.29 as it is.
 
 ## Commands run
 - `git log --format=%H -1 --grep="^work: w129 ready -> claimed$" work/w129`: unknown revision (the branch is gone)

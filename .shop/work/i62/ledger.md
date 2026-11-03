@@ -1,11 +1,11 @@
-- 2026-10-29: integrate round 1: adds supervision#r212, supervision#r213; 6 questions; 2 cut sentences; .shop/scratch/1-integrate/drafts/round-2
+- 2026-10-29: integrate round 1: adds supervision#r212@0.29, supervision#r213@0.29; 6 questions; 2 cut sentences; .shop/scratch/1-integrate/drafts/round-2
 - 2026-10-29: gate round 2: 6 questions on supervision r212, r213
 - 2026-10-29 22:55: compacted
 - 2026-11-02: apply round 8 supervision: answers of 2026-10-30 and 2026-11-02 applied, r219 and r220 added (drafted r212 r213 renumbered)
 - 2026-11-02: formulate round 9 supervision: commit ec876396; scenario added r220, r219 left as a question; features bindings clean; model check: 80 violations, none from supervision but r219 v_s3
 - 2026-11-02: formulate round 10 supervision: nothing formulated; the answer on r219 (a passing second run lets the merge go ahead) asks for a line that spec/ does not hold
 - 2026-11-02: integrate round 1 (q41 line 2, after answers): 1 line added (supervision r222), 0 changed, 0 removed; 0 cut sentences; drafts .shop/scratch/11-integrate/drafts/round-1/
-- 2026-11-02: gate round 12: 1 question (supervision#r222)
+- 2026-11-02: gate round 12: 1 question (supervision#r222@0.29)
 - 2026-11-02: apply round 13 supervision: applied the answers of 2026-10-30 and 2026-11-02, r222 added (r219 and r220 already in spec/); commit c9339765
 - 2026-11-02: formulate round 14 supervision: commit bddb538f; scenarios added r219 r222 (r220 already formulated); features bindings clean; model check: 62 violations, none from supervision
 - 2026-11-02 20:19: compacted

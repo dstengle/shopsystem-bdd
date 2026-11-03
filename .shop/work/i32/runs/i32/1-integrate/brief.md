@@ -9,7 +9,7 @@ Accepted lines of the request:
 - 1. **Where** the request an initiative fulfils gives a delegation, **when** a session that `work run` started under it answers a reviewer's question on a work-item, `work run` shall transition the work-item to `ready` for an answer that asks for a change and to `done` for one that accepts the work-item as it is.
 - 2. **When** a branch review ends, the branch reviewer shall give in its result's questions only the findings it triages fix now.
 - 3. **When** work-queue r26 and r27 change what decision 0063 decides for a reviewer's question, the spec shall hold a decision that supersedes the reviewer's row of decision 0063.
-Ids drafted elsewhere (number added lines above each on the same capability): supervision#r99
+Ids drafted elsewhere (number added lines above each on the same capability): supervision#r99@0.29
 Drafts path: /tmp/work-run-i32-_8yggjjo/i32-1-integrate/.shop/scratch/1-integrate/drafts
 Give your change list in your result's `changes`: a list with one entry for each capability, each `{"capability": <name>, "adds": [...], "changes": [...], "removes": [...]}`, the ids as `<capability>#r<n>` or `term/<term>`.
 Base: d3d3839d7347d73cc5e3d51f1761ba13875a4ae2

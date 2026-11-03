@@ -3,7 +3,7 @@
 
 ## Change list
 
-### supervision (adds supervision#r181, supervision#r182; changes supervision#r171; removes none)
+### supervision (adds supervision#r181@0.29, supervision#r182@0.29; changes supervision#r171@0.29; removes none)
 
 | change | capability | id | line | source |
 |---|---|---|---|---|
@@ -13,7 +13,7 @@
 
 r182 is written as a state (While), since the request's "until the person has answered" describes a period. It is placed after r162.
 
-### work-queue (adds work-queue#r40, work-queue#r41; changes work-queue#r23; removes none)
+### work-queue (adds work-queue#r40@0.29, work-queue#r41@0.29; changes work-queue#r23@0.29; removes none)
 
 | change | capability | id | line | source |
 |---|---|---|---|---|

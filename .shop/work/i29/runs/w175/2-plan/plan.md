@@ -1,8 +1,8 @@
-# Plan of w175: requests#r22, the empty delegation refused
+# Plan of w175: requests#r22@0.29, the empty delegation refused
 
 ## 1. What goes green
 
-- `requests#r22`: scenario "request with an empty delegation is refused, and nothing changes" (features/requests.feature:33).
+- `requests#r22@0.29`: scenario "request with an empty delegation is refused, and nothing changes" (features/requests.feature:33).
   Red today (notes §1): the Then "the command is refused because the delegation is empty" has no step definition
   (StepDefinitionNotFoundError). Behind it, `request()` in `scripts/workqueue_request.py` has no check for an empty
   delegation. It writes `delegation: ""` and commits `work request: q1`, exiting successfully (probe P1, defect D1).
@@ -28,10 +28,10 @@ edited files have plenty of room under the 300-line limit (144 and 122 lines).
 
 - D-a. The refusal is in the library (`request()`), not in argument parsing in `scripts/work`. It sits with the r2
   and r3 refusals, so the "change nothing" part of r22 holds the same way theirs does: no file is written, no commit
-  is made and no q-number is taken (notes §5). Rests on requests#r22 ("change nothing") and
+  is made and no q-number is taken (notes §5). Rests on requests#r22@0.29 ("change nothing") and
   design-decision/requests-written-through-work (0067: `work` alone writes a request).
 - D-b. A refused run exits with an error, the same error exit as the other refusals of `work request`. Rests on
-  design-decision/exits-are-successful-or-errors (0055) and requests#r22.
+  design-decision/exits-are-successful-or-errors (0055) and requests#r22@0.29.
 - D-c. What counts as "empty" is **not taken here**. See the question in the result. The empty string is refused
   under every reading. Whether a whitespace-only delegation (`--delegation "   "`, probe P2) is refused too, or is
   written under r19, is something the narrator can see. No requirement, decision or ruling settles it.

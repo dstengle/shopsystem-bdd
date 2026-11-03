@@ -17,11 +17,11 @@
 ## Range and work-items
 
 - **Range:** `4b7dca6c..4640ef08` on `i25-review-findings-to-implementation`. Head is `4640ef08` ("work: start i29, fulfilling q5").
-- **w167** (supervision#r92): `12f0b295`
-- **w168** (work-queue#r30): `fa6929fb`
-- **w169** (spec-integration#r43, a guarantee): `50788670`
-- **w170** (supervision#r102, r103, r104): `bcc41527`, `55eea183`, `2e0f2555`
-- **w171** (supervision#r102, the fix of w170's task-review finding): `a414d2bd`
+- **w167** (supervision#r92@0.29): `12f0b295`
+- **w168** (work-queue#r30@0.29): `fa6929fb`
+- **w169** (spec-integration#r43@0.29, a guarantee): `50788670`
+- **w170** (supervision#r102@0.29, r103, r104): `bcc41527`, `55eea183`, `2e0f2555`
+- **w171** (supervision#r102@0.29, the fix of w170's task-review finding): `a414d2bd`
 - **w172** (the fix of branch review 1, accepting r102, r103 and r104): `a1ff989a`
 - **Commits that belong to no work-item:**
   - From before review 2: `f85f0d23`, `7e6266ca`, `79f4b429`, `7636eb12`, `1649e9d2`, `f3143c56`, `d4a85c1e` and `cb04d752`, with the queue's own `work note`, `work add` and `work retry` commits.
@@ -53,7 +53,7 @@
 | w171 | 144 passed, 1 skipped |
 | w172 | 146 passed, 1 skipped |
 
-w169's spec-integration#r43 is a guarantee, so no scenario covers it. I read the line against the instructions that carry it:
+w169's spec-integration#r43@0.29 is a guarantee, so no scenario covers it. I read the line against the instructions that carry it:
 
 - `agents/initiative-round.md:27`
 - `skills/integrating-a-proposal/SKILL.md:23`
@@ -112,7 +112,7 @@ No check is unverified.
 
 - The sandbox refused to run a probe that imported `supervise_drafts` and `supervise_all` against this checkout's queue.
 - I read the same facts by hand instead. These readings are not checks a work-item names:
-  - **r102:** the kept drafts on the queue are `i25/runs/i25/2-integrate/drafts/round-1/spec/capabilities/{supervision,work-queue}.md` and `i26/runs/i26/2-integrate/drafts/round-1/spec/capabilities/{supervision,requests}.md`. Against `spec/`, they add supervision#r98 and r99, work-queue#r26 and r27, and requests#r20 and r21. Those are the ids i29's integrate round would be given, and the layout `kept_drafts` globs.
+  - **r102:** the kept drafts on the queue are `i25/runs/i25/2-integrate/drafts/round-1/spec/capabilities/{supervision,work-queue}.md` and `i26/runs/i26/2-integrate/drafts/round-1/spec/capabilities/{supervision,requests}.md`. Against `spec/`, they add supervision#r98@0.29 and r99, work-queue#r26@0.29 and r27, and requests#r20@0.29 and r21. Those are the ids i29's integrate round would be given, and the layout `kept_drafts` globs.
   - **r103:** all six requests (q1 to q6) are `accepted`, and each is now fulfilled by one initiative (i24, i25, i26, i27, i29 and i28). So `unfulfilled` gives none, and the next `work run` starts no further initiative.
 
 ## Findings
@@ -130,7 +130,7 @@ No check is unverified.
 ### 3. Minor, w171, observation: the deprecated @r102 scenario remains, though its replacement's work-item is green
 - **Where:** `features/supervision.feature:1239-1250`, with its step `other_initiative` (`tests/scenarios/supervision_integrate_steps.py:157-167`).
 - **What is wrong:** the replacement at `:1252` is delivered by w171 and w172, both green. Neither has a `## Retires`.
-- **Fix:** a work-item accepting supervision#r102 whose `## Retires` lists the deprecated scenario. It removes the scenario, its binding and `other_initiative`.
+- **Fix:** a work-item accepting supervision#r102@0.29 whose `## Retires` lists the deprecated scenario. It removes the scenario, its binding and `other_initiative`.
 - **Triage:** observation.
 
 ### 4. Minor, w167, w170 and w172, drop: ruff errors on lines the branch added or touched

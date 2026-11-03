@@ -2,8 +2,8 @@
 
 ## 1. What goes green
 
-- supervision#r159: "an integrate round that ends with a change list gives one drafted capability-proposal for each capability it names, with the requirement ids it adds, changes and removes on that capability" (features/supervision.feature:1507). Already green (research: `pytest --work-item w226` gave 183 passed, 0 failed). `Changes.write_proposals` in scripts/supervise_change.py already does it.
-- supervision#r168: "the gate round of a capability-proposal is asked only for the questions on the lines that proposal adds, changes or removes" (features/supervision.feature:1757). Already green. The gate-question limit in `brief` in scripts/supervise_brief.py already does it.
+- supervision#r159@0.29: "an integrate round that ends with a change list gives one drafted capability-proposal for each capability it names, with the requirement ids it adds, changes and removes on that capability" (features/supervision.feature:1507). Already green (research: `pytest --work-item w226` gave 183 passed, 0 failed). `Changes.write_proposals` in scripts/supervise_change.py already does it.
+- supervision#r168@0.29: "the gate round of a capability-proposal is asked only for the questions on the lines that proposal adds, changes or removes" (features/supervision.feature:1757). Already green. The gate-question limit in `brief` in scripts/supervise_brief.py already does it.
 
 Neither scenario is red. The work-item exists only to retire these deprecated scenarios (its `## Retires`):
 
@@ -26,9 +26,9 @@ These comments are left alone: this work-item does not need them changed, and le
 
 ## 3. Decisions
 
-- **D1. Keep Retires bullet 1 (the @r77 outline, research conflict A).** Rests on supervision#r123: once every work-item of the initiative is green or withdrawn, the work-item r123 drafts retires each deprecated scenario whose replacement's work-item is `green`. The replacement is the r163 outline, accepted by w223, which is `green`. r73 covers the drafting of a work-item by its accepted requirements. It does not limit r123's retiring work-item, so its retirement is in scope even though w226 does not accept r163.
-- **D2. Leave the @r92 scenario at line 1484 ("the change lists of two initiatives that name the same capability give two drafted capability-proposals with different ids (deprecated)", `Deprecated for: removal`) in place (research conflict B).** Rests on supervision#r123 and supervision#r73: both name only deprecated scenarios that have a replacement scenario. A scenario deprecated for removal has none, so neither requirement puts it in this work-item's Retires. The other "removal" scenarios (r3, r5, r16, r77 at 1319, r112, r113) stay for the same reason.
-- **D3. The overlap with w224 (research conflict C) changes nothing here.** w224 accepted r159 and r168 and is green. Under supervision#r123, w226 restates those accepted ids only to name the replacements whose deprecated scenarios it retires. It builds nothing a second time.
+- **D1. Keep Retires bullet 1 (the @r77 outline, research conflict A).** Rests on supervision#r123@0.29: once every work-item of the initiative is green or withdrawn, the work-item r123 drafts retires each deprecated scenario whose replacement's work-item is `green`. The replacement is the r163 outline, accepted by w223, which is `green`. r73 covers the drafting of a work-item by its accepted requirements. It does not limit r123's retiring work-item, so its retirement is in scope even though w226 does not accept r163.
+- **D2. Leave the @r92 scenario at line 1484 ("the change lists of two initiatives that name the same capability give two drafted capability-proposals with different ids (deprecated)", `Deprecated for: removal`) in place (research conflict B).** Rests on supervision#r123@0.29 and supervision#r73@0.29: both name only deprecated scenarios that have a replacement scenario. A scenario deprecated for removal has none, so neither requirement puts it in this work-item's Retires. The other "removal" scenarios (r3, r5, r16, r77 at 1319, r112, r113) stay for the same reason.
+- **D3. The overlap with w224 (research conflict C) changes nothing here.** w224 accepted r159 and r168 and is green. Under supervision#r123@0.29, w226 restates those accepted ids only to name the replacements whose deprecated scenarios it retires. It builds nothing a second time.
 - **D4. No step definitions are removed.** The work-item asks only for the scenarios to be retired. pytest-bdd does not fail on an unused step. See open case 2.
 
 ## 4. Tests the decisions break

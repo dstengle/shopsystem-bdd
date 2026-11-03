@@ -2,7 +2,7 @@
 
 Method: no `tools map` exists, so every count below is `by search`. `tools refs` was run on some names but missed `open_text`/`open_names` (0 refs, yet migrate_session.py calls them). Probes are in `.shop/scratch/w129-1-research/`.
 
-Accepted: requests#r13 (`show`), requests#r14 (`status` with no initiative).
+Accepted: requests#r13@0.29 (`show`), requests#r14@0.29 (`status` with no initiative).
 
 ## 1. Why each scenario is red today
 

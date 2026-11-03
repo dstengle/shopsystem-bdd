@@ -1,6 +1,6 @@
 # Review of w148: `work request` refuses a --lines file that does not exist
 
-**Verdict: DONE.** Nothing is Critical and nothing is triaged fix now. The change is the two-line check the plan asked for, plus a small steps module. It does what work-queue#r7 asks: it says why and changes nothing. The focused scenario passes. One Minor observation: the wording when `--lines` is a directory.
+**Verdict: DONE.** Nothing is Critical and nothing is triaged fix now. The change is the two-line check the plan asked for, plus a small steps module. It does what work-queue#r7@0.29 asks: it says why and changes nothing. The focused scenario passes. One Minor observation: the wording when `--lines` is a directory.
 
 ## Commits reviewed
 

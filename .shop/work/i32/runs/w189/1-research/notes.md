@@ -1,6 +1,6 @@
-# Research of w189: review#r31
+# Research of w189: review#r31@0.29
 
-Work-item w189 accepts review#r31: a branch review's result `questions` carry only the findings it triages fix now.
+Work-item w189 accepts review#r31@0.29: a branch review's result `questions` carry only the findings it triages fix now.
 Spec line already in the worktree (review.md, commit cb357911). Method: text search; `tools tests-of` has no map
 ("tools: no map: make one with tools map", not made); `tools refs` resolves no method call (0 references for
 `fix_work_item`, `lists_nothing`, both called through `self.`), so callers are by search. Probes run in
@@ -10,7 +10,7 @@ options carry `--work-item`), so scenarios ran with `--whole-suite -n 0 -m ""`.
 ## 1. Why each scenario is red today
 
 None. No feature tags `@r31` for review: `@r31` appears only in features/migration-tools.feature and
-features/supervision.feature, neither for review#r31. review is `group: guarantees`, and it has no feature file
+features/supervision.feature, neither for review#r31@0.29. review is `group: guarantees`, and it has no feature file
 (`features/review*` absent), so the work-item needs no scenario (ledger: formulate round 4, review). Nothing to run red.
 
 ## 2. What the system answers today
@@ -65,7 +65,7 @@ that only that step produces today (`run`, probe above):
   unverified-check line. Nothing else in the code reads those lines (read: `work status` shows work-item questions only).
 - with the findings file, the only place the person sees either under r31 (plus `DONE_WITH_CONCERNS` in result.json).
 
-Conflict for the plan (both readings given, not decided): review#r6 says a branch review that cannot verify a check
+Conflict for the plan (both readings given, not decided): review#r6@0.29 says a branch review that cannot verify a check
 **fails the review**. Under r31 that check is no longer in `questions`. The agent's status rule still makes it
 `DONE_WITH_CONCERNS`, so the fail stays in `status`, not in `questions`. Reading A: status carries the fail, and
 `questions` is fix-now only, as r31 says. Reading B: the unverified check still reaches `questions`, which r31 forbids.
@@ -75,7 +75,7 @@ Conflict for the plan (both readings given, not decided): review#r6 says a branc
 D1. A line that is not fix-now becomes a drafted fix work-item.
 Reproduction: `python3 -m pytest -q -s -n 0 -p no:cacheprovider .shop/scratch/w189-1-research/probe_r31.py`
 (tests `test_critical_observation_question_drafts_today`, `test_unverifiable_check_question_drafts_today`): each
-returns True and writes `.shop/work/i1/w2.md` with `status: drafted`. Against supervision#r74 ("findings to fix now
+returns True and writes `.shop/work/i1/w2.md` with `status: drafted`. Against supervision#r74@0.29 ("findings to fix now
 become one work-item"), the drafted work-item is wrong for these lines. Not judged here; see section 5.
 
 ## 7. The file set

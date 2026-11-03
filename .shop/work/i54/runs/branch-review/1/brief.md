@@ -484,7 +484,7 @@ Output:
     ce5d751c3c2f92440cd9913933a4c3ff3dd5adbb none work: supervision drafted -> awaiting-answer
     3fc55100ff69c2a0fae571043ef5d0e91f433f67 none Merge branch 'round/supervision-3-apply'
     f0321b5fdd78faeb8cce4289cf0eeab258df93b2 none work: supervision awaiting-answer -> approved
-    deda9fa6e1f1969073ec0b8d29673ad94bc7dd7d none spec: requests (i55), lines approved 2026-10-29 under the person's delegation of 2026-10-27 ("I'm delegating this to you. Please get the new version delivered without involving me."); adds requests#r50, r51, r52, r53, r54, r55, r56, r57, r58, supervision#r184, r185, r186, work-queue#r47; changes none; removes requests#r13, r34, r39, r41, r43
+    deda9fa6e1f1969073ec0b8d29673ad94bc7dd7d none spec: requests (i55), lines approved 2026-10-29 under the person's delegation of 2026-10-27 ("I'm delegating this to you. Please get the new version delivered without involving me."); adds requests#r50@0.29, r51, r52, r53, r54, r55, r56, r57, r58, supervision#r184@0.29, r185, r186, work-queue#r47@0.29; changes none; removes requests#r13@0.29, r34, r39, r41, r43
     782b76d99fe84a054690328373318c60f2601ae3 none work note: i55
     f8c0a26f9c02ec089cdef21a4125401724e2cc98 none work: requests awaiting-answer -> approved
     bb2caaeb966336119a0f38ac00f54938a0d7b87a none Formulate supervision r187: one scenario

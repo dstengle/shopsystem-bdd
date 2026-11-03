@@ -2,7 +2,7 @@
 
 ## 1. What goes green
 
-analysis-tools#r16. Its accepted scenarios in `features/analysis-tools.feature`:
+analysis-tools#r16@0.29. Its accepted scenarios in `features/analysis-tools.feature`:
 - Scenario Outline: `tools check` runs each tool under its own heading and fails when any finds something (ruff, vulture, import-linter)
 - `tools check` with --base examines the changed Python files that remain, in place of the paths given
 - `tools check` with no file to examine does not fail for ruff and vulture
@@ -30,12 +30,12 @@ There are 92 files: the researcher's 91 Python files with findings (notes 7) and
 
 ## 3. Decisions
 
-- **D1. The config lives in the checkout and keeps today's rules except UP031.** Add a root `ruff.toml`. A project config replaces the outside config that sets the rules today, which the researcher could not identify (notes 2, probe D). So the new file must list the rules ruff runs today, which `ruff check --show-settings` prints, and add UP031 to the ignore list. It must not fall back to ruff's defaults. The work-item permits this ("configure ruff to leave it"). The report says UP031 is left by config and why: % formatting is the code's chosen style throughout. Rests on analysis-tools#r16 (ruff runs over the paths given, and whatever it finds fails) and on the work-item's own text.
-- **D2. Every other ruff rule is fixed, not ignored.** Only UP031 meets the work-item's test of "a style the code keeps on purpose throughout". PLW1510 gets an explicit `check=False`, because the code reads return codes itself. RUF100 removes the unused noqa comments. I001, FURB167, UP017, UP032 and the rest of the tail are fixed in the form each rule suggests. Rests on the work-item ("Change no behaviour") and analysis-tools#r16.
+- **D1. The config lives in the checkout and keeps today's rules except UP031.** Add a root `ruff.toml`. A project config replaces the outside config that sets the rules today, which the researcher could not identify (notes 2, probe D). So the new file must list the rules ruff runs today, which `ruff check --show-settings` prints, and add UP031 to the ignore list. It must not fall back to ruff's defaults. The work-item permits this ("configure ruff to leave it"). The report says UP031 is left by config and why: % formatting is the code's chosen style throughout. Rests on analysis-tools#r16@0.29 (ruff runs over the paths given, and whatever it finds fails) and on the work-item's own text.
+- **D2. Every other ruff rule is fixed, not ignored.** Only UP031 meets the work-item's test of "a style the code keeps on purpose throughout". PLW1510 gets an explicit `check=False`, because the code reads return codes itself. RUF100 removes the unused noqa comments. I001, FURB167, UP017, UP032 and the rest of the tail are fixed in the form each rule suggests. Rests on the work-item ("Change no behaviour") and analysis-tools#r16@0.29.
 - **D3. Where a fix would change behaviour, add a line-level noqa instead.** This applies to BLE001, S110 and SIM115, where narrowing an exception or moving a file into a with block could change what happens. Each noqa names its rule. Rests on the work-item ("Change no behaviour").
-- **D4. The vulture `none` stays a parameter and is used.** pytest-bdd passes it as a keyword from the regex group, so removing or renaming it raises TypeError on the "no tag line" step (notes 4). The step body uses it (the researcher suggests `del none`). No vulture whitelist file is added. Rests on analysis-tools#r16.
-- **D5. stub_claude.py loses its shebang rather than gaining the executable bit.** It is always run as `exec <python> <stub>` (notes 4), so the shebang is never used, and this is a plain file edit. It stays a Python file under r50 through its `.py` extension. Rests on analysis-tools#r50 and #r16.
-- **D6. F811: the second `map_kept` (analysis_tools_map_steps.py:180) gets a name of its own.** Only the step decorators bind it to step text (notes 4). Rests on analysis-tools#r16.
+- **D4. The vulture `none` stays a parameter and is used.** pytest-bdd passes it as a keyword from the regex group, so removing or renaming it raises TypeError on the "no tag line" step (notes 4). The step body uses it (the researcher suggests `del none`). No vulture whitelist file is added. Rests on analysis-tools#r16@0.29.
+- **D5. stub_claude.py loses its shebang rather than gaining the executable bit.** It is always run as `exec <python> <stub>` (notes 4), so the shebang is never used, and this is a plain file edit. It stays a Python file under r50 through its `.py` extension. Rests on analysis-tools#r50@0.29 and #r16.
+- **D6. F811: the second `map_kept` (analysis_tools_map_steps.py:180) gets a name of its own.** Only the step decorators bind it to step text (notes 4). Rests on analysis-tools#r16@0.29.
 - **D7. The size limit stays.** No file goes over 300 lines (CLAUDE.md). The tightest file is design_model_check_problems.py at 288 lines. Explicit `check=False` and noqa additions must not wrap lines past the limit.
 
 ## 4. Tests the decisions break

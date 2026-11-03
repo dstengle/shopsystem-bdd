@@ -5,8 +5,8 @@ part_of: initiative/i24
 status: formulated
 date: 2026-10-24
 argues: [batch-measurement]
-adds: [batch-measurement#r60-r62]
-changes: [batch-measurement#r43]
+adds: [batch-measurement#r60@0.29, batch-measurement#r61@0.29, batch-measurement#r62@0.29]
+changes: [batch-measurement#r43@0.29]
 removes: []
 ---
 

@@ -1,4 +1,4 @@
-# Notes: w169 (spec-integration#r43, round-ids-avoided)
+# Notes: w169 (spec-integration#r43@0.29, round-ids-avoided)
 
 Method: `tools map` has never run here (`tests-of` and `untested` say "no map"), so no test lists; searched by text.
 `tools refs` works. Scripts run from `/home/vscode/shopsystem-bdd/scripts`. Accepted scenarios: none found (see 1).
@@ -17,13 +17,13 @@ Run: `python3 -m pytest -n 0 --work-item w169 tests/scenarios/test_supervision.p
 
 Probe `.shop/scratch/w169-1-research/probe_integrate_ids.py` (run with `-n 0`; `pytest.ini` otherwise hides prints).
 Fixture: request q1 with lines 1 (accepted), 2 (refused); i25 and i26 each drafted a `supervision.md` proposal adding
-`supervision#r98`; `spec/capabilities/supervision.md` holds r1-r97.
+`supervision#r98@0.29`; `spec/capabilities/supervision.md` holds r1-r97.
 `Briefs.integrate_lines({"fulfils": "request/x/q1"}, here)` returned (run):
 - `Request: q1`
 - `Accepted lines of the request:` `- 1. first line` (line 2 left out, as it should be)
 - `Drafts path: .../round/drafts`
 - the change-list form (`{"capability", "adds", "changes", "removes"}`)
-- nothing about the other drafts: `supervision#r98` in i25 and i26 is not in the brief.
+- nothing about the other drafts: `supervision#r98@0.29` in i25 and i26 is not in the brief.
 
 Nearest cases not given by the scenarios (run, same fixture): `-n 0` needed for output. Plain run of
 `tests/scenarios/test_supervision.py` collects 178 and deselects all 178 with no `--work-item` (run); I did not find
@@ -63,7 +63,7 @@ initiative branches, or in this checkout) decides whether the read sees them: `s
 
 ### r43 not met by today's integrate brief
 Reproduction: probe_integrate_ids.py (above). The brief names no id that another initiative's draft adds
-(`supervision#r98`, drafted by i25 and i26 in the fixture), so a round numbers its added line `r98` as well.
+(`supervision#r98@0.29`, drafted by i25 and i26 in the fixture), so a round numbers its added line `r98` as well.
 Read: the collision is caught only at apply, when `model check` reports v15b in `spec/` (model_work.py, apply step 4 in
 the skill), which sends the drafts back to the gate. This is a spec gap, not a crash.
 

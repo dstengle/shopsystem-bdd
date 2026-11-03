@@ -1,4 +1,4 @@
-# Notes: w169 (spec-integration#r43, round-ids-avoided)
+# Notes: w169 (spec-integration#r43@0.29, round-ids-avoided)
 
 Method: `tools refs` works (run). `tools tests-of` and `tools untested` refuse: "no map: make one with tools map" (run); I did not make a map. Tests are listed by search, marked `by search`. Scripts run from `/home/vscode/shopsystem-bdd/scripts`; probes import this worktree's `scripts/`, which is the same base.
 
@@ -10,13 +10,13 @@ Not red, by design: `spec/capabilities/spec-integration.md` has `group: guarante
 
 ## 2. What the system answers today
 
-Probe: `python3 -m pytest -q -s -n 0 .shop/scratch/w169-2-research/probe_integrate_ids.py` (run, 3 passed). Fixture in the scratch: request `q1` with lines 1 (accepted) and 2 (refused); `.shop/work/i25/supervision.md` and `.shop/work/i26/supervision.md`, each `adds: [supervision#r98]`. Called `Briefs.integrate_lines` (supervise_brief.py:66) with `{"fulfils": "request/x/q1"}`:
+Probe: `python3 -m pytest -q -s -n 0 .shop/scratch/w169-2-research/probe_integrate_ids.py` (run, 3 passed). Fixture in the scratch: request `q1` with lines 1 (accepted) and 2 (refused); `.shop/work/i25/supervision.md` and `.shop/work/i26/supervision.md`, each `adds: [supervision#r98@0.29]`. Called `Briefs.integrate_lines` (supervise_brief.py:66) with `{"fulfils": "request/x/q1"}`:
 
 - `Request: q1`
 - `Accepted lines of the request:` then `- 1. first line` (line 2 left out, as it should be)
 - `Drafts path: .../fx/round/drafts`
 - the change-list form: `{"capability", "adds", "changes", "removes"}`, ids `<capability>#r<n>` or `term/<term>`
-- `mentions supervision#r98: False`: the other initiatives' drafted `supervision#r98` is not in the brief.
+- `mentions supervision#r98@0.29: False`: the other initiatives' drafted `supervision#r98@0.29` is not in the brief.
 
 Nearest cases (same fixture, run):
 - request `q9` missing: raises `Refused: there is no request q9 under .shop/work/requests` (workqueue_request.py:22).
@@ -49,7 +49,7 @@ The existing way reads the request through `workqueue_request.accepted_lines` (w
 ## 6. Defects
 
 ### r43 not met by today's integrate brief
-Reproduction: `python3 -m pytest -q -s -n 0 .shop/scratch/w169-2-research/probe_integrate_ids.py` (run). The brief names no id that another initiative's draft adds (`supervision#r98` in `.shop/work/i25/` and `.shop/work/i26/`), so a round numbers its added line `r98` too. The collision is caught only at apply, through `model check` on `spec/` (read: model.lp:175-176 and the skill's step 4), which then sends the drafts back to the gate. This is a spec gap, not a crash.
+Reproduction: `python3 -m pytest -q -s -n 0 .shop/scratch/w169-2-research/probe_integrate_ids.py` (run). The brief names no id that another initiative's draft adds (`supervision#r98@0.29` in `.shop/work/i25/` and `.shop/work/i26/`), so a round numbers its added line `r98` too. The collision is caught only at apply, through `model check` on `spec/` (read: model.lp:175-176 and the skill's step 4), which then sends the drafts back to the gate. This is a spec gap, not a crash.
 
 ## 7. The file set
 

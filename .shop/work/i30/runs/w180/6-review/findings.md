@@ -1,11 +1,11 @@
-# Review of w180 (formulation#r23)
+# Review of w180 (formulation#r23@0.29)
 
 **Verdict: DONE_WITH_CONCERNS.** The diff does what r23 asks: the interpreter is `python3 -m pytest`. But the new rule for selecting the old scenario by name gives the wrong name for most titles. The skill's next bullet then reads "not collected" as permission to replace or remove the scenario. That way a passing scenario can leave the suite, which r4 forbids. One Important finding, triaged fix now.
 
 ## Commits reviewed
 
 - Claim commit: `225d3ed2 work: w180 ready -> claimed`. The branch `work/w180` is gone, so these are the commits between the claim commit and `5d20b71e work: w180 claimed -> done` on HEAD, less `work run`'s own commits.
-- One commit is w180's: `75cd7fda formulating-features: run an old scenario alone with python3 -m pytest, selected by test name (formulation#r23)`. It changes 1 line of `skills/formulating-features/SKILL.md`.
+- One commit is w180's: `75cd7fda formulating-features: run an old scenario alone with python3 -m pytest, selected by test name (formulation#r23@0.29)`. It changes 1 line of `skills/formulating-features/SKILL.md`.
 - The implementer's results list `a4fd9482` (stage 3), `06496c00` (stage 4) and `be7b9477` (stage 5). These are rebases of the same change: the `+`/`-` lines of all four commits have the same md5 (`c8aecd69…`). No difference.
 - The other commits in the range (w181's, branch reviews, `work add`) belong to other work-items.
 
@@ -35,7 +35,7 @@ The report's `## Tests changed under an allowance` is "none" in all three stages
   - The same command with pytest-bdd's real name gives `1/202 tests collected`.
   - 370 of the 470 `Scenario:` titles in `features/*.feature` contain such a character.
 - **Why it matters:**
-  - The skill's next bullet says: "It fails or is not collected … replace or remove it as before." A round that follows the rule literally collects nothing for a scenario that passes today, and then replaces or removes it. That contradicts formulation#r4 (keep a passing old scenario, deprecated) and loses the test.
+  - The skill's next bullet says: "It fails or is not collected … replace or remove it as before." A round that follows the rule literally collects nothing for a scenario that passes today, and then replaces or removes it. That contradicts formulation#r4@0.29 (keep a passing old scenario, deprecated) and loses the test.
   - The new "check with `--collect-only` that one test is collected" does not say what to do when the count is zero or more than one. Zero matches "not collected" exactly.
   - The `"<its node id>"` form has the same derivation problem.
 - **Fix:** In step 4, say how to get the real name:

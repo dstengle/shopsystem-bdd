@@ -8,13 +8,13 @@ This plan stops at one question (decision D1). It is written as far as it goes.
 
 None of the accepted scenarios is red today. The research ran `pytest --work-item w227`: 189 passed, 1 skipped, nothing failed. All seven pass. They are the same seven that w225 made green:
 
-- supervision#r161: the glossary-only initiative set `done` (`features/supervision.feature:1809`).
-- supervision#r164: the gate of a drafted glossary-proposal, asking only on its terms (`:1705`).
-- supervision#r165: the apply round once every gate question has an answer (`:1751`).
-- supervision#r166: the proposal `approved` after its apply round (`:1767`).
-- supervision#r167: no formulate round after a glossary apply (`:1776`).
-- supervision#r169: the proposal `awaiting-answer` when its gate round ends (`:1742`).
-- supervision#r170: the gate and apply rounds given the kept drafts (`:1727`, both Examples rows).
+- supervision#r161@0.29: the glossary-only initiative set `done` (`features/supervision.feature:1809`).
+- supervision#r164@0.29: the gate of a drafted glossary-proposal, asking only on its terms (`:1705`).
+- supervision#r165@0.29: the apply round once every gate question has an answer (`:1751`).
+- supervision#r166@0.29: the proposal `approved` after its apply round (`:1767`).
+- supervision#r167@0.29: no formulate round after a glossary apply (`:1776`).
+- supervision#r169@0.29: the proposal `awaiting-answer` when its gate round ends (`:1742`).
+- supervision#r170@0.29: the gate and apply rounds given the kept drafts (`:1727`, both Examples rows).
 
 The work-item exists for the one fix-now finding of branch review 2, F1. Through w225's routing, `work run` writes r117's approval question on a glossary-proposal whose gate round gives no question. r117 names only a capability-proposal. The work-item retires no deprecated scenario.
 
@@ -39,8 +39,8 @@ Left out of either set, though the research's set has it: `scripts/supervise_don
   - Against that, the coordinator's answer on w225 under the person's delegation (2026-10-28) kept the question, "which keeps glossary changes with the person as q30 rules". q30 line 4 says "the gate shall approve the terms of a proposal for the glossary before they are applied". It raised q36 line 1, still `open`, to write that into a line.
   - The branch review then triaged the same behaviour as fix now.
   - No requirement of the capability, no design-decision and no ruling of w227 settles which one stands. The two readings differ in what the narrator sees (section 5 of the result). So D1 is a question, not a decision of this plan.
-- **D2, only under reading B: a zero-question glossary gate is routed to r165's apply round.** The proposal is `awaiting-answer` (r169) and has no unanswered gate question. So r165's condition holds and r172's hold does not apply. The gate round already transitions to `awaiting-answer`, so r130's "next transition" is that one; this plan reads nothing more from it. Rests on supervision#r165, #r169 and #r172.
-- **D3: `scripts/supervise_done.py` is not changed.** Rests on supervision#r161, which names neither abandoned initiatives nor requests, and on the findings, which mark both as observations, not fix-now.
+- **D2, only under reading B: a zero-question glossary gate is routed to r165's apply round.** The proposal is `awaiting-answer` (r169) and has no unanswered gate question. So r165's condition holds and r172's hold does not apply. The gate round already transitions to `awaiting-answer`, so r130's "next transition" is that one; this plan reads nothing more from it. Rests on supervision#r165@0.29, #r169 and #r172.
+- **D3: `scripts/supervise_done.py` is not changed.** Rests on supervision#r161@0.29, which names neither abandoned initiatives nor requests, and on the findings, which mark both as observations, not fix-now.
 
 ## 4. Tests the decisions break
 

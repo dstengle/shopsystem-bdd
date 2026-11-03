@@ -2,7 +2,7 @@
 
 Method: `tools tests-of` and `untested` have no map (`no map: make one with tools map`); I did not make one, so every test list here is `by search`. `tools refs` used for `Rounds` (0 refs) and `keep_round` (1 production ref). Code read from this worktree; `Scripts:` path given by the brief. Probes are `run`; what I read is `read`.
 
-Accepted: supervision#r86, r87, r88. Scenarios: test_supervision.py node ids `test_when_a_round_work_run_started_for_a_capabilityproposal_{ends_at_its_turn_limit_the_proposal_keeps_its_status | gives_an_outcome_other_than_done_no_transition_is_made_from_it | leaves_no_result_it_can_read_work_run_exits_with_an_error_naming_the_round_and_how_it_ended}`.
+Accepted: supervision#r86@0.29, r87, r88. Scenarios: test_supervision.py node ids `test_when_a_round_work_run_started_for_a_capabilityproposal_{ends_at_its_turn_limit_the_proposal_keeps_its_status | gives_an_outcome_other_than_done_no_transition_is_made_from_it | leaves_no_result_it_can_read_work_run_exits_with_an_error_naming_the_round_and_how_it_ended}`.
 
 ## 1. Why each scenario is red today
 

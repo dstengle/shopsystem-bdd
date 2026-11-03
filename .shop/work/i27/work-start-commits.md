@@ -5,7 +5,7 @@ part_of: initiative/i27
 status: formulated
 date: 2026-10-25
 argues: [work-queue]
-adds: [work-queue#r25]
+adds: [work-queue#r25@0.29]
 changes: []
 removes: []
 ---

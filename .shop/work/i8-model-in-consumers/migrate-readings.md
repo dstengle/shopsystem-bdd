@@ -5,8 +5,8 @@ part_of: initiative/i8
 status: formulated
 date: 2026-10-20
 argues: [migration-tools]
-adds: [migration-tools#r8-r17]
-changes: [migration-tools#r1-r6, migration-tools#r8-r11]
+adds: [migration-tools#r8@0.29, migration-tools#r9@0.29, migration-tools#r10@0.29, migration-tools#r11@0.29, migration-tools#r12@0.29, migration-tools#r13@0.29, migration-tools#r14@0.29, migration-tools#r15@0.29, migration-tools#r16@0.29, migration-tools#r17@0.29]
+changes: [migration-tools#r1@0.29, migration-tools#r2@0.29, migration-tools#r3@0.29, migration-tools#r4@0.29, migration-tools#r5@0.29, migration-tools#r6@0.29, migration-tools#r8@0.29, migration-tools#r9@0.29, migration-tools#r10@0.29, migration-tools#r11@0.29]
 ---
 
 # migration-tools: from the skeleton's proof runs

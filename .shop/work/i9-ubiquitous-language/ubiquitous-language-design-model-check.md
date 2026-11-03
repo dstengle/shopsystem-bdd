@@ -5,7 +5,7 @@ part_of: initiative/i9
 status: formulated
 date: 2026-10-17
 argues: [design-model-check]
-adds: [design-model-check#r48-r57]
+adds: [design-model-check#r48@0.29, design-model-check#r49@0.29, design-model-check#r50@0.29, design-model-check#r51@0.29, design-model-check#r52@0.29, design-model-check#r53@0.29, design-model-check#r54@0.29, design-model-check#r55@0.29, design-model-check#r56@0.29, design-model-check#r57@0.29]
 ---
 
 # Design model check: terms and the clingo search

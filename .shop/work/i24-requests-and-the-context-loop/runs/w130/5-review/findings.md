@@ -1,4 +1,4 @@
-# Review of w130 (work-queue#r22, work-queue#r23)
+# Review of w130 (work-queue#r22@0.29, work-queue#r23@0.29)
 
 **Verdict: DONE_WITH_CONCERNS.** r22 and r23 are implemented and their five scenarios pass. No change under
 `features/`, no test removed or weakened, and the one allowance holds. But one finding is triaged fix now: `work retry`

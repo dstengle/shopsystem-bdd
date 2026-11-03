@@ -1,6 +1,6 @@
 # Branch review 2 of i30
 
-**Verdict: DONE.** Review 1 had one fix-now finding: `agents/code-scout.md:24` said 40 turns. w188 fixed it in `2e913069`, and the line now says 80 turns (`--max-turns 80`). That matches `scripts/supervise_worker.py:54` and supervision#r19. Nothing is Critical and nothing is fix now. Every check a work-item names was run here and passes.
+**Verdict: DONE.** Review 1 had one fix-now finding: `agents/code-scout.md:24` said 40 turns. w188 fixed it in `2e913069`, and the line now says 80 turns (`--max-turns 80`). That matches `scripts/supervise_worker.py:54` and supervision#r19@0.29. Nothing is Critical and nothing is fix now. Every check a work-item names was run here and passes.
 
 This is the re-review of a fix work-item (r110). Under that rule, everything below is an observation or a drop.
 
@@ -10,7 +10,7 @@ This is the re-review of a fix work-item (r110). Under that rule, everything bel
   - The branch is shared by i25 to i31. Most of the range is other initiatives' commits: their rounds, work-items, branch reviews, `done` commits and records. They are judged by their own reviews and named here only where a check reaches them.
   - Since review 1 (at `5892599d`), the only code change in the range is `agents/code-scout.md`: `git diff --stat 5892599d HEAD -- . ':!.shop'`.
 - **i30's work-items.** Each one's commits fall between `ready -> claimed` and `claimed -> done`, less the `work:` commits:
-  - **w180** (formulation#r23, green): `75cd7fda` (window `225d3ed2..5d20b71e`) and `4f1d4641` (window `ce37512e..5ee2e95a`).
+  - **w180** (formulation#r23@0.29, green): `75cd7fda` (window `225d3ed2..5d20b71e`) and `4f1d4641` (window `ce37512e..5ee2e95a`).
     - The first window also holds w181's commits (i29): `4d3113e1`, `5048b72e`, `c482f4f8`, `07d5c24c` and `d87a295b`. They are attributed by their messages.
   - **w182** (withdrawn): no commit reached the branch.
   - **w184** (supervision r19, r110, r117, green): `cd134f29`, `d40c0d26` and `b1b8562c` (window `85065878..6df21f90`).

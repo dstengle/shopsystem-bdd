@@ -1,4 +1,4 @@
-# Review of w175 (requests#r22, an empty delegation refused)
+# Review of w175 (requests#r22@0.29, an empty delegation refused)
 
 **Verdict: DONE.** No Critical finding, none triaged fix now. The change does what r22 and the person's answer
 (reading B) ask, and nothing more.

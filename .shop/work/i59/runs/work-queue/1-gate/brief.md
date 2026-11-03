@@ -5,9 +5,9 @@ Agent: initiative-round
 Scripts: /home/vscode/shopsystem-bdd/scripts
 Kind: gate
 Give the gate as questions in your result's `questions`, one string each: every question a decision, with its readings and the recommended reading marked.
-Adds: work-queue#r50, work-queue#r51, work-queue#r52, work-queue#r53, work-queue#r54, work-queue#r55, work-queue#r56, work-queue#r57, work-queue#r58
+Adds: work-queue#r50@0.29, work-queue#r51@0.29, work-queue#r52@0.29, work-queue#r53@0.29, work-queue#r54@0.29, work-queue#r55@0.29, work-queue#r56@0.29, work-queue#r57@0.29, work-queue#r58@0.29
 Changes: none
-Removes: work-queue#r7, work-queue#r21, work-queue#r28, work-queue#r15, work-queue#r35, work-queue#r38
+Removes: work-queue#r7@0.29, work-queue#r21@0.29, work-queue#r28@0.29, work-queue#r15@0.29, work-queue#r35@0.29, work-queue#r38@0.29
 Ask questions only on the lines and terms listed above as adds, changes or removes, and on no other line or term.
 Drafts path: .shop/work/i59/runs/i59/1-integrate/drafts/round-2/
 Base: 3be48327e94e2ec17ea63d9334f33dd184b148e0

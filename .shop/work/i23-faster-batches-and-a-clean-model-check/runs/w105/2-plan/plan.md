@@ -1,8 +1,8 @@
-# Plan of w105: `work answer` refuses every Unicode mandatory line break (work-queue#r15)
+# Plan of w105: `work answer` refuses every Unicode mandatory line break (work-queue#r15@0.29)
 
 ## 1. What goes green
 
-work-queue#r15, scenarios in features/work-queue.feature:
+work-queue#r15@0.29, scenarios in features/work-queue.feature:
 
 - **answer with a line break in it is refused, and nothing changes** (Scenario Outline, 7 examples). Red today: the When step "the session runs `work answer w1` with an answer of two lines broken by <line break>" has no step definition (StepDefinitionNotFoundError, run by the researcher). Behind it, `answer` in scripts/workqueue_answer.py tests only LF and CR, so VT, FF, NEL, U+2028 and U+2029 are accepted, written under `## Answers` and committed (defect D1, probed).
 - **an answer of two lines to a work-item not awaiting-answer is refused as more than one line first**. Red today: the same undefined step ("broken by a newline"); behind it, `answer` checks the awaiting-answer status (and the log) before the line break, so a ready w1 gets "is not awaiting-answer" instead of "an answer is one line" (defect D2, probed).
@@ -19,11 +19,11 @@ Not changed (on the path, read by the researcher): `scripts/work`, `scripts/work
 
 ## 3. Decisions
 
-1. **The seven breaks are exactly r15's list**: U+000A, U+000B, U+000C, U+000D, U+0085, U+2028, U+2029, and no others. U+001C–U+001E (which Python's line splitting also breaks on) are not refused; r15 names its list. Rests on work-queue#r15.
-2. **The one-line check comes first of every refusal in `answer`**: before `workqueue.find`, the awaiting-answer status check and `asked_from`'s log check. Rests on the person's ruling pinned in the scenario "an answer of two lines to a work-item not awaiting-answer is refused as more than one line first" ("of several reasons to refuse an answer, the one-line refusal comes first"), and on work-queue#r7 (nothing changes). So a two-line answer to an unknown work-item, or to an awaiting-answer one with no log line, is also refused as more than one line.
-3. **The refusal's text says "an answer is one line"** and no longer names only "a newline" (it covers all seven breaks); the wording around it is the implementer's, so long as it contains "an answer is one line" and no traceback. Rests on work-queue#r15 ("saying that an answer is one line") and r7.
-4. **The deprecated scenario stays bound and green**: its step "with an answer of two lines" (LF) and its Then step are kept as they are; retiring it is not this work-item's (no `Retires` section). The researcher's question on whether it counts as acceptance changes nothing the narrator observes and needs no answer here. Rests on work-queue#r15.
-5. **The break set lives in workqueue_answer.py**, not in workqueue.py (room 38 lines there; `work add`'s title check is not r15's and stays as it is). Rests on work-queue#r15 (answers only).
+1. **The seven breaks are exactly r15's list**: U+000A, U+000B, U+000C, U+000D, U+0085, U+2028, U+2029, and no others. U+001C–U+001E (which Python's line splitting also breaks on) are not refused; r15 names its list. Rests on work-queue#r15@0.29.
+2. **The one-line check comes first of every refusal in `answer`**: before `workqueue.find`, the awaiting-answer status check and `asked_from`'s log check. Rests on the person's ruling pinned in the scenario "an answer of two lines to a work-item not awaiting-answer is refused as more than one line first" ("of several reasons to refuse an answer, the one-line refusal comes first"), and on work-queue#r7@0.29 (nothing changes). So a two-line answer to an unknown work-item, or to an awaiting-answer one with no log line, is also refused as more than one line.
+3. **The refusal's text says "an answer is one line"** and no longer names only "a newline" (it covers all seven breaks); the wording around it is the implementer's, so long as it contains "an answer is one line" and no traceback. Rests on work-queue#r15@0.29 ("saying that an answer is one line") and r7.
+4. **The deprecated scenario stays bound and green**: its step "with an answer of two lines" (LF) and its Then step are kept as they are; retiring it is not this work-item's (no `Retires` section). The researcher's question on whether it counts as acceptance changes nothing the narrator observes and needs no answer here. Rests on work-queue#r15@0.29.
+5. **The break set lives in workqueue_answer.py**, not in workqueue.py (room 38 lines there; `work add`'s title check is not r15's and stays as it is). Rests on work-queue#r15@0.29 (answers only).
 
 ## 4. Tests the decisions break
 

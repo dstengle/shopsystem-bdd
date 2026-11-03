@@ -5,8 +5,8 @@ part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i37
 status: formulated
 argues: [requests]
 date: 2026-10-26
-adds: [requests#r23, requests#r24]
-changes: [requests#r7, term/turn]
+adds: [requests#r23@0.29, requests#r24@0.29]
+changes: [requests#r7@0.29, term/turn]
 removes: []
 ---
 

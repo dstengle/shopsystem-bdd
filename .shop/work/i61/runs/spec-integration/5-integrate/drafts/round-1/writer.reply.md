@@ -2,7 +2,7 @@
 
 ## Change list
 
-spec-integration: changes [spec-integration#r46]; adds none; removes none.
+spec-integration: changes [spec-integration#r46@0.29]; adds none; removes none.
 
 | change | capability | id | line | source |
 |---|---|---|---|---|

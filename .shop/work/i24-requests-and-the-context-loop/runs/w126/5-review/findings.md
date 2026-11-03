@@ -2,7 +2,7 @@
 
 **Verdict: DONE.** No finding is Critical, and none is still to be fixed now. This review covers the same single
 implementer commit as the first review (4-review). The one fix-now finding of that review, a missing `--lines` file
-ending on a traceback, was answered on 2026-10-24: accept as it stands, and deliver it later through a work-queue#r7
+ending on a traceback, was answered on 2026-10-24: accept as it stands, and deliver it later through a work-queue#r7@0.29
 examples row and its own fix work-item. So it is not raised again as fix now. The Minor observations remain.
 
 ## Commits reviewed
@@ -47,8 +47,8 @@ the report names it under "Outside the file set".
 ### 1. Important, answered (was fix now): a missing `--lines` file crashes instead of being refused
 `scripts/workqueue_request.py:67` reads the file through `workqueue.read`, which catches only `UnicodeDecodeError`.
 `scripts/work:128` catches only `Refused`. So a `--lines` path that does not exist ends on a `FileNotFoundError`
-traceback. This goes against work-queue#r7. The person answered on 2026-10-24: accept the work-item as it stands, and
-deliver the fix through an examples row of work-queue#r7 and its own fix work-item. Nothing is left to do in this
+traceback. This goes against work-queue#r7@0.29. The person answered on 2026-10-24: accept the work-item as it stands, and
+deliver the fix through an examples row of work-queue#r7@0.29 and its own fix work-item. Nothing is left to do in this
 work-item. The fix work-item is still to be drafted after that formulate round.
 
 ### 2. Minor, observation: the origin step ignores the origins the scenario names, and fails `tools check`
@@ -72,7 +72,7 @@ open case 4). Found by reading the code.
 
 ### 6. Minor, drop: the result lists no commit hash, and the request is committed against plan decision 2
 `3-implement/result.json` gives "see git log" where the hash `97a0cec` belongs. The commit `work request` makes serves
-requests#r12, and w128 already commits the other request commands. So this is not code that no line asks for. It
+requests#r12@0.29, and w128 already commits the other request commands. So this is not code that no line asks for. It
 departs from the plan's decision 2, and the report says so.
 
 ## Behaviour against the lines and decisions

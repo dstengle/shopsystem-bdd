@@ -4,7 +4,7 @@ Tools: `tools tests-of` has no map (`tools map` runs the whole suite, not run); 
 
 ## 1. Why each scenario is red today
 
-No accepted scenario. `delivery#r15` has no scenario: the work-item says so, there is no `features/delivery.feature`, and the `@r15` tags in `features/` belong to other capabilities (`migration-tools`, `supervision`, `design-model-check`, `work-queue` x2, `requests`) (`by search`). Judged by review, not by a run.
+No accepted scenario. `delivery#r15@0.29` has no scenario: the work-item says so, there is no `features/delivery.feature`, and the `@r15` tags in `features/` belong to other capabilities (`migration-tools`, `supervision`, `design-model-check`, `work-queue` x2, `requests`) (`by search`). Judged by review, not by a run.
 
 ## 2. What the system answers today
 

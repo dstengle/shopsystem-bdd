@@ -9,9 +9,9 @@
   - 792dc74e, 5d286cf8, 25f8e9ad, a700415c (the supervision formulate round), 6a59c634, 4804a724
   - w241's commits
 - i55's work-items, all `green`:
-  - **w239** (requests#r64): code commits cae12e0c and fce410f4. Reviewed in review 1.
-  - **w240** (work-queue#r62): code commits 8b68f278 and aff8ddf1. Reviewed in review 1.
-  - **w241** (supervision#r212, #r213): 7bb4eacf (add), e54e91ea, bad5d025, 7b658adb, 8c3caec6, **153518ea** (code), 48bc894e, 9e21ad76.
+  - **w239** (requests#r64@0.29): code commits cae12e0c and fce410f4. Reviewed in review 1.
+  - **w240** (work-queue#r62@0.29): code commits 8b68f278 and aff8ddf1. Reviewed in review 1.
+  - **w241** (supervision#r212@0.29, #r213): 7bb4eacf (add), e54e91ea, bad5d025, 7b658adb, 8c3caec6, **153518ea** (code), 48bc894e, 9e21ad76.
 - i55's proposals are all `formulated`:
   - requests: adds r64, removes r14
   - work-queue: adds r62, removes r23

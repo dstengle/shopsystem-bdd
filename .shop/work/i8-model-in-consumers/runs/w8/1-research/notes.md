@@ -1,6 +1,6 @@
 # migrate-kb-2 research notes
 
-Work-item: .shop/work/i8-model-in-consumers/migrate-kb-2.md (accepts migration-tools#r1-r17). Base 31e9ed3.
+Work-item: .shop/work/i8-model-in-consumers/migrate-kb-2.md (accepts migration-tools#r1@0.29, migration-tools#r2@0.29, migration-tools#r3@0.29, migration-tools#r4@0.29, migration-tools#r5@0.29, migration-tools#r6@0.29, migration-tools#r7@0.29, migration-tools#r8@0.29, migration-tools#r9@0.29, migration-tools#r10@0.29, migration-tools#r11@0.29, migration-tools#r12@0.29, migration-tools#r13@0.29, migration-tools#r14@0.29, migration-tools#r15@0.29, migration-tools#r16@0.29, migration-tools#r17@0.29). Base 31e9ed3.
 CLAUDE.md: none in the worktree or the plugin repo. The work-item says every module stays under 300 lines.
 Tools: `tools tests-of` and `untested` answer "no map" (a map runs the whole suite, which I may not run).
 Counts of tests by search are floors. `tools refs` answered for named functions.

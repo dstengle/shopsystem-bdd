@@ -6,7 +6,7 @@ status: formulated
 date: 2026-10-23
 argues: [migration-tools]
 adds: []
-changes: [migration-tools#r4, migration-tools#r9, migration-tools#r30, migration-tools#r31]
+changes: [migration-tools#r4@0.29, migration-tools#r9@0.29, migration-tools#r30@0.29, migration-tools#r31@0.29]
 removes: []
 ---
 

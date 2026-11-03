@@ -15,10 +15,10 @@ No change under `features/` and no removed or weakened test anywhere in the rang
 - **Range:** `b4c4ad5e..199e8dd3` on `main`.
   - Reviews 1 to 3 covered up to `ba907c58`. I re-ran every check on the whole range.
   - I read in full only what changed after `ba907c58`. `git diff --numstat ba907c58 HEAD -- tests features scripts` shows only w207's five files.
-- **w202** (spec-integration#r44, `green`): `6e3c4f04` and `fe844bb3`. Unchanged.
-- **w205** (work-queue#r34-r39, `green`): `a033c460` and `bf231ddc`. Unchanged, except where w206 and w207 change `scripts/workqueue_list.py`.
+- **w202** (spec-integration#r44@0.29, `green`): `6e3c4f04` and `fe844bb3`. Unchanged.
+- **w205** (work-queue#r34@0.29, work-queue#r35@0.29, work-queue#r36@0.29, work-queue#r37@0.29, work-queue#r38@0.29, work-queue#r39@0.29, `green`): `a033c460` and `bf231ddc`. Unchanged, except where w206 and w207 change `scripts/workqueue_list.py`.
 - **w206** (fix of branch review 2, `green`): `e4e61321`. Unchanged, except where w207 changes `scripts/supervise_change.py:105-118`.
-- **w207** (fix of branch review 3, accepts work-queue#r34-r39, `green`):
+- **w207** (fix of branch review 3, accepts work-queue#r34@0.29, work-queue#r35@0.29, work-queue#r36@0.29, work-queue#r37@0.29, work-queue#r38@0.29, work-queue#r39@0.29, `green`):
   - Its commits run from `2b50f401 work: w207 ready -> claimed` to `469cbcba work: w207 claimed -> done`.
   - Leaving out `work run`'s own commits, that is `b8dab1b2` "Fix branch review 3 findings…". It touches `scripts/supervise_change.py`, `scripts/workqueue_list.py`, `scripts/workqueue_status.py`, `tests/scripts/test_supervise_change.py` and `tests/scripts/test_workqueue_list.py`. All five are in its fileset.
 - **Other commits after review 3:**
@@ -157,12 +157,12 @@ None.
   - Observation, as in review 3: move them into the work-queue scenarios once a line names these refusals. A check that shows it complete: `tests/scripts/test_workqueue_list.py` holds no `work show` or `work list` call.
 - **Carried from earlier reviews:**
   - `spec_integration_steps.py` holds two concerns (r44, r45).
-  - The no-target `show` goes dead when requests#r13, work-queue r3 and r11 are retired.
+  - The no-target `show` goes dead when requests#r13@0.29, work-queue r3 and r11 are retired.
 - **Reachability:** w207 adds no step definitions. `merge_lists` is reached only by the unit tests and by a real redraft round (finding 1).
 
 ## Coupling
 
-- **`raised.jsonl`:** as in review 3. Nothing writes it yet; the writers would be requests#r29 and supervision#r135, both xfail. Its form is given only in `workqueue_list.py`. What would make it stable: state the form in the Implementation section of work-queue or requests.
+- **`raised.jsonl`:** as in review 3. Nothing writes it yet; the writers would be requests#r29@0.29 and supervision#r135@0.29, both xfail. Its form is given only in `workqueue_list.py`. What would make it stable: state the form in the Implementation section of work-queue or requests.
 - **q20:** w206's merge is promised only by an open request (finding 1). q20 also carries work-queue r48 and r40.
 - **Carried from reviews 1 to 3:**
   - the upstream's spec is read from a working-tree path (w202);

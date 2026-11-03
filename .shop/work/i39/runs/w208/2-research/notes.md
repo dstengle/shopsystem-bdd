@@ -1,6 +1,6 @@
 # Research of w208 (2-research): work-queue r34-r39 (list, show)
 
-Base b4c4ad5e. Accepts: work-queue#r34-r39 (r34, r35, r36, r37, r38, r39). Prior stage (`1-research`) read; its probes not re-run except where marked. Probes: `.shop/scratch/w208-2-research/` (ignored; `git status --porcelain` clean at the end).
+Base b4c4ad5e. Accepts: work-queue#r34@0.29, work-queue#r35@0.29, work-queue#r36@0.29, work-queue#r37@0.29, work-queue#r38@0.29, work-queue#r39@0.29 (r34, r35, r36, r37, r38, r39). Prior stage (`1-research`) read; its probes not re-run except where marked. Probes: `.shop/scratch/w208-2-research/` (ignored; `git status --porcelain` clean at the end).
 Tools: `tools refs` ran (counts below say `refs`); `tools tests-of` answered `tools: no map: make one with tools map` (not made) so test lists are `by search`; `tools size --limit 300` printed nothing.
 
 ## 1. Why each scenario is red today

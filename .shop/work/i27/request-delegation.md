@@ -5,7 +5,7 @@ part_of: initiative/i27
 status: formulated
 date: 2026-10-25
 argues: [requests]
-adds: [requests#r19]
+adds: [requests#r19@0.29]
 changes: []
 removes: []
 ---

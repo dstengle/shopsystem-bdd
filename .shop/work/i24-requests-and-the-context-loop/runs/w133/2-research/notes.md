@@ -1,6 +1,6 @@
 # Research of w133 (stage 2): measure gives the origin of the initiative's request
 
-Work-item w133 accepts batch-measurement#r63 and #r64. Accepted scenarios (features/batch-measurement.feature, not changed):
+Work-item w133 accepts batch-measurement#r63@0.29 and #r64. Accepted scenarios (features/batch-measurement.feature, not changed):
 - the request an initiative fulfils is given as <origin> when its asker is <asker> (r63; 2 examples, lines 171-182)
 - an initiative that fulfils no request is measured without saying internal or external (r64; lines 185-193)
 

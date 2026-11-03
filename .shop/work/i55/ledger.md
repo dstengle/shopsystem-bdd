@@ -13,7 +13,7 @@
 - 2026-10-29: gate round 1: 0 questions (glossary proposal; no glossary entries drafted)
 - 2026-10-29: apply round 16: requests r64 and supervision r212 r213 applied (3611f76b); work-queue draft not applied, stale against spec (r59 taken, r34/r35 already retired); nothing else
 - 2026-10-29: integrate round 17 (requests): work-queue +1 -1 (r62 for r23), no glossary, 0 questions, 0 cut sentences; drafts .shop/scratch/17-integrate/drafts/round-1
-- 2026-10-29: gate round 18: 0 questions (requests#r64 added, requests#r14 removed; answers already given under the delegation)
+- 2026-10-29: gate round 18: 0 questions (requests#r64@0.29 added, requests#r14@0.29 removed; answers already given under the delegation)
 - 2026-10-29: apply round 10 (supervision): nothing applied; drafts already in spec/ by 3611f76b (r212 added; r149 r32 r9 retired); stale draft would revert r213
 - 2026-10-29: apply 8: work-queue r62 replaces r23 (draft r59 renumbered, r59 taken); supervision r213 was already in spec; answers applied
 - 2026-10-29: formulate round 9: work-queue r62 formulated, r23's two scenarios deprecated, commit 19c0bc4d; 1 question (initiative with no capability-proposal)
@@ -29,7 +29,7 @@
 - 2026-11-02: formulate round 1 work-queue-deda9fa6: commit 383ee065; scenario added r47; features bindings clean; model check: 63 violations, none from work-queue r47
 - 2026-11-02: w244 withdrawn (2026-11-02): work-queue r47 is already met by the code (workqueue_done._holds), its scenario passes, and the planner's file set was empty; as with w229, the person's choice of 2026-11-02.
 - 2026-11-02: formulate round 3 requests-deda9fa6: nothing formulated; the answer to the r52 question changes r52, which is not in spec/ as answered; integrate round needed
-- 2026-11-02: integrate round 4 requests-deda9fa6: adds requests#r73, removes requests#r52 (answer: only a sent turn); drafts .shop/scratch/4-integrate/drafts/round-4
+- 2026-11-02: integrate round 4 requests-deda9fa6: adds requests#r73@0.29, removes requests#r52@0.29 (answer: only a sent turn); drafts .shop/scratch/4-integrate/drafts/round-4
 - 2026-11-02: gate round 5 requests-deda9fa6: 0 questions
 - 2026-11-02: Hand repair (2026-11-02): requests-deda9fa6's adds restored to r50, r51, r53-r58 beside r73 after integrate round 4 cut them; its removes keep r52 and the r13, r34, r39, r41, r43 that deda9fa6 retired.
 - 2026-11-02 20:19: compacted

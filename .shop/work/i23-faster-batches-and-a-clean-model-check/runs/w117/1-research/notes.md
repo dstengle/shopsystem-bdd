@@ -2,7 +2,7 @@
 
 Method: `tools tests-of` has no map (`tools: no map: make one with tools map`), so test lists are `by search`. `tools refs` ran on Python names only. Probes ran the worktree's `scripts/model` through its real entry point. Probe file: `.shop/scratch/w117-1-research/probe_w106.py`, run `python3 -m pytest -q -s -n 0 .shop/scratch/w117-1-research/probe_w106.py`. Its fixture puts the work-item directly under the initiative, so `v_b1` and `v_k3` print in every case; that is fixture noise, not studied.
 
-Accepted: `features/design-model-check.feature:727` (Outline, 4 rows, `@r106`) and `:742` (`@r106`). Requirement `design-model-check#r106`, rule `v_w4`.
+Accepted: `features/design-model-check.feature:727` (Outline, 4 rows, `@r106`) and `:742` (`@r106`). Requirement `design-model-check#r106@0.29`, rule `v_w4`.
 
 ## 1. Why each scenario is red today
 

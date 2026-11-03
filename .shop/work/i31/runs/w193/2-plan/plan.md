@@ -9,14 +9,14 @@ this plan does not take them (see part 5).
 
 The research notes (§1) ran every accepted node by id, and all of them pass today. They are:
 
-- supervision#r111: "an initiative that a work-item's transition leaves able to be done is set done before work run ends"
-- supervision#r70: "a capability-proposal whose every question has an answer is given to an apply round with its answers"
-- supervision#r116: "a capability-proposal whose every question from its formulate round has an answer is given to a formulate round with the answers"
-- supervision#r114: "when the apply round `work run` started for a capability-proposal ends, the proposal's adds, changes and removes are written from the change list the round applied"
-- supervision#r83: "when the formulate round … ends without giving a question, the proposal is formulated"
-- supervision#r112: "when the formulate round … gives questions, each is written under the proposal's ## Questions"
-- supervision#r113: "when the formulate round … gives a question, the proposal is awaiting-answer"
-- supervision#r115: "when the gate round of a capability-proposal ends …", all four Examples (BLOCKED, an error, the turn limit, no result file)
+- supervision#r111@0.29: "an initiative that a work-item's transition leaves able to be done is set done before work run ends"
+- supervision#r70@0.29: "a capability-proposal whose every question has an answer is given to an apply round with its answers"
+- supervision#r116@0.29: "a capability-proposal whose every question from its formulate round has an answer is given to a formulate round with the answers"
+- supervision#r114@0.29: "when the apply round `work run` started for a capability-proposal ends, the proposal's adds, changes and removes are written from the change list the round applied"
+- supervision#r83@0.29: "when the formulate round … ends without giving a question, the proposal is formulated"
+- supervision#r112@0.29: "when the formulate round … gives questions, each is written under the proposal's ## Questions"
+- supervision#r113@0.29: "when the formulate round … gives a question, the proposal is awaiting-answer"
+- supervision#r115@0.29: "when the gate round of a capability-proposal ends …", all four Examples (BLOCKED, an error, the turn limit, no result file)
 
 The r114 scenario passes only because its Given hands the stand-in a `changes` field
 (`supervision_formulate_steps.py`, `apply_change_list`). No real apply round gives that field. The agent's apply
@@ -56,7 +56,7 @@ The researcher's set has ten other files. This plan drops them all, and why:
 ## 3. Decisions
 
 1. **The apply round gives the change list it applied in its result's `changes`, in the integrate form, and both the
-   apply brief and the agent's apply text ask for it.** This rests on supervision#r114 ("from the change list the round
+   apply brief and the agent's apply text ask for it.** This rests on supervision#r114@0.29 ("from the change list the round
    applied") and design-decision/worker-results-are-files (0038: `work run` reads stage fields, never prose). It does
    not change what the narrator observes beyond what r114 already states. spec-integration's Implementation section
    already has the apply round's writer reply with a change list, so this is how that list reaches `work run`, not a
@@ -65,7 +65,7 @@ The researcher's set has ten other files. This plan drops them all, and why:
 2. **The r114 Then pins that the real brief asks for the list.** The stand-in cannot tell whether a real round would
    give `changes`. The only thing `work run` controls is that it asks for the list. So `lists_written` also checks
    that p1's apply brief, as recorded by the stand-in, names the change list in the result's `changes`. The check is
-   on wording that marks the request, not on the whole text. This rests on supervision#r114 and finding 1's "met only
+   on wording that marks the request, not on the whole text. This rests on supervision#r114@0.29 and finding 1's "met only
    against the stand-in". A new `tests/scripts` test of the brief was the other option. It is not chosen, because it
    would need a whole briefs fixture outside the scenarios the brief is already recorded in.
 

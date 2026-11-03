@@ -5,9 +5,9 @@ Agent: initiative-round
 Scripts: /home/vscode/shopsystem-bdd/scripts
 Kind: gate
 Give the gate as questions in your result's `questions`, one string each: every question a decision, with its readings and the recommended reading marked.
-Adds: design-model-check#r125, design-model-check#r126, design-model-check#r127, design-model-check#r128, design-model-check#r129, design-model-check#r130, design-model-check#r131, design-model-check#r132, design-model-check#r133, design-model-check#r134, design-model-check#r135, design-model-check#r136, design-model-check#r137, design-model-check#r138, design-model-check#r139
+Adds: design-model-check#r125@0.29, design-model-check#r126@0.29, design-model-check#r127@0.29, design-model-check#r128@0.29, design-model-check#r129@0.29, design-model-check#r130@0.29, design-model-check#r131@0.29, design-model-check#r132@0.29, design-model-check#r133@0.29, design-model-check#r134@0.29, design-model-check#r135@0.29, design-model-check#r136@0.29, design-model-check#r137@0.29, design-model-check#r138@0.29, design-model-check#r139@0.29
 Changes: none
-Removes: design-model-check#r2, design-model-check#r11, design-model-check#r33, design-model-check#r12, design-model-check#r15, design-model-check#r108, design-model-check#r65, design-model-check#r109, design-model-check#r105, design-model-check#r13
+Removes: design-model-check#r2@0.29, design-model-check#r11@0.29, design-model-check#r33@0.29, design-model-check#r12@0.29, design-model-check#r15@0.29, design-model-check#r108@0.29, design-model-check#r65@0.29, design-model-check#r109@0.29, design-model-check#r105@0.29, design-model-check#r13@0.29
 Ask questions only on the lines and terms listed above as adds, changes or removes, and on no other line or term.
 Drafts path: .shop/work/i59/runs/i59/1-integrate/drafts/round-2/
 Base: 3be48327e94e2ec17ea63d9334f33dd184b148e0

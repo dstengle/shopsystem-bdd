@@ -6,9 +6,9 @@
 
 - Range: `4640ef08..8ae0e927` on `i25-review-findings-to-implementation`, 275 commits. The branch is shared with i25, i26, i27, i28, i30 and i31, so most of the range is their work-items, rounds and reviews. I review i29's part and name anything of the others' that I came across.
 - i29's work-items, all `green`. Each commit is listed as it is on HEAD; I read each commit's whole diff.
-  - **w175** (requests#r22): `959cba20` *work request refuses an empty delegation*. It is the implementer's 72bd6f14, re-applied by the merge.
-  - **w179** (supervision#r15): `0c654848` *keep_named: a result value the file system refuses as a name names no file*. It is the implementer's f0695846.
-  - **w181** (supervision#r105–r109): `4d3113e1` (r107), `5048b72e` (r108), `c482f4f8` (r106), `07d5c24c` (r105, r109) and `d87a295b` (the r92 scenario's setup).
+  - **w175** (requests#r22@0.29): `959cba20` *work request refuses an empty delegation*. It is the implementer's 72bd6f14, re-applied by the merge.
+  - **w179** (supervision#r15@0.29): `0c654848` *keep_named: a result value the file system refuses as a name names no file*. It is the implementer's f0695846.
+  - **w181** (supervision#r105@0.29, supervision#r106@0.29, supervision#r107@0.29, supervision#r108@0.29, supervision#r109@0.29): `4d3113e1` (r107), `5048b72e` (r108), `c482f4f8` (r106), `07d5c24c` (r105, r109) and `d87a295b` (the r92 scenario's setup).
 - i29 commits that belong to no work-item:
   - the rounds' merges (`round/i29-1-integrate`, `round/requests-3-apply`, `round/requests-4-formulate`, `round/supervision-*`), with their spec and features commits `7c548d23`, `6cd77b2b`, `3bfdba68` and `d073c518`;
   - `work add`, `work answer` and `work note` commits;

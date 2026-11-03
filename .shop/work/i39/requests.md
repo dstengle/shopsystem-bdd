@@ -5,9 +5,9 @@ part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i39
 status: formulated
 argues: [requests]
 date: 2026-10-27
-adds: [requests#r25, requests#r28, requests#r29, requests#r30, requests#r31, requests#r32, requests#r33, requests#r34, requests#r39, requests#r40, requests#r41, requests#r42, requests#r43, requests#r44, requests#r45]
+adds: [requests#r25@0.29, requests#r28@0.29, requests#r29@0.29, requests#r30@0.29, requests#r31@0.29, requests#r32@0.29, requests#r33@0.29, requests#r34@0.29, requests#r39@0.29, requests#r40@0.29, requests#r41@0.29, requests#r42@0.29, requests#r43@0.29, requests#r44@0.29, requests#r45@0.29]
 changes: []
-removes: [requests#r1, requests#r3]
+removes: [requests#r1@0.29, requests#r3@0.29]
 ---
 
 # requests
@@ -24,7 +24,7 @@ The drafts of this proposal are in .shop/work/i39/runs/work-queue/5-integrate/dr
 - requests r33, r34: for an internal request asker and upstream repository are the same, so the repository does not say which side writes. Readings: (a) the command writes as the side owning the part, r34 never refuses on an internal request; (b) the repository is the upstream's side only, writing the asker's part (an answer) is refused under r34.
 - requests r39, r41, r43: 'message' is in no glossary entry and no line. Readings: (a) a message is the asker's answer or turn-passing (the acts r28 lists); (b) a separate kind of thing sent, needing its own command and form.
 - requests r25: 'one set of commands ... and one lifecycle'. Readings: (a) whatever the request and side, the same command does each action and every request goes through the same statuses; (b) a request's actions are part of work's one consolidated set for all work (work list, work show <id>), and its lifecycle is the one all work follows. The answer given named the consolidated actions but chose neither reading.
-- the formulate round's scenario for requests#r25, requests#r46, requests#r47 is missing: the formulate round's result gave no question and does not give it
+- the formulate round's scenario for requests#r25@0.29, requests#r46@0.29, requests#r47@0.29 is missing: the formulate round's result gave no question and does not give it
 
 ## Answers
 - 2026-10-27: r3: Reading (a), narrowed to requests whose asker is the upstream itself; as a changed line, r3 is retired and replaced by a line with a new id (no requirement is edited in place).

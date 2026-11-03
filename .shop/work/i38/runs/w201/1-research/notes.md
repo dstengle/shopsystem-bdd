@@ -11,10 +11,10 @@ Open gap, not an accepted scenario: the branch review's Important finding 1 (`.s
 ## 2. What the system answers today
 
 P1. `python3 -m pytest -q -s -p no:cacheprovider -n 0 .shop/scratch/w201-1-research/probe_guarantees.py` (run). The probe calls `supervise_outputs.unformulated(<worktree>, ids)` directly, not through `work run`.
-- ids `planning#r1, review#r1, formulation#r1, supervision#r132, supervision#r3, supervision#r999, thing#r1-r3, term/x` gave `['planning#r1', 'review#r1', 'formulation#r1', 'supervision#r3', 'supervision#r999', 'thing#r1-r3']`.
+- ids `planning#r1@0.29, review#r1@0.29, formulation#r1@0.29, supervision#r132@0.29, supervision#r3@0.29, supervision#r999@0.29, thing#r1-r3, term/x` gave `['planning#r1@0.29', 'review#r1@0.29', 'formulation#r1@0.29', 'supervision#r3@0.29', 'supervision#r999@0.29', 'thing#r1-r3']`.
 - Guarantees ids (`planning`, `review`, `formulation`: `group: guarantees` in `spec/capabilities/*.md`) are lacking only for having no feature file.
-- `supervision#r3` lacking is correct (its only scenario is deprecated). `thing#r1-r3` is lacking though ranges are a valid id form (read finding 2 of the review).
-- Feature file missing for capability `nowhere`: `planning#r1` lacking (second test in the probe, same run).
+- `supervision#r3@0.29` lacking is correct (its only scenario is deprecated). `thing#r1-r3` is lacking though ranges are a valid id form (read finding 2 of the review).
+- Feature file missing for capability `nowhere`: `planning#r1@0.29` lacking (second test in the probe, same run).
 
 P2. Wiring read, not run: `scripts/supervise_rounds.py:148-154`. A formulate round with no question calls `unformulated` on the proposal's `adds` and `changes`; a lacking id becomes a question via `supervise_outputs.question`, so the proposal goes to `awaiting-answer`. Each answer starts another formulate round (`supervise_rounds.py:60-61`, read), so the loop repeats.
 
@@ -43,7 +43,7 @@ None (read). The fix adds a skip in the check, not a path that leaves out a step
 ### D1. A formulate round on a guarantees requirement can never reach `formulated`
 Reproduction:
 - `python3 -m pytest -q -s -p no:cacheprovider -n 0 .shop/scratch/w201-1-research/probe_guarantees.py` (run).
-- Came back: `unformulated: ['planning#r1', 'review#r1', 'formulation#r1', ...]`.
+- Came back: `unformulated: ['planning#r1@0.29', 'review#r1@0.29', 'formulation#r1@0.29', ...]`.
 - Read: `supervise_rounds.py:150-154` turns that into a question, so the proposal goes to `awaiting-answer` (r83 says `formulated`).
 - Source: `.shop/work/i38/runs/branch-review/2/findings.md` finding 1 (Important, fix now).
 

@@ -1,4 +1,4 @@
-# w167 research: capability-proposals from a change list get distinct ids (supervision#r92)
+# w167 research: capability-proposals from a change list get distinct ids (supervision#r92@0.29)
 
 Method: `tools map` has no map here (`tools tests-of` answers "no map"; not made). Tests are found by search. `tools refs` ran for `entries`, `Changes`, `write_proposals`; `write_proposals` shows 0 refs because `Rounds` calls it as `self.write_proposals` (text search found supervise_rounds.py:108). Probes run with `python3 -m pytest -q -s -n 0` on files in `.shop/scratch/w167-1-research/`.
 

@@ -24,7 +24,7 @@ Suite at the start (brief): 888 passed, 10 failed at 81b7d67e; the 10 failing ar
 - r70 stays green (run).
 - r116 (159c7530): widened `apply_started` to `apply|formulate` and `answered_proposal` to read "its adds naming …" and "given by its gate/formulate round" (writes that round's move into awaiting-answer to log.jsonl; setup only).
 
-## Stop: HAND-BACK on supervision#r116
+## Stop: HAND-BACK on supervision#r116@0.29
 
 Stop condition: a scenario can't be made to fail on its Then line, only on an undefined step.
 

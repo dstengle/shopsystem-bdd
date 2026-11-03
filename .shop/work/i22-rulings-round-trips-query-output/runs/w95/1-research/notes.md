@@ -1,6 +1,6 @@
 # w95 research: analysis tools answer in their output
 
-Work-item `w95` under `analysis-tools`, accepts `analysis-tools#r11, r53-r57`.
+Work-item `w95` under `analysis-tools`, accepts `analysis-tools#r11@0.29, r53-r57`.
 Tools: `python3 /home/vscode/shopsystem-bdd/scripts/tools` (the brief's `Scripts:`); `tests-of`/`untested` have no map in the worktree, so their answers are by search and by probe.
 Probe files: `.shop/scratch/w95-1-research/probe_tools.py`, `probe_refusals.py`, `probe_scenarios.py`.
 Session env: `PYTEST_ADDOPTS=--work-item w95` (printed by a probe, run). It leaks into any `tools map` run.

@@ -1,6 +1,6 @@
 # Research of w141: delivering-an-initiative starts work run only
 
-Work-item w141 (under delivery) accepts delivery#r4, r10, r19, r20, r21, r22. Its change is to
+Work-item w141 (under delivery) accepts delivery#r4@0.29, r10, r19, r20, r21, r22. Its change is to
 `skills/delivering-an-initiative/SKILL.md` (markdown: no test executes it). No tools map exists: `tools tests-of`
 says "no map" and I did not run `tools map` (it runs the whole suite). Tests were searched by text. `tools refs`
 ran for `workqueue.add` and found 0 uses: it misses the extensionless `scripts/work` entry, which calls
@@ -23,10 +23,10 @@ Probes, run through the plugin's `work` entry point (`python3 /home/vscode/shops
 - `work run` with no initiative (run): exit 2, "the following arguments are required: initiative".
 - `work add --help` (run): `--part-of`, `--under`, `--accepts` (append, so one per id: scripts/work:100).
 - Case no_items (run): git repo in scratch; spec/index.md; initiative i1 `status: started`; p1 `formulated`, adds
-  delivery#r4; no work-item. `work --root <scratch> run i1`: exit 0, no output, nothing drafted, no commit. The
+  delivery#r4@0.29; no work-item. `work --root <scratch> run i1`: exit 0, no output, nothing drafted, no commit. The
   skill would read exit 0 as "every work-item green" over an empty list.
 - Case one_item, no origin (run): `work add i1 "probe item" --part-of capability-proposal/p1 --under delivery
-  --accepts delivery#r4`: exit 0, prints `w1`, committed by work add. `work run i1`: exit 1, `w1 failed`, fault
+  --accepts delivery#r4@0.29`: exit 0, prints `w1`, committed by work add. `work run i1`: exit 1, `w1 failed`, fault
   "work run could not verify that it can push the initiative branch main to origin before the research stage".
 - Case one_item, with a scratch bare origin (run): same, `work run i1` exit 1, `w1 failed`, fault "its researcher's
   session exited with an error (exit code 1); work run takes no outcome from it, whatever its result file says".

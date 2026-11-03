@@ -1,8 +1,8 @@
-# plan of w157 (supervision#r77, branch review 1 F1)
+# plan of w157 (supervision#r77@0.29, branch review 1 F1)
 
 ## 1. What goes green
 
-supervision#r77, in `features/supervision.feature`:
+supervision#r77@0.29, in `features/supervision.feature`:
 
 - **Scenario Outline (L971):** "under a delegation, each question of the initiative goes to a session of its own, given only the delegation and the files it names, that <reply>". Both examples (`answers it` and `leaves it for the person`) already pass today (notes §1, run). They must stay green.
 - **Scenario (L988):** "under a delegation, a work-item with two questions has each given to a session of its own, and both answers stay written when the run ends". It is red today for two reasons:
@@ -25,14 +25,14 @@ Removed from the researcher's set:
 ## 3. Decisions
 
 - **D1. Commit each answer the moment it is written** (using the existing `commit(name, before, before)`, which also commits the item's run directories and log and pushes), rather than having `checkout_changes` let work run's own answers through.
-  - Rests on supervision#r28: "the main checkout's `.shop/work/` differs from its last commit when a worker ends" must keep meaning a fault. An uncommitted answer would make the checkout differ from its last commit, so leaving it out of the check would bend r28's text. Committing keeps r28 intact for every session.
-  - Rests on supervision#r38: each commit on the initiative branch is pushed, so a push per answer is what r38 asks for.
+  - Rests on supervision#r28@0.29: "the main checkout's `.shop/work/` differs from its last commit when a worker ends" must keep meaning a fault. An uncommitted answer would make the checkout differ from its last commit, so leaving it out of the check would bend r28's text. Committing keeps r28 intact for every session.
+  - Rests on supervision#r38@0.29: each commit on the initiative branch is pushed, so a push per answer is what r38 asks for.
   - Rests on design-decision/a-script-supervises-delivery: work run's own writes are committed by work run.
   - The commit message stays `work: <name> <before> -> <before>` (Implementation, may change).
   - A per-answer commit happens only after a session that gave `DONE` with an answer. A session that faults or leaves the question still goes through `keep_round` and r89/r90 as today.
 - **D2. The stand-in picks its step for an answering session by the question in the brief.** It looks for a plan entry keyed by the question (for example under a `question:` prefix) and lays it over the agent's entry, the same way `round:<kind>` already takes precedence.
   - The scenario says "the session given Q answers A". A per-agent `fields` entry cannot give two different answers, and a test aid that depends on the order sessions start in would tie the scenario to that order.
-  - Rests on supervision#r77: each question goes to a session of its own.
+  - Rests on supervision#r77@0.29: each question goes to a session of its own.
 - **D3. Defect D2 of the notes (a refused `measure initiative` still exits 0) is out of this work-item.** No requirement of r77 covers it, and the notes put it down to the stand-in's `session.json`. It is left to the branch review.
 
 ## 4. Tests the decisions break

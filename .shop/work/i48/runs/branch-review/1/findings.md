@@ -16,7 +16,7 @@ Every check was given by a run in the brief, so nothing is listed under Cannot v
     - `3e242ec9`: r189. Touches `scripts/supervise_change.py` and `tests/scripts/test_supervise_change.py`.
     - `7c39e421`: r189's step, so that g1's apply round gives the unheld answer. Touches `tests/scenarios/supervision_reintegrate_steps.py`.
   - **961 belong to no work-item.** See finding C1.
-- Work-items of i48: w238 (`under: supervision`, accepts supervision#r188 and #r189), status green. Its capability-proposal `i48-supervision` is formulated.
+- Work-items of i48: w238 (`under: supervision`, accepts supervision#r188@0.29 and #r189), status green. Its capability-proposal `i48-supervision` is formulated.
 
 ## Suite
 

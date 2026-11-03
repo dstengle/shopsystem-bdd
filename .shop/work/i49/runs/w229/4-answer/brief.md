@@ -5,7 +5,7 @@ Scripts: /home/vscode/.claude/plugins/cache/shopsystem-bdd/shopsystem-bdd/0.28.3
 Base: none
 Worktree: /home/vscode/shopsystem-bdd/.shop/worktrees/w229-4-answer
 Branch: none (a detached checkout)
-Question: Scenario for supervision#r180 passes before any work (182 passed, 1 skipped). Is the work-item to be withdrawn, or should the Given be changed to write a glossary-proposal (reading B)?
+Question: Scenario for supervision#r180@0.29 passes before any work (182 passed, 1 skipped). Is the work-item to be withdrawn, or should the Given be changed to write a glossary-proposal (reading B)?
 Delegation: The person, 2026-10-28: "i am delegating to you" and "I take recommendations"; 2026-10-29: answer every question with its recommended reading; questions of a glossary-proposal are the person's.
 
 Read (paths in your worktree):

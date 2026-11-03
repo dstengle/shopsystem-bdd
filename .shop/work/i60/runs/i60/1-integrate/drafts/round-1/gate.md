@@ -19,7 +19,7 @@ No change drafted. Decisions: none. Cut sentences: none.
 
 ## Questions
 1. Glossary, entry **delegation** says "given with a request"; it can now be given after. Glossary changes are the person's. Yes -> change to: `- **delegation**: the person's words, given with a request or after it is raised, naming the questions a session may answer in the person's place.` No -> entry stays. Recommended: yes.
-2. requests#r60: commit on which branch? Reading A (recommended): "**When** `work delegate` writes a delegation in a request, `work` shall commit the request on the current branch." Reading B: r60 stays as drafted.
+2. requests#r60@0.29: commit on which branch? Reading A (recommended): "**When** `work delegate` writes a delegation in a request, `work` shall commit the request on the current branch." Reading B: r60 stays as drafted.
 3. Whose part is the delegation; may either side run `work delegate`? Reading A: only the asker's side: "**If** a side other than the request's asker runs `work delegate`, **then** `work delegate` shall refuse, naming the side that writes the delegation, and change nothing." (r4 then names `work delegate`.) Reading B: either side, no line.
 4. Does `work delegate` keep to turns as r16? Reading A: "**If** `work delegate` is run in the other side's turn, **then** `work delegate` shall refuse, because it is the other side's turn, and change nothing." Reading B (recommended, since a delegation comes from the person at any moment): "**When** `work delegate` is run, `work` shall write the delegation whichever side's turn it is."
 5. Does `work delegate` change status or turn? Reading A (recommended): "**When** `work delegate` writes a delegation in a request, `work` shall keep the request's status and turn." Reading B: no line.

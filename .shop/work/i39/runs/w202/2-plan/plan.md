@@ -1,13 +1,13 @@
-# Plan of w202: spec-integration#r44
+# Plan of w202: spec-integration#r44@0.29
 
-Inputs: `.shop/work/i39/w202.md` (accepts spec-integration#r44, no Retires, no Rulings), `spec/capabilities/spec-integration.md`,
+Inputs: `.shop/work/i39/w202.md` (accepts spec-integration#r44@0.29, no Retires, no Rulings), `spec/capabilities/spec-integration.md`,
 `.shop/work/i39/runs/w202/1-research/notes.md` and `result.json`, `features/spec-integration.feature`, decisions 0047
 (references-are-ids) and 0068 (the-context-runs-without-a-coordinator), `docs/design-model/design-model.md` §3 (the request
-carries the upstream's published spec), supervision#r135 and the integrate steps of supervision (to stay in line with them).
+carries the upstream's published spec), supervision#r135@0.29 and the integrate steps of supervision (to stay in line with them).
 
 ## 1. What goes green
 
-- **spec-integration#r44**, scenario "a round of the kind integrate that drafts a line needing what the named upstream does
+- **spec-integration#r44@0.29**, scenario "a round of the kind integrate that drafts a line needing what the named upstream does
   not yet give gives a request into that upstream, in its terms" (`features/spec-integration.feature` l.5-15).
   Red today because (notes §1, §2):
   - nothing binds the feature: no test module calls `scenarios` on `spec-integration.feature`, and none of its steps exist;
@@ -35,7 +35,7 @@ carries the upstream's published spec), supervision#r135 and the integrate steps
 - `tests/scenarios/spec_integration_steps.py` (new): the Givens, When and Thens (decision 4).
 
 Removed from the researcher's set: `scripts/supervise_rounds.py`. r44 requires only that the round *give* the lines in its
-result; reading them and raising them with `work request` is supervision#r135, another requirement not accepted here.
+result; reading them and raising them with `work request` is supervision#r135@0.29, another requirement not accepted here.
 The round's `result.json` is already kept with its stage directory under `.shop/work/<i>/runs/<i>/<n>-integrate/`
 (as for i39 itself), so nothing in `work run` must change for the lines to be observable. `supervise_change.py` and
 `supervise_outputs.py` (the researcher's "may change") are not touched, for the same reason.
@@ -50,16 +50,16 @@ Size: `supervise_brief.py` is 171 lines; the reader and brief lines fit well und
    id only and carries no path but a work-item's `fileset` (design-decision/references-are-ids); the id in the bullet keeps
    the bounded-context's id form. The published spec is what crosses with a request (design-model §3, "its published spec
    at a pinned version"). `model check` ignores the section today (Probe A), and `model_facts.py` is not changed (13 lines
-   of room). Rests on spec-integration#r44 ("Where `spec/index.md` names an upstream bounded-context").
+   of room). Rests on spec-integration#r44@0.29 ("Where `spec/index.md` names an upstream bounded-context").
 2. **Where the round gives the request lines.** In its result, a field `requests`: a list with one entry for each upstream,
    each naming the upstream by its bounded-context id and giving its lines (strict EARS, in order), beside `changes`. The
-   brief gives this form the way `CHANGE_LIST` gives the change list. Rests on spec-integration#r44 ("give in its result
-   the lines of a request into that upstream") and keeps the shape supervision#r135's work will read (an upstream and its
+   brief gives this form the way `CHANGE_LIST` gives the change list. Rests on spec-integration#r44@0.29 ("give in its result
+   the lines of a request into that upstream") and keeps the shape supervision#r135@0.29's work will read (an upstream and its
    lines, the form `work request --lines` takes).
 3. **What the round is told, in which terms.** `work run` resolves each upstream's spec path to an absolute path (the round
    runs in a worktree, where a relative path would not reach it) and lists it among the files to read; the brief tells the
    round to word the lines in that spec's glossary terms. The round reads; it writes nothing into the upstream. Rests on
-   spec-integration#r44 ("in the upstream's terms") and requests#r28 (no checkout of the upstream's repository is made).
+   spec-integration#r44@0.29 ("in the upstream's terms") and requests#r28@0.29 (no checkout of the upstream's repository is made).
 4. **How the scenario is bound.** The round is the stand-in session (`tests/scripts/stub_claude.py`), whose result the
    scenario scripts, so the Thens must observe what `work run` makes of the setting, not the stand-in's choice alone:
    - Givens: a repository like supervision's with `spec/index.md` naming `bounded-context/.../billing` under `## Upstreams`
@@ -75,7 +75,7 @@ Size: `supervise_brief.py` is 171 lines; the reader and brief lines fit well und
      for the `requests` form, and the kept `result.json` has a `requests` entry for billing. "ask for a credit note, in
      billing's terms": the brief listed billing's published spec (absolute path) to read and asked for its terms, and the
      kept lines say "credit note" and not "refund".
-   Rests on spec-integration#r44 and the existing supervision integrate steps' practice (`rounds(...)` brief reads).
+   Rests on spec-integration#r44@0.29 and the existing supervision integrate steps' practice (`rounds(...)` brief reads).
 
 ## 4. Tests the decisions break
 
@@ -94,9 +94,9 @@ assert named brief lines and stubbed `changes`, none the brief's whole text, not
 - More than one upstream, and a drafted line that needs two of them.
 - The "pinned version" of the upstream's spec (design-model §3): read as the path stands today, or at a pin?
 - A round that gives `requests` naming an upstream the index does not name, or gives `requests` when the index names none.
-- Whether a `requests` entry should also name the capability (or drafted line) needing it: supervision#r136 reading 2 would
+- Whether a `requests` entry should also name the capability (or drafted line) needing it: supervision#r136@0.29 reading 2 would
   need that tie; it is a question still open on supervision.
 - The round's tool permissions for reading an absolute path outside its worktree.
 - `spec/index.md` naming this context itself under `## Upstreams`.
 - Defects the research found in `work request` (D1-D3: `--source` from a non-upstream asker accepted, no `--raised-for`,
-  the refusal's wording) are requests#r29-r31 and supervision#r135 work, not this item's.
+  the refusal's wording) are requests#r29@0.29, requests#r30@0.29, requests#r31@0.29 and supervision#r135@0.29 work, not this item's.

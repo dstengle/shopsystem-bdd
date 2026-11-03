@@ -5,14 +5,14 @@ part_of: initiative/i10
 status: merged
 date: 2026-10-19
 argues: [planning]
-adds: [planning#r1-r8]
+adds: [planning#r1@0.29, planning#r2@0.29, planning#r3@0.29, planning#r4@0.29, planning#r5@0.29, planning#r6@0.29, planning#r7@0.29, planning#r8@0.29]
 changes: []
 removes: []
 ---
 
 # Planning: a new capability
 
-What the gate approves: `planning#r1-r14`, a new capability, as written in `capabilities/planning.md`.
+What the gate approves: `planning#r1@0.29, planning#r2@0.29, planning#r3@0.29, planning#r4@0.29, planning#r5@0.29, planning#r6@0.29, planning#r7@0.29, planning#r8@0.29, planning#r9@0.29, planning#r10@0.29, planning#r11@0.29, planning#r12@0.29, planning#r13@0.29, planning#r14@0.29`, a new capability, as written in `capabilities/planning.md`.
 
 The planner stage, researched to planned, was the planning session under `superpowers:writing-plans` with the
 constraints slicing handed it. It becomes an agent, `bdd-planner`, that plans one work-item from its researcher's

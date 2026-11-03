@@ -6,12 +6,12 @@ work-queue r39 and design-decisions 0067 (requests-written-through-work) and 005
 
 ## 1. What goes green
 
-- **supervision#r135**, "the lines an integrate round gives into an upstream are raised with `work request`, raised for
+- **supervision#r135@0.29**, "the lines an integrate round gives into an upstream are raised with `work request`, raised for
   the request the initiative fulfils and with its delegation" (features/supervision.feature:1445). Red today because the
   step at line 1448 is undefined, and lines 1451 and 1452 after it are too. In the code, `Rounds.run_round`'s integrate
   branch never reads the result's `requests`, and `work request` has no `--raised-for`: the probe shows it is refused
   with exit 2 (defect D1).
-- **supervision#r136**, "a formulated capability-proposal whose integrate round raised the lines of a request into an
+- **supervision#r136@0.29**, "a formulated capability-proposal whose integrate round raised the lines of a request into an
   upstream gets no work-item while that request is not delivered" (features/supervision.feature:1163). Red today because
   the Given at 1165 (two formulated proposals) is undefined, and so are 1166, 1167 and the Then at 1170. In the code,
   `Drafts.draft_proposals` drafts every formulated proposal and reads no record of raised requests, and nothing writes
@@ -52,7 +52,7 @@ Removed from the researcher's set:
 ## 3. Decisions
 
 1. **w210 builds `--raised-for` (requests r29).** r135's Then at 1452 cannot pass without it, and no other work-item
-   accepts requests#r29. Its behaviour is given by requests r29, r31 and r44. Nothing is chosen here, only the order of
+   accepts requests#r29@0.29. Its behaviour is given by requests r29, r31 and r44. Nothing is chosen here, only the order of
    work. The value is written as `work run` gives it.
 2. **Where the lines come from.** They come from the integrate result's `requests`: one entry per upstream, an
    `upstream` id and its `lines`, the form `supervise_brief.REQUEST_LINES` asks for (spec-integration r44). An entry

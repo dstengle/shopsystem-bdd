@@ -48,8 +48,8 @@ kind of `agents/initiative-round.md:33`. The r114 Then now asserts that the brie
   - r75 ×1: "… kept branch review lists nothing to fix now, measured".
   - r120 ×1 (`:1516`).
 
-  All four ids are accepted by i33's w194 (`accepts: [supervision#r120, supervision#r121, supervision#r75,
-  supervision#r105]`), which is awaiting-answer. They are not i31's and not a finding of this review.
+  All four ids are accepted by i33's w194 (`accepts: [supervision#r120@0.29, supervision#r121@0.29, supervision#r75@0.29,
+  supervision#r105@0.29]`), which is awaiting-answer. They are not i31's and not a finding of this review.
 
 ## Checks
 

@@ -32,7 +32,7 @@ Accepted lines of the request:
 - 24. **When** a round of the kind `integrate` that `work run` started gives the lines of a request into an upstream, `work run` shall raise them through the request tool, raised for the request the initiative fulfils and with its delegation.
 - 25. **While** a request that an initiative raised into an upstream is not `delivered`, `work run` shall draft no work-item for the capability-proposal whose lines it raised.
 - 26. **While** a request that an initiative raised into an upstream is not `delivered`, `work status` shall print the initiative as waiting on that request.
-Ids drafted elsewhere (number added lines above each on the same capability): supervision#r3, supervision#r5, supervision#r16, supervision#r99, supervision#r112, supervision#r113, supervision#r125, supervision#r126, supervision#r127
+Ids drafted elsewhere (number added lines above each on the same capability): supervision#r3@0.29, supervision#r5@0.29, supervision#r16@0.29, supervision#r99@0.29, supervision#r112@0.29, supervision#r113@0.29, supervision#r125@0.29, supervision#r126@0.29, supervision#r127@0.29
 Drafts path: /home/vscode/shopsystem-bdd/.shop/worktrees/i39-1-integrate/.shop/scratch/1-integrate/drafts
 Give your change list in your result's `changes`: a list with one entry for each capability, each `{"capability": <name>, "adds": [...], "changes": [...], "removes": [...]}`, the ids as `<capability>#r<n>` or `term/<term>`.
 Base: b4c4ad5e86f831f3aedb0695974552aed3ba6064

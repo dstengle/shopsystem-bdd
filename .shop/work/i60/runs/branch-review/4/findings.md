@@ -1,8 +1,8 @@
 # Branch review of i60 (review 4)
 
-**Verdict: DONE_WITH_CONCERNS.** w233 (supervision#r211), i60's only work-item, is still sound: it adds step definitions only and has no finding to fix now. But the whole suite now fails at the head, with 10 failures, and two findings are triaged fix now:
+**Verdict: DONE_WITH_CONCERNS.** w233 (supervision#r211@0.29), i60's only work-item, is still sound: it adds step definitions only and has no finding to fix now. But the whole suite now fails at the head, with 10 failures, and two findings are triaged fix now:
 
-- **Finding 1 (new, Important, fix now): data lost.** i60's own capability-proposal i60-requests lost requests r65–r71 from its `adds`. Integrate round 25 rewrote the proposal's lists to `adds: [requests#r72]` and `removes: [requests#r69]`. r65–r71 are applied in `spec/` and formulated in `features/requests.feature`. Now no proposal and no work-item holds them, so:
+- **Finding 1 (new, Important, fix now): data lost.** i60's own capability-proposal i60-requests lost requests r65–r71 from its `adds`. Integrate round 25 rewrote the proposal's lists to `adds: [requests#r72@0.29]` and `removes: [requests#r69@0.29]`. r65–r71 are applied in `spec/` and formulated in `features/requests.feature`. Now no proposal and no work-item holds them, so:
   - their 10 scenario cases are no longer expected failures, and the whole suite fails;
   - no work-item will ever be drafted to deliver them.
 - **Finding 2 (carried over, Important, fix now):** i54/w232's `work show <request>` leaves out lines that have no line outcome. It is still unfixed and is still w232's open question.
@@ -25,12 +25,12 @@ None of them touches anything outside `.shop/`. The change outside `.shop/` is t
 
 - Range: `ae85edd3a2ce3488f4d930ac5814845eea5e6178..b2554e029ed0fe9e9cc4a6f837a6589b73023282`, on branch `main`.
 - i60 (`started`, fulfils q39) holds:
-  - work-item **w233**: `green`, under supervision, accepts supervision#r211, fileset `tests/scenarios/supervision_delegation_steps.py`.
+  - work-item **w233**: `green`, under supervision, accepts supervision#r211@0.29, fileset `tests/scenarios/supervision_delegation_steps.py`.
     - Its transition commits are `6b7926df`, `864da987`, `4aa66cd4`, `129a247c`, `9b49a82a`, `de6a60b1` and `91d43216`.
     - Its only change is `4e206ec4` (steps only).
   - capability-proposal **i60-supervision**: `formulated`.
   - capability-proposal **i60-requests**: `awaiting-answer`.
-    - It now reads `adds: [requests#r72]`, `changes: []` and `removes: [requests#r69]` (`.shop/work/i60/requests.md:8-10`).
+    - It now reads `adds: [requests#r72@0.29]`, `changes: []` and `removes: [requests#r69@0.29]` (`.shop/work/i60/requests.md:8-10`).
     - Its open question is the r69→r72 swap from gate round 26 (`requests.md:26`).
 - Every other commit in the range is marked `none` (Finding 3).
 
@@ -102,7 +102,7 @@ None. Every check comes from a run at `b2554e02`.
 
 - **Work-item:** none. This is i60's proposal i60-requests, rewritten by `work run`'s integrate round 25 in commit `1fdab1cc`.
 - **Files:**
-  - `.shop/work/i60/requests.md:8-10`: `adds: [requests#r72]`, `changes: []`, `removes: [requests#r69]`.
+  - `.shop/work/i60/requests.md:8-10`: `adds: [requests#r72@0.29]`, `changes: []`, `removes: [requests#r69@0.29]`.
   - The mechanism: `scripts/supervise_change.py:59-72` `rewrite_lists`. Called from `write_proposals` at `:115`, it replaces the lists of the proposal the round was started for with the new change list alone.
 - **What is wrong:** requests r65–r71 were applied (`186d4789`) and formulated (`9172f19e`). Formulate round 24 then formulated nothing and started integrate round 25 (r186). That round's change list held only the r69→r72 swap, so the proposal's earlier ids were dropped. As a result:
   - **The suite fails.** `scripts/work_items.py:73-87` (`proposals`) marks a scenario xfail only when an open proposal's `adds` or `changes` names its requirement. No work-item accepts r65–r71 either (`acceptors`, `:60-70`). So their 10 cases now run and fail.
@@ -110,7 +110,7 @@ None. Every check comes from a run at `b2554e02`.
 - **Why it matters:** this is data lost, and a wrong state. The branch's head fails its whole suite.
 - **The line gap:** supervision r187 keeps a proposal's held ids when a round started for *another* proposal names its capability. No line keeps them when the round re-integrates the proposal it was started for (r142, r148, r159, r186). The `rewrite_lists` docstring cites r114, which is retired.
 - **Fix:**
-  1. Restore `adds: [requests#r65, requests#r66, requests#r67, requests#r68, requests#r70, requests#r71, requests#r72]` and `removes: [requests#r69]` in `.shop/work/i60/requests.md`.
+  1. Restore `adds: [requests#r65@0.29, requests#r66@0.29, requests#r67@0.29, requests#r68@0.29, requests#r70@0.29, requests#r71@0.29, requests#r72@0.29]` and `removes: [requests#r69@0.29]` in `.shop/work/i60/requests.md`.
   2. Write a supervision line, through integrating-a-proposal: when an integrate round started for a capability-proposal ends, `work run` shall keep the ids the proposal already holds that `spec/` holds, adding the round's own ids.
   3. Then change `rewrite_lists` to keep those ids.
 - **Reproduction:** the brief's whole-suite run shows 10 FAILED on r65–r71, where review 3's run at `46d6b92a` had them as xfail. Ledger lines 11-12 show the r186 path.
@@ -199,7 +199,7 @@ None. Every check comes from a run at `b2554e02`.
 
 ## Observations
 
-- F1: the brief's whole suite has 10 FAILED on `test_delegate_*` (r65–r71), where review 3 had 26 xfailed. `.shop/work/i60/requests.md:8` reads `adds: [requests#r72]`.
+- F1: the brief's whole suite has 10 FAILED on `test_delegate_*` (r65–r71), where review 3 had 26 xfailed. `.shop/work/i60/requests.md:8` reads `adds: [requests#r72@0.29]`.
 - F2: `workqueue_list.py:85-88`, `if outcome is not None`. Not run.
 - F3: the brief's `## Commits`. All lines are `none` but w233's.
 - F4: `supervision_delegation_steps.py:37-40`. Both commits come before `work run`. Not run.

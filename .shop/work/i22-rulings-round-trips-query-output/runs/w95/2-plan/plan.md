@@ -1,6 +1,6 @@
 # Plan of w95: the analysis tools answer in their output
 
-Work-item `w95`, under `analysis-tools`, accepts `analysis-tools#r11` and `analysis-tools#r53`–`r57`. It has no Rulings and no Retires section. The capability rests on `design-decision/query-commands-answer-in-their-output` (0058) and `design-decision/plugin-takes-the-dependencies-it-needs` (0035). Everything below comes from `runs/w95/1-research/notes.md` unless it says otherwise.
+Work-item `w95`, under `analysis-tools`, accepts `analysis-tools#r11@0.29` and `analysis-tools#r53@0.29`–`r57`. It has no Rulings and no Retires section. The capability rests on `design-decision/query-commands-answer-in-their-output` (0058) and `design-decision/plugin-takes-the-dependencies-it-needs` (0035). Everything below comes from `runs/w95/1-research/notes.md` unless it says otherwise.
 
 ## 1. What goes green
 
@@ -43,20 +43,20 @@ Left out of the researcher's set: `tests/scenarios/analysis_tools_code_steps.py`
 - **D1. Retire the deprecated outline, both rows.**
   - The row "unused" asserts exit 1 for a target no test executed. r11 and 0058 ("an empty answer exits successfully") say exit 0, so both cannot hold, and the outline's own `Deprecated for:` line names L138 as its replacement.
   - The row "missing" is covered by the r57 scenario at L455: same Given, same command, exits with an error.
-  - Use `features retire` with the outline's title. This is the researcher's question, and it is settled: requirement r11 and design-decision 0058 decide what the narrator sees (exit 0), so it does not go to the person. It rests on `analysis-tools#r11`, `analysis-tools#r57` and 0058.
+  - Use `features retire` with the outline's title. This is the researcher's question, and it is settled: requirement r11 and design-decision 0058 decide what the narrator sees (exit 0), so it does not go to the person. It rests on `analysis-tools#r11@0.29`, `analysis-tools#r57@0.29` and 0058.
 - **D2. The empty answer of tests-of (r11).**
   - It prints one line saying that no test of the map executed the target, naming the target and the commit the map was made at (`no test of the map executed src/cart.py:unused (map made at <commit>)`), and exits 0.
   - The non-empty summary line (`N of the M tests …`) stays as it is (r9).
   - With `--by-file`, the empty answer is the same line.
-  - Rests on `analysis-tools#r11` and 0058.
-- **D3. The unknown function (r57).** The refusal stays exit 1 with nothing on stdout. Its stderr names the target and says it cannot be read, giving the reason after it, for example `tools: cannot read src/cart.py:missing: src/cart.py has no function named missing`. Other refusals keep their wording (`no map`, `is not a file`). Rests on `analysis-tools#r57` and `#r49`.
+  - Rests on `analysis-tools#r11@0.29` and 0058.
+- **D3. The unknown function (r57).** The refusal stays exit 1 with nothing on stdout. Its stderr names the target and says it cannot be read, giving the reason after it, for example `tools: cannot read src/cart.py:missing: src/cart.py has no function named missing`. Other refusals keep their wording (`no map`, `is not a file`). Rests on `analysis-tools#r57@0.29` and `#r49`.
 - **D4. The `--json` objects.** The keys are Implementation (0058). With `--json`, each command prints one JSON object on stdout and nothing else, and exits as it would without the flag. Refusals stay on stderr as text: 0058 says `--json` prints the result, and a refusal has none.
   - **tests-of (r53):** `tests`, the list of test node ids; `count`; `commit`, the stored commit, the same value the text line gives. The count of the map's tests can also be given as `of`, since the text line gives it. An empty answer is an empty list with count 0 and exit 0 (r11 with r53).
   - **untested (r54):** `functions`, each with its path, line and name; `count`; `commit`.
   - **refs (r55):** `references`, each with its path and line; `summary`, holding the number of references, the production file count, the test file count, and `defined`, the list of `path:line` places where the name is defined.
   - **map (r56):** `commit`, the commit written beside the data; `tests`, the number of tests in the map, counted from the map's test contexts as tests-of counts them. pytest's own output is not printed.
-  - Rests on `analysis-tools#r53`–`r56` and 0058.
-- **D5. Checks before output.** Every refusal (no map, a file that is not there, an unknown function, `map` that makes no map) runs before anything is printed, in text or JSON. Each JSON object is printed once, after it is complete, never line by line. Rests on `analysis-tools#r49` (change nothing; say why), and notes part 5.
+  - Rests on `analysis-tools#r53@0.29`–`r56` and 0058.
+- **D5. Checks before output.** Every refusal (no map, a file that is not there, an unknown function, `map` that makes no map) runs before anything is printed, in text or JSON. Each JSON object is printed once, after it is complete, never line by line. Rests on `analysis-tools#r49@0.29` (change nothing; say why), and notes part 5.
 - **D6. Scenario environment (the researcher's second question).**
   - `invoke` in `analysis_tools_project.py` removes `PYTEST_ADDOPTS` from the environment of the `tools` it runs. It already removes `VIRTUAL_ENV` there.
   - The scenario's temporary project is a project of its own. The `--work-item` that a worker's pytest gets through `PYTEST_ADDOPTS` (supervision's Implementation) is meant for this repository's run, not for the project being mapped. `tests/scripts/test_work_items.py` already removes it the same way.

@@ -5,7 +5,7 @@ Agent: initiative-round
 Scripts: /home/vscode/shopsystem-bdd/scripts
 Kind: gate
 Give the gate as questions in your result's `questions`, one string each: every question a decision, with its readings and the recommended reading marked.
-Adds: requests#r59, requests#r60, requests#r61, requests#r62, requests#r63
+Adds: requests#r59@0.29, requests#r60@0.29, requests#r61@0.29, requests#r62@0.29, requests#r63@0.29
 Changes: none
 Removes: none
 Ask questions only on the lines and terms listed above as adds, changes or removes, and on no other line or term.

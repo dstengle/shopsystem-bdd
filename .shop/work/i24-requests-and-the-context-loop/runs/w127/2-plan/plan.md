@@ -1,6 +1,6 @@
 # Plan of w127: work outcome and work turn
 
-Accepts requests#r7, r15, r16, r17, r18. Rests on design-decision/requests-written-through-work (0067) and
+Accepts requests#r7@0.29, r15, r16, r17, r18. Rests on design-decision/requests-written-through-work (0067) and
 design-decision/exits-are-successful-or-errors (0055). Planned from `runs/w127/1-research/notes.md`.
 
 ## 1. What goes green
@@ -9,15 +9,15 @@ All of them are red today for the same two reasons. No test module binds `featur
 is undefined (notes §1). And `scripts/work` has no `outcome` or `turn` subcommand, so each When gets argparse's
 "invalid choice" and exits 2 (notes §2).
 
-- requests#r15: "outcome in the upstream's turn writes the outcome given as the line outcome of the line named".
-- requests#r16: "a side writing a part of a request in the other side's turn is refused, and nothing changes". Today
+- requests#r15@0.29: "outcome in the upstream's turn writes the outcome given as the line outcome of the line named".
+- requests#r16@0.29: "a side writing a part of a request in the other side's turn is refused, and nothing changes". Today
   the When exits 2 from argparse, not with the refusal.
-- requests#r7: "turn passes the request's turn from the <side> to the <other side>" (Outline: upstream→asker,
+- requests#r7@0.29: "turn passes the request's turn from the <side> to the <other side>" (Outline: upstream→asker,
   asker→upstream).
-- requests#r17: "turn passing a request to its asker with a line that has <line 2> sets the request's status to
+- requests#r17@0.29: "turn passing a request to its asker with a line that has <line 2> sets the request's status to
   awaiting-asker". This is an Outline with **no Examples table**, so `<line 2>` reaches the step as literal text
   (notes D2). It is the question below.
-- requests#r18: "turn passing a request to its upstream sets the request's status to awaiting-upstream".
+- requests#r18@0.29: "turn passing a request to its upstream sets the request's status to awaiting-upstream".
 
 The work-item has no Retires section, so it retires no deprecated scenarios.
 
@@ -48,24 +48,24 @@ second ones.
 ## 3. Decisions
 
 - **D1. No commit yet.** `work outcome` and `work turn` write the request file but do not wrap the write in
-  `workqueue.committed`. Committing is requests#r12, which w128 accepts. It is outside w127's accepts, and
+  `workqueue.committed`. Committing is requests#r12@0.29, which w128 accepts. It is outside w127's accepts, and
   `committed` would refuse in the non-git directories the r15–r18 Givens use. To leave w128 one seam to wrap, put
   each command's write in a single call (notes §5, reading b).
 - **D2. Which side runs a command comes from the command, not from a flag.** `work outcome` is the upstream's
-  command (requests#r5: the upstream writes line outcomes only through `outcome` and `resolve`). So `outcome` in
+  command (requests#r5@0.29: the upstream writes line outcomes only through `outcome` and `resolve`). So `outcome` in
   the asker's turn is refused, exits with an error (0055, via `Refused`) and names the asker's turn. The file is
-  left byte for byte as it was (requests#r16).
+  left byte for byte as it was (requests#r16@0.29).
 - **D3. `work turn` is never refused on whose turn it is.** It writes neither side's part; it only passes the turn
-  (0067; requests#r7). It flips `turn` between `asker` and `upstream` whatever the caller.
+  (0067; requests#r7@0.29). It flips `turn` between `asker` and `upstream` whatever the caller.
 - **D4. `work outcome` writes any outcome word.** It writes the word it is given, without checking it against a
-  vocabulary (requests#r15: "write `<outcome>`"). The scenarios use `accepted` and `question`. It writes only line
-  n's outcome and leaves the other lines' outcomes and the `## Lines` section as they were (requests#r15, r4).
+  vocabulary (requests#r15@0.29: "write `<outcome>`"). The scenarios use `accepted` and `question`. It writes only line
+  n's outcome and leaves the other lines' outcomes and the `## Lines` section as they were (requests#r15@0.29, r4).
 - **D5. Statuses set by `turn`:**
   - Passing to the asker sets `awaiting-asker` when any line has no line outcome, or an outcome other than accepted,
-    refused or withdrawn (requests#r17).
-  - Passing to the upstream always sets `awaiting-upstream` (requests#r18).
+    refused or withdrawn (requests#r17@0.29).
+  - Passing to the upstream always sets `awaiting-upstream` (requests#r18@0.29).
   - Passing to the asker when every line is settled leaves the status unchanged in w127. The accepted and refused
-    statuses are requests#r8 and r9, which w128 accepts.
+    statuses are requests#r8@0.29 and r9, which w128 accepts.
 - **D6. Where a request is found.** A request id `q<n>` names `.shop/work/requests/q<n>.md` under `--root`, the
   file form in the capability's Implementation section. The form is `work`'s own (0067).
 

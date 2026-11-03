@@ -5,7 +5,7 @@ part_of: initiative/i23
 status: formulated
 date: 2026-10-23
 argues: [analysis-tools]
-adds: [analysis-tools#r58]
+adds: [analysis-tools#r58@0.29]
 changes: []
 removes: []
 ---

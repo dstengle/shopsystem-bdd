@@ -1,8 +1,8 @@
-# Plan of w119: blocked_by read across initiatives (supervision#r63)
+# Plan of w119: blocked_by read across initiatives (supervision#r63@0.29)
 
 ## 1. What goes green
 
-supervision#r63, two scenarios in features/supervision.feature:
+supervision#r63@0.29, two scenarios in features/supervision.feature:
 - "no worker is started for a work-item whose blocked_by names a work-item that is not green" (line 665). It passes today (notes §1, run) and has to stay green.
 - "a worker is started for a work-item whose blocked_by names a green work-item of another initiative" (line 673). Red today in two ways:
   - Steps: its first Given, "i1's work-item w1 is drafted, its blocked_by naming w2", has no definition. The existing `blocked_item` step only matches the form with a second work-item in i1. The notes found by reading that "an initiative i2 under .shop/work/ whose work-item w2 is green" (defined only in test_work_queue.py, which test_supervision.py does not import) and "a worker was started for w1" are not defined either.
@@ -19,8 +19,8 @@ This is the researcher's file set, unchanged. Read but not edited: scripts/super
 
 ## 3. Decisions
 
-- D1. **The status map that `Pool.choose` checks blockers against is built from every initiative's work-items, with the work-item's own initiative taking precedence for a name more than one initiative holds.** The cross-initiative reading is what r63's scenario at line 673 pins (supervision#r63). Work-item names are unique across initiatives from 0.24.0 on (work-queue#r12 numbers ids above any initiative's highest, and migration-tools#r26 gives every legacy work-item a `w<n>` id). Where a legacy name is still held by several initiatives, migration-tools#r26 already reads that name as the naming work-item's own initiative's, and this decision uses the same reading. This settles the researcher's question 1 with reading (a). Reading (b), refusing as ambiguous, is not taken.
-- D2. **A blocker's status is the one its file gives. It is read without `workqueue.agrees`.** r63 asks whether the named work-item "is not `green`" (supervision#r63). Where status is defined, a work-item's status is the one its file gives: work-queue#r3's `work show` prints the file status, and so does `workqueue.items`. The check against log.jsonl is a guard on transitions (work-queue#r6, "shall refuse the transition"), and `work run i1` makes no transition of a blocker. A file with no status (probe B2) is not `green`, so its work-item stays blocked. This settles the researcher's question 2 with reading (b).
+- D1. **The status map that `Pool.choose` checks blockers against is built from every initiative's work-items, with the work-item's own initiative taking precedence for a name more than one initiative holds.** The cross-initiative reading is what r63's scenario at line 673 pins (supervision#r63@0.29). Work-item names are unique across initiatives from 0.24.0 on (work-queue#r12@0.29 numbers ids above any initiative's highest, and migration-tools#r26@0.29 gives every legacy work-item a `w<n>` id). Where a legacy name is still held by several initiatives, migration-tools#r26@0.29 already reads that name as the naming work-item's own initiative's, and this decision uses the same reading. This settles the researcher's question 1 with reading (a). Reading (b), refusing as ambiguous, is not taken.
+- D2. **A blocker's status is the one its file gives. It is read without `workqueue.agrees`.** r63 asks whether the named work-item "is not `green`" (supervision#r63@0.29). Where status is defined, a work-item's status is the one its file gives: work-queue#r3@0.29's `work show` prints the file status, and so does `workqueue.items`. The check against log.jsonl is a guard on transitions (work-queue#r6@0.29, "shall refuse the transition"), and `work run i1` makes no transition of a blocker. A file with no status (probe B2) is not `green`, so its work-item stays blocked. This settles the researcher's question 2 with reading (b).
 - D3. **The new steps live in supervision_parallel_steps.py.** The scenario's other `@r63` steps live there, and test_supervision.py's star imports pick them up (notes §7).
 
 ## 4. Tests the decisions break

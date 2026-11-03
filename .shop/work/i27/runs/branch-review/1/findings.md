@@ -126,7 +126,7 @@ No behaviour contradicts a Behaviour line or a Purpose:
 
 ## Feature files
 
-- **work-queue @r9, a deprecated scenario whose replacement's work-item is green:** "`work <command>` commits the change it makes to a work-item on the current branch" is deprecated for "... or a capability-proposal ...". The replacement's work-item, w140 (i24, accepts work-queue#r9), is `green`, so the deprecated scenario should have been retired.
+- **work-queue @r9, a deprecated scenario whose replacement's work-item is green:** "`work <command>` commits the change it makes to a work-item on the current branch" is deprecated for "... or a capability-proposal ...". The replacement's work-item, w140 (i24, accepts work-queue#r9@0.29), is `green`, so the deprecated scenario should have been retired.
   - This was already there before Base; it belongs to no i27 work-item.
   - **Observation:** retire it with its binding in a work-item that lists it under Retires.
 - **work-queue @r1 and migration-tools @r15:** their accepting work-items found by grep (w89, w90, w86, w17) are all `withdrawn`, so these deprecations are not stale by this test.

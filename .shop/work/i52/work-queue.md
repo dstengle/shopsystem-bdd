@@ -5,9 +5,9 @@ part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i52
 status: awaiting-answer
 argues: [work-queue]
 date: 2026-10-28
-adds: [work-queue#r50, work-queue#r51]
+adds: [work-queue#r50@0.29, work-queue#r51@0.29]
 changes: []
-removes: [work-queue#r23]
+removes: [work-queue#r23@0.29]
 ---
 
 # work-queue

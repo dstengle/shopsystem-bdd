@@ -1,4 +1,4 @@
-# Research of w105: `work answer` refuses every Unicode mandatory line break (work-queue#r15)
+# Research of w105: `work answer` refuses every Unicode mandatory line break (work-queue#r15@0.29)
 
 Tools: plugin 0.24.0 `scripts/tools`. `tools refs` ran by name (`asked_from`, `ASKED_FROM`, `answer`). `tools tests-of` has NO map ("no map: make one with tools map"); I did not run `tools map` (it runs the whole suite). So every test list below is `by search`, and `tests-of` is unavailable.
 Scratch: `.shop/scratch/w105-1-research/` (probe_answer.py). `git status --porcelain` empty at start and end; the scratch dir is ignored, nothing to remove.

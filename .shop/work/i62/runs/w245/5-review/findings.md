@@ -1,4 +1,4 @@
-# Review of w245 (supervision#r219, r220, r222)
+# Review of w245 (supervision#r219@0.29, r220, r222)
 
 **Verdict: DONE_WITH_CONCERNS.** The scenarios are bound and green and no test or feature was weakened. But `Merge.taken_back` has three ways to give a wrong merge decision: it reruns a scenario twice, it lets an erroring test through, and it takes back failures that are not scenarios. All three are triaged fix now.
 

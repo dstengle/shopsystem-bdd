@@ -5,8 +5,8 @@ part_of: initiative/i3
 status: merged
 date: 2026-10-16
 argues: [spec-integration]
-adds: [spec-integration#r12-r16]
-changes: [spec-integration#r1]
+adds: [spec-integration#r12@0.29, spec-integration#r13@0.29, spec-integration#r14@0.29, spec-integration#r15@0.29, spec-integration#r16@0.29]
+changes: [spec-integration#r1@0.29]
 ---
 
 # Spec integration: requirement ids

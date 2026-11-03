@@ -59,7 +59,7 @@ Probe: `.shop/scratch/w200-7-review/test_probe.py` calls `unformulated(root, ["t
 
 **Where.** `scripts/supervise_outputs.py:51`.
 
-**What happens.** The same probe reports `thing#r1-r3` as lacking even though `@r1`, `@r2` and `@r3` all exist. `rewrite_lists` writes what the apply round gives, and today's brief format is `<capability>#r<n>`, so no current client writes ranges. Older hand-written proposals do have them (e.g. `.shop/work/i18-deferred-findings/deferred-supervision.md:8` `supervision#r47-r54`).
+**What happens.** The same probe reports `thing#r1-r3` as lacking even though `@r1`, `@r2` and `@r3` all exist. `rewrite_lists` writes what the apply round gives, and today's brief format is `<capability>#r<n>`, so no current client writes ranges. Older hand-written proposals do have them (e.g. `.shop/work/i18-deferred-findings/deferred-supervision.md:8` `supervision#r47@0.29, supervision#r48@0.29, supervision#r49@0.29, supervision#r50@0.29, supervision#r51@0.29, supervision#r52@0.29, supervision#r53@0.29, supervision#r54@0.29`).
 
 **Fix.** Expand `r<a>-r<b>` before the lookup, or refuse it as unreadable.
 
