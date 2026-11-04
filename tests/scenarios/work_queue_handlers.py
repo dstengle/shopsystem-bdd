@@ -190,10 +190,10 @@ def work_prints(step):
 
 @local("GivenK_C", "initiative")
 def initiative_condition(step):
-    """complete: a `green` work-item kept in the initiative; not complete, not open: what the Givens of its status
-    and its work-items already make it; any other condition goes on to the registry's handler (design-model-check's)."""
+    """complete: a `green` work-item kept in the initiative; not complete: what the Givens of its work-items already
+    make it; any other condition goes on to the registry's handler (design-model-check's)."""
     word = step.text.split(" is ", 1)[1]
-    if word not in ("complete", "not complete", "not open"):
+    if word not in ("complete", "not complete"):
         return False
     if word == "complete":
         NODES.write(step.repo, "%s/%s/w9.md" % (W.WORK, step.names[0]), NODES.node_text(
