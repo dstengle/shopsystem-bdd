@@ -586,7 +586,7 @@ Meets `brainstorming#r1` and `r2`; `r3` stays unbuilt (D15).
   the two sides cannot agree after a counter-proposal is itself rewritten, it stops and names the request to the
   person in its last message.
 
-- [ ] **Step 1: Write the failing test** `tests/scripts/test_skill_shaping_items.py`:
+- [x] **Step 1: Write the failing test** `tests/scripts/test_skill_shaping_items.py`:
   - `test_r1_the_session_writes_lines_and_readies`: in `skills/shaping-items/SKILL.md`, the Process names
     `work idea`, `work line` and `work ready`, and `work line` comes before `work ready`.
   - `test_r2_nothing_waits_on_the_person`: the skill holds the pinned sentence, and no Process step after the one
@@ -596,17 +596,17 @@ Meets `brainstorming#r1` and `r2`; `r3` stays unbuilt (D15).
   - `test_each_skill_has_a_use_when_description`: both frontmatters have `name` equal to the directory and a
     `description` starting `Use when`.
 
-- [ ] **Step 2: Run it to verify it fails.**
+- [x] **Step 2: Run it to verify it fails.**
   Run: `python3 -m pytest tests/scripts/test_skill_shaping_items.py -q`
   Expected: FAIL; the skills do not exist.
 
-- [ ] **Step 3: Write the two skills.**
+- [x] **Step 3: Write the two skills.**
 
-- [ ] **Step 4: Run the test.** Then set `brainstorming.md`'s `unbuilt: [r3]` and its `## Not yet` bullet.
+- [x] **Step 4: Run the test.** Then set `brainstorming.md`'s `unbuilt: [r3]` and its `## Not yet` bullet.
   Run: `python3 -m pytest tests/scripts/test_skill_shaping_items.py tests/scripts/test_agents.py -q | tail -1; python3 scripts/model check | tail -1`
   Expected: all pass; `model check` at its baseline.
 
-- [ ] **Step 5: Commit.**
+- [x] **Step 5: Commit.**
   ```bash
   git add skills/shaping-items/SKILL.md skills/taking-in-a-request/SKILL.md tests/scripts/test_skill_shaping_items.py \
     spec/capabilities/brainstorming.md

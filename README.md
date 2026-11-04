@@ -6,7 +6,8 @@ spec's requirements, and delivery by work-items that a script, `work run`, pulls
 implementation and review.
 
 Skills: `raising-a-request`, `integrating-a-proposal`, `formulating-features`, `delivering-an-initiative`,
-`bdd-red-green`, `checking-spec-consistency`, `migrating-to-capabilities`, `analyzing-a-batch`.
+`bdd-red-green`, `checking-spec-consistency`, `migrating-to-capabilities`, `analyzing-a-batch`, `shaping-items`,
+`taking-in-a-request`.
 Agents: `capability-writer`, `initiative-round`, `spec-checker`, `code-scout`, `bdd-planner`, `bdd-implementer`,
 `bdd-task-reviewer`, `bdd-branch-reviewer`, `architecture-reviewer`, `trial-runner`, `batch-analyst`,
 `delegation-answerer`.
