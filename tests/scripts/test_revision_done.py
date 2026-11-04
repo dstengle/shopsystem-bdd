@@ -114,12 +114,12 @@ def test_model_logic_finds_no_conflict_in_the_spec(live_logic, live_expected):
     assert [f.text for f in live_logic if f.code in ("L1", "L2", "L3") and not live_expected(f)] == []
 
 
-@pytest.mark.live_logic
 def _cpu():
     used = resource.getrusage(resource.RUSAGE_CHILDREN)
     return used.ru_utime + used.ru_stime
 
 
+@pytest.mark.live_logic
 def test_model_logic_on_the_live_spec_is_fast():
     """design-r3 §6: the whole context in one solve, in under 2 s. Measured as the run's CPU time, which is its wall
     time on an idle machine (plan-r3 S12 timed 1.1 s of each) and does not grow with the suite's other workers; a run

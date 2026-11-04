@@ -200,8 +200,8 @@ def test_l0_is_an_error_and_its_report_exits_1(monkeypatch):
 
 
 def test_the_whole_context_is_one_grounding(monkeypatch, findings):
-    """One brave solve finds every finding; each L1's witness is a focused solve of that same grounding, its pair
-    assumed (S12: a grounding a witness made the live check 4 s)."""
+    """One brave solve finds every finding; each L1's witness is a focused solve of that same grounding, its pair's
+    external `focus` set true (S12: a grounding a witness made the live check 4 s)."""
     built, real = [], clingo.Control
     monkeypatch.setattr(spec_solve.clingo, "Control", lambda *a, **k: built.append(a) or real(*a, **k))
     assert spec_solve.run(CLUSTER) == findings
