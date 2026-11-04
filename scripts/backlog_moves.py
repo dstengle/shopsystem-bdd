@@ -15,12 +15,13 @@ from backlog_items import (
 )
 
 # The moves of an item's status that a command makes, before -> after: the glossary's transitions of `status` of item
-# by `work shape`, `work refuse`, `work withdraw` and `work answer`.
+# by `work shape`, `work refuse`, `work withdraw`, `work answer` and `work ready`.
 TRANSITIONS = {"work shape": {"idea": "shaped"},
                "work refuse": {"idea": "refused", "shaped": "refused"},
                "work withdraw": {"idea": "withdrawn", "shaped": "withdrawn", "ready": "withdrawn",
                                  "needs-input": "withdrawn"},
-               "work answer": {"needs-input": "shaped"}}
+               "work answer": {"needs-input": "shaped"},
+               "work ready": {"shaped": "ready"}}
 
 
 def text_line(text, what):
@@ -97,6 +98,20 @@ def answer(root, name, text):
         had = item.sections.get("Answers")
         item.sections["Answers"] = "%s\n%s" % (had, pair) if had else pair
     return move(root, name, "work answer", write)
+
+
+def ready(root, name):
+    """`shaped` -> `ready` (readiness r1-r3): refused with every reason the bar gives, so nothing is committed (D8);
+    the item and the bar's warnings."""
+    import readiness_bar
+    warnings = []
+
+    def check(item):
+        reasons, warns = readiness_bar.check(root, item)
+        if reasons:
+            raise Refused("work ready: %s is not passing:\n%s" % (label(item), "\n".join("  " + r for r in reasons)))
+        warnings.extend(warns)
+    return move(root, name, "work ready", check), warnings
 
 
 CLOSED = ("delivered", "refused", "withdrawn")

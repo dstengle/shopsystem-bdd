@@ -22,7 +22,8 @@ def args_of(command):
     return [verb, "b1"] + {"refuse": ["out of scope"], "answer": ["The first"]}.get(verb, [])
 
 
-@pytest.mark.parametrize("command, before, after", MOVES)
+# `work ready` moves only an item that passes the bar: test_readiness_bar.py's test_ready_readies_a_passing_item.
+@pytest.mark.parametrize("command, before, after", [m for m in MOVES if m[0] != "work ready"])
 def test_each_move_follows_its_row(backlog_repo, command, before, after):
     write_item(backlog_repo, "b1", status=before)
     done = work(backlog_repo, *args_of(command))

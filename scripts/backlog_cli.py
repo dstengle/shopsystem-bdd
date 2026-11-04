@@ -2,6 +2,7 @@
 scripts/work stays small. Every line names an item by its label, `b3 "Fix the parser"` (design goal 10)."""
 import argparse
 import json
+import sys
 
 import backlog_items
 import backlog_lines
@@ -41,6 +42,8 @@ def add_parsers(sub):
     p = sub.add_parser("depend", help="write in an item that it depends on another item")
     p.add_argument("name")
     p.add_argument("--on", required=True, help="the item it depends on")
+    p = sub.add_parser("ready", help="move an item that is shaped to ready, when it passes the readiness bar")
+    p.add_argument("name")
     p = sub.add_parser("line", help="write a requirement line (or a term bullet) into an item's ## Requirements, and commit it")
     p.__class__ = _LineParser
     p.add_argument("name")
@@ -93,6 +96,14 @@ def cmd_line(args):
     return 0
 
 
+def cmd_ready(args):
+    """`work ready`: the bar's warnings on stderr, the item's label and `ready` on stdout."""
+    item, warnings = backlog_moves.ready(args.root, args.name)
+    for warning in warnings:
+        print("work ready: warning: %s" % warning, file=sys.stderr)
+    return moved(item)
+
+
 def cmd_backlog(args):
     """`work backlog`: it only reads, and commits nothing."""
     if args.json:
@@ -117,7 +128,7 @@ def answer(args):
 
 
 COMMANDS = {"idea": cmd_idea, "shape": cmd_shape, "refuse": cmd_refuse, "rate": cmd_rate, "depend": cmd_depend,
-            "backlog": cmd_backlog, "line": cmd_line}
+            "backlog": cmd_backlog, "line": cmd_line, "ready": cmd_ready}
 
 
 def show(args):

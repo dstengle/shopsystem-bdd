@@ -45,7 +45,8 @@ def index(step):
 
 
 def write_item(step, name, **fields):
-    """Write (or write again) the item `name`: D15's defaults, the fields it had, then `fields`."""
+    """Write (or write again) the item `name`: D15's defaults, the fields it had, then `fields`; `sections` (heading ->
+    text) are written after the `## Question`, and `request` as a frontmatter line `request: q<n>` (plan 3)."""
     index(step)
     had = step.context.setdefault("item_fields", {}).setdefault(name, dict(DEFAULTS, depends_on=[],
                                                                           title="Title of %s" % name))
@@ -53,11 +54,13 @@ def write_item(step, name, **fields):
     b = ident(name)
     rel = "%s/%s.md" % (BACKLOG, b)
     head = "".join("%s: %s\n" % (k, had[k]) for k in DEFAULTS)
+    tail = "request: %s\n" % had["request"] if had.get("request") else ""
     body = "\n## Question\n\n%s\n" % QUESTION if had["status"] == "needs-input" else ""
+    body += "".join("\n## %s\n\n%s\n" % kv for kv in had.get("sections", {}).items())
     path = step.repo / rel
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("---\nid: item/ex.com/prod/ctx/%s\nkind: item\n%sdepends_on: [%s]\n---\n\n# %s\n%s"
-                    % (b, head, ", ".join(had["depends_on"]), had["title"], body))
+    path.write_text("---\nid: item/ex.com/prod/ctx/%s\nkind: item\n%sdepends_on: [%s]\n%s---\n\n# %s\n%s"
+                    % (b, head, ", ".join(had["depends_on"]), tail, had["title"], body))
     step.context.setdefault("items", {})[name] = rel
     step.context.setdefault("says", {})[name] = '%s "%s"' % (b, had["title"])   # what `work` names it by (goal 10)
     return path
@@ -119,13 +122,14 @@ def cells(line):
     return [c.strip() for c in re.split(r"(?<!\\)\|", line)][1:-1]
 
 
-def run_work(step, *args):
-    """Run `work` in the repository, committed first; keep the result and the commit it started from."""
+def run_work(step, *args, **kwargs):
+    """Run `work` in the repository, committed first; keep the result and the commit it started from. `kwargs` go to
+    the run (`stdin`, `timeout`)."""
     index(step)
     if args[0] != "idea":
         ensure_items(step)
     step.context["head"] = W().init(step.repo)
-    step.context["result"] = step.run("work", *args)
+    step.context["result"] = step.run("work", *args, **kwargs)
     return step.context["result"]
 
 

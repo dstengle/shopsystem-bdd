@@ -302,7 +302,7 @@ Builds `readiness#r1`-`r4`.
     `context["reason"]`;
   - registry `("ThenDoesNot", "ask")`: D16, written so intake r5 uses it as it is.
 
-- [ ] **Step 1: Write the failing script tests** in `tests/scripts/test_readiness_bar.py`, on `ready_repo` with a
+- [x] **Step 1: Write the failing script tests** in `tests/scripts/test_readiness_bar.py`, on `ready_repo` with a
   `shaped` b1 (`toolchain.require()` first):
   - `test_ready_readies_a_passing_item`: with `ABANDON` written by `work line`, `work ready b1` exits 0, prints
     `b1 "Fix the parser" ready`, and HEAD's commit holds only b1, now `ready`.
@@ -322,41 +322,41 @@ Builds `readiness#r1`-`r4`.
     is empty after the run, and `tempfile.gettempdir()` (pointed at a `tmp_path` dir through `TMPDIR`) holds nothing
     after it.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_readiness_bar.py -q`
   Expected: FAIL; `work` has no `ready` command.
 
-- [ ] **Step 3: Implement `readiness_bar.py`, `backlog_moves.ready` and the parser.** The copy of `spec/` is made with
+- [x] **Step 3: Implement `readiness_bar.py`, `backlog_moves.ready` and the parser.** The copy of `spec/` is made with
   `tempfile.mkdtemp(prefix="readiness-")` and removed in a `finally`. Parse each of the item's requirements in the
   copy; run `spec_solve.run(copy, cap)` and `features_generate.generate(copy, path)` only when every requirement
   parses.
 
-- [ ] **Step 4: Run the tests.**
+- [x] **Step 4: Run the tests.**
   Run: `python3 -m pytest tests/scripts/test_readiness_bar.py tests/scripts/test_backlog_moves.py tests/scripts/test_backlog_lines.py -q | tail -1`
   Expected: all pass (`test_the_moves_are_the_glossary_transitions` now includes `shaped -> ready: work ready`).
 
-- [ ] **Step 5: The world and the handlers**, as in Interfaces. Check each scenario against its point:
+- [x] **Step 5: The world and the handlers**, as in Interfaces. Check each scenario against its point:
   - r1: the item is `ready`, and the run committed it (`ThenK_A` reads the file after a real check of `PASSING`).
   - r2: the refusal names `work-queue#r5` and `frobnicate`, not merely a non-zero exit; nothing changed.
   - r3: the backlog's `local("ThenExitsErr", "item")` reads the label and the status `idea` (D15 of plan 2).
   - r4: the item is `idea` (D15), so `work ready` refuses, and D16's Then holds: the command exists, nothing asks.
     Mutate once by hand: make `cmd_ready` print `Ready it anyway?`, see r4 fail, revert.
 
-- [ ] **Step 6: Run the readiness scenarios.** Remove `r1, r2, r3, r4` from `readiness.md`'s `unbuilt:`.
+- [x] **Step 6: Run the readiness scenarios.** Remove `r1, r2, r3, r4` from `readiness.md`'s `unbuilt:`.
   Run: `python3 -m pytest tests/scenarios/test_readiness.py -q | tail -1; python3 scripts/features vocab --check | tail -1`
   Expected: `4 passed`; `every step has one handler`.
 
-- [ ] **Step 7: The spec's prose.** In `spec/capabilities/readiness.md`, add `## Implementation, may change` with one
+- [x] **Step 7: The spec's prose.** In `spec/capabilities/readiness.md`, add `## Implementation, may change` with one
   bullet each for D2 (where the lines live, `work line`), D6, D7, D8 and D9, and a `## Not yet` with two bullets: a
   new capability or a glossary term an item proposes (D4); the bar checked again when a batch picks the item (plan 4).
   Run: `python3 scripts/model check | tail -1; python3 scripts/features generate --check`
   Expected: at their baselines.
 
-- [ ] **Step 8: The baselines,** as in Task 1, Step 5, over this task's files, plus `python3 scripts/model logic |
+- [x] **Step 8: The baselines,** as in Task 1, Step 5, over this task's files, plus `python3 scripts/model logic |
   tail -1`.
   Expected: the suite at `33 xfailed`, no failures; `11 findings: 6 L5, 5 L6`; everything else unchanged.
 
-- [ ] **Step 9: Commit.**
+- [x] **Step 9: Commit.**
   ```bash
   git add scripts/readiness_bar.py scripts/backlog_moves.py scripts/backlog_cli.py tests/scenarios/readiness_world.py \
     tests/scenarios/readiness_handlers.py tests/scenarios/backlog_world.py tests/scenarios/test_readiness.py \
