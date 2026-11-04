@@ -191,7 +191,7 @@ The simplified workflow (plan 1, unbuilt):
 - **suite** (kind): every test `python3 -m pytest` runs from the root by default. Not: fast suite.
 
 - **record** (kind): a file under `.shop/records/` whose frontmatter id has a record kind. Not: log entry.
-- **measurement** (kind): a record under `.shop/records/measurements/` that `measure` writes for one initiative's deliveries, or that a trial writes. Not: facts file.
+- **measurement** (kind): a record under `.shop/records/measurements/` of the figures of one batch, of one earlier delivery or of a trial, written by `measure` or by the trial. Not: facts file.
 - **trial** (kind): one run by the `trial-runner` of a plugin tool or `work run` on a real target or a fixture repository, measuring what its input names.
 - **plugin version** (kind): the plugin release a repository on the final layout is on, recorded as one line in `.shop/plugin-version`.
 - **upgrade** (kind): what `migrate upgrade` does to a repository on the final layout to take it from one plugin release to the next: it applies the pending upgrade steps.
@@ -268,12 +268,17 @@ The simplified workflow (plan 1, unbuilt):
   Transitions: `building` → `in-review`: `work batch review`; `in-review` → `building`: a fix-now finding; `in-review` → `awaiting-merge`: a clean review; `awaiting-merge` → `merged`: merge; `building` → `abandoned`: `work batch abandon`; `in-review` → `abandoned`: `work batch abandon`.
 - **status** (attribute of task): Values: `pending`, `running`, `done`, `failed`.
 - **tier** (attribute of design-decision): Values: `check`, `requirement`, `judgement`.
-- **blocked** (condition of item): an item that depends on an item that is not `delivered` and is not in the same batch.
-- **passing** (condition of item): an item whose every requirement parses, has no L0 or L1 finding of `model logic` with the item's lines laid over `spec/`, and has its scenarios written by `features generate`.
+- **dependency** (kind): one item's need of another item, written in the item that needs it. Plural: dependencies.
+- **blocked** (condition of item): an item with a dependency on an item that is not `delivered` and is not in the same batch.
+- **well-formed** (condition of item): an item whose every requirement parses, has no L0 or L1 finding of `model logic` with the item's lines laid over `spec/`, and has its scenarios written by `features generate`.
+- **passing** (condition of item): An item is passing when the item is well-formed and every request line of the item is settled.
 - **clean** (condition of pull request): A pull request is clean when no review finding on the pull request is `fix now`.
 - **pick** (event): `work batch start` takes a ready item into a batch, or returns it to `shaped` when it is no longer passing. Forms: picks, picked.
 - **park** (event): a batch sets an item it cannot finish without an answer to `needs-input`. Forms: parks, parked.
 - **publish** (event): `work` puts a batch's branch on GitHub as a pull request. Forms: publishes, published.
+- **triage** (attribute of review finding): what a review asks of its finding: fixed on the branch before the merge, kept as an observation, or dropped. Values: `fix now`, `observation`, `drop`.
+- **defect** (kind): a fault in the behaviour of the repository's code, with its reproduction, found by a review or after a merge.
+- **failing** (condition of test): the test fails when it runs.
 
 ## Relations
 
@@ -310,7 +315,10 @@ The simplified workflow (plan 1, unbuilt):
 | stage | for | node |  |
 | stage | with | result |  |
 | request line | proposed in | request | one |
-| item | depending on | item |  |
+| dependency | of | item | one |
+| dependency | on | item | one |
+| request line | of | item |  |
+| question | on | item |  |
 | item | proposes | requirement |  |
 | item | in | batch | one |
 | item | asked by | bounded context |  |

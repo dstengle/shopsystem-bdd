@@ -50,10 +50,15 @@ to its tier, and keeps a superseded decision marked so.
   runs `model decisions --check`, then `model` shall exit with an error naming the design-decision.
 
 ### [g6] A superseded decision is `superseded`
-- [r6] While a design-decision supersedes a design-decision that is `accepted`, if the person runs `model check`, then
+- [r6] While a design-decision that is `accepted` supersedes a design-decision that is `accepted`, if the person runs `model check`, then
   `model` shall exit with an error naming `v_d8`.
 
 ## Implementation, may change
 
 - `w_untiered` is a warning while plan 6 sorts the 74 decisions into their tiers; a decision gives its tier as `tier:`
   in its frontmatter.
+
+## Not yet
+- The tier-1 decision checks in the readiness bar: the design's bar includes "the tier-1 decision checks hold for any
+  constraint the item states", but `passing` leaves them out until plan 6 builds `model decisions --check`; plan 6 adds
+  them to the bar.

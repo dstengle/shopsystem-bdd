@@ -17,12 +17,6 @@ Work from outside the bounded context comes in by a negotiation with another sys
 one: accept, refuse with a reason, or counter-propose. The exchange repeats until the item is ready or refused, with no
 person in the loop unless the two sides cannot agree. The brainstorming route is the `brainstorming` capability's.
 
-## Relations
-
-| from | word | to | cardinality |
-|---|---|---|---|
-| request line | of | item | |
-
 ## Behaviour
 
 ### [g1] A peer's request becomes an item
@@ -45,6 +39,10 @@ person in the loop unless the two sides cannot agree. The brainstorming route is
 - [r5] While a request is `awaiting-upstream`, when a session runs `work intake` on the request, `work` shall not ask
   a question.
 
-### [g6] An item whose every line is settled may be readied
-- [r6] While an item is `shaped` and every request line of the item is settled and the item is passing, when a
-  session runs `work ready` on the item, `work` shall set the status of the item to `ready`.
+### [g6] An item with a request line that is not settled is not readied
+- [r6] While an item is `shaped` and a request line of the item is not settled, if a session runs `work ready` on the
+  item, then `work` shall exit with an error naming the request line and change nothing.
+
+## Not yet
+- The item tied to the request's asker: r1 writes an item asked by a bounded context, but the grammar cannot yet say
+  that this bounded context is the request's asker, nor that the request's upstream is this bounded context.

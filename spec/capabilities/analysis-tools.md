@@ -31,7 +31,6 @@ file; it prints what the tools found and names a tool that is missing rather tha
 - **reference** (kind): a use of a name the project defines, written `path:line`.
 - **finding** (kind): what ruff, vulture or import-linter reports.
 - **dependency file** (kind): a file that lists a project's dependencies (`pyproject.toml`, `requirements.txt`, ...).
-- **failing** (condition of test): the test fails when it runs.
 - **install** (event): `tools` puts an analysis tool into the interpreter with pip. Forms: installs, installed.
 - **replace** (event): `tools` writes a new coverage map in place of the one before. Forms: replaces, replaced.
 

@@ -43,7 +43,7 @@ Feature: Decision tiers
   @g6 @r6
   Scenario: A superseded decision is `superseded`
     Given a design-decision d1 that is `accepted`
-    And a design-decision d2
-    And the design-decision d2 supersedes the design-decision d1
+    And a design-decision d2 that is `accepted`
+    And the design-decision d1 supersedes the design-decision d2
     When the person runs `model check`
     Then `model` exits with an error naming `v_d8`

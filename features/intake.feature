@@ -48,8 +48,11 @@ Feature: Intake
     Then `work` does not ask the question q2
 
   @g6 @r6
-  Scenario: An item whose every line is settled may be readied
+  Scenario: An item with a request line that is not settled is not readied
     Given an item i1 that is `shaped`
-    And the item i1 is passing
+    And a request line r1
+    And the request line r1 is of the item i1
+    And the request line r1 is not settled
     When the session s1 runs `work ready` on the item i1
-    Then the item i1 is `ready`
+    Then `work` exits with an error naming the request line r1
+    And `work` changes nothing

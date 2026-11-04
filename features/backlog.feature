@@ -54,12 +54,15 @@ Feature: Backlog
   @g7 @r7
   Scenario: `work backlog` marks a blocked item
     Given an item i1
-    And the item i1 is blocked
+    And the item i1 is not `delivered`
+    And a dependency d1
+    And the dependency d1 is on the item i1
     And an item i2
-    And the item i2 is not `delivered`
-    And the item i1 is depending on the item i2
+    And the item i2 is blocked
+    And the dependency d1 is of the item i2
     When the person runs `work backlog`
     Then `work` prints the item i2
+    And `work` prints the dependency d1
 
   @g8 @r8
   Scenario: `work backlog --json` prints one JSON object
@@ -109,3 +112,18 @@ Feature: Backlog
     When the person runs `work show` on the item i1
     Then `work` prints the title t1
     And the title t1 is of the item i1
+
+  @g16 @r16
+  Scenario: `work answer` returns an item that needs input to shaped
+    Given an item i1 that is `needs-input`
+    When the person runs `work answer` on the item i1
+    Then the item i1 is `shaped`
+    And `work` commits the item i1
+
+  @g17 @r17
+  Scenario: `work backlog` prints the question of an item that needs input
+    Given an item i1 that is `needs-input`
+    When the person runs `work backlog`
+    Then `work` prints the item i1
+    And `work` prints the question q1
+    And the question q1 is on the item i1

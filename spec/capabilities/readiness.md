@@ -14,8 +14,8 @@ unbuilt: [r1, r2, r3, r4]
 ## Purpose
 The questions move to the front (design goal 3): an item becomes `ready` only when it passes a mechanical bar, so
 that nothing asks the person while it is built. Its requirement lines parse in the context's grammar, `model logic`
-finds no L0 or L1 with them laid over `spec/`, and `features generate` writes their scenarios. `work ready` checks
-the bar and asks nobody.
+finds no L0 or L1 with them laid over `spec/`, `features generate` writes their scenarios, and every request line of
+the item is settled. `work ready` checks the bar and asks nobody.
 
 ## Behaviour
 

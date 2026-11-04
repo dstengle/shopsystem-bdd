@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10]
+unbuilt: [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13]
 ---
 
 # Batches
@@ -17,16 +17,21 @@ in rank order, which may be unrelated, writes its own plan of tasks and builds t
 request. The plan and each task's status are on disk, so a session can stop and any later session carry on. A
 question while building parks its item and the rest of the batch carries on. The person merges; the merge delivers.
 
+## Terms
+- **uncited** (condition of commit): A commit is uncited when the commit cites no item.
+
 ## Relations
 
 | from | word | to | cardinality |
 |---|---|---|---|
 | commit | of | item | one |
 | pull request | with | commit | |
+| pull request | cites | item | |
+| commit | cites | item | |
 
 ## Behaviour
 
-### [g1] `work batch start` picks ready items
+### [g1] `work batch start` picks ready items, up to `batch_size`
 - [r1] While an item is `ready` and the item is passing and the item is not blocked, when the person runs `work batch
   start`, `work` shall write a batch that is `building`, write a batch plan and set the status of the item to
   `in-batch`.
@@ -48,12 +53,12 @@ question while building parks its item and the rest of the batch carries on. The
   plan, and `work` shall not ask a question.
 
 ### [g6] A park leaves the rest building
-- [r6] When a batch parks an item that is `in-batch`, `work` shall set the status of the item to `needs-input`, and
-  `work` shall not set the status of the batch to `abandoned`.
+- [r6] When a batch parks an item that is `in-batch`, `work` shall set the status of the item to `needs-input` and
+  write a question on the item, and `work` shall not set the status of the batch to `abandoned`.
 
 ### [g7] A parked item's commits stay out of the pull request
-- [r7] While an item in a batch is `needs-input`, when the person runs `work batch review` on the batch, `work` shall
-  publish a pull request of the batch with no commit of the item.
+- [r7] While an item in a batch is `needs-input` and a commit is of the item, when the person runs `work batch review`
+  on the batch, `work` shall publish a pull request of the batch, and `work` shall not publish the commit.
 
 ### [g8] `work batch review` publishes the pull request
 - [r8] While a batch is `building` and every task of the batch is `done`, when the person runs `work batch review` on
@@ -61,11 +66,23 @@ question while building parks its item and the rest of the batch carries on. The
 
 ### [g9] The merge delivers
 - [r9] While an item in a batch is `in-batch`, when the person merges the pull request of the batch, `work` shall set
-  the status of the item to `delivered`.
+  the status of the item to `delivered` and set the status of the batch to `merged`.
 
 ### [g10] `work batch abandon` returns the batch's items
 - [r10] When the person runs `work batch abandon` on a batch that is `building`, `work` shall set the status of the
-  batch to `abandoned` and set the status of every item in the batch to `ready`.
+  batch to `abandoned` and set the status of every item in the batch that is `in-batch` to `ready`.
+
+### [g11] The pull request cites its items
+- [r11] While an item in a batch is `in-batch`, when the person runs `work batch review` on the batch, `work` shall
+  publish a pull request that cites the item.
+
+### [g12] `work batch review` refuses a batch with a task that is not done
+- [r12] While a task of a batch is not `done`, if the person runs `work batch review` on the batch, then `work` shall
+  exit with an error naming the task and change nothing.
+
+### [g13] `work batch review` refuses a commit that cites no item
+- [r13] While a commit of an item in a batch is uncited, if the person runs `work batch review` on the batch, then
+  `work` shall exit with an error naming the commit and change nothing.
 
 ## Implementation, may change
 

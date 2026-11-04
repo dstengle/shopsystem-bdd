@@ -28,7 +28,6 @@ fixed now becomes a fix work-item, and the rest an observation.
 - **code shape** (kind): the code's fit to the rules `CLAUDE.md` gives.
 - **coupling** (kind): what the code relies on in the projects it depends on.
 - **agreement test** (kind): a randomized test that the dry-run mode and the real mode of one operation agree.
-- **triage** (attribute of review finding): Values: `fix now`, `observation`, `drop`.
 - **reproduction** (attribute of review finding): Values: `reproduced`, `not run`.
 
 ## Relations

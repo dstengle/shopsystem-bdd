@@ -19,6 +19,7 @@ branch and the review re-reads what the fix changed; a clean pull request waits 
 
 ## Terms
 - **`pr-reviewer`** (actor): the agent that reviews a batch's pull request.
+- **unreviewed** (condition of pull request): a pull request that no review has been written of yet, so that its next review is its first.
 
 ## Relations
 
@@ -39,9 +40,9 @@ branch and the review re-reads what the fix changed; a clean pull request waits 
 - [r2] When a task of a batch becomes `done`, `pr-reviewer` shall not write a review.
 
 ### [g3] Correctness against the items' requirements, over the batch's own commits
-- [r3] When `pr-reviewer` writes a review of a pull request of a batch, `pr-reviewer` shall read every requirement
-  proposed by an item in the batch and read every commit of the batch, and `pr-reviewer` shall not read a commit
-  outside the batch.
+- [r3] While a pull request of a batch is unreviewed, when `pr-reviewer` writes a review of the pull request,
+  `pr-reviewer` shall read every requirement proposed by an item in the batch and read every commit of the batch, and
+  `pr-reviewer` shall not read a commit outside the batch.
 
 ### [g4] Engineering quality against the judgement decisions
 - [r4] While a design-decision is `judgement`, when `pr-reviewer` writes a review of a pull request, `pr-reviewer`
