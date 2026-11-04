@@ -27,11 +27,13 @@ compat(K,K2) :- subeq(K,K2).  compat(K,K2) :- subeq(K2,K).
 % A pair can clash only when its responses can: opposite polarities of one event, two values set of one attribute,
 % exit_ok with exit_error, change_nothing with a changing response, a use with a "shall not use".
 quiet(print). quiet(exit_ok). quiet(exit_error). quiet(change_nothing).
-changing(R) :- resp(R,_,pos,E,_,_), not quiet(E).
+% "D shall do E and change nothing" changes nothing but E: a requirement's own events are excepted from its own
+% change nothing, and from another's change nothing when that one names the same event
+own(R,E) :- resp(R,_,pos,E,_,_).
 cc(A,B) :- resp(A,_,P,E,_,_), resp(B,_,Q,E,_,_), P != Q.
 cc(A,B) :- set(A,_,_,T,V), set(B,_,_,T,W), V != W.
 cc(A,B) :- resp(A,_,pos,exit_ok,_,_), resp(B,_,pos,exit_error,_,_).
-cc(A,B) :- resp(A,_,pos,change_nothing,_,_), changing(B).
+cc(A,B) :- resp(A,_,pos,change_nothing,_,_), resp(B,_,pos,E,_,_), not quiet(E), not own(A,E).
 cc(A,B) :- uses(A,_,_), nouse(B,_,_).
 can(A,B) :- cc(A,B), A != B.  can(A,B) :- cc(B,A), A != B.
 % two triggers of one event, a compatible doer, objects of compatible kinds (or one constant)
@@ -49,18 +51,28 @@ names(R,E) :- resp(R,_,_,E,_,_).  names(R,E) :- trig(R,_,E,_,_).
 names(R,T) :- cond(R,_,T,_,_).    names(R,T) :- set(R,_,_,T,_).
 cand(A,B) :- can(A,B), universal(A), names(A,N), names(B,N).
 cand(A,B) :- can(A,B), uses(A,_,_), nouse(B,_,_).
-pair(A,B) :- cand(A,B), A < B.  pair(A,B) :- cand(B,A), A < B.
+% the EARS unwanted-behaviour form ("If T, then ...") is the exception to the other requirements on its trigger: it
+% wins over them, so an `if` requirement and a non-`if` one are never a pair (two of one form still are)
+exc(R) :- form(R,if).  exc(R) :- form(R,while_if).  exc(R) :- form(R,where_if).
+over(A,B) :- cand(A,B), exc(A), not exc(B).  over(A,B) :- cand(A,B), exc(B), not exc(A).
+pair(A,B) :- cand(A,B), A < B, not over(A,B).  pair(A,B) :- cand(B,A), A < B, not over(B,A).
 
 % ---- unification: each role of B is one of A's roles of a compatible kind, or its own instance b(Y) -------------
-{ map(A,B,Y,X) : role(A,X,K), compat(K,K2) } 1 :- pair(A,B), role(B,Y,K2).
+% A `Named` code is one thing (design-r3 §3): every role of a requirement with one code is its first such role
+% (`canon`), and a code both sides name is one role of the pair.
+nrep(S,Y) :- named(S,Y,C), named(S,Y0,C), Y0 < Y.
+canon(S,Y,Y0) :- named(S,Y,C), named(S,Y0,C), not nrep(S,Y0).  canon(S,Y,Y) :- role(S,Y,_), not named(S,Y,_).
+{ map(A,B,Y,X) : role(A,X,K), compat(K,K2), not nrep(A,X) } 1 :- pair(A,B), role(B,Y,K2), not nrep(B,Y).
 :- map(A,B,Y1,X), map(A,B,Y2,X), Y1 < Y2.
 :- map(A,B,Y,X), named(A,X,C), named(B,Y,C2), C != C2.
+:- pair(A,B), named(A,X,C), named(B,Y,C), not nrep(A,X), not nrep(B,Y), not map(A,B,Y,X).
 :- map(A,B,Y,X), oattr(A,X,T,V), oattr(B,Y,T,W), V != W.
 side(A,B,A) :- pair(A,B).  side(A,B,B) :- pair(A,B).
 mapped(A,B,Y) :- map(A,B,Y,_).
-at(A,B,A,X,X) :- pair(A,B), term(A,X).
-at(A,B,B,Y,X) :- map(A,B,Y,X).
-at(A,B,B,Y,b(Y)) :- pair(A,B), role(B,Y,_), not mapped(A,B,Y).
+at(A,B,A,X,Z) :- pair(A,B), term(A,X), canon(A,X,Z).
+at(A,B,A,X,X) :- pair(A,B), term(A,X), not role(A,X,_).
+at(A,B,B,Y,X) :- pair(A,B), canon(B,Y,Y0), map(A,B,Y0,X).
+at(A,B,B,Y,b(Y0)) :- pair(A,B), canon(B,Y,Y0), not mapped(A,B,Y0).
 at(A,B,B,Y,Y) :- pair(A,B), term(B,Y), not role(B,Y,_).
 same(A,B,X,Y) :- at(A,B,A,X,Z), at(A,B,B,Y,Z).
 kindof(A,B,Z,K) :- side(A,B,S), role(S,Y,K), at(A,B,S,Y,Z).
@@ -120,15 +132,16 @@ clash(A,B,set) :- ok(A,B), set(A,_,X,T,V), set(B,_,Y,T,W), same(A,B,X,Y), V != W
 clash(A,B,exit) :- ok(A,B), resp(A,_,pos,exit_ok,D1,_), resp(B,_,pos,exit_error,D2,_), doer(A,B,D1,D2).
 clash(A,B,exit) :- ok(A,B), resp(A,_,pos,exit_error,D1,_), resp(B,_,pos,exit_ok,D2,_), doer(A,B,D1,D2).
 clash(A,B,change) :- ok(A,B), resp(A,_,pos,change_nothing,D1,_), resp(B,_,pos,E,D2,_), not quiet(E),
-                     doer(A,B,D1,D2).
+                     not own(A,E), doer(A,B,D1,D2).
 clash(A,B,change) :- ok(A,B), resp(B,_,pos,change_nothing,D2,_), resp(A,_,pos,E,D1,_), not quiet(E),
-                     doer(A,B,D1,D2).
+                     not own(B,E), doer(A,B,D1,D2).
 clash(A,B,use) :- ok(A,B), uses(A,D1,X), nouse(B,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y).
 clash(A,B,use) :- ok(A,B), nouse(A,D1,X), uses(B,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y).
 % a requirement whose own pre-state is inconsistent, or that demands opposite things of itself
-self(R) :- cond(R,X,T,V,pos), cond(R,X,T,W,pos), V < W.
-self(R) :- cond(R,X,T,V,pos), cond(R,X,T,V,neg).
-self(R) :- ccond(R,X,C,pos), ccond(R,X,C,neg).
+cd(R,Z,T,V,P) :- cond(R,X,T,V,P), canon(R,X,Z).  ccd(R,Z,C,P) :- ccond(R,X,C,P), canon(R,X,Z).
+self(R) :- cd(R,X,T,V,pos), cd(R,X,T,W,pos), V < W.
+self(R) :- cd(R,X,T,V,pos), cd(R,X,T,V,neg).
+self(R) :- ccd(R,X,C,pos), ccd(R,X,C,neg).
 self(R) :- crel(R,Q,X,Y,pos), crel(R,Q,X,Y,neg).
 self(R) :- none(R,K,T,V), role(R,X,K2), subeq(K2,K), cond(R,X,T,V,pos).
 self(R) :- cnone(R,K,C), role(R,X,K2), subeq(K2,K), ccond(R,X,C,pos).
