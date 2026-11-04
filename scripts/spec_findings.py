@@ -46,6 +46,10 @@ class Words:
         for var, kind in self.of(rid, "role"):
             if var == x:
                 return article(self.v.kinds.get(kind.name, kind.name))
+        if x.name == "pair":
+            return " ".join(self.term(rid, a) for a in x.arguments)
+        if x.name in self.v.words:
+            return article(x.name[2:].replace("_", " "))
         if x.name == "value":
             return self.v.value_text.get(x.arguments[1].name, str(x))
         if x.name == "any":
@@ -83,16 +87,18 @@ class Words:
         return text[0].lower() + text[1:] if text[:1].isupper() else text
 
     def pre(self, a, b, atoms):
-        """The merged pre-state of a witness: its `pre(A,B,Z,Attr,Val,Pol)` atoms, one phrase an instance."""
+        """The merged pre-state of a witness: its `pre(A,B,Z,Attr,Val,Pol)` and `prec(A,B,Z,C,Pol)` atoms, one phrase
+        an instance."""
         inst = {}
         for atom in atoms:
             sym = clingo.parse_term(atom)
-            if sym.name != "pre":
+            if sym.name not in ("pre", "prec"):
                 continue
-            z, _, val, pol = sym.arguments[2:]
+            z, val, pol = sym.arguments[2], sym.arguments[-2], sym.arguments[-1]
             rid, var = (b, z.arguments[0]) if z.type == clingo.SymbolType.Function and z.name == "b" else (a, z)
             vals = inst.setdefault(str(z), (self.term(rid, var), []))[1]
-            text = ("" if pol.name == "pos" else "not ") + self.value(val)
+            word = self.value(val) if sym.name == "pre" else self.v.cond_terms.get(val.name, val.name)
+            text = ("" if pol.name == "pos" else "not ") + word
             if text not in vals:
                 vals.append(text)
         return ", ".join("%s that is %s" % (who, " and ".join(vals)) for _, (who, vals) in sorted(inst.items()))
@@ -110,6 +116,14 @@ class Words:
         where = " ".join(parts)
         return "%s and %s clash: %s" % (bx, "#" + local(by, bx) if local(by, bx) != by else by,
                                         "%s, %s" % (where, why) if where else why)
+
+    def maybe(self, conds, clash):
+        """An L6: `<x> and #<y>: possible clash, depends on the prose condition C; define it in the controlled
+        language to decide: <the clash's text after "clash: ">`."""
+        names = " and ".join(self.v.cond_terms.get(c.name, c.name) for c in conds)
+        ids, _, rest = clash.partition(" clash: ")
+        return "%s: possible clash, depends on the prose condition %s; define it in the controlled language to " \
+               "decide: %s" % (ids, names, rest)
 
     def why(self, x, y, kind):
         lx, ly = local(spec_facts.split(x), spec_facts.split(y)), local(spec_facts.split(y), spec_facts.split(x))

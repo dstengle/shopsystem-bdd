@@ -243,3 +243,19 @@ def test_no_telingo_cone_pool_or_horizon():
     text = (REPO / "scripts" / "spec_solve.py").read_text()
     assert not re.search(r"telingo|spec_engine|spec_logic|spec_trace|cone|pool|horizon|HORIZON", text)
     assert len(text.splitlines()) <= 200
+
+
+ODD = "- **odd** (condition of result): a result nobody reads.\n"
+ENDS = "When a session ends a stage with a result that is {}, `work run` shall not write a question."
+
+
+def test_a_clash_that_depends_on_a_prose_condition_is_an_l6_naming_it(tmp_path):
+    first = "While a result is odd, when a session ends a stage with the result, `work run` shall write a question."
+    root = copy(tmp_path, add=seeded(first, ENDS.format("not outputless")), glossary=ODD)
+    found = [f for f in spec_solve.run(root) if "supervision#r20" in f.ids]
+    assert [(f.code, f.ids) for f in found] == [("L6", ["supervision#r20", "supervision#r21"])]
+    assert found[0].text.startswith("supervision#r20 and #r21: possible clash, depends on the prose condition odd; "
+                                    "define it in the controlled language to decide: ")
+    assert "a result that is odd and not outputless" in found[0].text and spec_solve.report(found, False)[1] == 0
+    root = copy(tmp_path / "real", add=seeded(first, ENDS.format("odd")), glossary=ODD)
+    assert [f.code for f in spec_solve.run(root) if "supervision#r20" in f.ids] == ["L1"]   # both say odd: firm

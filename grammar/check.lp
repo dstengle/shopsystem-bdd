@@ -2,12 +2,14 @@
 % It reads the facts of design-r3 §3 (one translation per fun, scripts/spec_facts.py) and the lexicon's domain, with
 % one generic instance per noun phrase. A conflict is SEARCHED FOR: a witness of two requirements that fire on one
 % trigger in one consistent pre-state and demand opposite things, found by one brave solve over every candidate pair.
-% Shown: clash(A,B,Why) (L1), bad_set(R,A,From,To) (L3), unreachable(R,A,V) (L4), lint(R,E,T) (L5); with focus(A,B),
+% Shown: clash(A,B,Why) (L1), maybe(A,B,Why,C) (L6: a clash that depends on the prose condition C), bad_set(R,A,From,To) (L3), unreachable(R,A,V) (L4), lint(R,E,T) (L5); with focus(A,B),
 % pre(A,B,X,Attr,Val,Pol), the merged pre-state of one witness (a normal solve).
 #defined role/3.  #defined named/3. #defined cond/5. #defined ccond/4. #defined crel/5. #defined holds/3.
 #defined free/2.  #defined trig/5.  #defined resp/6. #defined oattr/4. #defined orel/4. #defined set/5.
 #defined none/4.  #defined cnone/3. #defined uses/3. #defined nouse/3. #defined form/2. #defined sub/2.
-#defined trans/4. #defined initial/3. #defined focus/2.
+#defined trans/4. #defined initial/3. #defined focus/2. #defined focusm/2. #defined rnone/4. #defined the/2.
+#defined fun/1.   #defined prose/1. #defined dalt/2.  #defined dlit/5. #defined uall/3. #defined urel/4.
+#defined uattr/4. #defined ucond/5. #defined uccond/4.
 
 req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
 trg(R) :- trig(R,_,_,_,_).
@@ -18,6 +20,7 @@ term(R,X) :- resp(R,_,_,_,X,_). term(R,X) :- resp(R,_,_,_,_,X). term(R,X) :- set
 term(R,X) :- uses(R,X,_).      term(R,X) :- uses(R,_,X).      term(R,X) :- nouse(R,X,_).  term(R,X) :- nouse(R,_,X).
 term(R,X) :- crel(R,_,X,_,_).  term(R,X) :- crel(R,_,_,X,_).  term(R,X) :- orel(R,_,_,X).
 term(R,X) :- holds(R,X,_).     term(R,X) :- holds(R,_,X).     term(R,X) :- free(R,X).
+term(R,X) :- urel(R,_,_,X).
 % kinds: a sub-kind is its kind (sub(K,K2): K is a kind of K2, transitively); two kinds are compatible when one is
 subeq(K,K) :- role(_,_,K).  subeq(K,K) :- none(_,K,_,_).  subeq(K,K) :- cnone(_,K,_).
 subeq(K,K3) :- sub(K,K2), subeq(K2,K3).
@@ -67,6 +70,14 @@ canon(S,Y,Y0) :- named(S,Y,C), named(S,Y0,C), not nrep(S,Y0).  canon(S,Y,Y) :- r
 :- map(A,B,Y,X), named(A,X,C), named(B,Y,C2), C != C2.
 :- pair(A,B), named(A,X,C), named(B,Y,C), not nrep(A,X), not nrep(B,Y), not map(A,B,Y,X).
 :- map(A,B,Y,X), oattr(A,X,T,V), oattr(B,Y,T,W), V != W.
+% A definite noun phrase with no antecedent (`the(R,V)`: "the work-item" never introduced) is the one thing of its
+% kind: when one side has one, each role of that kind the other side's pre-state or definites name is it, or the
+% pair is out under this unification.
+tdef(S,K) :- the(S,X), role(S,X,K).
+named1(S,Y) :- the(S,Y).  named1(S,Y) :- cond(S,Y,_,_,_).  named1(S,Y) :- ccond(S,Y,_,_).
+named1(S,Y) :- crel(S,_,Y,_,_).  named1(S,Y) :- crel(S,_,_,Y,_).  named1(S,Y) :- trig(S,_,_,Y,_).
+named1(S,Y) :- trig(S,_,_,_,Y).
+tmap(A,B,Y) :- map(A,B,Y,X), the(A,X).
 side(A,B,A) :- pair(A,B).  side(A,B,B) :- pair(A,B).
 mapped(A,B,Y) :- map(A,B,Y,_).
 at(A,B,A,X,Z) :- pair(A,B), term(A,X), canon(A,X,Z).
@@ -81,6 +92,8 @@ doer(A,B,any,Y) :- pair(A,B), term(B,Y).  doer(A,B,X,any) :- pair(A,B), term(A,X
 % the triggers are one event: its doer and its object unify, or the pair is out under this unification
 fires(A,B) :- pair(A,B), trig(A,P,E,D1,X), trig(B,P,E,D2,Y), same(A,B,X,Y), doer(A,B,D1,D2).
 out(A,B) :- pair(A,B), trg(A), trg(B), not fires(A,B).
+out(A,B) :- pair(A,B), tdef(A,K), named1(B,Y), role(B,Y,K), not tmap(A,B,Y).
+out(A,B) :- pair(A,B), tdef(B,K), the(B,Y), role(B,Y,K), named1(A,X), role(A,X,K), not map(A,B,Y,X).
 
 % ---- the two states: 0 is the pre-state (the trigger happens there), 1 is 0 with the sets of the triggered side --
 % An untriggered requirement paired with a triggered one is read at state 1 (its conditions there, its responses
@@ -112,6 +125,47 @@ pos(A,B,1,Z,T,V) :- w1(A,B,Z,T,V,pos).  pos(A,B,1,Z,T,V) :- n1(A,B,Z,T,V,pos).
 state(A,B,S,1) :- late(A,B,S).  state(A,B,S,0) :- side(A,B,S), not late(A,B,S).
 out(A,B) :- state(A,B,S,N), none(S,K,T,V), pos(A,B,N,Z,T,V), kindof(A,B,Z,K2), subeq(K2,K).
 out(A,B) :- side(A,B,S), cnone(S,K,C), cw(A,B,Z,C,pos), kindof(A,B,Z,K2), subeq(K2,K).
+% "no K is <rel> Y", "X is <rel> no K" (rnone): no instance of K is so related in the merged state
+out(A,B) :- side(A,B,S), rnone(S,Q,kind(K),Y), at(A,B,S,Y,Zy), rw(A,B,Q,Z,Zy,pos), kindof(A,B,Z,K2), subeq(K2,K).
+out(A,B) :- side(A,B,S), rnone(S,Q,X,kind(K)), at(A,B,S,X,Zx), rw(A,B,Q,Zx,Z,pos), kindof(A,B,Z,K2), subeq(K2,K).
+% a functional relation (`fun(Q)`: a relation row of cardinality one, or a preposition, spec_logic_vocab) relates a
+% thing to one thing: two images under one unification are out
+redge(A,B,Q,Z1,Z2) :- rw(A,B,Q,Z1,Z2,pos).
+redge(A,B,Q,Z1,Z2) :- side(A,B,S), orel(S,Q,Y1,Y2), at(A,B,S,Y1,Z1), at(A,B,S,Y2,Z2).
+out(A,B) :- fun(Q), redge(A,B,Q,Z,Z1), redge(A,B,Q,Z,Z2), Z1 < Z2.
+
+% ---- a defined condition read through its definition (`dalt(C,N)`, `dlit(C,N,Attr,Val,Pol)`: the ways through a
+% Def whose literals are all on its own subject, spec_facts.def_facts) under `no`, `every` and a negation --------
+has(A,B,0,Z,T,V,P) :- w0(A,B,Z,T,V,P).
+has(A,B,1,Z,T,V,P) :- w1(A,B,Z,T,V,P).  has(A,B,1,Z,T,V,P) :- n1(A,B,Z,T,V,P).
+% the instances a definition is asked of: (side's state N, instance Z, condition C)
+ask(A,B,N,Z,C) :- side(A,B,S), state(A,B,S,N), cnone(S,K,C), kindof(A,B,Z,K2), subeq(K2,K), dalt(C,_).
+ask(A,B,N,Z,C) :- side(A,B,S), state(A,B,S,N), ccond(S,Y,C,neg), at(A,B,S,Y,Z), dalt(C,_).
+ask(A,B,N,Z,C) :- umatch(A,B,S,U,Z), state(A,B,S,N), uccond(S,U,C,_), dalt(C,_).
+% a way through C is entailed on Z when each of its literals is; broken when one is contradicted
+unent(A,B,N,Z,C,W) :- ask(A,B,N,Z,C), dlit(C,W,T,V,pos), not has(A,B,N,Z,T,V,pos).
+negd(A,B,N,Z,T,V) :- has(A,B,N,Z,T,V,neg).
+negd(A,B,N,Z,T,V) :- has(A,B,N,Z,T,W,pos), dlit(_,_,T,V,_), V != W.
+unent(A,B,N,Z,C,W) :- ask(A,B,N,Z,C), dlit(C,W,T,V,neg), not negd(A,B,N,Z,T,V).
+ent(A,B,N,Z,C) :- ask(A,B,N,Z,C), dalt(C,W), not unent(A,B,N,Z,C,W).
+brk(A,B,N,Z,C,W) :- ask(A,B,N,Z,C), dlit(C,W,T,V,pos), negd(A,B,N,Z,T,V).
+brk(A,B,N,Z,C,W) :- ask(A,B,N,Z,C), dlit(C,W,T,V,neg), has(A,B,N,Z,T,V,pos).
+live(A,B,N,Z,C) :- ask(A,B,N,Z,C), dalt(C,W), not brk(A,B,N,Z,C,W).
+refuted(A,B,N,Z,C) :- ask(A,B,N,Z,C), not live(A,B,N,Z,C).
+out(A,B) :- side(A,B,S), state(A,B,S,N), cnone(S,K,C), kindof(A,B,Z,K2), subeq(K2,K), ent(A,B,N,Z,C).
+out(A,B) :- side(A,B,S), state(A,B,S,N), ccond(S,Y,C,neg), at(A,B,S,Y,Z), ent(A,B,N,Z,C).
+% "every K <restrictions> is C" (uall, urel, uattr; ucond, uccond): each instance of K with the restrictions is C
+ucand(A,B,S,U,Z) :- side(A,B,S), uall(S,U,K), kindof(A,B,Z,K2), subeq(K2,K).
+umiss(A,B,S,U,Z) :- ucand(A,B,S,U,Z), urel(S,Q,U,W), at(A,B,S,W,Zw), not rw(A,B,Q,Z,Zw,pos).
+umiss(A,B,S,U,Z) :- ucand(A,B,S,U,Z), state(A,B,S,N), uattr(S,U,T,V), not has(A,B,N,Z,T,V,pos).
+umatch(A,B,S,U,Z) :- ucand(A,B,S,U,Z), not umiss(A,B,S,U,Z).
+out(A,B) :- umatch(A,B,S,U,Z), state(A,B,S,N), ucond(S,U,T,V,pos), has(A,B,N,Z,T,W,pos), V != W.
+out(A,B) :- umatch(A,B,S,U,Z), state(A,B,S,N), ucond(S,U,T,V,pos), has(A,B,N,Z,T,V,neg).
+out(A,B) :- umatch(A,B,S,U,Z), state(A,B,S,N), ucond(S,U,T,V,neg), has(A,B,N,Z,T,V,pos).
+out(A,B) :- umatch(A,B,S,U,Z), uccond(S,U,C,pos), cw(A,B,Z,C,neg).
+out(A,B) :- umatch(A,B,S,U,Z), uccond(S,U,C,neg), cw(A,B,Z,C,pos).
+out(A,B) :- umatch(A,B,S,U,Z), state(A,B,S,N), uccond(S,U,C,pos), refuted(A,B,N,Z,C).
+out(A,B) :- umatch(A,B,S,U,Z), state(A,B,S,N), uccond(S,U,C,neg), ent(A,B,N,Z,C).
 
 % ---- L1: the clash of a pair, under one unification ---------------------------------------------------------------
 % A pair that cannot fire together under this unification is out: soft, so that one pair never makes the program
@@ -124,19 +178,30 @@ relby(A,B,X,Q,Z) :- map(A,B,Y,X), orel(B,Q,Y,Z), orel(A,Q,X,X2), same(A,B,X2,Z).
 pag(A,B,X,Y) :- map(A,B,Y,X), oattr(A,X,T,W), not oattr(B,Y,T,W).
 pag(A,B,X,Y) :- map(A,B,Y,X), orel(A,Q,X,X2), not relof(A,B,Y,Q,X2).
 relof(A,B,Y,Q,X2) :- map(A,B,Y,X), orel(A,Q,X,X2), orel(B,Q,Y,Z), same(A,B,X2,Z).
-clash(A,B,pos_neg) :- ok(A,B), resp(A,_,pos,E,D1,X), resp(B,_,neg,E,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y),
+cl(A,B,pos_neg) :- ok(A,B), resp(A,_,pos,E,D1,X), resp(B,_,neg,E,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y),
                       not gap(A,B,X,Y).
-clash(A,B,neg_pos) :- ok(A,B), resp(A,_,neg,E,D1,X), resp(B,_,pos,E,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y),
+cl(A,B,neg_pos) :- ok(A,B), resp(A,_,neg,E,D1,X), resp(B,_,pos,E,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y),
                       not pag(A,B,X,Y).
-clash(A,B,set) :- ok(A,B), set(A,_,X,T,V), set(B,_,Y,T,W), same(A,B,X,Y), V != W.
-clash(A,B,exit) :- ok(A,B), resp(A,_,pos,exit_ok,D1,_), resp(B,_,pos,exit_error,D2,_), doer(A,B,D1,D2).
-clash(A,B,exit) :- ok(A,B), resp(A,_,pos,exit_error,D1,_), resp(B,_,pos,exit_ok,D2,_), doer(A,B,D1,D2).
-clash(A,B,change) :- ok(A,B), resp(A,_,pos,change_nothing,D1,_), resp(B,_,pos,E,D2,_), not quiet(E),
+cl(A,B,set) :- ok(A,B), set(A,_,X,T,V), set(B,_,Y,T,W), same(A,B,X,Y), V != W.
+cl(A,B,exit) :- ok(A,B), resp(A,_,pos,exit_ok,D1,_), resp(B,_,pos,exit_error,D2,_), doer(A,B,D1,D2).
+cl(A,B,exit) :- ok(A,B), resp(A,_,pos,exit_error,D1,_), resp(B,_,pos,exit_ok,D2,_), doer(A,B,D1,D2).
+cl(A,B,change) :- ok(A,B), resp(A,_,pos,change_nothing,D1,_), resp(B,_,pos,E,D2,_), not quiet(E),
                      not own(A,E), doer(A,B,D1,D2).
-clash(A,B,change) :- ok(A,B), resp(B,_,pos,change_nothing,D2,_), resp(A,_,pos,E,D1,_), not quiet(E),
+cl(A,B,change) :- ok(A,B), resp(B,_,pos,change_nothing,D2,_), resp(A,_,pos,E,D1,_), not quiet(E),
                      not own(B,E), doer(A,B,D1,D2).
-clash(A,B,use) :- ok(A,B), uses(A,D1,X), nouse(B,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y).
-clash(A,B,use) :- ok(A,B), nouse(A,D1,X), uses(B,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y).
+cl(A,B,use) :- ok(A,B), uses(A,D1,X), nouse(B,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y).
+cl(A,B,use) :- ok(A,B), nouse(A,D1,X), uses(B,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y).
+% a clash whose witness merges onto an instance a prose condition one side states (`prose(C)`: no Def) and something
+% the other side states of it that the first does not: a definition of C could refute it, so it is L6, not L1
+lit(A,B,S,Z,c(T,V,P)) :- side(A,B,S), cond(S,Y,T,V,P), at(A,B,S,Y,Z).
+lit(A,B,S,Z,k(C,P)) :- side(A,B,S), ccond(S,Y,C,P), at(A,B,S,Y,Z).
+lit(A,B,S,Z1,r(Q,Z2,P)) :- side(A,B,S), crel(S,Q,Y1,Y2,P), at(A,B,S,Y1,Z1), at(A,B,S,Y2,Z2).
+lit(A,B,S,Z2,i(Q,Z1,P)) :- side(A,B,S), crel(S,Q,Y1,Y2,P), at(A,B,S,Y1,Z1), at(A,B,S,Y2,Z2).
+dep(A,B,C) :- lit(A,B,S,Z,k(C,_)), prose(C), side(A,B,S2), S2 != S, lit(A,B,S2,Z,L), not lit(A,B,S,Z,L).
+depends(A,B) :- dep(A,B,_).
+clash(A,B,W) :- cl(A,B,W), not depends(A,B).
+maybe(A,B,W,C) :- cl(A,B,W), dep(A,B,C).
+#show maybe/4.
 % a requirement whose own pre-state is inconsistent, or that demands opposite things of itself
 cd(R,Z,T,V,P) :- cond(R,X,T,V,P), canon(R,X,Z).  ccd(R,Z,C,P) :- ccond(R,X,C,P), canon(R,X,Z).
 self(R) :- cd(R,X,T,V,pos), cd(R,X,T,W,pos), V < W.
@@ -172,9 +237,13 @@ lint(R,E,none) :- l5(R,E), not reacts(E).
 
 % ---- the witness of one pair (a normal solve with focus(A,B)): it clashes, and its merged pre-state is shown -----
 % focus/2 is an external, false unless a witness solve assigns it true, so the check and every witness share one grounding
-#external focus(A,B) : pair(A,B).
-hit(A,B) :- clash(A,B,W), W != self.
+% (focusm/2 the same for an L6: a witness that clashes and depends on a prose condition)
+#external focus(A,B) : pair(A,B).  #external focusm(A,B) : pair(A,B).
+hit(A,B) :- clash(A,B,W), W != self.  hitm(A,B) :- maybe(A,B,_,_).
 :- focus(A,B), pair(A,B), not hit(A,B).
-pre(A,B,Z,T,V,P) :- focus(A,B), w0(A,B,Z,T,V,P).
-pre(A,B,Z,T,V,P) :- focus(A,B), n1(A,B,Z,T,V,P).
-#show pre/6.
+:- focusm(A,B), pair(A,B), not hitm(A,B).
+foc(A,B) :- focus(A,B).  foc(A,B) :- focusm(A,B).
+pre(A,B,Z,T,V,P) :- foc(A,B), w0(A,B,Z,T,V,P).
+pre(A,B,Z,T,V,P) :- foc(A,B), n1(A,B,Z,T,V,P).
+prec(A,B,Z,C,P) :- foc(A,B), cw(A,B,Z,C,P).
+#show pre/6.  #show prec/5.

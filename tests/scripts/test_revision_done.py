@@ -114,6 +114,13 @@ def test_model_logic_finds_no_conflict_in_the_spec(live_logic, live_expected):
     assert [f.text for f in live_logic if f.code in ("L1", "L2", "L3") and not live_expected(f)] == []
 
 
+@pytest.mark.live_logic
+def test_every_known_finding_still_fires(live_logic):
+    """An `EXPECTED` entry whose finding is gone (its question answered, or the check fixed) is removed."""
+    from conftest import EXPECTED
+    assert sorted(set(EXPECTED) - {" ".join([f.code] + list(f.ids)) for f in live_logic}) == []
+
+
 def _cpu():
     used = resource.getrusage(resource.RUSAGE_CHILDREN)
     return used.ru_utime + used.ru_stime

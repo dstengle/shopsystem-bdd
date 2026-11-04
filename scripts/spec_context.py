@@ -110,7 +110,8 @@ def _translate(root, extra):
         else:
             refused[ident] = parsed.refusal
     facts = {s.id: spec_facts.translate(vocab, s.id, s.tree) for s in statements}
-    return Context(vocab, caps, statements, facts, refused, spec_logic_vocab.domain(vocab))
+    domain = spec_logic_vocab.domain(vocab) + spec_facts.def_facts(vocab)
+    return Context(vocab, caps, statements, facts, refused, domain)
 
 
 def load(root, extra=()):
