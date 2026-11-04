@@ -106,7 +106,12 @@ item. Adding an idea starts no work. The person reads an item by its title, not 
   `needs-input` the first line of its question.
 - An item is blocked by each item it depends on that is not `delivered`, a missing one included (printed `missing`).
   The glossary's exception for an item in the same batch waits for plan 4, which makes batches.
+- `work depend` refuses a dependency on an item that is `refused` or `withdrawn`, which is never delivered and so
+  would block for good (plan 2 rulings, Q1).
 
 ## Not yet
 - For an item in a batch, how far the batch is along (design goal 2): waits for plan 4, which builds `batches`.
 - Bugs' risk and likelihood ratings (design goal 2): not built, because the design gives them no part in the rank.
+- Dropping a dependency (`work depend <item> --drop <item>`): waits for plan 4, where a blocked item starts to stop a
+  batch's work (plan 2 rulings, Q1). Until then a dependency on an item refused or withdrawn after it was written, or
+  one written by hand, blocks until the file is edited.

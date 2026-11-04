@@ -55,6 +55,18 @@ def test_depend_writes_the_dependency_in_the_needing_item(backlog_repo):
     assert git(backlog_repo, "show", "--name-only", "--format=", "HEAD").split() == [".shop/backlog/b2.md"]
     assert git(backlog_repo, "log", "-1", "--format=%s").strip() == \
         'work depend: b2 "Use the parser" on b1 "Fix the parser"'
+    assert done.stdout == 'b2 "Use the parser" depends on b1 "Fix the parser"\n'
+
+
+@pytest.mark.parametrize("status", ["refused", "withdrawn"])
+def test_depend_refuses_a_closed_target(backlog_repo, status):
+    write_item(backlog_repo, "b1", status=status)
+    write_item(backlog_repo, "b2", title="Use the parser")
+    before = state(backlog_repo)
+    done = work(backlog_repo, "depend", "b2", "--on", "b1")
+    assert done.returncode == 1, done.stdout
+    assert 'b1 "Fix the parser" is %s' % status in done.stderr and 'b2 "Use the parser"' in done.stderr, done.stderr
+    assert state(backlog_repo) == before
 
 
 def test_depend_refuses_itself(backlog_repo):

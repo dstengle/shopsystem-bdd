@@ -137,11 +137,14 @@ def cycle(root, name, on):
 
 
 def depend(root, name, on):
-    """Write the dependency of `name` on `on` in `name`'s file (r5): an item there is not, itself, a dependency it
-    already has and one that closes a cycle are refused."""
+    """Write the dependency of `name` on `on` in `name`'s file (r5): an item there is not, one refused or withdrawn,
+    itself, a dependency it already has and one that closes a cycle are refused."""
     item, target = find(root, name), find(root, on)
     if on == name:
         raise Refused("work depend: %s cannot depend on itself" % label(item))
+    if target.status in ("refused", "withdrawn"):     # it is never delivered: it would block for good (Q1)
+        raise Refused("work depend: %s is %s; %s would be blocked by it for good" % (
+            label(target), target.status, label(item)))
     if on in item.depends_on:
         raise Refused("work depend: %s already depends on %s" % (label(item), label(target)))
     path = cycle(root, name, on)

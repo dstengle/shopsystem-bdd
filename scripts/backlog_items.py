@@ -10,6 +10,7 @@ from pathlib import Path
 
 import workqueue
 from workqueue import Refused
+from workqueue_answer import LINE_BREAKS
 
 BACKLOG = Path(".shop") / "backlog"
 STATUSES = ("idea", "shaped", "ready", "in-batch", "delivered", "needs-input", "refused", "withdrawn")
@@ -17,8 +18,6 @@ PROVENANCES = ("own", "peer", "product")
 RATINGS = {"value": ("low-value", "medium-value", "high-value"),
            "urgency": ("low-urgency", "medium-urgency", "high-urgency"),
            "size": ("small", "medium", "large")}
-# Unicode's mandatory line breaks, as workqueue_answer reads them: a title, a reason or an answer is one line.
-LINE_BREAKS = "\n\x0b\x0c\r\x85  "
 
 
 @dataclass
@@ -91,6 +90,8 @@ def parse(text, rel):
     ident = data.get("id")
     if not isinstance(ident, str) or not ident.startswith("item/"):
         raise Refused("%s: id %r is not item/<context path>/b<n>" % (rel, ident))
+    if data.get("kind") != "item":
+        raise Refused("%s: kind %r is not item" % (rel, data.get("kind")))
     depends = data.get("depends_on", [])
     if not isinstance(depends, list) or not all(isinstance(d, str) and is_item(d) for d in depends):
         raise Refused("%s: depends_on %r is not a list of b<n>" % (rel, depends))
@@ -115,10 +116,19 @@ def rel_of(name):
     return (BACKLOG / ("%s.md" % name)).as_posix()
 
 
+def names(root):
+    """The `b<n>` of each file of .shop/backlog/, by number; a `.md` file named otherwise is refused, never skipped."""
+    found = []
+    for path in (Path(root) / BACKLOG).glob("*.md"):
+        if not is_item(path.stem):
+            raise Refused("%s: id: the file name is not b<n>" % (BACKLOG / path.name).as_posix())
+        found.append(path.stem)
+    return sorted(found, key=number)
+
+
 def items(root):
     """Every item of the backlog, by number; a malformed file is refused."""
-    paths = [p for p in (Path(root) / BACKLOG).glob("b*.md") if is_item(p.stem)]
-    return [load(root, p.stem) for p in sorted(paths, key=lambda p: number(p.stem))]
+    return [load(root, name) for name in names(root)]
 
 
 def load(root, name):
@@ -138,8 +148,7 @@ def find(root, name):
 
 def next_name(root):
     """`b<highest + 1>` over the files of .shop/backlog/ (D4)."""
-    found = [number(p.stem) for p in (Path(root) / BACKLOG).glob("b*.md") if is_item(p.stem)]
-    return "b%d" % (max(found, default=0) + 1)
+    return "b%d" % (max(map(number, names(root)), default=0) + 1)
 
 
 def label(item):

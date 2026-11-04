@@ -61,7 +61,7 @@ def test_an_unrated_item_renders_its_fields_empty():
 
 @pytest.mark.parametrize("fields, word", [({"status": "doing"}, "status"), ({"value": "huge"}, "value"),
                                           ({"title": ""}, "title"), ({"provenance": "mine"}, "provenance"),
-                                          ({"depends_on": "x1"}, "depends_on")])
+                                          ({"depends_on": "x1"}, "depends_on"), ({"kind": "nonsense"}, "kind")])
 def test_a_malformed_item_is_refused_naming_the_file_and_field(backlog_repo, fields, word):
     path = write_item(backlog_repo, "b1", **fields)
     if not fields.get("title", "x"):
@@ -83,6 +83,27 @@ def test_show_names_the_item_by_its_title(backlog_repo):
     shown = json.loads(work(backlog_repo, "show", "b1", "--json").stdout)
     assert shown["item"]["title"] == "Fix the parser" and shown["item"]["id"] == "b1"
     assert shown["item"]["value"] == "high-value" and shown["item"]["urgency"] is None
+
+
+def test_show_labels_each_dependency_and_a_missing_one(backlog_repo):
+    write_item(backlog_repo, "b1")
+    write_item(backlog_repo, "b2", title="Use the parser", depends_on="b1, b9")
+    done = work(backlog_repo, "show", "b2")
+    assert done.returncode == 0, done.stderr
+    assert '  depends on: b1 "Fix the parser", b9 (missing)\n' in done.stdout, done.stdout
+
+
+@pytest.mark.parametrize("stem", ["b07", "b0", "bx", "notes"])
+def test_a_file_not_named_b_n_is_refused_not_skipped(backlog_repo, stem):
+    write_item(backlog_repo, "b1")
+    (backlog_repo / ".shop/backlog/b1.md").rename(backlog_repo / (".shop/backlog/%s.md" % stem))
+    write_item(backlog_repo, "b2")
+    before = state(backlog_repo)
+    for args in (["backlog"], ["idea", "Another"]):
+        done = work(backlog_repo, *args)
+        assert done.returncode == 1, done.stdout
+        assert ".shop/backlog/%s.md: id: the file name is not b<n>" % stem in done.stderr, done.stderr
+    assert state(backlog_repo) == before
 
 
 def test_show_refuses_an_item_there_is_not(backlog_repo):

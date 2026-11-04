@@ -1,11 +1,13 @@
 """backlog r2, r3, r9-r14, r16: the moves of an item's status, each one commit, a move from another status refused
 naming it, and `work withdraw` and `work answer` on a work-item as before (workflow simplification plan 2, Task 2)."""
-import subprocess
+import json
+import shutil
 
 import backlog_items
 import backlog_moves
 import pytest
 import spec_lexicon
+import workqueue_answer
 from backlog_testing import REPO, git, state, work, write_item
 
 MOVES = sorted((command, before, after) for command, row in backlog_moves.TRANSITIONS.items()
@@ -114,9 +116,29 @@ def test_work_withdraw_on_a_work_item_is_unchanged(backlog_repo):
     assert state(backlog_repo) == before
 
 
-def test_work_answer_on_a_work_item_is_unchanged(backlog_repo):
-    done = work(backlog_repo, "answer", "w3", "x", "--change")
-    assert done.returncode == 1 and "w3" in done.stderr and "item" not in done.stderr.replace("work-item", ""), \
-        done.stderr
-    assert subprocess.run(["git", "status", "--porcelain"], cwd=backlog_repo, capture_output=True,
-                          text=True).stdout == ""
+W1, LOG = ".shop/work/i1/w1.md", ".shop/work/i1/log.jsonl"
+
+
+def awaiting_work_item(repo):
+    """An awaiting-answer work-item w1 a reviewer asked about, with its log.jsonl transition, committed."""
+    (repo / W1).parent.mkdir(parents=True)
+    (repo / W1).write_text("---\nid: work-item/ex.com/prod/ctx/w1\nkind: work-item\npart_of: initiative/i1\n"
+                           "status: awaiting-answer\nunder: thing\ncheck: true\n---\n\n# w1\n")
+    (repo / LOG).write_text(json.dumps({"work-item": "w1", "before": "done", "after": "awaiting-answer"}) + "\n")
+    git(repo, "add", "-A")
+    git(repo, "commit", "-qm", "w1")
+
+
+def test_work_answer_on_a_work_item_is_unchanged(backlog_repo, tmp_path_factory):
+    awaiting_work_item(backlog_repo)
+    direct = tmp_path_factory.mktemp("direct") / "repo"
+    shutil.copytree(backlog_repo, direct)
+    done = work(backlog_repo, "answer", "w1", "x", "--change")
+    assert done.returncode == 0, done.stderr
+    assert done.stdout == "w1 %s\n" % workqueue_answer.answer(direct, "w1", "x", change=True)
+    assert (backlog_repo / W1).read_text() == (direct / W1).read_text()
+    moves = [[(m["before"], m["after"]) for m in map(json.loads, (r / LOG).read_text().splitlines())]
+             for r in (backlog_repo, direct)]
+    assert moves[0] == moves[1], moves
+    assert git(backlog_repo, "log", "-1", "--format=%s") == git(direct, "log", "-1", "--format=%s")
+    assert git(backlog_repo, "status", "--porcelain") == ""

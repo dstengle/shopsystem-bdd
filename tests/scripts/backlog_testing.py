@@ -25,9 +25,9 @@ def state(repo):
 
 
 def item_text(name="b1", title="Fix the parser", status="idea", provenance="own", value="", urgency="", size="",
-              depends_on="", body=""):
-    return ("---\nid: item/ex.com/prod/ctx/%s\nkind: item\nstatus: %s\nprovenance: %s\nvalue: %s\nurgency: %s\n"
-            "size: %s\ndepends_on: [%s]\n---\n\n# %s\n%s" % (name, status, provenance, value, urgency, size,
+              depends_on="", body="", kind="item"):
+    return ("---\nid: item/ex.com/prod/ctx/%s\nkind: %s\nstatus: %s\nprovenance: %s\nvalue: %s\nurgency: %s\n"
+            "size: %s\ndepends_on: [%s]\n---\n\n# %s\n%s" % (name, kind, status, provenance, value, urgency, size,
                                                              depends_on, title, body)).replace(": \n", ":\n")
 
 

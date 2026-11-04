@@ -54,7 +54,7 @@ def cmd_rate(args):
 
 def cmd_depend(args):
     item = backlog_moves.depend(args.root, args.name, args.on)
-    print("%s depends on %s" % (backlog_items.label(item), ", ".join(item.depends_on)))
+    print("%s depends on %s" % (backlog_items.label(item), backlog_items.label(backlog_items.find(args.root, args.on))))
     return 0
 
 
@@ -96,7 +96,9 @@ def show(args):
     print(backlog_items.label(item))
     for key in ("status", "provenance", *backlog_items.RATINGS):
         print("  %s: %s" % (key, getattr(item, key) or "-"))
-    print("  depends on: %s" % (", ".join(item.depends_on) or "-"))
+    by_name = {i.name: i for i in backlog_items.items(args.root)}
+    print("  depends on: %s" % (", ".join(backlog_items.label(by_name[n]) if n in by_name else "%s (missing)" % n
+                                          for n in item.depends_on) or "-"))
     for heading, text in item.sections.items():
         print("\n## %s\n\n%s" % (heading, text))
     return 0
