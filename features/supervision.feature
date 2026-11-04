@@ -384,14 +384,16 @@ Feature: Supervision
 
   @g39 @r39
   Scenario: A green initiative branch gets a branch review
-    Given a work-item w1 that is `green`
-    And an initiative branch i1
-    And the initiative branch i1 is not reviewed
-    And an initiative i2 that is `started`
-    When the person runs `work run` on the initiative i2
+    Given an initiative i1 that is `started`
+    And a work-item w1
+    And the work-item w1 is kept in the initiative i1
+    And the work-item w1 is `green`
+    And an initiative branch i2
+    And the initiative branch i2 is not reviewed
+    When the person runs `work run` on the initiative i1
     Then `work run` starts the stage s1
     And the stage s1 is `branch review`
-    And the stage s1 is for the initiative i2
+    And the stage s1 is for the initiative i1
     And `work run` gives the stage s1 the review brief r1
     And the review brief r1 is with the commit c1
     And `work run` commits the stage s1
@@ -410,7 +412,6 @@ Feature: Supervision
   @g41 @r41
   Scenario: An initiative with no work-item is neither reviewed nor measured
     Given an initiative i1 that is `started`
-    And the initiative i1 is itemless
     When the person runs `work run` on the initiative i1
     Then `work run` does not start the stage s1
     And `work run` does not start the stage s2
@@ -803,12 +804,13 @@ Feature: Supervision
 
   @g76 @r76
   Scenario: An applied capability-proposal is formulated by `features generate`
-    Given a change list c1
+    Given a result r1 that is `DONE`
+    And a change list c1
+    And the result r1 gives the change list c1
     And the change list c1 is codified
     And a stage s1 that is `apply`
     And a capability-proposal p1
     And the stage s1 is for the capability-proposal p1
-    And a result r1 that is `DONE`
     And the stage s1 is with the result r1
     When the session s2 ends the stage s1
     Then `work run` starts the stage s3
@@ -820,12 +822,13 @@ Feature: Supervision
 
   @g77 @r77
   Scenario: A capability that is not codified is the formulate round's fault
-    Given a change list c1
+    Given a result r1 that is `DONE`
+    And a change list c1
+    And the result r1 gives the change list c1
     And the change list c1 is uncodified
     And a stage s1 that is `apply`
     And a capability-proposal p1
     And the stage s1 is for the capability-proposal p1
-    And a result r1 that is `DONE`
     And the stage s1 is with the result r1
     When the session s2 ends the stage s1
     Then the capability-proposal p1 is `approved`
