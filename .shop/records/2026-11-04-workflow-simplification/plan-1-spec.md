@@ -196,21 +196,21 @@ for the grammar:
 | quote | cites | message | |
 | design-decision | enforced by | test | |
 
-- [ ] **Step 1: Save the baseline.** Copy `features/` to a scratch directory (`<saved-dir>`), then write the terms
+- [x] **Step 1: Save the baseline.** Copy `features/` to a scratch directory (`<saved-dir>`), then write the terms
   and the relations.
-- [ ] **Step 2: Check the lexicon.**
+- [x] **Step 2: Check the lexicon.**
   Run: `python3 scripts/model lexicon --check`
   Expected: no problem lines.
-- [ ] **Step 3: Probe that the new terms parse.** Each must print a tree:
+- [x] **Step 3: Probe that the new terms parse.** Each must print a tree:
   - `python3 scripts/model parse "When the person runs \`work backlog\`, \`work\` shall print every item and the status of the item."`
   - `python3 scripts/model parse "When the person runs \`work batch abandon\` on a batch that is \`building\`, \`work\` shall set the status of the batch to \`abandoned\`."`
-- [ ] **Step 4: Check that existing features are unchanged.**
+- [x] **Step 4: Check that existing features are unchanged.**
   Run: `python3 scripts/features generate --check && diff -r <saved-dir> features/`
   Expected: `--check` passes and the diff is empty.
-- [ ] **Step 5: Check logic, the model and the suite.**
+- [x] **Step 5: Check logic, the model and the suite.**
   Run: `python3 scripts/model logic | tail -1; python3 scripts/model check | tail -1; python3 -m pytest -q | tail -1`
   Expected: the three baselines unchanged (`11 findings: 6 L5, 5 L6`; `53 violations, ...`; all passed).
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
   ```bash
   git add spec/index.md spec/decisions/
   git commit -m "spec: the simplified workflow's lexicon and decision 0074"

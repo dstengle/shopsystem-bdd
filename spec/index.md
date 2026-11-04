@@ -17,6 +17,9 @@ typed, `spec/universal.md` holds the universal conditions U1-U10, and `spec/rest
 capability file is codified when its own frontmatter says `language: codified-1`; until then it is read as 0.29 lines.
 Verify with `python3 scripts/model check`; the decisions index, `spec/decisions/index.md`, is written by `python3 scripts/model decisions`;
 `python3 scripts/model rules` lists every rule with its label.
+The workflow simplified (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified,
+`.shop/records/2026-11-04-workflow-simplification/`): items, a backlog, batches and one review at the pull request are
+written below as codified capabilities whose requirements are `unbuilt:` until a later plan builds them.
 
 ## Purpose
 
@@ -233,6 +236,31 @@ Tools the skills and agents run:
 - **turn** (resource, exclusive): one for each request, held by the side whose part of the request is to be written next.
 - **checkout** (resource, exclusive): the repository's main working tree, held by one delivery of `work run`.
 
+- **item** (kind): one entry of the backlog, work this bounded context may do, with its requirement lines, its provenance and its ratings, named by its id `b<n>` and its title.
+- **backlog** (kind): every item of a bounded context, kept in `.shop/backlog/`.
+- **batch** (kind): ready items built together on one branch and closed by its pull request, named `batch-<n>`. Plural: batches.
+- **batch plan** (kind): the file `.shop/batches/<n>/plan.md`, with a batch's tasks and their statuses.
+- **task** (kind): one unit of a batch plan, built in its own worktree.
+- **pull request** (kind): the GitHub pull request of a batch's branch.
+- **quote** (kind): the person's words cited by a file, with its session, its message and the messages around it.
+- **message** (kind): one turn of the person or of a session in a transcript, without its tool uses.
+- **status** (attribute of item): Values: `idea`, `shaped`, `ready`, `in-batch`, `delivered`, `needs-input`, `refused`, `withdrawn`.
+  Transitions: `idea` → `shaped`: `work shape`; `shaped` → `ready`: `work ready`; `ready` → `shaped`: pick; `ready` → `in-batch`: pick; `in-batch` → `delivered`: merge; `in-batch` → `needs-input`: park; `needs-input` → `shaped`: `work answer`; `idea` → `refused`: `work refuse`; `shaped` → `refused`: `work refuse`; `idea` → `withdrawn`: `work withdraw`; `shaped` → `withdrawn`: `work withdraw`; `ready` → `withdrawn`: `work withdraw`; `needs-input` → `withdrawn`: `work withdraw`.
+- **provenance** (attribute of item): where an item came from: this bounded context, a peer bounded context or the product. Values: `own`, `peer`, `product`.
+- **value** (attribute of item): Values: `low-value`, `medium-value`, `high-value`.
+- **urgency** (attribute of item): Values: `low-urgency`, `medium-urgency`, `high-urgency`.
+- **size** (attribute of item): Values: `small`, `medium`, `large`.
+- **status** (attribute of batch): Values: `building`, `in-review`, `awaiting-merge`, `merged`, `abandoned`.
+  Transitions: `building` → `in-review`: `work batch review`; `in-review` → `building`: a fix-now finding; `in-review` → `awaiting-merge`: a clean review; `awaiting-merge` → `merged`: merge; `building` → `abandoned`: `work batch abandon`; `in-review` → `abandoned`: `work batch abandon`.
+- **status** (attribute of task): Values: `pending`, `running`, `done`, `failed`.
+- **tier** (attribute of design-decision): Values: `check`, `requirement`, `judgement`.
+- **blocked** (condition of item): an item that depends on an item that is not `delivered` and is not in the same batch.
+- **passing** (condition of item): an item whose every requirement parses, has no L0 or L1 finding of `model logic` with the item's lines laid over `spec/`, and has its scenarios written by `features generate`.
+- **clean** (condition of pull request): a pull request whose review lists no review finding to fix now.
+- **pick** (event): `work batch start` takes a ready item into a batch, or returns it to `shaped` when it is no longer passing. Forms: picks, picked.
+- **park** (event): a batch sets an item it cannot finish without an answer to `needs-input`. Forms: parks, parked.
+- **publish** (event): `work` puts a batch's branch on GitHub as a pull request. Forms: publishes, published.
+
 ## Relations
 
 | from | word | to | cardinality |
@@ -268,6 +296,16 @@ Tools the skills and agents run:
 | stage | for | node |  |
 | stage | with | result |  |
 | request line | proposed in | request | one |
+| item | depends on | item |  |
+| item | proposes | requirement |  |
+| item | in | batch | one |
+| item | asked by | bounded context |  |
+| task | of | batch | one |
+| pull request | of | batch | one |
+| review finding | on | pull request |  |
+| quote | from | session | one |
+| quote | cites | message |  |
+| design-decision | enforced by | test |  |
 
 ## Where things live
 
