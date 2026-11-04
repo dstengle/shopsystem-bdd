@@ -17,6 +17,7 @@ BOUND_BY_PYTEST_BDD = [
     "features/design-model-check.feature",
     "features/feature-file-tools.feature",
     "features/migration-tools.feature",
+    "features/readiness.feature",
     "features/supervision.feature",
     "features/work-queue.feature",
 ]

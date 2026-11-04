@@ -271,6 +271,8 @@ The lines each section gives are target lines. Where the grammar takes one as wr
 
 #### Task 4: `readiness` (service)
 
+- [x] Steps 1-7 done. g2 names `the reason` (no term for "the first failing check"); g4 is event-driven on `work ready`, not Ubiquitous.
+
 - **Groups:**
   1. **`work ready` readies a passing item:** While an item is `shaped` and the item is passing, when the person runs
      `work ready` on the item, `work` shall set the status of the item to `ready`.

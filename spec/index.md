@@ -87,6 +87,7 @@ The simplified workflow (plan 1, unbuilt):
 | capability | narrator | group |
 |---|---|---|
 | `backlog` | a person or session keeping the backlog | service |
+| `readiness` | a person or session readying an item | service |
 
 ## Testing
 
