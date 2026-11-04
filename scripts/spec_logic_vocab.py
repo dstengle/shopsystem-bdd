@@ -25,6 +25,17 @@ ATTR_PARTS = {"One", "More", "ThatIs", "ThatIsNot", "Whose", "WhoseNot", "Pre", 
 COND_PARTS = {"Pre", "ThatIs", "ThatIsNot", "Is", "IsNot"}
 
 
+# A relation row with no cardinality whose word is one of these prepositions relates a thing to one thing: a stage is
+# for one node and with one result (a call of report-checker-gaps; "one" says it, any other word does not).
+PREPOSITIONS = ("for", "with", "on", "of", "in")
+
+
+def functional(row):
+    """Whether a relation row relates each thing of its first kind to at most one of its second."""
+    card = row.cardinality.strip().lower()
+    return card == "one" or (not card and row.word.strip().lower() in PREPOSITIONS)
+
+
 def _bare(text):
     return text.strip().strip("`")
 
@@ -66,6 +77,7 @@ class Vocab:
             if k1 in by_term and k2 in by_term:
                 self.rels[spec_typed.relation_fun(by_term[k1], word, by_term[k2])] = rid
                 self.rel_kinds.setdefault(rid, set()).add((by_term[k1], by_term[k2]))
+        self.functional = {spec_relations.rid(row) for row in lexicon.rows if functional(row)}
         subs = spec_relations.subkinds(lexicon)
         self.subs = sorted((by_term[s], by_term[k]) for k, under in subs.items() for s in under
                            if k in by_term and s in by_term)
@@ -126,6 +138,7 @@ def domain(vocab):
     out = ["kind(%s)." % k for k in sorted(vocab.kinds)]
     out += ["sub(%s,%s)." % pair for pair in vocab.subs]
     out += ["actor(%s)." % a for a in sorted(vocab.actors)]
+    out += ["fun(%s)." % r for r in sorted(vocab.functional)]
     for tid, (kid, _) in sorted(vocab.attrs.items()):
         values, edges = vocab.attr_values[tid], vocab.transitions(tid)
         entered = {b for _, b in edges}

@@ -15,22 +15,24 @@ import toolchain
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
 
-# the questions of the live findings (report-S11.md)
+# the questions of the live findings (report-S11.md, report-checker-gaps.md)
 Q_STAGE = ("question: `include` is measurement-wide, so a stage's figure given for one stage and withheld for "
            "another clashes; say it per stage, or drop the negative Then?")
-Q_RELEASE = ("question: define a repository's release in the controlled language (one value of behind, outdated, "
-             "uncodified, current), so `current` excludes the pending steps?")
+Q_RELEASE = ("question: \"a repository\" in r13-r16 is not the repository `migrate upgrade` runs in, so two "
+             "repositories (one behind, one current) fire both; say \"the repository\", and define its release in "
+             "the controlled language (one value of behind, outdated, uncodified, current) so `current` excludes "
+             "the pending steps?")
 Q_LINES = ("question: \"every line settled\" needs `no request line is not settled`, which the translation "
            "refuses; allow `no K is not C`, or reword r20-r22?")
-Q_CLOSED = ("question: should r26 read \"no work-item of the initiative is open\" and yield to r29 and r34; and "
-            "should the check expand `open` under `no`?")
-Q_ONE = ("question: the condition's noun phrase is not tied to the trigger's (the initiative's branch, its "
-         "work-items, the result's change list, the work-item's question); is it one per trigger, and how is "
-         "that said?")
-Q_RESULT = ("question: a stage ends with one result and is for one node; give `stage with result` and `stage for "
-            "node` cardinality one, and the check read it, then name the exceptions in r43, r57, r63, r76?")
-Q_COMPLETE = ("question: `complete` is defined with \"every\", which the check does not expand; expand it, or have "
-              "r5 name the closed capability-proposals?")
+Q_CLOSED = ("question: should r26 read \"no work-item of the initiative is open\" and yield to r29 and r34? (the "
+            "check now reads `open` through its definition under `no`)")
+Q_ONE = ("question: the condition's noun phrase is an indefinite with no tie to the trigger's (the initiative's "
+         "branch, its work-items, the result's change list, the work-item's question, the glossary-proposal's "
+         "questions), so two of them may differ; tie it (\"a question on the work-item\", \"a change list the "
+         "result gives\") or say \"the K\", which the check reads as the one K?")
+Q_RESULT = ("question: one stage is with one result (the check reads `stage with result` as functional), so the "
+            "pair fires only on a DONE result that is also fixing, strange, unparsing or unheld; are those "
+            "exclusive of DONE (define the condition, or name the exception in r43, r57, r63, r76)?")
 
 
 EXPECTED: dict[str, str] = {
@@ -48,15 +50,12 @@ EXPECTED: dict[str, str] = {
     "L1 supervision#r26 supervision#r34": Q_CLOSED,
     "L1 supervision#r39 supervision#r40": Q_ONE,
     "L1 supervision#r39 supervision#r41": Q_ONE,
-    "L1 supervision#r42 supervision#r43": Q_RESULT,
-    "L1 supervision#r46 supervision#r47": Q_RESULT,
-    "L1 supervision#r57 supervision#r61": Q_RESULT,
-    "L1 supervision#r57 supervision#r63": Q_RESULT,
-    "L1 supervision#r62 supervision#r63": Q_RESULT,
+    "L6 supervision#r42 supervision#r43": Q_RESULT,
+    "L6 supervision#r57 supervision#r61": Q_RESULT,
+    "L6 supervision#r62 supervision#r63": Q_RESULT,
     "L1 supervision#r71 supervision#r72": Q_ONE,
-    "L1 supervision#r73 supervision#r76": Q_RESULT,
+    "L6 supervision#r73 supervision#r76": Q_RESULT,
     "L1 supervision#r76 supervision#r77": Q_ONE,
-    "L1 work-queue#r5 work-queue#r7": Q_COMPLETE,
     "L1 work-queue#r20 work-queue#r21": Q_ONE,
     "L1 work-queue#r20 work-queue#r22": Q_ONE,
     "L1 work-queue#r20 work-queue#r23": Q_ONE,

@@ -10,6 +10,8 @@ The shown atoms are the findings:
   L3  `bad_set`: a set no transition allows. (error)
   L4  `unreachable`: a value a pre-state needs that no transition path reaches. (warning)
   L5  `lint`: an untriggered positive event obligation, with the requirements that react to its event. (warning)
+  L6  `maybe(A,B,Why,C)`: a clash whose every witness depends on the prose condition C (one side says C of a thing
+      the other says more of); defining C in the controlled language decides it. (warning)
 
 `run(root, capability=None, extra=None)` gives the findings, `report(findings, as_json)` their text and exit code.
 """
@@ -42,13 +44,14 @@ def _ground(program):
     return ctl
 
 
-def _solve(ctl, limit, brave=True, focus=None):
+def _solve(ctl, limit, brave=True, focus=None, external="focus"):
     """(the shown atoms of the last model, sorted; whether the solve finished within `limit` seconds) of a grounded
     program. Brave, the last model holds every atom some model has; past the limit, the atoms found so far. With
-    `focus` (a pair), a normal solve with the external `focus(A,B)` true for it: the first witness of that pair."""
+    `focus` (a pair), a normal solve with the external `focus(A,B)` (or `external`) true for it: the first witness of
+    that pair."""
     ctl.configuration.solve.enum_mode = "brave" if brave else "auto"
     ctl.configuration.solve.models = 0 if brave else 1
-    atom = clingo.Function("focus", [clingo.String(i) for i in focus]) if focus else None
+    atom = clingo.Function(external, [clingo.String(i) for i in focus]) if focus else None
     if atom:
         ctl.assign_external(atom, True)
     last = []
@@ -89,23 +92,34 @@ def l2(statements, scope):
     return out
 
 
-def _clashes(ctl, words, clashes):
-    """The L1 of each pair of requirements (a split's pairs read as one), and of each requirement that contradicts
-    itself; one focused normal solve a pair, on the one grounding, gives its witness's pre-state."""
-    out = []
+def _pairs(found):
+    """{(id, id) of a pair of requirements, a split's read as one, or (id,) of one: its atoms' (a, b, why, ...)}."""
     by_pair = defaultdict(list)
-    for a, b, why in clashes:
+    for a, b, why, *rest in found:
         pair = tuple(sorted({spec_facts.split(a), spec_facts.split(b)}, key=_order))
-        by_pair[pair].append((a, b, "self" if len(pair) == 1 else why))
-    for pair, found in sorted(by_pair.items(), key=lambda kv: [_order(i) for i in kv[0]]):
-        if len(pair) == 1:
-            out.append(Finding("L1", list(pair), "%s contradicts itself" % pair[0]))
-            continue
-        a, b, _ = min(found)
-        atoms, _ = _solve(ctl, LIMIT, brave=False, focus=(a, b))
-        x, y = (a, b) if spec_facts.split(a) == pair[0] else (b, a)
-        whys = sorted({w for _, _, w in found})
-        out.append(Finding("L1", list(pair), words.clash(x, y, whys, words.pre(a, b, atoms))))
+        by_pair[pair].append((a, b, "self" if len(pair) == 1 else why, *rest))
+    return sorted(by_pair.items(), key=lambda kv: [_order(i) for i in kv[0]])
+
+
+def _clashes(ctl, words, clashes, maybes=()):
+    """The L1 of each pair of requirements, and of each requirement that contradicts itself; the L6 of each pair with
+    a `maybe` and no `clash`. One focused normal solve a pair, on the one grounding, gives its witness's pre-state."""
+    out, firm = [], set()
+    for code, external, found in (("L1", "focus", clashes), ("L6", "focusm", maybes)):
+        for pair, hits in _pairs(found):
+            if len(pair) == 1:
+                out.append(Finding("L1", list(pair), "%s contradicts itself" % pair[0]))
+                continue
+            if pair in firm:
+                continue
+            firm.add(pair)
+            a, b = min(hits)[:2]
+            atoms, _ = _solve(ctl, LIMIT, brave=False, focus=(a, b), external=external)
+            x, y = (a, b) if spec_facts.split(a) == pair[0] else (b, a)
+            text = words.clash(x, y, sorted({h[2] for h in hits}), words.pre(a, b, atoms))
+            if code == "L6":
+                text = words.maybe(sorted({h[3] for h in hits}), text)
+            out.append(Finding(code, list(pair), text))
     return out
 
 
@@ -114,7 +128,8 @@ def _findings(ctl, words, atoms):
     args = defaultdict(list)
     for sym in syms:
         args[sym.name].append([s.string if s.type == clingo.SymbolType.String else s for s in sym.arguments])
-    out = _clashes(ctl, words, [(a, b, str(w)) for a, b, w in args["clash"]])
+    out = _clashes(ctl, words, [(a, b, str(w)) for a, b, w in args["clash"]],
+                   [(a, b, str(w), c) for a, b, w, c in args["maybe"]])
     seen = set()
     for code, name, write in (("L3", "bad_set", words.bad_set), ("L4", "unreachable", words.unreachable)):
         for r, *rest in args[name]:

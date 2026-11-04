@@ -244,7 +244,7 @@ def test_the_context_is_read_once_per_state_of_its_files(tmp_path):
     assert ctx.statements[-1] == spec_context.Statement("U2", None, None, ctx.statements[-1].tree)
     assert ctx.statements[0].group == "supervision#g1" and ctx.statements[0].capability == "supervision"
     assert ctx.facts["supervision#r11"][0] == 'form("supervision#r11",when).'
-    assert ctx.refused == {} and ctx.domain == spec_logic_vocab.domain(ctx.vocab)
+    assert ctx.refused == {} and ctx.domain == spec_logic_vocab.domain(ctx.vocab) + spec_facts.def_facts(ctx.vocab)
     assert "c_outputless" in ctx.vocab.def_lits and "c_free" not in ctx.vocab.def_lits
     cap = root / "spec" / "capabilities" / "supervision.md"
     cap.write_text(cap.read_text().replace("- [r12] When", "- [r12] Whenever"))
@@ -258,3 +258,31 @@ def test_the_context_is_read_once_per_state_of_its_files(tmp_path):
     assert drafted.refused == {} and drafted.caps["supervision"].path == draft
     assert 'set("supervision#r12",1,v1,t_status,v_done).' in drafted.facts["supervision#r12"]
     assert spec_context.load(root, [draft]) is drafted
+
+
+def test_a_definite_with_no_antecedent_is_the_one_thing_of_its_kind(vocab):
+    out = facts(vocab, "x", "When the person runs `work run` on the initiative, `work run` shall start a stage for "
+                            "the initiative.")
+    assert 'the("x",v1).' in out and 'orel("x",r_stage_for_initiative,v2,v1).' in out
+    assert not any(f.startswith("the(") for f in facts(vocab, "x", START))     # "its" has the initiative before it
+
+
+def test_every_in_a_condition_is_a_universal_not_a_role(vocab):
+    out = facts(vocab, "x", "While every stage for the initiative is `ended`, when the person runs `work run` on an "
+                            "initiative that is `started`, `work run` shall start a stage.")
+    assert {'uall("x",u1,k_stage).', 'urel("x",r_stage_for_initiative,u1,v1).',
+            'ucond("x",u1,t_status_3,v_ended,pos).'} <= set(out)
+    assert not any(f.startswith('role("x",u1') for f in out)
+
+
+def test_a_definition_of_literals_on_its_subject_is_a_domain_fact(vocab):
+    out = spec_facts.def_facts(vocab)
+    assert {"prose(c_free).", "dalt(c_open,1).", "dlit(c_open,1,t_status,v_done,neg).",
+            "dlit(c_open,1,t_status,v_abandoned,neg)."} <= set(out)
+    assert not any("c_outputless" in f for f in out)            # defined with a relation: followed, not a literal
+
+
+def test_a_relation_of_cardinality_one_or_a_preposition_is_functional(vocab):
+    funs = {f for f in spec_logic_vocab.domain(vocab) if f.startswith("fun(")}
+    assert "fun(r_stage_with_result)." in funs and "fun(r_stage_for_initiative)." in funs
+    assert "fun(r_result_gives_question)." not in funs and "fun(r_stage_needs_resource)." not in funs

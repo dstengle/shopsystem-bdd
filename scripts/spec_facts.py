@@ -6,7 +6,8 @@ steps.
 the condition, the trigger and each response conjunct `I` in spoken order, each with the roles it first mentions.
 
 - the pre-state: `feat(R,F)`, `cond(R,V,A,Val,Pol)`, `ccond(R,V,C,Pol)`, `crel(R,Rel,V,W,Pol)`, `holds(R,V,Res)`,
-  `free(R,Res)`, and `none`, `cnone`, `rnone` for a noun phrase under `no` (spec_facts_np);
+  `free(R,Res)`, `none`, `cnone`, `rnone` for a noun phrase under `no`, `uall` and its kin for one under `every`,
+  `the(R,V)` for a definite with no antecedent (spec_facts_np);
 - the trigger: `trig(R,P,E,D,V)`, P one of `does`, `ran`, `done_to`, `becomes`; D an actor, a role or `any`;
 - each response: `resp(R,I,Pol,E,D,V)`; a positive `Set` also `set(R,I,V,A,Val)`; the object's restrictions
   `oattr`, `orel` (`onot`, `ocond`); `every(R,V)` for an `every` object or subject; `only(R,I,K)` for `only a K`
@@ -22,7 +23,7 @@ from spec_facts_np import Scope, const, unwrap
 FORMS = {"Ubiq": "ubiq", "When": "when", "While": "while", "Where": "where", "IfThen": "if",
          "WhileWhen": "while_when", "WhereWhen": "where_when", "WhereWhile": "where_while", "WhileIf": "while_if",
          "WhereIf": "where_if"}
-__all__ = ["define", "split", "translate"]
+__all__ = ["def_facts", "define", "split", "translate"]
 
 
 class Walk(Scope):
@@ -127,6 +128,9 @@ class Walk(Scope):
             self.emit("free", t[1][0])
             return
         cat, base, part = self.decode(fun, "clause")
+        if cat in ("attribute", "condition") and part in ("Is", "IsNot") and self.universal_atom(t, cat, base, part,
+                                                                                               obj):
+            return
         if cat == "attribute" and part in ("Is", "IsNot"):
             x, kid = self.arg(t[1], obj)
             if kid and part == "Is":
@@ -210,6 +214,8 @@ class Walk(Scope):
                     part in ("The", "It", "Its") and base not in self.bound)):
                 saved = dict(self.bound)
                 y = self.fresh(base)
+                if part in ("The", "Its"):
+                    self.emit("the", y)
                 if part != "It":
                     self.cn(u[1], y, True)
                 self.bound = saved
@@ -251,6 +257,26 @@ def split(ident):
     """The requirement a split comes from: `s#r5#2` -> `s#r5`; any other id as it is."""
     head, sep, tail = ident.rpartition("#")
     return head if sep and tail.isdigit() else ident
+
+
+def def_facts(vocab):
+    """The domain facts of the defined conditions for `grammar/check.lp`: `prose(C)` for a condition with no `Def`;
+    for a `Def` whose every way through is attribute literals on its own subject, `dalt(C,N)` for its N-th way and
+    `dlit(C,N,Attr,Val,Pol)` for each literal (a `Def` with any other fact is neither: it is followed where positive)."""
+    out = ["prose(%s)." % c for c in sorted(vocab.conds) if c not in vocab.def_lits]
+    for cid, (kid, clause) in sorted(vocab.def_lits.items()):
+        ways, seq = [], []
+        while seq is not None:
+            w = Walk(vocab, "d", seq)
+            w.bound, w.expanding = {kid: "s"}, {cid}
+            w.clause(clause)
+            ways.append(w.out)
+            seq = _next(w.taken, w.options)
+        if all(f.startswith('cond("d",s,') for way in ways for f in way):
+            for n, way in enumerate(ways, 1):
+                out.append("dalt(%s,%d)." % (cid, n))
+                out += ["dlit(%s,%d,%s" % (cid, n, f[len('cond("d",s,'):]) for f in way]
+    return out
 
 
 def define(vocab, tree):
