@@ -16,13 +16,15 @@ removed requirement's handlers and code to take out) runs every test.
 
 With `--whole-suite` too, every test runs (the whole suite before the work-item's merge), and a scenario whose
 requirement a work-item other than the work-item, neither green nor withdrawn, accepts, or a capability-proposal
-neither formulated nor withdrawn adds or changes, is expected to fail: an xfail (supervision r43, r122). Standard library and pytest only.
+neither formulated nor withdrawn adds or changes, is expected to fail: an xfail (supervision r43, r122). On every run, a scenario of a requirement its codified
+capability lists in `unbuilt:` is a non-strict xfail (spec_unbuilt). Standard library and pytest only.
 """
 import os
 import pathlib
 import re
 
 import pytest
+import spec_unbuilt
 from supervise_outputs import is_guarantees
 
 
@@ -157,6 +159,7 @@ def pytest_configure(config):
 
 
 def pytest_collection_modifyitems(config, items):
+    spec_unbuilt.mark(items, spec_root(config))     # every run: an unbuilt requirement's scenario is an xfail
     name = config.getoption("--work-item")
     if not name:
         return

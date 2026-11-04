@@ -89,7 +89,7 @@ which capability).
     pytest-bdd scenario item whose feature stem is a capability with an `unbuilt:` id among the item's `r<n>` marks.
 - Consumes: `spec_read.capability(path)` for the requirement ids and `model_parse.frontmatter`.
 
-- [ ] **Step 1: Write the failing tests** in `tests/scripts/test_spec_unbuilt.py`. They use `unittest` with a
+- [x] **Step 1: Write the failing tests** in `tests/scripts/test_spec_unbuilt.py`. They use `unittest` with a
   temporary root holding `spec/capabilities/demo.md` (codified, two groups g1 = r1 and g2 = r2), in the style of
   `tests/scripts/test_spec_read.py`.
   - `test_unbuilt_reads_the_listed_ids`: with `unbuilt: [r2]`, assert `unbuilt(root) == {"demo": {"r2"}}`.
@@ -100,24 +100,24 @@ which capability).
   - `test_mark_adds_a_non_strict_xfail`: with `unbuilt: [r2]`, an item with marks `g2` and `r2` from `demo.feature`
     gets exactly one xfail marker, with `strict=False` and the reason `"unbuilt: demo#r2"`.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_spec_unbuilt.py -q`
   Expected: FAIL with `ModuleNotFoundError: spec_unbuilt`.
 
-- [ ] **Step 3: Implement `spec_unbuilt.py`** (standard library and pytest only). Then call
+- [x] **Step 3: Implement `spec_unbuilt.py`** (standard library and pytest only). Then call
   `spec_unbuilt.mark(items, root)` from `work_items.py`'s collection hook on every run, not only under
   `--whole-suite`. Give `root` the same way that hook finds the spec.
 
-- [ ] **Step 4: Run the tests and the suite.**
+- [x] **Step 4: Run the tests and the suite.**
   Run: `python3 -m pytest tests/scripts/test_spec_unbuilt.py -q && python3 -m pytest -q`
   Expected: 4 passed; the suite 945 passed, 1 skipped.
 
-- [ ] **Step 5: Check that `model check` takes the field.** Add `unbuilt: []` to `spec/capabilities/trials.md`'s
+- [x] **Step 5: Check that `model check` takes the field.** Add `unbuilt: []` to `spec/capabilities/trials.md`'s
   frontmatter as a probe. Run `python3 scripts/model check | tail -1`.
   Expected: `53 violations, 16 warnings, 29 unresolved references, 0 file problems`. If a file problem appears, add
   `unbuilt` to the frontmatter keys `scripts/model_spec.py` accepts. Then remove the probe.
 
-- [ ] **Step 6: Commit.** Add the CLAUDE.md row first:
+- [x] **Step 6: Commit.** Add the CLAUDE.md row first:
   `| scripts/spec_unbuilt.py | a capability's unbuilt: ids, their problems, and the xfail mark the pytest plugin puts on their scenarios |`.
   ```bash
   git add scripts/spec_unbuilt.py scripts/work_items.py tests/scripts/test_spec_unbuilt.py CLAUDE.md
