@@ -125,6 +125,16 @@ def test_a_negated_defined_condition_is_read_through_its_definition():
     assert 'clash("d1","d2",exit)' in solve(neg + ready.replace("v_ready", "v_done") + OPEN_DEF + DOM)
 
 
+def test_a_value_every_gives_reads_a_negated_defined_condition():
+    # u1: every work-item of the initiative is `done`; u2: a work-item of it is not closed. A done one is closed.
+    every = req("u1", "uall(R,u1,k_work_item). urel(R,r_of,u1,v2). ucond(R,u1,t_status,v_done,pos). "
+                      "set(R,1,v2,t_status,v_done). resp(R,1,pos,set(t_status,v_done),a_work_run,v2).")
+    assert not clashes(solve(every + OPEN.format(lit='ccond("a2",v3,c_closed,neg).') + CLOSED + DOM))
+    ready = every.replace("v_done,pos). set", "v_ready,pos). set")         # a ready one is not: real
+    assert 'clash("a2","u1",neg_pos)' in solve(ready + OPEN.format(lit='ccond("a2",v3,c_closed,neg).') + CLOSED
+                                               + DOM)
+
+
 # ---- no over a relation (rnone) -----------------------------------------------------------------------------------
 def test_no_over_a_relation_blocks_the_unification():
     alone = req("m1", 'rnone(R,r_of,kind(k_work_item),v2). resp(R,1,pos,exit_ok,a_work_run,none).')

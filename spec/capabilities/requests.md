@@ -126,18 +126,20 @@ Restates: r18@0.29, r7@0.29.
 
 ### [g20] The upstream's turn ends with a line not settled
 Restates: r17@0.29.
-- [r20] While a request line is not settled, when the person runs `work turn` on a request that is `open`, `work`
-  shall set the status of the request to `awaiting-asker`.
+- [r20] While a request is `open` and a request line proposed in the request is not settled, when the person runs `work
+  turn` on the request, `work` shall set the status of the request to `awaiting-asker`.
 
 ### [g21] The upstream's turn ends with every line settled and one accepted
 Restates: r23@0.29, r8@0.29.
-- [r21] While a request line is `accepted`, when the person runs `work turn` on a request that is `open`, `work`
-  shall set the status of the request to `accepted`, and `work` shall not change the side of the request.
+- [r21] While a request is `open` and every request line proposed in the request is settled and a request line proposed
+  in the request is `accepted`, when the person runs `work turn` on the request, `work` shall set the status of the
+  request to `accepted`, and `work` shall not change the side of the request.
 
 ### [g22] The upstream's turn ends with every line refused
 Restates: r9@0.29.
-- [r22] While a request line is `refused`, when the person runs `work turn` on a request that is `open`, `work` shall
-  set the status of the request to `refused`.
+- [r22] While a request is `open` and a request line proposed in the request is `refused` and every request line
+  proposed in the request is `refused`, when the person runs `work turn` on the request, `work` shall set the status of
+  the request to `refused`.
 
 ### [g23] `work resolve` delivers an accepted request
 Restates: r10@0.29, r11@0.29, r12@0.29, r24@0.29.

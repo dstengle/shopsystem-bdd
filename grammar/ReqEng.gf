@@ -48,6 +48,7 @@ concrete ReqEng of Req = TypedEng ** {
     HoldAtMost c r = "hold" ++ "at" ++ "most" ++ c ++ r.s ! Pl ++ "at" ++ "a" ++ "time" ;
     CodeNP c = np c ;
     QuotedNP q = np q ;
+    QuotedFor q x = np (q ++ "for" ++ x.s) ;
     Only x = {s = "only" ++ x.s ; p = Full ; n = x.n} ;
     OneNP x = {s = x.s ; m = One} ;
     MoreNP x l = {s = x.s ++ (case l.m of {One => "and" ; More => ","}) ++ l.s ; m = More} ;

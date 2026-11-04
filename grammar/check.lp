@@ -142,14 +142,18 @@ has(A,B,1,Z,T,V,P) :- w1(A,B,Z,T,V,P).  has(A,B,1,Z,T,V,P) :- n1(A,B,Z,T,V,P).
 ask(A,B,N,Z,C) :- side(A,B,S), state(A,B,S,N), cnone(S,K,C), kindof(A,B,Z,K2), subeq(K2,K), dalt(C,_).
 ask(A,B,N,Z,C) :- side(A,B,S), state(A,B,S,N), ccond(S,Y,C,neg), at(A,B,S,Y,Z), dalt(C,_).
 ask(A,B,N,Z,C) :- umatch(A,B,S,U,Z), state(A,B,S,N), uccond(S,U,C,_), dalt(C,_).
-% a way through C is entailed on Z when each of its literals is; broken when one is contradicted
-unent(A,B,N,Z,C,W) :- ask(A,B,N,Z,C), dlit(C,W,T,V,pos), not has(A,B,N,Z,T,V,pos).
+% a way through C is entailed on Z when each of its literals is; broken when one is contradicted. What a side's
+% "every K ... is v" says of Z (`ucond`) counts as Z's own value here (hasu): "every line is `refused`" makes a line
+% settled, so "a line is not settled" is out (requests r20, r22)
+hasu(A,B,N,Z,T,V,P) :- has(A,B,N,Z,T,V,P).
+hasu(A,B,N,Z,T,V,pos) :- umatch(A,B,S,U,Z), state(A,B,S,N), ucond(S,U,T,V,pos).
+unent(A,B,N,Z,C,W) :- ask(A,B,N,Z,C), dlit(C,W,T,V,pos), not hasu(A,B,N,Z,T,V,pos).
 negd(A,B,N,Z,T,V) :- has(A,B,N,Z,T,V,neg).
-negd(A,B,N,Z,T,V) :- has(A,B,N,Z,T,W,pos), dlit(_,_,T,V,_), V != W.
+negd(A,B,N,Z,T,V) :- hasu(A,B,N,Z,T,W,pos), dlit(_,_,T,V,_), V != W.
 unent(A,B,N,Z,C,W) :- ask(A,B,N,Z,C), dlit(C,W,T,V,neg), not negd(A,B,N,Z,T,V).
 ent(A,B,N,Z,C) :- ask(A,B,N,Z,C), dalt(C,W), not unent(A,B,N,Z,C,W).
 brk(A,B,N,Z,C,W) :- ask(A,B,N,Z,C), dlit(C,W,T,V,pos), negd(A,B,N,Z,T,V).
-brk(A,B,N,Z,C,W) :- ask(A,B,N,Z,C), dlit(C,W,T,V,neg), has(A,B,N,Z,T,V,pos).
+brk(A,B,N,Z,C,W) :- ask(A,B,N,Z,C), dlit(C,W,T,V,neg), hasu(A,B,N,Z,T,V,pos).
 live(A,B,N,Z,C) :- ask(A,B,N,Z,C), dalt(C,W), not brk(A,B,N,Z,C,W).
 refuted(A,B,N,Z,C) :- ask(A,B,N,Z,C), not live(A,B,N,Z,C).
 out(A,B) :- side(A,B,S), state(A,B,S,N), cnone(S,K,C), kindof(A,B,Z,K2), subeq(K2,K), ent(A,B,N,Z,C).

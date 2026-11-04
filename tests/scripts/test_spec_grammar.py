@@ -205,7 +205,7 @@ def test_core_has_a_line_for_each_new_fun_and_the_three_definitions():
     _, items = core()
     text = " ".join(want for _, _, want, _ in items)
     for fun in ("AndVP", "OrVP", "OneVPor", "AndResp", "CondOr", "_Atom", "rel_stage_for_node ",
-                "rel_stage_for_work_item ", "_Def "):
+                "rel_stage_for_work_item ", "_Def ", "QuotedFor "):
         assert fun in text, fun
     assert len([g for g, _, _, _ in items if g == "Def"]) == 3 and "the line count and exit" in str(items)
 

@@ -35,6 +35,13 @@ not know rather than guessing at it.
 - **present** (condition of measurement): a measurement of the initiative on the day is already written.
 - **include** (event): `measure` puts a figure or a name into the measurement it writes. Forms: includes, included.
 
+## Relations
+
+| from | word | to | cardinality |
+|---|---|---|---|
+| logged stage | has | transcript | one |
+| logged stage | has | session file | one |
+
 ## Behaviour
 
 ### [g1] `measure initiative` writes one measurement named by the day and the initiative, each ended stage with how long it took and its session's figures
@@ -67,7 +74,7 @@ Restates: r47@0.29.
 
 ### [g8] each stage is given with its session's round trips, a line break inside a transcript's JSON string not splitting its line
 Restates: r53@0.29, r58@0.29.
-- [r8] While a transcript is `found`, when the person runs `measure initiative i7-cart`, `measure` shall include "round_trips" and exit successfully.
+- [r8] While a logged stage has a transcript that is `found`, when the person runs `measure initiative i7-cart`, `measure` shall include "round_trips" for the logged stage and exit successfully.
 
 ### [g9] each work-item is given with its transitions, its counts of `awaiting-answer` and `failed`, and its commits, and the totals span the first transition to the last, a time ending in `Z` read as a time in UTC
 Restates: r41@0.29, r42@0.29, r59@0.29.
@@ -90,15 +97,15 @@ Restates: r52@0.29.
 
 ### [g12] a stage with a start and no end is given without how long it took
 Restates: r51@0.29.
-- [r12] While a logged stage is `unended`, when the person runs `measure initiative i7-cart`, `measure` shall include "turns", and `measure` shall not include "took".
+- [r12] While a logged stage is `unended` and the logged stage has a session file that is `filled`, when the person runs `measure initiative i7-cart`, `measure` shall include "turns" for the logged stage, and `measure` shall not include "took" for the logged stage.
 
 ### [g13] a stage whose `session.json` is empty is given without its session's figures, named as such
 Restates: r57@0.29.
-- [r13] While a session file is `empty`, when the person runs `measure initiative i7-cart`, `measure` shall include "session_json", and `measure` shall not include "turns".
+- [r13] While a logged stage has a session file that is `empty`, when the person runs `measure initiative i7-cart`, `measure` shall include "session_json" for the logged stage, and `measure` shall not include "turns" for the logged stage.
 
 ### [g14] a stage whose session has no transcript is given without its round trips
 Restates: r55@0.29.
-- [r14] While a transcript is `lost`, when the person runs `measure initiative i7-cart`, `measure` shall not include "round_trips".
+- [r14] While a logged stage has a transcript that is `lost`, when the person runs `measure initiative i7-cart`, `measure` shall not include "round_trips" for the logged stage.
 
 ### [g15] the request an initiative fulfils is given as internal or external
 Restates: r63@0.29.

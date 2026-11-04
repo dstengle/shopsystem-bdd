@@ -150,24 +150,29 @@ Feature: Requests
 
   @g20 @r20
   Scenario: The upstream's turn ends with a line not settled
-    Given a request line r1
+    Given a request q1 that is `open`
+    And a request line r1
+    And the request line r1 is proposed in the request q1
     And the request line r1 is not settled
-    And a request q1 that is `open`
     When the person runs `work turn` on the request q1
     Then the request q1 is `awaiting-asker`
 
   @g21 @r21
   Scenario: The upstream's turn ends with every line settled and one accepted
-    Given a request line r1 that is `accepted`
-    And a request q1 that is `open`
+    Given a request q1 that is `open`
+    And a request line r1
+    And the request line r1 is proposed in the request q1
+    And the request line r1 is `accepted`
     When the person runs `work turn` on the request q1
     Then the request q1 is `accepted`
     And `work` does not change the side of the request q1
 
   @g22 @r22
   Scenario: The upstream's turn ends with every line refused
-    Given a request line r1 that is `refused`
-    And a request q1 that is `open`
+    Given a request q1 that is `open`
+    And a request line r1
+    And the request line r1 is proposed in the request q1
+    And the request line r1 is `refused`
     When the person runs `work turn` on the request q1
     Then the request q1 is `refused`
 

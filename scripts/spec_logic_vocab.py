@@ -18,7 +18,7 @@ CORE = {"Ubiq", "When", "While", "Where", "IfThen", "WhileWhen", "WhereWhen", "W
         "Shall", "ShallNot", "OneVP", "AndVP", "OneVPor", "OrVP", "OneResp", "AndResp", "ActorSubj", "NPSubj",
         "Runs", "RunsOn", "IsRun", "Happens", "HappensI", "Undergoes", "CondOne", "CondAnd", "CondOr", "Holds",
         "HoldsA", "IsFree", "FeatGiven", "FeatAtom", "Do", "DoTo", "Print", "ExitOk", "ExitErr", "ChangeNothing",
-        "Hold", "HoldA", "HoldAtMost", "CodeNP", "QuotedNP", "Only", "OneNP", "MoreNP", "CodeLit", "CmdCode",
+        "Hold", "HoldA", "HoldAtMost", "CodeNP", "QuotedNP", "QuotedFor", "Only", "OneNP", "MoreNP", "CodeLit", "CmdCode",
         "CmdActor", "QuotedLit", "CountNum", "CountCode"}
 KIND_PARTS = {"An", "Every", "The", "No", "AtMostOne", "One", "Pl", "Its", "Named", "It", "toNP", "NumberOf"}
 ATTR_PARTS = {"One", "More", "ThatIs", "ThatIsNot", "Whose", "WhoseNot", "Pre", "Is", "IsNot", "Becomes", "Set", "Of"}
