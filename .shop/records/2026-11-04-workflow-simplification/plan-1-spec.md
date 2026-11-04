@@ -320,6 +320,8 @@ The lines each section gives are target lines. Where the grammar takes one as wr
 
 #### Task 7: `pr-review` and `brainstorming` (guarantees)
 
+- [x] Steps 1-7 done. pr-review: correctness and range are one group (g3, one trigger), the re-review is g6, the grade g8 (8 groups); `clean` is defined in the controlled language. brainstorming: "run `work ready`" is said "use `work ready`" (3 groups).
+
 - **Frontmatter:** narrator `the person who merges a batch's pull request`; no feature and no test module.
 - **Groups:**
   1. **One review a batch:** a pull request is reviewed once by the `pr-reviewer`, not after each task.

@@ -90,6 +90,8 @@ The simplified workflow (plan 1, unbuilt):
 | `readiness` | a person or session readying an item | service |
 | `intake` | a session answering a peer bounded context's request | service |
 | `batches` | a person or session building a batch | service |
+| `pr-review` | the person who merges a batch's pull request | guarantees |
+| `brainstorming` | the person shaping work in a conversation | guarantees |
 
 ## Testing
 
@@ -265,7 +267,7 @@ The simplified workflow (plan 1, unbuilt):
 - **tier** (attribute of design-decision): Values: `check`, `requirement`, `judgement`.
 - **blocked** (condition of item): an item that depends on an item that is not `delivered` and is not in the same batch.
 - **passing** (condition of item): an item whose every requirement parses, has no L0 or L1 finding of `model logic` with the item's lines laid over `spec/`, and has its scenarios written by `features generate`.
-- **clean** (condition of pull request): a pull request whose review lists no review finding to fix now.
+- **clean** (condition of pull request): A pull request is clean when no review finding on the pull request is `fix now`.
 - **pick** (event): `work batch start` takes a ready item into a batch, or returns it to `shaped` when it is no longer passing. Forms: picks, picked.
 - **park** (event): a batch sets an item it cannot finish without an answer to `needs-input`. Forms: parks, parked.
 - **publish** (event): `work` puts a batch's branch on GitHub as a pull request. Forms: publishes, published.
