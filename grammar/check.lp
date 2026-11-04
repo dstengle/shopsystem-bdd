@@ -149,7 +149,8 @@ reach(T,V) :- initial(_,T,V).  reach(T,W) :- reach(T,V), edge(T,V,W).
 unreachable(R,T,V) :- cond(R,_,T,V,pos), moving(T), not reach(T,V).
 #show unreachable/3.
 % ---- L5: an untriggered positive event obligation, with the triggered requirements that react to its event -------
-stative(set(T,V)) :- resp(_,_,_,set(T,V),_,_).  stative(change_nothing).
+% holding a resource is a state, not an event ("every stage shall hold the initiative lock" is no G p trap)
+stative(set(T,V)) :- resp(_,_,_,set(T,V),_,_).  stative(hold(S)) :- resp(_,_,_,hold(S),_,_).  stative(change_nothing).
 l5(R,E) :- resp(R,_,pos,E,_,_), not trg(R), not stative(E).
 reacts(E) :- l5(_,E), trig(_,_,E,_,_).
 lint(R,E,T) :- l5(R,E), trig(T,_,E,_,_).
