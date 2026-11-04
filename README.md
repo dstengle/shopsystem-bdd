@@ -154,7 +154,8 @@ limits are its tools; under `work run` they are also its `--allowedTools`.
   file says `language: codified-1`. `spec/universal.md` holds the universal conditions `U<n>`.
 - **New tools:** `tools install` installs GF 3.12 and the pinned pgf and clingo; `model parse`, `model lexicon`,
   `model logic` (one clingo solve of `grammar/check.lp` over each requirement's facts: clashes naming both ids,
-  duplicates, transitions, reachability, untriggered event obligations) and `model restates` (each 0.29 id restated, dropped or moved); `features generate` and `features vocab`.
+  duplicates, transitions, reachability, untriggered event obligations) and `model restates` (each 0.29 id
+  restated, dropped or moved); `features generate` and `features vocab`.
 - **Scenarios are generated**, not written: `features generate` writes one scenario a group, tagged `@g<n> @r<n>…`,
   and step definitions are handlers of a fixed step vocabulary. The agent that wrote feature files is gone, and so are
   `features tag`, `move`, `deprecate`, `retire`, `rebind` and `verify-moved`. `work run`'s formulate round is a script.
