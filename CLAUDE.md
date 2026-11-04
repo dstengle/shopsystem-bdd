@@ -25,6 +25,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/spec_typed.py` | the generated GF modules of a lexicon: `Lex` and `Typed`, each with its English, a relation row's modifier and clause funs |
 | `scripts/spec_typed_def.py` | the generated Def grammar: a condition defined in the controlled language, and the refusal of a definition that says "it" (design-r2 §4.3) |
 | `scripts/spec_grammar.py` | a context's requirement grammar: compile and cache, tokenise, parse with the guards, linearise, and the hint a refusal carries |
+| `scripts/spec_parse_cache.py` | GF's parse of a line kept on disk for `spec_grammar`, shared by processes, keyed by the grammar's sources, the grammar, the lexicon's words and the text |
 | `scripts/spec_tree.py` | requirement trees: the post-parse guards, normalised trees and `logic_only` |
 | `scripts/spec_read.py` | the codified spec files read: a capability's groups, requirements, `Restates:` and `## Dropped`; `spec/universal.md`; `spec/restated.json`; the per-file marker `language: codified-1` |
 | `scripts/spec_read_given.py` | a codified group's given block read for spec_read, and the shape test of example data (v15m; design-r2 §9.1) |

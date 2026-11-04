@@ -16,6 +16,7 @@ from itertools import islice
 from pathlib import Path
 
 import spec_lexicon
+import spec_parse_cache
 import spec_tree
 import spec_typed
 import spec_typed_def
@@ -24,6 +25,7 @@ import tools_grammar
 GRAMMARS = Path(__file__).resolve().parent.parent / "grammar"
 LIMIT = 2000  # trees read from one parse before the guards; a literal slot reads any token
 _loaded = {}
+_contexts = {}  # (spec_lexicon.read, root) -> (state of the files, (lexicon, sources, sha))
 
 
 class GrammarError(Exception):
@@ -115,13 +117,34 @@ def _compile(srcs, sha, grammar):
             shutil.rmtree(tmp, ignore_errors=True)
 
 
+def _state(root):
+    files = sorted((root / "spec").glob("**/*.md")) + sorted(GRAMMARS.glob("*.gf"))
+    return tuple((str(p), st.st_mtime_ns, st.st_size) for p, st in ((p, p.stat()) for p in files))
+
+
+def _context(root):
+    """(lexicon, GF sources, their sha) of the context, read again when a file under `spec/` or a grammar source
+    changes, or when `spec_lexicon.read` is replaced (a stub, or `spec_context`'s memo): a whole spec's parses read
+    the lexicon once, not three times a line. The sha names the compiled PGFs and the cached parses."""
+    root = Path(root).resolve()
+    key, state = (spec_lexicon.read, str(root)), _state(root)
+    hit = _contexts.get(key)
+    if hit is None or hit[0] != state:
+        lex = spec_lexicon.read(root)
+        srcs = sources(root, lex)
+        sha = hashlib.sha256("".join("%s\0%s\0" % kv for kv in sorted(srcs.items())).encode()).hexdigest()[:32]
+        if len(_contexts) >= 16:
+            _contexts.clear()
+        hit = _contexts[key] = (state, (lex, srcs, sha))
+    return hit[1]
+
+
 def load(root, grammar="Req"):
     """The context's compiled grammar (`"Req"`, `"Steps"` or `"Def"`) as a `pgf.PGF`, compiled once per set of sources."""
     import pgf
-    srcs = sources(root)
+    _, srcs, sha = _context(root)
     if "%sEng.gf" % grammar not in srcs:
         raise GrammarError("no grammar %s under %s" % (grammar, GRAMMARS))
-    sha = hashlib.sha256("".join("%s\0%s\0" % kv for kv in sorted(srcs.items())).encode()).hexdigest()[:32]
     if (sha, grammar) not in _loaded:
         target = _cache() / sha / ("%s.pgf" % grammar)
         if not target.is_file():
@@ -166,11 +189,10 @@ def _position(tokens, offset):
     return len(tokens)
 
 
-def _literal(root, text):
+def _literal(words, text):
     """GF's String callback: a literal slot reads one token, but not a lexicon word, which the guard would refuse
     there anyway; so a line of many backticked words is not read 3^n ways past LIMIT."""
     import pgf
-    words = {w.replace(" ", spec_typed.PLACEHOLDER) for w in spec_lexicon.read(root).words()}
 
     def read(_, start):  # offsets count characters
         while start < len(text) and text[start] == " ":
@@ -183,12 +205,22 @@ def _literal(root, text):
 
 
 def _raw(root, tokens, grammar):
-    """(trees, error index or None) of the parse before the guards."""
+    """(trees, error index or None) of the parse before the guards, from `spec_parse_cache` when it has it."""
+    lex, _, sha = _context(root)
+    text, words = _gf_text(tokens), {w.replace(" ", spec_typed.PLACEHOLDER) for w in lex.words()}
+    digest = spec_parse_cache.key(sha, grammar, text, words, LIMIT)
+    hit = spec_parse_cache.get(sha, grammar, digest)
+    if hit is None:
+        hit = _gf_parse(root, tokens, grammar, text, words)
+        spec_parse_cache.put(sha, grammar, digest, *hit)
+    return hit
+
+
+def _gf_parse(root, tokens, grammar, text, words):
     import pgf
     gram = load(root, grammar)
-    text = _gf_text(tokens)
     try:
-        parses = islice(gram.languages["%sEng" % grammar].parse(text, callbacks=[("String", _literal(root, text))]),
+        parses = islice(gram.languages["%sEng" % grammar].parse(text, callbacks=[("String", _literal(words, text))]),
                         LIMIT)
         return [_tree(e, gram) for _, e in parses], None
     except pgf.ParseError as err:
@@ -204,7 +236,7 @@ def parse(root, line, grammar="Req"):
         if at >= len(tokens):
             return Parse(refusal="the line ends before its sentence does (after %d tokens)" % len(tokens))
         return Parse(refusal="does not parse at %s (token %d of %d)" % (tokens[at], at + 1, len(tokens)))
-    lex = spec_lexicon.read(root)
+    lex = _context(root)[0]
     words = lex.words()
     kept, reasons = [], []
     for tree in trees:

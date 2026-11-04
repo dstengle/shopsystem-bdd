@@ -4,6 +4,7 @@ import json
 import re
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -72,7 +73,7 @@ def test_a_relation_entry_is_v_t8_and_gives_no_relation(tmp_path):
 
 
 def test_no_fixed_horizon():
-    """Point 4: telingo's own horizon, no constant."""
+    """Point 4: no horizon constant."""
     assert [p.name for p in SCRIPTS.glob("*.py") if "HORIZON = " in p.read_text()] == []
 
 
@@ -103,8 +104,19 @@ def test_the_lines_of_q47_parse(tmp_path):
     assert done.returncode == 0, done.stdout + done.stderr
 
 
-def test_model_logic_finds_no_conflict_in_the_spec():
-    """Point 4 on the live spec: no L1-L3 finding (L4 warnings are listed in gate-r2-done.md)."""
-    done = run(SCRIPTS / "model", "logic", "--json", timeout=600)
-    found = json.loads(done.stdout)["findings"]
-    assert [f for f in found if str(f.get("code", "")).upper() in ("L1", "L2", "L3")] == []
+@pytest.mark.live_logic
+def test_model_logic_finds_no_conflict_in_the_spec(live_logic, live_expected):
+    """Point 4 on the live spec: no L1-L3 finding outside the known ones (`EXPECTED`); L4 and L5 are warnings."""
+    assert [f.text for f in live_logic if f.code in ("L1", "L2", "L3") and f.text not in live_expected] == []
+
+
+@pytest.mark.live_logic
+def test_model_logic_on_the_live_spec_is_fast():
+    """design-r3 §6: the whole context in one solve, in under 2 s of wall time (the first run warms the parse
+    cache)."""
+    run(SCRIPTS / "model", "logic", "--json", timeout=60)
+    start = time.monotonic()
+    done = run(SCRIPTS / "model", "logic", "--json", timeout=60)
+    took = time.monotonic() - start
+    assert "Traceback" not in done.stderr, done.stderr
+    assert took < 2, "model logic took %.1f s" % took

@@ -62,7 +62,9 @@ def environment(tmp_path, phase):
     env = {k: v for k, v in os.environ.items() if k not in ("SHOPSYSTEM_WORK_RUN_WORKER", "PYTEST_XDIST_WORKER")}
     env.update(PATH="%s%s%s" % (there / "bin", os.pathsep, os.environ.get("PATH", "")),
                SHOPSYSTEM_WORK_CLAUDE=str(claude), STUB_CLAUDE_PLAN=str(there / ("%s.json" % phase)),
-               STUB_CLAUDE_CALLS=str(there / ("%s.jsonl" % phase)), CLAUDE_CONFIG_DIR=str(there / "claude"))
+               STUB_CLAUDE_CALLS=str(there / ("%s.jsonl" % phase)), CLAUDE_CONFIG_DIR=str(there / "claude"),
+               # `work run`'s `-n auto` on the fixture's two scenarios: two xdist workers, not one per core
+               PYTEST_XDIST_AUTO_NUM_WORKERS="2")
     env["PYTHONPATH"] = os.pathsep.join(p for p in env.get("PYTHONPATH", "").split(os.pathsep)
                                         if p and not (Path(p) / "work_items.py").exists())
     return env
