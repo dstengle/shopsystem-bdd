@@ -171,6 +171,8 @@ lint(R,E,none) :- l5(R,E), not reacts(E).
 #show lint/3.
 
 % ---- the witness of one pair (a normal solve with focus(A,B)): it clashes, and its merged pre-state is shown -----
+% focus/2 is an external, false unless a solve assumes it, so the check and every witness share one grounding
+#external focus(A,B) : pair(A,B).
 hit(A,B) :- clash(A,B,W), W != self.
 :- focus(A,B), pair(A,B), not hit(A,B).
 pre(A,B,Z,T,V,P) :- focus(A,B), w0(A,B,Z,T,V,P).

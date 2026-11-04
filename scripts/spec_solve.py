@@ -35,12 +35,22 @@ def _order(ident):
     return (local.startswith("U"), cap, local[:1], int(re.sub(r"\D", "", local) or 0))
 
 
-def solve(program, limit, brave=True):
-    """(the shown atoms of the last model, sorted; whether the solve finished within `limit` seconds). Brave, the
-    last model holds every atom some model has; past the limit, the atoms found so far."""
-    ctl = clingo.Control(["--enum-mode=brave", "--warn=none"] if brave else ["--warn=none"])
+def _ground(program):
+    ctl = clingo.Control(["--warn=none"])
     ctl.add("base", [], program)
     ctl.ground([("base", [])])
+    return ctl
+
+
+def _solve(ctl, limit, brave=True, focus=None):
+    """(the shown atoms of the last model, sorted; whether the solve finished within `limit` seconds) of a grounded
+    program. Brave, the last model holds every atom some model has; past the limit, the atoms found so far. With
+    `focus` (a pair), a normal solve with the external `focus(A,B)` true for it: the first witness of that pair."""
+    ctl.configuration.solve.enum_mode = "brave" if brave else "auto"
+    ctl.configuration.solve.models = 0 if brave else 1
+    atom = clingo.Function("focus", [clingo.String(i) for i in focus]) if focus else None
+    if atom:
+        ctl.assign_external(atom, True)
     last = []
 
     def model(m):
@@ -49,7 +59,14 @@ def solve(program, limit, brave=True):
         done = handle.wait(limit)
         if not done:
             handle.cancel()
+    if atom:
+        ctl.assign_external(atom, False)
     return sorted(last), done
+
+
+def solve(program, limit, brave=True):
+    """`_solve` of `program`, grounded."""
+    return _solve(_ground(program), limit, brave)
 
 
 def _key(tree):
@@ -72,13 +89,9 @@ def l2(statements, scope):
     return out
 
 
-def _q(ident):
-    return '"%s"' % ident
-
-
-def _clashes(program, words, clashes):
+def _clashes(ctl, words, clashes):
     """The L1 of each pair of requirements (a split's pairs read as one), and of each requirement that contradicts
-    itself; one focused normal solve a pair gives its witness's pre-state."""
+    itself; one focused normal solve a pair, on the one grounding, gives its witness's pre-state."""
     out = []
     by_pair = defaultdict(list)
     for a, b, why in clashes:
@@ -89,19 +102,19 @@ def _clashes(program, words, clashes):
             out.append(Finding("L1", list(pair), "%s contradicts itself" % pair[0]))
             continue
         a, b, _ = min(found)
-        atoms, _ = solve(program + "\nfocus(%s,%s)." % (_q(a), _q(b)), LIMIT, brave=False)
+        atoms, _ = _solve(ctl, LIMIT, brave=False, focus=(a, b))
         x, y = (a, b) if spec_facts.split(a) == pair[0] else (b, a)
         whys = sorted({w for _, _, w in found})
         out.append(Finding("L1", list(pair), words.clash(x, y, whys, words.pre(a, b, atoms))))
     return out
 
 
-def _findings(program, words, atoms):
+def _findings(ctl, words, atoms):
     syms = [clingo.parse_term(a) for a in atoms]
     args = defaultdict(list)
     for sym in syms:
         args[sym.name].append([s.string if s.type == clingo.SymbolType.String else s for s in sym.arguments])
-    out = _clashes(program, words, [(a, b, str(w)) for a, b, w in args["clash"]])
+    out = _clashes(ctl, words, [(a, b, str(w)) for a, b, w in args["clash"]])
     seen = set()
     for code, name, write in (("L3", "bad_set", words.bad_set), ("L4", "unreachable", words.unreachable)):
         for r, *rest in args[name]:
@@ -133,8 +146,9 @@ def run(root, capability=None, extra=None):
     ctx = spec_context.load(root, extra or ())
     facts = [f for s in ctx.statements for f in ctx.facts[s.id]]
     program = "\n".join(ctx.domain + facts + [CHECK.read_text()])
-    atoms, done = solve(program, LIMIT)
-    found = _findings(program, spec_findings.Words(root, ctx), atoms)
+    ctl = _ground(program)
+    atoms, done = _solve(ctl, LIMIT)
+    found = _findings(ctl, spec_findings.Words(root, ctx), atoms)
     scope = set(ctx.caps) if capability is None else {capability} & set(ctx.caps)
     if capability is not None:
         found = [f for f in found if _names(f, scope)]

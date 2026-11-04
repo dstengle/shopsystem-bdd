@@ -209,12 +209,15 @@ def test_generation_imports_no_solver():
 
 def test_check_on_the_live_repo_is_fast_and_clean():
     """Every live service capability is read off its requirements' facts without a crash, in under 5 s with the parse
-    cache warm (the first run warms it); the checked-in features may differ until layer 4 regenerates them."""
+    cache warm (a run over 5 s is taken again, once, since it may have warmed the cache); the checked-in features
+    may differ until layer 4 regenerates them."""
     toolchain.require()
-    features(REPO, "generate", "--check")
-    start = time.monotonic()
-    done = features(REPO, "generate", "--check")
-    took = time.monotonic() - start
+    for _ in range(2):
+        start = time.monotonic()
+        done = features(REPO, "generate", "--check")
+        took = time.monotonic() - start
+        if took < 5:
+            break
     assert done.returncode in (0, 1), done.stdout + done.stderr
     assert "Traceback" not in done.stderr
     assert took < 5, "features generate --check took %.1f s" % took

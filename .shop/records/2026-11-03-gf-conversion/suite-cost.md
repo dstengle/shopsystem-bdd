@@ -1,6 +1,6 @@
 ---
 id: record/missingmass.io/shopsystem/shopsystem-bdd/2026-11-04-gf-conversion-suite-cost
-kind: measurement
+kind: analysis
 about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
 date: 2026-11-04
 status: final

@@ -56,7 +56,7 @@ def test_every_statement_parses_to_one_tree(grammar, cap):
 @pytest.mark.parametrize("cap", GUARANTEES)
 def test_the_logic_check_finds_no_error(live_logic, live_expected, cap):
     errors = [f.text for f in live_logic if f.code in spec_solve.ERRORS and any(i.startswith(f"{cap}#") for i in f.ids)
-              and f.text not in live_expected]
+              and not live_expected(f)]
     assert errors == []
 
 

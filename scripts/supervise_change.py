@@ -80,7 +80,8 @@ class Changes:
         named = {i for field in FIELDS for i in one[field]}
         for field in FIELDS:
             mine = [i for i in (held.get(field) or []) if i not in named] + one[field]
-            text = re.sub(r"(?m)^%s:.*$" % field, lambda _: "%s: [%s]" % (field, ", ".join(mine)), text, count=1)
+            line = "%s: [%s]" % (field, ", ".join(mine))
+            text = re.sub(r"(?m)^%s:.*$" % field, lambda _, line=line: line, text, count=1)
         path.write_text(text)
 
     def proposal_for(self, capability):
@@ -100,7 +101,8 @@ class Changes:
         for field in FIELDS:
             mine = list(lists.get(field) or [])
             mine += [i for i in one[field] if i not in mine]
-            text = re.sub(r"(?m)^%s:.*$" % field, lambda _: "%s: [%s]" % (field, ", ".join(mine)), text, count=1)
+            line = "%s: [%s]" % (field, ", ".join(mine))
+            text = re.sub(r"(?m)^%s:.*$" % field, lambda _, line=line: line, text, count=1)
         path.write_text(text)
 
     def write_proposals(self, found, stage_dir, own=None):
@@ -127,7 +129,7 @@ class Changes:
                 self.redraft_lists(held.stem, one)
                 text = held.read_text()
                 said = "The drafts of this proposal are in %s." % stage_dir
-                held.write_text(re.sub(r"The drafts of this proposal are in \S+?\.(?=\s|$)", lambda _: said, text)
+                held.write_text(re.sub(r"The drafts of this proposal are in \S+?\.(?=\s|$)", lambda _, said=said: said, text)
                                 if "The drafts of this proposal are in" in text else text.rstrip("\n") + "\n\n" + said + "\n")
                 written.append(held)
                 continue
@@ -148,7 +150,7 @@ class Changes:
                 self.redraft_lists(own, terms)     # the glossary-proposal the round was started for keeps the terms the round does not name
                 text = mine.read_text()
                 said = "The drafts of this proposal are in %s." % stage_dir
-                mine.write_text(re.sub(r"The drafts of this proposal are in \S+?\.(?=\s|$)", lambda _: said, text)
+                mine.write_text(re.sub(r"The drafts of this proposal are in \S+?\.(?=\s|$)", lambda _, said=said: said, text)
                                 if "The drafts of this proposal are in" in text else text.rstrip("\n") + "\n\n" + said + "\n")
                 written.append(mine)
                 return written

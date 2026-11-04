@@ -192,18 +192,20 @@ def test_a_solve_past_its_limit_is_partial():
 
 
 def test_l0_is_an_error_and_its_report_exits_1(monkeypatch):
-    monkeypatch.setattr(spec_solve, "solve", lambda program, limit, brave=True: ([], False))
+    monkeypatch.setattr(spec_solve, "_solve", lambda ctl, limit, brave=True, focus=None: ([], False))
     found = spec_solve.run(CLUSTER)
     [l0] = of(found, "L0")
     assert l0.ids == [] and l0.text == "the check did not finish in 20 s; the findings so far are listed"
     assert "L0" in spec_solve.ERRORS and spec_solve.report([l0], False)[1] == 1
 
 
-def test_the_whole_context_is_one_solve(monkeypatch, findings):
+def test_the_whole_context_is_one_grounding(monkeypatch, findings):
+    """One brave solve finds every finding; each L1's witness is a focused solve of that same grounding, its pair
+    assumed (S12: a grounding a witness made the live check 4 s)."""
     built, real = [], clingo.Control
     monkeypatch.setattr(spec_solve.clingo, "Control", lambda *a, **k: built.append(a) or real(*a, **k))
     assert spec_solve.run(CLUSTER) == findings
-    assert len(built) == 1 + len(of(findings, "L1"))
+    assert of(findings, "L1") and len(built) == 1
 
 
 def test_the_cluster_is_checked_in_under_a_second(findings):

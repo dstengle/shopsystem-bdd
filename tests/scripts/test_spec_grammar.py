@@ -12,7 +12,6 @@ import spec_grammar
 import spec_lexicon
 import spec_relations
 import spec_tree
-import spec_typed
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import toolchain
@@ -59,7 +58,7 @@ def core():
     """grammar/corpus/core.txt as (rows, [(grammar, line, expected tree, guard row or None)])."""
     rows, out, guard = [], [], None
     for raw in (CORPUS / "core.txt").read_text().splitlines():
-        if raw.startswith("# row: ") or raw.startswith("# guard: "):
+        if raw.startswith(("# row: ", "# guard: ")):
             row = tuple(x.strip() for x in raw.split(": ", 1)[1].split("|"))
             rows, guard = (rows + [row], guard) if raw.startswith("# row") else (rows, row)
         elif raw.startswith("= "):
