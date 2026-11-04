@@ -278,7 +278,7 @@ the tracked file `.shop/plugin-version` holds "banana"
 
 ### [g13] `migrate upgrade` applies each pending step in one commit: work-items are named `w<n>` with their files and stage directories
 Restates: r20@0.29, r25@0.29, r26@0.29.
-- [r13] While a repository is behind, when the person runs `migrate upgrade`, `migrate` shall rewrite
+- [r13] While the repository is behind, when the person runs `migrate upgrade`, `migrate` shall rewrite
   `.shop/plugin-version`, print "work-items named by ids" and "answers, not rulings", rename
   `.shop/work/i1/size-check.md`, rename `.shop/work/i1/runs/size-check/` and rewrite `.shop/work/i1/log.jsonl`.
 
@@ -304,7 +304,7 @@ the tracked file `.shop/work/i1/log.jsonl` holds:
 
 ### [g14] `migrate upgrade` with no pending step says so and changes nothing
 Restates: r27@0.29.
-- [r14] While a repository is current, when the person runs `migrate upgrade`, `migrate` shall print "no upgrade
+- [r14] While the repository is current, when the person runs `migrate upgrade`, `migrate` shall print "no upgrade
   step is pending" and change nothing.
 
 ```given
@@ -313,7 +313,7 @@ the tracked file `.shop/plugin-version` holds "1.0.0"
 
 ### [g15] the upgrade step after 0.24.0 renames `awaiting-ruling` to `awaiting-answer` and `## Rulings` to `## Answers`
 Restates: r29@0.29.
-- [r15] While a repository is outdated, when the person runs `migrate upgrade`, `migrate` shall rewrite
+- [r15] While the repository is outdated, when the person runs `migrate upgrade`, `migrate` shall rewrite
   `.shop/work/i1/w1.md`.
 
 ```given
@@ -330,7 +330,7 @@ the tracked file `.shop/work/i1/w1.md` holds:
 ```
 
 ### [g16] the upgrade step "codified requirements" writes `spec/restated.json`, scaffolds each uncodified capability, deletes deprecated scenarios and writes old references with their release
-- [r16] While a repository is uncodified, when the person runs `migrate upgrade`, `migrate` shall print
+- [r16] While the repository is uncodified, when the person runs `migrate upgrade`, `migrate` shall print
   "spec/restated.json" and "spec/capabilities/cart.md", rewrite `spec/capabilities/cart.md`, rewrite
   `features/cart.feature` and rewrite `.shop/work/i1/w2.md`.
 
