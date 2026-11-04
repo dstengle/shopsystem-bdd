@@ -19,7 +19,7 @@ import os
 import spec_engine
 import spec_logic
 import spec_solve
-from spec_trace_steps import Reader, TraceError, is_instance, text_of, things
+from spec_steps import Reader, TraceError, is_instance, text_of, things
 
 PROJECT = """
 #program always.
