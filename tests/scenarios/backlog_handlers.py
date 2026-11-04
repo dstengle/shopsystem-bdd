@@ -56,12 +56,13 @@ def given_item_is(step):
 @handler("ThenK_A", "item")
 def item_is(step):
     """The item's attribute is (is not) the value. A negated Then says what a command did not do, so the command must
-    have run and exited 0: a refused one would make it hold whatever the command is."""
+    exist: a usage error (argparse's exit 2) would make it hold whatever the command is. Its exit code is left to the
+    line that builds it (plan 2 rulings, Q2)."""
     got = W.field(B.item_file(step, step.names[0]), step.attribute)
     wanted = bare(step.values[0])
     done = step.context.get("result")
     if " is not " in step.text and done is not None:
-        assert done.returncode == 0, (step.text, "the command was refused", done.stderr)
+        assert done.returncode != 2, (step.text, "the command is not there", done.stderr)
     assert (got != wanted) if " is not " in step.text else (got == wanted), (step.text, got)
 
 
