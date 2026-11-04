@@ -50,3 +50,21 @@ def expected(finding):
 def live_expected():
     """`expected`, for a test module, which cannot import this conftest by name."""
     return expected
+
+
+@pytest.fixture
+def backlog_repo(tmp_path):
+    """A git repository with an identity whose spec/index.md names the context `ex.com/prod/ctx`, all committed: the
+    repository the backlog's script tests run `work` in."""
+    import subprocess
+
+    def git(*args):
+        subprocess.run(["git", *args], cwd=tmp_path, capture_output=True, text=True, check=True)
+    git("init", "-q", "-b", "main")
+    for key, value in (("user.name", "T"), ("user.email", "t@example.com"), ("commit.gpgsign", "false")):
+        git("config", key, value)
+    (tmp_path / "spec").mkdir()
+    (tmp_path / "spec/index.md").write_text("---\nid: bounded-context/ex.com/prod/ctx\n---\n# ctx\n")
+    git("add", "-A")
+    git("commit", "-q", "-m", "init")
+    return tmp_path

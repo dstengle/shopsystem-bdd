@@ -66,6 +66,9 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/supervise_done.py` | `work run`'s done: an initiative whose delivery is closed set `done` and committed |
 | `scripts/supervise_intake.py` | `work run`'s intake rounds: a request this context is the upstream of, given to a session that writes its line outcomes and passes its turn |
 | `scripts/supervise_draft.py` | `work run`'s drafting: the work-items of a formulated capability-proposal and of a branch review's fix-now findings |
+| `scripts/backlog_items.py` | one item of the backlog: its file `.shop/backlog/b<n>.md` read (`parse`, a malformed file refused naming the file and the field) and written (`render`), its label `b<n> "<title>"`, numbering and its one-path commit |
+| `scripts/backlog_moves.py` | the commands that change an item (`work idea` ...), each one commit of its file |
+| `scripts/backlog_cli.py` | the backlog's commands of `work`: their parsers, dispatch and what they print, `work show b<n>` |
 | `scripts/work_items.py` | the pytest plugin of `--work-item`, loaded by `work run`'s tests and this repository's conftest |
 | `scripts/measure` with `scripts/measure_*.py` | the `measure` command: `initiative` (reading `measure_read.py`, figures `measure_build.py`, the record `measure_write.py`) and `show`, `compare` (`measure_show.py`) |
 | `scripts/migrate*.py` | the `migrate` command |
@@ -75,10 +78,10 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `tests/scenarios/` | the generated features' tests: one `test_<capability>.py` a capability, its handlers in `<capability>_handlers*.py` |
 | `tests/scenarios/vocab.py` | the vocabulary in pytest-bdd: step definitions matched by grammar, the handler registry (`from vocab import handler`), the marks from the spec, the U3/U8 checks after a generated scenario |
 | `tests/scenarios/world_*.py` | shared handlers: the domain kinds' nodes and files (`world_nodes.py`), running a command and reading its result (`world_run.py`) |
-| `tests/scenarios/<capability>_handlers*.py` | the handlers of a capability's generated feature (analysis-tools, batch-measurement, design-model-check, feature-file-tools, migration-tools, requests, supervision, work-queue) |
+| `tests/scenarios/<capability>_handlers*.py` | the handlers of a capability's generated feature (analysis-tools, backlog, batch-measurement, design-model-check, feature-file-tools, migration-tools, requests, supervision, work-queue) |
 | `tests/scenarios/supervision_handlers_more.py` | supervision's Thens on what `work run` merged, logged, took, pushed, drafted, raised and removed, and the Givens of what a stage holds |
 | `tests/scenarios/migration_tools_handlers_conditions.py` | migration-tools' condition Givens: a repository's primitive conditions checked against the scenario's example data, and the untracked file built |
-| `tests/scenarios/<capability>_world.py` and the like | a capability's scenario repository: `analysis_tools_world.py`; `work_queue_world.py` (the repository in version control, noun phrases matched against files, `bind_all`); `supervision_world.py`, `supervision_build.py` and `supervision_plans.py` (the repository `work run` runs in, built from the Givens, and what the stand-in claude does in it) |
+| `tests/scenarios/<capability>_world.py` and the like | a capability's scenario repository: `analysis_tools_world.py`; `work_queue_world.py` (the repository in version control, noun phrases matched against files, `bind_all`); `supervision_world.py`, `supervision_build.py` and `supervision_plans.py` (the repository `work run` runs in, built from the Givens, and what the stand-in claude does in it); `backlog_world.py` (items written as `.shop/backlog/` files, the scenario's `i<n>` as `b<n>`, the items a scenario names written before its command) |
 | `tests/toolchain.py` | the grammar tools the suite needs: `require()` fails a test, never skips it, naming `tools install` |
 | `tests/scripts/` | tests of the scripts that no scenario drives |
 

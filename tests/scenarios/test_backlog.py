@@ -1,6 +1,11 @@
-"""features/backlog.feature, generated from spec/capabilities/backlog.md and bound by pytest-bdd. Its scenarios are
-unbuilt (workflow simplification plan 1): every requirement of the capability is listed in its `unbuilt:`, so each
-scenario runs as an expected failure until a later plan builds it."""
+"""features/backlog.feature, generated from spec/capabilities/backlog.md and bound by the step vocabulary: every
+scenario, by `scenarios()`. Its handlers are in backlog_handlers.py, over the repository backlog_world.py writes; a step
+whose key another capability claims reaches them through work_queue_world's `local` table, so this module binds with
+`bind_all`. A requirement still in the capability's `unbuilt:` runs as an expected failure."""
 from pytest_bdd import scenarios
 
+from .conftest import ROOT
+from .work_queue_world import bind_all
+
+bind_all(globals(), ROOT)
 scenarios("backlog.feature")

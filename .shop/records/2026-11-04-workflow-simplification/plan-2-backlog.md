@@ -82,7 +82,7 @@ revisit.**
 
 | # | Decision |
 |---|---|
-| D1 | **Branch.** Plan 2 is built on `plan-2-backlog`, branched from `workflow-simplification`, so that plan 1's PR can be reviewed and merged on its own. Once plan 1 merges, rebase plan 2 onto `main`. |
+| D1 | **Branch.** Plan 2 is built on `plan-2-backlog`, branched from `workflow-simplification`, so that plan 1's PR can be reviewed and merged on its own. Once plan 1 merges, rebase plan 2 onto `main`.<br>**Overridden** by the main session's ruling (2026-11-04): every plan goes on the one branch `workflow-simplification`, so plan 2 was built and committed there, with no branch `plan-2-backlog`. |
 | D2 | **The item file.** It is `.shop/backlog/b<n>.md`, in the format pinned in Task 1:<br>- the frontmatter holds `id: item/<context path>/b<n>`, `kind: item`, `status`, `provenance`, `value`, `urgency`, `size` and `depends_on: [b<m>, ...]`;<br>- the title is the one `# ` heading, as a work-item's is, so no title is ever quoted in YAML;<br>- the body has optional `## Notes`, `## Question`, `## Answers` and `## Refused` sections.<br>An unrated field is written empty and reads as None. |
 | D3 | **No log file.** Each change to an item is one git commit of that one file, and git history is its log. Plan 7 (telemetry) may add a log if it needs one. |
 | D4 | **Numbering.** A new item is `b<highest + 1>` over `.shop/backlog/b*.md`. Two branches that each add the same `b<n>` meet as a git conflict on that path. That collision is not prevented here. |
@@ -221,7 +221,7 @@ depends_on: [b1]
 the note text
 ```
 
-- [ ] **Step 1: Write the failing script tests** in `tests/scripts/test_backlog_items.py`, using `backlog_repo` (a git
+- [x] **Step 1: Write the failing script tests** in `tests/scripts/test_backlog_items.py`, using `backlog_repo` (a git
   repository with an identity, `spec/index.md` holding `id: bounded-context/ex.com/prod/ctx`, all committed):
   - `test_idea_writes_b1_and_commits_only_it`: `work idea "Fix the parser"` exits 0 and prints `b1 "Fix the parser"`.
     `.shop/backlog/b1.md` parses to `status == "idea"`, `provenance == "own"`, `value is None` and
@@ -239,19 +239,19 @@ the note text
   - `test_show_of_a_work_item_is_unchanged`: in a repository with `.shop/work/i1/w1.md`, `work show w1` gives the
     same stdout as before this task. Compare against `workqueue_list.show` called directly.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_backlog_items.py -q`
   Expected: FAIL; `work` has no `idea` command and `backlog_items` does not exist.
 
-- [ ] **Step 3: Implement `backlog_items.py`, `backlog_moves.idea` and `backlog_cli.py`, and wire `scripts/work`.**
+- [x] **Step 3: Implement `backlog_items.py`, `backlog_moves.idea` and `backlog_cli.py`, and wire `scripts/work`.**
   - `work idea` commits with the message `work idea: b<n> "<title>" idea`.
   - A note given with `--note` goes under `## Notes`.
 
-- [ ] **Step 4: Run the script tests.**
+- [x] **Step 4: Run the script tests.**
   Run: `python3 -m pytest tests/scripts/test_backlog_items.py tests/scripts/test_work_show_request.py tests/scripts/test_workqueue_list.py -q`
   Expected: all pass.
 
-- [ ] **Step 5: Write the scenario world and the handlers for r1 and r15.** In `backlog_handlers.py`:
+- [x] **Step 5: Write the scenario world and the handlers for r1 and r15.** In `backlog_handlers.py`:
   - **Registry handlers** (keys no capability claims):
     - `("WhenRuns", "`work idea`")`: runs `work idea "A new idea"`.
     - `("GivenK", "item")` and `("GivenK_A", "item")` call `write_item`. For "the item i1 is not `v`", the item keeps
@@ -274,11 +274,11 @@ the note text
   - r1 asserts a new `idea` file, committed.
   - r15 asserts the title of `b1`, which is `Title of i1`, printed by `work show`.
 
-- [ ] **Step 6: Mark r1 and r15 built.** Remove `r1` and `r15` from `unbuilt:` in `spec/capabilities/backlog.md`.
+- [x] **Step 6: Mark r1 and r15 built.** Remove `r1` and `r15` from `unbuilt:` in `spec/capabilities/backlog.md`.
   Run: `python3 -m pytest tests/scenarios/test_backlog.py -q | tail -1; python3 scripts/features vocab --check | tail -1`
   Expected: `2 passed, 15 xfailed`; `every step has one handler`.
 
-- [ ] **Step 7: The baselines.**
+- [x] **Step 7: The baselines.**
   Run: `python3 -m pytest -q | tail -1; python3 scripts/model check | tail -1; python3 scripts/features generate --check; python3 scripts/tools size --limit 300; python3 scripts/tools check scripts/backlog_items.py scripts/backlog_moves.py scripts/backlog_cli.py scripts/work tests/scenarios/backlog_world.py tests/scenarios/backlog_handlers.py`
   Expected:
   - the suite: `52 xfailed`, no failures, passed = 951 + 2 + the new script tests;
@@ -286,7 +286,7 @@ the note text
   - `size` silent;
   - `check` reports nothing for ruff, vulture or import-linter.
 
-- [ ] **Step 8: Commit.**
+- [x] **Step 8: Commit.**
   ```bash
   git add scripts/backlog_items.py scripts/backlog_moves.py scripts/backlog_cli.py scripts/work tests/scenarios/backlog_world.py \
     tests/scenarios/backlog_handlers.py tests/scenarios/test_backlog.py tests/scripts/conftest.py \
