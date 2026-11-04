@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: [r6, r7, r8, r17]
+unbuilt: []
 ---
 
 # Backlog
@@ -94,9 +94,19 @@ item. Adding an idea starts no work. The person reads an item by its title, not 
 - [r17] While an item is `needs-input`, when the person runs `work backlog`, `work` shall print the item and print the
   question on the item.
 
+## Implementation, may change
+- Each item is the file `.shop/backlog/b<n>.md`, and each change to it is one commit of that file, whose history is
+  its log. `work backlog` only reads, and commits nothing.
+- An item's score is (value + urgency) / size, with low and small 1, medium 2, and high and large 3. Within a state
+  items go by score from high to low, and a tie goes to the item added first (the lower `b<n>`). An item missing a
+  rating has no score and ranks after the rated items of its state.
+- `work backlog` prints every item, one table a state, in the order `in-batch`, `needs-input`, `ready`, `shaped`,
+  `idea`, `delivered`, `refused`, `withdrawn`; a state with no items is left out.
+- A row's `waiting on` column names each item it is blocked by, with that item's status, and for an item that is
+  `needs-input` the first line of its question.
+- An item is blocked by each item it depends on that is not `delivered`, a missing one included (printed `missing`).
+  The glossary's exception for an item in the same batch waits for plan 4, which makes batches.
+
 ## Not yet
-- The backlog printed as tables by state, in rank order (the WSJF score, ties to the item added first), and for an
-  item in a batch how far the batch is along (design goal 2): the grammar has no order and no grouping of what is
-  printed, so these wait for plan 2, which builds `work backlog` and may extend it.
-- Bugs' risk and likelihood ratings (design goal 2): the design gives them no part in the rank, so plan 2 decides
-  whether they are attributes of an item and what reads them.
+- For an item in a batch, how far the batch is along (design goal 2): waits for plan 4, which builds `batches`.
+- Bugs' risk and likelihood ratings (design goal 2): not built, because the design gives them no part in the rank.

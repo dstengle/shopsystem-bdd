@@ -55,8 +55,13 @@ def given_item_is(step):
 
 @handler("ThenK_A", "item")
 def item_is(step):
+    """The item's attribute is (is not) the value. A negated Then says what a command did not do, so the command must
+    have run and exited 0: a refused one would make it hold whatever the command is."""
     got = W.field(B.item_file(step, step.names[0]), step.attribute)
     wanted = bare(step.values[0])
+    done = step.context.get("result")
+    if " is not " in step.text and done is not None:
+        assert done.returncode == 0, (step.text, "the command was refused", done.stderr)
     assert (got != wanted) if " is not " in step.text else (got == wanted), (step.text, got)
 
 
@@ -100,7 +105,10 @@ def prints_title(step):
 def title_of(step):
     title, item = step.names
     assert item in step.context.get("titles", {}).get(title, ()), (step.text, step.context.get("titles"))
-    assert B.title_of(step, item) in step.context["result"].stdout
+    stdout = step.context["result"].stdout
+    assert B.title_of(step, item) in stdout
+    line = B.row(stdout, item)
+    assert line is None or B.title_of(step, item) in B.cells(line), (step.text, line)   # a table: in the item's row
 
 
 @local("ThenExitsErr", "item")
@@ -150,3 +158,104 @@ def dependency_of(step):
     if step.term != "of":
         return False
     assert step.context["deps"][dep]["of"] == item, (step.text, step.context["deps"])
+
+
+@handler("WhenRuns", "`work backlog`")
+def work_backlog(step):
+    B.run_work(step, "backlog", *step.context.get("flags", []))
+
+
+@handler("GivenK", "dependency")
+def given_dependency(step):
+    step.context.setdefault("deps", {}).setdefault(step.names[0], {})
+
+
+def dependency_given(step, half):
+    dep, item = step.names
+    found = step.context.setdefault("deps", {}).setdefault(dep, {})
+    found[half] = item
+    B.add_dependency(step, found)
+
+
+# `the x is of the y`, by the kind of x: later plans add theirs (a task of a batch, a request line of an item).
+OF_GIVENS = {"dependency": lambda step: dependency_given(step, "of")}
+
+
+@handler("GivenR", "of")
+def given_of(step):
+    assert step.kind in OF_GIVENS, "no Given of a %s of another: %s" % (step.kind, step.text)
+    OF_GIVENS[step.kind](step)
+
+
+@local("GivenR", "dependency")
+def given_dependency_on(step):
+    if step.term != "on":
+        return False
+    dependency_given(step, "on")
+
+
+@handler("GivenK_C", "item")
+def given_blocked(step):
+    word = step.text.split(" is ", 1)[1]
+    assert word in ("blocked", "not blocked"), step.text
+    step.context.setdefault("blocked", {})[step.names[0]] = word == "blocked"
+
+
+def result_ok(step):
+    done = step.context["result"]
+    assert done.returncode == 0, done.stderr
+    return done.stdout
+
+
+def row_of(step, name):
+    line = B.row(result_ok(step), name)
+    assert line is not None, (step.text, step.context["result"].stdout)
+    return line
+
+
+@local("ThenPrints", "item")
+def prints_item(step):
+    """`the item i1`: its row; `the status of the item i1`: its row under the table of its status; any other
+    attribute: the item file's value is a cell of its row."""
+    name = step.names[0]
+    line, np = row_of(step, name), step.nps[0]
+    attribute = np[4:].split(" of the item ")[0] if " of the item " in np else None
+    if attribute is None:
+        return
+    wanted = W.field(B.item_file(step, name), attribute)
+    if attribute == "status":
+        assert B.heading_of(step.context["result"].stdout, line) == wanted, (step.text, line)
+    else:
+        assert wanted in B.cells(line), (step.text, wanted, line)
+
+
+@local("ThenPrints", "dependency")
+def prints_dependency(step):
+    dep = step.context["deps"][step.names[0]]
+    line = row_of(step, dep["of"])
+    assert "blocked by %s" % B.ident(dep["on"]) in line, (step.text, line)
+
+
+def about_items(step):
+    """Whether the scenario keeps items: a step of another feature's kind (a question on a work-item) is not ours."""
+    return bool(step.context.get("items"))
+
+
+@local("ThenPrints", "question")
+def prints_question(step):
+    if not about_items(step):
+        return False
+    stdout = result_ok(step)
+    hits = [n for n, f in step.context.get("item_fields", {}).items()
+            if f["status"] == "needs-input" and B.QUESTION in stdout]
+    assert hits, (step.text, stdout)
+    step.context.setdefault("questions", {})[step.names[0]] = hits
+
+
+@local("ThenR", "question")
+def question_on(step):
+    question, item = step.names
+    if step.term != "on" or not B.item_rel(step.context, item):
+        return False
+    assert item in step.context.get("questions", {}).get(question, ()), step.text
+    assert "question: %s" % B.QUESTION in row_of(step, item), step.text

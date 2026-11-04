@@ -67,8 +67,9 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/supervise_intake.py` | `work run`'s intake rounds: a request this context is the upstream of, given to a session that writes its line outcomes and passes its turn |
 | `scripts/supervise_draft.py` | `work run`'s drafting: the work-items of a formulated capability-proposal and of a branch review's fix-now findings |
 | `scripts/backlog_items.py` | one item of the backlog: its file `.shop/backlog/b<n>.md` read (`parse`, a malformed file refused naming the file and the field) and written (`render`), its label `b<n> "<title>"`, numbering and its one-path commit |
-| `scripts/backlog_moves.py` | the commands that change an item (`work idea` ...), each one commit of its file |
+| `scripts/backlog_moves.py` | the commands that change an item (`work idea`, `shape`, `refuse`, `withdraw`, `answer`, `rate`, `depend`), each one commit of its file; a dependency that closes a cycle refused |
 | `scripts/backlog_cli.py` | the backlog's commands of `work`: their parsers, dispatch and what they print, `work show b<n>` |
+| `scripts/backlog_view.py` | `work backlog`: the score, the rank within a state, an item's blockers, the tables by state and the JSON |
 | `scripts/work_items.py` | the pytest plugin of `--work-item`, loaded by `work run`'s tests and this repository's conftest |
 | `scripts/measure` with `scripts/measure_*.py` | the `measure` command: `initiative` (reading `measure_read.py`, figures `measure_build.py`, the record `measure_write.py`) and `show`, `compare` (`measure_show.py`) |
 | `scripts/migrate*.py` | the `migrate` command |

@@ -12,7 +12,7 @@ if str(SCRIPTS) not in sys.path:
 
 def work(repo, *args):
     return subprocess.run([sys.executable, str(SCRIPTS / "work"), "--root", str(repo), *args], capture_output=True,
-                          text=True)
+                          text=True, timeout=60)
 
 
 def git(repo, *args):

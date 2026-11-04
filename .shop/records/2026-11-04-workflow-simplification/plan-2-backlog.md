@@ -501,7 +501,7 @@ Builds `backlog#r6`, `r7`, `r8` and `r17`.
 - A `|` in any cell is written `\|`.
 - An empty backlog prints `the backlog is empty`; with `--json` it prints `{"items": []}`.
 
-- [ ] **Step 1: Write the failing tests** in `tests/scripts/test_backlog_view.py`:
+- [x] **Step 1: Write the failing tests** in `tests/scripts/test_backlog_view.py`:
   - `test_score_is_value_plus_urgency_over_size`: `high-value, medium-urgency, small` gives `5.0`; `low-value,
     low-urgency, large` gives `2/3`; an item with no size gives `None`.
   - `test_rank_breaks_ties_by_the_item_added_first`: `b2` and `b5` with equal scores, and an unrated `b1`, all
@@ -521,18 +521,18 @@ Builds `backlog#r6`, `r7`, `r8` and `r17`.
     table order, with `score` null for an unrated item.
   - `test_an_empty_backlog`: both forms, exit 0.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_backlog_view.py -q`
   Expected: FAIL; `work backlog` is not a command.
 
-- [ ] **Step 3: Implement `backlog_view.py` and the `backlog` parser.** `work backlog` only reads, and it commits
+- [x] **Step 3: Implement `backlog_view.py` and the `backlog` parser.** `work backlog` only reads, and it commits
   nothing.
 
-- [ ] **Step 4: Run the tests.**
+- [x] **Step 4: Run the tests.**
   Run: `python3 -m pytest tests/scripts/test_backlog_view.py tests/scripts/test_backlog_items.py -q | tail -1`
   Expected: all pass.
 
-- [ ] **Step 5: The handlers.**
+- [x] **Step 5: The handlers.**
   - **Registry:**
     - `("WhenRuns", "`work backlog`")` runs `work backlog` with the scenario's flags.
     - `("GivenK", "dependency")` records the name in `context["deps"]`.
@@ -560,7 +560,7 @@ Builds `backlog#r6`, `r7`, `r8` and `r17`.
   - r8: the U8 check;
   - r17: the question is in `b1`'s row.
 
-- [ ] **Step 6: The spec's prose, and every id built.** In `spec/capabilities/backlog.md`:
+- [x] **Step 6: The spec's prose, and every id built.** In `spec/capabilities/backlog.md`:
   - set `unbuilt: []`;
   - add `## Implementation, may change` before `## Not yet`, with one bullet each for:
     - D7's score and tie rule;
@@ -573,10 +573,10 @@ Builds `backlog#r6`, `r7`, `r8` and `r17`.
   Run: `python3 -m pytest tests/scenarios/test_backlog.py -q | tail -1; python3 scripts/features vocab --check | tail -1; python3 scripts/features generate --check; python3 scripts/model check | tail -1`
   Expected: `17 passed`; `every step has one handler`; `generate --check` exit 0; `model check` at its baseline.
 
-- [ ] **Step 7: The baselines,** as in Task 1, Step 7, plus `python3 scripts/model logic | tail -1`.
+- [x] **Step 7: The baselines,** as in Task 1, Step 7, plus `python3 scripts/model logic | tail -1`.
   Expected: the suite at `37 xfailed`, no failures; `11 findings: 6 L5, 5 L6`; everything else unchanged.
 
-- [ ] **Step 8: Commit.**
+- [x] **Step 8: Commit.**
   ```bash
   git add scripts/backlog_view.py scripts/backlog_cli.py tests/scenarios/backlog_handlers.py \
     tests/scenarios/backlog_world.py tests/scripts/test_backlog_view.py spec/capabilities/backlog.md CLAUDE.md

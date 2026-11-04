@@ -64,11 +64,59 @@ def write_item(step, name, **fields):
 
 
 def ensure_items(step):
-    """Write every item the scenario names that no Given wrote, before its command runs (D15)."""
+    """Before the command runs: write every item the scenario names that no Given wrote (D15), complete a dependency
+    given by one half with the world's own item, and give each item a Given made blocked a dependency on an item
+    that is not `delivered` (one of the world's own where it has none), and one made not blocked none."""
     for text in W().scenario_texts(step):
         for name in re.findall(r"\bthe item (i\d+)\b", text):
             if not item_rel(step.context, name):
                 write_item(step, name)
+    for dep in step.context.get("deps", {}).values():
+        for half, own in (("on", OWN), ("of", OWN_NEEDING)):
+            if dep.get(half) is None:
+                write_item(step, own, title=OWN_TITLE)
+                dep[half] = own
+        add_dependency(step, dep)
+    for name, blocked in step.context.get("blocked", {}).items():
+        had = step.context["item_fields"][name]["depends_on"]
+        open_ = [d for d in had if status_of(step, d) != "delivered"]
+        if blocked and not open_:
+            write_item(step, OWN, title=OWN_TITLE)
+            write_item(step, name, depends_on=had + [ident(OWN)])
+        elif not blocked and open_:
+            write_item(step, name, depends_on=[d for d in had if d not in open_])
+
+
+def status_of(step, b):
+    """The status of the item file `b<n>`, or None when there is none."""
+    path = step.repo / BACKLOG / ("%s.md" % b)
+    return W().field(path, "status") if path.is_file() else None
+
+
+def add_dependency(step, dep):
+    """Write the dependency `dep` ({"of": needing item, "on": item}) into its needing item, once."""
+    if dep.get("of") is None or dep.get("on") is None:
+        return
+    if not item_rel(step.context, dep["of"]):
+        write_item(step, dep["of"])
+    had = step.context["item_fields"][dep["of"]]["depends_on"]
+    if ident(dep["on"]) not in had:
+        write_item(step, dep["of"], depends_on=had + [ident(dep["on"])])
+
+
+def heading_of(stdout, line):
+    """The state of the `## <state> (<n>)` table a row of `work backlog` lies under."""
+    state = None
+    for each in stdout.splitlines():
+        if each.startswith("## "):
+            state = each[3:].split(" (")[0]
+        if each == line:
+            return state
+    return None
+
+
+def cells(line):
+    return [c.strip() for c in re.split(r"(?<!\\)\|", line)][1:-1]
 
 
 def run_work(step, *args):
@@ -134,6 +182,7 @@ def item_file(step, name):
 
 # The world's own item, which a dependency the scenario does not set up is on.
 OWN = "i90"
+OWN_NEEDING = "i91"
 OWN_TITLE = "an item the scenario does not name"
 
 
