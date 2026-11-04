@@ -73,3 +73,7 @@ def link_request(step, line, item):
     B().write_item(step, item, request=REQUEST)
     step.context.setdefault("line_of", {})[line] = (REQUEST, 1)
     step.context.setdefault("says", {})[line] = "line 1 of request %s" % REQUEST
+
+
+# The counter-proposal `work outcome rewritten` gives: a line that parses in the fixture's spec.
+COUNTER = PASSING

@@ -488,7 +488,7 @@ Builds `intake#r2`, `r3` and `r4`.
     (`workqueue_lines.check`'s refusal); a linked item that is `delivered`, `refused` or `withdrawn`. The commit
     message is `work outcome: q<n> line <k> <word>` (`... -> <label>` when an item is written).
 
-- [ ] **Step 1: Write the failing tests** in `tests/scripts/test_intake_outcome.py`, on Task 3's `q1` taken in as b1:
+- [x] **Step 1: Write the failing tests** in `tests/scripts/test_intake_outcome.py`, on Task 3's `q1` taken in as b1:
   - `test_accepted_writes_the_line_into_the_item`: `work outcome q1 1 accepted --into work-queue` exits 0; q1's
     `## Outcomes` holds `1. accepted`; b1's block holds `g4`/`r5` with the line's text, and its notes
     `line 1 of request q1 accepted into work-queue#r5`; HEAD's one commit holds both files. Then `work ready b1` exits 0.
@@ -508,18 +508,18 @@ Builds `intake#r2`, `r3` and `r4`.
   - `test_model_check_accepts_reasons`: `model check --root` on the repository after the refused outcome reports no
     request-form problem for q1.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_intake_outcome.py -q`
   Expected: FAIL; `work outcome` has no `--into`.
 
-- [ ] **Step 3: Implement `handles`, `outcome`, the options and `SECTIONS`.** Read the request once, build its new
+- [x] **Step 3: Implement `handles`, `outcome`, the options and `SECTIONS`.** Read the request once, build its new
   text by the old helpers, and commit it with the item in one `workqueue.committed` call.
 
-- [ ] **Step 4: Run the tests and the old requests'.**
+- [x] **Step 4: Run the tests and the old requests'.**
   Run: `python3 -m pytest tests/scripts/test_intake_outcome.py tests/scripts/test_intake_moves.py tests/scenarios/test_requests.py tests/scripts/test_work_show_request.py -q | tail -1`
   Expected: all pass.
 
-- [ ] **Step 5: The handlers.**
+- [x] **Step 5: The handlers.**
   - **Registry:** `("WhenRuns", "`work outcome accepted`")`, `` `work outcome refused` `` and `` `work outcome
     rewritten` ``. Each takes the request and number from `context["line_of"][line]`, records
     `context["before"] = {"status": ..., "side": ...}` of that request (read by requests' `ThenDoes change`), and runs
@@ -537,17 +537,17 @@ Builds `intake#r2`, `r3` and `r4`.
   - r3: `1. refused`, the reason in a changed file, the item in the commit;
   - r4: `1. rewritten`, line 2 written, and the side moved from `upstream` to `asker`.
 
-- [ ] **Step 6: Mark them built, and the spec's prose.** In `intake.md`: `unbuilt: []`; `## Implementation, may
+- [x] **Step 6: Mark them built, and the spec's prose.** In `intake.md`: `unbuilt: []`; `## Implementation, may
   change` with one bullet each for D10, D11, D12 and D13; `## Not yet` keeps its bullet and gains one for D14 (the
   intake session started by `work backlog`, plan 4).
   Run: `python3 -m pytest tests/scenarios/test_intake.py -q | tail -1; python3 scripts/features vocab --check | tail -1; python3 scripts/model check | tail -1; python3 scripts/features generate --check`
   Expected: `6 passed`; `every step has one handler`; `model check` and `generate --check` at their baselines.
 
-- [ ] **Step 7: The baselines,** as in Task 2, Step 8, with `scripts/work` and `scripts/model_requests.py` in the
+- [x] **Step 7: The baselines,** as in Task 2, Step 8, with `scripts/work` and `scripts/model_requests.py` in the
   `tools check` list.
   Expected: the suite at `27 xfailed`, no failures; `scripts/work` at most 222 lines; everything else unchanged.
 
-- [ ] **Step 8: Commit.**
+- [x] **Step 8: Commit.**
   ```bash
   git add scripts/intake_moves.py scripts/work scripts/model_requests.py tests/scenarios/intake_handlers.py \
     tests/scenarios/readiness_world.py tests/scripts/test_intake_outcome.py spec/capabilities/intake.md

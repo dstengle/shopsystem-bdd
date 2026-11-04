@@ -61,3 +61,70 @@ def refused_naming_line(step):
     assert done.returncode == 1, (done.returncode, done.stdout, done.stderr)
     said = step.context["says"][step.names[0]]
     assert said in done.stderr, (said, done.stderr)
+
+
+# What each word of `work outcome` is run with (D12).
+OPTIONS = {"accepted": ["--into", "work-queue"], "refused": ["--reason", "out of scope"],
+           "rewritten": ["--line", R.COUNTER]}
+
+
+@handler("WhenRuns", "`work outcome accepted`")
+@handler("WhenRuns", "`work outcome refused`")
+@handler("WhenRuns", "`work outcome rewritten`")
+def work_outcome(step):
+    """`work outcome q<n> <k> <word>` on the line a Given placed, with the word's option, over the codified spec (the
+    accepted line goes into one of its capabilities, a counter-proposal parses in its grammar)."""
+    request, number = step.context["line_of"][step.names[-1]]
+    word = step.term.strip("`").split()[-1]
+    R.codify(step)
+    path = step.repo / W.node_rel(step.context, request)
+    step.context["before"] = {"status": W.field(path, "status"), "side": W.field(path, "turn")}
+    step.context["reason_text"] = "out of scope" if word == "refused" else None
+    B.run_work(step, "outcome", request, str(number), word, *OPTIONS[word], **R.NO_INPUT)
+
+
+@local("GivenR", "request line")
+def proposed_in(step):
+    """`the request line r1 is proposed in the request q1`: the line is line 1 of q1; requests' handler runs too."""
+    if step.term == "proposed in":
+        step.context.setdefault("line_of", {})[step.names[0]] = (step.names[1], 1)
+    return False
+
+
+def request_of(step, line):
+    request, number = step.context["line_of"][line]
+    return step.repo / W.node_rel(step.context, request), number
+
+
+@handler("ThenK_A", "request line")
+def line_outcome(step):
+    """The request's `## Outcomes` entry for the line's number is (is not) the value."""
+    path, number = request_of(step, step.names[0])
+    got = workqueue_request._entries(path.read_text(), "Outcomes")
+    has = "%d. %s" % (number, step.values[0].strip("`")) in got
+    assert (not has) if " is not " in step.text else has, (step.text, got)
+
+
+@local("ThenDoes", "reason")
+def writes_reason(step):
+    """A file the last run changed holds the reason the run gave."""
+    said = step.context.get("reason_text")
+    if step.term != "write" or not said:
+        return False
+    hits = [rel for rel in W.runs(step)[-1]["changed"] if said in (step.repo / rel).read_text()]
+    assert hits, (step.text, said, W.runs(step)[-1]["changed"])
+
+
+@local("ThenDoes", "request line")
+def writes_line(step):
+    """The request's `## Lines` gained an entry in the last run; the name is bound to its number."""
+    if step.term != "write" or not step.context.get("line_of"):
+        return False
+    path, _ = request_of(step, next(iter(step.context["line_of"])))
+    rel = path.relative_to(step.repo).as_posix()
+    assert rel in W.runs(step)[-1]["changed"], (step.text, W.runs(step)[-1]["changed"])
+    had = workqueue_request._entries(W.git(step.repo, "show", "%s:%s" % (step.context["head"], rel)), "Lines")
+    now = workqueue_request._entries(path.read_text(), "Lines")
+    assert len(now) == len(had) + 1, (step.text, had, now)
+    step.context["line_of"][step.names[0]] = (step.context["line_of"][next(iter(step.context["line_of"]))][0],
+                                              int(now[-1].split(".", 1)[0]))

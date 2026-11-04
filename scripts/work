@@ -84,6 +84,11 @@ def cmd_request(args):
 
 
 def cmd_outcome(args):
+    import intake_moves
+    if intake_moves.handles(args):
+        intake_moves.outcome(args.root, args.request, args.line, args.outcome, args.into, args.group, args.reason,
+                             args.text)
+        return 0
     workqueue_request.outcome(args.root, args.request, args.line, args.outcome)
     return 0
 
@@ -168,6 +173,10 @@ def main(argv=None):
     q.add_argument("request")
     q.add_argument("line", type=int)
     q.add_argument("outcome")
+    q.add_argument("--into", help="accepted, on a request taken in as an item: the capability the line goes into")
+    q.add_argument("--group", help="with --into: the title of the item's new group (default: the item's title)")
+    q.add_argument("--reason", help="the reason, written under the request's ## Reasons")
+    q.add_argument("--line", dest="text", help="rewritten: the counter-proposal, appended to the request's lines")
     q = sub.add_parser("ask", help="write the upstream's question on a line of a request")
     q.add_argument("request")
     q.add_argument("line", type=int)

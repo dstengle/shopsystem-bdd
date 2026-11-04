@@ -2,10 +2,23 @@
 (`work intake`), and the item side of `work outcome` on a request an item was taken in from. The request files are
 the ones workqueue_request.py keeps; `work intake` changes nothing in the request."""
 import re
+from pathlib import Path
 
 import workqueue
 import workqueue_request
-from backlog_items import Item, Refused, commit, items, label, next_name, one_line
+from backlog_items import (
+    Item,
+    Refused,
+    commit,
+    items,
+    label,
+    next_name,
+    one_line,
+    rel_of,
+    render,
+)
+from backlog_moves import CLOSED, add_note, text_line
+from workqueue_request import _entries, _numbered, _with_entries, _with_field, field
 
 TAKES = ("open", "awaiting-upstream")      # the upstream's turn
 
@@ -52,3 +65,84 @@ def intake(root, request):
                 sections={"Notes": "taken in from request %s" % named(request, text)})
     commit(root, item, "work intake: %s -> %s shaped" % (named(request, text), label(item)))
     return item
+
+
+def handles(args):
+    """Whether `work outcome` is intake's: one of its options given (`--line` is `text`, `line` the line's number),
+    or an item taken in from the request."""
+    if any(getattr(args, k, None) is not None for k in ("into", "group", "reason", "text")):
+        return True
+    try:
+        return linked(args.root, args.request) is not None
+    except Refused:
+        return False
+
+
+def _refusals(root, ident, text, number, word, item, into, group, reason, line):
+    """Refuse, before anything is written, an outcome intake does not take (D12); the old refusals first."""
+    workqueue_request._refuse_upstream_part(root, text, ident, "the line outcomes")
+    if field(text, "turn") == "asker":
+        raise Refused("%s is in the asker's turn; the upstream writes a line outcome only in its own turn" % ident)
+    if str(number) not in {e.split(". ", 1)[0] for e in _entries(text, "Lines")}:
+        raise Refused("work outcome: %s has no line %d" % (named(ident, text), number))
+    if (into is not None or group is not None) and (item is None or word != "accepted"):
+        raise Refused("work outcome: --into and --group write an accepted line into the item taken in from the "
+                      "request; give them with accepted, on a request taken in with `work intake`")
+    if line is not None and word != "rewritten":
+        raise Refused("work outcome: --line is a counter-proposal; give it with rewritten")
+    if item is not None and item.status in CLOSED:
+        raise Refused("work outcome: %s, taken in from %s, is %s" % (label(item), named(ident, text), item.status))
+    if item is not None and word == "accepted" and into is None:
+        raise Refused("work outcome: an accepted line of %s goes into a capability of %s: give --into <capability>"
+                      % (named(ident, text), label(item)))
+    if item is not None and word == "refused" and reason is None:
+        raise Refused("work outcome: a refused line of %s is written with its reason: give --reason" % named(ident, text))
+
+
+def outcome(root, ident, number, word, into=None, group=None, reason=None, line=None):
+    """`work outcome` on a request taken in as an item, or with one of intake's options (D12): the line outcome, a
+    reason under `## Reasons`, a counter-proposal appended to `## Lines` with the turn passed to the asker, and, on a
+    request taken in, the accepted line written into the item and a note; one commit of the request and the item."""
+    path = workqueue_request.path_of(root, ident)
+    text = workqueue.read(path, root)
+    item = linked(root, ident)
+    reason = text_line(reason, "reason") if reason is not None else None
+    _refusals(root, ident, text, number, word, item, into, group, reason, line)
+    after = _with_entries(text, "Outcomes", _numbered(_entries(text, "Outcomes"), number, word))
+    note = "line %d of request %s %s" % (number, ident, word)
+    if line is not None:
+        line = text_line(line, "counter-proposal")
+        workqueue_lines_check(root, line)
+        lines = _entries(text, "Lines")
+        at = max(int(e.split(".", 1)[0]) for e in lines) + 1
+        after = _with_entries(after, "Lines", lines + ["%d. %s" % (at, line)])
+        # a rewritten line is never settled, so `work turn` from the upstream sets awaiting-asker (requests r17)
+        after = _with_field(_with_field(after, "status", "awaiting-asker"), "turn", "asker")
+        reason = reason or "rewritten as line %d" % at
+        note += " as line %d" % at
+    elif reason is not None:
+        note += ": %s" % reason
+    if reason is not None:
+        after = _with_entries(after, "Reasons", _numbered(_entries(after, "Reasons"), number, reason))
+    if item is not None and word == "accepted":
+        import backlog_lines
+        written = dict(e.split(". ", 1) for e in _entries(text, "Lines"))[str(number)]
+        note += " into %s" % backlog_lines.add_line_to(root, item, into, written, group)
+    rels = [str(path.relative_to(root))]
+    message = "work outcome: %s line %d %s" % (ident, number, word)
+    if item is not None:
+        add_note(item, note)
+        rels.append(rel_of(item.name))
+        message += " -> %s" % label(item)
+
+    def write():
+        path.write_text(after)
+        if item is not None:
+            (Path(root) / rel_of(item.name)).write_text(render(item))
+    workqueue.committed(root, rels, message, write)
+
+
+def workqueue_lines_check(root, line):
+    """The counter-proposal checked in this context's grammar, as `work request` checks a line (requests r2)."""
+    import workqueue_lines
+    workqueue_lines.check(root, [line])
