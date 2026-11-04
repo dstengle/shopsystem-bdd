@@ -221,29 +221,29 @@ for the grammar:
 Every capability task has the same steps. Its own section below gives the file, the frontmatter, the groups and the
 test module.
 
-- [ ] **Step 1: Write the capability file**, with its frontmatter, `# <Title>`, `## Purpose` (two to four sentences
+- [x] **Step 1: Write the capability file**, with its frontmatter, `# <Title>`, `## Purpose` (two to four sentences
   from the design goal it serves), `## Terms` (only where its section names some) and `## Behaviour`. Each group is
   `### [g<n>] <title>` followed by its `- [r<n>] <line>`. There is no `Restates:`. List every `r<n>` in `unbuilt:`.
-- [ ] **Step 2: Parse it.**
+- [x] **Step 2: Parse it.**
   Run: `python3 scripts/model parse --file spec/capabilities/<cap>.md`
   Expected: a tree for every line. Reword any refused line, as the Global Constraints say.
-- [ ] **Step 3: Check its logic.**
+- [x] **Step 3: Check its logic.**
   Run: `python3 scripts/model logic | grep '<cap>#'; python3 scripts/model logic | tail -1`
   Expected: no finding naming the capability, and the total unchanged at `11 findings: 6 L5, 5 L6`.
-- [ ] **Step 4: Generate its feature** (service capabilities only).
+- [x] **Step 4: Generate its feature** (service capabilities only).
   Run: `python3 scripts/features generate <cap> && python3 scripts/features generate --check`
   Expected: `features/<cap>.feature` is written, with one scenario a group, and `--check` passes.
-- [ ] **Step 5: Bind it** (service capabilities only). Create `tests/scenarios/test_<cap_underscored>.py`. Its
+- [x] **Step 5: Bind it** (service capabilities only). Create `tests/scenarios/test_<cap_underscored>.py`. Its
   docstring names the feature and says its scenarios are unbuilt (plan 1); its body is `scenarios("<cap>.feature")`,
   as in `tests/scenarios/test_analysis_tools.py`. Write no handlers.
   Run: `python3 -m pytest tests/scenarios/test_<cap_underscored>.py -q | tail -1`
   Expected: every scenario `xfailed`, none failed and none errored.
-- [ ] **Step 6: Add its row** to `spec/index.md`'s Composition table: a new sub-table headed "The simplified
+- [x] **Step 6: Add its row** to `spec/index.md`'s Composition table: a new sub-table headed "The simplified
   workflow (plan 1, unbuilt):". Then check the model and the suite.
   Run: `python3 scripts/model check | tail -1; python3 -m pytest -q | tail -1`
   Expected: the model check baseline unchanged, apart from a `w_unserved_cap` warning, which is accepted. The suite
   passes.
-- [ ] **Step 7: Commit:** `git commit -m "spec: <cap>, codified and unbuilt"`.
+- [x] **Step 7: Commit:** `git commit -m "spec: <cap>, codified and unbuilt"`.
 
 The lines each section gives are target lines. Where the grammar takes one as written, use it as written.
 
@@ -386,10 +386,10 @@ The lines each section gives are target lines. Where the grammar takes one as wr
 
 **Files:** `.shop/records/README.md` (rows for `roadmap.md` and `plan-1-spec.md`).
 
-- [ ] **Step 1: Bindings.**
+- [x] **Step 1: Bindings.**
   Run: `python3 scripts/features bindings --unbound`
   Expected: no output, exit 0.
-- [ ] **Step 2: The baselines.**
+- [x] **Step 2: The baselines.**
   Run: `python3 scripts/model check | tail -1; python3 scripts/model logic | tail -1; python3 scripts/model lexicon --check; python3 scripts/tools size --limit 300; python3 -m pytest -q | tail -2`
   Expected:
   - `model check` at 53 violations or fewer, 0 file problems;
@@ -397,10 +397,10 @@ The lines each section gives are target lines. Where the grammar takes one as wr
   - no lexicon problems;
   - `tools size` silent;
   - the suite passed, with the new scenarios xfailed.
-- [ ] **Step 3: Count.**
+- [x] **Step 3: Count.**
   Run: `python3 -c "import sys; sys.path.insert(0,'scripts'); import pathlib, spec_unbuilt as u; d=u.unbuilt(pathlib.Path('.')); print(sum(map(len,d.values())), sorted(d))"`
   Expected: all nine capabilities, and a count equal to the number of `[r<n>]` lines in their files.
-- [ ] **Step 4: Commit the records rows.**
+- [x] **Step 4: Commit the records rows.**
   ```bash
   git add .shop/records/README.md
   git commit -m "records: the roadmap and plan 1 of the workflow simplification"
