@@ -66,6 +66,7 @@ class Vocab:
         by_cond = {(self.cond_terms[c], self.kinds[k]): c for c, k in self.conds.items()}
         self.def_funs = {fun: (by_cond[pair], by_term[pair[1]])
                          for fun, pair in spec_typed_def.funs(lexicon).items() if pair in by_cond}
+        self.def_lits = {}   # {condition id: (kind id, its Def clause)}, from spec_facts.define
         self.rels, self.rel_kinds = {}, {}
         for k1, word, k2, rid in lexicon.relations():
             if k1 in by_term and k2 in by_term:
@@ -159,6 +160,22 @@ def facts(vocab):
         elif cid not in vocab.defined:
             out.append("primitive(%s,%s)." % (cid, kid))
     return {"always": out, "dynamic": dynamic, "initial": []}
+
+
+def domain(vocab):
+    """The lexicon's facts for `grammar/check.lp` (design-r3 §3): kinds, sub-kinds, actors, each attribute's values in
+    their order, its transitions, and its initial values: those no transition enters, or every value when each one
+    is entered."""
+    out = ["kind(%s)." % k for k in sorted(vocab.kinds)]
+    out += ["sub(%s,%s)." % pair for pair in vocab.subs]
+    out += ["actor(%s)." % a for a in sorted(vocab.actors)]
+    for tid, (kid, _) in sorted(vocab.attrs.items()):
+        values, edges = vocab.attr_values[tid], vocab.transitions(tid)
+        entered = {b for _, b in edges}
+        out += ["val(%s,%s,%s)." % (kid, tid, v) for v in values]
+        out += ["trans(%s,%s,%s,%s)." % (kid, tid, a, b) for a, b in edges]
+        out += ["initial(%s,%s,%s)." % (kid, tid, v) for v in values if v not in entered or entered >= set(values)]
+    return out
 
 
 def pools(counts):
