@@ -168,6 +168,7 @@ Feature: Supervision
   Scenario: An implementer's branch without a green check is not merged
     Given a work-item branch w1
     And the work-item branch w1 is not green check
+    And the work-item branch w1 is not flaky
     And a stage s1 that is `implement`
     And a work-item w2
     And the stage s1 is for the work-item w2

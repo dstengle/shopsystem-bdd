@@ -142,7 +142,7 @@ Restates: r4@0.29, r15@0.29, r24@0.29.
 
 ### [g15] An implementer's branch without a green check is not merged
 Restates: r4@0.29.
-- [r15] While a work-item branch is not green check, when a session ends an `implement` stage for a work-item, `work run` shall not merge the work-item branch.
+- [r15] While a work-item branch is not green check and the work-item branch is not flaky, when a session ends an `implement` stage for a work-item, `work run` shall not merge the work-item branch.
 
 ### [g16] A merged work-item branch is deleted
 Restates: r18@0.29.
