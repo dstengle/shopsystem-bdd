@@ -8,17 +8,17 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import backlog_cli  # noqa: E402
-import backlog_items  # noqa: E402
-import supervise  # noqa: E402
-import supervise_all  # noqa: E402
-import workqueue  # noqa: E402
-import workqueue_answer  # noqa: E402
-import workqueue_list  # noqa: E402
-import workqueue_note  # noqa: E402
-import workqueue_request  # noqa: E402
-import workqueue_start  # noqa: E402
-import workqueue_status  # noqa: E402
+import backlog_cli
+import backlog_items
+import supervise
+import supervise_all
+import workqueue
+import workqueue_answer
+import workqueue_list
+import workqueue_note
+import workqueue_request
+import workqueue_start
+import workqueue_status
 
 
 def cmd_add(args):
