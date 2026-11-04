@@ -129,28 +129,28 @@ Restates: r13@0.29, r24@0.29, r30@0.29.
 
 ### [g20] `work answer` returns a work-item to the research stage that asked
 Restates: r13@0.29, r14@0.29.
-- [r20] While a question is `research`, when the person runs `work answer` on a work-item that is `awaiting-answer`,
-  `work` shall set its status to `drafted` and write an answer.
+- [r20] While a work-item is `awaiting-answer` and the question on the work-item is `research`, when the person runs
+  `work answer` on the work-item, `work` shall set its status to `drafted` and write an answer.
 
 ### [g21] `work answer` returns a work-item to the plan stage that asked
 Restates: r14@0.29.
-- [r21] While a question is `plan`, when the person runs `work answer` on a work-item that is `awaiting-answer`,
-  `work` shall set its status to `researched`.
+- [r21] While a work-item is `awaiting-answer` and the question on the work-item is `plan`, when the person runs
+  `work answer` on the work-item, `work` shall set its status to `researched`.
 
 ### [g22] `work answer` returns a work-item to the implement stage that asked
 Restates: r14@0.29.
-- [r22] While a question is `implement`, when the person runs `work answer` on a work-item that is
-  `awaiting-answer`, `work` shall set its status to `ready`.
+- [r22] While a work-item is `awaiting-answer` and the question on the work-item is `implement`, when the person runs
+  `work answer` on the work-item, `work` shall set its status to `ready`.
 
 ### [g23] An answer to a reviewer's question that asks for a change
 Restates: r26@0.29.
-- [r23] While a question is `review` and an answer is `--change`, when the person runs `work answer` on a work-item
-  that is `awaiting-answer`, `work` shall set its status to `ready`.
+- [r23] While a work-item is `awaiting-answer` and the question on the work-item is `review` and the answer is
+  `--change`, when the person runs `work answer` on the work-item, `work` shall set its status to `ready`.
 
 ### [g24] An answer to a reviewer's question that accepts the work-item
 Restates: r27@0.29.
-- [r24] While a question is `review` and an answer is `--accept`, when the person runs `work answer` on a work-item
-  that is `awaiting-answer`, `work` shall set its status to `done`.
+- [r24] While a work-item is `awaiting-answer` and the question on the work-item is `review` and the answer is
+  `--accept`, when the person runs `work answer` on the work-item, `work` shall set its status to `done`.
 
 ### [g25] An answer to a reviewer's question must say which
 Restates: r28@0.29.
