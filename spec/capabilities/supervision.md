@@ -397,7 +397,7 @@ Restates: r86@0.29, r87@0.29, r88@0.29, r115@0.29.
 
 ### [g79] A formulated capability-proposal gets its work-items
 Restates: r72@0.29.
-- [r79] While a capability-proposal is `formulated` and a result is not awaited, when the person runs `work run` on a `started` initiative, `work run` shall draft a work-item.
+- [r79] While a capability-proposal is `formulated` and no result is awaited, when the person runs `work run` on a `started` initiative, `work run` shall draft a work-item.
 
 ### [g80] The rounds that change the spec hold the spec lock
 Restates: r95@0.29.

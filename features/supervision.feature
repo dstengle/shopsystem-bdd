@@ -849,8 +849,6 @@ Feature: Supervision
   @g79 @r79
   Scenario: A formulated capability-proposal gets its work-items
     Given a capability-proposal p1 that is `formulated`
-    And a result r1
-    And the result r1 is not awaited
     And an initiative i1 that is `started`
     When the person runs `work run` on the initiative i1
     Then `work run` drafts the work-item w1
