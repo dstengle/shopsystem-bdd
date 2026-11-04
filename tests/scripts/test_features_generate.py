@@ -7,6 +7,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 
 import pytest
 
@@ -206,10 +207,30 @@ def test_generation_imports_no_solver():
     assert not re.search(r"spec_solve|spec_trace\b|spec_engine|telingo|clingo\.Control", text)
 
 
-def test_check_on_the_live_repo_runs_to_its_end():
-    """Every live service capability is read off its requirements' facts without a crash; the checked-in features may differ
-    until layer 4 regenerates them, and a group with an L1 is left out with a line on stderr."""
+def test_check_on_the_live_repo_is_fast_and_clean():
+    """Every live service capability is read off its requirements' facts without a crash, in under 5 s with the parse
+    cache warm (the first run warms it); the checked-in features may differ until layer 4 regenerates them."""
     toolchain.require()
+    features(REPO, "generate", "--check")
+    start = time.monotonic()
     done = features(REPO, "generate", "--check")
+    took = time.monotonic() - start
     assert done.returncode in (0, 1), done.stdout + done.stderr
     assert "Traceback" not in done.stderr
+    assert took < 5, "features generate --check took %.1f s" % took
+
+
+def test_byte_stable(tmp_path):
+    """design-r3 §5: every live service capability's feature is the same bytes under two hash seeds."""
+    toolchain.require()
+    procs = {}
+    for seed in ("1", "2"):
+        shutil.copytree(REPO / "spec", tmp_path / seed / "spec")
+        procs[seed] = subprocess.Popen([sys.executable, str(FEATURES), "generate"], cwd=tmp_path / seed,
+                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+                                       env=dict(os.environ, PYTHONHASHSEED=seed))
+    for proc in procs.values():
+        _, err = proc.communicate(timeout=120)
+        assert proc.returncode == 0, err
+    texts = [{p.name: p.read_bytes() for p in (tmp_path / seed / "features").glob("*.feature")} for seed in procs]
+    assert texts[0] and texts[0] == texts[1]

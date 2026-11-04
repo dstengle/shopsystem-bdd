@@ -1,5 +1,6 @@
 """The 11 guarantees capabilities, converted (the GF conversion's design §16, plan P9): each file is codified, every
-statement parses to exactly one tree in the live `Req` grammar, `model logic` finds no L1 or L3 in it, `model
+statement parses to exactly one tree in the live `Req` grammar, `model logic` finds no error in it (the one live run,
+`live_logic`, less its known findings), `model
 restates` finds every 0.29 id restated, dropped or moved, and none of them has a feature file."""
 import pathlib
 import sys
@@ -31,11 +32,6 @@ def grammar():
     return spec_grammar.load(REPO)
 
 
-@pytest.fixture(scope="module")
-def findings(grammar):
-    return spec_solve.run(REPO)
-
-
 @pytest.mark.parametrize("cap", GUARANTEES)
 def test_the_capability_is_codified_and_well_formed(cap):
     assert spec_read.codified(path(cap)), f"{cap} has no `language: codified-1`"
@@ -56,9 +52,11 @@ def test_every_statement_parses_to_one_tree(grammar, cap):
     assert refused == []
 
 
+@pytest.mark.live_logic
 @pytest.mark.parametrize("cap", GUARANTEES)
-def test_the_logic_check_finds_no_error(findings, cap):
-    errors = [f.text for f in findings if f.code in ("L1", "L3") and any(i.startswith(f"{cap}#") for i in f.ids)]
+def test_the_logic_check_finds_no_error(live_logic, live_expected, cap):
+    errors = [f.text for f in live_logic if f.code in spec_solve.ERRORS and any(i.startswith(f"{cap}#") for i in f.ids)
+              and f.text not in live_expected]
     assert errors == []
 
 
