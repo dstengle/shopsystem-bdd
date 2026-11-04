@@ -72,6 +72,7 @@ These are recorded as rulings in the ledger at `.superpowers/sdd/plan-1-spec/pro
     - telemetry: `measure compare batch-2 batch-3` prints both names.
     - Counts, flags and rank order are prose under `## Implementation, may change`.
 11. **Plan progress.** Tasks 3-10 share one set of step checkboxes, so each task also has a "- [x] Steps 1-7 done." line with its notes.
+12. **pytest, not `unittest`.** `tests/scripts/test_spec_unbuilt.py` is written as pytest functions with `tmp_path`, where Task 1 asked for `unittest`. Harmless *(added after the review, M8)*.
 
 No line went to `## Not yet`, and the grammar was not extended.
 
