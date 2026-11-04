@@ -96,6 +96,14 @@ def test_a_response_object_gives_its_restrictions(vocab):
                    'resp("U2",1,neg,e_start,a_work_run,v1).']
 
 
+def test_the_k_after_a_response_object_a_k_is_that_object(vocab):
+    out = facts(vocab, "s#r2", "When the person runs `work start` on an initiative, `work run` shall start a "
+                               "research stage for the initiative and end the stage.")
+    assert 'resp("s#r2",1,pos,e_start,a_work_run,v2).' in out
+    assert 'resp("s#r2",2,pos,e_end,a_work_run,v2).' in out
+    assert not any(f.startswith('role("s#r2",v3') for f in out)
+
+
 def test_every_gives_every_and_its_restriction_as_cond(vocab):
     out = facts(vocab, "s#r5", "While research stages for an initiative are `waiting`, when the person runs "
                                "`work run`, `work run` shall start every research stage for the initiative.")

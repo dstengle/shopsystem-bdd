@@ -150,3 +150,10 @@ def test_a_split_requirement_gives_its_first_way_through(repo):
     got = steps(repo, "supervision#g9")
     assert got[0] == ("given", "an initiative i1 that is `started`")
     assert not any("`done`" in t for _, t in got)
+
+
+def test_an_instance_name_is_lower_case_for_a_capitalised_kind(repo):
+    add_term(repo, "- **Python interpreter** (kind): the Python a command runs with.")
+    add_group(repo, "work-queue", "### [g9] the interpreter is listed\n"
+              "- [r9] When the person runs `work list`, `work` shall print every Python interpreter.")
+    assert steps(repo, "work-queue#g9")[-1] == ("then", "`work` prints the Python interpreter p1")
