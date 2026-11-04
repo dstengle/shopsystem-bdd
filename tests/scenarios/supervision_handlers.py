@@ -92,6 +92,13 @@ def stage_with(step):
     W.sv(step.context)["with"][step.names[0]] = step.names[1]
 
 
+@handler("GivenR", "gives")
+def result_gives(step):
+    """The result gives the change list: the stand-in's result of an `integrate` or `apply` stage gives the one
+    change list its plan writes, with the change list's conditions; recorded, nothing more to build."""
+    W.sv(step.context).setdefault("gives", {})[step.names[0]] = step.names[1]
+
+
 @handler("GivenR", "on")
 def question_on(step):
     sv = W.sv(step.context)

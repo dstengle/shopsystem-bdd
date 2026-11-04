@@ -146,39 +146,49 @@ Feature: Work queue
 
   @g20 @r20
   Scenario: `work answer` returns a work-item to the research stage that asked
-    Given a question q1 that is `research`
-    And a work-item w1 that is `awaiting-answer`
+    Given a work-item w1 that is `awaiting-answer`
+    And a question q1
+    And the question q1 is on the work-item w1
+    And the question q1 is `research`
     When the person runs `work answer` on the work-item w1
     Then the work-item w1 is `drafted`
     And `work` writes the answer a1
 
   @g21 @r21
   Scenario: `work answer` returns a work-item to the plan stage that asked
-    Given a question q1 that is `plan`
-    And a work-item w1 that is `awaiting-answer`
+    Given a work-item w1 that is `awaiting-answer`
+    And a question q1
+    And the question q1 is on the work-item w1
+    And the question q1 is `plan`
     When the person runs `work answer` on the work-item w1
     Then the work-item w1 is `researched`
 
   @g22 @r22
   Scenario: `work answer` returns a work-item to the implement stage that asked
-    Given a question q1 that is `implement`
-    And a work-item w1 that is `awaiting-answer`
+    Given a work-item w1 that is `awaiting-answer`
+    And a question q1
+    And the question q1 is on the work-item w1
+    And the question q1 is `implement`
     When the person runs `work answer` on the work-item w1
     Then the work-item w1 is `ready`
 
   @g23 @r23
   Scenario: An answer to a reviewer's question that asks for a change
-    Given a question q1 that is `review`
+    Given a work-item w1 that is `awaiting-answer`
+    And a question q1
+    And the question q1 is on the work-item w1
+    And the question q1 is `review`
     And an answer a1 that is `--change`
-    And a work-item w1 that is `awaiting-answer`
     When the person runs `work answer` on the work-item w1
     Then the work-item w1 is `ready`
 
   @g24 @r24
   Scenario: An answer to a reviewer's question that accepts the work-item
-    Given a question q1 that is `review`
+    Given a work-item w1 that is `awaiting-answer`
+    And a question q1
+    And the question q1 is on the work-item w1
+    And the question q1 is `review`
     And an answer a1 that is `--accept`
-    And a work-item w1 that is `awaiting-answer`
     When the person runs `work answer` on the work-item w1
     Then the work-item w1 is `done`
 

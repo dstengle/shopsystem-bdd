@@ -238,15 +238,15 @@ Restates: r63@0.29.
 
 ### [g39] A green initiative branch gets a branch review
 Restates: r27@0.29, r47@0.29, r48@0.29, r49@0.29, r110@0.29, r154@0.29, r155@0.29, r156@0.29, r157@0.29.
-- [r39] While a work-item is `green` and no remote is unpushable and an initiative branch is not reviewed, when the person runs `work run` on a `started` initiative, `work run` shall start a `branch review` stage for the initiative, give the stage a review brief with a commit, commit the stage, push the commit and log the stage.
+- [r39] While an initiative is `started` and a work-item kept in the initiative is `green` and no remote is unpushable and the initiative branch is not reviewed, when the person runs `work run` on the initiative, `work run` shall start a `branch review` stage for the initiative, give the stage a review brief with a commit, commit the stage, push the commit and log the stage.
 
 ### [g40] A branch read by a kept review gets no branch review
 Restates: r50@0.29.
-- [r40] While a work-item is `green` and an initiative branch is reviewed, when the person runs `work run` on a `started` initiative, `work run` shall not start a `branch review` stage for the initiative.
+- [r40] While a work-item is `green` and the initiative branch is reviewed, when the person runs `work run` on a `started` initiative, `work run` shall not start a `branch review` stage for the initiative.
 
 ### [g41] An initiative with no work-item is neither reviewed nor measured
 Restates: r94@0.29, r97@0.29.
-- [r41] While a `started` initiative is itemless, when the person runs `work run` on the initiative, `work run` shall not start a `branch review` stage for the initiative or start an `analysis` stage for the initiative.
+- [r41] While an initiative is `started` and no work-item is kept in the initiative, when the person runs `work run` on the initiative, `work run` shall not start a `branch review` stage for the initiative or start an `analysis` stage for the initiative.
 
 ### [g42] A branch review's findings to fix now get a work-item
 Restates: r74@0.29.
@@ -365,7 +365,7 @@ Restates: r70@0.29, r108@0.29.
 
 ### [g71] An answered glossary-proposal gets an apply round
 Restates: r165@0.29, r170@0.29.
-- [r71] While a glossary-proposal is `awaiting-answer` and a question on the glossary-proposal is answered, when the person runs `work run` on a `started` initiative, `work run` shall start an `apply` stage for the glossary-proposal.
+- [r71] While a glossary-proposal is `awaiting-answer` and the question on the glossary-proposal is answered, when the person runs `work run` on a `started` initiative, `work run` shall start an `apply` stage for the glossary-proposal.
 
 ### [g72] A glossary-proposal with a question unanswered gets no apply round
 Restates: r172@0.29, spec-integration#r55@0.29.
@@ -385,11 +385,11 @@ Restates: r166@0.29, r167@0.29.
 
 ### [g76] An applied capability-proposal is formulated by `features generate`
 Restates: r83@0.29, r144@0.29, r145@0.29, r146@0.29, formulation#r1@0.29, formulation#r2@0.29, formulation#r6@0.29, formulation#r7@0.29, formulation#r11@0.29.
-- [r76] While a change list is codified, when a session ends an `apply` stage for a capability-proposal with a result that is `DONE`, `work run` shall start a `formulate` stage for the capability-proposal, set the status of the capability-proposal to `formulated`, commit the feature and push the commit.
+- [r76] While a result that is `DONE` gives the change list and the change list is codified, when a session ends an `apply` stage for a capability-proposal with the result, `work run` shall start a `formulate` stage for the capability-proposal, set the status of the capability-proposal to `formulated`, commit the feature and push the commit.
 
 ### [g77] A capability that is not codified is the formulate round's fault
 Restates: formulation#r22@0.29.
-- [r77] While a change list is uncodified, when a session ends an `apply` stage for a capability-proposal with a result that is `DONE`, `work run` shall set the status of the capability-proposal to `approved` and exit with an error naming the capability.
+- [r77] While a result that is `DONE` gives the change list and the change list is uncodified, when a session ends an `apply` stage for a capability-proposal with the result, `work run` shall set the status of the capability-proposal to `approved` and exit with an error naming the capability.
 
 ### [g78] A faulty round makes no transition and the initiative's other nodes go on
 Restates: r86@0.29, r87@0.29, r88@0.29, r115@0.29.
