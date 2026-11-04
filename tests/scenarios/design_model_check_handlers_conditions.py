@@ -131,6 +131,8 @@ def work_item(step):
     path = node_path(step, name)
     if word == "out of step":     # work-queue's: `work` refuses its transition
         step.context.setdefault("out_of_step", set()).add(name)
+    elif word in ("not open", "closed"):     # supervision's: a node work run does not take
+        edit(path, r"^status: .*$", "status: withdrawn")
     elif word == "parentless":
         edit(path, r"^part_of: .*\n", "")
     elif word == "uncommitted":
@@ -171,6 +173,8 @@ def initiative(step):
                 "## Resolution\n" % (H.full("request", "q9"), H.full("initiative", name)))
     elif word == "jobbed":
         path.write_text(H.initiative_text(name, kind="job"))
+    elif word == "not open" and not re.search(r"^status: (done|abandoned)$", path.read_text(), re.MULTILINE):
+        edit(path, r"^status: .*$", "status: abandoned")
 
 
 @handler("GivenK_C", "request")
@@ -184,6 +188,8 @@ def request(step):
         path.write_text(path.read_text().replace("## Resolution\n", "## Resolution\n1. thing#r9 1.0.0\n"))
     elif word == "misformed":
         path.write_text(path.read_text().replace("## Lines\n", "## Things\n"))
+    elif word == "closed":
+        edit(path, r"^status: .*$", "status: delivered")
 
 
 @handler("GivenK_C", "design-decision")

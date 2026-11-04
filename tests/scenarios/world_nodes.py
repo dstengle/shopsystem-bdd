@@ -86,6 +86,14 @@ def frontmatter_field(text, name):
 for _kind in NODE_KINDS:
     @handler("GivenK_A", _kind)
     def given_node(step):
+        """`a K x that is v` writes the node; `the K x is v` after it sets the status and keeps what other Givens
+        wrote into it (its relations)."""
+        known = step.context.get("nodes", {}).get(step.names[0])
+        path = step.repo / known[1] if known else None
+        if path and path.is_file():
+            path.write_text(re.sub(r"^status: .*$", "status: %s" % bare(step.values[0]), path.read_text(), count=1,
+                                   flags=re.MULTILINE))
+            return
         write_node(step, step.kind, step.names[0], step.values[0])
 
     @handler("GivenK", _kind)
