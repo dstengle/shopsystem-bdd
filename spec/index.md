@@ -94,6 +94,7 @@ The simplified workflow (plan 1, unbuilt):
 | `brainstorming` | the person shaping work in a conversation | guarantees |
 | `decision-tiers` | a person or session keeping the decisions | service |
 | `telemetry` | a session measuring a batch | service |
+| `conversation` | the person reading why a piece of work was asked for | service |
 
 ## Testing
 

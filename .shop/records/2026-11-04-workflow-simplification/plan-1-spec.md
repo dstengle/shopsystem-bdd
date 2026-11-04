@@ -371,6 +371,8 @@ The lines each section gives are target lines. Where the grammar takes one as wr
 
 #### Task 10: `conversation` (service)
 
+- [x] Steps 1-7 done. The two messages either side, without tool uses, and the hook's flags are under `## Implementation, may change`; the hook gives the names by `work names`; `the UserPromptSubmit hook` is an actor of its `## Terms`.
+
 - **Groups:**
   1. **`work quote` keeps the turns:** When a session runs `work quote` with the person's words, `work` shall write a
      quote with its session, its message and the two messages before it and after it, without tool uses, and commit
