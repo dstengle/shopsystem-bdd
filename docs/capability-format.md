@@ -112,7 +112,7 @@ phrases joined by `or` (`shall not A or B`: neither):
 
 | form | shape | its scenario |
 |---|---|---|
-| ubiquitous | `Actor shall V.` | Givens from the witness, then Then; no When |
+| ubiquitous | `Actor shall V.` | Givens from its noun phrases' restrictions, then Then; no When |
 | event-driven | `When T, Actor shall V.` | When T, Then V |
 | state-driven | `While C, Actor shall V.` | Given C, Then V |
 | optional feature | `Where F, Actor shall V.` | Given F, Then V |
@@ -306,7 +306,8 @@ written as the clause says it (`fulfils`, `rests on`).
 
 `spec/universal.md` holds `- [U<n>] <statement>`, each a ubiquitous, `Where`, `While` or `When` statement in the
 same grammar, with frontmatter `group: guarantees` and `language: codified-1`. They are true in every state of
-every trace: `model logic` adds each to the background of every check, and where one is observable in a test, the
+every trace: `model logic` checks each against the requirements that share an event or an attribute with it, and
+where one is observable in a test, the
 scenario conftest checks it after every scenario that makes its trigger true. A requirement never restates one; a
 0.29 line that only restated one is dropped with the U as its reason.
 
@@ -329,18 +330,18 @@ feature differs from what the spec generates. The file starts with the header
 `# generated from spec/capabilities/<name>.md by features generate; do not edit`, then `Feature: <title>`, then one
 scenario per group in group order, tagged `@g<n>` and each member's `@r<n>`.
 
-A scenario is read off a trace. `features generate` asks the same solver `model logic` uses for the smallest trace
-in which the group's statement fires (fewest instances, then fewest events, then fewest facts at the start), and
-reads it: the state the trace starts in gives the Givens (the statement's Where and While clauses, its defined
-conditions and whatever else a statement the trigger reaches needs), the trigger gives the When, and each verb
-phrase of the response gives its own Then. A group's example data comes first, from its `given` block. Every step
-is a sentence of the step grammar. Among equal traces the least by a fixed order is taken, so the same spec gives
-the same bytes, and a requirement the group's trace cannot reach changes nothing in it. Instances are named by
-their kind's first letter and a number in order of first mention (`i1`, `w1`), and every step names the kind: `an
-initiative i1 that is `proposed`` where it is introduced, `the initiative i1` after. A group with no trace to read
-(its trace cannot happen, which is its L1; the trace is not determined; or a step of it has no template) gets no
-scenario: `features generate` names the group and the reason on stderr and writes the rest. The errors are `model
-logic`'s L1 and `model check`'s row for a group with no scenario (v_s3). `features generate` exits 1 on a requirement
+A scenario is read off its group's requirements, with no solver. `features generate` reads the facts `model logic`
+checks (one translation of each grammar fun) by a fixed rule: the statement's Where and While clauses, its defined
+conditions and its noun phrases' restrictions give the Givens, the trigger gives the When, and each verb phrase of
+the response gives its own Then, followed by the attributes it sets. A condition "no K is v" gives no Given. A noun
+phrase with `every` and a restriction gets a contrast: one more instance that fails the restriction, as a Given, and
+a `does not` Then for it. A scenario states only its own requirements, so a requirement added elsewhere changes
+nothing in it; the world the handlers build supplies the defaults. A group's example data comes first, from its
+`given` block. Every step is a sentence of the step grammar, and the same spec gives the same bytes. Instances are
+named by their kind's first letter and a number in order of first mention (`i1`, `w1`), and every step names the
+kind: `an initiative i1 that is `proposed`` where it is introduced, `the initiative i1` after. A group with a fact
+no step words gets no scenario: `features generate` names the group and the reason on stderr and writes the rest;
+`model check`'s row for a group with no scenario (v_s3) is its error. `features generate` exits 1 on a requirement
 that does not parse or an example-data line the step grammar refuses.
 
 A scenario that looks wrong is a wrong requirement (back to the spec, at the gate) or a defect of the plugin's
@@ -402,19 +403,23 @@ The only delete rule is `refuse`.
   v_t9 a `Means` field, v_t10 two relation rows with one from, word and to), and references that
   name nothing. It exits 0 when it finds nothing. `scripts/model lexicon --check` prints the term problems alone.
 - `scripts/model logic [<capability>]` checks the requirements together. Each statement is translated, fun by fun,
-  into telingo temporal formulas (`&tel`), and each group is solved with the statements its trigger can reach and
-  the universal conditions, at a horizon telingo raises step by step up to the longest chain of triggers:
-  - L1 (error): a group that cannot happen; the unsatisfiable core names the requirements and universal conditions
-    in conflict;
+  into ground facts about it (its roles, pre-state, trigger, responses and sets), and the whole context is checked in
+  one clingo solve of the fixed encoding `grammar/check.lp` over the pairs of requirements that share vocabulary
+  (a trigger, a kind, an event or an attribute), with one generic instance a noun phrase. A capability filters the
+  findings to those that name it; it exits 1 on an error:
+  - L1 (error): a clash: two requirements that fire on one trigger in one consistent pre-state and demand opposite
+    things, named both, with the merged pre-state of the witness; or one requirement that contradicts itself;
   - L2 (warning): two statements that say the same thing;
-  - L3 (error): a status set where no transition row allows it (an L1 whose core holds a transition);
-  - L4 (warning): a value a group's pre-state needs that no trace from an initial state reaches, asked of the
-    solver.
+  - L3 (error): a set where no transition row allows it;
+  - L4 (warning): a value some pre-state needs that no transition path reaches from an initial value;
+  - L5 (warning): an untriggered positive event obligation ("While C, X shall do E"), naming the requirements that
+    react to its event;
+  - L0 (error): the check did not finish within its 20 s limit; the findings found so far are listed.
 - `scripts/model restates [<capability>]`, in a converted repository: every 0.29 id restated, dropped or moved.
-- `features generate --check`: every feature file is what its capability generates.
+- `features generate --check`: every feature file is what its capability generates. A scenario is read off its
+  group's requirements' facts, with no solver.
 
-The grammar tools (GF, its pgf runtime, clingo and telingo) are installed by `tools install`; `tools probe`
-reports them.
+The grammar tools (GF, its pgf runtime and clingo) are installed by `tools install`; `tools probe` reports them.
 
 ## Doing it
 

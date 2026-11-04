@@ -1,8 +1,9 @@
 # The grammar, formally
 
-Version 5, 2026-11-03, with the GF conversion's revision 2 (`and`
-between responses, relations as rows, conditions defined in the
-language, the `&tel` translation, scenarios read from traces). A
+Version 5, 2026-11-03, with the GF conversion's revisions 2 and 3
+(`and` between responses, relations as rows, conditions defined in the
+language, one translation of each fun into facts, the clingo check over
+pairs, scenarios read off each requirement's facts). A
 machine-checkable statement of
 `design-model.md`, in two parts. The **graph** (§1–§5): the schema, the
 integrity constraints, the lifecycles. Notation: Datalog (clingo
@@ -258,9 +259,8 @@ v_e2 (the regex check, replaced by v_p1 and v_p2), and the inputs `needs`,
 ## 5. Lifecycles
 
 Transitions not listed are violations. The glossary's attribute entries
-(`spec/index.md`) give each as a row `from → to: event`, and the
-background theory of `model logic` allows a status to change only along a
-row.
+(`spec/index.md`) give each as a row `from → to: event`, and
+`model logic` reports a status set along no row (L3).
 
 **request**: `open` → `awaiting-asker` (the upstream wrote an outcome for
 every line and some line is not settled) ⇄ `awaiting-upstream` →
@@ -410,42 +410,62 @@ A line is a sentence of §6.1.
   (`scripts/model.lp`). It reads the parse facts, and never solves over
   time.
 - **`model logic`** translates each requirement's tree, one translation
-  for each abstract fun, into telingo temporal formulas guarded by
-  `on(<id>)`: `When T, R` is `:- on(id), B, &tel{ T & ~ > R }`, `While C,
-  R` is `&tel{ C & ~ R }`, `shall not` fires when the forbidden response
-  happens, and each conjunct of `and` is its own constraint under the one
-  id. A defined condition is a rule; U1–U10 are statements guarded by
-  `on("U<n>")`. For each group it solves the group's witness with its
-  **cone** (the statements its trigger reaches, over the whole spec, and
-  the trigger-less statements and U's over kinds the cone uses) and the
-  background theory (instances, creation, frame axioms, one value per
-  attribute, the resource rules, the transition rows guarded by
-  `on("T:<attribute>@<kind>")`), by telingo's own incremental loop
-  (`imain`), up to a horizon of the longest trigger chain in the cone
-  plus 2:
-  - **L1** (error): no model; the unsatisfiable core names the
-    requirements and U's that conflict;
+  for each abstract fun, into ground facts about the requirement, its
+  noun phrases one generic instance each (`v1`, `v2`, … in order of
+  mention): `role` for each noun phrase, `cond`, `ccond` and `crel` for
+  the pre-state (a `Def` condition expanded into its literals, a prose
+  one opaque), `none` for "no K is v" (read over every thing of kind K),
+  `trig` for the trigger, `resp` for each conjunct of `and`, `set` for
+  an attribute set, `every`, `uses` for "X shall use Y" (static, not an
+  event), and `form`; a choice is split into `R#1`, `R#2`, … reported
+  under R. The lexicon adds the domain facts: kinds, sub-kinds, values,
+  transition rows and initial values. The whole context is checked in
+  one brave clingo solve of these facts with the fixed encoding
+  `grammar/check.lp`, over two states: state 0 is the pre-state, the
+  trigger happens there, and state 1 is state 0 with the sets applied,
+  where the responses happen (`When T, R` is G(T → X R); `While C, R` is
+  G(C → R)). Candidate pairs come from a shared-vocabulary index, never
+  the cross product: two triggered requirements with one trigger, a
+  triggered and an untriggered one over a shared kind, a requirement and
+  a U that share an event or an attribute. A unification maps each role
+  of one requirement to a role of the other of a compatible kind, or
+  keeps it apart; the triggers must unify and the merged pre-state must
+  be consistent. The shown atoms are the findings:
+  - **L1** (error): a clash: under one unification, two requirements
+    fire together and demand opposite things (one event done and not
+    done on one object, one attribute set to two values, `exit_ok` with
+    `exit_error`, `change_nothing` with a change, "use" with "shall not
+    use"), named both, with the merged pre-state of the witness; or one
+    requirement whose own pre-state is inconsistent;
   - **L2** (warning): two requirements with equal normalised trees;
-  - **L3** (error): a status set by no transition row: an L1 whose core
-    holds a transition guard;
-  - **L4** (warning): a value a group's pre-state needs that no trace
-    reaches, asked of the solver for each labelled state-0 value.
+  - **L3** (error): a set whose implied pre-value has no transition row
+    to the new value;
+  - **L4** (warning): a value some pre-state needs that no transition
+    path reaches from an initial value;
+  - **L5** (warning): an untriggered positive event obligation ("While
+    C, X shall do E"), naming the triggered requirements that react to
+    its event;
+  - **L0** (error): the solve did not finish within its 20 s limit; the
+    findings so far are listed.
 - **`model parse`**, **`model lexicon`** and **`model restates`** report a
   line's tree or refusal (with the longest parsed prefix and the nearest
   lexicon words), the lexicon by category, and the coverage of the 0.29
   ids.
 - **`features generate`** writes one scenario for each group, read off
-  the group's minimal trace on the same solver (fewest instances, then
-  events, then state-0 facts; ties broken by a fixed order, instances
-  named in order of mention): the labelled state-0 atoms and every other
-  state-0 fluent give the Givens, the trigger the When, each response
-  conjunct a Then, each linearised through the Steps grammar. A given
-  block gives only example data, first; a given line that is not example
-  data is left out with a line on stderr (v15m is its error). The same
-  spec gives the same bytes. A group with no trace to read (its L1, a
-  trace that is not determined, a step with no template) gets no
-  scenario and a line on stderr; `model logic` (L1) and `model check`
-  (v_s3) are its errors. `features vocab`
-  reads the step grammar's typed funs as step patterns.
-- The grammar tools are GF 3.12 with the pgf runtime, clingo and telingo,
+  its requirements' facts with no solver: the `feat` facts, then the
+  pre-state facts in clause order, then each instance first mentioned
+  there give the Givens, the `trig` fact the When, each `resp` fact with
+  its object's restrictions and then the `set` facts the Thens, each
+  linearised through the Steps grammar; instances are named by their
+  kind's letter in order of first mention. An `every` role with a
+  restriction gets a contrast: one more instance that fails it, as a
+  Given, and a `does not` Then for it. A `none` condition gives no
+  Given. A scenario states only its own requirements; the world the
+  handlers build supplies the defaults. A given block gives only example
+  data, first; a given line that is not example data is left out with a
+  line on stderr (v15m is its error). The same spec gives the same
+  bytes. A group with a fact no step words gets no scenario and a line
+  on stderr. `features vocab` reads the step grammar's typed funs as
+  step patterns.
+- The grammar tools are GF 3.12 with the pgf runtime and clingo,
   installed by `tools install`.

@@ -18,8 +18,8 @@ Version 5 holds two languages, and says so first:
 - **the requirement language**: every requirement is a sentence that
   parses to exactly one tree in a GF grammar whose words are the
   glossary (the lexicon), and the requirements of a context are checked
-  together by a temporal logic program (`model logic`, telingo;
-  `grammar.md` §6–§7).
+  together by one clingo solve over their facts (`model logic`,
+  `grammar/check.lp`; `grammar.md` §6–§7).
 
 The two are joined by facts: `parsed(Q)`, `unparsed(Q, Why)`,
 `ambiguous(Q)`, `member_of(Q, G)`, `in(G, C)`, `generates(G, S)` and
@@ -139,15 +139,17 @@ sentence of the language ("An initiative is open when the initiative is
 not `done` and the initiative is not `abandoned`."), or is primitive.
 The grammar, its guards and its growth rule are `grammar.md` §6.
 
-**The logic.** Each grammar fun has one translation into telingo
-temporal formulas (`&tel`): `When T, R` as always (T → next R), `While
-C, R` as always (C → R), `shall not` as a constraint, U1–U10 as always
-formulas. `model logic` solves each group on telingo's incremental
-horizon, and an unsatisfiable core names the requirement and U ids in
-conflict. `features generate` reads each scenario off the group's
-minimal trace on the same solver: the first state gives the Givens, the
-trigger the When, the responses the Thens. A `given` block gives only
-example data (file contents, tables).
+**The logic.** Each grammar fun has one translation into ground facts
+about its requirement (roles, pre-state, trigger, responses, sets), one
+generic instance a noun phrase. `When T, R` is read as always (T → next
+R) and `While C, R` as always (C → R), unrolled once over two states.
+`model logic` is one clingo solve of `grammar/check.lp` over the pairs of
+requirements and U's that share vocabulary: L1 a clash witness naming
+both ids, L2 duplicates, L3 and L4 graph rules on the transitions, L5 an
+untriggered event obligation. `features generate` reads each scenario
+off its requirements' facts, with no solver: the pre-state gives the
+Givens, the trigger the When, the responses the Thens. A `given` block
+gives only example data (file contents, tables).
 
 **Restates.** `Restates: r66@0.29, formulation#r5@0.29` lists the 0.29
 ids a group replaces (frozen in `spec/restated.json`); a bare id is of the
@@ -471,6 +473,7 @@ glossary, and never tracked.
 | C35 | Relations are rows of `## Relations` with `Kind of:` expansion; a preposition means the row for its kind pair (v_t8, v_t10) | revision 2, point D: no entry for each meaning of "on" or "for" |
 | C36 | A condition is a `Def` sentence or primitive; a term entry is one sentence (v_t7); the `Means` field goes (v_t9) | revision 2, points E and F |
 | C37 | `model logic` translates each fun into `&tel` formulas, solves on telingo's incremental horizon over each group's cone, and names conflicts by unsat cores; L3 is a core holding a transition guard; L4 is asked of the solver. `features generate` reads scenarios off minimal traces | revision 2, points A and B: one translation |
+| C38 | `model logic` translates each fun into facts, and checks the whole context in one brave clingo solve of the fixed `grammar/check.lp` over pairs that share vocabulary, one generic instance a noun phrase: L1 a clash witness naming both ids, L2 duplicates, L3/L4 graph rules on the transitions, L5 an untriggered event obligation. `features generate` reads each requirement's facts, with no solver. telingo, cones, pools and traces go; C37 is replaced | revision 3 (`.shop/records/2026-11-03-gf-conversion/design-r3.md`): the per-group solve took minutes; a pair check is milliseconds |
 
 ### 10.2 Rule codes with one meaning each
 
