@@ -63,7 +63,7 @@ Restates: r1@0.29.
 
 ### [g7] `tools probe` prints each analysis tool and the Python interpreter
 Restates: r3@0.29.
-- [r7] When the person runs `tools probe`, `tools` shall print every analysis tool and the Python interpreter and exit successfully.
+- [r7] While no analysis tool is `missing`, when the person runs `tools probe`, `tools` shall print every analysis tool and exit successfully.
 
 ### [g8] `tools probe` exits with an error naming a missing analysis tool
 Restates: r3@0.29.

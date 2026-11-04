@@ -49,7 +49,6 @@ Feature: Analysis tools
   Scenario: `tools probe` prints each analysis tool and the Python interpreter
     When the person runs `tools probe`
     Then `tools` prints the analysis tool a1
-    And `tools` prints the Python interpreter p1
     And `tools` exits successfully
 
   @g8 @r8

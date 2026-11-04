@@ -90,7 +90,7 @@ Restates: r1@0.29, r111@0.29.
 
 ### [g2] A drafted work-item gets a research stage
 Restates: r2@0.29.
-- [r2] While a work-item is `drafted` and the work-item is not waiting and a remote is not unpushable, when the person runs `work run` on a `started` initiative, `work run` shall start a `research` stage for the work-item.
+- [r2] While a work-item is `drafted` and the work-item is not waiting and no remote is unpushable, when the person runs `work run` on a `started` initiative, `work run` shall start a `research` stage for the work-item.
 
 ### [g3] A researched work-item gets a plan stage
 Restates: r2@0.29.
@@ -142,7 +142,7 @@ Restates: r4@0.29, r15@0.29, r24@0.29.
 
 ### [g15] An implementer's branch without a green check is not merged
 Restates: r4@0.29.
-- [r15] While a work-item branch is not green check, when a session ends an `implement` stage for a work-item, `work run` shall not merge the work-item branch.
+- [r15] While a work-item branch is not green check and the work-item branch is not flaky, when a session ends an `implement` stage for a work-item, `work run` shall not merge the work-item branch.
 
 ### [g16] A merged work-item branch is deleted
 Restates: r18@0.29.
@@ -238,7 +238,7 @@ Restates: r63@0.29.
 
 ### [g39] A green initiative branch gets a branch review
 Restates: r27@0.29, r47@0.29, r48@0.29, r49@0.29, r110@0.29, r154@0.29, r155@0.29, r156@0.29, r157@0.29.
-- [r39] While a work-item is `green` and a remote is not unpushable and an initiative branch is not reviewed, when the person runs `work run` on a `started` initiative, `work run` shall start a `branch review` stage for the initiative, give the stage a review brief with a commit, commit the stage, push the commit and log the stage.
+- [r39] While a work-item is `green` and no remote is unpushable and an initiative branch is not reviewed, when the person runs `work run` on a `started` initiative, `work run` shall start a `branch review` stage for the initiative, give the stage a review brief with a commit, commit the stage, push the commit and log the stage.
 
 ### [g40] A branch read by a kept review gets no branch review
 Restates: r50@0.29.
@@ -349,7 +349,7 @@ Restates: r164@0.29, r170@0.29.
 
 ### [g67] A gate round's questions make the capability-proposal await an answer
 Restates: r69@0.29, r85@0.29.
-- [r67] When a session ends a `gate` stage for a capability-proposal with a result that is `QUESTION`, `work run` shall set the status of the capability-proposal to `awaiting-answer` and ask a question on the capability-proposal.
+- [r67] While a session is not faulty, when the session ends a `gate` stage for a capability-proposal with a result that is `QUESTION`, `work run` shall set the status of the capability-proposal to `awaiting-answer` and ask a question on the capability-proposal.
 
 ### [g68] A gate round with no question asks for the approval of the lines
 Restates: r117@0.29.
@@ -397,7 +397,7 @@ Restates: r86@0.29, r87@0.29, r88@0.29, r115@0.29.
 
 ### [g79] A formulated capability-proposal gets its work-items
 Restates: r72@0.29.
-- [r79] While a capability-proposal is `formulated` and a result is not awaited, when the person runs `work run` on a `started` initiative, `work run` shall draft a work-item.
+- [r79] While a capability-proposal is `formulated` and no result is awaited, when the person runs `work run` on a `started` initiative, `work run` shall draft a work-item.
 
 ### [g80] The rounds that change the spec hold the spec lock
 Restates: r95@0.29.

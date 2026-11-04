@@ -257,3 +257,30 @@ def test_the_example_grounds_small_and_fast():
     assert clashes(set(last)) == {'clash("r2","r53",pos_neg)', 'clash("r16","r99",set)',
                                  'clash("r52","r72",neg_pos)'}
     assert 'bad_set("r98",t_status,v_drafted,v_done)' in last
+
+
+def test_one_named_code_is_one_thing():
+    # analysis-tools r3 and r6: r3 needs `.venv` absent, r6 present (and names it twice), so they never fire together
+    probe = 'trig("{r}",ran,"`tools probe`",a_person,none). form("{r}",while_when). '
+    cs = 'role("{{r}}",{v},k_python_interpreter). named("{{r}}",{v},"{c}"). '
+    r3 = (probe + cs.format(v="v1", c="venv") + cs.format(v="v2", c=".venv") + 'ccond("{r}",v1,c_present,pos). '
+          'ccond("{r}",v2,c_present,neg). resp("{r}",1,pos,print,a_tools,v1). ').format(r="r3")
+    r6 = (probe + "".join(cs.format(v=v, c=c) for v, c in (("v1", ".venv"), ("v2", "venv"), ("v3", ".venv"))) +
+          'ccond("{r}",v1,c_present,pos). ccond("{r}",v2,c_present,pos). resp("{r}",1,pos,print,a_tools,v3). '
+          'resp("{r}",2,neg,print,a_tools,v2). ').format(r="r6")
+    assert not clashes(solve(r3 + r6 + DOM))
+    assert clashes(solve(r3.replace("c_present,neg", "c_present,pos") + r6 + DOM))
+
+
+def test_an_if_requirement_is_the_exception_on_its_trigger():
+    refuse = R53.replace("while_when", "while_if")
+    assert not clashes(solve(R2 + refuse + DOM))                    # the unwanted-behaviour form wins over r2
+    assert clashes(solve(R2.replace("while_when", "while_if") + refuse + DOM))     # two of one form still clash
+
+
+def test_a_requirement_changes_nothing_but_its_own_events():
+    show = 'resp(R,1,pos,change_nothing,a_skill,none). resp(R,2,pos,e_show,a_skill,"the reason"). '
+    one, two = req("x5", show), req("x6", "cond(R,v1,t_status,v_ready,pos). " + show)
+    assert not clashes(solve(one + two + DOM))                      # "show the reason and change nothing" twice
+    writes = req("x6", 'cond(R,v1,t_status,v_ready,pos). resp(R,1,pos,e_write,a_skill,"a reason").')
+    assert 'clash("x5","x6",change)' in solve(one + writes + DOM)

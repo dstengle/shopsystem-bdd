@@ -19,8 +19,6 @@ Feature: Supervision
   Scenario: A drafted work-item gets a research stage
     Given a work-item w1 that is `drafted`
     And the work-item w1 is not waiting
-    And a remote r1
-    And the remote r1 is not unpushable
     And an initiative i1 that is `started`
     When the person runs `work run` on the initiative i1
     Then `work run` starts the stage s1
@@ -168,6 +166,7 @@ Feature: Supervision
   Scenario: An implementer's branch without a green check is not merged
     Given a work-item branch w1
     And the work-item branch w1 is not green check
+    And the work-item branch w1 is not flaky
     And a stage s1 that is `implement`
     And a work-item w2
     And the stage s1 is for the work-item w2
@@ -386,8 +385,6 @@ Feature: Supervision
   @g39 @r39
   Scenario: A green initiative branch gets a branch review
     Given a work-item w1 that is `green`
-    And a remote r1
-    And the remote r1 is not unpushable
     And an initiative branch i1
     And the initiative branch i1 is not reviewed
     And an initiative i2 that is `started`
@@ -395,8 +392,8 @@ Feature: Supervision
     Then `work run` starts the stage s1
     And the stage s1 is `branch review`
     And the stage s1 is for the initiative i2
-    And `work run` gives the stage s1 the review brief r2
-    And the review brief r2 is with the commit c1
+    And `work run` gives the stage s1 the review brief r1
+    And the review brief r1 is with the commit c1
     And `work run` commits the stage s1
     And `work run` pushes the commit c2
     And `work run` logs the stage s1
@@ -696,12 +693,14 @@ Feature: Supervision
 
   @g67 @r67
   Scenario: A gate round's questions make the capability-proposal await an answer
-    Given a stage s1 that is `gate`
+    Given a session s1
+    And the session s1 is not faulty
+    And a stage s2 that is `gate`
     And a capability-proposal p1
-    And the stage s1 is for the capability-proposal p1
+    And the stage s2 is for the capability-proposal p1
     And a result r1 that is `QUESTION`
-    And the stage s1 is with the result r1
-    When the session s2 ends the stage s1
+    And the stage s2 is with the result r1
+    When the session s1 ends the stage s2
     Then the capability-proposal p1 is `awaiting-answer`
     And `work run` asks the question q1
     And the question q1 is on the capability-proposal p1
@@ -852,8 +851,6 @@ Feature: Supervision
   @g79 @r79
   Scenario: A formulated capability-proposal gets its work-items
     Given a capability-proposal p1 that is `formulated`
-    And a result r1
-    And the result r1 is not awaited
     And an initiative i1 that is `started`
     When the person runs `work run` on the initiative i1
     Then `work run` drafts the work-item w1
