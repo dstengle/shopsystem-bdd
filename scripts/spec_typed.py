@@ -153,7 +153,7 @@ def _relation(word, k1, k2, fun):
     if word.split()[-1] in PREPOSITIONS:
         return funs, ["%s cn x = post cn (same (%s ++ x.s)) ;" % (fun, w), "%s_Atom x y = x.s ++ be x ++ %s ++ y.s ;" % (
             fun, w)]
-    inf = gf_str(word.removesuffix("s"))
+    inf = gf_str(re.sub(r"has$", "have", word) if word.endswith("has") else word.removesuffix("s"))
     return funs, ["%s cn x = post cn (verbal %s %s x) ;" % (fun, w, inf),
                   "%s_Atom x y = x.s ++ (case x.n of {Sg => %s ; Pl => %s}) ++ y.s ;" % (fun, w, inf)]
 

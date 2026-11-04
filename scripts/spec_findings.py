@@ -73,6 +73,9 @@ class Words:
             return "%s to set the %s of %s to %s" % (who, term, kind, self.value(e.arguments[1]))
         if e.name == "hold":
             return "%s to hold the %s" % (who, self.v.resources[e.arguments[0].name].term)
+        if e.name == "for":
+            return '%s to %s "%s" for %s' % (who, self.v.events.get(e.arguments[0].name, e.arguments[0].name),
+                                            e.arguments[1].string, self.term(rid, x))
         if e.name in QUIET:
             return "%s to %s" % (who, QUIET[e.name])
         obj = "" if x.type == clingo.SymbolType.Function and x.name == "none" else " " + self.term(rid, x)

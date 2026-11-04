@@ -186,15 +186,15 @@ Restates: r31@0.29.
 
 ### [g26] `work run` exits successfully when the initiative's work is closed
 Restates: r212@0.29.
-- [r26] While a work-item is closed, when the person runs `work run` on a `started` initiative, `work run` shall exit successfully and print the status of the work-item.
+- [r26] While an initiative is `started` and a work-item kept in the initiative is closed and every work-item kept in the initiative is closed and no request is `asker` and no remote is unpushable, when the person runs `work run` on the initiative, `work run` shall exit successfully and print the status of the work-item.
 
 ### [g27] A work-item awaiting an answer gets no worker, and `work run` exits with an error
 Restates: r37@0.29, r184@0.29.
-- [r27] While a work-item is `awaiting-answer` and no delegation is `written`, when the person runs `work run` on a `started` initiative, `work run` shall exit with an error naming the work-item, and `work run` shall not start a stage for the work-item.
+- [r27] While an initiative is `started` and a work-item kept in the initiative is `awaiting-answer` and no delegation is `written`, when the person runs `work run` on the initiative, `work run` shall exit with an error naming the work-item, and `work run` shall not start a stage for the work-item.
 
 ### [g28] `work run` exits with an error while a failed work-item is left
 Restates: r37@0.29, r52@0.29.
-- [r28] While a work-item is `failed`, when the person runs `work run` on a `started` initiative, `work run` shall exit with an error naming the work-item, and `work run` shall not start a stage for the work-item.
+- [r28] While an initiative is `started` and a work-item kept in the initiative is `failed`, when the person runs `work run` on the initiative, `work run` shall exit with an error naming the work-item, and `work run` shall not start a stage for the work-item.
 
 ### [g29] `work run` exits with an error while a request is in its asker's turn
 Restates: r101@0.29.

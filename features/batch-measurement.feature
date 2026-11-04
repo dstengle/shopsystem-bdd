@@ -60,8 +60,10 @@ Feature: Measurement of an initiative's deliveries
   @g8 @r8
   Scenario: each stage is given with its session's round trips, a line break inside a transcript's JSON string not splitting its line
     Given a transcript t1 that is `found`
+    And a logged stage l1
+    And the logged stage l1 has the transcript t1
     When the person runs `measure initiative i7-cart`
-    Then `measure` includes "round_trips"
+    Then `measure` includes "round_trips" for the logged stage l1
     And `measure` exits successfully
 
   @g9 @r9
@@ -99,22 +101,28 @@ Feature: Measurement of an initiative's deliveries
   @g12 @r12
   Scenario: a stage with a start and no end is given without how long it took
     Given a logged stage l1 that is `unended`
+    And a session file s1 that is `filled`
+    And the logged stage l1 has the session file s1
     When the person runs `measure initiative i7-cart`
-    Then `measure` includes "turns"
-    And `measure` does not include "took"
+    Then `measure` includes "turns" for the logged stage l1
+    And `measure` does not include "took" for the logged stage l1
 
   @g13 @r13
   Scenario: a stage whose `session.json` is empty is given without its session's figures, named as such
     Given a session file s1 that is `empty`
+    And a logged stage l1
+    And the logged stage l1 has the session file s1
     When the person runs `measure initiative i7-cart`
-    Then `measure` includes "session_json"
-    And `measure` does not include "turns"
+    Then `measure` includes "session_json" for the logged stage l1
+    And `measure` does not include "turns" for the logged stage l1
 
   @g14 @r14
   Scenario: a stage whose session has no transcript is given without its round trips
     Given a transcript t1 that is `lost`
+    And a logged stage l1
+    And the logged stage l1 has the transcript t1
     When the person runs `measure initiative i7-cart`
-    Then `measure` does not include "round_trips"
+    Then `measure` does not include "round_trips" for the logged stage l1
 
   @g15 @r15
   Scenario: the request an initiative fulfils is given as internal or external

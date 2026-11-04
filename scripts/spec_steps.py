@@ -154,6 +154,9 @@ class Reader:
         if event.name == "set":
             return "SAtom", self.build(event.arguments[0].name + ("_Is" if positive else "_IsNot"), x,
                                        (event.arguments[1].name,))
+        if event.name == "for":
+            q = "QuotedFor", ("QuotedLit", '"%s"' % text_of(event.arguments[1])), self.np(x)
+            return ("SDoes" if positive else "SDoesNot"), s, (event.arguments[0].name,), q
         if event.name == "print":
             return ("SPrints" if positive else "SPrintsNot"), s, ("OneNP", self.np(x))
         if positive and event.name in ("exit_ok", "change_nothing"):

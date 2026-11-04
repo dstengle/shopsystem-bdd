@@ -5,7 +5,8 @@ log when no Given wrote one) and runs `measure`'s main in-process on the World's
 and the measurement it wrote.
 
 `include "x"` holds when x is in the measurement's text; `not include "x"` when x is in none of its entries (its
-stages, work-items, sessions and request; its totals are left out, since they always name every figure)."""
+stages, work-items, sessions and request; its totals are left out, since they always name every figure). `include
+"x" for the logged stage l1` holds when x is a figure of that stage's entry, `not include` when it is not."""
 import json
 import pathlib
 import re
@@ -82,6 +83,17 @@ def given_log_rows(step):
 @handler("GivenK", "measurement")
 def given_thing(step):
     """A thing a condition is about: the condition's Given says what it is."""
+
+
+@handler("GivenK", "logged stage")
+def given_logged_stage(step):
+    """The stage of the standard log, whose session file and transcript the scenario's other Givens describe."""
+    world(step).called[step.names[0]] = "cart-1"
+
+
+@handler("GivenR", "has")
+def given_has(step):
+    """A logged stage's session file or transcript: the one stage has the one session, so the Given only records."""
 
 
 @handler("GivenK_C", "initiative log")
@@ -172,7 +184,8 @@ def made(w, sessions):
         standard(w)
     if w.content:
         item, stage, _ = w.sessions["s-1"]
-        w.sessions["s-1"] = (item, stage, "" if w.content == "empty" else "not a session")
+        if w.content != "filled":
+            w.sessions["s-1"] = (item, stage, "" if w.content == "empty" else "not a session")
     if w.availability == "found":
         w.store["s-1"] = line_break_inside("s-1")
     if sessions:
@@ -242,10 +255,22 @@ def prints_not(step):
         assert np.strip('"') not in w.out, (np, w.out)
 
 
+def stage_figures(w, name):
+    """The figures of the stage a scenario names (`l1`): the keys of its entry."""
+    item = w.called.get(name, name)
+    found = [s for s in w.figures()["stages"] if s["work-item"] == item]
+    assert len(found) == 1, (name, w.figures()["stages"])
+    return found[0]
+
+
 @handler("ThenDoes", "include")
 def includes(step):
     w = world(step)
     assert w.code == 0, w.err
+    if step.names:
+        for q in step.quoted:
+            assert q.strip('"') in stage_figures(w, step.names[0]), (q, step.text)
+        return
     for np in step.nps:
         assert np.strip('"') in w.record().read_text(), (np, w.record().read_text())
 
@@ -254,6 +279,10 @@ def includes(step):
 def includes_not(step):
     w = world(step)
     assert w.code == 0, w.err
+    if step.names:
+        for q in step.quoted:
+            assert q.strip('"') not in stage_figures(w, step.names[0]), (q, step.text)
+        return
     entries = {k: v for k, v in w.figures().items() if k != "totals"}
     for np in step.nps:
         assert np.strip('"') not in json.dumps(entries), (np, entries)

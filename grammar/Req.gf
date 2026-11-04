@@ -55,6 +55,7 @@ abstract Req = Typed ** {
     -- noun phrases tied to no kind
     CodeNP : Code -> NP ;
     QuotedNP : Quoted -> NP ;
+    QuotedFor : Quoted -> NP -> NP ;             -- "turns" for the logged stage: a figure given for one thing
     Only : NP -> NP ;                            -- only a brief
     OneNP : NP -> NPs ;
     MoreNP : NP -> NPs -> NPs ;

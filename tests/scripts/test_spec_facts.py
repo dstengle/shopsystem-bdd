@@ -171,6 +171,13 @@ def test_the_other_triggers_and_verb_phrases(gvocab):
     assert 'cnone("s#r1",k_initiative,c_open).' in out
 
 
+
+def test_a_quoted_figure_for_a_thing_is_an_event_on_that_thing(gvocab):
+    out = facts(gvocab, "s#r1", 'When the person runs `work start` on an initiative, `work` shall not give "turns" '
+                                'for the initiative.', GLOSSARY)
+    assert out[-1] == 'resp("s#r1",1,neg,for(e_give,"turns"),a_work,v1).'
+
+
 def test_cond_or_splits_the_requirement(vocab):
     out = facts(vocab, "s#r5", "While an initiative is `proposed` or the initiative is `started`, `work` shall "
                                "write a question.")

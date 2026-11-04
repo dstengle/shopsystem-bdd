@@ -9,9 +9,10 @@ the condition, the trigger and each response conjunct `I` in spoken order, each 
   `free(R,Res)`, `none`, `cnone`, `rnone` for a noun phrase under `no`, `uall` and its kin for one under `every`,
   `the(R,V)` for a definite with no antecedent (spec_facts_np);
 - the trigger: `trig(R,P,E,D,V)`, P one of `does`, `ran`, `done_to`, `becomes`; D an actor, a role or `any`;
-- each response: `resp(R,I,Pol,E,D,V)`; a positive `Set` also `set(R,I,V,A,Val)`; the object's restrictions
-  `oattr`, `orel` (`onot`, `ocond`); `every(R,V)` for an `every` object or subject; `only(R,I,K)` for `only a K`
-  (no `resp`); `count(R,Res,N)` for `hold at most`; `uses(R,D,X)` and `nouse(R,D,X)` for a ubiquitous `use`.
+- each response: `resp(R,I,Pol,E,D,V)`, E `for(E0,Q)` and V the role X for `E0 "q" for X`; a positive `Set`
+  also `set(R,I,V,A,Val)`; the object's restrictions `oattr`, `orel` (`onot`, `ocond`); `every(R,V)` for an
+  `every` object or subject; `only(R,I,K)` for `only a K` (no `resp`); `count(R,Res,N)` for `hold at most`;
+  `uses(R,D,X)` and `nouse(R,D,X)` for a ubiquitous `use`.
 
 A choice (a condition's `or`, a value list `whose A is v1 or v2`) splits the requirement: one walk for each way
 through, ids `R#1`, `R#2`, … with `disj(R#k,R)` naming the requirement each comes from (`split`). A fun with no
@@ -168,6 +169,11 @@ class Walk(Scope):
         i += 1
         if fun == "Do" and ubiq and self.v.events.get(t[1][0]) == "use":
             self.emit("uses" if shall else "nouse", d, self.np(t[2]))
+        elif fun == "Do" and unwrap(t[2])[0] == "QuotedFor":
+            q = unwrap(t[2])
+            terms, negate, _ = self.objects([q[2]])
+            event = "for(%s,%s)" % (t[1][0], const(q[1][1][1:-1]))
+            self.emit("resp", i, "pos" if shall != negate else "neg", event, d, terms[0])
         elif fun == "Do":
             self.respond(i, shall, t[1][0], d, [t[2]])
         elif fun == "DoTo":

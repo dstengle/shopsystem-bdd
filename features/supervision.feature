@@ -273,25 +273,30 @@ Feature: Supervision
 
   @g26 @r26
   Scenario: `work run` exits successfully when the initiative's work is closed
-    Given a work-item w1
+    Given an initiative i1 that is `started`
+    And a work-item w1
+    And the work-item w1 is kept in the initiative i1
     And the work-item w1 is closed
-    And an initiative i1 that is `started`
     When the person runs `work run` on the initiative i1
     Then `work run` exits successfully
     And `work run` prints the status of the work-item w1
 
   @g27 @r27
   Scenario: A work-item awaiting an answer gets no worker, and `work run` exits with an error
-    Given a work-item w1 that is `awaiting-answer`
-    And an initiative i1 that is `started`
+    Given an initiative i1 that is `started`
+    And a work-item w1
+    And the work-item w1 is kept in the initiative i1
+    And the work-item w1 is `awaiting-answer`
     When the person runs `work run` on the initiative i1
     Then `work run` exits with an error naming the work-item w1
     And `work run` does not start the stage s1
 
   @g28 @r28
   Scenario: `work run` exits with an error while a failed work-item is left
-    Given a work-item w1 that is `failed`
-    And an initiative i1 that is `started`
+    Given an initiative i1 that is `started`
+    And a work-item w1
+    And the work-item w1 is kept in the initiative i1
+    And the work-item w1 is `failed`
     When the person runs `work run` on the initiative i1
     Then `work run` exits with an error naming the work-item w1
     And `work run` does not start the stage s1
