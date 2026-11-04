@@ -1,13 +1,13 @@
-"""The lexicon's side of the logic (design-r2 §5, §6.1): each fun of the generated `Typed` module traced back to its
-lexicon entry, and the context's facts for the background theory (`grammar/background.lp`).
+"""The lexicon's side of the logic (design-r3 §3): each fun of the generated `Typed` module traced back to its lexicon
+entry, and the domain facts for `grammar/check.lp` (kinds, sub-kinds, actors, values, transitions, `initial/3`).
 
 The fun names are the ones `spec_typed.modules` gives: `<kind>_<det>`, `<attribute>_<part>`, `<condition>_<part>`,
 `rel_<k1>_<word>_<k2>` (a relation row's modifier) and its `_Atom` (its clause), a value's own id and `n_<word>` for an
 attribute's bare word. An attribute or a condition of more than one kind is suffixed with the kind's id. A relation
 is named by its row's id (`spec_relations.rid`), shared by every row its `Kind of:` expansion gives.
 
-A condition is **defined** when its sentence parses as a `Def` (spec_logic.definition gives its rule; the caller
-marks it with `Vocab.define`) and **primitive** otherwise: a fluent chosen when its thing is created (§4.3).
+A condition is **defined** when its sentence parses as a `Def` (spec_facts.define reads it and marks it with
+`Vocab.define`) and **opaque** otherwise (design-r3 §3.2).
 """
 import spec_lexicon
 import spec_relations
@@ -23,16 +23,10 @@ CORE = {"Ubiq", "When", "While", "Where", "IfThen", "WhileWhen", "WhereWhen", "W
 KIND_PARTS = {"An", "Every", "The", "No", "AtMostOne", "One", "Pl", "Its", "Named", "It", "toNP", "NumberOf"}
 ATTR_PARTS = {"One", "More", "ThatIs", "ThatIsNot", "Whose", "WhoseNot", "Pre", "Is", "IsNot", "Becomes", "Set", "Of"}
 COND_PARTS = {"Pre", "ThatIs", "ThatIsNot", "Is", "IsNot"}
-AMOUNT = 3   # what a count named by a code (`workers`) stands for in a check
 
 
 def _bare(text):
     return text.strip().strip("`")
-
-
-def guard_id(attr_term, kind_term):
-    """The `on/1` id of an attribute's transition constraint: `T:status@initiative` (design-r2 §6.3)."""
-    return "T:%s@%s" % (attr_term, kind_term)
 
 
 class Vocab:
@@ -102,7 +96,7 @@ class Vocab:
         return fun in CORE or self.decode(fun)[0] is not None
 
     def define(self, cid):
-        """Mark a condition as defined by a `Def` sentence: its rule derives it, so it is not chosen."""
+        """Mark a condition as defined by a `Def` sentence: its literals stand in for it (design-r3 §3.2)."""
         self.defined.add(cid)
 
     @staticmethod
@@ -124,43 +118,6 @@ class Vocab:
         return sorted({(by_text[_bare(a)], by_text[_bare(b)]) for a, b, _ in self.attrs[tid][1].transitions
                        if _bare(a) in by_text and _bare(b) in by_text})
 
-    def guards(self):
-        """{guard id: attribute id} of every attribute that has transitions."""
-        return {guard_id(t.term, self.kinds[kid]): tid for tid, (kid, t) in sorted(self.attrs.items())
-                if self.transitions(tid)}
-
-
-def facts(vocab):
-    """The context's facts from its lexicon: values and transitions (with their guarded constraints), kinds' supertypes,
-    relation rows, primitive conditions, and the resources and events the background theory reads."""
-    out = ["value(%s,%s,%s)." % (kid, tid, vid) for tid, (kid, _) in sorted(vocab.attrs.items())
-           for vid in vocab.attr_values[tid]]
-    out += ["attribute(%s,%s)." % (kid, tid) for tid, (kid, _) in sorted(vocab.attrs.items())]
-    out += ["sub(%s,%s)." % pair for pair in vocab.subs]
-    out += ["relk(%s,%s,%s)." % (rid, a, b) for rid, pairs in sorted(vocab.rel_kinds.items()) for a, b in sorted(pairs)]
-    dynamic = []
-    for gid, tid in vocab.guards().items():
-        edges = vocab.transitions(tid)
-        out += ["trans(%s,%s,%s)." % (tid, a, b) for a, b in edges]
-        out += ["into(%s,%s)." % (tid, b) for b in sorted({b for _, b in edges})]
-        out += ['#external on("%s").' % gid,
-                ':- on("%s"), does(_,set(%s,W),X), not into(%s,W).' % (gid, tid, tid)]
-        dynamic.append(':- on("%s"), does(_,set(%s,W),X), \'attr(X,%s,V), V != W, not trans(%s,V,W).'
-                       % (gid, tid, tid, tid))
-    for sid, term in sorted(vocab.resources.items()):
-        out += ["resource(%s)." % sid, "capacity(%s,%d)." % (sid, 1 if "exclusive" in term.resource else AMOUNT)]
-    names = {"start": "start_event(%s).", "end": "end_event(%s)."}
-    out += [names[term] % eid for eid, term in sorted(vocab.events.items()) if term in names]
-    out += ["resource_kind(%s)." % kid for kid, term in sorted(vocab.kinds.items()) if term == "resource"]
-    out += ["resource_relation(%s)." % rid for rid, pairs in sorted(vocab.rel_kinds.items())
-            if any(vocab.kinds[b] == "resource" for _, b in pairs)]
-    for cid, kid in sorted(vocab.conds.items()):
-        if vocab.cond_terms[cid] == "free" and vocab.kinds.get(kid) == "resource":
-            out.append("free_condition(%s)." % cid)
-        elif cid not in vocab.defined:
-            out.append("primitive(%s,%s)." % (cid, kid))
-    return {"always": out, "dynamic": dynamic, "initial": []}
-
 
 def domain(vocab):
     """The lexicon's facts for `grammar/check.lp` (design-r3 §3): kinds, sub-kinds, actors, each attribute's values in
@@ -177,7 +134,3 @@ def domain(vocab):
         out += ["initial(%s,%s,%s)." % (kid, tid, v) for v in values if v not in entered or entered >= set(values)]
     return out
 
-
-def pools(counts):
-    """{kind: n + 1} from the number of noun phrases of each kind (design-r2 §6.2)."""
-    return {k: n + 1 for k, n in sorted(counts.items())}

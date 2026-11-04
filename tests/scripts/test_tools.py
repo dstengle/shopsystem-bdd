@@ -77,7 +77,7 @@ class ToolsTest(unittest.TestCase):
         done = self.run_script("probe")
         lines = done.stdout.splitlines()
         grammar = lines.index("grammar:")
-        self.assertEqual([line.split()[0] for line in lines[grammar + 1:]], ["gf", "pgf", "clingo", "telingo"])
+        self.assertEqual([line.split()[0] for line in lines[grammar + 1:]], ["gf", "pgf", "clingo"])
         lines = lines[:grammar]
         self.assertEqual(len(lines), 9)
         for line, name in zip(lines, ("coverage", "pytest-cov", "jedi", "ast-grep", "ruff", "vulture", "import-linter", "hypothesis")):

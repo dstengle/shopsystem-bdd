@@ -5,7 +5,7 @@
 % reads a repository's files. Every v_ relation must be empty; w_ relations are warnings.
 % Each shown relation has one plain label, label("<code>", "<label>"), written beside its rule and only here;
 % `model check` and `model rules` read them from the solve (design-model-check r2, r65).
-% The requirement language (GF parse, telingo) is outside this file: it joins the graph by the facts parsed/unparsed/
+% The requirement language (GF parse, `model logic`) is outside this file: it joins the graph by the facts parsed/unparsed/
 % ambiguous, member_of, in(G, C), generates and restates (C29). Rules over facts the codified reader emits are
 % `#defined` and silent until it emits them. A file without `language: codified-1` is not read: it is v_p0.
 
