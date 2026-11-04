@@ -90,7 +90,7 @@ Restates: r1@0.29, r111@0.29.
 
 ### [g2] A drafted work-item gets a research stage
 Restates: r2@0.29.
-- [r2] While a work-item is `drafted` and the work-item is not waiting and a remote is not unpushable, when the person runs `work run` on a `started` initiative, `work run` shall start a `research` stage for the work-item.
+- [r2] While a work-item is `drafted` and the work-item is not waiting and no remote is unpushable, when the person runs `work run` on a `started` initiative, `work run` shall start a `research` stage for the work-item.
 
 ### [g3] A researched work-item gets a plan stage
 Restates: r2@0.29.

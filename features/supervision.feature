@@ -19,8 +19,6 @@ Feature: Supervision
   Scenario: A drafted work-item gets a research stage
     Given a work-item w1 that is `drafted`
     And the work-item w1 is not waiting
-    And a remote r1
-    And the remote r1 is not unpushable
     And an initiative i1 that is `started`
     When the person runs `work run` on the initiative i1
     Then `work run` starts the stage s1
