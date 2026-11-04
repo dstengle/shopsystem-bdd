@@ -3,10 +3,12 @@ message naming the item by its label (workflow simplification plan 2, D3, D5).""
 import workqueue
 from backlog_items import (
     PROVENANCES,
+    RATINGS,
     Item,
     Refused,
     commit,
     find,
+    items,
     label,
     next_name,
     one_line,
@@ -95,3 +97,58 @@ def answer(root, name, text):
         had = item.sections.get("Answers")
         item.sections["Answers"] = "%s\n%s" % (had, pair) if had else pair
     return move(root, name, "work answer", write)
+
+
+CLOSED = ("delivered", "refused", "withdrawn")
+
+
+def rate(root, name, value=None, urgency=None, size=None):
+    """Set each rating given, to one of the glossary's values (r4, D6); an item that is closed keeps its ratings."""
+    given = {k: v for k, v in (("value", value), ("urgency", urgency), ("size", size)) if v is not None}
+    for key, rating in given.items():
+        if rating not in RATINGS[key]:
+            raise Refused("work rate: the %s %s is not one of %s" % (key, rating, ", ".join(RATINGS[key])))
+    item = find(root, name)
+    if not given:
+        raise Refused("work rate: %s: give --value, --urgency or --size" % label(item))
+    if item.status in CLOSED:
+        raise Refused("work rate: %s is %s; work rate takes an item that is not %s" % (label(item), item.status,
+                                                                                     either(CLOSED)))
+    for key, rating in given.items():
+        setattr(item, key, rating)
+    commit(root, item, "work rate: %s %s" % (label(item), " ".join("%s=%s" % kv for kv in given.items())))
+    return item
+
+
+def cycle(root, name, on):
+    """The path from `on` back to `name` over `depends_on`, as names, or None: the cycle a dependency of `name` on
+    `on` would close. Each item is visited once, so a cycle written by hand ends the walk."""
+    by_name = {i.name: i for i in items(root)}
+    stack, seen = [[on]], {on}
+    while stack:
+        path = stack.pop()
+        if path[-1] == name:
+            return path
+        for nxt in reversed(by_name[path[-1]].depends_on if path[-1] in by_name else ()):
+            if nxt not in seen:
+                seen.add(nxt)
+                stack.append(path + [nxt])
+    return None
+
+
+def depend(root, name, on):
+    """Write the dependency of `name` on `on` in `name`'s file (r5): an item there is not, itself, a dependency it
+    already has and one that closes a cycle are refused."""
+    item, target = find(root, name), find(root, on)
+    if on == name:
+        raise Refused("work depend: %s cannot depend on itself" % label(item))
+    if on in item.depends_on:
+        raise Refused("work depend: %s already depends on %s" % (label(item), label(target)))
+    path = cycle(root, name, on)
+    if path is not None:
+        by_name = {i.name: i for i in items(root)}
+        raise Refused("work depend: %s on %s closes the cycle %s" % (label(item), label(target), " -> ".join(
+            label(by_name[n]) for n in [name] + path)))
+    item.depends_on += (on,)
+    commit(root, item, "work depend: %s on %s" % (label(item), label(target)))
+    return item

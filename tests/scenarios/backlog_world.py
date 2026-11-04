@@ -47,7 +47,8 @@ def index(step):
 def write_item(step, name, **fields):
     """Write (or write again) the item `name`: D15's defaults, the fields it had, then `fields`."""
     index(step)
-    had = step.context.setdefault("item_fields", {}).setdefault(name, dict(DEFAULTS, depends_on=[]))
+    had = step.context.setdefault("item_fields", {}).setdefault(name, dict(DEFAULTS, depends_on=[],
+                                                                          title="Title of %s" % name))
     had.update(fields)
     b = ident(name)
     rel = "%s/%s.md" % (BACKLOG, b)
@@ -55,10 +56,10 @@ def write_item(step, name, **fields):
     body = "\n## Question\n\n%s\n" % QUESTION if had["status"] == "needs-input" else ""
     path = step.repo / rel
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("---\nid: item/ex.com/prod/ctx/%s\nkind: item\n%sdepends_on: [%s]\n---\n\n# Title of %s\n%s"
-                    % (b, head, ", ".join(had["depends_on"]), name, body))
+    path.write_text("---\nid: item/ex.com/prod/ctx/%s\nkind: item\n%sdepends_on: [%s]\n---\n\n# %s\n%s"
+                    % (b, head, ", ".join(had["depends_on"]), had["title"], body))
     step.context.setdefault("items", {})[name] = rel
-    step.context.setdefault("says", {})[name] = '%s "Title of %s"' % (b, name)   # what `work` names it by (goal 10)
+    step.context.setdefault("says", {})[name] = '%s "%s"' % (b, had["title"])   # what `work` names it by (goal 10)
     return path
 
 
@@ -129,3 +130,18 @@ def in_commits(step, rel):
 
 def item_file(step, name):
     return Path(step.repo) / item_rel(step.context, name)
+
+
+# The world's own item, which a dependency the scenario does not set up is on.
+OWN = "i90"
+OWN_TITLE = "an item the scenario does not name"
+
+
+def depends_on(path):
+    """The `depends_on` of an item's file, as names."""
+    return re.findall(r"b[1-9]\d*", W().field(path, "depends_on") or "")
+
+
+def name_of(context, rel):
+    """The scenario's name of the item whose file is `rel`."""
+    return next((n for n, r in context.get("items", {}).items() if r == rel), None)

@@ -401,7 +401,7 @@ Builds `backlog#r4` and `r5`.
   - `cycle(root, name, on) -> list[str] | None`: the path from `on` back to `name` over `depends_on`, if there is
     one. Task 4 uses its traversal guard.
 
-- [ ] **Step 1: Write the failing tests** in `tests/scripts/test_backlog_ratings.py`:
+- [x] **Step 1: Write the failing tests** in `tests/scripts/test_backlog_ratings.py`:
   - `test_rate_sets_each_given_rating`: `work rate b1 --value high-value --size small` gives `value == "high-value"`,
     `size == "small"` and `urgency is None`, in one commit.
   - `test_rate_refuses_a_value_of_another_attribute`: `--value high` and `--size high-value` each exit 1. Stderr names
@@ -414,17 +414,17 @@ Builds `backlog#r4` and `r5`.
     Stderr holds `b3`, `b1` and `b2` in path order, and HEAD is unchanged.
   - `test_depend_refuses_an_unknown_item_and_a_duplicate`.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_backlog_ratings.py -q`
   Expected: FAIL; `work rate` is not a command.
 
-- [ ] **Step 3: Implement `rate`, `depend`, `cycle` and their parsers.**
+- [x] **Step 3: Implement `rate`, `depend`, `cycle` and their parsers.**
 
-- [ ] **Step 4: Run the tests.**
+- [x] **Step 4: Run the tests.**
   Run: `python3 -m pytest tests/scripts/test_backlog_ratings.py tests/scripts/test_backlog_moves.py -q | tail -1`
   Expected: all pass.
 
-- [ ] **Step 5: The handlers.**
+- [x] **Step 5: The handlers.**
   - **Registry:**
     - `("WhenRuns", "`work rate`")` runs `work rate b<n>` with each `context["flags"]` entry split by `shlex`. The
       registry's `GivenFeat` keeps a flag string as one entry.
@@ -440,14 +440,14 @@ Builds `backlog#r4` and `r5`.
   - r4 asserts all three ratings and a commit;
   - r5 asserts a new dependency in `b1`'s file, and a commit of `b1`.
 
-- [ ] **Step 6: Mark them built.** Remove `r4, r5` from `unbuilt:`.
+- [x] **Step 6: Mark them built.** Remove `r4, r5` from `unbuilt:`.
   Run: `python3 -m pytest tests/scenarios/test_backlog.py -q | tail -1; python3 scripts/features vocab --check | tail -1`
   Expected: `13 passed, 4 xfailed`; `every step has one handler`.
 
-- [ ] **Step 7: The baselines,** as in Task 1, Step 7.
+- [x] **Step 7: The baselines,** as in Task 1, Step 7.
   Expected: the suite at `41 xfailed`, no failures; everything else unchanged.
 
-- [ ] **Step 8: Commit.**
+- [x] **Step 8: Commit.**
   ```bash
   git add scripts/backlog_moves.py scripts/backlog_cli.py tests/scenarios/backlog_handlers.py \
     tests/scenarios/backlog_world.py tests/scripts/test_backlog_ratings.py spec/capabilities/backlog.md

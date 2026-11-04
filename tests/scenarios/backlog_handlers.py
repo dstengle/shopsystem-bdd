@@ -6,6 +6,7 @@ A step whose registry key another capability claims (`ThenPrints` with `` `work`
 handlers only in test_backlog.py, which binds with `bind_all`; each returns False for a step that is not about the
 backlog, which then goes on to the registry."""
 import importlib.util
+import shlex
 import sys
 from pathlib import Path
 
@@ -114,3 +115,38 @@ def item_refused(step):
         if any(np.startswith("the status of the item %s" % name) for np in step.nps):
             status = step.context["item_fields"][name]["status"]
             assert status in said, (step.text, status, said)
+
+
+@handler("WhenRuns", "`work rate`")
+def work_rate(step):
+    flags = [w for flag in step.context.get("flags", []) for w in shlex.split(flag)]
+    B.run_work(step, "rate", B.ident(step.names[0]), *flags)
+
+
+@handler("WhenRuns", "`work depend`")
+def work_depend(step):
+    B.write_item(step, B.OWN, title=B.OWN_TITLE)
+    B.run_work(step, "depend", B.ident(step.names[0]), "--on", B.ident(B.OWN))
+
+
+@local("ThenDoes", "dependency")
+def writes_dependency(step):
+    """The last run changed the file of an item whose depends_on gained an entry; the dependency is (that item,
+    the entry)."""
+    if step.term != "write":
+        return False
+    gained = []
+    for rel in filter(B.is_item_file, B.changed(step)):
+        name = B.name_of(step.context, rel)
+        had = step.context.get("item_fields", {}).get(name, {}).get("depends_on", [])
+        gained += [(name, d) for d in B.depends_on(step.repo / rel) if d not in had]
+    assert gained, (step.text, B.changed(step))
+    step.context.setdefault("deps", {})[step.names[0]] = {"of": gained[0][0], "on": gained[0][1]}
+
+
+@local("ThenR", "dependency")
+def dependency_of(step):
+    dep, item = step.names
+    if step.term != "of":
+        return False
+    assert step.context["deps"][dep]["of"] == item, (step.text, step.context["deps"])

@@ -18,6 +18,13 @@ def add_parsers(sub):
     p = sub.add_parser("refuse", help="move an item that is idea or shaped to refused, with the reason")
     p.add_argument("name")
     p.add_argument("reason")
+    p = sub.add_parser("rate", help="set an item's value, urgency or size, to the glossary's values")
+    p.add_argument("name")
+    for key, values in backlog_items.RATINGS.items():
+        p.add_argument("--" + key, help=", ".join(values))
+    p = sub.add_parser("depend", help="write in an item that it depends on another item")
+    p.add_argument("name")
+    p.add_argument("--on", required=True, help="the item it depends on")
 
 
 def cmd_idea(args):
@@ -38,6 +45,16 @@ def cmd_refuse(args):
     return moved(backlog_moves.refuse(args.root, args.name, args.reason))
 
 
+def cmd_rate(args):
+    return moved(backlog_moves.rate(args.root, args.name, args.value, args.urgency, args.size))
+
+
+def cmd_depend(args):
+    item = backlog_moves.depend(args.root, args.name, args.on)
+    print("%s depends on %s" % (backlog_items.label(item), ", ".join(item.depends_on)))
+    return 0
+
+
 def withdraw(args):
     """`work withdraw b<n>`."""
     return moved(backlog_moves.withdraw(args.root, args.name))
@@ -52,7 +69,7 @@ def answer(args):
     return moved(backlog_moves.answer(args.root, args.name, args.answer))
 
 
-COMMANDS = {"idea": cmd_idea, "shape": cmd_shape, "refuse": cmd_refuse}
+COMMANDS = {"idea": cmd_idea, "shape": cmd_shape, "refuse": cmd_refuse, "rate": cmd_rate, "depend": cmd_depend}
 
 
 def show(args):
