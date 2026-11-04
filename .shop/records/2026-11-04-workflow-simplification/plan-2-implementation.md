@@ -1,10 +1,3 @@
----
-id: record/missingmass.io/shopsystem/shopsystem-bdd/2026-11-04-workflow-simplification-plan-2-implementation
-kind: report
-about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
-date: 2026-11-04
----
-
 # Plan 2 of the workflow simplification: implementation report
 
 This is the report of the one implementer agent that executed `plan-2-backlog.md` on 2026-11-04. It used
@@ -73,6 +66,12 @@ Each of these was found by the suite and fixed so that the scenario tests its po
   there is a question.
 - **A note, reason or answer that starts with `#` is refused**, because it would read as a heading and make the file
   malformed (D16).
+
+### The report's frontmatter
+- **This report has no frontmatter.** Task 5 asked for `plan-1-implementation.md`'s frontmatter form with
+  `kind: report`. But `plan-1-implementation.md` has no frontmatter, and `model check` refuses `report` as a record
+  kind ("1 file problems"). So the report follows plan 1's report and has none, and `model check` is back to 0 file
+  problems.
 
 ### Tests and code style
 - **The hand-written cycle test.** pytest-timeout is not installed, so the test bounds `work` with a 60 s subprocess
