@@ -18,6 +18,7 @@ Dated, never edited (design model v3, section 3a). Not design and not work. Path
 | `2026-11-04-workflow-simplification/design.md` | the workflow simplified: one kind of item in a backlog across sessions, a mechanical readiness bar in place of question gates, batches built superpowers-style as one PR with one adversarial review, decisions in three tiers, telemetry and tuning, quotes with their conversation, names for ids; builds on the board design | design (draft) |
 | `2026-11-04-workflow-simplification/recon.md` | the figures behind that design: cost by stage, review yield, question-gate waits (i42-i64), the GF run, the decisions and the queue, quotes and ids, what superpowers 7.0.0 offers | analysis |
 | `2026-11-04-workflow-simplification/roadmap.md`, `plan-1-spec.md` | the design built as nine plans in order, and plan 1: the new workflow's lexicon and nine capabilities codified, their requirements marked `unbuilt:` until built | design (draft) |
+| `2026-11-04-workflow-simplification/plan-1-implementation.md`, `plan-1-review.md` | plan 1 executed (10 commits, every baseline held, 11 deviations) and its end-of-branch review: mechanics sound, 10 should-fix requirement lines and 11 questions for the person before merge | report |
 | `archive/design-notes/`, `archive/plans/`, `archive/requests/` | the design notes, plans and requests of releases 0.6.0-0.20.0, moved from `docs/superpowers/` | history: read to trace why, never a source |
 
 A record file is a node for `scripts/model` only when its frontmatter has an `id`, a `kind` and `about`.
