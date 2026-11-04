@@ -106,6 +106,13 @@ not. That is sound for clashes (no false hits) and incomplete (it can miss a cla
 115 prose definitions are the open item they already are; each one converted to `Def` makes the check sharper with no
 code change.
 
+**Correction (report-checker-gaps, 2026-11-04).** "Sound for clashes (no false hits)" is wrong for this check, which
+searches for a consistent merged pre-state: an opaque condition can never refute one, so it gives false hits and
+misses nothing. A clash whose every witness puts a prose condition one side states on an instance the other side says
+more of is now L6 (warning: "possible clash, depends on the prose condition C; define it in the controlled language
+to decide"), not L1. A `Def` of literals on its own subject is also read where it is negated, under `no` and under
+`every` (`dalt`/`dlit` domain facts), not only where it is positive.
+
 ### 3.3 "no K is v" in a condition
 `none(R,K,A,Val)` is universal over the merged pre-state. It is not a negated literal on one generic instance. After
 unification, the pre-state is inconsistent if any role of kind K (or a sub-kind), A's or B's, has `cond(…,A,Val,pos)`.
