@@ -12,6 +12,7 @@ SCRIPT = ROOT / "scripts" / "features"
 # The feature files whose scenarios tests/scenarios/ binds.
 BOUND_BY_PYTEST_BDD = [
     "features/analysis-tools.feature",
+    "features/backlog.feature",
     "features/batch-measurement.feature",
     "features/design-model-check.feature",
     "features/feature-file-tools.feature",

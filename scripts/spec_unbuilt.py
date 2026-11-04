@@ -52,3 +52,17 @@ def mark(items, root):
         if ids:
             item.add_marker(pytest.mark.xfail(
                 strict=False, reason="unbuilt: %s" % ", ".join("%s#%s" % (cap, one) for one in ids)))
+
+
+def unbuilt_lines(feature, root):
+    """The line numbers of `feature` (features/<cap>.feature) that belong to a scenario of an unbuilt requirement, from
+    its tag line to the next scenario's: `features vocab --check` wants no handler for their steps."""
+    feature = pathlib.Path(feature)
+    ids = unbuilt(root).get(feature.stem, set())
+    out, inside = set(), False
+    for n, line in enumerate(feature.read_text().splitlines() if ids and feature.is_file() else [], 1):
+        if line.strip().startswith("@"):
+            inside = bool(ids & {tag.lstrip("@") for tag in line.split()})
+        if inside:
+            out.add(n)
+    return out

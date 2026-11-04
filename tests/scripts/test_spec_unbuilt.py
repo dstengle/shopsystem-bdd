@@ -73,3 +73,26 @@ def test_mark_adds_a_non_strict_xfail(tmp_path):
     marker = unbuilt.markers[0].mark
     assert marker.name == "xfail"
     assert marker.kwargs == {"strict": False, "reason": "unbuilt: demo#r2"}
+
+
+FEATURE = """# generated from spec/capabilities/demo.md by features generate; do not edit
+Feature: Demo
+
+  @g1 @r1
+  Scenario: one
+    When the person runs `work list`
+    Then `work` prints the queue
+
+  @g2 @r2
+  Scenario: two
+    When the person runs `work list`
+    Then `work` commits the queue
+"""
+
+
+def test_the_steps_of_an_unbuilt_scenario_are_its_lines(tmp_path):
+    root = root_with(tmp_path, "unbuilt: [r2]\n")
+    feature = tmp_path / "demo.feature"
+    feature.write_text(FEATURE)
+    assert spec_unbuilt.unbuilt_lines(feature, root) == {9, 10, 11, 12}
+    assert spec_unbuilt.unbuilt_lines(tmp_path / "other.feature", root) == set()

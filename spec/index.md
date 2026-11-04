@@ -82,6 +82,12 @@ Tools the skills and agents run:
 | `supervision` | the person who started `work run` | service |
 | `migration-tools` | a person or session migrating a repository to the final layout or upgrading it between plugin releases | service |
 
+The simplified workflow (plan 1, unbuilt):
+
+| capability | narrator | group |
+|---|---|---|
+| `backlog` | a person or session keeping the backlog | service |
+
 ## Testing
 
 - The suite: `python3 -m pytest` from the root. A script capability's scenarios run as pytest-bdd step
@@ -296,7 +302,7 @@ Tools the skills and agents run:
 | stage | for | node |  |
 | stage | with | result |  |
 | request line | proposed in | request | one |
-| item | depends on | item |  |
+| item | depending on | item |  |
 | item | proposes | requirement |  |
 | item | in | batch | one |
 | item | asked by | bounded context |  |

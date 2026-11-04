@@ -249,6 +249,8 @@ The lines each section gives are target lines. Where the grammar takes one as wr
 
 #### Task 3: `backlog` (service)
 
+- [x] Steps 1-7 done. Groups 9-11 are split one value or command a group (15 groups); `origin` is `provenance`, the ratings' values are distinct; `dependency` and `title` are kinds of its `## Terms`.
+
 - **Frontmatter:** narrator `a person or session keeping the backlog`; `rests_on:
   [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]`.
 - **Groups:**
