@@ -4,11 +4,17 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import types
 import unittest
 from pathlib import Path
 from typing import ClassVar
+from unittest import mock
 
 SCRIPTS = Path(__file__).resolve().parents[2] / "scripts"
+if str(SCRIPTS) not in sys.path:
+    sys.path.append(str(SCRIPTS))
+import migrate_upgrade
+
 INDEX = "---\nid: bounded-context/example.org/acme/shop\n---\n# shop\n"
 
 
@@ -58,6 +64,28 @@ class TheMoveCheck(unittest.TestCase):
         self.assertEqual(done.returncode, 1, done.stderr)
         self.assertIn("could not move .shop/work/i1-x/runs/a onto .shop/work/i1-x/runs/w1", done.stderr)
         self.assertEqual(status_of(root), "")
+
+
+class TheStaging(unittest.TestCase):
+    def setUp(self):
+        self.root = repository({"spec/index.md": INDEX})
+
+    def test_apply_stages_every_text_with_one_add_per_batch(self):
+        calls = []
+        changes = types.SimpleNamespace(moves=[], texts={"f%04d.md" % i: "x\n" for i in range(1201)})
+        with mock.patch.object(migrate_upgrade, "git", side_effect=lambda root, *a: calls.append(a)):
+            migrate_upgrade.apply(self.root, changes)
+        adds = [c for c in calls if c[0] == "add"]
+        self.assertEqual([len(c) - 3 for c in adds], [500, 500, 201])
+        self.assertTrue(all(c[:3] == ("add", "-f", "--") for c in adds))
+        self.assertEqual(sorted(p for c in adds for p in c[3:]), sorted(changes.texts))
+
+    def test_apply_on_a_real_repository_stages_every_text(self):
+        texts = {"a.md": "a\n", "spec/index.md": INDEX + "more\n", "b.md": "b\n"}
+        migrate_upgrade.apply(self.root, types.SimpleNamespace(moves=[], texts=texts))
+        staged = subprocess.run(["git", "diff", "--cached", "--name-only"], cwd=self.root, capture_output=True,
+                                text=True).stdout.split()
+        self.assertEqual(sorted(staged), ["a.md", "b.md", "spec/index.md"])
 
 
 if __name__ == "__main__":
