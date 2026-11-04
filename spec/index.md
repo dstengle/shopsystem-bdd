@@ -88,6 +88,7 @@ The simplified workflow (plan 1, unbuilt):
 |---|---|---|
 | `backlog` | a person or session keeping the backlog | service |
 | `readiness` | a person or session readying an item | service |
+| `intake` | a session answering a peer bounded context's request | service |
 
 ## Testing
 

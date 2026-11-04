@@ -283,6 +283,8 @@ The lines each section gives are target lines. Where the grammar takes one as wr
 
 #### Task 5: `intake` (service)
 
+- [x] Steps 1-7 done. The outcome is the command literal (`work outcome accepted`); a request line is `of` an item (a row of its `## Relations`); the asker is "a bounded context" the item is asked by (the `upstream` relation does not read as a modifier).
+
 - **Groups:**
   1. **A peer's request becomes an item:** When a session runs `work intake` on a request whose upstream is this
      bounded context, `work` shall write an item that is `shaped`, whose origin is `peer`, asked by the asker of the

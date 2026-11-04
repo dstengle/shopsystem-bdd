@@ -16,6 +16,7 @@ BOUND_BY_PYTEST_BDD = [
     "features/batch-measurement.feature",
     "features/design-model-check.feature",
     "features/feature-file-tools.feature",
+    "features/intake.feature",
     "features/migration-tools.feature",
     "features/readiness.feature",
     "features/supervision.feature",
