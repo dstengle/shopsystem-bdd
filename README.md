@@ -1,7 +1,7 @@
 # shopsystem-bdd
 Claude Code plugin for the shopsystem harness: a behaviour-driven workflow with one spec of capability files per
 bounded context, written as codified requirements in a controlled language (a GF grammar built from the glossary),
-logic-checked with telingo/clingo, Gherkin feature files generated from them as the contract, one human gate on the
+logic-checked with clingo, Gherkin feature files generated from them as the contract, one human gate on the
 spec's requirements, and delivery by work-items that a script, `work run`, pulls through research, plan,
 implementation and review.
 
@@ -18,8 +18,8 @@ This repository's own spec: `spec/index.md`; check it with `python3 scripts/mode
 The plugin depends on no other plugin. It needs, in the consuming repository's Python:
 
 - the grammar tools, installed by `python3 scripts/tools install` (Linux x86_64): GF 3.12 under
-  `~/.local/share/shopsystem-bdd/gf-3.12/` (or `$SHOPSYSTEM_GF`), and the pinned wheels pgf 1.1, clingo 5.8.2 and
-  telingo 2.1.3, for `model check`, `model parse`, `model logic`, `features generate` and `work request`;
+  `~/.local/share/shopsystem-bdd/gf-3.12/` (or `$SHOPSYSTEM_GF`), and the pinned wheels pgf 1.1 and clingo 5.8.2,
+  for `model check`, `model parse`, `model logic`, `features generate` and `work request`;
   `tools probe` shows what is installed;
 - pytest and pytest-bdd, for the scenarios;
 - pytest-xdist, optional, to run the tests in parallel (`pytest.ini`'s `addopts = -n auto`; `-n 0` runs them in one
@@ -60,10 +60,12 @@ A consuming repository keeps (design-decision/final-layout):
 - **Requirements parse.** Every Behaviour statement is an EARS requirement in the context's grammar (the glossary of
   `spec/index.md` and each capability's `## Terms` are its lexicon), in a requirement group `[g<n>]` with ids
   `[r<n>]`, and parses to exactly one tree (`v_p1`, `v_p2`). `spec/universal.md` holds the universal conditions
-  `U<n>`. `model logic` checks each group's logic, with the universal conditions, resources and exclusivity, with
-  telingo.
-- **Groups become scenarios.** `features generate` writes one scenario a group, tagged `@g<n> @r<n>…`, from the
-  parsed requirements: no session writes a feature file, and the formulate round of `work run` is a script.
+  `U<n>`. Each grammar fun translates to facts about its requirement, and `model logic` checks them in one clingo
+  solve of `grammar/check.lp` over the pairs of requirements that share vocabulary: clashes (L1), duplicates (L2),
+  sets no transition allows and unreachable values (L3, L4), untriggered event obligations (L5).
+- **Groups become scenarios.** `features generate` writes one scenario a group, tagged `@g<n> @r<n>…`, read off
+  its requirements' facts with no solver: no session writes a feature file, and the formulate round of `work run`
+  is a script.
 - **Scenarios are delivered.** `delivering-an-initiative` drafts the initiative's work-items from the spec alone
   (`work add`), commits them and starts `work run <initiative>`. `work run` takes each work-item through its stages,
   one fresh `claude -p` worker a stage: `code-scout` researches, `bdd-planner` plans (intent, never code),
@@ -150,9 +152,9 @@ limits are its tools; under `work run` they are also its `--allowedTools`.
   `spec/index.md` is typed (`- **<term>** (<category>): …`) and is the lexicon of a GF grammar; every Behaviour
   statement is an EARS requirement that parses to exactly one tree, in a requirement group `[g<n>]`; a capability
   file says `language: codified-1`. `spec/universal.md` holds the universal conditions `U<n>`.
-- **New tools:** `tools install` installs GF 3.12 and the pinned pgf, clingo and telingo; `model parse`, `model
-  lexicon`, `model logic` (telingo: each group's witness, contradictions, universal conditions, resources) and `model
-  restates` (each 0.29 id restated, dropped or moved); `features generate` and `features vocab`.
+- **New tools:** `tools install` installs GF 3.12 and the pinned pgf and clingo; `model parse`, `model lexicon`,
+  `model logic` (one clingo solve of `grammar/check.lp` over each requirement's facts: clashes naming both ids,
+  duplicates, transitions, reachability, untriggered event obligations) and `model restates` (each 0.29 id restated, dropped or moved); `features generate` and `features vocab`.
 - **Scenarios are generated**, not written: `features generate` writes one scenario a group, tagged `@g<n> @r<n>…`,
   and step definitions are handlers of a fixed step vocabulary. The agent that wrote feature files is gone, and so are
   `features tag`, `move`, `deprecate`, `retire`, `rebind` and `verify-moved`. `work run`'s formulate round is a script.

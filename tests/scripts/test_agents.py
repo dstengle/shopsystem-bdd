@@ -125,3 +125,14 @@ class CodifiedFlow(unittest.TestCase):
         for path in sorted(AGENTS.glob("*.md")) + sorted(SKILLS.rglob("*.md")):
             with self.subTest(path=path.name):
                 self.assertNotIn(FORMULATOR, path.read_text())
+
+    def test_no_doc_names_telingo_as_current(self):
+        """Revision 3: `model logic` is one clingo solve of `grammar/check.lp`; telingo is history, kept only in
+        `design-model.md` and `how-we-got-here.md`."""
+        root = AGENTS.parent
+        for name in ("README.md", "docs/capability-format.md", "docs/design-model/grammar.md",
+                     "skills/checking-spec-consistency/SKILL.md"):
+            with self.subTest(path=name):
+                hits = [line for line in (root / name).read_text().splitlines()
+                        if "telingo" in line or "&tel" in line]
+                self.assertEqual(hits, [])
