@@ -17,6 +17,7 @@ from migrate_write import check_moves, git, top_level, uncommitted
 SCRIPTS = Path(__file__).resolve().parent
 VERSION_FILE = ".shop/plugin-version"
 UNRECORDED = "0.23.1"
+BATCH = 500  # paths a `git add` stages at once: one process per batch, not one per file
 STEPS = [("0.24.0", "work-items named by ids", "give every work-item the id w<n>", migrate_upgrade_ids),
          ("0.25.0", "answers, not rulings",
           "rename awaiting-ruling to awaiting-answer and `## Rulings` to `## Answers`", migrate_upgrade_answers),
@@ -104,7 +105,9 @@ def apply(root, changes):
     for rel, text in changes.texts.items():
         with open(root / rel, "w", newline="") as handle:
             handle.write(text)
-        git(root, "add", "-f", "--", rel)
+    paths = list(changes.texts)
+    for start in range(0, len(paths), BATCH):
+        git(root, "add", "-f", "--", *paths[start:start + BATCH])
 
 
 def move_failures(root, changes):
