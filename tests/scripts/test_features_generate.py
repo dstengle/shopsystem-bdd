@@ -1,7 +1,9 @@
-"""`features generate` (design-r2 §7): one scenario a group read off its trace, the example data of its `given` block
+"""`features generate` (design-r3 §5): one scenario a group read off its requirements' facts, no solver, the example data of its `given` block
 (any other given line left out with a line on stderr), and the exit codes of a codified, an uncodified and a broken
 capability."""
+import os
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
@@ -29,7 +31,8 @@ Feature: Work queue
 
   @g2 @r3
   Scenario: `work start` refuses an initiative that is not proposed
-    Given an initiative i1 that is `abandoned`
+    Given an initiative i1
+    And the initiative i1 is not `proposed`
     When the person runs `work start` on the initiative i1
     Then `work` exits with an error naming the status of the initiative i1
 
@@ -52,18 +55,17 @@ Feature: Work queue
     And `work` does not print the work-item w2
 '''
 
-G1 = '''\
-  @g1 @r1 @r2
-  Scenario: `work run` with no initiative takes the open initiatives side by side
-    Given an initiative i1
-    And the initiative i1 is not `done`
-    And the initiative i1 is not `abandoned`
-    And an initiative i2 that is `abandoned`
-    And an initiative i3 that is `abandoned`
-    When the person runs `work run`
-    Then `work run` takes the initiative i1
-    And `work run` does not take the initiative i2
-'''
+G1 = [
+    "  @g1 @r1 @r2",
+    "  Scenario: `work run` with no initiative takes the open initiatives side by side",
+    "    Given an initiative i1",
+    "    And the initiative i1 is not `done`",
+    "    And the initiative i1 is not `abandoned`",
+    "    And an initiative i2 that is `done`",
+    "    When the person runs `work run`",
+    "    Then `work run` takes the initiative i1",
+    "    And `work run` does not take the initiative i2",
+]
 
 
 @pytest.fixture
@@ -132,17 +134,20 @@ def test_check_with_no_names_refuses_an_uncodified_service_capability(repo):
     assert "spec/capabilities/legacy.md is not codified: run `migrate upgrade`" in done.stderr
 
 
-def test_an_every_response_gives_its_contrasts_then_from_one_solve(repo):
-    """`take every initiative whose status is not done or abandoned`: the witness asks for one that fails the
-    restriction, and its absent response is a `does not` Then (design-r2 §7.3)."""
+def test_an_every_response_gives_one_contrast_by_rule(repo):
+    """`take every initiative whose status is not done or abandoned`: one more initiative with the first value the
+    restriction excludes, and its absent response a `does not` Then (design-r3 §5 rule 5)."""
     assert features(repo, "generate", "supervision").returncode == 0
-    assert G1 in generated(repo, "supervision")
+    lines = generated(repo, "supervision").split("\n\n")[1].splitlines()
+    assert lines[:len(G1)] == G1
+    assert all(line.startswith("    And ") for line in lines[len(G1):])
+    assert not any("i3" in line for line in lines)
 
 
-def test_an_if_group_gives_an_initiative_its_restriction_excludes(repo):
+def test_an_if_group_states_the_restriction_it_excludes(repo):
     assert features(repo, "generate", "work-queue").returncode == 0
     block = generated(repo, "work-queue").split("  @g2 @r3")[1].split("  @g3")[0]
-    assert "    Given an initiative i1 that is `abandoned`\n" in block
+    assert "    Given an initiative i1\n    And the initiative i1 is not `proposed`\n" in block
 
 
 def test_a_given_line_that_is_not_example_data_is_left_out_with_one_line_on_stderr(repo):
@@ -185,8 +190,24 @@ def test_a_requirement_that_does_not_parse_is_refused_naming_it(tmp_path):
     assert not (tmp_path / "broken" / "features").exists()
 
 
+def test_byte_stable_under_two_hash_seeds(repo):
+    texts = []
+    for seed in ("1", "2"):
+        done = subprocess.run([sys.executable, str(FEATURES), "generate", "--preview",
+                               str(repo / "spec" / "capabilities" / "supervision.md")], cwd=repo, capture_output=True,
+                              text=True, env=dict(os.environ, PYTHONHASHSEED=seed))
+        assert done.returncode == 0, done.stderr
+        texts.append(done.stdout)
+    assert texts[0] == texts[1]
+
+
+def test_generation_imports_no_solver():
+    text = (REPO / "scripts" / "features_generate.py").read_text() + (REPO / "scripts" / "spec_steps.py").read_text()
+    assert not re.search(r"spec_solve|spec_trace\b|spec_engine|telingo|clingo\.Control", text)
+
+
 def test_check_on_the_live_repo_runs_to_its_end():
-    """Every live service capability is read off its traces without a crash; the checked-in features may differ
+    """Every live service capability is read off its requirements' facts without a crash; the checked-in features may differ
     until layer 4 regenerates them, and a group with an L1 is left out with a line on stderr."""
     toolchain.require()
     done = features(REPO, "generate", "--check")

@@ -1,12 +1,13 @@
 """The fixture's handlers (copied to tests/scenarios/work_queue_handlers.py by the end-to-end test): a toy queue
-kept in the scenario's context, enough to run the generated work-queue feature."""
+kept in the scenario's context, enough to run the generated work-queue feature. A thing whose status no Given
+states has the status `none`, which is none of the glossary's values."""
 from vocab import handler
 
 
 @handler("GivenK", "initiative")
 @handler("GivenK", "work-item")
 def given_thing(step):
-    step.context.setdefault("status", {})[step.names[0]] = None
+    step.context.setdefault("status", {})[step.names[0]] = "`none`"
 
 
 @handler("GivenK_A", "initiative")
@@ -16,7 +17,7 @@ def given_status(step):
     if " is not " not in step.text:
         status[step.names[0]] = step.values[0]
     elif status.get(step.names[0]) == step.values[0]:
-        status[step.names[0]] = None
+        status[step.names[0]] = "`none`"
 
 
 @handler("GivenCodeText", "file")

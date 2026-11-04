@@ -16,7 +16,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/tools_check.py` | `check`: ruff, vulture, import-linter |
 | `scripts/tools_size.py` | `size`: tracked Python files over a line limit |
 | `scripts/features*.py` | the `features` command: Gherkin reading, bindings, reports |
-| `scripts/features_generate.py` | `features generate`: a codified capability's groups written as scenarios read off their traces (`spec_trace`), example data first, byte-stable; an uncodified capability refused, naming `migrate upgrade` |
+| `scripts/features_generate.py` | `features generate`: a codified capability's groups written as scenarios read off their facts by `spec_steps`, with no solver, example data first, byte-stable; an uncodified capability refused, naming `migrate upgrade` |
 | `scripts/features_vocab.py` | the step vocabulary: a step read back into its template, kind and term, the (template, kind) patterns (design §14.1, §14.3) |
 | `scripts/features_vocab_gf.py` | the generated StepsTyped module: for each kind its instance mention and Given templates, and for each attribute slot its Given (design-r2 §4.4) |
 | `grammar/` | the plugin's GF sources: the core requirement grammar (`Core`, `Req`) and the step grammar (`Steps`), each with its English; `background.lp`, the background theory of `model logic` (instances, creation, frame, running sessions, resources, `free`); `cone.lp`, a group's cone and horizon edges; `corpus/`, the sentences the grammar must parse and refuse |
@@ -35,7 +35,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/spec_engine.py` | the solver of the codified spec: `telingo.imain` through a proxy (its own incremental horizon), cores over the `on/1` assumptions, optimal models and the least of them, the pool retry, a group's cone and its horizon bound with `grammar/cone.lp` (design-r2 §6.3) |
 | `scripts/spec_solve.py` | `model logic`: L1-L4 on `spec_engine`, groups solved side by side, the text and JSON reports (design-r2 §6.4) |
 | `scripts/spec_trace.py` | a group's trace for `features generate`: its cone, an optN solve projected on its labels and state-0 fluents, groups solved side by side, labels read into Givens, When and Thens (design-r2 §7) |
-| `scripts/spec_trace_steps.py` | a trace's atoms as steps: the table from atom predicate to Steps fun, instances named in order of first mention (design-r2 §7.3) |
+| `scripts/spec_steps.py` with `scripts/spec_steps_facts.py` | a group's requirements as Gherkin steps (design-r3 §5): each requirement's facts read into atoms (`spec_steps_facts`: instances, fluents, the trigger, responses, the contrast of an `every` role) and the atoms into Givens, a When and Thens by the table from atom predicate to Steps fun, instances named in order of first mention |
 | `scripts/migrate_session.py` | the hooks' text about initiatives: `work status` at SessionStart, `migrate compacting` at PreCompact |
 | `scripts/migrate_prompt.py` | the UserPromptSubmit hook's text (`migrate prompting`): a session writes a delegation the person gives with `work delegate` (requests r72) |
 | `scripts/model*.py` | the `model` command: parsing, facts, checks, work, reports |

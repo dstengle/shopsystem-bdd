@@ -1,20 +1,33 @@
-"""The atom table of design-r2 §7.3: one atom of a trace (a clingo symbol) as the Steps tree of a Given, a When or a
-Then, with the trace's instances named by their kind's letter and a counter in order of first mention.
+"""A group's requirements read into Gherkin steps (design-r3 §5): their facts (`spec_facts`), never a solve, read by
+fixed rules into the Steps trees of Givens, a When and Thens.
 
-`Reader(logic, steps)` holds one scenario's names: `logic` is spec_logic's Vocab (the kinds, actors, resources,
-relations and defined conditions the atoms name), `steps` features_vocab's Vocab (the Steps grammar, whose fun types
-fit each term to the noun phrase its slot asks for). An instance first mentioned in a Given is introduced by
-`<attribute>_Given` ("a work-item w1 that is `drafted`") or `<kind>_Given` ("a result r1").
+`read(facts, logic, steps)` takes the facts of each requirement of one group, in order, as `spec_steps_facts` keeps
+them (a split requirement's first way through; a defined condition without its definition's literals):
+- Givens: `feat`, then the pre-state (`cond`, `ccond`, `crel`, `holds`, `free`) in fact order, then one contrast
+  for each `every` role with a restriction. A `none` gives no Given.
+- When: the `trig`.
+- Thens: by conjunct, each `resp`, then its object's restrictions, then its `set`s (a positive set worded once);
+  then each contrast's `does not`, after its requirement's Thens.
+A later requirement's role is the first requirement's role of the same kind and rank; Givens and the When are the
+first requirement's.
+
+`Reader(logic, steps)` is the atom table: one atom (a clingo symbol: `attr`, `cond`, `rel`, `given`, `holds`, `over`,
+`ran`, `ran_any`, `does`, `done_to`, `set_to`, over instances `o(K,V)`) as a Steps tree, with the instances named by
+their kind's letter and a counter in order of first mention. `logic` is spec_logic_vocab's Vocab, `steps`
+features_vocab's Vocab. An instance first mentioned in a Given is introduced by `<attribute>_Given` ("a work-item w1
+that is `drafted`") or `<kind>_Given` ("a result r1").
 """
+import spec_steps_facts as sf
+
 LETTERS = {"initiative": "i", "work-item": "w", "capability-proposal": "p", "glossary-proposal": "p", "request": "q"}
 
 
 class TraceError(Exception):
-    """A group with no scenario: its L1, a trace not determined, or an atom with no step."""
+    """A group with no scenario: an atom with no step."""
 
 
 class Reader:
-    """One model read into steps: the instances' names, the Givens already introduced, and the step funs' types."""
+    """One scenario read into steps: the instances' names, the Givens already introduced, and the step funs' types."""
 
     def __init__(self, logic, steps):
         self.logic, self.steps, self.names, self.counts, self.known = logic, steps, {}, {}, set()
@@ -178,3 +191,43 @@ def things(sym):
     for arg in sym.arguments if name_of(sym) else ():
         out += [x for x in things(arg) if x not in out]
     return out
+
+
+def read(facts, logic, steps):
+    """[(keyword, Steps tree)] of one group: `facts` holds the facts of each of its requirements, in order."""
+    shared, pre, when, thens, extra = {}, [], [], [], []
+    for n, req in enumerate(facts):
+        syms = sf.own(logic, req)
+        inst = sf.instances(syms, n, shared)
+        groups, pending, late = {}, [], []
+        for sym in syms:
+            name, a = sym.name, sym.arguments
+            if name in sf.PRE and n == 0:
+                pre.append(sf.fluent(sf.subst(sym, inst)))
+            elif name == "trig" and n == 0:
+                when.append(sf.trigger(sf.subst(sym, inst)))
+            elif name in sf.OBJ:
+                pending.append(sf.fluent(sf.subst(sym, inst)))
+            elif name in ("resp", "set", "only"):
+                resps, objs, sets = groups.setdefault(a[1].number, ([], [], []))
+                if name == "set":
+                    sets.append(sf.fluent(sf.subst(sym, inst)))
+                    continue
+                if name == "resp" and not (a[2].name == "pos" and name_of(a[3]) == "set"):
+                    resps.append(sf.response(sf.subst(sym, inst)))
+                # the restrictions of what a response does not do pick it out; they hold of nothing it makes
+                objs.extend(pending if name == "resp" and a[2].name == "pos" else [])
+                pending = []
+            elif name == "every":
+                found = sf.contrast(logic, syms, a[1].name, inst, n)
+                if found:
+                    extra.append(found[1])
+                    late += [sf.response(sf.subst(s, inst), found[0]) for s in syms if s.name == "resp"
+                             and s.arguments[2].name == "pos" and s.arguments[5] == a[1]]
+        thens += [t for i in sorted(groups) for part in groups[i] for t in part] + late
+    r, out = Reader(logic, steps), []
+    pre.sort(key=lambda p: p[1].name != "given")
+    for positive, sym in pre + extra:
+        out += [("given", t) for t in r.given(sym, positive) if ("given", t) not in out]
+    out += [("when", r.when(t)) for t in when]
+    return out + list(dict.fromkeys(("then", r.then(sym, positive)) for positive, sym in thens))
