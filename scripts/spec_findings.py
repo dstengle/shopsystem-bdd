@@ -1,0 +1,162 @@
+"""The words of `model logic`'s findings (design-r3 §6): an atom `grammar/check.lp` shows, written with the lexicon's
+terms from the facts of the requirements it names (`spec_context`). A split requirement's id (`s#r5#2`) is written
+as its requirement's (`spec_facts.split`)."""
+from collections import defaultdict
+
+import clingo
+import spec_facts
+import spec_grammar
+import spec_tree
+
+QUIET = {"print": "print", "exit_ok": "exit successfully", "exit_error": "exit with an error",
+         "change_nothing": "change nothing"}
+
+
+def article(word):
+    return ("an " if word[:1] in "aeiou" else "a ") + word
+
+
+def local(ident, other):
+    """`r12` when the two ids are of one capability, else the whole id."""
+    cap, _, rest = ident.rpartition("#")
+    return rest if cap and cap == other.rpartition("#")[0] else ident
+
+
+class Words:
+    """The texts of one context's findings."""
+
+    def __init__(self, root, ctx):
+        self.root, self.v = root, ctx.vocab
+        self.trees = {s.id: s.tree for s in ctx.statements}
+        self.facts = defaultdict(list)
+        for facts in ctx.facts.values():
+            for fact in facts:
+                sym = clingo.parse_term(fact[:-1])
+                self.facts[sym.arguments[0].string].append((sym.name, sym.arguments[1:]))
+
+    def of(self, rid, name):
+        return [args for n, args in self.facts[rid] if n == name]
+
+    def term(self, rid, x):
+        """A term of a requirement in words: a role as its kind, an actor, a code, a value."""
+        if x.type == clingo.SymbolType.String:
+            return x.string
+        if x.type == clingo.SymbolType.Number:
+            return str(x.number)
+        for var, kind in self.of(rid, "role"):
+            if var == x:
+                return article(self.v.kinds.get(kind.name, kind.name))
+        if x.name == "value":
+            return self.v.value_text.get(x.arguments[1].name, str(x))
+        if x.name == "any":
+            return "anyone"
+        return self.v.actors.get(x.name, str(x))
+
+    def attr(self, t):
+        kid, entry = self.v.attrs[t.name]
+        return entry.term, article(self.v.kinds[kid])
+
+    def value(self, v):
+        return self.v.value_text.get(v.name, v.name)
+
+    def does(self, rid, e, d, x):
+        """`<doer> to <event> <object>`."""
+        who = self.term(rid, d)
+        if e.type == clingo.SymbolType.String:
+            return "%s to %s" % (who, e.string)
+        if e.name == "set":
+            term, kind = self.attr(e.arguments[0])
+            return "%s to set the %s of %s to %s" % (who, term, kind, self.value(e.arguments[1]))
+        if e.name == "hold":
+            return "%s to hold the %s" % (who, self.v.resources[e.arguments[0].name].term)
+        if e.name in QUIET:
+            return "%s to %s" % (who, QUIET[e.name])
+        obj = "" if x.type == clingo.SymbolType.Function and x.name == "none" else " " + self.term(rid, x)
+        return "%s to %s%s" % (who, self.v.events.get(e.name, e.name), obj)
+
+    def trigger(self, base):
+        tree = self.trees.get(base)
+        trig = spec_tree.parts(tree)["trig"] if tree else None
+        if trig is None:
+            return None
+        text = spec_grammar.linearise(self.root, trig)
+        return text[0].lower() + text[1:] if text[:1].isupper() else text
+
+    def pre(self, a, b, atoms):
+        """The merged pre-state of a witness: its `pre(A,B,Z,Attr,Val,Pol)` atoms, one phrase an instance."""
+        inst = {}
+        for atom in atoms:
+            sym = clingo.parse_term(atom)
+            if sym.name != "pre":
+                continue
+            z, _, val, pol = sym.arguments[2:]
+            rid, var = (b, z.arguments[0]) if z.type == clingo.SymbolType.Function and z.name == "b" else (a, z)
+            vals = inst.setdefault(str(z), (self.term(rid, var), []))[1]
+            text = ("" if pol.name == "pos" else "not ") + self.value(val)
+            if text not in vals:
+                vals.append(text)
+        return ", ".join("%s that is %s" % (who, " and ".join(vals)) for _, (who, vals) in sorted(inst.items()))
+
+    def clash(self, x, y, whys, pre):
+        """`<x> and #<y> clash: on "<trigger>" with <pre-state>, <why>`: x, y in the order they are reported."""
+        bx, by = spec_facts.split(x), spec_facts.split(y)
+        parts = []
+        on = self.trigger(bx) or self.trigger(by)
+        if on:
+            parts.append('on "%s"' % on)
+        if pre:
+            parts.append("with %s" % pre)
+        why = " and ".join(dict.fromkeys(self.why(x, y, w) for w in whys))
+        where = " ".join(parts)
+        return "%s and %s clash: %s" % (bx, "#" + local(by, bx) if local(by, bx) != by else by,
+                                        "%s, %s" % (where, why) if where else why)
+
+    def why(self, x, y, kind):
+        lx, ly = local(spec_facts.split(x), spec_facts.split(y)), local(spec_facts.split(y), spec_facts.split(x))
+        rx, ry = self.of(x, "resp"), self.of(y, "resp")
+        if kind in ("pos_neg", "neg_pos"):
+            for _, p, e, d, o in rx:
+                if any(e == e2 and p != q for _, q, e2, _, _ in ry):
+                    verbs = ("obliges", "forbids") if p.name == "pos" else ("forbids", "obliges")
+                    return "%s %s and %s %s %s" % (lx, verbs[0], ly, verbs[1], self.does(x, e, d, o))
+        if kind == "set":
+            for _, _, t, v in self.of(x, "set"):
+                for _, _, t2, w in self.of(y, "set"):
+                    if t == t2 and v != w:
+                        term, of = self.attr(t)
+                        return "%s sets the %s of %s to %s and %s to %s" % (lx, term, of, self.value(v), ly,
+                                                                            self.value(w))
+        if kind == "exit":
+            ok = any(r[2].name == "exit_ok" for r in rx if r[1].name == "pos")
+            return ("%s exits successfully and %s with an error" if ok else
+                    "%s exits with an error and %s successfully") % (lx, ly)
+        if kind == "change":
+            quiet = any(r[2].name == "change_nothing" for r in rx if r[1].name == "pos")
+            rid, other = (y, ry) if quiet else (x, rx)
+            what = next(self.does(rid, e, d, o) for _, p, e, d, o in other
+                        if p.name == "pos" and e.name not in QUIET)
+            return ("%s changes nothing and %s obliges %s" % (lx, ly, what) if quiet else
+                    "%s obliges %s and %s changes nothing" % (lx, what, ly))
+        if kind == "use":
+            uses = self.of(x, "uses")
+            d, o = (uses or self.of(x, "nouse"))[0]
+            verbs = ("obliges", "forbids") if uses else ("forbids", "obliges")
+            return "%s %s and %s %s %s to use %s" % (lx, verbs[0], ly, verbs[1], self.term(x, d), self.term(x, o))
+        return "%s and %s demand opposite things" % (lx, ly)
+
+    def bad_set(self, base, t, frm, to):
+        term, kind = self.attr(t)
+        start = "" if frm.name == "none" else " from %s" % self.value(frm)
+        return "%s sets the %s of %s%s to %s, which no transition allows" % (base, term, kind, start, self.value(to))
+
+    def unreachable(self, base, t, v):
+        term, kind = self.attr(t)
+        return "%s needs %s whose %s is %s, which no transition path reaches" % (base, kind, term, self.value(v))
+
+    def lint(self, raw, e, reactors):
+        base = spec_facts.split(raw)
+        d, o = next((d, o) for _, p, e2, d, o in self.of(raw, "resp") if e2 == e and p.name == "pos")
+        text = "%s obliges %s in every state" % (base, self.does(raw, e, d, o))
+        if reactors:
+            text += "; %s %s to it" % (", ".join(reactors), "reacts" if len(reactors) == 1 else "react")
+        return text
