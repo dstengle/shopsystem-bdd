@@ -1,9 +1,10 @@
-"""tools_grammar: GF and the pinned pgf, clingo and telingo wheels, installed and probed (design §11.1-§11.2)."""
+"""tools_grammar: GF and the pinned pgf and clingo wheels, installed and probed (design §11.1-§11.2)."""
 import hashlib
 import io
 import json
 import os
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
@@ -132,15 +133,14 @@ class GrammarTest(unittest.TestCase):
         out = io.StringIO()
         with redirect_stdout(out):
             tools_grammar.install_wheels(str(python))
-        self.assertEqual(out.getvalue().splitlines(), ["pgf 1.1 already installed", "clingo 5.8.2 installed",
-                                                       "telingo 2.1.3 installed"])
-        self.assertEqual(self.pip_log(), ["--user clingo==5.8.2", "--user telingo==2.1.3"])
+        self.assertEqual(out.getvalue().splitlines(), ["pgf 1.1 already installed", "clingo 5.8.2 installed"])
+        self.assertEqual(self.pip_log(), ["--user clingo==5.8.2"])
 
     def test_in_a_virtualenv_the_wheels_go_in_without_user(self):
         python = self.python({}, venv=True)
         with redirect_stdout(io.StringIO()):
             tools_grammar.install_wheels(str(python))
-        self.assertEqual(self.pip_log(), ["pgf==1.1", "clingo==5.8.2", "telingo==2.1.3"])
+        self.assertEqual(self.pip_log(), ["pgf==1.1", "clingo==5.8.2"])
 
     def test_an_externally_managed_interpreter_is_refused_naming_python(self):
         python = self.python({}, pip_error="error: externally-managed-environment\n")
@@ -183,19 +183,27 @@ class GrammarTest(unittest.TestCase):
         self.assertEqual(found["python"], sys.executable)
         self.assertIn("ruff", found["tools"])
         self.assertEqual(found["grammar"]["gf"], "3.12.0")
-        self.assertEqual(set(found["grammar"]), {"gf", "pgf", "clingo", "telingo"})
+        self.assertEqual(set(found["grammar"]), {"gf", "pgf", "clingo"})
 
     def test_probe_prints_a_grammar_block_naming_what_a_missing_tool_stops(self):
         done = self.tools("probe", env={"XDG_DATA_HOME": str(self.tmp / "nothing"), "PATH": "/usr/bin:/bin"})
         lines = done.stdout.splitlines()
         block = lines[lines.index("grammar:") + 1:]
-        self.assertEqual([line.split()[0] for line in block], ["gf", "pgf", "clingo", "telingo"])
+        self.assertEqual([line.split()[0] for line in block], ["gf", "pgf", "clingo"])
         self.assertIn("  gf missing: requirements cannot be parsed: `work request` and `model check` refuse", block)
         self.assertEqual(done.returncode, 1)
 
     def test_probe_json_says_null_for_a_missing_gf(self):
         done = self.tools("probe", "--json", env={"XDG_DATA_HOME": str(self.tmp / "nothing"), "PATH": "/usr/bin:/bin"})
         self.assertIsNone(json.loads(done.stdout)["grammar"]["gf"])
+
+    def test_nothing_imports_telingo_or_the_old_solver(self):
+        root = pathlib.Path(__file__).resolve().parents[2]
+        files = list((root / "scripts").glob("*.py")) + [root / "scripts" / n for n in ("tools", "model", "features")]
+        pattern = r"^\s*(import|from)\s+(telingo|spec_engine|spec_logic\b|spec_logic_np|spec_trace\b)"
+        bad = sorted(p.name for p in files if re.search(pattern, p.read_text(), re.MULTILINE))
+        self.assertEqual(bad, [])
+        self.assertFalse((root / "grammar" / "background.lp").exists() or (root / "grammar" / "cone.lp").exists())
 
 
 if __name__ == "__main__":

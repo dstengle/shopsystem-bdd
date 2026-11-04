@@ -10,7 +10,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 |---|---|
 | `scripts/tools` | the `tools` command: its contract and argument parsing |
 | `scripts/tools_env.py` | the project's interpreter, `probe` and `install` |
-| `scripts/tools_grammar.py` | the grammar tools: GF 3.12 and the pinned pgf, clingo and telingo wheels, installed (`tools install`) and probed (`tools probe`'s grammar block, `--json`), and GF's lookup (`gf_binary`) |
+| `scripts/tools_grammar.py` | the grammar tools: GF 3.12 and the pinned pgf and clingo wheels, installed (`tools install`) and probed (`tools probe`'s grammar block, `--json`), and GF's lookup (`gf_binary`) |
 | `scripts/tools_map.py` | the coverage map: `map`, `tests-of`, `untested` |
 | `scripts/tools_refs.py` | `refs` |
 | `scripts/tools_check.py` | `check`: ruff, vulture, import-linter |
@@ -19,7 +19,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/features_generate.py` | `features generate`: a codified capability's groups written as scenarios read off their facts by `spec_steps`, with no solver, example data first, byte-stable; an uncodified capability refused, naming `migrate upgrade` |
 | `scripts/features_vocab.py` | the step vocabulary: a step read back into its template, kind and term, the (template, kind) patterns (design §14.1, §14.3) |
 | `scripts/features_vocab_gf.py` | the generated StepsTyped module: for each kind its instance mention and Given templates, and for each attribute slot its Given (design-r2 §4.4) |
-| `grammar/` | the plugin's GF sources: the core requirement grammar (`Core`, `Req`) and the step grammar (`Steps`), each with its English; `background.lp`, the background theory of `model logic` (instances, creation, frame, running sessions, resources, `free`); `cone.lp`, a group's cone and horizon edges; `corpus/`, the sentences the grammar must parse and refuse |
+| `grammar/` | the plugin's GF sources: the core requirement grammar (`Core`, `Req`) and the step grammar (`Steps`), each with its English; `check.lp`, the fixed meta-encoding of `model logic` over a context's facts (two states, candidate pairs, unification, L1, L3-L5); `corpus/`, the sentences the grammar must parse and refuse |
 | `scripts/spec_lexicon.py` | the lexicon of a bounded context, the one reader of term entries: the typed `## Glossary` of `spec/index.md` and each capability's `## Terms`, identifiers (`ident`), a condition's definition sentence and the lexicon's problems (v_t4-v_t7, v_t9) |
 | `scripts/spec_relations.py` | the relations of a context: the `## Relations` tables, `Kind of:` expanded to subkinds, and v_t8 (a relation entry) and v_t10 (design-r2 §4.2, §8) |
 | `scripts/spec_typed.py` | the generated GF modules of a lexicon: `Lex` and `Typed`, each with its English, a relation row's modifier and clause funs |
@@ -28,14 +28,11 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/spec_tree.py` | requirement trees: the post-parse guards, normalised trees and `logic_only` |
 | `scripts/spec_read.py` | the codified spec files read: a capability's groups, requirements, `Restates:` and `## Dropped`; `spec/universal.md`; `spec/restated.json`; the per-file marker `language: codified-1` |
 | `scripts/spec_read_given.py` | a codified group's given block read for spec_read, and the shape test of example data (v15m; design-r2 §9.1) |
-| `scripts/spec_logic.py` with `scripts/spec_logic_np.py` | `model logic`'s translation: a requirement tree into telingo `&tel` formulas, its labels and signatures, the witness of a group, condition definitions (design-r2 §5) |
-| `scripts/spec_logic_vocab.py` | the lexicon's side of the logic: typed funs traced to their lexicon entries, the context's facts for the background theory, guarded transitions, pool sizes, and `domain`, the lexicon's facts for `grammar/check.lp` (kinds, values, transitions, initial values) |
+| `scripts/spec_logic_vocab.py` | the lexicon's side of the logic: typed funs traced to their lexicon entries, and `domain`, the domain facts for `grammar/check.lp` (kinds, sub-kinds, actors, values, transitions, `initial/3`) |
 | `scripts/spec_facts.py` with `scripts/spec_facts_np.py` | a requirement tree as ground facts, one translation per fun (design-r3 §3): roles, pre-state, trigger, responses, sets, `every`, `none`; a choice split into `R#n` (`split`); a `Def` condition recorded (`define`) and followed where it is positive; an unknown fun refused naming it |
 | `scripts/spec_context.py` | a context read once per state of its files (`load`): the vocabulary, the codified capabilities with drafted files laid over them, each statement parsed and translated into facts, the refused requirements, the domain facts |
-| `scripts/spec_engine.py` | the solver of the codified spec: `telingo.imain` through a proxy (its own incremental horizon), cores over the `on/1` assumptions, optimal models and the least of them, the pool retry, a group's cone and its horizon bound with `grammar/cone.lp` (design-r2 §6.3) |
-| `scripts/spec_solve.py` | `model logic`: one brave clingo solve of the context's facts and `grammar/check.lp` (`solve`, its 20 s limit and L0), the shown atoms read into L1, L3-L5, L2 on normalised trees, the text and JSON reports (design-r3 §6) |
+| `scripts/spec_solve.py` | `model logic`, facts → `check.lp` → findings, L1-L5: one brave clingo solve of the context's facts and `grammar/check.lp` (`solve`, its 20 s limit and L0), the shown atoms read into L1, L3-L5, L2 on normalised trees, the text and JSON reports (design-r3 §6) |
 | `scripts/spec_findings.py` | the words of `model logic`'s findings: a shown atom of `check.lp` written with the lexicon's terms, an L1's trigger, merged pre-state and why |
-| `scripts/spec_trace.py` | a group's trace for `features generate`: its cone, an optN solve projected on its labels and state-0 fluents, groups solved side by side, labels read into Givens, When and Thens (design-r2 §7) |
 | `scripts/spec_steps.py` with `scripts/spec_steps_facts.py` | a group's requirements as Gherkin steps (design-r3 §5): each requirement's facts read into atoms (`spec_steps_facts`: instances, fluents, the trigger, responses, the contrast of an `every` role) and the atoms into Givens, a When and Thens by the table from atom predicate to Steps fun, instances named in order of first mention |
 | `scripts/migrate_session.py` | the hooks' text about initiatives: `work status` at SessionStart, `migrate compacting` at PreCompact |
 | `scripts/migrate_prompt.py` | the UserPromptSubmit hook's text (`migrate prompting`): a session writes a delegation the person gives with `work delegate` (requests r72) |

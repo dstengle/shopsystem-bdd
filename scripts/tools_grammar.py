@@ -1,4 +1,4 @@
-"""The grammar tools: GF 3.12 and the pinned pgf, clingo and telingo wheels, installed and probed (design §11)."""
+"""The grammar tools: GF 3.12 and the pinned pgf and clingo wheels, installed and probed (design §11)."""
 import hashlib
 import json
 import os
@@ -15,10 +15,10 @@ GF_VERSION = "3.12"
 GF_URL = ("https://github.com/GrammaticalFramework/gf-core/releases/download/release-3.12/"
           "gf-3.12-ubuntu-24.04.deb")
 GF_SHA256 = "17aa5452b713f1e00a0755a1bad998a926acbffb96eefde2c3800ca72536b4d8"
-WHEELS = {"pgf": "1.1", "clingo": "5.8.2", "telingo": "2.1.3"}
+WHEELS = {"pgf": "1.1", "clingo": "5.8.2"}
 PARSE = "requirements cannot be parsed: `work request` and `model check` refuse"
 LOGIC = "requirements cannot be logic-checked: `model logic` refuses"
-WITHOUT = {"gf": PARSE, "pgf": PARSE, "clingo": LOGIC, "telingo": LOGIC}
+WITHOUT = {"gf": PARSE, "pgf": PARSE, "clingo": LOGIC}
 BY_HAND = "build GF 3.12 by hand and set $SHOPSYSTEM_GF to its gf"
 VERSIONS = ("import json, sys\nfrom importlib import metadata\nout = {}\n"
             "for name in sys.argv[1:]:\n    try:\n        out[name] = metadata.version(name)\n"
@@ -82,7 +82,7 @@ def versions(python):
 
 
 def probed(python=None, environ=None):
-    """{"gf": version|None, "pgf": …, "clingo": …, "telingo": …} for the interpreter running the scripts."""
+    """{"gf": version|None, "pgf": …, "clingo": …} for the interpreter running the scripts."""
     found = versions(python or sys.executable)
     binary = gf_binary(environ)
     grammar = {"gf": gf_version(binary) if binary else None}

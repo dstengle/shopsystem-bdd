@@ -10,7 +10,7 @@ SCRIPTS = str(pathlib.Path(__file__).resolve().parent.parent / "scripts")
 if SCRIPTS not in sys.path:
     sys.path.append(SCRIPTS)
 
-WHEELS = ("pgf", "clingo", "telingo")
+WHEELS = ("pgf", "clingo")
 
 
 def missing():
