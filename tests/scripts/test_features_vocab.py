@@ -2,6 +2,7 @@
 template, kind and arguments, `features vocab --check`, the post-scenario U checks, and a fixture repository whose
 generated feature passes under pytest with its handlers."""
 import importlib.util
+import os
 import pathlib
 import re
 import shutil
@@ -10,6 +11,8 @@ import sys
 
 import features_vocab
 import pytest
+import spec_grammar
+import spec_lexicon
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import toolchain
@@ -169,3 +172,46 @@ def test_marks_come_from_the_spec():
     marks = vocab.marks(FIXTURES / "repo")
     assert {"g1", "g2", "g3", "r1", "r4"} <= set(marks)
     assert "r5" not in marks
+
+
+@pytest.fixture
+def spec_repo(tmp_path):
+    toolchain.require()
+    shutil.copytree(FIXTURES / "repo", tmp_path / "repo")
+    return tmp_path / "repo"
+
+
+def test_a_second_load_reads_nothing(spec_repo, monkeypatch):
+    first = features_vocab.load(spec_repo)
+    monkeypatch.setattr(spec_lexicon, "read", lambda *a, **k: pytest.fail("lexicon read"))
+    monkeypatch.setattr(spec_grammar, "sources", lambda *a, **k: pytest.fail("sources rebuilt"))
+    assert features_vocab.load(spec_repo) is first
+
+
+def test_a_cold_load_reads_the_lexicon_once(spec_repo, monkeypatch):
+    features_vocab._by_print.clear()
+    real, calls = spec_lexicon.read, []
+    monkeypatch.setattr(spec_lexicon, "read", lambda *a, **k: calls.append(a) or real(*a, **k))
+    features_vocab.load(spec_repo)
+    assert len(calls) == 1
+
+
+def test_an_edit_of_equal_size_reloads(spec_repo):
+    first = features_vocab.load(spec_repo)
+    index = spec_repo / "spec" / "index.md"
+    text = index.read_text()
+    assert "a unit of delivery" in text
+    index.write_text(text.replace("a unit of delivery", "a unit of delivers"))
+    assert index.stat().st_size == len(text.encode())
+    assert features_vocab.load(spec_repo).lex is not first.lex
+
+
+def test_a_grammar_edit_reloads(spec_repo, tmp_path, monkeypatch):
+    grammars = tmp_path / "grammar"
+    shutil.copytree(spec_grammar.GRAMMARS, grammars)
+    monkeypatch.setattr(spec_grammar, "GRAMMARS", grammars)
+    before = features_vocab._fingerprint(spec_repo)
+    gf = min(grammars.glob("*.gf"))
+    stat = gf.stat()
+    os.utime(gf, ns=(stat.st_atime_ns, stat.st_mtime_ns + 1_000_000))
+    assert features_vocab._fingerprint(spec_repo) != before
