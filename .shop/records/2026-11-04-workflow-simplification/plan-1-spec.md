@@ -299,6 +299,8 @@ The lines each section gives are target lines. Where the grammar takes one as wr
 
 #### Task 6: `batches` (service)
 
+- [x] Steps 1-7 done. Rank order and `batch_size` are under `## Implementation, may change`; g6 adds that the batch is not `abandoned`; the glossary gains `in-batch` → `ready`: `work batch abandon`. g7's scenario does not show the exclusion ("with no commit of the item" gives no Then).
+
 - **Groups:**
   1. **`work batch start` picks ready items:** in rank order, unblocked, up to `batch_size` of `.shop/delivery.toml` (a new key, default 4).
      It writes a batch that is `building` and a batch plan, and sets each picked item `in-batch`.

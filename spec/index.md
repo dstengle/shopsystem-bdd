@@ -89,6 +89,7 @@ The simplified workflow (plan 1, unbuilt):
 | `backlog` | a person or session keeping the backlog | service |
 | `readiness` | a person or session readying an item | service |
 | `intake` | a session answering a peer bounded context's request | service |
+| `batches` | a person or session building a batch | service |
 
 ## Testing
 
@@ -253,7 +254,7 @@ The simplified workflow (plan 1, unbuilt):
 - **quote** (kind): the person's words cited by a file, with its session, its message and the messages around it.
 - **message** (kind): one turn of the person or of a session in a transcript, without its tool uses.
 - **status** (attribute of item): Values: `idea`, `shaped`, `ready`, `in-batch`, `delivered`, `needs-input`, `refused`, `withdrawn`.
-  Transitions: `idea` → `shaped`: `work shape`; `shaped` → `ready`: `work ready`; `ready` → `shaped`: pick; `ready` → `in-batch`: pick; `in-batch` → `delivered`: merge; `in-batch` → `needs-input`: park; `needs-input` → `shaped`: `work answer`; `idea` → `refused`: `work refuse`; `shaped` → `refused`: `work refuse`; `idea` → `withdrawn`: `work withdraw`; `shaped` → `withdrawn`: `work withdraw`; `ready` → `withdrawn`: `work withdraw`; `needs-input` → `withdrawn`: `work withdraw`.
+  Transitions: `idea` → `shaped`: `work shape`; `shaped` → `ready`: `work ready`; `ready` → `shaped`: pick; `ready` → `in-batch`: pick; `in-batch` → `delivered`: merge; `in-batch` → `needs-input`: park; `in-batch` → `ready`: `work batch abandon`; `needs-input` → `shaped`: `work answer`; `idea` → `refused`: `work refuse`; `shaped` → `refused`: `work refuse`; `idea` → `withdrawn`: `work withdraw`; `shaped` → `withdrawn`: `work withdraw`; `ready` → `withdrawn`: `work withdraw`; `needs-input` → `withdrawn`: `work withdraw`.
 - **provenance** (attribute of item): where an item came from: this bounded context, a peer bounded context or the product. Values: `own`, `peer`, `product`.
 - **value** (attribute of item): Values: `low-value`, `medium-value`, `high-value`.
 - **urgency** (attribute of item): Values: `low-urgency`, `medium-urgency`, `high-urgency`.
