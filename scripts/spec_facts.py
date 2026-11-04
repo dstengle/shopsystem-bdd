@@ -213,6 +213,8 @@ class Walk(Scope):
                 if part != "It":
                     self.cn(u[1], y, True)
                 self.bound = saved
+                if part != "No":
+                    self.bound[base] = y          # a later "the K" is this object (S10)
                 negate = negate or part == "No"
                 only = base if t[0] == "Only" and part in ("An", "One") else only
                 terms.append(y)

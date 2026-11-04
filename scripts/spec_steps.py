@@ -36,7 +36,7 @@ class Reader:
     def name(self, sym):
         if sym not in self.names:
             term = self.logic.kinds.get(sym.arguments[0].name, "x")
-            letter = LETTERS.get(term, term[0])
+            letter = LETTERS.get(term, term[0].lower())
             self.counts[letter] = self.counts.get(letter, 0) + 1
             self.names[sym] = "%s%d" % (letter, self.counts[letter])
         return self.names[sym]

@@ -4,7 +4,6 @@ Feature: Requests
 
   @g1 @r1
   Scenario: `work request` takes in an open request
-    Given a request q1 that is `open`
     When the person runs `work request`
     Then `work` writes the request q1
     And the request q1 is `open`
@@ -13,11 +12,9 @@ Feature: Requests
   @g2 @r2
   Scenario: `work request` writes the request it is raised for
     Given `--raised-for` is given
-    And a request q1
-    And the request q1 is raised for the request q1
     When the person runs `work request` on the request q1
-    Then `work` writes the request q1
-    And the request q1 is raised for the request q1
+    Then `work` writes the request q2
+    And the request q2 is raised for the request q1
 
   @g3 @r3
   Scenario: `work request` writes a delegation it is given
@@ -103,7 +100,6 @@ Feature: Requests
   Scenario: `work delegate` refuses a closed request
     Given a request q1
     And the request q1 is closed
-    And the request q1 is `delivered`
     When the person runs `work delegate` on the request q1
     Then `work` exits with an error naming the status of the request q1
     And `work` changes nothing
@@ -196,11 +192,11 @@ Feature: Requests
   Scenario: `work list` prints every request with its status and every observation no node cites
     Given an observation o1
     And the observation o1 is uncited
+    And an observation o2
+    And the observation o2 is not uncited
     When the person runs `work list`
     Then `work` prints the request q1
-    And `work` prints the request q2
     And `work` prints the status of the request q1
-    And `work` prints the status of the request q2
     And `work` prints the observation o1
     And `work` does not print the observation o2
 
@@ -212,4 +208,3 @@ Feature: Requests
     When the person runs `work show` on the request q1
     Then `work` prints the status of the request q1
     And `work` prints the request line r1
-    And `work` does not print the request line r2

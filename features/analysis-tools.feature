@@ -49,8 +49,7 @@ Feature: Analysis tools
   Scenario: `tools probe` prints each analysis tool and the Python interpreter
     When the person runs `tools probe`
     Then `tools` prints the analysis tool a1
-    And `tools` prints the analysis tool a2
-    And `tools` prints `sys.executable`
+    And `tools` prints the Python interpreter p1
     And `tools` exits successfully
 
   @g8 @r8
@@ -64,17 +63,17 @@ Feature: Analysis tools
     When the person runs `tools probe --log`
     Then `tools` prints "Probe: tools ->"
     And `tools` prints the analysis tool a1
-    And `tools` prints the analysis tool a2
 
   @g10 @r10
   Scenario: `tools install` installs a missing analysis tool and changes no dependency file
     Given the dependency file `requirements.txt` holds "pytest"
     And the Python interpreter `.venv/bin/python` is `virtualenv`
     And an analysis tool a1 that is `missing`
+    And an analysis tool a2 that is `installed`
     When the person runs `tools install`
     Then `tools` installs the analysis tool a1
     And `tools` changes nothing
-    And `tools` does not install `ruff`
+    And `tools` does not install the analysis tool a2
 
   @g11 @r11
   Scenario: `tools install` installs the one version of ruff the plugin pins
@@ -85,19 +84,19 @@ Feature: Analysis tools
 
   @g12 @r12
   Scenario: `tools install` installs nothing into a Python interpreter that is not a virtualenv
-    Given the analysis tool `ruff` is `missing`
+    Given an analysis tool a1 that is `missing`
     And the Python interpreter `.venv/bin/python` is `system`
     When the person runs `tools install`
-    Then `tools` exits with an error naming `ruff`
-    And `tools` does not install `ruff`
+    Then `tools` does not install the analysis tool a1
+    And `tools` exits with an error naming the analysis tool a1
 
   @g13 @r13
   Scenario: an analysis tool still missing after `tools install` is printed with the failed command
-    Given the analysis tool `ruff` is `uninstallable`
+    Given an analysis tool a1 that is `uninstallable`
     And the Python interpreter `.venv/bin/python` is `virtualenv`
     When the person runs `tools install`
     Then `tools` prints `pip install`
-    And `tools` exits with an error naming `ruff`
+    And `tools` exits with an error naming the analysis tool a1
 
   @g14 @r14
   Scenario: `tools map` writes the coverage map whether or not the tests pass
@@ -127,7 +126,6 @@ Feature: Analysis tools
     And the coverage map c1 is present
     When the person runs `tools tests-of src/cart.py:total`
     Then `tools` prints the test t1
-    And `tools` prints the test t2
     And `tools` prints the number of tests
     And `tools` prints the map commit m1
 
@@ -154,7 +152,6 @@ Feature: Analysis tools
     And the coverage map c1 is present
     When the person runs `tools tests-of src/cart.py:total --json`
     Then `tools` prints the test t1
-    And `tools` prints the test t2
     And `tools` prints the number of tests
     And `tools` prints the map commit m1
 

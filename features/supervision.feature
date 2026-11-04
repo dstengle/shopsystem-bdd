@@ -9,10 +9,10 @@ Feature: Supervision
     And an initiative i1 that is `started`
     And a work-item w1
     And the work-item w1 is open
-    And a work-item w2 that is `withdrawn`
+    And a work-item w2
+    And the work-item w2 is not open
     When the person runs `work run` on the initiative i1
     Then `work run` takes the work-item w1
-    And `work run` takes the work-item w3
     And `work run` does not take the work-item w2
 
   @g2 @r2
@@ -59,7 +59,6 @@ Feature: Supervision
     Given a stage s1 that is `research`
     And a work-item w1
     And the stage s1 is for the work-item w1
-    And the stage s1 holds a worker slot
     When `work run` starts the stage s1
     Then `work run` logs the stage s1
     And `work run` names the transcript t1
@@ -73,7 +72,6 @@ Feature: Supervision
     And the stage s1 is for the work-item w1
     And a result r1 that is `DONE`
     And the stage s1 is with the result r1
-    And the stage s1 holds a worker slot
     When the session s2 ends the stage s1
     Then `work run` starts the stage s3
     And the stage s3 is `plan`
@@ -87,7 +85,6 @@ Feature: Supervision
     And a work-item w1
     And the stage s1 is for the work-item w1
     And the stage s1 is with the result r1
-    And the stage s1 holds a worker slot
     When the session s2 ends the stage s1
     Then `work run` starts the stage s3
     And the stage s3 is `plan`
@@ -100,7 +97,6 @@ Feature: Supervision
     And the stage s1 is for the work-item w1
     And a result r1 that is `BLOCKED`
     And the stage s1 is with the result r1
-    And the stage s1 holds a worker slot
     When the session s2 ends the stage s1
     Then `work run` starts the stage s3
     And the stage s3 is `plan`
@@ -113,7 +109,6 @@ Feature: Supervision
     And the stage s1 is for the work-item w1
     And a result r1 that is `QUESTION`
     And the stage s1 is with the result r1
-    And the stage s1 holds a worker slot
     When the session s2 ends the stage s1
     Then the work-item w1 is `awaiting-answer`
     And `work run` asks the question q1
@@ -126,7 +121,6 @@ Feature: Supervision
     And the stage s1 is for the work-item w1
     And a result r1 that is `QUESTION`
     And the stage s1 is with the result r1
-    And the stage s1 holds a worker slot
     When the session s2 ends the stage s1
     Then `work run` gives the stage s3 the question q1
     And the stage s3 is `plan`
@@ -140,7 +134,6 @@ Feature: Supervision
     And a work-item w1
     And the stage s1 is for the work-item w1
     And the stage s1 is with the result r1
-    And the stage s1 holds a worker slot
     When the session s2 ends the stage s1
     Then the work-item w1 is `awaiting-answer`
     And `work run` asks the question q1
@@ -153,7 +146,6 @@ Feature: Supervision
     And a stage s2 that is `research`
     And a work-item w1
     And the stage s2 is for the work-item w1
-    And the stage s2 holds a worker slot
     When the session s1 ends the stage s2
     Then the work-item w1 is `failed`
     And `work run` exits with an error naming the work-item w1
@@ -168,8 +160,6 @@ Feature: Supervision
     And a work-item w2
     And the stage s1 is for the work-item w2
     And the stage s1 is with the result r1
-    And the stage s1 holds the claim
-    And the stage s1 holds a worker slot
     When the session s2 ends the stage s1
     Then `work run` merges the work-item branch w1
     And `work run` keeps the report r2
@@ -181,9 +171,8 @@ Feature: Supervision
     And a stage s1 that is `implement`
     And a work-item w2
     And the stage s1 is for the work-item w2
-    And the stage s1 holds the claim
-    And the stage s1 holds a worker slot
     When the session s2 ends the stage s1
+    Then `work run` does not merge the work-item branch w1
 
   @g16 @r16
   Scenario: A merged work-item branch is deleted
@@ -197,8 +186,6 @@ Feature: Supervision
     And the stage s1 is for the work-item w1
     And a result r1 that is `QUESTION`
     And the stage s1 is with the result r1
-    And the stage s1 holds the claim
-    And the stage s1 holds a worker slot
     When the session s2 ends the stage s1
     Then `work run` keeps the work-item branch w2
 
@@ -220,8 +207,6 @@ Feature: Supervision
     And a stage s1 that is `implement`
     And a work-item w2
     And the stage s1 is for the work-item w2
-    And the stage s1 holds the claim
-    And the stage s1 holds a worker slot
     When the session s2 ends the stage s1
     Then the work-item w2 is `failed`
 
@@ -232,9 +217,6 @@ Feature: Supervision
     And a stage s1 that is `implement`
     And a work-item w2
     And the stage s1 is for the work-item w2
-    And the work-item branch w1 is green check
-    And the stage s1 holds the claim
-    And the stage s1 holds a worker slot
     When the session s2 ends the stage s1
     Then `work run` reruns the scenario s3
     And `work run` merges the work-item branch w1
@@ -246,7 +228,6 @@ Feature: Supervision
     And a stage s2 that is `research`
     And a work-item w1
     And the stage s2 is for the work-item w1
-    And the stage s2 holds a worker slot
     When the session s1 ends the stage s2
     Then the work-item w1 is `failed`
     And `work run` restores the file f1
@@ -258,7 +239,6 @@ Feature: Supervision
     And a stage s2 that is `research`
     And a work-item w1
     And the stage s2 is for the work-item w1
-    And the stage s2 holds a worker slot
     When the session s1 ends the stage s2
     Then the work-item w1 is `failed`
 
@@ -269,7 +249,6 @@ Feature: Supervision
     And a stage s2 that is `research`
     And a work-item w1
     And the stage s2 is for the work-item w1
-    And the stage s2 holds a worker slot
     When the session s1 ends the stage s2
     Then `work run` starts the stage s3
     And the stage s3 is `plan`
@@ -280,10 +259,8 @@ Feature: Supervision
     Given an initiative i1 that is `started`
     When the person runs `work run` on the initiative i1
     Then `work run` commits the transition t1
-    And `work run` commits the transition t2
     And `work run` pushes the commit c1
     And `work run` removes the worktree w1
-    And `work run` removes the worktree w2
 
   @g25 @r25
   Scenario: A planner's file set is written into the work-item
@@ -292,7 +269,6 @@ Feature: Supervision
     And the stage s1 is for the work-item w1
     And a result r1 that is `DONE`
     And the stage s1 is with the result r1
-    And the stage s1 holds a worker slot
     When the session s2 ends the stage s1
     Then `work run` gives the work-item w1 the file set f1
 
@@ -301,7 +277,6 @@ Feature: Supervision
     Given a work-item w1
     And the work-item w1 is closed
     And an initiative i1 that is `started`
-    And the work-item w1 is `withdrawn`
     When the person runs `work run` on the initiative i1
     Then `work run` exits successfully
     And `work run` prints the status of the work-item w1
@@ -312,6 +287,7 @@ Feature: Supervision
     And an initiative i1 that is `started`
     When the person runs `work run` on the initiative i1
     Then `work run` exits with an error naming the work-item w1
+    And `work run` does not start the stage s1
 
   @g28 @r28
   Scenario: `work run` exits with an error while a failed work-item is left
@@ -319,6 +295,7 @@ Feature: Supervision
     And an initiative i1 that is `started`
     When the person runs `work run` on the initiative i1
     Then `work run` exits with an error naming the work-item w1
+    And `work run` does not start the stage s1
 
   @g29 @r29
   Scenario: `work run` exits with an error while a request is in its asker's turn
@@ -331,7 +308,8 @@ Feature: Supervision
   Scenario: `work run` with no initiative takes every open initiative
     Given an initiative i1
     And the initiative i1 is open
-    And an initiative i2 that is `abandoned`
+    And an initiative i2
+    And the initiative i2 is not open
     When the person runs `work run`
     Then `work run` takes the initiative i1
     And `work run` exits successfully
@@ -350,7 +328,6 @@ Feature: Supervision
     And an initiative branch i1
     And the initiative branch i1 is ahead
     And an initiative i2 that is `started`
-    And the work-item w1 is blocked by the work-item w1
     When the person runs `work run` on the initiative i2
     Then `work run` pushes the initiative branch i1
 
@@ -360,9 +337,9 @@ Feature: Supervision
     And a remote r1
     And the remote r1 is unpushable
     And an initiative i1 that is `started`
-    And the work-item w1 is blocked by the work-item w1
     When the person runs `work run` on the initiative i1
     Then the work-item w1 is `failed`
+    And `work run` does not start the stage s1
 
   @g34 @r34
   Scenario: A remote that refuses the push starts no branch review
@@ -370,11 +347,9 @@ Feature: Supervision
     And a remote r1
     And the remote r1 is unpushable
     And an initiative i1 that is `started`
-    And a remote r2
-    And the remote r2 is unpushable
     When the person runs `work run` on the initiative i1
     Then `work run` exits with an error naming the remote r1
-    And `work run` exits with an error naming the remote r2
+    And `work run` does not start the stage s1
 
   @g35 @r35
   Scenario: `work run` refuses while `.shop/work/` has uncommitted changes
@@ -405,8 +380,8 @@ Feature: Supervision
     Given a work-item w1 that is `drafted`
     And the work-item w1 is waiting
     And an initiative i1 that is `started`
-    And the work-item w1 is blocked by the work-item w1
     When the person runs `work run` on the initiative i1
+    Then `work run` does not start the stage s1
 
   @g39 @r39
   Scenario: A green initiative branch gets a branch review
@@ -423,7 +398,7 @@ Feature: Supervision
     And `work run` gives the stage s1 the review brief r2
     And the review brief r2 is with the commit c1
     And `work run` commits the stage s1
-    And `work run` pushes the commit c1
+    And `work run` pushes the commit c2
     And `work run` logs the stage s1
 
   @g40 @r40
@@ -433,12 +408,15 @@ Feature: Supervision
     And the initiative branch i1 is reviewed
     And an initiative i2 that is `started`
     When the person runs `work run` on the initiative i2
+    Then `work run` does not start the stage s1
 
   @g41 @r41
   Scenario: An initiative with no work-item is neither reviewed nor measured
     Given an initiative i1 that is `started`
     And the initiative i1 is itemless
     When the person runs `work run` on the initiative i1
+    Then `work run` does not start the stage s1
+    And `work run` does not start the stage s2
 
   @g42 @r42
   Scenario: A branch review's findings to fix now get a work-item
@@ -449,9 +427,8 @@ Feature: Supervision
     And an initiative i1 that is `started`
     And the stage s1 is for the initiative i1
     And the stage s1 is with the result r1
-    And the stage s1 holds the initiative lock
     When the session s2 ends the stage s1
-    Then `work run` drafts the work-item w1
+    Then `work run` drafts the work-item w2
 
   @g43 @r43
   Scenario: A branch review that lists nothing to fix is followed by the analysis
@@ -461,13 +438,13 @@ Feature: Supervision
     And the stage s1 is for the initiative i1
     And a result r1 that is `DONE`
     And the stage s1 is with the result r1
-    And the stage s1 holds the initiative lock
     When the session s2 ends the stage s1
     Then `work run` starts the stage s3
     And the stage s3 is `analysis`
     And the stage s3 is for the initiative i1
     And `work run` commits the measurement m1
     And `work run` pushes the commit c1
+    And `work run` does not draft the work-item w2
 
   @g44 @r44
   Scenario: An initiative whose delivery is closed is set done
@@ -504,13 +481,15 @@ Feature: Supervision
     And a glossary-proposal p1 that is `awaiting-answer`
     And an initiative i1 that is `started`
     When the person runs `work run` on the initiative i1
+    Then `work run` does not start the stage s1
 
   @g48 @r48
   Scenario: Under a delegation, an answer asking for a change makes the work-item ready
     Given a delegation d1 that is `written`
     And a work-item w1 that is `awaiting-answer`
-    And a question q1 that is `review`
+    And a question q1
     And the question q1 is on the work-item w1
+    And the question q1 is `review`
     And an answer a1 that is `--change`
     And an initiative i1 that is `started`
     When the person runs `work run` on the initiative i1
@@ -522,8 +501,9 @@ Feature: Supervision
   Scenario: Under a delegation, an answer accepting the work-item makes it done
     Given a delegation d1 that is `written`
     And a work-item w1 that is `awaiting-answer`
-    And a question q1 that is `review`
+    And a question q1
     And the question q1 is on the work-item w1
+    And the question q1 is `review`
     And an answer a1 that is `--accept`
     And an initiative i1 that is `started`
     When the person runs `work run` on the initiative i1
@@ -541,7 +521,6 @@ Feature: Supervision
     And a work-item w1
     And the question q1 is on the work-item w1
     And the stage s2 is for the question q1
-    And the stage s2 holds the initiative lock
     When the session s1 ends the stage s2
     Then the work-item w1 is `awaiting-answer`
     And `work run` commits the stage s2
@@ -571,7 +550,6 @@ Feature: Supervision
   Scenario: An accepted request gets its initiative
     Given a request q1 that is `accepted`
     And the request q1 is unfulfilled
-    And an initiative i1 that is `abandoned`
     When the person runs `work run`
     Then `work run` starts the initiative i1
 
@@ -584,7 +562,6 @@ Feature: Supervision
     And the stage s1 is for the initiative i1
     And `work run` gives the stage s1 the round brief r1
     And the round brief r1 is with the request q1
-    And the round brief r1 is with the request q2
     And the initiative i1 is `started`
 
   @g55 @r55
@@ -604,8 +581,6 @@ Feature: Supervision
     And an initiative i1 that is `started`
     And the stage s1 is for the initiative i1
     And the stage s1 is with the result r1
-    And the stage s1 holds the initiative lock
-    And the stage s1 holds the spec lock
     When the session s2 ends the stage s1
     Then `work run` exits with an error naming the stage s1
 
@@ -616,12 +591,9 @@ Feature: Supervision
     And the stage s1 is for the initiative i1
     And a result r1 that is `DONE`
     And the stage s1 is with the result r1
-    And the stage s1 holds the initiative lock
-    And the stage s1 holds the spec lock
     When the session s2 ends the stage s1
     Then `work run` drafts the capability-proposal p1
     And `work run` commits the draft d1
-    And `work run` commits the draft d2
     And `work run` pushes the commit c1
 
   @g58 @r58
@@ -632,8 +604,6 @@ Feature: Supervision
     And an initiative i1 that is `started`
     And the stage s1 is for the initiative i1
     And the stage s1 is with the result r1
-    And the stage s1 holds the initiative lock
-    And the stage s1 holds the spec lock
     When the session s2 ends the stage s1
     Then `work run` drafts the glossary-proposal p1
 
@@ -645,8 +615,6 @@ Feature: Supervision
     And an initiative i1 that is `started`
     And the stage s1 is for the initiative i1
     And the stage s1 is with the result r1
-    And the stage s1 holds the initiative lock
-    And the stage s1 holds the spec lock
     When the session s2 ends the stage s1
     Then `work run` raises the request q1
 
@@ -657,6 +625,7 @@ Feature: Supervision
     And the result r1 is awaited
     And an initiative i1 that is `started`
     When the person runs `work run` on the initiative i1
+    Then `work run` does not draft the work-item w1
 
   @g61 @r61
   Scenario: A change list naming an unknown capability ends `work run` with an error
@@ -666,10 +635,9 @@ Feature: Supervision
     And an initiative i1 that is `started`
     And the stage s1 is for the initiative i1
     And the stage s1 is with the result r1
-    And the stage s1 holds the initiative lock
-    And the stage s1 holds the spec lock
     When the session s2 ends the stage s1
     Then `work run` exits with an error naming the capability c1
+    And `work run` does not draft the capability-proposal p1
 
   @g62 @r62
   Scenario: Drafts that do not parse are sent back, then asked about
@@ -679,12 +647,10 @@ Feature: Supervision
     And a capability-proposal p1
     And the stage s1 is for the capability-proposal p1
     And the stage s1 is with the result r1
-    And the stage s1 holds the initiative lock
-    And the stage s1 holds the spec lock
     When the session s2 ends the stage s1
-    Then `work run` starts the stage s1
-    And the stage s1 is `integrate`
-    And the stage s1 is for the capability-proposal p1
+    Then `work run` starts the stage s3
+    And the stage s3 is `integrate`
+    And the stage s3 is for the capability-proposal p1
     And the capability-proposal p1 is `awaiting-answer`
 
   @g63 @r63
@@ -694,10 +660,9 @@ Feature: Supervision
     And the stage s1 is for the capability-proposal p1
     And a result r1 that is `DONE`
     And the stage s1 is with the result r1
-    And the stage s1 holds the initiative lock
-    And the stage s1 holds the spec lock
     When the session s2 ends the stage s1
     Then the capability-proposal p1 is `drafted`
+    And `work run` does not draft the capability-proposal p2
 
   @g64 @r64
   Scenario: A redrafted glossary-proposal is drafted again
@@ -706,8 +671,6 @@ Feature: Supervision
     And the stage s1 is for the glossary-proposal p1
     And a result r1 that is `DONE`
     And the stage s1 is with the result r1
-    And the stage s1 holds the initiative lock
-    And the stage s1 holds the spec lock
     When the session s2 ends the stage s1
     Then the glossary-proposal p1 is `drafted`
 
@@ -738,7 +701,6 @@ Feature: Supervision
     And the stage s1 is for the capability-proposal p1
     And a result r1 that is `QUESTION`
     And the stage s1 is with the result r1
-    And the stage s1 holds the initiative lock
     When the session s2 ends the stage s1
     Then the capability-proposal p1 is `awaiting-answer`
     And `work run` asks the question q1
@@ -751,7 +713,6 @@ Feature: Supervision
     And the stage s1 is for the capability-proposal p1
     And a result r1 that is `DONE`
     And the stage s1 is with the result r1
-    And the stage s1 holds the initiative lock
     When the session s2 ends the stage s1
     Then `work run` asks the question q1
     And the question q1 is on the capability-proposal p1
@@ -763,7 +724,6 @@ Feature: Supervision
     And the stage s1 is for the glossary-proposal p1
     And a result r1 that is `DONE`
     And the stage s1 is with the result r1
-    And the stage s1 holds the initiative lock
     When the session s2 ends the stage s1
     Then the glossary-proposal p1 is `awaiting-answer`
     And `work run` asks the question q1
@@ -773,8 +733,8 @@ Feature: Supervision
   Scenario: An answered capability-proposal gets an apply round
     Given a capability-proposal p1 that is `awaiting-answer`
     And a question q1
-    And the question q1 is answered
     And the question q1 is on the capability-proposal p1
+    And the question q1 is answered
     And an initiative i1 that is `started`
     When the person runs `work run` on the initiative i1
     Then `work run` starts the stage s1
@@ -786,8 +746,8 @@ Feature: Supervision
   Scenario: An answered glossary-proposal gets an apply round
     Given a glossary-proposal p1 that is `awaiting-answer`
     And a question q1
-    And the question q1 is answered
     And the question q1 is on the glossary-proposal p1
+    And the question q1 is answered
     And an initiative i1 that is `started`
     When the person runs `work run` on the initiative i1
     Then `work run` starts the stage s1
@@ -798,10 +758,11 @@ Feature: Supervision
   Scenario: A glossary-proposal with a question unanswered gets no apply round
     Given a glossary-proposal p1 that is `awaiting-answer`
     And a question q1
-    And the question q1 is not answered
     And the question q1 is on the glossary-proposal p1
+    And the question q1 is not answered
     And an initiative i1 that is `started`
     When the person runs `work run` on the initiative i1
+    Then `work run` does not start the stage s1
 
   @g73 @r73
   Scenario: An apply round's answers its drafts do not hold go back to integration
@@ -811,12 +772,11 @@ Feature: Supervision
     And a capability-proposal p1
     And the stage s1 is for the capability-proposal p1
     And the stage s1 is with the result r1
-    And the stage s1 holds the initiative lock
-    And the stage s1 holds the spec lock
     When the session s2 ends the stage s1
     Then `work run` starts the stage s3
     And the stage s3 is `integrate`
     And the stage s3 is for the capability-proposal p1
+    And `work run` does not start the stage s4
 
   @g74 @r74
   Scenario: A glossary apply round's answers its drafts do not hold go back to integration
@@ -826,8 +786,6 @@ Feature: Supervision
     And a glossary-proposal p1
     And the stage s1 is for the glossary-proposal p1
     And the stage s1 is with the result r1
-    And the stage s1 holds the initiative lock
-    And the stage s1 holds the spec lock
     When the session s2 ends the stage s1
     Then `work run` starts the stage s3
     And the stage s3 is `integrate`
@@ -840,10 +798,9 @@ Feature: Supervision
     And the stage s1 is for the glossary-proposal p1
     And a result r1 that is `DONE`
     And the stage s1 is with the result r1
-    And the stage s1 holds the initiative lock
-    And the stage s1 holds the spec lock
     When the session s2 ends the stage s1
     Then the glossary-proposal p1 is `approved`
+    And `work run` does not start the stage s3
 
   @g76 @r76
   Scenario: An applied capability-proposal is formulated by `features generate`
@@ -854,8 +811,6 @@ Feature: Supervision
     And the stage s1 is for the capability-proposal p1
     And a result r1 that is `DONE`
     And the stage s1 is with the result r1
-    And the stage s1 holds the initiative lock
-    And the stage s1 holds the spec lock
     When the session s2 ends the stage s1
     Then `work run` starts the stage s3
     And the stage s3 is `formulate`
@@ -873,8 +828,6 @@ Feature: Supervision
     And the stage s1 is for the capability-proposal p1
     And a result r1 that is `DONE`
     And the stage s1 is with the result r1
-    And the stage s1 holds the initiative lock
-    And the stage s1 holds the spec lock
     When the session s2 ends the stage s1
     Then the capability-proposal p1 is `approved`
     And `work run` exits with an error naming the capability c2
@@ -888,8 +841,8 @@ Feature: Supervision
     And the stage s2 is for the capability-proposal p1
     And a work-item w1
     And the work-item w1 is open
-    And a work-item w2 that is `green`
-    And the stage s2 holds the initiative lock
+    And a work-item w2
+    And the work-item w2 is not open
     When the session s1 ends the stage s2
     Then the capability-proposal p1 is `drafted`
     And `work run` exits with an error naming the stage s2
@@ -910,8 +863,6 @@ Feature: Supervision
     Given a stage s1 that is `implement`
     And a work-item w1
     And the stage s1 is for the work-item w1
-    And the stage s1 holds the claim
-    And the stage s1 holds a worker slot
     When `work run` starts the stage s1
     Then `work run` gives the stage s1 the worker brief w2
     And the worker brief w2 is with the work-item branch w3
