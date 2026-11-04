@@ -42,6 +42,8 @@ def add_parsers(sub):
     p = sub.add_parser("depend", help="write in an item that it depends on another item")
     p.add_argument("name")
     p.add_argument("--on", required=True, help="the item it depends on")
+    p = sub.add_parser("intake", help="take a request of this context in as an item that is shaped, and commit it")
+    p.add_argument("request")
     p = sub.add_parser("ready", help="move an item that is shaped to ready, when it passes the readiness bar")
     p.add_argument("name")
     p = sub.add_parser("line", help="write a requirement line (or a term bullet) into an item's ## Requirements, and commit it")
@@ -104,6 +106,11 @@ def cmd_ready(args):
     return moved(item)
 
 
+def cmd_intake(args):
+    import intake_moves
+    return moved(intake_moves.intake(args.root, args.request))
+
+
 def cmd_backlog(args):
     """`work backlog`: it only reads, and commits nothing."""
     if args.json:
@@ -128,7 +135,7 @@ def answer(args):
 
 
 COMMANDS = {"idea": cmd_idea, "shape": cmd_shape, "refuse": cmd_refuse, "rate": cmd_rate, "depend": cmd_depend,
-            "backlog": cmd_backlog, "line": cmd_line, "ready": cmd_ready}
+            "backlog": cmd_backlog, "line": cmd_line, "ready": cmd_ready, "intake": cmd_intake}
 
 
 def show(args):

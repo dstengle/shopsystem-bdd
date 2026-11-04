@@ -15,6 +15,9 @@ INDEX = "---\nid: bounded-context/ex.com/prod/ctx\n---\n# ctx\n"
 DEFAULTS = {"status": "idea", "provenance": "own", "value": "medium-value", "urgency": "medium-urgency",
             "size": "medium"}
 QUESTION = "Which reading holds, the first or the second?"
+# `the x is of the y`, by the kind of x, each handler module adding its own: a dependency of an item (backlog), a
+# request line of an item (intake); plan 4 adds a task of a batch.
+OF_GIVENS = {}
 
 
 def W():
@@ -126,7 +129,7 @@ def run_work(step, *args, **kwargs):
     """Run `work` in the repository, committed first; keep the result and the commit it started from. `kwargs` go to
     the run (`stdin`, `timeout`)."""
     index(step)
-    if args[0] != "idea":
+    if args[0] not in ("idea", "intake"):     # the item a Then names is the one the command writes
         ensure_items(step)
     step.context["head"] = W().init(step.repo)
     step.context["result"] = step.run("work", *args, **kwargs)

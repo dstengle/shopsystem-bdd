@@ -32,6 +32,8 @@ class Item:
     size: str | None = None
     depends_on: tuple = ()
     sections: dict = field(default_factory=dict)
+    request: str | None = None      # the request the item was taken in from (plan 3, D10)
+    asked_by: str | None = None     # that request's asker
 
     @property
     def question(self):
@@ -95,11 +97,17 @@ def parse(text, rel):
     depends = data.get("depends_on", [])
     if not isinstance(depends, list) or not all(isinstance(d, str) and is_item(d) for d in depends):
         raise Refused("%s: depends_on %r is not a list of b<n>" % (rel, depends))
+    request = data.get("request")
+    if request is not None and not (isinstance(request, str) and re.fullmatch(r"q[1-9]\d*", request)):
+        raise Refused("%s: request %r is not q<n>" % (rel, request))
+    asked_by = data.get("asked_by")
+    if asked_by is not None and not isinstance(asked_by, str):
+        raise Refused("%s: asked_by %r is not an asker's id" % (rel, asked_by))
     title, sections = _body(body, rel)
     return Item(name=ident.rsplit("/", 1)[-1], ident=ident, title=title, status=_choice(data, rel, "status", STATUSES),
                 provenance=_choice(data, rel, "provenance", PROVENANCES),
                 **{k: _choice(data, rel, k, allowed, optional=True) for k, allowed in RATINGS.items()},
-                depends_on=tuple(depends), sections=sections)
+                depends_on=tuple(depends), sections=sections, request=request, asked_by=asked_by)
 
 
 def render(item):
@@ -108,6 +116,7 @@ def render(item):
         return "%s:%s" % (key, " %s" % value if value else "")
     head = [line("id", item.ident), "kind: item", line("status", item.status), line("provenance", item.provenance)]
     head += [line(k, getattr(item, k)) for k in RATINGS] + ["depends_on: [%s]" % ", ".join(item.depends_on)]
+    head += [line(k, getattr(item, k)) for k in ("request", "asked_by") if getattr(item, k)]
     body = "".join("\n## %s\n\n%s\n" % (h, t) if t else "\n## %s\n" % h for h, t in item.sections.items())
     return "---\n%s\n---\n\n# %s\n%s" % ("\n".join(head), item.title, body)
 
@@ -157,10 +166,13 @@ def label(item):
 
 
 def as_dict(item):
-    """The item's own fields, as `work show --json` and `work backlog --json` give them."""
-    return {"id": item.name, "title": item.title, "status": item.status, "provenance": item.provenance,
-            "value": item.value, "urgency": item.urgency, "size": item.size, "depends_on": list(item.depends_on),
-            "question": item.question}
+    """The item's own fields, as `work show --json` and `work backlog --json` give them; `request` and `asked_by`
+    only for an item taken in from a request, so the rows of every other item are as before."""
+    out = {"id": item.name, "title": item.title, "status": item.status, "provenance": item.provenance,
+           "value": item.value, "urgency": item.urgency, "size": item.size, "depends_on": list(item.depends_on),
+           "question": item.question}
+    out.update({k: getattr(item, k) for k in ("request", "asked_by") if getattr(item, k)})
+    return out
 
 
 def commit(root, item, message):

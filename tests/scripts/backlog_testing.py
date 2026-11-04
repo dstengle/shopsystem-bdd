@@ -39,3 +39,24 @@ def write_item(repo, name="b1", commit=True, **fields):
         git(repo, "add", "-A")
         git(repo, "commit", "-q", "-m", "write %s" % name)
     return path
+
+
+def request_text(name="q1", asker="bounded-context/ex.com/prod/peer", status="open", turn="upstream",
+                 lines=(), outcomes=(), title="Archive old items"):
+    """A request's file in the form `workqueue_request.request` writes it, with the line outcomes given."""
+    numbered = "".join("%d. %s\n" % e for e in enumerate(lines, 1))
+    settled = "".join("%d. %s\n" % e for e in enumerate(outcomes, 1) if e[1])
+    return ("---\nid: request/ex.com/prod/ctx/%s\nkind: request\nasker: %s\npart_of: job-thread/ex.com/prod/t1\n"
+            "status: %s\nturn: %s\n---\n\n# %s\n\n## Lines\n%s\n## Questions\n\n## Answers\n\n## Outcomes\n%s\n"
+            "## Resolution\n" % (name, asker, status, turn, title, numbered, settled))
+
+
+def write_request(repo, name="q1", commit=True, **fields):
+    """A peer's request written by hand: `work request`'s gate (requests r32) takes only this repository's asker."""
+    path = Path(repo) / ".shop" / "work" / "requests" / ("%s.md" % name)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(request_text(name, **fields))
+    if commit:
+        git(repo, "add", "-A")
+        git(repo, "commit", "-q", "-m", "write %s" % name)
+    return path

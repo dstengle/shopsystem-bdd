@@ -411,7 +411,7 @@ Builds `intake#r1`, `r5` and `r6`.
   - The backlog's handlers already read `writes the item`, `is `shaped``, `is `peer`` (the attribute `provenance`) and
     `commits the item`.
 
-- [ ] **Step 1: Write the failing tests** in `tests/scripts/test_intake_moves.py`, on `ready_repo` with a request
+- [x] **Step 1: Write the failing tests** in `tests/scripts/test_intake_moves.py`, on `ready_repo` with a request
   `q1` titled `Archive old items`, written by `write_request` with the one line `ABANDON`:
   - `test_intake_writes_a_shaped_peer_item_and_commits_only_it`: `work intake q1` exits 0 and prints
     `b1 "Archive old items" shaped`; b1 has `provenance: peer`, `request: q1`, `asked_by:
@@ -429,30 +429,30 @@ Builds `intake#r1`, `r5` and `r6`.
   - `test_unsettled_names_each_line`: an item taken in from a request with lines 1-3 and outcomes `1. accepted`,
     `2. question`, `3. rewritten` gives `readiness_bar.unsettled` exactly one reason, naming `line 2 of request q1`.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_intake_moves.py -q`
   Expected: FAIL; `work` has no `intake` command.
 
-- [ ] **Step 3: Implement the item fields, `intake_moves.intake` and `linked`, and the parser.**
+- [x] **Step 3: Implement the item fields, `intake_moves.intake` and `linked`, and the parser.**
 
-- [ ] **Step 4: Run the tests and the backlog's.**
+- [x] **Step 4: Run the tests and the backlog's.**
   Run: `python3 -m pytest tests/scripts/test_intake_moves.py tests/scripts/test_readiness_bar.py tests/scripts/test_backlog_items.py tests/scenarios/test_backlog.py tests/scenarios/test_requests.py -q | tail -1`
   Expected: all pass.
 
-- [ ] **Step 5: The handlers**, as in Interfaces. Check each scenario against its point:
+- [x] **Step 5: The handlers**, as in Interfaces. Check each scenario against its point:
   - r1: the item is the file the run wrote (not one `ensure_items` wrote), `shaped`, `peer`, asked by the request's
     asker (`other`, which world_nodes writes), and committed.
   - r5: the request is `awaiting-upstream`; D16's Then.
   - r6: the refusal names `line 1 of request q9`, the item is `shaped`, nothing changed.
 
-- [ ] **Step 6: Mark them built.** Remove `r1, r5, r6` from `intake.md`'s `unbuilt:`.
+- [x] **Step 6: Mark them built.** Remove `r1, r5, r6` from `intake.md`'s `unbuilt:`.
   Run: `python3 -m pytest tests/scenarios/test_intake.py -q | tail -1; python3 scripts/features vocab --check | tail -1`
   Expected: `3 passed, 3 xfailed`; `every step has one handler`.
 
-- [ ] **Step 7: The baselines,** as in Task 2, Step 8.
+- [x] **Step 7: The baselines,** as in Task 2, Step 8.
   Expected: the suite at `30 xfailed`, no failures; everything else unchanged.
 
-- [ ] **Step 8: Commit.**
+- [x] **Step 8: Commit.**
   ```bash
   git add scripts/intake_moves.py scripts/backlog_items.py scripts/backlog_cli.py tests/scenarios/intake_handlers.py \
     tests/scenarios/backlog_world.py tests/scenarios/backlog_handlers.py tests/scenarios/readiness_world.py \

@@ -178,14 +178,13 @@ def dependency_given(step, half):
     B.add_dependency(step, found)
 
 
-# `the x is of the y`, by the kind of x: later plans add theirs (a task of a batch, a request line of an item).
-OF_GIVENS = {"dependency": lambda step: dependency_given(step, "of")}
+B.OF_GIVENS["dependency"] = lambda step: dependency_given(step, "of")
 
 
 @handler("GivenR", "of")
 def given_of(step):
-    assert step.kind in OF_GIVENS, "no Given of a %s of another: %s" % (step.kind, step.text)
-    OF_GIVENS[step.kind](step)
+    assert step.kind in B.OF_GIVENS, "no Given of a %s of another: %s" % (step.kind, step.text)
+    B.OF_GIVENS[step.kind](step)
 
 
 @local("GivenR", "dependency")
