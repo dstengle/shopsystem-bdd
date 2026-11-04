@@ -22,7 +22,7 @@ from features_vocab_gf import attributes, modules
 GRAMMAR = "StepsTyped"
 NAME = re.compile(r"^(?:[a-z][a-z-]*[1-9]\d*|`[^`\s]+`)$")
 HOLE_N, HOLE_X, META = "\x01", "\x02", object()
-_loaded = {}
+_loaded, _by_print = {}, {}
 ALLOWED = {"given": ("SAtom", "SFeat", "_Given", "_HoldsText", "_HoldsBlock"), "when": ("STrig",),
            "then": ("SAtom", "SDoes", "SDoesNot", "SDoesTo", "SPrints", "SPrintsNot", "SExitsOk", "SExitsErr",
                     "SChangesNothing")}
@@ -83,18 +83,36 @@ class Vocab:
 
 
 def load(root):
-    """The context's step vocabulary, compiled once per set of sources."""
+    """The context's step vocabulary, read once per state of the spec and grammar files (`_by_print`), its grammar
+    compiled and loaded once per set of sources (`_loaded`)."""
     import pgf
+    key = _fingerprint(root)
+    if key in _by_print:
+        return _by_print[key]
     lex = spec_lexicon.read(root)
-    srcs = spec_grammar.sources(root)
+    srcs = spec_grammar.sources(root, lex)
     srcs.update(modules(lex))
     sha = hashlib.sha256(("steps\0%s" % sorted(srcs.items())).encode()).hexdigest()[:32]
     if sha not in _loaded:
         target = spec_grammar._cache() / sha / (GRAMMAR + ".pgf")
         if not target.is_file():
             spec_grammar._compile(srcs, sha, GRAMMAR)
-        _loaded[sha] = Vocab(root, pgf.readPGF(str(target)), lex)
-    return _loaded[sha]
+        _loaded[sha] = pgf.readPGF(str(target))
+    _by_print[key] = Vocab(root, _loaded[sha], lex)
+    return _by_print[key]
+
+
+def _fingerprint(root):
+    """The state of a context's files: its resolved root, then (path, mtime, size) of every file under `spec/` and of
+    every grammar source."""
+    root = Path(root).resolve()
+    files = [(p, p.relative_to(root)) for p in sorted((root / "spec").rglob("*")) if p.is_file()]
+    files += [(p, p.name) for p in sorted(spec_grammar.GRAMMARS.glob("*.gf"))]
+    out = [str(root)]
+    for path, name in files:
+        st = path.stat()
+        out.append((str(name), st.st_mtime_ns, st.st_size))
+    return tuple(out)
 
 
 def detokenise(text):

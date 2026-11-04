@@ -75,9 +75,10 @@ def _cache():
     return Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "shopsystem-bdd" / "pgf"
 
 
-def sources(root):
-    """{file name: text} of every GF source of the context's grammars: the core files and the generated ones."""
-    lex = spec_lexicon.read(root)
+def sources(root, lex=None):
+    """{file name: text} of every GF source of the context's grammars: the core files and the generated ones. The
+    lexicon is read only when `lex` is not given."""
+    lex = lex or spec_lexicon.read(root)
     out = {p.name: p.read_text() for p in sorted(GRAMMARS.glob("*.gf"))}
     out.update(spec_typed.modules(lex))
     out.update(spec_typed_def.modules(lex))
