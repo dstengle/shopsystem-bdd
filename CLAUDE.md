@@ -70,6 +70,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/backlog_moves.py` | the commands that change an item (`work idea`, `shape`, `refuse`, `withdraw`, `answer`, `rate`, `depend`), each one commit of its file; a dependency that closes a cycle refused |
 | `scripts/backlog_cli.py` | the backlog's commands of `work`: their parsers, dispatch and what they print, `work show b<n>` |
 | `scripts/backlog_view.py` | `work backlog`: the score, the rank within a state, an item's blockers, the tables by state and the JSON |
+| `scripts/backlog_lines.py` | an item's requirement lines: its `## Requirements` blocks read and written, `work line` giving a line (or a term bullet) the next ids of its codified capability, and the blocks laid over a copy of `spec/` (`lay`) |
 | `scripts/work_items.py` | the pytest plugin of `--work-item`, loaded by `work run`'s tests and this repository's conftest |
 | `scripts/measure` with `scripts/measure_*.py` | the `measure` command: `initiative` (reading `measure_read.py`, figures `measure_build.py`, the record `measure_write.py`) and `show`, `compare` (`measure_show.py`) |
 | `scripts/migrate*.py` | the `migrate` command |

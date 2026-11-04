@@ -68,3 +68,23 @@ def backlog_repo(tmp_path):
     git("add", "-A")
     git("commit", "-q", "-m", "init")
     return tmp_path
+
+
+GENERATE_SPEC = pathlib.Path(__file__).resolve().parent / "fixtures" / "generate" / "repo" / "spec"
+
+
+@pytest.fixture
+def ready_repo(backlog_repo):
+    """`backlog_repo` with the codified spec of fixtures/generate/repo/ over its spec/, less the uncodified
+    `legacy.md`, its index naming the context `ex.com/prod/ctx`, all committed (plan 3, D17): the repository an item's
+    lines are written and readied in."""
+    import re
+    import shutil
+    import subprocess
+    shutil.copytree(GENERATE_SPEC, backlog_repo / "spec", dirs_exist_ok=True)
+    (backlog_repo / "spec" / "capabilities" / "legacy.md").unlink()
+    index = backlog_repo / "spec" / "index.md"
+    index.write_text(re.sub(r"(?m)^id: .*$", "id: bounded-context/ex.com/prod/ctx", index.read_text(), count=1))
+    for args in (("add", "-A"), ("commit", "-q", "-m", "a codified spec")):
+        subprocess.run(["git", *args], cwd=backlog_repo, capture_output=True, text=True, check=True)
+    return backlog_repo

@@ -1,10 +1,23 @@
 """The backlog's commands of `work` (capability backlog): their parsers, what they print, and their dispatch, so that
 scripts/work stays small. Every line names an item by its label, `b3 "Fix the parser"` (design goal 10)."""
+import argparse
 import json
 
 import backlog_items
+import backlog_lines
 import backlog_moves
 import backlog_view
+
+
+class _LineParser(argparse.ArgumentParser):
+    """`work line b1 --into CAP TEXT`: argparse (before 3.12) gives the optional positional TEXT nothing at `b1` and
+    then finds TEXT left over after the options; it is taken as TEXT here."""
+
+    def parse_known_args(self, args=None, namespace=None):
+        found, extras = super().parse_known_args(args, namespace)
+        if found.text is None and len(extras) == 1 and not extras[0].startswith("-"):
+            found.text = extras.pop()
+        return found, extras
 
 
 def add_parsers(sub):
@@ -28,6 +41,15 @@ def add_parsers(sub):
     p = sub.add_parser("depend", help="write in an item that it depends on another item")
     p.add_argument("name")
     p.add_argument("--on", required=True, help="the item it depends on")
+    p = sub.add_parser("line", help="write a requirement line (or a term bullet) into an item's ## Requirements, and commit it")
+    p.__class__ = _LineParser
+    p.add_argument("name")
+    p.add_argument("--into", required=True, help="the codified capability the line goes into")
+    where = p.add_mutually_exclusive_group()
+    where.add_argument("--group", help="the title of the new group the line opens (default: the item's title)")
+    where.add_argument("--in", dest="in_group", help="the item's group g<n> the line joins")
+    p.add_argument("text", nargs="?", help="the requirement line (or --term)")
+    p.add_argument("--term", help="a term bullet for the capability's ## Terms, in place of a line")
 
 
 def cmd_idea(args):
@@ -58,6 +80,19 @@ def cmd_depend(args):
     return 0
 
 
+def cmd_line(args):
+    """`work line`: it parses nothing; `work ready` is the check (D5)."""
+    if (args.text is None) == (args.term is None):
+        raise backlog_items.Refused("work line: give either a requirement line or --term, not both or neither")
+    if args.term is not None:
+        item = backlog_lines.add_term(args.root, args.name, args.into, args.term)
+        print("%s: a term of %s" % (backlog_items.label(item), args.into))
+    else:
+        item, ident = backlog_lines.add_line(args.root, args.name, args.into, args.text, args.group, args.in_group)
+        print("%s: %s" % (backlog_items.label(item), ident))
+    return 0
+
+
 def cmd_backlog(args):
     """`work backlog`: it only reads, and commits nothing."""
     if args.json:
@@ -82,7 +117,7 @@ def answer(args):
 
 
 COMMANDS = {"idea": cmd_idea, "shape": cmd_shape, "refuse": cmd_refuse, "rate": cmd_rate, "depend": cmd_depend,
-            "backlog": cmd_backlog}
+            "backlog": cmd_backlog, "line": cmd_line}
 
 
 def show(args):

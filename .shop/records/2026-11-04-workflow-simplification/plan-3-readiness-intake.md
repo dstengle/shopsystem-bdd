@@ -202,7 +202,7 @@ between groups):
 - [r5] When the person runs `work abandon` on an initiative that is `started`, `work` shall set its status to `abandoned`.
 ```
 
-- [ ] **Step 1: Write the fixture and the failing tests.**
+- [x] **Step 1: Write the fixture and the failing tests.**
   - `ready_repo` in `tests/scripts/conftest.py`: `backlog_repo`, with `tests/scripts/fixtures/generate/repo/spec/`
     copied over its `spec/` less `capabilities/legacy.md`, the index's `id:` line made
     `id: bounded-context/ex.com/prod/ctx` (D17), all committed.
@@ -229,23 +229,23 @@ between groups):
       `work-queue.md` reads (`spec_read.capability`) with a `g4` holding `r5`, no problems, and its `## Terms` holds
       the term; `root/spec` is byte-identical.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_backlog_lines.py -q`
   Expected: FAIL; `backlog_lines` does not exist and `work` has no `line` command.
 
-- [ ] **Step 3: Implement `backlog_lines.py` and the `line` parser.** `TEXT` and `--term` are mutually exclusive and
+- [x] **Step 3: Implement `backlog_lines.py` and the `line` parser.** `TEXT` and `--term` are mutually exclusive and
   one is required; `--group` and `--in` are mutually exclusive.
 
-- [ ] **Step 4: Run the tests and the backlog's.**
+- [x] **Step 4: Run the tests and the backlog's.**
   Run: `python3 -m pytest tests/scripts/test_backlog_lines.py tests/scripts/test_backlog_items.py tests/scripts/test_backlog_moves.py -q | tail -1`
   Expected: all pass.
 
-- [ ] **Step 5: The baselines.**
+- [x] **Step 5: The baselines.**
   Run: `python3 -m pytest -q | tail -1; python3 scripts/model check | tail -1; python3 scripts/features generate --check; python3 scripts/tools size --limit 300; python3 scripts/tools check scripts/backlog_lines.py scripts/backlog_cli.py tests/scripts/test_backlog_lines.py tests/scripts/conftest.py`
   Expected: the suite at `37 xfailed`, no failures, passed = 1067 + the new tests; `model check` and `generate
   --check` at their baselines; `size` silent; `check` clean.
 
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
   ```bash
   git add scripts/backlog_lines.py scripts/backlog_cli.py tests/scripts/test_backlog_lines.py tests/scripts/conftest.py CLAUDE.md
   git commit -m "backlog: an item's requirement lines and work line"
