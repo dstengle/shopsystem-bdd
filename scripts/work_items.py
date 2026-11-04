@@ -17,7 +17,7 @@ removed requirement's handlers and code to take out) runs every test.
 With `--whole-suite` too, every test runs (the whole suite before the work-item's merge), and a scenario whose
 requirement a work-item other than the work-item, neither green nor withdrawn, accepts, or a capability-proposal
 neither formulated nor withdrawn adds or changes, is expected to fail: an xfail (supervision r43, r122). On every run, a scenario of a requirement its codified
-capability lists in `unbuilt:` is a non-strict xfail (spec_unbuilt). Standard library and pytest only.
+capability lists in `unbuilt:` is a strict xfail (spec_unbuilt). Standard library and pytest only.
 """
 import os
 import pathlib

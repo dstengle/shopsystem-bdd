@@ -1,10 +1,12 @@
 """spec_unbuilt: a codified capability's `unbuilt: [r<n>, ...]` read, an id it has no requirement for reported as a
-problem, and the non-strict xfail put on the scenarios of the listed requirements (workflow simplification plan 1)."""
+problem, and the strict xfail put on the scenarios of the listed requirements (workflow simplification plan 1)."""
+import subprocess
 import sys
 from pathlib import Path
 from types import SimpleNamespace
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO / "scripts"))
 
 import spec_unbuilt
 
@@ -29,10 +31,10 @@ retired: []
 """
 
 
-def root_with(tmp_path, field=""):
+def root_with(tmp_path, field="", name="demo"):
     caps = tmp_path / "spec" / "capabilities"
-    caps.mkdir(parents=True)
-    (caps / "demo.md").write_text(HEAD % field)
+    caps.mkdir(parents=True, exist_ok=True)
+    (caps / ("%s.md" % name)).write_text(HEAD % field)
     return tmp_path
 
 
@@ -64,7 +66,26 @@ def test_an_unbuilt_id_the_capability_lacks_is_a_problem(tmp_path):
     assert spec_unbuilt.unbuilt(root) == {}
 
 
-def test_mark_adds_a_non_strict_xfail(tmp_path):
+def test_an_unbuilt_on_a_capability_that_is_not_codified_is_a_problem(tmp_path):
+    root = root_with(tmp_path)
+    (root / "spec" / "capabilities" / "old.md").write_text((HEAD % "unbuilt: [r1]\n").replace(
+        "language: codified-1\n", ""))
+    assert spec_unbuilt.problems(root) == ["old: unbuilt is given on a capability that is not codified"]
+    assert spec_unbuilt.unbuilt(root) == {}
+
+
+def test_the_repository_lists_no_unbuilt_id_it_lacks():
+    assert spec_unbuilt.problems(REPO) == []
+
+
+def test_mark_leaves_the_same_id_of_another_capability_alone(tmp_path):
+    root = root_with(root_with(tmp_path, "unbuilt: [r2]\n"), name="other")
+    other = Item("other.feature", ["g2", "r2"])
+    spec_unbuilt.mark([other], root)
+    assert other.markers == []
+
+
+def test_mark_adds_a_strict_xfail(tmp_path):
     root = root_with(tmp_path, "unbuilt: [r2]\n")
     built, unbuilt = Item("demo.feature", ["g1", "r1"]), Item("demo.feature", ["g2", "r2"])
     spec_unbuilt.mark([built, unbuilt, SimpleNamespace()], root)
@@ -72,7 +93,37 @@ def test_mark_adds_a_non_strict_xfail(tmp_path):
     assert len(unbuilt.markers) == 1
     marker = unbuilt.markers[0].mark
     assert marker.name == "xfail"
-    assert marker.kwargs == {"strict": False, "reason": "unbuilt: demo#r2"}
+    assert marker.kwargs == {"strict": True, "reason": "unbuilt: demo#r2"}
+
+
+CONFTEST = """import sys
+sys.path.insert(0, %r)
+import spec_unbuilt
+
+
+def pytest_collection_modifyitems(config, items):
+    spec_unbuilt.mark(items, config.rootpath)
+"""
+
+PASSING = """from types import SimpleNamespace
+
+
+def test_built():
+    pass
+
+
+test_built.__scenario__ = SimpleNamespace(feature=SimpleNamespace(filename="/x/features/demo.feature"), tags={"r2"})
+"""
+
+
+def test_an_unbuilt_scenario_that_passes_fails_the_run(tmp_path):
+    root = root_with(tmp_path, "unbuilt: [r2]\n")
+    (root / "conftest.py").write_text(CONFTEST % str(REPO / "scripts"))
+    (root / "test_demo.py").write_text(PASSING)
+    done = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "test_demo.py"], cwd=root,
+                          capture_output=True, text=True)
+    assert done.returncode == 1, done.stdout + done.stderr
+    assert "XPASS(strict)" in done.stdout
 
 
 FEATURE = """# generated from spec/capabilities/demo.md by features generate; do not edit

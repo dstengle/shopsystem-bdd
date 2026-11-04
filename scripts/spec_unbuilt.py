@@ -1,8 +1,9 @@
 """A codified capability's `unbuilt: [r<n>, ...]`: the requirements written in the spec and not yet built (workflow
 simplification plan 1). `unbuilt(root)` reads the ids of every codified capability under `root`/spec/capabilities/,
-`problems(root)` names each listed id the capability has no requirement for (it marks nothing), and `mark(items, root)`
-puts a non-strict xfail on each pytest-bdd scenario of a listed requirement, so a scenario that starts passing shows
-as XPASS and is not hidden. Standard library and pytest only."""
+`problems(root)` names each listed id the capability has no requirement for and each `unbuilt:` of a capability that
+is not codified (they mark nothing), and `mark(items, root)` puts a strict xfail on each pytest-bdd scenario of a
+listed requirement, so a scenario that starts passing fails the suite until its id leaves `unbuilt:`. Standard library
+and pytest only."""
 import pathlib
 
 import pytest
@@ -11,13 +12,15 @@ from spec_read import MARKER, capability
 
 
 def _listed(root):
-    """(capability name, its listed ids, its requirement ids) of each codified capability under `root`."""
+    """(capability name, its listed ids, its requirement ids or None when it is not codified) of each capability under
+    `root`."""
     for path in sorted((pathlib.Path(root) / "spec" / "capabilities").glob("*.md")):
         data, _ = frontmatter(path.read_text())
-        if str(data.get("language", "")).strip() != MARKER:
-            continue
         listed = data.get("unbuilt") or []
         listed = [str(one).strip() for one in listed] if isinstance(listed, list) else [str(listed)]
+        if str(data.get("language", "")).strip() != MARKER:
+            yield path.stem, listed, None
+            continue
         have = {r.id for g in capability(path).groups for r in g.requirements}
         yield path.stem, listed, have
 
@@ -26,20 +29,27 @@ def unbuilt(root):
     """{capability: {r<n>, ...}} of the listed ids each codified capability has a requirement for."""
     found = {}
     for name, listed, have in _listed(root):
-        ids = {one for one in listed if one in have}
+        ids = {one for one in listed if one in (have or ())}
         if ids:
             found[name] = ids
     return found
 
 
 def problems(root):
-    """One line for each listed id the capability has no requirement for."""
-    return ["%s: unbuilt %s is no requirement of the capability" % (name, one)
-            for name, listed, have in _listed(root) for one in listed if one not in have]
+    """One line for each listed id the capability has no requirement for, and one for each capability that is not
+    codified and lists ids."""
+    out = []
+    for name, listed, have in _listed(root):
+        if have is None:
+            out += ["%s: unbuilt is given on a capability that is not codified" % name] if listed else []
+        else:
+            out += ["%s: unbuilt %s is no requirement of the capability" % (name, one) for one in listed
+                    if one not in have]
+    return out
 
 
 def mark(items, root):
-    """A non-strict xfail on each scenario item whose feature's capability lists one of the item's r<n> marks."""
+    """A strict xfail on each scenario item whose feature's capability lists one of the item's r<n> marks."""
     found = unbuilt(root)
     if not found:
         return
@@ -51,7 +61,7 @@ def mark(items, root):
         ids = sorted(tag for tag in scenario.tags if tag in found.get(cap, ()))
         if ids:
             item.add_marker(pytest.mark.xfail(
-                strict=False, reason="unbuilt: %s" % ", ".join("%s#%s" % (cap, one) for one in ids)))
+                strict=True, reason="unbuilt: %s" % ", ".join("%s#%s" % (cap, one) for one in ids)))
 
 
 def unbuilt_lines(feature, root):

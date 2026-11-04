@@ -126,6 +126,15 @@ def test_vocab_check_names_a_missing_handler_and_passes_with_every_one(repo):
     assert ok.returncode == 0, ok.stdout + ok.stderr
 
 
+def test_vocab_check_wants_no_handler_for_an_unbuilt_scenario(repo):
+    handlers = (E2E / "work_queue_handlers.py.in").read_text()
+    scenarios_dir(repo, handlers.replace('@handler("WhenRuns", "`work start`")\n', ""))
+    cap = repo / "spec" / "capabilities" / "work-queue.md"
+    cap.write_text(cap.read_text().replace("retired: []\n", "retired: []\nunbuilt: [r1, r2, r3]\n", 1))
+    done = features(repo, "vocab", "--check", "--tests", "tests/scenarios", "features/work-queue.feature")
+    assert done.returncode == 0, done.stdout + done.stderr
+
+
 def test_vocab_check_names_two_handlers_that_claim_one_key(repo):
     handlers = (E2E / "work_queue_handlers.py.in").read_text()
     tests = scenarios_dir(repo, handlers)
