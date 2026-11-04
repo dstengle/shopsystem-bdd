@@ -343,6 +343,8 @@ The lines each section gives are target lines. Where the grammar takes one as wr
 
 #### Task 8: `decision-tiers` (service)
 
+- [x] Steps 1-7 done. Rule codes `w_untiered`, `v_d6`, `v_d7`, `v_d8` are named (v_d1-v_d5 are taken); g4 is split into g4 (runs the tests) and g5 (names a failing decision), one statement a group (6 groups); `failing` is analysis-tools' condition of test.
+
 - **Groups:**
   1. **Each decision has a tier:** `model check` reports a design-decision with no tier, as a warning while plan 6
      sorts them.

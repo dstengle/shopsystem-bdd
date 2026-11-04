@@ -92,6 +92,7 @@ The simplified workflow (plan 1, unbuilt):
 | `batches` | a person or session building a batch | service |
 | `pr-review` | the person who merges a batch's pull request | guarantees |
 | `brainstorming` | the person shaping work in a conversation | guarantees |
+| `decision-tiers` | a person or session keeping the decisions | service |
 
 ## Testing
 
