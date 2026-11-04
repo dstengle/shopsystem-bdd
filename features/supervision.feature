@@ -693,12 +693,14 @@ Feature: Supervision
 
   @g67 @r67
   Scenario: A gate round's questions make the capability-proposal await an answer
-    Given a stage s1 that is `gate`
+    Given a session s1
+    And the session s1 is not faulty
+    And a stage s2 that is `gate`
     And a capability-proposal p1
-    And the stage s1 is for the capability-proposal p1
+    And the stage s2 is for the capability-proposal p1
     And a result r1 that is `QUESTION`
-    And the stage s1 is with the result r1
-    When the session s2 ends the stage s1
+    And the stage s2 is with the result r1
+    When the session s1 ends the stage s2
     Then the capability-proposal p1 is `awaiting-answer`
     And `work run` asks the question q1
     And the question q1 is on the capability-proposal p1

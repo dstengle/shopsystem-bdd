@@ -349,7 +349,7 @@ Restates: r164@0.29, r170@0.29.
 
 ### [g67] A gate round's questions make the capability-proposal await an answer
 Restates: r69@0.29, r85@0.29.
-- [r67] When a session ends a `gate` stage for a capability-proposal with a result that is `QUESTION`, `work run` shall set the status of the capability-proposal to `awaiting-answer` and ask a question on the capability-proposal.
+- [r67] While a session is not faulty, when the session ends a `gate` stage for a capability-proposal with a result that is `QUESTION`, `work run` shall set the status of the capability-proposal to `awaiting-answer` and ask a question on the capability-proposal.
 
 ### [g68] A gate round with no question asks for the approval of the lines
 Restates: r117@0.29.
