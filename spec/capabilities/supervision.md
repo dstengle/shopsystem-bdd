@@ -238,7 +238,7 @@ Restates: r63@0.29.
 
 ### [g39] A green initiative branch gets a branch review
 Restates: r27@0.29, r47@0.29, r48@0.29, r49@0.29, r110@0.29, r154@0.29, r155@0.29, r156@0.29, r157@0.29.
-- [r39] While a work-item is `green` and a remote is not unpushable and an initiative branch is not reviewed, when the person runs `work run` on a `started` initiative, `work run` shall start a `branch review` stage for the initiative, give the stage a review brief with a commit, commit the stage, push the commit and log the stage.
+- [r39] While a work-item is `green` and no remote is unpushable and an initiative branch is not reviewed, when the person runs `work run` on a `started` initiative, `work run` shall start a `branch review` stage for the initiative, give the stage a review brief with a commit, commit the stage, push the commit and log the stage.
 
 ### [g40] A branch read by a kept review gets no branch review
 Restates: r50@0.29.

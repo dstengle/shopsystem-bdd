@@ -385,8 +385,6 @@ Feature: Supervision
   @g39 @r39
   Scenario: A green initiative branch gets a branch review
     Given a work-item w1 that is `green`
-    And a remote r1
-    And the remote r1 is not unpushable
     And an initiative branch i1
     And the initiative branch i1 is not reviewed
     And an initiative i2 that is `started`
@@ -394,8 +392,8 @@ Feature: Supervision
     Then `work run` starts the stage s1
     And the stage s1 is `branch review`
     And the stage s1 is for the initiative i2
-    And `work run` gives the stage s1 the review brief r2
-    And the review brief r2 is with the commit c1
+    And `work run` gives the stage s1 the review brief r1
+    And the review brief r1 is with the commit c1
     And `work run` commits the stage s1
     And `work run` pushes the commit c2
     And `work run` logs the stage s1
