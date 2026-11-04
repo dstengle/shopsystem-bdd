@@ -589,10 +589,10 @@ Builds `backlog#r6`, `r7`, `r8` and `r17`.
 - Create: `.shop/records/2026-11-04-workflow-simplification/plan-2-implementation.md` (the implementation report)
 - Modify: `.shop/records/README.md` (a row for the report); this plan (every box ticked)
 
-- [ ] **Step 1: Every backlog requirement is built.**
+- [x] **Step 1: Every backlog requirement is built.**
   Run: `python3 -c "import sys; sys.path.insert(0,'scripts'); import pathlib, spec_unbuilt as u; d=u.unbuilt(pathlib.Path('.')); print('backlog' in d, sum(map(len,d.values())), u.problems(pathlib.Path('.')))"`
   Expected: `False 37 []`.
-- [ ] **Step 2: The baselines, all at once.**
+- [x] **Step 2: The baselines, all at once.**
   Run: `python3 -m pytest -q | tail -2; python3 scripts/model check | tail -1; python3 scripts/model logic | tail -1; python3 scripts/model lexicon --check | tail -1; python3 scripts/features generate --check; python3 scripts/features vocab --check | tail -1; python3 scripts/features bindings --unbound; python3 scripts/tools size --limit 300; python3 scripts/tools check $(git diff --name-only workflow-simplification...HEAD -- '*.py' scripts/work)`
   Expected:
   - the suite: `37 xfailed`, no failures, and passed = 951 + 17 + the new script tests;
@@ -604,7 +604,7 @@ Builds `backlog#r6`, `r7`, `r8` and `r17`.
   - `bindings --unbound`: `every binding names a scenario`;
   - `size`: silent;
   - `check`: nothing to report.
-- [ ] **Step 3: A smoke run in a scratch repository.** It shows the person's view end to end:
+- [x] **Step 3: A smoke run in a scratch repository.** It shows the person's view end to end:
   ```bash
   d=$(mktemp -d) && git -C "$d" init -q && git -C "$d" config user.name t && git -C "$d" config user.email t@example.com
   mkdir -p "$d/spec" && printf -- '---\nid: bounded-context/ex.com/prod/ctx\n---\n# ctx\n' > "$d/spec/index.md"
@@ -617,7 +617,7 @@ Builds `backlog#r6`, `r7`, `r8` and `r17`.
   - b1's score `5.00`;
   - b2's row reads `blocked by b1 "Parse the item lines" (shaped)` and keeps 10 unescaped `|`;
   - `git -C "$d" log --oneline | wc -l` is `6`.
-- [ ] **Step 4: Write the implementation report** at
+- [x] **Step 4: Write the implementation report** at
   `.shop/records/2026-11-04-workflow-simplification/plan-2-implementation.md`, with `plan-1-implementation.md`'s
   frontmatter form (`kind: report`) and sections:
   - Final state (each Step 2 figure as measured);
@@ -626,10 +626,10 @@ Builds `backlog#r6`, `r7`, `r8` and `r17`.
   - D1-D18, each kept or changed;
   - open problems for plan 3 and later;
   - files.
-- [ ] **Step 5: Index the records.** Add a row to `.shop/records/README.md` after the row for `plan-1-rulings.md`:
+- [x] **Step 5: Index the records.** Add a row to `.shop/records/README.md` after the row for `plan-1-rulings.md`:
   `| \`2026-11-04-workflow-simplification/plan-2-implementation.md\` | plan 2 executed: the backlog built (item files, the item commands of \`work\`, \`work backlog\` by state in rank order), its 17 requirements out of \`unbuilt:\` | report |`.
   Tick every box of this plan.
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
   ```bash
   git add .shop/records/2026-11-04-workflow-simplification/plan-2-implementation.md .shop/records/README.md \
     .shop/records/2026-11-04-workflow-simplification/plan-2-backlog.md
