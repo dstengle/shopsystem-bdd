@@ -59,11 +59,22 @@ def item_is(step):
     assert (got != wanted) if " is not " in step.text else (got == wanted), (step.text, got)
 
 
+@handler("WhenRuns", "`work shape`")
+@handler("WhenRuns", "`work refuse`")
+def work_move(step):
+    B.run_work(step, bare(step.term).split()[1], B.ident(step.names[0]), *TEXT.get(step.term, ()))
+
+
+# The text a command on an item takes, where it takes one.
+TEXT = {"`work refuse`": ("out of scope",), "`work answer`": ("the first reading",)}
+
+
 @local("WhenRuns", "item")
 def run_on_item(step):
-    if step.term not in ("`work show`",):
+    """`work show`, `work withdraw` and `work answer` on an item; on any other kind they are the work-queue's."""
+    if step.term not in ("`work show`", "`work withdraw`", "`work answer`"):
         return False
-    B.run_work(step, bare(step.term).split()[1], B.ident(step.names[0]))
+    B.run_work(step, bare(step.term).split()[1], B.ident(step.names[0]), *TEXT.get(step.term, ()))
 
 
 @local("ThenDoes", "item")

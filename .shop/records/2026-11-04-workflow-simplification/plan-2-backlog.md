@@ -322,7 +322,7 @@ Builds `backlog#r2`, `r3`, `r9`-`r14` and `r16`.
   command's row lacks is refused with `<command>: <label> is <status>; <command> takes an item that is <a or b>`. The
   message names the status (r3).
 
-- [ ] **Step 1: Write the failing tests** in `tests/scripts/test_backlog_moves.py`:
+- [x] **Step 1: Write the failing tests** in `tests/scripts/test_backlog_moves.py`:
   - `test_each_move_follows_its_row`: parametrised over every (command, before, after) in `TRANSITIONS`. From an item
     written `before`, the command exits 0, the file reads `after`, and HEAD's commit holds only that file.
   - `test_a_move_from_another_status_is_refused_naming_it`: parametrised over every command and every status not in
@@ -338,18 +338,18 @@ Builds `backlog#r2`, `r3`, `r9`-`r14` and `r16`.
   - `test_work_withdraw_on_a_work_item_is_unchanged`: `tests/scripts/test_work_withdraw.py`'s scenario, run through
     `scripts/work withdraw w1`, is still refused with `withdrawn` on stderr.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_backlog_moves.py -q`
   Expected: FAIL; `work shape` is not a command.
 
-- [ ] **Step 3: Implement `backlog_moves.py`, the parsers and the routing.** `work answer`'s parser keeps its
+- [x] **Step 3: Implement `backlog_moves.py`, the parsers and the routing.** `work answer`'s parser keeps its
   `--change` and `--accept` flags. `backlog_cli.answer` refuses them for an item.
 
-- [ ] **Step 4: Run the tests and the old `work` tests.**
+- [x] **Step 4: Run the tests and the old `work` tests.**
   Run: `python3 -m pytest tests/scripts/test_backlog_moves.py tests/scripts/test_backlog_items.py tests/scripts/test_work_withdraw.py tests/scenarios/test_work_queue.py tests/scenarios/test_requests.py -q | tail -1`
   Expected: all pass.
 
-- [ ] **Step 5: The handlers.**
+- [x] **Step 5: The handlers.**
   - **Registry:** `("WhenRuns", "`work shape`")` and `("WhenRuns", "`work refuse`")`. The refuse handler supplies the
     reason `out of scope`.
   - **`local`:**
@@ -364,14 +364,14 @@ Builds `backlog#r2`, `r3`, `r9`-`r14` and `r16`.
   - r3 needs the item to be given a status other than `idea` before the run;
   - r16 asserts `shaped` and a commit of `b1`.
 
-- [ ] **Step 6: Mark them built.** Remove `r2, r3, r9, r10, r11, r12, r13, r14, r16` from `unbuilt:`.
+- [x] **Step 6: Mark them built.** Remove `r2, r3, r9, r10, r11, r12, r13, r14, r16` from `unbuilt:`.
   Run: `python3 -m pytest tests/scenarios/test_backlog.py -q | tail -1; python3 scripts/features vocab --check | tail -1`
   Expected: `11 passed, 6 xfailed`; `every step has one handler`.
 
-- [ ] **Step 7: The baselines,** as in Task 1, Step 7, over the files of this task.
+- [x] **Step 7: The baselines,** as in Task 1, Step 7, over the files of this task.
   Expected: the suite at `43 xfailed`, no failures; every other baseline unchanged.
 
-- [ ] **Step 8: Commit.**
+- [x] **Step 8: Commit.**
   ```bash
   git add scripts/backlog_moves.py scripts/backlog_cli.py scripts/work tests/scenarios/backlog_handlers.py \
     tests/scenarios/backlog_world.py tests/scripts/test_backlog_moves.py spec/capabilities/backlog.md

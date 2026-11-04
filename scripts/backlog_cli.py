@@ -12,15 +12,47 @@ def add_parsers(sub):
     p.add_argument("title")
     p.add_argument("--provenance", default="own", choices=backlog_items.PROVENANCES)
     p.add_argument("--note", help="a line under the item's ## Notes")
+    p = sub.add_parser("shape", help="move an item that is idea to shaped")
+    p.add_argument("name")
+    p.add_argument("--note", help="a line under the item's ## Notes")
+    p = sub.add_parser("refuse", help="move an item that is idea or shaped to refused, with the reason")
+    p.add_argument("name")
+    p.add_argument("reason")
 
 
 def cmd_idea(args):
     item = backlog_moves.idea(args.root, args.title, args.provenance, args.note)
+    return moved(item)
+
+
+def moved(item):
     print("%s %s" % (backlog_items.label(item), item.status))
     return 0
 
 
-COMMANDS = {"idea": cmd_idea}
+def cmd_shape(args):
+    return moved(backlog_moves.shape(args.root, args.name, args.note))
+
+
+def cmd_refuse(args):
+    return moved(backlog_moves.refuse(args.root, args.name, args.reason))
+
+
+def withdraw(args):
+    """`work withdraw b<n>`."""
+    return moved(backlog_moves.withdraw(args.root, args.name))
+
+
+def answer(args):
+    """`work answer b<n> TEXT`; a reviewer's flag is a work-item's, and refused for an item."""
+    for flag, given in (("--change", args.change), ("--accept", args.accept)):
+        if given:
+            raise backlog_items.Refused("work answer: %s is a reviewer's flag on a work-item; an item takes none"
+                                        % flag)
+    return moved(backlog_moves.answer(args.root, args.name, args.answer))
+
+
+COMMANDS = {"idea": cmd_idea, "shape": cmd_shape, "refuse": cmd_refuse}
 
 
 def show(args):

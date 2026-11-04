@@ -27,6 +27,8 @@ def cmd_add(args):
 
 
 def cmd_withdraw(args):
+    if backlog_items.is_item(args.name):
+        return backlog_cli.withdraw(args)
     print("%s %s" % (args.name, workqueue.withdraw(args.root, args.name)))
     return 0
 
@@ -59,6 +61,8 @@ def cmd_retry(args):
 
 
 def cmd_answer(args):
+    if backlog_items.is_item(args.name):
+        return backlog_cli.answer(args)
     print("%s %s" % (args.name, workqueue_answer.answer(args.root, args.name, args.answer, args.change, args.accept)))
     return 0
 
@@ -135,13 +139,13 @@ def main(argv=None):
     s = sub.add_parser("show", help="where an initiative or a work-item stands (default: each work-item and request, with its status)")
     s.add_argument("target", nargs="?", help="an initiative, a work-item or an item b<n>")
     s.add_argument("--json", action="store_true", help="print one JSON object instead of lines")
-    w = sub.add_parser("withdraw", help="move a work-item that is neither claimed nor green to withdrawn")
+    w = sub.add_parser("withdraw", help="move a work-item that is neither claimed nor green, or an item b<n>, to withdrawn")
     w.add_argument("name")
     r = sub.add_parser("run", help="take an initiative's work-items through their stages, one claude -p worker at a time")
     r.add_argument("initiative", nargs="?", help="the initiative (default: every one that is neither done nor abandoned)")
     t = sub.add_parser("retry", help="return a failed work-item to the status before that log.jsonl gives in its transition into failed")
     t.add_argument("name")
-    n = sub.add_parser("answer", help="answer the question of an awaiting-answer work-item (returning it to the stage that asked) or capability-proposal")
+    n = sub.add_parser("answer", help="answer the question of an awaiting-answer work-item (returning it to the stage that asked), a capability-proposal or an item b<n> that is needs-input")
     n.add_argument("name")
     n.add_argument("answer")
     n.add_argument("--change", action="store_true", help="a reviewer's question: the answer asks for a change (the work-item returns to ready)")
