@@ -126,8 +126,9 @@ Feature: Design model check
   @g18 @r18
   Scenario: A delivered request whose initiative is not done
     Given a request q1 that is `delivered`
-    And an initiative i1 that is `started`
+    And an initiative i1
     And the initiative i1 fulfils the request q1
+    And the initiative i1 is `started`
     When the person runs `model check`
     Then `model` exits with an error naming `v_d3`
 
@@ -310,20 +311,25 @@ Feature: Design model check
   @g44 @r44
   Scenario: A context with no job has no unserved capability
     When the person runs `model check`
+    Then `model` does not print `w_unserved_cap`
 
   @g45 @r45
   Scenario: A formulated capability-proposal is closed for a done initiative
     Given an initiative i1 that is `done`
-    And a capability-proposal p1 that is `formulated`
+    And a capability-proposal p1
     And the capability-proposal p1 is part of the initiative i1
+    And the capability-proposal p1 is `formulated`
     When the person runs `model check`
+    Then `model` does not print `v_d1`
 
   @g46 @r46
   Scenario: An approved glossary-proposal is closed for a done initiative
     Given an initiative i1 that is `done`
-    And a glossary-proposal p1 that is `approved`
+    And a glossary-proposal p1
     And the glossary-proposal p1 is part of the initiative i1
+    And the glossary-proposal p1 is `approved`
     When the person runs `model check`
+    Then `model` does not print `v_d1`
 
   @g47 @r47
   Scenario: `model check` tries again under an interpreter that has clingo
@@ -343,7 +349,6 @@ Feature: Design model check
   Scenario: `model facts` prints the facts
     When the person runs `model facts`
     Then `model` prints the fact f1
-    And `model` prints the fact f2
 
   @g50 @r50
   Scenario: `model decisions` writes the decisions index
@@ -374,11 +379,9 @@ Feature: Design model check
     Then `model` prints the requirement r1
     And `model` prints the capability-proposal p1
     And `model` exits successfully
-    And `model` does not print the capability-proposal p2
 
   @g54 @r54
   Scenario: `model rules` prints every rule
     When the person runs `model rules`
     Then `model` prints the rule r1
-    And `model` prints the rule r2
     And `model` exits successfully

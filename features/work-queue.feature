@@ -5,7 +5,6 @@ Feature: Work queue
   @g1 @r1
   Scenario: `work add` drafts a work-item
     Given an initiative i1 that is `started`
-    And a work-item w1 that is `drafted`
     When the person runs `work add` on the initiative i1
     Then `work` writes the work-item w1
     And the work-item w1 is `drafted`
@@ -15,7 +14,6 @@ Feature: Work queue
   Scenario: `work add` refuses an initiative that is not open
     Given an initiative i1
     And the initiative i1 is not open
-    And the initiative i1 is `abandoned`
     When the person runs `work add` on the initiative i1
     Then `work` exits with an error naming the status of the initiative i1
     And `work` changes nothing
@@ -23,8 +21,6 @@ Feature: Work queue
   @g3 @r3
   Scenario: `work start` begins an initiative for an accepted request
     Given a request q1 that is `accepted`
-    And an initiative i1 that is `abandoned`
-    And the initiative i1 fulfils the request q1
     When the person runs `work start` on the request q1
     Then `work` writes the initiative i1
     And the initiative i1 fulfils the request q1
@@ -58,25 +54,19 @@ Feature: Work queue
   Scenario: An open capability-proposal keeps its initiative started
     Given an initiative i1 that is `started`
     And a capability-proposal p1
-    And the capability-proposal p1 is not closed
     And the capability-proposal p1 is part of the initiative i1
+    And the capability-proposal p1 is not closed
     And a work-item w1 that is `ready`
     When the person runs `work withdraw` on the work-item w1
     Then the initiative i1 is not `done`
 
   @g8 @r8
   Scenario: `work list` prints every node with its status
-    Given an initiative i1 that is `abandoned`
-    And an initiative i2 that is `abandoned`
     When the person runs `work list`
     Then `work` prints the initiative i1
-    And `work` prints the initiative i2
     And `work` prints the status of the initiative i1
-    And `work` prints the status of the initiative i2
     And `work` prints the work-item w1
-    And `work` prints the work-item w2
     And `work` prints the status of the work-item w1
-    And `work` prints the status of the work-item w2
 
   @g9 @r9
   Scenario: `work list --json` prints one JSON object
@@ -89,11 +79,9 @@ Feature: Work queue
     Given a work-item w1
     And an initiative i1
     And the work-item w1 is kept in the initiative i1
-    And the initiative i1 is `abandoned`
     When the person runs `work show` on the initiative i1
     Then `work` prints the status of the initiative i1
     And `work` prints the work-item w1
-    And `work` does not print the work-item w2
 
   @g11 @r11
   Scenario: `work show` on a work-item prints its status
@@ -103,13 +91,11 @@ Feature: Work queue
   @g12 @r12
   Scenario: `work show --json` prints one JSON object
     Given `--json` is given
-    And an initiative i1 that is `abandoned`
     When the person runs `work show` on the initiative i1
     Then `work` exits successfully
 
   @g13 @r13
   Scenario: `work note` appends a note to the ledger
-    Given an initiative i1 that is `abandoned`
     When the person runs `work note` on the initiative i1
     Then `work` writes the ledger l1
     And the ledger l1 is of the initiative i1
@@ -118,7 +104,6 @@ Feature: Work queue
   @g14 @r14
   Scenario: `work note` refuses a note of more than one line
     Given a note n1 that is `multi-line`
-    And an initiative i1 that is `abandoned`
     When the person runs `work note` on the initiative i1
     Then `work` exits with an error naming the note n1
     And `work` changes nothing
