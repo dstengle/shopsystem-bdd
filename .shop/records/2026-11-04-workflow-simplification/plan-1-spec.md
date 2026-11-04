@@ -358,6 +358,8 @@ The lines each section gives are target lines. Where the grammar takes one as wr
 
 #### Task 9: `telemetry` (service)
 
+- [x] Steps 1-7 done. The figures are `include`d as quoted words (batch-measurement's form); `defect` is code-research's kind, with telemetry's rows `defect of item`, `defect for batch`, `measurement of batch`.
+
 - **Groups:**
   1. **`measure batch` writes a measurement:** for a batch that is `merged`, with its wall time, session time, tokens
      and cost by role.
