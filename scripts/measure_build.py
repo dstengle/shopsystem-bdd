@@ -7,9 +7,9 @@ from pathlib import Path
 from measure_read import (
     Refused,
     read_log,
-    request_of,
     read_session_jsons,
     read_transcripts,
+    request_of,
     round_trips,
 )
 

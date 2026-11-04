@@ -4,7 +4,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 
-from supervise_change import Changes, entries  # noqa: E402
+from supervise_change import Changes, entries
 
 
 def write(tmp_path, changes):

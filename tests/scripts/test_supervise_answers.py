@@ -6,8 +6,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 
-import supervise  # noqa: E402,F401  (its import order settles the modules' circular imports)
-from supervise_answers import Answers  # noqa: E402
+import supervise  # noqa: F401  (its import order settles the modules' circular imports)
+from supervise_answers import Answers
 
 
 class Stubbed(Answers):
