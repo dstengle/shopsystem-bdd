@@ -196,6 +196,10 @@ state 0 with the responses' `set`s applied, and the responses happen there.
 - no literal both pos and neg;
 - B's unless not entailed (§4).
 
+**"If" lines take precedence** (the person, 2026-11-04). An EARS "If T, then R" line states unwanted behaviour and
+wins over every non-"If" line on its trigger, so the two are never paired. Two "If" lines are. The rule is stated for
+readers in `spec/universal.md` ("An 'If' line takes precedence") and is `exc/1` in `check.lp`.
+
 | code | severity | finding |
 |---|---|---|
 | L1 | error | `clash(A,B,Why)`: under one unification, A and B fire together and demand opposite things. The Why is one of: pos/neg of one event on one object, two `set`s of one attribute to different values, exit_ok with exit_error, change_nothing with any changing response, or "use" with "shall not use". Also `clash(A,A,self)`: a requirement whose own pre-state is inconsistent. The text names both ids and the merged pre-state: `supervision#r52 and #r72 clash: on "the person runs work run" with a work-item awaiting-answer, r52 forbids and r72 starts a stage for it` |

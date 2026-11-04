@@ -54,3 +54,15 @@ lexicon and the background theory of `model logic`, not by a second statement:
   and report). Carried forward to R14: a core fun for "X or Y" of two noun phrases.
 - U1, U2 and U9 follow from the resources of the glossary: a stage holds what it needs while it runs, an exclusive
   resource is held by one session at a time, and a counted one by at most its number.
+
+
+### An "If" line takes precedence
+
+This is a rule about how lines are read, not a statement about behaviour, so it has no U id and no tree.
+- An EARS "If T, then R" line (`IfThen`, `WhileIf`, `WhereIf`) states unwanted behaviour, and it takes precedence over
+  every line that is not an "If" line on the same trigger. When its condition holds, its responses are what happens,
+  and the normal line does not apply.
+- `model logic` therefore never pairs an "If" line with a non-"If" line (`exc/1` in `grammar/check.lp`). Two "If"
+  lines on one trigger are still checked against each other.
+- An implementation and a scenario follow the same rule: the "If" line's scenario holds even where a normal line's
+  trigger is also true.
