@@ -30,7 +30,7 @@ def main(argv):
         if text:
             print(text)
     except BaseException:  # noqa: BLE001  (a hook never fails: D5, D8)
-        pass
+        return 0
     return 0
 
 

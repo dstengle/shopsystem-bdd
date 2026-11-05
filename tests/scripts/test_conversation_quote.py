@@ -6,10 +6,10 @@ import json
 import re
 
 import conversation_quote as Q
+import conversation_read as C
 import pytest
 import transcript_testing as T
 from backlog_testing import git, work
-import conversation_read as C
 from conversation_read import Message
 from measure_batch_read import project_dir
 from workqueue import Refused
