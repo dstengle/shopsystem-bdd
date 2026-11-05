@@ -115,6 +115,26 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 No agent has the Agent tool (design-decision/the-2-0-agents). A plugin agent's `hooks` and `permissionMode` are
 ignored, so a role's limits are its tools.
 
+## 2.1.0: requests exchanged through GitHub issues
+
+- **A request is a conversation on one GitHub issue** on the upstream's repository (b26, requests r27-r41, intake
+  r7). Each side keeps its record in its own repository, and nothing reads or writes the other side's checkout:
+  - the asker asks in its own words with `work request --ask`, and the upstream answers with `work offer`;
+  - the asker ends the request with `work fits`, or writes lines with `work propose`;
+  - each side ends its turn with `work turn`, which posts it on the issue;
+  - the upstream's person accepts with `work accept`, which writes the item;
+  - `work resolve` posts the resolution and closes the issue;
+  - `work sync` records what the other side posted. A comment whose block of fields does not parse is printed,
+    never acted on.
+- **Where the issue lives:** an upstream's bullet under `## Upstreams` in `spec/index.md` names its repository as
+  `github: <owner>/<name>`. A context's own request goes on its own repository, read from `origin`.
+- **Retired:** `work intake`, `work outcome --into` on an item, and `work request --lines`. `work outcome accepted`
+  now parses the line in this context's grammar and names its capability with `--into`.
+- **Not yet:** `work sync` applies a readable comment whoever posted it (b35). Until that is fixed, exchange
+  requests only between your own contexts, or on private repositories.
+- **No upgrade step.** A 2.0.0 repository needs only `github:` on each upstream it asks. A request it already holds
+  has no issue, and is read as before.
+
 ## 2.0.0: the workflow simplified
 
 - **One item, a backlog, batches, one review at the pull request** (design-decision/the-workflow-simplified): work is
