@@ -469,7 +469,7 @@ test in the task named.
   - the locals `ThenDoes defect` (`write`: the printed path exists and `git log -1 --format=%s` names it) and
     `ThenR defect` (`of`: its frontmatter `item` is `B.ident(i1)`; `for`: its `batch` is `T.batch_name(step, b1)`).
 
-- [ ] **Step 1: Write the failing tests** (`test_measure_defect.py`, on the merged batch of Task 2's fixture,
+- [x] **Step 1: Write the failing tests** (`test_measure_defect.py`, on the merged batch of Task 2's fixture,
   imported from `test_measure_batch`):
   - `test_a_defect_is_written_and_committed`: exit 0, it prints `.shop/batches/1/defect-1.md`, and the file parses as
     `Defect("d1", "defect/ex.com/prod/ctx/batch-1/d1", "batch-1", "b1", <today>, "the fault")`. The last commit's
@@ -488,26 +488,26 @@ test in the task named.
     batch-1` gives `defects["after_merge"] == {"b1": 1}`, `per_item == 1.0` (the review's `fix now` plus this one,
     over 2 items) and `goals["defects_per_item"] == 1.0`. A second batch, batch-2, gives `after_merge == {}`.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_measure_defect.py -q | tail -3`
   Expected: FAIL. There is no subcommand `defect`.
 
-- [ ] **Step 3: Implement D11** and the counts in `figures_of`.
+- [x] **Step 3: Implement D11** and the counts in `figures_of`.
 
-- [ ] **Step 4: The r3 handlers; take r3 out of `unbuilt:`.**
+- [x] **Step 4: The r3 handlers; take r3 out of `unbuilt:`.**
   Run: `python3 -m pytest tests/scripts/test_measure_defect.py tests/scripts/test_measure_batch.py tests/scenarios/test_telemetry.py tests/scenarios/test_backlog.py tests/scenarios/test_batches.py -q | tail -1; python3 scripts/features vocab --check | tail -1`
   Expected: all pass, telemetry `3 passed, 1 xfailed`; `every step has one handler`.
 
-- [ ] **Step 5: Mutations, each reverted.** Each must turn its test red:
+- [x] **Step 5: Mutations, each reverted.** Each must turn its test red:
   - accepting an `abandoned` batch fails the `abandoned` case;
   - numbering from the count of files rather than the highest k fails `test_the_next_defect_is_numbered_on` once
     `defect-1.md` is removed by hand. Remove it with `git rm` alone (the person's rule).
 
-- [ ] **Step 6: The baselines.**
+- [x] **Step 6: The baselines.**
   Run: `python3 -m pytest -q | tail -1; python3 scripts/tools size --limit 300; python3 scripts/tools check scripts/measure scripts/measure_defect.py scripts/measure_batch.py tests/scripts/test_measure_defect.py tests/scenarios/telemetry_handlers.py`
   Expected: `5 xfailed`, no failures; silent; clean.
 
-- [ ] **Step 7: Commit.**
+- [x] **Step 7: Commit.**
   ```bash
   git add scripts/measure scripts/measure_defect.py scripts/measure_batch.py tests/scripts/test_measure_defect.py \
     tests/scenarios/telemetry_handlers.py spec/capabilities/telemetry.md CLAUDE.md

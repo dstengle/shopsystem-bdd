@@ -134,3 +134,42 @@ def includes_grade(step):
     assert ran.code == 0, ran.err
     assert ran.figures()["findings_by_grade"]["Important"] >= 1, ran.figures()["findings_by_grade"]
     assert "Important" in ran.record().read_text(), step.text
+
+
+@handler("WhenRuns", "`measure defect`")
+def measure_defect(step):
+    item = step.names[-1]
+    batch = step.context.get("given", {}).get("item", {}).get(item, {}).get("batch", "b1")
+    T.given(step, "batch", batch)["status"] = "merged"
+    T.prepare(step)
+    T.ensure_batch(step)
+    run_measure(step, "defect", B.ident(item), "--says", "abandon leaves it started; run work abandon i1")
+
+
+def defect_field(step, key):
+    ran = step.context["world"]
+    assert ran.code == 0, ran.err
+    return W.field(ran.repo / ran.out.strip(), key)
+
+
+@local("ThenDoes", "defect")
+def writes_defect(step):
+    if not telemetry(step) or step.term != "write":
+        return False
+    ran = step.context["world"]
+    assert ran.code == 0, ran.err
+    rel = ran.out.strip()
+    assert (ran.repo / rel).is_file() and rel.startswith(".shop/batches/"), (step.text, rel)
+    subject = T.git(step, "log", "-1", "--format=%s").strip()
+    name = rel.rsplit("defect-", 1)[1].split(".")[0]
+    assert subject.startswith("measure defect: ") and " d%s of " % name in subject, (step.text, subject)
+
+
+@local("ThenR", "defect")
+def defect_of_for(step):
+    if not telemetry(step) or step.term not in ("of", "for"):
+        return False
+    if step.term == "of":
+        assert defect_field(step, "item") == B.ident(step.names[1]), step.text
+    else:
+        assert defect_field(step, "batch") == T.batch_name(step, step.names[1]), step.text

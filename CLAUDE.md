@@ -94,6 +94,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/measure_cost.py` | the price of a request: the dated table of each model's input, output and cache-read price, `.shop/delivery.toml`'s `[prices]` over it, cache writes by their time to live, and an unpriced model named, never guessed (telemetry) |
 | `scripts/measure_batch_read.py` | the transcripts of a batch's sessions: each distinct request with its model and tokens, each subagent's type and description from its meta file, and the root's project directory in Claude Code's store (telemetry) |
 | `scripts/measure_batch.py` with `scripts/measure_batch_sessions.py` | `measure batch`: a batch's window from git, its sessions in the window with their role and session time, its review findings, defects and knobs (telemetry) |
+| `scripts/measure_defect.py` | `measure defect`: a fault found after the merge, written `.shop/batches/<n>/defect-<k>.md` against its delivered item and committed, and the defects of a batch read back (telemetry) |
 | `scripts/migrate*.py` | the `migrate` command |
 | `scripts/migrate_upgrade*.py` | `migrate status` and `migrate upgrade`: the upgrade steps between plugin releases, one module a step |
 | `scripts/migrate_upgrade_codified.py` | the 1.0.0 upgrade step "codified requirements": `spec/restated.json`, the scaffold of each uncodified capability, `@deprecated` scenarios deleted, old references written `<cap>#r<n>@0.29`, and what is left reported |

@@ -17,6 +17,7 @@ import measure_batch_read
 import measure_batch_sessions
 import measure_build
 import measure_cost
+import measure_defect
 import workqueue
 from measure_read import Refused, moment
 
@@ -73,6 +74,13 @@ def knobs_of(root, batch, reviews):
             "reviews": len(reviews), "readiness_bar": "mechanical"}
 
 
+def _after_merge(root, name):
+    counts = {}
+    for defect in measure_defect.defects(root, name):
+        counts[defect.item] = counts.get(defect.item, 0) + 1
+    return counts
+
+
 def _seconds(a, b):
     return round((b - a).total_seconds()) if a and b else None
 
@@ -103,7 +111,7 @@ def _figures(root, name, sessions_dir):
             unpriced[model] = unpriced.get(model, 0) + count
     review = findings_of(root, batch)
     reviews = batch_findings.reviews(root, name)
-    defects = {"review": {}, "after_merge": {}}
+    defects = {"review": {}, "after_merge": _after_merge(root, name)}
     for f in review["findings"]:
         if f["triage"] == "fix now" and f["item"]:
             defects["review"][f["item"]] = defects["review"].get(f["item"], 0) + 1

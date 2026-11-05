@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: [r3, r4]
+unbuilt: [r4]
 ---
 
 # Telemetry
@@ -59,3 +59,6 @@ knobs (batch size, review depth, the readiness bar) are tuned against these figu
   after it.
 - The measurement is the record `.shop/records/measurements/<date>-batch-<n>.md`, its summary tables before its JSON
   block, not written over without `--replace`.
+- `measure defect <item> --says "<the fault and how to reproduce it>"` writes `.shop/batches/<n>/defect-<k>.md`
+  (`kind: defect`, its `batch` and `item`) against a `delivered` item of a `merged` batch and commits it alone; it
+  refuses anything else, changing nothing, and `measure batch` counts it under the defects after the merge.
