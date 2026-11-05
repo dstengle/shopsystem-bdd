@@ -25,7 +25,7 @@ from scenarios.migration_old import CONTEXT, Old, plugin
 PLUGIN = HERE.parents[1]
 FEATURE = PLUGIN / "features" / "migration-tools.feature"
 WHO = {"GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t", "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"}
-HOOKS = {"`migrate status --hook`": "SessionStart", "`migrate compacting`": "PreCompact"}
+HOOKS = {"`migrate status --hook`": "SessionStart"}
 RELOCATED = {"decisions/": "spec/decisions/", "work/": ".shop/work/", "records/": ".shop/records/",
              "docs/superpowers/plans/": ".shop/records/archive/plans/",
              "docs/superpowers/specs/": ".shop/records/archive/design-notes/",

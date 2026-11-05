@@ -87,7 +87,7 @@ def test_model_check_takes_the_section(taken):
     git(taken, "status", "--porcelain")
 
 
-def test_a_new_request_is_numbered_above_the_frozen_ones(repo):
+def test_a_new_request_is_numbered_above_the_frozen_ones(repo):  # noqa: F811  (the fixture imported above)
     """Plan 9, D7: a live request is `.shop/requests/q<n>.md`, its number one above the highest of `.shop/requests/`
     and the frozen `.shop/work/requests/`."""
     for rel in (".shop/work/requests/q7.md", ".shop/requests/q2.md"):
