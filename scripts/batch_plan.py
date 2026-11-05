@@ -178,10 +178,11 @@ def on_base(root, batch):
             batch.name, batch.base, batch.base, branch or "a detached HEAD"))
 
 
-def commit(root, batch, items, message):
-    """`plan.md` and each item's file written and committed together on the current branch; the caller holds
-    `batch_git.locked`."""
-    rels = [rel_of(batch.name)] + [backlog_items.rel_of(i.name) for i in items]
+def commit(root, batch, items, message, files=None):
+    """`plan.md`, each item's file and each of `files` ({rel: text}) written and committed together on the current
+    branch; the caller holds `batch_git.locked`."""
+    files = files or {}
+    rels = [rel_of(batch.name)] + [backlog_items.rel_of(i.name) for i in items] + list(files)
 
     def write():
         path = Path(root) / rels[0]
@@ -189,4 +190,7 @@ def commit(root, batch, items, message):
         path.write_text(render(batch), encoding="utf-8")
         for item in items:
             (Path(root) / backlog_items.rel_of(item.name)).write_text(backlog_items.render(item), encoding="utf-8")
+        for rel, text in files.items():
+            (Path(root) / rel).parent.mkdir(parents=True, exist_ok=True)
+            (Path(root) / rel).write_text(text, encoding="utf-8")
     workqueue.committed(root, rels, message, write)

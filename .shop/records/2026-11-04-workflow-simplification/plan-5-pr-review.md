@@ -289,7 +289,7 @@ Task 5.
   - `findings(repo, k=1) -> Path`: the scratch `findings.md` path.
   - `FIX_NOW_B1`, `CLEAN`, `FIXED_F1`: findings texts in D9's form.
 
-- [ ] **Step 1: Write the failing tests** (`test_batch_findings.py`, mostly pure text):
+- [x] **Step 1: Write the failing tests** (`test_batch_findings.py`, mostly pure text):
   - `test_a_findings_file_parses`: the D9 example gives the verdict, two findings with the grade, triage, title,
     item (`b1` and None), where and body, and `{"f1": "fixed"}`.
   - `test_malformed_findings_are_refused`, parametrised. Each is refused naming `rel` and the heading or line:
@@ -314,21 +314,21 @@ Task 5.
   - `test_commit_takes_files`: `batch_plan.commit(..., files={rel: text})` makes one commit holding `plan.md` and
     that file.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_batch_findings.py -q`
   Expected: FAIL; `batch_findings` does not exist.
 
-- [ ] **Step 3: Implement `batch_findings.py` and `commit`'s `files`, and write `review_testing.py`.**
+- [x] **Step 3: Implement `batch_findings.py` and `commit`'s `files`, and write `review_testing.py`.**
 
-- [ ] **Step 4: Run them, and the batch plan tests.**
+- [x] **Step 4: Run them, and the batch plan tests.**
   Run: `python3 -m pytest tests/scripts/test_batch_findings.py tests/scripts/test_batch_plan.py -q | tail -1`
   Expected: all pass.
 
-- [ ] **Step 5: The baselines.**
+- [x] **Step 5: The baselines.**
   Run: `python3 -m pytest -q | tail -1; python3 scripts/tools size --limit 300; python3 scripts/tools check scripts/batch_findings.py scripts/batch_plan.py tests/scripts/review_testing.py tests/scripts/test_batch_findings.py`
   Expected: `14 xfailed`, no failures, passed = 1277 + the new tests; `size` silent; `check` clean.
 
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
   ```bash
   git add scripts/batch_findings.py scripts/batch_plan.py tests/scripts/review_testing.py tests/scripts/test_batch_findings.py CLAUDE.md
   git commit -m "batches: the pull request review's findings file and its record .shop/batches/<n>/review-<k>.md"
