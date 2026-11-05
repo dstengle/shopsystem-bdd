@@ -5,6 +5,7 @@ is not codified (they mark nothing), and `mark(items, root)` puts a strict xfail
 listed requirement, so a scenario that starts passing fails the suite until its id leaves `unbuilt:`. Standard library
 and pytest only."""
 import pathlib
+import re
 
 import pytest
 from model_parse import frontmatter
@@ -46,6 +47,22 @@ def problems(root):
             out += ["%s: unbuilt %s is no requirement of the capability" % (name, one) for one in listed
                     if one not in have]
     return out
+
+
+def with_unbuilt(text, ids):
+    """A capability file's text with `ids` appended to its `unbuilt: [...]`, once each, in the order given; the key is
+    written after `retired:` (else last in the frontmatter) when the file has none (workflow simplification plan 4,
+    D6)."""
+    head_end = text.find("\n---", 4)
+    head = text[:head_end]
+    found = re.search(r"(?m)^unbuilt:[ \t]*\[(.*)\][ \t]*$", head)
+    had = [one.strip() for one in found.group(1).split(",") if one.strip()] if found else []
+    listed = "unbuilt: [%s]" % ", ".join(list(dict.fromkeys(had + list(ids))))
+    if found:
+        return text[:found.start()] + listed + text[found.end():]
+    after = re.search(r"(?m)^retired:.*$", head)
+    at = after.end() if after else head_end
+    return text[:at] + "\n" + listed + text[at:]
 
 
 def mark(items, root):

@@ -144,3 +144,39 @@ def test_a_line_after_a_double_dash_is_the_line(ready_repo):
     done = work(ready_repo, "line", "b1", "--into", "work-queue", "--", "-x " + ABANDON)
     assert done.returncode == 0, done.stderr
     assert [r for b in blocks(ready_repo) for g in b.groups for r in g.requirements] == [("r5", "-x " + ABANDON)]
+
+
+def ready_lines(repo, name, text, title="Fix the parser"):
+    write_item(repo, name, title=title, status="ready",
+               body="\n## Requirements\n\n### work-queue\n\n#### [g4] %s\n- [r5] %s\n" % (title, text))
+    return backlog_items.find(repo, name)
+
+
+def test_renumber_moves_past_spec_and_taken(ready_repo):
+    """plan 4, Task 2, D8: an item's ids moved past its capability's and those of the items picked before it."""
+    item = ready_lines(ready_repo, "b1", ABANDON)
+    taken = {}
+    assert backlog_lines.renumber(ready_repo, item, taken) == []
+    assert backlog_lines.ids(backlog_lines.read(item, "b1")) == ["work-queue#r5"]
+    taken = {"work-queue": {"g4", "r5"}}
+    assert backlog_lines.renumber(ready_repo, item, taken) == [("work-queue#g4", "work-queue#g5"),
+                                                               ("work-queue#r5", "work-queue#r6")]
+    assert backlog_lines.read(item, "b1")[0].groups[0].id == "g5"
+    assert taken == {"work-queue": {"g4", "r5", "g5", "r6"}}
+    path = ready_repo / "spec" / "capabilities" / "work-queue.md"
+    text = path.read_text().replace("retired: []", "retired: [r7]").replace(
+        "\n## Not yet", "\n### [g9] more\n- [r6] %s\n\n## Not yet" % DONE)
+    path.write_text(text)
+    item = ready_lines(ready_repo, "b2", ABANDON)
+    assert backlog_lines.renumber(ready_repo, item, {"work-queue": {"r5"}}) == [("work-queue#r5", "work-queue#r8")]
+
+
+def test_lay_with_others_lays_both(ready_repo, tmp_path):
+    first = ready_lines(ready_repo, "b1", ABANDON)
+    second = ready_lines(ready_repo, "b2", DONE)
+    backlog_lines.renumber(ready_repo, second, {"work-queue": {"g4", "r5"}})
+    live = (ready_repo / "spec" / "capabilities" / "work-queue.md").read_bytes()
+    backlog_lines.lay(ready_repo, second, tmp_path / "copy", others=[first])
+    cap = spec_read.capability(tmp_path / "copy" / "spec" / "capabilities" / "work-queue.md")
+    assert cap.problems == [] and {"g4", "g5"} <= {g.id for g in cap.groups}
+    assert (ready_repo / "spec" / "capabilities" / "work-queue.md").read_bytes() == live

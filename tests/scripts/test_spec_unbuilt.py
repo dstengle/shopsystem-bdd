@@ -147,3 +147,15 @@ def test_the_steps_of_an_unbuilt_scenario_are_its_lines(tmp_path):
     feature.write_text(FEATURE)
     assert spec_unbuilt.unbuilt_lines(feature, root) == {9, 10, 11, 12}
     assert spec_unbuilt.unbuilt_lines(tmp_path / "other.feature", root) == set()
+
+
+def test_with_unbuilt_appends_and_inserts(tmp_path):
+    """plan 4, Task 2: the ids a batch lays appended to `unbuilt:`, once each; the key made after `retired:`."""
+    text = HEAD % "unbuilt: [r1]\n"
+    assert "unbuilt: [r1, r2]\n" in spec_unbuilt.with_unbuilt(text, ["r2", "r1", "r2"])
+    made = spec_unbuilt.with_unbuilt(HEAD % "", ["r2"])
+    assert "retired: []\nunbuilt: [r2]\n---" in made
+    caps = tmp_path / "spec" / "capabilities"
+    caps.mkdir(parents=True)
+    (caps / "demo.md").write_text(made)
+    assert spec_unbuilt.unbuilt(tmp_path) == {"demo": {"r2"}}

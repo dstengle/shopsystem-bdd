@@ -174,12 +174,10 @@ def _append(text, heading, body, before="Behaviour"):
     return text[:found.start(1)] + joined + text[found.end(1):]
 
 
-def lay(root, item, into):
-    """`spec/` of `root` copied to `into/spec`, and the item's blocks laid over the copy: term bullets at the end of the
-    capability file's `## Terms`, groups (headings raised to `### `) at the end of its `## Behaviour`. The names of the
-    capabilities laid."""
+def lay_onto(into, item):
+    """The item's blocks laid over `into/spec`: term bullets at the end of the capability file's `## Terms`, groups
+    (headings raised to `### `) at the end of its `## Behaviour`. The names of the capabilities laid."""
     blocks = read(item, "the item %s" % item.name)
-    shutil.copytree(Path(root) / "spec", Path(into) / "spec", dirs_exist_ok=True)
     for block in blocks:
         path = capability_file(into, block.capability)
         text = path.read_text()
@@ -191,3 +189,49 @@ def lay(root, item, into):
                 for g in block.groups))
         path.write_text(text)
     return [b.capability for b in blocks]
+
+
+def lay(root, item, into, others=()):
+    """`spec/` of `root` copied to `into/spec`, each of `others` laid over the copy, then the item (`lay_onto`). The
+    names of the item's capabilities laid."""
+    shutil.copytree(Path(root) / "spec", Path(into) / "spec", dirs_exist_ok=True)
+    for other in others:
+        lay_onto(into, other)
+    return lay_onto(into, item)
+
+
+def _fresh(old, capability, used, seen, pairs):
+    """`old`, or the next id above every one `seen` when it is `used`, the pair noted in `pairs`."""
+    if old not in used:
+        used.add(old)
+        return old
+    new = "%s%d" % (old[0], max(_number(i) for i in seen if i[0] == old[0]) + 1)
+    seen.add(new)
+    used.add(new)
+    pairs.append(("%s#%s" % (capability, old), "%s#%s" % (capability, new)))
+    return new
+
+
+def renumber(root, item, taken):
+    """New group and requirement ids for the item's wherever they collide with its capability in `spec/` (groups,
+    requirements, `retired:`) or with `taken` ({capability: ids} of the items picked before it), each the next free
+    in file order (plan 4, D8). `taken` gains the item's ids; the item's `## Requirements` is rewritten. The
+    (`<cap>#<old>`, `<cap>#<new>`) pairs."""
+    blocks, out, pairs = read(item, "the item %s" % item.name), [], []
+    for block in blocks:
+        cap = spec_read.capability(capability_file(root, block.capability))
+        used = {g.id for g in cap.groups} | {r.id for g in cap.groups for r in g.requirements}
+        used |= {r for r in cap.retired if re.fullmatch(r"[gr][1-9]\d*", r)} | taken.get(block.capability, set())
+        seen = used | {g.id for g in block.groups} | {r for g in block.groups for r, _ in g.requirements}
+
+        groups = []
+        for g in block.groups:
+            gid = _fresh(g.id, block.capability, used, seen, pairs)
+            groups.append(Group(gid, g.title, [(_fresh(r, block.capability, used, seen, pairs), text)
+                                               for r, text in g.requirements]))
+        out.append(Block(block.capability, block.terms, groups))
+        taken.setdefault(block.capability, set()).update(
+            {g.id for g in groups} | {r for g in groups for r, _ in g.requirements})
+    if pairs:
+        item.sections[SECTION] = render(out)
+    return pairs

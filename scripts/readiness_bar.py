@@ -85,16 +85,16 @@ def _scenarios(copy, blocks):
     return reasons
 
 
-def well_formed(root, item):
-    """(reasons, warnings) of the item's requirement lines, checked on a copy of `spec/` with them laid in (D6, D7, D9).
-    An item with no line is not passing."""
+def well_formed(root, item, others=()):
+    """(reasons, warnings) of the item's requirement lines, checked on a copy of `spec/` with them laid in (D6, D7, D9),
+    over the lines of `others` (a batch's items picked before it, plan 4 D7). An item with no line is not passing."""
     blocks = backlog_lines.read(item, rel_of(item.name))
     mine = set(backlog_lines.ids(blocks))
     if not mine:
         return ["it has no requirement line: give it one with `work line`"], []
     copy = Path(tempfile.mkdtemp(prefix="readiness-"))
     try:
-        backlog_lines.lay(root, item, copy)
+        backlog_lines.lay(root, item, copy, others)
         reasons = ["%s.md: %s" % (b.capability, p) for b in blocks
                    for p in spec_read.capability(backlog_lines.capability_file(copy, b.capability)).problems]
         reasons = reasons or _parses(copy, blocks)
@@ -106,7 +106,8 @@ def well_formed(root, item):
         shutil.rmtree(copy, ignore_errors=True)
 
 
-def check(root, item):
-    """(reasons, warnings): the request lines not settled, then the well-formed reasons (D8)."""
-    reasons, warnings = well_formed(root, item)
+def check(root, item, others=()):
+    """(reasons, warnings): the request lines not settled, then the well-formed reasons (D8), laid over `others`; the
+    item's own ids are the only ones whose L1 refuses."""
+    reasons, warnings = well_formed(root, item, others)
     return unsettled(root, item) + reasons, warnings

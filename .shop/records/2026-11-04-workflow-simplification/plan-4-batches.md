@@ -367,7 +367,7 @@ Builds no requirement on its own. Task 3's `start` is a commit around it.
   - `batch_pick.pick(root, size=None) -> Pick`: D7, writing nothing. Returned items have `status="shaped"` and the
     note set on the Item; picked ones keep `ready`, and Task 3 moves them.
 
-- [ ] **Step 1: Write the failing tests.** Use `ready_repo`, `ABANDON` as the passing line, `SECOND` (``When the person
+- [x] **Step 1: Write the failing tests.** Use `ready_repo`, `ABANDON` as the passing line, `SECOND` (``When the person
   runs `work abandon` on an initiative that is `started`, `work` shall exit successfully.``, measured to pass alone
   and together with `ABANDON`), and `FROBNICATE`.
   - `test_with_unbuilt_appends_and_inserts`: on a file with `unbuilt: [r1]`, `[r5]` gives `unbuilt: [r1, r5]`. On a
@@ -392,21 +392,21 @@ Builds no requirement on its own. Task 3's `start` is a commit around it.
     with that `L1` reason and stays `ready`.
   - `test_pick_writes_nothing`: the tree and HEAD are unchanged.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_batch_pick.py tests/scripts/test_backlog_lines.py tests/scripts/test_spec_unbuilt.py -q`
   Expected: FAIL; `batch_pick` does not exist.
 
-- [ ] **Step 3: Implement.** The pick loops over the `ready` table until a pass picks nothing new. Each item is
+- [x] **Step 3: Implement.** The pick loops over the `ready` table until a pass picks nothing new. Each item is
   checked alone once, and laid with the picked once.
 
-- [ ] **Step 4: Run them and the readiness tests.**
+- [x] **Step 4: Run them and the readiness tests.**
   Run: `python3 -m pytest tests/scripts/test_batch_pick.py tests/scripts/test_backlog_lines.py tests/scripts/test_spec_unbuilt.py tests/scripts/test_readiness_bar.py tests/scenarios/test_readiness.py -q | tail -1`
   Expected: all pass.
 
-- [ ] **Step 5: The baselines.** The Task 1 command, with this task's files.
+- [x] **Step 5: The baselines.** The Task 1 command, with this task's files.
   Expected: `27 xfailed`, no failures; `size` silent; `check` clean.
 
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
   ```bash
   git add scripts/batch_pick.py scripts/backlog_lines.py scripts/readiness_bar.py scripts/spec_unbuilt.py \
     tests/scripts/test_batch_pick.py tests/scripts/test_backlog_lines.py tests/scripts/test_spec_unbuilt.py CLAUDE.md
