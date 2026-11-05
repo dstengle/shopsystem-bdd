@@ -39,6 +39,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/migrate_session.py` | the hooks' text about initiatives: `work status` at SessionStart, `migrate compacting` at PreCompact |
 | `scripts/migrate_prompt.py` | the UserPromptSubmit hook's text (`migrate prompting`): a session writes a delegation the person gives with `work delegate` (requests r72) |
 | `scripts/model*.py` | the `model` command: parsing, facts, checks, work, reports |
+| `scripts/model_decisions.py` | the tiers of `spec/decisions/`: the `enforced_by` entries told apart, and `model decisions --check`'s runs of each `check` decision's tests (decision-tiers) |
 | `scripts/model_requests.py` | the reading of requests by `model`: `.shop/work/requests/q<n>.md` |
 | `scripts/model_spec.py` | `model`'s reading of the codified spec: groups, requirements and their parse, universal conditions, `restated.json`, the typed glossary, generated scenarios (`@g<n>`), and a file without `language: codified-1` (v_p0) |
 | `scripts/model_restates.py` | `model restates`: the coverage of the 0.29 ids by groups, `## Dropped` and moves |

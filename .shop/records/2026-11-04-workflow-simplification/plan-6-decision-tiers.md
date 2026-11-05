@@ -435,7 +435,7 @@ test in the task named.
   - the local `ThenDoes use`: only when `decisions_run` is set (otherwise it returns `False`). It asserts that the
     test's id is printed on a `holds` or `failing` line and that `<outside>/ran` holds `<t>`.
 
-- [ ] **Step 1: Write the failing tests** (`test_model_decisions.py`, on a `tmp_path` repository: `spec/decisions/`
+- [x] **Step 1: Write the failing tests** (`test_model_decisions.py`, on a `tmp_path` repository: `spec/decisions/`
   with decision files written by a helper and `tests/test_*.py` files; `model` run through `subprocess` as
   `test_model_output.py` does):
   - `test_a_passing_check_decision_holds`: exit 0; the index line, `holds    spec/decisions/a.md (design-decision/…/a): tests/test_a.py::test_a`,
@@ -458,27 +458,27 @@ test in the task named.
     and no `__pycache__`.
   - `test_the_decisions_run_side_by_side`: three decisions, each sleeping 1 s, finish in under 2.5 s.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_model_decisions.py -q | tail -3`
   Expected: FAIL. `--check` prints only the index line.
 
-- [ ] **Step 3: Implement D5** in `model_decisions.py` and `cmd_decisions`.
+- [x] **Step 3: Implement D5** in `model_decisions.py` and `cmd_decisions`.
 
-- [ ] **Step 4: Run them, and design-model-check's `model decisions` scenarios.**
+- [x] **Step 4: Run them, and design-model-check's `model decisions` scenarios.**
   Run: `python3 -m pytest tests/scripts/test_model_decisions.py tests/scenarios/test_design_model_check.py -q -k "decisions or Decision" | tail -1`
   Expected: all pass; r50, r51 and r52 are unchanged.
 
-- [ ] **Step 5: The r4 and r5 handlers; take r4 and r5 out of `unbuilt:`.**
+- [x] **Step 5: The r4 and r5 handlers; take r4 and r5 out of `unbuilt:`.**
   Run: `python3 -m pytest tests/scenarios/test_decision_tiers.py -q | tail -1; python3 scripts/features vocab --check | tail -1`
   Expected: `6 passed`; `every step has one handler`.
 
-- [ ] **Step 6: Mutations, each reverted.** Each must turn its test red:
+- [x] **Step 6: Mutations, each reverted.** Each must turn its test red:
   - dropping `-o addopts=` fails `test_the_repositorys_addopts_do_not_deselect_a_named_test`;
   - dropping `-B` (or `-p no:cacheprovider`) fails `test_the_check_writes_nothing_in_the_repository`, and scenario
     @r5 fails U3;
   - treating exit 5 as holding fails the `exit 5` case.
 
-- [ ] **Step 7: The live run and the baselines.**
+- [x] **Step 7: The live run and the baselines.**
   Run: `time python3 scripts/model decisions --check; python3 -m pytest -q | tail -1; python3 scripts/tools size --limit 300; python3 scripts/tools check scripts/model_decisions.py scripts/model_report.py tests/scripts/test_model_decisions.py tests/scenarios/decision_tiers_handlers.py`
   Expected:
   - live: the index line and `0 check decisions: 0 hold, 0 failing`, exit 0, since no decision is tiered yet;
@@ -486,7 +486,7 @@ test in the task named.
   - `size` silent;
   - `check` clean.
 
-- [ ] **Step 8: Commit.**
+- [x] **Step 8: Commit.**
   ```bash
   git add scripts/model_decisions.py scripts/model_report.py scripts/model tests/scripts/test_model_decisions.py \
     tests/scenarios/decision_tiers_handlers.py spec/capabilities/decision-tiers.md CLAUDE.md

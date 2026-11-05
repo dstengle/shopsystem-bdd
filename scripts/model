@@ -130,8 +130,11 @@ contract:
     supersedes one still accepted.
   - decisions writes spec/decisions/index.md, the generated index of
     spec/decisions/, each row linked to its file, and nothing else; --check
-    writes nothing and exits 1 when the file on disk is not what it would
-    write.
+    writes nothing and says whether the file on disk is what it would
+    write, then runs each check decision's tests (one pytest run a decision,
+    the repository's addopts cleared, no cache or bytecode written) and
+    prints `holds` or `failing` with each decision's path and id, then the
+    count; it exits 1 when the index is stale or any decision fails.
   - why <capability>#r<n> prints the trace the model gives for a
     requirement: the requirement, its group and the 0.29 ids the group
     restates with their text, each capability-proposal that adds or changes

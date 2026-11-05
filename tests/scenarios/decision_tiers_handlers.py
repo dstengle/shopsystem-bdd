@@ -24,6 +24,7 @@ def shared(name, file):
 
 
 W = shared("shop_work_queue_world", "work_queue_world.py")
+H = shared("shop_design_model_check_handlers", "design_model_check_handlers.py")   # design-model-check's run_model
 local = W.local
 
 
@@ -88,3 +89,67 @@ def given_supersedes(step):
     new, old = (bare(n) for n in step.names)
     have = re.findall(r"[\w./-]+", fields(step, new).get("supersedes", "").strip("[]"))
     field(step, new, "supersedes", "[%s]" % ", ".join(have + ["design-decision/%s" % old]))
+
+
+def write(step, rel, text):
+    path = step.repo / rel
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text)
+
+
+def outside(step):
+    """A directory outside the repository, where a test leaves the mark that it ran."""
+    if "outside" not in step.context:
+        step.context["outside"] = step.fixtures("tmp_path_factory").mktemp("outside")
+    return step.context["outside"]
+
+
+def source(step, name, failing=False):
+    mark = str(outside(step) / "ran")
+    return "def test_%s():\n    open(%r, 'a').write(%r)\n%s" % (name, mark, name + "\n",
+                                                                "    assert False\n" if failing else "")
+
+
+@local("GivenK", "test")
+def given_test(step):
+    """tests/test_<t>.py, whose test marks that it ran outside the repository and passes. analysis-tools' test (it
+    imports `cart`) is the registry's, and its feature does not bind with `bind_all`."""
+    name = bare(step.names[0])
+    write(step, "tests/test_%s.py" % name, source(step, name))
+    says(step, name, "tests/test_%s.py::test_%s" % (name, name))
+
+
+@local("GivenK_C", "test")
+def given_failing_test(step):
+    """failing: the test also asserts False. Any other condition goes on to the registry."""
+    name = bare(step.names[0])
+    if not step.text.endswith(" is failing") or name not in step.context.get("says", {}):
+        return False
+    write(step, "tests/test_%s.py" % name, source(step, name, failing=True))
+
+
+@handler("GivenR", "enforced by")
+def given_enforced_by(step):
+    name, by = (bare(n) for n in step.names)
+    have = [x.strip() for x in fields(step, name).get("enforced_by", "").strip("[]").split(",") if x.strip()]
+    field(step, name, "enforced_by", "[%s]" % ", ".join(have + [step.context["says"][by]]))
+
+
+@handler("WhenRuns", "`model decisions --check`")
+def model_decisions_check(step):
+    H.run_model(step, "decisions")
+    H.run_model(step, "decisions", "--check")
+    step.context["decisions_run"] = True
+
+
+@local("ThenDoes", "test")
+def uses_test(step):
+    """`model` uses the test: its id is on a `holds` or `failing` line, and the test ran. Only after `model decisions
+    --check`: the registry's `use` is the batches' (a batch's plan)."""
+    if step.term != "use" or not step.context.get("decisions_run"):
+        return False
+    done, name = step.context["result"], bare(step.names[0])
+    said = step.context["says"][name]
+    assert any(line.startswith(("holds ", "failing ")) and said in line for line in done.stdout.splitlines()), \
+        (said, done.stdout)
+    assert name in (outside(step) / "ran").read_text().split(), done.stdout

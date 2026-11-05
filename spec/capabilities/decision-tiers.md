@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: [r4, r5]
+unbuilt: []
 ---
 
 # Decision tiers
@@ -64,6 +64,15 @@ to its tier, and keeps a superseded decision marked so.
   file is not under the root are each a file problem; a requirement id that names nothing is an unresolved reference.
   History needs no tier: a `superseded` or `rejected` decision gives none, and `w_untiered` does not name it (plan 6,
   D2, D3).
+- `model decisions --check` checks the index first and prints its line, then runs each `check` decision's tests, in
+  file order and up to 4 at a time: one `python -B -m pytest -q -p no:cacheprovider -o addopts= <entries>` a decision,
+  in the repository, with `PYTHONDONTWRITEBYTECODE=1` and a 600 s timeout, so a named test runs alone whatever the
+  repository's own `addopts` deselect, and nothing is written there. It prints `holds    <path> (<id>): <entries>` or
+  `failing  <path> (<id>): <entries>: exit <code>` (or `timed out after <n> s`, or `names no test`) with the last 20
+  lines of pytest's output, then `<n> check decisions: <h> hold, <f> failing`. A pytest exit other than 0 is failing
+  (4: a test not found, 5: nothing collected). It exits 1 when the index is stale or any decision fails (plan 6, D5).
+- design-model-check r52 (`--check` on a current index exits successfully) and r5 here are both kept: r5 is an
+  unwanted-behaviour line and takes precedence, and r52's repository has no `check` decision (plan 6, D6).
 
 ## Not yet
 - The tier-1 decision checks in the readiness bar: the design's bar includes "the tier-1 decision checks hold for any

@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 
+import model_decisions
 from model_facts import Model
 from model_parse import DECISIONS, as_list, decision_files, expand, frontmatter
 
@@ -38,11 +39,12 @@ def cmd_decisions(args):
     target = Path(args.root) / DECISIONS / "index.md"
     if args.check:
         current = target.read_text() if target.exists() else ""
-        if current != text:
-            print("spec/decisions/index.md is not what `model decisions` writes: run it")
-            return 1
-        print("spec/decisions/index.md is current")
-        return 0
+        stale = current != text
+        print("spec/decisions/index.md is not what `model decisions` writes: run it" if stale
+              else "spec/decisions/index.md is current")
+        lines, held = model_decisions.report(model_decisions.check_tests(args.root))   # decision-tiers r4, r5
+        print("\n".join(lines))
+        return 1 if stale or not held else 0
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(text)
     print(f"wrote {target.relative_to(args.root) if not os.path.isabs(args.root) else target}")
