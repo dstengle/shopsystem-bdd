@@ -130,3 +130,10 @@ def test_a_merged_batch_is_measured():
     text = SKILL.read_text()
     merged = text.index("work batch merged <batch>")
     assert "measure batch <batch>" in text[merged:], text[merged:]
+
+
+def test_an_abandoned_batch_is_measured_too():
+    """Plan 7 review M8: this skill runs `measure batch`, after `merged` and after `abandon`."""
+    text = SKILL.read_text()
+    abandon = text.index("work batch abandon <batch>")
+    assert "measure batch <batch>" in text[abandon:abandon + 300], text[abandon:abandon + 300]

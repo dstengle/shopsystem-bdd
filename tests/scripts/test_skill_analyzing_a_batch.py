@@ -19,3 +19,9 @@ def test_a_candidate_that_changes_a_knob_is_a_decision():
 
 def test_an_initiative_is_still_measured_until_plan_9():
     assert "measure initiative" in SKILL.read_text()
+
+
+def test_it_reads_the_measurement_building_a_batch_wrote():
+    """Plan 7 review M8: building-a-batch measures the batch; this skill measures it only when nothing did."""
+    step = process(SKILL)[0]
+    assert "the measurement building-a-batch wrote" in step and "only when there is none" in step, step
