@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: [r1, r2, r3, r4, r5, r6]
+unbuilt: [r4, r5]
 ---
 
 # Decision tiers
@@ -18,7 +18,7 @@ runs with the suite and at the pull request; a `requirement` decision names the 
 to its tier, and keeps a superseded decision marked so.
 
 ## Terms
-- **untiered** (condition of design-decision): a design-decision whose frontmatter gives no `tier`.
+- **untiered** (condition of design-decision): a design-decision that is not `superseded` or `rejected` and whose frontmatter gives no `tier`.
 - **untested** (condition of design-decision): A design-decision is untested when the design-decision is enforced by no test.
 - **unrequired** (condition of design-decision): A design-decision is unrequired when the design-decision is enforced by no requirement.
 
@@ -57,6 +57,13 @@ to its tier, and keeps a superseded decision marked so.
 
 - `w_untiered` is a warning while plan 6 sorts the 74 decisions into their tiers; a decision gives its tier as `tier:`
   in its frontmatter.
+- A decision gives its tier as `tier: check | requirement | judgement` and what enforces it as `enforced_by: [...]`:
+  pytest node ids (`<path>.py` or `<path>.py::<name>`, relative to the root) for a `check` decision, requirement ids
+  (an entry holding `#`, as `model why` reads them) for a `requirement` decision, and none for a `judgement` one. A tier
+  outside the three, an entry of the wrong kind for its tier, `enforced_by` on a `judgement` decision and a test whose
+  file is not under the root are each a file problem; a requirement id that names nothing is an unresolved reference.
+  History needs no tier: a `superseded` or `rejected` decision gives none, and `w_untiered` does not name it (plan 6,
+  D2, D3).
 
 ## Not yet
 - The tier-1 decision checks in the readiness bar: the design's bar includes "the tier-1 decision checks hold for any

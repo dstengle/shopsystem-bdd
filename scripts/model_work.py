@@ -4,6 +4,7 @@ import datetime
 import re
 from pathlib import Path
 
+import model_decisions
 from model_parse import as_list, decision_files, expand, frontmatter, scalar
 
 STATUSES = {     # design model v5's lifecycles (GF conversion design §7.1: C11, C13-C15)
@@ -55,6 +56,19 @@ class WorkReading:
                 self.want(self.qualify(s), None, self.rel(path))
             if data.get("revisit_signal"):
                 self.fact("revisit_signal", d, self.qualify(data["revisit_signal"]))   # "requests" stays as written
+            self.read_tier(d, data, self.rel(path))
+
+    def read_tier(self, d, data, where):
+        """tier/2, enforced_test/2 and enforced_req/2 (decision-tiers D2); an entry of the wrong form is a file problem."""
+        tier, (tests, reqs) = data.get("tier"), model_decisions.split(as_list(data.get("enforced_by")))
+        self.problems += [f"{where}: {p}" for p in model_decisions.wrong(self.root, tier, tests, reqs)]
+        if tier in model_decisions.TIERS:
+            self.fact("tier", d, tier)
+        for t in tests:
+            self.fact("enforced_test", d, t)
+        for q in filter(None, (self.resolve_req(ref, where) for ref in reqs)):
+            self.fact("enforced_req", d, q)
+            self.want(q, "requirement", where)
 
     def read_records(self):
         obs = self.root / RECORDS / "observations.md"

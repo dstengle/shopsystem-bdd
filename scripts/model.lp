@@ -28,6 +28,7 @@
 #defined upstream/2.  #defined line/3.       #defined outcome/3.   #defined resolution_of_line/2.   % a request (C20)
 #defined authored_depends_on/2.   % the parse of "CAP depends on X" (v4)
 #defined age/2.                   % days since an initiative or a request was dated
+#defined tier/2.   #defined enforced_test/2.   #defined enforced_req/2.   % a decision's tier (decision-tiers D2)
 % the glossary: terms of spec/index.md and of each capability's Terms (C8, C27)
 #defined term_of/2.               % term_of(T, Ctx): term T is a term of bounded-context Ctx
 #defined avoid/2.                 % avoid(T, W): term T's entry lists word W after `Not:`
@@ -278,6 +279,17 @@ v_d4(Q, N) :- status(Q, "delivered"), outcome(Q, N, "accepted"), line(Q, N, _), 
 label("v_d5", "an abandoned initiative has a part open").                                   % §7.2: the live v_d2
 v_d5(I) :- status(I, "abandoned"), root(P, I), not closed(P).
 
+% decision tiers (decision-tiers r2, r3, r6; plan 6 D4): a check decision names a test, a requirement decision a
+% requirement, and an accepted decision supersedes none still accepted. A proposed superseder fires nothing.
+has_test(D) :- enforced_test(D, _).
+has_req_entry(D) :- enforced_req(D, _).
+label("v_d6", "a check decision names no test").
+v_d6(D) :- tier(D, "check"), not has_test(D).
+label("v_d7", "a requirement decision names no requirement").
+v_d7(D) :- tier(D, "requirement"), not has_req_entry(D).
+label("v_d8", "an accepted decision supersedes one still accepted").
+v_d8(Old, New) :- supersedes(New, Old), status(New, "accepted"), status(Old, "accepted").
+
 % 16-18. requests (r113, r115, r117, r121). §7.2 drops v16a's date cutoff once old initiatives are compacted; until
 % then it stays, so that the initiatives from before requests existed are not reported (the release compacts them).
 label("v16a", "an initiative dated after 2026-10-23 that fulfils no request").
@@ -349,6 +361,9 @@ w_stale_intake(Q)  :- status(Q, "accepted"), node(Q, "request"), not fulfilled(Q
 fulfilled(Q)       :- fulfils(_, Q).
 label("w_stale_proposed", "an initiative proposed more than 90 days ago").                 % §7.2: the live w_stale_intake
 w_stale_proposed(I) :- status(I, "proposed"), node(I, "initiative"), age(I, Days), Days > 90.
+label("w_untiered", "a decision in force gives no tier").                                  % decision-tiers r1, D3
+tiered(D)          :- tier(D, _).
+w_untiered(D)      :- node(D, "design-decision"), not status(D, "superseded"), not status(D, "rejected"), not tiered(D).
 
 #show.
 #show label/2.
@@ -362,8 +377,9 @@ w_stale_proposed(I) :- status(I, "proposed"), node(I, "initiative"), age(I, Days
 #show v_s1/1. #show v_s2/1. #show v_s3/1. #show v_s4/1.
 #show v_w1/1. #show v_w2/1. #show v_w3/2. #show v_w4/1.
 #show v_d1/1. #show v_d2/1. #show v_d3/1. #show v_d4/2. #show v_d5/1.
+#show v_d6/1. #show v_d7/1. #show v_d8/2.
 #show v16a/1. #show v17/1. #show v18a/2. #show v18b/2. #show v18c/2. #show v18d/1.
 #show v_t1/3. #show v_t2/1. #show v_t3/1. #show v_t4/1. #show v_t5/1. #show v_t6/2.
 #show v_p0/1. #show v_p1/2. #show v_p2/1. #show v_p3/2.
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
-#show w_many_requests/1. #show w_stale_intake/1. #show w_stale_proposed/1.
+#show w_many_requests/1. #show w_stale_intake/1. #show w_stale_proposed/1. #show w_untiered/1.

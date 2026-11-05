@@ -328,7 +328,7 @@ test in the task named.
     any other is the status), the local `GivenK_C design-decision` (`untiered`, `untested`, `unrequired` write
     nothing, and any other returns `False`), and `GivenR supersedes`.
 
-- [ ] **Step 1: Write the failing script tests** (`test_model_tiers.py`, a `ModelTest` subclass from `test_model`,
+- [x] **Step 1: Write the failing script tests** (`test_model_tiers.py`, a `ModelTest` subclass from `test_model`,
   `self.good()` first, solved with `self.check_json()`):
   - `test_w_untiered_names_a_decision_with_no_tier`: one accepted decision with no tier gives one `w_untiered` row
     naming its id. With `tier: judgement` it gives none.
@@ -351,35 +351,35 @@ test in the task named.
   - `test_the_index_gives_the_tier`: `render_decisions` has the D12 header and `judgement` in the row of a judgement
     decision.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_model_tiers.py -q | tail -3`
   Expected: FAIL. There is no `model_decisions`, no `w_untiered` row, and no `tier` column.
 
-- [ ] **Step 3: Implement D2-D4 and D12.** Write `model_decisions.py` (TIERS, `split`, `test_file`) and the
+- [x] **Step 3: Implement D2-D4 and D12.** Write `model_decisions.py` (TIERS, `split`, `test_file`) and the
   `read_decisions` lines (at most 19 more). Add the rules and labels to `model.lp`, `w_untiered` among the warnings,
   and the column to `render_decisions`. Then write the contract lines in `scripts/model`.
 
-- [ ] **Step 4: Run them, and the model tests.**
+- [x] **Step 4: Run them, and the model tests.**
   Run: `python3 -m pytest tests/scripts/test_model_tiers.py tests/scripts/test_model.py tests/scripts/test_model_output.py tests/scripts/test_model_withdrawn.py tests/scripts/test_model_reading.py -q | tail -1`
   Expected: all pass.
 
-- [ ] **Step 5: Write the scenario handlers, take r1, r2, r3, r6 out of `unbuilt:`, and edit the `untiered`
+- [x] **Step 5: Write the scenario handlers, take r1, r2, r3, r6 out of `unbuilt:`, and edit the `untiered`
   definition.** Switch `test_decision_tiers.py` to `bind_all`.
   Run: `python3 -m pytest tests/scenarios/test_decision_tiers.py tests/scenarios/test_design_model_check.py -q | tail -1`
   Expected: decision-tiers shows `4 passed, 2 xfailed`. design-model-check passes as before, `headless` (r40)
   included.
 
-- [ ] **Step 6: Check the vocabulary and the generated feature.**
+- [x] **Step 6: Check the vocabulary and the generated feature.**
   Run: `python3 scripts/features vocab --check | tail -1; python3 scripts/features generate --check; echo $?; python3 scripts/model lexicon --check | tail -1; python3 scripts/model logic | tail -1`
   Expected: `every step has one handler`; exit 0 (the `untiered` edit changes no step); `401 terms, 0 problems`;
   `11 findings: 6 L5, 5 L6`.
 
-- [ ] **Step 7: Mutations, each reverted.** Each must turn its test red:
+- [x] **Step 7: Mutations, each reverted.** Each must turn its test red:
   - `v_d8` without the `status(New, "accepted")` clause fails `test_v_d8_fires_only_for_accepted_pairs`;
   - `w_untiered` without the history clauses fails `test_history_needs_no_tier`;
   - r6 left in `unbuilt:` fails the suite as `XPASS(strict)`.
 
-- [ ] **Step 8: Regenerate the index; the baselines.**
+- [x] **Step 8: Regenerate the index; the baselines.**
   Run: `python3 scripts/model decisions && python3 scripts/model decisions --check; python3 -m pytest -q | tail -1; python3 scripts/model check | tail -1; python3 scripts/tools size --limit 300; python3 scripts/tools check scripts/model_decisions.py scripts/model_work.py scripts/model_report.py tests/scripts/test_model_tiers.py tests/scenarios/decision_tiers_handlers.py tests/scenarios/test_decision_tiers.py`
   Expected:
   - `spec/decisions/index.md is current`;
@@ -388,7 +388,7 @@ test in the task named.
   - `size` silent, with `model_work.py` ≤ 285;
   - `check` clean.
 
-- [ ] **Step 9: Commit.**
+- [x] **Step 9: Commit.**
   ```bash
   git add scripts/model_decisions.py scripts/model_work.py scripts/model.lp scripts/model_report.py scripts/model \
     tests/scripts/test_model_tiers.py tests/scenarios/decision_tiers_handlers.py tests/scenarios/test_decision_tiers.py \

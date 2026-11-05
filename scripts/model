@@ -51,7 +51,8 @@ contract:
     <name>'s being features/<name>.feature; any other feature file is a file
     problem;
     spec/decisions/*.md but index.md, one design-decision each (frontmatter
-    id, summary, date, status, supersedes, revisit_when, revisit_signal);
+    id, summary, date, status, supersedes, revisit_when, revisit_signal,
+    tier, enforced_by);
     .shop/work/<initiative>/initiative.md and .shop/work/<initiative>/<part>.md;
     .shop/work/requests/q<n>.md, one request each (a file not of the form
     `work request` writes is a file problem);
@@ -119,6 +120,14 @@ contract:
     and closed. v_d5 names an `abandoned` initiative with a part, at any
     depth, neither closed nor withdrawn; abandoning an initiative means
     withdrawing what is open under it.
+  - A decision's tier is check, requirement or judgement; enforced_by lists
+    pytest node ids (<path>.py[::<name>...]) for a check decision and
+    requirement ids (an entry with #) for a requirement decision, and a
+    judgement decision has none; any other tier or entry is a file problem.
+    w_untiered names a decision in force (not superseded or rejected, or with
+    no status) that gives no tier; v_d6 a check decision with no test, v_d7 a
+    requirement decision with no requirement, v_d8 an accepted decision that
+    supersedes one still accepted.
   - decisions writes spec/decisions/index.md, the generated index of
     spec/decisions/, each row linked to its file, and nothing else; --check
     writes nothing and exits 1 when the file on disk is not what it would
