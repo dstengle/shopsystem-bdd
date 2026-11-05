@@ -1,9 +1,9 @@
 """`work sync` (capability requests, r32, r33): what the other side of each request posted on its issue, recorded in
-this side's record, and every live request printed with whose turn it is. Run on either side, it is how a person nudges
+this side's record, and every request printed with its status and, unless it is closed, whose turn it is. Run on either side, it is how a person nudges
 a conversation along ("check your requests").
 
 A request this context answers that has no record yet is an open issue on this context's own GitHub repository whose
-body is an `ask` form (request_form); it is written as a new `q<n>`. For each record with an issue that is not closed,
+body is an `ask` form (request_form); it is written as a new `q<n>`. For each record with an issue, closed or not,
 each comment it does not yet hold (`## Comments`, request_post) is read as its block of fields: the block's entries
 are written into their sections, by number, and its status and turn set; an offer is kept under `## Offer`. That is a
 copy of what the issue holds, not a write of the other side's part. A comment whose block does not parse, or that
@@ -106,21 +106,23 @@ def caught_up(root, name, text, out):
     return text
 
 
-def waiting(root, text):
-    """Whose move a live request waits on, in words."""
+def waiting(root, status, text):
+    """Whose move a live request waits on, in words; nothing for a closed one."""
+    if status in CLOSED:
+        return ""
     mine = request_post.is_upstream(root, text) if field(text, "turn") == "upstream" else request_post.is_asker(root, text)
     side = "this side" if mine else "the other side"
-    return "the %s's turn, waiting on %s" % (field(text, "turn"), side)
+    return ": the %s's turn, waiting on %s" % (field(text, "turn"), side)
 
 
 def sync(root):
-    """Record what the other side posted, commit the records changed, and print every live request."""
+    """Record what the other side posted, commit the records changed, and print every request."""
     writes, out = {}, []
     new_requests(root, writes, out)
     for name, status, _, _ in request_moves.requests(root):
         path = request_moves.path_of(root, name)
         text = shop_files.read(path, root)
-        if status in CLOSED or not field(text, "issue"):
+        if not field(text, "issue"):
             continue
         after = caught_up(root, name, text, out)
         if after != text:
@@ -136,6 +138,5 @@ def sync(root):
         print(line)
     for name, status, _, _ in request_moves.requests(root):
         text = shop_files.read(request_moves.path_of(root, name), root)
-        if status not in CLOSED:
-            print("%s %s: %s" % (intake_moves.named(name, text), status, waiting(root, text)))
+        print("%s %s%s" % (intake_moves.named(name, text), status, waiting(root, status, text)))
     return 0
