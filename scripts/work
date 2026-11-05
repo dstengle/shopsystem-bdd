@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Keep the backlog in .shop/backlog/: an item from an idea to its delivery, named `b<n>` (capability backlog).
 Keep the person's words with the turns around them in .shop/quotes/, named `quote-<n>` (capability conversation).
-Keep the requests between bounded contexts (capability requests). Plugin 1.x's queue of initiatives and work-items is
-frozen under .shop/work/ and read as files (workflow simplification plan 9)."""
+Keep the requests between bounded contexts in .shop/requests/, named `q<n>` (capability requests).
+Plugin 1.x's queue of initiatives and work-items is frozen under .shop/work/ and read as files (workflow simplification
+plan 9)."""
 import argparse
 import os
 import sys

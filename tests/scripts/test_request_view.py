@@ -17,8 +17,8 @@ REQUEST = ("---\nid: request/o/p/c/q1\nkind: request\nasker: bounded-context/o/p
 def test_a_line_with_no_line_outcome_is_listed_as_unsettled(tmp_path, capsys):
     (tmp_path / "spec").mkdir()
     (tmp_path / "spec/index.md").write_text("---\nid: bounded-context/o/p/c\nkind: bounded-context\n---\n")
-    (tmp_path / ".shop/work/requests").mkdir(parents=True)
-    (tmp_path / ".shop/work/requests/q1.md").write_text(REQUEST)
+    (tmp_path / ".shop/requests").mkdir(parents=True)
+    (tmp_path / ".shop/requests/q1.md").write_text(REQUEST)
     assert request_view.show(tmp_path, "q1", False) == 0
     shown = capsys.readouterr().out.splitlines()
     assert "  line 1: accepted - The first line." in shown, shown
@@ -31,7 +31,7 @@ OBSERVATIONS = ("# Observations\n\n## observation/o/p/c/o1\nabout: bounded-conte
 
 def frozen(tmp_path):
     for rel, text in {"spec/index.md": "---\nid: bounded-context/o/p/c\nkind: bounded-context\n---\n",
-                      ".shop/work/requests/q1.md": REQUEST,
+                      ".shop/requests/q1.md": REQUEST,
                       ".shop/work/i1/initiative.md": "---\nkind: initiative\nstatus: started\n"
                                                      "source: [observation/o/p/c/o1]\n---\n",
                       ".shop/work/i1/w1.md": "---\nkind: work-item\nstatus: drafted\n---\n",

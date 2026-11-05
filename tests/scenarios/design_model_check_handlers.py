@@ -79,11 +79,12 @@ def base(repo, context):
         if directory.name != "requests" and not (directory / "initiative.md").is_file() and \
                 not context.get("homeless"):
             write(repo, ".shop/work/%s/initiative.md" % directory.name, initiative_text(directory.name))
-    for path in sorted((work / "requests").glob("q*.md")) if work.is_dir() else ():
+    live = repo / ".shop" / "requests"
+    for path in sorted(live.glob("q*.md")) if live.is_dir() else ():
         text = path.read_text()
         if not re.search(r"^(part_of|source|raised_for): ", text, re.MULTILINE):
             path.write_text(text.replace("\n---\n", "\nsource: [observation/obs-1]\n---\n", 1))
-    if work.is_dir() and not (repo / ".shop" / "records" / "observations.md").is_file():
+    if (work.is_dir() or live.is_dir()) and not (repo / ".shop" / "records" / "observations.md").is_file():
         write(repo, ".shop/records/observations.md", "# Observations\n\n## %s\nabout: bounded-context/%s\nby: someone"
               "\ndate: 2026-10-15\n\nSeen.\n" % (full("observation", "obs-1"), PATH))
 

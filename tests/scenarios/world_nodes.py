@@ -43,7 +43,7 @@ def node_path(context, kind, name):
     if kind == "initiative":
         return ".shop/work/%s/initiative.md" % name
     if kind == "request":
-        return ".shop/work/requests/%s.md" % name
+        return ".shop/requests/%s.md" % name
     return ".shop/work/%s/%s.md" % (context.get("part_of", {}).get(name, initiative_of(context)), name)
 
 

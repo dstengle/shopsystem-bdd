@@ -38,7 +38,7 @@ class V5ReadingTest(ModelTest):
 
     def test_a_requests_lines_outcomes_and_upstream_are_facts(self):
         q = full("request", "q1")
-        self.write(".shop/work/requests/q1.md", f"---\nid: {q}\nkind: request\nasker: internal\nsource: [x]\n"
+        self.write(".shop/requests/q1.md", f"---\nid: {q}\nkind: request\nasker: internal\nsource: [x]\n"
                    "status: delivered\nturn: asker\ndate: 2026-01-01\n---\n\n## Lines\n1. Do \"a\".\n2. Do b.\n\n"
                    "## Outcomes\n1. accepted\n2. rewritten: Do c.\n\n## Resolution\n1. thing#r1 1.0\n")
         facts = model_facts.Model(self.tmp).read().facts

@@ -1,4 +1,4 @@
-"""The requests of a context, kept as .shop/work/requests/<id>.md: the library behind `work outcome`, `turn` and
+"""The requests of a context, kept as .shop/requests/<id>.md: the library behind `work outcome`, `turn` and
 `resolve`, `ask` and `reply` (capability requests). Every change is committed on the current branch (r12).
 
 A request's `## Lines`, `## Questions`, `## Answers`, `## Outcomes` and `## Resolution` hold one entry a line,
@@ -11,10 +11,11 @@ from pathlib import Path
 import request_lines
 import shop_files
 from request_text import (  # noqa: F401  (SETTLED: imported from here)
+    REQUESTS,
     SETTLED,
-    WORK_REQUESTS,
     entries,
     field,
+    next_number,
     numbered,
     requests,
     turned,
@@ -25,9 +26,9 @@ from shop_files import Refused
 
 
 def path_of(root, ident):
-    path = Path(root) / WORK_REQUESTS / (ident + ".md")
+    path = Path(root) / REQUESTS / (ident + ".md")
     if "/" in ident or not path.is_file():
-        raise Refused("there is no request %s under %s" % (ident, WORK_REQUESTS))
+        raise Refused("there is no request %s under %s" % (ident, REQUESTS))
     return path
 
 
@@ -120,9 +121,8 @@ def request(root, title, asker, lines_file, sources, thread, raised_for=None):
         raise Refused("the file %s does not exist" % lines_file)
     lines = [line.strip() for line in shop_files.read(Path(lines_file), Path(lines_file).parent).splitlines() if line.strip()]
     request_lines.check(root, lines)
-    directory = Path(root) / WORK_REQUESTS
-    taken = [int(m.group(1)) for p in directory.glob("q*.md") if (m := re.fullmatch(r"q(\d+)\.md", p.name))]
-    name = "q%d" % (max(taken, default=0) + 1)
+    directory = Path(root) / REQUESTS
+    name = "q%d" % next_number(root)
     origin = ["part_of: %s" % thread] if thread is not None else ["source: [%s]" % ", ".join(sources)] if sources else []
     if raised_for is not None and re.fullmatch(r"q\d+", raised_for):     # a bare q<n> names a request of this context
         raised_for = "request/%s/%s" % (shop_files.context_path(root), raised_for)

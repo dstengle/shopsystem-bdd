@@ -56,7 +56,7 @@ def test_another_asker_is_refused_naming_it(repo):
 def test_a_bare_raised_for_is_written_as_the_full_request_id(repo):
     name = request_moves.request(repo, "t", "internal", str(repo / "lines.md"), ["observation/o1"], None,
                                      raised_for="q7")
-    text = (repo / ".shop/work/requests" / (name + ".md")).read_text()
+    text = (repo / ".shop/requests" / (name + ".md")).read_text()
     assert re.search(r"(?m)^raised_for: request/%s/q7$" % re.escape(CONTEXT), text), text
 
 
@@ -64,4 +64,4 @@ def test_a_full_raised_for_is_written_as_given(repo):
     full = "request/ex.com/prod/app/q3"
     name = request_moves.request(repo, "t", "internal", str(repo / "lines.md"), ["observation/o1"], None,
                                      raised_for=full)
-    assert "\nraised_for: %s\n" % full in (repo / ".shop/work/requests" / (name + ".md")).read_text()
+    assert "\nraised_for: %s\n" % full in (repo / ".shop/requests" / (name + ".md")).read_text()

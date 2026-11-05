@@ -591,19 +591,19 @@ This repository's own requests are not moved here: Task 10's `migrate upgrade` m
   - `request_text.requests(root)`, which reads `REQUESTS` only.
   - Task 9 relies on `REQUESTS`, `FROZEN` and the requests' frontmatter fields `status` and `asker`.
 
-- [ ] **Step 1: Write the failing tests.**
+- [x] **Step 1: Write the failing tests.**
   - `test_request_counter.py::test_a_new_request_is_numbered_above_the_frozen_ones`: with `.shop/work/requests/q7.md`
     and `.shop/requests/q2.md`, `work request` writes `.shop/requests/q8.md`.
   - `test_model.py::test_model_reads_no_frozen_request`: a request with no origin under `.shop/work/requests/` gives
     no `v17`, and the same request under `.shop/requests/` gives one.
-- [ ] **Step 2: Run them.** Expected: FAIL (`q8` written under `.shop/work/requests/`; `v17` on the frozen file).
-- [ ] **Step 3: Implement D7**, and move every fixture to `.shop/requests/`.
-- [ ] **Step 4: The gate.** Expected:
+- [x] **Step 2: Run them.** Expected: FAIL (`q8` written under `.shop/work/requests/`; `v17` on the frozen file).
+- [x] **Step 3: Implement D7**, and move every fixture to `.shop/requests/`.
+- [x] **Step 4: The gate.** Expected:
   - `model check`: `0 violations, 16 warnings, 0 unresolved references, 0 file problems`. This repository's requests
     are all frozen until Task 10, and their sources still cite (D6).
   - `python3 scripts/work list` prints the 16 uncited observations and no request.
   - Suite: no failure, with nothing removed by the collection diff.
-- [ ] **Step 5: Commit.**
+- [x] **Step 5: Commit.**
   ```bash
   git add -A scripts tests spec skills README.md
   git commit -m "requests: live in .shop/requests/, numbered above the frozen queue's (plan 9, Task 6)"

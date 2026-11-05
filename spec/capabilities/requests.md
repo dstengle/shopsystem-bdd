@@ -137,8 +137,9 @@ Restates: work-queue#r59@0.29.
 - `work request`, `work outcome`, `work ask`, `work reply`, `work turn` and `work resolve` are commands of
   `scripts/work`, one set for every asker and every upstream, with one lifecycle; how a request is kept
   is `work`'s own (design-decision/requests-written-through-work).
-- A request is kept in its upstream's repository as `.shop/work/requests/q<n>.md`; the asker writes and reads it
-  there through the upstream's `work`.
+- A request is kept in its upstream's repository as `.shop/requests/q<n>.md`, its number one above the highest of
+  `.shop/requests/` and the frozen `.shop/work/requests/`; the asker writes and reads it there through the upstream's
+  `work`.
 - The file's form: frontmatter `id: request/<context path>/q<n>`, `kind: request`, `asker` (a context id,
   `internal`, or the product level), `part_of` (a job-thread) or `source` (origins), `raised_for`, `status`, `turn`
   (`asker` | `upstream`, the request's side); sections `## Lines` (the asker's), `## Questions`,

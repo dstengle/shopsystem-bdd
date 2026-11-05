@@ -7,10 +7,12 @@ import shutil
 import sys
 
 import pytest
+import request_moves
 import request_text
 from backlog_testing import REPO, git, work, write_request
 from test_backlog_lines import ABANDON
 from test_intake_outcome import ASKED, request
+from test_request_asker import repo  # noqa: F401  (the fixture)
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import toolchain
@@ -83,3 +85,17 @@ def test_model_check_takes_the_section(taken):
     assert done.returncode != 2, done.stderr
     assert not [line for line in done.stdout.splitlines() if "q1.md" in line], done.stdout
     git(taken, "status", "--porcelain")
+
+
+def test_a_new_request_is_numbered_above_the_frozen_ones(repo):
+    """Plan 9, D7: a live request is `.shop/requests/q<n>.md`, its number one above the highest of `.shop/requests/`
+    and the frozen `.shop/work/requests/`."""
+    for rel in (".shop/work/requests/q7.md", ".shop/requests/q2.md"):
+        (repo / rel).parent.mkdir(parents=True, exist_ok=True)
+        (repo / rel).write_text("---\nkind: request\nstatus: delivered\n---\n")
+    git(repo, "add", "-A")
+    git(repo, "commit", "-qm", "requests")
+    name = request_moves.request(repo, "t", "internal", str(repo / "lines.md"), ["observation/o1"], None)
+    assert name == "q8"
+    assert (repo / ".shop/requests/q8.md").is_file()
+    assert not (repo / ".shop/work/requests/q8.md").exists()

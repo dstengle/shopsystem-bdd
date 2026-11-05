@@ -1,6 +1,6 @@
 ---
 name: taking-in-a-request
-description: Use when a request from a peer bounded context or the product is open or awaiting the upstream in this repository's `.shop/work/requests/`, and is to be answered here. Not for this repository's own requests to its upstream, which are kept in the same folder and taken in there. Also use when a peer's request is to become an item of the backlog, or when its asker has answered a counter-proposal.
+description: Use when a request from a peer bounded context or the product is open or awaiting the upstream in this repository's `.shop/requests/`, and is to be answered here. Not for this repository's own requests to its upstream, which are kept in the same folder and taken in there. Also use when a peer's request is to become an item of the backlog, or when its asker has answered a counter-proposal.
 ---
 
 # Taking In a Request

@@ -33,7 +33,7 @@ def taken(ready_repo):
 
 
 def request(repo, name="q1"):
-    return (repo / ".shop" / "work" / "requests" / ("%s.md" % name)).read_text()
+    return (repo / ".shop" / "requests" / ("%s.md" % name)).read_text()
 
 
 def entries(text, section):
@@ -44,7 +44,7 @@ def committed(repo):
     return sorted(git(repo, "show", "--name-only", "--format=", "HEAD").split())
 
 
-BOTH = [".shop/backlog/b1.md", ".shop/work/requests/q1.md"]
+BOTH = [".shop/backlog/b1.md", ".shop/requests/q1.md"]
 
 
 def test_accepted_writes_the_line_into_the_item(taken):
@@ -93,7 +93,7 @@ def test_rewritten_with_a_line_passes_the_turn(ready_repo):
     assert entries(text, "Reasons") == ["1. rewritten as line 2"]
     assert (request_moves.field(text, "status"), request_moves.field(text, "turn")) == ("awaiting-asker",
                                                                                                "asker")
-    assert committed(ready_repo) == [".shop/work/requests/q2.md"]
+    assert committed(ready_repo) == [".shop/requests/q2.md"]
 
 
 def test_a_counter_proposal_that_does_not_parse_is_refused(taken):

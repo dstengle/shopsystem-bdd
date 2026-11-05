@@ -57,12 +57,12 @@ def lines(repo, *text):
 
 
 def written(repo):
-    return sorted((repo / ".shop/work/requests").glob("q*.md")) if (repo / ".shop/work/requests").is_dir() else []
+    return sorted((repo / ".shop/requests").glob("q*.md")) if (repo / ".shop/requests").is_dir() else []
 
 
 def test_lines_that_parse_are_written(codified):
     name = request_moves.request(codified, "t", "internal", lines(codified, GOOD), ["observation/o1"], None)
-    assert GOOD in (codified / ".shop/work/requests" / (name + ".md")).read_text()
+    assert GOOD in (codified / ".shop/requests" / (name + ".md")).read_text()
 
 
 def test_a_line_that_does_not_parse_is_refused_naming_it_and_nothing_is_written(codified):

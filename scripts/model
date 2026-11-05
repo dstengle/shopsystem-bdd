@@ -60,10 +60,10 @@ contract:
     spec/decisions/*.md but index.md, one design-decision each (frontmatter
     id, summary, date, status, supersedes, revisit_when, revisit_signal,
     tier, enforced_by);
-    .shop/work/requests/q<n>.md, one request each (a file not of the form
-    `work request` writes is a file problem); .shop/work/ is otherwise
-    frozen, read only for the observations its initiatives' and requests'
-    `source` cite (cited), and a reference to one of its kinds (initiative,
+    .shop/requests/q<n>.md, one request each (a file not of the form
+    `work request` writes is a file problem); .shop/work/ is frozen, read
+    only for the observations its initiatives' and requests' `source`
+    cite (cited), and a reference to one of its kinds (initiative,
     work-item, proposal) is history, never resolved;
     .shop/records/observations.md (one `## <id>` heading an observation) and
     any other Markdown under .shop/records/ whose frontmatter has an `id`.

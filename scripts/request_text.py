@@ -1,4 +1,4 @@
-"""The text of a request file `.shop/work/requests/q<n>.md` (capability requests; workflow simplification plan 4,
+"""The text of a request file `.shop/requests/q<n>.md` (capability requests; workflow simplification plan 4,
 D24, D25): its numbered sections read and written, its frontmatter fields, and the turn rule (`turned`), written once
 for `work turn` and for `work outcome`'s counter-proposal.
 
@@ -10,7 +10,9 @@ from pathlib import Path
 
 from shop_files import frontmatter, read
 
-WORK_REQUESTS = Path(".shop") / "work" / "requests"
+# Where a live request is kept, and where plugin 1.x kept them, frozen (workflow simplification plan 9, D7).
+REQUESTS = Path(".shop") / "requests"
+FROZEN = Path(".shop") / "work" / "requests"
 SETTLED = ("accepted", "refused", "withdrawn")
 COUNTERS = "Counter-proposals"
 
@@ -67,11 +69,22 @@ def turned(text):
     return with_field(text, "turn", "asker")
 
 
+def numbers(directory):
+    """The n of each q<n>.md in `directory`."""
+    return [int(m.group(1)) for p in Path(directory).glob("q*.md") if (m := re.fullmatch(r"q(\d+)\.md", p.name))]
+
+
+def next_number(root):
+    """One above the highest q<n> of .shop/requests/ and the frozen .shop/work/requests/ together, so that a new id
+    never takes a frozen one."""
+    return max(numbers(Path(root) / REQUESTS) + numbers(Path(root) / FROZEN), default=0) + 1
+
+
 def requests(root):
-    """Each request under .shop/work/requests/: (name, status, turn, source), by the number in its name."""
+    """Each live request under .shop/requests/: (name, status, turn, source), by the number in its name."""
     def number(path):
         return [int(w) if w.isdigit() else w for w in re.split(r"(\d+)", path.stem)]
-    for path in sorted((Path(root) / WORK_REQUESTS).glob("q*.md"), key=number):
+    for path in sorted((Path(root) / REQUESTS).glob("q*.md"), key=number):
         data, _ = frontmatter(read(path, root))
         if data.get("kind") == "request":
             yield path.stem, data.get("status"), data.get("turn"), data.get("source")

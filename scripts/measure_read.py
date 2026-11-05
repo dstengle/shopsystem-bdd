@@ -44,7 +44,8 @@ def request_of(initiative, root):
         if "/" in ident or not (Path(root) / ".shop" / "work" / "requests" / (ident + ".md")).is_file():
             raise Refused("the queue does not hold the request %s (no %s)" % (
                 ident, Path(".shop/work/requests") / (ident + ".md")))
-        asker = request_moves.field(shop_files.read(request_moves.path_of(root, ident), root), "asker")
+        frozen = Path(root) / ".shop" / "work" / "requests" / (ident + ".md")
+        asker = request_moves.field(shop_files.read(frozen, root), "asker")
         if not asker:
             raise Refused("%s has no asker" % (Path(".shop/work/requests") / (ident + ".md")))
         internal = asker == "internal" or asker == "bounded-context/" + shop_files.context_path(root)

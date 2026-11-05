@@ -240,10 +240,19 @@ class Model(SpecReading, WorkReading, RequestReading):
         self._wanted = getattr(self, "_wanted", [])
         self._wanted.append((ident, kind, where))
 
+    def frozen_request(self, ident):
+        """Whether `ident` is a request of this context kept only in the frozen .shop/work/requests/."""
+        head, _, rest = str(ident).partition("/")
+        if head != "request" or not self.path or not rest.startswith(self.path + "/") or ident in self.nodes:
+            return False
+        return (self.root / ".shop" / "work" / "requests" / (rest.rsplit("/", 1)[-1] + ".md")).is_file()
+
     def check_refs(self):
         for ident, kind, where in getattr(self, "_wanted", []):
             if str(ident).partition("/")[0] in FROZEN_KINDS:
                 continue        # a reference into the frozen .shop/work/ is history, never resolved (D5)
+            if self.frozen_request(ident):
+                continue        # a request of the frozen queue is history too (D7): its file is still there
             if str(ident).endswith("@0.29") and kind is None:
                 self.resolve_req(ident, where)      # a 0.29 id is history, looked up by its form alone
             if kind is None and ident not in self.nodes:

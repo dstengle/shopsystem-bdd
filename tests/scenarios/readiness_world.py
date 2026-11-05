@@ -60,7 +60,7 @@ def request_text(outcome=None):
 
 def write_request(step, outcome=None):
     """The world's request `q9`, its one line with the line outcome `outcome` (none when None)."""
-    path = step.repo / ".shop" / "work" / "requests" / ("%s.md" % REQUEST)
+    path = step.repo / ".shop" / "requests" / ("%s.md" % REQUEST)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(request_text(outcome))
     step.context.setdefault("nodes", {})[REQUEST] = ("request", path.relative_to(step.repo).as_posix())

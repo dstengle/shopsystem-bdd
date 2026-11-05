@@ -53,7 +53,7 @@ def request_text(name="q1", asker="bounded-context/ex.com/prod/peer", status="op
 
 def write_request(repo, name="q1", commit=True, **fields):
     """A peer's request written by hand: `work request`'s gate (requests r32) takes only this repository's asker."""
-    path = Path(repo) / ".shop" / "work" / "requests" / ("%s.md" % name)
+    path = Path(repo) / ".shop" / "requests" / ("%s.md" % name)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(request_text(name, **fields))
     if commit:

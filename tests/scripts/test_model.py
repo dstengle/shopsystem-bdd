@@ -189,6 +189,19 @@ class FrozenTest(ModelTest):
         uncited = [a for name, a in found["warnings"] if name == "w_uncited_obs"]
         self.assertEqual(uncited, [[full("observation", "obs-2")]], found)
 
+    def test_model_reads_no_frozen_request(self):
+        """Plan 9, D7: a request with no origin under the frozen `.shop/work/requests/` gives no v17; the same request
+        under `.shop/requests/` gives one."""
+        self.good()
+        text = ("---\nid: %s\nkind: request\nasker: internal\nraised_for: q9\nstatus: open\nturn: upstream\n---\n\n"
+                "# q1\n\n## Lines\n1. A line.\n" % full("request", "q1"))
+        self.write(".shop/work/requests/q1.md", text.replace("raised_for: q9\n", "source: [x]\n"))
+        found, _ = self.check_json()
+        self.assertEqual(self.violated(found, "v17"), [], found)
+        self.write(".shop/requests/q1.md", text.replace("raised_for: q9\n", "part_of: x\n"))
+        found, _ = self.check_json()
+        self.assertEqual(self.violated(found, "v17"), [[full("request", "q1")]], found)
+
     def test_the_rules_of_the_old_queue_are_gone(self):
         r = subprocess.run([sys.executable, str(SCRIPT), "rules"], capture_output=True, text=True)
         codes = {line.split()[0] for line in r.stdout.splitlines() if line.strip()}

@@ -194,8 +194,8 @@ Restates: r65@0.29.
   from the solve, and a unit test fails when a relation has no label or two.
 - `model` reads, under `--root` (default the current directory), only `spec/index.md`, `spec/universal.md`,
   `spec/restated.json`, `spec/capabilities/*.md`, every `*.feature` under `features/`, every `spec/decisions/*.md` but
-  `index.md` and `README.md`, `.shop/work/<initiative>/*.md`, `.shop/work/requests/*.md`,
-  `.shop/records/observations.md` and any other Markdown under `.shop/records/` whose frontmatter has an `id`.
+  `index.md` and `README.md`, `.shop/requests/*.md`, the `source` of the frozen `.shop/work/*/initiative.md` and
+  `.shop/work/requests/*.md` (as citations of observations), `.shop/records/observations.md` and any other Markdown under `.shop/records/` whose frontmatter has an `id`.
 - References: `<name>#r<n>` or `capability/<name>#r<n>` is a requirement of `capability/<context path>/<name>`;
   `<capability>#r<a>-r<b>` in a list is every id from a to b; `<cap>#r<n>@0.29` is resolved through
   `spec/restated.json`. A node is `<kind>/<context path>/<name>` or `<kind>/<name>`, and a bare `<name>` only in a
