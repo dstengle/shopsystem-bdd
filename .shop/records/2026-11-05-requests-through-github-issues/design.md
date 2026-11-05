@@ -1,3 +1,11 @@
+---
+id: record/missingmass.io/shopsystem/shopsystem-bdd/2026-11-05-requests-through-github-issues-design
+kind: design
+about: bounded-context/missingmass.io/shopsystem/shopsystem-bdd
+date: 2026-11-05
+status: draft
+---
+
 # Requests exchanged through GitHub issues
 
 Backlog item b26. Design written 2026-11-05 from a brainstorming session with the person. Marks: **(person)** is

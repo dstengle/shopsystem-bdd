@@ -11,6 +11,8 @@
 - Every report a session or an agent writes (an analysis, an investigation, research with recommendations) is kept
   as `.shop/records/<date>-<topic>.md`, supporting files in a folder of the same name, indexed in
   `.shop/records/README.md` and committed. A committed record is never edited.
+- A design or a plan is a record too, under `.shop/records/<date>-<topic>/` (`design.md`, `plan-*.md`), in place of
+  a skill's default `docs/superpowers/` path: nothing writes under `docs/superpowers/` (design-decision/final-layout).
 - A plan is carried out by one fresh agent that implements every task in order, then one fresh reviewer of the whole
   branch; not an implementer and a reviewer per task, and not inside a long main session.
 - Requirement lines are what the rest of the system stands on: when work touches spec lines or requests, weigh
