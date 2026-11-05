@@ -56,7 +56,10 @@ contract:
 
   - show <record> prints a measurement's stages, work-items, totals and sessions as tables.
   - compare <a> <b> prints the two measurements' totals side by side with the
-    ratio of b to a.
+    ratio of b to a. Each is a record or batch-<n>, the batch's newest
+    measurement; two batches give wall time, session time, tokens, cost,
+    defects per item, each role's cost and the findings by grade. A batch's
+    measurement is not compared with an initiative's.
 
 exit status: 0 success, 1 refused, 2 bad usage.
 """
@@ -95,7 +98,9 @@ def show(args):
 
 
 def compare(args):
-    print(measure_show.compare(args.a, args.b), end="")
+    import measure_batch_show
+    first, second = (measure_batch_show.resolve(os.getcwd(), word) for word in (args.a, args.b))
+    print(measure_show.compare(first, second), end="")
 
 
 COMMANDS = {"batch": batch, "defect": defect, "initiative": initiative, "show": show, "compare": compare}

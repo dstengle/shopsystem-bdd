@@ -22,9 +22,10 @@ import batch_findings
 
 
 def shared(name, file):
-    """A world module loaded once by path, the one the other handler modules load under the same name."""
+    """A world module loaded once by path (relative to this directory), the one the other handler modules load under
+    the same name."""
     if name not in sys.modules:
-        spec = importlib.util.spec_from_file_location(name, Path(__file__).with_name(file))
+        spec = importlib.util.spec_from_file_location(name, Path(__file__).parent / file)
         sys.modules[name] = module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
     return sys.modules[name]
@@ -173,3 +174,15 @@ def defect_of_for(step):
         assert defect_field(step, "item") == B.ident(step.names[1]), step.text
     else:
         assert defect_field(step, "batch") == T.batch_name(step, step.names[1]), step.text
+
+
+@handler("WhenRuns", "`measure compare batch-2 batch-3`")
+def measure_compare(step):
+    """Two batches' measurements written from the script tests' complete figures (measure_batch_testing.FIGURES),
+    then compared by name."""
+    testing = shared("shop_measure_batch_testing", "../scripts/measure_batch_testing.py")
+    B.index(step)
+    for date, name, cost in (("2026-11-01", "batch-2", 1.0), ("2026-11-02", "batch-3", 2.0)):
+        testing.write_measurement(step.repo, date, dict(testing.FIGURES, batch=name, cost=cost))
+    W.init(step.repo)
+    run_measure(step, "compare", "batch-2", "batch-3")

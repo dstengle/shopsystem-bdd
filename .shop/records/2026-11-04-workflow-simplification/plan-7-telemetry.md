@@ -540,7 +540,7 @@ test in the task named.
   each with figures built from the test module's `FIGURES` constant (a complete D9 dict with every role). Then it runs
   `run_measure(step, "compare", "batch-2", "batch-3")`.
 
-- [ ] **Step 1: Write the failing tests** (`test_measure_batch_show.py`, records written from a complete D9 dict):
+- [x] **Step 1: Write the failing tests** (`test_measure_batch_show.py`, records written from a complete D9 dict):
   - `test_compare_by_batch_name`: exit 0, and the head line is `total | batch-2 | batch-3 | ratio`. The rows hold
     `wall time`, `cost`, `planning cost`, `review cost` and `defects per item`. The cost row's ratio is `b / a`,
     rounded as `measure_show.ratio` rounds.
@@ -554,21 +554,21 @@ test in the task named.
   - `test_an_initiatives_records_compare_as_before`: batch-measurement r21's two records give the same output as at
     `9d765bb8`. The test pins the head `total | a | b | ratio`.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_measure_batch_show.py -q | tail -3`
   Expected: FAIL. `batch-2` is read as a path, giving `no measurement at batch-2`.
 
-- [ ] **Step 3: Implement D12.**
+- [x] **Step 3: Implement D12.**
 
-- [ ] **Step 4: The r4 handler; take r4 out of `unbuilt:`.**
+- [x] **Step 4: The r4 handler; take r4 out of `unbuilt:`.**
   Run: `python3 -m pytest tests/scripts/test_measure_batch_show.py tests/scenarios/test_telemetry.py tests/scenarios/test_batch_measurement.py -q | tail -1`
   Expected: all pass; telemetry `4 passed`; batch-measurement's `show` and `compare` scenarios (r18-r22) unchanged.
 
-- [ ] **Step 5: Mutations, each reverted.** Each must turn its test red:
+- [x] **Step 5: Mutations, each reverted.** Each must turn its test red:
   - resolving the oldest record fails `test_a_batch_name_takes_its_newest_measurement`;
   - letting a mixed pair through fails `test_a_batch_and_an_initiative_do_not_compare`.
 
-- [ ] **Step 6: The baselines.**
+- [x] **Step 6: The baselines.**
   Run: `python3 -m pytest -q | tail -1; python3 scripts/features vocab --check | tail -1; python3 scripts/tools size --limit 300; python3 scripts/tools check scripts/measure scripts/measure_show.py scripts/measure_batch_show.py tests/scripts/test_measure_batch_show.py tests/scenarios/telemetry_handlers.py`
   Expected:
   - the suite: `4 xfailed`, no failures;
@@ -576,7 +576,7 @@ test in the task named.
   - silent, with `measure_show.py` ≤ 135;
   - clean.
 
-- [ ] **Step 7: Commit.**
+- [x] **Step 7: Commit.**
   ```bash
   git add scripts/measure scripts/measure_show.py scripts/measure_batch_show.py tests/scripts/test_measure_batch_show.py \
     tests/scenarios/telemetry_handlers.py spec/capabilities/telemetry.md

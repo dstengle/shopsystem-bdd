@@ -1,10 +1,18 @@
 """A batch's measurement read (capability telemetry; workflow simplification plan 7, D8, D12): its summary, the tables
-written before the record's JSON block. Standard library only."""
-from measure_show import table
+written before the record's JSON block; `show` with its sessions; `compare` of two batches side by side with the
+ratio of the second to the first; and a batch's name resolved to its newest measurement. Standard library only."""
+import re
+from pathlib import Path
+
+import measure_write
+from measure_read import Refused
+from measure_show import cell, ratio, table
 
 TOTALS = (("wall time", "wall_time"), ("session time", "session_time"), ("waiting for merge", "waiting_for_merge"),
           ("output tokens", "output_tokens"), ("new input tokens", "new_input_tokens"),
           ("cache-read tokens", "cache_read_tokens"), ("cost", "cost"))
+SESSION_HEAD = ("session", "agent type", "role", "started", "requests", "session time", "output tokens",
+                "new input tokens", "cache-read tokens", "cost")
 ROLE_HEAD = ("role", "sessions", "session time", "output tokens", "new input tokens", "cache-read tokens", "cost")
 
 
@@ -42,3 +50,49 @@ def summary(figures):
     if not figures.get("sessions_found"):
         out.append("no transcripts at %s\n" % figures.get("sessions_from"))
     return "\n".join(out)
+
+
+def is_batch(figures):
+    return isinstance(figures, dict) and "batch" in figures and "cost_by_role" in figures
+
+
+def resolve(root, word):
+    """The record `word` names: for `batch-<n>`, its newest measurement (by name, which is by date); else the path."""
+    if not re.fullmatch(r"batch-[1-9]\d*", word):
+        return Path(word)
+    folder = Path(root) / measure_write.DIRECTORY
+    found = sorted(p for p in folder.glob("*-%s.md" % word) if re.fullmatch(r"\d{4}-\d{2}-\d{2}-%s\.md" % word, p.name))
+    if not found:
+        raise Refused("no measurement of %s in %s/; run measure batch %s" % (word, measure_write.DIRECTORY.as_posix(),
+                                                                            word))
+    return found[-1]
+
+
+def show(figures):
+    """The summary and the sessions table."""
+    rows = [(s["session"] if not s.get("agent") else "%s/%s" % (s["session"], s["agent"]), s.get("agent_type"),
+             s["role"], s.get("started"), s.get("requests"), _duration(s.get("session_time_seconds")),
+             s.get("output_tokens"), s.get("new_input_tokens"), s.get("cache_read_tokens"), s.get("cost"))
+            for s in figures.get("sessions", [])]
+    return "%s\nsessions\n%s\n" % (summary(figures), table(list(SESSION_HEAD), rows))
+
+
+def _rows(figures):
+    """(name, shown, value the ratio is of) of each row of `compare`."""
+    tokens, defects = figures.get("tokens", {}), figures.get("defects", {})
+    out = [("wall time", figures.get("wall_time"), figures.get("wall_time_seconds")),
+           ("session time", figures.get("session_time"), figures.get("session_time_seconds"))]
+    out += [(name, tokens.get(key), tokens.get(key)) for name, key in TOTALS[3:6]]
+    out += [("cost", figures.get("cost"), figures.get("cost")),
+            ("defects per item", defects.get("per_item"), defects.get("per_item"))]
+    out += [("%s cost" % role, r.get("cost"), r.get("cost")) for role, r in figures.get("cost_by_role", {}).items()]
+    out += [("%s findings" % grade, n, n) for grade, n in figures.get("findings_by_grade", {}).items()]
+    return out
+
+
+def compare(a_name, a, b_name, b):
+    """Two batches' totals, costs by role and findings by grade side by side, with the ratio of b to a."""
+    second = {name: (shown, value) for name, shown, value in _rows(b)}
+    rows = [(name, cell(shown), cell(second.get(name, (None, None))[0]), ratio(value, second.get(name, (None, None))[1]))
+            for name, shown, value in _rows(a)]
+    return table(["total", a_name, b_name, "ratio"], rows) + "\n"
