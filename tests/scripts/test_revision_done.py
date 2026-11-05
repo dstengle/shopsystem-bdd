@@ -127,10 +127,12 @@ def _cpu():
 
 
 @pytest.mark.live_logic
+@pytest.mark.timing
 def test_model_logic_on_the_live_spec_is_fast():
     """design-r3 §6: the whole context in one solve, in under 2 s. Measured as the run's CPU time, which is its wall
-    time on an idle machine (plan-r3 S12 timed 1.1 s of each). Under a full xdist load the CPU time of one run still
-    inflates (2.5 s at 32 workers), so the best of up to three runs is taken."""
+    time on an idle machine (plan-r3 S12 timed 1.1 s of each). Under a full xdist load the CPU time of one run
+    inflates (2.5 s at 32 workers), so it is a `timing` test, left out of the parallel run and run alone with
+    `python3 -m pytest -m timing -n 0` (workflow simplification plan-3 review S5); the best of up to three runs."""
     best = None
     for _ in range(3):
         start, wall = _cpu(), time.monotonic()
