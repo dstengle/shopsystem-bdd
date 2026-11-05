@@ -6,6 +6,7 @@ A step whose registry key another capability claims (`ThenDoes` with `write` and
 taken through work_queue_world's `local` table by its kind, so it reaches these handlers only in test_conversation.py,
 which binds with `bind_all`; each returns False for a step of a scenario that is not about the conversation (every
 conversation When and Given sets `step.context["conversation"]`), which then goes on to the registry."""
+import datetime
 import importlib.util
 import json
 import os
@@ -153,4 +154,58 @@ def keeps_session(step):
     wanted = (talk(step)["sessions"][name], talk(step)["transcripts"][name])
     assert conversation_prompt.kept(step.repo) == wanted, (step.text, conversation_prompt.kept(step.repo))
     assert W.git(step.repo, "status", "--porcelain") == "", step.text
+    return None
+
+
+@handler("GivenK", "message")
+def given_message(step):
+    """A message of the person, kept by the scenario until a quote cites it."""
+    name = step.names[0]
+    talk(step)["messages"][name] = "message-%s" % name
+    talk(step).setdefault("texts", {})[name] = "The words of the person in %s, to be kept." % name
+
+
+@handler("GivenK", "quote")
+def given_quote(step):
+    talk(step)["quotes"].setdefault(step.names[0], None)
+
+
+@handler("GivenR", "cited by")
+def given_cited_by(step):
+    """`the message m1 is cited by the quote q1`: the quote's file, written with conversation_quote.render, its cited
+    message the message with one message of the session before it, committed."""
+    message, quote = step.names
+    number = len([q for q in talk(step)["quotes"].values() if q]) + 1
+    name = "quote-%d" % number
+    at = T.at(3).replace("Z", "+00:00")
+    cited = conversation_quote.C.Message(talk(step)["messages"][message], "person",
+                                         datetime.datetime.fromisoformat(at), talk(step)["texts"][message])
+    before = conversation_quote.C.Message("a0", "session", cited.at - datetime.timedelta(minutes=1), "Asked before.")
+    found = conversation_quote.Quote(name, "quote/ex.com/prod/ctx/%s" % name, "session-s1", cited.ident, "2026-11-05",
+                                     cited.text, [before, cited])
+    rel = conversation_quote.rel_of(name)
+    path = step.repo / rel
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(conversation_quote.render(found))
+    talk(step)["quotes"][quote] = rel
+    B.index(step)
+    step.context["head"] = W.init(step.repo)
+
+
+@local("WhenRuns", "quote")
+def show_quote(step):
+    if not step.context.get("conversation") or step.term != "`work show`":
+        return False
+    rel = talk(step)["quotes"][step.names[0]]
+    B.run_work(step, "show", "quote-%s" % Path(rel).stem)
+    return None
+
+
+@local("ThenPrints", "message")
+def prints_message(step):
+    if not step.context.get("conversation"):
+        return False
+    done = step.context["result"]
+    assert done.returncode == 0, done.stderr
+    assert talk(step)["texts"][step.names[0]] in done.stdout and ", cited:" in done.stdout, (step.text, done.stdout)
     return None

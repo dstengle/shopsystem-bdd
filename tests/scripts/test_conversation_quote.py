@@ -2,6 +2,7 @@
 written in .shop/quotes/<n>.md and committed alone; the file reads back whatever its text holds; words that match
 nothing write nothing. `work show quote-<n>` (r3, D7) prints the quote's messages."""
 import datetime
+import json
 import re
 
 import conversation_quote as Q
@@ -116,3 +117,43 @@ def test_a_malformed_quote_file_is_refused_naming_its_field(quoting):
     path.write_text(path.read_text().replace("kind: quote", "kind: note"))
     with pytest.raises(Refused, match=r"^\.shop/quotes/1\.md: kind "):
         Q.find(quoting, "quote-1")
+
+
+def test_show_prints_every_message_of_the_quote(quoting):
+    assert quote(quoting, T.TEXTS[2], "--session", "s-1").returncode == 0
+    done = work(quoting, "show", "quote-1")
+    assert done.returncode == 0, done.stderr
+    lines = done.stdout.splitlines()
+    assert lines[0] == 'quote-1 "%s"' % T.TEXTS[2]
+    assert "  session: s-1" in lines and "  date: 2026-11-05" in lines
+    body = done.stdout.split("\n", 1)[1]
+    places = [body.index(text) for text in T.TEXTS[:5]]
+    assert places == sorted(places)
+    heads = [line for line in lines if line.startswith(("the person, ", "the session, "))]
+    assert len(heads) == 5
+    assert [line.endswith(", cited:") for line in heads] == [False, False, True, False, False]
+    assert T.TEXTS[5] not in done.stdout
+
+
+def test_show_json_gives_the_quote(quoting):
+    assert quote(quoting, T.TEXTS[2], "--session", "s-1").returncode == 0
+    done = work(quoting, "show", "quote-1", "--json")
+    got = json.loads(done.stdout)["quote"]
+    assert got["name"] == "quote-1" and got["session"] == "s-1" and got["message"] == "u2"
+    assert len(got["messages"]) == 5 and [m["cited"] for m in got["messages"]].count(True) == 1
+    assert got["messages"][2] == {"who": "person", "at": "2026-11-05T10:03:00+00:00", "ident": "u2", "cited": True,
+                                  "text": T.TEXTS[2]}
+
+
+def test_show_of_no_quote_is_refused(backlog_repo):
+    done = work(backlog_repo, "show", "quote-9")
+    assert done.returncode == 1
+    assert "there is no quote quote-9 in .shop/quotes/" in done.stderr, done.stderr
+
+
+def test_show_of_an_item_or_initiative_is_unchanged(quoting):
+    assert work(quoting, "idea", "Fix the parser").returncode == 0
+    done = work(quoting, "show", "b1")
+    assert done.returncode == 0 and done.stdout.startswith('b1 "Fix the parser"'), done.stderr
+    done = work(quoting, "show")
+    assert done.returncode == 0 and done.stdout == "", (done.stdout, done.stderr)

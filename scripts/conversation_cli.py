@@ -1,6 +1,7 @@
-"""The conversation's commands of `work` (capability conversation; workflow simplification plan 8): `work quote`, their
-parsers and dispatch, so that scripts/work stays small. A quote is named by its label, `quote-1 "<its words>"` (design
-goal 10)."""
+"""The conversation's commands of `work` (capability conversation; workflow simplification plan 8): `work quote` and
+`work show quote-<n>`, their parsers and dispatch, so that scripts/work stays small. A quote is named by its label,
+`quote-1 "<its words>"` (design goal 10)."""
+import json
 import sys
 from pathlib import Path
 
@@ -8,6 +9,8 @@ import conversation_prompt
 import conversation_quote
 from measure_read import Refused as ReadRefused
 from workqueue import Refused
+
+is_quote = conversation_quote.is_quote
 
 
 def add_parsers(sub):
@@ -37,6 +40,25 @@ def quote(args):
     except (Refused, ReadRefused) as why:
         return refused("quote", why)
     print(conversation_quote.label(found))
+    return 0
+
+
+def show(args):
+    """`work show quote-<n>`: the quote's label, its session and date, then each message it cites, the cited one
+    marked (D7); with --json one object `{"quote": {...}}`."""
+    try:
+        found = conversation_quote.find(args.root, args.target)
+    except Refused as why:
+        return refused("show", why)
+    if args.json:
+        print(json.dumps(conversation_quote.as_json(found)))
+        return 0
+    print(conversation_quote.label(found))
+    print("  session: %s" % found.session)
+    print("  date: %s" % found.date)
+    for m in found.messages:
+        cited = ", cited" if m.ident == found.message else ""
+        print("\n%s, %s%s:\n%s" % (conversation_quote.WHO[m.who], m.at.isoformat(), cited, m.text))
     return 0
 
 

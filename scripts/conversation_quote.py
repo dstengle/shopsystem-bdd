@@ -213,3 +213,11 @@ def write(root, words, session=None, transcript=None):
         target.write_text(render(quote), encoding="utf-8")
     workqueue.committed(root, [rel], "quote: %s from the session %s" % (name, session[:8]), put)
     return quote
+
+
+def as_json(quote):
+    """`work show quote-<n> --json`'s object (D7)."""
+    return {"quote": {"name": quote.name, "session": quote.session, "message": quote.message, "date": quote.date,
+                      "words": quote.words,
+                      "messages": [{"who": m.who, "at": m.at.isoformat(), "ident": m.ident,
+                                    "cited": m.ident == quote.message, "text": m.text} for m in quote.messages]}}

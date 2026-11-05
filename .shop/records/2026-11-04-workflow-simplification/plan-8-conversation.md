@@ -548,7 +548,7 @@ test in the task named.
   - the local `WhenRuns quote` (`` `work show` ``), which runs `work show quote-<n>`;
   - the local `ThenPrints message`: exit 0, and the message's text and the word `cited` are in stdout.
 
-- [ ] **Step 1: Write the failing tests** (in `test_conversation_quote.py`).
+- [x] **Step 1: Write the failing tests** (in `test_conversation_quote.py`).
   - `test_show_prints_every_message_of_the_quote`: after a quote of the 3rd of 6 messages, `work show quote-1`
     prints its label first, `session: s-1`, the 5 texts in order, and `cited` on the 3rd message's line only.
   - `test_show_json_gives_the_quote`: `--json` gives `quote.name == "quote-1"`, 5 `messages`, and exactly one with
@@ -558,23 +558,23 @@ test in the task named.
   - `test_show_of_an_item_or_initiative_is_unchanged`: `work show b1` still prints the item's label, and `work show`
     with no target still lists work-items. This checks the routing.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_conversation_quote.py -q -k show | tail -3`
   Expected: FAIL. `work show quote-1` reaches the work-queue and is refused there.
 
-- [ ] **Step 3: Implement** `show` and the route in `cmd_show`.
+- [x] **Step 3: Implement** `show` and the route in `cmd_show`.
 
-- [ ] **Step 4: The r3 handlers; take r3 out of `unbuilt:`.**
+- [x] **Step 4: The r3 handlers; take r3 out of `unbuilt:`.**
   Run: `python3 -m pytest tests/scenarios/test_conversation.py tests/scenarios/test_backlog.py tests/scenarios/test_work_queue.py tests/scripts/test_conversation_quote.py -q | tail -1; python3 scripts/features vocab --check | tail -1`
   Expected: conversation `3 passed, 1 xfailed`, the rest pass; `every step has one handler`.
 
-- [ ] **Step 5: Mutation, reverted.** Printing only the cited message fails `test_show_prints_every_message_of_the_quote`.
+- [x] **Step 5: Mutation, reverted.** Printing only the cited message fails `test_show_prints_every_message_of_the_quote`.
 
-- [ ] **Step 6: The baselines.**
+- [x] **Step 6: The baselines.**
   Run: `python3 -m pytest -q | tail -1; python3 scripts/tools size --limit 300; wc -l scripts/work; python3 scripts/tools check scripts/conversation_cli.py scripts/work tests/scripts/test_conversation_quote.py tests/scenarios/conversation_handlers.py`
   Expected: `1 xfailed`, no failures; silent; ≤ 225; clean.
 
-- [ ] **Step 7: Commit.**
+- [x] **Step 7: Commit.**
   ```bash
   git add scripts/conversation_cli.py scripts/work tests/scripts/test_conversation_quote.py \
     tests/scenarios/conversation_handlers.py spec/capabilities/conversation.md

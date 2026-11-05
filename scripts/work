@@ -43,6 +43,8 @@ def cmd_list(args):
 def cmd_show(args):
     if args.target is not None and backlog_items.is_item(args.target):
         return backlog_cli.show(args)
+    if args.target is not None and conversation_cli.is_quote(args.target):
+        return conversation_cli.show(args)
     if args.target is not None:
         return workqueue_list.show(args.root, args.target, args.json)
     if args.json:
@@ -145,7 +147,7 @@ def main(argv=None):
     li = sub.add_parser("list", help="each initiative, request and work-item under .shop/work/, with its status")
     li.add_argument("--json", action="store_true", help="print one JSON object instead of lines")
     s = sub.add_parser("show", help="where an initiative or a work-item stands (default: each work-item and request, with its status)")
-    s.add_argument("target", nargs="?", help="an initiative, a work-item or an item b<n>")
+    s.add_argument("target", nargs="?", help="an initiative, a work-item, an item b<n> or a quote quote-<n>")
     s.add_argument("--json", action="store_true", help="print one JSON object instead of lines")
     w = sub.add_parser("withdraw", help="move a work-item that is neither claimed nor green, or an item b<n>, to withdrawn")
     w.add_argument("name")
