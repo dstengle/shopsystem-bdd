@@ -1,7 +1,7 @@
-"""The check `work request` makes of a request's lines before it writes anything (the GF conversion's design §13,
-§13.4): each line parses in the upstream's requirement grammar, and a refusal names the line, the refusal and
-`model parse`'s hint. An upstream whose `spec/index.md` or a capability file is not codified is refused, naming
-`migrate upgrade`. `root` is the upstream's repository, where the request is written."""
+"""The check the upstream makes of a request's lines (the GF conversion's design §13, §13.4; requests r38): `work
+outcome accepted` and a counter-proposal parse in the upstream's own requirement grammar, and a refusal names the
+line, the refusal and `model parse`'s hint. An upstream whose `spec/index.md` or a capability file is not codified is
+refused, naming `migrate upgrade`. `root` is the upstream's repository, where the check runs."""
 from pathlib import Path
 
 import spec_read

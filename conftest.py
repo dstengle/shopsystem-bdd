@@ -13,8 +13,11 @@ import sys
 import pytest
 
 SCRIPTS = str(pathlib.Path(__file__).parent / "scripts")
-if SCRIPTS not in sys.path:
-    sys.path.append(SCRIPTS)
+# This checkout's scripts come first: `work batch done` runs the suite with the plugin's own scripts directory on
+# PYTHONPATH (for `-p work_items`), and a module the tests import in-process must be the worktree's, not the plugin's.
+if SCRIPTS in sys.path:
+    sys.path.remove(SCRIPTS)
+sys.path.insert(0, SCRIPTS)
 
 pytest_plugins = ["work_items"]
 _durations = {}

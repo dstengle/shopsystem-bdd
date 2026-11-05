@@ -1,5 +1,7 @@
-"""The requests of a context, kept as .shop/requests/<id>.md: the library behind `work outcome`, `turn` and
-`resolve`, `ask` and `reply` (capability requests). Every change is committed on the current branch (r12).
+"""The requests of a context, kept as .shop/requests/<id>.md: the library behind `work request`, `turn` and
+`resolve`, `ask` and `reply` (capability requests). Every change is committed on the current branch (r12). A request
+is a conversation on one GitHub issue on its upstream's repository; the step a command takes is posted there
+(request_post), and this file is this side's record of it.
 
 A request's `## Lines`, `## Questions`, `## Answers`, `## Outcomes` and `## Resolution` hold one entry a line,
 `<n>. <text>`; the resolution's text is the requirement id and the version. A question's text is `line <l>: <words>`;
@@ -8,8 +10,11 @@ answer n answers question n. The text helpers and the turn rule are request_text
 import re
 from pathlib import Path
 
-import request_lines
+import request_form
+import request_gh
+import request_post
 import shop_files
+from backlog_items import one_line
 from request_text import (  # noqa: F401  (SETTLED: imported from here)
     REQUESTS,
     SETTLED,
@@ -23,6 +28,9 @@ from request_text import (  # noqa: F401  (SETTLED: imported from here)
     with_field,
 )
 from shop_files import Refused
+
+ABOUT = ("A request between bounded contexts, kept by shopsystem-bdd's `work`: each step is a comment `work` posts, "
+         "and only its block of fields is read.")
 
 
 def path_of(root, ident):
@@ -65,10 +73,13 @@ def asked_here(root):
 
 
 def _change(root, ident, message, edit):
-    """Rewrite request `ident` as `edit` makes it from its text, and commit it, and only it."""
+    """Rewrite request `ident` as `edit` makes it from its text, and commit it, and only it; an edit that changes
+    nothing (an upstream's turn that waits for `work accept`, on a request with no issue) commits nothing."""
     path = path_of(root, ident)
     text = shop_files.read(path, root)
     after = edit(text)
+    if after == text:
+        return
     shop_files.committed(root, [str(path.relative_to(root))], "work %s: %s" % (message, ident), lambda: path.write_text(after))
 
 
@@ -100,53 +111,70 @@ def gate(root, asker, sources, thread, raised_for):
 
 
 def refuse_upstream_part(root, text, ident, part):
-    """r34: refuse, naming the upstream, a write of `part` of a request to an upstream from this repository. A request is
-    to an upstream when its asker is this repository's own id, the repository lists upstreams and the request names no
-    origin; an internal request (asker the upstream itself) is written by this repository as either side (r44, r15, r25)."""
+    """r34: refuse, naming the upstream, a write of `part` of a request to an upstream from this repository. A record
+    names its `upstream`; one kept from before does not, and is to an upstream when its asker is this repository's own
+    id, the repository lists upstreams and the request names no origin; an internal request (asker the upstream itself)
+    is written by this repository as either side (r44, r15, r25)."""
+    upstream = field(text, "upstream")
+    if upstream is not None:
+        if upstream != "bounded-context/" + shop_files.context_path(root):
+            raise Refused("%s is a request to the upstream %s; the upstream writes %s" % (ident, upstream, part))
+        return
     asked = upstreams(root)
     if asked and field(text, "asker") in own_askers(root) and field(text, "source") is None:
         raise Refused("%s is a request to the upstream %s; the upstream writes %s" % (ident, asked[0], part))
 
 
-def request(root, title, asker, lines_file, sources, thread, raised_for=None):
-    """Write a new open request in the upstream's turn, `q<n>` one above the highest kept; return q<n> (r1).
+def upstream_of(root, sources, to):
+    """The bounded-context id of the context a new request asks: `to` (an upstream under `## Upstreams`, by its id or
+    its last part), else the one upstream of a request that names no origin, else this context itself (an internal
+    request, its issue on this context's own repository)."""
+    own = "bounded-context/" + shop_files.context_path(root)
+    listed = list(request_gh.bullets(root))
+    if to is not None:
+        found = [c for c in listed + [own] if to in (c, c[len("bounded-context/"):], c.rsplit("/", 1)[-1])]
+        if not found:
+            raise Refused("work request: %s is no upstream under ## Upstreams in spec/index.md" % to)
+        return found[0]
+    if listed and not sources:
+        if len(listed) > 1:
+            raise Refused("work request: this context has the upstreams %s: name one with --to" % ", ".join(listed))
+        return listed[0]
+    return own
 
-    A request that names neither an origin nor a job-thread is refused (r3), and so is one with a line the upstream
-    would not read (r2): one that does not parse in its requirement grammar, or, where its index is not codified, one
-    not in the strict form `model check` holds (request_lines); a refusal writes nothing.
-    """
+
+def request(root, title, asker, ask_text, sources, thread, raised_for=None, to=None):
+    """Post the request's issue on its upstream's GitHub repository and write the request, open in the upstream's
+    turn, `q<n>` one above the highest kept, with the issue's URL; return (q<n>, the URL) (r27). An upstream that names
+    no GitHub repository is refused before anything is posted (r28). The ask is the asker's own words; its lines
+    come later (`work propose`), checked by the upstream."""
     if not sources and thread is None and raised_for is None:
         raise Refused("the request names neither an origin (--source) nor a job-thread (--thread)")
-    if not Path(lines_file).is_file():
-        raise Refused("the file %s does not exist" % lines_file)
-    lines = [line.strip() for line in shop_files.read(Path(lines_file), Path(lines_file).parent).splitlines() if line.strip()]
-    request_lines.check(root, lines)
+    title = one_line(title, "title")
+    ask_text = (ask_text or title).strip()
+    upstream = upstream_of(root, sources, to)
+    repo = request_gh.repo_of(root, upstream, "work request")
+    shop_files.git(root, "rev-parse", "--is-inside-work-tree")
     directory = Path(root) / REQUESTS
     name = "q%d" % next_number(root)
+    ident = "request/%s/%s" % (shop_files.context_path(root), name)
     origin = ["part_of: %s" % thread] if thread is not None else ["source: [%s]" % ", ".join(sources)] if sources else []
     if raised_for is not None and re.fullmatch(r"q\d+", raised_for):     # a bare q<n> names a request of this context
         raised_for = "request/%s/%s" % (shop_files.context_path(root), raised_for)
-    origin = "\n".join(origin + (["raised_for: %s" % raised_for] if raised_for is not None else []))
-    text = ("---\nid: request/%s/%s\nkind: request\nasker: %s\n%s\nstatus: open\nturn: upstream\n---\n\n# %s\n\n## Lines\n%s\n"
-            "## Questions\n\n## Answers\n\n## Outcomes\n\n## Resolution\n"
-            % (shop_files.context_path(root), name, asker, origin, title,"".join("%d. %s\n" % e for e in enumerate(lines, 1))))
+    origin = "".join(o + "\n" for o in origin + (["raised_for: %s" % raised_for] if raised_for is not None else []))
+    fields = {"step": "ask", "request": ident, "asker": asker, "upstream": upstream, "title": title, "ask": ask_text,
+              "status": "open", "turn": "upstream"}
+    url = request_gh.open_issue(root, repo, title, request_form.render(fields, None, ABOUT), "work request")
+    text = ("---\nid: %s\nkind: request\nasker: %s\nupstream: %s\nissue: %s\n%sstatus: open\nturn: upstream\n---\n\n"
+            "# %s\n\n## Ask\n%s\n## Lines\n\n## Questions\n\n## Answers\n\n## Outcomes\n\n## Resolution\n\n"
+            "## Comments\n1. %s ask\n" % (ident, asker, upstream, url, origin, title, request_post.quoted(ask_text), url))
     path = directory / (name + ".md")
 
     def write():
         directory.mkdir(parents=True, exist_ok=True)
         path.write_text(text)
     shop_files.committed(root, [str(path.relative_to(root))], "work request: %s" % name, write)
-    return name
-
-
-def outcome(root, ident, number, word):
-    """Write line `number`'s outcome `word` (r12, r15); in the asker's turn it is refused, writing nothing (r16)."""
-    def edit(text):
-        refuse_upstream_part(root, text, ident, "the line outcomes")
-        if field(text, "turn") == "asker":
-            raise Refused("%s is in the asker's turn; the upstream writes a line outcome only in its own turn" % ident)
-        return with_entries(text, "Outcomes", numbered(entries(text, "Outcomes"), number, word))
-    _change(root, ident, "outcome", edit)
+    return name, url
 
 
 def ask(root, ident, number, question):
@@ -170,8 +198,9 @@ def reply(root, ident, number, answer):
 
 
 def turn(root, ident):
-    """Pass the turn to the other side (r7, r8, r9, r17, r18, r23): `request_text.turned`."""
-    _change(root, ident, "turn", turned)
+    """Pass the turn to the other side (r7, r8, r9, r17, r18, r23): `request_text.turned`, and post the side's part of
+    the turn on the issue, closing it when the turn refused the request (r34-r37)."""
+    _change(root, ident, "turn", lambda text: request_post.posted_turn(root, text, turned(text), "work turn"))
 
 
 def resolve(root, ident, lines):
@@ -185,7 +214,9 @@ def resolve(root, ident, lines):
         for number, requirement, version in lines:
             held = numbered(held, number, "%s %s" % (requirement, version))
         text = with_field(with_entries(text, "Resolution", held), "status", "delivered")
-        return with_field(text, "turn", "asker")  # r24
+        text = with_field(text, "turn", "asker")  # r24
+        return request_post.post(root, text, "resolve", {"Resolution": request_post.numbered(text, "Resolution")},
+                                 "work resolve", close=True)   # r41
     path = path_of(root, ident)
     after = edit(shop_files.read(path, root))
     shop_files.committed(root, [str(path.relative_to(root))], "work resolve: %s" % ident, lambda: path.write_text(after))

@@ -10,6 +10,7 @@ import pytest
 import request_moves
 import request_text
 from backlog_testing import REPO, git, work, write_request
+from request_testing import hosted
 from test_backlog_lines import ABANDON
 from test_intake_outcome import ASKED, request
 from test_request_asker import repo  # noqa: F401  (the fixture)
@@ -22,7 +23,6 @@ import toolchain
 def taken(ready_repo):
     toolchain.require()
     write_request(ready_repo, "q1", lines=(ASKED,))
-    assert work(ready_repo, "intake", "q1").returncode == 0
     return ready_repo
 
 
@@ -37,7 +37,11 @@ def test_a_counter_proposed_request_closes(taken):
     assert request_text.field(request(taken), "turn") == "upstream"
     done = work(taken, "outcome", "q1", "2", "accepted", "--into", "work-queue")
     assert done.returncode == 0, done.stderr
-    assert work(taken, "turn", "q1").returncode == 0
+    assert work(taken, "turn", "q1").returncode == 0      # settled, one accepted: the turn stays, for the person
+    text = request(taken)
+    assert (request_text.field(text, "status"), request_text.field(text, "turn")) == ("awaiting-upstream", "upstream")
+    done = work(taken, "accept", "q1")
+    assert done.returncode == 0, done.stderr
     text = request(taken)
     assert (request_text.field(text, "status"), request_text.field(text, "turn")) == ("accepted", "upstream")
 
@@ -59,8 +63,8 @@ def old_turn(text):
     return _with_field(text, "turn", "asker")
 
 
-@pytest.mark.parametrize("outcomes, turn", [(("rewritten",), "upstream"), (("accepted",), "upstream"),
-                                            (("refused", "accepted"), "upstream"), ((), "asker")])
+@pytest.mark.parametrize("outcomes, turn", [(("rewritten",), "upstream"), (("refused",), "upstream"),
+                                            ((), "asker")])
 def test_without_the_section_turn_is_as_before(ready_repo, outcomes, turn):
     lines = (ABANDON, ASKED)[:max(1, len(outcomes))]
     path = write_request(ready_repo, "q1", lines=lines, outcomes=outcomes, turn=turn)
@@ -70,6 +74,15 @@ def test_without_the_section_turn_is_as_before(ready_repo, outcomes, turn):
     assert path.read_text() == old_turn(copy.read_text())
     if outcomes == ("rewritten",):
         assert request_text.field(path.read_text(), "status") == "awaiting-asker"
+
+
+@pytest.mark.parametrize("outcomes", [("accepted",), ("refused", "accepted")])
+def test_an_upstream_turn_with_a_line_accepted_keeps_the_turn_and_the_status(ready_repo, outcomes):
+    """requests r36: `accepted` is the person's, by `work accept`; the turn only waits for it."""
+    path = write_request(ready_repo, "q1", lines=(ABANDON, ASKED)[:len(outcomes)], outcomes=outcomes)
+    before = path.read_text()
+    assert work(ready_repo, "turn", "q1").returncode == 0
+    assert path.read_text() == before
 
 
 def test_the_rewritten_path_and_turn_share_one_rule():
@@ -87,7 +100,7 @@ def test_model_check_takes_the_section(taken):
     git(taken, "status", "--porcelain")
 
 
-def test_a_new_request_is_numbered_above_the_frozen_ones(repo):  # noqa: F811  (the fixture imported above)
+def test_a_new_request_is_numbered_above_the_frozen_ones(repo, monkeypatch):  # noqa: F811  (the fixture above)
     """Plan 9, D7: a live request is `.shop/requests/q<n>.md`, its number one above the highest of `.shop/requests/`
     and the frozen `.shop/work/requests/`."""
     for rel in (".shop/work/requests/q7.md", ".shop/requests/q2.md"):
@@ -95,7 +108,8 @@ def test_a_new_request_is_numbered_above_the_frozen_ones(repo):  # noqa: F811  (
         (repo / rel).write_text("---\nkind: request\nstatus: delivered\n---\n")
     git(repo, "add", "-A")
     git(repo, "commit", "-qm", "requests")
-    name = request_moves.request(repo, "t", "internal", str(repo / "lines.md"), ["observation/o1"], None)
+    hosted(repo, repo.parent / (repo.name + "-gh"), monkeypatch=monkeypatch)
+    name, _ = request_moves.request(repo, "t", "internal", None, ["observation/o1"], None)
     assert name == "q8"
     assert (repo / ".shop/requests/q8.md").is_file()
     assert not (repo / ".shop/work/requests/q8.md").exists()

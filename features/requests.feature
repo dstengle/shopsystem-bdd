@@ -2,27 +2,12 @@
 Feature: Requests
   Narrator: a context taking in or raising a request
 
-  @g1 @r1
-  Scenario: `work request` takes in an open request
-    When the person runs `work request`
-    Then `work` writes the request q1
-    And the request q1 is `open`
-    And `work` commits the request q1
-
   @g2 @r2
   Scenario: `work request` writes the request it is raised for
     Given `--raised-for` is given
     When the person runs `work request` on the request q1
     Then `work` writes the request q2
     And the request q2 is raised for the request q1
-
-  @g5 @r5
-  Scenario: `work request` refuses a line that does not parse
-    Given a request line r1
-    And the request line r1 is unparsed
-    When the person runs `work request`
-    Then `work` exits with an error naming the request line r1
-    And `work` changes nothing
 
   @g6 @r6
   Scenario: An internal request names an origin
@@ -95,50 +80,6 @@ Feature: Requests
     Given a request q1 that is `awaiting-asker`
     When the person runs `work reply` on the request q1
     Then `work` writes the answer a1
-    And `work` commits the request q1
-
-  @g19 @r19
-  Scenario: `work turn` passes the asker's turn to the upstream
-    Given a request q1 that is `awaiting-asker`
-    When the person runs `work turn` on the request q1
-    Then the request q1 is `awaiting-upstream`
-    And `work` changes the side of the request q1
-
-  @g20 @r20
-  Scenario: The upstream's turn ends with a line not settled
-    Given a request q1 that is `open`
-    And a request line r1
-    And the request line r1 is proposed in the request q1
-    And the request line r1 is not settled
-    When the person runs `work turn` on the request q1
-    Then the request q1 is `awaiting-asker`
-
-  @g21 @r21
-  Scenario: The upstream's turn ends with every line settled and one accepted
-    Given a request q1 that is `open`
-    And a request line r1
-    And the request line r1 is proposed in the request q1
-    And the request line r1 is `accepted`
-    When the person runs `work turn` on the request q1
-    Then the request q1 is `accepted`
-    And `work` does not change the side of the request q1
-
-  @g22 @r22
-  Scenario: The upstream's turn ends with every line refused
-    Given a request q1 that is `open`
-    And a request line r1
-    And the request line r1 is proposed in the request q1
-    And the request line r1 is `refused`
-    When the person runs `work turn` on the request q1
-    Then the request q1 is `refused`
-
-  @g23 @r23
-  Scenario: `work resolve` delivers an accepted request
-    Given a request q1 that is `accepted`
-    When the person runs `work resolve` on the request q1
-    Then the request q1 is `delivered`
-    And `work` writes the resolution r1
-    And `work` changes the side of the request q1
     And `work` commits the request q1
 
   @g24 @r24

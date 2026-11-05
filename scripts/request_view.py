@@ -48,7 +48,8 @@ def parts(root, name, turn):
     """What `work show <request>` prints after its first line: whose turn it is, each line with its line outcome,
     each question with its answer, the resolution."""
     found = request_moves.sections(root, name)
-    print("it is the %s's turn" % turn)
+    issue = request_text.field(read(request_moves.path_of(root, name), root), "issue")
+    print("it is the %s's turn" % turn + (", on %s" % issue if issue else ""))
     for number, text in sorted(found["Lines"].items(), key=lambda e: int(e[0])):
         print("  line %s: %s - %s" % (number, found["Outcomes"].get(number, "unsettled"), text))
     for number, text in sorted(found["Questions"].items(), key=lambda e: int(e[0])):
