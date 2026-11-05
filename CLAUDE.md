@@ -66,6 +66,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/model_requests.py` | the reading of requests by `model`: `.shop/requests/q<n>.md`, a request asked on an issue naming the issue in place of an origin, and its upstream |
 | `scripts/model_spec.py` | `model`'s reading of the codified spec: groups, requirements and their parse, universal conditions, `restated.json`, the typed glossary, generated scenarios (`@g<n>`), and a file without `language: codified-1` (v_p0) |
 | `scripts/model_restates.py` | `model restates`: the coverage of the 0.29 ids by groups, `## Dropped` and moves |
+| `scripts/model_forms.py` | `model forms`: every file form a context keeps (`FORMS`), its path pattern and the command that writes it, or the plugin's item that will give it one, or by hand; text or `--json` |
 | `scripts/work` | the `work` command: its contract, its parsers and dispatch to the backlog, batch, request and conversation modules |
 | `scripts/request_view.py` | `work list` (each request with its status, and each observation no source cites) and `work show <request>` (its turn and its issue's URL, lines with their outcomes, questions with their answers, resolution) |
 | `scripts/shop_frozen.py` | what is still read of plugin 1.x's frozen `.shop/work/`: the `source:` ids of its initiatives and requests (`sources`), as citations of observations |
