@@ -24,9 +24,9 @@ def hook(cwd, stdin):
                           text=True, timeout=30)
 
 
-def prompt(session, path):
+def prompt(session, path, **more):
     return json.dumps({"session_id": session, "transcript_path": str(path), "hook_event_name": "UserPromptSubmit",
-                       "prompt": "x"})
+                       "prompt": "x", **more})
 
 
 def shopped(repo):
@@ -106,6 +106,39 @@ def test_no_session_known_is_refused(backlog_repo, store):
     done = work(backlog_repo, "quote", T.TEXTS[2])
     assert done.returncode == 1
     assert "work quote --hook" in done.stderr and "--session" in done.stderr, done.stderr
+
+
+def test_a_failed_rename_leaves_nothing_behind(backlog_repo):
+    """Review M4."""
+    shopped(backlog_repo)
+    (backlog_repo / ".git" / "shopsystem" / "prompt.json").mkdir(parents=True)
+    done = hook(backlog_repo, prompt("s-1", "x"))
+    assert (done.returncode, done.stdout, done.stderr) == (0, "", "")
+    assert sorted(p.name for p in (backlog_repo / ".git" / "shopsystem").iterdir()) == ["prompt.json"]
+
+
+def test_a_prompt_from_outside_the_repository_is_ignored(backlog_repo, tmp_path_factory):
+    """Review Q3: the pointer is the session's whose cwd is in this repository."""
+    shopped(backlog_repo)
+    elsewhere = tmp_path_factory.mktemp("elsewhere")
+    assert hook(backlog_repo, prompt("s-1", "x", cwd=str(elsewhere))).returncode == 0
+    assert P.kept(backlog_repo) is None
+    (backlog_repo / "sub").mkdir()
+    assert hook(backlog_repo, prompt("s-2", "y", cwd=str(backlog_repo / "sub"))).returncode == 0
+    assert P.kept(backlog_repo) == ("s-2", "y")
+
+
+@pytest.mark.usefixtures("store")
+@pytest.mark.parametrize("spoil", ["{not json", "[]"])
+def test_an_unreadable_pointer_is_refused_naming_it(backlog_repo, spoil):
+    """Review M3: not the refusal of no pointer at all."""
+    target = backlog_repo / ".git" / "shopsystem" / "prompt.json"
+    target.parent.mkdir()
+    target.write_text(spoil)
+    done = work(backlog_repo, "quote", T.TEXTS[2])
+    assert done.returncode == 1
+    assert "the pointer %s the UserPromptSubmit hook keeps cannot be read; give --session <id>" % target in \
+        done.stderr, done.stderr
 
 
 def test_hook_takes_no_words(backlog_repo):

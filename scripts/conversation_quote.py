@@ -165,7 +165,11 @@ def transcript_of(root, session, transcript):
         if not found:
             raise Refused("there is no transcript of the session %s under %s" % (session, store_dir() / "projects"))
         return session, found[0]
-    pointer = conversation_prompt.kept(root)
+    try:
+        pointer = conversation_prompt.kept(root)
+    except conversation_prompt.Unreadable as why:
+        raise Refused("the pointer %s the UserPromptSubmit hook keeps cannot be read; give --session <id>"
+                      % why.args[0]) from None
     if pointer is not None:
         if not Path(pointer[1]).is_file():
             raise Refused("the transcript %s the UserPromptSubmit hook kept for the session %s is not a file; give "
