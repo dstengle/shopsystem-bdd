@@ -2,27 +2,12 @@
 Feature: Requests
   Narrator: a context taking in or raising a request
 
-  @g1 @r1
-  Scenario: `work request` takes in an open request
-    When the person runs `work request`
-    Then `work` writes the request q1
-    And the request q1 is `open`
-    And `work` commits the request q1
-
   @g2 @r2
   Scenario: `work request` writes the request it is raised for
     Given `--raised-for` is given
     When the person runs `work request` on the request q1
     Then `work` writes the request q2
     And the request q2 is raised for the request q1
-
-  @g5 @r5
-  Scenario: `work request` refuses a line that does not parse
-    Given a request line r1
-    And the request line r1 is unparsed
-    When the person runs `work request`
-    Then `work` exits with an error naming the request line r1
-    And `work` changes nothing
 
   @g6 @r6
   Scenario: An internal request names an origin
@@ -97,50 +82,6 @@ Feature: Requests
     Then `work` writes the answer a1
     And `work` commits the request q1
 
-  @g19 @r19
-  Scenario: `work turn` passes the asker's turn to the upstream
-    Given a request q1 that is `awaiting-asker`
-    When the person runs `work turn` on the request q1
-    Then the request q1 is `awaiting-upstream`
-    And `work` changes the side of the request q1
-
-  @g20 @r20
-  Scenario: The upstream's turn ends with a line not settled
-    Given a request q1 that is `open`
-    And a request line r1
-    And the request line r1 is proposed in the request q1
-    And the request line r1 is not settled
-    When the person runs `work turn` on the request q1
-    Then the request q1 is `awaiting-asker`
-
-  @g21 @r21
-  Scenario: The upstream's turn ends with every line settled and one accepted
-    Given a request q1 that is `open`
-    And a request line r1
-    And the request line r1 is proposed in the request q1
-    And the request line r1 is `accepted`
-    When the person runs `work turn` on the request q1
-    Then the request q1 is `accepted`
-    And `work` does not change the side of the request q1
-
-  @g22 @r22
-  Scenario: The upstream's turn ends with every line refused
-    Given a request q1 that is `open`
-    And a request line r1
-    And the request line r1 is proposed in the request q1
-    And the request line r1 is `refused`
-    When the person runs `work turn` on the request q1
-    Then the request q1 is `refused`
-
-  @g23 @r23
-  Scenario: `work resolve` delivers an accepted request
-    Given a request q1 that is `accepted`
-    When the person runs `work resolve` on the request q1
-    Then the request q1 is `delivered`
-    And `work` writes the resolution r1
-    And `work` changes the side of the request q1
-    And `work` commits the request q1
-
   @g24 @r24
   Scenario: `work resolve` refuses a request that is not accepted
     Given a request q1
@@ -169,3 +110,144 @@ Feature: Requests
     When the person runs `work show` on the request q1
     Then `work` prints the status of the request q1
     And `work` prints the request line r1
+
+  @g27 @r27
+  Scenario: `work request` opens the request's issue
+    When the person runs `work request`
+    Then `work` posts the issue i1
+    And `work` writes the request q1
+    And the request q1 is `open`
+    And `work` commits the request q1
+
+  @g28 @r28
+  Scenario: `work request` refuses an upstream with no GitHub repository
+    Given a bounded context b1
+    And the bounded context b1 is unhosted
+    When the person runs `work request`
+    Then `work` exits with an error naming the bounded context b1
+    And `work` changes nothing
+
+  @g29 @r29
+  Scenario: `work offer` answers an ask with what may serve it
+    Given a request q1 that is `open`
+    When the session s1 runs `work offer` on the request q1
+    Then `work` posts the comment c1
+    And the request q1 is `awaiting-asker`
+    And `work` commits the request q1
+
+  @g30 @r30
+  Scenario: `work fits` ends a request an offer serves
+    Given a request q1 that is `awaiting-asker`
+    When the person runs `work fits` on the request q1
+    Then the request q1 is `delivered`
+    And `work` writes the resolution r1
+    And `work` posts the comment c1
+    And `work` closes the issue i1
+    And `work` commits the request q1
+
+  @g31 @r31
+  Scenario: `work propose` writes the asker's lines
+    Given a request q1 that is `awaiting-asker`
+    When the person runs `work propose` on the request q1
+    Then `work` writes the request line r1
+    And `work` commits the request q1
+
+  @g32 @r32
+  Scenario: `work sync` records what the other side posted
+    Given a comment c1
+    And the comment c1 is unrecorded
+    And a comment c2
+    And the comment c2 is not unrecorded
+    When the session s1 runs `work sync`
+    Then `work` writes the comment c1
+    And `work` prints the request q1
+    And `work` does not write the comment c2
+
+  @g33 @r33
+  Scenario: `work sync` acts on no comment it cannot read
+    Given a comment c1
+    And the comment c1 is unreadable
+    When the session s1 runs `work sync`
+    Then `work` prints the comment c1
+    And `work` does not write the comment c1
+
+  @g34 @r34
+  Scenario: `work turn` posts the asker's turn
+    Given a request q1 that is `awaiting-asker`
+    When the person runs `work turn` on the request q1
+    Then the request q1 is `awaiting-upstream`
+    And `work` changes the side of the request q1
+    And `work` posts the comment c1
+
+  @g35 @r35
+  Scenario: The upstream's turn ends with a line not settled, posted
+    Given a request q1 that is `open`
+    And a request line r1
+    And the request line r1 is proposed in the request q1
+    And the request line r1 is not settled
+    When the person runs `work turn` on the request q1
+    Then the request q1 is `awaiting-asker`
+    And `work` posts the comment c1
+
+  @g36 @r36
+  Scenario: The upstream's turn ends with every line settled and one accepted, posted for the person to accept
+    Given a request q1 that is `open`
+    And a request line r1
+    And the request line r1 is proposed in the request q1
+    And the request line r1 is `accepted`
+    When the person runs `work turn` on the request q1
+    Then `work` posts the comment c1
+    And `work` does not change the side of the request q1
+
+  @g37 @r37
+  Scenario: The upstream's turn ends with every line refused, and the issue closed
+    Given a request q1 that is `open`
+    And a request line r1
+    And the request line r1 is proposed in the request q1
+    And the request line r1 is `refused`
+    When the person runs `work turn` on the request q1
+    Then the request q1 is `refused`
+    And `work` posts the comment c1
+    And `work` closes the issue i1
+
+  @g38 @r38
+  Scenario: A line that does not parse is not accepted
+    Given a request line r1
+    And the request line r1 is unparsed
+    When the session s1 runs `work outcome accepted` on the request line r1
+    Then `work` exits with an error naming the request line r1
+    And `work` changes nothing
+
+  @g39 @r39
+  Scenario: `work accept` accepts a request and writes its item
+    Given a request q1 that is `open`
+    And a request line r1
+    And the request line r1 is proposed in the request q1
+    And the request line r1 is `accepted`
+    When the person runs `work accept` on the request q1
+    Then the request q1 is `accepted`
+    And `work` writes the item i1
+    And the item i1 is `shaped`
+    And `work` posts the comment c1
+    And `work` commits the request q1
+
+  @g40 @r40
+  Scenario: `work accept` refuses a request with a line not settled
+    Given a request line r1
+    And a request q1
+    And the request line r1 is proposed in the request q1
+    And the request line r1 is not settled
+    When the person runs `work accept` on the request q1
+    Then `work` exits with an error naming the request line r1
+    And `work` changes nothing
+
+  @g41 @r41
+  Scenario: `work resolve` posts the resolution and closes the issue
+    Given a request q1 that is `accepted`
+    When the person runs `work resolve` on the request q1
+    Then the request q1 is `delivered`
+    And `work` writes the resolution r1
+    And `work` changes the side of the request q1
+    And `work` posts the comment c1
+    And `work` closes the issue i1
+    And `work` commits the request q1

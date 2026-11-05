@@ -13,6 +13,7 @@ import backlog_cli
 import backlog_items
 import batch_cli
 import conversation_cli
+import request_cli
 import request_moves
 import request_view
 import shop_files
@@ -42,17 +43,15 @@ def cmd_answer(args):
 
 def cmd_request(args):
     request_moves.gate(args.root, args.asker, args.source, args.thread, args.raised_for)
-    print(request_moves.request(args.root, args.title, args.asker, args.lines, args.source, args.thread, args.raised_for))
+    name, url = request_moves.request(args.root, args.title, args.asker, args.ask, args.source, args.thread,
+                                      args.raised_for, args.to)
+    print("%s %s" % (name, url))
     return 0
 
 
 def cmd_outcome(args):
     import intake_moves
-    if intake_moves.handles(args):
-        intake_moves.outcome(args.root, args.request, args.line, args.outcome, args.into, args.group, args.reason,
-                             args.text)
-        return 0
-    request_moves.outcome(args.root, args.request, args.line, args.outcome)
+    intake_moves.outcome(args.root, args.request, args.line, args.outcome, args.into, args.group, args.reason, args.text)
     return 0
 
 
@@ -90,10 +89,11 @@ def main(argv=None):
     n = sub.add_parser("answer", help="answer the question of an item b<n> that is needs-input")
     n.add_argument("name")
     n.add_argument("answer")
-    q = sub.add_parser("request", help="take in a request from its asker, open and in the upstream's turn")
+    q = sub.add_parser("request", help="ask an upstream (or this context): open the request's issue, and the request")
     q.add_argument("title")
     q.add_argument("--from", dest="asker", required=True)
-    q.add_argument("--lines", required=True, help="a file of the request's lines, one a line")
+    q.add_argument("--ask", help="what the asker needs, in its own words (default: the title)")
+    q.add_argument("--to", help="the upstream asked, under ## Upstreams (default: the one upstream, or this context)")
     q.add_argument("--source", action="append", default=[])
     q.add_argument("--thread")
     q.add_argument("--raised-for", dest="raised_for", help="the request of the asker this one is raised for")
@@ -101,8 +101,8 @@ def main(argv=None):
     q.add_argument("request")
     q.add_argument("line", type=int)
     q.add_argument("outcome")
-    q.add_argument("--into", help="accepted, on a request taken in as an item: the capability the line goes into")
-    q.add_argument("--group", help="with --into: the title of the item's new group (default: the item's title)")
+    q.add_argument("--into", help="accepted: the capability of this context the line goes into")
+    q.add_argument("--group", help="with --into: a group g<n> of the capability, or the title of a new group")
     q.add_argument("--reason", help="the reason, written under the request's ## Reasons")
     q.add_argument("--line", dest="text", help="rewritten: the counter-proposal, appended to the request's lines")
     q = sub.add_parser("ask", help="write the upstream's question on a line of a request")
@@ -121,12 +121,13 @@ def main(argv=None):
     backlog_cli.add_parsers(sub)
     batch_cli.add_parsers(sub)
     conversation_cli.add_parsers(sub)
+    request_cli.add_parsers(sub)
     args = ap.parse_args(argv)
     try:
         return {"show": cmd_show, "list": cmd_list, "answer": cmd_answer, "withdraw": cmd_withdraw,
                 "request": cmd_request, "outcome": cmd_outcome, "ask": cmd_ask, "reply": cmd_reply, "turn": cmd_turn,
                 "resolve": cmd_resolve, **backlog_cli.COMMANDS, **batch_cli.COMMANDS,
-                **conversation_cli.COMMANDS}[args.cmd](args)
+                **conversation_cli.COMMANDS, **request_cli.COMMANDS}[args.cmd](args)
     except shop_files.Refused as refused:
         print("work: %s" % refused, file=sys.stderr)
         return 1

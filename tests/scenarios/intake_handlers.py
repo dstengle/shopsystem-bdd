@@ -1,12 +1,12 @@
-"""Handlers of features/intake.feature (plan 3, Tasks 3 and 4): `work intake` and `work outcome` run with no input on
-the requests world_nodes.py and readiness_world.py write and the items backlog_world.py writes. The steps whose key
+"""Handlers of features/intake.feature (plan 3, Tasks 3 and 4) and of `work outcome accepted` in
+features/requests.feature (r38): `work outcome` run with no input on the requests world_nodes.py and readiness_world.py
+write, each on its issue (requests_world.py), and the items backlog_world.py writes. The steps whose key
 another capability claims reach these through work_queue_world's `local` table, so test_intake.py binds with
 `bind_all`; each returns False for a step that is not about intake, which then goes on to the registry."""
 import importlib.util
 import sys
 from pathlib import Path
 
-import request_moves
 import request_text
 from vocab import handler
 
@@ -23,14 +23,9 @@ def shared(name, file):
 W = shared("shop_work_queue_world", "work_queue_world.py")
 B = shared("shop_backlog_world", "backlog_world.py")
 R = shared("shop_readiness_world", "readiness_world.py")
+Q = shared("shop_requests_world", "requests_world.py")
 local = W.local
 B.OF_GIVENS["request line"] = lambda step: R.link_request(step, *step.names)
-
-
-@handler("WhenRuns", "`work intake`")
-def work_intake(step):
-    step.context["taken_in"] = step.names[-1]
-    B.run_work(step, "intake", step.names[-1], **R.NO_INPUT)
 
 
 @local("GivenK_C", "request line")
@@ -45,16 +40,6 @@ def given_settled(step):
         R.write_request(step, outcome)
 
 
-@handler("ThenR", "asked by")
-def asked_by(step):
-    """The item's `asked_by` is the asker of the request the run took in, and that asker is not this context."""
-    item = B.item_file(step, step.names[0])
-    request = step.repo / W.node_rel(step.context, step.context["taken_in"])
-    asker = W.field(request, "asker")
-    assert W.field(item, "asked_by") == asker, (step.text, W.field(item, "asked_by"), asker)
-    assert asker not in request_moves.own_askers(step.repo) and asker != "internal", (step.text, asker)
-
-
 @local("ThenExitsErr", "request line")
 def refused_naming_line(step):
     """Exit 1 (not a usage error), naming the line as `work` names it: `line <n> of request q<m>`."""
@@ -65,23 +50,29 @@ def refused_naming_line(step):
 
 
 # What each word of `work outcome` is run with (D12).
-OPTIONS = {"accepted": ["--into", "work-queue"], "refused": ["--reason", "out of scope"],
-           "rewritten": ["--line", R.COUNTER]}
+OPTIONS = {"accepted": ["--into", "work-queue"], "rewritten": ["--line", R.COUNTER]}
 
 
 @handler("WhenRuns", "`work outcome accepted`")
-@handler("WhenRuns", "`work outcome refused`")
 @handler("WhenRuns", "`work outcome rewritten`")
 def work_outcome(step):
     """`work outcome q<n> <k> <word>` on the line a Given placed, with the word's option, over the codified spec (the
-    accepted line goes into one of its capabilities, a counter-proposal parses in its grammar)."""
+    accepted line goes into one of its capabilities, a counter-proposal parses in its grammar). A line no Given placed
+    in a request is line 1 of the world's request q9, in the words a Given said it has; the request is on its issue."""
+    if step.names[-1] not in step.context.get("line_of", {}):
+        R.write_request(step)
+        step.context.setdefault("line_of", {})[step.names[-1]] = (R.REQUEST, 1)
+        said = step.context.get("says", {}).get(step.names[-1])
+        if said and step.context.get("unparsed"):
+            path = step.repo / W.node_rel(step.context, R.REQUEST)
+            path.write_text(path.read_text().replace("1. %s\n" % R.PASSING, "1. %s\n" % said, 1))
     request, number = step.context["line_of"][step.names[-1]]
     word = step.term.strip("`").split()[-1]
     R.codify(step)
     path = step.repo / W.node_rel(step.context, request)
+    Q.with_issue(step, path)
     step.context["before"] = {"status": W.field(path, "status"), "side": W.field(path, "turn")}
-    step.context["reason_text"] = "out of scope" if word == "refused" else None
-    B.run_work(step, "outcome", request, str(number), word, *OPTIONS[word], **R.NO_INPUT)
+    B.run_work(step, "outcome", request, str(number), word, *OPTIONS[word], env=Q.env(step), **R.NO_INPUT)
 
 
 @local("GivenR", "request line")
@@ -104,16 +95,6 @@ def line_outcome(step):
     got = request_text.entries(path.read_text(), "Outcomes")
     has = "%d. %s" % (number, step.values[0].strip("`")) in got
     assert (not has) if " is not " in step.text else has, (step.text, got)
-
-
-@local("ThenDoes", "reason")
-def writes_reason(step):
-    """A file the last run changed holds the reason the run gave."""
-    said = step.context.get("reason_text")
-    if step.term != "write" or not said:
-        return False
-    hits = [rel for rel in W.runs(step)[-1]["changed"] if said in (step.repo / rel).read_text()]
-    assert hits, (step.text, said, W.runs(step)[-1]["changed"])
 
 
 @local("ThenDoes", "request line")

@@ -12,9 +12,11 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 sys.path.insert(0, str(ROOT / "tests"))
+sys.path.insert(0, str(ROOT / "tests" / "scripts"))
 import request_moves
 import shop_files
 import toolchain
+from request_testing import hosted
 
 CONTEXT = "ex.com/prod/ctx"
 GLOSSARY = (ROOT / "tests" / "scripts" / "fixtures" / "glossary" / "spec" / "index.md").read_text()
@@ -53,15 +55,15 @@ def test_another_asker_is_refused_naming_it(repo):
         request_moves.gate(repo, "bounded-context/ex.com/prod/other", ["observation/o1"], None, None)
 
 
-def test_a_bare_raised_for_is_written_as_the_full_request_id(repo):
-    name = request_moves.request(repo, "t", "internal", str(repo / "lines.md"), ["observation/o1"], None,
-                                     raised_for="q7")
+def test_a_bare_raised_for_is_written_as_the_full_request_id(repo, monkeypatch):
+    hosted(repo, repo.parent / (repo.name + "-gh"), monkeypatch=monkeypatch)
+    name, _ = request_moves.request(repo, "t", "internal", None, ["observation/o1"], None, raised_for="q7")
     text = (repo / ".shop/requests" / (name + ".md")).read_text()
     assert re.search(r"(?m)^raised_for: request/%s/q7$" % re.escape(CONTEXT), text), text
 
 
-def test_a_full_raised_for_is_written_as_given(repo):
+def test_a_full_raised_for_is_written_as_given(repo, monkeypatch):
+    hosted(repo, repo.parent / (repo.name + "-gh"), monkeypatch=monkeypatch)
     full = "request/ex.com/prod/app/q3"
-    name = request_moves.request(repo, "t", "internal", str(repo / "lines.md"), ["observation/o1"], None,
-                                     raised_for=full)
+    name, _ = request_moves.request(repo, "t", "internal", None, ["observation/o1"], None, raised_for=full)
     assert "\nraised_for: %s\n" % full in (repo / ".shop/requests" / (name + ".md")).read_text()

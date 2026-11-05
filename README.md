@@ -16,12 +16,12 @@ The plugin depends on no other plugin. It needs, in the consuming repository's P
 
 - the grammar tools, installed by `python3 scripts/tools install` (Linux x86_64): GF 3.12 under
   `~/.local/share/shopsystem-bdd/gf-3.12/` (or `$SHOPSYSTEM_GF`), and the pinned wheels pgf 1.1 and clingo 5.8.2,
-  for `model check`, `model parse`, `model logic`, `features generate` and `work request`;
+  for `model check`, `model parse`, `model logic`, `features generate` and `work outcome`;
   `tools probe` shows what is installed;
 - pytest and pytest-bdd, for the scenarios;
 - pytest-xdist, optional, to run the tests in parallel (`pytest.ini`'s `addopts = -n auto`; `-n 0` runs them in one
   process);
-- `gh`, for a batch's pull request.
+- `gh`, logged in, for a batch's pull request and a request's issue.
 
 ## Install
 
@@ -50,10 +50,17 @@ A consuming repository keeps (design-decision/final-layout):
 
 - **Work comes in as items.** `shaping-items` turns what the person wants into an item of the backlog
   (`work idea`, `work shape`), its requirement lines written into it (`work line`); `taking-in-a-request` answers a
-  peer context's request (`work intake`), and `raising-a-request` raises one into an upstream.
-- **Requests are codified.** `raising-a-request` turns what the person says into lines of the upstream's
-  requirement grammar (`model lexicon`, `model parse`), and `work request` refuses a line that does not parse,
-  with the longest prefix that parsed and the nearest lexicon words.
+  request asked of this context, and `raising-a-request` raises one into an upstream.
+- **A request is a conversation on one GitHub issue** on the upstream's GitHub repository (its `github:
+  <owner>/<name>` under `## Upstreams`; a context's own request on its own repository). Every step is a comment a
+  `work` command posts, and each side keeps its record in `.shop/requests/q<n>.md` with the issue's URL; nothing
+  reads or writes the other side's repository. The asker asks in its own words (`work request`), the upstream offers
+  what may serve with its glossary (`work offer`), the asker says one fits (`work fits`) or proposes lines in the
+  upstream's terms (`work propose`, `work turn`), the upstream answers each (`work outcome`, `work ask`, `work turn`;
+  an accepted line parses in its grammar and names its capability), and the upstream's person accepts the request,
+  which becomes an item (`work accept`); `work resolve` posts the resolution and closes the issue. `work sync`, run
+  on either side, records what the other side posted and prints what waits; only a comment's block of fields is
+  read.
 - **Requirements parse.** Every Behaviour statement is an EARS requirement in the context's grammar (the glossary of
   `spec/index.md` and each capability's `## Terms` are its lexicon), in a requirement group `[g<n>]` with ids
   `[r<n>]`, and parses to exactly one tree (`v_p1`, `v_p2`). `spec/universal.md` holds the universal conditions
@@ -81,8 +88,8 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
   `vocab` checks the fixed step vocabulary; `count`, `list`, `bindings` and `deprecated` read feature files without
   the test runner.
 - `scripts/work`: the backlog (`idea`, `shape`, `line`, `rate`, `depend`, `refuse`, `ready`, `backlog`), the
-  batches (`batch`), the requests between contexts (`request`, `outcome`, `ask`, `reply`, `turn`, `resolve`,
-  `intake`), and `list` and `show`.
+  batches (`batch`), the requests between contexts (`request`, `offer`, `fits`, `propose`, `outcome`, `ask`,
+  `reply`, `turn`, `accept`, `resolve`, `sync`), and `list` and `show`.
   - `work quote "<the person's words>"` copies the person's message with the two messages before and after it (no
     tool output) into `.shop/quotes/` and commits it. `work show quote-<n>` prints it. `work names` is the table of
     items and batches by name. The UserPromptSubmit hook keeps the session for `work quote`

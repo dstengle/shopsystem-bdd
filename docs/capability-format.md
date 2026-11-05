@@ -141,7 +141,7 @@ asks for a glossary entry; a synonym never stands in for it.
 
 **Check while writing.** `model parse "<line>"` (or `--file <lines>`) prints the tree, or the refusal with the
 token, its position, the longest prefix that parsed and the nearest lexicon words. `model lexicon` lists the words
-by category. A request's lines are checked the same way by `work request`.
+by category. A request's lines are checked the same way by the upstream's `work outcome accepted`.
 
 **What not to write.**
 
@@ -318,13 +318,15 @@ scenario conftest checks it after every scenario that makes its trigger true. A 
 ## Upstreams
 
 A context that depends on others names each one in a `## Upstreams` section of `spec/index.md`, one bullet for
-each: the upstream's bounded-context id, a colon, and the path of its published spec. A request into an upstream
-is written in the upstream's lexicon, and `work request` parses its lines with the upstream's grammar.
+each: the upstream's bounded-context id, a colon, the path of its published spec, and `github: <owner>/<name>`, the
+GitHub repository whose issues carry the requests to it (`work request` refuses an upstream with none). A request
+into an upstream is written in the upstream's lexicon, the glossary its offer quotes, and the upstream parses each
+line in its own grammar before it accepts one.
 
 ```markdown
 ## Upstreams
 
-- bounded-context/missingmass.io/shopsystem/billing: ../billing/spec
+- bounded-context/missingmass.io/shopsystem/billing: ../billing/spec, github: missingmass/billing
 ```
 
 ## The feature file
