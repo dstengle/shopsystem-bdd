@@ -149,3 +149,22 @@ def test_a_commit_subject_with_quotes_is_escaped(pub):
     shape = re.compile(r'^- [0-9a-f]{7,} "(?:[^"\\]|\\.)*"(?: Item: [^"]*)?(?: Finding: [^"]*)?$')
     assert all(shape.match(line) for line in listed), listed
     assert any('\\"' in line for line in listed), listed
+
+
+BASE_CHECK = "import pathlib, sys\nsys.exit(0 if pathlib.Path('src/b1.txt').exists() else 1)\n"
+
+
+def test_each_run_gives_the_bases_exit_code_once_a_batch(batch_repo):
+    """Review S5, Q2: each check is run at `forked_from` too, once a batch, so a failure the batch did not cause is
+    told apart from one it did."""
+    (batch_repo / "check.py").write_text(BASE_CHECK)
+    git(batch_repo, "add", "check.py")
+    configure(batch_repo, '\n[review]\nchecks = ["python3 check.py"]\n')
+    published(batch_repo)
+    before = state(batch_repo)
+    assert "Exit code: 0 (base: 1)" in section(brief(batch_repo)[2], "Runs")
+    assert state(batch_repo) == before
+    assert not any(p.name.endswith("-base") for p in (batch_repo / ".shop" / "worktrees").iterdir())
+    cache = scratch(batch_repo) / "base-runs.json"
+    cache.write_text(cache.read_text().replace(": 1", ": 7"))
+    assert "Exit code: 0 (base: 7)" in section(brief(batch_repo)[2], "Runs")

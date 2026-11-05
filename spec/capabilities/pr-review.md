@@ -74,9 +74,10 @@ branch and the review re-reads what the fix changed; a clean pull request waits 
   `fix now` sets the batch `building`; a clean review sets it `awaiting-merge` and marks the pull request ready
   (`gh pr ready`).
 - `pr-reviewer` (`agents/pr-reviewer.md`: Read, Glob, Grep and Write, no shell) reads the brief `work batch brief`
-  writes in the ignored worktrees directory: the range's commits and `change.diff`, the items' lines (first review)
-  or the open findings with the commits for each (re-review), the `tier: judgement` decisions, `CLAUDE.md`, the size
-  and the runs of `[review] checks`. It writes one findings file, each finding graded and triaged.
+  writes in the ignored worktrees directory: the range's commits, each with its own patch, and `change.diff`, the
+  items' lines (first review) or the open findings with the commits for each (re-review), the `tier: judgement`
+  decisions, `CLAUDE.md`, the size and the runs of `[review] checks`, each with its exit code at the head and, run
+  once a batch, at `forked_from`. It writes one findings file, each finding graded and triaged.
 - The loop is the batch session's (skill `building-a-batch`): after `work batch review`, `work batch brief`, one
   fresh `pr-reviewer` on the brief, then `work batch reviewed`. On `building`, each open finding is fixed on its
   item's branch by commits ending `Item: b<j>` and `Finding: f<m>`; `work batch review` checks and pushes them, and

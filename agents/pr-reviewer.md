@@ -24,7 +24,7 @@ Then its sections, in order:
 - `## Judgement decisions`: each design-decision whose tier is `judgement`, with its summary, or `none`;
 - `## Rules`: the repository's `CLAUDE.md`, or `none`;
 - `## Size`: the files and lines the range changes, `.shop/` left out, and the limit;
-- `## Runs`: each check `work` ran in the batch's worktree at `Head:`, with its command, its exit code and the end of its output;
+- `## Runs`: each check `work` ran in the batch's worktree at `Head:`, with its command, its exit code, the exit code it had at the batch's base (`Exit code: 1 (base: 0)`) and the end of its output;
 - `## Commits`: every commit of the range, oldest first, `<short sha> "<subject>"` (a `"` in the subject written `\"`) with its `Item:` and `Finding:`, and for each commit that is not a merge `patch: <path>`, its own change;
 - `## Change`: the path of `change.diff`, the range's change less `.shop/`.
 
@@ -51,7 +51,7 @@ Nothing but the findings file, at the path `Findings file:` gives. The worktree,
 - **`CLAUDE.md`'s rules and module map**: each rule and each module-map row the change touches, met or not, with its file and line.
 - **The judgement decisions**: each one the change goes against, naming the decision.
 - **The size**: a change over the limit `## Size` gives is a `Minor` `observation` naming the items that make most of it.
-- **The runs**: a check that exited other than 0 is a finding, with the lines of its output that show why.
+- **The runs**: a check that exited other than 0 at `Head:` and 0 at the base (`Exit code: 1 (base: 0)`) is a finding, with the lines of its output that show why; one that exited other than 0 at the base too is not the batch's, and is at most an `observation`.
 
 ## Triage
 

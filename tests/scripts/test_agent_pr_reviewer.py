@@ -58,3 +58,10 @@ def test_the_reviewer_reads_each_commits_own_patch():
     """Review S4."""
     has("Each commit's own change is the patch its line names (`patch: <path>`): read it to see what that commit "
         "did, and `change.diff` for the range's net change.")
+
+
+def test_a_run_failing_at_the_base_already_is_no_fix_now_finding():
+    """Review S5."""
+    has("**The runs**: a check that exited other than 0 at `Head:` and 0 at the base (`Exit code: 1 (base: 0)`) is a "
+        "finding, with the lines of its output that show why; one that exited other than 0 at the base too is not "
+        "the batch's, and is at most an `observation`.")

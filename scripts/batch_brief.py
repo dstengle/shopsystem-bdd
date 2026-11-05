@@ -6,7 +6,9 @@ The first review (the pull request is unreviewed) reads the range `forked_from..
 no other, every requirement line of its in-batch items, the `tier: judgement` design-decisions, the rules
 (`CLAUDE.md`), the size of the change and the runs of `[review] checks`, each with its command, exit code and output.
 A re-review reads the range from the last review's head: the open findings, each with the commits for it, in place of
-the items (r3 binds the first review only)."""
+the items (r3 binds the first review only). Each check is also run once a batch at `forked_from`, and its exit code
+there given beside the one at the head (review S5)."""
+import json
 import re
 import shlex
 import subprocess
@@ -25,6 +27,7 @@ from batch_git import (
     git,
     remote,
     remote_head,
+    remove_tree,
     scripts_env,
     tree_for,
     trees_dir,
@@ -99,16 +102,40 @@ def _indented(text):
     return "\n".join("    %s" % line if line.strip() else "" for line in text.splitlines()) or "    (no output)"
 
 
+def _run(command, where):
+    return subprocess.run(shlex.split(command), cwd=where, capture_output=True, text=True, env=scripts_env())
+
+
+def base_runs(root, batch, commands):
+    """{command: exit code} of each check run at the batch's `forked_from`, in a throwaway worktree, once a batch:
+    kept in the first review's scratch directory as `base-runs.json` (review S5, plan 5 rulings Q2)."""
+    cache = batch_findings.scratch(root, batch.name, 1) / "base-runs.json"
+    found = json.loads(cache.read_text(encoding="utf-8")) if cache.is_file() else {}
+    missing = [c for c in commands if c not in found]
+    if missing:
+        tree = trees_dir(root) / ("%s-base" % batch.name)
+        remove_tree(root, tree)
+        git(root, "worktree", "add", "-q", "--detach", str(tree), batch.forked_from)
+        try:
+            found.update({c: _run(c, tree).returncode for c in missing})
+        finally:
+            remove_tree(root, tree)
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        cache.write_text(json.dumps(found, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    return found
+
+
 def _runs(root, tree, batch):
     checks = delivery(root).get("review", {}).get("checks", list(CHECKS))
     if not isinstance(checks, list) or not all(isinstance(c, str) for c in checks):
         raise Refused("%s: .shop/delivery.toml: [review] checks is not a list of strings" % COMMAND)
-    out = []
-    for check in checks:
-        command = check.replace("{scripts}", str(SCRIPTS)).replace("{forked_from}", batch.forked_from)
-        done = subprocess.run(shlex.split(command), cwd=tree, capture_output=True, text=True, env=scripts_env())
+    commands = [c.replace("{scripts}", str(SCRIPTS)).replace("{forked_from}", batch.forked_from) for c in checks]
+    base, out = base_runs(root, batch, commands), []
+    for command in commands:
+        done = _run(command, tree)
         tail = "\n".join((done.stdout + done.stderr).splitlines()[-TAIL:])
-        out.append("### `%s`\n\nExit code: %d\n\n%s" % (command, done.returncode, _indented(tail)))
+        out.append("### `%s`\n\nExit code: %d (base: %d)\n\n%s" % (command, done.returncode, base[command],
+                                                                       _indented(tail)))
     return "\n\n".join(out) or "none: [review] checks is empty"
 
 
