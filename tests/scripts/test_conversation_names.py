@@ -131,7 +131,7 @@ def test_the_hook_is_wired():
     hooks = json.loads((T.Path(__file__).resolve().parents[2] / "hooks/hooks.json").read_text())["hooks"]
     commands = [h["command"] for group in hooks["SessionStart"] for h in group["hooks"]]
     assert len(commands) == 2
-    assert commands[0].endswith('migrate" status --hook') and commands[1].endswith('work" names --hook'), commands
+    assert commands[0].endswith('migrate" status --hook') and commands[1].endswith('conversation_hook" names'), commands
 
 
 @pytest.mark.timing

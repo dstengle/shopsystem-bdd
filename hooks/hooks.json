@@ -9,7 +9,7 @@
           },
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/work\" names --hook"
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/conversation_hook\" names"
           }
         ]
       }
@@ -23,7 +23,7 @@
           },
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/work\" quote --hook"
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/conversation_hook\" quote"
           }
         ]
       }

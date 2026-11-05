@@ -122,8 +122,9 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
   returns a `failed` work-item, `withdraw` withdraws one, `run` delivers an initiative.
   - `work quote "<the person's words>"` copies the person's message with the two messages before and after it (no
     tool output) into `.shop/quotes/` and commits it. `work show quote-<n>` prints it. `work names` is the table of
-    items and batches by name. The UserPromptSubmit hook keeps the session for `work quote` (`work quote --hook`),
-    and the SessionStart hook prints `work names --hook`.
+    items and batches by name. The UserPromptSubmit hook keeps the session for `work quote`
+    (`conversation_hook quote`), and the SessionStart hook prints the names table (`conversation_hook names`); each
+    imports only what it needs and never fails. `work quote --hook` and `work names --hook` do the same.
 - `scripts/tools`: the project's analysis tools behind one interface: `probe`, `install` (also the grammar tools), `map`, `tests-of`,
   `untested`, `refs`, `check`, and `size`, the tracked Python files over a line limit.
 - `scripts/migrate`: `migrate run --context <owner/product/context>` takes a repository from the old system to

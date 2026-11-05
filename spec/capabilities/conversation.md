@@ -54,11 +54,13 @@ of every item and batch a session names (design goal 10).
   than the cited message is cut at 2,000 characters.
 - `work quote "<words>"` prints the quote's label, `quote-<n> "<its words>"`, and commits the quote's file alone on the
   current branch; words that match nothing write nothing.
-- The UserPromptSubmit hook runs `work quote --hook`, which writes the session and transcript of its stdin to
+- The UserPromptSubmit hook runs `scripts/conversation_hook quote`, the same as `work quote --hook`, which writes the session and transcript of its stdin to
   `<git dir>/shopsystem/prompt.json`, never tracked, prints nothing and never fails; `work quote` reads its transcript
   from `--transcript`, else `--session` in any project of Claude Code's store, else that pointer.
 - `work show quote-<n>` prints the quote's label, its session and date, then each of its messages with who wrote it,
   its time and the cited one marked `cited`; with `--json`, one object.
 - `work names` prints one table of every item and then every batch, each with its name beside its id, a batch named
-  by the labels of its items; the SessionStart hook runs `work names --hook`, which prints the table under one line
+  by the labels of its items; the SessionStart hook runs `scripts/conversation_hook names`, the same as `work names --hook`, which prints the table under one line
   telling the session to name things by their names, prints nothing when there is nothing to name, and never fails.
+- `scripts/conversation_hook` imports only the standard library and the conversation's modules, so the hooks run under
+  any `python3`, and exits 0 whatever goes wrong.
