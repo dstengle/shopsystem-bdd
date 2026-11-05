@@ -2,7 +2,8 @@
 """Keep the backlog in .shop/backlog/: an item from an idea to its delivery, named `b<n>` (capability backlog).
 Keep the person's words with the turns around them in .shop/quotes/, named `quote-<n>` (capability conversation).
 Keep the requests between bounded contexts in .shop/requests/, named `q<n>` (capability requests).
-Write a design-decision under spec/decisions/ with `work decision` (capability decision-tiers).
+Write a design-decision under spec/decisions/ with `work decision` (capability decision-tiers), and a
+record under .shop/records/ with `work record` (capability design-model-check).
 Plugin 1.x's queue of initiatives and work-items is frozen under .shop/work/ and read as files (workflow simplification
 plan 9)."""
 import argparse
@@ -15,6 +16,7 @@ import backlog_items
 import batch_cli
 import conversation_cli
 import decision_write
+import record_write
 import request_cli
 import request_moves
 import request_view
@@ -124,13 +126,15 @@ def main(argv=None):
     batch_cli.add_parsers(sub)
     conversation_cli.add_parsers(sub)
     decision_write.add_parser(sub)
+    record_write.add_parser(sub)
     request_cli.add_parsers(sub)
     args = ap.parse_args(argv)
     try:
         return {"show": cmd_show, "list": cmd_list, "answer": cmd_answer, "withdraw": cmd_withdraw,
                 "request": cmd_request, "outcome": cmd_outcome, "ask": cmd_ask, "reply": cmd_reply, "turn": cmd_turn,
                 "resolve": cmd_resolve, **backlog_cli.COMMANDS, **batch_cli.COMMANDS,
-                **conversation_cli.COMMANDS, **request_cli.COMMANDS, **decision_write.COMMANDS}[args.cmd](args)
+                **conversation_cli.COMMANDS, **request_cli.COMMANDS, **decision_write.COMMANDS,
+                **record_write.COMMANDS}[args.cmd](args)
     except shop_files.Refused as refused:
         print("work: %s" % refused, file=sys.stderr)
         return 1
