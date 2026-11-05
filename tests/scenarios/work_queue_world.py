@@ -101,6 +101,8 @@ def matches(repo, context, np, rel):
     an answer, a delegation or a transition. An instance the scenario has not written yet (the trace's name for what
     the command writes) is matched as any of its kind."""
     path = Path(repo) / rel
+    if re.fullmatch(r"`[^`]+`", np):      # a file named by its path (migration-tools' `.shop/work/FROZEN.md`)
+        return rel == np.strip("`")
     if re.fullmatch(r"(a|the) decisions index( \S+)?", np):
         return rel == "spec/decisions/index.md"
     ledger = re.match(r"the ledger of the initiative (\S+)$", np)

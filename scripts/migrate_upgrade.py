@@ -11,6 +11,7 @@ from pathlib import Path
 import migrate_upgrade_answers
 import migrate_upgrade_codified
 import migrate_upgrade_ids
+import migrate_upgrade_simplified
 from migrate_write import check_moves, git, top_level, uncommitted
 
 SCRIPTS = Path(__file__).resolve().parent
@@ -22,7 +23,10 @@ STEPS = [("0.24.0", "work-items named by ids", "give every work-item the id w<n>
           "rename awaiting-ruling to awaiting-answer and `## Rulings` to `## Answers`", migrate_upgrade_answers),
          ("1.0.0", "codified requirements",
           ("write spec/restated.json, scaffold each uncodified capability's Behaviour as groups, delete @deprecated "
-          "scenarios and write old references <cap>#r<n>@0.29"), migrate_upgrade_codified)]
+          "scenarios and write old references <cap>#r<n>@0.29"), migrate_upgrade_codified),
+         ("2.0.0", "the workflow simplified",
+          "freeze .shop/work/, move the live requests to .shop/requests/ and write the decisions index",
+          migrate_upgrade_simplified)]
 
 
 def number(version):
@@ -100,6 +104,7 @@ def apply(root, changes):
         git(root, "mv", old, temporary)
         held.append((temporary, new))
     for temporary, new in held:
+        (root / new).parent.mkdir(parents=True, exist_ok=True)     # a request moved to .shop/requests/ (2.0.0)
         git(root, "mv", temporary, new)
     for rel, text in changes.texts.items():
         with open(root / rel, "w", newline="") as handle:

@@ -721,7 +721,7 @@ This repository's own requests are not moved here: Task 10's `migrate upgrade` m
 - Produces: `migrate_upgrade_simplified.plan(root) -> Changes`, and `FROZEN_TEXT` (D13's text, the one constant the
   tests compare).
 
-- [ ] **Step 1: Write the failing tests** in `test_migrate_upgrade_simplified.py`. Build the fixture with the
+- [x] **Step 1: Write the failing tests** in `test_migrate_upgrade_simplified.py`. Build the fixture with the
   `repository(files)` helper of `test_migrate_upgrade_codified.py` (import it), and run `migrate upgrade`
   in-process with `migrate_upgrade.plugin_version = lambda: "2.0.0"`.
   - **The 1.0 repository:**
@@ -766,17 +766,17 @@ This repository's own requests are not moved here: Task 10's `migrate upgrade` m
       the scaffold, `FROZEN.md` and version `2.0.0` in one commit.
   - **The spec:** add D17's terms, group and line to `migration-tools.md`, edit r14's and r19's givens, and set
     `TARGET = "2.0.0"`.
-- [ ] **Step 2: Run them.** `python3 -m pytest tests/scripts/test_migrate_upgrade_simplified.py tests/scenarios/test_migration_tools.py -q`.
+- [x] **Step 2: Run them.** `python3 -m pytest tests/scripts/test_migrate_upgrade_simplified.py tests/scenarios/test_migration_tools.py -q`.
   Expected: the step's tests fail (no module), and `@r24` fails (`FROZEN.md` not written). `@r14` and `@r19` already
   pass, because `migration_old.plugin()` copies the plugin at `TARGET` while `plugin.json` is below it.
-- [ ] **Step 3: Implement D13**, add the step to `STEPS`, and set `plugin.json` to 2.0.0 (D22).
-- [ ] **Step 4: The gate.** Expected:
+- [x] **Step 3: Implement D13**, add the step to `STEPS`, and set `plugin.json` to 2.0.0 (D22).
+- [x] **Step 4: The gate.** Expected:
   - Suite: no failure. The collection diff removes nothing and adds the new tests and `@r24`.
   - `model lexicon --check`: `402 terms, 0 problems`.
   - `model check`: 0/16/0/0.
   - `python3 scripts/migrate status` in this repository: `the repository's plugin version: 1.0.0`, `the plugin's
     version: 2.0.0`, `pending upgrade step 2.0.0 "the workflow simplified": …`.
-- [ ] **Step 5: Commit.**
+- [x] **Step 5: Commit.**
   ```bash
   git add -A scripts tests spec features .claude-plugin/plugin.json README.md CLAUDE.md
   git commit -m "migrate upgrade 2.0.0 \"the workflow simplified\": .shop/work/ frozen, live requests moved, the decisions index rewritten; plugin 2.0.0 (plan 9, Task 9)"

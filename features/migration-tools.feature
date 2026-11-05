@@ -310,7 +310,7 @@ Feature: Migration tools
 
   @g14 @r14
   Scenario: `migrate upgrade` with no pending step says so and changes nothing
-    Given the tracked file `.shop/plugin-version` holds "1.0.0"
+    Given the tracked file `.shop/plugin-version` holds "2.0.0"
     And a repository r1
     And the repository r1 is current
     When the person runs `migrate upgrade`
@@ -403,7 +403,7 @@ Feature: Migration tools
 
   @g19 @r19
   Scenario: the SessionStart hook tells a session nothing when nothing is pending and no initiative is open
-    Given the tracked file `.shop/plugin-version` holds "1.0.0"
+    Given the tracked file `.shop/plugin-version` holds "2.0.0"
     And the tracked file `.shop/work/i1/initiative.md` holds:
       """
       ---
@@ -436,3 +436,73 @@ Feature: Migration tools
     When the SessionStart hook runs `migrate status --hook`
     Then `migrate` prints "holds no version"
     And `migrate` prints "banana"
+
+  @g24 @r24
+  Scenario: the upgrade step "the workflow simplified" freezes `.shop/work/`, moves the live requests to `.shop/requests/` and writes the decisions index
+    Given the tracked file `.shop/plugin-version` holds "1.0.0"
+    And the tracked file `spec/index.md` holds:
+      """
+      ---
+      id: bounded-context/example.org/acme/shop
+      title: shop
+      ---
+      # shop
+      """
+    And the tracked file `spec/decisions/0001-one.md` holds:
+      """
+      ---
+      id: design-decision/example.org/acme/shop/one
+      summary: One decision.
+      status: accepted
+      tier: judgement
+      ---
+      # One
+      ## Decision
+      One.
+      """
+    And the tracked file `spec/decisions/index.md` holds:
+      """
+      # Decisions
+      Written by hand, with no tier.
+      """
+    And the tracked file `.shop/work/i1/initiative.md` holds:
+      """
+      ---
+      id: initiative/example.org/acme/shop/i1
+      kind: initiative
+      title: A cart
+      status: started
+      ---
+      # i1
+      """
+    And the tracked file `.shop/work/requests/q1.md` holds:
+      """
+      ---
+      id: request/example.org/acme/shop/q1
+      kind: request
+      asker: internal
+      status: open
+      turn: upstream
+      ---
+      # An intention
+      """
+    And the tracked file `.shop/work/requests/q2.md` holds:
+      """
+      ---
+      id: request/example.org/acme/shop/q2
+      kind: request
+      asker: bounded-context/example.org/acme/web
+      status: open
+      turn: upstream
+      ---
+      # A peer's request
+      """
+    And a repository r1
+    And the repository r1 is queued
+    When the person runs `migrate upgrade`
+    Then `migrate` writes `.shop/work/FROZEN.md`
+    And `migrate` renames `.shop/work/requests/q2.md`
+    And `migrate` rewrites `spec/decisions/index.md`
+    And `migrate` prints "the workflow simplified"
+    And `migrate` prints "i1"
+    And `migrate` prints "q1"

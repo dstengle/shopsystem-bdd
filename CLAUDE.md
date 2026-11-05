@@ -84,6 +84,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/migrate` with `scripts/migrate*.py` | the `migrate` command |
 | `scripts/migrate_upgrade*.py` | `migrate status` and `migrate upgrade`: the upgrade steps between plugin releases, one module a step |
 | `scripts/migrate_upgrade_codified.py` | the 1.0.0 upgrade step "codified requirements": `spec/restated.json`, the scaffold of each uncodified capability, `@deprecated` scenarios deleted, old references written `<cap>#r<n>@0.29`, and what is left reported |
+| `scripts/migrate_upgrade_simplified.py` | the 2.0.0 upgrade step "the workflow simplified": `.shop/work/FROZEN.md`, the live requests moved to `.shop/requests/`, the decisions index rewritten, and what is left reported |
 | `hooks/hooks.json` | the plugin's hooks: SessionStart (`migrate status --hook`, `conversation_hook names`), UserPromptSubmit (`conversation_hook quote`) |
 | `tests/scenarios/` | the generated features' tests: one `test_<capability>.py` a capability, its handlers in `<capability>_handlers*.py` |
 | `tests/scenarios/vocab.py` | the vocabulary in pytest-bdd: step definitions matched by grammar, the handler registry (`from vocab import handler`), the marks from the spec, the U3/U8 checks after a generated scenario |

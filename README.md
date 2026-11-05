@@ -122,6 +122,11 @@ ignored, so a role's limits are its tools.
 - **`.shop/work/` frozen** (design-decision/the-2-0-layout): nothing writes it, and `model check` reads only the
   `source` of its initiatives and requests, as citations of observations. Live requests are `.shop/requests/q<n>.md`,
   numbered above the frozen ones.
+- **`migrate upgrade` 2.0.0, "the workflow simplified"**: a 1.0.x repository is moved to the new workflow in one
+  commit. It writes `.shop/work/FROZEN.md`, moves each open request of a peer to `.shop/requests/` with `git mv`, and
+  rewrites `spec/decisions/index.md`. Nothing is deleted. It names each open initiative, each proposal never applied
+  and each internal request not closed, to be shaped as items with `work idea`. A 0.29.x repository reaches 2.0.0
+  through the 1.0.0 step in the same commit.
 
 ## 1.0.0: codified requirements
 

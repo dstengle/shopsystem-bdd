@@ -26,7 +26,7 @@ what it needs to know at its start and before it is compacted.
 - **untracked file** (kind): a file of the repository's working tree that git does not track, or a change not
   committed.
 - **repository** (kind): the repository `migrate` runs in, with its working tree. Plural: repositories.
-- **release** (attribute of repository): the plugin release `.shop/plugin-version` names, against the plugin's own: `0.23.1` before work-items were named by ids, `0.24.0` before `awaiting-answer` replaced `awaiting-ruling`, `0.29.0` before requirements were codified, `own` the plugin's own release and `newer` a release newer than the plugin's. Values: `0.23.1`, `0.24.0`, `0.29.0`, `own`, `newer`.
+- **release** (attribute of repository): the plugin release `.shop/plugin-version` names, against the plugin's own: `0.23.1` before work-items were named by ids, `0.24.0` before `awaiting-answer` replaced `awaiting-ruling`, `0.29.0` before requirements were codified, `1.0.0` before the workflow was simplified, `own` the plugin's own release and `newer` a release newer than the plugin's. Values: `0.23.1`, `0.24.0`, `0.29.0`, `1.0.0`, `own`, `newer`.
 - **codified** (condition of capability): a capability whose file has `language: codified-1` in its frontmatter.
 - **rewrite** (event): `migrate` changes the text of a file in place. Forms: rewrites, rewritten.
 - **rename** (event): `migrate` gives a file another name with git. Forms: renames, renamed.
@@ -44,6 +44,7 @@ what it needs to know at its start and before it is compacted.
 - **behind** (condition of repository): A repository is behind when the repository is `0.23.1`.
 - **outdated** (condition of repository): A repository is outdated when the repository is `0.24.0`.
 - **uncodified** (condition of repository): A repository is uncodified when the repository is `0.29.0` and a capability is not codified.
+- **queued** (condition of repository): A repository is queued when the repository is `1.0.0`.
 - **current** (condition of repository): A repository is current when the repository is `own`.
 - **ahead** (condition of repository): A repository is ahead when the repository is `newer`.
 - **idle** (condition of repository): A repository is idle when the repository is `own` and no initiative is open.
@@ -310,7 +311,7 @@ Restates: r27@0.29.
   step is pending" and change nothing.
 
 ```given
-the tracked file `.shop/plugin-version` holds "1.0.0"
+the tracked file `.shop/plugin-version` holds "2.0.0"
 ```
 
 ### [g15] the upgrade step after 0.24.0 renames `awaiting-ruling` to `awaiting-answer` and `## Rulings` to `## Answers`
@@ -391,7 +392,7 @@ Restates: r24@0.29.
   successfully, and `migrate` shall not print "migrate upgrade" or print "i1".
 
 ```given
-the tracked file `.shop/plugin-version` holds "1.0.0"
+the tracked file `.shop/plugin-version` holds "2.0.0"
 the tracked file `.shop/work/i1/initiative.md` holds:
   ---
   id: initiative/example.org/acme/shop/i1
@@ -417,6 +418,60 @@ Restates: r31@0.29.
 
 ```given
 the tracked file `.shop/plugin-version` holds "banana"
+```
+
+### [g24] the upgrade step "the workflow simplified" freezes `.shop/work/`, moves the live requests to `.shop/requests/` and writes the decisions index
+- [r24] While the repository is queued, when the person runs `migrate upgrade`, `migrate` shall write
+  `.shop/work/FROZEN.md`, rename `.shop/work/requests/q2.md`, rewrite `spec/decisions/index.md` and print "the
+  workflow simplified", "i1" and "q1".
+
+```given
+the tracked file `.shop/plugin-version` holds "1.0.0"
+the tracked file `spec/index.md` holds:
+  ---
+  id: bounded-context/example.org/acme/shop
+  title: shop
+  ---
+  # shop
+the tracked file `spec/decisions/0001-one.md` holds:
+  ---
+  id: design-decision/example.org/acme/shop/one
+  summary: One decision.
+  status: accepted
+  tier: judgement
+  ---
+  # One
+  ## Decision
+  One.
+the tracked file `spec/decisions/index.md` holds:
+  # Decisions
+  Written by hand, with no tier.
+the tracked file `.shop/work/i1/initiative.md` holds:
+  ---
+  id: initiative/example.org/acme/shop/i1
+  kind: initiative
+  title: A cart
+  status: started
+  ---
+  # i1
+the tracked file `.shop/work/requests/q1.md` holds:
+  ---
+  id: request/example.org/acme/shop/q1
+  kind: request
+  asker: internal
+  status: open
+  turn: upstream
+  ---
+  # An intention
+the tracked file `.shop/work/requests/q2.md` holds:
+  ---
+  id: request/example.org/acme/shop/q2
+  kind: request
+  asker: bounded-context/example.org/acme/web
+  status: open
+  turn: upstream
+  ---
+  # A peer's request
 ```
 
 ## Implementation, may change
@@ -460,6 +515,14 @@ the tracked file `.shop/plugin-version` holds "banana"
   `<cap>#r<n>@0.29`, a range id by id: in every file when the step writes `spec/restated.json`, else in the lines a
   file had at the commit that added `spec/restated.json`. It prints, and the commit message lists, what is left for
   a session to write: each scaffolded capability, and the glossary of an index without `language: codified-1`.
+- The 2.0.0 step "the workflow simplified" (`migrate_upgrade_simplified.py`): when `.shop/work/` exists, it writes
+  `.shop/work/FROZEN.md`, which says that the queue of plugin 1.x is frozen and where items, batches and live requests
+  are. Each request of `.shop/work/requests/` that is not closed (`open`, `awaiting-asker`, `awaiting-upstream`,
+  `accepted`) and whose asker is neither `internal` nor this context is moved to `.shop/requests/` with `git mv`, its
+  name and id unchanged; a destination that exists is a change it cannot make. When `spec/decisions/` exists, it
+  rewrites `spec/decisions/index.md` as `model decisions` writes it. Nothing is deleted, and nothing else under
+  `.shop/work/` changes. It prints, and the commit message lists, each initiative neither `done` nor `abandoned`, each
+  capability- or glossary-proposal never applied, each internal request not closed, and each request moved.
 - `migrate status` and `migrate upgrade` refuse a `.shop/plugin-version` that holds no version, naming an empty file
   as empty and otherwise what it holds; the SessionStart hook tells the session the same.
 

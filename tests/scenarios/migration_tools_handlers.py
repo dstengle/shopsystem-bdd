@@ -1,7 +1,7 @@
 """migration-tools' handlers (design §14.3): the Givens hold the files of the repository `migrate` runs in, tracked
 (committed before the command runs) or not; every `migrate ...` command of the generated feature runs the real
 script, and the hooks' commands run as hooks/hooks.json has them, both from the plugin migration_old.plugin gives (a
-copy at 1.0.0 while this one is below it); the Thens read what it printed and the files it left.
+copy at its TARGET while this one is below it); the Thens read what it printed and the files it left.
 
 What a `relocate`, `rewrite` or `rename` Then looks for in a file is in this module (EXPECTED and the checks under
 it), from the files the scenario's given block holds. A `migrate run` that exits successfully also leaves a
@@ -150,7 +150,8 @@ def upgraded(step, rel):
 
 
 EXPECTED = {
-    "spec/decisions/index.md": lambda step, rel: "0007-a" in read(step, rel),
+    "spec/decisions/index.md": lambda step, rel: ("0007-a" in read(step, rel) if "spec/decisions.md" in held(step)
+                                                  else "| tier |" in read(step, rel) and "0001-one.md" in read(step, rel)),
     "spec/index.md": lambda step, rel: "id: bounded-context/%s\n" % CONTEXT in read(step, rel),
     "README.md": lambda step, rel: ("(.shop/records/notes/one.md)" in read(step, rel)
                                     and ".shop/work/i1-cart/initiative.md" in read(step, rel)),
@@ -186,7 +187,9 @@ def renames(step):
     rel = bare(step.nps[0]).rstrip("/")
     assert step.context["done"].returncode == 0, said(step)
     assert not (step.repo / rel).exists()
-    if rel.endswith(".md"):
+    if rel.startswith(".shop/work/requests/"):      # moved, byte for byte, to the live requests
+        assert read(step, ".shop/requests/" + rel.rsplit("/", 1)[1]) == held(step)[rel]
+    elif rel.endswith(".md"):
         text = read(step, ".shop/work/i1/w1.md")
         assert "id: work-item/%s/w1\n" % CONTEXT in text and "\n# size-check\n" in text, text
     else:
