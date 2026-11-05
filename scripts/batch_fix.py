@@ -46,20 +46,23 @@ def _label(root, name):
 
 
 def check(root, batch, mine, command):
-    """Refused unless every commit on an in-batch item's branch after the last review cites an open finding of that
-    item, and every open finding has such a commit (D11). `mine` is [(task, item)] of the in-batch items."""
+    """Refused unless every commit on an in-batch item's branch after the last review cites an open finding, and
+    every open finding has a commit on its item's branch citing it (D11). A commit may cite another in-batch item's
+    open finding, so that a branch may merge another's fix to resolve a conflict (plan 5 rulings, Q1). `mine` is
+    [(task, item)] of the in-batch items."""
     since = _last_head(root, batch)
     if since is None:
         return
     still = batch_findings.open_findings(root, batch.name)
+    allowed = {f.fid for f in still}
+    named = ", ".join("%s (%s)" % (f.fid, f.item) for f in sorted(still, key=lambda f: int(f.fid[1:])))
     for task, item in mine:
-        own = {f.fid for f in still if f.item == item.name}
         for sha, subject, cited in cited_findings(root, since, task.branch):
-            if not cited & own:
+            if not cited & allowed:
                 raise Refused('%s: %s: %s "%s" on %s cites no open finding (a Finding: f<m> line)%s' % (
                     command, batch.name, sha, subject, task.branch,
-                    "; %s's open findings are %s" % (item.name, ", ".join(sorted(own))) if own else
-                    "; %s has no open finding: take the commit off %s" % (item.name, task.branch)))
+                    "; the open findings are %s" % named if named else
+                    "; no finding is open: take the commit off %s" % task.branch))
     found = for_finding(root, batch)
     for finding in still:
         if not found.get(finding.fid):
