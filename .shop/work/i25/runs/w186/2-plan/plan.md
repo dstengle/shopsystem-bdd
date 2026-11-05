@@ -1,6 +1,6 @@
 # Plan: w186, fix the findings of branch review 3 of i25
 
-Work-item `.shop/work/i25/w186.md`, under work-queue, accepts work-queue#r14, #r26, #r27, #r28; findings
+Work-item `.shop/work/i25/w186.md`, under work-queue, accepts work-queue#r14@0.29, #r26, #r27, #r28; findings
 `.shop/work/i25/runs/branch-review/3/findings.md`. No `## Retires`, no `## Rulings`.
 
 ## 1. What goes green
@@ -8,12 +8,12 @@ Work-item `.shop/work/i25/w186.md`, under work-queue, accepts work-queue#r14, #r
 None of the four is red today. The researcher ran them (notes §1): `-k "reviewer or implementers_question"` on
 `tests/scenarios/test_work_queue.py` gave 6 passed. w176 (green, `a2d1083e`) delivered them.
 
-- work-queue#r14: "answer to a researcher's, a planner's or an implementer's question transitions the work-item to the
+- work-queue#r14@0.29: "answer to a researcher's, a planner's or an implementer's question transitions the work-item to the
   status that stage started from" (outline, 3 rows). Green.
-- work-queue#r26: "answer that asks for a change, to a reviewer's question, transitions the work-item to ready". Green.
-- work-queue#r27: "answer that accepts the work-item as it is, to a reviewer's question, transitions the work-item to
+- work-queue#r26@0.29: "answer that asks for a change, to a reviewer's question, transitions the work-item to ready". Green.
+- work-queue#r27@0.29: "answer that accepts the work-item as it is, to a reviewer's question, transitions the work-item to
   done". Green.
-- work-queue#r28: "answer to a reviewer's question that says neither whether it asks for a change nor whether it
+- work-queue#r28@0.29: "answer to a reviewer's question that says neither whether it asks for a change nor whether it
   accepts the work-item is refused, and nothing changes". Green.
 
 Deprecated scenarios retired: none. w176 already removed the deprecated @r14 outline (notes §4).
@@ -32,7 +32,7 @@ candidates the branch review named. Each is left out for the reason given:
 - `scripts/supervise_answers.py` (finding 3): this is supervision behaviour that no line names (decision 3).
 - `scripts/supervise.py`: this would only change if `--accept` were to end the review at `green`. r27 rules that out
   (decision 1).
-- `scripts/supervise_brief.py` (findings 4 and 5): these belong to w173 under supervision#r98, which this work-item
+- `scripts/supervise_brief.py` (findings 4 and 5): these belong to w173 under supervision#r98@0.29, which this work-item
   does not accept. Finding 4 would also change the outcome a malformed log gives (a refusal instead of a crash).
 - `scripts/work` (finding 6): the review triaged it "drop".
 - `spec/decisions/0063-...md` (finding 2): this is a design-decision change. The review routes it through
@@ -45,7 +45,7 @@ candidates the branch review named. Each is left out for the reason given:
 
 ## 3. Decisions
 
-1. A reviewer's `--accept` lands `done`, as it does today. It does not land `green`. This rests on work-queue#r27,
+1. A reviewer's `--accept` lands `done`, as it does today. It does not land `green`. This rests on work-queue#r27@0.29,
    which names `done` as the status. The researcher's first question is settled by that line, not by a reading. The
    consequence is that the next `work run` reviews the item again (notes §3 row 3, §5). That is supervision behaviour.
    Decision 0063 (design-decision/a-ruling-returns-to-the-asking-stage, line 21) agrees that a reviewer's question
@@ -55,7 +55,7 @@ candidates the branch review named. Each is left out for the reason given:
    narrator observes. This work-item's accepted lines do not need it, so the plan takes no decision on it. It is put
    to the coordinator (summary) as a candidate line, not as a question for this work-item.
 3. A delegated answer to a reviewer's question in `supervise_answers.py` still lands `done`. The second research
-   question is left untaken: it is a supervision matter outside work-queue#r14/r26-r28. The branch review (finding 3)
+   question is left untaken: it is a supervision matter outside work-queue#r14@0.29/r26-r28. The branch review (finding 3)
    triaged it "not fix now; fix: a supervision line".
 
 ## 4. Tests the decisions break

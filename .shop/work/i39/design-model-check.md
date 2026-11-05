@@ -5,9 +5,9 @@ part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i39
 status: formulated
 argues: [design-model-check]
 date: 2026-10-27
-adds: [design-model-check#r120, design-model-check#r121]
+adds: [design-model-check#r120@0.29, design-model-check#r121@0.29]
 changes: []
-removes: [design-model-check#r115, design-model-check#r117]
+removes: [design-model-check#r115@0.29, design-model-check#r117@0.29]
 ---
 
 # design-model-check

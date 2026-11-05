@@ -1,0 +1,4 @@
+"""The fixture's generated work-queue feature, bound by pytest-bdd."""
+from pytest_bdd import scenarios
+
+scenarios("work-queue.feature")

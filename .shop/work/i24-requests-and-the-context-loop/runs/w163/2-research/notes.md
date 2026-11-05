@@ -1,4 +1,4 @@
-# Research of w163 (accepts supervision#r79, supervision#r84)
+# Research of w163 (accepts supervision#r79@0.29, supervision#r84@0.29)
 
 Search: no `tools map` exists, so `tests-of` and `untested` are unavailable; counts below are `by search`. `tools refs` reported 0 callers of `workqueue_request.accepted_lines`, which grep shows are 2 (module-attribute calls not followed), so refs under-reports here. Probes: `.shop/scratch/2-research/probe_integrate.py` (run with `-n 0`).
 

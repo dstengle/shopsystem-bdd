@@ -1,20 +1,26 @@
 # shopsystem-bdd
 Claude Code plugin for the shopsystem harness: a behaviour-driven workflow with one spec of capability files per
-bounded context, Gherkin feature files paired with them as the contract, one human gate on the spec's Behaviour
-lines, and delivery by work-items that a script, `work run`, pulls through research, plan, implementation and review.
+bounded context, written as codified requirements in a controlled language (a GF grammar built from the glossary),
+logic-checked with clingo, Gherkin feature files generated from them as the contract, one human gate on the
+spec's requirements, and delivery by work-items that a script, `work run`, pulls through research, plan,
+implementation and review.
 
-Skills: `integrating-a-proposal`, `formulating-features`, `delivering-an-initiative`, `bdd-red-green`,
-`checking-spec-consistency`, `migrating-to-capabilities`, `analyzing-a-batch`.
-Agents: `capability-writer`, `feature-formulator`, `initiative-round`, `spec-checker`, `code-scout`, `bdd-planner`,
-`bdd-implementer`, `bdd-task-reviewer`, `bdd-branch-reviewer`, `architecture-reviewer`, `trial-runner`.
-Format: `docs/capability-format.md`. The design model it keeps: `docs/design-model/` (version 3).
+Skills: `raising-a-request`, `integrating-a-proposal`, `formulating-features`, `delivering-an-initiative`,
+`bdd-red-green`, `checking-spec-consistency`, `migrating-to-capabilities`, `analyzing-a-batch`.
+Agents: `capability-writer`, `initiative-round`, `spec-checker`, `code-scout`, `bdd-planner`, `bdd-implementer`,
+`bdd-task-reviewer`, `bdd-branch-reviewer`, `architecture-reviewer`, `trial-runner`, `batch-analyst`,
+`delegation-answerer`.
+Format: `docs/capability-format.md`. The design model it keeps: `docs/design-model/` (version 5).
 This repository's own spec: `spec/index.md`; check it with `python3 scripts/model check`.
 
 ## Requires
 
 The plugin depends on no other plugin. It needs, in the consuming repository's Python:
 
-- clingo, for `model check` (`python3 -m pip install clingo`);
+- the grammar tools, installed by `python3 scripts/tools install` (Linux x86_64): GF 3.12 under
+  `~/.local/share/shopsystem-bdd/gf-3.12/` (or `$SHOPSYSTEM_GF`), and the pinned wheels pgf 1.1 and clingo 5.8.2,
+  for `model check`, `model parse`, `model logic`, `features generate` and `work request`;
+  `tools probe` shows what is installed;
 - pytest and pytest-bdd, for the scenarios;
 - pytest-xdist, optional, to run the tests in parallel (`pytest.ini`'s `addopts = -n auto`; `-n 0` runs them in one
   process). `work run` runs the tests with `-n auto` where it is installed.
@@ -48,12 +54,18 @@ A consuming repository keeps (design-decision/final-layout):
 - **A proposal becomes lines.** `integrating-a-proposal` has the `capability-writer` (blind to the code) merge an
   approved note into `spec/` and stops at the one gate: the added, changed and removed Behaviour lines with their
   ids, glossary entries and decisions. Nothing is written to `spec/` before the person's yes.
-- **Lines are EARS.** Every Behaviour line is one EARS requirement with "shall", in one of its patterns (`When`,
-  `While`, `If … then`, `Where`, or none), one response, one sentence, with a stable id `[r<n>]`
-  (design-decision/behaviour-lines-are-ears). `model check` reports a line that is not (`v_e1`, `v_e2`).
-- **Lines become scenarios.** `formulating-features` has the `feature-formulator` (blind to the code) write one
-  scenario a line, tagged `@r<n>`, with no second approval. A scenario that passes today and whose line changes is
-  kept, tagged `@deprecated`, until the work-item that turns its replacement green retires it.
+- **Requests are codified.** `raising-a-request` turns what the person says into lines of the upstream's
+  requirement grammar (`model lexicon`, `model parse`), and `work request` refuses a line that does not parse,
+  with the longest prefix that parsed and the nearest lexicon words.
+- **Requirements parse.** Every Behaviour statement is an EARS requirement in the context's grammar (the glossary of
+  `spec/index.md` and each capability's `## Terms` are its lexicon), in a requirement group `[g<n>]` with ids
+  `[r<n>]`, and parses to exactly one tree (`v_p1`, `v_p2`). `spec/universal.md` holds the universal conditions
+  `U<n>`. Each grammar fun translates to facts about its requirement, and `model logic` checks them in one clingo
+  solve of `grammar/check.lp` over the pairs of requirements that share vocabulary: clashes (L1), duplicates (L2),
+  sets no transition allows and unreachable values (L3, L4), untriggered event obligations (L5).
+- **Groups become scenarios.** `features generate` writes one scenario a group, tagged `@g<n> @r<n>…`, read off
+  its requirements' facts with no solver: no session writes a feature file, and the formulate round of `work run`
+  is a script.
 - **Scenarios are delivered.** `delivering-an-initiative` drafts the initiative's work-items from the spec alone
   (`work add`), commits them and starts `work run <initiative>`. `work run` takes each work-item through its stages,
   one fresh `claude -p` worker a stage: `code-scout` researches, `bdd-planner` plans (intent, never code),
@@ -99,16 +111,18 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 
 - `scripts/model`: read a bounded context's spec, feature files, decisions, work and records as the facts of the
   design model's grammar (`facts`), check them with clingo (`check`), list the rules (`rules`), write the decisions
-  index (`decisions`), and trace a requirement to why it exists (`why`).
-- `scripts/features`: count, list, tag, move and verify-moved for feature files without the test runner;
-  deprecate, retire and deprecated for scenarios kept while they still pass; bindings and rebind for the titles
-  test modules bind.
+  index (`decisions`), trace a requirement to why it exists (`why`), parse a line in the context's grammar
+  (`parse`), list the lexicon (`lexicon`), check the logic of the groups (`logic`) and the coverage of the 0.29 ids
+  (`restates`).
+- `scripts/features`: `generate` writes (or `--check`s) each codified capability's feature file from its groups;
+  `vocab` checks the fixed step vocabulary; `count`, `list`, `bindings` and `deprecated` read feature files without
+  the test runner.
 - `scripts/work`: `add` drafts a work-item, `show` lists every work-item with its status (`--json`), `retry`
   returns a `failed` work-item, `withdraw` withdraws one, `run` delivers an initiative.
-- `scripts/tools`: the project's analysis tools behind one interface: `probe`, `install`, `map`, `tests-of`,
+- `scripts/tools`: the project's analysis tools behind one interface: `probe`, `install` (also the grammar tools), `map`, `tests-of`,
   `untested`, `refs`, `check`, and `size`, the tracked Python files over a line limit.
 - `scripts/migrate`: `migrate run --context <owner/product/context>` takes a repository from the old system to
-  this layout in one run.
+  this layout in one run; `migrate upgrade` takes it from an earlier plugin release to this one.
 - `scripts/measure`: write an initiative's measurement from `work run`'s log, its sessions and git (`measure initiative`), print one as tables (`measure show`) and
   two side by side with their ratio (`measure compare`).
 
@@ -117,8 +131,7 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 | agent | tools | model | for |
 |---|---|---|---|
 | `capability-writer` | Read, Glob, Grep, Write | opus | integrating a note into `spec/`, and a repository's first `spec/`, blind to the code; writes only drafts |
-| `feature-formulator` | Read, Glob, Grep, Write | opus | writing feature files from the spec, blind to the code; writes only drafts |
-| `initiative-round` | Read, Glob, Grep, Bash, Write, Edit, Agent | sonnet | one round of spec work for the session that keeps the gate; dispatches only the two agents above |
+| `initiative-round` | Read, Glob, Grep, Bash, Write, Edit, Agent | sonnet | one round of spec work for the session that keeps the gate; dispatches only `capability-writer` |
 | `spec-checker` | Read, Glob, Grep, Write | sonnet | judging a spec against itself, blind to the code; writes only its findings file |
 | `code-scout` | Read, Glob, Grep, Bash, Write | haiku | a work-item's research for `work run`: why its scenarios are red, its file set, the tests it may break |
 | `bdd-planner` | Read, Glob, Grep, Write | opus | a work-item's plan for `work run`, from the research notes, intent and never code |
@@ -127,9 +140,38 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 | `bdd-branch-reviewer` | Read, Glob, Grep, Write | opus | an initiative's branch review, from its base, over every work-item; changes nothing |
 | `architecture-reviewer` | Read, Glob, Grep, Bash, Write | opus | an architecture review when the person asks for one |
 | `trial-runner` | Read, Glob, Grep, Bash, Write | sonnet | one trial of a plugin tool or `work run` on a target; writes only one measurement record |
+| `batch-analyst` | Read, Glob, Grep, Bash, Write, Skill | opus | what a closed batch cost and why, under `analyzing-a-batch` |
+| `delegation-answerer` | Read, Glob, Grep, Write | sonnet | one question answered under a request's delegation, for `work run` |
 
 Only `initiative-round` has the Agent tool. A plugin agent's `hooks` and `permissionMode` are ignored, so a role's
 limits are its tools; under `work run` they are also its `--allowedTools`.
+
+## 1.0.0: codified requirements
+
+- **Requirements are written in a controlled language** (design model v5, `docs/design-model/`): the glossary of
+  `spec/index.md` is typed (`- **<term>** (<category>): …`) and is the lexicon of a GF grammar; every Behaviour
+  statement is an EARS requirement that parses to exactly one tree, in a requirement group `[g<n>]`; a capability
+  file says `language: codified-1`. `spec/universal.md` holds the universal conditions `U<n>`.
+- **New tools:** `tools install` installs GF 3.12 and the pinned pgf and clingo; `model parse`, `model lexicon`,
+  `model logic` (one clingo solve of `grammar/check.lp` over each requirement's facts: clashes naming both ids,
+  duplicates, transitions, reachability, untriggered event obligations) and `model restates` (each 0.29 id
+  restated, dropped or moved); `features generate` and `features vocab`.
+- **Scenarios are generated**, not written: `features generate` writes one scenario a group, tagged `@g<n> @r<n>…`,
+  and step definitions are handlers of a fixed step vocabulary. The agent that wrote feature files is gone, and so are
+  `features tag`, `move`, `deprecate`, `retire`, `rebind` and `verify-moved`. `work run`'s formulate round is a script.
+- **Requests are codified:** `work request` parses each line in the upstream's grammar and refuses one that does not
+  parse, with a hint; the new skill `raising-a-request` writes the lines from English.
+- **The 0.29 reader is gone.** `model check` reports a capability file or a `spec/index.md` without
+  `language: codified-1` (`v_p0`), and `features generate` (exit 2) and `work request` refuse it, each naming
+  `migrate upgrade`.
+
+Upgrading a consuming repository from 0.29: update the plugin, run `python3 scripts/tools install`, then
+`python3 scripts/migrate upgrade` on a clean tree. Its 1.0.0 step writes `spec/restated.json` (the text of every 0.29
+id), turns each capability's Behaviour into a scaffold of one group per old line with `Restates:` filled and the old
+text kept as a comment, deletes `@deprecated` scenarios, rewrites the old references in `.shop/work/` to
+`<cap>#r<n>@0.29`, and lists what is left for a session to write: the typed glossary, each scaffold's requirements and
+each open capability-proposal. Write those with `integrating-a-proposal` (checking them with `model parse`, `model
+check`, `model logic` and `model restates`), then `features generate` and the handlers of the new scenarios.
 
 ## 0.29.0: glossary-proposals, delegations given late, and fewer stops from outside a work-item
 

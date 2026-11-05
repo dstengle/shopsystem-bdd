@@ -1,10 +1,10 @@
-# w166 plan: work start commits the initiative (work-queue#r25)
+# w166 plan: work start commits the initiative (work-queue#r25@0.29)
 
 From the research notes at `.shop/work/i27/runs/w166/1-research/notes.md`. Their file:line references are to base 3cbd0c52.
 
 ## 1. What goes green
 
-- **work-queue#r25**: scenario "start commits the initiative it writes on the current branch" (features/work-queue.feature:46-54). It is red today for three reasons (notes §1):
+- **work-queue#r25@0.29**: scenario "start commits the initiative it writes on the current branch" (features/work-queue.feature:46-54). It is red today for three reasons (notes §1):
   - `work start q1` exits 1 with "spec/index.md, which names the context, is missing". The scenario's Givens write no index.
   - `workqueue_start.start` writes `initiative.md` but never commits it (probe a).
   - The Then phrases "the new initiative's initiative.md" and "the new initiative's directory under .shop/work/" are not mapped to a path. The first runs `git show main:<the phrase>`. The second passes on any path, because it checks a path that does not exist (probe h, D3).
@@ -34,12 +34,12 @@ Unchanged, on the path:
 
 ## 3. Decisions
 
-1. **`start` commits through `workqueue.committed` and refuses before writing.** It rests on work-queue#r25 and work-queue#r7.
+1. **`start` commits through `workqueue.committed` and refuses before writing.** It rests on work-queue#r25@0.29 and work-queue#r7@0.29.
    - A directory that is not a git repository is now refused, and nothing is written (D2, probe b). Today it gets rc 0.
    - A failed commit leaves nothing behind: no file, no empty directory.
    - Only the new `initiative.md` is committed. A change someone else has staged stays out of the commit, as with r9 and r20.
-2. **The scenario's missing index is supplied by the step definitions, not by editing the accepted feature.** The request Given writes `spec/index.md`, because a request "kept in this context" presumes the context that `spec/index.md` names. This does not change what the narrator observes in r22: its `initiative` Given already writes the same index. It rests on work-queue#r25: its scenario is accepted as written.
-3. **The "new initiative" phrases resolve to the single initiative directory added since the When's snapshot.** The steps assert there is exactly one. It rests on work-queue#r25 and on r22's own "one new initiative".
+2. **The scenario's missing index is supplied by the step definitions, not by editing the accepted feature.** The request Given writes `spec/index.md`, because a request "kept in this context" presumes the context that `spec/index.md` names. This does not change what the narrator observes in r22: its `initiative` Given already writes the same index. It rests on work-queue#r25@0.29: its scenario is accepted as written.
+3. **The "new initiative" phrases resolve to the single initiative directory added since the When's snapshot.** The steps assert there is exactly one. It rests on work-queue#r25@0.29 and on r22's own "one new initiative".
 
 ## 4. Tests the decisions break
 

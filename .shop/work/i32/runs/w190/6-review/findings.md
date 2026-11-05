@@ -1,4 +1,4 @@
-# Review of w190 (supervision#r118, supervision#r119)
+# Review of w190 (supervision#r118@0.29, supervision#r119@0.29)
 
 **Verdict: DONE.** Nothing is Critical and nothing is fix now. Under a delegation, the commits move a reviewer's work-item to `ready` on a `change` verdict and to `done` on an `accept` verdict, as r118, r119 and decision 0069 ask. Two Minor findings follow, one an observation and one a drop.
 

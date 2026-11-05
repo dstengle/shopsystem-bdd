@@ -1,6 +1,6 @@
 # Plan of w207: fix the findings of branch review 3 of i39
 
-w207 accepts work-queue#r34-r39. Its title and its `findings:` field name `.shop/work/i39/runs/branch-review/3/findings.md`. `work run` drafts a work-item like this from a branch review's fix-now findings (`supervise_draft.py`). The scope is therefore those fix-now findings, 1 and 2, kept green against r34-r39. w207 has no `Retires` section and no `## Rulings`.
+w207 accepts work-queue#r34@0.29, work-queue#r35@0.29, work-queue#r36@0.29, work-queue#r37@0.29, work-queue#r38@0.29, work-queue#r39@0.29. Its title and its `findings:` field name `.shop/work/i39/runs/branch-review/3/findings.md`. `work run` drafts a work-item like this from a branch review's fix-now findings (`supervise_draft.py`). The scope is therefore those fix-now findings, 1 and 2, kept green against r34-r39. w207 has no `Retires` section and no `## Rulings`.
 
 ## 1. What goes green
 
@@ -37,12 +37,12 @@ Not touched:
 ## 3. Decisions
 
 1. **Branch review finding 1: keep the merge as it is, with no code change.** This is already ruled: the ledger of 2026-10-27 reads "w206 branch review finding 1: reading B (union of the round's ids into another capability's proposal); a supervision line for it goes into the follow-up request". The finding's own fix offers this: "confirm that i39 closes with this line carried by q20". Observations F3 (an id in both `adds` and `removes`) and F4 (a first integrate round also merges) depend on that line, so they stay unfixed.
-2. **Branch review finding 2: on the merge path, the other proposal's drafts sentence is left unchanged.** This rests on supervision#r108: a gate or apply round gets the kept drafts of the integrate round "that wrote the proposal". A round started for p1 wrote p1. Into p2 it only merged ids, and it was briefed without p2's earlier drafts, so its drafts are not p2's.
-   - It also rests on supervision#r142: a proposal drafted anew keeps its earlier drafts "in their round's directory".
+2. **Branch review finding 2: on the merge path, the other proposal's drafts sentence is left unchanged.** This rests on supervision#r108@0.29: a gate or apply round gets the kept drafts of the integrate round "that wrote the proposal". A round started for p1 wrote p1. Into p2 it only merged ids, and it was briefed without p2's earlier drafts, so its drafts are not p2's.
+   - It also rests on supervision#r142@0.29: a proposal drafted anew keeps its earlier drafts "in their round's directory".
    - The own-proposal path is unchanged (r142, r148): it rewrites the lists and repoints the drafts.
    - The other fix the reviewer offers is a second drafts sentence that `supervise_brief.py` would read. It is not taken: the reviewer says it "needs a line in q20".
-3. **D1: an undecodable ledger is refused.** This rests on work-queue#r7: a command that cannot do what it was asked exits with an error and says why. Here that is `work show <initiative>`, on the path of the accepted r36. The refusal names the ledger file, as the r7 refusal of a non-UTF-8 work-item file already does.
-4. **D3: a work-item file with no `kind` is refused, saying it has no kind.** This rests on work-queue#r7 ("say why"), on the path of the accepted r37. The command is refused today too; only the wording changes, so no outcome changes.
+3. **D1: an undecodable ledger is refused.** This rests on work-queue#r7@0.29: a command that cannot do what it was asked exits with an error and says why. Here that is `work show <initiative>`, on the path of the accepted r36. The refusal names the ledger file, as the r7 refusal of a non-UTF-8 work-item file already does.
+4. **D3: a work-item file with no `kind` is refused, saying it has no kind.** This rests on work-queue#r7@0.29 ("say why"), on the path of the accepted r37. The command is refused today too; only the wording changes, so no outcome changes.
 
 ## 4. Tests the decisions break
 

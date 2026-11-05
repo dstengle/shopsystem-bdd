@@ -1,4 +1,4 @@
-# Review of w202 (spec-integration#r44)
+# Review of w202 (spec-integration#r44@0.29)
 
 **Verdict: DONE_WITH_CONCERNS.** The code does what the plan says and the r44 scenario passes. One Important finding is triaged fix now: integrating-a-proposal's writer template asks the writer for request lines in the upstream's glossary terms, but the same template does not let the writer read the upstream's spec. The template for round 1 does not ask for request lines at all. There are also two Minor findings.
 

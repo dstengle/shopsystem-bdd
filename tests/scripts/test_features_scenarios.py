@@ -1,4 +1,4 @@
-"""Unit tests of scripts/features on feature files written for each test: deprecate, deprecated, retire and rebind."""
+"""Unit tests of scripts/features on feature files written for each test: the deprecated list."""
 import pathlib
 import shutil
 import subprocess
@@ -37,46 +37,12 @@ class Workspace:
         path.write_text(text)
         return path
 
-    def everything(self):
-        return {str(p.relative_to(self.tmp)): p.read_text() for p in sorted(self.tmp.rglob("*")) if p.is_file()}
-
     def run_script(self, *args):
         return subprocess.run([sys.executable, str(SCRIPT), *args], cwd=self.tmp, capture_output=True, text=True)
-
-    def refused(self, *args):
-        """Run an edit that must be refused: exit 1, a reason on stderr, every file as it was."""
-        before = self.everything()
-        done = self.run_script(*args)
-        self.assertEqual(done.returncode, 1, done.stdout + done.stderr)
-        self.assertEqual(done.stdout, "")
-        self.assertEqual(self.everything(), before)
-        return done.stderr
 
 
 class ScenarioTest(Workspace, unittest.TestCase):
     """Unit tests of `features` on feature files. The scenarios are bound in tests/scenarios/test_feature_file_tools.py."""
-
-    def test_deprecating_a_scenario_marks_it_deprecated_and_records_what_for(self):
-        plain = block("Apply a code", body="    When a code is applied\n    Then the total drops\n")
-        voucher = block("Apply a voucher")
-        for replacement, option, deprecated_for in (
-                (True, ("--for", "Apply a voucher"), "Apply a voucher"),
-                (False, ("--for", "Apply a voucher"), "Apply a voucher"),
-                (False, ("--for-removal",), "removal")):
-            with self.subTest(option=option, replacement=replacement):
-                path = self.write("features/cart.feature", feature(plain, voucher) if replacement else feature(plain))
-                before = path.read_text()
-                done = self.run_script("deprecate", "Apply a code", *option)
-                self.assertEqual(done.returncode, 0, done.stderr)
-                self.assertEqual(path.read_text(), before.replace(
-                    "  Scenario: Apply a code\n",
-                    "  @deprecated\n  Scenario: Apply a code (deprecated)\n    Deprecated for: %s\n" % deprecated_for))
-
-    def test_deprecating_a_scenario_already_deprecated_is_refused(self):
-        self.write("features/cart.feature", feature(block(
-            "Apply a code (deprecated)", "@deprecated", "    Deprecated for: removal\n    Given a step\n")))
-        reason = self.refused("deprecate", "Apply a code (deprecated)", "--for", "Apply a voucher")
-        self.assertIn("already deprecated", reason)
 
     def test_the_deprecated_list_shows_each_deprecated_scenario_and_what_will_retire_it(self):
         voucher = block("Apply a voucher", "@r3")
@@ -111,23 +77,6 @@ class ScenarioTest(Workspace, unittest.TestCase):
         done = self.run_script("deprecated")
         self.assertEqual((done.returncode, done.stdout), (0, "none deprecated\n"))
 
-    def test_retiring_a_deprecated_scenario_removes_its_block(self):
-        deprecated = block("Apply a code (deprecated)", "@deprecated", "    Deprecated for: removal\n    Given a step\n")
-        rest = [block("Empty cart"), block("Checkout")]
-        path = self.write("features/cart.feature", feature(rest[0], deprecated, rest[1]))
-        done = self.run_script("retire", "Apply a code (deprecated)")
-        self.assertEqual(done.returncode, 0, done.stderr)
-        self.assertEqual(path.read_text(), feature(*rest))
-
-    def test_retiring_a_scenario_that_is_not_deprecated_is_refused(self):
-        self.write("features/cart.feature", feature(block("Apply a code", "@slice-1")))
-        self.assertIn("not tagged @deprecated", self.refused("retire", "Apply a code"))
-
-    def test_deprecating_a_scenario_prints_its_file_and_new_title(self):
-        self.write("features/cart.feature", feature(block("Apply a code")))
-        done = self.run_script("deprecate", "Apply a code", "--for-removal")
-        self.assertEqual((done.returncode, done.stdout), (0, "features/cart.feature: Apply a code (deprecated)\n"), done.stderr)
-
     def test_the_deprecated_list_flags_a_deprecated_scenario_it_cannot_place(self):
         for body, others, said in (
                 ("    Given a step\n", [], "no Deprecated for: line"),
@@ -139,33 +88,6 @@ class ScenarioTest(Workspace, unittest.TestCase):
                 lines = [x for x in done.stdout.splitlines() if "Apply a code (deprecated)" in x]
                 self.assertEqual(len(lines), 1)
                 self.assertTrue(lines[0].endswith("| " + said), lines[0])
-
-
-def binding(title, feature_name="cart.feature", line=12):
-    pad = "".join("# filler\n" for _ in range(line - 2))
-    return 'from pytest_bdd import scenario\n%s@scenario("%s", "%s")\ndef test_x():\n    pass\n' % (pad, feature_name, title)
-
-
-class BindingsScenarioTest(Workspace, unittest.TestCase):
-    """Unit tests of `features` on test-module bindings."""
-
-    def test_rebind_with_file_takes_a_new_title_that_several_feature_files_have(self):
-        # rebind --file follows only its own file when both files have the new title
-        self.write("features/cart.feature", feature(block("Apply a code")))
-        self.write("features/old.feature", feature(block("Apply a code")))
-        modules = {"tests/test_cart.py": binding("Apply a code", "cart.feature"),
-                   "tests/test_old.py": binding("Apply a code", "old.feature")}
-        for name, text in modules.items():
-            self.write(name, text)
-        for name in ("cart", "old"):
-            done = self.run_script("deprecate", "Apply a code", "--for-removal", "--file", "features/%s.feature" % name)
-            self.assertEqual(done.returncode, 0, done.stderr)
-        for name in ("cart", "old"):
-            done = self.run_script("rebind", "Apply a code", "Apply a code (deprecated)", "--file", "features/%s.feature" % name)
-            self.assertEqual((done.returncode, done.stdout), (0, "1 binding rebound\n"), done.stderr)
-            moved = [m for m in modules if '"Apply a code (deprecated)")' in (self.tmp / m).read_text()]
-            self.assertEqual(moved, ["tests/test_cart.py"] if name == "cart" else list(modules))
-        self.assertEqual(self.run_script("bindings").returncode, 0)
 
 
 if __name__ == "__main__":

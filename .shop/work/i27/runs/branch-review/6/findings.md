@@ -81,7 +81,7 @@
 - **`tests/`:** only `+` lines, in `requests_write_steps.py` and `supervision_answers_steps.py`. Both are w173's and w177's new steps.
 - **`features/`:** the only removals are the deprecated requests scenarios @r4, @r5 and @r12.
   - Each had a `Deprecated for:` replacement, which is still there and passes.
-  - w177 accepts requests#r4, #r5 and #r12, and is `green`.
+  - w177 accepts requests#r4@0.29, #r5 and #r12, and is `green`.
   - That removal is i26's to review, not i27's.
 
 **The one weakened test in i27's commits is still** `supervision_rounds_steps.py` `second_not_refused` (w164, a4e922a6).
@@ -169,7 +169,7 @@ One line each, with its reproduction:
 - **F3-F5:** read at `scripts/supervise_change.py:23-30,45`. The probe was refused in reviews 1-5 and was not run here.
 - **F6:** read at `scripts/supervise_rounds.py:107-109`.
 - **F7:** `grep -n drafts scripts/supervise_brief.py` finds only the integrate brief.
-- **F8:** read at `workqueue_request.py:87-88`. `.shop/work/i29/w175.md` is `status: researched` with `accepts: [requests#r22]`. The suite fails `test_request_with_an_empty_delegation_is_refused_and_nothing_changes` with `StepDefinitionNotFoundError`.
+- **F8:** read at `workqueue_request.py:87-88`. `.shop/work/i29/w175.md` is `status: researched` with `accepts: [requests#r22@0.29]`. The suite fails `test_request_with_an_empty_delegation_is_refused_and_nothing_changes` with `StepDefinitionNotFoundError`.
 - **F10:** `git log --format=%s -1 d365c763` says "left uncommitted".
 - **N1:** `python3 <Scripts>/tools check --base 3cbd0c52` lists both gate `mk.py` files, at I001 and at SIM115.
 - **N2:** `features deprecated` lists supervision @r102 and work-queue @r9.

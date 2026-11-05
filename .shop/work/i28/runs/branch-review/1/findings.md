@@ -5,11 +5,11 @@
 ## Range and work-items
 
 - Range: `4b7dca6c..1dfed57d` on `i25-review-findings-to-implementation`. Head is `1dfed57d` ("work: w171 done -> green").
-- w167 (supervision#r92): `12f0b295`
-- w168 (work-queue#r30): `fa6929fb`
-- w169 (spec-integration#r43, guarantees): `50788670`
-- w170 (supervision#r102, r103, r104): `bcc41527`, `55eea183`, `2e0f2555`
-- w171 (supervision#r102, the fix of w170's task-review finding): `a414d2bd`
+- w167 (supervision#r92@0.29): `12f0b295`
+- w168 (work-queue#r30@0.29): `fa6929fb`
+- w169 (spec-integration#r43@0.29, guarantees): `50788670`
+- w170 (supervision#r102@0.29, r103, r104): `bcc41527`, `55eea183`, `2e0f2555`
+- w171 (supervision#r102@0.29, the fix of w170's task-review finding): `a414d2bd`
 - Commits outside any work-item's claimed..done span:
   - the spec apply `f85f0d23`
   - the formulate commits `7e6266ca`, `79f4b429` and `7636eb12`
@@ -92,7 +92,7 @@ Nothing a work-item names as a check. The behaviour of a live `initiative-round`
 ### 3. Minor, w171, observation: the deprecated @r102 scenario remains, though its replacement's work-item is green
 - **Where:** `features/supervision.feature:1239-1250`, with its step `other_initiative` (`tests/scenarios/supervision_integrate_steps.py:144-155`).
 - **What is wrong:** the replacement scenario at line 1252 is delivered by w171, which is green. w171 was added by hand with no `## Retires`, so nothing retires the old scenario. Both scenarios now pass, because w171 moved the old step to the new layout.
-- **Fix:** a work-item accepting supervision#r102 whose `## Retires` lists the deprecated scenario. That removes it, its binding, and the step `other_initiative`, which only it reaches.
+- **Fix:** a work-item accepting supervision#r102@0.29 whose `## Retires` lists the deprecated scenario. That removes it, its binding, and the step `other_initiative`, which only it reaches.
 
 ### 4. Minor, w167 and w170, drop: ruff errors on the lines the branch added
 - **Where:** as listed under Checks.
@@ -129,7 +129,7 @@ Nothing a work-item names as a check. The behaviour of a live `initiative-round`
   - The stub's `round:<kind>:<name>` key is test harness.
 - **Behaviour against the lines and the Purpose:** no contradiction found.
   - r102 says "not yet applied". The code reads it as "spec/ does not hold", and counts drafts of initiatives of any status. That gives every id r102 asks for. It gives more only for ids that are spec/'s already or drafts of abandoned initiatives, and those cost only skipped numbers.
-  - The probe on this branch's real queue: `added_by_others(root, "i28")` gave `supervision#r98, work-queue#r26, work-queue#r27, requests#r20, requests#r21, supervision#r99`. For `i25` it gave `requests#r20, requests#r21, supervision#r98, supervision#r99`. These are i25's and i26's kept round-1 drafts, so r102 now works on the real layout.
+  - The probe on this branch's real queue: `added_by_others(root, "i28")` gave `supervision#r98@0.29, work-queue#r26@0.29, work-queue#r27@0.29, requests#r20@0.29, requests#r21@0.29, supervision#r99@0.29`. For `i25` it gave `requests#r20@0.29, requests#r21@0.29, supervision#r98@0.29, supervision#r99@0.29`. These are i25's and i26's kept round-1 drafts, so r102 now works on the real layout.
 
 ## Coupling
 

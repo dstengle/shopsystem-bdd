@@ -1,14 +1,14 @@
 # Branch review of i60
 
-**Verdict: DONE_WITH_CONCERNS.** i60's own work (w233, supervision#r211) is sound: no Critical finding and nothing to fix now in i60. But i60's branch is `main`, so the range `Base..HEAD` also holds other initiatives' work. One of their commits, i54/w232's `a5d6b59b`, gives a wrong answer that is already held open as w232's own fix-now. It is triaged fix now here and goes to the person, to be fixed under w232 and not drafted again in i60. `tools check` fails on two ruff errors, both in other initiatives' commits.
+**Verdict: DONE_WITH_CONCERNS.** i60's own work (w233, supervision#r211@0.29) is sound: no Critical finding and nothing to fix now in i60. But i60's branch is `main`, so the range `Base..HEAD` also holds other initiatives' work. One of their commits, i54/w232's `a5d6b59b`, gives a wrong answer that is already held open as w232's own fix-now. It is triaged fix now here and goes to the person, to be fixed under w232 and not drafted again in i60. `tools check` fails on two ruff errors, both in other initiatives' commits.
 
 ## Range and work-items
 
 - Range: `ae85edd3a2ce3488f4d930ac5814845eea5e6178..91d43216bef3d0fba6f0d6ffddc3e1ddcb56b669`, on the branch `main`.
 - i60 (started, fulfils q39) holds:
-  - work-item **w233** (green, under supervision, accepts supervision#r211, fileset `tests/scenarios/supervision_delegation_steps.py`). Its commits are `6b7926df`, `864da987`, `4aa66cd4`, `129a247c`, `9b49a82a` and `de6a60b1`, `91d43216` (transitions), and `4e206ec4` (its only code commit, steps only).
-  - capability-proposal **i60-supervision** (formulated, adds supervision#r211).
-  - capability-proposal **i60-requests** (**awaiting-answer**, adds requests#r59–r63, the `work delegate` lines).
+  - work-item **w233** (green, under supervision, accepts supervision#r211@0.29, fileset `tests/scenarios/supervision_delegation_steps.py`). Its commits are `6b7926df`, `864da987`, `4aa66cd4`, `129a247c`, `9b49a82a` and `de6a60b1`, `91d43216` (transitions), and `4e206ec4` (its only code commit, steps only).
+  - capability-proposal **i60-supervision** (formulated, adds supervision#r211@0.29).
+  - capability-proposal **i60-requests** (**awaiting-answer**, adds requests#r59@0.29, requests#r60@0.29, requests#r61@0.29, requests#r62@0.29, requests#r63@0.29, the `work delegate` lines).
 - Every other commit in the range belongs to no i60 work-item. See Finding 1.
 
 ## Suite
@@ -105,7 +105,7 @@ None. Every check is given by a run at `91d43216`. w233 names no check of its ow
 
 ### 5. Minor (observation): i60 holds the capability-proposal i60-requests awaiting-answer
 - **Work-item:** none (proposal i60-requests).
-- **File:** `.shop/work/i60/requests.md`: status `awaiting-answer`, with five open questions on requests#r59–r63 (`work delegate`). One has been answered.
+- **File:** `.shop/work/i60/requests.md`: status `awaiting-answer`, with five open questions on requests#r59@0.29, requests#r60@0.29, requests#r61@0.29, requests#r62@0.29, requests#r63@0.29 (`work delegate`). One has been answered.
 - **What is wrong:** under supervision r213 and work-queue r62/r47, i60 cannot be `done` while this proposal is neither formulated nor withdrawn, although w233 is green. Until `work delegate` exists, delegations are reworded by hand (`9b453fd2`).
 - **Fix:** answer or withdraw the proposal. This is the person's call under the delegation.
 

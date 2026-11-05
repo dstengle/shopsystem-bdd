@@ -22,11 +22,11 @@
 
 | Work-item | Accepts | Commits |
 |---|---|---|
-| w167 | supervision#r92 | `12f0b295` |
-| w168 | work-queue#r30 | `fa6929fb` |
-| w169 | spec-integration#r43, a guarantee | `50788670` |
-| w170 | supervision#r102, r103, r104 | `bcc41527`, `55eea183`, `2e0f2555` |
-| w171 | supervision#r102, the fix of w170's task review | `a414d2bd` |
+| w167 | supervision#r92@0.29 | `12f0b295` |
+| w168 | work-queue#r30@0.29 | `fa6929fb` |
+| w169 | spec-integration#r43@0.29, a guarantee | `50788670` |
+| w170 | supervision#r102@0.29, r103, r104 | `bcc41527`, `55eea183`, `2e0f2555` |
+| w171 | supervision#r102@0.29, the fix of w170's task review | `a414d2bd` |
 | w172 | the fix of branch review 1 | `a1ff989a` |
 
 - **Commits that belong to no work-item of i28** (finding 5):
@@ -68,7 +68,7 @@ pytest's own line was "16 failed, 870 passed, 1 skipped, 404 warnings, 56 subtes
 | w171 | 144 passed, 1 skipped |
 | w172 | 146 passed, 1 skipped |
 
-w169's spec-integration#r43 is a guarantee, so no scenario covers it. The four instruction files that carry it are unchanged since review 3, which read them against the line.
+w169's spec-integration#r43@0.29 is a guarantee, so no scenario covers it. The four instruction files that carry it are unchanged since review 3, which read them against the line.
 
 The real queue now shows r43 and r102 at work:
 
@@ -150,7 +150,7 @@ No check is unverified.
 ### 3. Minor, w171, observation: the deprecated @r102 scenario remains, though its replacement's work-item is green
 - **Where:** `features/supervision.feature`, the deprecated @r102 scenario, with its step `other_initiative` (`tests/scenarios/supervision_integrate_steps.py:157-167`).
 - **What is wrong:** w171 and w172 are green, and neither has a `## Retires`.
-- **Fix:** a work-item accepting supervision#r102 that retires the scenario, its binding and the step.
+- **Fix:** a work-item accepting supervision#r102@0.29 that retires the scenario, its binding and the step.
 - **Triage:** observation.
 
 ### 4. Minor, w167, w170 and w172, drop: the 5 ruff errors under Checks

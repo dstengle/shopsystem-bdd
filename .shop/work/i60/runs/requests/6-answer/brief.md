@@ -5,7 +5,7 @@ Scripts: /home/vscode/shopsystem-bdd/scripts
 Base: none
 Worktree: /tmp/work-run-i60-f1a4jpu_/requests-6-answer
 Branch: none (a detached checkout)
-Question: requests#r62 (added): "**If** `work delegate` is given a request that is `delivered`, `refused` or `withdrawn`, **then** `work delegate` shall refuse, naming the request's status, and change nothing." It names `withdrawn`, a status this spec does not yet name. Reading A (recommended): keep as drafted. Reading B: drop it until it exists: "...`delivered` or `refused`...".
+Question: requests#r62@0.29 (added): "**If** `work delegate` is given a request that is `delivered`, `refused` or `withdrawn`, **then** `work delegate` shall refuse, naming the request's status, and change nothing." It names `withdrawn`, a status this spec does not yet name. Reading A (recommended): keep as drafted. Reading B: drop it until it exists: "...`delivered` or `refused`...".
 Delegation: The person, 2026-10-28: "i am delegating to you" and "Please do what is necessary to get the system back into working condition"; 2026-10-29: "the delegation problem needs to be fixed". Glossary changes are never delegated.
 
 Read (paths in your worktree):

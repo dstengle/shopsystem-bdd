@@ -4,9 +4,9 @@ kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i59
 status: awaiting-answer
 argues: [batch-measurement]
-adds: [batch-measurement#r68, batch-measurement#r69, batch-measurement#r70, batch-measurement#r71, batch-measurement#r72, batch-measurement#r73, batch-measurement#r74]
+adds: [batch-measurement#r68@0.29, batch-measurement#r69@0.29, batch-measurement#r70@0.29, batch-measurement#r71@0.29, batch-measurement#r72@0.29, batch-measurement#r73@0.29, batch-measurement#r74@0.29]
 changes: []
-removes: [batch-measurement#r50]
+removes: [batch-measurement#r50@0.29]
 date: 2026-10-29
 ---
 

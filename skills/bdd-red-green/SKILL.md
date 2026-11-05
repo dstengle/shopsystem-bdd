@@ -57,11 +57,13 @@ A project whose suite cannot do one of these says why in its `CLAUDE.md`.
 
 This skill never edits a `.feature` file. Not to fix a typo, not to correct arithmetic, not to align wording.
 
-One command removes a scenario, and only one kind: `python3 <scripts>/features retire "<title> (deprecated)"` takes out a scenario tagged `@deprecated`. You run it for each scenario the work-item lists under Retires, in the commit that turns its replacement green, and remove with it its binding and the step definitions nothing else uses. It refuses any other scenario, and so do you.
+Feature files are generated from the codified requirements by `features generate` (their header says so), and a removed requirement's scenario leaves with the regeneration. A work-item's `## Retires` names what it takes out: a requirement removed from `spec/` (`(<capability> @r<n>)`) means the handlers (`tests/scenarios/<cap>_handlers*.py`) and the code only that requirement used, and the whole suite is its check. You remove nothing else, and you never edit a `.feature` file.
+
+A step of a generated scenario is matched by the step vocabulary, not by a regex of your own: you write a **handler** for a vocabulary use the suite has no handler for, `@handler("<template>", "<term>")` in `tests/scenarios/<cap>_handlers*.py`, and `python3 <scripts>/features vocab --check` lists the ones missing.
 
 Nothing under `.shop/work/` is yours to commit either: not the work-item, not its stage directories, not `log.jsonl`. Your report and your result go where the brief names, by the paths it gives, and are never added to a commit.
 
-A scenario that is wrong is a **stop condition**, not a chore. Whether the contract changes is the person's ruling, and only `formulating-features` writes features.
+A scenario that is wrong is a **stop condition**, not a chore. Whether the contract changes is the person's ruling. A generated scenario is wrong in one of two ways, and your HAND-BACK says which you saw: it says what its group says and that is not what the code should do (a **wrong requirement**: the ruling goes back to integration), or it does not say what its group says, or words it so no handler can check it (a **plugin defect** in the grammar or the generator: the ruling is a request to the plugin). There is no formulation question and no formulator: nobody edits the feature.
 
 ## Existing Tests
 
@@ -128,7 +130,7 @@ When every scenario the work-item accepts (or the check) passes and the test mod
 
 ## Red Flags
 
-- Any diff touching a `.feature` file, other than `features retire` of a scenario the work-item lists under Retires
+- Any diff touching a `.feature` file
 - `sed -i` or an editor on anything under `features/`, or a commit touching `.shop/work/`
 - Writing a second step definition before the first scenario is green
 - The phrase "typo", "obviously meant", or "arithmetically impossible" about a Then line

@@ -1,7 +1,7 @@
-- 2026-10-25: integrate round 1: 3 added lines (supervision#r118, supervision#r119, review#r31), 1 decision (0069), 3 questions, 0 cut sentences; drafts .shop/scratch/1-integrate/drafts/round-1
-- 2026-10-25: gate round 1: 1 question (review#r31)
-- 2026-10-25: gate round 1 (supervision-1-gate): 1 question (supervision#r118, supervision#r119)
-- 2026-10-25: apply round 3 (review): applied the answer (a) keep the wording, review#r31 added in spec/capabilities/review.md, commit cb357911; supervision and decision 0069 not applied, unanswered
-- 2026-10-25: formulate round 4 (review): no scenario formulated, review is a guarantees capability (group: guarantees, exempt from v_s3 and v15f), review#r31 needs none; no commit, model check 12 violations, 12 warnings, 2 unresolved references, none naming review
-- 2026-10-25: apply round 3 (supervision): applied the answer (a), supervision#r118 and supervision#r119 added in spec/capabilities/supervision.md with decision 0069, commit 57be6d74
+- 2026-10-25: integrate round 1: 3 added lines (supervision#r118@0.29, supervision#r119@0.29, review#r31@0.29), 1 decision (0069), 3 questions, 0 cut sentences; drafts .shop/scratch/1-integrate/drafts/round-1
+- 2026-10-25: gate round 1: 1 question (review#r31@0.29)
+- 2026-10-25: gate round 1 (supervision-1-gate): 1 question (supervision#r118@0.29, supervision#r119@0.29)
+- 2026-10-25: apply round 3 (review): applied the answer (a) keep the wording, review#r31@0.29 added in spec/capabilities/review.md, commit cb357911; supervision and decision 0069 not applied, unanswered
+- 2026-10-25: formulate round 4 (review): no scenario formulated, review is a guarantees capability (group: guarantees, exempt from v_s3 and v15f), review#r31@0.29 needs none; no commit, model check 12 violations, 12 warnings, 2 unresolved references, none naming review
+- 2026-10-25: apply round 3 (supervision): applied the answer (a), supervision#r118@0.29 and supervision#r119@0.29 added in spec/capabilities/supervision.md with decision 0069, commit 57be6d74
 - 2026-10-25: formulate round 4 (supervision): 2 scenarios added (r118, r119) in features/supervision.feature, 0 changed, 0 deprecated, commit bc00efae, model check 12 violations, 12 warnings, 0 unresolved references, 0 file problems

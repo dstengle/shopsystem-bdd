@@ -10,7 +10,7 @@ Accepted lines of the request:
 - 2. **When** a work-item drafted for a kept branch review's findings turns `green`, `work run` shall start the next branch review of the initiative before it ends.
 - 3. **When** `work run` starts a researcher, `work run` shall give the researcher a limit of 80 turns.
 - 4. **When** `formulating-features` runs an old scenario alone, `formulating-features` shall run it with `python3 -m pytest`.
-Ids drafted elsewhere (number added lines above each on the same capability): supervision#r99, supervision#r105, supervision#r106, supervision#r107, supervision#r108
+Ids drafted elsewhere (number added lines above each on the same capability): supervision#r99@0.29, supervision#r105@0.29, supervision#r106@0.29, supervision#r107@0.29, supervision#r108@0.29
 Drafts path: /tmp/work-run-i30-o1gqd7vm/i30-1-integrate/.shop/scratch/1-integrate/drafts
 Give your change list in your result's `changes`: a list with one entry for each capability, each `{"capability": <name>, "adds": [...], "changes": [...], "removes": [...]}`, the ids as `<capability>#r<n>` or `term/<term>`.
 Base: 4fbc25cd32843edb441abb8b04189f38edde1105

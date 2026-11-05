@@ -1,4 +1,4 @@
-# Review 9 of w163 (accepts supervision#r79, supervision#r84)
+# Review 9 of w163 (accepts supervision#r79@0.29, supervision#r84@0.29)
 
 **Verdict: DONE.** Nothing is Critical and nothing is triaged fix now.
 

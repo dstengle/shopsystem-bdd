@@ -1,8 +1,8 @@
-# Plan of w218: role-boundaries#r7
+# Plan of w218: role-boundaries#r7@0.29
 
 ## 1. What goes green
 
-- **role-boundaries#r7**: "The plugin's agent definitions shall give the `bdd-branch-reviewer` no shell tool."
+- **role-boundaries#r7@0.29**: "The plugin's agent definitions shall give the `bdd-branch-reviewer` no shell tool."
   No scenarios: the capability is checked by reading `agents/` (its Purpose; `tests/scripts/test_agents.py`), and
   no feature carries `@r7` under role-boundaries (notes §1). The check that goes green is a new unit test
   in `tests/scripts/test_agents.py`, `test_r7_branch_reviewer_has_no_shell`. It is red at first because
@@ -30,15 +30,15 @@ Removed from the researcher's set, as nothing changes in them:
 
 1. **Only the definition and its check change; the runtime list stays as it is.** `work run` already starts the
    branch review without Bash. r7 is a guarantee about the agent definitions (the "shall" of r7, and
-   role-boundaries' Purpose: "verified by reading the definitions under `agents/`"). Rests on role-boundaries#r7.
+   role-boundaries' Purpose: "verified by reading the definitions under `agents/`"). Rests on role-boundaries#r7@0.29.
 2. **Decision record 0053 is not edited.** An accepted design-decision is a record of what was decided then, and
    0053 itself says that capability/role-boundaries states the guarantees and `test_agents.py` checks them.
    r7, the later requirement, holds where the two differ. Changing what was decided would take a superseding
    design-decision, which is not this work-item's to write. The narrator sees no difference either way: the
    tool list and the test are the same under both readings. Rests on design-decision/the-v3-agents (its
-   pointer to role-boundaries as the statement of the guarantees) and role-boundaries#r7.
+   pointer to role-boundaries as the statement of the guarantees) and role-boundaries#r7@0.29.
 3. **"No shell tool" means none of the module's `SHELL` tools**, the same reading r3 and r6 already use
-   (`test_r3`, `test_r6`). Rests on role-boundaries#r6 and #r7, which use the same words.
+   (`test_r3`, `test_r6`). Rests on role-boundaries#r6@0.29 and #r7, which use the same words.
 
 ## 4. Tests the decisions break
 

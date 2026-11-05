@@ -179,7 +179,7 @@ One line each, with its reproduction:
 - **F3-F5:** read at `scripts/supervise_change.py:23-30,45`; running the probe was refused approval.
 - **F6:** read at `scripts/supervise_rounds.py:107-109`.
 - **F7:** `grep -n drafts scripts/supervise_brief.py` finds only the integrate brief.
-- **F8:** read at `workqueue_request.py:87`. `.shop/work/i29/w175.md` accepts requests#r22 and is `awaiting-answer`. The suite fails `test_request_with_an_empty_delegation_is_refused_and_nothing_changes` for lack of steps.
+- **F8:** read at `workqueue_request.py:87`. `.shop/work/i29/w175.md` accepts requests#r22@0.29 and is `awaiting-answer`. The suite fails `test_request_with_an_empty_delegation_is_refused_and_nothing_changes` for lack of steps.
 - **F10:** the subjects of 7d8572d6 and ab63bd6c say "left uncommitted".
 - **N1:** `python3 <Scripts>/tools check --base 3cbd0c52` lists both gate `mk.py` files, at `:1` I001 and at SIM115.
 - **N2:** `features deprecated` lists supervision @r102 and work-queue @r9; w171 and w140 are `green`.

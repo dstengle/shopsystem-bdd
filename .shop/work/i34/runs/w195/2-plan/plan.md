@@ -1,10 +1,10 @@
-# Plan of w195: supervision#r122, whole-suite expected red for capability-proposals
+# Plan of w195: supervision#r122@0.29, whole-suite expected red for capability-proposals
 
 Planned from `.shop/work/i34/runs/w195/1-research/notes.md`. Where the notes did not settle a decision, I also read `scripts/work_items.py` (lines 50-100), `tests/scenarios/supervision_proposal_steps.py` (the proposal Givens) and `tests/scenarios/supervision_tests_steps.py` (`counted_as`).
 
 ## 1. What goes green
 
-**supervision#r122**: Scenario Outline "when the whole suite is run <run>, a failing scenario whose requirement a capability-proposal that is <status> adds or changes is counted as <counted>" (`features/supervision.feature:813`, 10 rows).
+**supervision#r122@0.29**: Scenario Outline "when the whole suite is run <run>, a failing scenario whose requirement a capability-proposal that is <status> adds or changes is counted as <counted>" (`features/supervision.feature:813`, 10 rows).
 
 Why it is red today (notes §1, run): 9 rows fail, 1 passes.
 - Six rows (worktree/approved, worktree/withdrawn, merge/awaiting-answer, merge/merged, merge/withdrawn, merge/approved-r3) stop at an undefined Given at line 817. A Given exists for `formulated` and for `drafted`, but none for `approved`, `withdrawn`, `awaiting-answer` or `merged`.
@@ -28,12 +28,12 @@ These are the researcher's three files plus the one comment. Not in the set: `RE
 
 ## 3. Decisions
 
-1. **The proposal source has no exclusion by name.** A work-item's own name excludes it under r43, but a capability-proposal is never "the one being merged". Every proposal that is neither `formulated` nor `withdrawn` counts. Rests on supervision#r122 (its text has no such exclusion) and supervision#r43 (the exclusion applies to work-items only).
-2. **`merged` counts as expected.** r122 says "neither `formulated` nor `withdrawn`", and the accepted outline row (before w1's merge, merged, changes thing#r2) says expected. `model_work.py`'s `SETTLED` set is not used and not changed here; it serves a different check (retired ids in the design model). This settles the researcher's question 1 with the requirement's text and its accepted scenario, so it is not a question to the person. Rests on supervision#r122.
-3. **Only `adds:` and `changes:` count, not `removes:`.** Entries that are not requirement ids, such as `term/<name>` in `adds:`, are ignored. Rests on supervision#r122 ("adds or changes").
-4. **The scope is every initiative under `.shop/work/`.** `acceptors` already reads every initiative for r43's work-items. r122 names no initiative, so a proposal counts wherever it is filed. This settles the researcher's question 3 with the requirement's unqualified text and the reach r43 already has; it does not narrow r122. Rests on supervision#r122 and supervision#r43.
+1. **The proposal source has no exclusion by name.** A work-item's own name excludes it under r43, but a capability-proposal is never "the one being merged". Every proposal that is neither `formulated` nor `withdrawn` counts. Rests on supervision#r122@0.29 (its text has no such exclusion) and supervision#r43@0.29 (the exclusion applies to work-items only).
+2. **`merged` counts as expected.** r122 says "neither `formulated` nor `withdrawn`", and the accepted outline row (before w1's merge, merged, changes thing#r2) says expected. `model_work.py`'s `SETTLED` set is not used and not changed here; it serves a different check (retired ids in the design model). This settles the researcher's question 1 with the requirement's text and its accepted scenario, so it is not a question to the person. Rests on supervision#r122@0.29.
+3. **Only `adds:` and `changes:` count, not `removes:`.** Entries that are not requirement ids, such as `term/<name>` in `adds:`, are ignored. Rests on supervision#r122@0.29 ("adds or changes").
+4. **The scope is every initiative under `.shop/work/`.** `acceptors` already reads every initiative for r43's work-items. r122 names no initiative, so a proposal counts wherever it is filed. This settles the researcher's question 3 with the requirement's unqualified text and the reach r43 already has; it does not narrow r122. Rests on supervision#r122@0.29 and supervision#r43@0.29.
 5. **Both whole-suite runs get the rule through one change.** The implement-stage run (r24) and the merge-stage run (r43) use the same `--whole-suite` command. Rests on the supervision Implementation note "r122: the checks are the whole-suite runs of r24 and r43" and on the commands note (`--whole-suite` marks as xfail what is counted as expected).
-6. **The status a proposal has at each run is the status in that run's checkout.** For the implement run that is the claim-time head; for the merge run it is the rebased head. No extra reading of proposal state is added. Rests on supervision#r24 and supervision#r43 (each run checks its own tree).
+6. **The status a proposal has at each run is the status in that run's checkout.** For the implement run that is the claim-time head; for the merge run it is the rebased head. No extra reading of proposal state is added. Rests on supervision#r24@0.29 and supervision#r43@0.29 (each run checks its own tree).
 7. **The new Given covers only the four statuses that have no step today.** That way it does not overlap the existing `formulated` and `drafted` Givens, and no step text matches twice. This decision concerns the test steps only; it rests on the accepted scenario text at line 817.
 
 Not taken, and outside this work: the researcher's question 2, `--whole-suite` with an unknown work-item (D2). r122 adds nothing to the whole-suite path's handling of an unknown name, and no accepted scenario of this work-item drives it. The behaviour stays as it is today (the suite runs). It is left for its own request (see §5).

@@ -1,4 +1,4 @@
-# Plan of w163 (accepts supervision#r79, supervision#r84)
+# Plan of w163 (accepts supervision#r79@0.29, supervision#r84@0.29)
 
 Finding: branch review 3's R3-F1 (`runs/branch-review/3/findings.md`). An integrate round that ends DONE leaves its stage directory `.shop/work/<init>/runs/<init>/<k>-integrate/` uncommitted, so the next `work run` is refused under r46.
 

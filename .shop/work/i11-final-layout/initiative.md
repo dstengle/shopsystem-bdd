@@ -78,7 +78,7 @@ pytest.
 ## What is removed
 
 `spec/decisions.md`; `decisions/`, `work/`, `records/` and `docs/superpowers/` at the top level (moved); the
-`formulated_as` field; design-model-check#r45 (reading a ledger); `features hold` and `features holding`;
+`formulated_as` field; design-model-check#r45@0.29 (reading a ledger); `features hold` and `features holding`;
 the docstring binding test in each test module but `test_measure.py`.
 
 ## What is left alone

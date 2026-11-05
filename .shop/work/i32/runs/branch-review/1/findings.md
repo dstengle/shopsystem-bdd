@@ -5,12 +5,12 @@
 ## Range and work-items
 
 - Range: `d3d3839d..7ede38b8` (base `work: start i32, fulfilling q9`, head `work: w190 done -> green`).
-- **w189** (review#r31, under review, group guarantees): one commit, `ee81efd0` (`agents/bdd-branch-reviewer.md`). It lies between `6fa7dc00 work: w189 ready -> claimed` and `72e77945 work: w189 claimed -> done`.
-- **w190** (supervision#r118, r119): two commits between `2c448d35 work: w190 ready -> claimed` and `0a9226a6 work: w190 claimed -> done`:
+- **w189** (review#r31@0.29, under review, group guarantees): one commit, `ee81efd0` (`agents/bdd-branch-reviewer.md`). It lies between `6fa7dc00 work: w189 ready -> claimed` and `72e77945 work: w189 claimed -> done`.
+- **w190** (supervision#r118@0.29, r119): two commits between `2c448d35 work: w190 ready -> claimed` and `0a9226a6 work: w190 claimed -> done`:
   - `6622133a`: steps, `tests/scenarios/supervision_delegation_steps.py`;
   - `31c86e3c`: `scripts/supervise_answers.py`, `scripts/workqueue_answer.py`.
   - The first claim, `fc76d519..12897d9b`, holds only w189's `ee81efd0`, from the pool running both side by side. Its own `c5561011` was carried forward as `6622133a`.
-- Commits that belong to no work-item: the capability-proposal rounds' commits. These are `cb357911` (spec review#r31), `57be6d74` (spec supervision r118, r119, decision 0069), `bc00efae` (features r118, r119) and `f33c07a6` (the apply round's stage directory, including `apply.py`), plus `work note` and `work` status commits. See finding 3.
+- Commits that belong to no work-item: the capability-proposal rounds' commits. These are `cb357911` (spec review#r31@0.29), `57be6d74` (spec supervision r118, r119, decision 0069), `bc00efae` (features r118, r119) and `f33c07a6` (the apply round's stage directory, including `apply.py`), plus `work note` and `work` status commits. See finding 3.
 
 ## Suite
 
@@ -57,7 +57,7 @@ Every implementer report gives `## Tests changed under an allowance: none` (w189
 
 ## Cannot verify
 
-- **review#r31 on a real batch.** It is a guarantees capability with no scenario. The plan names `measure` of a later initiative as its check. I verified the agent text, not a run's result.
+- **review#r31@0.29 on a real batch.** It is a guarantees capability with no scenario. The plan names `measure` of a later initiative as its check. I verified the agent text, not a run's result.
 - **That a real `delegation-answerer` session gives the `verdict` field.** The scenarios use the stand-in. `agents/delegation-answerer.md` does not mention `verdict`; only the brief's `VERDICT` sentence (`scripts/supervise_answers.py:17`) asks for it. A session that omits it leaves the question for the person (line 120), so the failure is safe but would stall a delegated run.
 
 ## Findings

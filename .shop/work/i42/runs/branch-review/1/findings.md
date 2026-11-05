@@ -6,7 +6,7 @@
 
 `8f90ad3e..733efe83` (Base `8f90ad3e`, "work: start i42, fulfilling q22", which adds `.shop/work/i42/initiative.md`), 32 commits.
 
-- **w213** (spec-integration#r46, green): its commits run from `6de25e87 work: w213 ready -> claimed` to `53d57591 work: w213 claimed -> done`. Its one commit of its own is `5482e7e3` "spec-integration r46: an apply round gives each answer its drafts do not hold, in unheld_answers". That commit touches:
+- **w213** (spec-integration#r46@0.29, green): its commits run from `6de25e87 work: w213 ready -> claimed` to `53d57591 work: w213 claimed -> done`. Its one commit of its own is `5482e7e3` "spec-integration r46: an apply round gives each answer its drafts do not hold, in unheld_answers". That commit touches:
   - README.md
   - agents/initiative-round.md
   - scripts/supervise_brief.py (+4)

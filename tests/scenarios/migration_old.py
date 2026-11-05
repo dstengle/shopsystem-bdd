@@ -1,9 +1,37 @@
-"""What migration-tools' step modules share: the repository on the old system a Given builds (`Old`, the `old`
-fixture conftest gives), migrate's one run, and model's reading of what it left."""
+"""The repository `migrate` runs in, for migration-tools' handlers (`Old`, also the `old` fixture conftest gives):
+files written, committed, and remembered as they were; and the plugin `migrate` runs from (`plugin`)."""
+import atexit
+import json
 import pathlib
+import shutil
 import subprocess
+import tempfile
 
 CONTEXT = "example.org/acme/shop"
+PLUGIN = pathlib.Path(__file__).resolve().parents[2]
+TARGET = "1.0.0"     # the release migration-tools' scenarios describe
+_copy = {}
+
+
+def number(version):
+    return tuple(int(p) for p in version.split("."))
+
+
+def plugin():
+    """(root, version) of the plugin the scenarios run: this one, or, while its version is below TARGET, a copy of its
+    scripts and hooks whose plugin.json says TARGET, made once."""
+    data = json.loads((PLUGIN / ".claude-plugin/plugin.json").read_text())
+    if number(data["version"]) >= number(TARGET):
+        return PLUGIN, data["version"]
+    if not _copy:
+        root = pathlib.Path(tempfile.mkdtemp())
+        atexit.register(shutil.rmtree, root, True)
+        for part in ("scripts", "hooks"):
+            shutil.copytree(PLUGIN / part, root / part, ignore=shutil.ignore_patterns("__pycache__"))
+        (root / ".claude-plugin").mkdir()
+        (root / ".claude-plugin/plugin.json").write_text(json.dumps(dict(data, version=TARGET), indent=2) + "\n")
+        _copy["root"] = root
+    return _copy["root"], TARGET
 
 
 class Old:
@@ -44,38 +72,3 @@ class Old:
         return (self.root / rel).read_text()
 
 
-def migrate(run, old, context, root=None):
-    context["done"] = run("migrate", "run", "--context", CONTEXT, cwd=root or old.root)
-
-
-def load_model():
-    """scripts/model, read by path: its own reading of frontmatter."""
-    import importlib.machinery
-    import importlib.util
-    SCRIPTS = pathlib.Path(__file__).resolve().parents[2] / "scripts"
-    loader = importlib.machinery.SourceFileLoader("model_by_path", str(SCRIPTS / "model"))
-    spec = importlib.util.spec_from_loader("model_by_path", loader)
-    module = importlib.util.module_from_spec(spec)
-    loader.exec_module(module)
-    return module
-
-
-def front(old, rel):
-    data, body = load_model().frontmatter(old.read(rel))
-    return data, body
-
-
-def capability(old, ident=None, retired="[]", lines=("- [r1] **When** a, `thing` shall a.",)):
-    head = "id: %s\n" % ident if ident else ""
-    old.write("spec/capabilities/thing.md", "---\n%stitle: thing\nnarrator: a client\ngroup: service\nrests_on: []\nretired: %s\n---\n\n"
-              "# thing\n\n## Purpose\nSomething.\n\n## Behaviour\n%s\n\n## Not yet\n- None.\n" % (head, retired, "\n".join(lines)))
-
-
-def said(context):
-    done = context["done"]
-    return done.stdout + done.stderr
-
-
-def body(name):
-    """A record's body, long enough that git still sees a rename after migrate adds an id, a kind and an about."""
-    return "".join("%s, line %d of a body that git compares to find the rename.\n" % (name, i) for i in range(1, 7))

@@ -1,8 +1,8 @@
 import json
-r20="[requests#r20] **When** the upstream asks a question on a line of a request in its turn, `work` shall write the question in the request."
-r21="[requests#r21] **When** the asker answers a question on a request in its turn, `work` shall write the answer in the request."
-r98="[supervision#r98] **When** a round of the kind `intake` that `work run` started gives a question on a line of a request, `work run` shall write the question in the request."
-r99="[supervision#r99] **When** `work run` ends while a request whose asker is this context is in the asker's turn, `work run` shall exit with an error, printing the request with its open questions."
+r20="[requests#r20@0.29] **When** the upstream asks a question on a line of a request in its turn, `work` shall write the question in the request."
+r21="[requests#r21@0.29] **When** the asker answers a question on a request in its turn, `work` shall write the answer in the request."
+r98="[supervision#r98@0.29] **When** a round of the kind `intake` that `work run` started gives a question on a line of a request, `work run` shall write the question in the request."
+r99="[supervision#r99@0.29] **When** `work run` ends while a request whose asker is this context is in the asker's turn, `work run` shall exit with an error, printing the request with its open questions."
 q=[
 f"Which command writes a question and which an answer? Lines (added):\n{r20}\n{r21}\nThe note names no command. A: put new commands in the lines (`work question <request> <n> <text>`, `work answer <request> <text>`). B (recommended): lines as drafted; commands stay Implementation, named once known.",
 "requests r4 and r5 contradict r20/r21. Changed lines: r4 was \"`work` shall write the asker's part of a request, its lines, only when `work request` is run.\"; r5 was \"`work` shall write the upstream's part of a request, its line outcomes and its resolution, only when `work outcome` or `work resolve` is run.\" Change r4 to add the asker's answers and r5 to add the upstream's questions? Yes (recommended) / no, leaving a contradiction.",

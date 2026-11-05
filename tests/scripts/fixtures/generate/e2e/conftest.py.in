@@ -1,0 +1,13 @@
+"""The fixture repository's scenario conftest (copied to tests/scenarios/conftest.py by the end-to-end test): the
+plugin's vocabulary, installed for this repository's spec and handlers."""
+import importlib.util
+import pathlib
+import sys
+
+PLUGIN = pathlib.Path("@PLUGIN@")
+sys.path.insert(0, str(PLUGIN / "scripts"))
+_spec = importlib.util.spec_from_file_location("vocab", PLUGIN / "tests" / "scenarios" / "vocab.py")
+vocab = sys.modules["vocab"] = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(vocab)
+HERE = pathlib.Path(__file__).resolve().parent
+vocab.install(globals(), HERE.parents[1], HERE)

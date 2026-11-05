@@ -6,7 +6,7 @@
 
 `96d2b80b..729152c6` (Base `96d2b80b`, the commit that added `.shop/work/i40/initiative.md`; HEAD `729152c6`). The range has 27 commits.
 
-- **w203** (spec-integration#r45, `green`): its one commit is `1c351ddc` "spec-integration r45: an integrate round given answers drafts the lines they ask for". It sits between `689248a7 work: w203 ready -> claimed` and `4a3c3110 work: w203 claimed -> done`. It changes 4 files, all in w203's fileset: `scripts/supervise_brief.py` (+4), `agents/initiative-round.md` (1 line), `skills/integrating-a-proposal/SKILL.md` (1 line) and `tests/scenarios/spec_integration_steps.py` (+48).
+- **w203** (spec-integration#r45@0.29, `green`): its one commit is `1c351ddc` "spec-integration r45: an integrate round given answers drafts the lines they ask for". It sits between `689248a7 work: w203 ready -> claimed` and `4a3c3110 work: w203 claimed -> done`. It changes 4 files, all in w203's fileset: `scripts/supervise_brief.py` (+4), `agents/initiative-round.md` (1 line), `skills/integrating-a-proposal/SKILL.md` (1 line) and `tests/scenarios/spec_integration_steps.py` (+48).
 - **Commits from the capability-proposals' rounds** (`work run`): `0c09944f` (spec: add r45), `3df7df2e` (features: formulate r45), and the `work:`, `work note:`, `work answer:` and `work add:` commits.
 - **One commit belongs to no work-item and no round:** `ce86effc` "records: observation 2026-10-27-silent-exit-on-questions" (see Finding 2).
 

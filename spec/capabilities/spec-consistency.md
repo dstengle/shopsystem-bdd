@@ -4,7 +4,8 @@ title: Spec consistency
 narrator: the person keeping a spec
 group: guarantees
 rests_on: [design-decision/the-glossary-is-a-target-of-spec-work, design-decision/consistency-check-on-demand, design-decision/spec-writers-blind-to-code, design-decision/workflow-capabilities-are-guarantees]
-retired: [r5]
+language: codified-1
+retired: []
 ---
 
 # Spec consistency
@@ -15,41 +16,101 @@ that a line has one reading, that the lines leave nothing to infer and that a sc
 used on demand by the session the person talks to, with a blind `spec-checker` dispatch for each judgment of
 meaning. It reads nothing but `spec/` and `features/`, and integration and formulation do not use it.
 
+## Terms
+
+- **`checking-spec-consistency`** (actor): the skill that checks the spec's consistency, run only when the person asks.
+- **consistency finding** (kind): one finding of a consistency pass, naming its ids, written in its findings file.
+- **competing pair** (kind): two requirements that act on one thing, such as one file, one status or one command, without saying which of them wins.
+- **unscoped requirement** (kind): a requirement that leaves to inference which runs, workers or commands it applies to.
+- **misplaced scenario** (kind): a scenario that shows the response of a requirement other than the one it names, or that gives an exit code.
+- **orphan status** (kind): a status or a mode the requirements name, with a way into it or out of it that no requirement gives.
+- **undefined word** (kind): a word a requirement depends on that is neither a term nor spelled out in the requirement.
+
 ## Behaviour
-- [r1] **When** the person asks for a consistency pass, `checking-spec-consistency` shall run `model check` before anything else and give its `v_t1`, `v_t2` and `v_t3` rows as findings.
-- [r2] **When** the pass starts, `checking-spec-consistency` shall say how many `spec-checker` dispatches it will make, one for each capability and one for the whole context, before it dispatches any.
-- [r3] **When** a `spec-checker` is dispatched, the `spec-checker` shall read only `spec/` and `features/`, never the source.
-- [r4] **Where** the pass is in findings mode, **when** the pass ends, `checking-spec-consistency` shall have changed nothing but one findings file, each finding in it naming its ids.
-- [r28] **Where** fix mode is asked for, `checking-spec-consistency` shall first propose, for each term cluster, a glossary entry with its `Not:` words, and put it, with the line changes that apply it, each changed line retired and its replacement given a new id, through one gate pass for the term.
-- [r6] **Where** fix mode is asked for, **when** the terms are settled, `checking-spec-consistency` shall have a scenario that uses an avoided word reworded to its line through formulation's small-change path, with no further approval.
-- [r7] **Where** fix mode is asked for, **when** a line has two readings, `checking-spec-consistency` shall ask the person one question with its readings, to be integrated through the question path of `integrating-a-proposal`.
-- [r8] **Where** fix mode is asked for, **when** a finding is drift other than a term or a line with two readings, `checking-spec-consistency` shall ask the person which side is right, one finding at a time.
-- [r9] **Where** fix mode is asked for, **when** a step is complete, `checking-spec-consistency` shall tell the person what `model check` finds before the next step.
-- [r10] **When** every finding is applied, rejected or written as an observation, `checking-spec-consistency` shall end fix mode with `model check` printing no `v_t1`, `v_t2` or `v_t3` row.
-- [r11] `checking-spec-consistency` shall start only when the person asks for it, never during an integration or a formulation.
-- [r21] **If** `checking-spec-consistency` cannot do what it was asked, then `checking-spec-consistency` shall stop, saying why, and change nothing.
-- **When** a `spec-checker` finds one of the following in what it reads, the `spec-checker` shall write it as a finding, naming its ids:
 
-  | id | found |
-  |---|---|
-  | [r22] | a scenario that shows observable behaviour, such as an output, a file written or a status, that no Behaviour line of its capability asks for |
-  | [r23] | two lines that act on one thing, such as one file, one status or one command, without saying which of them wins |
-  | [r24] | a line that leaves to inference which runs, workers or commands it applies to |
-  | [r25] | a scenario that shows the response of a line other than the one it names, an exit or a refusal of the capability's general failure line included, or that gives an exit code |
-  | [r26] | a status or a mode that the lines name, with a way into it or out of it that no line gives |
-  | [r27] | a word a line depends on that is neither a glossary term nor spelled out in the line |
+### [g1] A pass starts with `model check` and shows what it finds
+Restates: r1@0.29, r2@0.29.
+- [r1] When the person runs `checking-spec-consistency`, `checking-spec-consistency` shall start `model check`, show
+  every violation and show the number of dispatches.
 
+### [g2] A `spec-checker` reads no source
+Restates: r3@0.29.
+- [r2] `spec-checker` shall not read a module.
+
+### [g3] A pass ends with its findings written
+Restates: r4@0.29.
+- [r3] When `checking-spec-consistency` ends, `checking-spec-consistency` shall write every consistency finding.
+
+### [g4] The skill commits no requirement itself
+Restates: r4@0.29.
+- [r4] `checking-spec-consistency` shall not commit a requirement.
+
+### [g5] Fix mode proposes a glossary entry for each term
+Restates: r28@0.29.
+- [r5] Where `--fix` is given, when `checking-spec-consistency` finds a term, `checking-spec-consistency` shall write
+  a glossary-proposal.
+
+### [g6] Fix mode asks about each finding
+Restates: r8@0.29.
+- [r6] Where `--fix` is given, when `checking-spec-consistency` finds a consistency finding,
+  `checking-spec-consistency` shall ask a question.
+
+### [g7] Fix mode runs `model check` after each answer
+Restates: r9@0.29.
+- [r7] Where `--fix` is given, when the person gives an answer, `checking-spec-consistency` shall start `model check`.
+
+### [g8] Fix mode ends with no violation
+Restates: r10@0.29.
+- [r8] Where `--fix` is given, when `checking-spec-consistency` ends, `model` shall print no violation.
+
+### [g9] The skill starts no round
+Restates: r11@0.29.
+- [r9] `checking-spec-consistency` shall not start a round.
+
+### [g10] A refused command is shown and changes nothing
+Restates: r21@0.29.
+- [r10] If a command is refused, then `checking-spec-consistency` shall show the reason and change nothing.
+
+### [g11] Unrequested behaviour in a scenario is a finding
+Restates: r22@0.29.
+- [r11] When `spec-checker` finds an unrequested behaviour, `spec-checker` shall write a consistency finding.
+
+### [g12] A competing pair is a finding
+Restates: r23@0.29.
+- [r12] When `spec-checker` finds a competing pair, `spec-checker` shall write a consistency finding.
+
+### [g13] An unscoped requirement is a finding
+Restates: r24@0.29.
+- [r13] When `spec-checker` finds an unscoped requirement, `spec-checker` shall write a consistency finding.
+
+### [g14] A misplaced scenario is a finding
+Restates: r25@0.29.
+- [r14] When `spec-checker` finds a misplaced scenario, `spec-checker` shall write a consistency finding.
+
+### [g15] An orphan status is a finding
+Restates: r26@0.29.
+- [r15] When `spec-checker` finds an orphan status, `spec-checker` shall write a consistency finding.
+
+### [g16] An undefined word is a finding
+Restates: r27@0.29.
+- [r16] When `spec-checker` finds an undefined word, `spec-checker` shall write a consistency finding.
+
+### [g17] A finding names its ids
+Restates: r4@0.29.
+- [r17] When `spec-checker` writes a consistency finding, `spec-checker` shall name a requirement.
 
 ## Implementation, may change
-- The skill is `skills/checking-spec-consistency/SKILL.md`; the agent is `agents/spec-checker.md`
-  (tools Read, Glob, Grep, Write; model sonnet).
-- One dispatch for each capability judges its lines against its scenarios (r22, r23, r24 and r25 within the
-  capability); one for the context judges every Behaviour line and the glossary, with no scenarios (r23 and r24
-  across capabilities, r26 and r27).
-- A `spec-checker` writes its findings to a file under the drafts path and replies with a short summary. The
-  findings file is grouped by term cluster (r27 among them), then lines with two readings, lines in the wrong
-  pattern, lines left to infer (r23, r24, r26), behaviour no line asks for (r22), scenarios showing another
-  line's response (r25), then other drift.
+- `skills/checking-spec-consistency/`, `agents/spec-checker.md`. The pass dispatches one `spec-checker` for each
+  capability and one for the whole context, and says how many before it dispatches any. A `spec-checker` reads only
+  `spec/` and `features/`.
+- The findings it shows from `model check` are its `v_t1`, `v_t2` and `v_t3` rows. In findings mode the pass changes
+  nothing but one findings file. In fix mode a glossary entry with its `Not:` words goes, with the statements that
+  apply it, through one gate pass for the term; a changed statement is retired and its replacement given a new id.
+- The pass starts only when the person asks, never during an integration or a formulation.
 
 ## Not yet
-- The pass is used during integration and formulation — trigger: a measured initiative shows drift the on-demand pass would have caught.
+- None.
+
+## Dropped
+- r6@0.29: scenarios are generated from parsed statements, so no scenario uses a word the glossary avoids and none is reworded by hand.
+- r7@0.29: no statement has two readings: one that does not parse to exactly one tree is refused (v_p1, v_p2).

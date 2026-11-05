@@ -5,7 +5,7 @@ part_of: initiative/i9
 status: merged
 date: 2026-10-17
 argues: [formulation]
-adds: [formulation#r14]
+adds: [formulation#r14@0.29]
 ---
 
 # Formulation: scenarios follow a term

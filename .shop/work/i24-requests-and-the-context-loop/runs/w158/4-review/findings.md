@@ -1,6 +1,6 @@
 # Review of w158: DONE (no findings)
 
-**Verdict:** the commits do what the plan and supervision#r79 ask, plus the work-item's ruling of 2026-10-25. No finding is Critical, and none is to be fixed now.
+**Verdict:** the commits do what the plan and supervision#r79@0.29 ask, plus the work-item's ruling of 2026-10-25. No finding is Critical, and none is to be fixed now.
 
 ## Commits reviewed
 

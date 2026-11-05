@@ -1,4 +1,4 @@
-# Plan: migration-tools-1 (accepts migration-tools#r15, r18-r20, r22-r28)
+# Plan: migration-tools-1 (accepts migration-tools#r15@0.29, r18-r20, r22-r28)
 
 Taken from the research notes, `.shop/work/i21-work-item-ids-and-upgrades/runs/migration-tools-1/1-research/notes.md`.
 

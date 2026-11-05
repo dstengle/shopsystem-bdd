@@ -4,7 +4,7 @@ kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i59
 status: awaiting-answer
 argues: [role-boundaries]
-adds: [role-boundaries#r8]
+adds: [role-boundaries#r8@0.29]
 changes: []
 removes: []
 date: 2026-10-29

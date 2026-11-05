@@ -3,125 +3,333 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/design-model-check
 title: Design model check
 narrator: a person or session verifying a repository against the design model
 group: service
+language: codified-1
 rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/query-commands-answer-in-their-output, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items, design-decision/work-items-named-by-ids, design-decision/the-glossary-is-a-target-of-spec-work]
-retired: [r28, r30, r31, r32, r38, r39, r40, r41, r42, r44, r45, r47, r50, r56, r57, r58, r60, r62, r63, r67, r115, r117, r27]
+retired: []
 ---
 
 # Design model check
 
 ## Purpose
-`scripts/model` reads a bounded context's files — spec, feature files, decisions, work and records, in the
-final layout and no other — as the facts of `docs/design-model/grammar.md`, and prints what the grammar
-refuses, each rule by its code and its plain label. It also writes the generated decisions index, lists the
-rules, and traces a requirement to why it exists. It does not edit the spec, the work or the records, and it
-verifies one bounded context: product-level artifacts are read only where the files contain them.
+`scripts/model` reads a bounded context's files — spec, feature files, decisions, work and records, in the final
+layout and no other — as the facts of design model v5 (`docs/design-model/`), and prints what the model refuses,
+each rule by its code and its plain label. It also writes the generated decisions index, lists the rules, and traces
+a requirement to why it exists. It does not edit the spec, the work or the records, and it verifies one bounded
+context: product-level artifacts are read only where the files contain them.
+
+## Terms
+- **rule** (kind): a relation of `scripts/model.lp`, with its code and its plain label: a violation's or a warning's.
+- **decisions index** (kind): the generated file `spec/decisions/index.md`. Plural: decisions indexes.
+- **interpreter** (kind): a `python3` that `model` runs under or tries.
+- **clingoless** (condition of interpreter): an interpreter that cannot import clingo, where a `python3` on `PATH` can.
+- **unfound** (condition of interpreter): an interpreter that cannot import clingo, where no interpreter `model` tries can.
+- **stale** (condition of decisions index): a decisions index that is not what `model decisions` would write.
+- **sound** (condition of bounded context): a bounded context in which `model check` finds no violation, unresolved reference or file problem.
+- **unmigrated** (condition of bounded context): a bounded context with `spec/decisions.md`, or with a `decisions/`, `work/` or `records/` directory at its root.
+- **unnumbered** (condition of capability): a capability with a requirement bullet in its Behaviour that has no `[r<n>]`.
+- **renumbered** (condition of capability): a capability two of whose requirements have the same id.
+- **reusing** (condition of capability): a capability that uses an id it lists as retired.
+- **misnamed** (condition of capability): a capability whose `id` is not `capability/<context path>/<file name>`, or that has no `## Behaviour`.
+- **untested** (condition of requirement): a requirement that no scenario names, of a capability that is not of the group `guarantees`.
+- **avoiding** (condition of requirement): a requirement that mentions a word its context's glossary lists after `Not:`.
+- **unparsed** (condition of requirement): a requirement that does not parse in the requirement grammar of its context.
+- **overtagged** (condition of scenario): a scenario not tagged `@deprecated` that has more than one `@r<n>` tag.
+- **misreferring** (condition of scenario): a scenario that names a requirement its capability does not have.
+- **misfiled** (condition of feature): a feature that is not `features/<name>.feature` for a capability `<name>`.
+- **duplicated** (condition of term): a term that two glossary entries have as their term.
+- **selfavoiding** (condition of term): a term with a word after `Not:` that is a term of the context, or the term itself.
+- **malformed** (condition of term): a term whose bullet in the `## Glossary` of `spec/index.md` is in no form of a term entry.
+- **reaching** (condition of capability-proposal): a `drafted` or `approved` capability-proposal that changes a requirement no capability has.
+- **unformulated** (condition of capability-proposal): a `formulated` capability-proposal that adds a requirement with no scenario, of a capability that is not of the group `guarantees`.
+- **plural** (condition of capability-proposal): a capability-proposal that argues more than one capability.
+- **dangling** (condition of capability-proposal): a capability-proposal that adds or removes an id its capability neither has nor lists as retired.
+- **termless** (condition of capability-proposal): a capability-proposal whose `adds`, `changes` or `removes` names a `term/<term>` the glossary does not have.
+- **termless** (condition of glossary-proposal): a glossary-proposal whose `adds`, `changes` or `removes` names a `term/<term>` the glossary does not have.
+- **parentless** (condition of work-item): a work-item with no `part_of`.
+- **uncommitted** (condition of work-item): a work-item that is not `withdrawn` and has no `accepts` and no `check`.
+- **misnumbered** (condition of work-item): a work-item whose file name is not `w<n>.md`.
+- **alien** (condition of work-item): a work-item whose `part_of` has another context's path, on a kind kept in `.shop/work/`.
+- **misreferenced** (condition of work-item): a work-item whose `accepts` names a reference that is not `<capability>#r<n>`.
+- **unresolving** (condition of work-item): a work-item whose `under` names nothing in the repository.
+- **misidentified** (condition of work-item): a work-item whose `id` is not `<kind>/<context path>/<name>` with its own kind.
+- **homeless** (condition of work-item): a work-item whose directory has no `initiative.md`.
+- **crowded** (condition of initiative): an initiative that is not a capability-change and has more than one part directly under it.
+- **unrequested** (condition of initiative): an initiative dated after 2026-10-23 that fulfils no request.
+- **unwaiting** (condition of initiative): a `done` initiative while a request whose asker is its context and that names it is not `delivered`.
+- **jobbed** (condition of initiative): an initiative whose kind is `job` or `job-path`.
+- **unanchored** (condition of request): a request that is part of no job-thread, cites no origin and is raised for no request.
+- **misresolved** (condition of request): a `delivered` request whose resolution names a requirement the spec does not have.
+- **misformed** (condition of request): a request that is not of the form `work request` writes.
+- **compound** (condition of requirement group): a requirement group with more than one statement.
+- **repeating** (condition of requirement group): a requirement group whose statement has the features, condition and trigger of another group's statement in its capability.
+- **unexampled** (condition of requirement group): a requirement group with a given line that is not example data.
+- **headless** (condition of design-decision): a design-decision with no `id` or no `## Decision` section.
 
 ## Behaviour
 
-### `model check`
-- [r1] **When** `model check` finds no violation, unresolved reference or file problem, `model check` shall say so and exit successfully.
-- [r2] **If** `model check` finds a violation, an unresolved reference or a file problem, then `model check` shall print each, a violated relation by its grammar.md code and plain label with its rows, and exit with an error.
-- [r11] **When** `model check` finds warnings, `model check` shall print each warning relation with its plain label and its count, with no effect on whether it exits successfully.
-- [r111] **While** the bounded context has no job, `model check` shall print no `w_unserved_cap` warning.
-- [r33] **Where** `--json` is given, `model check` shall print its violations, warnings, unresolved references and file problems as one JSON object, each code mapped to its plain label, exiting as it would without `--json`.
-- [r36] **When** `model check` decides whether an initiative may be `done`, `model check` shall count a `formulated` capability-proposal, and any `withdrawn` part, as closed.
-- [r123] **When** `model check` decides whether an initiative may be `done`, `model check` shall count an `approved` glossary-proposal as closed.
-- [r55] **If** `import clingo` fails, then `model check` shall try again, once, under the first interpreter that has clingo of `$SHOPSYSTEM_MODEL_PYTHON`, each `python3` on `PATH` outside the active virtualenv's `bin/`, `/usr/local/bin/python3` and `/usr/bin/python3`, in that order.
-- [r12] **If** no interpreter has clingo, then `model check` shall exit with an error, naming each interpreter it tried and the command that installs clingo.
+### [g1] `model check` exits successfully on a sound context
+Restates: r1@0.29.
+- [r1] When the person runs `model check` on a bounded context that is sound, `model` shall print "0 violations" and exit successfully.
 
-**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file
-problem names the file.
+### [g2] `model check` prints a violation under its rule's code
+Restates: r2@0.29, r3@0.29, spec-integration#r16@0.29.
+- [r2] If the person runs `model check` on a capability that is unnumbered, then `model` shall exit with an error naming `v15a`.
 
-| id | code | what is printed |
-|---|---|---|
-| [r3] | v15a | a requirement bullet in a capability's Behaviour has no `[r<n>]` |
-| [r4] | v15b | two requirements of one capability have the same id |
-| [r5] | v15c | a capability uses an id it lists as retired, or a capability-proposal that is not `merged`, `formulated` or `withdrawn` adds one |
-| [r6] | v15e | a `drafted` or `approved` capability-proposal changes a requirement no capability has |
-| [r7] | v15f | a `formulated` capability-proposal adds or changes a requirement with no scenario, of a capability that is not guarantees |
-| [r8] | v_s3 | a requirement of a capability that is not guarantees has no scenario naming it |
-| [r107] | v_s2 | a scenario not tagged `@deprecated` has more than one `@r<n>` tag, its own and its feature's together |
-| [r10] | v9a, v9c | a part has no `part_of` (v9a), or its `part_of` chain reaches no initiative (v9c) |
-| [r34] | v_k5 | an initiative that is not a capability-change has more than one part directly under it (a capability-change may have several capability-proposals) |
-| [r35] | v_k6 | a capability-proposal argues more than one capability |
-| [r59] | v_d2 | an initiative is `abandoned` while a part of it, at any depth, is neither closed nor `withdrawn` |
-| [r113] | v16a | an initiative dated after 2026-10-23 fulfils no request |
-| [r114] | v_d1 | an initiative is `done` while a request kept in this context, whose asker is this context and whose `part_of` or `source` names the initiative, is not `delivered` |
-| [r119] | v_d3 | a request is `delivered` while the initiative that fulfils it is not `done` |
-| [r120] | v17 | a request neither is part of a job-thread, cites an origin nor is raised for a request |
-| [r116] | v3 | a `delivered` request's resolution names a requirement the spec does not have |
-| [r121] | v18 | an id in this context's files has another context's path on a kind kept in `.shop/work/`, judged from the id alone, other than the request a request is raised for |
-| [r52] | v_t1 | a requirement or a scenario mentions a word its context's glossary lists after `Not:`, named with the word and the term |
-| [r53] | v_t2 | two glossary entries have one term |
-| [r54] | v_t3 | a word one term lists after `Not:` is another term of the context, or the term itself |
-| [r103] | v_e1 | a Behaviour line is in none of EARS's patterns, combines their clauses in an order other than Where, While, then When or If, or has an If clause with no then |
-| [r104] | v_e2 | a Behaviour line has more than one "shall" or more than one sentence |
-| [r106] | v_w4 | a work-item that is not `withdrawn` has no `accepts` and no `check` |
-| [r110] | file problem | a work-item's file name is not `w<n>.md`, or two work-items have one id |
-| [r112] | file problem | a request is not of the form `work request` writes (capability/requests) |
-| [r118] | file problem | an initiative's kind is `job` or `job-path` |
-| [r9] | unresolved | a scenario names a requirement its capability does not have, or a capability rests on a decision that does not exist |
-| [r22] | unresolved | a list names a reference that is not `<capability>#r<n>` (`#behaviour/r<n>` included), with the capability written `capability/<context path>/<name>`, `capability/<name>` or `<name>`, or a range `#r<a>-r<b>` with a greater than b |
-| [r23] | unresolved | a capability-proposal adds or removes an id its capability neither has nor lists as retired, or removes a retired id while not `merged`, `formulated` or `withdrawn`; a proposal that is may name a retired id in `adds`, `changes` or `removes`, one it removes read as that requirement |
-| [r24] | unresolved | a `supersedes`, `source`, `part_of`, `argues`, `under`, `for`, `blocked_by`, `depends_on`, `fixes` or `findings` names nothing in the repository, a node of the wrong kind (`supersedes` needs a design-decision, `under` and `depends_on` a capability, `for`, `blocked_by` and `fixes` a work-item, `findings` a review-finding); or any reference is written `<context name>/<name>`, `decision/<name>` or `obs/<name>` |
-| [r66] | unresolved | a capability-proposal's `adds`, `changes` or `removes` names `term/<term>` the glossary does not have, except one a `merged` or `formulated` proposal removes |
-| [r122] | unresolved | a glossary-proposal's `adds`, `changes` or `removes` names `term/<term>` the glossary does not have, except one an `approved` glossary-proposal removes |
-| [r25] | file problem | `spec/index.md` is missing or has no `id`; a capability's `id` is not `capability/<context path>/<file name>`, it has no `## Behaviour` section, its `retired` lists an entry that is neither `r<n>` nor a number, or its frontmatter has `formulated_as` |
-| [r46] | file problem | a node's `id` is not `<kind>/<context path>/<name>` with its own kind, or `spec/index.md`'s is not `bounded-context/<context path>` |
-| [r26] | file problem | a feature file is not `features/<name>.feature` for a capability `<name>`, two of its scenarios not tagged `@deprecated` share a title, or a scenario is tagged `@holding` |
-| [r124] | file problem | a work directory has no `initiative.md` (the directory named, not the file), an initiative or part has no `id`, a part's kind is not a part kind, `glossary-proposal` being one, a status is missing or not in its kind's lifecycle, an initiative's priority is not a number or its date not `YYYY-MM-DD`, or a work-item that is not `withdrawn` accepts a requirement of a capability that is not guarantees and no scenario names it yet, other than a retired id the work-item accepts while `green` |
-| [r29] | file problem | a decision has no `id` or no `## Decision` section, a record with an `id` has a kind that is not a record kind, a frontmatter value is written as a folded or literal block, or one id names nodes of two kinds |
-| [r49] | file problem | a bullet in `spec/index.md`'s `## Glossary` is not of the form r48 gives |
-| [r61] | file problem | the repository has `spec/decisions.md`, or a `decisions/`, `work/` or `records/` directory at its root, each named with `scripts/migrate` |
+### [g3] Two requirements with one id
+Restates: r4@0.29.
+- [r3] If the person runs `model check` on a capability that is renumbered, then `model` shall exit with an error naming `v15b`.
 
-### Reading
-- [r19] `model` shall read, under `--root` (default the current directory), only `spec/index.md`, `spec/capabilities/*.md`, every `*.feature` under `features/`, every `spec/decisions/*.md` but `index.md` and `README.md`, `.shop/work/<initiative>/*.md`, `.shop/work/requests/*.md`, `.shop/records/observations.md` and any other Markdown under `.shop/records/` whose frontmatter has an `id`.
-- [r20] `model` shall read the `@r<n>` tag of a scenario not tagged `@deprecated` in `features/<capability name>.feature`, its own or its feature's, as the one requirement of that capability the scenario names.
-- [r21] `model` shall read a reference written `<name>#r<n>` or `capability/<name>#r<n>` as a requirement of the capability `capability/<context path>/<name>` in the bounded context, the field fixing the kind where it is written `<name>`.
-- [r18] `model` shall read `<capability>#r<a>-r<b>` in a proposal's or work-item's list as every id from a to b.
-- [r43] `model` shall read a node written `<kind>/<context path>/<name>`, or `<kind>/<name>`, as that node, and a bare `<name>` as one only in a field that fixes the kind (`rests_on`, `supersedes`, `argues`, `under`, `depends_on`) or the capability part of a `#r<n>` reference, the context path being `<owner>/<product>/<context name>` and the bounded context `bounded-context/<context path>`.
-- [r64] `model` shall read a decision's `source`, and not its `by`, as a list of ids, each resolved as r24 says for `source` and naming a node of any kind.
-- [r48] `model` shall read each bullet of `spec/index.md`'s `## Glossary` written `- **<term>**: <one-sentence definition>. Not: <word>, <word>.`, the `Not:` part optional, as a term of the bounded context with the id `term/<context path>/<term>`, the term lowercased with spaces as hyphens, and each word after `Not:` as a word the term avoids.
-- [r51] `model` shall read a requirement or a scenario as mentioning a term or avoided word when it contains it as a whole word, whatever its case, with a plural "s" allowed, outside code spans, double-quoted strings and `@` tags, so that "restore" is no mention of "store" and a line naming the tag `@holding` is no mention of "holding".
+### [g4] A retired id used again
+Restates: r5@0.29.
+- [r4] If the person runs `model check` on a capability that is reusing, then `model` shall exit with an error naming `v15c`.
 
-### Other commands
-- [r13] **When** `model facts` is run, `model facts` shall print the facts read, one a line in clingo's syntax, using only the standard library.
-- [r14] **When** `model decisions` is run, `model decisions` shall write `spec/decisions/index.md` listing every decision in `spec/decisions/` that has an `id`, with its summary, status, what it supersedes and when to revisit it, each linked to its file.
-- [r15] **If** `model decisions --check` finds `spec/decisions/index.md` is not what `model decisions` would write, then `model decisions` shall say so and exit with an error, writing nothing.
-- [r37] **When** `model decisions --check` finds `spec/decisions/index.md` is what `model decisions` would write, `model decisions` shall say the file is current and exit successfully.
-- [r16] **When** `model why <capability>#r<n>` is run, `model why` shall print the requirement's text (or that no capability has it), each capability-proposal that adds, changes or removes it in date order with its status and date, the `part_of` chain to its initiative and the initiative's sources.
-- [r17] **When** no capability-proposal adds or changes the requirement given to `model why`, `model why` shall say so and exit successfully.
-- [r108] **Where** `--json` is given, `model why` shall print its result, the requirement's text and the capability-proposals that trace it, as one JSON object.
-- [r65] **When** `model rules` is run, `model rules` shall print each rule's code and plain label, one a line, the violations first and then the warnings, and exit successfully.
-- [r109] **Where** `--json` is given, `model rules` shall print its result, each rule's code, plain label and kind, as one JSON object.
-- [r105] **If** `model` cannot do what it was asked, then `model` shall exit with an error, say why, and change nothing.
+### [g5] A group with more than one statement
+- [r5] If the person runs `model check` on a requirement group that is compound, then `model` shall exit with an error naming `v15l`.
+
+### [g6] Two groups of a capability that share their features, condition and trigger
+- [r6] If the person runs `model check` on a requirement group that is repeating, then `model` shall exit with an error naming `v15n`.
+
+### [g7] A given line that is not example data
+- [r7] If the person runs `model check` on a requirement group that is unexampled, then `model` shall exit with an error naming `v15m`.
+
+### [g8] A proposal that changes a requirement no capability has
+Restates: r6@0.29.
+- [r8] If the person runs `model check` on a capability-proposal that is reaching, then `model` shall exit with an error naming `v15e`.
+
+### [g9] A formulated proposal that leaves a requirement with no scenario
+Restates: r7@0.29.
+- [r9] If the person runs `model check` on a capability-proposal that is unformulated, then `model` shall exit with an error naming `v15f`.
+
+### [g10] A requirement with no scenario
+Restates: r8@0.29.
+- [r10] If the person runs `model check` on a requirement that is untested, then `model` shall exit with an error naming `v_s3`.
+
+### [g11] A scenario that names more than one requirement
+Restates: r107@0.29.
+- [r11] If the person runs `model check` on a scenario that is overtagged, then `model` shall exit with an error naming `v_s2`.
+
+### [g12] A part with no part_of
+Restates: r10@0.29.
+- [r12] If the person runs `model check` on a work-item that is parentless, then `model` shall exit with an error naming `v9a`.
+
+### [g13] An initiative with more than one first part
+Restates: r34@0.29.
+- [r13] If the person runs `model check` on a `started` initiative that is crowded, then `model` shall exit with an error naming `v_k5`.
+
+### [g14] A capability-proposal that argues more than one capability
+Restates: r35@0.29.
+- [r14] If the person runs `model check` on a capability-proposal that is plural, then `model` shall exit with an error naming `v_k6`.
+
+### [g15] An abandoned initiative with an open part
+Restates: r59@0.29.
+- [r15] While an initiative is `abandoned` and a work-item is open, if the person runs `model check`, then `model` shall exit with an error naming `v_d5`.
+
+### [g16] An initiative that fulfils no request
+Restates: r113@0.29.
+- [r16] If the person runs `model check` on a `started` initiative that is unrequested, then `model` shall exit with an error naming `v16a`.
+
+### [g17] A done initiative with a request of its own not delivered
+Restates: r114@0.29.
+- [r17] If the person runs `model check` on a `done` initiative that is unwaiting, then `model` shall exit with an error naming `v_d1`.
+
+### [g18] A delivered request whose initiative is not done
+Restates: r119@0.29.
+- [r18] While a request is `delivered` and an initiative that fulfils the request is `started`, if the person runs `model check`, then `model` shall exit with an error naming `v_d3`.
+
+### [g19] A request with no origin
+Restates: r120@0.29.
+- [r19] If the person runs `model check` on a request that is unanchored, then `model` shall exit with an error naming `v17`.
+
+### [g20] A delivered request resolved by no requirement of the spec
+Restates: r116@0.29.
+- [r20] If the person runs `model check` on a request that is misresolved, then `model` shall exit with an error naming `v3`.
+
+### [g21] An id with another context's path
+Restates: r121@0.29.
+- [r21] If the person runs `model check` on a work-item that is alien, then `model` shall exit with an error naming `v18d`.
+
+### [g22] A requirement that uses an avoided word
+Restates: r52@0.29.
+- [r22] If the person runs `model check` on a requirement that is avoiding, then `model` shall exit with an error naming `v_t1`.
+
+### [g23] Two glossary entries with one term
+Restates: r53@0.29.
+- [r23] If the person runs `model check` on a term that is duplicated, then `model` shall exit with an error naming `v_t2`.
+
+### [g24] An avoided word that is a term
+Restates: r54@0.29.
+- [r24] If the person runs `model check` on a term that is selfavoiding, then `model` shall exit with an error naming `v_t3`.
+
+### [g25] A requirement that does not parse
+Restates: r103@0.29, r104@0.29.
+- [r25] If the person runs `model check` on a requirement that is unparsed, then `model` shall exit with an error naming `v_p1`.
+
+### [g26] A work-item with no acceptance and no check
+Restates: r106@0.29.
+- [r26] If the person runs `model check` on a work-item that is uncommitted, then `model` shall exit with an error naming `v_w4`.
+
+### [g27] A work-item file not named by its id
+Restates: r110@0.29.
+- [r27] If the person runs `model check` on a work-item that is misnumbered, then `model` shall exit with an error naming the work-item.
+
+### [g28] A request not of the form `work request` writes
+Restates: r112@0.29.
+- [r28] If the person runs `model check` on a request that is misformed, then `model` shall exit with an error naming the request.
+
+### [g29] An initiative of a job's kind
+Restates: r118@0.29.
+- [r29] If the person runs `model check` on a `started` initiative that is jobbed, then `model` shall exit with an error naming the initiative.
+
+### [g30] A scenario that names a requirement its capability does not have
+Restates: r9@0.29.
+- [r30] If the person runs `model check` on a scenario that is misreferring, then `model` shall exit with an error naming the scenario.
+
+### [g31] A reference not written as a requirement id
+Restates: r22@0.29.
+- [r31] If the person runs `model check` on a work-item that is misreferenced, then `model` shall exit with an error naming the work-item.
+
+### [g32] A proposal that adds an id its capability does not have
+Restates: r23@0.29.
+- [r32] If the person runs `model check` on a capability-proposal that is dangling, then `model` shall exit with an error naming the capability-proposal.
+
+### [g33] A field that names nothing
+Restates: r24@0.29.
+- [r33] If the person runs `model check` on a work-item that is unresolving, then `model` shall exit with an error naming the work-item.
+
+### [g34] A capability-proposal that names a term the glossary does not have
+Restates: r66@0.29.
+- [r34] If the person runs `model check` on a capability-proposal that is termless, then `model` shall exit with an error naming the capability-proposal.
+
+### [g35] A glossary-proposal that names a term the glossary does not have
+Restates: r122@0.29.
+- [r35] If the person runs `model check` on a glossary-proposal that is termless, then `model` shall exit with an error naming the glossary-proposal.
+
+### [g36] A capability not named by its file
+Restates: r25@0.29.
+- [r36] If the person runs `model check` on a capability that is misnamed, then `model` shall exit with an error naming the capability.
+
+### [g37] A node whose id is not of its kind
+Restates: r46@0.29.
+- [r37] If the person runs `model check` on a work-item that is misidentified, then `model` shall exit with an error naming the work-item.
+
+### [g38] A feature file of no capability
+Restates: r26@0.29.
+- [r38] If the person runs `model check` on a feature that is misfiled, then `model` shall exit with an error naming the feature.
+
+### [g39] A work directory with no initiative
+Restates: r124@0.29.
+- [r39] If the person runs `model check` on a work-item that is homeless, then `model` shall exit with an error naming the work-item.
+
+### [g40] A decision with no id or no Decision section
+Restates: r29@0.29.
+- [r40] If the person runs `model check` on a design-decision that is headless, then `model` shall exit with an error naming the design-decision.
+
+### [g41] A glossary bullet in no form of a term entry
+Restates: r48@0.29, r49@0.29.
+- [r41] If the person runs `model check` on a term that is malformed, then `model` shall exit with an error naming the term.
+
+### [g42] A repository not on the final layout
+Restates: r61@0.29.
+- [r42] If the person runs `model check` on a bounded context that is unmigrated, then `model` shall exit with an error naming `scripts/migrate`.
+
+### [g43] A warning leaves the exit as it is
+Restates: r11@0.29.
+- [r43] When the person runs `model check` on an observation that is uncited, `model` shall print `w_uncited_obs` and exit successfully.
+
+### [g44] A context with no job has no unserved capability
+Restates: r111@0.29.
+- [r44] When the person runs `model check`, `model` shall not print `w_unserved_cap`.
+
+### [g45] A formulated capability-proposal is closed for a done initiative
+Restates: r36@0.29.
+- [r45] While an initiative is `done` and a capability-proposal part of the initiative is `formulated`, when the person runs `model check`, `model` shall not print `v_d1`.
+
+### [g46] An approved glossary-proposal is closed for a done initiative
+Restates: r123@0.29.
+- [r46] While an initiative is `done` and a glossary-proposal part of the initiative is `approved`, when the person runs `model check`, `model` shall not print `v_d1`.
+
+### [g47] `model check` tries again under an interpreter that has clingo
+Restates: r55@0.29.
+- [r47] While an interpreter is clingoless, when the person runs `model check`, `model` shall print "0 violations".
+
+### [g48] No interpreter has clingo
+Restates: r12@0.29.
+- [r48] While an interpreter is unfound, if the person runs `model check`, then `model` shall exit with an error naming "pip install clingo".
+
+### [g49] `model facts` prints the facts
+Restates: r13@0.29.
+- [r49] When the person runs `model facts`, `model` shall print every fact.
+
+### [g50] `model decisions` writes the decisions index
+Restates: r14@0.29, spec-integration#r22@0.29.
+- [r50] When the person runs `model decisions`, `model` shall write a decisions index.
+
+### [g51] `model decisions --check` refuses a stale index
+Restates: r15@0.29.
+- [r51] Where `--check` is given, if the person runs `model decisions` on a decisions index that is stale, then `model` shall exit with an error naming the decisions index and change nothing.
+
+### [g52] `model decisions --check` passes a current index
+Restates: r37@0.29.
+- [r52] Where `--check` is given, when the person runs `model decisions` on a decisions index, `model` shall exit successfully.
+
+### [g53] `model why` traces a requirement to the proposals that add it
+Restates: r16@0.29, r17@0.29.
+- [r53] When the person runs `model why` on a requirement, `model` shall print the requirement and every capability-proposal that adds the requirement and exit successfully.
+
+### [g54] `model rules` prints every rule
+Restates: r65@0.29.
+- [r54] When the person runs `model rules`, `model` shall print every rule and exit successfully.
 
 ## Implementation, may change
-- `scripts/model.lp` is grammar.md v3 sections 1, 3 and 4 in clingo, with FIX notes where grammar.md does not
-  compile as written; facts use grammar.md's relation names.
-- Each rule's plain label is a fact `label("<code>", "<label>")` beside the rule in `model.lp`, the one place it
-  is written; `check` and `rules` read the labels from the solve. A unit test fails when a relation `model.lp`
-  shows has no label or two.
+- `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a
+  fact `label("<code>", "<label>")` beside the rule, the one place it is written; `check` and `rules` read the labels
+  from the solve, and a unit test fails when a relation has no label or two.
+- `model` reads, under `--root` (default the current directory), only `spec/index.md`, `spec/universal.md`,
+  `spec/restated.json`, `spec/capabilities/*.md`, every `*.feature` under `features/`, every `spec/decisions/*.md` but
+  `index.md` and `README.md`, `.shop/work/<initiative>/*.md`, `.shop/work/requests/*.md`,
+  `.shop/records/observations.md` and any other Markdown under `.shop/records/` whose frontmatter has an `id`.
+- References: `<name>#r<n>` or `capability/<name>#r<n>` is a requirement of `capability/<context path>/<name>`;
+  `<capability>#r<a>-r<b>` in a list is every id from a to b; `<cap>#r<n>@0.29` is resolved through
+  `spec/restated.json`. A node is `<kind>/<context path>/<name>` or `<kind>/<name>`, and a bare `<name>` only in a
+  field that fixes the kind (`rests_on`, `supersedes`, `argues`, `under`, `depends_on`) or the capability part of a
+  reference. A decision's `source`, and not its `by`, is a list of ids.
+- The glossary of `spec/index.md` (and each capability's `## Terms`) is read by `spec_lexicon` where the index is
+  codified; a term is `term/<context path>/<term>`, and each word after `Not:` a word it avoids. A requirement or a
+  scenario mentions a term or avoided word when it contains it as a whole word, whatever its case, with a plural "s"
+  allowed, outside code spans, double-quoted strings and `@` tags.
+- A scenario's `@g<n>` tag names the group that generates it, and its `@r<n>` tags the group's requirements.
 - Output: `<code>  <label>  (<count>)` above a violated relation's rows; `warning <code>  <label>  (<count>)`;
-  `rules` prints `<code>  <label>`. `--json` adds `"labels": {code: label}` for the codes it prints.
+  `rules` prints `<code>  <label>`, the violations first and then the warnings. `--json` adds `"labels": {code: label}`
+  for the codes it prints, and `check --json` exits as it would without `--json`.
 - Without `--json`, `model check` ends with the counts of violations, warnings, unresolved references and file
   problems. `--limit <n>` (default 10) prints at most n rows of each violated relation and how many more there are.
-- A file problem for `@holding` names the scenario's title too. `model decisions` prints the file it wrote.
-  `model why` given an argument that is not a requirement reference exits 2.
+- If `import clingo` fails, `model check` tries again, once, under the first interpreter that has clingo of
+  `$SHOPSYSTEM_MODEL_PYTHON`, each `python3` on `PATH` outside the active virtualenv's `bin/`,
+  `/usr/local/bin/python3` and `/usr/bin/python3`, in that order; with none, it names each one it tried.
+- An initiative may be `done` when its parts are closed: a `formulated` capability-proposal, an `approved`
+  glossary-proposal and any `withdrawn` part count as closed.
+- `model facts` prints the facts, one a line in clingo's syntax, using only the standard library.
+- `model decisions` writes `spec/decisions/index.md` listing every decision in `spec/decisions/` that has an `id`,
+  with its summary, status, what it supersedes and when to revisit it, each linked to its file; `--check` says
+  whether the file is current. `model why <capability>#r<n>` prints the requirement's text (or that no capability has
+  it), each capability-proposal that adds, changes or removes it in date order with its status and date, the
+  `part_of` chain to its initiative and the initiative's sources; given an argument that is not a requirement
+  reference it exits 2.
 - Exit code: 0 success; 1 a violation, unresolved reference or file problem found, or a decisions index that is
   not current; 2 no interpreter has clingo, or bad usage.
-- `model facts` prints, for each glossary entry, a `node` fact of kind `term`, a `term_of` fact naming the
-  bounded context and an `avoid` fact for each word after its `Not:`, and a `mentions` fact for each mention r51
-  reads.
-- A work-item's `accepts` facts are written from its `accepts` field, whether or not a scenario names the
-  requirement (r106).
-- `withdrawn` is in the lifecycle of a capability-proposal and of a work-item.
-- Node ids: the bounded-context is spec/index.md's `id`; a requirement without an id is `<capability>#line<k>`;
-  a scenario is `<feature path>:<title>`.
-- The frontmatter reader is a YAML subset: scalars, `[a, b]` lists and `- x` block lists.
-- A decision's `source` gives no `source` fact (grammar.md's `source` is an initiative's); its ids are only
-  resolved.
-- `model decisions` links each row to `<file name>`, relative to `spec/decisions/index.md`.
 
 ## Not yet
 - Product-level artifacts (jobs, the context-map, seams, pins) read from a product repository — trigger: a second bounded context is verified together with this one.
+
+## Dropped
+- r18@0.29: the reading of a range is `model`'s implementation, kept under Implementation, may change.
+- r19@0.29: the files `model` reads are its implementation, kept under Implementation, may change.
+- r20@0.29: a scenario's tags are read as design model v5's generates (C4, C6), kept under Implementation, may change.
+- r21@0.29: the reading of a reference is `model`'s implementation, kept under Implementation, may change.
+- r43@0.29: the reading of a node's id is `model`'s implementation, kept under Implementation, may change.
+- r51@0.29: what counts as a mention is `model`'s implementation, kept under Implementation, may change.
+- r64@0.29: the reading of a decision's source is `model`'s implementation, kept under Implementation, may change.
+- r105@0.29: restated U3 (a refused command exits with an error and changes nothing).
+- r33@0.29: restated U8 (`--json` prints one JSON object), for `model check`.
+- r108@0.29: restated U8 (`--json` prints one JSON object), for `model why`.
+- r109@0.29: restated U8 (`--json` prints one JSON object), for `model rules`.

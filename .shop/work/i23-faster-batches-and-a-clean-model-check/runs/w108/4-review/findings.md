@@ -12,7 +12,7 @@ This is the one commit the implementer's `result.json` lists. Files: `features/m
 
 ## Changes under features/
 
-The only change removes the four scenarios that the work-item's Retires section lists (delivery#r17), at the old lines 364-372 (@r4), 381-389 (@r9), 551-565 (@r30) and 582-589 (@r31). Each was `@deprecated`. `test_migration_tools.py` binds through `scenarios()`, so no binding needed to change. Nothing else under `features/` changed.
+The only change removes the four scenarios that the work-item's Retires section lists (delivery#r17@0.29), at the old lines 364-372 (@r4), 381-389 (@r9), 551-565 (@r30) and 582-589 (@r31). Each was `@deprecated`. `test_migration_tools.py` binds through `scenarios()`, so no binding needed to change. Nothing else under `features/` changed.
 
 ## Removed and weakened tests
 

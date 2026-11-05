@@ -1,6 +1,6 @@
 # w233 research: supervision r211
 
-Accepted: supervision#r211. Scenario: features/supervision.feature:1373-1386 (Outline, examples before, after).
+Accepted: supervision#r211@0.29. Scenario: features/supervision.feature:1373-1386 (Outline, examples before, after).
 Tools: `tools refs` worked (by refs). `tools tests-of` has no map (`tools map` not made): tests listed by search.
 
 ## 1. Why each scenario is red today

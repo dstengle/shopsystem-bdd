@@ -2,7 +2,7 @@
 
 ## 1. What goes green
 
-- `design-model-check#r111`: scenario "a bounded context with no job gets no unserved-capability warning" (`features/design-model-check.feature:75`).
+- `design-model-check#r111@0.29`: scenario "a bounded context with no job gets no unserved-capability warning" (`features/design-model-check.feature:75`).
   Red today because:
   - its Given "a bounded context with one capability and no job" has no step definition;
   - its Then "the output does not give w_unserved_cap" has no step definition either;
@@ -21,12 +21,12 @@ The researcher's "on the path, unchanged" files stay unchanged: `scripts/model_c
 
 ## 3. Decisions
 
-- **D1: the rule is gated on a job, not removed** (`design-model-check#r111`).
+- **D1: the rule is gated on a job, not removed** (`design-model-check#r111@0.29`).
   - r111 is worded "While the bounded context has no job". So the literal reading wins: the rule holds only while at least one job node exists, and is otherwise kept as it is. This is the researcher's reading A.
   - The narrator sees the same thing under reading B, which drops the warning outright. Under r19 no job is ever read, so neither reading ever prints `w_unserved_cap` today, and this is no question for the person.
   - Gating keeps the rule correct for the "Not yet" trigger: product-level jobs read when a second bounded context is verified together with this one.
   - Also rests on `design-decision/model-check-solves-with-clingo`: the gate is a clingo condition in `model.lp`, not a filter in Python.
-- **D2: the label stays** (`design-model-check#r65`, `#r109`). `model rules` still lists `w_unserved_cap` with its label and kind. The existing unit test that every shown relation has one label stays sound.
+- **D2: the label stays** (`design-model-check#r65@0.29`, `#r109`). `model rules` still lists `w_unserved_cap` with its label and kind. The existing unit test that every shown relation has one label stays sound.
 - **D3: the new Then is generic over the code** ("the output does not give {code}"), alongside the existing "gives" steps of `design_model_check_then.py`. This is a test-side choice and is not observable by the narrator.
 
 ## 4. Tests the decisions break

@@ -1,4 +1,4 @@
-# Research of w2 (accepts work-queue#r1, r7)
+# Research of w2 (accepts work-queue#r1@0.29, r7)
 
 Tools: `tools map` never made (no map; it runs the suite). `tests-of` and `untested` not used: by search for tests.
 `tools refs` is blind to `scripts/work` (it imports `workqueue` by sys.path): `refs workqueue.add` gives 0, text search gives scripts/work:15.

@@ -14,7 +14,7 @@ Files: `features/work-queue.feature` (-9), `scripts/workqueue_answer.py` (+5/-2)
 
 ## Changes under features/
 
-- Removed only the scenario "answer with a newline in it is refused, and nothing changes (deprecated)" (@r15 @deprecated). The work-item's `## Retires` lists it under delivery#r17. `test_work_queue.py` binds the feature through `scenarios()`, so the binding is gone with the scenario, and its own When step ("with an answer of two lines" with nothing after it) was removed with it. Nothing else under `features/` changed. This removal is allowed.
+- Removed only the scenario "answer with a newline in it is refused, and nothing changes (deprecated)" (@r15 @deprecated). The work-item's `## Retires` lists it under delivery#r17@0.29. `test_work_queue.py` binds the feature through `scenarios()`, so the binding is gone with the scenario, and its own When step ("with an answer of two lines" with nothing after it) was removed with it. Nothing else under `features/` changed. This removal is allowed.
 
 ## Removed and weakened tests
 

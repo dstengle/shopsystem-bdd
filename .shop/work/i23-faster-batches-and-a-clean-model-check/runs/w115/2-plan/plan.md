@@ -6,10 +6,10 @@ Work from the worktree's HEAD. It already holds the r57, r58 and r59 commits and
 
 None of the accepted scenarios is red today. The researcher ran all 8 and they pass (notes §1).
 
-- batch-measurement#r47: "a <file kind> of a shape measure does not know is refused, naming it", rows session.json and transcript. Green already.
-- batch-measurement#r58: "a transcript line with <line break> inside a JSON string is read as one line", rows U+2028, U+2029 and U+0085. Green already.
-- batch-measurement#r59: "a time ending in Z in <file> is read as a time in UTC", rows log.jsonl and a transcript. Green already.
-- batch-measurement#r57: "a stage whose session.json is empty is given without its session's figures, named as such". Green already.
+- batch-measurement#r47@0.29: "a <file kind> of a shape measure does not know is refused, naming it", rows session.json and transcript. Green already.
+- batch-measurement#r58@0.29: "a transcript line with <line break> inside a JSON string is read as one line", rows U+2028, U+2029 and U+0085. Green already.
+- batch-measurement#r59@0.29: "a time ending in Z in <file> is read as a time in UTC", rows log.jsonl and a transcript. Green already.
+- batch-measurement#r57@0.29: "a stage whose session.json is empty is given without its session's figures, named as such". Green already.
 
 The work left is the w110 review's finding against r57, given in the work-item: an empty session.json marks every run of that stage with the same name. Probe A (notes §2, D1) shows it. Two research runs of cart-1 are in the log, the first with an empty session.json and the second with figures. Both stages come back with `session_json` "empty", and the second also carries turns 14 and cost 0.42. No accepted scenario has two runs of one stage, so the red test for this is a new script test (part 2 and decision 2).
 
@@ -28,14 +28,14 @@ All files stay well under 300 lines (notes §7: measure_read 141, measure_build 
 
 ## 3. Decisions
 
-1. **How an empty run directory is linked to its stage** (notes Q5). Rests on batch-measurement#r57 ("a stage's session.json is empty" names that stage) and on the work-item's ruling that the empty file is that run's alone.
+1. **How an empty run directory is linked to its stage** (notes Q5). Rests on batch-measurement#r57@0.29 ("a stage's session.json is empty" names that stage) and on the work-item's ruling that the empty file is that run's alone.
    - Within each work-item and stage, pair the run directories `<k>-<stage>` (in ascending `k`) with that stage's start rows that have an end (in log order).
    - The empty directory's place in that order gives the start row, and through it the session, that is named empty.
    - Why this holds: `work run` creates a run directory and writes its session.json only just before it logs the stage's end, under one lock. A work-item's stages run one after another, so directories of one stage are made in the order their ends are logged (`supervise_worker.py` worker and run_dir, read).
    - The other reading in Q5, having `work run` record the session id in the run directory before dispatch, changes `supervise_worker.py`. That file belongs to another capability (supervision) and is outside this work-item, so it is not taken.
    - The narrator sees the same thing under either way of linking: the run whose file is empty is named, and no other run is.
-2. **The red test is a script test, not a new scenario** (notes Q1). Rests on batch-measurement#r57 as accepted. The finding is a defect against an accepted requirement, not a new behaviour, so the accepted features are left as they are.
-3. **`sessions` in the totals counts only sessions that gave figures.** This is the work-item's ruling (reading B, 2026-10-23) with batch-measurement#r42. Probe A already gives 1, and the new test pins it.
+2. **The red test is a script test, not a new scenario** (notes Q1). Rests on batch-measurement#r57@0.29 as accepted. The finding is a defect against an accepted requirement, not a new behaviour, so the accepted features are left as they are.
+3. **`sessions` in the totals counts only sessions that gave figures.** This is the work-item's ruling (reading B, 2026-10-23) with batch-measurement#r42@0.29. Probe A already gives 1, and the new test pins it.
 4. **Out of scope, unchanged:**
    - lowercase `z` (Q2, D3): r59 names only `Z`;
    - a session.json holding only whitespace (Q3, D4): r57's "empty" is left as the code reads it today, zero bytes;

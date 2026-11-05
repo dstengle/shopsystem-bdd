@@ -5,7 +5,7 @@ part_of: initiative/i8
 status: formulated
 date: 2026-10-21
 argues: [migration-tools]
-changes: [migration-tools#r3]
+changes: [migration-tools#r3@0.29]
 ---
 
 # migration-tools: a held scenario renamed and rebound

@@ -10,11 +10,11 @@
 ## Range and work-items
 
 - **Range:** `4b7dca6c..3e969c93` on `i25-review-findings-to-implementation`. Head is `3e969c93` ("work: w172 done -> green").
-- **w167** (supervision#r92): `12f0b295`
-- **w168** (work-queue#r30): `fa6929fb`
-- **w169** (spec-integration#r43, guarantees): `50788670`
-- **w170** (supervision#r102, r103, r104): `bcc41527`, `55eea183`, `2e0f2555`
-- **w171** (supervision#r102, the fix of w170's task-review finding): `a414d2bd`
+- **w167** (supervision#r92@0.29): `12f0b295`
+- **w168** (work-queue#r30@0.29): `fa6929fb`
+- **w169** (spec-integration#r43@0.29, guarantees): `50788670`
+- **w170** (supervision#r102@0.29, r103, r104): `bcc41527`, `55eea183`, `2e0f2555`
+- **w171** (supervision#r102@0.29, the fix of w170's task-review finding): `a414d2bd`
 - **w172** (the fix of branch review 1, which accepts r102, r103 and r104): `a1ff989a`
 - **Commits outside any work-item's claimed..done span:**
   - the spec apply `f85f0d23`
@@ -131,7 +131,7 @@ No check is unverified.
 ### 3. Minor, w171, observation: the deprecated @r102 scenario remains, though its replacement's work-item is green
 - **Where:** `features/supervision.feature:1239-1250`, with its step `other_initiative` (`tests/scenarios/supervision_integrate_steps.py:144-155`).
 - **What is wrong:** w171 and w172, which deliver the replacement at `:1252`, are both green. Neither has a `## Retires`.
-- **Fix:** a work-item accepting supervision#r102 whose `## Retires` lists the deprecated scenario. It removes the scenario, its binding and `other_initiative`.
+- **Fix:** a work-item accepting supervision#r102@0.29 whose `## Retires` lists the deprecated scenario. It removes the scenario, its binding and `other_initiative`.
 
 ### 4. Minor, w167, w170 and w172, drop: ruff errors on lines the branch added or touched
 - **Where:** the 5 errors listed under Checks.

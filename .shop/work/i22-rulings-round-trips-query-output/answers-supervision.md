@@ -5,8 +5,8 @@ part_of: initiative/i22
 status: formulated
 date: 2026-10-23
 argues: [supervision]
-adds: [supervision#r57-r58]
-changes: [supervision#r5, supervision#r26, supervision#r32, supervision#r36, supervision#r37]
+adds: [supervision#r57@0.29, supervision#r58@0.29]
+changes: [supervision#r5@0.29, supervision#r26@0.29, supervision#r32@0.29, supervision#r36@0.29, supervision#r37@0.29]
 removes: []
 ---
 

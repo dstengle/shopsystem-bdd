@@ -4,10 +4,10 @@
 
 None of the accepted scenarios is red today. The research ran all 11 accepted test ids and all 11 pass. This work-item retires deprecated scenarios. It adds no behaviour.
 
-- supervision#r121: "a kept branch review whose result gives <outcome> and no question is taken as listing nothing to fix now" (DONE, PARTIAL, BLOCKED, NEEDS_CONTEXT). It passes because `lists_nothing` in `supervise_analysis.py` already takes a missing question as nothing to fix.
-- supervision#r75: "an initiative whose work-items are <work-items> and whose kept branch review lists nothing to fix now <measured>" (is measured, is not measured). It passes.
-- supervision#r105: "an initiative whose work-items are <work-items>, its delivery otherwise closed, <set>" (is set done, is not set done). It passes.
-- supervision#r120: "under a delegation, the session answering a reviewer's question is asked to say in its result whether its answer asks for a change or accepts the work-item as it is". It passes because `VERDICT` is appended to a reviewer's answer brief in `supervise_answers.py`.
+- supervision#r121@0.29: "a kept branch review whose result gives <outcome> and no question is taken as listing nothing to fix now" (DONE, PARTIAL, BLOCKED, NEEDS_CONTEXT). It passes because `lists_nothing` in `supervise_analysis.py` already takes a missing question as nothing to fix.
+- supervision#r75@0.29: "an initiative whose work-items are <work-items> and whose kept branch review lists nothing to fix now <measured>" (is measured, is not measured). It passes.
+- supervision#r105@0.29: "an initiative whose work-items are <work-items>, its delivery otherwise closed, <set>" (is set done, is not set done). It passes.
+- supervision#r120@0.29: "under a delegation, the session answering a reviewer's question is asked to say in its result whether its answer asks for a change or accepts the work-item as it is". It passes because `VERDICT` is appended to a reviewer's answer brief in `supervise_answers.py`.
 
 Deprecated scenarios retired (the work-item's Retires section), each removed with `features retire`:
 - supervision @r75: "when every work-item is green or withdrawn and the kept branch review lists nothing to fix now, `measure initiative` is run on the initiative (deprecated)"
@@ -43,7 +43,7 @@ No script changes. The research found no file over 300 lines, and removing these
   - work-queue r23: same steps as the live r23 scenario.
   - work-queue r9: same steps as the live r9 scenario, including the "add i1 w1" When step and the "with no work-item w1" Given step.
   - work-queue r1: its other steps are shared with the live r9 and r1 scenarios.
-- **No behaviour decision is taken.** supervision#r75, #r105, #r120 and #r121 are already met by the code, and the work-item asks only for the retirements.
+- **No behaviour decision is taken.** supervision#r75@0.29, #r105, #r120 and #r121 are already met by the code, and the work-item asks only for the retirements.
 
 ## 4. Tests the decisions break
 

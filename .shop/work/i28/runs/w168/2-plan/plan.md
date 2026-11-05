@@ -1,8 +1,8 @@
-# w168 plan: answer named by its initiative (work-queue#r30)
+# w168 plan: answer named by its initiative (work-queue#r30@0.29)
 
 ## 1. What goes green
 
-- **work-queue#r30**: features/work-queue.feature, Scenario Outline "answer named by its initiative answers the <kind> <name> of that initiative". It has two rows:
+- **work-queue#r30@0.29**: features/work-queue.feature, Scenario Outline "answer named by its initiative answers the <kind> <name> of that initiative". It has two rows:
   - `capability-proposal p1` (i1 also has a capability-proposal p1 awaiting-answer);
   - `work-item w2` (i1 has work-item w1 awaiting-answer).
 
@@ -21,10 +21,10 @@ Removed from the researcher's set:
 
 ## 3. Decisions
 
-1. **The split happens in `workqueue_answer.answer`, not in `workqueue.find`.** If `find` accepted `/`, `work retry` and `work withdraw` would accept `<initiative>/<name>` without any requirement asking for it. Those commands are named by a bare work-item (work-queue#r8, #r10), and only `work answer` gets the prefixed form (work-queue#r30). The choice also keeps `scripts/workqueue.py`, which has 10 lines of room, under the size limit (CLAUDE.md).
-2. **Both parts are checked the way `work add` checks an initiative.** The initiative part and the name part each go through `workqueue.entry`, and the initiative must exist as a directory under `.shop/work/`. A name with no file `<name>.md` in that initiative is refused the same way `agrees` refuses a missing file today. Any failure exits with an error that says why and changes nothing (work-queue#r7). This keeps the path checks the bare form gets from `find` (notes §5), so `../i1/w1`, `i1/`, `/w1` and `i1/w1/extra` are still refused. The one-match check is unnecessary because the initiative is named, and that is what r30 is for.
+1. **The split happens in `workqueue_answer.answer`, not in `workqueue.find`.** If `find` accepted `/`, `work retry` and `work withdraw` would accept `<initiative>/<name>` without any requirement asking for it. Those commands are named by a bare work-item (work-queue#r8@0.29, #r10), and only `work answer` gets the prefixed form (work-queue#r30@0.29). The choice also keeps `scripts/workqueue.py`, which has 10 lines of room, under the size limit (CLAUDE.md).
+2. **Both parts are checked the way `work add` checks an initiative.** The initiative part and the name part each go through `workqueue.entry`, and the initiative must exist as a directory under `.shop/work/`. A name with no file `<name>.md` in that initiative is refused the same way `agrees` refuses a missing file today. Any failure exits with an error that says why and changes nothing (work-queue#r7@0.29). This keeps the path checks the bare form gets from `find` (notes §5), so `../i1/w1`, `i1/`, `/w1` and `i1/w1/extra` are still refused. The one-match check is unnecessary because the initiative is named, and that is what r30 is for.
 3. **The printed line stays `<name as given> <status>`.** r30 does not cover what `work answer` prints, and the notes found no assertion on it. Leaving it unchanged takes no decision about what the narrator sees.
-4. **The bare form stays as it is.** That includes its refusal when a name exists in more than one initiative (notes probe C1). work-queue#r13, #r24 and #r14 keep naming the bare `<work-item>` / `<capability-proposal>`.
+4. **The bare form stays as it is.** That includes its refusal when a name exists in more than one initiative (notes probe C1). work-queue#r13@0.29, #r24 and #r14 keep naming the bare `<work-item>` / `<capability-proposal>`.
 5. Once resolved, the prefixed form behaves exactly like the bare form: the asked-from transition (r14), the line-break refusal (r15) and the commit (r9). This follows from r30, which says "shall answer", meaning the same answer.
 
 ## 4. Tests the decisions break

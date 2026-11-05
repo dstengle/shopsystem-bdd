@@ -55,7 +55,7 @@ def request_of(initiative, root):
     try:
         workqueue.read(path, root)
         head = path.read_text(encoding="utf-8").split("\n---", 1)[0]
-        values = [v.strip() for v in re.findall(r"^fulfils:[ \t]*(.*)$", head, re.M) if v.strip()]
+        values = [v.strip() for v in re.findall(r"^fulfils:[ \t]*(.*)$", head, re.MULTILINE) if v.strip()]
         idents = {v.rsplit("/", 1)[-1] for value in values for v in re.split(r"[,\s]+", value) if v}
         if not idents:
             return None

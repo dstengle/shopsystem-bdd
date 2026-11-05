@@ -8,7 +8,7 @@ Worktree: /tmp/work-run-i25-13i_gdaw/w173-4-plan
 Branch: none (a detached checkout)
 Work-item branch: work/w173
 Answers the person gave, each with the question it answers:
-- Question: supervision#r98 has no accepted scenario: features/supervision.feature has no @r98 tag. The i25 supervision formulate round returned r98 as a question (conflict with the then-unapplied work-queue r14) and committed nothing, yet the capability-proposal is marked formulated. Without a scenario, w173 cannot be shown red or go green ('--work-item w173' is refused under r56). The formulate round needs to run again for supervision r98 and write its scenario, with w174 (work-queue r26-r28, the reviewer's answer reaching ready through --change) landing first. Then w173 can be planned again.
+- Question: supervision#r98@0.29 has no accepted scenario: features/supervision.feature has no @r98 tag. The i25 supervision formulate round returned r98 as a question (conflict with the then-unapplied work-queue r14) and committed nothing, yet the capability-proposal is marked formulated. Without a scenario, w173 cannot be shown red or go green ('--work-item w173' is refused under r56). The formulate round needs to run again for supervision r98 and write its scenario, with w174 (work-queue r26-r28, the reviewer's answer reaching ready through --change) landing first. Then w173 can be planned again.
   Answer: 2026-10-25: r98's scenario is now formulated (46fef129, dispatched by the coordinator under the person's delegation 2026-10-25); plan and implement it against that scenario.
 
 Read (paths in your worktree):

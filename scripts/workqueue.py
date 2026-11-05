@@ -245,7 +245,7 @@ def withdraw(root, name):
 
 def moved_to(root, path, name, after, message, by):
     """Move work-item `name` to `after` and commit; when that leaves its initiative done, mark and commit that too (r23)."""
-    import workqueue_done     # imports this module, so it is read here
+    import workqueue_done  # imports this module, so it is read here
     done = workqueue_done.becomes(root, path.parent, {name: after})
     rels = rels_of(root, path) + ([str((path.parent / "initiative.md").relative_to(root))] if done else [])
 

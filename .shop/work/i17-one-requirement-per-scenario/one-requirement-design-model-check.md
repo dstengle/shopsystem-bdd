@@ -5,8 +5,8 @@ part_of: initiative/i17
 status: formulated
 date: 2026-10-21
 argues: [design-model-check]
-adds: [design-model-check#r107]
-changes: [design-model-check#r1, design-model-check#r2, design-model-check#r11, design-model-check#r12, design-model-check#r15, design-model-check#r17, design-model-check#r20, design-model-check#r33, design-model-check#r37, design-model-check#r65, design-model-check#r105]
+adds: [design-model-check#r107@0.29]
+changes: [design-model-check#r1@0.29, design-model-check#r2@0.29, design-model-check#r11@0.29, design-model-check#r12@0.29, design-model-check#r15@0.29, design-model-check#r17@0.29, design-model-check#r20@0.29, design-model-check#r33@0.29, design-model-check#r37@0.29, design-model-check#r65@0.29, design-model-check#r105@0.29]
 removes: []
 ---
 

@@ -1,8 +1,8 @@
-# Plan: design-model-check-3 (design-model-check#r110)
+# Plan: design-model-check-3 (design-model-check#r110@0.29)
 
 ## 1. What goes green
 
-- **design-model-check#r110**: the file problem when a work-item's file name is not `w<n>.md`, or when two work-items have one id.
+- **design-model-check#r110@0.29**: the file problem when a work-item's file name is not `w<n>.md`, or when two work-items have one id.
   - Scenario Outline "a work-item not named w<n>.md, or two work-items with one id, is a file problem", in `features/design-model-check.feature`, with four rows:
     1. `.shop/work/i1/fix-login.md` with the id w3: prints a file problem
     2. `.shop/work/i1/w3.md` with the id w3: does not print one

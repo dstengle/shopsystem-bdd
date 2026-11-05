@@ -10,18 +10,18 @@ Work-items, and the commits between each one's `ready -> claimed` and `claimed -
 
 | work-item | status | commits | accepts |
 |---|---|---|---|
-| w107 | green | 753c5a6 | analysis-tools#r7 |
-| w108 | green | e00780e | migration-tools#r4 r9 r30 r31 |
-| w109 | green | 4232bc6 | supervision#r1 r20 r59-r63 |
-| w110 | withdrawn (after its review) | 5d88909, aecf1e7, 2e956ab (still on the branch; w115 accepts the same four ids and fixes its review finding) | batch-measurement#r47 r57-r59 |
-| w113 | green | a3cb90e | work-queue#r15 |
-| w114 | green | 8f76e50 | analysis-tools#r58 |
-| w115 | green | 4ebe93b | batch-measurement#r47 r57-r59 |
-| w116 | green | 495a420 | design-model-check#r27 |
-| w117 | green | aaeea80 | design-model-check#r106 |
-| w118 | green | 8a32a57 | design-model-check#r111 |
+| w107 | green | 753c5a6 | analysis-tools#r7@0.29 |
+| w108 | green | e00780e | migration-tools#r4@0.29 r9 r30 r31 |
+| w109 | green | 4232bc6 | supervision#r1@0.29 r20 r59-r63 |
+| w110 | withdrawn (after its review) | 5d88909, aecf1e7, 2e956ab (still on the branch; w115 accepts the same four ids and fixes its review finding) | batch-measurement#r47@0.29 r57-r59 |
+| w113 | green | a3cb90e | work-queue#r15@0.29 |
+| w114 | green | 8f76e50 | analysis-tools#r58@0.29 |
+| w115 | green | 4ebe93b | batch-measurement#r47@0.29 r57-r59 |
+| w116 | green | 495a420 | design-model-check#r27@0.29 |
+| w117 | green | aaeea80 | design-model-check#r106@0.29 |
+| w118 | green | 8a32a57 | design-model-check#r111@0.29 |
 | w101-w106, w112 | withdrawn | none (no commit between claimed and awaiting-ruling/failed) | |
-| w111 | withdrawn | none inside work run; c8eb828 and 6559731 were delivered outside it (F4) | delivery#r17 r18 |
+| w111 | withdrawn | none inside work run; c8eb828 and 6559731 were delivered outside it (F4) | delivery#r17@0.29 r18 |
 
 The remaining commits are the initiative's formulation and records (spec:, features:, `work add`, `work:` notes). There are also unrelated records and design notes (b61404b…a1fffa7, 749ed8a, f9a5ed2, c29a521) and i22 housekeeping (1a7dc75); see F5.
 
@@ -137,10 +137,10 @@ None. One caveat: ruff 0.17.0 (w114's pin) is the version installed here, and I 
 ### F4. Important, w111 (withdrawn), observation: skill changes delivered outside `work run`
 
 - **Where**: c8eb828 and 6559731 (skills/delivering-an-initiative/SKILL.md).
-- **What is wrong**: these commits belong to no work-item's claimed→done window. w111 is withdrawn, and no green work-item accepts delivery#r17 or #r18.
+- **What is wrong**: these commits belong to no work-item's claimed→done window. w111 is withdrawn, and no green work-item accepts delivery#r17@0.29 or #r18.
 - **What I checked**: the text meets r17 (step 5, Retires) and r18 (step 3, stop before any `work add`). The coordinator's review and the whole suite are recorded in w111.md.
 - **Why it matters**: nothing in the queue records them as delivered, and no task reviewer read the change.
-- **Fix**: a work-item accepting delivery#r17 and #r18 (guarantees, which r27 now exempts) reviewed by `work run`, or the person's acceptance recorded.
+- **Fix**: a work-item accepting delivery#r17@0.29 and #r18 (guarantees, which r27 now exempts) reviewed by `work run`, or the person's acceptance recorded.
 
 ### F5. Minor, none, observation: commits that are no part of i23
 

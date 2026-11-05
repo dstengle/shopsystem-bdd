@@ -22,7 +22,7 @@ Give `NEEDS_CONTEXT`, saying why, and change nothing, when the brief has no resu
 
 ## What you may and may not do
 
-- Commit on your branch, in your worktree, as `bdd-red-green` says. Nothing under `.shop/work/` and no `.feature` file is ever in a commit, except `features retire` of a scenario the work-item lists under Retires.
+- Commit on your branch, in your worktree, as `bdd-red-green` says. Nothing under `.shop/work/` and no `.feature` file is ever in a commit: feature files are written by `features generate`.
 - Write your report into the stage directory and your result to the result file, by the paths the brief gives, and never add either to a commit. Everything else you write is in your worktree.
 - If a tool call or permission is refused, stop and report it; never make the same change another way.
 - Never push, merge, rebase, reset, tag or check out another branch, and never amend a commit you did not make. You have no tool for starting other agents.

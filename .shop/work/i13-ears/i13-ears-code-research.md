@@ -6,13 +6,13 @@ status: merged
 date: 2026-10-19
 argues: [code-research]
 adds: []
-changes: [code-research#r1, code-research#r3-r6, code-research#r8-r12]
-removes: [code-research#r7]
+changes: [code-research#r1@0.29, code-research#r3@0.29, code-research#r4@0.29, code-research#r5@0.29, code-research#r6@0.29, code-research#r8@0.29, code-research#r9@0.29, code-research#r10@0.29, code-research#r11@0.29, code-research#r12@0.29]
+removes: [code-research#r7@0.29]
 ---
 
 # Code research: Behaviour lines in EARS
 
-What the gate approves (the person, 2026-10-19: "I approve"): changed `code-research#r1`, `code-research#r3-r6`, `code-research#r8-r12`; removed `code-research#r7` (now under `retired:`).
+What the gate approves (the person, 2026-10-19: "I approve"): changed `code-research#r1@0.29`, `code-research#r3@0.29, code-research#r4@0.29, code-research#r5@0.29, code-research#r6@0.29`, `code-research#r8@0.29, code-research#r9@0.29, code-research#r10@0.29, code-research#r11@0.29, code-research#r12@0.29`; removed `code-research#r7@0.29` (now under `retired:`).
 
 Each line is one EARS requirement, its pattern chosen by what starts the behaviour, with "shall", one response and one sentence; `If` lines only where design-decision/behaviour-lines-are-ears allows them. A line whose meaning is unchanged keeps its id; a retired line's meaning is in the line named below, or in "Implementation, may change".
 

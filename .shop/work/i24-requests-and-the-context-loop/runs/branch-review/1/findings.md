@@ -83,7 +83,7 @@ Each run also has 1 skipped and 56 subtests passed.
 
 - work-queue @r1 "add with --part-of, --under and --accepts writes a drafted work-item with the fields given (deprecated)": already there at Base.
 - migration-tools @r15 "`migrate run` on a repository with <change> refuses …": already there at Base.
-- work-queue @r9 "`work <command>` commits the change it makes to a work-item on the current branch (deprecated)": deprecated on this branch by 28047f5, but its replacement's work-item, w140 (accepts work-queue#r9), is green. See Finding M1.
+- work-queue @r9 "`work <command>` commits the change it makes to a work-item on the current branch (deprecated)": deprecated on this branch by 28047f5, but its replacement's work-item, w140 (accepts work-queue#r9@0.29), is green. See Finding M1.
 
 **`features bindings`**: "every binding names a scenario".
 

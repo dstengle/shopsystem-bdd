@@ -113,7 +113,7 @@ Accepted lines of q5 already ask for F3, F7, F8 and F10. i29, started at 4640ef0
 - **Fix:** keep only the stage's own records (`brief.md`, `result.json`, `session.json` and the stage's outputs) when committing a stage directory, or exclude `*.py` under `.shop/work/*/runs/` from `tools check`. Either way, it should be decided by a line.
 
 **N2. Minor | not i27 (i28, w171) | observation.**
-- **What:** supervision @r102's old scenario is deprecated (7636eb12), and w171, which accepts supervision#r102, is green. The deprecated scenario was not retired with its binding.
+- **What:** supervision @r102's old scenario is deprecated (7636eb12), and w171, which accepts supervision#r102@0.29, is green. The deprecated scenario was not retired with its binding.
 - This is the same pattern as work-queue @r9 and w140 in review 2.
 - **Fix:** retire both in a work-item that lists them under Retires.
 
@@ -153,6 +153,6 @@ One line each, with its reproduction:
 - **F8:** `work request … --delegation ""` writes `delegation: ""` (`workqueue_request.py:87`, read).
 - **F10:** ab63bd6c's and 7d8572d6's subjects say the measurement was "left uncommitted".
 - **N1:** `python3 scripts/tools check --base 3cbd0c52` lists `.shop/work/i26/runs/supervision/1-gate/mk.py:1` and `:19`; `git log --diff-filter=A -- <that path>` gives dbbf9089.
-- **N2:** `features deprecated` lists supervision @r102; `grep -E '^(status|accepts)' .shop/work/i28/w171.md` gives `green` and `[supervision#r102]`.
+- **N2:** `features deprecated` lists supervision @r102; `grep -E '^(status|accepts)' .shop/work/i28/w171.md` gives `green` and `[supervision#r102@0.29]`.
 - **Stale deprecation:** work-queue @r9 is still deprecated while w140 is green.
 - **Stale module-map row:** CLAUDE.md:28 and `supervise_rounds.py:1-3`.

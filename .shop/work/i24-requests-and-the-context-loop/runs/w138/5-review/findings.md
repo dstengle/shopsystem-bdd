@@ -1,6 +1,6 @@
 # Review of w138 (second review, after the answer of 2026-10-25)
 
-**Verdict: DONE.** The commits are the same ones the first review (4-review) read, and nothing was added after it. That review's one fix-now finding was the range gap in `retires()`. The person has answered it: accept w138 as it stands and fix the gap in its own work-item. That work-item exists as w150 (drafted, accepts supervision#r73, its range scenario to be formulated first). So the gap is recorded below as answered and not raised again. No finding is Critical, and none still needs fixing now.
+**Verdict: DONE.** The commits are the same ones the first review (4-review) read, and nothing was added after it. That review's one fix-now finding was the range gap in `retires()`. The person has answered it: accept w138 as it stands and fix the gap in its own work-item. That work-item exists as w150 (drafted, accepts supervision#r73@0.29, its range scenario to be formulated first). So the gap is recorded below as answered and not raised again. No finding is Critical, and none still needs fixing now.
 
 ## Commits reviewed
 
@@ -32,7 +32,7 @@ The report gives "none", and the commits agree.
 ### 1. Important, answered (was fix now). A range in `accepts` retires nothing: scripts/supervise_draft.py:30-33
 
 - **What is wrong.** `retires()` compares `r3-r6` to a single `@r<n>` tag by equality, so r73 misses deprecated scenarios that are accepted through a range.
-- **The answer (2026-10-25).** Accept w138 as it stands. The fix is its own work-item, w150 (drafted, supervision#r73), with a range scenario row formulated first.
+- **The answer (2026-10-25).** Accept w138 as it stands. The fix is its own work-item, w150 (drafted, supervision#r73@0.29), with a range scenario row formulated first.
 - **Triage.** No longer fix now under w138.
 
 ### 2. Minor, observation. A named work-item without `part_of` or `under`: scripts/supervise_draft.py:76-78

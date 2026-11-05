@@ -1,6 +1,6 @@
-# research of w245: supervision#r222
+# research of w245: supervision#r222@0.29
 
-Accepted: supervision#r222 (second run of a scenario that r219 makes passes, taken as passing in r4's merge). Depends on r219 (rerun once, alone), r4 (merge), r43. No `tools map` exists: every test list below is `by search`; `refs` and `wc` used where stated. No `Scripts:` tools run beyond `--help`.
+Accepted: supervision#r222@0.29 (second run of a scenario that r219 makes passes, taken as passing in r4's merge). Depends on r219 (rerun once, alone), r4 (merge), r43. No `tools map` exists: every test list below is `by search`; `refs` and `wc` used where stated. No `Scripts:` tools run beyond `--help`.
 
 ## 1. Why each scenario is red today
 

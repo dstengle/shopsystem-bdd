@@ -6,7 +6,7 @@ status: merged
 date: 2026-10-21
 argues: [spec-migration]
 adds: []
-changes: [spec-migration#r2, spec-migration#r11]
+changes: [spec-migration#r2@0.29, spec-migration#r11@0.29]
 removes: []
 ---
 

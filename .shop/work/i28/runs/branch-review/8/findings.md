@@ -20,12 +20,12 @@
 
 | Work-item | Status | Accepts | Commits |
 |---|---|---|---|
-| w167 | green | supervision#r92 | `12f0b295` |
-| w168 | green | work-queue#r30 | `fa6929fb` |
-| w169 | green | spec-integration#r43 (a guarantee) | `50788670` |
-| w170 | green | supervision#r102, r103, r104 | `bcc41527`, `55eea183`, `2e0f2555` |
-| w171 | green | supervision#r102 | `a414d2bd` |
-| w172 | green | supervision#r102, r103, r104 (fix of branch review 1) | `a1ff989a` |
+| w167 | green | supervision#r92@0.29 | `12f0b295` |
+| w168 | green | work-queue#r30@0.29 | `fa6929fb` |
+| w169 | green | spec-integration#r43@0.29 (a guarantee) | `50788670` |
+| w170 | green | supervision#r102@0.29, r103, r104 | `bcc41527`, `55eea183`, `2e0f2555` |
+| w171 | green | supervision#r102@0.29 | `a414d2bd` |
+| w172 | green | supervision#r102@0.29, r103, r104 (fix of branch review 1) | `a1ff989a` |
 
 - **Commits of no i28 work-item:** every other commit in the range (finding 5). Since review 7 these are:
   - w175's and w179's (i29), w180's and w182's to w185's (i30 and i31);
@@ -63,7 +63,7 @@
 | w171 | 144 passed, 1 skipped |
 | w172 | 146 passed, 1 skipped |
 
-w169's line, spec-integration#r43, is a guarantee, so no scenario covers it. Its four instruction files are unchanged since review 3, which read them against the line.
+w169's line, spec-integration#r43@0.29, is a guarantee, so no scenario covers it. Its four instruction files are unchanged since review 3, which read them against the line.
 
 **`tools check --base 4b7dca6c`:**
 
@@ -135,7 +135,7 @@ None. I ran every check myself.
 ### 3. Minor, w171, observation: the deprecated @r102 scenario remains, though its replacement's work-items are green
 - **Where:** `features/supervision.feature`, the deprecated @r102 scenario, with its step `other_initiative` in `tests/scenarios/supervision_integrate_steps.py`.
 - **What is wrong:** w171 and w172 are green, and neither has a `## Retires`.
-- **Fix:** a work-item that accepts supervision#r102 and retires the scenario, its binding and the step.
+- **Fix:** a work-item that accepts supervision#r102@0.29 and retires the scenario, its binding and the step.
 - **Triage:** observation.
 
 ### 4. Minor, w167, w170 and w172, drop: the 5 ruff errors of i28 under Checks

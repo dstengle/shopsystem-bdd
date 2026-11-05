@@ -162,7 +162,7 @@
 
 ## Feature files
 
-- **work-queue @r9 is deprecated, but its replacement's work-item is green.** w140 (i24, `accepts: [work-queue#r24, work-queue#r9]`) is green, so the deprecated scenario should have been retired with its binding.
+- **work-queue @r9 is deprecated, but its replacement's work-item is green.** w140 (i24, `accepts: [work-queue#r24@0.29, work-queue#r9@0.29]`) is green, so the deprecated scenario should have been retired with its binding.
   - It was already there before Base and belongs to no i27 work-item.
   - Observation: retire it in a work-item that lists it under Retires.
 - **work-queue @r1 and migration-tools @r15:** the work-items that would accept the replacements (w89, w90, w86, w17) are withdrawn, so these deprecations are not stale. w50 (green) accepts r1-r7, but it predates the replacement scenario.

@@ -5,23 +5,23 @@ answers on the proposal `.shop/work/i42/supervision.md` (gate rounds 1 and 2, 20
 
 ## 1. What goes green
 
-- **supervision#r149**: "a formulate round that formulates nothing because the proposal's answers change lines not in
+- **supervision#r149@0.29**: "a formulate round that formulates nothing because the proposal's answers change lines not in
   spec/ is followed by a new integrate round for the proposal" (features/supervision.feature:1503). Red: the Given "the
   formulate round for p1 formulates nothing, giving that p1's answers change lines not in spec/" and the Then "a round of
   the kind integrate was started for p1 after the formulate round had ended" are undefined; in code, `Rounds.route`
   sends an answered proposal whose last move came from approved back to formulate, never to integrate.
-- **supervision#r150**: "an apply round that gives an answer the drafts it applied do not hold is followed by a new
+- **supervision#r150@0.29**: "an apply round that gives an answer the drafts it applied do not hold is followed by a new
   integrate round for the proposal" (1070). Passes today (run, by the researcher) through the `nothing_applied` path. It
   must stay green. Decision 2 widens the code to what r150 says.
-- **supervision#r151**: "an apply round that gives an answer the drafts it applied do not hold is followed by no
+- **supervision#r151@0.29**: "an apply round that gives an answer the drafts it applied do not hold is followed by no
   formulate round for the proposal before the new integrate round's drafts are applied" (1080). Red: the Then "no round
   of the kind formulate was started for p1" is undefined. The flow already holds (read): apply nothing, then integrate,
   then drafted, then gate, then awaiting-answer.
-- **supervision#r152**: "... leaves the proposal's status as it was" (1513). Red: the Given and both Thens ("p1 was
+- **supervision#r152@0.29**: "... leaves the proposal's status as it was" (1513). Red: the Given and both Thens ("p1 was
   awaiting-answer when the formulate round for p1 had ended", "no transition of p1 was made between the start of the
   formulate round for p1 and the start of the integrate round for p1") are undefined. In code, the formulate branch of
   `Rounds.run_round` moves the proposal to `formulated` when no question is given.
-- **supervision#r153**: "... has given its output" (1524). Red: the Given variant ", and no scenario" and the Then "no
+- **supervision#r153@0.29**: "... has given its output" (1524). Red: the Given variant ", and no scenario" and the Then "no
   question naming the formulate round's output as missing was written under p1's ## Questions" are undefined. In code,
   the formulate branch asks `supervise_outputs.unformulated`'s missing scenarios as a question.
 - **Retired**: the `@r140 @deprecated` scenario "an apply round that applies nothing because the proposal's answers give
@@ -61,7 +61,7 @@ The researcher's set, plus `scripts/supervise_outputs.py` (decision 4). Nothing 
 1. **The formulate round's field is `nothing_formulated`, a sentence saying that the proposal's answers change lines
    not in spec/, given with no `questions`.** `work run` reads it the way `gives_nothing` reads `nothing_applied`: a
    non-empty string and no question. It reads it whatever `changes` or scenarios the round gives. This is the
-   researcher's reading A. It rests on supervision#r153 and on the proposal's answer "r149 against r131/r132: reading
+   researcher's reading A. It rests on supervision#r153@0.29 and on the proposal's answer "r149 against r131/r132: reading
    (a) ... take that case as the round's output, as r147 does for apply", which asks for the apply mirror. The field is
    part of `work run`'s contract with its own round and the narrator does not see it, so it is not a question
    (design-decision/worker-results-are-files).

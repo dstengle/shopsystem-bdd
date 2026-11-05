@@ -6,7 +6,7 @@ status: awaiting-answer
 argues: [spec-integration]
 date: 2026-10-29
 adds: []
-changes: [spec-integration#r46]
+changes: [spec-integration#r46@0.29]
 removes: []
 ---
 

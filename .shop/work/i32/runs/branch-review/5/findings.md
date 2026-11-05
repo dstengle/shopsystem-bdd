@@ -9,8 +9,8 @@
 ## Range and work-items
 
 - **Range:** `d3d3839d..507d361e`.
-- **w189** (review#r31): `ee81efd0`, which changes `agents/bdd-branch-reviewer.md:74,76`.
-- **w190** (supervision#r118, r119): `6622133a` and `31c86e3c`.
+- **w189** (review#r31@0.29): `ee81efd0`, which changes `agents/bdd-branch-reviewer.md:74,76`.
+- **w190** (supervision#r118@0.29, r119): `6622133a` and `31c86e3c`.
 - **w191** (the fix of branch review 1): `32b5f1fa`.
 - **Commits that belong to no i32 work-item:**
   - Carried from review 4: the proposal rounds, the `work`, `work note` and `work add` commits, the branch-review records, `3e1cb8bb` (finding 1), `d05108fe`, q10, w185's state commits and i33's start.
@@ -76,7 +76,7 @@ None in i32's work-items. I searched removed lines in `git diff d3d3839d HEAD --
 
 ## Cannot verify
 
-- **review#r31 on a real batch.** w189's plan names `measure` of a later initiative as the check.
+- **review#r31@0.29 on a real batch.** w189's plan names `measure` of a later initiative as the check.
   - The latest analysis in `.shop/records/` is still `2026-10-25-i30-analysis.md`.
   - I checked the agent text (`agents/bdd-branch-reviewer.md:74,76`), and this review follows it.
 - **That a real `delegation-answerer` session gives `verdict`.**

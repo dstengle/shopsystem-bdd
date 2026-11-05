@@ -12,7 +12,7 @@ Accepted lines of the request:
 - 4. **When** a session that `work run` started ends with a result that gives neither a question nor its stage's output, `work run` shall write under the node's `## Questions` a question naming the output missing and transition the node to `awaiting-answer`.
 - 5. `work run` shall take as a stage's output: a researcher's file set; a planner's plan and file set; an implementer's commits on which the work-item's scenarios and the whole suite pass; a reviewer's findings; an answering session's answer; an integrate or apply round's change list; a formulate round's scenario for each requirement its proposal adds or changes; an intake round's line outcome or question on each line of its request; a gate round's questions.
 - 6. `work run` shall make no transition from the outcome a session's result gives.
-Ids drafted elsewhere (number added lines above each on the same capability): supervision#r99, supervision#r125, supervision#r126, supervision#r127
+Ids drafted elsewhere (number added lines above each on the same capability): supervision#r99@0.29, supervision#r125@0.29, supervision#r126@0.29, supervision#r127@0.29
 Drafts path: /home/vscode/shopsystem-bdd/.shop/worktrees/i38-1-integrate/.shop/scratch/1-integrate/drafts
 Give your change list in your result's `changes`: a list with one entry for each capability, each `{"capability": <name>, "adds": [...], "changes": [...], "removes": [...]}`, the ids as `<capability>#r<n>` or `term/<term>`.
 Base: 50a40103b15d1b9455b9d609ddb1a96cf799a11d

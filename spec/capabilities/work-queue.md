@@ -3,8 +3,9 @@ id: capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue
 title: Work queue
 narrator: a person, session or script reading work-items or writing their transitions
 group: service
+language: codified-1
 rests_on: [design-decision/work-file-forms, design-decision/work-item-lifecycle-as-run, design-decision/the-file-set-is-the-claim, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/work-retry-reads-the-log, design-decision/query-commands-answer-in-their-output, design-decision/work-items-named-by-ids, design-decision/a-ruling-returns-to-the-asking-stage, design-decision/answers-not-rulings, design-decision/the-ledger-is-tracked, design-decision/work-list-and-work-show-replace-work-status]
-retired: [r2, r3, r11, r16, r17, r18, r33, r34, r35, r23]
+retired: []
 ---
 
 # Work queue
@@ -14,57 +15,191 @@ retired: [r2, r3, r11, r16, r17, r18, r33, r34, r35, r23]
 writes their transitions through their lifecycle, logging every transition; it starts an initiative from an
 `accepted` request and makes it `done` when its work and the requests it raised are; it prints where an initiative
 stands, for a session to start from, and appends notes to an initiative's ledger. It is the only writer of a
-work-item's status; `work run` (supervision) takes them through it. It judges nothing. A walking skeleton
-(design-decision/behaviour-lines-are-ears): it grows from what using it shows.
+work-item's status; `work run` (supervision) takes them through it. It judges nothing.
+
+## Terms
+- **note** (kind): the one line `work note` appends to a ledger after the date it writes.
+- **form** (attribute of note): Values: `one-line`, `multi-line`.
+- **form** (attribute of answer): Values: `one-line`, `multi-line`.
+- **out of step** (condition of work-item): a work-item whose last status in `log.jsonl` differs from the status in its file.
+- **asking stage** (attribute of question): the kind of stage that asked the question. Values: `research`, `plan`, `implement`, `review`.
+- **flag** (attribute of answer): the flag `work answer` is given with an answer to a reviewer's question. Values: `--change`, `--accept`, `unflagged`.
+
+## Relations
+
+| from | word | to | cardinality |
+|---|---|---|---|
+| ledger | of | initiative | one |
+| work-item | kept in | initiative | one |
 
 ## Behaviour
-- [r1] **When** `work add <initiative> <title>` is run with `--part-of`, `--under` and `--accepts`, `work` shall write `.shop/work/<initiative>/w<n>.md` as a `drafted` work-item with the id `w<n>`, the fields given and the title as its `# ` heading, and print the id.
-- [r12] `work add` shall number a new work-item's id `w<n>` with `<n>` one above the highest `<n>` of any work-item under `.shop/work/`, in any initiative and any status.
-- [r32] **If** `work add` is given an initiative that is `done` or `abandoned`, **then** `work add` shall refuse, naming the initiative's status, and change nothing.
-- [r22] **When** `work start <request>` is run on an `accepted` request, `work` shall write `.shop/work/<initiative>/initiative.md` as a `proposed` initiative of kind `capability-change` that fulfils the request, with the request's origins as its source, and print its id.
-- [r25] **When** `work start` writes an initiative, `work` shall commit the initiative on the current branch.
-- [r62] **When** a `work` command's change makes it true that an initiative has at least one work-item that is `green`, that every work-item of it is `green` or `withdrawn`, that every capability-proposal of it is `formulated` or `withdrawn` and that every request kept in this context whose asker is this context and that names the initiative is `delivered`, that command shall set the initiative's status to `done`.
-- [r31] **If** every work-item of an initiative is `withdrawn`, **then** `work` shall leave the initiative's status as it is.
-- [r47] **If** every work-item of an initiative is `green` or `withdrawn` while one of its capability-proposals is neither `formulated` nor `withdrawn`, **then** `work` shall keep the initiative `started`.
-- [r60] **When** `work list` is run, `work` shall print each initiative and each work-item under `.shop/work/` with its status.
-- [r61] **Where** `--json` is given, `work list` shall print its result, each initiative and work-item with its status, as one JSON object.
-- [r39] **While** a request that an initiative raised into an upstream is not `delivered`, `work list` shall print the initiative as waiting on that request.
-- [r36] **When** `work show <initiative>` is run, `work` shall print the initiative's status, each of its capability-proposals with its status, each of its work-items with its status and its open questions, the initiative branch and whether the remote has every commit of it, each tracked file of the checkout with uncommitted changes and each untracked file of the checkout that git does not ignore, the last ten lines of the initiative's ledger, and the ledger's last line whose note, the text given to `work note` after the date `work note` writes, begins `next:`.
-- [r37] **When** `work show <work-item>` is run, `work` shall print the work-item's status and its open questions.
-- [r59] **When** `work show <request>` is run, `work` shall print the request's status, whose turn it is, its lines with their line outcomes, its questions, its answers and its resolution.
-- [r38] **Where** `--json` is given, `work show` shall print its result as one JSON object.
-- [r19] **When** `work note <initiative> <line>` is run, `work` shall append the line, with the date, to the initiative's ledger `.shop/work/<initiative>/ledger.md`.
-- [r20] **When** `work note` appends a line to an initiative's ledger, `work` shall commit the ledger on the current branch.
-- [r21] **If** the line given to `work note` has in it one of Unicode's mandatory line breaks, U+000A (LF), U+000B (VT), U+000C (FF), U+000D (CR), U+0085 (NEL), U+2028 or U+2029, then `work` shall exit with an error, saying that a note is one line, and change nothing.
-- [r4] **When** `work` makes a work-item's transition, `work` shall write the new status into the work-item's file.
-- [r5] **When** `work` makes a work-item's transition, `work` shall append a line to `.shop/work/<initiative>/log.jsonl` with the time, the work-item, the status before and after, and who made the transition.
-- [r6] **If** a work-item's status in its file is not the last status `log.jsonl` gives it, then `work` shall refuse the transition, naming the file and both statuses.
-- [r7] **If** `work` cannot do what it was asked, then `work` shall exit with an error, say why, and change nothing.
-- [r8] **When** `work retry <work-item>` is run on a `failed` work-item, `work` shall transition it to the status before that `log.jsonl` gives in the work-item's transition into `failed`.
-- [r10] **When** `work withdraw <work-item>` is run on a work-item that is neither `claimed` nor `green`, `work` shall transition it to `withdrawn`.
-- [r13] **When** `work answer <work-item> <answer>` is run on an `awaiting-answer` work-item, `work` shall write the answer, with the date, under the work-item's `## Answers`.
-- [r24] **When** `work answer <capability-proposal> <answer>` is run on an `awaiting-answer` capability-proposal, `work` shall write the answer, with the date, under the proposal's `## Answers`.
-- [r30] **When** `work answer <initiative>/<name> <answer>` is run, `work` shall answer the work-item or capability-proposal `<name>` of that initiative.
-- [r14] **When** `work answer <work-item> <answer>` is run on an `awaiting-answer` work-item whose question a researcher, a planner or an implementer asked, `work` shall transition it to the status the stage that asked its question started from: `drafted` for a researcher's question, `researched` for a planner's and `ready` for an implementer's.
-- [r26] **When** `work answer <work-item> <answer>` is run, with the flag saying that the answer asks for a change, on an `awaiting-answer` work-item whose question a reviewer asked, `work` shall transition the work-item to `ready`.
-- [r27] **When** `work answer <work-item> <answer>` is run, with the flag saying that the answer accepts the work-item as it is, on an `awaiting-answer` work-item whose question a reviewer asked, `work` shall transition the work-item to `done`.
-- [r28] **If** `work answer <work-item> <answer>` is run without the flag saying whether the answer asks for a change or accepts the work-item as it is on an `awaiting-answer` work-item whose question a reviewer asked, then `work` shall exit with an error, saying that the answer must say which, and change nothing.
-- [r15] **If** the answer given to `work answer` has in it one of Unicode's mandatory line breaks, U+000A (LF), U+000B (VT), U+000C (FF), U+000D (CR), U+0085 (NEL), U+2028 or U+2029, then `work` shall exit with an error, saying that an answer is one line, and change nothing.
-- [r9] **When** `work add`, `work retry`, `work withdraw` or `work answer` changes a work-item or a capability-proposal, `work` shall commit on the current branch the changed file and the `log.jsonl` line the change made, if it made one.
+
+### [g1] `work add` drafts a work-item
+Restates: r1@0.29, r9@0.29.
+- [r1] When the person runs `work add` on an initiative that is `started`, `work` shall write a work-item that is
+  `drafted` and commit the work-item.
+
+### [g2] `work add` refuses an initiative that is not open
+Restates: r32@0.29.
+- [r2] If the person runs `work add` on an initiative that is not open, then `work` shall exit with an error naming
+  the status of the initiative and change nothing.
+
+### [g3] `work start` begins an initiative for an accepted request
+Restates: r22@0.29, r25@0.29.
+- [r3] When the person runs `work start` on a request that is `accepted`, `work` shall write an initiative that fulfils
+  the request and commit the initiative.
+
+### [g4] `work start` refuses a request that is not accepted
+Restates: r7@0.29.
+- [r4] If the person runs `work start` on a request that is not `accepted`, then `work` shall exit with an error
+  naming the request and change nothing.
+
+### [g5] An initiative whose work is closed becomes done
+Restates: r62@0.29.
+- [r5] While an initiative is `started` and the initiative is complete, when the person runs `work withdraw` on a
+  work-item that is `ready`, `work` shall set the status of the initiative to `done`.
+
+### [g6] An initiative whose every work-item is withdrawn stays as it is
+Restates: r31@0.29.
+- [r6] While an initiative is `started` and the initiative is not complete, when the person runs `work withdraw` on
+  a work-item that is `ready`, `work` shall not set the status of the initiative to `done`.
+
+### [g7] An open capability-proposal keeps its initiative started
+Restates: r47@0.29.
+- [r7] While an initiative is `started` and a capability-proposal part of the initiative is not closed, when the
+  person runs `work withdraw` on a work-item that is `ready`, `work` shall not set the status of the initiative to
+  `done`.
+
+### [g8] `work list` prints every node with its status
+Restates: r60@0.29.
+- [r8] When the person runs `work list`, `work` shall print every initiative and the status of the initiative and
+  print every work-item and the status of the work-item.
+
+### [g9] `work list --json` prints one JSON object
+Restates: r61@0.29.
+- [r9] Where `--json` is given, when the person runs `work list`, `work` shall exit successfully.
+
+### [g10] `work show` on an initiative prints where it stands
+Restates: r36@0.29.
+- [r10] When the person runs `work show` on an initiative, `work` shall print the status of the initiative and every
+  work-item kept in the initiative.
+
+### [g11] `work show` on a work-item prints its status
+Restates: r37@0.29.
+- [r11] When the person runs `work show` on a work-item, `work` shall print the status of the work-item.
+
+### [g12] `work show --json` prints one JSON object
+Restates: r38@0.29.
+- [r12] Where `--json` is given, when the person runs `work show` on an initiative, `work` shall exit
+  successfully.
+
+### [g13] `work note` appends a note to the ledger
+Restates: r19@0.29, r20@0.29.
+- [r13] When the person runs `work note` on an initiative, `work` shall write the ledger of the initiative and commit
+  the ledger.
+
+### [g14] `work note` refuses a note of more than one line
+Restates: r21@0.29.
+- [r14] While a note is `multi-line`, if the person runs `work note` on an initiative, then `work` shall exit with an
+  error naming the note and change nothing.
+
+### [g15] `work withdraw` withdraws a work-item that is not claimed or green
+Restates: r10@0.29, r4@0.29, r5@0.29.
+- [r15] When the person runs `work withdraw` on a work-item that is `ready`, `work` shall set its status to
+  `withdrawn`, write a transition and commit the work-item.
+
+### [g16] `work withdraw` refuses a green work-item
+Restates: r10@0.29.
+- [r16] If the person runs `work withdraw` on a work-item that is `green`, then `work` shall exit with an error
+  naming the status of the work-item and change nothing.
+
+### [g17] A transition the log does not agree with is refused
+Restates: r6@0.29.
+- [r17] If the person runs `work withdraw` on a work-item that is out of step, then `work` shall exit with an error
+  naming the work-item and change nothing.
+
+### [g18] `work retry` returns a failed work-item
+Restates: r8@0.29.
+- [r18] When the person runs `work retry` on a work-item that is `failed`, `work` shall set its status to `claimed`.
+
+### [g19] `work answer` writes an answer
+Restates: r13@0.29, r24@0.29, r30@0.29.
+- [r19] When the person runs `work answer` on a capability-proposal that is `awaiting-answer`, `work` shall write an
+  answer and commit the capability-proposal.
+
+### [g20] `work answer` returns a work-item to the research stage that asked
+Restates: r13@0.29, r14@0.29.
+- [r20] While a work-item is `awaiting-answer` and the question on the work-item is `research`, when the person runs
+  `work answer` on the work-item, `work` shall set its status to `drafted` and write an answer.
+
+### [g21] `work answer` returns a work-item to the plan stage that asked
+Restates: r14@0.29.
+- [r21] While a work-item is `awaiting-answer` and the question on the work-item is `plan`, when the person runs
+  `work answer` on the work-item, `work` shall set its status to `researched`.
+
+### [g22] `work answer` returns a work-item to the implement stage that asked
+Restates: r14@0.29.
+- [r22] While a work-item is `awaiting-answer` and the question on the work-item is `implement`, when the person runs
+  `work answer` on the work-item, `work` shall set its status to `ready`.
+
+### [g23] An answer to a reviewer's question that asks for a change
+Restates: r26@0.29.
+- [r23] While a work-item is `awaiting-answer` and the question on the work-item is `review` and the answer is
+  `--change`, when the person runs `work answer` on the work-item, `work` shall set its status to `ready`.
+
+### [g24] An answer to a reviewer's question that accepts the work-item
+Restates: r27@0.29.
+- [r24] While a work-item is `awaiting-answer` and the question on the work-item is `review` and the answer is
+  `--accept`, when the person runs `work answer` on the work-item, `work` shall set its status to `done`.
+
+### [g25] An answer to a reviewer's question must say which
+Restates: r28@0.29.
+- [r25] While a question is `review` and an answer is `unflagged`, if the person runs `work answer` on a work-item
+  that is `awaiting-answer`, then `work` shall exit with an error naming the flag of the answer and change nothing.
+
+### [g26] `work answer` refuses an answer of more than one line
+Restates: r15@0.29.
+- [r26] While an answer is `multi-line`, if the person runs `work answer` on a work-item that is `awaiting-answer`,
+  then `work` shall exit with an error naming the answer and change nothing.
 
 ## Implementation, may change
 - `scripts/work` with its library `scripts/workqueue.py`, standard library only; the frontmatter subset
   `scripts/model` reads. A work-item's fields are design-decision/work-file-forms'.
 - A work-item's frontmatter `id` is `work-item/<context path>/w<n>`; `<work-item>` in a command is its id `w<n>`
-  (design-decision/work-items-named-by-ids).
-- `log.jsonl` is one JSON object a line; a transition and the work-item's file are written together, the log line last.
-- A transition the lifecycle does not allow from the work-item's status is refused under r7.
-- `work answer` on a work-item that is not `awaiting-answer` is a change `work` cannot make, refused under r7.
+  (design-decision/work-items-named-by-ids). `work add` numbers a new work-item's id `w<n>` with `<n>` one above the
+  highest `<n>` of any work-item under `.shop/work/`, in any initiative and any status, and prints it.
+- `work add` takes `--part-of`, `--under` and `--accepts`, and writes the title as the work-item's `# ` heading.
+- `work start` writes `.shop/work/<initiative>/initiative.md`, a `capability-change` initiative whose `fulfils` names
+  the request and whose `source` is the request's, and prints its id.
+- `log.jsonl` is one JSON object a line, with the time, the work-item, the status before and after, and who made the
+  transition; a transition and the work-item's file are written together, the log line last.
+- A transition the lifecycle does not allow from the work-item's status is refused (U3).
+- `work answer` on a work-item that is not `awaiting-answer` is a change `work` cannot make, refused (U3). It writes
+  the answer, with the date, under the node's `## Answers`; `<initiative>/<name>` names the node of that initiative.
+  The work-item returns to the status its asking stage started from: `drafted` for a researcher, `researched` for a
+  planner, `ready` for an implementer.
+- `work retry` returns a work-item to the status before that `log.jsonl` gives in its transition into `failed`.
 - `work retry` and `work withdraw` print `<work-item> <status>`, the status being the one the transition made.
-- r62: a request names the initiative in its `part_of` or its `source`.
-- r26, r27: the flag is `--change` for an answer that asks for a change and `--accept` for one that accepts the
-  work-item as it is; the answer stays one line of free text.
+- An initiative is complete (the glossary's condition) when it has a `green` work-item, every work-item is `green`
+  or `withdrawn`, every capability-proposal is `formulated` or `withdrawn`, and every request kept in this context
+  whose asker is this context and that names the initiative in its `part_of` or its `source` is `delivered`.
+- The flag of a reviewer's answer is `--change` for an answer that asks for a change and `--accept` for one that
+  accepts the work-item as it is; the answer stays one line of free text.
+- A note or an answer is one line: it has none of Unicode's mandatory line breaks, U+000A (LF), U+000B (VT),
+  U+000C (FF), U+000D (CR), U+0085 (NEL), U+2028 or U+2029.
+- `work show <initiative>` also prints each capability-proposal with its status, each work-item's open questions,
+  the initiative branch and whether the remote has every commit of it, the checkout's uncommitted and untracked
+  files, the last ten lines of the ledger and its last line whose note begins `next:`. `work show <request>` prints
+  the request's status, whose turn it is, its lines with their line outcomes, its questions, its answers and its
+  resolution.
 
 ## Not yet
 - `next`, `claim`, `questions`, `log` and `plugin` (`work_expectations.py`), `--check`
   work-items, the guards between work-items, `show --status` (see skeleton-notes.md).
+- `work list` printing an initiative as waiting on a request it raised into an upstream while that request is not
+  `delivered` (0.29's r39): the grammar has no condition on a relation between two nodes yet.
+
+## Dropped
+- r12@0.29: the numbering of a work-item's id is `work add`'s implementation, kept under Implementation, may change.
+- r39@0.29: the grammar cannot say a condition on a relation between an initiative and a request; kept under Not yet.
+- r59@0.29: moved to requests.

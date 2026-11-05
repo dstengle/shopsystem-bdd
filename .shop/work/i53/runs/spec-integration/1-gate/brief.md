@@ -5,8 +5,8 @@ Agent: initiative-round
 Scripts: /home/vscode/shopsystem-bdd/scripts
 Kind: gate
 Give the gate as questions in your result's `questions`, one string each: every question a decision, with its readings and the recommended reading marked.
-Adds: spec-integration#r57
-Changes: spec-integration#r44
+Adds: spec-integration#r57@0.29
+Changes: spec-integration#r44@0.29
 Removes: none
 Ask questions only on the lines and terms listed above as adds, changes or removes, and on no other line or term.
 Drafts path: .shop/work/i53/runs/i53/1-integrate/drafts/round-1/

@@ -1,21 +1,12 @@
 """The transcripts batch-measurement's scenarios write: Claude Code's raw rows and the slim export's rows."""
 import json
 
-from .batch_measurement_world import DAY, stamp
+from scenarios.batch_measurement_world import DAY, stamp
 
 
 def usage(out, new, read):
     return {"input_tokens": new, "cache_creation_input_tokens": 0, "cache_read_input_tokens": read,
             "output_tokens": out}
-
-
-def slim_session(session, parent, starts, ends, out, new, read):
-    """The slim export's rows of one session (or, with a `parent`, of a subagent it dispatched): its tokens on the
-    first row, a closing row at the end."""
-    who = {"session": parent or session, "agent": session if parent else None}
-    rows = [dict(time=stamp(starts), type="assistant", model="m", usage=usage(out, new, read), **who),
-            dict(time=stamp(ends), type="assistant", model="m", usage=usage(0, 0, 0), **who)]
-    return "".join(json.dumps(r) + "\n" for r in rows)
 
 
 def who_of(session, parent):
@@ -26,13 +17,6 @@ def timed_session(session, parent, times, out, new, read):
     """The slim export's rows of one session, one assistant row at each of `times`; its tokens on the first."""
     rows = [dict(time=stamp(at), type="assistant", model="m", usage=usage(*(out, new, read) if n == 0 else (0, 0, 0)),
                  **who_of(session, parent)) for n, at in enumerate(times)]
-    return "".join(json.dumps(r) + "\n" for r in rows)
-
-
-def counted_session(session, parent, start, messages, requests):
-    """The slim export's rows of one session: `messages` assistant rows over `requests` request ids, a second apart."""
-    rows = [dict(time="%sT%s:%02d+00:00" % (DAY, start, n), type="assistant", model="m", usage=usage(0, 0, 0),
-                 requestId="q%d" % (n % requests), **who_of(session, parent)) for n in range(messages)]
     return "".join(json.dumps(r) + "\n" for r in rows)
 
 

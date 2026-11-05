@@ -1,7 +1,8 @@
 """Unit tests of scripts/model. The scenarios of features/design-model-check.feature are bound in
 tests/scenarios/test_design_model_check.py. A test here that shares a scenario's subject usually checks what its steps do
 not; test_r5 and test_r20 repeat their scenarios and stay until a later cleanup removes them. ModelTest and the file
-builders here serve test_model_reading.py and test_model_glossary.py too."""
+builders here serve test_model_reading.py and test_model_glossary.py too. Every fixture is codified (design model v5):
+the index carries the typed glossary of tests/scripts/fixtures/glossary/, and `cap()` writes one group a requirement."""
 
 import json
 import pathlib
@@ -14,6 +15,24 @@ import textwrap
 import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "tests"))
+import toolchain
+from model_fixture import (  # noqa: F401 -- the builders, imported from here by the other model tests
+    CONTEXT,
+    HEAD,
+    I1,
+    INDEX,
+    OBS1,
+    P1,
+    PATH,
+    STATEMENT,
+    THING,
+    W1,
+    cap,
+    feature,
+    full,
+)
+
 SCRIPT = ROOT / "scripts" / "model"
 LP = ROOT / "scripts" / "model.lp"
 
@@ -23,53 +42,9 @@ try:
 except ImportError:
     HAVE_CLINGO = False
 
-PATH = "ex.com/prod/ctx"
-CONTEXT = f"bounded-context/{PATH}"
-INDEX = f"---\nid: {CONTEXT}\n---\n# ctx\n"
-
-
-def full(kind, name):
-    """A node's id in full: <kind>/<context path>/<name>."""
-    return f"{kind}/{PATH}/{name}"
-
-
-THING = full("capability", "thing")
-P1 = full("capability-proposal", "p1")
-I1 = full("initiative", "i1")
-W1 = full("work-item", "w1")
-OBS1 = full("observation", "obs-1")
-
-
-def cap(name, reqs, group="service", retired="[]", rests_on="[]"):
-    lines = "\n".join(reqs)
-    return textwrap.dedent(f"""\
-        ---
-        id: capability/{PATH}/{name}
-        title: {name}
-        narrator: a client
-        group: {group}
-        rests_on: {rests_on}
-        retired: {retired}
-        ---
-
-        # {name}
-
-        ## Purpose
-        Something.
-
-        ## Behaviour
-        """) + lines + "\n\n## Not yet\n- None.\n"
-
-
-def feature(name, *scenarios):
-    out = [f"# formulated from spec/capabilities/{name}.md", f"Feature: {name}", "  Narrator: a client", ""]
-    for tag, title in scenarios:
-        out += [f"  {tag}", f"  Scenario: {title}", "    Given a thing", "    Then it holds", ""]
-    return "\n".join(out)
-
-
 class ModelTest(unittest.TestCase):
     def setUp(self):
+        toolchain.require()
         self.tmp = pathlib.Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, self.tmp)
         self.write("spec/index.md", INDEX)
@@ -145,9 +120,11 @@ class ModelTest(unittest.TestCase):
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
 class CheckTest(ModelTest):
     def test_r3(self):
+        """A statement with no id: v15a, and the reader reports its line."""
         self.write("spec/capabilities/thing.md", cap("thing", ["- **When** asked, `thing` shall answer."], group="guarantees"))
         r = self.run_model("check")
         self.assertIn("v15a", r.stdout)
+        self.assertIn("a requirement is not '- [r<n>] <statement>'", r.stdout)
         self.assertEqual(r.returncode, 1)
 
     def test_r5(self):
@@ -201,12 +178,91 @@ class WithdrawnTest(ModelTest):
     def test_r59(self):
         self.breakdown("abandoned", "withdrawn", "drafted")
         found, r = self.check_json()
-        self.assertEqual(self.violated(found, "v_d2"), [[I1]], found)
+        self.assertEqual(self.violated(found, "v_d5"), [[I1]], found)
         self.assertEqual(r.returncode, 1)
         self.reset()
         self.breakdown("abandoned", "withdrawn", "withdrawn")
         found, _ = self.check_json()
         self.assertEqual(self.about_initiative(found), [], found)
+
+
+class Facts:
+    """Facts written by hand, standing in for a Model: the v5 rules over facts `model facts` does not emit yet (P5)."""
+
+    def __init__(self, text):
+        self.text = text
+
+    def asp(self):
+        return self.text
+
+
+def solve(text):
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import model_check
+    return [(name, args) for name, args in model_check.solve(Facts(text))[0]]
+
+
+CAP = 'node("c","capability"). narrator("c","n"). in("c","x"). node("x","bounded-context"). '
+GROUP = CAP + 'node("g","requirement-group"). in("g","c"). group_id("g","c",1). node("q","requirement"). req_id("q","c",1). member_of("q","g"). '
+TESTED = GROUP + 'node("s","scenario"). generates("g","s"). '
+WI = 'node("i","initiative"). status("i","started"). node("p","capability-proposal"). part_of("p","i"). status("p","drafted"). '
+REQ = 'node("r","request"). asker("r","internal"). upstream("r","x"). req_source("r","o"). node("o","observation"). '
+V5 = [   # (facts, code, the rows it gives)
+    (TESTED, None, []),
+    (GROUP, "v_s3", [["g"]]), (GROUP + 'logic_only("g").', "v_s3", []), (GROUP + 'group("c","guarantees").', "v_s3", []),
+    (TESTED + 'node("s2","scenario").', "v_s1", [["s2"]]),
+    (TESTED + 'node("g2","requirement-group"). in("g2","c"). generates("g2","s").', "v_s2", [["s"]]),
+    (TESTED + 'node("g2","requirement-group"). in("g2","c"). member_of("q","g2").', "v_s4", [["q"]]),
+    (TESTED + 'codified("c"). node("q2","requirement"). req_id("q2","c",2).', "v_s4", [["q2"]]),
+    (TESTED + 'node("g2","requirement-group"). in("g2","c").', "v15g", [["g2"]]),
+    (TESTED + 'node("g2","requirement-group"). in("g2","c"). group_id("g2","c",1).', "v15g", [["g"], ["g2"]]),
+    (TESTED + 'node("u","universal-condition"). node("u2","universal-condition"). u_id("u2",1).', "v15h", [["u"]]),
+    (TESTED + 'retired_group("c",1).', "v15i", [["g"]]),
+    (TESTED + 'restates("g","c#r9@0.29"). restates("g","c#r1@0.29"). restated_id("c#r1@0.29").', "v15j", [["g", "c#r9@0.29"]]),
+    (TESTED + 'node("q2","requirement"). member_of("q2","g"). pre("q","a"). pre("q2","b").', "v15k", [["g"]]),
+    (TESTED + 'node("t","term"). term_of("t","x"). typed("x").', "v_t4", [["t"]]),
+    (TESTED + 'node("t","term"). term_of("t","x").', "v_t4", []),
+    (TESTED + 'value_of("v","k","a"). value_of("v","k","b").', "v_t5", [["v"]]),
+    (TESTED + 'node("v","term"). category("v","value").', "v_t5", [["v"]]),
+    (TESTED + 'linearises("t1","x y"). linearises("t2","x y").', "v_t6", [["t1", "t2"]]),
+    (GROUP + WI + 'status("p","formulated"). adds("p","q").', "v15f", [["p"]]),
+    (TESTED + WI + 'changes("p","q").', "v15e", [["p", "q"]]), (TESTED + WI + 'changes("p","g").', "v15e", []),
+    (TESTED + 'resolution("r","s"). node("r","request"). status("r","accepted").', "v3", [["r", "s"]]),
+    (WI + 'status("i","abandoned").', "v_d5", [["i"]]),
+    (REQ + 'node("t","job-thread"). status("t","built"). req_part_of("r","t"). status("r","accepted").', "v_d2", [["t"]]),
+    (REQ + 'status("r","delivered"). outcome("r",1,"accepted"). line("r",1,"x"). outcome("r",2,"accepted"). '
+           'line("r",2,"y"). resolution_of_line("r",2).', "v_d4", [["r", 1]]),
+    (REQ + 'asker("r2","bounded-context/a"). upstream("r2","x"). node("r2","request").', "v7", []),
+    (REQ + 'asker("r2","bounded-context/a"). upstream("r2","x"). node("r2","request"). node("m","context-seam").', "v7", [["r2"]]),
+    (REQ + 'node("t","job-thread"). node("p","capability-proposal"). part_of("p","t").', "v_b3", [["t"]]),
+    (REQ + 'node("t","job-thread"). node("p","map-escalation"). part_of("p","t").', "v9c", []),
+    (REQ + 'node("p","work-item"). part_of("p","r").', "v18b", [["p", "r"]]),
+    ('foreign("request/a/b/c/q1").', "v18d", [["request/a/b/c/q1"]]),
+    (WI + 'status("i","proposed"). age("i",91).', "w_stale_proposed", [["i"]]),
+    (REQ + 'status("r","accepted"). age("r",91).', "w_stale_intake", [["r"]]),
+    (" ".join(f'node("r{n}","request"). upstream("r{n}","x"). status("r{n}","open").' for n in range(6)), "w_many_requests", [["x"]]),
+    (WI + 'date("i","2026-10-24").', "v16a", [["i"]]), (WI + 'date("i","2026-10-23").', "v16a", []),
+]
+
+
+@unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
+class V5RulesTest(unittest.TestCase):
+    def test_each_v5_rule_over_the_facts_it_reads(self):
+        for facts, code, rows in V5:
+            with self.subTest(code=code, facts=facts):
+                found = solve(facts)
+                if code is None:
+                    self.assertEqual([f for f in found if f[0].startswith("v")], [], found)
+                else:
+                    self.assertEqual(sorted(a for name, a in found if name == code), rows, found)
+
+    def test_the_rules_v5_retires_are_gone_and_its_renamed_codes_are_listed(self):
+        r = subprocess.run([sys.executable, str(SCRIPT), "rules"], capture_output=True, text=True)
+        codes = {line.split()[0] for line in r.stdout.splitlines()}
+        self.assertFalse(codes & {"v1", "v7b", "v_k1", "v_k2", "v_b2", "v18"}, r.stdout)
+        self.assertTrue({"v_d5", "w_stale_proposed", "v18d", "v15g", "v15h", "v15i", "v15j", "v15k", "v_t4", "v_t5",
+                         "v_t6", "v_s4", "v_d4"} <= codes, r.stdout)
+        self.assertNotIn("cross-context-request", LP.read_text())
 
 
 if __name__ == "__main__":

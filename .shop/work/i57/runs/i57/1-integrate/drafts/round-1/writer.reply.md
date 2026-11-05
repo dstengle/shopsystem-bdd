@@ -14,8 +14,8 @@
 | added | backlog | backlog#r6 | **When** the person gives a session a rule outside an initiative, the session shall add it to the log of temporary rules in the same turn, with its date and the person's words. | Line 7: "**When** the person gives a session a rule outside an initiative, the session shall add it to the log of temporary rules in the same turn, with its date and the person's words." |
 | added | backlog | backlog#r7 | **When** the person rules that a rule of the log of temporary rules moves to the backlog, the session shall move it from the log of temporary rules to the backlog. | Line 9: "**When** the person rules that a rule of the log of temporary rules moves to the backlog, the session shall move it from the log to the backlog." |
 | added | backlog | backlog#r8 | The session shall keep each rule, idea and observation of the bounded context in the repository. | Line 10: "The session shall keep each rule, idea and observation of the bounded context in the repository." |
-| added | migration-tools | migration-tools#r35 | **When** a session starts, the plugin's SessionStart hook shall give the session no item of the backlog. | Line 3: "The session-start hook's text shall give no item of the backlog." |
-| added | migration-tools | migration-tools#r36 | **When** a session starts, the plugin's SessionStart hook shall give the session each rule of the log of temporary rules. | Line 8: "The session-start hook's text shall give each rule of the log of temporary rules." |
+| added | migration-tools | migration-tools#r35@0.29 | **When** a session starts, the plugin's SessionStart hook shall give the session no item of the backlog. | Line 3: "The session-start hook's text shall give no item of the backlog." |
+| added | migration-tools | migration-tools#r36@0.29 | **When** a session starts, the plugin's SessionStart hook shall give the session each rule of the log of temporary rules. | Line 8: "The session-start hook's text shall give each rule of the log of temporary rules." |
 
 Glossary:
 

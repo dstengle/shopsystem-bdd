@@ -5,14 +5,14 @@ part_of: initiative/i10
 status: merged
 date: 2026-10-19
 argues: [code-research]
-adds: [code-research#r10-r12]
-changes: [code-research#r1, code-research#r3-r6]
-removes: [code-research#r2]
+adds: [code-research#r10@0.29, code-research#r11@0.29, code-research#r12@0.29]
+changes: [code-research#r1@0.29, code-research#r3@0.29, code-research#r4@0.29, code-research#r5@0.29, code-research#r6@0.29]
+removes: [code-research#r2@0.29]
 ---
 
 # Code research: the researcher stage
 
-What the gate approves: added `code-research#r10-r12`, changed `#r1` and `#r3-r6`, removed `#r2`, and the narrator
+What the gate approves: added `code-research#r10@0.29, code-research#r11@0.29, code-research#r12@0.29`, changed `#r1` and `#r3-r6`, removed `#r2`, and the narrator
 "the supervisor that started the researcher" (was "the session that plans a batch").
 
 The scout researches one drafted work-item for `work run` and its result gives the file set that becomes the

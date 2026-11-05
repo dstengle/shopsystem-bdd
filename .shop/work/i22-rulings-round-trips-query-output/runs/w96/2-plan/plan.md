@@ -8,18 +8,18 @@ One decision is open as a question (decision 1 below); everything else is taken.
 None of the accepted scenarios is red today. All 10 (16 test items) pass (notes §1, run). The work changes code they
 cover, so they must stay green:
 
-- migration-tools#r7: the "finds <found>", "would land on <there>" and "would <what>" outlines; "cannot make two of
+- migration-tools#r7@0.29: the "finds <found>", "would land on <there>" and "would <what>" outlines; "cannot make two of
   its changes"; "would relocate onto an untracked file"; "outside a git repository".
-- migration-tools#r18: `migrate status` prints the versions and the pending step.
-- migration-tools#r25: numbering by initiative number, then file name.
-- migration-tools#r26: rename and rewrite (the name in its own initiative, in another initiative, in `for:`).
+- migration-tools#r18@0.29: `migrate status` prints the versions and the pending step.
+- migration-tools#r25@0.29: numbering by initiative number, then file name.
+- migration-tools#r26@0.29: rename and rewrite (the name in its own initiative, in another initiative, in `for:`).
 
 The work-item's fixes have no scenario. Each gets a test under tests/scripts/ that is red today for the reason given
 (notes §2, §6):
 
 - N4: the ambiguity refusal says "reference" for every field and repeats a line, because the resolver is called
   with one label and the `refused` list in upgrade is never deduplicated.
-- N5: `for: migration-tools#r26` becomes `for: w2#r26`, and a comment `# item` becomes `# w2`. The token pattern
+- N5: `for: migration-tools#r26@0.29` becomes `for: w2#r26`, and a comment `# item` becomes `# w2`. The token pattern
   rewrites any token equal to a work-item's name.
 - N6: the move check (move_failures) has no test. It already refuses (probe). Its tests pass at once, and are
   written to guard it.
@@ -66,26 +66,26 @@ No file is added or removed beyond the researcher's set. Every file has room und
 2. **`migrate status` with a version file that holds no version** prints nothing to stdout. It prints one line on
    stderr naming `.shop/plugin-version` and what it holds, saying that this is not a version, and exits 1. It
    stops before the first status line, because r18's print ends in "exit successfully": a partial status followed
-   by a failure is neither the one nor the other. Rests on migration-tools#r18 and the work-item's "refuse, saying
+   by a failure is neither the one nor the other. Rests on migration-tools#r18@0.29 and the work-item's "refuse, saying
    why".
 3. **`migrate upgrade` with a version file that holds no version** refuses in the same words, exits 1 and changes
-   nothing. Rests on migration-tools#r7.
+   nothing. Rests on migration-tools#r7@0.29.
 4. **N5: what the rewrite touches.** On a `blocked_by`, `depends_on` or `for` line, and on each item of a block
    list, only a value that names a work-item is rewritten: the bare name or the name at the end of
    `work-item/<...>/`. A token with a `#r<n>` qualifier names a requirement, not a work-item, and is left as it is.
-   So is anything after a YAML comment marker. Rests on migration-tools#r26 ("every work-item's blocked_by,
+   So is anything after a YAML comment marker. Rests on migration-tools#r26@0.29 ("every work-item's blocked_by,
    depends_on and for that names it … leave free text in records as it is") and the work-item's N5.
 5. **N4 wording.** The refusal names the field the name stands in (blocked_by, depends_on or for), not
    "reference", and each refusal line appears once. The exact sentence is the implementer's. Rests on the
-   work-item's N4 and migration-tools#r7 ("naming each change it could not make").
+   work-item's N4 and migration-tools#r7@0.29 ("naming each change it could not make").
 6. **F8: when the missing id is refused.** context_path's failure goes into the plan's failures, and from there into
    upgrade's `refused` list before any apply. It is raised only when the step has a work-item to give an id, because
    with no work-item there is no change the id is needed for. `migrate status` never reads the id. A missing
    spec/index.md is refused the same way as an index with no id: the refusal names spec/index.md and says it has no
-   bounded-context id. Rests on migration-tools#r7, migration-tools#r26 (the id is `work-item/<context path>/w<n>`)
+   bounded-context id. Rests on migration-tools#r7@0.29, migration-tools#r26@0.29 (the id is `work-item/<context path>/w<n>`)
    and the work-item's F8.
 7. **F9: the tie-break.** The tie-break is the initiative directory's full name, compared as a string (so i1-a
-   comes before i1-b). Rests on migration-tools#r25 and the work-item's F9 ("sort by number, then name").
+   comes before i1-b). Rests on migration-tools#r25@0.29 and the work-item's F9 ("sort by number, then name").
 8. **The symbolic link at `.shop/plugin-version`** (notes §6.3): out of scope. The work-item does not name it. It
    stays a finding for a later work-item, and this plan does not change it.
 

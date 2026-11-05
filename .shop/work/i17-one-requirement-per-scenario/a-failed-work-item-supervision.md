@@ -5,8 +5,8 @@ part_of: initiative/i17
 status: formulated
 date: 2026-10-22
 argues: [supervision]
-adds: [supervision#r33-r41]
-changes: [supervision#r28]
+adds: [supervision#r33@0.29, supervision#r34@0.29, supervision#r35@0.29, supervision#r36@0.29, supervision#r37@0.29, supervision#r38@0.29, supervision#r39@0.29, supervision#r40@0.29, supervision#r41@0.29]
+changes: [supervision#r28@0.29]
 source: [design-decision/a-failed-work-item]
 ---
 

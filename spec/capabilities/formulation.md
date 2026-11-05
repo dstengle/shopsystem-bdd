@@ -4,45 +4,40 @@ title: Formulation
 narrator: the person who approved the lines
 group: guarantees
 rests_on: [design-decision/a-scenario-names-one-requirement, design-decision/exits-are-successful-or-errors, design-decision/formulation-needs-no-second-approval, design-decision/spec-writers-blind-to-code, design-decision/held-scenarios, design-decision/controller-per-spec-round, design-decision/workflow-capabilities-are-guarantees, design-decision/the-context-runs-without-a-coordinator]
-retired: [r8, r12]
+language: codified-1
+retired: []
 ---
 
 # Formulation
 
 ## Purpose
-Writes the acceptance-scenarios for approved Behaviour lines, one feature file per capability, from the
-narrator's side and without sight of the code. It is `formulating-features`, used in a round of the kind
-`formulate`, an `initiative-round` session that `work run` starts (supervision), which dispatches
-`feature-formulator`s; no session writes feature files itself (design-decision/the-context-runs-without-a-coordinator).
-It decides nothing: a line with two readings comes back as a question.
+Formulation is no longer a session's work. A scenario is the generated linearisation of one requirement group
+(design model v5), so `work run`'s formulate round runs `features generate` as a script, with no session and no
+question (supervision). What the 0.29 lines of this capability guaranteed is either said by that script, and moved to
+supervision, or has no subject left: no line admits two readings once it parses to one tree, and the generator owns
+every feature file, so no scenario is deprecated, rebound or reworded by hand. The capability keeps its file as the
+record of where its lines went.
 
 ## Behaviour
-- [r1] **When** lines are approved, `formulating-features` shall write the scenarios of each added or changed line that has one reading in its capability's feature file `features/<name>.feature`, one scenario or one outline for the line, or one scenario per reason for a line every call must keep (r9).
-- [r2] `formulating-features` shall commit formulated scenarios without showing them to the person for approval.
-- [r3] **If** a line admits two readings, then `formulating-features` shall show the person the question with its two readings in place of that line's scenarios, formulating the rest of the capability.
-- [r4] **When** a line whose old scenario passes today is changed or removed, `formulating-features` shall keep the old scenario in its feature file, deprecated and with the `@r<n>` tag it had, until the work-item whose work makes its replacement pass retires it.
-- [r5] **When** a line whose old scenario does not pass today is changed or removed, `formulating-features` shall replace or remove the old scenario.
-- [r23] **When** `formulating-features` runs an old scenario alone, `formulating-features` shall run it with `python3 -m pytest`.
-- [r6] **When** `formulating-features` commits feature files, `formulating-features` shall commit only the feature files and the test files `features rebind` changed, with `features bindings` printing that every binding names a scenario.
-- [r7] **When** an existing feature file is changed, `formulating-features` shall keep every scenario not added, changed or removed byte for byte as it was, tags included.
-- [r9] `formulating-features` shall formulate a line every call must keep as one scenario per reason the line gives, each with one representative call.
-- [r10] **When** the person answers that a scenario a work-item's implementer handed back with evidence is a formulation question, `formulating-features` shall rewrite the scenario to fit its line and the evidence, or show the person a question with two readings.
-- [r11] `formulating-features` shall tag each scenario, on its tag line, with the one `@r<n>` of the one line it formulates, whatever the scenario's title.
-- [r13] **Where** `model check` is available, **when** feature files are committed, `model check` shall print no scenario that is not deprecated and names no line or more than one, and no added or changed line without a scenario.
-- [r14] **When** a scenario uses a word its context's glossary avoids, `formulating-features` shall reword the scenario to its line in a round of the kind `formulate`, without a further gate.
-- [r22] **If** `formulating-features` cannot do what it was asked, then `formulating-features` shall stop, saying why, and commit nothing.
 
 ## Implementation, may change
-- This capability is guarantees, checked by `measure` on real batches (design-decision/workflow-capabilities-are-guarantees).
-- `work run` starts `initiative-round` with the kind `formulate`; the round dispatches one `feature-formulator`
-  a capability with the template in the skill as its input, verifies coverage one to one, runs each old scenario alone before
-  replacing it, uses `features deprecate`, `features rebind` and `features bindings`, splices and commits.
-- A scenario's title usually restates its line's condition, though the `@r<n>` tag is what names the line; Then lines name a refusal's reason, never message text, and say a command exits successfully or exits with an error, never an exit code.
-- Two lines that need the same setup or check get a scenario each, sharing step definitions in code.
-- A feature file begins `# formulated from spec/capabilities/<name>.md`, then `Feature: <title>`, then
-  `Narrator: <narrator>`. A deprecated scenario is tagged `@deprecated`, has " (deprecated)" at the end of its
-  title and a `Deprecated for:` line naming what replaces it.
-- Where `model check` is not available, the round says so and verifies coverage by hand.
+- `skills/formulating-features/` explains generation; `scripts/supervise_formulate.py` is the formulate round.
 
 ## Not yet
-None.
+- None.
+
+## Dropped
+- r1@0.29: moved to supervision
+- r2@0.29: moved to supervision
+- r3@0.29: no line has two readings: a statement that does not parse to exactly one tree is refused (v_p1, v_p2).
+- r4@0.29: the generator owns feature files and `features deprecate` is gone; a group's scenario is regenerated, never deprecated.
+- r5@0.29: as r4: a removed group's scenario is removed by the generator.
+- r6@0.29: moved to supervision
+- r7@0.29: moved to supervision
+- r9@0.29: one scenario is generated for each group; a line every call must keep is a group of its own.
+- r10@0.29: the formulation question is gone with the formulator: an implementer's evidence goes back as a question for the spec.
+- r11@0.29: moved to supervision
+- r13@0.29: design model v5's v_s1 to v_s3 say it, and design-model-check checks them.
+- r14@0.29: a generated scenario uses only lexicon words, and v_t1 checks the prose that is left.
+- r22@0.29: moved to supervision
+- r23@0.29: no old scenario is run alone before it is replaced: nothing is deprecated.

@@ -2,7 +2,7 @@
 
 ## 1. What goes green
 
-`design-model-check#r106` (v_w4: a work-item that is not `withdrawn` has no `accepts` and no `check`).
+`design-model-check#r106@0.29` (v_w4: a work-item that is not `withdrawn` has no `accepts` and no `check`).
 
 - Scenario Outline "a work-item with no accepts and no check is v_w4, unless it is withdrawn" (4 rows): green today (notes §1, run: 4 passed); it stays green.
 - Scenario "a work-item accepting a requirement no scenario names yet, with no check, is not v_w4": red today at its second Given, a KeyError in the step `work_item_with` of `tests/scenarios/design_model_check_one_each.py`, since `FIELDS` has no entry for "accepts thing#r2 and no check". With that entry it would still be red at the Then: `read_part` in `scripts/model_work.py` writes an `accepts` fact only for the scenarios found naming the accepted requirement, so `has_accepts` in `scripts/model.lp` is false and v_w4 prints w1 (notes §1, probe A).

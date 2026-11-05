@@ -5,7 +5,7 @@ part_of: initiative/i23
 status: formulated
 date: 2026-10-23
 argues: [delivery]
-adds: [delivery#r17-r18]
+adds: [delivery#r17@0.29, delivery#r18@0.29]
 changes: []
 removes: []
 ---

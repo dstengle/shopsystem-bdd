@@ -1,4 +1,4 @@
-# Research of w103: delivery#r17, delivery#r18
+# Research of w103: delivery#r17@0.29, delivery#r18@0.29
 
 Tools: plugin 0.24.0 `scripts/` by path. `tools probe` ok. `tools tests-of` and `untested`: "no map", so no `map` run; test lists are `by search`. `refs` not run.
 
@@ -19,7 +19,7 @@ Probes (scratch: `.shop/scratch/w103-1-research/`).
   - `replacement` came back null: my `Deprecated for:` named a title that differed from the replacement's exact title. Replacement tags come only from an exact title match (read: features_report.py:77-79).
   - Text form: `... | for: the new listing | no scenario has that title`; removal: `deprecated for removal`.
 - P2 `probe_model.py`. Command as P1. Run, on a synthetic root (not the checkout).
-  - Work-item accepting `delivery#r17` and `#r18`, no scenario naming them: `file: ...w103.md: accepts capability/.../delivery#r17, which no scenario names yet` (same for #r18). Exit 1.
+  - Work-item accepting `delivery#r17@0.29` and `#r18`, no scenario naming them: `file: ...w103.md: accepts capability/.../delivery#r17, which no scenario names yet` (same for #r18). Exit 1.
   - Also `v_w4  a work-item has no acceptance and no check (1)`.
   - Artifacts of my synthetic root, not the real checkout: `v9c`, `v_b1` and `unresolved` (the proposal file was absent), and `initiative.md` status `formulated` is not a valid lifecycle value in this root.
   - The real checkout's `model check` was not run (probes never read the checkout's data).
@@ -55,7 +55,7 @@ None found that the requirements break. No code path the requirements change is 
 
 ### D1 `--work-item` with no scenario collected runs unrelated tests and passes
 
-Reproduction: P3 `probe_zero.py`, run. Scratch root, `.shop/work/i23/w103.md` with `accepts: [delivery#r17, delivery#r18]`, `tests/test_plain.py` with one plain test.
+Reproduction: P3 `probe_zero.py`, run. Scratch root, `.shop/work/i23/w103.md` with `accepts: [delivery#r17@0.29, delivery#r18@0.29]`, `tests/test_plain.py` with one plain test.
 
 Command: `PYTHONPATH=<Scripts> python3 -m pytest -q -n 0 -p work_items --work-item w103 tests`
 

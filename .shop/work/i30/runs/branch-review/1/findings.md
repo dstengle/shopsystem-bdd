@@ -6,7 +6,7 @@
 
 - Range: `4fbc25cd..5892599d` on `i25-review-findings-to-implementation`. The branch is shared by i25 through i31. The range also holds the commits of i25, i26, i27, i28, i29 and i31: their rounds, work-items, branch reviews and records. This review judges i30's work-items and names the other initiatives' commits only where a check reaches them.
 - i30's work-items and their commits (between `ready -> claimed` and `claimed -> done`, less `work:` commits):
-  - **w180** (formulation#r23, green): two commits.
+  - **w180** (formulation#r23@0.29, green): two commits.
     - `75cd7fda`: claim `225d3ed2` to done `5d20b71e`.
     - `4f1d4641`: the fix of review 6's F1, claim `ce37512e` to done `5ee2e95a`.
   - **w182** (withdrawn): no commit reached the branch. Claim `a0be069f` was followed by `90c3ec28 awaiting-answer`, then `df76cd2f` withdrawn.

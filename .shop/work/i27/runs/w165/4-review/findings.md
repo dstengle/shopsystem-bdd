@@ -1,4 +1,4 @@
-# Review of w165 (requests#r19, `work request --delegation`)
+# Review of w165 (requests#r19@0.29, `work request --delegation`)
 
 **Verdict: DONE.** No Critical finding, none triaged fix now. The change does what r19 and the Implementation section
 ("`--delegation` is written as the frontmatter field `delegation`") ask for, along the plan's decisions 1-5.

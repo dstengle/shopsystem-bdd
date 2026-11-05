@@ -6,18 +6,24 @@ from pathlib import Path
 
 from model_parse import as_list, decision_files, expand, frontmatter, scalar
 
-STATUSES = {
+STATUSES = {     # design model v5's lifecycles (GF conversion design §7.1: C11, C13-C15)
     "initiative": {"proposed", "started", "done", "abandoned"},
-    "capability-proposal": {"drafted", "approved", "merged", "formulated", "withdrawn", "awaiting-answer"},   # withdrawn: EXTENSION (r58)
+    "capability-proposal": {"drafted", "awaiting-answer", "approved", "formulated", "withdrawn"},
     "work-item": {"drafted", "researched", "planned", "ready", "claimed", "done", "green", "awaiting-answer", "failed",
-                  "withdrawn"},   # withdrawn: EXTENSION (r58); failed: design-decision/a-failed-work-item
+                  "withdrawn"},
     "glossary-proposal": {"drafted", "awaiting-answer", "approved", "withdrawn"},   # the glossary's term `status` (r124)
     "request": {"open", "awaiting-asker", "awaiting-upstream", "accepted", "refused", "delivered", "withdrawn"},
+    "design-decision": {"proposed", "accepted", "rejected", "superseded"},
 }
+LEGACY = {"capability-proposal": {"merged"}}     # 0.29's, kept readable only under a done or abandoned initiative (C11)
+CLOSED_INITIATIVE = {"done", "abandoned"}
 SETTLED = {"merged", "formulated", "withdrawn"}     # a capability-proposal that may name a retired id (r5, r23)
-PART_KINDS = {"job-proposal", "map-proposal", "vision-proposal", "job-thread", "capability-proposal",
-              "cross-context-request", "map-escalation", "work-item", "glossary-proposal"}
-RECORD_KINDS = {"observation", "measurement", "review-finding", "decision-argument", "initiative-archive"}
+PART_KINDS = {"job-proposal", "map-proposal", "vision-proposal", "capability-proposal", "map-escalation", "work-item",
+              "glossary-proposal"}     # a job-thread is a root (C23); cross-context-request is gone (C22)
+RECORD_KINDS = {"observation", "measurement", "review-finding", "decision-argument", "initiative-archive",
+                "design", "analysis"}     # design and analysis are history (C21)
+HISTORY = {"design": "record", "analysis": "record"}     # their ids are record/<path>/<name>
+GROUP_REF = re.compile(r"^(?P<cap>[\w.-]+(?:/[\w.-]+)*)#g(?P<n>\d+)$")
 WORK = Path(".shop") / "work"
 RECORDS = Path(".shop") / "records"
 
@@ -37,6 +43,8 @@ class WorkReading:
                 continue
             self.check_id(d, "design-decision", self.rel(path))
             self.node(d, "design-decision")
+            if data.get("status") is not None:      # C14; a decision with no status is read as before
+                self.status(d, "design-decision", data["status"], path)
             if data.get("summary"):
                 self.fact("summary", d, data["summary"])
             for old in as_list(data.get("supersedes")):
@@ -74,7 +82,7 @@ class WorkReading:
             if kind not in RECORD_KINDS:
                 self.problems.append(f"{self.rel(path)}: kind {kind!r} is not a record kind")
                 continue
-            self.check_id(data["id"], kind, self.rel(path))
+            self.check_id(data["id"], HISTORY.get(kind, kind), self.rel(path))
             self.node(data["id"], kind)
             for a in as_list(data.get("about")):
                 a = self.qualify(a)
@@ -115,6 +123,7 @@ class WorkReading:
                 continue
             self.check_id(i, "initiative", self.rel(ipath))
             self.node(i, "initiative")
+            self.closed_initiative = data.get("status") in CLOSED_INITIATIVE
             self.status(i, "initiative", data.get("status"), ipath)
             if data.get("kind"):
                 self.fact("ikind", i, data["kind"])
@@ -176,7 +185,7 @@ class WorkReading:
                     if not q:
                         continue
                     self.fact(rel, p, q)
-                    if q in self.nodes:
+                    if q.endswith("@0.29") or q in self.nodes:      # a 0.29 id is history (§13.4)
                         continue
                     cap, n = q.rsplit("#r", 1)
                     if (cap, int(n)) in self.retired and data.get("status") in SETTLED:
@@ -209,16 +218,7 @@ class WorkReading:
             if data.get("check"):
                 self.fact("check", p, data["check"])
             for ref in expand(as_list(data.get("accepts"))):
-                q = self.resolve_req(ref, where)
-                if not q:
-                    continue
-                self.fact("accepts", p, q)                  # r106: from the field, whether or not a scenario names it
-                found = [args[1] for name, args in self.facts if name == "has_sc" and args[0] == q]
-                cap, _, n = q.rpartition("#r")
-                exempt = (("group", [cap, "guarantees"]) in [(f, list(a)) for f, a in self.facts]
-                          or (data.get("status") == "green" and (cap, int(n)) in self.retired))
-                if not found and data.get("status") != "withdrawn" and not exempt:    # r27: a withdrawn one is closed (r36)
-                    self.problems.append(f"{where}: accepts {q}, which no scenario names yet")
+                self.read_accepts(p, ref, data.get("status"), where)
             for b in as_list(data.get("blocked_by")):
                 b = self.qualify(b)
                 self.fact("blocked_by", p, b)
@@ -230,11 +230,37 @@ class WorkReading:
             for f in as_list(data.get("fileset")):
                 self.fact("fileset", p, f)
 
+    def read_accepts(self, w, ref, status, where):
+        """accepts(W, X), X a requirement or a group (C17), from the field whether or not a scenario names it (r106);
+        a file problem when no scenario tests it yet, unless W is withdrawn (r27, r36)."""
+        m = GROUP_REF.match(str(ref).strip())
+        if m:
+            x = f"{self.qualify(m.group('cap'), 'capability')}#g{m.group('n')}"
+            if self.nodes.get(x) != "requirement-group":
+                self.dangling.append(f"{where}: accepts {x}, which no capability has")
+                return
+        else:
+            x = self.resolve_req(ref, where)
+            if not x:
+                return
+        self.fact("accepts", w, x)
+        facts = {(name, tuple(args)) for name, args in self.facts}
+        groups = [a[1] for name, a in facts if name == "member_of" and a[0] == x] + ([x] if m else [])
+        tested = {a[0] for name, a in facts if name in ("generates", "logic_only")}
+        cap = x.rpartition("#")[0]
+        found = [a for name, a in facts if name == "has_sc" and a[0] == x] or [g for g in groups if g in tested]
+        exempt = (("group", (cap, "guarantees")) in facts
+                  or (not m and status == "green" and (cap, int(x.rpartition("#r")[2])) in self.retired))
+        if not found and status != "withdrawn" and not exempt:
+            self.problems.append(f"{where}: accepts {x}, which no scenario names yet")
+
     def status(self, ident, kind, value, path):
         if value is None:
             self.problems.append(f"{self.rel(path)}: no status")
             return
         allowed = STATUSES.get(kind)
+        if value in LEGACY.get(kind, ()) and getattr(self, "closed_initiative", False):
+            allowed = None
         if allowed and value not in allowed:
             self.problems.append(f"{self.rel(path)}: status {value!r} is not one of {', '.join(sorted(allowed))}")
         self.fact("status", ident, value)

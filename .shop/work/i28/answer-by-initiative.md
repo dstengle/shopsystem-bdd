@@ -5,7 +5,7 @@ part_of: initiative/i28
 status: formulated
 date: 2026-10-25
 argues: [work-queue]
-adds: [work-queue#r30]
+adds: [work-queue#r30@0.29]
 changes: []
 removes: []
 ---

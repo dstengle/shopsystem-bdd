@@ -5,7 +5,7 @@ part_of: initiative/i17
 status: merged
 date: 2026-10-22
 argues: [review]
-adds: [review#r29, review#r30]
+adds: [review#r29@0.29, review#r30@0.29]
 changes: []
 removes: []
 ---

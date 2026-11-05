@@ -1,6 +1,6 @@
 # w107 research notes
 
-Work-item: w107, accepts analysis-tools#r7. Scenario: features/analysis-tools.feature:89 "a tool still missing after install is printed with the failed command". Node: tests/scenarios/test_analysis_tools.py::test_a_tool_still_missing_after_install_is_printed_with_the_failed_command
+Work-item: w107, accepts analysis-tools#r7@0.29. Scenario: features/analysis-tools.feature:89 "a tool still missing after install is printed with the failed command". Node: tests/scenarios/test_analysis_tools.py::test_a_tool_still_missing_after_install_is_printed_with_the_failed_command
 Method: `tools refs` (run), `python3 -m pytest --collect-only` (run), reads (`read`), a probe in scratch (`run`). No `tools map` run: it writes .shop/scratch/tools/coverage, outside my scratch dir. So `tests-of` / `untested` were not used; test lists below are `by search`.
 
 ## 1. Why each scenario is red today

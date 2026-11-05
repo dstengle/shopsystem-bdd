@@ -10,8 +10,8 @@ Base: ebbf1beaaa1fb5e4e3d29ffde673a5999a2cbd22
 Worktree: /home/vscode/shopsystem-bdd/.shop/worktrees/supervision-2-apply
 Branch: round/supervision-2-apply
 Answers the person gave, each with the question it answers:
-- Question: supervision#r155: "**When** `work run` starts a branch review, `work run` shall give the branch reviewer each run r154 names with its command, how it exited and its output, naming the commit they ran at." How should a run's exit be worded? Reading A (recommended, drafted): keep "how it exited" and add the Implementation line "r155: how a run exited is given as its exit code." Reading B: put it in the line: "each run r154 names with its command, exit code and output, naming the commit they ran at."
-  Answer: 2026-10-28: supervision#r155: Reading A, keep 'how it exited' and add the Implementation line 'r155: how a run exited is given as its exit code.' (answered by the coordinator under the person's delegation of 2026-10-28).
+- Question: supervision#r155@0.29: "**When** `work run` starts a branch review, `work run` shall give the branch reviewer each run r154 names with its command, how it exited and its output, naming the commit they ran at." How should a run's exit be worded? Reading A (recommended, drafted): keep "how it exited" and add the Implementation line "r155: how a run exited is given as its exit code." Reading B: put it in the line: "each run r154 names with its command, exit code and output, naming the commit they ran at."
+  Answer: 2026-10-28: supervision#r155@0.29: Reading A, keep 'how it exited' and add the Implementation line 'r155: how a run exited is given as its exit code.' (answered by the coordinator under the person's delegation of 2026-10-28).
 
 Read (paths in your worktree):
 - .shop/work/i43/supervision.md

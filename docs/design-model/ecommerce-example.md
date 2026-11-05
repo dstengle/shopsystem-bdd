@@ -6,6 +6,13 @@ back as statements. Every statement is one artifact or one edge from
 statement can't be formed, the design is missing something; if one can be
 formed that shouldn't be, the grammar is too loose. Both are at the end.
 
+**Under version 5** this example keeps its version 4 wording: it reads the
+graph aloud in the non-normative reading form (`grammar.md` §6.5). Read
+"capability-requirement" as requirement and "acceptance-scenario" as
+scenario; "formulated as" is now a scenario generated from the
+requirement's group, and a request's lines would be sentences that parse
+in the shop's own requirement grammar.
+
 ## 1. The product
 
 **Product-vision.** A small online shop for one maker: shoppers find,

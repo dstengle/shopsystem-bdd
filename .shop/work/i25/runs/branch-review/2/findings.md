@@ -9,7 +9,7 @@
 
 - Range: `f582b1bb..76a9ed4b` on `i25-review-findings-to-implementation`. The branch is shared with i26 to i31, so most of its commits belong to those initiatives' work-items and rounds.
 - i25's work-items:
-  - **w173** (supervision#r98), green. One commit: `b6c4feb1` (`scripts/supervise_brief.py` +19, `tests/scenarios/supervision_answers_steps.py` +36). It lies between `906706f0` (ready -> claimed) and `9e50678a` (claimed -> done).
+  - **w173** (supervision#r98@0.29), green. One commit: `b6c4feb1` (`scripts/supervise_brief.py` +19, `tests/scenarios/supervision_answers_steps.py` +36). It lies between `906706f0` (ready -> claimed) and `9e50678a` (claimed -> done).
   - **w174** (work-queue r14, r26, r27), withdrawn. Its branch `work/w174` (`e0ee6404`) is **not** merged into HEAD (`git merge-base --is-ancestor work/w174 HEAD` is false). Nothing of it is on the branch.
   - **w176** (work-queue r14, r26-r28), green. One commit: `a2d1083e` (`features/work-queue.feature` -15, `scripts/work` +4/-2, `scripts/workqueue_answer.py` +15/-2, `tests/scenarios/work_queue_answer_steps.py` +29). It lies between `9c79765c` (ready -> claimed) and `e0ce90ce` (claimed -> done).
 - i25's spec and formulate commits, which are rounds and not work-items:

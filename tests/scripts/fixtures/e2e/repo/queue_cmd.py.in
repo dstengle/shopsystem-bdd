@@ -1,0 +1,6 @@
+"""The fixture's toy queue (queue_cmd.py in the end-to-end test's clone): each command takes an initiative's status and
+gives its new status and the command's exit code."""
+
+
+def start(status):
+    return ("started", 0) if status == "proposed" else (status, 1)

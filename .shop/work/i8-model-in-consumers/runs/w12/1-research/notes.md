@@ -1,4 +1,4 @@
-# Research notes: migrate-run (work-item i8, accepts migration-tools#r1-r11)
+# Research notes: migrate-run (work-item i8, accepts migration-tools#r1@0.29, migration-tools#r2@0.29, migration-tools#r3@0.29, migration-tools#r4@0.29, migration-tools#r5@0.29, migration-tools#r6@0.29, migration-tools#r7@0.29, migration-tools#r8@0.29, migration-tools#r9@0.29, migration-tools#r10@0.29, migration-tools#r11@0.29)
 
 Method. No `CLAUDE.md` in the worktree (Glob for it: none), so module map and size limit are "no limit stated".
 Analysis tools: `tools probe` ok (no virtualenv). `tools refs` works on `.py` only: `scripts/model`, `scripts/features`,

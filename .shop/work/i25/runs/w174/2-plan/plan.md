@@ -4,9 +4,9 @@ From the research notes, `.shop/work/i25/runs/w174/1-research/notes.md`.
 
 ## 1. What goes green
 
-- **work-queue#r26**: "answer that asks for a change, to a reviewer's question, transitions the work-item to ready". Red today because its When step ("…, saying that the answer asks for a change") has no step definition. Also, `scripts/work answer` has no `--change` flag (argparse refuses it with rc 2), and `workqueue_answer.answer` has no reviewer branch, so a reviewer's question goes by `asked_from` to `done`.
-- **work-queue#r27**: "answer that accepts the work-item as it is, to a reviewer's question, transitions the work-item to done". Red the same way: its When step ("…, saying that the answer accepts the work-item as it is") has no step definition, and there is no `--accept` flag.
-- **work-queue#r14**: "answer to a researcher's, a planner's or an implementer's question transitions the work-item to the status that stage started from" (three examples). Green today and must stay green.
+- **work-queue#r26@0.29**: "answer that asks for a change, to a reviewer's question, transitions the work-item to ready". Red today because its When step ("…, saying that the answer asks for a change") has no step definition. Also, `scripts/work answer` has no `--change` flag (argparse refuses it with rc 2), and `workqueue_answer.answer` has no reviewer branch, so a reviewer's question goes by `asked_from` to `done`.
+- **work-queue#r27@0.29**: "answer that accepts the work-item as it is, to a reviewer's question, transitions the work-item to done". Red the same way: its When step ("…, saying that the answer accepts the work-item as it is") has no step definition, and there is no `--accept` flag.
+- **work-queue#r14@0.29**: "answer to a researcher's, a planner's or an implementer's question transitions the work-item to the status that stage started from" (three examples). Green today and must stay green.
 - **Retired**: the deprecated outline "answer on an awaiting-answer work-item transitions it to the status the asking stage started from (deprecated)" (`@r14 @deprecated`, features/work-queue.feature, its four examples). It is green today. Its reviewer→done row cannot stay green once a reviewer's question needs a flag.
 
 ## 2. Where the change lands
@@ -23,7 +23,7 @@ Removed from the researcher's set:
 ## 3. Decisions
 
 1. **The flag's form**: `--change` and `--accept`, with the answer still one line of free text. This rests on the capability's Implementation line for r26 and r27 and on answer 4 of the i25 work-queue capability-proposal.
-2. **A reviewer's question answered with neither flag is refused**: exit with an error saying the answer must say whether it asks for a change or accepts the work-item as it is, and change nothing. It is checked before anything is written, so `## Answers`, the status, the log and the commit all stay unchanged. This rests on work-queue#r28 (the capability's Behaviour), answer 1 of the proposal, and r7. It is not a reading chosen here, but w174 does not accept r28, so the `@r28` scenario's step ("saying neither …") is not written in this work-item. That scenario stays red, on an undefined step, until the work-item that accepts r28 adds it. Keeping today's landing in `done` would contradict r28 and the retirement of the deprecated outline.
+2. **A reviewer's question answered with neither flag is refused**: exit with an error saying the answer must say whether it asks for a change or accepts the work-item as it is, and change nothing. It is checked before anything is written, so `## Answers`, the status, the log and the commit all stay unchanged. This rests on work-queue#r28@0.29 (the capability's Behaviour), answer 1 of the proposal, and r7. It is not a reading chosen here, but w174 does not accept r28, so the `@r28` scenario's step ("saying neither …") is not written in this work-item. That scenario stays red, on an undefined step, until the work-item that accepts r28 adds it. Keeping today's landing in `done` would contradict r28 and the retirement of the deprecated outline.
 3. **The deprecated outline is deleted whole**, not just its reviewer row. The work-item's Retires section names the outline. Its replacement, the current `@r14` outline, covers the three stages before review. The "its question asked by <asker>" Given stays, because r26, r27 and r28 use it.
 4. **The flag on a researcher's, planner's or implementer's question is ignored, and r14 holds.** This rests on answer 2 of the proposal.
 5. **`work answer` alone changes; `work run`'s delegated answers do not.** `supervise_answers.py` line 79 keeps moving a delegated work-item by `asked_from`. `asked_from` keeps its present contract, so the supervision narrator sees nothing new from this work-item. How a delegated answer to a reviewer's question says change or accept is supervision behaviour that no accepted line here names (w174 is under work-queue).
@@ -42,6 +42,6 @@ Removed from the researcher's set:
 - Either flag on a capability-proposal's answer (r24): answer 2 speaks of work-items. Whether a proposal ignores the flag is unnamed.
 - A reviewer's question whose log has no move into `awaiting-answer`: today `asked_from` refuses this. Where the reviewer branch reads the log, and so which of the two refusals is given first, is for the implementer to name.
 - Gaps outside w174, recorded for whoever takes them:
-  - r28 is in the capability but in no work-item's accepts that this plan can see (w173 accepts supervision#r98).
+  - r28 is in the capability but in no work-item's accepts that this plan can see (w173 accepts supervision#r98@0.29).
   - `supervise_answers.py` line 79 can still land a delegated answer to a reviewer's question in `done` with no flag.
   - An accepted work-item is reviewed again by `work run`.

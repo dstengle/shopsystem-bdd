@@ -5,7 +5,7 @@ part_of: initiative/i17
 status: merged
 date: 2026-10-22
 argues: [delivery]
-adds: [delivery#r9]
+adds: [delivery#r9@0.29]
 ---
 
 # delivery: small work-items, expected red, faults

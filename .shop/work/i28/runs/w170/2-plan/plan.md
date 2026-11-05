@@ -1,22 +1,22 @@
 # Plan of w170: initiatives side by side in the loop
 
-Work-item `.shop/work/i28/w170.md`, under `supervision`, accepts supervision#r102, #r103, #r104. Planned from
+Work-item `.shop/work/i28/w170.md`, under `supervision`, accepts supervision#r102@0.29, #r103, #r104. Planned from
 `.shop/work/i28/runs/w170/1-research/notes.md` (notes) and the scenarios in `features/supervision.feature`.
 No `## Retires`, no `## Rulings`.
 
 ## 1. What goes green
 
-- **supervision#r103**: "an accepted request this context is the upstream of, that no initiative fulfils, has its
+- **supervision#r103@0.29**: "an accepted request this context is the upstream of, that no initiative fulfils, has its
   initiative started with `work start`" (feature line 1230). Red: `StepDefinitionNotFoundError` at its first Given (the
   existing intake Given needs "its turn the upstream's, with two lines"). Behind that, `supervise_all.run_all` never
   starts an initiative: probe R103-a shows `work run` with q1 accepted and no initiative leaves `.shop/work/` with no
   initiative (notes 1, 2).
-- **supervision#r102**: "an integrate round is given every requirement id another initiative's kept drafts add that
+- **supervision#r102@0.29**: "an integrate round is given every requirement id another initiative's kept drafts add that
   spec/ on the branch it starts from does not hold, whatever that initiative's capability-proposal's status" (line
   1240). Red: undefined Given at the spec/capabilities/thing.md step. Behind that, `supervise_brief.integrate_lines`
   gives only the request's accepted lines, the drafts path and the change-list form; probe R102 shows the brief names
   none of the ids (notes 1, 2).
-- **supervision#r104**: "the gate round of a capability-proposal is asked only for the questions on the lines and terms
+- **supervision#r104@0.29**: "the gate round of a capability-proposal is asked only for the questions on the lines and terms
   that proposal adds, changes or removes" (line 1252). Red: undefined Given "the capability thing holds ...". Behind
   that, the gate branch of `supervise_brief.brief` writes one fixed sentence and no id of the proposal; probe R104
   (notes 1, 2).
@@ -54,18 +54,18 @@ A step module that would go over 300 lines is split into a new `supervision_*_st
 1. **When the start happens (r103, r10).** `work run` with no initiative makes every check it makes today (each open
    initiative's `Run.check`, each intake's `check`) and only then starts the new initiatives. The new initiatives join
    the runs taken in this same `work run`, each checked like the others, before anything moves. It rests on
-   supervision#r10: a refusal changes nothing. Probe R103-c shows that an initiative started by hand is taken through
-   integrate onward, and the one `work run` started is taken the same way (supervision#r79, #r84).
+   supervision#r10@0.29: a refusal changes nothing. Probe R103-c shows that an initiative started by hand is taken through
+   integrate onward, and the one `work run` started is taken the same way (supervision#r79@0.29, #r84).
 2. **Refusals when no initiative is open (r10).** When there is no open initiative, `work run`'s path to the start still
    refuses what `Run.check` refuses, before starting anything: a worker's marker (`SHOPSYSTEM_WORK_RUN_WORKER`), a
    detached HEAD, and loose changes under `.shop/work/`. This keeps D1 (a start inside a worker) and D3 (a commit on a
-   detached HEAD) out of `work run`. It rests on supervision#r10. `work start` by hand keeps its behaviour today; this
+   detached HEAD) out of `work run`. It rests on supervision#r10@0.29. `work start` by hand keeps its behaviour today; this
    work-item does not cover it.
 3. **What "no initiative fulfils it" means (r103).** It means no initiative under `.shop/work/`, of any status, has a
    `fulfils` that names the request. The id is matched the way `supervise_rounds.due` matches it (the last path
    segment). This is r103's literal wording, and it keeps D2 (a second initiative for one request) out of `work run`.
    The push is the one `push_unpushed` already makes later in `run_all`; no push is added.
-4. **Where the ids of r102 come from (supervision#r102, #r91).** "Kept drafts" means the drafts r91 keeps: the
+4. **Where the ids of r102 come from (supervision#r102@0.29, #r91).** "Kept drafts" means the drafts r91 keeps: the
    capability files under each other initiative's integrate stage directories (`runs/<initiative>/<k>-integrate/
    drafts/spec/capabilities/<capability>.md`). The capability-proposal's `adds` is not the source, which is why the
    proposal's status does not matter, as the scenario's title says.
@@ -79,7 +79,7 @@ A step module that would go over 300 lines is split into a new `supervision_*_st
    - The round's own initiative is skipped.
    - The brief gives the ids as `<capability>#r<n>`, in a line of their own that says they are taken by other drafts.
      When there are none, the line says so or is left out (the implementer chooses).
-5. **What the gate brief names (supervision#r104, #r92).** The ids come from the proposal's frontmatter `adds`,
+5. **What the gate brief names (supervision#r104@0.29, #r92).** The ids come from the proposal's frontmatter `adds`,
    `changes` and `removes`, as `supervise_change.write_proposals` writes them: `<capability>#r<n>` and `term/<term>`.
    - The brief lists them under adds, changes and removes, and asks for questions on those ids and terms only.
    - The read list stays as it is: the proposal file and its stage directories. No capability file is added, so the

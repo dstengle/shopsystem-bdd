@@ -1,6 +1,6 @@
 # Branch review 2 of i54
 
-**Verdict: DONE_WITH_CONCERNS.** i54's own work is clean: w231 (supervision#r187) and w232 (work-queue#r59, r60, r61) are both `green`, and neither has a finding that is Critical or fix now. w232's earlier fix-now finding (lines with no line outcome left out of `work show <request>`) is fixed at `scripts/workqueue_list.py:86`.
+**Verdict: DONE_WITH_CONCERNS.** i54's own work is clean: w231 (supervision#r187@0.29) and w232 (work-queue#r59@0.29, r60, r61) are both `green`, and neither has a finding that is Critical or fix now. w232's earlier fix-now finding (lines with no line outcome left out of `work show <request>`) is fixed at `scripts/workqueue_list.py:86`.
 
 The status is DONE_WITH_CONCERNS because the range is on `main` and also holds other initiatives' work. Two findings there are carried from earlier reviews and are not i54's:
 - one Critical: w230 (i51) removed the r162 outline from `features/` with no `## Retires`;
@@ -11,9 +11,9 @@ Neither is triaged fix now, so `questions` is empty.
 ## Range
 
 - `a2a53b36c02b74d046b7a490d802403f3f1828a9..c25a4c0d22c882d576e5b09f38c2b9f3335b74e1` (branch `main`): 644 commits, of which 22 belong to an i54 work-item.
-- **w231** (`green`, under supervision, accepts supervision#r187), fileset `[tests/scenarios/supervision_merge_steps.py, tests/scenarios/test_supervision.py]`.
+- **w231** (`green`, under supervision, accepts supervision#r187@0.29), fileset `[tests/scenarios/supervision_merge_steps.py, tests/scenarios/test_supervision.py]`.
   - Commits: `6e55ddd3`, `82832c5e`, `56f6efb6`, `f5f6671b`, `156d2b2b`, `afc4aa72` (steps), `3cc54654`, `eb1a30ac`.
-- **w232** (`green`, under work-queue, accepts work-queue#r59, r60, r61).
+- **w232** (`green`, under work-queue, accepts work-queue#r59@0.29, r60, r61).
   - Commits: `911cac0f`, `63e22026`, `3fe3a538`, `a2c10dd2`, `7b1e1e12`, `a5d6b59b` (code), `14e01547`, `069d133d`, `74c02e0c`, `9d5b527a`, `e49440e2`, `cb269262` (fix), `20334492`, `c25a4c0d`.
 - i54's own round and spec commits, with no work-item. These are workflow commits, not code:
   - `49d8369f`, `c1aa3af9`, `97c440d1`, `985c0204`, `afb68414`;

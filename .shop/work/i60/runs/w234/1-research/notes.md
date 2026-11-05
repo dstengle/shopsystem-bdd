@@ -60,6 +60,6 @@ Modules on the change's path, with lines and room under 300:
 
 ## Open for the planner (both readings)
 
-- Dependency: r65-r68, r70, r71 (`work delegate`'s own rules) are accepted by no work-item (search of `.shop/work` for `requests#r65`..`r71`: none). r72 names `work delegate`, so either this item adds the command with r72's scenario only, or a work-item for r65-r71 comes first. This item accepts r72 alone.
+- Dependency: r65-r68, r70, r71 (`work delegate`'s own rules) are accepted by no work-item (search of `.shop/work` for `requests#r65@0.29`..`r71`: none). r72 names `work delegate`, so either this item adds the command with r72's scenario only, or a work-item for r65-r71 comes first. This item accepts r72 alone.
 - Testability: the Then "in its reply ... the session runs `work delegate`" is a claim about a session's reply, not about code. Reading A: the When runs `work delegate` as the session's stand-in and the Then checks the argv. Reading B: a transcript fixture like `tests/scenarios/batch_measurement_transcripts.py` and the instruction text, which the plugin does not have.
 - Delegation's date: the When gives "2026-10-29"; the stored text is `The person, 2026-10-29: "answer any question on line 1"`, which the delegate command stores as given.

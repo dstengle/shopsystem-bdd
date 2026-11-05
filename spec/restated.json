@@ -1,0 +1,2326 @@
+{
+ "analysis-tools#r1": {
+  "text": "**When** `tools` needs an interpreter, `tools` shall use the first of these, in this order: the one `--python` gives, used as given; `.venv/bin/python` under the current directory, if that file exists; `venv/bin/python` under the current directory, if that file exists; `$VIRTUAL_ENV/bin/python`, if that file exists, wherever `$VIRTUAL_ENV` points; and else the interpreter running the script.",
+  "line": 19
+ },
+ "analysis-tools#r49": {
+  "text": "**If** `tools` cannot do what it was asked, then `tools` shall exit with an error, say why, and change nothing.",
+  "line": 20
+ },
+ "analysis-tools#r17": {
+  "text": "**If** a tool that `tools check`, `tools tests-of`, `tools untested` or `tools refs` needs is missing, then `tools` shall name it as missing rather than skip it, and exit with an error.",
+  "line": 21
+ },
+ "analysis-tools#r3": {
+  "text": "**When** `tools probe` is run, `tools` shall print each tool with its version, or as missing with what it is for, then the interpreter's path and whether it came from `--python`, the project's virtualenv or neither, and exit with an error when any tool is missing.",
+  "line": 24
+ },
+ "analysis-tools#r4": {
+  "text": "**When** `tools probe --log` is run, `tools` shall print one line, `Probe: tools -> ...`, naming every tool with its version or `missing`, for a researcher's notes.",
+  "line": 25
+ },
+ "analysis-tools#r5": {
+  "text": "**When** `tools install` is run, `tools` shall install each missing tool into the interpreter with pip and edit no dependency file.",
+  "line": 26
+ },
+ "analysis-tools#r58": {
+  "text": "**When** `tools install` installs ruff, `tools` shall install the one version of ruff the plugin pins.",
+  "line": 27
+ },
+ "analysis-tools#r6": {
+  "text": "**If** `tools install` has a missing tool to install and the interpreter is not a virtualenv, then `tools` shall install nothing, say so for each missing tool, and exit with an error.",
+  "line": 28
+ },
+ "analysis-tools#r7": {
+  "text": "**If** a tool is still missing after `tools install`, then `tools` shall print the tool, what it is for, what the workflow does without it, and the command that failed with the end of its error, and exit with an error.",
+  "line": 29
+ },
+ "analysis-tools#r8": {
+  "text": "**When** `tools map` is run, `tools` shall run the suite once under coverage with a context per test, passing arguments after `--` to pytest, replace any earlier map in `.shop/scratch/tools/coverage`, and exit successfully whether or not the tests passed.",
+  "line": 32
+ },
+ "analysis-tools#r56": {
+  "text": "**Where** `--json` is given, `tools map` shall print its result, the map's commit and its test count, as one JSON object.",
+  "line": 33
+ },
+ "analysis-tools#r9": {
+  "text": "**When** `tools tests-of <file>[:<function, Class.method or line range>]` is run, `tools` shall print each test that executed it in the last map, one a line, and how many of the map's tests that is, with the commit the map was made at.",
+  "line": 34
+ },
+ "analysis-tools#r10": {
+  "text": "**Where** `--by-file` is given, **when** `tools tests-of` is run, `tools` shall print a count for each test file instead of each test.",
+  "line": 35
+ },
+ "analysis-tools#r11": {
+  "text": "**When** no test in the map executed the target of `tools tests-of`, `tools` shall print that no test of the map executed it, with the commit the map was made at, and exit successfully.",
+  "line": 36
+ },
+ "analysis-tools#r53": {
+  "text": "**Where** `--json` is given, `tools tests-of` shall print its result, the tests, their count and the map's commit, as one JSON object.",
+  "line": 37
+ },
+ "analysis-tools#r57": {
+  "text": "**If** the file given to `tools tests-of` has no function by the name given, then `tools` shall exit with an error, saying the target cannot be read.",
+  "line": 38
+ },
+ "analysis-tools#r13": {
+  "text": "**When** `tools untested <file>...` is run, `tools` shall print each function in the files that no test in the last map executed, how many they are and the commit the map was made at, and exit successfully however many there are.",
+  "line": 39
+ },
+ "analysis-tools#r54": {
+  "text": "**Where** `--json` is given, `tools untested` shall print its result, the functions, their count and the map's commit, as one JSON object.",
+  "line": 40
+ },
+ "analysis-tools#r14": {
+  "text": "**When** `tools refs <name>` is run on a name the project defines, `tools` shall print every reference to it as `path:line`, including uses through an import or an alias and counting no definition as a reference, then one summary line with the number of references, the number of production files and, apart, of test files that contain them, and where the name is defined.",
+  "line": 41
+ },
+ "analysis-tools#r55": {
+  "text": "**Where** `--json` is given, `tools refs` shall print its result, the references and the summary, as one JSON object.",
+  "line": 42
+ },
+ "analysis-tools#r16": {
+  "text": "**When** `tools check` is run, `tools` shall run ruff and vulture over the paths given, or in their place the Python files changed since `--base` and not deleted, and, where the project has import contracts, import-linter over the project, each under its own heading, and exit with an error when any finds something.",
+  "line": 43
+ },
+ "analysis-tools#r50": {
+  "text": "**When** `tools size` is run, `tools` shall print each tracked Python file over the size limit in the working tree, a Python file being one with a `.py` extension or a `python` shebang, tests included, with its line count.",
+  "line": 44
+ },
+ "analysis-tools#r51": {
+  "text": "**If** any tracked Python file is over the size limit, then `tools size` shall exit with an error.",
+  "line": 45
+ },
+ "analysis-tools#r52": {
+  "text": "**Where** `tools size --limit <n>` is given, `tools size` shall use `<n>` lines as the size limit, and 300 lines otherwise.",
+  "line": 46
+ },
+ "batch-measurement#r39": {
+  "text": "**When** `measure initiative <initiative>` is run, `measure` shall write one measurement for the initiative at `.shop/records/measurements/<date>-<initiative>.md`, the date being the day it is run.",
+  "line": 21
+ },
+ "batch-measurement#r46": {
+  "text": "**If** the initiative has no `log.jsonl`, **then** `measure initiative` shall refuse, writing nothing, because the initiative has no `log.jsonl`.",
+  "line": 22
+ },
+ "batch-measurement#r65": {
+  "text": "**If** the initiative fulfils a request that the queue does not hold, **then** `measure initiative` shall refuse, writing no measurement, because the queue does not hold that request.",
+  "line": 23
+ },
+ "batch-measurement#r66": {
+  "text": "**If** the request the initiative fulfils has no asker, **then** `measure initiative` shall refuse, writing no measurement, because the request has no asker.",
+  "line": 24
+ },
+ "batch-measurement#r67": {
+  "text": "**If** the initiative fulfils more than one request, **then** `measure initiative` shall refuse, writing no measurement, because the initiative fulfils more than one request.",
+  "line": 25
+ },
+ "batch-measurement#r47": {
+  "text": "**If** a `session.json` that is not empty, or a transcript, is not of a shape `measure` knows, **then** `measure` shall refuse, writing nothing, naming that file.",
+  "line": 26
+ },
+ "batch-measurement#r58": {
+  "text": "**When** a line of a transcript holds U+2028 or another Unicode line break inside a JSON string, `measure` shall read it as one line.",
+  "line": 27
+ },
+ "batch-measurement#r59": {
+  "text": "**When** a time in `log.jsonl` or in a transcript ends in `Z`, `measure` shall read it as a time in UTC.",
+  "line": 28
+ },
+ "batch-measurement#r48": {
+  "text": "**If** the measurement exists and `--replace` is not given, **then** `measure initiative` shall refuse, writing nothing, because the measurement exists.",
+  "line": 29
+ },
+ "batch-measurement#r52": {
+  "text": "**Where** `--replace` is given, `measure initiative` shall write the measurement over the one that exists.",
+  "line": 30
+ },
+ "batch-measurement#r50": {
+  "text": "**If** `measure` refuses, **then** `measure` shall exit with an error.",
+  "line": 31
+ },
+ "batch-measurement#r40": {
+  "text": "`measure initiative` shall give, for each stage `log.jsonl` gives a start and an end for, the work-item, the stage, the agent, the session id, how long the stage took, and the session's turns, output tokens, new input tokens, cache-read tokens and cost.",
+  "line": 34
+ },
+ "batch-measurement#r51": {
+  "text": "`measure initiative` shall give each stage `log.jsonl` gives a start and no end for, without how long it took.",
+  "line": 35
+ },
+ "batch-measurement#r57": {
+  "text": "**If** a stage's `session.json` is empty, **then** `measure initiative` shall give the stage without its session's figures, named as a stage whose `session.json` is empty.",
+  "line": 36
+ },
+ "batch-measurement#r53": {
+  "text": "`measure initiative` shall give, for each stage it gives, its session's round trips, the number of assistant messages with distinct request ids in the session's transcript.",
+  "line": 37
+ },
+ "batch-measurement#r55": {
+  "text": "**If** a stage's session has no transcript `measure` can find, **then** `measure initiative` shall give the stage without its round trips.",
+  "line": 38
+ },
+ "batch-measurement#r41": {
+  "text": "`measure initiative` shall give, for each work-item, its transitions, how many times it went to `awaiting-answer` and to `failed`, and the commits merged into the initiative branch for it.",
+  "line": 39
+ },
+ "batch-measurement#r42": {
+  "text": "`measure initiative` shall give the totals over the initiative: stages, sessions, turns, round trips, tokens of each kind, cost, and the time from the first transition to the last.",
+  "line": 40
+ },
+ "batch-measurement#r63": {
+  "text": "`measure initiative` shall give whether the request the initiative fulfils is internal, its asker being this bounded context, or external.",
+  "line": 41
+ },
+ "batch-measurement#r64": {
+  "text": "**If** the initiative fulfils no request, **then** `measure initiative` shall give the measurement without whether the request is internal or external.",
+  "line": 42
+ },
+ "batch-measurement#r43": {
+  "text": "**Where** `--sessions <dir>` names a directory of transcripts, `measure initiative` shall also give each session found there that is active inside the initiative's window, starting inside it or starting before it with a message inside it, and each session it dispatched, with its tokens of each kind.",
+  "line": 43
+ },
+ "batch-measurement#r60": {
+  "text": "**Where** `--sessions <dir>` is given, `measure initiative` shall give, for each session it gives, its round trips, its tool uses by tool name, the sessions it dispatched, and the number of compactions its transcript holds.",
+  "line": 44
+ },
+ "batch-measurement#r49": {
+  "text": "`measure` shall write no prompt, reply or tool content into the measurement.",
+  "line": 45
+ },
+ "batch-measurement#r44": {
+  "text": "**When** `measure show <record>` is run, `measure` shall print the measurement's figures as tables.",
+  "line": 48
+ },
+ "batch-measurement#r54": {
+  "text": "**When** `measure show <record>` is run, `measure` shall print each stage's round trips beside its turns.",
+  "line": 49
+ },
+ "batch-measurement#r56": {
+  "text": "**When** `measure show <record>` is run on a measurement that gives no round trips, `measure` shall print its stages without them.",
+  "line": 50
+ },
+ "batch-measurement#r61": {
+  "text": "**When** `measure show <record>` is run on a measurement that gives sessions, `measure` shall print, beside each session's tokens, its round trips, its tool uses by tool name, the sessions it dispatched, and the number of compactions its transcript holds.",
+  "line": 51
+ },
+ "batch-measurement#r45": {
+  "text": "**When** `measure compare <a> <b>` is run, `measure` shall print the two measurements' totals side by side with the ratio of the second to the first.",
+  "line": 52
+ },
+ "batch-measurement#r62": {
+  "text": "**When** `measure compare <a> <b>` is run on measurements that give sessions, `measure` shall print, side by side, each measurement's total over its sessions of round trips, of tool uses of all tools together, and of compactions, each total with one ratio of the second measurement's to the first's.",
+  "line": 53
+ },
+ "code-research#r1": {
+  "text": "**When** research ends, the researcher shall leave its notes in the notes file and the file set in the result its brief names, and the checkout unchanged.",
+  "line": 19
+ },
+ "code-research#r4": {
+  "text": "**When** a work-item is researched, the researcher shall say in the notes why each scenario it accepts is red today, from running it.",
+  "line": 20
+ },
+ "code-research#r3": {
+  "text": "**When** a requirement the work-item accepts changes or replaces one that existing code relies on, the researcher shall list in the notes every place that still makes the old assumption, with the tests that execute it.",
+  "line": 21
+ },
+ "code-research#r5": {
+  "text": "**When** a work-item is researched, the researcher shall list in the notes the existing tests its accepted requirements make impossible to keep, starting from the tests that execute the code those requirements change.",
+  "line": 22
+ },
+ "code-research#r6": {
+  "text": "**When** a work-item adds a path that skips a step of today's processing, the researcher shall list in the notes every refusal and effect only that step produces.",
+  "line": 23
+ },
+ "code-research#r8": {
+  "text": "**When** a probe finds a defect in today's behaviour, the researcher shall write it in the notes with its reproduction.",
+  "line": 24
+ },
+ "code-research#r9": {
+  "text": "The researcher shall run every probe in a scratch directory, on none of the checkout's data.",
+  "line": 25
+ },
+ "code-research#r10": {
+  "text": "The researcher shall name in the result's file set every production and test file the work-item must change for its scenarios to pass and for everything that passes today to keep passing, each one a search or a read showed.",
+  "line": 26
+ },
+ "code-research#r11": {
+  "text": "The researcher shall give in the notes each module on the change's path with its line count and its room under the size limit `CLAUDE.md` gives.",
+  "line": 27
+ },
+ "code-research#r12": {
+  "text": "**If** the researcher cannot do what its brief asks, then the researcher shall stop with the outcome `NEEDS_CONTEXT`, saying why, and change nothing.",
+  "line": 28
+ },
+ "delivery#r4": {
+  "text": "**When** the person asks to deliver an initiative, `delivering-an-initiative` shall start `work run` on the initiative.",
+  "line": 20
+ },
+ "delivery#r5": {
+  "text": "**While** a delivery by `work run` lasts, `delivering-an-initiative` shall read nothing its workers write.",
+  "line": 21
+ },
+ "delivery#r6": {
+  "text": "**When** `work run` exits, `delivering-an-initiative` shall show the person each work-item's status and each open question, as `work run` printed them.",
+  "line": 22
+ },
+ "delivery#r7": {
+  "text": "**If** `delivering-an-initiative` cannot do what it was asked, then `delivering-an-initiative` shall stop, saying why, and change nothing.",
+  "line": 23
+ },
+ "delivery#r10": {
+  "text": "**When** a trial finds a fix to code, `delivering-an-initiative` shall draft the fix as a work-item for `work run` to deliver.",
+  "line": 24
+ },
+ "delivery#r11": {
+  "text": "`delivering-an-initiative` shall change no code itself.",
+  "line": 25
+ },
+ "delivery#r19": {
+  "text": "`delivering-an-initiative` shall start no `claude -p` session itself.",
+  "line": 26
+ },
+ "delivery#r20": {
+  "text": "`delivering-an-initiative` shall merge no branch itself.",
+  "line": 27
+ },
+ "delivery#r21": {
+  "text": "**When** a worker needs a tool that `work run` does not allow it, `delivering-an-initiative` shall put the tool to the person as a question, naming the stage.",
+  "line": 28
+ },
+ "delivery#r22": {
+  "text": "**If** `work run` cannot deliver a change, then `delivering-an-initiative` shall put the change to the person as a question, changing nothing itself.",
+  "line": 29
+ },
+ "delivery#r12": {
+  "text": "**When** a fix needs a new scenario or a new row of a scenario's examples, `delivering-an-initiative` shall send it to the `feature-formulator` through a `formulate` round of `initiative-round`, never to the implementer.",
+  "line": 30
+ },
+ "delivery#r13": {
+  "text": "**When** `delivering-an-initiative` dispatches an agent, `delivering-an-initiative` shall ask it to reply in a few lines and leave the rest in files.",
+  "line": 31
+ },
+ "delivery#r14": {
+  "text": "**When** a dispatch `delivering-an-initiative` started has replied, `delivering-an-initiative` shall read a file the dispatch wrote only to decide what to do next.",
+  "line": 32
+ },
+ "delivery#r15": {
+  "text": "**When** the person gives an answer, `delivering-an-initiative` shall append one line naming it to the initiative's ledger with `work note`.",
+  "line": 33
+ },
+ "design-model-check#r1": {
+  "text": "**When** `model check` finds no violation, unresolved reference or file problem, `model check` shall say so and exit successfully.",
+  "line": 22
+ },
+ "design-model-check#r2": {
+  "text": "**If** `model check` finds a violation, an unresolved reference or a file problem, then `model check` shall print each, a violated relation by its grammar.md code and plain label with its rows, and exit with an error.",
+  "line": 23
+ },
+ "design-model-check#r11": {
+  "text": "**When** `model check` finds warnings, `model check` shall print each warning relation with its plain label and its count, with no effect on whether it exits successfully.",
+  "line": 24
+ },
+ "design-model-check#r111": {
+  "text": "**While** the bounded context has no job, `model check` shall print no `w_unserved_cap` warning.",
+  "line": 25
+ },
+ "design-model-check#r33": {
+  "text": "**Where** `--json` is given, `model check` shall print its violations, warnings, unresolved references and file problems as one JSON object, each code mapped to its plain label, exiting as it would without `--json`.",
+  "line": 26
+ },
+ "design-model-check#r36": {
+  "text": "**When** `model check` decides whether an initiative may be `done`, `model check` shall count a `formulated` capability-proposal, and any `withdrawn` part, as closed.",
+  "line": 27
+ },
+ "design-model-check#r123": {
+  "text": "**When** `model check` decides whether an initiative may be `done`, `model check` shall count an `approved` glossary-proposal as closed.",
+  "line": 28
+ },
+ "design-model-check#r55": {
+  "text": "**If** `import clingo` fails, then `model check` shall try again, once, under the first interpreter that has clingo of `$SHOPSYSTEM_MODEL_PYTHON`, each `python3` on `PATH` outside the active virtualenv's `bin/`, `/usr/local/bin/python3` and `/usr/bin/python3`, in that order.",
+  "line": 29
+ },
+ "design-model-check#r12": {
+  "text": "**If** no interpreter has clingo, then `model check` shall exit with an error, naming each interpreter it tried and the command that installs clingo.",
+  "line": 30
+ },
+ "design-model-check#r3": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v15a | a requirement bullet in a capability's Behaviour has no `[r<n>]`",
+  "line": 37
+ },
+ "design-model-check#r4": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v15b | two requirements of one capability have the same id",
+  "line": 38
+ },
+ "design-model-check#r5": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v15c | a capability uses an id it lists as retired, or a capability-proposal that is not `merged`, `formulated` or `withdrawn` adds one",
+  "line": 39
+ },
+ "design-model-check#r6": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v15e | a `drafted` or `approved` capability-proposal changes a requirement no capability has",
+  "line": 40
+ },
+ "design-model-check#r7": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v15f | a `formulated` capability-proposal adds or changes a requirement with no scenario, of a capability that is not guarantees",
+  "line": 41
+ },
+ "design-model-check#r8": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v_s3 | a requirement of a capability that is not guarantees has no scenario naming it",
+  "line": 42
+ },
+ "design-model-check#r107": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v_s2 | a scenario not tagged `@deprecated` has more than one `@r<n>` tag, its own and its feature's together",
+  "line": 43
+ },
+ "design-model-check#r10": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v9a, v9c | a part has no `part_of` (v9a), or its `part_of` chain reaches no initiative (v9c)",
+  "line": 44
+ },
+ "design-model-check#r34": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v_k5 | an initiative that is not a capability-change has more than one part directly under it (a capability-change may have several capability-proposals)",
+  "line": 45
+ },
+ "design-model-check#r35": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v_k6 | a capability-proposal argues more than one capability",
+  "line": 46
+ },
+ "design-model-check#r59": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v_d2 | an initiative is `abandoned` while a part of it, at any depth, is neither closed nor `withdrawn`",
+  "line": 47
+ },
+ "design-model-check#r113": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v16a | an initiative dated after 2026-10-23 fulfils no request",
+  "line": 48
+ },
+ "design-model-check#r114": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v_d1 | an initiative is `done` while a request kept in this context, whose asker is this context and whose `part_of` or `source` names the initiative, is not `delivered`",
+  "line": 49
+ },
+ "design-model-check#r119": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v_d3 | a request is `delivered` while the initiative that fulfils it is not `done`",
+  "line": 50
+ },
+ "design-model-check#r120": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v17 | a request neither is part of a job-thread, cites an origin nor is raised for a request",
+  "line": 51
+ },
+ "design-model-check#r116": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v3 | a `delivered` request's resolution names a requirement the spec does not have",
+  "line": 52
+ },
+ "design-model-check#r121": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v18 | an id in this context's files has another context's path on a kind kept in `.shop/work/`, judged from the id alone, other than the request a request is raised for",
+  "line": 53
+ },
+ "design-model-check#r52": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v_t1 | a requirement or a scenario mentions a word its context's glossary lists after `Not:`, named with the word and the term",
+  "line": 54
+ },
+ "design-model-check#r53": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v_t2 | two glossary entries have one term",
+  "line": 55
+ },
+ "design-model-check#r54": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v_t3 | a word one term lists after `Not:` is another term of the context, or the term itself",
+  "line": 56
+ },
+ "design-model-check#r103": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v_e1 | a Behaviour line is in none of EARS's patterns, combines their clauses in an order other than Where, While, then When or If, or has an If clause with no then",
+  "line": 57
+ },
+ "design-model-check#r104": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v_e2 | a Behaviour line has more than one \"shall\" or more than one sentence",
+  "line": 58
+ },
+ "design-model-check#r106": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | v_w4 | a work-item that is not `withdrawn` has no `accepts` and no `check`",
+  "line": 59
+ },
+ "design-model-check#r110": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | file problem | a work-item's file name is not `w<n>.md`, or two work-items have one id",
+  "line": 60
+ },
+ "design-model-check#r112": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | file problem | a request is not of the form `work request` writes (capability/requests)",
+  "line": 61
+ },
+ "design-model-check#r118": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | file problem | an initiative's kind is `job` or `job-path`",
+  "line": 62
+ },
+ "design-model-check#r9": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | unresolved | a scenario names a requirement its capability does not have, or a capability rests on a decision that does not exist",
+  "line": 63
+ },
+ "design-model-check#r22": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | unresolved | a list names a reference that is not `<capability>#r<n>` (`#behaviour/r<n>` included), with the capability written `capability/<context path>/<name>`, `capability/<name>` or `<name>`, or a range `#r<a>-r<b>` with a greater than b",
+  "line": 64
+ },
+ "design-model-check#r23": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | unresolved | a capability-proposal adds or removes an id its capability neither has nor lists as retired, or removes a retired id while not `merged`, `formulated` or `withdrawn`; a proposal that is may name a retired id in `adds`, `changes` or `removes`, one it removes read as that requirement",
+  "line": 65
+ },
+ "design-model-check#r24": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | unresolved | a `supersedes`, `source`, `part_of`, `argues`, `under`, `for`, `blocked_by`, `depends_on`, `fixes` or `findings` names nothing in the repository, a node of the wrong kind (`supersedes` needs a design-decision, `under` and `depends_on` a capability, `for`, `blocked_by` and `fixes` a work-item, `findings` a review-finding); or any reference is written `<context name>/<name>`, `decision/<name>` or `obs/<name>`",
+  "line": 66
+ },
+ "design-model-check#r66": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | unresolved | a capability-proposal's `adds`, `changes` or `removes` names `term/<term>` the glossary does not have, except one a `merged` or `formulated` proposal removes",
+  "line": 67
+ },
+ "design-model-check#r122": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | unresolved | a glossary-proposal's `adds`, `changes` or `removes` names `term/<term>` the glossary does not have, except one an `approved` glossary-proposal removes",
+  "line": 68
+ },
+ "design-model-check#r25": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | file problem | `spec/index.md` is missing or has no `id`; a capability's `id` is not `capability/<context path>/<file name>`, it has no `## Behaviour` section, its `retired` lists an entry that is neither `r<n>` nor a number, or its frontmatter has `formulated_as`",
+  "line": 69
+ },
+ "design-model-check#r46": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | file problem | a node's `id` is not `<kind>/<context path>/<name>` with its own kind, or `spec/index.md`'s is not `bounded-context/<context path>`",
+  "line": 70
+ },
+ "design-model-check#r26": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | file problem | a feature file is not `features/<name>.feature` for a capability `<name>`, two of its scenarios not tagged `@deprecated` share a title, or a scenario is tagged `@holding`",
+  "line": 71
+ },
+ "design-model-check#r124": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | file problem | a work directory has no `initiative.md` (the directory named, not the file), an initiative or part has no `id`, a part's kind is not a part kind, `glossary-proposal` being one, a status is missing or not in its kind's lifecycle, an initiative's priority is not a number or its date not `YYYY-MM-DD`, or a work-item that is not `withdrawn` accepts a requirement of a capability that is not guarantees and no scenario names it yet, other than a retired id the work-item accepts while `green`",
+  "line": 72
+ },
+ "design-model-check#r29": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | file problem | a decision has no `id` or no `## Decision` section, a record with an `id` has a kind that is not a record kind, a frontmatter value is written as a folded or literal block, or one id names nodes of two kinds",
+  "line": 73
+ },
+ "design-model-check#r49": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | file problem | a bullet in `spec/index.md`'s `## Glossary` is not of the form r48 gives",
+  "line": 74
+ },
+ "design-model-check#r61": {
+  "text": "**If** `model check` finds a case of a row below, then `model check` shall print it under the row's code; a file problem names the file. | file problem | the repository has `spec/decisions.md`, or a `decisions/`, `work/` or `records/` directory at its root, each named with `scripts/migrate`",
+  "line": 75
+ },
+ "design-model-check#r19": {
+  "text": "`model` shall read, under `--root` (default the current directory), only `spec/index.md`, `spec/capabilities/*.md`, every `*.feature` under `features/`, every `spec/decisions/*.md` but `index.md` and `README.md`, `.shop/work/<initiative>/*.md`, `.shop/work/requests/*.md`, `.shop/records/observations.md` and any other Markdown under `.shop/records/` whose frontmatter has an `id`.",
+  "line": 78
+ },
+ "design-model-check#r20": {
+  "text": "`model` shall read the `@r<n>` tag of a scenario not tagged `@deprecated` in `features/<capability name>.feature`, its own or its feature's, as the one requirement of that capability the scenario names.",
+  "line": 79
+ },
+ "design-model-check#r21": {
+  "text": "`model` shall read a reference written `<name>#r<n>` or `capability/<name>#r<n>` as a requirement of the capability `capability/<context path>/<name>` in the bounded context, the field fixing the kind where it is written `<name>`.",
+  "line": 80
+ },
+ "design-model-check#r18": {
+  "text": "`model` shall read `<capability>#r<a>-r<b>` in a proposal's or work-item's list as every id from a to b.",
+  "line": 81
+ },
+ "design-model-check#r43": {
+  "text": "`model` shall read a node written `<kind>/<context path>/<name>`, or `<kind>/<name>`, as that node, and a bare `<name>` as one only in a field that fixes the kind (`rests_on`, `supersedes`, `argues`, `under`, `depends_on`) or the capability part of a `#r<n>` reference, the context path being `<owner>/<product>/<context name>` and the bounded context `bounded-context/<context path>`.",
+  "line": 82
+ },
+ "design-model-check#r64": {
+  "text": "`model` shall read a decision's `source`, and not its `by`, as a list of ids, each resolved as r24 says for `source` and naming a node of any kind.",
+  "line": 83
+ },
+ "design-model-check#r48": {
+  "text": "`model` shall read each bullet of `spec/index.md`'s `## Glossary` written `- **<term>**: <one-sentence definition>. Not: <word>, <word>.`, the `Not:` part optional, as a term of the bounded context with the id `term/<context path>/<term>`, the term lowercased with spaces as hyphens, and each word after `Not:` as a word the term avoids.",
+  "line": 84
+ },
+ "design-model-check#r51": {
+  "text": "`model` shall read a requirement or a scenario as mentioning a term or avoided word when it contains it as a whole word, whatever its case, with a plural \"s\" allowed, outside code spans, double-quoted strings and `@` tags, so that \"restore\" is no mention of \"store\" and a line naming the tag `@holding` is no mention of \"holding\".",
+  "line": 85
+ },
+ "design-model-check#r13": {
+  "text": "**When** `model facts` is run, `model facts` shall print the facts read, one a line in clingo's syntax, using only the standard library.",
+  "line": 88
+ },
+ "design-model-check#r14": {
+  "text": "**When** `model decisions` is run, `model decisions` shall write `spec/decisions/index.md` listing every decision in `spec/decisions/` that has an `id`, with its summary, status, what it supersedes and when to revisit it, each linked to its file.",
+  "line": 89
+ },
+ "design-model-check#r15": {
+  "text": "**If** `model decisions --check` finds `spec/decisions/index.md` is not what `model decisions` would write, then `model decisions` shall say so and exit with an error, writing nothing.",
+  "line": 90
+ },
+ "design-model-check#r37": {
+  "text": "**When** `model decisions --check` finds `spec/decisions/index.md` is what `model decisions` would write, `model decisions` shall say the file is current and exit successfully.",
+  "line": 91
+ },
+ "design-model-check#r16": {
+  "text": "**When** `model why <capability>#r<n>` is run, `model why` shall print the requirement's text (or that no capability has it), each capability-proposal that adds, changes or removes it in date order with its status and date, the `part_of` chain to its initiative and the initiative's sources.",
+  "line": 92
+ },
+ "design-model-check#r17": {
+  "text": "**When** no capability-proposal adds or changes the requirement given to `model why`, `model why` shall say so and exit successfully.",
+  "line": 93
+ },
+ "design-model-check#r108": {
+  "text": "**Where** `--json` is given, `model why` shall print its result, the requirement's text and the capability-proposals that trace it, as one JSON object.",
+  "line": 94
+ },
+ "design-model-check#r65": {
+  "text": "**When** `model rules` is run, `model rules` shall print each rule's code and plain label, one a line, the violations first and then the warnings, and exit successfully.",
+  "line": 95
+ },
+ "design-model-check#r109": {
+  "text": "**Where** `--json` is given, `model rules` shall print its result, each rule's code, plain label and kind, as one JSON object.",
+  "line": 96
+ },
+ "design-model-check#r105": {
+  "text": "**If** `model` cannot do what it was asked, then `model` shall exit with an error, say why, and change nothing.",
+  "line": 97
+ },
+ "feature-file-tools#r1": {
+  "text": "The `features` script shall read every `*.feature` under `--dir` (default `features`), recursively, never taking text inside a docstring as a scenario, keyword or tag.",
+  "line": 20
+ },
+ "feature-file-tools#r52": {
+  "text": "**Where** `--file <path>` is given, the `features` script shall look for the scenario's title in that file only, whatever the command.",
+  "line": 21
+ },
+ "feature-file-tools#r46": {
+  "text": "**If** `features` cannot do what it was asked, then `features` shall exit with an error, say why on stderr, and change nothing.",
+  "line": 22
+ },
+ "feature-file-tools#r2": {
+  "text": "**If** a feature file contains a `Rule:` block outside a docstring, or an edit would leave one, then `features` shall refuse, naming the file, and leave every file as it was.",
+  "line": 23
+ },
+ "feature-file-tools#r35": {
+  "text": "**If** the title given to `features tag`, `move`, `deprecate` or `retire` is in no file, is in several without `--file`, is not exactly once in the file `--file` names, or `--file` or `--to` names a file outside `--dir`, then `features` shall refuse, naming each file that has the title, and change no file.",
+  "line": 24
+ },
+ "feature-file-tools#r4": {
+  "text": "**When** `features count --by-tag` is run, `features` shall print the number of scenarios with each tag and a total of every scenario, those with no tag included, counting a Scenario Outline once per Examples row and giving each scenario its feature's tags and its Examples table's tags.",
+  "line": 27
+ },
+ "feature-file-tools#r5": {
+  "text": "**When** `features list --tag <tag>` or `--title <text>` is run, `features` shall print the file and title of each scenario whose tags, its feature's and its Examples' included, include that tag, or whose title contains the text.",
+  "line": 28
+ },
+ "feature-file-tools#r7": {
+  "text": "**Where** `--json` is not given, **when** `features list` matches no scenario, `features` shall print nothing and exit successfully.",
+  "line": 29
+ },
+ "feature-file-tools#r60": {
+  "text": "**Where** `--json` is given, `features list` shall print its result, the scenarios with the file and title of each, as one JSON object.",
+  "line": 30
+ },
+ "feature-file-tools#r51": {
+  "text": "**When** `features tag <title> r<n>` is run, `features` shall make `@r<n>` the scenario's one requirement tag, in place of any `@r<m>` tag it has, and leave its other tags and every other line unchanged.",
+  "line": 33
+ },
+ "feature-file-tools#r12": {
+  "text": "**When** `features move <title> --to <file>` is run, `features` shall take the scenario's block unchanged from its file to the end of the destination file.",
+  "line": 34
+ },
+ "feature-file-tools#r13": {
+  "text": "**Where** `--inline-background` is given, **when** `features move` is run, `features` shall put the source Background's steps before the relocated scenario's first step.",
+  "line": 35
+ },
+ "feature-file-tools#r14": {
+  "text": "**Where** `--keep-feature-tags` is given, **when** `features move` is run, `features` shall put the source's feature tags that the destination's feature tags lack on a tag line of their own immediately above the relocated scenario's `Scenario:` line, after any tag line the scenario already has, joined to none.",
+  "line": 36
+ },
+ "feature-file-tools#r19": {
+  "text": "**When** `features deprecate <title>` is run with `--for <new title>` or `--for-removal`, `features` shall give the scenario the tag `@deprecated`, \" (deprecated)\" at the end of its title and a description line `Deprecated for: <new title>` or `Deprecated for: removal`, whether or not the replacement exists yet, and change nothing else in it.",
+  "line": 37
+ },
+ "feature-file-tools#r21": {
+  "text": "**When** `features deprecated` is run, `features` shall list each deprecated scenario with what it is deprecated for and, for a replacement, the file and `@r<n>` tag of the scenario with that title, saying on its line when it has no `Deprecated for:` line, no scenario has the replacement's title, or the replacement has no `@r<n>` tag.",
+  "line": 38
+ },
+ "feature-file-tools#r61": {
+  "text": "**Where** `--json` is given, `features deprecated` shall print its result, each deprecated scenario with what it is deprecated for and its replacement, as one JSON object.",
+  "line": 39
+ },
+ "feature-file-tools#r23": {
+  "text": "**When** `features retire <title>` is run on a scenario tagged `@deprecated`, `features` shall remove that scenario's block and leave the rest of the file as it was.",
+  "line": 40
+ },
+ "feature-file-tools#r24": {
+  "text": "**If** `features retire` is given a scenario not tagged `@deprecated`, then `features` shall refuse because it is not deprecated, and leave the file as it was.",
+  "line": 41
+ },
+ "feature-file-tools#r16": {
+  "text": "**When** `features verify-moved --from <dir>` finds every scenario in the two trees alike by title in its effective tags, description, and Background and own steps, `features` shall print how many scenarios match and exit successfully.",
+  "line": 44
+ },
+ "feature-file-tools#r17": {
+  "text": "**If** `features verify-moved` finds a scenario whose effective tags, description or steps differ between the two trees, a title used by more than one scenario in either tree, or a title in one tree and not the other, then `features verify-moved` shall name each, as changed (with what changed), duplicate, missing or added, and exit with an error.",
+  "line": 45
+ },
+ "feature-file-tools#r57": {
+  "text": "`features bindings` shall read a `scenarios(<path>, ...)` call under `--tests` as binding every scenario of each feature file it names, and of every feature file under a directory it names.",
+  "line": 46
+ },
+ "feature-file-tools#r25": {
+  "text": "**If** `features bindings` finds a `scenario(<feature>, \"<title>\")` call under `--tests` (default `tests`) whose title no feature file has, or not the feature it names, then `features` shall print the module, line, title and feature of each, and exit with an error.",
+  "line": 47
+ },
+ "feature-file-tools#r26": {
+  "text": "**When** `features bindings` finds every binding names a scenario, `features` shall say so and exit successfully.",
+  "line": 48
+ },
+ "feature-file-tools#r58": {
+  "text": "**Where** `--unbound` is given, **if** a scenario in the feature files named after `--unbound` (with none named, every feature file under `--dir`) is bound by no `scenario(...)` or `scenarios(...)` call, or by more than one, then `features bindings` shall print its file and title, with the module and line of each call, and exit with an error.",
+  "line": 49
+ },
+ "feature-file-tools#r62": {
+  "text": "**Where** `--json` is given, `features bindings` shall print its result, the bindings it found wrong or, with `--unbound`, the scenarios bound by no test or by more than one, as one JSON object.",
+  "line": 50
+ },
+ "feature-file-tools#r28": {
+  "text": "**When** `features rebind <old> <new>` is run, `features` shall rewrite `<old>` to `<new>` in each binding call that names it and change nothing else in the module.",
+  "line": 51
+ },
+ "feature-file-tools#r56": {
+  "text": "**Where** `--file <feature path>` is given, **when** `features rebind` is run, `features` shall rewrite only the bindings whose feature argument names that file, the feature argument resolved against `--dir`.",
+  "line": 52
+ },
+ "feature-file-tools#r29": {
+  "text": "**If** the new title given to `features rebind` is no scenario's or several feature files', or a binding call names the old title in a string written over several lines, then `features` shall refuse and change no test module.",
+  "line": 53
+ },
+ "formulation#r1": {
+  "text": "**When** lines are approved, `formulating-features` shall write the scenarios of each added or changed line that has one reading in its capability's feature file `features/<name>.feature`, one scenario or one outline for the line, or one scenario per reason for a line every call must keep (r9).",
+  "line": 20
+ },
+ "formulation#r2": {
+  "text": "`formulating-features` shall commit formulated scenarios without showing them to the person for approval.",
+  "line": 21
+ },
+ "formulation#r3": {
+  "text": "**If** a line admits two readings, then `formulating-features` shall show the person the question with its two readings in place of that line's scenarios, formulating the rest of the capability.",
+  "line": 22
+ },
+ "formulation#r4": {
+  "text": "**When** a line whose old scenario passes today is changed or removed, `formulating-features` shall keep the old scenario in its feature file, deprecated and with the `@r<n>` tag it had, until the work-item whose work makes its replacement pass retires it.",
+  "line": 23
+ },
+ "formulation#r5": {
+  "text": "**When** a line whose old scenario does not pass today is changed or removed, `formulating-features` shall replace or remove the old scenario.",
+  "line": 24
+ },
+ "formulation#r23": {
+  "text": "**When** `formulating-features` runs an old scenario alone, `formulating-features` shall run it with `python3 -m pytest`.",
+  "line": 25
+ },
+ "formulation#r6": {
+  "text": "**When** `formulating-features` commits feature files, `formulating-features` shall commit only the feature files and the test files `features rebind` changed, with `features bindings` printing that every binding names a scenario.",
+  "line": 26
+ },
+ "formulation#r7": {
+  "text": "**When** an existing feature file is changed, `formulating-features` shall keep every scenario not added, changed or removed byte for byte as it was, tags included.",
+  "line": 27
+ },
+ "formulation#r9": {
+  "text": "`formulating-features` shall formulate a line every call must keep as one scenario per reason the line gives, each with one representative call.",
+  "line": 28
+ },
+ "formulation#r10": {
+  "text": "**When** the person answers that a scenario a work-item's implementer handed back with evidence is a formulation question, `formulating-features` shall rewrite the scenario to fit its line and the evidence, or show the person a question with two readings.",
+  "line": 29
+ },
+ "formulation#r11": {
+  "text": "`formulating-features` shall tag each scenario, on its tag line, with the one `@r<n>` of the one line it formulates, whatever the scenario's title.",
+  "line": 30
+ },
+ "formulation#r13": {
+  "text": "**Where** `model check` is available, **when** feature files are committed, `model check` shall print no scenario that is not deprecated and names no line or more than one, and no added or changed line without a scenario.",
+  "line": 31
+ },
+ "formulation#r14": {
+  "text": "**When** a scenario uses a word its context's glossary avoids, `formulating-features` shall reword the scenario to its line in a round of the kind `formulate`, without a further gate.",
+  "line": 32
+ },
+ "formulation#r22": {
+  "text": "**If** `formulating-features` cannot do what it was asked, then `formulating-features` shall stop, saying why, and commit nothing.",
+  "line": 33
+ },
+ "migration-tools#r1": {
+  "text": "**When** `migrate run --context <path>` is run, `migrate` shall relocate with git a top-level `decisions/` to `spec/decisions/`, `work/` to `.shop/work/`, and each `records/<x>` to `.shop/records/<x>`.",
+  "line": 20
+ },
+ "migration-tools#r2": {
+  "text": "**When** `migrate run` finds a ledger entry `## decision/<nnnn>-<slug>` in `spec/decisions.md`, `migrate` shall replace it with `spec/decisions/<nnnn>-<slug>.md`, whose summary is the entry's first paragraph, whose Decision is the entry's whole text, whose status is `superseded` when another entry supersedes it and `accepted` otherwise, and whose `date`, `by`, `supersedes` and `revisit_when` are the entry's.",
+  "line": 21
+ },
+ "migration-tools#r3": {
+  "text": "**When** `migrate run` finds a `@holding` scenario, `migrate` shall tag it `@deprecated` with \" (deprecated)\" for \" (held)\" on its title and `Deprecated for:` for `Held for:`, rebind each test that names it by title, and leave no `@holding` tag.",
+  "line": 22
+ },
+ "migration-tools#r4": {
+  "text": "**When** `migrate run --context <path>` is run, `migrate` shall give `spec/index.md` the id `bounded-context/<path>`.",
+  "line": 23
+ },
+ "migration-tools#r5": {
+  "text": "**When** `migrate run` relocates a file or changes an id, `migrate` shall rewrite each repository-relative path, relative Markdown link and frontmatter id that names it in the repository's tracked text files.",
+  "line": 24
+ },
+ "migration-tools#r6": {
+  "text": "**When** `migrate run` has run on a repository on the old system, `migrate` shall have left it so that `model check` prints no unresolved reference or file problem.",
+  "line": 25
+ },
+ "migration-tools#r7": {
+  "text": "**If** `migrate` cannot make every change it was asked to, then `migrate` shall exit with an error, naming each change it could not make, and change no file.",
+  "line": 26
+ },
+ "migration-tools#r8": {
+  "text": "**When** `migrate run` is run, `migrate` shall relocate with git `docs/superpowers/plans/` to `.shop/records/archive/plans/`, `docs/superpowers/specs/` to `.shop/records/archive/design-notes/` and `docs/superpowers/requests/` to `.shop/records/archive/requests/`.",
+  "line": 27
+ },
+ "migration-tools#r9": {
+  "text": "**When** `migrate run` gives a capability, a decision file or a relocated record its id, `migrate` shall write `<kind>/<path>/<name>`, the name being the file's stem, without a decision file's number, and the kind `capability`, `design-decision`, or for a relocated plan or request `initiative-archive`, for a relocated design note or ADR `decision-argument`, and for a relocated test log (a file whose name ends `-test-log.md`) `measurement`.",
+  "line": 28
+ },
+ "migration-tools#r10": {
+  "text": "**When** `migrate run` finds Behaviour lines with no id, `migrate` shall number them in Behaviour order from one above the highest id their capability has ever used.",
+  "line": 29
+ },
+ "migration-tools#r11": {
+  "text": "**When** `migrate run` has replaced every entry of `spec/decisions.md` and the ledger holds nothing but its entries and a title, `migrate` shall remove `spec/decisions.md`.",
+  "line": 30
+ },
+ "migration-tools#r12": {
+  "text": "**When** `migrate run` gives a relocated record its id and the record has no `about`, `migrate` shall give it `about: bounded-context/<path>`.",
+  "line": 31
+ },
+ "migration-tools#r13": {
+  "text": "**When** `migrate run` finds a ledger entry `## decision/<slug>` with no number, `migrate` shall number it in ledger order from one above the ledger's highest entry number.",
+  "line": 32
+ },
+ "migration-tools#r14": {
+  "text": "**When** `migrate run` is run, `migrate` shall relocate with git a top-level `adrs/` to `.shop/records/decision-arguments/`.",
+  "line": 33
+ },
+ "migration-tools#r15": {
+  "text": "**If** the repository has uncommitted changes, then `migrate run` or `migrate upgrade` shall refuse, naming them, and change no file.",
+  "line": 34
+ },
+ "migration-tools#r16": {
+  "text": "**When** `migrate run` has made its changes, `migrate` shall add every file it wrote or relocated to git and write `spec/decisions/index.md`.",
+  "line": 35
+ },
+ "migration-tools#r17": {
+  "text": "**When** a ledger entry's `supersedes` names a decision with a qualifier, `migrate` shall write the decision's id alone in `supersedes` and the qualifier in `by`.",
+  "line": 36
+ },
+ "migration-tools#r18": {
+  "text": "**When** `migrate status` is run, `migrate` shall print the repository's plugin version, the plugin's version and each pending upgrade step with its version and description, and exit successfully.",
+  "line": 39
+ },
+ "migration-tools#r19": {
+  "text": "**While** a repository with `.shop/` has no `.shop/plugin-version`, `migrate` shall take its plugin version to be 0.23.1.",
+  "line": 40
+ },
+ "migration-tools#r20": {
+  "text": "**When** `migrate upgrade` is run, `migrate` shall apply each pending upgrade step, oldest first, write the plugin's version into `.shop/plugin-version`, and commit all of it in one commit that names each step.",
+  "line": 41
+ },
+ "migration-tools#r22": {
+  "text": "**When** a session starts in a repository with `.shop/` for which an upgrade step is pending, the plugin's SessionStart hook shall tell the session to offer the person the upgrade, naming both versions and each pending upgrade step, and to run `migrate upgrade` only on the person's yes.",
+  "line": 42
+ },
+ "migration-tools#r23": {
+  "text": "**When** a session starts in a repository with `.shop/` whose plugin version is above the plugin's, the plugin's SessionStart hook shall tell the session to tell the person to update the plugin.",
+  "line": 43
+ },
+ "migration-tools#r24": {
+  "text": "**When** a session starts in a repository with `.shop/` for which no upgrade step is pending, whose plugin version is not above the plugin's and that has no initiative that is neither `done` nor `abandoned`, the plugin's SessionStart hook shall tell the session nothing.",
+  "line": 44
+ },
+ "migration-tools#r25": {
+  "text": "**When** `migrate upgrade` applies the 0.24.0 upgrade step \"work-items named by ids\", `migrate` shall give every work-item under `.shop/work/` the id `w<n>`, numbered from 1 in the order of its initiative's number and, within one initiative, of its file name.",
+  "line": 45
+ },
+ "migration-tools#r26": {
+  "text": "**When** the 0.24.0 upgrade step gives a work-item its id, `migrate` shall rename with git its file to `w<n>.md` and its `runs/<name>/` to `runs/w<n>/`, write its frontmatter `id` as `work-item/<context path>/w<n>`, keep its `# ` heading or, where it has none, write its old name as one, rewrite its old name to its id in its initiative's `log.jsonl` `work-item` fields and in every work-item's `blocked_by`, `depends_on` and `for` that names it, a name several initiatives hold being the naming work-item's own initiative's, and leave free text in records as it is.",
+  "line": 46
+ },
+ "migration-tools#r27": {
+  "text": "**When** `migrate upgrade` is run on a repository with no uncommitted changes and finds no pending upgrade step, `migrate` shall say so, exit successfully and change nothing.",
+  "line": 47
+ },
+ "migration-tools#r28": {
+  "text": "**When** a session starts in a repository without `.shop/`, the plugin's SessionStart hook shall tell the session nothing.",
+  "line": 48
+ },
+ "migration-tools#r29": {
+  "text": "**When** `migrate upgrade` applies the upgrade step of the plugin version after 0.24.0, `migrate` shall rename the status `awaiting-ruling` to `awaiting-answer` in every work-item's file under `.shop/work/` and every `log.jsonl` line, and each work-item's `## Rulings` to `## Answers`.",
+  "line": 49
+ },
+ "migration-tools#r30": {
+  "text": "**If** `.shop/plugin-version` holds no version, then `migrate status` and `migrate upgrade` shall exit with an error, saying that the file holds no version and naming, for an empty file, that the file is empty and, for a file with other text in it, what it holds, and change nothing.",
+  "line": 50
+ },
+ "migration-tools#r31": {
+  "text": "**When** a session starts in a repository with `.shop/` whose `.shop/plugin-version` holds no version, the plugin's SessionStart hook shall tell the session to tell the person that the file holds no version, naming, for an empty file, that the file is empty and, for a file with other text in it, what it holds.",
+  "line": 51
+ },
+ "migration-tools#r32": {
+  "text": "**When** a session starts in a repository with an initiative that is neither `done` nor `abandoned`, the plugin's SessionStart hook shall give the session what `work status` prints for each such initiative.",
+  "line": 54
+ },
+ "migration-tools#r33": {
+  "text": "**When** a session is about to be compacted in a repository with an initiative that is neither `done` nor `abandoned`, the plugin's PreCompact hook shall append `compacted`, with the time, to the ledger of each such initiative.",
+  "line": 55
+ },
+ "migration-tools#r34": {
+  "text": "**When** a session is about to be compacted in a repository with an initiative that is neither `done` nor `abandoned`, the plugin's PreCompact hook shall tell the session to write its hand-off with `work note` and end instead of being compacted.",
+  "line": 56
+ },
+ "planning#r1": {
+  "text": "**When** the planner is started on a work-item, the planner shall write a plan to the plan file its brief names.",
+  "line": 19
+ },
+ "planning#r2": {
+  "text": "**When** the planner writes the plan, the planner shall name in it each decision the capability's Behaviour leaves open, with the requirement or design-decision it rests on.",
+  "line": 20
+ },
+ "planning#r3": {
+  "text": "**When** the planner writes the plan, the planner shall list in it each test a decision of the plan breaks, with what becomes of it.",
+  "line": 21
+ },
+ "planning#r4": {
+  "text": "The planner shall put in the plan no code block, file contents, diff or step-definition body.",
+  "line": 22
+ },
+ "planning#r5": {
+  "text": "**When** planning ends, the planner shall write its result with the outcome `DONE` or `QUESTION` and the final file set.",
+  "line": 23
+ },
+ "planning#r6": {
+  "text": "**If** a decision would change what the capability's narrator observes and no requirement or design-decision settles it, then the planner shall give the outcome `QUESTION`, with the question and its readings.",
+  "line": 24
+ },
+ "planning#r7": {
+  "text": "**While** planning, the planner shall change no file but the plan and its result.",
+  "line": 25
+ },
+ "planning#r8": {
+  "text": "**If** the planner cannot do what it was asked, then the planner shall stop with the outcome `NEEDS_CONTEXT`, saying why.",
+  "line": 26
+ },
+ "red-green#r1": {
+  "text": "**When** the implementer gives the outcome `DONE`, the implementer shall have every scenario the work-item accepts passing, leaving the whole suite to `work run`, which runs it before it merges.",
+  "line": 19
+ },
+ "red-green#r2": {
+  "text": "The implementer shall not commit a change to a `.feature` file or to a file under `.shop/work/`, except removing, with `features retire`, a deprecated scenario the work-item lists under Retires.",
+  "line": 20
+ },
+ "red-green#r3": {
+  "text": "**If** a scenario the work-item accepts passes before any code is written for it or can only fail on setup, the work-item's check passes before any of its work is written, a scenario of a work-item not yet claimed passes, a Then line can only pass through code that contradicts it, or making the scenarios pass needs work that no scenario of the work-item describes and its plan does not name, beyond a trivial helper, then the implementer shall hand back.",
+  "line": 21
+ },
+ "red-green#r5": {
+  "text": "**If** an existing test could keep passing only by being removed, loosened, skipped or rewritten to assert something else and the work-item's plan does not list it, a scenario that passed before now fails and fixing it would change what a step means, the work needs a decision the plan, its answers and the capability's Behaviour leave open, or a file would cross the repository's size limit with no rule in `CLAUDE.md` saying where the code goes, then the implementer shall stop with the outcome `BLOCKED`, naming the test, step, decision or file.",
+  "line": 22
+ },
+ "red-green#r6": {
+  "text": "**When** the implementer changes a test's setup without touching what it asserts, or rewrites a test first committed after the initiative branch's base, the implementer shall name the test in its report.",
+  "line": 23
+ },
+ "red-green#r7": {
+  "text": "**When** the implementer hands back, the implementer shall give the outcome `HAND-BACK` in its result, with the stop condition and its evidence word for word, the work so far committed on the work-item branch.",
+  "line": 24
+ },
+ "red-green#r9": {
+  "text": "**If** the work needs more than 15 files touched, then the implementer shall stop with the outcome `PARTIAL` at a green commit, having touched only the files it named in its report before its first edit.",
+  "line": 25
+ },
+ "red-green#r10": {
+  "text": "**When** the scenarios are silent about a case, the implementer shall name the case in its report as an open question, leaving its behaviour unchosen by the code.",
+  "line": 26
+ },
+ "red-green#r11": {
+  "text": "**When** the plan contains code, the implementer shall not paste it.",
+  "line": 27
+ },
+ "red-green#r15": {
+  "text": "**If** the implementer cannot do what its brief asks, then the implementer shall stop with the outcome `NEEDS_CONTEXT`, saying why.",
+  "line": 28
+ },
+ "red-green#r16": {
+  "text": "The implementer shall end every session with a result whose outcome is one of `DONE`, `DONE_WITH_CONCERNS`, `PARTIAL`, `BLOCKED`, `HAND-BACK`, `NEEDS_CONTEXT`.",
+  "line": 29
+ },
+ "red-green#r17": {
+  "text": "**When** the work needs a file outside the work-item's file set, the implementer shall name the file in its report under `## Outside the file set` before editing it.",
+  "line": 30
+ },
+ "red-green#r18": {
+  "text": "The implementer shall work only in the worktree and on the branch its brief names, pushing, merging, rebasing and resetting nothing.",
+  "line": 31
+ },
+ "requests#r25": {
+  "text": "`work` shall give every asker and every upstream one set of commands for a request (raise, take in, give a line outcome, ask, answer, pass the turn, resolve and show) and one lifecycle.",
+  "line": 21
+ },
+ "requests#r28": {
+  "text": "**When** an asker raises a request, answers a question or passes the turn, `work` shall do it from the asker's own repository, with no checkout of the upstream's repository.",
+  "line": 22
+ },
+ "requests#r44": {
+  "text": "**When** `work request <title> --from <asker> --lines <file>` is run with one or more `--source <id>`, with `--thread <id>` or with `--raised-for <request>`, `work` shall write an `open` request with the file's lines as its lines, the asker given as its asker, the origins `--source` names or the job-thread `--thread` names, and the turn the upstream's, and print its id.",
+  "line": 23
+ },
+ "requests#r29": {
+  "text": "**Where** `--raised-for <request>` is given to `work request`, `work` shall write in the upstream's request the request it is raised for.",
+  "line": 24
+ },
+ "requests#r19": {
+  "text": "**Where** `--delegation <text>` is given to `work request`, `work` shall write the delegation in the request.",
+  "line": 25
+ },
+ "requests#r22": {
+  "text": "**If** the delegation given to `work request` is empty, **then** `work request` shall refuse, because the delegation is empty, and change nothing.",
+  "line": 26
+ },
+ "requests#r65": {
+  "text": "**When** `work delegate` is given a request and a delegation, `work` shall write the delegation in the request, replacing any delegation the request has.",
+  "line": 27
+ },
+ "requests#r66": {
+  "text": "**When** `work delegate` writes a delegation in a request, `work` shall commit the request on the current branch.",
+  "line": 28
+ },
+ "requests#r67": {
+  "text": "**If** the delegation given to `work delegate` is empty, **then** `work delegate` shall refuse, because the delegation is empty, and change nothing.",
+  "line": 29
+ },
+ "requests#r68": {
+  "text": "**If** `work delegate` is given a request that is `delivered`, `refused` or `withdrawn`, **then** `work delegate` shall refuse, naming the request's status, and change nothing.",
+  "line": 30
+ },
+ "requests#r72": {
+  "text": "**When** the person gives a session a delegation for a request outside `work request`, the session shall, in the same reply, write the delegation in the request by giving `work delegate` the delegation as the person's words with the date.",
+  "line": 31
+ },
+ "requests#r70": {
+  "text": "**When** `work delegate` is run, `work` shall write the delegation whichever side's turn it is.",
+  "line": 32
+ },
+ "requests#r71": {
+  "text": "**When** `work delegate` writes a delegation in a request, `work` shall keep the request's status and turn.",
+  "line": 33
+ },
+ "requests#r2": {
+  "text": "**If** a line given to `work request` is not in the strict form `model check` holds (v_e1, v_e2), **then** `work request` shall refuse, naming the line, and change nothing.",
+  "line": 34
+ },
+ "requests#r59": {
+  "text": "**If** a line given to `work request` names an implementation detail or uses a word that is neither a term of the upstream's glossary nor a word of a Behaviour line under the upstream's `spec/capabilities/`, **then** `work request` shall refuse, naming the word and why it is refused, and change nothing.",
+  "line": 35
+ },
+ "requests#r45": {
+  "text": "**If** a request whose asker is the upstream itself is raised with neither `--source` nor `--thread`, **then** `work request` shall refuse, because the request names neither an origin nor a job-thread, and change nothing.",
+  "line": 36
+ },
+ "requests#r30": {
+  "text": "**If** a request whose asker is not the upstream itself is raised with `--source`, **then** `work request` shall refuse, because an origin belongs to an internal request, and change nothing.",
+  "line": 37
+ },
+ "requests#r31": {
+  "text": "**If** a request whose asker is not the upstream itself is raised with neither `--raised-for` nor `--thread`, **then** `work request` shall refuse, because the request names neither a request it is raised for nor a job-thread, and change nothing.",
+  "line": 38
+ },
+ "requests#r32": {
+  "text": "**If** the asker given to `work request` is not the bounded-context or product level whose repository raises the request, **then** `work request` shall refuse, naming the asker, and change nothing.",
+  "line": 39
+ },
+ "requests#r4": {
+  "text": "`work` shall write the asker's part of a request, its lines and its answers, only when `work request` is run or the asker answers a question.",
+  "line": 40
+ },
+ "requests#r5": {
+  "text": "`work` shall write the upstream's part of a request, its questions, its line outcomes and its resolution, only when the upstream asks a question or `work outcome` or `work resolve` is run.",
+  "line": 41
+ },
+ "requests#r33": {
+  "text": "**When** a `work` command writes a part of a request, `work` shall take the side that writes it from the repository the command is run in, never from an argument.",
+  "line": 42
+ },
+ "requests#r55": {
+  "text": "**If** a side writes a part of a request that is the other side's part, and the request's asker is not the upstream itself, **then** `work` shall refuse, naming the side that writes that part, and change nothing.",
+  "line": 43
+ },
+ "requests#r15": {
+  "text": "**When** `work outcome <request> <n> <outcome>` is run in the upstream's turn, `work` shall write `<outcome>` as the line outcome of line n.",
+  "line": 44
+ },
+ "requests#r20": {
+  "text": "**When** the upstream asks a question on a line of a request in its turn, `work` shall write the question in the request.",
+  "line": 45
+ },
+ "requests#r21": {
+  "text": "**When** the asker answers a question on a request in its turn, `work` shall write the answer in the request.",
+  "line": 46
+ },
+ "requests#r16": {
+  "text": "**If** a side runs a command other than `work resolve` that writes a part of a request in the other side's turn, **then** `work` shall refuse, because it is the other side's turn, and change nothing.",
+  "line": 47
+ },
+ "requests#r7": {
+  "text": "**When** `work turn <request>` is run on a request that it does not set to `accepted`, `work` shall pass the request's turn to the other side.",
+  "line": 48
+ },
+ "requests#r17": {
+  "text": "**When** `work turn` passes a request's turn to its asker with a line that has no line outcome or a line outcome other than accepted, refused or withdrawn, `work` shall set the request's status to `awaiting-asker`.",
+  "line": 49
+ },
+ "requests#r18": {
+  "text": "**When** `work turn` passes a request's turn to its upstream, `work` shall set the request's status to `awaiting-upstream`.",
+  "line": 50
+ },
+ "requests#r8": {
+  "text": "**When** the upstream ends its turn on a request that is not `delivered` whose every line has the line outcome accepted, refused or withdrawn and at least one line the line outcome accepted, `work` shall set the request's status to `accepted`.",
+  "line": 51
+ },
+ "requests#r23": {
+  "text": "**When** the upstream ends its turn on a request and `work` sets the request's status to `accepted`, `work` shall keep the request's turn the upstream's.",
+  "line": 52
+ },
+ "requests#r9": {
+  "text": "**When** the upstream ends its turn on a request that is not `delivered` whose every line has the line outcome refused or withdrawn, `work` shall set the request's status to `refused`.",
+  "line": 53
+ },
+ "requests#r10": {
+  "text": "**When** `work resolve <request>` is run on an `accepted` request with each accepted line's requirement id and the version that holds it, whichever side's turn it is, `work` shall write them as the request's resolution.",
+  "line": 54
+ },
+ "requests#r11": {
+  "text": "**When** `work resolve` writes a request's resolution, `work` shall set the request's status to `delivered`.",
+  "line": 55
+ },
+ "requests#r24": {
+  "text": "**When** `work` sets a request's status to `delivered`, `work` shall pass the request's turn to its asker.",
+  "line": 56
+ },
+ "requests#r12": {
+  "text": "**When** `work request`, `work outcome`, `work turn`, `work resolve` or a command that writes a question or an answer changes a request, `work` shall commit the request on the current branch.",
+  "line": 57
+ },
+ "requests#r50": {
+  "text": "**When** `work list` is run, `work` shall print each request with its status and whose turn it is.",
+  "line": 58
+ },
+ "requests#r51": {
+  "text": "**When** `work show <request>` is run in the asker's repository while the request is in the asker's turn, `work` shall print that it is the asker's turn, with each question the asker has not answered.",
+  "line": 59
+ },
+ "requests#r52": {
+  "text": "**While** an answer or a turn the asker has sent has not been taken in by the upstream, `work show <request>` shall print the request on either side as awaiting the upstream and not yet taken in.",
+  "line": 60
+ },
+ "requests#r53": {
+  "text": "**While** the upstream holds a line outcome or a question it has not sent with the turn, `work show <request>` run in the upstream's repository shall print that the asker has not seen it.",
+  "line": 61
+ },
+ "requests#r54": {
+  "text": "**When** `work show <request>` is run in the asker's repository after the upstream resolves the request, `work` shall print each accepted line's requirement id and the version that holds it.",
+  "line": 62
+ },
+ "requests#r56": {
+  "text": "**When** the upstream takes in what has been sent to it, `work` shall take in every request, answer and turn sent before the take-in began, whether or not a listing of what has been sent shows it yet.",
+  "line": 63
+ },
+ "requests#r40": {
+  "text": "**When** `work run` is run in an upstream's repository, `work` shall take in what has been sent to the upstream before `work run` starts the rounds of the kind `intake`.",
+  "line": 64
+ },
+ "requests#r57": {
+  "text": "**If** a request, an answer or a turn comes from a repository registered under an asker id that the upstream does not allow for the asker it names, **then** `work` shall leave it untaken, telling the upstream which it left and why.",
+  "line": 65
+ },
+ "requests#r42": {
+  "text": "`work` shall tell one asker from another by the asker id the asker's repository is registered under.",
+  "line": 66
+ },
+ "requests#r58": {
+  "text": "**When** `work` takes in a request, an answer or a turn, `work` shall read its body only as the fields of a request's form, following nothing written in it.",
+  "line": 67
+ },
+ "requests#r64": {
+  "text": "**When** `work list` is run, `work` shall print, with its date, each observation that the `source` of no initiative and of no request names.",
+  "line": 68
+ },
+ "review#r1": {
+  "text": "**When** a review ends, the reviewer shall leave its findings in the findings file and the result its brief names, and the working tree, index, HEAD and branches as they were.",
+  "line": 19
+ },
+ "review#r13": {
+  "text": "The reviewer shall read, for a work-item review, the commits of one work-item and its plan, and for a branch review, the initiative branch from its base and every work-item of the initiative.",
+  "line": 20
+ },
+ "review#r32": {
+  "text": "The branch reviewer shall run nothing: it reads what `work run` gives it and the repository's files, and writes its findings and its result.",
+  "line": 21
+ },
+ "review#r2": {
+  "text": "The work-item and branch reviewers shall grade every finding Critical, Important or Minor.",
+  "line": 22
+ },
+ "review#r10": {
+  "text": "**When** a work-item or branch review finds one of the following in what it reads, the reviewer shall do what the row says: | a change under `features/` other than removing a deprecated scenario the work-item lists under Retires | grade it Critical",
+  "line": 27
+ },
+ "review#r3": {
+  "text": "**When** a work-item or branch review finds one of the following in what it reads, the reviewer shall do what the row says: | a test removed or weakened | list it, graded Important where the work-item's plan did not list it",
+  "line": 28
+ },
+ "review#r4": {
+  "text": "**When** a work-item or branch review finds one of the following in what it reads, the reviewer shall do what the row says: | a setup-only change, or a rewrite of a test this initiative wrote, that the implementer named in its report | verify each against the commits",
+  "line": 29
+ },
+ "review#r5": {
+  "text": "**When** a work-item or branch review finds one of the following in what it reads, the reviewer shall do what the row says: | behaviour that contradicts a Behaviour line or a capability's Purpose, whether or not a scenario covers it | grade it Important",
+  "line": 30
+ },
+ "review#r6": {
+  "text": "**When** a work-item or branch review finds one of the following in what it reads, the reviewer shall do what the row says: | a check a work-item names that the reviewer cannot verify | in a branch review, fail the review; in a work-item review, list what it cannot verify from the commits separately",
+  "line": 31
+ },
+ "review#r11": {
+  "text": "**When** a work-item or branch review finds one of the following in what it reads, the reviewer shall do what the row says: | in a branch review, a deprecated scenario whose replacement's work-item is `green`, a scenario removed that was not deprecated, or a binding that names no scenario | write each in its findings",
+  "line": 32
+ },
+ "review#r29": {
+  "text": "**When** a work-item or branch review finds one of the following in what it reads, the reviewer shall do what the row says: | code whose observable behaviour, such as an output, a file written, a status or a refusal, no Behaviour line asks for | grade it Important",
+  "line": 33
+ },
+ "review#r12": {
+  "text": "The reviewer shall triage each finding, naming the work-item whose commits contain it, as fix now for a wrong answer, a crash where a refusal belongs or lost data, as an observation, with its reproduction, for hardening, or as drop for polish that is not cheap.",
+  "line": 35
+ },
+ "review#r33": {
+  "text": "**When** a branch review finds a behaviour that only a run would show, the branch reviewer shall give it as a finding with the test that would show it, marked not run, in place of a reproduction.",
+  "line": 36
+ },
+ "review#r30": {
+  "text": "**When** a work-item or branch review, a re-review included, finds code whose observable behaviour no Behaviour line asks for, the reviewer shall triage it as fix now, the fix being its line written first or the code removed, whatever r8 and r12 would make it.",
+  "line": 37
+ },
+ "review#r8": {
+  "text": "**When** the re-review of a fix work-item finds something other than data left invalid, the system's own fault on input, or a write that lands where a refusal belongs, the reviewer shall triage it as an observation.",
+  "line": 38
+ },
+ "review#r7": {
+  "text": "**When** a branch review ends, the branch reviewer shall write in its findings the suite's wall time, the code's shape against `CLAUDE.md` and its coupling to the projects it depends on.",
+  "line": 39
+ },
+ "review#r31": {
+  "text": "**When** a branch review ends, the branch reviewer shall give in its result's questions only the findings it triages fix now.",
+  "line": 40
+ },
+ "review#r34": {
+  "text": "**Where** the system reviewed has a dry-run mode and a real mode of one operation, the branch reviewer shall verify from the suite run `work run` gave it that the randomized test that they agree ran, and how many cases it tried.",
+  "line": 41
+ },
+ "review#r14": {
+  "text": "**When** the architecture reviewer finds a refactor to call for, the architecture reviewer shall give it as an observation with a check that would show it complete, naming the work-item it would unblock, if any.",
+  "line": 42
+ },
+ "review#r28": {
+  "text": "**If** a reviewer cannot do what its input asks, then the reviewer shall stop, saying why, and change nothing.",
+  "line": 43
+ },
+ "role-boundaries#r1": {
+  "text": "The plugin's agent definitions shall let only `initiative-round` dispatch.",
+  "line": 18
+ },
+ "role-boundaries#r2": {
+  "text": "The plugin's agent definitions shall give no reviewer, no researcher and no planner the Edit tool.",
+  "line": 19
+ },
+ "role-boundaries#r3": {
+  "text": "The plugin's agent definitions shall give the `capability-writer` and the `feature-formulator` no edit and no shell tool.",
+  "line": 20
+ },
+ "role-boundaries#r4": {
+  "text": "The plugin's agent definitions shall give the implementer the skills listed under its `skills:`, `bdd-red-green` always among them, and the Skill tool, which `work run` allows only for those skills.",
+  "line": 21
+ },
+ "role-boundaries#r5": {
+  "text": "The plugin's agent definitions shall name each agent's model: Opus for the `capability-writer` and the `feature-formulator`, the planner and the reviewers, Sonnet for the implementer, `initiative-round`, the `spec-checker` and the `trial-runner`, Haiku for the researcher.",
+  "line": 22
+ },
+ "role-boundaries#r6": {
+  "text": "The plugin's agent definitions shall give the `bdd-planner` no shell tool.",
+  "line": 23
+ },
+ "role-boundaries#r7": {
+  "text": "The plugin's agent definitions shall give the `bdd-branch-reviewer` no shell tool.",
+  "line": 24
+ },
+ "spec-consistency#r1": {
+  "text": "**When** the person asks for a consistency pass, `checking-spec-consistency` shall run `model check` before anything else and give its `v_t1`, `v_t2` and `v_t3` rows as findings.",
+  "line": 19
+ },
+ "spec-consistency#r2": {
+  "text": "**When** the pass starts, `checking-spec-consistency` shall say how many `spec-checker` dispatches it will make, one for each capability and one for the whole context, before it dispatches any.",
+  "line": 20
+ },
+ "spec-consistency#r3": {
+  "text": "**When** a `spec-checker` is dispatched, the `spec-checker` shall read only `spec/` and `features/`, never the source.",
+  "line": 21
+ },
+ "spec-consistency#r4": {
+  "text": "**Where** the pass is in findings mode, **when** the pass ends, `checking-spec-consistency` shall have changed nothing but one findings file, each finding in it naming its ids.",
+  "line": 22
+ },
+ "spec-consistency#r28": {
+  "text": "**Where** fix mode is asked for, `checking-spec-consistency` shall first propose, for each term cluster, a glossary entry with its `Not:` words, and put it, with the line changes that apply it, each changed line retired and its replacement given a new id, through one gate pass for the term.",
+  "line": 23
+ },
+ "spec-consistency#r6": {
+  "text": "**Where** fix mode is asked for, **when** the terms are settled, `checking-spec-consistency` shall have a scenario that uses an avoided word reworded to its line through formulation's small-change path, with no further approval.",
+  "line": 24
+ },
+ "spec-consistency#r7": {
+  "text": "**Where** fix mode is asked for, **when** a line has two readings, `checking-spec-consistency` shall ask the person one question with its readings, to be integrated through the question path of `integrating-a-proposal`.",
+  "line": 25
+ },
+ "spec-consistency#r8": {
+  "text": "**Where** fix mode is asked for, **when** a finding is drift other than a term or a line with two readings, `checking-spec-consistency` shall ask the person which side is right, one finding at a time.",
+  "line": 26
+ },
+ "spec-consistency#r9": {
+  "text": "**Where** fix mode is asked for, **when** a step is complete, `checking-spec-consistency` shall tell the person what `model check` finds before the next step.",
+  "line": 27
+ },
+ "spec-consistency#r10": {
+  "text": "**When** every finding is applied, rejected or written as an observation, `checking-spec-consistency` shall end fix mode with `model check` printing no `v_t1`, `v_t2` or `v_t3` row.",
+  "line": 28
+ },
+ "spec-consistency#r11": {
+  "text": "`checking-spec-consistency` shall start only when the person asks for it, never during an integration or a formulation.",
+  "line": 29
+ },
+ "spec-consistency#r21": {
+  "text": "**If** `checking-spec-consistency` cannot do what it was asked, then `checking-spec-consistency` shall stop, saying why, and change nothing.",
+  "line": 30
+ },
+ "spec-consistency#r22": {
+  "text": "**When** a `spec-checker` finds one of the following in what it reads, the `spec-checker` shall write it as a finding, naming its ids: | a scenario that shows observable behaviour, such as an output, a file written or a status, that no Behaviour line of its capability asks for",
+  "line": 35
+ },
+ "spec-consistency#r23": {
+  "text": "**When** a `spec-checker` finds one of the following in what it reads, the `spec-checker` shall write it as a finding, naming its ids: | two lines that act on one thing, such as one file, one status or one command, without saying which of them wins",
+  "line": 36
+ },
+ "spec-consistency#r24": {
+  "text": "**When** a `spec-checker` finds one of the following in what it reads, the `spec-checker` shall write it as a finding, naming its ids: | a line that leaves to inference which runs, workers or commands it applies to",
+  "line": 37
+ },
+ "spec-consistency#r25": {
+  "text": "**When** a `spec-checker` finds one of the following in what it reads, the `spec-checker` shall write it as a finding, naming its ids: | a scenario that shows the response of a line other than the one it names, an exit or a refusal of the capability's general failure line included, or that gives an exit code",
+  "line": 38
+ },
+ "spec-consistency#r26": {
+  "text": "**When** a `spec-checker` finds one of the following in what it reads, the `spec-checker` shall write it as a finding, naming its ids: | a status or a mode that the lines name, with a way into it or out of it that no line gives",
+  "line": 39
+ },
+ "spec-consistency#r27": {
+  "text": "**When** a `spec-checker` finds one of the following in what it reads, the `spec-checker` shall write it as a finding, naming its ids: | a word a line depends on that is neither a glossary term nor spelled out in the line",
+  "line": 40
+ },
+ "spec-integration#r1": {
+  "text": "**When** an approved note is integrated, `integrating-a-proposal` shall show the person every added, changed and removed Behaviour line, each with its id, and every question the note left open, each with the lines its answers would give.",
+  "line": 21
+ },
+ "spec-integration#r2": {
+  "text": "**When** a line drafted from a note quotes no sentence of the note, `integrating-a-proposal` shall show it to the person as a question, not as a line.",
+  "line": 22
+ },
+ "spec-integration#r3": {
+  "text": "**While** the person has not said yes to the lines and answered every question, `integrating-a-proposal` shall change nothing under `spec/`.",
+  "line": 23
+ },
+ "spec-integration#r4": {
+  "text": "**When** the person answers a question, `integrating-a-proposal` shall show the changed lines again, the answer drafted as a further round, before anything is written.",
+  "line": 24
+ },
+ "spec-integration#r6": {
+  "text": "**When** the person says yes, `integrating-a-proposal` shall commit the approved drafts to `spec/` alone, with the Behaviour lines exactly as approved.",
+  "line": 25
+ },
+ "spec-integration#r15": {
+  "text": "**When** the approved drafts are committed, `integrating-a-proposal` shall name in the commit message the approval and its date, any delegation it was given under, and each id and each glossary term added, changed and removed.",
+  "line": 26
+ },
+ "spec-integration#r7": {
+  "text": "**When** a note would start a second spec in a context that has one, `integrating-a-proposal` shall integrate it into the existing `spec/` instead.",
+  "line": 27
+ },
+ "spec-integration#r12": {
+  "text": "**When** a line is added to a capability, `integrating-a-proposal` shall give it the id one above every id the capability has used or retired, wherever the line sits in the section.",
+  "line": 28
+ },
+ "spec-integration#r13": {
+  "text": "**When** a line is changed, `integrating-a-proposal` shall keep its id.",
+  "line": 29
+ },
+ "spec-integration#r14": {
+  "text": "**When** a line is removed, `integrating-a-proposal` shall add its id to the capability's `retired` list.",
+  "line": 30
+ },
+ "spec-integration#r16": {
+  "text": "**Where** `model check` is available, **if** applying the approved drafts makes it print a new problem other than an added line with no scenario yet, a removed line's scenario that now names no line, or a scenario that uses a word the new glossary entry avoids, then `integrating-a-proposal` shall not commit them.",
+  "line": 31
+ },
+ "spec-integration#r54": {
+  "text": "**When** a round of the kind `integrate` drafts a change to the glossary, `initiative-round` shall give the terms the change adds, changes and removes in the change list's entry for the glossary and in no entry for a capability.",
+  "line": 32
+ },
+ "spec-integration#r55": {
+  "text": "**While** the person has not approved the terms of a glossary-proposal, `initiative-round` shall apply none of them to `spec/index.md`.",
+  "line": 33
+ },
+ "spec-integration#r59": {
+  "text": "**When** a round of the kind `gate` is started for a glossary-proposal, `initiative-round` shall ask only about the terms the glossary-proposal adds, changes and removes.",
+  "line": 34
+ },
+ "spec-integration#r19": {
+  "text": "**Where** a repository has no `.shop/work/`, **when** a glossary change is drafted, `integrating-a-proposal` shall put it through the gate like a Behaviour line.",
+  "line": 35
+ },
+ "spec-integration#r20": {
+  "text": "**When** a change makes a decision, `integrating-a-proposal` shall show it to the person as one file `spec/decisions/<nnnn>-<slug>.md`, `nnnn` one above the highest number in `spec/decisions/`.",
+  "line": 36
+ },
+ "spec-integration#r21": {
+  "text": "**When** a drafted decision names what it came from, `integrating-a-proposal` shall list by id in its `source` only records, initiatives and decisions, writing the person, a date, a delegation or anything outside the repository in its `by`.",
+  "line": 37
+ },
+ "spec-integration#r22": {
+  "text": "**When** the approved drafts are committed with a decision, `integrating-a-proposal` shall commit in the same commit the `spec/decisions/index.md` that `model decisions` writes.",
+  "line": 38
+ },
+ "spec-integration#r35": {
+  "text": "**When** `initiative-round` runs the kind `gate`, `initiative-round` shall give in its result one question for each decision the person is asked to make, each marking the recommended reading and giving the lines it concerns in full.",
+  "line": 39
+ },
+ "spec-integration#r39": {
+  "text": "**When** `initiative-round` runs the kind `apply` with the file of the person's answers, or with the person's approval in their words, `initiative-round` shall apply exactly the drafts the person approved.",
+  "line": 40
+ },
+ "spec-integration#r46": {
+  "text": "**When** a round of the kind `apply` ends, `initiative-round` shall give in its result each answer of the capability-proposal that the drafts it applied do not hold.",
+  "line": 41
+ },
+ "spec-integration#r40": {
+  "text": "**When** `initiative-round` finishes a round, `initiative-round` shall append one line to the initiative's ledger with `work note`, naming the kind, the round, and what the round ended with or the answers it applied.",
+  "line": 42
+ },
+ "spec-integration#r43": {
+  "text": "**When** a round of the kind `integrate` is given requirement ids that other initiatives' drafts add, `initiative-round` shall number the round's added lines above every id it is given on the same capability.",
+  "line": 43
+ },
+ "spec-integration#r45": {
+  "text": "**When** a round of the kind `integrate` is given answers that ask for lines the request's accepted lines do not, `initiative-round` shall draft those lines under the capabilities the answers name.",
+  "line": 44
+ },
+ "spec-integration#r44": {
+  "text": "**Where** `spec/index.md` names an upstream bounded-context, **when** a round of the kind `integrate` drafts a line that needs what the upstream does not yet give, `initiative-round` shall give in its result the lines of a request into that upstream, in the upstream's terms.",
+  "line": 45
+ },
+ "spec-integration#r33": {
+  "text": "**If** `integrating-a-proposal` cannot do what it was asked, then `integrating-a-proposal` shall stop, saying why, and change nothing under `spec/`.",
+  "line": 46
+ },
+ "spec-migration#r1": {
+  "text": "**If** the working tree is not clean, a work-item is `claimed`, the suite does not run cleanly, or `migrating-to-capabilities` cannot otherwise do what it was asked, then `migrating-to-capabilities` shall stop before any change, saying why.",
+  "line": 21
+ },
+ "spec-migration#r2": {
+  "text": "**When** migration stops at its gate, `migrating-to-capabilities` shall show the person the capabilities, which old features' scenarios each receives, every line no scenario backs, every scenario that formulates no line or more than one, each pair of scenarios with one title that would land in one capability (asking to retitle one), and every other question.",
+  "line": 22
+ },
+ "spec-migration#r16": {
+  "text": "**When** migration stops at its gate, `migrating-to-capabilities` shall show the person each glossary bullet not in the glossary's form, each open slice of the living plan, and each backlog entry and each entry of a log that would become an observation.",
+  "line": 23
+ },
+ "spec-migration#r26": {
+  "text": "**While** the person has not answered at the gate, `migrating-to-capabilities` shall change nothing beyond the mechanical commit.",
+  "line": 24
+ },
+ "spec-migration#r22": {
+  "text": "**When** migration is complete, `migrating-to-capabilities` shall have made the mechanical changes one commit, the mechanical commit, before the gate, in which no Behaviour line's text and no scenario but its renaming of r18 changes.",
+  "line": 25
+ },
+ "spec-migration#r4": {
+  "text": "**When** migration is complete, `migrating-to-capabilities` shall have put each scenario in the one feature file named for its capability, its effective tags, title, description and tables, and its Background steps followed by its own steps, as they were, the new `@r<n>` tags aside.",
+  "line": 26
+ },
+ "spec-migration#r5": {
+  "text": "**When** migration onto `spec/` or to ids is complete, `migrating-to-capabilities` shall have left the suite's summary, its passing scenarios by title and its count of scenarios per tag equal to those before it, the retitles approved at the gate, the new `@r<n>` tags, the deprecations the gate led to, and the \" (deprecated)\" titles of those and of r18's renaming aside.",
+  "line": 27
+ },
+ "spec-migration#r6": {
+  "text": "**If** the suite's summary, its passing scenarios by title or its count of scenarios per tag differ from those before migration beyond what r5 sets aside, then `migrating-to-capabilities` shall stop and show the person the difference without editing a scenario.",
+  "line": 28
+ },
+ "spec-migration#r7": {
+  "text": "`migrating-to-capabilities` shall change no step definition's body in a migration.",
+  "line": 29
+ },
+ "spec-migration#r23": {
+  "text": "**When** migration is complete, `migrating-to-capabilities` shall show the person each file other than Markdown in which the migration rewrote a path it relocated, with the line.",
+  "line": 30
+ },
+ "spec-migration#r8": {
+  "text": "**When** migration is complete, `migrating-to-capabilities` shall have headed each note as a proposal integrated into `spec/` on its date.",
+  "line": 31
+ },
+ "spec-migration#r9": {
+  "text": "**Where** a repository has capability files whose Behaviour lines have no ids, **when** it is migrated to ids, `migrating-to-capabilities` shall give each line `[r<n>]` in its order from r1, its text unchanged, and each capability `retired: []` and the id `capability/<context path>/<name>`.",
+  "line": 32
+ },
+ "spec-migration#r10": {
+  "text": "**When** a repository is migrated to ids, `migrating-to-capabilities` shall make its context's id `bounded-context/<context path>`, the owner's domain, product and context name that `spec/index.md` names or, where it names none, that the person gives at the gate.",
+  "line": 33
+ },
+ "spec-migration#r11": {
+  "text": "**When** a repository is migrated onto `spec/` or to ids, `migrating-to-capabilities` shall give each scenario that is not deprecated the `@r<n>` tag of the one line it formulates, and change nothing else in a scenario but the deprecations the gate led to and the renaming of r18.",
+  "line": 34
+ },
+ "spec-migration#r14": {
+  "text": "**When** a repository is migrated to ids, `migrating-to-capabilities` shall rewrite its `decision/<name>` references as `design-decision/<name>`, every frontmatter `id` under `spec/decisions/` and `.shop/` in full, and its observation headings `## obs/<x>` as `## observation/<context path>/<x>`, changing nothing else in a reference.",
+  "line": 35
+ },
+ "spec-migration#r15": {
+  "text": "**When** a repository is migrated, `migrating-to-capabilities` shall leave it on the final layout: decisions one file each in `spec/decisions/` with the generated `index.md`, work and records under `.shop/`, nothing of the plugin under `docs/superpowers/` or `.superpowers/`, and `model check` printing no file problem that names `scripts/migrate`.",
+  "line": 36
+ },
+ "spec-migration#r17": {
+  "text": "**When** migration is complete, `migrating-to-capabilities` shall have turned the living plan into what the person kept at the gate: each open slice kept a work-item accepting the requirements its scenarios are tagged with, each slice dropped only in the archived plan, each entry not left out an observation, and the plan and its archives records under `.shop/records/archive/plans/`.",
+  "line": 37
+ },
+ "spec-migration#r18": {
+  "text": "**When** migration is complete, `migrating-to-capabilities` shall have tagged each scenario that was tagged `@holding` `@deprecated`, with \" (deprecated)\" for \" (held)\" on its title and `Deprecated for:` for `Held for:`, still bound by its test.",
+  "line": 38
+ },
+ "spec-migration#r19": {
+  "text": "**When** migration is complete, `migrating-to-capabilities` shall have made each decision of the ledger a decision file with the entry's text as its summary and Decision, its `source` naming by id the records the files the entry named became.",
+  "line": 39
+ },
+ "spec-migration#r20": {
+  "text": "**When** migration is complete, `migrating-to-capabilities` shall have left the repository with no violation, unresolved reference, file problem or `v_s3` (a requirement has no scenario) for `model check` to print, but a `v_s3` for a line that had no scenario before.",
+  "line": 40
+ },
+ "spec-migration#r21": {
+  "text": "**When** migration is complete, `migrating-to-capabilities` shall have put each glossary bullet in the glossary's form, in the words the person gave at the gate.",
+  "line": 41
+ },
+ "supervision#r1": {
+  "text": "**When** `work run <initiative>` is started, `work run` shall pull the initiative's work-items through research, plan, implementation and review until no work-item can make a transition.",
+  "line": 26
+ },
+ "supervision#r66": {
+  "text": "**When** `work run` is started with no initiative, `work run` shall take every initiative that is neither `done` nor `abandoned` through every transition its nodes can make, the initiatives side by side and, but for the workers r20 and r59 start together, one session of an initiative at a time, and the rounds r95 names one at a time across initiatives.",
+  "line": 27
+ },
+ "supervision#r111": {
+  "text": "**When** a transition that `work run` makes leaves a node of an initiative able to make another transition, `work run` shall take the node through that transition before it ends.",
+  "line": 28
+ },
+ "supervision#r128": {
+  "text": "**If** a session that `work run` started for a work-item, a capability-proposal, an initiative or a question ends in an error or at its turn limit, or leaves no result `work run` can read, **then** `work run` shall take the session's end as a fault, whatever its result says.",
+  "line": 29
+ },
+ "supervision#r129": {
+  "text": "**When** a session that `work run` started ends with a result that gives questions, `work run` shall send each question where its stage's questions go: a researcher's into the planner's brief, every other stage's under the node's `## Questions`, transitioning the node to `awaiting-answer`.",
+  "line": 30
+ },
+ "supervision#r130": {
+  "text": "**When** a session that `work run` started ends with a result that gives no question and its stage's output, `work run` shall make the node's next transition.",
+  "line": 31
+ },
+ "supervision#r131": {
+  "text": "**When** a session that `work run` started ends with a result that gives neither a question nor its stage's output, `work run` shall write under the node's `## Questions` a question naming the output missing and transition the node to `awaiting-answer`.",
+  "line": 32
+ },
+ "supervision#r132": {
+  "text": "`work run` shall take as a stage's output: a researcher's file set; a planner's plan and file set; an implementer's commits on which the work-item's scenarios and the whole suite pass; a reviewer's findings; an answering session's answer; an integrate or apply round's change list; a formulate round's scenario for each requirement its proposal adds or changes; an intake round's line outcome or question on each line of its request; a gate round's questions.",
+  "line": 33
+ },
+ "supervision#r185": {
+  "text": "**When** a researcher's result gives an empty file set, `work run` shall take it as the researcher's file set.",
+  "line": 34
+ },
+ "supervision#r133": {
+  "text": "`work run` shall make no transition from the outcome a session's result gives.",
+  "line": 35
+ },
+ "supervision#r95": {
+  "text": "`work run` shall start the rounds of the kind `integrate`, `apply` and `formulate` of different initiatives one at a time.",
+  "line": 36
+ },
+ "supervision#r67": {
+  "text": "**When** a request of which this context is the upstream is `open` or `awaiting-upstream`, `work run` shall start an `initiative-round` session of the kind `intake`, given the request, that writes each line's line outcome or a question on it and passes the turn with `work turn`.",
+  "line": 37
+ },
+ "supervision#r100": {
+  "text": "**When** a round of the kind `intake` that `work run` started gives a question on a line of a request, `work run` shall write the question in the request.",
+  "line": 38
+ },
+ "supervision#r134": {
+  "text": "**When** a round of the kind `intake` that `work run` started gives a question, `work run` shall leave the request's status as `work turn` writes it.",
+  "line": 39
+ },
+ "supervision#r103": {
+  "text": "**When** a request of which this context is the upstream is `accepted` and no initiative fulfils it, `work run` shall start its initiative with `work start`.",
+  "line": 40
+ },
+ "supervision#r79": {
+  "text": "**When** an initiative is `proposed`, `work run` shall start a round of the kind `integrate` given the accepted lines of the request it fulfils.",
+  "line": 41
+ },
+ "supervision#r180": {
+  "text": "**When** a `started` initiative that fulfils a request has neither a capability-proposal, a glossary-proposal nor a work-item, `work run` shall start a round of the kind `integrate` for it, given the accepted lines of the request it fulfils.",
+  "line": 42
+ },
+ "supervision#r102": {
+  "text": "**When** `work run` starts a round of the kind `integrate`, `work run` shall give the round every requirement id that the kept drafts of another initiative, not yet applied, add.",
+  "line": 43
+ },
+ "supervision#r96": {
+  "text": "**If** a round of the kind `integrate` that `work run` started ends without a change list, **then** `work run` shall exit with an error, naming the round.",
+  "line": 44
+ },
+ "supervision#r84": {
+  "text": "**When** `work run` starts the round of the kind `integrate` of a `proposed` initiative, `work run` shall transition the initiative to `started`.",
+  "line": 45
+ },
+ "supervision#r91": {
+  "text": "**When** a round of the kind `integrate` that `work run` started ends, `work run` shall keep the round's drafts on the initiative branch.",
+  "line": 46
+ },
+ "supervision#r159": {
+  "text": "**When** a round of the kind `integrate` that `work run` started ends with a change list, `work run` shall write a `drafted` capability-proposal for each capability the change list names, with the requirement ids it adds, changes and removes on that capability.",
+  "line": 47
+ },
+ "supervision#r187": {
+  "text": "**When** a round of the kind `integrate` started for a capability-proposal ends with a change list that names another capability for which the initiative holds a capability-proposal, `work run` shall add the round's ids for that capability to that proposal's `adds`, `changes` and `removes`, keeping the ids it holds.",
+  "line": 48
+ },
+ "supervision#r171": {
+  "text": "**When** a round of the kind `integrate` that `work run` started ends with a change list that names the glossary, `work run` shall write a `drafted` glossary-proposal with the terms the change list adds, changes and removes in the glossary.",
+  "line": 49
+ },
+ "supervision#r135": {
+  "text": "**When** a round of the kind `integrate` that `work run` started gives the lines of a request into an upstream, `work run` shall raise them with `work request`, raised for the request the initiative fulfils and with that request's delegation.",
+  "line": 50
+ },
+ "supervision#r107": {
+  "text": "**If** a change list that `work run` reads names a capability that neither `spec/capabilities/` nor the round's drafts have, **then** `work run` shall write no capability-proposal for it and exit with an error, naming the capability.",
+  "line": 51
+ },
+ "supervision#r68": {
+  "text": "**When** a capability-proposal is `drafted`, `work run` shall start a round of the kind `gate` whose brief asks for the gate as questions, each a decision with its readings and the recommended reading marked.",
+  "line": 52
+ },
+ "supervision#r164": {
+  "text": "**When** a glossary-proposal is `drafted`, `work run` shall start a round of the kind `gate` for it, asking only for the questions on the terms it adds, changes or removes.",
+  "line": 53
+ },
+ "supervision#r168": {
+  "text": "**When** `work run` starts a round of the kind `gate` for a capability-proposal, `work run` shall ask the round only for the questions on the lines the proposal adds, changes or removes.",
+  "line": 54
+ },
+ "supervision#r108": {
+  "text": "**When** `work run` starts a round of the kind `gate` or `apply` for a capability-proposal, `work run` shall give the round the path of the kept drafts of the round of the kind `integrate` that wrote the proposal.",
+  "line": 55
+ },
+ "supervision#r170": {
+  "text": "**When** `work run` starts a round of the kind `gate` or `apply` for a glossary-proposal, `work run` shall give the round the path of the kept drafts of the round of the kind `integrate` that wrote the proposal.",
+  "line": 56
+ },
+ "supervision#r85": {
+  "text": "**When** a round of the kind `gate` that `work run` started for a capability-proposal ends, `work run` shall write the questions its result gives under the proposal's `## Questions`.",
+  "line": 57
+ },
+ "supervision#r117": {
+  "text": "**When** a round of the kind `gate` that `work run` started for a capability-proposal gives no question, `work run` shall write under the proposal's `## Questions` one question asking for the approval of the proposal's lines as drafted.",
+  "line": 58
+ },
+ "supervision#r69": {
+  "text": "**When** a round of the kind `gate` that `work run` started for a capability-proposal ends, `work run` shall transition the proposal to `awaiting-answer`.",
+  "line": 59
+ },
+ "supervision#r169": {
+  "text": "**When** a round of the kind `gate` that `work run` started for a glossary-proposal ends, `work run` shall transition the proposal to `awaiting-answer`.",
+  "line": 60
+ },
+ "supervision#r173": {
+  "text": "**When** a round of the kind `gate` that `work run` started for a glossary-proposal ends with no question, `work run` shall write one question asking the person to approve the terms the proposal adds, changes and removes.",
+  "line": 61
+ },
+ "supervision#r70": {
+  "text": "**When** every question that a round of the kind `gate` gave on a capability-proposal has an answer, `work run` shall start a round of the kind `apply` given the answers.",
+  "line": 62
+ },
+ "supervision#r165": {
+  "text": "**When** every question that a round of the kind `gate` gave on a glossary-proposal has an answer, `work run` shall start a round of the kind `apply` given the answers.",
+  "line": 63
+ },
+ "supervision#r172": {
+  "text": "**While** a glossary-proposal is `awaiting-answer` and a question that a round of the kind `gate` gave on it has no answer, `work run` shall start no round of the kind `apply` for it.",
+  "line": 64
+ },
+ "supervision#r116": {
+  "text": "**When** every question that a round of the kind `formulate` gave on a capability-proposal has an answer, `work run` shall start a round of the kind `formulate` for the proposal, given the answers.",
+  "line": 65
+ },
+ "supervision#r150": {
+  "text": "**When** a round of the kind `apply` gives in its result an answer that the drafts it applied do not hold, `work run` shall start a new round of the kind `integrate` for the capability-proposal.",
+  "line": 66
+ },
+ "supervision#r221": {
+  "text": "**When** a round of the kind `apply` gives in its result an answer that the drafts it applied do not hold for a glossary-proposal, `work run` shall start a new round of the kind `integrate` for the glossary-proposal.",
+  "line": 67
+ },
+ "supervision#r151": {
+  "text": "**When** a round of the kind `apply` gives in its result an answer that the drafts it applied do not hold, `work run` shall start no round of the kind `formulate` for the capability-proposal until the new round of the kind `integrate` has been applied.",
+  "line": 68
+ },
+ "supervision#r141": {
+  "text": "**When** `work run` starts a round of the kind `integrate` for a capability-proposal that has answers, `work run` shall give the round the capability-proposal's questions and answers and the initiative's ledger, with the accepted lines of the request the initiative fulfils.",
+  "line": 69
+ },
+ "supervision#r142": {
+  "text": "**When** a round of the kind `integrate` drafts a capability-proposal anew from its answers, `work run` shall set the capability-proposal `drafted`, its earlier drafts kept in their round's directory.",
+  "line": 70
+ },
+ "supervision#r143": {
+  "text": "**When** `work run` starts a round of the kind `integrate` for a capability-proposal, `work run` shall keep the proposal's status until the round ends.",
+  "line": 71
+ },
+ "supervision#r144": {
+  "text": "**When** a round of the kind `apply` that `work run` started for a capability-proposal ends having applied its drafts, `work run` shall transition the proposal to `approved`.",
+  "line": 72
+ },
+ "supervision#r166": {
+  "text": "**When** a round of the kind `apply` that `work run` started for a glossary-proposal ends having applied its drafts, `work run` shall transition the proposal to `approved`.",
+  "line": 73
+ },
+ "supervision#r167": {
+  "text": "**When** a round of the kind `apply` that `work run` started for a glossary-proposal ends having applied its drafts, `work run` shall start no round of the kind `formulate` for the proposal.",
+  "line": 74
+ },
+ "supervision#r145": {
+  "text": "**When** a round of the kind `apply` that `work run` started for a capability-proposal ends having applied its drafts, `work run` shall write the proposal's `adds`, `changes` and `removes` from the change list the round applied.",
+  "line": 75
+ },
+ "supervision#r146": {
+  "text": "**When** a round of the kind `apply` that `work run` started for a capability-proposal ends having applied its drafts, `work run` shall start a round of the kind `formulate` for the proposal.",
+  "line": 76
+ },
+ "supervision#r147": {
+  "text": "**When** a round of the kind `apply` applies nothing because a capability-proposal's answers give what its drafts do not hold, `work run` shall take that as the round's output.",
+  "line": 77
+ },
+ "supervision#r148": {
+  "text": "**When** a round of the kind `integrate` drafts a capability-proposal anew from its answers, `work run` shall write no second capability-proposal for that proposal's capability.",
+  "line": 78
+ },
+ "supervision#r188": {
+  "text": "**When** a round of the kind `integrate` redrafts some of the lines of a capability-proposal it was started for, `work run` shall keep the requirement ids of the proposal that the round's change list does not name.",
+  "line": 79
+ },
+ "supervision#r189": {
+  "text": "**When** a round of the kind `integrate` redrafts some of the terms of a glossary-proposal it was started for, `work run` shall keep the terms of the glossary-proposal that the round's change list does not name.",
+  "line": 80
+ },
+ "supervision#r83": {
+  "text": "**When** a round of the kind `formulate` that `work run` started for a capability-proposal ends without giving a question, `work run` shall transition the proposal to `formulated`.",
+  "line": 81
+ },
+ "supervision#r186": {
+  "text": "**When** a round of the kind `formulate` formulates nothing because a capability-proposal's answers change lines not in `spec/`, `work run` shall start a new round of the kind `integrate` for the capability-proposal.",
+  "line": 82
+ },
+ "supervision#r152": {
+  "text": "**When** a round of the kind `formulate` formulates nothing because a capability-proposal's answers change lines not in `spec/`, `work run` shall keep the capability-proposal's status.",
+  "line": 83
+ },
+ "supervision#r153": {
+  "text": "**When** a round of the kind `formulate` formulates nothing because a capability-proposal's answers change lines not in `spec/`, `work run` shall take that as the round's output.",
+  "line": 84
+ },
+ "supervision#r86": {
+  "text": "**If** a round of any kind that `work run` started for a capability-proposal or an initiative ends in an error or at its turn limit, or leaves no result `work run` can read, then `work run` shall keep the proposal's or initiative's status.",
+  "line": 85
+ },
+ "supervision#r87": {
+  "text": "**If** a round of any kind that `work run` started for a capability-proposal or an initiative ends in an error or at its turn limit, or leaves no result `work run` can read, then `work run` shall make no transition from the round.",
+  "line": 86
+ },
+ "supervision#r88": {
+  "text": "**If** a round of any kind that `work run` started for a capability-proposal or an initiative ends in an error or at its turn limit, or leaves no result `work run` can read, then `work run` shall exit with an error, naming the round and how it ended.",
+  "line": 87
+ },
+ "supervision#r115": {
+  "text": "**If** a round of any kind that `work run` started for a capability-proposal or an initiative ends in an error or at its turn limit, or leaves no result `work run` can read, then `work run` shall take the initiative's other nodes through their transitions before it exits with an error.",
+  "line": 88
+ },
+ "supervision#r72": {
+  "text": "**When** a capability-proposal is `formulated`, `work run` shall draft with `work add` one work-item for each capability the proposal's `adds` and `changes` name, accepting every requirement they name on that capability.",
+  "line": 89
+ },
+ "supervision#r136": {
+  "text": "**While** a request that an initiative raised into an upstream is not `delivered`, `work run` shall draft no work-item for the capability-proposal whose lines it raised.",
+  "line": 90
+ },
+ "supervision#r73": {
+  "text": "**When** `work run` drafts a work-item, `work run` shall list under the work-item's `## Retires` each deprecated scenario whose `Deprecated for:` line names a scenario of a requirement the work-item accepts.",
+  "line": 91
+ },
+ "supervision#r123": {
+  "text": "**When** every work-item of an initiative is `green` or `withdrawn` and a deprecated scenario's replacement's work-item, of any initiative, is `green`, `work run` shall draft one work-item, under the capability-proposal of the last-drafted work-item whose replacement it retires, that retires each deprecated scenario whose replacement's work-item is `green`.",
+  "line": 92
+ },
+ "supervision#r124": {
+  "text": "**When** every work-item of an initiative is `green` or `withdrawn`, `work run` shall draft the work-item r123 names before it starts a branch review or runs `measure initiative`.",
+  "line": 93
+ },
+ "supervision#r74": {
+  "text": "**When** a kept branch review's result lists findings to fix now, `work run` shall draft one work-item for them, naming the findings file, under the capability-proposal that the work-item the findings concern is part of.",
+  "line": 94
+ },
+ "supervision#r121": {
+  "text": "**When** a kept branch review's result gives no question, `work run` shall take the review as listing nothing to fix now, whatever its status.",
+  "line": 95
+ },
+ "supervision#r110": {
+  "text": "**When** a work-item drafted for a kept branch review's findings turns `green`, `work run` shall start the next branch review of the initiative before `work run` exits.",
+  "line": 96
+ },
+ "supervision#r75": {
+  "text": "**When** every work-item of an initiative is `green` or `withdrawn` and at least one of them is `green` and its kept branch review lists nothing to fix now, `work run` shall run `measure initiative` on the initiative.",
+  "line": 97
+ },
+ "supervision#r97": {
+  "text": "**While** an initiative has no work-item, `work run` shall run no `measure initiative` on it.",
+  "line": 98
+ },
+ "supervision#r76": {
+  "text": "**When** the `measure initiative` that `work run` ran on an initiative has written its measurement, `work run` shall start a session of `analyzing-a-batch` that writes the initiative's analysis record.",
+  "line": 99
+ },
+ "supervision#r106": {
+  "text": "**When** `work run` has written an initiative's measurement and its analysis record, `work run` shall commit them on the initiative branch.",
+  "line": 100
+ },
+ "supervision#r213": {
+  "text": "**When** `work run` finds an initiative that is not `done`, that has at least one work-item that is `green`, whose every work-item is `green` or `withdrawn`, whose every capability-proposal is `formulated` or `withdrawn`, whose kept branch review lists nothing to fix now, whose measurement and analysis record `work run` has committed and whose every request kept in this context whose asker is this context and that names the initiative is `delivered`, `work run` shall set the initiative's status to `done`.",
+  "line": 101
+ },
+ "supervision#r161": {
+  "text": "**When** an initiative changes only the glossary, its glossary-proposal is `approved` and its terms are committed to `spec/index.md`, `work run` shall set the initiative's status to `done`.",
+  "line": 102
+ },
+ "supervision#r109": {
+  "text": "**When** `work run` sets an initiative's status to `done`, `work run` shall commit the initiative on the initiative branch.",
+  "line": 103
+ },
+ "supervision#r210": {
+  "text": "**Where** the request an initiative fulfils gives a delegation, `work run` shall give each question of the initiative that is not a question of a glossary-proposal, whatever words it uses, to a session of its own, given the delegation, the files that one question names and nothing else, which answers the question if the delegation covers it and leaves it for the person otherwise.",
+  "line": 104
+ },
+ "supervision#r211": {
+  "text": "**When** `work run` reads the delegation of an initiative's request, `work run` shall read the delegation the request has at that moment, given before or after the initiative started.",
+  "line": 105
+ },
+ "supervision#r209": {
+  "text": "**When** a question of an initiative is a question of a glossary-proposal, `work run` shall leave the question for the person, giving it to no session under a delegation.",
+  "line": 106
+ },
+ "supervision#r78": {
+  "text": "**Where** the request an initiative fulfils gives a delegation, **when** a session `work run` started under it answers a question, `work run` shall write the answer naming the delegation it was given under.",
+  "line": 107
+ },
+ "supervision#r118": {
+  "text": "**Where** the request an initiative fulfils gives a delegation, **when** a session that `work run` started under it answers a reviewer's question on a work-item with an answer that asks for a change, `work run` shall transition the work-item to `ready`.",
+  "line": 108
+ },
+ "supervision#r119": {
+  "text": "**Where** the request an initiative fulfils gives a delegation, **when** a session that `work run` started under it answers a reviewer's question on a work-item with an answer that accepts the work-item as it is, `work run` shall transition the work-item to `done`.",
+  "line": 109
+ },
+ "supervision#r120": {
+  "text": "**Where** the request an initiative fulfils gives a delegation, **when** a session that `work run` started under it answers a reviewer's question on a work-item, the session shall give in its result whether its answer asks for a change or accepts the work-item as it is.",
+  "line": 110
+ },
+ "supervision#r89": {
+  "text": "**If** a session that `work run` started under a delegation to answer a question ends in an error or at its turn limit, or leaves no result `work run` can read, then `work run` shall leave the question unanswered for the person.",
+  "line": 111
+ },
+ "supervision#r90": {
+  "text": "**If** a session that `work run` started under a delegation to answer a question ends in an error or at its turn limit, or leaves no result `work run` can read, then `work run` shall commit the session's stage directory and log lines.",
+  "line": 112
+ },
+ "supervision#r59": {
+  "text": "**When** more than one work-item of the initiative is `drafted` or `researched`, `work run` shall start the research or plan stage of each of them at the same time, within the number of workers r60 gives.",
+  "line": 113
+ },
+ "supervision#r60": {
+  "text": "`work run` shall run at most as many workers at the same time as `.shop/delivery.toml`'s number of workers, and 4 where it gives none.",
+  "line": 114
+ },
+ "supervision#r2": {
+  "text": "**When** a work-item's status is `drafted`, `researched`, `ready` or `done`, `work run` shall start a new `claude -p` session of that stage's agent (`code-scout`, `bdd-planner`, `bdd-implementer`, `bdd-task-reviewer`), given one brief that names the work-item, the files to read and where its result goes.",
+  "line": 115
+ },
+ "supervision#r4": {
+  "text": "**When** an implementer's session ends with a result that gives no question, `work run` shall merge its work-item branch into the initiative branch only if the work-item's scenarios pass on it and the whole suite passes on it but for the failing scenarios r43 counts as expected.",
+  "line": 116
+ },
+ "supervision#r6": {
+  "text": "**If** a worker changes a file under `.shop/work/` outside its stage directory, then `work run` shall put the file back as it was.",
+  "line": 117
+ },
+ "supervision#r7": {
+  "text": "**When** `work run` makes a work-item's transition, `work run` shall commit the work-item's file, its stage directories and `log.jsonl` on the initiative branch, and nothing else.",
+  "line": 118
+ },
+ "supervision#r8": {
+  "text": "**When** a worker starts or ends, `work run` shall append a line to `log.jsonl` with the time, the work-item, the stage, the agent and the session id.",
+  "line": 119
+ },
+ "supervision#r62": {
+  "text": "**When** `work run` writes a stage's `session.json`, `work run` shall record in it the path of the transcript of the stage's session.",
+  "line": 120
+ },
+ "supervision#r212": {
+  "text": "**When** no node of the initiative can make a transition, every work-item is `green` or `withdrawn`, no capability-proposal is `awaiting-answer` and no request whose asker is this context is in the asker's turn, `work run` shall exit successfully, printing each work-item's status.",
+  "line": 121
+ },
+ "supervision#r101": {
+  "text": "**When** `work run` ends while a request kept in this context whose asker is this context is in the asker's turn, `work run` shall exit with an error, printing the request with its open questions.",
+  "line": 122
+ },
+ "supervision#r184": {
+  "text": "**When** `work run` ends with a capability-proposal or a work-item `awaiting-answer`, `work run` shall exit with an error, printing each with its open questions.",
+  "line": 123
+ },
+ "supervision#r52": {
+  "text": "**When** no work-item can make a transition and a work-item is `failed`, `work run` shall exit with an error, printing each work-item's status and each fault.",
+  "line": 124
+ },
+ "supervision#r81": {
+  "text": "**When** `work run` was started with no initiative, no node of an initiative it took can make a transition and one such node is `awaiting-answer` or `failed`, `work run` shall exit with an error, printing the status of each initiative it took.",
+  "line": 125
+ },
+ "supervision#r82": {
+  "text": "**When** `work run` was started with no initiative, no node of an initiative it took can make a transition and none is `awaiting-answer` or `failed` and no request whose asker is this context is in the asker's turn, `work run` shall exit successfully, printing the status of each initiative it took.",
+  "line": 126
+ },
+ "supervision#r53": {
+  "text": "**If** the push after the branch review's commit fails, then `work run` shall exit with an error, saying why.",
+  "line": 127
+ },
+ "supervision#r54": {
+  "text": "**When** `work run` starts and the initiative branch has commits its remote does not have, `work run` shall first push the initiative branch to the remote.",
+  "line": 128
+ },
+ "supervision#r10": {
+  "text": "**If** `work run` cannot start the delivery it was asked for, then `work run` shall exit with an error, say why, and change nothing.",
+  "line": 129
+ },
+ "supervision#r11": {
+  "text": "**When** `work run` starts a worker, `work run` shall give the worker this plugin's own directory as its plugin.",
+  "line": 130
+ },
+ "supervision#r12": {
+  "text": "**When** `work run` starts a worker whose agent lists skills, `work run` shall allow the worker to load each of those skills.",
+  "line": 131
+ },
+ "supervision#r13": {
+  "text": "`work run` shall give no worker a bare Write or Edit tool.",
+  "line": 132
+ },
+ "supervision#r14": {
+  "text": "`work run` shall allow a worker's Bash only `python3 -m pytest`, the plugin's scripts its stage runs, by path, and the git commands its stage needs.",
+  "line": 133
+ },
+ "supervision#r15": {
+  "text": "**When** `work run` removes a worker's worktree, `work run` shall first copy each file the worker's result names into its stage directory.",
+  "line": 134
+ },
+ "supervision#r17": {
+  "text": "**When** `work run` writes a worker's brief, `work run` shall tell the worker that it starts in its worktree and never changes directory.",
+  "line": 135
+ },
+ "supervision#r18": {
+  "text": "**When** `work run` merges a work-item branch, `work run` shall delete that branch.",
+  "line": 136
+ },
+ "supervision#r19": {
+  "text": "**When** `work run` starts a researcher, `work run` shall give it the work-item's file set and accepted scenarios and a limit of 80 turns.",
+  "line": 137
+ },
+ "supervision#r20": {
+  "text": "**While** ready work-items have claims that share no file, `work run` shall have them implemented at the same time, each in its own worktree, within the number of workers r60 gives.",
+  "line": 138
+ },
+ "supervision#r61": {
+  "text": "**When** implementers working at the same time end, `work run` shall merge the work-item branches that r4 merges into the initiative branch one at a time, in the order the implementers ended.",
+  "line": 139
+ },
+ "supervision#r21": {
+  "text": "**If** `work run` is started by a worker of another `work run`, then `work run` shall refuse, saying so.",
+  "line": 140
+ },
+ "supervision#r22": {
+  "text": "`work run` shall give every pytest command it starts, and every worker's, the plugin's option `--work-item <name>`, which selects the scenarios the work-item accepts.",
+  "line": 141
+ },
+ "supervision#r55": {
+  "text": "**When** a pytest command given `--work-item <name>` collects a test that is not a scenario, the option shall keep that test.",
+  "line": 142
+ },
+ "supervision#r56": {
+  "text": "**If** a pytest command given `--work-item <name>` collects scenarios and none that the work-item accepts, and a requirement the work-item accepts is not of a guarantees capability, then the option shall refuse, saying so.",
+  "line": 143
+ },
+ "supervision#r64": {
+  "text": "**When** a pytest command given `--work-item <name>` collects scenarios and none that the work-item accepts, and every requirement the work-item accepts is of a guarantees capability, the option shall deselect each scenario it collects.",
+  "line": 144
+ },
+ "supervision#r65": {
+  "text": "**When** a pytest command given `--work-item <name>` for a work-item every requirement of which is of a guarantees capability is left with no test, the command shall exit successfully.",
+  "line": 145
+ },
+ "supervision#r23": {
+  "text": "**Where** the repository is inside the plugin's own directory, `work run` shall make each worker's worktree in a temporary directory outside it.",
+  "line": 146
+ },
+ "supervision#r24": {
+  "text": "**When** `work run` starts an implementer, `work run` shall first run the whole suite in the implementer's worktree and say in the brief how it ended.",
+  "line": 147
+ },
+ "supervision#r25": {
+  "text": "**When** `work run` writes a worker's brief, `work run` shall name in it the plugin's scripts directory, the initiative branch's base, the worker's worktree and its work-item branch.",
+  "line": 148
+ },
+ "supervision#r57": {
+  "text": "**When** `work run` writes the brief of a worker for a work-item that has answers, `work run` shall write each of the work-item's answers, with the question it answers, in it.",
+  "line": 149
+ },
+ "supervision#r98": {
+  "text": "**When** `work run` starts an implementer for a work-item that an answer to the question of a work-item's reviewer returned to `ready`, `work run` shall give the implementer the reviewer's findings and the answer.",
+  "line": 150
+ },
+ "supervision#r26": {
+  "text": "**When** `work run` makes a work-item's transition to `awaiting-answer`, `work run` shall keep the work-item branch.",
+  "line": 151
+ },
+ "supervision#r58": {
+  "text": "**When** `work run` starts an implementer for a work-item whose work-item branch it kept, `work run` shall make the implementer's worktree on that branch.",
+  "line": 152
+ },
+ "supervision#r27": {
+  "text": "**When** every work-item of the initiative is `green` or `withdrawn` and the initiative branch holds a commit, other than a kept branch review's own commit, that no kept branch review has read, `work run` shall start a `claude -p` session of `bdd-branch-reviewer` over the initiative branch from its base, given one brief.",
+  "line": 153
+ },
+ "supervision#r154": {
+  "text": "**When** `work run` starts a branch review, `work run` shall first run, at the initiative branch's head, the whole suite, each work-item's scenarios, each check a work-item names, `tools check`, `tools size`, `features deprecated` and `features bindings`.",
+  "line": 154
+ },
+ "supervision#r155": {
+  "text": "**When** `work run` starts a branch review, `work run` shall give the branch reviewer each run r154 names with its command, how it exited and its output, naming the commit they ran at.",
+  "line": 155
+ },
+ "supervision#r156": {
+  "text": "**When** `work run` starts a branch review, `work run` shall give the branch reviewer the commits from the initiative branch's base to its head, each with the work-item it belongs to or none, and the change of that range less `.shop/`.",
+  "line": 156
+ },
+ "supervision#r157": {
+  "text": "**When** `work run` starts a branch review, `work run` shall give the branch reviewer the files to read: the capabilities the work-items are under, the design-decisions those capabilities rest on, and each work-item's plan, implementer's report and review findings.",
+  "line": 157
+ },
+ "supervision#r47": {
+  "text": "**When** the branch reviewer's session ends, `work run` shall copy its directory into `.shop/work/<initiative>/runs/branch-review/<k>/`.",
+  "line": 158
+ },
+ "supervision#r48": {
+  "text": "**When** the branch reviewer's session ends, `work run` shall commit `.shop/work/<initiative>/runs/branch-review/<k>/` on the initiative branch.",
+  "line": 159
+ },
+ "supervision#r49": {
+  "text": "**When** the branch reviewer's session starts or ends, `work run` shall append a line to `log.jsonl` with the time, the stage `branch-review`, the agent and the session id.",
+  "line": 160
+ },
+ "supervision#r50": {
+  "text": "**While** every commit on the initiative branch other than the kept branch reviews' own commits has been read by a kept branch review, `work run` shall start no branch review.",
+  "line": 161
+ },
+ "supervision#r94": {
+  "text": "**While** an initiative has no work-item, `work run` shall start no branch review of it.",
+  "line": 162
+ },
+ "supervision#r51": {
+  "text": "**If** the push verification before the branch review fails, then `work run` shall exit with an error, saying why, and start no branch review.",
+  "line": 163
+ },
+ "supervision#r214": {
+  "text": "**When** `work run` checks what changed in the main checkout while a session it started for one initiative worked, `work run` shall leave out each path under `.shop/work/<initiative>/` of another initiative that `work run` is running side by side.",
+  "line": 164
+ },
+ "supervision#r215": {
+  "text": "**If** a path under `.shop/work/<initiative>/` of another initiative that `work run` is running side by side changed, by a session of that initiative, while a session of one initiative worked, **then** `work run` shall put back no change of that path.",
+  "line": 165
+ },
+ "supervision#r216": {
+  "text": "**If** a path under `.shop/work/<initiative>/` of another initiative that `work run` is running side by side changed, by a session of that initiative, while a session of one initiative worked, **then** `work run` shall fault no session for that change.",
+  "line": 166
+ },
+ "supervision#r218": {
+  "text": "**If** the main checkout's `.shop/work/`, less each path under `.shop/work/<initiative>/` of another initiative that `work run` is running side by side, differs from its last commit when a worker ends, then `work run` shall put it back and transition the work-item to `failed`, naming each file.",
+  "line": 167
+ },
+ "supervision#r29": {
+  "text": "**Where** `.shop/delivery.toml` gives `[tests]`, `work run` shall run those commands in place of its own commands for the work-item's scenarios and the suite.",
+  "line": 168
+ },
+ "supervision#r30": {
+  "text": "**Where** `.shop/delivery.toml` gives a stage's `[allowed_tools]`, `work run` shall give that stage's worker that list in place of its own, less any bare Write or Edit.",
+  "line": 169
+ },
+ "supervision#r31": {
+  "text": "**When** a planner's result gives a `fileset`, `work run` shall write that file set into the work-item as `fileset:` as it makes the work-item's transition to `planned`.",
+  "line": 170
+ },
+ "supervision#r33": {
+  "text": "**When** `work run` exits, `work run` shall remove every worktree it made.",
+  "line": 171
+ },
+ "supervision#r34": {
+  "text": "**If** a worker changes a file under `.shop/work/` outside its stage directory, then `work run` shall transition the work-item to `failed`, recording the files, its branch unmerged.",
+  "line": 172
+ },
+ "supervision#r35": {
+  "text": "**When** `work run` is about to start a worker or the branch reviewer, `work run` shall first verify that it can push the initiative branch to the remote.",
+  "line": 173
+ },
+ "supervision#r36": {
+  "text": "**When** `work run` transitions a work-item to `awaiting-answer`, `work run` shall write its question under the work-item's `## Questions`.",
+  "line": 174
+ },
+ "supervision#r37": {
+  "text": "**While** a work-item is `awaiting-answer` or `failed`, `work run` shall start no worker for it.",
+  "line": 175
+ },
+ "supervision#r63": {
+  "text": "**While** a work-item's `blocked_by` names a work-item that is not `green`, `work run` shall start no worker for it.",
+  "line": 176
+ },
+ "supervision#r38": {
+  "text": "**When** `work run` commits on the initiative branch, `work run` shall push the initiative branch to the remote.",
+  "line": 177
+ },
+ "supervision#r39": {
+  "text": "**If** the verification before a worker starts fails, then `work run` shall transition the work-item to `failed`, recording the reason, before any worker starts.",
+  "line": 178
+ },
+ "supervision#r40": {
+  "text": "**When** `work run` transitions a work-item to `failed`, `work run` shall exit with an error, naming the work-item and its fault.",
+  "line": 179
+ },
+ "supervision#r41": {
+  "text": "**If** a git command, a push included, fails during a work-item's stage, then `work run` shall transition the work-item to `failed`, recording git's reason.",
+  "line": 180
+ },
+ "supervision#r42": {
+  "text": "**If** a worker ends without a result file that `work run` can read, then `work run` shall transition the work-item to `failed`, recording how its session ended.",
+  "line": 181
+ },
+ "supervision#r43": {
+  "text": "**When** `work run` runs the whole suite before a merge, `work run` shall count as expected each failing scenario whose requirement a work-item other than the one being merged accepts and that is neither `green` nor `withdrawn`.",
+  "line": 182
+ },
+ "supervision#r122": {
+  "text": "**When** `work run` checks a work-item against the whole suite, `work run` shall count as expected to fail each scenario whose requirement a capability-proposal that is neither `formulated` nor `withdrawn` adds or changes.",
+  "line": 183
+ },
+ "supervision#r219": {
+  "text": "**If** a scenario fails in a run that `work run` makes before a merge and its failure would keep r4 from merging the work-item branch, **then** `work run` shall run that scenario again once, alone, before it refuses the merge.",
+  "line": 184
+ },
+ "supervision#r220": {
+  "text": "**If** the second run of a scenario that r219 makes also fails, **then** `work run` shall give both runs of the scenario in the question r131 writes for the work-item.",
+  "line": 185
+ },
+ "supervision#r222": {
+  "text": "**When** the second run of a scenario that r219 makes passes, `work run` shall take the scenario as passing in r4's merge of the work-item branch.",
+  "line": 186
+ },
+ "supervision#r44": {
+  "text": "**When** `work run` writes a worker's brief, `work run` shall tell the worker to write its result file first with the outcome `PARTIAL`, and keep it current as it works.",
+  "line": 187
+ },
+ "supervision#r45": {
+  "text": "**If** a worker's session ends in an error or at its turn limit, exits with an error, or leaves output that holds no JSON result, then `work run` shall transition the work-item to `failed`, recording how the session ended.",
+  "line": 188
+ },
+ "supervision#r46": {
+  "text": "**If** the main checkout's `.shop/work/` has uncommitted changes when `work run` starts, then `work run` shall exit with an error, naming them, and change nothing.",
+  "line": 189
+ },
+ "trials#r1": {
+  "text": "**When** the `trial-runner` is started with an input naming a plugin tool or `work run`, a real target or a fixture repository, and what to measure, the `trial-runner` shall run that one trial on that target.",
+  "line": 19
+ },
+ "trials#r2": {
+  "text": "**While** a trial runs, the `trial-runner` shall read nothing but the target and the plugin's scripts.",
+  "line": 20
+ },
+ "trials#r3": {
+  "text": "**While** a trial runs, the `trial-runner` shall change nothing in the repository it was started in but the measurement record it writes.",
+  "line": 21
+ },
+ "trials#r4": {
+  "text": "**When** the trial has run, the `trial-runner` shall write one measurement record under `.shop/records/measurements/` naming what it ran, on what target, and what it measured.",
+  "line": 22
+ },
+ "trials#r5": {
+  "text": "**When** the `trial-runner` has written its measurement record, the `trial-runner` shall reply naming the record.",
+  "line": 23
+ },
+ "work-queue#r1": {
+  "text": "**When** `work add <initiative> <title>` is run with `--part-of`, `--under` and `--accepts`, `work` shall write `.shop/work/<initiative>/w<n>.md` as a `drafted` work-item with the id `w<n>`, the fields given and the title as its `# ` heading, and print the id.",
+  "line": 21
+ },
+ "work-queue#r12": {
+  "text": "`work add` shall number a new work-item's id `w<n>` with `<n>` one above the highest `<n>` of any work-item under `.shop/work/`, in any initiative and any status.",
+  "line": 22
+ },
+ "work-queue#r32": {
+  "text": "**If** `work add` is given an initiative that is `done` or `abandoned`, **then** `work add` shall refuse, naming the initiative's status, and change nothing.",
+  "line": 23
+ },
+ "work-queue#r22": {
+  "text": "**When** `work start <request>` is run on an `accepted` request, `work` shall write `.shop/work/<initiative>/initiative.md` as a `proposed` initiative of kind `capability-change` that fulfils the request, with the request's origins as its source, and print its id.",
+  "line": 24
+ },
+ "work-queue#r25": {
+  "text": "**When** `work start` writes an initiative, `work` shall commit the initiative on the current branch.",
+  "line": 25
+ },
+ "work-queue#r62": {
+  "text": "**When** a `work` command's change makes it true that an initiative has at least one work-item that is `green`, that every work-item of it is `green` or `withdrawn`, that every capability-proposal of it is `formulated` or `withdrawn` and that every request kept in this context whose asker is this context and that names the initiative is `delivered`, that command shall set the initiative's status to `done`.",
+  "line": 26
+ },
+ "work-queue#r31": {
+  "text": "**If** every work-item of an initiative is `withdrawn`, **then** `work` shall leave the initiative's status as it is.",
+  "line": 27
+ },
+ "work-queue#r47": {
+  "text": "**If** every work-item of an initiative is `green` or `withdrawn` while one of its capability-proposals is neither `formulated` nor `withdrawn`, **then** `work` shall keep the initiative `started`.",
+  "line": 28
+ },
+ "work-queue#r60": {
+  "text": "**When** `work list` is run, `work` shall print each initiative and each work-item under `.shop/work/` with its status.",
+  "line": 29
+ },
+ "work-queue#r61": {
+  "text": "**Where** `--json` is given, `work list` shall print its result, each initiative and work-item with its status, as one JSON object.",
+  "line": 30
+ },
+ "work-queue#r39": {
+  "text": "**While** a request that an initiative raised into an upstream is not `delivered`, `work list` shall print the initiative as waiting on that request.",
+  "line": 31
+ },
+ "work-queue#r36": {
+  "text": "**When** `work show <initiative>` is run, `work` shall print the initiative's status, each of its capability-proposals with its status, each of its work-items with its status and its open questions, the initiative branch and whether the remote has every commit of it, each tracked file of the checkout with uncommitted changes and each untracked file of the checkout that git does not ignore, the last ten lines of the initiative's ledger, and the ledger's last line whose note, the text given to `work note` after the date `work note` writes, begins `next:`.",
+  "line": 32
+ },
+ "work-queue#r37": {
+  "text": "**When** `work show <work-item>` is run, `work` shall print the work-item's status and its open questions.",
+  "line": 33
+ },
+ "work-queue#r59": {
+  "text": "**When** `work show <request>` is run, `work` shall print the request's status, whose turn it is, its lines with their line outcomes, its questions, its answers and its resolution.",
+  "line": 34
+ },
+ "work-queue#r38": {
+  "text": "**Where** `--json` is given, `work show` shall print its result as one JSON object.",
+  "line": 35
+ },
+ "work-queue#r19": {
+  "text": "**When** `work note <initiative> <line>` is run, `work` shall append the line, with the date, to the initiative's ledger `.shop/work/<initiative>/ledger.md`.",
+  "line": 36
+ },
+ "work-queue#r20": {
+  "text": "**When** `work note` appends a line to an initiative's ledger, `work` shall commit the ledger on the current branch.",
+  "line": 37
+ },
+ "work-queue#r21": {
+  "text": "**If** the line given to `work note` has in it one of Unicode's mandatory line breaks, U+000A (LF), U+000B (VT), U+000C (FF), U+000D (CR), U+0085 (NEL), U+2028 or U+2029, then `work` shall exit with an error, saying that a note is one line, and change nothing.",
+  "line": 38
+ },
+ "work-queue#r4": {
+  "text": "**When** `work` makes a work-item's transition, `work` shall write the new status into the work-item's file.",
+  "line": 39
+ },
+ "work-queue#r5": {
+  "text": "**When** `work` makes a work-item's transition, `work` shall append a line to `.shop/work/<initiative>/log.jsonl` with the time, the work-item, the status before and after, and who made the transition.",
+  "line": 40
+ },
+ "work-queue#r6": {
+  "text": "**If** a work-item's status in its file is not the last status `log.jsonl` gives it, then `work` shall refuse the transition, naming the file and both statuses.",
+  "line": 41
+ },
+ "work-queue#r7": {
+  "text": "**If** `work` cannot do what it was asked, then `work` shall exit with an error, say why, and change nothing.",
+  "line": 42
+ },
+ "work-queue#r8": {
+  "text": "**When** `work retry <work-item>` is run on a `failed` work-item, `work` shall transition it to the status before that `log.jsonl` gives in the work-item's transition into `failed`.",
+  "line": 43
+ },
+ "work-queue#r10": {
+  "text": "**When** `work withdraw <work-item>` is run on a work-item that is neither `claimed` nor `green`, `work` shall transition it to `withdrawn`.",
+  "line": 44
+ },
+ "work-queue#r13": {
+  "text": "**When** `work answer <work-item> <answer>` is run on an `awaiting-answer` work-item, `work` shall write the answer, with the date, under the work-item's `## Answers`.",
+  "line": 45
+ },
+ "work-queue#r24": {
+  "text": "**When** `work answer <capability-proposal> <answer>` is run on an `awaiting-answer` capability-proposal, `work` shall write the answer, with the date, under the proposal's `## Answers`.",
+  "line": 46
+ },
+ "work-queue#r30": {
+  "text": "**When** `work answer <initiative>/<name> <answer>` is run, `work` shall answer the work-item or capability-proposal `<name>` of that initiative.",
+  "line": 47
+ },
+ "work-queue#r14": {
+  "text": "**When** `work answer <work-item> <answer>` is run on an `awaiting-answer` work-item whose question a researcher, a planner or an implementer asked, `work` shall transition it to the status the stage that asked its question started from: `drafted` for a researcher's question, `researched` for a planner's and `ready` for an implementer's.",
+  "line": 48
+ },
+ "work-queue#r26": {
+  "text": "**When** `work answer <work-item> <answer>` is run, with the flag saying that the answer asks for a change, on an `awaiting-answer` work-item whose question a reviewer asked, `work` shall transition the work-item to `ready`.",
+  "line": 49
+ },
+ "work-queue#r27": {
+  "text": "**When** `work answer <work-item> <answer>` is run, with the flag saying that the answer accepts the work-item as it is, on an `awaiting-answer` work-item whose question a reviewer asked, `work` shall transition the work-item to `done`.",
+  "line": 50
+ },
+ "work-queue#r28": {
+  "text": "**If** `work answer <work-item> <answer>` is run without the flag saying whether the answer asks for a change or accepts the work-item as it is on an `awaiting-answer` work-item whose question a reviewer asked, then `work` shall exit with an error, saying that the answer must say which, and change nothing.",
+  "line": 51
+ },
+ "work-queue#r15": {
+  "text": "**If** the answer given to `work answer` has in it one of Unicode's mandatory line breaks, U+000A (LF), U+000B (VT), U+000C (FF), U+000D (CR), U+0085 (NEL), U+2028 or U+2029, then `work` shall exit with an error, saying that an answer is one line, and change nothing.",
+  "line": 52
+ },
+ "work-queue#r9": {
+  "text": "**When** `work add`, `work retry`, `work withdraw` or `work answer` changes a work-item or a capability-proposal, `work` shall commit on the current branch the changed file and the `log.jsonl` line the change made, if it made one.",
+  "line": 53
+ }
+}

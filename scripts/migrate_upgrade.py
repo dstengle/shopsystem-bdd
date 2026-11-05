@@ -1,6 +1,6 @@
-"""`migrate status` and `migrate upgrade` (migration-tools r15, r18-r20, r22-r24, r27-r29): the repository's plugin
-version, the plugin's, the upgrade steps between them, what a session is told at its start, and the upgrade, all of it
-in one commit or none of it."""
+"""`migrate status` and `migrate upgrade` (migration-tools g14-g29): the repository's plugin version, the plugin's,
+the upgrade steps between them, what a session is told at its start, and the upgrade, all of it in one commit or none
+of it, with what a step leaves for a session to write printed and in the commit message."""
 import json
 import re
 import subprocess
@@ -9,6 +9,7 @@ import types
 from pathlib import Path
 
 import migrate_upgrade_answers
+import migrate_upgrade_codified
 import migrate_upgrade_ids
 from migrate_session import work_text
 from migrate_write import check_moves, git, top_level, uncommitted
@@ -16,9 +17,13 @@ from migrate_write import check_moves, git, top_level, uncommitted
 SCRIPTS = Path(__file__).resolve().parent
 VERSION_FILE = ".shop/plugin-version"
 UNRECORDED = "0.23.1"
+BATCH = 500  # paths a `git add` stages at once: one process per batch, not one per file
 STEPS = [("0.24.0", "work-items named by ids", "give every work-item the id w<n>", migrate_upgrade_ids),
          ("0.25.0", "answers, not rulings",
-          "rename awaiting-ruling to awaiting-answer and `## Rulings` to `## Answers`", migrate_upgrade_answers)]
+          "rename awaiting-ruling to awaiting-answer and `## Rulings` to `## Answers`", migrate_upgrade_answers),
+         ("1.0.0", "codified requirements",
+          ("write spec/restated.json, scaffold each uncodified capability's Behaviour as groups, delete @deprecated "
+          "scenarios and write old references <cap>#r<n>@0.29"), migrate_upgrade_codified)]
 
 
 def number(version):
@@ -100,7 +105,9 @@ def apply(root, changes):
     for rel, text in changes.texts.items():
         with open(root / rel, "w", newline="") as handle:
             handle.write(text)
-        git(root, "add", "-f", "--", rel)
+    paths = list(changes.texts)
+    for start in range(0, len(paths), BATCH):
+        git(root, "add", "-f", "--", *paths[start:start + BATCH])
 
 
 def move_failures(root, changes):
@@ -130,7 +137,7 @@ def upgrade(root):
         print("no upgrade step is pending")
         return 0
     before = repository_version(root)
-    refused = []
+    refused, notes = [], []
     try:
         for step in steps:  # oldest first, each planned from the tree the steps before it left (r20)
             changes = step[3].plan(root)
@@ -138,6 +145,7 @@ def upgrade(root):
             if refused:
                 break
             apply(root, changes)
+            notes += getattr(changes, "notes", [])
         if refused:
             subprocess.run(["git", "reset", "-q", "--hard", "HEAD"], cwd=root, capture_output=True)
             subprocess.run(["git", "clean", "-fdq"], cwd=root, capture_output=True)
@@ -146,7 +154,7 @@ def upgrade(root):
         (root / VERSION_FILE).write_text(plugin_version() + "\n")
         git(root, "add", "-f", "--", VERSION_FILE)
         git(root, "commit", "-q", "-m", "migrate upgrade: %s to %s\n\n%s" % (
-            before, plugin_version(), "\n".join("upgrade step " + step_line(s) for s in steps)))
+            before, plugin_version(), "\n".join(["upgrade step " + step_line(s) for s in steps] + notes)))
     except Exception as error:  # noqa: BLE001 -- any failure of a step puts every change back (r15, r20)
         subprocess.run(["git", "reset", "-q", "--hard", "HEAD"], cwd=root, capture_output=True)
         subprocess.run(["git", "clean", "-fdq"], cwd=root, capture_output=True)
@@ -154,6 +162,8 @@ def upgrade(root):
               % (getattr(error, "stderr", None) or error), file=sys.stderr)
         return 1
     print("upgraded to %s: %s" % (plugin_version(), ", ".join(s[1] for s in steps)))
+    for note in notes:
+        print(note)
     return 0
 
 

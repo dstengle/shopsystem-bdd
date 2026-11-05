@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Check a repository's files against the design model's grammar (version 3)."""
-# The command; its parts are the sibling modules model_parse (the files' forms), model_facts and model_work (the facts),
-# model_check (check and rules) and model_report (decisions and why).
+"""Check a repository's files against design model v5: the graph's rules, and the requirement language's parse."""
+# The command; its parts are the sibling modules model_parse (the files' forms), model_facts, model_spec (codified
+# files) and model_work (the facts), model_check (check and rules), model_report
+# (decisions, why, parse, lexicon, logic) and model_restates (restates).
 
 import argparse
 import os
@@ -12,24 +13,43 @@ from model_check import check, needing_clingo, rules  # noqa: E402
 from model_facts import Model  # noqa: E402
 # what scripts/migrate, scripts/workqueue and the migration steps read by loading this file
 from model_parse import as_list, frontmatter, scenarios, section  # noqa: E402,F401
-from model_report import cmd_decisions, cmd_why, render_decisions  # noqa: E402,F401
+from model_report import cmd_decisions, cmd_lexicon, cmd_logic, cmd_parse, cmd_why, render_decisions  # noqa: E402,F401
+from model_restates import cmd_restates  # noqa: E402
 
 CONTRACT = """\
 contract:
   - It reads, under --root (default: the current directory):
     spec/index.md, whose frontmatter `id` names the bounded-context,
     written bounded-context/<context path>, the path being
-    <owner>/<product>/<context name>, and whose `## Glossary` bullets,
-    each written `- **<term>**: <definition>. Not: <word>, <word>.` (the
-    `Not:` part optional, split on `. Not:` only), are the context's terms,
-    term/<context path>/<term lowercased, spaces as hyphens>; a bullet of
-    that section in any other form is a file problem;
+    <owner>/<product>/<context name>, and whose `## Glossary` bullets are
+    the context's terms. When its frontmatter has `language: codified-1`
+    the glossary is typed: each bullet `- **<term>** (<category>): ...`,
+    read by spec_lexicon, every capability's `## Terms` too; otherwise each
+    bullet is `- **<term>**: <definition>. Not: <word>, <word>.`. A term is
+    term/<context path>/<term lowercased, spaces as hyphens> (an attribute or
+    condition entry with no gloss, opening with a field such as Values:, is
+    `<term> of <kind>`, a relation `<term> of <kind> to <kind>`, a word given
+    in a second category `<term> <category>`, a value `<value> of <kind>`); a
+    bullet of that section in no such form is a file problem. A
+    `## Relations` table, in spec/index.md or a capability, gives the
+    relations as rows `| from kind | word | to kind |`, and a kind's
+    `Kind of: <kind>` its supertype (spec_relations);
     spec/capabilities/*.md, each a capability with frontmatter (id, narrator,
     group, rests_on, retired) and a `## Behaviour` section; a `formulated_as`
-    key is a file problem;
-    features/**/*.feature, the containers of acceptance-scenarios, a
-    capability <name>'s being features/<name>.feature; any other feature file
-    is a file problem;
+    key is a file problem. A file whose own frontmatter has
+    `language: codified-1` is codified (design model v5): its Behaviour is
+    groups `### [g<n>] <title>`, each with an optional
+    `Restates: r<n>@0.29, <cap>#r<n>@0.29.` line, `- [r<n>] <statement>`
+    bullets and an optional fenced `given` block of example data; its
+    `## Dropped` lists the
+    0.29 ids no group restates. A capability file, spec/index.md or
+    spec/universal.md without that marker is not read: it is v_p0, which
+    `migrate upgrade` converts;
+    spec/universal.md, the universal conditions `- [U<n>] <statement>`;
+    spec/restated.json, the 0.29 ids `<cap>#r<n>` with their text;
+    features/**/*.feature, the containers of scenarios, a capability
+    <name>'s being features/<name>.feature; any other feature file is a file
+    problem;
     spec/decisions/*.md but index.md, one design-decision each (frontmatter
     id, summary, date, status, supersedes, revisit_when, revisit_signal);
     .shop/work/<initiative>/initiative.md and .shop/work/<initiative>/<part>.md;
@@ -48,25 +68,37 @@ contract:
     in a field that fixes the kind (rests_on, supersedes, argues, under,
     depends_on, and the capability of a requirement reference). The forms
     <context name>/<name>, decision/<name> and obs/<name> name nothing.
-  - Each bullet of a capability's Behaviour section is a
-    capability-requirement; `- [r<n>] ...` gives it the id <capability>#r<n>.
-    A bullet with no [r<n>] is a requirement with no id.
-    `retired: [r4, ...]` lists ids the capability used and retired.
-    A reference is written <capability>#r<n>. In a
-    list, <capability>#r<a>-r<b> stands for each id from a to b.
-  - A scenario names its requirement by a tag @r<n> in the capability's own
-    feature file, features/<name>.feature; its title is free. A scenario
-    with no such tag names none.
-    A scenario tagged @deprecated is no acceptance-scenario; one tagged @holding is a file problem.
+  - A requirement is <capability>#r<n>, a group <capability>#g<n>, a
+    universal condition universal-condition/<context path>/u<n>. A
+    requirement of a codified file is a member of its group (member_of; the
+    capability's has_req is derived); a statement with no [r<n>] has no id
+    (v15a), and one whose id came before is a second id (v15b), each beside
+    its file problem. `retired: [r4, g2, ...]`
+    lists ids the capability used and retired. A reference is written
+    <capability>#r<n> (a list may write <capability>#r<a>-r<b>);
+    <capability>#r<n>@0.29 names a 0.29 id: it is history, never read
+    against the live spec, and `why` finds its text in spec/restated.json.
+  - Every statement of a codified file and of spec/universal.md is parsed in
+    the context's requirement grammar (spec_grammar): parsed, unparsed (v_p1)
+    or ambiguous (v_p2); a group's statements share their trigger and
+    condition (v15k), and a group has one statement (v15l); a given line is
+    example data, `the <words> <name> holds:` with a docstring or table
+    under it or `the <words> <name> holds` and one code span or quoted
+    string (v15m); no two groups of a capability share features, condition
+    and trigger (v15n); a group whose every statement holds a resource is
+    logic_only and has no scenario. A scenario of a codified capability names
+    its group by a tag @g<n> (generates). A scenario tagged @deprecated is no
+    scenario; one tagged @holding is a file problem.
   - facts prints the facts it read, one a line, in clingo's syntax, under
     grammar.md's relation names. A term gives node(T, "term"),
     term_of(T, <bounded-context>), avoid(T, <word>) for each word after its
-    `Not:`, and glossary_entry(T, <bullet number>, <term lowercased>); each
-    requirement (its line) and each acceptance-scenario (its title and its
-    Given/When/Then/And/But steps, not its description, docstrings or
-    Examples tables) gives mentions(X, <word>) for each term or avoided word it contains, as a
-    whole word in any case, with a plural "s" allowed. It needs nothing
-    beyond the standard library.
+    `Not:`, glossary_entry(T, <entry number>, <word>) and, typed,
+    category(T, <category>), value_of(V, K, A) and linearises(T, <text>);
+    a statement that does not parse, and a scenario of a feature file that
+    is no capability's, gives mentions(X, <word>) for each term or avoided
+    word it contains, as a whole word in any case, with a plural "s" allowed
+    (a parsed statement and a generated scenario use lexicon words, so give
+    none). A codified statement needs the grammar tools (`tools install`).
   - Every rule of model.lp has one plain label, label("<code>", "<label>"),
     written beside it. check prints `<code>  <label>  (<count>)` above each
     non-empty v_ relation's rows; `rules` prints every `<code>  <label>`,
@@ -84,21 +116,41 @@ contract:
     whose `-c "import clingo"` succeeds; when none does, it says so with the
     command that installs clingo and each interpreter it tried, and exits 2.
   - A capability-proposal or work-item may be `withdrawn`: no longer pursued,
-    and closed (an extension proposed against grammar.md v3). v_d2 names an
-    `abandoned` initiative with a part, at any depth, neither closed nor
-    withdrawn; abandoning an initiative means withdrawing what is open under it.
+    and closed. v_d5 names an `abandoned` initiative with a part, at any
+    depth, neither closed nor withdrawn; abandoning an initiative means
+    withdrawing what is open under it.
   - decisions writes spec/decisions/index.md, the generated index of
     spec/decisions/, each row linked to its file, and nothing else; --check
     writes nothing and exits 1 when the file on disk is not what it would
     write.
   - why <capability>#r<n> prints the trace the model gives for a
-    requirement: the requirement, each capability-proposal that adds or
-    changes it, the part_of chain to its initiative, and the initiative's
-    sources. When no proposal adds or changes the id it says so and exits 0;
-    it exits 2 when the argument is not a requirement reference. why --json
-    prints one object: "requirement", "text" and "proposals", each with its
-    "id", "relation", "status" and "date". rules --json prints one object,
-    "rules", each {"code", "label", "kind": "violation" or "warning"}.
+    requirement: the requirement, its group and the 0.29 ids the group
+    restates with their text, each capability-proposal that adds or changes
+    it, the part_of chain to its initiative, and the initiative's sources.
+    When no proposal adds or changes the id it says so and exits 0; it exits
+    2 when the argument is not a requirement reference. why
+    <capability>#r<n>@0.29 prints the 0.29 text and the groups that restate
+    it. why --json prints one object: "requirement", "text", "group",
+    "restates" and "proposals", each with its "id", "relation", "status" and
+    "date". rules --json prints one object, "rules", each {"code", "label",
+    "kind": "violation" or "warning"}.
+  - parse <line> | --file F [--grammar Req|Steps|Def] prints the line's tree in
+    the context's grammar and exits 0; a refused line prints the refusal (the
+    token and its position, or the guard), the longest prefix that parsed and
+    the lexicon words nearest the refused token, and exits 1. A file's lines
+    are numbered `<n>: `. It exits 2 when the grammar cannot be built.
+  - lexicon lists the terms by category; lexicon --check prints v_t4-v_t10
+    (`<code>  <term>  <message>`) and exits 1 when there is any: v_t7 a
+    gloss of more than one sentence, v_t8 a relation entry (a relation is a
+    row of `## Relations`), v_t9 a meaning given as a field rather than a sentence,
+    v_t10 two relation rows with one (from, word, to).
+  - logic [--json] [<capability>] runs the temporal check (spec_solve) and
+    prints its report, with its exit code.
+  - restates [--json] [<capability>] exits 0 when every 0.29 id (of the
+    capability, or of every one) is restated by a group, dropped, or moved
+    (a move into a codified capability must be restated there; one into an
+    uncodified capability is pending), and 1 otherwise, printing each id that
+    is missing or pending.
 """
 
 
@@ -128,11 +180,26 @@ def main(argv=None):
     c.add_argument("--limit", type=int, default=10, help="rows shown per relation")
     d = sub.add_parser("decisions", help="write spec/decisions/index.md from spec/decisions/")
     d.add_argument("--check", action="store_true")
-    w = sub.add_parser("why", help="trace a requirement to its initiative's sources")
+    w = sub.add_parser("why", help="trace a requirement to its initiative's sources and its 0.29 ids")
     w.add_argument("ref")
     w.add_argument("--json", action="store_true")
+    p = sub.add_parser("parse", help="parse a line in the context's grammar: its tree, or its refusal with a hint")
+    p.add_argument("line", nargs="?")
+    p.add_argument("--file")
+    p.add_argument("--grammar", default="Req", choices=["Req", "Steps", "Def"])
+    x = sub.add_parser("lexicon", help="list the terms by category; --check gives v_t4-v_t10")
+    x.add_argument("--check", action="store_true")
+    g = sub.add_parser("logic", help="the temporal check of the codified requirements")
+    g.add_argument("capability", nargs="?")
+    g.add_argument("--json", action="store_true")
+    s = sub.add_parser("restates", help="whether every 0.29 id is restated, dropped or moved")
+    s.add_argument("capability", nargs="?")
+    s.add_argument("--json", action="store_true")
     args = ap.parse_args(argv)
-    return {"facts": cmd_facts, "check": cmd_check, "rules": cmd_rules, "decisions": cmd_decisions, "why": cmd_why}[args.cmd](args)
+    if args.cmd == "parse" and (args.line is None) == (args.file is None):
+        ap.error("parse takes a line or --file, not both")
+    return {"facts": cmd_facts, "check": cmd_check, "rules": cmd_rules, "decisions": cmd_decisions, "why": cmd_why,
+            "parse": cmd_parse, "lexicon": cmd_lexicon, "logic": cmd_logic, "restates": cmd_restates}[args.cmd](args)
 
 
 if __name__ == "__main__":

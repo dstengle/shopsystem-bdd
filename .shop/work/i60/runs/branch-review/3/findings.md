@@ -1,6 +1,6 @@
 # Branch review of i60 (review 3)
 
-**Verdict: DONE_WITH_CONCERNS.** i60's own work-item is sound. That is w233 (supervision#r211), which adds step definitions only and no production code. It has no Critical finding and nothing to fix now.
+**Verdict: DONE_WITH_CONCERNS.** i60's own work-item is sound. That is w233 (supervision#r211@0.29), which adds step definitions only and no production code. It has no Critical finding and nothing to fix now.
 
 The review still goes to the person, for two reasons:
 
@@ -24,11 +24,11 @@ The rest of the change outside `.shop/` is the same as in reviews 1 and 2.
 
 - Range: `ae85edd3a2ce3488f4d930ac5814845eea5e6178..46d6b92a8f9043dd26bb8c4e8525ae22f31d3af8`, on branch `main`.
 - i60 (`started`, fulfils q39) holds:
-  - work-item **w233**: `green`, under supervision, accepts supervision#r211, fileset `tests/scenarios/supervision_delegation_steps.py`.
+  - work-item **w233**: `green`, under supervision, accepts supervision#r211@0.29, fileset `tests/scenarios/supervision_delegation_steps.py`.
     - Its transition commits are `6b7926df`, `864da987`, `4aa66cd4`, `129a247c`, `9b49a82a`, `de6a60b1` and `91d43216`.
     - Its only change is `4e206ec4` (steps only).
-  - capability-proposal **i60-supervision**: `formulated`, adds supervision#r211.
-  - capability-proposal **i60-requests**: `awaiting-answer`, adds requests#r65–r71.
+  - capability-proposal **i60-supervision**: `formulated`, adds supervision#r211@0.29.
+  - capability-proposal **i60-requests**: `awaiting-answer`, adds requests#r65@0.29, requests#r66@0.29, requests#r67@0.29, requests#r68@0.29, requests#r69@0.29, requests#r70@0.29, requests#r71@0.29.
     - Apply round 22 applied it (`186d4789`).
     - Formulate round 23 (`9172f19e`) formulated six of the seven lines and asked one question, on r69.
 - Every other commit in the range is marked `none` (Finding 1).

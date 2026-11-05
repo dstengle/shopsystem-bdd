@@ -1,4 +1,4 @@
-# Research notes: w171 (supervision#r102)
+# Research notes: w171 (supervision#r102@0.29)
 
 Tools: `scripts/tools` by path. No map exists (`tools tests-of` says "no map"), so every test list below is `by search`. `tools refs` ran (see part 3).
 

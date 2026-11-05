@@ -5,7 +5,7 @@ part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i55
 status: formulated
 argues: [supervision]
 date: 2026-11-02
-adds: [supervision#r184, supervision#r185, supervision#r186]
+adds: [supervision#r184@0.29, supervision#r185@0.29, supervision#r186@0.29]
 changes: []
 removes: []
 ---

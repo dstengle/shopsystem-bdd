@@ -5,7 +5,7 @@ part_of: initiative/i8
 status: formulated
 date: 2026-10-19
 argues: [migration-tools]
-adds: [migration-tools#r1-r7]
+adds: [migration-tools#r1@0.29, migration-tools#r2@0.29, migration-tools#r3@0.29, migration-tools#r4@0.29, migration-tools#r5@0.29, migration-tools#r6@0.29, migration-tools#r7@0.29]
 ---
 
 # Migration tools: scripts/migrate

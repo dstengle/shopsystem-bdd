@@ -4,9 +4,9 @@ kind: capability-proposal
 part_of: initiative/missingmass.io/shopsystem/shopsystem-bdd/i59
 status: awaiting-answer
 argues: [delivery]
-adds: [delivery#r23]
+adds: [delivery#r23@0.29]
 changes: []
-removes: [delivery#r6]
+removes: [delivery#r6@0.29]
 date: 2026-10-29
 ---
 

@@ -1,11 +1,11 @@
-# Review of w180 (formulation#r23), after the fix of review 6's F1
+# Review of w180 (formulation#r23@0.29), after the fix of review 6's F1
 
-**Verdict: DONE.** Nothing is fix now and nothing is Critical. Review 6's F1 is fixed. Step 4 now gives pytest-bdd's naming, says to find the node id by collecting the tests, and treats a selection that collects zero tests or several as no verdict ("fix the selection, or stop (r22)"). A passing scenario can no longer be removed because it was not collected, so formulation#r4 holds. Two Minor findings remain, neither fix now.
+**Verdict: DONE.** Nothing is fix now and nothing is Critical. Review 6's F1 is fixed. Step 4 now gives pytest-bdd's naming, says to find the node id by collecting the tests, and treats a selection that collects zero tests or several as no verdict ("fix the selection, or stop (r22)"). A passing scenario can no longer be removed because it was not collected, so formulation#r4@0.29 holds. Two Minor findings remain, neither fix now.
 
 ## Commits reviewed
 
-- The branch `work/w180` is gone, so the commits were taken from HEAD. The last claim is `ce37512e work: w180 ready -> claimed` and the last done is `5ee2e95a work: w180 claimed -> done`. Between them, the one w180 commit is `4f1d4641 formulating-features: derive the old scenario's test name as pytest-bdd does, and take no collection as a verdict (formulation#r4, r23)`. It changes 2 lines of `skills/formulating-features/SKILL.md`. The other commits in that range are `7109a88c` (branch review 5 of i26) and `ef803ad1` (i26 done), which are not w180's.
-- The implementer's result (stage 7) lists `1a2b008e`. Its `+`/`-` lines have the same md5 as 4f1d4641's (`1996771b…`), and its message is the same. The result's summary leaves off the "(formulation#r4, r23)" suffix, but the commit has it. No difference.
+- The branch `work/w180` is gone, so the commits were taken from HEAD. The last claim is `ce37512e work: w180 ready -> claimed` and the last done is `5ee2e95a work: w180 claimed -> done`. Between them, the one w180 commit is `4f1d4641 formulating-features: derive the old scenario's test name as pytest-bdd does, and take no collection as a verdict (formulation#r4@0.29, r23)`. It changes 2 lines of `skills/formulating-features/SKILL.md`. The other commits in that range are `7109a88c` (branch review 5 of i26) and `ef803ad1` (i26 done), which are not w180's.
+- The implementer's result (stage 7) lists `1a2b008e`. Its `+`/`-` lines have the same md5 as 4f1d4641's (`1996771b…`), and its message is the same. The result's summary leaves off the "(formulation#r4@0.29, r23)" suffix, but the commit has it. No difference.
 - The earlier cycle's commit `75cd7fda` (1 line, the same file) was reviewed in 6-review. I re-read it here as the base of the fix.
 - Files touched by w180 in all cycles: only `skills/formulating-features/SKILL.md`. Nothing under `features/`, `tests/` or `scripts/`.
 

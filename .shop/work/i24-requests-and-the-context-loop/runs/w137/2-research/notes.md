@@ -1,6 +1,6 @@
 # w137 research notes
 
-w137 (under supervision) accepts supervision#r70, r80, r71, r83. Four accepted scenarios in features/supervision.feature (r70 at 865, r80 at 873, r71 at 881, r83 at 995). No `## Retires`.
+w137 (under supervision) accepts supervision#r70@0.29, r80, r71, r83. Four accepted scenarios in features/supervision.feature (r70 at 865, r80 at 873, r71 at 881, r83 at 995). No `## Retires`.
 No map: `tools tests-of` and `untested` report "no map", so every test list here is `by search`. `refs` names resolved; `refs` missed module-attribute calls (see part 3, row 6).
 Code run: the worktree's own scripts/ (base f890f2), not the brief's Scripts path. Probes: `.shop/scratch/w137-2-research/probe_proposal.py`, repos under `.../repos/`, run `python3 -m pytest -q -s -n 0 <file>`. Previous stage (1-research) notes read for orientation; its P1-P7 agree with my runs below.
 

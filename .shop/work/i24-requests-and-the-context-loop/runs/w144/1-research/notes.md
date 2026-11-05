@@ -1,13 +1,13 @@
 # Research of w144: initiative-round appends its ledger line with work note
 
-Work-item w144 (drafted, blocked_by w125), under spec-integration, accepts spec-integration#r40. It is a guarantees
+Work-item w144 (drafted, blocked_by w125), under spec-integration, accepts spec-integration#r40@0.29. It is a guarantees
 work-item with no scenario. Scripts: /home/vscode/shopsystem-bdd/scripts (the brief's line). Tests-of: no map in
 the worktree (`tools tests-of` says "no map"); I did not make one (it runs the whole suite). Counts below are `refs`,
 `tests-of` (no map, so none), or `by search`. Size check: `tools size --limit 300` printed nothing.
 
 ## 1. Why each scenario is red today
 
-None. w144 accepts spec-integration#r40 and has no scenario (its file says so). It is judged by review. The gap is
+None. w144 accepts spec-integration#r40@0.29 and has no scenario (its file says so). It is judged by review. The gap is
 text, not code: the round's agent still names the old ledger, and no code path writes it.
 
 ## 2. What the system answers today

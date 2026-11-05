@@ -1,14 +1,14 @@
-# Plan of w130: `work start` and an initiative's `done` (work-queue#r22, work-queue#r23)
+# Plan of w130: `work start` and an initiative's `done` (work-queue#r22@0.29, work-queue#r23@0.29)
 
 This plan replaces 2-plan/plan.md. The question that plan left open (whether `work run` counts as a `work` command for r23) was answered on 2026-10-24 with reading B, in the work-item's `## Answers`. The answer is taken here as decision D7.
 
 ## 1. What goes green
 
-- **work-queue#r22**: "start on an accepted request writes a proposed capability-change initiative that fulfils it, sourced from its origins, and prints its id" (features/work-queue.feature:34-44).
+- **work-queue#r22@0.29**: "start on an accepted request writes a proposed capability-change initiative that fulfils it, sourced from its origins, and prints its id" (features/work-queue.feature:34-44).
   - Why it is red (notes §1): no step matches the Given "a request q1 that is accepted, whose origins are o1 and o2" (StepDefinitionNotFoundError at line 38).
   - No step binds the Thens about one new initiative, `fulfils` with its source, and the printed id.
   - `scripts/work` has no `start`: probe P1 exits 2 with "invalid choice: 'start'".
-- **work-queue#r23**: the Scenario Outline "a command whose change leaves every work-item of an initiative green or withdrawn, and every request this context asked naming it delivered, sets the initiative to done" (features/work-queue.feature:46-62), with four Examples rows.
+- **work-queue#r23@0.29**: the Scenario Outline "a command whose change leaves every work-item of an initiative green or withdrawn, and every request this context asked naming it delivered, sets the initiative to done" (features/work-queue.feature:46-62), with four Examples rows.
   - Why it is red: no step matches the `<request>` Given in any of its four forms (line 51).
   - The code has no done check: probes P2 and P3 show that after `work withdraw w2`, initiative.md is still `started` and the commit holds only w2.md and log.jsonl.
 - No deprecated scenarios are retired. The work-item has no Rulings. It has one Answer (D7).
@@ -49,14 +49,14 @@ This plan replaces 2-plan/plan.md. The question that plan left open (whether `wo
   - The id is `i<n>`, with `<n>` one above the highest `<n>` of any initiative under `.shop/work/`. That `<n>` is read from the frontmatter id `initiative/<context path>/i<n>` or from the directory name's leading `i<n>`. Existing directories carry a slug (`i24-requests-and-the-context-loop`, whose id is `i24`).
   - The directory is `.shop/work/i<n>/`. `work` takes an initiative by its directory name (`work add <initiative>`, r1; `work status <initiative>`, r16), so the id that r22 prints has to name that directory.
   - `work start` prints the id alone, as `work add` prints `w<n>` (r1).
-  - Rests on: design-decision/work-items-named-by-ids (ids are the context's, one above the highest, never repeated; by analogy), work-queue#r22 ("print its id") and r1/r16.
+  - Rests on: design-decision/work-items-named-by-ids (ids are the context's, one above the highest, never repeated; by analogy), work-queue#r22@0.29 ("print its id") and r1/r16.
 - **D2. The initiative's fields.**
   - `id`, `kind: capability-change`, `status: proposed`, `fulfils:` the request's frontmatter id, `source:` the request's `source` list as written, `title` (the request's `# ` heading) and `date` (the day of the run).
-  - Rests on: work-queue#r22, and design-decision/work-file-forms (the initiative's field set; `fulfils` is r22's addition).
+  - Rests on: work-queue#r22@0.29, and design-decision/work-file-forms (the initiative's field set; `fulfils` is r22's addition).
 - **D3. What start refuses.** start exits with an error, saying why and writing nothing, when there is no request file for the id given or the request's status is not `accepted`.
-  - Rests on: work-queue#r7 (r22 applies only to an `accepted` request).
+  - Rests on: work-queue#r7@0.29 (r22 applies only to an `accepted` request).
 - **D4. start does not commit.** r9 lists the committing commands, and `start` is not one of them.
-  - Rests on: work-queue#r9.
+  - Rests on: work-queue#r9@0.29.
   - Its consequence is in part 5.
 - **D5. The done condition.** An initiative qualifies when all three hold:
   - it has at least one work-item;
@@ -68,11 +68,11 @@ This plan replaces 2-plan/plan.md. The question that plan left open (whether `wo
   - "This context" is an `asker` of `internal` or this context's own id.
   - The check sets `done` only when the command's change makes the condition true: false before the change, true after it.
   - Only initiative.md's `status` line is rewritten. No log.jsonl line is written for it, because r5 logs work-item transitions only.
-  - Rests on: work-queue#r23.
+  - Rests on: work-queue#r23@0.29.
 - **D6. The done write is in the same commit as the change.**
   - When `withdraw`, `retry`, `answer` or `resolve` sets the initiative to `done`, initiative.md joins that command's commit.
   - When the commit fails, initiative.md is restored with the rest of the command's change.
-  - Rests on: work-queue#r9 and its withdraw row (features/work-queue.feature:236), whose initiative has only w1. Withdrawing w1 makes it done, and "nothing under .shop/work/ differs from main's last commit" then holds only if initiative.md is committed. Also rests on work-queue#r7 (change nothing on failure).
+  - Rests on: work-queue#r9@0.29 and its withdraw row (features/work-queue.feature:236), whose initiative has only w1. Withdrawing w1 makes it done, and "nothing under .shop/work/ differs from main's last commit" then holds only if initiative.md is committed. Also rests on work-queue#r7@0.29 (change nothing on failure).
 - **D7. Which commands run the done check.**
   - These do: `work withdraw`, `work retry` and `work answer`, and the request command `work resolve`, when its change makes the condition true.
   - `work run` (supervision) does not. Its green move leaves initiative.md as it is, and `scripts/supervise.py` does not change.

@@ -1,6 +1,6 @@
 # Review of w232, round 7 (the fix for round 4's finding 1)
 
-**Verdict: DONE.** The commit does what the answer asked: `work show <request>` now lists every line of the request, and a line with no line outcome is shown as `unsettled` (work-queue#r59). Nothing under `features/` changed, no test was removed or weakened, and no finding is Critical or fix now.
+**Verdict: DONE.** The commit does what the answer asked: `work show <request>` now lists every line of the request, and a line with no line outcome is shown as `unsettled` (work-queue#r59@0.29). Nothing under `features/` changed, no test was removed or weakened, and no finding is Critical or fix now.
 
 ## Commits reviewed
 - cb26926247a31f6adf5067b10507f6e8b7603d77, "work show of a request lists every line, an unsettled one as unsettled (r59)". It touches:

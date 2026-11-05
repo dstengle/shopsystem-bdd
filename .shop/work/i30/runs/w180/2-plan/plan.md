@@ -1,8 +1,8 @@
-# w180 plan: formulation#r23
+# w180 plan: formulation#r23@0.29
 
 ## 1. What goes green
 
-- `formulation#r23`, "When `formulating-features` runs an old scenario alone, `formulating-features` shall run it with `python3 -m pytest`." It has no scenario: there is no `features/formulation.feature` and no `@r23` tag of this capability in `features/` (the seven `@r23` hits belong to other capabilities; notes part 1). Nothing is red, and nothing turns green in the suite.
+- `formulation#r23@0.29`, "When `formulating-features` runs an old scenario alone, `formulating-features` shall run it with `python3 -m pytest`." It has no scenario: there is no `features/formulation.feature` and no `@r23` tag of this capability in `features/` (the seven `@r23` hits belong to other capabilities; notes part 1). Nothing is red, and nothing turns green in the suite.
 - `formulation` is `group: guarantees` (design-decision/workflow-capabilities-are-guarantees, 0065): it is checked by `measure` on real batches, and `--work-item w180` passes with no test (notes part 2, `scripts/work_items.py:123-131`, read). The work is skill text only.
 - Retires: none (the work-item has no Retires section).
 
@@ -14,14 +14,14 @@ Left out, with why:
 - `agents/initiative-round.md` line 20 ("one scenario by name"): still true under decision 2, which selects by a name; not changed.
 - `skills/migrating-to-capabilities/SKILL.md:30`: the project's suite command, another concern; r23 does not reach it.
 - `agents/feature-formulator.md`: has no Bash and runs nothing; unaffected.
-- `features/formulation.feature` and a step module: a formulate round writes feature files (formulation#r1, design-decision/spec-writers-blind-to-code), not an implementer; not created here.
+- `features/formulation.feature` and a step module: a formulate round writes feature files (formulation#r1@0.29, design-decision/spec-writers-blind-to-code), not an implementer; not created here.
 - No Python file changes; no size-limit concern.
 
 ## 3. Decisions
 
-1. The command in step 4 uses `python3 -m pytest`, in place of `python -m pytest`. Rests on `formulation#r23`.
-2. The command selects the old scenario alone, not by its spaced title. The notes show (D1, probes P2-P4) that `-k "<title with spaces>"` selects as much as no `-k` (143/877 on the suite, 11/11 in one file), while `-k` on the underscored test-function name pytest-bdd derives from the title selected one (1/877). So the skill tells the round to select by the scenario's bound test name (its title in the form pytest-bdd gives the test function), or by its node id, so that one test is collected; the implementer names the form in the skill text. Rests on `formulation#r23` ("runs an old scenario alone") and `formulation#r4`/`#r5`, whose pass/fail verdict is of the old scenario, not of the suite.
-3. No scenario is written for r23 in this work-item; it is accepted as a guarantee measured on batches. Rests on design-decision/workflow-capabilities-are-guarantees and formulation#r1 (the formulate round writes scenarios).
+1. The command in step 4 uses `python3 -m pytest`, in place of `python -m pytest`. Rests on `formulation#r23@0.29`.
+2. The command selects the old scenario alone, not by its spaced title. The notes show (D1, probes P2-P4) that `-k "<title with spaces>"` selects as much as no `-k` (143/877 on the suite, 11/11 in one file), while `-k` on the underscored test-function name pytest-bdd derives from the title selected one (1/877). So the skill tells the round to select by the scenario's bound test name (its title in the form pytest-bdd gives the test function), or by its node id, so that one test is collected; the implementer names the form in the skill text. Rests on `formulation#r23@0.29` ("runs an old scenario alone") and `formulation#r4@0.29`/`#r5`, whose pass/fail verdict is of the old scenario, not of the suite.
+3. No scenario is written for r23 in this work-item; it is accepted as a guarantee measured on batches. Rests on design-decision/workflow-capabilities-are-guarantees and formulation#r1@0.29 (the formulate round writes scenarios).
 
 ## 4. Tests the decisions break
 

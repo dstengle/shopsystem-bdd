@@ -1,18 +1,17 @@
-"""batch-measurement's world: the repository a scenario builds for `measure initiative`, and the run of it.
+"""batch-measurement's world: the repository a scenario builds for `measure`, and the run of it.
 
-The Given steps only record what the repository is to hold (a log's rows, a stage's session.json, transcripts); the
-When step writes it out with `World.flush` and calls `measure`'s `main` in-process, in the repository, on the date
-the scenario names.
+The handlers' Givens only record what the repository is to hold (a log's rows, a stage's session.json, transcripts);
+the When writes it out with `World.flush` and calls `measure`'s `main` in-process, in the repository, on the
+scenario's date.
 """
 import importlib.machinery
 import importlib.util
 import json
+import pathlib
 import subprocess
 import sys
 
-import pytest
-
-from .conftest import SCRIPTS
+SCRIPTS = pathlib.Path(__file__).resolve().parents[2] / "scripts"
 
 DAY = "2026-10-22"
 INITIATIVE = "i7-cart"
@@ -62,6 +61,10 @@ class World:
         self.named = {}             # measurement name -> its path, for `measure compare`
         self.merged = ()            # the commits a work-item's merge brought in
         self.requests = []          # [id, held by the queue, asker] of each request the initiative fulfils
+        self.unwritten = False      # a Given said the initiative has no log.jsonl
+        self.content = None         # what a Given said the stage's session.json holds: `empty` or `garbled`
+        self.availability = None    # what a Given said of the stage's transcript: `found`, `lost` or `unreadable`
+        self.called = {}            # a scenario's name of a thing (`t1`) -> the name measure gives it in a refusal
         self.code = None
         self.err = ""
         self.out = ""
@@ -141,13 +144,3 @@ class World:
         directory = self.repo / MEASUREMENTS
         return sorted(p.name for p in directory.glob("*")) if directory.is_dir() else []
 
-
-@pytest.fixture
-def world(repo):
-    return World(repo)
-
-
-@pytest.fixture
-def measure_run(world, monkeypatch, capsys):
-    """Run `measure` with the arguments given; the exit code, stdout and stderr stay in the world."""
-    return lambda *args: world.run(monkeypatch, capsys, *args)

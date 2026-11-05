@@ -5,9 +5,9 @@ Agent: initiative-round
 Scripts: /home/vscode/shopsystem-bdd/scripts
 Kind: gate
 Give the gate as questions in your result's `questions`, one string each: every question a decision, with its readings and the recommended reading marked.
-Adds: supervision#r174, supervision#r175, supervision#r176
+Adds: supervision#r174@0.29, supervision#r175@0.29, supervision#r176@0.29
 Changes: none
-Removes: supervision#r162, supervision#r163
+Removes: supervision#r162@0.29, supervision#r163@0.29
 Ask questions only on the lines and terms listed above as adds, changes or removes, and on no other line or term.
 Drafts path: .shop/work/i51/runs/i51/1-integrate/drafts/round-1/
 Base: 3c43389a5a12ce6f84d8556d2d86945c5fd901aa

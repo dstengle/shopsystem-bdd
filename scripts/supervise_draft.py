@@ -1,5 +1,6 @@
 """`work run`'s drafting (capability supervision): the work-items of a formulated capability-proposal, one a capability
-with the deprecated scenarios it retires, and the work-item for the findings a kept branch review lists to fix now.
+with the requirements its `removes` retires there (and any deprecated scenario a 0.29 feature still holds), and the
+work-item for the findings a kept branch review lists to fix now.
 Standard library only; a part of supervise.Run. Drafting goes through workqueue.add, the function behind `work add`."""
 import json
 import re
@@ -11,6 +12,7 @@ from model_parse import expand
 
 REQUIREMENT = re.compile(r"([\w-]+)#(r\d+(?:-r\d+)?)$")
 WORK_ITEM = re.compile(r"\bw\d+\b")
+RETIRED = "the handlers and code only %s used, removed from spec/"
 
 
 class Drafts:
@@ -75,24 +77,29 @@ class Drafts:
         return True
 
     def draft_proposals(self):
-        """One work-item for each capability a formulated capability-proposal adds or changes, accepting every
-        requirement it names on that capability (r72); a capability that has one already gets none. Whether any was
-        drafted."""
+        """One work-item for each capability a formulated capability-proposal adds, changes or removes requirements of
+        (r72): accepting every requirement it adds or changes there, and retiring, under its `## Retires`, every one it
+        removes there (the GF conversion's design §13: the generated feature has dropped the removed requirement's
+        scenario, and the work-item takes out the handlers and code only it used). A work-item that accepts nothing
+        retires only, and its check is the whole suite (work_items.py). A capability that has one already gets none.
+        Whether any was drafted."""
         have = {(str(d.get("part_of")).rsplit("/", 1)[-1], d.get("under")) for _, d in self.nodes("work-item")}
         drafted = False
         for name, data in self.nodes("capability-proposal"):
             if data.get("status") != "formulated" or self.waits(self.dir / (name + ".md")):     # r136
                 continue
             groups = {}
-            for entry in list(data.get("adds") or []) + list(data.get("changes") or []):
-                found = REQUIREMENT.match(str(entry))
-                if found:
-                    groups.setdefault(found.group(1), []).append(str(entry))
-            for capability, accepts in groups.items():
+            for field in ("adds", "changes", "removes"):
+                for entry in data.get(field) or []:
+                    found = REQUIREMENT.match(str(entry))
+                    if found:
+                        groups.setdefault(found.group(1), ([], []))[field == "removes"].append(str(entry))
+            for capability, (accepts, removes) in groups.items():
                 if (str(data.get("id", name)).rsplit("/", 1)[-1], capability) in have:
                     continue
-                workqueue.add(self.root, self.initiative, "%s: %s" % (name, capability), str(data.get("id", name)),
-                              capability, accepts, retires=self.retires(accepts))
+                retires = self.retires(accepts) + [(RETIRED % one, one) for one in removes]
+                workqueue.add(self.root, self.initiative, "%s: %s%s" % (name, "" if accepts else "retire ", capability),
+                              str(data.get("id", name)), capability, accepts, retires=retires)
                 drafted = True
         return drafted
 

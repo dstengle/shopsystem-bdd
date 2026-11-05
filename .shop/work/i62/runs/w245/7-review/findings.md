@@ -1,4 +1,4 @@
-# Review 7 of w245 (supervision#r219, r220, r222): the fix round
+# Review 7 of w245 (supervision#r219@0.29, r220, r222): the fix round
 
 **Verdict: DONE_WITH_CONCERNS.** Commit 58879782 fixes finding 1 of review 5 correctly. `taken_back` now runs once whatever number of runs failed, so a scenario gets one run alone (r219). A pass on that run lets the merge go ahead (r222). There is a test for each case. Two findings from review 5 are still in the code, though: findings 2 (ERROR lines) and 3 (tests that are not scenarios are rerun). The person's answer addresses neither, and the implementer left both unfixed (6-implement report, "Open questions"). Each can merge a branch whose suite fails, which r4 forbids. So they are carried here as fix now, for the person to decide explicitly.
 

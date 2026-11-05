@@ -1,6 +1,6 @@
 # Research of w155: an answering session that ends other than DONE
 
-Scope: work-item w155 accepts supervision#r89 and supervision#r90. Accepted scenarios: the two in `features/supervision.feature` at lines 997 and 1007, bound in `tests/scenarios/test_supervision.py`.
+Scope: work-item w155 accepts supervision#r89@0.29 and supervision#r90@0.29. Accepted scenarios: the two in `features/supervision.feature` at lines 997 and 1007, bound in `tests/scenarios/test_supervision.py`.
 
 Method: no coverage map exists (`tools tests-of` and `tools untested` answer "no map"; I did not run `tools map`, which runs the whole suite). Every test list below is `by search`. `tools refs` was not run; callers are `by read` of `scripts/supervise.py` and `grep`. Probes are `run`; reading is `read`.
 

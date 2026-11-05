@@ -7,7 +7,11 @@ import subprocess
 import sys
 import uuid
 
-from supervise_worker import SCRIPTS, cut_short, git    # supervise_worker first: it and supervise_faults import each other
+from supervise_worker import (  # supervise_worker first: it and supervise_faults import each other
+    SCRIPTS,
+    cut_short,
+    git,
+)
 
 AGENT = "batch-analyst"
 STAGE = "analysis"

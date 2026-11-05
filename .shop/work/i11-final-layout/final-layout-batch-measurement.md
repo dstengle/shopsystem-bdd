@@ -5,7 +5,7 @@ part_of: initiative/i11
 status: formulated
 date: 2026-10-19
 argues: [batch-measurement]
-changes: [batch-measurement#r10, batch-measurement#r16]
+changes: [batch-measurement#r10@0.29, batch-measurement#r16@0.29]
 ---
 
 # Batch measurement: two words, nothing else

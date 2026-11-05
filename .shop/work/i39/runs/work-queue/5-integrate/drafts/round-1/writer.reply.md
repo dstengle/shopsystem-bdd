@@ -42,9 +42,9 @@ No change: no entry of `spec/index.md`'s Glossary names `work status` or `work s
 
 | path | summary | source | by |
 |---|---|---|---|
-| spec/decisions/0072-work-list-and-work-show-replace-work-status.md | `work status` and `work show` are consolidated into `work list`, which lists all work (initiatives, requests and work-items) with its status, and `work show <id>`, which shows the detail of one initiative, request or work-item; `work status` is retired. | capability/work-queue#r3, #r11, #r16, #r17, #r18, #r33, capability/requests#r13, #r14, capability/work-queue#r34-#r39, capability/requests#r46, #r47, design-decision/the-context-runs-without-a-coordinator | "the person's answers of 2026-10-27 to the question against spec/capabilities/work-queue.md (answers 1 and 2)" |
+| spec/decisions/0072-work-list-and-work-show-replace-work-status.md | `work status` and `work show` are consolidated into `work list`, which lists all work (initiatives, requests and work-items) with its status, and `work show <id>`, which shows the detail of one initiative, request or work-item; `work status` is retired. | capability/work-queue#r3@0.29, #r11, #r16, #r17, #r18, #r33, capability/requests#r13@0.29, #r14, capability/work-queue#r34-#r39, capability/requests#r46@0.29, #r47, design-decision/the-context-runs-without-a-coordinator | "the person's answers of 2026-10-27 to the question against spec/capabilities/work-queue.md (answers 1 and 2)" |
 
-No `supersedes`: 0072 replaces only what 0068 says of `work status`, which it says in its Decision, the way 0068 itself replaced one sentence of design-decision/a-script-supervises-delivery. 0068 is not edited. migration-tools#r32 and its replacement are not in `source` yet; they join it when question 2 is answered.
+No `supersedes`: 0072 replaces only what 0068 says of `work status`, which it says in its Decision, the way 0068 itself replaced one sentence of design-decision/a-script-supervises-delivery. 0068 is not edited. migration-tools#r32@0.29 and its replacement are not in `source` yet; they join it when question 2 is answered.
 
 ## Mentions of `work status` / `work show` not changed
 

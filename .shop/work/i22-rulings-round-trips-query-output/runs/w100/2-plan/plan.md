@@ -4,7 +4,7 @@ Outcome: QUESTION. The plan below covers everything except the two retirements (
 
 ## 1. What goes green
 
-- **work-queue#r15**: "answer with a newline in it is refused, and nothing changes" (features/work-queue.feature, @r15).
+- **work-queue#r15@0.29**: "answer with a newline in it is refused, and nothing changes" (features/work-queue.feature, @r15).
   - Red today because two steps are undefined (notes §1).
     - The When "the session runs `work answer w1` with an answer of two lines" has no definition (StepDefinitionNotFoundError, run).
     - The Then "work exits with an error, saying that an answer is one line" has no definition either (read).
@@ -32,7 +32,7 @@ These are left out until the question is answered: features/batch-measurement.fe
    - The When runs `work answer w1` with an answer of two lines joined by a newline.
    - It records `context["before"]` the same way `run_work` does, so that `both_as_they_were` can compare.
    - The Then asserts that the command exited with an error and that its stderr says an answer is one line.
-   - Rests on work-queue#r15, r7 and design-decision/exits-are-successful-or-errors (the step checks "an error", not a particular exit code).
+   - Rests on work-queue#r15@0.29, r7 and design-decision/exits-are-successful-or-errors (the step checks "an error", not a particular exit code).
 2. **Which answers count as a newline.** Only the `\n` and `\r` that workqueue_answer.py refuses today. The U+2028 / form-feed case (notes D1) stays as it is. Rests on the work-item's "Change no other behaviour".
 3. **What the put-back catches.** Every `Exception` raised while the steps are applied or while the version commit is made. It then resets and cleans as it does now, prints the same "migrate put the repository back as it was; …" message with the error, and exits with an error. Rests on migration-tools r15 and r20 (every change or none) and the work-item's ruling. KeyboardInterrupt and other non-Exception signals are not part of the ruling.
 4. **The `Z` replacement in `moment`.** Drop the `.replace("Z", "+00:00")` and its `# noqa`. From Python 3.11, `datetime.fromisoformat` reads a trailing `Z` as UTC, so the function gives the same answer for every input. The work-item allows either option.

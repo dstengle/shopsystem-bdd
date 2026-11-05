@@ -1,4 +1,4 @@
-# Review of w171 (supervision#r102)
+# Review of w171 (supervision#r102@0.29)
 
 **Verdict: DONE.** No Critical finding, none triaged fix now. The change does what the plan says: `supervise_drafts` reads kept drafts at `<k>-integrate/drafts/round-<m>/spec/capabilities/*.md`, for every round of every integrate stage. Both @r102 scenarios pass.
 

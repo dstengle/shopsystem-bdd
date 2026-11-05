@@ -1,6 +1,6 @@
 # Research of w127 (requests: line outcome, turn, awaiting statuses)
 
-Accepts requests#r7, r15, r16, r17, r18. Scenarios (features/requests.feature): r15 outcome; r16 refused out of turn;
+Accepts requests#r7@0.29, r15, r16, r17, r18. Scenarios (features/requests.feature): r15 outcome; r16 refused out of turn;
 r7 turn, Outline, 2 examples; r17 turn to asker, Outline with no Examples; r18 turn to upstream.
 Tools: no map exists, `tools map` not made (it runs the suite): `tests-of` and `untested` answer "no map"; test
 lists below are `by search` or from runs. `refs` not run: the request commands name nothing in the code yet.

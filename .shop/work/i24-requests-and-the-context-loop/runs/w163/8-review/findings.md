@@ -1,4 +1,4 @@
-# Review of w163 (accepts supervision#r79, supervision#r84)
+# Review of w163 (accepts supervision#r79@0.29, supervision#r84@0.29)
 
 **Verdict: DONE_WITH_CONCERNS.** One Important finding is triaged fix now. The fix works: an integrate round that ends DONE now commits its stage directory, so the next `work run` is not refused. But it lands as a second commit. The scenario's text and the person's answer ask for one commit holding the stage directory and the change to `started`. The new step definition is written loosely, so it passes on the two commits anyway.
 

@@ -10,7 +10,7 @@ Accepted lines of the request:
 - 2. **If** `work add` is given an initiative that is `done` or `abandoned`, **then** `work add` shall refuse, naming the initiative's status, and change nothing.
 - 3. **When** the delegation-answerer answers a reviewer's question on a work-item, the delegation-answerer shall give in its result whether its answer asks for a change or accepts the work-item as it is.
 - 4. **When** a kept branch review's result gives no question, `work run` shall take the review as listing nothing to fix now, whatever its status.
-Ids drafted elsewhere (number added lines above each on the same capability): supervision#r99
+Ids drafted elsewhere (number added lines above each on the same capability): supervision#r99@0.29
 Drafts path: /tmp/work-run-i33-2zhew41f/i33-1-integrate/.shop/scratch/1-integrate/drafts
 Give your change list in your result's `changes`: a list with one entry for each capability, each `{"capability": <name>, "adds": [...], "changes": [...], "removes": [...]}`, the ids as `<capability>#r<n>` or `term/<term>`.
 Base: 1caef88132eda3084c4ef5d18d7c8deeeccaf483

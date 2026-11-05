@@ -2,7 +2,7 @@
 
 ## 1. What goes green
 
-- **supervision#r187**, scenario (features/supervision.feature:1518): "an integrate round started for a capability-proposal whose change list names another capability the initiative holds a capability-proposal for adds the round's ids for that capability to that proposal, keeping the ids it holds".
+- **supervision#r187@0.29**, scenario (features/supervision.feature:1518): "an integrate round started for a capability-proposal whose change list names another capability the initiative holds a capability-proposal for adds the round's ids for that capability to that proposal, keeping the ids it holds".
   Why it is red today (notes part 1, run): it stops with `StepDefinitionNotFoundError` on the Given at line 1523 (p2, for other, awaiting-answer, with its adds, changes and removes). Read but not reached: the Given at line 1525 (an integrate change list on two capabilities) does not match, because the reintegrate step matches only `... on thing`. The Then at line 1528 (p2's three lists) has no definition.
   The production behaviour is already there (notes part 1): `Changes.write_proposals` in `scripts/supervise_change.py` merges a non-own held proposal through `merge_lists` (commit e4e61321). No scenario has run it yet.
 
@@ -21,10 +21,10 @@ No production file is expected to change (notes part 4). If the scenario is stil
 
 ## 3. Decisions
 
-- **Steps go in a new module, not in `supervision_reintegrate_steps.py`.** This follows the module-map rule of one `<capability>_*_steps.py` module per concern: merging into another proposal is a separate concern from the own-proposal rewrite (r142/r148). It rests on supervision#r187.
-- **The two-capability Given gets its own pattern, ending in "on other".** The existing `... on thing` step stays as it is, so the r142/r148 scenarios that use it do not change. The new pattern must not also match those single-capability lines. Rests on supervision#r187.
-- **The Then compares the lists as sets of ids, not in order.** r187 says "add ... keeping the ids it holds" and says nothing about order. Rests on supervision#r187.
-- **The p2 Given gives the integrate round a way to reach p2.** The initiative must hold p2 as a capability-proposal for `other` (it argues `other`), so `write_proposals` finds it as a held proposal of that capability. Rests on supervision#r187 ("for which the initiative holds a capability-proposal") and design-decision/worker-results-are-files (the round's change list comes from its result file).
+- **Steps go in a new module, not in `supervision_reintegrate_steps.py`.** This follows the module-map rule of one `<capability>_*_steps.py` module per concern: merging into another proposal is a separate concern from the own-proposal rewrite (r142/r148). It rests on supervision#r187@0.29.
+- **The two-capability Given gets its own pattern, ending in "on other".** The existing `... on thing` step stays as it is, so the r142/r148 scenarios that use it do not change. The new pattern must not also match those single-capability lines. Rests on supervision#r187@0.29.
+- **The Then compares the lists as sets of ids, not in order.** r187 says "add ... keeping the ids it holds" and says nothing about order. Rests on supervision#r187@0.29.
+- **The p2 Given gives the integrate round a way to reach p2.** The initiative must hold p2 as a capability-proposal for `other` (it argues `other`), so `write_proposals` finds it as a held proposal of that capability. Rests on supervision#r187@0.29 ("for which the initiative holds a capability-proposal") and design-decision/worker-results-are-files (the round's change list comes from its result file).
 
 ## 4. Tests the decisions break
 

@@ -1,6 +1,6 @@
-- 2026-10-28: integrate round 1: 10 lines added (backlog#r1-r8 new capability, migration-tools#r35-r36), 2 glossary terms, 8 questions, 1 cut sentence; drafts .shop/scratch/1-integrate/drafts/round-1
+- 2026-10-28: integrate round 1: 10 lines added (backlog#r1-r8 new capability, migration-tools#r35@0.29, migration-tools#r36@0.29), 2 glossary terms, 8 questions, 1 cut sentence; drafts .shop/scratch/1-integrate/drafts/round-1
 - 2026-10-28: gate round 1: 8 questions for the person (backlog r1-r8, migration-tools r35/r36)
-- 2026-10-28: gate round 1: 1 question (migration-tools#r36 against r24 and r28)
+- 2026-10-28: gate round 1: 1 question (migration-tools#r36@0.29 against r24 and r28)
 - 2026-10-28: gate round 1: 1 question (term/backlog: observation vs observation record)
 - 2026-10-29 22:55: compacted
 - 2026-10-30: the person, 2026-10-30: a discovery conversation held in place of the 8 questions; approved the design record/2026-10-30-backlog-board-design and said "go ahead and replace q31". q31's backlog lines are replaced by q45; its log of temporary rules is a separate idea, out of q45. i57 abandoned, its proposals withdrawn (hand edit: no work command withdraws a proposal or a request, or abandons an initiative)

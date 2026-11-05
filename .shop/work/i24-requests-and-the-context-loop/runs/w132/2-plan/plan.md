@@ -8,17 +8,17 @@ Under design-model-check; accepts r113, r114, r115, r116, r117, r119. There is n
 
 All 14 cases are red today. Each one fails with StepDefinitionNotFoundError on its first Given. The Then steps of the form "`<code>` names / does not name" do not exist, and model.lp has no rule for any of these clauses (notes §1, §2).
 
-- **design-model-check#r113**, "an initiative dated after 2026-10-23 that fulfils no request is v16a".
+- **design-model-check#r113@0.29**, "an initiative dated after 2026-10-23 that fulfils no request is v16a".
   - Red because model.lp has no v16a. The initiative reader emits `age` but no date and does not read `fulfils` (P1).
-- **design-model-check#r114**, "a done initiative whose own request in this context is not delivered is v_d1", 5 Examples.
+- **design-model-check#r114@0.29**, "a done initiative whose own request in this context is not delivered is v_d1", 5 Examples.
   - Red because v_d1 is only the part-open clause, and nothing reads a request's asker, `part_of` or `source` (P2, P3).
-- **design-model-check#r119**, "a delivered request whose initiative is not done is v_d3".
+- **design-model-check#r119@0.29**, "a delivered request whose initiative is not done is v_d3".
   - Red because model.lp has no v_d3 and nothing emits a fact for `fulfils` (P4).
-- **design-model-check#r115**, "a request that is part of no job-thread and cites no origin is v17".
+- **design-model-check#r115@0.29**, "a request that is part of no job-thread and cites no origin is v17".
   - Red because model.lp has no v17 and a request's links are not read (P5).
-- **design-model-check#r116**, "a delivered request whose resolution names a requirement the spec does not have is v3".
+- **design-model-check#r116@0.29**, "a delivered request whose resolution names a requirement the spec does not have is v3".
   - Red because today's v3 is the dead `needs` rule (model.lp:93-95) and `resolution` is never emitted (P6).
-- **design-model-check#r117**, "an id of a kind kept in .shop/work/ with another context's path is v18", 6 Examples.
+- **design-model-check#r117@0.29**, "an id of a kind kept in .shop/work/ with another context's path is v18", 6 Examples.
   - Red because model.lp has no v18. Such a source gives only v10a and an unresolved reference (P7, P7b, P7c).
 
 ## 2. Where the change lands
@@ -52,16 +52,16 @@ Removed from the researcher's set:
 ## 3. Decisions
 
 1. **An initiative carries `fulfils`.** It is one request id, read with `qualify` and the kind `request`. A request has no field that points back.
-   - Rests on: r113 and r119, whose wording is "an initiative … that fulfils"; work-queue#r22 (`work start` writes an initiative that fulfils the request); grammar.md:75, `fulfils(I, Q)` initiative → request; the capability's Implementation, "facts use grammar.md's relation names".
+   - Rests on: r113 and r119, whose wording is "an initiative … that fulfils"; work-queue#r22@0.29 (`work start` writes an initiative that fulfils the request); grammar.md:75, `fulfils(I, Q)` initiative → request; the capability's Implementation, "facts use grammar.md's relation names".
    - `fulfils` is not added to r24's list of fields resolved as unresolved references.
 2. **v16a compares the initiative's `date` with the literal 2026-10-23.** It does not compare it with today. An initiative with no date, or with a malformed date, is not v16a; a malformed date stays the r27 file problem.
    - Rests on: r113.
 3. **A request's `part_of` and `source` go under request-only relations, not under `part_of` and `source`.** Read through grammar.md's `part_of` and `source`, a request with `part_of` i1 would fire v_k3, v_k5 and v_d2, and a request whose source names i1 would fire v9e and v10a. No requirement asks for any of that. Today requests give none of those rows, and they still give none.
-   - Rests on: design-model-check#r10, #r34 and #r59, whose rules range over parts, and a request is not a part kind (model_work.py PART_KINDS).
+   - Rests on: design-model-check#r10@0.29, #r34 and #r59, whose rules range over parts, and a request is not a part kind (model_work.py PART_KINDS).
 4. **The asker counts as "this context" when it is `internal` or the bounded context's own id.** A request is "kept in this context" when it is read from `.shop/work/requests/`; r46 already refuses a request whose own id is not of this context. The v_d1 Given for "another context" writes another bounded context's id.
    - Rests on: r114; the requests capability's Implementation (the asker is a context id, `internal` or the product level); grammar.md:51 ("the upstream itself when internal").
 5. **v_d1 keeps its part-open clause and adds r114's clause under the same code.** The added clause: i1 is `done`, and a request whose asker is this context and whose `part_of` or `source` names i1 is not `delivered`. The single label names both cases.
-   - Rests on: r114; design-model-check#r36, which needs the part-open clause; grammar.md:224-226 ("v_d1 extended").
+   - Rests on: r114; design-model-check#r36@0.29, which needs the part-open clause; grammar.md:224-226 ("v_d1 extended").
    - RulesTest wants one label for each code, which is why there is a single label.
 6. **v17 holds for a request that is not part of a job-thread and does not cite an origin.**
    - "Part of a job-thread": its `part_of` names a node of kind `job-thread`.

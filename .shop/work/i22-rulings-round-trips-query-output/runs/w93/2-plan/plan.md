@@ -5,7 +5,7 @@ From the research notes (`runs/w93/1-research/notes.md`), the work-item, migrati
 
 ## 1. What goes green
 
-- **migration-tools#r29**: scenario "the upgrade step of the plugin version after 0.24.0 renames the old status and
+- **migration-tools#r29@0.29**: scenario "the upgrade step of the plugin version after 0.24.0 renames the old status and
   the old heading in work-items and logs" (`features/migration-tools.feature` line 524).
   Red today because:
   - its first Given (plugin-version 0.24.0, feature line 526) has no step definition. Its other Givens (527-529) and
@@ -48,7 +48,7 @@ From the research notes (`runs/w93/1-research/notes.md`), the work-item, migrati
      plugin 0.24.0. This settles the researcher's question (notes §7) with reading B for the plugin. Section 1 gives
      how the scenario still goes green.
 2. **The scenario runs the real `migrate` from a copy of the plugin whose `plugin.json` names the version after
-   0.24.0 (0.25.0).** The scenario's condition is migration-tools#r29's "when `migrate upgrade` applies the upgrade
+   0.24.0 (0.25.0).** The scenario's condition is migration-tools#r29@0.29's "when `migrate upgrade` applies the upgrade
    step of the plugin version after 0.24.0".
    - The r29 Given builds the repository at plugin-version 0.24.0, makes the copy (the scripts directory and
      `.claude-plugin/plugin.json` with the raised version) in the scenario's temporary space, and records it in the
@@ -56,7 +56,7 @@ From the research notes (`runs/w93/1-research/notes.md`), the work-item, migrati
    - The shared When runs `migrate` from that copy when the context holds one; otherwise it runs as today.
    - No production code learns a version override.
 3. **`upgrade` applies the steps oldest first, each planned from the tree the steps before it left.** This rests on
-   migration-tools#r20 ("apply each pending upgrade step, oldest first") and fixes notes §6 defect 1. Without it, a
+   migration-tools#r20@0.29 ("apply each pending upgrade step, oldest first") and fixes notes §6 defect 1. Without it, a
    repository at 0.23.1 upgraded to 0.25.0 gets a work-item duplicated under its old name, and the renamed item and
    its log keep awaiting-ruling.
    - A later step's refusal (failures or move failures) puts the tree back the way the existing error path does
@@ -64,13 +64,13 @@ From the research notes (`runs/w93/1-research/notes.md`), the work-item, migrati
      exits 1. `.shop/plugin-version` is not written and nothing is committed (r20 one commit, r7's change no file;
      the tree was clean by r15).
    - The commit and the printed line are unchanged.
-4. **What the step renames** (migration-tools#r29):
+4. **What the step renames** (migration-tools#r29@0.29):
    - the frontmatter `status:` value awaiting-ruling in every work-item file (kind work-item) under `.shop/work/`;
    - every heading line that is exactly `## Rulings` in every work-item file, whatever its status (the w2 case);
    - in every `log.jsonl` line, each status field (`before` and `after`) that holds awaiting-ruling (notes §5: renaming
      `after` alone leaves the old name in the next line's `before`).
    - Free text in a body or in records that only mentions the word stays as it is. This follows r29's "the status"
-     and the "leave free text as it is" of migration-tools#r26.
+     and the "leave free text as it is" of migration-tools#r26@0.29.
    - Every other field and line of a log is written back as it was. The log rewrite follows the pattern of
      `migrate_upgrade_ids` (whole text, one JSON object per line).
 5. **The step's description** is "answers, not rulings", the name of design-decision/answers-not-rulings, which calls

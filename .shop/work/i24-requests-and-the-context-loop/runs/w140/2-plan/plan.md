@@ -2,8 +2,8 @@
 
 ## 1. What goes green
 
-- **work-queue#r24**: "answer on an awaiting-answer capability-proposal writes the answer with the date under the proposal's Answers". Red today (notes part 1): no step matches the Given "an initiative i1 under .shop/work/ whose capability-proposal p1 is awaiting-answer" (StepDefinitionNotFound, features line 260). Behind it, `work answer p1` refuses in `asked_from` (scripts/workqueue_answer.py), since log.jsonl has no transition of p1 into awaiting-answer (probe a).
-- **work-queue#r9**: the outline "`work <command>` commits the change it makes to a work-item or a capability-proposal on the current branch". Its four work-item rows pass today; its row `answer p1` is red for the same missing Given, and behind it for the same refusal, and then for the commit, which always names log.jsonl (`workqueue.rels_of`) although the scenario makes none.
+- **work-queue#r24@0.29**: "answer on an awaiting-answer capability-proposal writes the answer with the date under the proposal's Answers". Red today (notes part 1): no step matches the Given "an initiative i1 under .shop/work/ whose capability-proposal p1 is awaiting-answer" (StepDefinitionNotFound, features line 260). Behind it, `work answer p1` refuses in `asked_from` (scripts/workqueue_answer.py), since log.jsonl has no transition of p1 into awaiting-answer (probe a).
+- **work-queue#r9@0.29**: the outline "`work <command>` commits the change it makes to a work-item or a capability-proposal on the current branch". Its four work-item rows pass today; its row `answer p1` is red for the same missing Given, and behind it for the same refusal, and then for the commit, which always names log.jsonl (`workqueue.rels_of`) although the scenario makes none.
 - Deprecated: the work-item has no Retires section, so it retires nothing. The deprecated r9 outline "`work <command>` commits the change it makes to a work-item on the current branch (deprecated)" passes today and stays passing (notes part 4).
 
 ## 2. Where the change lands
@@ -19,11 +19,11 @@ The researcher's "may change" files that this plan leaves out:
 
 ## 3. Decisions
 
-- **D1. Answering a capability-proposal leaves its status `awaiting-answer` and makes no transition or log line.** This fixes the notes' defect D1, where probe c showed the status returned to drafted. It rests on work-queue#r24, which writes the answer only. work-queue#r14 makes a transition for a work-item only, and r4/r5 are a work-item's transitions. Under it the narrator sees p1 still awaiting-answer, with its answer written.
-- **D2. A proposal needs no log.jsonl move into awaiting-answer to be answered.** The status comes from its file. This rests on work-queue#r24, whose trigger is the proposal's being awaiting-answer, and the r24 scenario's Given has no log. The `agrees` check (r6) stays in its current place before the change. A log that disagrees with the file is still refused, and a proposal with no log lines passes it.
-- **D3. The commit of a proposal's answer holds the proposal's file and no log.jsonl.** It rests on work-queue#r9 ("the `log.jsonl` line the change made, if it made one") and D1. The proposal path names only its own file. The work-item path keeps committing the file and log.jsonl.
+- **D1. Answering a capability-proposal leaves its status `awaiting-answer` and makes no transition or log line.** This fixes the notes' defect D1, where probe c showed the status returned to drafted. It rests on work-queue#r24@0.29, which writes the answer only. work-queue#r14@0.29 makes a transition for a work-item only, and r4/r5 are a work-item's transitions. Under it the narrator sees p1 still awaiting-answer, with its answer written.
+- **D2. A proposal needs no log.jsonl move into awaiting-answer to be answered.** The status comes from its file. This rests on work-queue#r24@0.29, whose trigger is the proposal's being awaiting-answer, and the r24 scenario's Given has no log. The `agrees` check (r6) stays in its current place before the change. A log that disagrees with the file is still refused, and a proposal with no log lines passes it.
+- **D3. The commit of a proposal's answer holds the proposal's file and no log.jsonl.** It rests on work-queue#r9@0.29 ("the `log.jsonl` line the change made, if it made one") and D1. The proposal path names only its own file. The work-item path keeps committing the file and log.jsonl.
 - **D4. A proposal is told from a work-item by the frontmatter `kind: capability-proposal`.** It rests on design-decision/work-file-forms, which gives every part file `kind`. Lookup stays as `workqueue.find`, which does not depend on kind.
-- **D5. The one-line check (r15) stays first for both kinds.** It rests on work-queue#r15 and r7 ("change nothing"). Probe d shows it already runs first.
+- **D5. The one-line check (r15) stays first for both kinds.** It rests on work-queue#r15@0.29 and r7 ("change nothing"). Probe d shows it already runs first.
 
 ## 4. Tests the decisions break
 

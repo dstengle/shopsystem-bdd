@@ -5,7 +5,7 @@ part_of: initiative/i15
 status: formulated
 date: 2026-10-21
 argues: [analysis-tools]
-changes: [analysis-tools#r17]
+changes: [analysis-tools#r17@0.29]
 ---
 
 # analysis-tools: a missing tool exits 1

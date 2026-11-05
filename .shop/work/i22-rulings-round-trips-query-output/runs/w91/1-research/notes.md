@@ -1,6 +1,6 @@
 # Research notes: w91 (work answer; awaiting-ruling renamed awaiting-answer)
 
-Accepted: work-queue#r9, #r13, #r14. Base dc9ece7. Worktree clean at the end (`git status --porcelain` empty; `.shop/scratch/` is ignored).
+Accepted: work-queue#r9@0.29, #r13, #r14. Base dc9ece7. Worktree clean at the end (`git status --porcelain` empty; `.shop/scratch/` is ignored).
 Tools: `tools refs` ran (run). `tools tests-of` and `untested` have no map (`tools: no map`); I did not run `tools map` (it writes `.shop/scratch/tools` in the worktree, outside my scratch dir). Every test list below is `by search`.
 Probe file: `.shop/scratch/w91-1-research/probe_work.py`.
 

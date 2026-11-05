@@ -8,7 +8,7 @@
 ## Range and work-items
 
 - Range: `3fbe46ea..bd7b11b4` (base `3fbe46ea`, "work: start i35, fulfilling q12", which adds `.shop/work/i35/initiative.md`).
-- Work-items: **w196** (supervision; accepts supervision#r73, r123, r124; green).
+- Work-items: **w196** (supervision; accepts supervision#r73@0.29, r123, r124; green).
   - Its commits run from `00964b0e work: w196 ready -> claimed` to `ed893f5c work: w196 claimed -> done`.
   - Less `work run`'s own commits, that leaves one: `45922c8e supervision: retire by the deprecated scenario's replacement (r73), draft the retire work-item (r123, r124)`.
 - Commits outside any work-item are `work run`'s own rounds for the capability-proposal and the initiative, so none of them is a finding:
@@ -82,12 +82,12 @@ The report's `## Tests changed under an allowance` says "none". That is right: t
 
 - **Where:** features/supervision.feature:1091 (@r75), :1413 (@r102), :1487 (@r105); features/work-queue.feature:7 (@r1), :71 (@r23), :282 (@r9).
 - **The holders, read from `.shop/work/*/w*.md`.** These are the non-withdrawn work-items that accept the replacements' requirements:
-  - supervision#r75: w139, w153, w194, all green.
-  - supervision#r102: w170, w171, w172, all green.
-  - supervision#r105: w181, w194, both green.
-  - work-queue#r1: w50, green.
-  - work-queue#r9: w140, green.
-  - work-queue#r23: w130, w160, w192, all green.
+  - supervision#r75@0.29: w139, w153, w194, all green.
+  - supervision#r102@0.29: w170, w171, w172, all green.
+  - supervision#r105@0.29: w181, w194, both green.
+  - work-queue#r1@0.29: w50, green.
+  - work-queue#r9@0.29: w140, green.
+  - work-queue#r23@0.29: w130, w160, w192, all green.
   - Every other work-item in `.shop/work` is green or withdrawn.
 - **Why the guard does not stop it:** none of the six is listed in the form the guard matches (`- "<title>" (`). w194 lists a different r75 scenario. w100 names the r9 one inside a prose bullet and is green, yet the scenario is still there.
 - **What HEAD's code would draft:** under r123 and r124, `pull_through` (scripts/supervise.py:212-215) would have drafted one work-item in i35 before this review. It would retire these six, under w194's `part_of` (the highest-numbered holder).
@@ -107,7 +107,7 @@ The report's `## Tests changed under an allowance` says "none". That is right: t
 **F3. Minor, w196, observation:** the retire work-item copies `under` and `accepts` from the last-drafted green holder, so it re-accepts requirements that are already done.
 
 - **Where:** scripts/supervise_draft.py:72-74.
-- **What it does:** in scenario 1063 it is drafted with `under: other` and `accepts: [other#r4]`. On this branch (F1) it would accept w194's `[supervision#r120, r121, r75, r105]` while retiring work-queue scenarios too.
+- **What it does:** in scenario 1063 it is drafted with `under: other` and `accepts: [other#r4]`. On this branch (F1) it would accept w194's `[supervision#r120@0.29, r121, r75, r105]` while retiring work-queue scenarios too.
 - **Why it is not "code no line asks for":** `work add` requires both fields. r123's "under the capability-proposal of the last-drafted work-item" fixes `part_of`, and copying `under` and `accepts` from that same work-item mirrors r74's fix work-item. That is mechanism, not new observable behaviour. The plan (decision 5) and the implementer's report both flag it.
 - **Fix:** if it proves noisy, write a line on what a retire work-item accepts.
 

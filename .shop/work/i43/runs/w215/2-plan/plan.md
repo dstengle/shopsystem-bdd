@@ -7,13 +7,13 @@ Review is a `guarantees` capability (design-decision/workflow-capabilities-are-g
 tags in other feature files carry other capabilities' ids. `python3 -m pytest -q --work-item w215` is green today
 (176 passed, 1 skipped), and none of those tests is a review scenario. No deprecated scenario is retired.
 
-- **review#r32**, the branch reviewer runs nothing. No scenario. It is not met today: the agent's description and its
+- **review#r32@0.29**, the branch reviewer runs nothing. No scenario. It is not met today: the agent's description and its
   "What you run" section have it run the suite, each work-item's pytest, `tools check`, `tools size`,
   `features deprecated`/`bindings` and the dry-run test. The branch review is started with stage `review`, whose list
   (`READER`) allows pytest, the plugin's scripts and git.
-- **review#r33**, a behaviour only a run would show becomes a finding with its test, marked not run. No scenario. The
+- **review#r33@0.29**, a behaviour only a run would show becomes a finding with its test, marked not run. No scenario. The
   agent today writes probes in scratch and gives each observation a reproduction made of commands.
-- **review#r34**, the randomized dry-run/real agreement test is verified from `work run`'s suite run. No scenario.
+- **review#r34@0.29**, the randomized dry-run/real agreement test is verified from `work run`'s suite run. No scenario.
   The agent today runs that test itself.
 
 ## 2. Where the change lands
@@ -43,33 +43,33 @@ On the path, not edited: `scripts/supervise.py`, `scripts/supervise_merge.py`, `
    and the ledger, made by the coordinator under the person's delegation. Reading B was taken: the Bash removal is
    request q24 (i44), "r32 held by the brief until then". This settles the researcher's conflict C1.
 2. **The branch review gets its own stage list, keyed `branch-review`, with Read, Glob and Grep and no Bash entry: no
-   pytest, no plugin script, no git.** The work-item reviewer's `review` list stays `READER`. This rests on review#r32
+   pytest, no plugin script, no git.** The work-item reviewer's `review` list stays `READER`. This rests on review#r32@0.29
    (it runs nothing) and supervision r14 (Bash only for what the stage runs and the git commands it needs, here none).
    The commits and the change it would have read with git come from `work run` (supervision r156, w216). A
    `.shop/delivery.toml` `[allowed_tools]` entry for `review` no longer applies to the branch review. Its own key is
    `branch-review`.
 3. **The agent reads every run from the brief.** "What you run" is replaced by a section on what `work run` gives:
    each run of supervision r154, with its command, how it exited, its output and the commit it ran at (r155).
-   - **The findings file.** `Suite` (its line and wall time, review#r7) and `Checks` (each work-item's check, the
+   - **The findings file.** `Suite` (its line and wall time, review#r7@0.29) and `Checks` (each work-item's check, the
      `tools check` headings, `tools size`, `features deprecated`, `features bindings`) are taken from those runs,
      naming the commit.
    - **A check `work run` did not give.** A check a work-item names with no run in the brief is listed under
-     `Cannot verify` and fails the review (review#r6 with r32). "A check you did not run is not a check that passed"
+     `Cannot verify` and fails the review (review#r6@0.29 with r32). "A check you did not run is not a check that passed"
      goes.
    - **The branch section.** It reads the commits, each with its work-item, and the change from the brief (r156), not
      from `git log`/`git diff`/`git show`.
    - **Writes and probes.** Its only writes are `findings.md` and the result (r32). No probes, no scratch directory.
 
-   Rests on review#r32, #r7, #r6 and supervision r154–r156.
+   Rests on review#r32@0.29, #r7, #r6 and supervision r154–r156.
 4. **w215 depends on w216** (supervision r154–r157). The body names the brief's runs, commits and files as w216's
-   brief gives them. Until w216 lands there is nothing in the brief to read them from. This rests on review#r34 ("from
+   brief gives them. Until w216 lands there is nothing in the brief to read them from. This rests on review#r34@0.29 ("from
    the suite run `work run` gave it") and supervision r155. It settles the researcher's conflict C2 as reading A:
    w215 changes the agent's reading, and the plugin carries no case count of its own. `depends_on: [w216]` is in the
    result.
 5. **The `--whole-suite` exemption in `scripts/work_items.py` stays.** The worker name "the branch review" is set for
    every session with no work-item (`supervise_worker.py`'s environment), so rounds and intake have it too. Removing it
    would change what those sessions may run, which no line of w215's asks. With decision 2, no branch reviewer can
-   reach pytest anyway. This rests on review#r32 (scope) and red-green r1 as `work_items.py` cites it.
+   reach pytest anyway. This rests on review#r32@0.29 (scope) and red-green r1 as `work_items.py` cites it.
 6. **r34 and r33 together.** Where the system has a dry-run and a real mode of one operation:
    - The reviewer finds the agreement test in the suite run's output and gives that it ran and how many cases it
      tried (r34).
@@ -78,7 +78,7 @@ On the path, not edited: `scripts/supervise.py`, `scripts/supervise_merge.py`, `
 
    More generally, any behaviour that only a run would show is given as a finding with its test, marked not run, in
    place of a reproduction (r33). An observation's reproduction (r12) is drawn from the given runs' output or from
-   what was read. Rests on review#r33, #r34, #r12.
+   what was read. Rests on review#r33@0.29, #r34, #r12.
 
 ## 4. Tests the decisions break
 

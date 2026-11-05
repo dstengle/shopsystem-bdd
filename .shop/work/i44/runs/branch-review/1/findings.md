@@ -11,7 +11,7 @@ The installed plugin 0.28.1 started this review (`Scripts:`), not the branch's o
 ## Range and work-items
 
 - **Range:** `40bc819b..d5e53571` (Base `40bc819b06ac8dd62a03580aaee217c7afa0b330`, `work: start i44, fulfilling q24`; HEAD `d5e53571013de98942df1194bb56e8a318c1562d`).
-- **w218** (role-boundaries#r7), green. Its one commit is `ae666f39`, between `58d3a1db` (ready -> claimed) and `26340221` (claimed -> done). It touches `agents/bdd-branch-reviewer.md`, `tests/scripts/test_agents.py` and `README.md`, all three in its `fileset:`.
+- **w218** (role-boundaries#r7@0.29), green. Its one commit is `ae666f39`, between `58d3a1db` (ready -> claimed) and `26340221` (claimed -> done). It touches `agents/bdd-branch-reviewer.md`, `tests/scripts/test_agents.py` and `README.md`, all three in its `fileset:`.
 - **Commits of i44 that belong to no work-item.** All are the workflow's own commits; none is a stray change:
   - the apply round `c1446053` (`spec/capabilities/role-boundaries.md`, +r7);
   - the `work note`, `work answer` and `work add` commits;

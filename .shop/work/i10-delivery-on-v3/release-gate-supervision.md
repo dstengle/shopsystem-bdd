@@ -5,8 +5,8 @@ part_of: initiative/i10
 status: formulated
 date: 2026-10-21
 argues: [supervision]
-adds: [supervision#r21-r31]
-changes: [supervision#r14]
+adds: [supervision#r21@0.29, supervision#r22@0.29, supervision#r23@0.29, supervision#r24@0.29, supervision#r25@0.29, supervision#r26@0.29, supervision#r27@0.29, supervision#r28@0.29, supervision#r29@0.29, supervision#r30@0.29, supervision#r31@0.29]
+changes: [supervision#r14@0.29]
 ---
 
 # supervision: lines from the release's runs and final review

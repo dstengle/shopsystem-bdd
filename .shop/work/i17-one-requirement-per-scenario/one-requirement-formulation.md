@@ -6,7 +6,7 @@ status: merged
 date: 2026-10-21
 argues: [formulation]
 adds: []
-changes: [formulation#r4, formulation#r11, formulation#r13]
+changes: [formulation#r4@0.29, formulation#r11@0.29, formulation#r13@0.29]
 removes: []
 ---
 

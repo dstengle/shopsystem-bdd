@@ -1,6 +1,6 @@
 # w120 research notes
 
-Work-item: w120, accepts work-queue#r15. Accepted scenarios: 2 (8 example rows as tests).
+Work-item: w120, accepts work-queue#r15@0.29. Accepted scenarios: 2 (8 example rows as tests).
 Tools: `tools check` run; `tools tests-of` refused, no map (`tools map` not run: it runs the suite); `tools refs` not run; callers by search. Scratch: `.shop/scratch/w120-1-research/` (git-ignored, so `git status --porcelain` stays clean).
 
 ## 1. Why each scenario is red today

@@ -1,4 +1,4 @@
-# Review of w203 (spec-integration#r45)
+# Review of w203 (spec-integration#r45@0.29)
 
 **Verdict: DONE.** No Critical finding, none triaged fix now. One Minor observation about how strong the new Then is.
 

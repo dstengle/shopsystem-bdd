@@ -2,9 +2,9 @@
 
 ## 1. What goes green
 
-- **analysis-tools#r50**: "size prints each tracked Python file over the limit in the working tree, with its line count". Red: the first Given `a Python project in git` has no step definition (StepDefinitionNotFoundError); the `it tracks ...`, `it has an untracked ...`, `tools prints ... with N lines` and `it prints no other file` steps are undefined too; `scripts/tools` has no `size` subcommand (argparse refuses it, rc 2, probe P1).
-- **analysis-tools#r51**: "size fails when one tracked Python file is over the limit". Red: same missing Given and `it tracks src/cart.py of 301 lines and src/total.py of 120 lines`; the command returns 2 today, not 1.
-- **analysis-tools#r52**: "size uses the limit --limit gives, and 300 lines without it" (two examples, `--limit 250` and none). Red: same missing Given, the `it tracks src/total.py of <within> lines and src/cart.py of <over> lines` step, `tools prints src/cart.py with <over> lines` and `it does not print src/total.py` are undefined; `--limit` is unknown.
+- **analysis-tools#r50@0.29**: "size prints each tracked Python file over the limit in the working tree, with its line count". Red: the first Given `a Python project in git` has no step definition (StepDefinitionNotFoundError); the `it tracks ...`, `it has an untracked ...`, `tools prints ... with N lines` and `it prints no other file` steps are undefined too; `scripts/tools` has no `size` subcommand (argparse refuses it, rc 2, probe P1).
+- **analysis-tools#r51@0.29**: "size fails when one tracked Python file is over the limit". Red: same missing Given and `it tracks src/cart.py of 301 lines and src/total.py of 120 lines`; the command returns 2 today, not 1.
+- **analysis-tools#r52@0.29**: "size uses the limit --limit gives, and 300 lines without it" (two examples, `--limit 250` and none). Red: same missing Given, the `it tracks src/total.py of <within> lines and src/cart.py of <over> lines` step, `tools prints src/cart.py with <over> lines` and `it does not print src/total.py` are undefined; `--limit` is unknown.
 
 The work-item retires no deprecated scenario.
 

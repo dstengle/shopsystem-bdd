@@ -5,9 +5,9 @@ Agent: initiative-round
 Scripts: /home/vscode/shopsystem-bdd/scripts
 Kind: gate
 Give the gate as questions in your result's `questions`, one string each: every question a decision, with its readings and the recommended reading marked.
-Adds: feature-file-tools#r63, feature-file-tools#r64, feature-file-tools#r65, feature-file-tools#r66, feature-file-tools#r67, feature-file-tools#r68, feature-file-tools#r69, feature-file-tools#r70, feature-file-tools#r71, feature-file-tools#r72, feature-file-tools#r73
+Adds: feature-file-tools#r63@0.29, feature-file-tools#r64@0.29, feature-file-tools#r65@0.29, feature-file-tools#r66@0.29, feature-file-tools#r67@0.29, feature-file-tools#r68@0.29, feature-file-tools#r69@0.29, feature-file-tools#r70@0.29, feature-file-tools#r71@0.29, feature-file-tools#r72@0.29, feature-file-tools#r73@0.29
 Changes: none
-Removes: feature-file-tools#r46, feature-file-tools#r7, feature-file-tools#r60, feature-file-tools#r61, feature-file-tools#r62, feature-file-tools#r17, feature-file-tools#r25, feature-file-tools#r58
+Removes: feature-file-tools#r46@0.29, feature-file-tools#r7@0.29, feature-file-tools#r60@0.29, feature-file-tools#r61@0.29, feature-file-tools#r62@0.29, feature-file-tools#r17@0.29, feature-file-tools#r25@0.29, feature-file-tools#r58@0.29
 Ask questions only on the lines and terms listed above as adds, changes or removes, and on no other line or term.
 Drafts path: .shop/work/i59/runs/i59/1-integrate/drafts/round-2/
 Base: 3be48327e94e2ec17ea63d9334f33dd184b148e0

@@ -31,7 +31,7 @@ The report gives "none", and none is needed: no remaining test's assertions chan
 - **Where:** `scripts/model_requests.py:58`, `raised = data.get("raised_for") and str(data["asker"]).strip() != "internal"`.
 - **What is wrong:**
   - The request file's form lets the asker of an internal request be written `internal` or as the context's own id. See requests' Implementation (asker "a context id, `internal`, …"), and `workqueue_request.py:44`, where `mine` holds both `internal` and `bounded-context/<own path>`.
-  - requests#r45 refuses a request whose asker is the upstream itself when it names neither `--source` nor `--thread`. So `work request` never writes such a request with `raised_for` only.
+  - requests#r45@0.29 refuses a request whose asker is the upstream itself when it names neither `--source` nor `--thread`. So `work request` never writes such a request with `raised_for` only.
   - But `model check` accepts that form when the asker is written as the own context id, and reports no file problem. Under r112 it should report one.
 - **Reproduction:** `.shop/scratch/w209-4-review/test_probe_asker.py`, run with `python3 -m pytest -q -s -n 0 -p no:cacheprovider <it>`. It writes q1 with `raised_for: request/ex.com/prod/other/q7` and no `part_of` or `source`. What came back:
   - asker `bounded-context/ex.com/prod/ctx` (own): exit 0, 0 file problems;
@@ -56,7 +56,7 @@ The report gives "none", and none is needed: no remaining test's assertions chan
   - The labels follow r120 and r121. The v18 label leaves out "judged from the id alone", as plan decision 5 allows.
 - **Code no line asks for (none found):**
   - `req_thread` and `req_raised_for` serve r120 and r121.
-  - The `request_form` change serves r112 together with requests#r44 and r31: a request from another context's asker with `--raised-for` alone.
+  - The `request_form` change serves r112 together with requests#r44@0.29 and r31: a request from another context's asker with `--raised-for` alone.
 - **`world.cited`** is set only by `initiative_citing` and read only by the new q9 Given. In every r121 row, the initiative Given comes before `<raised>`.
 - **A `raised_for` naming a non-request kind:** the form is accepted, but no `req_raised_for` fact is made, so v17 still fires. This is consistent; the report lists it as an open question.
 

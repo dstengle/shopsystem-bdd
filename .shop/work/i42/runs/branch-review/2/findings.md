@@ -6,8 +6,8 @@
 
 `8f90ad3e..7ac8eb59`, 60 commits. Base `8f90ad3e` is the commit that adds `.shop/work/i42/initiative.md`.
 
-- **w213** (spec-integration#r46, green): the commits from `6de25e87` (ready -> claimed) to `53d57591` (claimed -> done). Its one commit of its own is `5482e7e3`. Branch review 1 (`.shop/work/i42/runs/branch-review/1/findings.md`) reviewed it, and those findings are carried forward below.
-- **w214** (supervision#r149-r153, green): the commits from `13faa004` (ready -> claimed) to `9c34d167` (claimed -> done). Its one commit of its own is `2b4cbe78`. That commit touches:
+- **w213** (spec-integration#r46@0.29, green): the commits from `6de25e87` (ready -> claimed) to `53d57591` (claimed -> done). Its one commit of its own is `5482e7e3`. Branch review 1 (`.shop/work/i42/runs/branch-review/1/findings.md`) reviewed it, and those findings are carried forward below.
+- **w214** (supervision#r149@0.29, supervision#r150@0.29, supervision#r151@0.29, supervision#r152@0.29, supervision#r153@0.29, green): the commits from `13faa004` (ready -> claimed) to `9c34d167` (claimed -> done). Its one commit of its own is `2b4cbe78`. That commit touches:
   - agents/initiative-round.md
   - features/supervision.feature (the Retires removal)
   - scripts/supervise_brief.py

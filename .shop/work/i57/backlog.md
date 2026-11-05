@@ -31,7 +31,7 @@ The drafts of this proposal are in .shop/work/i57/runs/i57/1-integrate/drafts/ro
   Line: [backlog#r3] (as in Q3).
   Readings: (a) Capability- and glossary-proposals both, recommended: '...draft no request, no capability-proposal and no glossary-proposal from it.' (b) Only capability-proposals.
 - Q6 (migration-tools r36 against r24 and r28, which say the hook tells nothing when there is no pending step, no open initiative, or no .shop/):
-  Lines: [migration-tools#r35] **When** a session starts, the plugin's SessionStart hook shall give the session no item of the backlog. / [migration-tools#r36] **When** a session starts, the plugin's SessionStart hook shall give the session each rule of the log of temporary rules.
+  Lines: [migration-tools#r35@0.29] **When** a session starts, the plugin's SessionStart hook shall give the session no item of the backlog. / [migration-tools#r36@0.29] **When** a session starts, the plugin's SessionStart hook shall give the session each rule of the log of temporary rules.
   Readings: (a) r36 wins, recommended: r24 is retired and replaced by new r37 adding 'and whose log of temporary rules holds no rule' (r28 likewise). (b) r24/r28 win: r36 is restricted to repositories with a pending step or an open initiative.
 - Q7 (backlog r7): 'the person rules' is close to the avoided 'ruling' (design-decision/answers-not-rulings).
   Line: [backlog#r7] **When** the person rules that a rule of the log of temporary rules moves to the backlog, the session shall move it from the log of temporary rules to the backlog.

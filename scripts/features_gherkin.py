@@ -121,11 +121,6 @@ class Feature:
         step = self.first_step(sc)
         return [] if step is None else [s for _, s in self.content(step, sc.end)]
 
-    def background_steps(self):
-        if not self.background:
-            return []
-        return [s for _, s in self.content(*self.background)]
-
 
 def load(directory):
     found = []
@@ -139,36 +134,6 @@ def load(directory):
                     except Refused as why:
                         raise Refused("%s: %s" % (path, why))
     return found
-
-
-def locate(files, title, args=None):
-    only = getattr(args, "file", None)
-    if only:
-        return locate_in(files, title, only, args.dir)
-    hits = [(p, f, sc) for p, f in files for sc in f.scenarios if sc.title == title]
-    if not hits:
-        raise Refused("no scenario titled %r" % title)
-    if len(hits) > 1:
-        raise Refused("title %r is in several scenarios: %s" % (
-            title, ", ".join(sorted({p for p, _, _ in hits}))))
-    return hits[0]
-
-
-def locate_in(files, title, only, directory):
-    """The one scenario titled `title` in the file `only`, a file under `directory`."""
-    root = os.path.realpath(directory)
-    target = os.path.realpath(only)
-    if os.path.commonpath([root, target]) != root:
-        raise Refused("%s is outside %s" % (only, directory))
-    for path, f in files:
-        if os.path.realpath(path) == target:
-            hits = [sc for sc in f.scenarios if sc.title == title]
-            if len(hits) > 1:
-                raise Refused("%s has the title %r twice" % (only, title))
-            if hits:
-                return path, f, hits[0]
-            break
-    raise Refused("%s does not have the title %r" % (only, title))
 
 
 def natural(tag):

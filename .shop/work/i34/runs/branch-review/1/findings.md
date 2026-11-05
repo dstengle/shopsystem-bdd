@@ -5,7 +5,7 @@
 ## Range and work-items
 
 - **Range:** `c7f6d2f7..86a8c33f` on `i25-review-findings-to-implementation`: 46 commits.
-- **i34's one work-item:** w195 (`supervision#r122`), green. Its commits lie between `23d63b30 work: w195 ready -> claimed` and `e1065200 work: w195 claimed -> done`. Leaving out `work run`'s `work:` commits, that is one commit:
+- **i34's one work-item:** w195 (`supervision#r122@0.29`), green. Its commits lie between `23d63b30 work: w195 ready -> claimed` and `e1065200 work: w195 claimed -> done`. Leaving out `work run`'s `work:` commits, that is one commit:
   - `f682b013`: `scripts/work_items.py` +21/-2, `tests/scenarios/supervision_proposal_steps.py` +15, `tests/scenarios/supervision_tests_steps.py` +11/-1. All three are in the fileset.
 - **i34's commits outside w195** are `work run`'s own rounds:
   - `c7f6d2f7`, `c3b67a4a`, `96aab65d`, the integrate merge `c3ece9ea`

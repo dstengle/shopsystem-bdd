@@ -5,8 +5,8 @@ part_of: initiative/i22
 status: formulated
 date: 2026-10-23
 argues: [work-queue]
-adds: [work-queue#r13-r14, term/answer]
-changes: [work-queue#r9, term/status]
+adds: [work-queue#r13@0.29, work-queue#r14@0.29, term/answer]
+changes: [work-queue#r9@0.29, term/status]
 removes: [term/ruling]
 ---
 

@@ -1,4 +1,4 @@
-# Review of w169 (spec-integration#r43, round-ids-avoided)
+# Review of w169 (spec-integration#r43@0.29, round-ids-avoided)
 
 Verdict: DONE. No Critical finding, none triaged fix now. One Minor observation.
 
@@ -20,8 +20,8 @@ The report's `## Tests changed under an allowance` says "none", and the commits 
 
 ## Cannot verify
 
-- spec-integration#r43 is a guarantee (design-decision/workflow-capabilities-are-guarantees), so no scenario covers it. Whether a real integrate round now numbers above the ids it is given can only be judged by `measure` on a real batch.
-- The label "Ids drafted elsewhere" appears nowhere under `scripts/`, `tests/` or `features/` (grep). The brief that gives these ids is w170's (supervision#r102), so this work-item cannot show whether the round text's label matches what `integrate_lines` will write. The report flags this for w170.
+- spec-integration#r43@0.29 is a guarantee (design-decision/workflow-capabilities-are-guarantees), so no scenario covers it. Whether a real integrate round now numbers above the ids it is given can only be judged by `measure` on a real batch.
+- The label "Ids drafted elsewhere" appears nowhere under `scripts/`, `tests/` or `features/` (grep). The brief that gives these ids is w170's (supervision#r102@0.29), so this work-item cannot show whether the round text's label matches what `integrate_lines` will write. The report flags this for w170.
 
 ## Findings
 

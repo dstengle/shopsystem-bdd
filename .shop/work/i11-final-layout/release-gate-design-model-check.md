@@ -5,8 +5,8 @@ part_of: initiative/i11
 status: formulated
 date: 2026-10-21
 argues: [design-model-check]
-adds: [design-model-check#r106]
-changes: [design-model-check#r19, design-model-check#r27]
+adds: [design-model-check#r106@0.29]
+changes: [design-model-check#r19@0.29, design-model-check#r27@0.29]
 ---
 
 # design-model-check: withdrawn work-items, v_w4 and the decisions README

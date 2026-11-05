@@ -1,6 +1,6 @@
 # w131 research: model reads requests; an initiative of kind job is a file problem
 
-Accepted: design-model-check#r19, #r112, #r118. Retired: the deprecated r19 outline.
+Accepted: design-model-check#r19@0.29, #r112, #r118. Retired: the deprecated r19 outline.
 Search: no `tools map` exists, so `tests-of` and `untested` cannot answer; every test count below is `by search`.
 `tools refs` used for names. Probes: `.shop/scratch/w131-1-research/probe_w131*.py`, run `-n 0`.
 

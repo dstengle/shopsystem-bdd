@@ -3,14 +3,14 @@
 **Verdict: DONE_WITH_CONCERNS.**
 - No finding is triaged fix now, and none is Critical.
 - No code, test, feature or spec file has changed since branch review 2 (`5d72991d`). The commits since then are records, a request and one hand edit of another initiative's status.
-- The status is DONE_WITH_CONCERNS for one reason: the same two checks as in reviews 1 and 2 still cannot be verified (see Cannot verify). Under review#r31 those stay out of `questions`, so `questions` is empty.
+- The status is DONE_WITH_CONCERNS for one reason: the same two checks as in reviews 1 and 2 still cannot be verified (see Cannot verify). Under review#r31@0.29 those stay out of `questions`, so `questions` is empty.
 - How the loop will read this: r75 counts only `DONE` as "nothing to fix now". So i32 will again not be set done from this result. That is the gap q10's line 4 names (accepted 2026-10-25, not yet delivered). This review does not route around it by claiming checks it did not verify.
 
 ## Range and work-items
 
 - **Range:** `d3d3839d..935c2ee0`.
-- **w189** (review#r31): `ee81efd0`, between `6fa7dc00` (claimed) and `72e77945` (done). It changes `agents/bdd-branch-reviewer.md:74,76`.
-- **w190** (supervision#r118, r119):
+- **w189** (review#r31@0.29): `ee81efd0`, between `6fa7dc00` (claimed) and `72e77945` (done). It changes `agents/bdd-branch-reviewer.md:74,76`.
+- **w190** (supervision#r118@0.29, r119):
   - `6622133a`: steps;
   - `31c86e3c`: `scripts/supervise_answers.py` and `scripts/workqueue_answer.py`.
 
@@ -69,7 +69,7 @@ Each implementer report gives `## Tests changed under an allowance` `none`: w189
 
 ## Cannot verify
 
-- **review#r31 on a real batch.** w189's plan names `measure` of a later initiative as the check, and none exists yet. I verified the agent text (`agents/bdd-branch-reviewer.md:74,76`). This review also follows it: `questions` is empty while the status is DONE_WITH_CONCERNS.
+- **review#r31@0.29 on a real batch.** w189's plan names `measure` of a later initiative as the check, and none exists yet. I verified the agent text (`agents/bdd-branch-reviewer.md:74,76`). This review also follows it: `questions` is empty while the status is DONE_WITH_CONCERNS.
 - **That a real `delegation-answerer` session gives `verdict`.**
   - `agents/delegation-answerer.md` still does not mention `verdict` (0 matches). Only the brief's sentence at `scripts/supervise_answers.py:17` asks for it.
   - The scenarios use a stand-in.

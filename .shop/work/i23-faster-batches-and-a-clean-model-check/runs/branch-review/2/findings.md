@@ -10,19 +10,19 @@ Review 1 covered `1ad6281..1620d96` (runs/branch-review/1/findings.md). I re-ran
 
 | work-item | status | commits (between `ready -> claimed` and `claimed -> done`) | accepts |
 |---|---|---|---|
-| w107 | green | 753c5a6 | analysis-tools#r7 |
-| w108 | green | e00780e | migration-tools#r4 r9 r30 r31 |
-| w109 | green | 4232bc6 | supervision#r1 r20 r59-r63 |
-| w113 | green | a3cb90e | work-queue#r15 |
-| w114 | green | 8f76e50 | analysis-tools#r58 |
-| w115 | green | 4ebe93b | batch-measurement#r47 r57-r59 |
-| w116 | green | 495a420 | design-model-check#r27 |
-| w117 | green | aaeea80 | design-model-check#r106 |
-| w118 | green | 8a32a57 | design-model-check#r111 |
-| w119 (fix of review 1 F1) | green | fd035f0; and work run's 27b455b (`drafted -> researched`), which carries G1 | supervision#r63 |
-| w120 (fix of review 1 F2) | green | edad3b6 | work-queue#r15 |
+| w107 | green | 753c5a6 | analysis-tools#r7@0.29 |
+| w108 | green | e00780e | migration-tools#r4@0.29 r9 r30 r31 |
+| w109 | green | 4232bc6 | supervision#r1@0.29 r20 r59-r63 |
+| w113 | green | a3cb90e | work-queue#r15@0.29 |
+| w114 | green | 8f76e50 | analysis-tools#r58@0.29 |
+| w115 | green | 4ebe93b | batch-measurement#r47@0.29 r57-r59 |
+| w116 | green | 495a420 | design-model-check#r27@0.29 |
+| w117 | green | aaeea80 | design-model-check#r106@0.29 |
+| w118 | green | 8a32a57 | design-model-check#r111@0.29 |
+| w119 (fix of review 1 F1) | green | fd035f0; and work run's 27b455b (`drafted -> researched`), which carries G1 | supervision#r63@0.29 |
+| w120 (fix of review 1 F2) | green | edad3b6 | work-queue#r15@0.29 |
 | w110 | withdrawn | 5d88909, aecf1e7, 2e956ab (w115 accepts the same ids) | batch-measurement |
-| w111 | withdrawn | none inside work run; c8eb828 and 6559731 were delivered outside it (review 1 F4, still open) | delivery#r17 r18 |
+| w111 | withdrawn | none inside work run; c8eb828 and 6559731 were delivered outside it (review 1 F4, still open) | delivery#r17@0.29 r18 |
 | w101-w106, w112 | withdrawn | none | |
 
 New commits since review 1 that belong to no work-item:

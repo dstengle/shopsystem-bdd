@@ -1,12 +1,12 @@
 # Branch review of i54
 
-**Verdict: DONE_WITH_CONCERNS.** i54's own work, w231 (supervision#r187), is clean. It adds only step definitions and one import, and nothing in it is fix now. The range `Base..HEAD` is on `main`, so it also holds the work of fourteen other initiatives (i45, i47 to i53, i55 to i60). In that part there is one Critical finding, carried from i51 (w230 removed the r162 outline with no `## Retires` entry). There is also one Important finding no review has raised: r209 and r210, and w230's code, contradict design-decision 0073, which supervision rests on. Neither is triaged fix now, so `questions` is empty. Both go to the person through this file and the status.
+**Verdict: DONE_WITH_CONCERNS.** i54's own work, w231 (supervision#r187@0.29), is clean. It adds only step definitions and one import, and nothing in it is fix now. The range `Base..HEAD` is on `main`, so it also holds the work of fourteen other initiatives (i45, i47 to i53, i55 to i60). In that part there is one Critical finding, carried from i51 (w230 removed the r162 outline with no `## Retires` entry). There is also one Important finding no review has raised: r209 and r210, and w230's code, contradict design-decision 0073, which supervision rests on. Neither is triaged fix now, so `questions` is empty. Both go to the person through this file and the status.
 
 ## Range
 
 - `a2a53b36c02b74d046b7a490d802403f3f1828a9..eb1a30ac52528d23385846ad51c1947066590847` (branch `main`), 331 commits.
 - i54's work-items:
-  - w231 (`green`, under supervision, accepts supervision#r187). Its commits: `6e55ddd3` (added), `82832c5e`, `56f6efb6`, `f5f6671b`, `156d2b2b` (transitions), `afc4aa72` (steps), `3cc54654`, `eb1a30ac` (done, then green).
+  - w231 (`green`, under supervision, accepts supervision#r187@0.29). Its commits: `6e55ddd3` (added), `82832c5e`, `56f6efb6`, `f5f6671b`, `156d2b2b` (transitions), `afc4aa72` (steps), `3cc54654`, `eb1a30ac` (done, then green).
 - i54's capability-proposals:
   - `i54-supervision`: `formulated`.
   - `i54-work-queue`: **`awaiting-answer`**. Its second question, "Are the lines of work-queue approved as drafted?", has no answer. q20's lines 1 and 2 (work show of a request, work list without requests) are not delivered, so under work-queue r47 the initiative stays `started`. This review covers the delivered part only.

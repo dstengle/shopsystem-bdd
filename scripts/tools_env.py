@@ -4,6 +4,8 @@ import os
 import subprocess
 import sys
 
+import tools_grammar
+
 # name, pip package, what it is for, what the workflow does without it
 TOOLS = (
     ("coverage", "coverage", "which tests execute a function, and which code no test executes",
@@ -20,7 +22,7 @@ TOOLS = (
      "reviewers read the imports against CLAUDE.md"),
     ("hypothesis", "hypothesis", "the project's invariants as property tests", "invariants are probed by hand in review"),
 )
-RUFF_PIN = "0.17.0"  # the one version of ruff `install` puts in
+PINS = {"ruff": "0.17.0"}  # the one version of each of these `install` puts in
 VERSIONS = ("import json, sys\nfrom importlib import metadata\nout = {}\n"
             "for name in sys.argv[1:]:\n    try:\n        out[name] = metadata.version(name)\n"
             "    except metadata.PackageNotFoundError:\n        out[name] = None\n"
@@ -68,18 +70,35 @@ def probed(args):
 
 def cmd_probe(args):
     python, why, found = probed(args)
+    grammar, binary = tools_grammar.probed()
     missing = [name for name, package, _, _ in TOOLS if not found[package]]
-    if args.log:
+    missing += [name for name, version in grammar.items() if version is None]
+    if getattr(args, "json", False):
+        print(json.dumps({"python": python, "source": why, "grammar": grammar,
+                          "tools": {name: found[package] for name, package, _, _ in TOOLS}}))
+    elif args.log:
         print("Probe: tools -> " + ", ".join(
             "%s %s" % (name, found[package] or "missing") for name, package, _, _ in TOOLS))
     else:
         for name, package, what, _ in TOOLS:
             print("%s %s" % (name, found[package]) if found[package] else "%s missing: %s" % (name, what))
         print("python: %s (%s)" % (python, why))
+        print("\n".join(tools_grammar.probe_lines(grammar, binary)))
     return 1 if missing else 0
 
 
 def cmd_install(args):
+    """The analysis tools into the project's interpreter, then the grammar tools; exit 1 when either fails."""
+    analysis = install_analysis(args)
+    try:
+        tools_grammar.install()
+    except tools_grammar.Refused as why:
+        print("the grammar tools are not installed: %s" % why)
+        return 1
+    return analysis
+
+
+def install_analysis(args):
     python, why, found = probed(args)
     missing = [tool for tool in TOOLS if not found[tool[1]]]
     if not missing:
@@ -91,7 +110,7 @@ def cmd_install(args):
                   for tool in missing}
     else:
         for name, package, _, _ in missing:
-            requirement = "%s==%s" % (package, RUFF_PIN) if name == "ruff" else package
+            requirement = "%s==%s" % (package, PINS[name]) if name in PINS else package
             command = [python, "-m", "pip", "install", requirement]
             done = subprocess.run(command, capture_output=True, text=True)
             if done.returncode:

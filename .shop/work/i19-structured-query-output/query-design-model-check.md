@@ -5,8 +5,8 @@ part_of: initiative/i19
 status: formulated
 date: 2026-10-22
 argues: [design-model-check]
-adds: [design-model-check#r108-r109]
-changes: [design-model-check#r17]
+adds: [design-model-check#r108@0.29, design-model-check#r109@0.29]
+changes: [design-model-check#r17@0.29]
 source: [design-decision/query-commands-answer-in-their-output]
 ---
 

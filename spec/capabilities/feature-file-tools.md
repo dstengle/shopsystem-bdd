@@ -1,84 +1,362 @@
 ---
 id: capability/missingmass.io/shopsystem/shopsystem-bdd/feature-file-tools
 title: Feature file tools
-narrator: a session editing feature files
+narrator: a session reading or generating feature files
 group: service
-rests_on: [design-decision/plugin-takes-the-dependencies-it-needs, design-decision/held-scenarios, design-decision/plugin-scenarios-run-as-pytest-bdd, design-decision/query-commands-answer-in-their-output]
-retired: [r3, r6, r8, r9, r10, r11, r15, r18, r20, r22, r27, r30, r31, r32, r33, r34, r36, r37, r38, r39, r40, r41, r42, r43, r44, r45, r47, r48, r49, r50, r53, r54, r55, r59]
+language: codified-1
+rests_on: [design-decision/plugin-takes-the-dependencies-it-needs, design-decision/plugin-scenarios-run-as-pytest-bdd, design-decision/query-commands-answer-in-their-output]
+retired: []
 ---
 
 # Feature file tools
 
 ## Purpose
-`scripts/features` reads and edits Gherkin feature files without the test runner: it counts and lists
-scenarios by tag or title, sets a scenario's requirement tag, takes a scenario from one file to another and verifies
-it arrived unchanged, deprecates and retires scenarios kept while they still pass, verifies that every scenario has exactly one
-test binding it and rewrites the titles test modules bind. It is not a Gherkin runner and does not run any
-test; it edits only the feature files, test modules and directory it is pointed at.
+`scripts/features` reads Gherkin feature files without the test runner: it counts and lists scenarios by tag or
+title, lists the deprecated scenarios kept from before the conversion, and verifies that every scenario has exactly
+one test binding it. It writes each codified service capability's feature file from its requirement groups
+(`generate`), and checks that every step of a generated feature has a handler (`vocab`). It is not a Gherkin runner
+and runs no test; it edits no feature file by hand, since the generator owns them.
+
+## Terms
+- **feature file** (kind): a `*.feature` file under the directory `--dir` names (default `features`), read line by
+  line.
+- **test module** (kind): a Python file under the directory `--tests` names (default `tests`) that binds scenarios
+  with `scenario(<feature>, "<title>")` or `scenarios(<path>, ...)` calls.
+- **nested** (condition of feature file): a feature file with a docstring whose text has a tag and a `Scenario:` line.
+- **outlined** (condition of feature file): a feature file with a Scenario Outline of several Examples tables.
+- **sectioned** (condition of feature file): a feature file with a `Rule:` block.
+- **deprecating** (condition of feature file): a feature file with a scenario tagged `@deprecated` and its replacement.
+- **undeprecated** (condition of feature file): a feature file with no scenario tagged `@deprecated`.
+- **resolving** (condition of test module): a test module each of whose bindings names a scenario a feature file has.
+- **dangling** (condition of test module): a test module with a binding whose title no feature file has.
+- **sweeping** (condition of test module): a test module that binds every scenario of a feature file with one `scenarios(...)` call.
+- **partial** (condition of test module): a test module that leaves a scenario of the feature file it binds unbound.
 
 ## Behaviour
-- [r1] The `features` script shall read every `*.feature` under `--dir` (default `features`), recursively, never taking text inside a docstring as a scenario, keyword or tag.
-- [r52] **Where** `--file <path>` is given, the `features` script shall look for the scenario's title in that file only, whatever the command.
-- [r46] **If** `features` cannot do what it was asked, then `features` shall exit with an error, say why on stderr, and change nothing.
-- [r2] **If** a feature file contains a `Rule:` block outside a docstring, or an edit would leave one, then `features` shall refuse, naming the file, and leave every file as it was.
-- [r35] **If** the title given to `features tag`, `move`, `deprecate` or `retire` is in no file, is in several without `--file`, is not exactly once in the file `--file` names, or `--file` or `--to` names a file outside `--dir`, then `features` shall refuse, naming each file that has the title, and change no file.
 
-### Reading
-- [r4] **When** `features count --by-tag` is run, `features` shall print the number of scenarios with each tag and a total of every scenario, those with no tag included, counting a Scenario Outline once per Examples row and giving each scenario its feature's tags and its Examples table's tags.
-- [r5] **When** `features list --tag <tag>` or `--title <text>` is run, `features` shall print the file and title of each scenario whose tags, its feature's and its Examples' included, include that tag, or whose title contains the text.
-- [r7] **Where** `--json` is not given, **when** `features list` matches no scenario, `features` shall print nothing and exit successfully.
-- [r60] **Where** `--json` is given, `features list` shall print its result, the scenarios with the file and title of each, as one JSON object.
+### [g1] `features count --by-tag` counts every scenario, and a docstring's text is none
+Restates: r1@0.29, r4@0.29.
+- [r1] While the feature file `features/notes.feature` is nested, when the person runs `features count --by-tag`,
+  `features` shall print the number of scenarios.
 
-### Editing
-- [r51] **When** `features tag <title> r<n>` is run, `features` shall make `@r<n>` the scenario's one requirement tag, in place of any `@r<m>` tag it has, and leave its other tags and every other line unchanged.
-- [r12] **When** `features move <title> --to <file>` is run, `features` shall take the scenario's block unchanged from its file to the end of the destination file.
-- [r13] **Where** `--inline-background` is given, **when** `features move` is run, `features` shall put the source Background's steps before the relocated scenario's first step.
-- [r14] **Where** `--keep-feature-tags` is given, **when** `features move` is run, `features` shall put the source's feature tags that the destination's feature tags lack on a tag line of their own immediately above the relocated scenario's `Scenario:` line, after any tag line the scenario already has, joined to none.
-- [r19] **When** `features deprecate <title>` is run with `--for <new title>` or `--for-removal`, `features` shall give the scenario the tag `@deprecated`, " (deprecated)" at the end of its title and a description line `Deprecated for: <new title>` or `Deprecated for: removal`, whether or not the replacement exists yet, and change nothing else in it.
-- [r21] **When** `features deprecated` is run, `features` shall list each deprecated scenario with what it is deprecated for and, for a replacement, the file and `@r<n>` tag of the scenario with that title, saying on its line when it has no `Deprecated for:` line, no scenario has the replacement's title, or the replacement has no `@r<n>` tag.
-- [r61] **Where** `--json` is given, `features deprecated` shall print its result, each deprecated scenario with what it is deprecated for and its replacement, as one JSON object.
-- [r23] **When** `features retire <title>` is run on a scenario tagged `@deprecated`, `features` shall remove that scenario's block and leave the rest of the file as it was.
-- [r24] **If** `features retire` is given a scenario not tagged `@deprecated`, then `features` shall refuse because it is not deprecated, and leave the file as it was.
+### [g2] `features count --by-tag` counts a Scenario Outline once for each Examples row
+Restates: r4@0.29.
+- [r2] While the feature file `features/outline.feature` is outlined, when the person runs `features count --by-tag`,
+  `features` shall print the number of scenarios.
 
-### Verifying `features move` and bindings
-- [r16] **When** `features verify-moved --from <dir>` finds every scenario in the two trees alike by title in its effective tags, description, and Background and own steps, `features` shall print how many scenarios match and exit successfully.
-- [r17] **If** `features verify-moved` finds a scenario whose effective tags, description or steps differ between the two trees, a title used by more than one scenario in either tree, or a title in one tree and not the other, then `features verify-moved` shall name each, as changed (with what changed), duplicate, missing or added, and exit with an error.
-- [r57] `features bindings` shall read a `scenarios(<path>, ...)` call under `--tests` as binding every scenario of each feature file it names, and of every feature file under a directory it names.
-- [r25] **If** `features bindings` finds a `scenario(<feature>, "<title>")` call under `--tests` (default `tests`) whose title no feature file has, or not the feature it names, then `features` shall print the module, line, title and feature of each, and exit with an error.
-- [r26] **When** `features bindings` finds every binding names a scenario, `features` shall say so and exit successfully.
-- [r58] **Where** `--unbound` is given, **if** a scenario in the feature files named after `--unbound` (with none named, every feature file under `--dir`) is bound by no `scenario(...)` or `scenarios(...)` call, or by more than one, then `features bindings` shall print its file and title, with the module and line of each call, and exit with an error.
-- [r62] **Where** `--json` is given, `features bindings` shall print its result, the bindings it found wrong or, with `--unbound`, the scenarios bound by no test or by more than one, as one JSON object.
-- [r28] **When** `features rebind <old> <new>` is run, `features` shall rewrite `<old>` to `<new>` in each binding call that names it and change nothing else in the module.
-- [r56] **Where** `--file <feature path>` is given, **when** `features rebind` is run, `features` shall rewrite only the bindings whose feature argument names that file, the feature argument resolved against `--dir`.
-- [r29] **If** the new title given to `features rebind` is no scenario's or several feature files', or a binding call names the old title in a string written over several lines, then `features` shall refuse and change no test module.
+### [g3] a docstring's text is no tag
+Restates: r1@0.29, r7@0.29.
+- [r3] While the feature file `features/notes.feature` is nested, when the person runs `features list --tag slice-9`,
+  `features` shall exit successfully, and `features` shall not print the feature file `features/notes.feature`.
+
+### [g4] every feature file under the directory is read, however deep
+Restates: r1@0.29.
+- [r4] When the person runs `features list --title Deep`, `features` shall print the feature file
+  `features/sub/deep.feature`.
+
+```given
+the feature file `features/sub/deep.feature` holds:
+  Feature: Deep
+    Scenario: Deep down
+      Given a step
+```
+
+### [g5] `features list --tag` prints each scenario whose tags, its feature's included, have the tag
+Restates: r5@0.29.
+- [r5] When the person runs `features list --tag cart`, `features` shall print the feature file
+  `features/cart.feature` and "Adding".
+
+```given
+the feature file `features/cart.feature` holds:
+  @cart
+  Feature: Cart
+    Scenario: Adding
+      Given a step
+```
+
+### [g6] `features list --title` prints each scenario whose title holds the text
+Restates: r5@0.29.
+- [r6] When the person runs `features list --title Add`, `features` shall print the feature file
+  `features/cart.feature` and "Adding".
+
+```given
+the feature file `features/cart.feature` holds:
+  Feature: Cart
+    Scenario: Adding
+      Given a step
+    Scenario: Paying
+      Given a step
+```
+
+### [g7] `features list --json` prints the scenarios it found as one JSON object
+Restates: r60@0.29.
+- [r7] Where `--json` is given, when the person runs `features list --title Add`, `features` shall print the feature
+  file `features/cart.feature` and "Adding".
+
+```given
+the feature file `features/cart.feature` holds:
+  Feature: Cart
+    Scenario: Adding
+      Given a step
+```
+
+### [g8] a feature file with a `Rule:` block is refused
+Restates: r2@0.29, r46@0.29.
+- [r8] While the feature file `features/rule.feature` is sectioned, if the person runs `features count --by-tag`,
+  then `features` shall exit with an error naming the feature file `features/rule.feature` and change nothing.
+
+### [g9] `features deprecated` prints each deprecated scenario with what replaces it
+Restates: r21@0.29.
+- [r9] While the feature file `features/shelf.feature` is deprecating, when the person runs `features deprecated`,
+  `features` shall print "Lending" and "@r4".
+
+```given
+the feature file `features/shelf.feature` holds:
+  Feature: Shelf
+    @deprecated
+    Scenario: Lending (deprecated)
+      Deprecated for: Lending a book
+      Given a step
+    @r4
+    Scenario: Lending a book
+      Given a step
+```
+
+### [g10] `features deprecated` says when nothing is deprecated
+Restates: r21@0.29.
+- [r10] While the feature file `features/shelf.feature` is undeprecated, when the person runs `features deprecated`,
+  `features` shall print "none deprecated".
+
+```given
+the feature file `features/shelf.feature` holds:
+  Feature: Shelf
+    Scenario: Lending
+      Given a step
+```
+
+### [g11] `features deprecated --json` prints the deprecated scenarios as one JSON object
+Restates: r61@0.29.
+- [r11] Where `--json` is given, when the person runs `features deprecated`, `features` shall print "Lending".
+
+```given
+the feature file `features/shelf.feature` holds:
+  Feature: Shelf
+    @deprecated
+    Scenario: Lending (deprecated)
+      Deprecated for: removal
+      Given a step
+```
+
+### [g12] `features bindings` says so when every binding names a scenario
+Restates: r26@0.29.
+- [r12] While the test module `tests/test_cart.py` is resolving, when the person runs `features bindings`,
+  `features` shall print "every binding names a scenario" and exit successfully.
+
+```given
+the feature file `features/cart.feature` holds:
+  Feature: Cart
+    Scenario: Adding
+      Given a step
+the test module `tests/test_cart.py` holds:
+  from pytest_bdd import scenario
+  @scenario("cart.feature", "Adding")
+  def test_adding():
+      pass
+```
+
+### [g13] `features bindings` names a binding whose title no feature file has
+Restates: r25@0.29.
+- [r13] While the test module `tests/test_cart.py` is dangling, if the person runs `features bindings`, then
+  `features` shall exit with an error naming the test module `tests/test_cart.py` and change nothing.
+
+```given
+the feature file `features/cart.feature` holds:
+  Feature: Cart
+    Scenario: Adding
+      Given a step
+the test module `tests/test_cart.py` holds:
+  from pytest_bdd import scenario
+  @scenario("cart.feature", "Paying")
+  def test_paying():
+      pass
+```
+
+### [g14] a `scenarios(...)` call binds every scenario of the feature file it names
+Restates: r57@0.29.
+- [r14] While the test module `tests/test_cart.py` is sweeping, when the person runs `features bindings --unbound`,
+  `features` shall exit successfully.
+
+```given
+the feature file `features/cart.feature` holds:
+  Feature: Cart
+    Scenario: Adding
+      Given a step
+    Scenario: Paying
+      Given a step
+the test module `tests/test_cart.py` holds:
+  from pytest_bdd import scenarios
+  scenarios("cart.feature")
+```
+
+### [g15] `features bindings --unbound` names a scenario no test binds
+Restates: r58@0.29.
+- [r15] While the test module `tests/test_cart.py` is partial, if the person runs `features bindings --unbound`, then
+  `features` shall exit with an error naming "Paying" and change nothing.
+
+```given
+the feature file `features/cart.feature` holds:
+  Feature: Cart
+    Scenario: Adding
+      Given a step
+    Scenario: Paying
+      Given a step
+the test module `tests/test_cart.py` holds:
+  from pytest_bdd import scenario
+  @scenario("cart.feature", "Adding")
+  def test_adding():
+      pass
+```
+
+### [g16] `features bindings --json` prints what it found wrong as one JSON object
+Restates: r62@0.29.
+- [r16] Where `--json` is given, when the person runs `features bindings --unbound`, `features` shall print "Paying".
+
+```given
+the feature file `features/cart.feature` holds:
+  Feature: Cart
+    Scenario: Adding
+      Given a step
+    Scenario: Paying
+      Given a step
+the test module `tests/test_cart.py` holds:
+  from pytest_bdd import scenario
+  @scenario("cart.feature", "Adding")
+  def test_adding():
+      pass
+```
+
+### [g17] `features generate` writes the feature file of a codified service capability
+- [r17] When the person runs `features generate`, `features` shall print the feature file `features/shelf.feature`
+  and exit successfully.
+
+```given
+the capability `shelf` holds:
+  ---
+  id: capability/ex.com/prod/ctx/shelf
+  title: shelf
+  narrator: a client
+  group: service
+  language: codified-1
+  rests_on: []
+  retired: []
+  ---
+  # shelf
+  ## Purpose
+  Something.
+  ## Terms
+  - **book** (kind): a thing.
+  ## Behaviour
+  ## Not yet
+  ## Dropped
+```
+
+### [g18] `features generate --check` names a feature file that differs from its capability
+- [r18] Where `--check` is given, if the person runs `features generate`, then `features` shall exit with an error
+  naming the feature file `features/shelf.feature` and change nothing.
+
+```given
+the capability `shelf` holds:
+  ---
+  id: capability/ex.com/prod/ctx/shelf
+  title: shelf
+  narrator: a client
+  group: service
+  language: codified-1
+  rests_on: []
+  retired: []
+  ---
+  # shelf
+  ## Purpose
+  Something.
+  ## Terms
+  - **book** (kind): a thing.
+  ## Behaviour
+  ## Not yet
+  ## Dropped
+the feature file `features/shelf.feature` holds:
+  Feature: Shelf
+    Scenario: Edited by hand
+      Given a step
+```
+
+### [g19] `features vocab --check` names a step with no handler
+- [r19] If the person runs `features vocab --check`, then `features` shall exit with an error naming the feature file
+  `features/shelf.feature` and change nothing.
+
+```given
+the capability `shelf` holds:
+  ---
+  id: capability/ex.com/prod/ctx/shelf
+  title: shelf
+  narrator: a client
+  group: service
+  language: codified-1
+  rests_on: []
+  retired: []
+  ---
+  # shelf
+  ## Purpose
+  Something.
+  ## Terms
+  - **book** (kind): a thing.
+  ## Behaviour
+  ## Not yet
+  ## Dropped
+the feature file `features/shelf.feature` holds:
+  # generated from spec/capabilities/shelf.md by features generate; do not edit
+  Feature: shelf
+    Narrator: a client
+    @g1 @r1
+    Scenario: Lending
+      When the person lends a book
+```
 
 ## Implementation, may change
 - Gherkin is parsed line by line, not by a Gherkin library. A docstring opens and closes on `"""` or three
-  backticks. A scenario's block is its tag lines, its `Scenario:` line and everything up to the next
-  scenario's tag lines; `move` drops the block's trailing blank lines.
-- An edit's output is verified for nothing but a `Rule:` block outside a docstring.
-- `tag` writes `@r<n>` in place of the scenario's first `@r<m>` tag and removes any other, or adds it to the
-  scenario's last tag line when it has none; `deprecate` adds to the last
-  tag line; a new tag line takes the scenario's indentation. Background steps inlined by `move` take the
-  scenario's step indentation; kept feature tags take the `Scenario:` line's.
-- `verify-moved` compares lines stripped of indentation, blank lines and comments; a title only in `--from` is
-  missing, one only in the other tree is added.
-- `deprecate` writes the description line as `Deprecated for: <title>` or `Deprecated for: removal`, indented
-  like the scenario's first following line, and prints the scenario's file and new title.
-- `list --tag` takes the tag with its leading `@` or without.
-- `rebind` prints how many bindings it rebound, zero included, and names the module and line of a title written
-  over several lines; without `--file` it rewrites every binding of the old title.
-- Refusals under r46 include: a `tag` argument not written `r<n>` (exit 2, bad usage), a `move` destination that
-  does not exist or is the scenario's own file, `deprecate` on a scenario already tagged `@deprecated`, and a test
-  module under `--tests` that does not parse (named), for `bindings` and `rebind`.
-- `bindings` reads only a title written as a plain string in the call; a feature given as a name is looked up
-  among the module's own top-level assignments. A `scenario` or `scenarios` path names a feature file by its
-  base name, as it does today, or a directory by every feature file under it.
+  backticks. A scenario's block is its tag lines, its `Scenario:` line and everything up to the next scenario's tag
+  lines. A Scenario Outline counts once per Examples row, and each scenario takes its feature's tags and its Examples
+  table's tags.
+- `list --tag` takes the tag with its leading `@` or without; `list` matching nothing prints nothing and exits 0.
 - Output lines: `list` prints `<path>: <title>`; `deprecated` prints
   `<path>: <title> | for: <what> | <replacement's path> @r<n>` or `none deprecated`; `bindings` prints
   `<path>:<line>: no scenario titled "<title>" in <feature>`, and with `--unbound`
   `<feature path>: <title> | bound by no test` or `<feature path>: <title> | bound by <module>:<line>, <module>:<line>`.
-- Exit code: 0 success, 1 a verification failed or an edit was refused, 2 bad usage.
+- `bindings` reads only a title written as a plain string in the call; a feature given as a name is looked up among
+  the module's own top-level assignments. A `scenario` or `scenarios` path names a feature file by its base name, or
+  a directory by every feature file under it. A test module under `--tests` that does not parse is refused, named.
+- `bindings --unbound` takes feature files after it; with none, every feature file under `--dir`. A scenario bound by
+  more than one call is printed with each call's module and line.
+- `generate` and `vocab` are the GF conversion's design §13.4 and §14: `generate --check` with no names prints
+  `skipped <c>: not codified` for each service capability not yet codified; naming one exits 2; `--preview <file>`
+  prints a draft's feature and writes nothing. `vocab --check --tests <dir> [<feature>...]` loads `<dir>`'s
+  `world_*.py` and `*_handlers*.py` and names each step with no handler and each key two handlers claim.
+- Exit code: 0 success, 1 a check failed or a file was refused, 2 bad usage.
 
 ## Not yet
 - `Rule:` blocks are refused rather than parsed — trigger: a feature file needs a `Rule:`.
+
+## Dropped
+- r12@0.29: removed with `features move`: the generator owns the feature files (the GF conversion's design §15)
+- r13@0.29: removed with `features move`: the generator owns the feature files (the GF conversion's design §15)
+- r14@0.29: removed with `features move`: the generator owns the feature files (the GF conversion's design §15)
+- r16@0.29: removed with `features verify-moved`: the generator owns the feature files (the GF conversion's design §15)
+- r17@0.29: removed with `features verify-moved`: the generator owns the feature files (the GF conversion's design §15)
+- r19@0.29: removed with `features deprecate`: the generator owns the feature files (the GF conversion's design §15)
+- r23@0.29: removed with `features retire`: the generator owns the feature files (the GF conversion's design §15)
+- r24@0.29: removed with `features retire`: the generator owns the feature files (the GF conversion's design §15)
+- r28@0.29: removed with `features rebind`: the generator owns the feature files (the GF conversion's design §15)
+- r29@0.29: removed with `features rebind`: the generator owns the feature files (the GF conversion's design §15)
+- r35@0.29: the title lookup of `tag`, `move`, `deprecate` and `retire`, which are removed: the generator owns the feature files (the GF conversion's design §15)
+- r51@0.29: removed with `features tag`: the generator owns the feature files (the GF conversion's design §15)
+- r52@0.29: `--file` chose the file of a title for `tag`, `move`, `deprecate` and `retire`, which are removed: the generator owns the feature files (the GF conversion's design §15)
+- r56@0.29: removed with `features rebind`: the generator owns the feature files (the GF conversion's design §15)

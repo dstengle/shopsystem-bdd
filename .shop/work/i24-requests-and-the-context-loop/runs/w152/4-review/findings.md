@@ -1,12 +1,12 @@
 # Review of w152: DONE
 
-Verdict: no Critical finding and nothing to fix now. The commit adds one Given binding for supervision#r69's scenario, and that scenario passes. No production code, feature file or test was changed beyond that binding.
+Verdict: no Critical finding and nothing to fix now. The commit adds one Given binding for supervision#r69@0.29's scenario, and that scenario passes. No production code, feature file or test was changed beyond that binding.
 
 ## Commits reviewed
 
 The branch `work/w152` no longer exists. I took the commits between `f1a315f work: w152 ready -> claimed` and `6b7cdf6 work: w152 claimed -> done` on HEAD, leaving out work run's `work:` commits (01e8daa, b7bfe50, 1996a4d belong to w151 and w153):
 
-- `aedf564 Bind the gate round's single-question Given (supervision#r69)`: tests/scenarios/supervision_rounds_steps.py, +5.
+- `aedf564 Bind the gate round's single-question Given (supervision#r69@0.29)`: tests/scenarios/supervision_rounds_steps.py, +5.
 
 The implementer's result names `c5a7bb1`, which is a different hash. `git diff c5a7bb1 aedf564 -- tests/scenarios/supervision_rounds_steps.py` printed nothing: the content, author, date and message are the same. It is the same commit, re-applied when the branch was merged (see Finding 1).
 

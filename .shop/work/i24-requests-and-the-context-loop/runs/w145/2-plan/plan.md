@@ -1,8 +1,8 @@
-# Plan of w145: formulating-features without a small-change path (formulation#r14)
+# Plan of w145: formulating-features without a small-change path (formulation#r14@0.29)
 
 ## 1. What goes green
 
-- **formulation#r14**: "When a scenario uses a word its context's glossary avoids, `formulating-features` shall reword the scenario to its line in a round of the kind `formulate`, without a further gate."
+- **formulation#r14@0.29**: "When a scenario uses a word its context's glossary avoids, `formulating-features` shall reword the scenario to its line in a round of the kind `formulate`, without a further gate."
   - Scenarios: none. This is a guarantees work-item (formulation is `group: guarantees`, design-decision/workflow-capabilities-are-guarantees). There is no `features/formulation.feature`, and the `@r14` tags in `features/` belong to other capabilities (notes §1). The review judges the work, and `--work-item w145` exits successfully for a guarantees-only item once w125 is in (w125 is green).
   - Why it fails today (notes §3): `skills/formulating-features/SKILL.md` has the session reword such a scenario itself through "The Small-Change Path", with no round. It also keeps an "If the person is talking to you" section and a step-4 sentence that hands `v_t1` rows to "the session the person talks to". Under design-decision/the-context-runs-without-a-coordinator no such session exists, and nothing picks up those rows (notes §2: `work run` starts formulate rounds only for approved capability-proposals).
 - Deprecated scenarios retired: none. The work-item has no Retires section.
@@ -28,11 +28,11 @@ No Python file changes, and no test file changes (§4).
 ## 3. Decisions
 
 1. **The round that finds a `v_t1` row naming another capability's scenario rewords it itself.** After its own commit, the same `formulate` round dispatches one `feature-formulator` for each such capability, in a later round directory. The formulator gets the skill's template, and the change list is the named scenario reworded to its line for the avoided word. The round then verifies the porcelain and the coverage, splices it in, deprecates and rebinds an old scenario that passes (step 4), runs `features bindings` and `model check`, and commits with no gate.
-   - Rests on formulation#r14, which says the reword happens "in a round of the kind `formulate`, without a further gate".
+   - Rests on formulation#r14@0.29, which says the reword happens "in a round of the kind `formulate`, without a further gate".
    - Rests on design-decision/the-context-runs-without-a-coordinator: no session writes feature files, and its rule stands that a new scenario a fix needs is written by the `feature-formulator` in a `formulate` round.
    - Rests on design-decision/formulation-needs-no-second-approval.
    - The notes' reading A(ii) (leave the row in the reply for a person) is not taken. It would not reword the scenario, so r14 rules it out. Reading A(i) (`work run` starts a new formulate round for it) would need code that r14 does not ask for (notes §7). Either way the narrator sees the same thing: the scenario reworded and committed without a gate. So this choice is not the narrator's to make.
-2. **Rows of other capabilities found in the reword's own `model check` are not followed again in that round.** The reword commit is checked like any other, and only failures in scenarios it wrote block it (step 4's existing rule). This keeps a round from chasing rows without end. It rests on formulation#r14 and design-decision/controller-per-spec-round (one round, ending with it).
+2. **Rows of other capabilities found in the reword's own `model check` are not followed again in that round.** The reword commit is checked like any other, and only failures in scenarios it wrote block it (step 4's existing rule). This keeps a round from chasing rows without end. It rests on formulation#r14@0.29 and design-decision/controller-per-spec-round (one round, ending with it).
 3. **Leave the small-change references outside w145's file set as they are** (notes' reading B(ii)):
    - integrating-a-proposal's are w143's;
    - spec-consistency r6 changes only through integrating-a-proposal's gate (design-decision/the-context-runs-without-a-coordinator: no session writes spec);

@@ -9,7 +9,7 @@ Branch: none (a detached checkout)
 Work-item branch: work/w170
 Answers the person gave, each with the question it answers:
 - Question: Important, scripts/supervise_drafts.py:29: kept drafts are read from drafts/spec/capabilities/*.md, but integrate rounds keep them under drafts/round-<n>/spec/capabilities/, so r102 gives no ids on the real queue (i25's and i26's supervision r98 missed); the scenario's Given uses the same wrong layout
-  Answer: 2026-10-25: Accepted as it is under the person's delegation (2026-10-25): the finding is real; r102's scenario is reformulated with the kept drafts' real layout (drafts/round-<n>/spec/capabilities/) and a fix work-item accepting supervision#r102 delivers it, because a reviewer's answer cannot yet return a work-item to implementation (q2, i25).
+  Answer: 2026-10-25: Accepted as it is under the person's delegation (2026-10-25): the finding is real; r102's scenario is reformulated with the kept drafts' real layout (drafts/round-<n>/spec/capabilities/) and a fix work-item accepting supervision#r102@0.29 delivers it, because a reviewer's answer cannot yet return a work-item to implementation (q2, i25).
 
 Read (paths in your worktree):
 - .shop/work/i28/w170.md

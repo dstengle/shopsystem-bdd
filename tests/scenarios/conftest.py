@@ -1,4 +1,7 @@
-"""Fixtures every scenario step module shares."""
+"""Fixtures every scenario step module shares, and the step vocabulary (design §14.3): the step definitions of the
+generated features, the marks registered from the spec, the handlers imported by glob (`world_*.py`,
+`*_handlers*.py`) and the U3/U8 checks after each generated scenario, all from `vocab.py`. Frozen after layer 2 of
+the GF conversion: a capability adds handlers in `<capability>_handlers*.py`, never here."""
 import json
 import pathlib
 import subprocess
@@ -7,8 +10,11 @@ import textwrap
 
 import pytest
 
+from . import vocab
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "scripts"
+HERE = pathlib.Path(__file__).resolve().parent
 
 
 @pytest.fixture
@@ -24,21 +30,19 @@ def context():
 
 
 @pytest.fixture
-def run(repo):
+def run(repo, request):
     """Run one of the scripts (model, features, tools) with this Python; return the completed process.
 
     `run("model", "check", "--root", ...)`: the arguments go to the script as given; `cwd` defaults to the repository root.
+    In a generated scenario each run is recorded for the U3/U8 checks.
     """
-    def _run(script, *args, cwd=None, **kwargs):
-        cmd = [sys.executable, str(SCRIPTS / script), *map(str, args)]
-        return subprocess.run(cmd, capture_output=True, text=True, cwd=cwd or repo, **kwargs)
-    return _run
+    return vocab.runner(repo, request, SCRIPTS)
 
 
 def pytest_configure(config):
-    """The feature files' requirement tags (@r1 ...) are marks; register them."""
-    for number in range(1, 200):
-        config.addinivalue_line("markers", "r%d: scenario of requirement r%d" % (number, number))
+    """The scenarios' tags (@g1, @r1 ...) are marks: register every one the spec's capability files name."""
+    for mark in vocab.marks(ROOT):
+        config.addinivalue_line("markers", "%s: scenario of %s" % (mark, mark))
 
 
 # --- the repositories design-model-check's scenarios build ---------------------------------------------------
@@ -181,3 +185,7 @@ def old(repo):
     """migration-tools' repository on the old system (tests/scenarios/migration_old.py)."""
     from .migration_old import Old
     return Old(repo)
+
+
+# The step vocabulary: definitions for the generated features, the hooks, and the handlers under this directory.
+vocab.install(globals(), ROOT, HERE)

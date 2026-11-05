@@ -4,21 +4,21 @@
 
 Accepted: 18 scenarios in `features/migration-tools.feature`, 21 test ids. The research run shows 20 green and 1 red.
 
-- **migration-tools#r1**: green today.
+- **migration-tools#r1@0.29**: green today.
   - `migrate run` relocates decisions/ to spec/decisions/, work/ to .shop/work/ and each records/<x> to .shop/records/<x>, with git
   - `migrate run` relocates a file under records/ that is not text as it is
   - `migrate run` from a subdirectory relocates the repository's top-level directories
-- **migration-tools#r2**: green today.
+- **migration-tools#r2@0.29**: green today.
   - `migrate run` replaces a ledger entry with a decision file named by its heading, with its first paragraph, accepted, with its date and source
   - `migrate run` ends an entry's first paragraph at its date or source line, with or without a blank line before it
   - `migrate run` writes a first paragraph and a source that hold <what> so that model reads them as they are (outline, three rows)
   - `migrate run` puts an entry's whole text in its decision file's Decision, its first paragraph also being its summary
   - `migrate run` gives a decision file its entry's supersedes and revisit_when, and the entry it supersedes the status `superseded`
   - `migrate run` keeps both decisions an entry's supersedes names, each by its new id, and supersedes both
-- **migration-tools#r4**:
+- **migration-tools#r4@0.29**:
   - `migrate run` gives spec/index.md the id bounded-context/<path>: green today.
   - `migrate run` gives spec/index.md whose id is bounded-context/shop the id bounded-context/<path>: **red**. Its Given ("a repository on the old system whose spec/index.md gives the id {ident}", `tests/scenarios/migration_safety_steps.py`) writes `spec/index.md` but does not commit it. So migrate's uncommitted-tree refusal (r15) fires: exit 1, nothing written, and the Then reads the old id `bounded-context/shop`. The product's rewrite is right: probes P1–P4 pass on a committed tree, and probe U1 reproduces the refusal.
-- **migration-tools#r5**: green today.
+- **migration-tools#r5@0.29**: green today.
   - `migrate run` rewrites a repository-relative path, a relative Markdown link and a frontmatter id that name what it relocated or renamed
   - `migrate run` rewrites a frontmatter id and a supersedes that name a ledger entry it numbered
   - `migrate run` rewrites a decision file's by that names <old>, a path it relocated (outline, two rows)
@@ -36,8 +36,8 @@ This is the researcher's set, unchanged. The work-item's broader fileset (`scrip
 
 ## 3. Decisions
 
-- **D1: fix the test step, not the product.** The scenario's Given describes "a repository on the old system", meaning a committed starting tree. Migrate refusing an uncommitted tree is migration-tools#r15 itself, so the refusal is correct and the Given is what is wrong. This decision rests on migration-tools#r15 (refuse on uncommitted changes) and migration-tools#r4 (the id the narrator observes after a successful run). The narrator observes nothing new: the scenario's Then already states the outcome.
-- **D2: commit in the Given itself, not in the When.** This keeps the When step that all migration scenarios share unchanged. The r15 scenarios depend on the When leaving the tree as the Givens built it (migration-tools#r15).
+- **D1: fix the test step, not the product.** The scenario's Given describes "a repository on the old system", meaning a committed starting tree. Migrate refusing an uncommitted tree is migration-tools#r15@0.29 itself, so the refusal is correct and the Given is what is wrong. This decision rests on migration-tools#r15@0.29 (refuse on uncommitted changes) and migration-tools#r4@0.29 (the id the narrator observes after a successful run). The narrator observes nothing new: the scenario's Then already states the outcome.
+- **D2: commit in the Given itself, not in the When.** This keeps the When step that all migration scenarios share unchanged. The r15 scenarios depend on the When leaving the tree as the Givens built it (migration-tools#r15@0.29).
 
 ## 4. Tests the decisions break
 

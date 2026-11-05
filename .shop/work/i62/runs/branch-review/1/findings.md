@@ -10,7 +10,7 @@ Nothing is Critical. Every check has a run in the brief.
 ## Range reviewed
 
 - **Range:** `955ad466..0b5e8470` on `main`, the initiative branch.
-- **i62's work-item:** w245 (`under: supervision`, accepts supervision#r219, r220, r222), status green.
+- **i62's work-item:** w245 (`under: supervision`, accepts supervision#r219@0.29, r220, r222), status green.
 - **w245's commits:**
   - b274fa52: r222 rerun, first cut
   - 83e3b8ee: r219 and r220 bound; the question gives the second run

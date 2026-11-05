@@ -40,7 +40,7 @@
 | `features deprecated` | 5 scenarios, each "for: removal": r3 ("a worker's outcome DONE ..."), the r5 implementer outline, r16, r112 and r113. These are review 1's Finding 7, unchanged (Finding 8 below). None has a replacement whose work-item is green. |
 | `features bindings` | "every binding names a scenario" |
 | Dry run against real run, randomized | Not applicable. The only `--dry-run` in `scripts/` is `git push --dry-run` (`supervise_faults.py:71`, `supervise_review.py:41`), a check git provides before a push, not a mode of this system. |
-| `model check` (also run) | 12 violations, 13 warnings, as at review 1. Review 1's v3 on q8 / `supervision#r113` is still there (Finding 8). |
+| `model check` (also run) | 12 violations, 13 warnings, as at review 1. Review 1's v3 on q8 / `supervision#r113@0.29` is still there (Finding 8). |
 
 ## Removed and weakened tests
 
@@ -81,14 +81,14 @@ Nothing. Every check above was run here at HEAD `922f5f6`.
   - `work_items.py:133-149` and supervision r56, r64, r65 excuse a guarantees work-item from having scenarios.
 - `unformulated` does not leave them out.
 
-**Reproduction.** I wrote a probe at `.shop/scratch/i38-branch-review/test_probe.py`, since deleted, that calls `supervise_outputs.unformulated(<repo root>, ["planning#r1", "supervision#r132", "supervision#r3", "supervision#r999", "term/x"])` at HEAD.
-- Run with `python3 -m pytest -q -n 0 -s -p no:cacheprovider <probe>`, it printed `unformulated: ['planning#r1', 'supervision#r3', 'supervision#r999']`.
-- `supervision#r3` is lacking because its only scenario is deprecated, which is correct.
-- `planning#r1` is lacking only because planning is guarantees.
+**Reproduction.** I wrote a probe at `.shop/scratch/i38-branch-review/test_probe.py`, since deleted, that calls `supervise_outputs.unformulated(<repo root>, ["planning#r1@0.29", "supervision#r132@0.29", "supervision#r3@0.29", "supervision#r999@0.29", "term/x"])` at HEAD.
+- Run with `python3 -m pytest -q -n 0 -s -p no:cacheprovider <probe>`, it printed `unformulated: ['planning#r1@0.29', 'supervision#r3@0.29', 'supervision#r999@0.29']`.
+- `supervision#r3@0.29` is lacking because its only scenario is deprecated, which is correct.
+- `planning#r1@0.29` is lacking only because planning is guarantees.
 - Proposals on guarantees capabilities do occur, for example `.shop/work/i9-ubiquitous-language/ubiquitous-language-formulation.md`, `...-spec-consistency.md`, `...-spec-integration.md` and `.shop/work/i8-model-in-consumers/*-spec-migration.md`.
 
 **Why it matters.** This is a wrong transition, a fault of the system itself on valid input.
-- A formulate round on such a proposal that correctly writes no scenario gives no question. `work run` then writes "the formulate round's scenario for planning#r1 is missing ..." under the proposal's `## Questions` and moves it to `awaiting-answer` instead of `formulated`. That contradicts r83, read with 0065.
+- A formulate round on such a proposal that correctly writes no scenario gives no question. `work run` then writes "the formulate round's scenario for planning#r1@0.29 is missing ..." under the proposal's `## Questions` and moves it to `awaiting-answer` instead of `formulated`. That contradicts r83, read with 0065.
 - No answer can satisfy the question. Each answer starts a new formulate round (`supervise_rounds.py:60-61`), and that round is asked again.
 - Under a delegation (r77), the answering session answers it, so the loop has no bound inside one `work run`.
 - It is the same kind of defect as w200 review 7's term-id finding, for a different class of id.
@@ -100,7 +100,7 @@ Nothing. Every check above was run here at HEAD `922f5f6`.
 
 ### 2. Minor, w200, observation: requirement ranges and Gherkin keyword synonyms are not read (scripts/supervise_outputs.py:28-41, :51)
 
-- **Ranges.** `thing#r1-r3` is looked up as the single tag `r1-r3`, so it is always lacking. This is w200 review 7 finding 2, unchanged. No client writes ranges today: `rewrite_lists` writes the apply round's `<capability>#r<n>` ids. Hand-written proposals have them, for example `.shop/work/i18-deferred-findings/deferred-supervision.md:8` `supervision#r47-r54`.
+- **Ranges.** `thing#r1-r3` is looked up as the single tag `r1-r3`, so it is always lacking. This is w200 review 7 finding 2, unchanged. No client writes ranges today: `rewrite_lists` writes the apply round's `<capability>#r<n>` ids. Hand-written proposals have them, for example `.shop/work/i18-deferred-findings/deferred-supervision.md:8` `supervision#r47@0.29, supervision#r48@0.29, supervision#r49@0.29, supervision#r50@0.29, supervision#r51@0.29, supervision#r52@0.29, supervision#r53@0.29, supervision#r54@0.29`.
 - **Keyword synonyms.** `scenario_ids` knows only `Scenario:` and `Scenario Outline:`. The repository's own reader, `features_gherkin.py:7`, also takes `Scenario Template:` and `Example:`. A scenario written with either is not counted. Feature-level tags are dropped too. The formulator writes `Scenario:`/`Scenario Outline:` today.
 - **Reproduction:** w200 review 7's probe gave `LACKING ['thing#r1-r3', ...]`. For the synonyms, see `grep -n "Scenario Template" scripts/features_gherkin.py scripts/supervise_outputs.py` (it is only in the first).
 - **Fix:** read the tags through `features_gherkin`, and expand or refuse ranges.
@@ -137,7 +137,7 @@ For an id in `changes`, a non-deprecated scenario that was there before the roun
 ### 8. Minor, w199 / the proposal, observation, carried from review 1 findings 7 and 8
 
 - **Deprecated for removal, nothing to retire them.** `features deprecated` lists 5 "for: removal" scenarios, of r3, r5, r16, r112 and r113. Those requirements are retired, and nothing retires the scenarios.
-- **q8's resolution.** `model check` gives v3 on q8 for the removed `supervision#r113`.
+- **q8's resolution.** `model check` gives v3 on q8 for the removed `supervision#r113@0.29`.
 
 ### 9. Minor, w199, observation, carried from review 1 finding 4: no intake output check and no implementer-commit check
 
@@ -176,12 +176,12 @@ None. w200's new observable behaviour is each asked for by a line:
 
 ## Observations
 
-1. Guarantees capabilities are asked for scenarios (Finding 1, fix now). `unformulated(root, ["planning#r1", ...])` gave `['planning#r1', 'supervision#r3', 'supervision#r999']`.
+1. Guarantees capabilities are asked for scenarios (Finding 1, fix now). `unformulated(root, ["planning#r1@0.29", ...])` gave `['planning#r1@0.29', 'supervision#r3@0.29', 'supervision#r999@0.29']`.
 2. Ranges and keyword synonyms (Finding 2). w200 review 7's probe gave `thing#r1-r3` as lacking. `grep -n "Scenario Template" scripts/features_gherkin.py scripts/supervise_outputs.py` finds it only in `features_gherkin.py`.
 3. Import order (Finding 3). `tools check --base 50a40103` gives `scripts/supervise_rounds.py:7:1: I001`.
 4. A changed requirement's old scenario counts (Finding 4). See by reading `supervise_outputs.py:44-58`, which does not look at the round's diff.
 5. 0039 still guards on DONE (Finding 5). `grep -c DONE spec/decisions/0039-work-item-lifecycle-as-run.md` gives 6.
 6. Commits outside work-items (Finding 6). `git show --stat e9cfc7ff bf58a9b3 46b35719 33ba1e88 5d6c49ad 8c1d9d51`.
 7. Committed round scripts fail ruff (Finding 7). `tools check --base 50a40103` gives 8 errors under `.shop/work/i38/runs/`.
-8. Deprecated-for-removal scenarios and q8 (Finding 8). `features deprecated` lists 5, and `model check` gives v3 on q8 / `supervision#r113`.
+8. Deprecated-for-removal scenarios and q8 (Finding 8). `features deprecated` lists 5, and `model check` gives v3 on q8 / `supervision#r113@0.29`.
 9. No intake or implementer-commit output check (Finding 9). See by reading `supervise_outputs.py:12-25`.

@@ -6,12 +6,12 @@ The work-item accepts work-queue r34-r39. It has no Retires section and no Rulin
 
 None of the accepted scenarios is red today. At fb9cc6d3 the researcher ran all 7 by node id and all 7 passed (notes §1):
 
-- work-queue#r34, "list prints each initiative, each request and each work-item under .shop/work/ with its status": passes.
-- work-queue#r35, "list with --json prints each initiative, request and work-item with its status as one JSON object": passes. Its step `gives_pairs` checks only the name and status pairs. It does not check the scenario's "and nothing besides", so the extra request key `turn` (finding 2, probe p6) goes unseen.
-- work-queue#r39, "list prints an initiative as waiting on a request it raised into an upstream while that request is not delivered": passes. A malformed `raised.jsonl` line makes `work list` crash with a traceback (D1 and D2, finding 3). No scenario covers that.
-- work-queue#r36, "show of an initiative prints where it stands, for a session to start from": passes.
-- work-queue#r37, "show of a work-item prints its status and its open questions": passes.
-- work-queue#r38, "show of <target> with --json prints its result as one JSON object" (i1 and w1): passes.
+- work-queue#r34@0.29, "list prints each initiative, each request and each work-item under .shop/work/ with its status": passes.
+- work-queue#r35@0.29, "list with --json prints each initiative, request and work-item with its status as one JSON object": passes. Its step `gives_pairs` checks only the name and status pairs. It does not check the scenario's "and nothing besides", so the extra request key `turn` (finding 2, probe p6) goes unseen.
+- work-queue#r39@0.29, "list prints an initiative as waiting on a request it raised into an upstream while that request is not delivered": passes. A malformed `raised.jsonl` line makes `work list` crash with a traceback (D1 and D2, finding 3). No scenario covers that.
+- work-queue#r36@0.29, "show of an initiative prints where it stands, for a session to start from": passes.
+- work-queue#r37@0.29, "show of a work-item prints its status and its open questions": passes.
+- work-queue#r38@0.29, "show of <target> with --json prints its result as one JSON object" (i1 and w1): passes.
 
 The new unit tests in part 2 are what start red: one for `turn` being absent, and one for the refusal of a malformed record. The implementer sees them red first.
 
@@ -32,8 +32,8 @@ Removed from the researcher's set, and why:
 
 ## 3. Decisions
 
-- **D-a: `work list --json` drops `turn` from each request.** This rests on work-queue#r35 ("each initiative, request and work-item with its status"), whose scenario pins "and nothing besides". The text form already omits the turn. No line asks `work list` for the turn (requests#r13 asks it of `work show`). Design-decision/query-commands-answer-in-their-output makes the JSON keys Implementation, so the keys of the request objects stay as they are apart from `turn`. This is finding 2, fix now.
-- **D-b: a `raised.jsonl` line `work list` cannot read is refused under work-queue#r7.** The exit is an error, the message names the file and the line, and the command changes nothing, with no traceback. It rests on r7, on the r39 path. The review triaged this as an observation (finding 3) and gave this fix. It goes in because r7 already asks for it, and it is on an accepted line's path.
+- **D-a: `work list --json` drops `turn` from each request.** This rests on work-queue#r35@0.29 ("each initiative, request and work-item with its status"), whose scenario pins "and nothing besides". The text form already omits the turn. No line asks `work list` for the turn (requests#r13@0.29 asks it of `work show`). Design-decision/query-commands-answer-in-their-output makes the JSON keys Implementation, so the keys of the request objects stay as they are apart from `turn`. This is finding 2, fix now.
+- **D-b: a `raised.jsonl` line `work list` cannot read is refused under work-queue#r7@0.29.** The exit is an error, the message names the file and the line, and the command changes nothing, with no traceback. It rests on r7, on the r39 path. The review triaged this as an observation (finding 3) and gave this fix. It goes in because r7 already asks for it, and it is on an accepted line's path.
 - **D-c: the branch r36 prints stays the checkout's branch, as it is now** (Q-5 of the notes). The r36 scenario passes as it is, and nothing in w206 changes it.
 - **D-d: the old forms stay.** Bare `work show`, `work status` and the SessionStart hook text stay, along with requests r13 and r14 and migration-tools r32 (Q-2 and Q-3 of the notes). w206 has no Retires section, so their retirement belongs to the work-item that retires r3, r11 and r16-r18 under design-decision/work-list-and-work-show-replace-work-status.
 - **Finding 1 (`write_proposals`): not taken. See the question.** No accepted requirement of w206 covers it. Supervision#r142 and #r148 are about the proposal being redrafted, and say nothing of what happens to a proposal held for another capability that the change list names. What supervision's narrator sees stored in that proposal's `adds`, `changes` and `removes` depends on the answer.

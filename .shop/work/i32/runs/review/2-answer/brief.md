@@ -5,7 +5,7 @@ Scripts: /home/vscode/shopsystem-bdd/scripts
 Base: none
 Worktree: /tmp/work-run-i32-_6c6pt8f/review-2-answer
 Branch: none (a detached checkout)
-Question: Wording of the added line [review#r31] "**When** a branch review ends, the branch reviewer shall give in its result's questions only the findings it triages fix now." It names the result's `questions` field in the words of the request. Readings: (a, recommended) keep the wording as drafted, the request's own text; (b) reword to "shall give as questions in its result only the findings it triages fix now" and name the field `questions` under Implementation. Answer (a) leaves the line as above; answer (b) gives the reworded line.
+Question: Wording of the added line [review#r31@0.29] "**When** a branch review ends, the branch reviewer shall give in its result's questions only the findings it triages fix now." It names the result's `questions` field in the words of the request. Readings: (a, recommended) keep the wording as drafted, the request's own text; (b) reword to "shall give as questions in its result only the findings it triages fix now" and name the field `questions` under Implementation. Answer (a) leaves the line as above; answer (b) gives the reworded line.
 Delegation: The person, 2026-10-25: "Do not involve me in fixing all of the bugs. Please get the system into a correctly working state before doing a release". Answer every question with its recommended reading.
 
 Read (paths in your worktree):

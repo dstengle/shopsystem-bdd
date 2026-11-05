@@ -1,6 +1,6 @@
 # Research notes: w188 (fix the findings of branch review 1 of i30)
 
-Accepts: supervision#r19, supervision#r110, supervision#r117. Base checkout HEAD `0279766f` (clean worktree).
+Accepts: supervision#r19@0.29, supervision#r110@0.29, supervision#r117@0.29. Base checkout HEAD `0279766f` (clean worktree).
 Method: `tools map` absent (no map). `tools tests-of` and `untested` unusable, so every test list is `by search`. `tools map` would write `.shop/scratch/tools/`, outside my allowed write place, so I did not run it. Counts by search are floors.
 
 ## 1. Why each scenario is red today

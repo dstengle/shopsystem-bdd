@@ -205,8 +205,8 @@ def main(argv):
     if isinstance(plan.get(short), list):     # one result for each session of the agent, in the order they start; the last repeats
         nth = started_agents().count(agent)
         plan[short] = plan[short][min(nth, len(plan[short])) - 1]
-    kind = re.search(r"^# (\w+) of (\S+)", brief, re.M)
-    asked = re.search(r"^Question: (.*)$", brief, re.M)
+    kind = re.search(r"^# (\w+) of (\S+)", brief, re.MULTILINE)
+    asked = re.search(r"^Question: (.*)$", brief, re.MULTILINE)
     step = {**plan.get("default", {}), **plan.get(short, {}), **(plan.get("round:" + kind.group(1), {}) if kind else {}),
             **(plan.get("round:%s:%s" % kind.groups(), {}) if kind else {}),
             **(plan.get("question:" + asked.group(1), {}) if asked else {})}

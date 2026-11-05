@@ -1,0 +1,229 @@
+"""The lexicon of a bounded context: the one reader of term entries (design §10.1).
+
+A term entry is a bullet of `spec/index.md`'s `## Glossary` or of a capability's `## Terms`:
+
+    - **status** (attribute of initiative): Values: `proposed`, `started`. Transitions: `proposed` → `started`: `work start`.
+
+Its category is the grammar slot the term fills (actor, kind, attribute, relation, event, resource, condition).
+Values belong to one attribute of one kind. `ident` names a term in GF (§9.6); `problems` gives v_t4–v_t10.
+The gloss is the text after the entry's `:` and before its first field, one sentence (v_t7, design-r2 §8); a kind's
+`Kind of:` names its supertype. Relations are rows (spec_relations): a relation entry is read only to be a problem
+(v_t8), and so is a `Means:` field (v_t9).
+"""
+import re
+from collections import defaultdict
+from dataclasses import dataclass, field
+from pathlib import Path
+
+import spec_relations
+
+CATEGORIES = ("actor", "kind", "attribute", "value", "relation", "event", "resource", "condition")
+LETTER = {"actor": "a", "kind": "k", "attribute": "t", "value": "v", "relation": "r", "event": "e",
+          "resource": "s", "condition": "c"}
+# verbs the core grammar spells itself; an event with one of these names would make two trees of one line
+CORE_VERBS = {"run", "print", "hold", "exit", "become", "set", "be"}
+
+ENTRY = re.compile(r"^- \*\*(?P<term>.+?)\*\*\s*(?:\((?P<cat>[^)]*)\))?\s*:\s*(?P<text>.*)$", re.DOTALL)
+FIELDS = ("Values", "Transitions", "Means", "Forms", "Plural", "Not", "Kind of")
+FIELD = re.compile(r"(?:^|\s)(?:%s):" % "|".join(FIELDS))
+
+
+@dataclass(frozen=True)
+class Term:
+    term: str
+    category: str
+    kinds: tuple = ()
+    text: str = ""
+    where: str = ""
+    values: tuple = ()
+    transitions: tuple = ()
+    forms: tuple = ()
+    plural: str = ""
+    nots: tuple = ()
+    resource: str = ""
+    supertype: str = ""
+
+    @property
+    def key(self):
+        return (self.category, self.term, self.kinds)
+
+
+def _field(text, name):
+    found = re.search(r"(?:^|\s)%s:\s*(.+?)\.(?=\s+(?:%s):|\s*$)" % (name, "|".join(FIELDS)), text, re.DOTALL)
+    return " ".join(found.group(1).split()) if found else ""
+
+
+def _list(text):
+    return tuple(w.strip() for w in text.split(",") if w.strip())
+
+
+def _category(raw):
+    """`attribute of initiative` -> ("attribute", ("initiative",), ""); `resource, exclusive` -> resource."""
+    raw = " ".join(raw.split())
+    cat, _, rest = raw.partition(" ")
+    cat = cat.rstrip(",")
+    if cat not in CATEGORIES:
+        return raw, (), ""
+    rest = rest.lstrip(", ").strip()
+    if cat in ("attribute", "condition") and rest.startswith("of "):
+        return cat, _list(rest[3:]), ""
+    if cat == "relation":
+        parts = re.split(r"\s*(?:→|->)\s*", rest)
+        return cat, tuple(p.strip() for p in parts if p.strip()), ""
+    if cat == "resource":
+        return cat, (), rest
+    return cat, (), ""
+
+
+def entry(bullet, where):
+    """One term entry, or None when the bullet is not one. A missing category reads as ""."""
+    found = ENTRY.match(" ".join(bullet.split()))
+    if not found:
+        return None
+    category, kinds, resource = _category(found.group("cat") or "")
+    text = found.group("text").strip()
+    transitions = []
+    for row in _field(text, "Transitions").split(";"):
+        step = re.match(r"\s*(.+?)\s*(?:→|->)\s*(.+?):\s*(.+?)\s*$", row)
+        if step:
+            transitions.append(step.groups())
+    return Term(term=found.group("term").strip(), category=category, kinds=kinds, text=text, where=where,
+                values=_list(_field(text, "Values")), transitions=tuple(transitions),
+                forms=_list(_field(text, "Forms")), plural=_field(text, "Plural"), nots=_list(_field(text, "Not")),
+                resource=resource, supertype=_field(text, "Kind of"))
+
+
+def gloss(text):
+    """An entry's text up to its first field."""
+    found = FIELD.search(text)
+    return (text[:found.start()] if found else text).strip()
+
+
+def one_sentence(text):
+    """design-r2 §8's rule: code spans, quoted strings and e.g., i.e., etc., vs. are blanked; `.!?` before a space or
+    the end, and `;`, end a sentence; `:` does not. An empty gloss passes."""
+    text = re.sub(r"`[^`]*`|\"[^\"]*\"|“[^”]*”", "x", text)
+    text = re.sub(r"\b(?:e\.g|i\.e|etc|vs)\.", "x", text).strip()
+    body = text[:-1] if text[-1:] in ".!?" else text
+    return ";" not in text and not re.search(r"[.!?](?:\s|$)", body)
+
+
+def _bullets(text, heading):
+    """The bullets of one `## <heading>` section, each with its indented continuation lines joined."""
+    out, inside = [], False
+    for line in text.splitlines():
+        if line.startswith("## "):
+            inside = line[3:].strip() == heading
+            continue
+        if not inside:
+            continue
+        if line.startswith("- "):
+            out.append(line)
+        elif out and line[:1].isspace() and line.strip():
+            out[-1] += " " + line.strip()
+    return out
+
+
+@dataclass
+class Lexicon:
+    terms: list = field(default_factory=list)
+    rows: list = field(default_factory=list)       # spec_relations.Row of the `## Relations` tables
+
+    def of(self, category):
+        return [t for t in self.terms if t.category == category]
+
+    def kind_names(self):
+        return {t.term for t in self.of("kind")}
+
+    def values(self):
+        """Every value as (value, kind, attribute term, attribute entry)."""
+        return [(v, k, t.term, t) for t in self.of("attribute") for k in t.kinds for v in t.values]
+
+    def keys(self):
+        keys = [t.key for t in self.terms if t.category in LETTER and t.category != "value"]
+        return keys + [("value", v, (k, a)) for v, k, a, _ in self.values()]
+
+    def ids(self):
+        """A GF identifier for every key; colliding identifiers are numbered in sorted key order."""
+        by_base = defaultdict(list)
+        for key in set(self.keys()):
+            by_base[ident(key[1], key[0])].append(key)
+        out = {}
+        for base, keys in by_base.items():
+            for n, key in enumerate(sorted(keys)):
+                out[key] = base if n == 0 else "%s_%d" % (base, n + 1)
+        return out
+
+    def words(self):
+        """Every spelling a line may use: terms, values, and the forms of events."""
+        out = {t.term for t in self.terms if t.category in LETTER}
+        out |= {v for v, _, _, _ in self.values()}
+        out |= {f for t in self.of("event") for f in t.forms} | {t.plural for t in self.terms if t.plural}
+        return out | {r.word for r in self.rows}
+
+    def relations(self):
+        """The expanded relation rows (k1, word, k2, rid), the supertype's own included (spec_relations)."""
+        return spec_relations.expand(self)
+
+    def definition(self, term):
+        """The gloss sentence of a condition (its entry, or by name the first so named), which a `Def` parse reads;
+        "" when none."""
+        found = [t for t in self.of("condition") if t == term or t.term == term]
+        return gloss(found[0].text) if found else ""
+
+
+def ident(term, category):
+    """`work-item`, kind -> k_work_item; `` `work run` ``, actor -> a_work_run."""
+    return "%s_%s" % (LETTER[category], re.sub(r"[^a-z0-9]+", "_", term.lower()).strip("_") or "x")
+
+
+def read(root):
+    """The lexicon of the context at `root`: the glossary of `spec/index.md` and every capability's `## Terms`."""
+    root = Path(root)
+    sources = [(root / "spec" / "index.md", "Glossary")]
+    sources += [(p, "Terms") for p in sorted((root / "spec" / "capabilities").glob("*.md"))]
+    terms = []
+    for path, heading in sources:
+        if path.is_file():
+            where = path.relative_to(root).as_posix()
+            terms += [t for t in (entry(b, where) for b in _bullets(path.read_text(), heading)) if t]
+    return Lexicon(terms, spec_relations.read(root))
+
+
+def problems(lexicon):
+    """v_t4 (a term has a category, and its kinds are kinds), v_t5 (a value names one attribute of one kind),
+    v_t6 (no two terms linearise the same), v_t7 (a gloss of more than one sentence), v_t9 (a `Means:` field), and
+    spec_relations' v_t4, v_t8 and v_t10, as (code, term, message) sorted."""
+    out = []
+    kinds = lexicon.kind_names()
+    for t in lexicon.terms:
+        if t.category not in LETTER or t.category == "value":
+            out.append(("v_t4", t.term, "%s: the term has no category" % t.where))
+        elif t.category in ("attribute", "condition", "relation") and not t.kinds:
+            out.append(("v_t4", t.term, "%s: the %s names no kind" % (t.where, t.category)))
+        elif any(k not in kinds for k in t.kinds):
+            missing = ", ".join(k for k in t.kinds if k not in kinds)
+            out.append(("v_t4", t.term, "%s: %s is not a kind" % (t.where, missing)))
+        elif t.category == "attribute" and not t.values:
+            out.append(("v_t4", t.term, "%s: the attribute gives no Values" % t.where))
+        if t.category == "event" and t.term in CORE_VERBS:
+            out.append(("v_t6", t.term, "%s: the grammar spells `%s` itself" % (t.where, t.term)))
+    seen = defaultdict(list)
+    for v, k, a, _ in lexicon.values():
+        seen[(k, v)].append(a)
+    out += [("v_t5", v, "the value %s of %s is in more than one attribute (%s)" % (v, k, ", ".join(a)))
+            for (k, v), a in seen.items() if len(a) > 1]
+    counts = defaultdict(int)
+    for t in lexicon.terms:
+        counts[t.key] += 1
+    out += [("v_t6", key[1], "the %s %s is given %d times" % (key[0], key[1], n)) for key, n in counts.items()
+            if n > 1]
+    for t in lexicon.of("actor"):
+        words = t.term.split(" ", 1)
+        if len(words) == 2 and words[0] in ("a", "an", "the") and words[1] in kinds:
+            out.append(("v_t6", t.term, "the actor %s reads as the kind %s" % (t.term, words[1])))
+    out += [("v_t7", t.term, "%s: the entry's gloss is more than one sentence" % t.where)
+            for t in lexicon.terms if not one_sentence(gloss(t.text))]
+    out += [("v_t9", t.term, "%s: the meaning is a Means: field; write one Def sentence, or a gloss" % t.where)
+            for t in lexicon.terms if re.search(r"(?:^|\s)Means:", t.text)]
+    return sorted(set(out + spec_relations.problems(lexicon)))

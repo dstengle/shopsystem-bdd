@@ -4,9 +4,9 @@ From the research notes `.shop/work/i33/runs/w192/1-research/notes.md`.
 
 ## 1. What goes green
 
-- **work-queue#r32**: features/work-queue.feature, Scenario Outline `add given an initiative that is <status> is refused, naming its status, and changes nothing`, examples `done` and `abandoned`.
+- **work-queue#r32@0.29**: features/work-queue.feature, Scenario Outline `add given an initiative that is <status> is refused, naming its status, and changes nothing`, examples `done` and `abandoned`.
   Red today for two reasons. The step `the add is refused because i1 is <status>, naming <status>` has no definition. And `workqueue.add()` reads no initiative status: it refuses only a missing directory. Probes A1 and A2 show the add succeeding, with exit 0, `w2` printed and w2.md written. So once the step exists, the Then fails.
-- **work-queue#r31**: Scenario `withdraw that leaves every work-item of an initiative withdrawn leaves the initiative's status as it is`.
+- **work-queue#r31@0.29**: Scenario `withdraw that leaves every work-item of an initiative withdrawn leaves the initiative's status as it is`.
   Every step is bound. It fails at `status_is` with `'done' == 'started'`. The cause is `workqueue_done._holds`, which accepts any non-empty set of green or withdrawn work-items without asking that one of them be green. `becomes` then says done and `moved_to` marks the initiative done (probes W1, W2, W4).
 - Deprecated scenarios retired: none. The work-item has no Retires section.
 
@@ -20,10 +20,10 @@ This is the researcher's file set, unchanged.
 
 ## 3. Decisions
 
-1. **The at-least-one-green clause goes into the shared condition, not only into withdraw.** Rests on work-queue#r31 and r23. r23 is already in spec and asks for "at least one work-item that is `green`". supervision#r105 asks `work run` for the same clause, so `set_done` going through `holds` stays faithful to it. What `work run` sees changes: an all-withdrawn initiative is no longer set done after review. r105 already requires that, so it is not a question.
-2. **An initiative with no `initiative.md` is not `done` or `abandoned`, so `work add` into it goes ahead as r1 says.** Rests on the wording of work-queue#r32 ("an initiative that is `done` or `abandoned`") and on r1. The r1, r12 and r9 add scenarios use an initiative directory with no initiative.md (probe A4). Refusing there would break them, and no requirement asks for it.
-3. **The refusal is a r7 error.** It exits with an error, writes nothing and makes no commit, and its message names the initiative's status. Rests on work-queue#r32 and r7. The wording beyond the status is the implementer's.
-4. **Withdraw's path to done gets no records check.** Rests on work-queue#r23, which names no measurement or analysis record. The records check stays in `work run`'s own done, supervision#r105 (notes §5). This is out of scope for this work-item.
+1. **The at-least-one-green clause goes into the shared condition, not only into withdraw.** Rests on work-queue#r31@0.29 and r23. r23 is already in spec and asks for "at least one work-item that is `green`". supervision#r105@0.29 asks `work run` for the same clause, so `set_done` going through `holds` stays faithful to it. What `work run` sees changes: an all-withdrawn initiative is no longer set done after review. r105 already requires that, so it is not a question.
+2. **An initiative with no `initiative.md` is not `done` or `abandoned`, so `work add` into it goes ahead as r1 says.** Rests on the wording of work-queue#r32@0.29 ("an initiative that is `done` or `abandoned`") and on r1. The r1, r12 and r9 add scenarios use an initiative directory with no initiative.md (probe A4). Refusing there would break them, and no requirement asks for it.
+3. **The refusal is a r7 error.** It exits with an error, writes nothing and makes no commit, and its message names the initiative's status. Rests on work-queue#r32@0.29 and r7. The wording beyond the status is the implementer's.
+4. **Withdraw's path to done gets no records check.** Rests on work-queue#r23@0.29, which names no measurement or analysis record. The records check stays in `work run`'s own done, supervision#r105@0.29 (notes §5). This is out of scope for this work-item.
 
 ## 4. Tests the decisions break
 

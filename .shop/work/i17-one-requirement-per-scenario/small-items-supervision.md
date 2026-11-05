@@ -5,8 +5,8 @@ part_of: initiative/i17
 status: formulated
 date: 2026-10-22
 argues: [supervision]
-adds: [supervision#r42-r45]
-changes: [supervision#r5]
+adds: [supervision#r42@0.29, supervision#r43@0.29, supervision#r44@0.29, supervision#r45@0.29]
+changes: [supervision#r5@0.29]
 ---
 
 # supervision: small work-items, expected red, faults

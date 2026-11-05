@@ -1,4 +1,4 @@
-# Review of w218 (role-boundaries#r7)
+# Review of w218 (role-boundaries#r7@0.29)
 
 **Verdict: DONE.** Nothing is Critical and nothing is triaged fix now. The commit does what r7 asks and nothing more: Bash is gone from `agents/bdd-branch-reviewer.md`, the README row matches, and a test checks it.
 

@@ -5,7 +5,7 @@ part_of: initiative/i28
 status: formulated
 date: 2026-10-25
 argues: [supervision]
-adds: [supervision#r102-r104]
+adds: [supervision#r102@0.29, supervision#r103@0.29, supervision#r104@0.29]
 changes: []
 removes: []
 ---

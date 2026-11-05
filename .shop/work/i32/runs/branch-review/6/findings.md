@@ -9,8 +9,8 @@
 ## Range and work-items
 
 - **Range:** `d3d3839d..05777a48`.
-- **w189** (review#r31): `ee81efd0`, at `agents/bdd-branch-reviewer.md:74,76`.
-- **w190** (supervision#r118, r119): `6622133a`, `31c86e3c`.
+- **w189** (review#r31@0.29): `ee81efd0`, at `agents/bdd-branch-reviewer.md:74,76`.
+- **w190** (supervision#r118@0.29, r119): `6622133a`, `31c86e3c`.
 - **w191** (the fix of branch review 1): `32b5f1fa`.
 - **Commits that belong to no i32 work-item:**
   - The ones carried from review 5.
@@ -83,7 +83,7 @@ None in i32's work-items.
 
 ## Cannot verify
 
-- **review#r31 on a real batch.**
+- **review#r31@0.29 on a real batch.**
   - w189's plan names `measure` of a later initiative as the check. The latest measurement in `.shop/records/measurements/` is still `2026-10-25-i30.md`.
   - I checked the agent text instead (`agents/bdd-branch-reviewer.md:74,76`), and this review follows it: `questions` is empty because nothing is fix now.
 - **That a real `delegation-answerer` session gives `verdict`.**

@@ -1,11 +1,11 @@
-- 2026-10-28: integrate round 1: adds supervision#r149 r150, spec-integration#r46; 5 questions, 1 cut sentence; drafts .shop/scratch/1-integrate/drafts/round-1
+- 2026-10-28: integrate round 1: adds supervision#r149@0.29 r150, spec-integration#r46@0.29; 5 questions, 1 cut sentence; drafts .shop/scratch/1-integrate/drafts/round-1
 - 2026-10-28: gate round 1: 4 questions on supervision r149 r150
 - 2026-10-28: 2026-10-28 the person: take recommendations on all gate round 1 questions (spec-integration approved as drafted; supervision r150/r140 a, r150/r144-r146 b, r149/r83 a, r149/r131-r132 a); run independently through the next release, then analyse whether the performance fixes had the intended effect.
 - 2026-10-28: 2026-10-28 the person: 'I am delegating to you.' The coordinator answers further questions of i42 under this delegation, taking the recommended reading, and runs through the next release and its analysis.
 - 2026-10-28: apply round 2: spec-integration approved as drafted (the person, 2026-10-28), r46 added; commit 356ac0f4
 - 2026-10-28: formulate round 3 spec-integration: commit 6c1dca8d; scenario added r46; features bindings clean; model check: 12 violations, none from spec-integration
 - 2026-10-28: apply round 2 supervision: nothing applied; the answers (retire r140, add r151 and lines for r149 keeping status and taking the output, from q22) ask for lines the drafts never held, so an integrate round follows
-- 2026-10-28: integrate round 3 supervision (q22 anew): adds supervision#r149 r150 r151 r152 r153, removes r140; 2 questions, 0 cut sentences; drafts .shop/scratch/3-integrate/drafts/round-1
+- 2026-10-28: integrate round 3 supervision (q22 anew): adds supervision#r149@0.29 r150 r151 r152 r153, removes r140; 2 questions, 0 cut sentences; drafts .shop/scratch/3-integrate/drafts/round-1
 - 2026-10-28: gate round 4: 2 questions on supervision r152/r83 and r150-r151/r144-r145
 - 2026-10-28: 2026-10-28 gate round 2: supervision r152/r83 reading (a), r150-r151/r144-r145 reading (a), answered by the coordinator under the person's delegation (recommended readings).
 - 2026-10-28: apply round 5 supervision: adds r149 r150 r151 r152 r153, removes r140 (r152 over r83 and r150/r151 over r144-r145 as meant, per the person's delegation 2026-10-28); commit 83361ea7

@@ -4,16 +4,16 @@ From the research notes (`runs/migration-rebind-2/1-research/notes.md`), checked
 
 ## 1. What goes green
 
-- **migration-tools#r6**: "after `migrate run` on a repository with <what>, `model check` prints no unresolved reference or file problem" (4 Examples). **Green today** (notes part 1, run). No change; it must stay green.
-- **migration-tools#r7**: red today. Each fails at `And it exits with an error` with StepDefinitionNotFoundError. The only step there is `it exits non-zero` (test_migration_tools.py:215). According to the notes' CLI probes (part 2), migrate already prints every message the Thens expect and exits 1.
+- **migration-tools#r6@0.29**: "after `migrate run` on a repository with <what>, `model check` prints no unresolved reference or file problem" (4 Examples). **Green today** (notes part 1, run). No change; it must stay green.
+- **migration-tools#r7@0.29**: red today. Each fails at `And it exits with an error` with StepDefinitionNotFoundError. The only step there is `it exits non-zero` (test_migration_tools.py:215). According to the notes' CLI probes (part 2), migrate already prints every message the Thens expect and exits 1.
   - "`migrate run` that finds <found> in spec/decisions.md names it, exits with an error and changes no file, the ledger included" (2 Examples)
   - "`migrate run` whose ledger entry's decision file would land on <there> names it, exits with an error and changes no file" (4 Examples)
   - "`migrate run` that cannot make two of its changes names both, exits with an error and changes no file"
   - "`migrate run` that would relocate a file onto an untracked file names the relocation, exits with an error and changes no file"
   - "`migrate run` that would <what> names it, exits with an error and changes no file" (3 Examples)
   - "`migrate run` outside a git repository says so, exits with an error and changes no file"
-- **migration-tools#r8**: "`migrate run` relocates docs/superpowers/plans/, specs/ and requests/ under .shop/records/archive/, with git". **Green today**.
-- **migration-tools#r9**:
+- **migration-tools#r8@0.29**: "`migrate run` relocates docs/superpowers/plans/, specs/ and requests/ under .shop/records/archive/, with git". **Green today**.
+- **migration-tools#r9@0.29**:
   - "... gives a capability, a decision file, a plan, a request, a design note, an ADR and a test log the type-first id of its kind": green today.
   - "... gives a capability whose id is the short form capability/<name> its full id": green today.
   - "... gives a README.md it relocates to <new> no id, kind or about" (3 Examples): green today.
@@ -31,9 +31,9 @@ I removed one change from the researcher's proposal: the extra commit in the Giv
 
 ## 3. Decisions
 
-1. **"it exits with an error" means a non-zero exit code.** It is checked the same way `it exits non-zero` checks it today. The step is renamed rather than added next to the old one, because no feature uses the old text any more (search over `features/`), and keeping it would leave a dead step. The naming of each change and the "changes no file" part are the scenario's other Thens, so this step asserts the exit alone. Rests on migration-tools#r7.
-2. **The decision-file Given commits.** A repository "on the old system" is a committed tree. Migrate rightly refuses an uncommitted one, so a Given that leaves its subject untracked tests r15 instead of r9. Rests on migration-tools#r9 and migration-tools#r15. The r5 scenario "rewrites a frontmatter id that names a decision file's old id" uses the same Given and then writes a capability. The implementer should check that its second Given still has a change to commit, or commits without failing on an empty commit.
-3. **No production change.** Each red scenario's Then already holds against the CLI (notes part 2, probes 1-13). Rests on migration-tools#r7 and #r9.
+1. **"it exits with an error" means a non-zero exit code.** It is checked the same way `it exits non-zero` checks it today. The step is renamed rather than added next to the old one, because no feature uses the old text any more (search over `features/`), and keeping it would leave a dead step. The naming of each change and the "changes no file" part are the scenario's other Thens, so this step asserts the exit alone. Rests on migration-tools#r7@0.29.
+2. **The decision-file Given commits.** A repository "on the old system" is a committed tree. Migrate rightly refuses an uncommitted one, so a Given that leaves its subject untracked tests r15 instead of r9. Rests on migration-tools#r9@0.29 and migration-tools#r15@0.29. The r5 scenario "rewrites a frontmatter id that names a decision file's old id" uses the same Given and then writes a capability. The implementer should check that its second Given still has a change to commit, or commits without failing on an empty commit.
+3. **No production change.** Each red scenario's Then already holds against the CLI (notes part 2, probes 1-13). Rests on migration-tools#r7@0.29 and #r9.
 
 ## 4. Tests the decisions break
 

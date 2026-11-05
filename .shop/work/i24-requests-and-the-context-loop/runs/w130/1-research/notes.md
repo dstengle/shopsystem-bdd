@@ -1,6 +1,6 @@
 # w130 research notes
 
-Accepted: work-queue#r22 (start), work-queue#r23 (done). Scenarios: features/work-queue.feature lines 34-62.
+Accepted: work-queue#r22@0.29 (start), work-queue#r23@0.29 (done). Scenarios: features/work-queue.feature lines 34-62.
 Search basis: `tools refs` works; `tools tests-of` and `untested` refuse (no map, `tools map` not run). Test lists below are `by search` or `read`.
 Probes: `.shop/scratch/w130-1-research/probe_start_done.py`, `probe_commit.py`; run with `-n 0`. Repos made there only.
 

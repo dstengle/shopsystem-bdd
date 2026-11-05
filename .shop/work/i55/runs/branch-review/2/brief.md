@@ -696,7 +696,7 @@ Output:
     ce5d751c3c2f92440cd9913933a4c3ff3dd5adbb none work: supervision drafted -> awaiting-answer
     3fc55100ff69c2a0fae571043ef5d0e91f433f67 none Merge branch 'round/supervision-3-apply'
     f0321b5fdd78faeb8cce4289cf0eeab258df93b2 none work: supervision awaiting-answer -> approved
-    deda9fa6e1f1969073ec0b8d29673ad94bc7dd7d none spec: requests (i55), lines approved 2026-10-29 under the person's delegation of 2026-10-27 ("I'm delegating this to you. Please get the new version delivered without involving me."); adds requests#r50, r51, r52, r53, r54, r55, r56, r57, r58, supervision#r184, r185, r186, work-queue#r47; changes none; removes requests#r13, r34, r39, r41, r43
+    deda9fa6e1f1969073ec0b8d29673ad94bc7dd7d none spec: requests (i55), lines approved 2026-10-29 under the person's delegation of 2026-10-27 ("I'm delegating this to you. Please get the new version delivered without involving me."); adds requests#r50@0.29, r51, r52, r53, r54, r55, r56, r57, r58, supervision#r184@0.29, r185, r186, work-queue#r47@0.29; changes none; removes requests#r13@0.29, r34, r39, r41, r43
     782b76d99fe84a054690328373318c60f2601ae3 none work note: i55
     f8c0a26f9c02ec089cdef21a4125401724e2cc98 none work: requests awaiting-answer -> approved
     bb2caaeb966336119a0f38ac00f54938a0d7b87a none Formulate supervision r187: one scenario
@@ -803,7 +803,7 @@ Output:
     7cf948c9d6c2632b117ccf847ba8c936d0a89db8 none spec: supervision r211 (delegation read at the moment), approved 2026-10-29 under the person's delegation (work run answered the recommended reading)
     aaf27a1938317ea3f381a9d700d818ab40f881b1 none work note: i60
     9d33b055bbb4826ddcf90128240f49d79b292ed6 none work: supervision awaiting-answer -> approved
-    698c1d4401e85ac6709bcb371db90da94baafe6c none Formulate supervision#r211: the delegation read as the request has it at that moment
+    698c1d4401e85ac6709bcb371db90da94baafe6c none Formulate supervision#r211@0.29: the delegation read as the request has it at that moment
     89bced6c6079bcc9d97ad3bf2d6153196c5a2421 none work note: i60
     2d27c7184660b74ea0d495e84b2227bb358d6887 none work: supervision approved -> formulated
     6b7926df135a5da0951201f6cb9a724210fde131 none work add: i60/w233 drafted

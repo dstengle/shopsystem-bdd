@@ -1,8 +1,8 @@
-# w180 research: formulation#r23
+# w180 research: formulation#r23@0.29
 
 Tool use: `tools` ran (`refs`, `tests-of`, `untested` not needed: no function changes). Accepted scenarios found `by search`. Brief gave no `Accepted scenarios:` and no `File set:` line. Scripts: `/home/vscode/shopsystem-bdd/scripts`.
 
-Requirement: `formulation#r23` (spec line 25, approved 2026-10-25, commit 31738369): "When `formulating-features` runs an old scenario alone, it shall run it with `python3 -m pytest`."
+Requirement: `formulation#r23@0.29` (spec line 25, approved 2026-10-25, commit 31738369): "When `formulating-features` runs an old scenario alone, it shall run it with `python3 -m pytest`."
 
 ## 1. Why each scenario is red today
 
@@ -11,7 +11,7 @@ No accepted scenario exists. By search:
 - `features/formulat*` matches nothing (Glob); no `features/formulation.feature`.
 - `tests/scenarios/` has no formulation step module (`ls | grep -i formul`: none).
 
-So `formulation#r23` has no scenario, and nothing is red. Missing: a scenario tagged `@r23` in `features/formulation.feature` and its step module. Nothing run for part 1.
+So `formulation#r23@0.29` has no scenario, and nothing is red. Missing: a scenario tagged `@r23` in `features/formulation.feature` and its step module. Nothing run for part 1.
 
 ## 2. What the system answers today
 
@@ -20,10 +20,10 @@ Run in the worktree, `--collect-only` only, no test executed:
 - P2 `... -k "retiring a deprecated scenario removes its block" tests/scripts/test_features_scenarios.py`: `11 tests collected`. Unfiltered same file: `11 tests collected`. run
 - P3 `... -k "retiring a deprecated scenario removes its block"` (whole suite): `143/877`, same as P1. run
 - P4 `... -k "retiring_a_deprecated"` (whole suite): `1/877`. run
-- P5 `python3 -m pytest -q -p no:cacheprovider --work-item w180 --co`: `143/877` kept, the same as P1. The work-item accepts only formulation#r23, which has no scenario. run
+- P5 `python3 -m pytest -q -p no:cacheprovider --work-item w180 --co`: `143/877` kept, the same as P1. The work-item accepts only formulation#r23@0.29, which has no scenario. run
 - P6 same with `-k no_such_zz_name`: `no tests collected (877 deselected)`. run
 
-Reading (read): `scripts/work_items.py:123-131`: a work-item whose capabilities are all `group: guarantees`, left with no test, exits OK. `formulation` is `group: guarantees` (spec frontmatter line 5). So `--work-item w180` cannot fail on a scenario of formulation#r23: none exists. Exit code not seen in a run; read only.
+Reading (read): `scripts/work_items.py:123-131`: a work-item whose capabilities are all `group: guarantees`, left with no test, exits OK. `formulation` is `group: guarantees` (spec frontmatter line 5). So `--work-item w180` cannot fail on a scenario of formulation#r23@0.29: none exists. Exit code not seen in a run; read only.
 
 Nearest cases: the spaced `-k` form (P2, P3) selects as much as no `-k`. The skill's own form is not narrowed.
 
@@ -44,7 +44,7 @@ None. The change is skill text. No Python function or branch changes. Searched t
 
 ## 5. A step the work-item skips
 
-The work-item adds no path. The check the work-item would hold to, a scenario of formulation#r23, never lands: no scenario exists (part 1), and the guarantees rule (part 2, read) lets w180 pass with no test. The existing run path (skill step 4) is the one r23 changes; it has no step left out (read).
+The work-item adds no path. The check the work-item would hold to, a scenario of formulation#r23@0.29, never lands: no scenario exists (part 1), and the guarantees rule (part 2, read) lets w180 pass with no test. The existing run path (skill step 4) is the one r23 changes; it has no step left out (read).
 
 ## 6. Defects
 

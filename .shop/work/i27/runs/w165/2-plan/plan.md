@@ -1,8 +1,8 @@
-# Plan of w165: requests#r19, `work request --delegation`
+# Plan of w165: requests#r19@0.29, `work request --delegation`
 
 ## 1. What goes green
 
-- **requests#r19**: scenario "request with --delegation writes the delegation given in the request"
+- **requests#r19@0.29**: scenario "request with --delegation writes the delegation given in the request"
   (`features/requests.feature`, `@r19`; `tests/scenarios/test_requests.py::test_request_with_delegation_writes_the_delegation_given_in_the_request`).
   Why it is red today (notes §1, §2): two steps have no definition, "the upstream keeps one new request" and
   "its delegation is "<text>"", and behind them the When fails anyway: the `request` subparser of `scripts/work` does
@@ -28,20 +28,20 @@ No file is added or removed by a decision below. All three files are well under 
 ## 3. Decisions
 
 1. **The delegation is written as the frontmatter field `delegation`, as one JSON-quoted string** (the text encoded
-   as a JSON string, so a quote, a backslash or a newline in it stays on one line). Rests on requests#r19 ("write the
+   as a JSON string, so a quote, a backslash or a newline in it stays on one line). Rests on requests#r19@0.29 ("write the
    delegation in the request") and the capability's Implementation ("`--delegation` is written as the frontmatter
    field `delegation`"); the quoted form is the one the existing reader, `supervise_answers.py`'s
    `Answers.delegation`, decodes (notes §3, row 1), and the one the supervision steps already write by hand. A raw
    value would break that reader on a quote and break the file on a newline (frontmatter ends at a line `---`).
-2. **No `delegation` field at all when the option is not given.** Rests on requests#r1 (the request r1 writes is
+2. **No `delegation` field at all when the option is not given.** Rests on requests#r1@0.29 (the request r1 writes is
    unchanged; probe B's frontmatter stays as it is) and r19 being a **Where** line (only where the option is given).
 3. **The delegation goes through the same `request()` path**: after every existing refusal (r2, r3, missing lines
-   file) and inside the one commit. Rests on requests#r2/r3 ("change nothing" on refusal) and requests#r12 (the
+   file) and inside the one commit. Rests on requests#r2@0.29/r3 ("change nothing" on refusal) and requests#r12@0.29 (the
    change is committed); design-decision/requests-written-through-work (the asker's part is written by `work`
-   only, `work request` only, requests#r4).
+   only, `work request` only, requests#r4@0.29).
 4. **The step "its delegation is" reads the stored field and decodes it as `Answers.delegation` does** (JSON when
    quoted), not through `model_parse.scalar`, which strips quotes without unescaping (notes §3, row 2). Rests on the
-   scenario's purpose line ("as they were given") and requests#r19.
+   scenario's purpose line ("as they were given") and requests#r19@0.29.
 5. **Exit**: success, as the scenario's "it exits successfully" says; no exit code is named in the scenario
    (design-decision/exits-are-successful-or-errors).
 
