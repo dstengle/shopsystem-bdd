@@ -138,11 +138,7 @@ def withdraw(args):
 
 
 def answer(args):
-    """`work answer b<n> TEXT`; a reviewer's flag is a work-item's, and refused for an item."""
-    for flag, given in (("--change", args.change), ("--accept", args.accept)):
-        if given:
-            raise backlog_items.Refused("work answer: %s is a reviewer's flag on a work-item; an item takes none"
-                                        % flag)
+    """`work answer b<n> TEXT`."""
     return moved(backlog_moves.answer(args.root, args.name, args.answer))
 
 

@@ -1,13 +1,10 @@
 """backlog r2, r3, r9-r14, r16: the moves of an item's status, each one commit, a move from another status refused
-naming it, and `work withdraw` and `work answer` on a work-item as before (workflow simplification plan 2, Task 2)."""
-import json
-import shutil
+naming it (workflow simplification plan 2, Task 2)."""
 
 import backlog_items
 import backlog_moves
 import pytest
 import spec_lexicon
-import workqueue_answer
 from backlog_testing import REPO, git, state, work, write_item
 
 MOVES = sorted((command, before, after) for command, row in backlog_moves.TRANSITIONS.items()
@@ -91,58 +88,9 @@ def test_an_empty_or_multi_line_text_is_refused(backlog_repo, verb, text):
     assert state(backlog_repo) == before
 
 
-@pytest.mark.parametrize("flag", ["--change", "--accept"])
-def test_an_item_answer_refuses_the_reviewer_flags(backlog_repo, flag):
-    write_item(backlog_repo, "b1", status="needs-input")
-    before = state(backlog_repo)
-    done = work(backlog_repo, "answer", "b1", "x", flag)
-    assert done.returncode == 1 and flag in done.stderr, done.stderr
-    assert state(backlog_repo) == before
-
-
 def test_a_move_of_an_item_there_is_not_is_refused(backlog_repo):
     done = work(backlog_repo, "shape", "b9")
     assert done.returncode == 1 and "there is no item b9" in done.stderr
-
-
-def test_work_withdraw_on_a_work_item_is_unchanged(backlog_repo):
-    path = backlog_repo / ".shop/work/i1/w1.md"
-    path.parent.mkdir(parents=True)
-    path.write_text("---\nid: work-item/x/w1\nkind: work-item\nstatus: withdrawn\n---\n\n# w1\n")
-    git(backlog_repo, "add", "-A")
-    git(backlog_repo, "commit", "-qm", "w1")
-    before = state(backlog_repo)
-    done = work(backlog_repo, "withdraw", "w1")
-    assert done.returncode == 1 and "withdrawn" in done.stderr, done.stderr
-    assert state(backlog_repo) == before
-
-
-W1, LOG = ".shop/work/i1/w1.md", ".shop/work/i1/log.jsonl"
-
-
-def awaiting_work_item(repo):
-    """An awaiting-answer work-item w1 a reviewer asked about, with its log.jsonl transition, committed."""
-    (repo / W1).parent.mkdir(parents=True)
-    (repo / W1).write_text("---\nid: work-item/ex.com/prod/ctx/w1\nkind: work-item\npart_of: initiative/i1\n"
-                           "status: awaiting-answer\nunder: thing\ncheck: true\n---\n\n# w1\n")
-    (repo / LOG).write_text(json.dumps({"work-item": "w1", "before": "done", "after": "awaiting-answer"}) + "\n")
-    git(repo, "add", "-A")
-    git(repo, "commit", "-qm", "w1")
-
-
-def test_work_answer_on_a_work_item_is_unchanged(backlog_repo, tmp_path_factory):
-    awaiting_work_item(backlog_repo)
-    direct = tmp_path_factory.mktemp("direct") / "repo"
-    shutil.copytree(backlog_repo, direct, ignore=shutil.ignore_patterns("*.lock"))
-    done = work(backlog_repo, "answer", "w1", "x", "--change")
-    assert done.returncode == 0, done.stderr
-    assert done.stdout == "w1 %s\n" % workqueue_answer.answer(direct, "w1", "x", change=True)
-    assert (backlog_repo / W1).read_text() == (direct / W1).read_text()
-    moves = [[(m["before"], m["after"]) for m in map(json.loads, (r / LOG).read_text().splitlines())]
-             for r in (backlog_repo, direct)]
-    assert moves[0] == moves[1], moves
-    assert git(backlog_repo, "log", "-1", "--format=%s") == git(direct, "log", "-1", "--format=%s")
-    assert git(backlog_repo, "status", "--porcelain") == ""
 
 
 def test_drop_removes_a_dependency(backlog_repo):

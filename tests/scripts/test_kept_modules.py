@@ -19,12 +19,7 @@ OLD = {"workqueue", "workqueue_answer", "workqueue_done", "workqueue_list", "wor
 # The kept files that still import an old module, because the command that needs it is deleted by a later task of
 # plan 9. Tasks 3-7 empty it, entry by entry.
 ALLOWED = {
-    "scripts/work": {"workqueue", "workqueue_answer", "workqueue_list", "workqueue_note",
-                     "workqueue_start", "workqueue_status"},
     "scripts/measure": {"measure_build", "measure_read"},
-    "scripts/migrate": {"migrate_prompt", "migrate_session"},
-    "scripts/migrate_upgrade.py": {"migrate_session"},
-    "scripts/request_moves.py": {"workqueue_done"},
 }
 
 

@@ -47,18 +47,3 @@ def pytest(repo, *args):
 def test_without_the_option_the_suite_runs_whole(tmp_path):
     done = pytest(consumer(tmp_path, "thing#r1"))
     assert done.returncode == 0 and "2 passed" in done.stdout, done.stdout + done.stderr
-
-
-def test_a_move_to_a_status_outside_the_lifecycle_is_refused(tmp_path):
-    sys.path.insert(0, str(SCRIPTS))
-    import workqueue
-    item = tmp_path / ".shop/work/i1/w1.md"
-    item.parent.mkdir(parents=True)
-    item.write_text("---\nkind: work-item\nstatus: drafted\n---\n")
-    try:
-        workqueue.move(tmp_path, "i1", "w1", "finished", by="someone")
-    except workqueue.Refused as refused:
-        assert "finished is no status" in str(refused)
-    else:
-        raise AssertionError("moved to finished")
-    assert "status: drafted" in item.read_text() and not (item.parent / "log.jsonl").exists()

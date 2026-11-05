@@ -23,7 +23,6 @@ BOUND_BY_PYTEST_BDD = [
     "features/migration-tools.feature",
     "features/readiness.feature",
     "features/telemetry.feature",
-    "features/work-queue.feature",
 ]
 
 

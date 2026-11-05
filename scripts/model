@@ -11,7 +11,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from model_check import check, needing_clingo, rules  # noqa: E402
 from model_facts import Model  # noqa: E402
-# what scripts/migrate, scripts/workqueue and the migration steps read by loading this file
+# what scripts/migrate, scripts/shop_files and the migration steps read by loading this file
 from model_parse import as_list, frontmatter, scenarios, section  # noqa: E402,F401
 from model_report import cmd_decisions, cmd_lexicon, cmd_logic, cmd_parse, cmd_why, render_decisions  # noqa: E402,F401
 from model_restates import cmd_restates  # noqa: E402

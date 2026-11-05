@@ -493,7 +493,7 @@ Spec only, plus the helper and `model restates`' qualified entries. Nothing that
     `.shop/work/*/initiative.md` and `.shop/work/requests/*.md`; an unreadable frontmatter is skipped, never
     refused, because frozen history is not checked.
 
-- [ ] **Step 1: Write the failing tests.**
+- [x] **Step 1: Write the failing tests.**
   - `test_request_view.py`:
     - `test_work_list_gives_requests_and_uncited_observations_only` (a fixture with an initiative, a work-item and a
       request: the output names the request and no `i1`/`w1`);
@@ -501,18 +501,18 @@ Spec only, plus the helper and `model restates`' qualified entries. Nothing that
   - `test_hooks.py::test_no_hook_names_the_old_queue`: no hooks.json command names `prompting` or `compacting`, and
     `migrate status --hook` in a repository with a started initiative prints no `i1`.
   - `test_retirement.py`'s grep grows by the commands listed in Task 3.
-- [ ] **Step 2: Run them.** Expected: FAIL (`work list` prints `initiative i1`; hooks.json has `prompting`).
-- [ ] **Step 3: Retire** work-queue, requests r3, r4, r10-r13 and migration-tools r22, r23 with the helper. Then
+- [x] **Step 2: Run them.** Expected: FAIL (`work list` prints `initiative i1`; hooks.json has `prompting`).
+- [x] **Step 3: Retire** work-queue, requests r3, r4, r10-r13 and migration-tools r22, r23 with the helper. Then
   delete, create and modify as listed, and run `python3 scripts/features generate`, which removes
   `features/work-queue.feature` and regenerates requests and migration-tools.
-- [ ] **Step 4: The gate.** Expected:
+- [x] **Step 4: The gate.** Expected:
   - Suite: no failure.
   - `model check`: unchanged, 53/16/19/0, because the model still reads `.shop/work/`.
   - `restates`: 0 missing.
   - `vocab --check`: one handler each.
   - Collection diff: work-queue's 26 scenarios, requests' 6, migration-tools' 2, and the deleted test files' ids.
   - `grep -rn "workqueue" scripts tests --include=*.py` finds nothing but `test_kept_modules.OLD`.
-- [ ] **Step 5: Commit.**
+- [x] **Step 5: Commit.**
   ```bash
   git add -A scripts tests spec skills hooks features README.md CLAUDE.md
   git commit -m "the old queue retired: work-queue's lines, delegations, work add/run/retry/note/status/start/delegate, the hooks' initiative text (plan 9, Task 4)"

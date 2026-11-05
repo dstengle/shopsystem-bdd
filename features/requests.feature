@@ -16,19 +16,6 @@ Feature: Requests
     Then `work` writes the request q2
     And the request q2 is raised for the request q1
 
-  @g3 @r3
-  Scenario: `work request` writes a delegation it is given
-    Given `--delegation` is given
-    When the person runs `work request`
-    Then `work` writes the delegation d1
-
-  @g4 @r4
-  Scenario: `work request` refuses an empty delegation
-    Given a delegation d1 that is `empty`
-    When the person runs `work request`
-    Then `work` exits with an error naming the delegation d1
-    And `work` changes nothing
-
   @g5 @r5
   Scenario: `work request` refuses a line that does not parse
     Given a request line r1
@@ -71,37 +58,6 @@ Feature: Requests
     And the command c1 is foreign
     When the person runs `work request`
     Then `work` exits with an error naming the bounded context b1
-    And `work` changes nothing
-
-  @g10 @r10
-  Scenario: `work delegate` writes a delegation in place of any
-    Given a request q1 that is `open`
-    When the person runs `work delegate` on the request q1
-    Then `work` writes the delegation d1
-    And `work` commits the request q1
-    And `work` does not change the status of the request q1
-    And `work` does not change the side of the request q1
-
-  @g11 @r11
-  Scenario: `work delegate` writes a delegation in the asker's turn
-    Given a request q1 that is `awaiting-asker`
-    When the person runs `work delegate` on the request q1
-    Then `work` writes the delegation d1
-
-  @g12 @r12
-  Scenario: `work delegate` refuses an empty delegation
-    Given a delegation d1 that is `empty`
-    And a request q1 that is `open`
-    When the person runs `work delegate` on the request q1
-    Then `work` exits with an error naming the delegation d1
-    And `work` changes nothing
-
-  @g13 @r13
-  Scenario: `work delegate` refuses a closed request
-    Given a request q1
-    And the request q1 is closed
-    When the person runs `work delegate` on the request q1
-    Then `work` exits with an error naming the status of the request q1
     And `work` changes nothing
 
   @g14 @r14

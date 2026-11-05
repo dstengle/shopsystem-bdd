@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Keep the work-queue of a bounded context in .shop/work/: draft work-items and show them (capability work-queue),
-and return a failed work-item (`work retry`).
-Keep the backlog in .shop/backlog/: an item from an idea to its delivery, named `b<n>` (capability backlog).
-Keep the person's words with the turns around them in .shop/quotes/, named `quote-<n>` (capability conversation)."""
+"""Keep the backlog in .shop/backlog/: an item from an idea to its delivery, named `b<n>` (capability backlog).
+Keep the person's words with the turns around them in .shop/quotes/, named `quote-<n>` (capability conversation).
+Keep the requests between bounded contexts (capability requests). Plugin 1.x's queue of initiatives and work-items is
+frozen under .shop/work/ and read as files (workflow simplification plan 9)."""
 import argparse
-import json
 import os
 import sys
 
@@ -13,76 +12,36 @@ import backlog_cli
 import backlog_items
 import batch_cli
 import conversation_cli
-import workqueue
-import workqueue_answer
-import workqueue_list
-import workqueue_note
 import request_moves
-import workqueue_start
-import workqueue_status
-
-
-def cmd_add(args):
-    print(workqueue.add(args.root, args.initiative, args.title, args.part_of, args.under, args.accepts))
-    return 0
+import request_view
+import shop_files
 
 
 def cmd_withdraw(args):
-    if backlog_items.is_item(args.name):
-        return backlog_cli.withdraw(args)
-    print("%s %s" % (args.name, workqueue.withdraw(args.root, args.name)))
-    return 0
+    return backlog_cli.withdraw(args)
 
 
 def cmd_list(args):
-    return workqueue_list.listing(args.root, args.json)
+    return request_view.listing(args.root, args.json)
 
 
 def cmd_show(args):
-    if args.target is not None and backlog_items.is_item(args.target):
+    if args.target is None:
+        return request_view.listing(args.root, args.json)
+    if backlog_items.is_item(args.target):
         return backlog_cli.show(args)
-    if args.target is not None and conversation_cli.is_quote(args.target):
+    if conversation_cli.is_quote(args.target):
         return conversation_cli.show(args)
-    if args.target is not None:
-        return workqueue_list.show(args.root, args.target, args.json)
-    if args.json:
-        print(json.dumps({"work-items": [{"work-item": n, "initiative": i, "status": s}
-                                         for i, n, s in workqueue.items(args.root)],
-                          "requests": [{"request": n, "status": s, "turn": t}
-                                       for n, s, t, _ in workqueue.requests(args.root)]}))
-        return 0
-    for initiative, name, status in workqueue.items(args.root):
-        print("%s/%s %s" % (initiative, name, status))
-    for name, status, turn, _ in workqueue.requests(args.root):
-        print("%s %s %s" % (name, status, turn))
-    return 0
-
-
-def cmd_retry(args):
-    print("%s %s" % (args.name, workqueue.retry(args.root, args.name)))
-    return 0
+    return request_view.show(args.root, args.target, args.json)
 
 
 def cmd_answer(args):
-    if backlog_items.is_item(args.name):
-        return backlog_cli.answer(args)
-    print("%s %s" % (args.name, workqueue_answer.answer(args.root, args.name, args.answer, args.change, args.accept)))
-    return 0
-
-
-def cmd_note(args):
-    workqueue_note.note(args.root, args.initiative, args.line)
-    return 0
-
-
-def cmd_status(args):
-    return workqueue_status.status(args.root, args.initiative, args.json)
+    return backlog_cli.answer(args)
 
 
 def cmd_request(args):
     request_moves.gate(args.root, args.asker, args.source, args.thread, args.raised_for)
-    print(request_moves.request(args.root, args.title, args.asker, args.lines, args.source, args.thread, args.delegation,
-                                     args.raised_for))
+    print(request_moves.request(args.root, args.title, args.asker, args.lines, args.source, args.thread, args.raised_for))
     return 0
 
 
@@ -116,46 +75,20 @@ def cmd_resolve(args):
     return 0
 
 
-def cmd_delegate(args):
-    request_moves.delegate(args.root, args.request, args.delegation)
-    return 0
-
-
-def cmd_start(args):
-    print(workqueue_start.start(args.root, args.request))
-    return 0
-
-
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="work", description=__doc__)
     ap.add_argument("--root", default=".", help="the repository (default: the current directory)")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    a = sub.add_parser("add", help="draft a work-item")
-    a.add_argument("initiative")
-    a.add_argument("title")
-    a.add_argument("--part-of", required=True)
-    a.add_argument("--under", required=True)
-    a.add_argument("--accepts", required=True, action="append")
-    li = sub.add_parser("list", help="each initiative, request and work-item under .shop/work/, with its status")
+    li = sub.add_parser("list", help="each request with its status, and each observation no source cites")
     li.add_argument("--json", action="store_true", help="print one JSON object instead of lines")
-    s = sub.add_parser("show", help="where an initiative or a work-item stands (default: each work-item and request, with its status)")
-    s.add_argument("target", nargs="?", help="an initiative, a work-item, an item b<n> or a quote quote-<n>")
+    s = sub.add_parser("show", help="where an item, a request or a quote stands (default: as `work list`)")
+    s.add_argument("target", nargs="?", help="an item b<n>, a request q<n> or a quote quote-<n>")
     s.add_argument("--json", action="store_true", help="print one JSON object instead of lines")
-    w = sub.add_parser("withdraw", help="move a work-item that is neither claimed nor green, or an item b<n>, to withdrawn")
+    w = sub.add_parser("withdraw", help="move an item b<n> to withdrawn")
     w.add_argument("name")
-    t = sub.add_parser("retry", help="return a failed work-item to the status before that log.jsonl gives in its transition into failed")
-    t.add_argument("name")
-    n = sub.add_parser("answer", help="answer the question of an awaiting-answer work-item (returning it to the stage that asked), a capability-proposal or an item b<n> that is needs-input")
+    n = sub.add_parser("answer", help="answer the question of an item b<n> that is needs-input")
     n.add_argument("name")
     n.add_argument("answer")
-    n.add_argument("--change", action="store_true", help="a reviewer's question: the answer asks for a change (the work-item returns to ready)")
-    n.add_argument("--accept", action="store_true", help="a reviewer's question: the answer accepts the work-item as it is (it returns to done)")
-    o =sub.add_parser("note", help="append a dated line to an initiative's ledger and commit it")
-    o.add_argument("initiative")
-    o.add_argument("line")
-    u = sub.add_parser("status", help="where an initiative (default: each open one) stands, for a session to start from")
-    u.add_argument("initiative", nargs="?")
-    u.add_argument("--json", action="store_true", help="print one JSON object instead of text")
     q = sub.add_parser("request", help="take in a request from its asker, open and in the upstream's turn")
     q.add_argument("title")
     q.add_argument("--from", dest="asker", required=True)
@@ -163,7 +96,6 @@ def main(argv=None):
     q.add_argument("--source", action="append", default=[])
     q.add_argument("--thread")
     q.add_argument("--raised-for", dest="raised_for", help="the request of the asker this one is raised for")
-    q.add_argument("--delegation")
     q = sub.add_parser("outcome", help="write the outcome of a line of a request", allow_abbrev=False)
     q.add_argument("request")
     q.add_argument("line", type=int)
@@ -185,22 +117,16 @@ def main(argv=None):
     q = sub.add_parser("resolve", help="write which requirement holds each accepted line of a request, and in which version")
     q.add_argument("request")
     q.add_argument("--line", nargs=3, action="append", default=[], metavar=("N", "REQUIREMENT", "VERSION"))
-    q = sub.add_parser("delegate", help="write the delegation of a request, in place of any it had")
-    q.add_argument("request")
-    q.add_argument("delegation")
-    q = sub.add_parser("start", help="write the initiative an accepted request begins, proposed")
-    q.add_argument("request")
     backlog_cli.add_parsers(sub)
     batch_cli.add_parsers(sub)
     conversation_cli.add_parsers(sub)
     args = ap.parse_args(argv)
     try:
-        return {"add": cmd_add, "show": cmd_show, "list": cmd_list, "retry": cmd_retry, "answer": cmd_answer,
-                "withdraw": cmd_withdraw, "note": cmd_note, "status": cmd_status,
-                "request": cmd_request, "outcome": cmd_outcome, "ask": cmd_ask, "reply": cmd_reply, "turn": cmd_turn, "resolve": cmd_resolve,
-                "delegate": cmd_delegate, "start": cmd_start, **backlog_cli.COMMANDS, **batch_cli.COMMANDS,
+        return {"show": cmd_show, "list": cmd_list, "answer": cmd_answer, "withdraw": cmd_withdraw,
+                "request": cmd_request, "outcome": cmd_outcome, "ask": cmd_ask, "reply": cmd_reply, "turn": cmd_turn,
+                "resolve": cmd_resolve, **backlog_cli.COMMANDS, **batch_cli.COMMANDS,
                 **conversation_cli.COMMANDS}[args.cmd](args)
-    except workqueue.Refused as refused:
+    except shop_files.Refused as refused:
         print("work: %s" % refused, file=sys.stderr)
         return 1
 

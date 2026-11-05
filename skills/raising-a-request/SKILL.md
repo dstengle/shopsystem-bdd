@@ -28,7 +28,7 @@ The form follows what starts the behaviour, not the person's wording. What happe
 
 ```
 While an item is `shaped`, when the person runs `work ready` on the item, `work` shall set the status of the item to `ready`.
-When the person runs `work start` on an initiative that is `proposed`, `work` shall set the status of the initiative to `started` and print the initiative.
+When the person runs `work idea`, `work` shall write an item and commit the item.
 ```
 
 `shall A, B and C` lists more; `shall not A or B` forbids both; `R1, and R2` joins responses whose subjects differ. A condition's clauses join by `and` or `or`. A preposition (`for`, `on`, `with`) means the one relation the context's `## Relations` table gives for the two kinds it joins (`model lexicon` lists the rows); where two readings typecheck, the line is refused as ambiguous and reworded. Exits are in words (`shall exit successfully`, `shall exit with an error naming …`). Never restate what `spec/universal.md` holds (a refusal changes nothing, `--json` prints one object).

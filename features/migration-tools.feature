@@ -436,39 +436,3 @@ Feature: Migration tools
     When the SessionStart hook runs `migrate status --hook`
     Then `migrate` prints "holds no version"
     And `migrate` prints "banana"
-
-  @g22 @r22
-  Scenario: the SessionStart hook gives a session what `work status` prints for each open initiative
-    Given the tracked file `.shop/plugin-version` holds "1.0.0"
-    And the tracked file `.shop/work/i1/initiative.md` holds:
-      """
-      ---
-      id: initiative/example.org/acme/shop/i1
-      kind: initiative
-      status: started
-      ---
-      # i1
-      """
-    And a repository r1
-    And the repository r1 is busy
-    When the SessionStart hook runs `migrate status --hook`
-    Then `migrate` prints "initiative i1"
-
-  @g23 @r23
-  Scenario: the PreCompact hook appends `compacted` to the ledger of each open initiative and tells the session to hand off
-    Given the tracked file `.shop/work/i1/initiative.md` holds:
-      """
-      ---
-      id: initiative/example.org/acme/shop/i1
-      kind: initiative
-      status: started
-      ---
-      # i1
-      """
-    And the tracked file `.shop/work/i1/ledger.md` holds "- 2026-01-02: began"
-    And a repository r1
-    And the repository r1 is busy
-    When the PreCompact hook runs `migrate compacting`
-    Then `migrate` appends "compacted"
-    And `migrate` prints "work note"
-    And `migrate` prints "instead of being compacted"

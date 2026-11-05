@@ -27,12 +27,12 @@ def request_of(initiative, root):
     """The request `initiative` fulfils, as {"id": q<n>, "origin": "internal"|"external"}; None when its initiative.md
     names none. The request is read through `work`'s own reader. A link that cannot be read is refused."""
     import request_moves
-    import workqueue
+    import shop_files
     path = Path(root) / ".shop" / "work" / initiative / "initiative.md"
     if not path.is_file():
         return None
     try:
-        workqueue.read(path, root)
+        shop_files.read(path, root)
         head = path.read_text(encoding="utf-8").split("\n---", 1)[0]
         values = [v.strip() for v in re.findall(r"^fulfils:[ \t]*(.*)$", head, re.MULTILINE) if v.strip()]
         idents = {v.rsplit("/", 1)[-1] for value in values for v in re.split(r"[,\s]+", value) if v}
@@ -44,11 +44,11 @@ def request_of(initiative, root):
         if "/" in ident or not (Path(root) / ".shop" / "work" / "requests" / (ident + ".md")).is_file():
             raise Refused("the queue does not hold the request %s (no %s)" % (
                 ident, Path(".shop/work/requests") / (ident + ".md")))
-        asker = request_moves.field(workqueue.read(request_moves.path_of(root, ident), root), "asker")
+        asker = request_moves.field(shop_files.read(request_moves.path_of(root, ident), root), "asker")
         if not asker:
             raise Refused("%s has no asker" % (Path(".shop/work/requests") / (ident + ".md")))
-        internal = asker == "internal" or asker == "bounded-context/" + workqueue.context_path(root)
-    except workqueue.Refused as why:
+        internal = asker == "internal" or asker == "bounded-context/" + shop_files.context_path(root)
+    except shop_files.Refused as why:
         raise Refused(str(why)) from None
     return {"id": ident, "origin": "internal" if internal else "external"}
 

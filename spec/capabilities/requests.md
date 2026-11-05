@@ -5,7 +5,7 @@ narrator: a context taking in or raising a request
 group: service
 language: codified-1
 rests_on: [design-decision/requests-written-through-work, design-decision/exits-are-successful-or-errors, design-decision/an-asker-is-told-by-its-registered-asker-id]
-retired: []
+retired: [r3, r4, r10, r11, r12, r13]
 ---
 
 # Requests
@@ -41,15 +41,6 @@ Restates: r29@0.29.
 - [r2] Where `--raised-for` is given, when the person runs `work request` on a request, `work` shall write a request
   raised for the request.
 
-### [g3] `work request` writes a delegation it is given
-Restates: r19@0.29.
-- [r3] Where `--delegation` is given, when the person runs `work request`, `work` shall write a delegation.
-
-### [g4] `work request` refuses an empty delegation
-Restates: r22@0.29.
-- [r4] While a delegation is `empty`, if the person runs `work request`, then `work` shall exit with an error naming
-  the delegation and change nothing.
-
 ### [g5] `work request` refuses a line that does not parse
 Restates: r2@0.29, r59@0.29.
 - [r5] While a request line is unparsed, if the person runs `work request`, then `work` shall exit with an error
@@ -74,25 +65,6 @@ Restates: r31@0.29.
 Restates: r32@0.29.
 - [r9] While a command is foreign, if the person runs `work request`, then `work` shall exit with an error naming a
   bounded context and change nothing.
-
-### [g10] `work delegate` writes a delegation in place of any
-Restates: r65@0.29, r66@0.29, r71@0.29.
-- [r10] When the person runs `work delegate` on a request that is `open`, `work` shall write a delegation and commit
-  the request, and `work` shall not change the status of the request or change the side of the request.
-
-### [g11] `work delegate` writes a delegation in the asker's turn
-Restates: r70@0.29.
-- [r11] When the person runs `work delegate` on a request that is `awaiting-asker`, `work` shall write a delegation.
-
-### [g12] `work delegate` refuses an empty delegation
-Restates: r67@0.29.
-- [r12] While a delegation is `empty`, if the person runs `work delegate` on a request that is `open`, then `work`
-  shall exit with an error naming the delegation and change nothing.
-
-### [g13] `work delegate` refuses a closed request
-Restates: r68@0.29.
-- [r13] If the person runs `work delegate` on a request that is closed, then `work` shall exit with an error naming
-  the status of the request and change nothing.
 
 ### [g14] `work outcome` writes a line outcome in the upstream's turn
 Restates: r12@0.29, r15@0.29, r5@0.29.
@@ -162,17 +134,17 @@ Restates: work-queue#r59@0.29.
   request line proposed in the request.
 
 ## Implementation, may change
-- `work request`, `work outcome`, `work ask`, `work reply`, `work turn`, `work resolve` and `work delegate` are
-  commands of `scripts/work`, one set for every asker and every upstream, with one lifecycle; how a request is kept
+- `work request`, `work outcome`, `work ask`, `work reply`, `work turn` and `work resolve` are commands of
+  `scripts/work`, one set for every asker and every upstream, with one lifecycle; how a request is kept
   is `work`'s own (design-decision/requests-written-through-work).
 - A request is kept in its upstream's repository as `.shop/work/requests/q<n>.md`; the asker writes and reads it
   there through the upstream's `work`.
 - The file's form: frontmatter `id: request/<context path>/q<n>`, `kind: request`, `asker` (a context id,
   `internal`, or the product level), `part_of` (a job-thread) or `source` (origins), `raised_for`, `status`, `turn`
-  (`asker` | `upstream`, the request's side), `delegation`; sections `## Lines` (the asker's), `## Questions`,
+  (`asker` | `upstream`, the request's side); sections `## Lines` (the asker's), `## Questions`,
   `## Answers`, `## Outcomes` (the upstream's, one a line), `## Resolution` (the upstream's).
-- `work request <title> --from <asker> --lines <file>` takes `--source <id>`, `--thread <id>`, `--raised-for <request>`
-  and `--delegation <text>`, writes the file's lines as the request's lines with the turn the upstream's, and prints
+- `work request <title> --from <asker> --lines <file>` takes `--source <id>`, `--thread <id>` and `--raised-for <request>`,
+  writes the file's lines as the request's lines with the turn the upstream's, and prints
   its id. A line is parsed in the upstream's requirement grammar where its `spec/index.md` is codified, and held to
   0.29's strict form otherwise.
 - The asker's part (its lines and answers) is written only by `work request` and `work reply`; the upstream's part
@@ -217,3 +189,11 @@ Restates: work-queue#r59@0.29.
 - r57@0.29: not implemented; kept under Not yet.
 - r58@0.29: not implemented; kept under Not yet.
 - r72@0.29: what a session does with a delegation the person gives it is no behaviour of `work`; the hook that tells the session is `migrate prompting`'s (migration-tools).
+- r19@0.29: retired with requests#r3 in 2.0.0 (the-old-workflow-retired).
+- r22@0.29: retired with requests#r4 in 2.0.0 (the-old-workflow-retired).
+- r65@0.29: retired with requests#r10 in 2.0.0 (the-old-workflow-retired).
+- r66@0.29: retired with requests#r10 in 2.0.0 (the-old-workflow-retired).
+- r67@0.29: retired with requests#r12 in 2.0.0 (the-old-workflow-retired).
+- r68@0.29: retired with requests#r13 in 2.0.0 (the-old-workflow-retired).
+- r70@0.29: retired with requests#r11 in 2.0.0 (the-old-workflow-retired).
+- r71@0.29: retired with requests#r10 in 2.0.0 (the-old-workflow-retired).

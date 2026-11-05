@@ -63,3 +63,19 @@ def test_the_conversation_hook_exits_0_when_its_modules_are_missing(tmp_path, su
     done = subprocess.run([sys.executable, "-S", str(alone / "conversation_hook"), sub], cwd=tmp_path, input="{}",
                           capture_output=True, text=True, timeout=60)
     assert (done.returncode, done.stdout, done.stderr) == (0, "", "")
+
+
+def test_no_hook_names_the_old_queue(tmp_path):
+    """Plan 9, D15: no hook runs `migrate prompting` or `migrate compacting`, and the SessionStart hook prints no
+    initiative of the frozen queue."""
+    assert [c for _, c in COMMANDS if "prompting" in c or "compacting" in c] == []
+    for rel, text in {"spec/index.md": "---\nid: bounded-context/o/p/c\nkind: bounded-context\n---\n",
+                      ".shop/work/i1/initiative.md": "---\nkind: initiative\nstatus: started\ntitle: Cart\n---\n",
+                      ".shop/work/i1/ledger.md": "# i1\n"}.items():
+        (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
+        (tmp_path / rel).write_text(text)
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    done = subprocess.run([sys.executable, str(ROOT / "scripts" / "migrate"), "status", "--hook"], cwd=tmp_path,
+                          capture_output=True, text=True, timeout=60)
+    assert done.returncode == 0, done.stderr
+    assert "i1" not in done.stdout, done.stdout

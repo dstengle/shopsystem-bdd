@@ -5,13 +5,11 @@ A request's `## Lines`, `## Questions`, `## Answers`, `## Outcomes` and `## Reso
 `<n>. <text>`; the resolution's text is the requirement id and the version. A question's text is `line <l>: <words>`;
 answer n answers question n. The text helpers and the turn rule are request_text's (plan 4, D24, D25).
 """
-import json
 import re
 from pathlib import Path
 
 import request_lines
 import shop_files
-import workqueue_done
 from request_text import (  # noqa: F401  (SETTLED: imported from here)
     SETTLED,
     WORK_REQUESTS,
@@ -109,15 +107,13 @@ def refuse_upstream_part(root, text, ident, part):
         raise Refused("%s is a request to the upstream %s; the upstream writes %s" % (ident, asked[0], part))
 
 
-def request(root, title, asker, lines_file, sources, thread, delegation=None, raised_for=None):
+def request(root, title, asker, lines_file, sources, thread, raised_for=None):
     """Write a new open request in the upstream's turn, `q<n>` one above the highest kept; return q<n> (r1).
 
     A request that names neither an origin nor a job-thread is refused (r3), and so is one with a line the upstream
     would not read (r2): one that does not parse in its requirement grammar, or, where its index is not codified, one
     not in the strict form `model check` holds (request_lines); a refusal writes nothing.
     """
-    if delegation is not None and not delegation.strip():
-        raise Refused("the delegation is empty")
     if not sources and thread is None and raised_for is None:
         raise Refused("the request names neither an origin (--source) nor a job-thread (--thread)")
     if not Path(lines_file).is_file():
@@ -131,10 +127,9 @@ def request(root, title, asker, lines_file, sources, thread, delegation=None, ra
     if raised_for is not None and re.fullmatch(r"q\d+", raised_for):     # a bare q<n> names a request of this context
         raised_for = "request/%s/%s" % (shop_files.context_path(root), raised_for)
     origin = "\n".join(origin + (["raised_for: %s" % raised_for] if raised_for is not None else []))
-    given = "delegation: %s\n" % json.dumps(delegation) if delegation is not None else ""
-    text = ("---\nid: request/%s/%s\nkind: request\nasker: %s\n%s\nstatus: open\nturn: upstream\n%s---\n\n# %s\n\n## Lines\n%s\n"
+    text = ("---\nid: request/%s/%s\nkind: request\nasker: %s\n%s\nstatus: open\nturn: upstream\n---\n\n# %s\n\n## Lines\n%s\n"
             "## Questions\n\n## Answers\n\n## Outcomes\n\n## Resolution\n"
-            % (shop_files.context_path(root), name, asker, origin, given, title,"".join("%d. %s\n" % e for e in enumerate(lines, 1))))
+            % (shop_files.context_path(root), name, asker, origin, title,"".join("%d. %s\n" % e for e in enumerate(lines, 1))))
     path = directory / (name + ".md")
 
     def write():
@@ -179,24 +174,6 @@ def turn(root, ident):
     _change(root, ident, "turn", turned)
 
 
-def delegate(root, ident, text):
-    """Write `text` as request `ident`'s delegation in place of any it had (r65), committed (r66). An empty one is refused
-    (r67), and so is a delivered, refused or withdrawn request (r68); status and turn stay as they are (r70, r71)."""
-    if not text.strip():
-        raise Refused("the delegation is empty")
-
-    def edit(old):
-        status = field(old, "status")
-        if status in ("delivered", "refused", "withdrawn"):
-            raise Refused("%s is %s; work delegate writes a delegation only in a request whose negotiation has not ended" % (ident, status))
-        value = json.dumps(text)
-        if field(old, "delegation") is not None:
-            return with_field(old, "delegation", value)
-        end = old.find("\n---", 4)
-        return old[:end] + "\ndelegation: %s" % value + old[end:]
-    _change(root, ident, "delegate", edit)
-
-
 def resolve(root, ident, lines):
     """Write each accepted line's requirement and version, `lines` being (number, requirement, version), and set the
     status to delivered (r10, r11); a request that is not accepted is refused."""
@@ -210,12 +187,5 @@ def resolve(root, ident, lines):
         text = with_field(with_entries(text, "Resolution", held), "status", "delivered")
         return with_field(text, "turn", "asker")  # r24
     path = path_of(root, ident)
-    after =edit(shop_files.read(path, root))
-    done = [d for d in workqueue_done.naming(root, ident) if workqueue_done.becomes(root, d, {ident: "delivered"})]
-
-    def write():
-        path.write_text(after)
-        for directory in done:
-            workqueue_done.mark(directory, root)
-    rels = [str(p.relative_to(root)) for p in [path] + [d / "initiative.md" for d in done]]
-    shop_files.committed(root, rels, "work resolve: %s" % ident, write)
+    after = edit(shop_files.read(path, root))
+    shop_files.committed(root, [str(path.relative_to(root))], "work resolve: %s" % ident, lambda: path.write_text(after))

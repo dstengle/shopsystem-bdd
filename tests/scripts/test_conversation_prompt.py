@@ -149,8 +149,8 @@ def test_hook_takes_no_words(backlog_repo):
 def test_the_hook_is_wired():
     hooks = json.loads((T.Path(__file__).resolve().parents[2] / "hooks/hooks.json").read_text())["hooks"]
     commands = [h["command"] for group in hooks["UserPromptSubmit"] for h in group["hooks"]]
-    assert len(commands) == 2
-    assert commands[0].endswith('migrate" prompting') and commands[1].endswith('conversation_hook" quote'), commands
+    assert len(commands) == 1
+    assert commands[0].endswith('conversation_hook" quote'), commands
 
 
 @pytest.mark.timing

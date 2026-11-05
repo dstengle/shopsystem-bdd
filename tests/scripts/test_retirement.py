@@ -12,7 +12,8 @@ DELETED_AGENTS = ("code-scout", "bdd-planner", "bdd-implementer", "bdd-task-revi
                   "initiative-round", "capability-writer", "delegation-answerer", "spec-checker", "batch-analyst")
 DELETED_SKILLS = ("delivering-an-initiative", "formulating-features", "integrating-a-proposal",
                   "checking-spec-consistency", "migrating-to-capabilities", "bdd-red-green")
-DELETED_NAMES = ("work run", "--work-item", "supervise_")
+DELETED_NAMES = ("work run", "--work-item", "supervise_", "work add", "work status", "work note", "work start",
+                 "work delegate", "work retry", "migrate prompting", "migrate compacting")
 HISTORY = re.compile(r"^## \d+\.\d+\.\d+:")
 
 

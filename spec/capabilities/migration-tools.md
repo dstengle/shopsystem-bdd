@@ -5,7 +5,7 @@ narrator: a person or session migrating a repository to the final layout or upgr
 group: service
 language: codified-1
 rests_on: [design-decision/migration-in-one-pass, design-decision/living-plan-to-work-items, design-decision/final-layout, design-decision/references-are-ids, design-decision/capability-ids-are-context-scoped, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/upgrades-between-plugin-releases, design-decision/work-items-named-by-ids, design-decision/answers-not-rulings, design-decision/the-ledger-is-tracked]
-retired: []
+retired: [r22, r23]
 ---
 
 # Migration tools
@@ -419,38 +419,6 @@ Restates: r31@0.29.
 the tracked file `.shop/plugin-version` holds "banana"
 ```
 
-### [g22] the SessionStart hook gives a session what `work status` prints for each open initiative
-Restates: r32@0.29.
-- [r22] While a repository is busy, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print
-  "initiative i1".
-
-```given
-the tracked file `.shop/plugin-version` holds "1.0.0"
-the tracked file `.shop/work/i1/initiative.md` holds:
-  ---
-  id: initiative/example.org/acme/shop/i1
-  kind: initiative
-  status: started
-  ---
-  # i1
-```
-
-### [g23] the PreCompact hook appends `compacted` to the ledger of each open initiative and tells the session to hand off
-Restates: r33@0.29, r34@0.29.
-- [r23] While a repository is busy, when the PreCompact hook runs `migrate compacting`, `migrate` shall append
-  "compacted" and print "work note" and "instead of being compacted".
-
-```given
-the tracked file `.shop/work/i1/initiative.md` holds:
-  ---
-  id: initiative/example.org/acme/shop/i1
-  kind: initiative
-  status: started
-  ---
-  # i1
-the tracked file `.shop/work/i1/ledger.md` holds "- 2026-01-02: began"
-```
-
 ## Implementation, may change
 - r17's `by`: the entry's source, then `; supersedes <id> <qualifier>`.
 - Python 3 with the standard library; it relocates with `git mv`; `migrate run` does not commit, `migrate upgrade`
@@ -494,8 +462,6 @@ the tracked file `.shop/work/i1/ledger.md` holds "- 2026-01-02: began"
   a session to write: each scaffolded capability, and the glossary of an index without `language: codified-1`.
 - `migrate status` and `migrate upgrade` refuse a `.shop/plugin-version` that holds no version, naming an empty file
   as empty and otherwise what it holds; the SessionStart hook tells the session the same.
-- The PreCompact hook appends `compacted` with the time to the ledger of each initiative that is neither `done` nor
-  `abandoned`, and tells the session to write its hand-off with `work note` and end instead of being compacted.
 
 ## Not yet
 - `migrate plan` (a living plan to work-items and observations), `--dry-run`, and product-level repositories (see
@@ -505,3 +471,6 @@ the tracked file `.shop/work/i1/ledger.md` holds "- 2026-01-02: began"
 
 ## Dropped
 - r3@0.29: the `@holding` tag is the old system's, and `migrate run` deprecated a held scenario through `features deprecate`, which is removed: the generator owns the feature files (the GF conversion's design §15), and the 1.0.0 upgrade deletes deprecated scenarios
+- r32@0.29: retired with migration-tools#r22 in 2.0.0 (the-old-workflow-retired).
+- r33@0.29: retired with migration-tools#r23 in 2.0.0 (the-old-workflow-retired).
+- r34@0.29: retired with migration-tools#r23 in 2.0.0 (the-old-workflow-retired).

@@ -5,7 +5,6 @@ import json
 import backlog_items
 import pytest
 import shop_files
-import workqueue_list
 from backlog_testing import git, state, work, write_item
 
 
@@ -109,16 +108,6 @@ def test_a_file_not_named_b_n_is_refused_not_skipped(backlog_repo, stem):
 def test_show_refuses_an_item_there_is_not(backlog_repo):
     done = work(backlog_repo, "show", "b4")
     assert done.returncode == 1 and "b4" in done.stderr
-
-
-def test_show_of_a_work_item_is_unchanged(backlog_repo, capsys):
-    path = backlog_repo / ".shop/work/i1/w1.md"
-    path.parent.mkdir(parents=True)
-    path.write_text("---\nid: work-item/ex.com/prod/ctx/w1\nkind: work-item\npart_of: initiative/i1\n"
-                    "status: drafted\nunder: thing\ncheck: true\n---\n\n# w1\n")
-    done = work(backlog_repo, "show", "w1")
-    assert workqueue_list.show(backlog_repo, "w1", False) == 0
-    assert done.stdout == capsys.readouterr().out and done.returncode == 0
 
 
 def test_label_names_the_item_by_id_and_title():
