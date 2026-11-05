@@ -107,7 +107,8 @@ def _figures(root, name, sessions_dir):
     span = (at["started"] or stop, at["built"] or at["closed"] or stop)
     sessions = measure_batch_sessions.sessions_of(measure_batch_read.requests_of(directory),
                                                   measure_batch_read.agent_types(directory), span,
-                                                  at["first_review"], table)
+                                                  at["first_review"], table, batch=name,
+                                                  parents=measure_batch_read.parents(directory))
     unpriced = {}
     for one in sessions:
         for model, count in one.pop("unpriced").items():
@@ -122,7 +123,7 @@ def _figures(root, name, sessions_dir):
     defects["per_item"] = round(total / len(items), 6) if items else None
     wall = _seconds(at["started"], at["closed"] or stop)
     seconds = sum(s["session_time_seconds"] for s in sessions)
-    cost = round(sum(s["cost"] for s in sessions), 6)
+    cost = round(sum(s["cost"] or 0 for s in sessions), 6)
     return {"batch": name, "status": batch.status, "pull_request": batch.pull_request,
             "items": [{"item": i.name, "title": i.title, "status": i.status} for i in items],
             "window": window, "wall_time_seconds": wall,

@@ -47,8 +47,15 @@ def summary(figures):
     if figures.get("unpriced"):
         out.append("unpriced (left out of the cost, prices as of %s): %s\n" % (figures.get("prices_as_of"), ", ".join(
             "%s %d request%s" % (m, n, "" if n == 1 else "s") for m, n in figures["unpriced"].items())))
+    where, sessions = figures.get("sessions_from"), figures.get("sessions", [])
     if not figures.get("sessions_found"):
-        out.append("no transcripts at %s\n" % figures.get("sessions_from"))
+        out.append("no transcripts at %s\n" % where)
+    elif not sessions:
+        out.append("no session in the window at %s; a batch driven from another directory needs --sessions <the main "
+                   "session's directory>\n" % where)
+    elif not any(s.get("driver") or not s.get("agent") for s in sessions):
+        out.append("no main session in the window at %s: a batch driven from a subagent or from another directory "
+                   "needs --sessions <the main session's directory>\n" % where)
     return "\n".join(out)
 
 
@@ -72,7 +79,8 @@ def show(figures):
     """The summary and the sessions table."""
     rows = [(s["session"] if not s.get("agent") else "%s/%s" % (s["session"], s["agent"]), s.get("agent_type"),
              s["role"], s.get("started"), s.get("requests"), _duration(s.get("session_time_seconds")),
-             s.get("output_tokens"), s.get("new_input_tokens"), s.get("cache_read_tokens"), s.get("cost"))
+             s.get("output_tokens"), s.get("new_input_tokens"), s.get("cache_read_tokens"),
+             "-" if s.get("cost") is None else s["cost"])
             for s in figures.get("sessions", [])]
     return "%s\nsessions\n%s\n" % (summary(figures), table(list(SESSION_HEAD), rows))
 

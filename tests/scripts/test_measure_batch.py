@@ -123,7 +123,7 @@ def one(agent=None, minutes=10):
 def test_each_session_has_its_role(agent, kind, minutes, review, role):
     """Review Focus 3: D6's four rules, the first that applies."""
     types = {"a1": kind} if agent else {}
-    (found,) = S.sessions_of([one(agent, minutes)], types, (T0, T0 + DAY), review, measure_cost.PRICES)
+    (found,) = S.sessions_of([one(agent, minutes)], types, (T0, T0 + DAY), review, measure_cost.PRICES, batch="batch-1")
     assert found["role"] == role
 
 

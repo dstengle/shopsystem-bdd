@@ -54,9 +54,15 @@ knobs (batch size, review depth, the readiness bar) are tuned against these figu
   whole when its first request is inside it; each request once, and session time is the sum of gaps of at most 300 s.
 - Cost is computed from a dated price table per model, which `.shop/delivery.toml` `[prices."<model>"]` overrides; a
   request of a model with no price is counted in tokens and named under `unpriced`, never guessed.
-- A role is planning for a main session, review for a `pr-reviewer` or a subagent described `batch-<n> review`,
-  fixing for `batch-<n> fix`, implementing for `batch-<n> t<k>`, else implementing before the first review and fixing
-  after it.
+- A role is planning for a main session and for the subagent that drove the batch (one begun before the window that
+  dispatched a subagent counted in it, by its meta file's `parentAgentId`), its requests inside the window counted;
+  review for a `pr-reviewer` or a subagent described `batch-<n> review`, fixing for `batch-<n> fix`, implementing for
+  `batch-<n> t<k>`, `<n>` being the measured batch's; planning for a subagent described otherwise; else, with no
+  description, implementing before the first review and fixing after it. A session none of whose requests has a
+  price has no cost (`-`), not 0.
+- The summary says when no main session or driver was counted in the window (a batch driven from a subagent or from
+  another directory needs `--sessions <the main session's directory>`), and when transcripts were found but no
+  session was in the window.
 - The changed lines, a knob, are the batch's from its fork to the last review's head, `.shop/` left out; each review
   gives its own range's lines beside it.
 - The measurement is the record `.shop/records/measurements/<date>-batch-<n>.md`, its summary tables before its JSON
