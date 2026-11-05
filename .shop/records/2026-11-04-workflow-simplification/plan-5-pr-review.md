@@ -529,7 +529,7 @@ Builds no requirement on its own. It is r6's mechanism; r6 leaves `unbuilt:` wit
   - `trees(root, batch) -> list[tuple[Finding, Task, Path]]` (D14), re-making a lost worktree with `tree_for`.
   - `said(root, batch, found) -> list[str]`.
 
-- [ ] **Step 1: Write the failing tests** (`test_batch_fix_loop.py`). Each starts from `published`, a brief and
+- [x] **Step 1: Write the failing tests** (`test_batch_fix_loop.py`). Each starts from `published`, a brief and
   `reviewed` with `FIX_NOW_B1`, so the batch is `building` with f1 open on b1:
   - `test_the_re_review_brief_gives_the_commits_for_each_finding` (Review Focus 3):
     - a commit on `batch-1-b1` with `Item: b1` and `Finding: f1` is made, then `review` and `brief`;
@@ -557,23 +557,23 @@ Builds no requirement on its own. It is r6's mechanism; r6 leaves `unbuilt:` wit
     - t1 stays `done`, and nothing is committed.
   - `test_review_prints_the_next_step`: the line before the URL is D15's `next:` line.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_batch_fix_loop.py -q`
   Expected: FAIL; `batch_fix` does not exist.
 
-- [ ] **Step 3: Implement `batch_fix.py` and the changes to `review`, `brief`, `resume` and `review`'s output.**
+- [x] **Step 3: Implement `batch_fix.py` and the changes to `review`, `brief`, `resume` and `review`'s output.**
 
-- [ ] **Step 4: Run them and every batch test.**
+- [x] **Step 4: Run them and every batch test.**
   Run: `python3 -m pytest tests/scripts/test_batch_fix_loop.py tests/scripts/test_batch_*.py tests/scenarios/test_batches.py -q | tail -1`
   Expected: all pass. Plan 4's tests are unchanged, `test_a_second_review_pushes_only` included.
 
-- [ ] **Step 5: Mutations,** each reverted:
+- [x] **Step 5: Mutations,** each reverted:
   - `check` skipped fails both Review Focus 4 tests;
   - the re-review range taken from `forked_from` fails the re-review brief test.
 
-- [ ] **Step 6: The baselines** (Task 3's Step 7 command). Expected: at baseline; unbuilt 21.
+- [x] **Step 6: The baselines** (Task 3's Step 7 command). Expected: at baseline; unbuilt 21.
 
-- [ ] **Step 7: Commit.**
+- [x] **Step 7: Commit.**
   ```bash
   git add scripts/batch_fix.py scripts/batch_review.py scripts/batch_brief.py scripts/batch_tasks.py scripts/batch_cli.py \
     tests/scripts/test_batch_fix_loop.py spec/capabilities/batches.md CLAUDE.md

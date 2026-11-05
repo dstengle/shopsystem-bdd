@@ -117,7 +117,9 @@ question while building parks its item and the rest of the batch carries on. The
   conflict alone is settled by the merge, any other refuses. It runs the tests there, pushes `batch-<n>` with `git
   push -u` to the base branch's upstream remote (else `origin`), and creates a draft pull request with `gh pr create
   --draft`, its body naming each `in-batch` item with its requirement ids and each parked one; a batch that has a
-  pull request already is pushed only. gh is `$SHOPSYSTEM_WORK_GH`, else `gh`. A review refused while merging,
+  pull request already is pushed only; once a review of it is recorded, each commit on an `in-batch` item's branch
+  after that review's head must cite an open finding of its item (`Finding: f<m>`) and each open finding must have
+  such a commit, else the review is refused, naming the commit or the finding (pr-review's fix loop). gh is `$SHOPSYSTEM_WORK_GH`, else `gh`. A review refused while merging,
   testing, pushing or creating puts the batch branch, and the remote's, back where they were.
 - The merge is recorded by `work batch merged <batch>`, on a batch that is `in-review` or `awaiting-merge`: gh must
   say the pull request is `MERGED`, and its merge commit must be in the base branch's history (else `git pull`

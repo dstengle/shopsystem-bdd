@@ -15,6 +15,7 @@ import subprocess
 import backlog_items
 import backlog_lines
 import backlog_moves
+import batch_fix
 import batch_plan
 import spec_unbuilt
 from batch_git import (
@@ -124,6 +125,7 @@ def resume(root, name):
             out.append((task, tree))
         if moved:
             batch_plan.commit(root, batch, [], "work batch resume: %s %s running" % (batch.name, ", ".join(moved)))
+        batch_fix.trees(root, batch)    # each open finding's worktree, its task left done (plan 5, D14)
         return batch, out
 
 
@@ -140,7 +142,7 @@ def resume_said(root, batch, out):
             said.append("%s: parked (%s)" % (label, item.status))
         else:
             said.append("%s: %s" % (label, task.status))
-    return "\n".join(said)
+    return "\n".join(said + batch_fix.said(root, batch, batch_fix.trees(root, batch)))
 
 
 def checked(root, batch, task):

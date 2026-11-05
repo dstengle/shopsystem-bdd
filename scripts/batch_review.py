@@ -6,13 +6,15 @@ commit must cite its item (or an earlier in-batch item, whose branch it merged) 
 batch's worktree, one commit takes every parked item's lines out of `spec/` (plan 4 review, B1), each in-batch item's
 branch is merged into `batch-<n>` with `--no-ff` in plan order (a parked item's branch never is, so its commits stay out), the
 tests run there, the branch is pushed to the base's remote, and a draft pull request is created through gh unless the
-batch has one already (plan 5's fix loop pushes only). Last, the batch is `in-review` with its pull request,
+batch has one already (plan 5's fix loop pushes only, once each commit since the last review cites an open finding
+and each open finding has a commit: `batch_fix.check`). Last, the batch is `in-review` with its pull request,
 committed on the base. A refusal while merging, testing, pushing or creating puts `batch-<n>` (and the remote's) back
 where it was and commits nothing."""
 import shutil
 import subprocess
 
 import backlog_items
+import batch_fix
 import batch_gh
 import batch_merge
 import batch_plan
@@ -113,6 +115,7 @@ def review(root, name):
     with locked(root):
         batch = building(root, name, COMMAND)
         mine = checked(root, batch)
+        batch_fix.check(root, batch, mine, COMMAND)     # a batch with a recorded review: its fixes (plan 5, D11)
         fresh = not trees_path(root).is_dir()
         tree = trees_dir(root) / batch.name
         try:
