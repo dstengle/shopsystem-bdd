@@ -468,7 +468,7 @@ test in the task named.
   - the local `ThenDoes session` (`keep`): exit 0, stdout empty, `kept(repo) == (s1, path)`, and `git status
     --porcelain` empty.
 
-- [ ] **Step 1: Write the failing tests** (`test_conversation_prompt.py`).
+- [x] **Step 1: Write the failing tests** (`test_conversation_prompt.py`).
   - `test_the_hook_keeps_the_session_for_work_quote`: after `work quote --hook` with that stdin, `work quote
     "<words>"` with no flags writes `quote-1` from `s-1`.
   - `test_the_prompt_hook_never_fails` (Review Focus 3), parametrised over these cases, each exiting 0 with empty
@@ -493,34 +493,34 @@ test in the task named.
     repository of 200 item files and 20 batch plans (written with `backlog_items.render` and `batch_plan.render`, one
     commit), has a median under 1.0 s.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_conversation_prompt.py -q -m "timing or not timing" -n 0 | tail -3`
   Expected: FAIL. `work quote` has no `--hook` (exit 2), and there is no module `conversation_prompt`.
 
-- [ ] **Step 3: Implement** `conversation_prompt.py`, `--hook`, `transcript_of`'s step 3 and the hooks.json entry.
+- [x] **Step 3: Implement** `conversation_prompt.py`, `--hook`, `transcript_of`'s step 3 and the hooks.json entry.
   The hook reads stdin only when `--hook` is given.
 
-- [ ] **Step 4: Reword r2 and regenerate.**
+- [x] **Step 4: Reword r2 and regenerate.**
   Run: `python3 scripts/model parse "When the UserPromptSubmit hook runs \`work quote --hook\`, \`work\` shall keep the session."; python3 scripts/features generate && git diff --stat features/; python3 scripts/model logic | tail -1; python3 scripts/model check | tail -1`
   Expected: a tree (`… Do e_keep (k_session_toNP (k_session_The k_session)) …`); only `features/conversation.feature`
   changes, g2 reading `When the UserPromptSubmit hook runs \`work quote --hook\`` / `Then \`work\` keeps the session
   s1`; `11 findings: 6 L5, 5 L6`; `53 violations, 16 warnings, 19 unresolved references, 0 file problems`.
 
-- [ ] **Step 5: The r2 handlers; take r2 out of `unbuilt:`.**
+- [x] **Step 5: The r2 handlers; take r2 out of `unbuilt:`.**
   Run: `python3 -m pytest tests/scenarios/test_conversation.py tests/scripts/test_conversation_prompt.py tests/scripts/test_conversation_quote.py -q | tail -1; python3 -m pytest -m timing -n 0 -q tests/scripts/test_conversation_prompt.py | tail -1; python3 scripts/features vocab --check | tail -1`
   Expected: conversation `2 passed, 2 xfailed`, the rest pass; `1 passed`, with the median printed under 1.0 s;
   `every step has one handler`.
 
-- [ ] **Step 6: Mutations, each reverted.** Each must turn its test red:
+- [x] **Step 6: Mutations, each reverted.** Each must turn its test red:
   - letting a `json.JSONDecodeError` escape fails `test_the_prompt_hook_never_fails`;
   - writing the pointer under the top level instead of the git dir fails the same test's `git status` check;
   - reading the pointer before `--session` fails `test_the_pointer_is_the_last_prompts_session`.
 
-- [ ] **Step 7: The baselines.**
+- [x] **Step 7: The baselines.**
   Run: `python3 -m pytest -q | tail -1; python3 scripts/features generate --check; echo $?; python3 scripts/tools size --limit 300; python3 scripts/tools check scripts/conversation_prompt.py scripts/conversation_cli.py scripts/conversation_quote.py tests/scripts/test_conversation_prompt.py tests/scenarios/conversation_handlers.py`
   Expected: `2 xfailed`, no failures; exit 0; silent; clean.
 
-- [ ] **Step 8: Commit.**
+- [x] **Step 8: Commit.**
   ```bash
   git add scripts/conversation_prompt.py scripts/conversation_cli.py scripts/conversation_quote.py hooks/hooks.json \
     tests/scripts/test_conversation_prompt.py tests/scenarios/conversation_handlers.py \

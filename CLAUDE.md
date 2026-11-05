@@ -40,6 +40,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/migrate_prompt.py` | the UserPromptSubmit hook's text (`migrate prompting`): a session writes a delegation the person gives with `work delegate` (requests r72) |
 | `scripts/conversation_read.py` | the messages of a session's transcript: the person's prompts and the session's text of each turn, without tool uses, tool results, thinking, reminders, meta or subagent rows; the message a quote's words cite and the messages around it (conversation) |
 | `scripts/conversation_quote.py` with `scripts/conversation_cli.py` | `work quote` and `work show quote-<n>`: their parsers and dispatch; the quote file `.shop/quotes/<n>.md` (`render`, `parse`), its words, session, cited message and the messages around it, written and committed (conversation) |
+| `scripts/conversation_prompt.py` | the UserPromptSubmit hook's `work quote --hook`: the session and its transcript kept in the git dir for `work quote`, never committed, never failing (conversation) |
 | `scripts/model*.py` | the `model` command: parsing, facts, checks, work, reports |
 | `scripts/model_decisions.py` | the tiers of `spec/decisions/`: the `enforced_by` entries told apart, and `model decisions --check`'s runs of each `check` decision's tests (decision-tiers) |
 | `scripts/model_requests.py` | the reading of requests by `model`: `.shop/work/requests/q<n>.md` |
@@ -100,7 +101,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/migrate*.py` | the `migrate` command |
 | `scripts/migrate_upgrade*.py` | `migrate status` and `migrate upgrade`: the upgrade steps between plugin releases, one module a step |
 | `scripts/migrate_upgrade_codified.py` | the 1.0.0 upgrade step "codified requirements": `spec/restated.json`, the scaffold of each uncodified capability, `@deprecated` scenarios deleted, old references written `<cap>#r<n>@0.29`, and what is left reported |
-| `hooks/hooks.json` | the plugin's SessionStart hook, running `migrate status --hook` |
+| `hooks/hooks.json` | the plugin's hooks: SessionStart (`migrate status --hook`), UserPromptSubmit (`migrate prompting`, `work quote --hook`), PreCompact (`migrate compacting`) |
 | `tests/scenarios/` | the generated features' tests: one `test_<capability>.py` a capability, its handlers in `<capability>_handlers*.py` |
 | `tests/scenarios/vocab.py` | the vocabulary in pytest-bdd: step definitions matched by grammar, the handler registry (`from vocab import handler`), the marks from the spec, the U3/U8 checks after a generated scenario |
 | `tests/scenarios/world_*.py` | shared handlers: the domain kinds' nodes and files (`world_nodes.py`), running a command and reading its result (`world_run.py`) |

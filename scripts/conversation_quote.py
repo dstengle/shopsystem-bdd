@@ -8,6 +8,7 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import conversation_prompt
 import conversation_read as C
 import workqueue
 from measure_read import Refused as ReadRefused
@@ -148,7 +149,8 @@ def _messages(lines, at, rel, cited_ident):
 
 
 def transcript_of(root, session, transcript):
-    """(session id, transcript path) by D5's order: --transcript, then --session in any project of the store."""
+    """(session id, transcript path) by D5's order: --transcript, then --session in any project of the store, then the
+    pointer the UserPromptSubmit hook kept."""
     if transcript:
         path = Path(transcript)
         if not path.is_file():
@@ -163,6 +165,12 @@ def transcript_of(root, session, transcript):
         if not found:
             raise Refused("there is no transcript of the session %s under %s" % (session, store_dir() / "projects"))
         return session, found[0]
+    pointer = conversation_prompt.kept(root)
+    if pointer is not None:
+        if not Path(pointer[1]).is_file():
+            raise Refused("the transcript %s the UserPromptSubmit hook kept for the session %s is not a file; give "
+                          "--session <id>" % (pointer[1], pointer[0]))
+        return pointer[0], Path(pointer[1])
     raise Refused("no session is known: the UserPromptSubmit hook keeps it (work quote --hook), or give --session <id>")
 
 

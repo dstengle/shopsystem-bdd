@@ -2,7 +2,9 @@
 parsers and dispatch, so that scripts/work stays small. A quote is named by its label, `quote-1 "<its words>"` (design
 goal 10)."""
 import sys
+from pathlib import Path
 
+import conversation_prompt
 import conversation_quote
 from measure_read import Refused as ReadRefused
 from workqueue import Refused
@@ -15,6 +17,8 @@ def add_parsers(sub):
     p.add_argument("words", nargs="?", help="the person's words, as they wrote them")
     p.add_argument("--session", help="the session whose transcript holds them (default: the one the hook kept)")
     p.add_argument("--transcript", help="the transcript file itself")
+    p.add_argument("--hook", action="store_true", help="the UserPromptSubmit hook: keep the session and transcript "
+                                                       "its stdin gives for work quote, printing nothing")
 
 
 def refused(command, why):
@@ -23,6 +27,11 @@ def refused(command, why):
 
 
 def quote(args):
+    if args.hook and args.words is not None:
+        return refused("quote", "--hook takes no words")
+    if args.hook:
+        conversation_prompt.keep(Path.cwd(), sys.stdin.read())
+        return 0
     try:
         found = conversation_quote.write(args.root, args.words, args.session, args.transcript)
     except (Refused, ReadRefused) as why:

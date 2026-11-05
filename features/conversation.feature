@@ -12,9 +12,8 @@ Feature: Conversation
 
   @g2 @r2
   Scenario: The prompt hook gives the session and the transcript
-    When the UserPromptSubmit hook runs `work quote --session --transcript`
-    Then `work` writes the quote q1
-    And the quote q1 is from the session s1
+    When the UserPromptSubmit hook runs `work quote --hook`
+    Then `work` keeps the session s1
 
   @g3 @r3
   Scenario: `work show` on a quote prints its messages

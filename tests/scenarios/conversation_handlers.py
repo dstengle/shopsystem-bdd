@@ -7,11 +7,13 @@ taken through work_queue_world's `local` table by its kind, so it reaches these 
 which binds with `bind_all`; each returns False for a step of a scenario that is not about the conversation (every
 conversation When and Given sets `step.context["conversation"]`), which then goes on to the registry."""
 import importlib.util
+import json
 import os
 import re
 import sys
 from pathlib import Path
 
+import conversation_prompt
 import conversation_quote
 import measure_batch_read
 from vocab import handler
@@ -116,3 +118,39 @@ def quote_of(step):
 def quote_from(step):
     """`the quote q1 is from the session s1`: the registry's key, which no other capability claims."""
     assert quote_of(step) is not False, "no quote from a session in this scenario: %s" % step.text
+
+
+def hook(step, event, sub, stdin):
+    """Run the command hooks/hooks.json gives for `event` and `sub` (D13) in the scenario's repository, committed
+    first, with the hook's stdin JSON."""
+    argv = T.hook_command(event, sub)
+    script = Path(argv[1])
+    assert argv[0] == "python3" and script.parent == HERE.parents[1] / "scripts", argv
+    B.index(step)
+    shop = step.repo / ".shop" / "README.md"
+    shop.parent.mkdir(parents=True, exist_ok=True)
+    shop.write_text("The repository's .shop/.\n")
+    step.context["head"] = W.init(step.repo)
+    step.context["result"] = step.run(script.name, *argv[2:], input=json.dumps(stdin), env=env(step))
+    return step.context["result"]
+
+
+@handler("WhenRuns", "`work quote --hook`")
+def prompt_hook(step):
+    """The UserPromptSubmit hook on a prompt of the scenario's session s1, whose transcript is written first."""
+    path = transcript(step, "s1")
+    talk(step)["transcripts"] = {"s1": str(path)}
+    hook(step, "UserPromptSubmit", "quote", {"session_id": talk(step)["sessions"]["s1"], "transcript_path": str(path),
+                                             "hook_event_name": "UserPromptSubmit", "prompt": "x"})
+
+
+@local("ThenDoes", "session")
+def keeps_session(step):
+    if not step.context.get("conversation") or step.term != "keep":
+        return False
+    done, name = step.context["result"], step.names[0]
+    assert (done.returncode, done.stdout) == (0, ""), (step.text, done.stdout, done.stderr)
+    wanted = (talk(step)["sessions"][name], talk(step)["transcripts"][name])
+    assert conversation_prompt.kept(step.repo) == wanted, (step.text, conversation_prompt.kept(step.repo))
+    assert W.git(step.repo, "status", "--porcelain") == "", step.text
+    return None

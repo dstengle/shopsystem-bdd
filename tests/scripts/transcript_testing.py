@@ -1,8 +1,15 @@
 """Claude Code's transcript rows written by hand for the conversation tests (plan 8, Task 2): the person's prompt, the
 session's text, thinking, a tool use and its result, each a raw row of `<session>.jsonl`, and CONVERSATION, six
-messages with a tool use and its result inside the second turn of the session. A test helper, not a test module."""
+messages with a tool use and its result inside the second turn of the session; a hook's command as hooks.json gives
+it, and a crowded repository to time a hook on. A test helper, not a test module (the scripts directory is on the
+path before it is imported)."""
 import json
+import shlex
+import subprocess
 from pathlib import Path
+
+import backlog_items
+import batch_plan
 
 
 def _row(kind, content, uuid, at, session, **extra):
@@ -67,3 +74,32 @@ CONVERSATION = [
     session_text(TEXTS[5], "a4", at(8), msg="m4"),
 ]
 IDENTS = ["u1", "a1", "u2", "a3", "u4", "a4"]
+
+
+def hook_command(event, sub):
+    """The argv of the command hooks/hooks.json gives for `event` whose words hold `sub`, `${CLAUDE_PLUGIN_ROOT}` the
+    repository's root."""
+    root = Path(__file__).resolve().parents[2]
+    hooks = json.loads((root / "hooks" / "hooks.json").read_text())["hooks"][event]
+    commands = [h["command"] for group in hooks for h in group["hooks"]]
+    found = [c for c in commands if sub in c]
+    assert len(found) == 1, (event, sub, commands)
+    return shlex.split(found[0].replace("${CLAUDE_PLUGIN_ROOT}", str(root)))
+
+
+def crowded(repo, items=200, batches=20):
+    """`items` item files and `batches` batch plans of one task each in `repo`, committed at once: the repository a
+    hook's time is measured on."""
+    for n in range(1, items + 1):
+        item = backlog_items.Item("b%d" % n, "item/ex.com/prod/ctx/b%d" % n, "Item number %d" % n, "shaped", "own")
+        path = Path(repo) / backlog_items.rel_of(item.name)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(backlog_items.render(item))
+    for n in range(1, batches + 1):
+        batch = batch_plan.Batch("batch-%d" % n, "batch/ex.com/prod/ctx/batch-%d" % n, "merged", "main", "0" * 40,
+                                 "batch-%d" % n, None, [batch_plan.Task("t1", "b%d" % n, "done", "batch-%d-t1" % n)])
+        path = Path(repo) / batch_plan.rel_of(batch.name)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(batch_plan.render(batch))
+    subprocess.run(["git", "add", "-A"], cwd=repo, check=True)
+    subprocess.run(["git", "commit", "-q", "-m", "crowded"], cwd=repo, check=True)

@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: [r2, r3, r4]
+unbuilt: [r3, r4]
 ---
 
 # Conversation
@@ -33,8 +33,7 @@ of every item and batch a session names (design goal 10).
   the quote.
 
 ### [g2] The prompt hook gives the session and the transcript
-- [r2] When the UserPromptSubmit hook runs `work quote --session --transcript`, `work` shall write a quote from a
-  session.
+- [r2] When the UserPromptSubmit hook runs `work quote --hook`, `work` shall keep the session.
 
 ### [g3] `work show` on a quote prints its messages
 - [r3] When the person runs `work show` on a quote, `work` shall print every message cited by the quote.
@@ -54,5 +53,7 @@ of every item and batch a session names (design goal 10).
   other than the cited message is cut at 2,000 characters.
 - `work quote "<words>"` prints the quote's label, `quote-<n> "<its words>"`, and commits the quote's file alone on the
   current branch; words that match nothing write nothing.
-- `work quote --session <id> --transcript <path>` is how the UserPromptSubmit hook passes them.
+- The UserPromptSubmit hook runs `work quote --hook`, which writes the session and transcript of its stdin to
+  `<git dir>/shopsystem/prompt.json`, never tracked, prints nothing and never fails; `work quote` reads its transcript
+  from `--transcript`, else `--session` in any project of Claude Code's store, else that pointer.
 - `work names` is the SessionStart hook's table of the items' and batches' names beside their ids.
