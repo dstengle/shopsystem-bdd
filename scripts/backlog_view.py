@@ -6,6 +6,7 @@ score from high to low, ties to the item added first; an item missing a rating h
 rated. An item is blocked by each dependency on an item that is not `delivered`, a missing one included (D9). Reading
 only direct dependencies, the view never walks a cycle written by hand."""
 import backlog_items
+import batch_plan
 
 WEIGHT = {"low-value": 1, "medium-value": 2, "high-value": 3, "low-urgency": 1, "medium-urgency": 2,
           "high-urgency": 3, "small": 1, "medium": 2, "large": 3}
@@ -43,17 +44,30 @@ def first_line(item):
     return question.strip().splitlines()[0] if question and question.strip() else None
 
 
-def waiting_on(item, by_name):
+def progress(root, item):
+    """{"name", "status", "tasks_done", "tasks"} of the batch an `in-batch` item is in, or None (plan 4, D26)."""
+    batch = batch_plan.of_item(root, item.name) if item.status == "in-batch" else None
+    if batch is None:
+        return None
+    return {"name": batch.name, "status": batch.status, "tasks_done": sum(t.status == "done" for t in batch.tasks),
+            "tasks": len(batch.tasks)}
+
+
+def waiting_on(item, by_name, root=None):
     said = ["blocked by %s (%s)" % (backlog_items.label(by_name[n]) if n in by_name else n, s)
             for n, s in blockers(item, by_name)]
     question = first_line(item)
+    found = progress(root, item) if root is not None else None
+    said += ["in %(name)s (%(status)s): %(tasks_done)d of %(tasks)d tasks done" % found] if found else []
     return said + (["question: %s" % question] if question else [])
 
 
-def row_json(item, by_name, rank):
+def row_json(item, by_name, rank, root=None):
     out = backlog_items.as_dict(item)
     out.update(score=score(item), rank=rank,
                blocked_by=[{"id": n, "status": s} for n, s in blockers(item, by_name)])
+    found = progress(root, item) if root is not None else None
+    out.update({"batch": found} if found else {})
     return out
 
 
@@ -79,7 +93,7 @@ def tables(root):
         for n, item in enumerate(its, 1):
             found = score(item)
             cells = [str(n), item.name, item.title, item.provenance, item.value, item.urgency, item.size,
-                     "%.2f" % found if found is not None else None, "; ".join(waiting_on(item, by_name))]
+                     "%.2f" % found if found is not None else None, "; ".join(waiting_on(item, by_name, root))]
             lines.append("| %s |" % " | ".join(map(cell, cells)))
         out.append("\n".join(lines) + "\n")
     return "\n".join(out)
@@ -88,4 +102,4 @@ def tables(root):
 def as_json(root):
     items = backlog_items.items(root)
     by_name = {i.name: i for i in items}
-    return {"items": [row_json(item, by_name, n) for _, its in ordered(items) for n, item in enumerate(its, 1)]}
+    return {"items": [row_json(item, by_name, n, root) for _, its in ordered(items) for n, item in enumerate(its, 1)]}

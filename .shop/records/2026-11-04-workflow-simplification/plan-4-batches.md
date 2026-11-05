@@ -826,7 +826,7 @@ Builds no new requirement; closes backlog's two plan-4 `## Not yet` bullets (D26
   `batch_plan.of_item`, counting the item's batch's tasks.
 - `backlog_moves.undepend(root, name, on) -> Item`.
 
-- [ ] **Step 1: Failing tests:**
+- [x] **Step 1: Failing tests:**
   - `test_an_in_batch_item_shows_its_batch`: the row's `waiting on` cell holds `in batch-1 (building): 1 of 2 tasks
     done`, and `--json`'s row has `batch` with those four values.
   - `test_rows_of_items_in_no_batch_are_unchanged`: the JSON keys of an `idea` row are exactly as before.
@@ -836,19 +836,19 @@ Builds no new requirement; closes backlog's two plan-4 `## Not yet` bullets (D26
   - `test_drop_refuses_one_it_lacks`.
   - `test_depend_takes_on_or_drop`: neither, or both, is a usage error (exit 2).
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_backlog_view.py tests/scripts/test_backlog_moves.py -q`
   Expected: the new tests fail.
 
-- [ ] **Step 3: Implement.**
+- [x] **Step 3: Implement.**
 
-- [ ] **Step 4: Run them and the backlog scenarios.**
+- [x] **Step 4: Run them and the backlog scenarios.**
   Run: `python3 -m pytest tests/scripts/test_backlog_view.py tests/scripts/test_backlog_moves.py tests/scenarios/test_backlog.py -q | tail -1`
   Expected: all pass.
 
-- [ ] **Step 5: The baselines.** Expected: `14 xfailed`, no failures.
+- [x] **Step 5: The baselines.** Expected: `14 xfailed`, no failures.
 
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
   ```bash
   git add scripts/backlog_view.py scripts/backlog_moves.py scripts/backlog_cli.py spec/capabilities/backlog.md \
     tests/scripts/test_backlog_view.py tests/scripts/test_backlog_moves.py

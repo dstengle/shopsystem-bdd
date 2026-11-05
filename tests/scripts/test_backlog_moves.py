@@ -143,3 +143,37 @@ def test_work_answer_on_a_work_item_is_unchanged(backlog_repo, tmp_path_factory)
     assert moves[0] == moves[1], moves
     assert git(backlog_repo, "log", "-1", "--format=%s") == git(direct, "log", "-1", "--format=%s")
     assert git(backlog_repo, "status", "--porcelain") == ""
+
+
+def test_drop_removes_a_dependency(backlog_repo):
+    """plan 4, D27: `work depend B --drop A`."""
+    write_item(backlog_repo, "b1", title="First")
+    write_item(backlog_repo, "b2", title="Second", depends_on="b1")
+    head = git(backlog_repo, "rev-parse", "HEAD").strip()
+    done = work(backlog_repo, "depend", "b2", "--drop", "b1")
+    assert done.returncode == 0, done.stderr
+    assert done.stdout == 'b2 "Second" no longer depends on b1 "First"\n'
+    assert backlog_items.find(backlog_repo, "b2").depends_on == ()
+    assert len(git(backlog_repo, "rev-list", "%s..HEAD" % head).split()) == 1
+
+
+def test_drop_of_a_missing_item(backlog_repo):
+    write_item(backlog_repo, "b2", title="Second", depends_on="b9")
+    done = work(backlog_repo, "depend", "b2", "--drop", "b9")
+    assert done.returncode == 0 and done.stdout == 'b2 "Second" no longer depends on b9 (missing)\n', done.stderr
+
+
+def test_drop_refuses_one_it_lacks(backlog_repo):
+    write_item(backlog_repo, "b1", title="First")
+    write_item(backlog_repo, "b2", title="Second")
+    before = state(backlog_repo)
+    done = work(backlog_repo, "depend", "b2", "--drop", "b1")
+    assert done.returncode == 1 and 'b2 "Second" does not depend on b1' in done.stderr, done.stderr
+    assert state(backlog_repo) == before
+
+
+@pytest.mark.parametrize("flags", [(), ("--on", "b1", "--drop", "b1")])
+def test_depend_takes_on_or_drop(backlog_repo, flags):
+    write_item(backlog_repo, "b1")
+    write_item(backlog_repo, "b2")
+    assert work(backlog_repo, "depend", "b2", *flags).returncode == 2

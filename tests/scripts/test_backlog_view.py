@@ -130,3 +130,48 @@ def test_backlog_commits_nothing_and_refuses_a_malformed_item(backlog_repo):
     done = work(backlog_repo, "backlog")
     assert done.returncode == 1 and ".shop/backlog/b1.md" in done.stderr and "status" in done.stderr
     assert state(backlog_repo) == before
+
+
+PLAN = """---
+id: batch/ex.com/prod/ctx/batch-1
+kind: batch
+status: building
+base: main
+forked_from: abc
+branch: batch-1
+pull_request:
+---
+
+# batch-1
+
+## Tasks
+
+| task | item | status | branch |
+|---|---|---|---|
+| t1 | b1 | done | batch-1-b1 |
+| t2 | b2 | running | batch-1-b2 |
+
+## Plan
+
+The plan.
+"""
+
+
+def test_an_in_batch_item_shows_its_batch(backlog_repo):
+    """plan 4, D26: how far the batch of an item in it is along."""
+    write_item(backlog_repo, "b1", status="in-batch", commit=False)
+    write_item(backlog_repo, "b2", status="in-batch", commit=False)
+    plan = backlog_repo / ".shop" / "batches" / "1" / "plan.md"
+    plan.parent.mkdir(parents=True)
+    plan.write_text(PLAN)
+    done = work(backlog_repo, "backlog")
+    assert "in batch-1 (building): 1 of 2 tasks done" in row(done.stdout, "b1"), done.stdout
+    got = json.loads(work(backlog_repo, "backlog", "--json").stdout)["items"]
+    assert got[0]["batch"] == {"name": "batch-1", "status": "building", "tasks_done": 1, "tasks": 2}
+
+
+def test_rows_of_items_in_no_batch_are_unchanged(backlog_repo):
+    write_item(backlog_repo, "b1", status="idea")
+    got = json.loads(work(backlog_repo, "backlog", "--json").stdout)["items"][0]
+    assert set(got) == {"id", "title", "status", "provenance", "value", "urgency", "size", "score", "rank",
+                        "depends_on", "blocked_by", "question"}

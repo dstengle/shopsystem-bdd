@@ -170,3 +170,14 @@ def depend(root, name, on):
     item.depends_on += (on,)
     commit(root, item, "work depend: %s on %s" % (label(item), label(target)))
     return item
+
+
+def undepend(root, name, on):
+    """The dependency of `name` on `on` dropped from its file (plan 4, D27); `on` need not be an item there is. A
+    dependency `name` does not have is refused."""
+    item = find(root, name)
+    if on not in item.depends_on:
+        raise Refused("work depend: %s does not depend on %s" % (label(item), on))
+    item.depends_on = tuple(d for d in item.depends_on if d != on)
+    commit(root, item, "work depend: %s no longer on %s" % (label(item), on))
+    return item

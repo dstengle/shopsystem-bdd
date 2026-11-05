@@ -41,9 +41,11 @@ def add_parsers(sub):
     p.add_argument("name")
     for key, values in backlog_items.RATINGS.items():
         p.add_argument("--" + key, help=", ".join(values))
-    p = sub.add_parser("depend", help="write in an item that it depends on another item")
+    p = sub.add_parser("depend", help="write in an item that it depends on another item (--on), or drop a dependency it has (--drop)")
     p.add_argument("name")
-    p.add_argument("--on", required=True, help="the item it depends on")
+    on = p.add_mutually_exclusive_group(required=True)
+    on.add_argument("--on", help="the item it depends on")
+    on.add_argument("--drop", help="an item it depends on, the dependency to drop")
     p = sub.add_parser("intake", help="take a request of this context in as an item that is shaped, and commit it")
     p.add_argument("request")
     p = sub.add_parser("ready", help="move an item that is shaped to ready, when it passes the readiness bar")
@@ -82,6 +84,14 @@ def cmd_rate(args):
 
 
 def cmd_depend(args):
+    if args.drop is not None:
+        item = backlog_moves.undepend(args.root, args.name, args.drop)
+        try:
+            dropped = backlog_items.label(backlog_items.find(args.root, args.drop))
+        except backlog_items.Refused:
+            dropped = "%s (missing)" % args.drop
+        print("%s no longer depends on %s" % (backlog_items.label(item), dropped))
+        return 0
     item = backlog_moves.depend(args.root, args.name, args.on)
     print("%s depends on %s" % (backlog_items.label(item), backlog_items.label(backlog_items.find(args.root, args.on))))
     return 0
@@ -146,7 +156,7 @@ def show(args):
     if args.json:
         items = backlog_items.items(args.root)
         print(json.dumps({"item": backlog_view.row_json(item, {i.name: i for i in items},
-                                                        backlog_view.rank_of(item, items))}))
+                                                        backlog_view.rank_of(item, items), args.root)}))
         return 0
     print(backlog_items.label(item))
     for key in ("status", "provenance", *backlog_items.RATINGS):
