@@ -206,11 +206,14 @@ Restates: r10@0.29, r11@0.29, r12@0.29, r24@0.29.
   version that holds it, posts the resolution and closes the issue; `work resolve` on a request that is not
   `accepted` is refused (U3). A delivered request's turn is the asker's.
 - `work sync` lists the open issues of this context's own repository and writes a record for each `ask` no record
-  holds, then reads the issue of every record that is not closed and applies each comment it does not hold: its
+  holds, then reads the issue of every record, closed or not, and applies each comment it does not hold: its
   entries written into their sections by number, its status and turn set, an offer quoted under `## Offer`. That is
   a copy of what the issue holds, not a write of the other side's part. An unreadable comment is printed and never
-  recorded. The records changed are one commit, on the current branch; then every live request is printed with whose
-  move it waits on.
+  recorded. The records changed are one commit, on the current branch; then every request is printed with its status
+  and, unless it is `delivered`, `refused` or `withdrawn`, whose move it waits on.
+- `work show <request>` prints the request's status and turn, then whose turn it is and, for a request on an issue,
+  the issue's URL (`it is the <side>'s turn, on <URL>`), then each line with its line outcome, each question with its
+  answer and the resolution.
 - A question is written under `## Questions`, an answer under `## Answers`, the n-th answering the n-th.
 - `## Counter-proposals` holds `<n>. <m>` for each line n that the upstream's `work outcome <request> <n> rewritten
   --line <text>` rewrote as its line m. Line n is then no longer a request line proposed in the request, and its

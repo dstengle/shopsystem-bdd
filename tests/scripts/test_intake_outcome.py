@@ -6,7 +6,9 @@ import pathlib
 import subprocess
 import sys
 
+import backlog_items
 import pytest
+import readiness_bar
 import request_moves
 import request_text
 from backlog_testing import REPO, git, state, work, write_request
@@ -104,7 +106,25 @@ def test_a_counter_proposal_that_does_not_parse_is_refused_and_named_so(taken):
     done = work(taken, "outcome", "q1", "1", "rewritten", "--line", FROBNICATE)
     assert done.returncode == 1 and "the counter-proposal does not parse" in done.stderr, done.stderr
     assert "parsed up to:" in done.stderr, done.stderr
+    assert "line 1 does not parse" not in done.stderr, done.stderr
     assert state(taken) == before
+
+
+def test_the_rewritten_line_is_not_the_items(ready_repo):
+    """intake's Implementation: an item's request lines are its request's lines not `rewritten`."""
+    toolchain.require()
+    write_request(ready_repo, "q1", lines=(ASKED,))
+    assert work(ready_repo, "outcome", "q1", "1", "rewritten", "--line", COUNTER).returncode == 0
+    assert work(ready_repo, "turn", "q1").returncode == 0      # the asker passes the turn back
+    done = work(ready_repo, "outcome", "q1", "2", "accepted", "--into", "work-queue")
+    assert done.returncode == 0, done.stderr
+    assert work(ready_repo, "turn", "q1").returncode == 0
+    done = work(ready_repo, "accept", "q1")
+    assert done.returncode == 0, done.stderr
+    written = (ready_repo / ".shop" / "backlog" / "b1.md").read_text()
+    assert COUNTER in written and ASKED not in written, written
+    item = backlog_items.find(ready_repo, "b1")
+    assert [n for n, _, _ in readiness_bar.request_lines(ready_repo, item)] == [2]
 
 
 def test_line_only_with_rewritten_and_into_only_with_accepted(taken):

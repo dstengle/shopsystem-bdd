@@ -129,3 +129,24 @@ def test_an_upstream_with_no_github_repository_is_refused_naming_it(pair):
                            "--thread", "job-thread/ex.com/prod/t1"], capture_output=True, text=True, env=env)
     assert done.returncode == 1 and UP in done.stderr and "github:" in done.stderr, done.stderr
     assert calls(shared, "issue") == [] and not (down / ".shop").exists()
+
+
+def test_sync_writes_a_closed_requests_comment_and_prints_every_request(pair):
+    """r32: a `delivered` request's issue is read too, and it is printed with its status and no "waiting on"."""
+    up, down, shared, env = pair
+    run(down, env, "request", "Archive old items", "--from", DOWN, "--thread", "job-thread/ex.com/prod/t1")
+    run(up, env, "sync")
+    run(up, env, "offer", "q1", "--capability", "work-queue")
+    run(down, env, "sync")
+    run(down, env, "fits", "q1", "--serves", "work-queue#r1")
+    assert where(record(down))[0] == "delivered"
+    found = issues(shared)
+    found["https://github.com/ex/ctx/issues/1"]["comments"].append(
+        {"url": "https://github.com/ex/ctx/issues/1#issuecomment-98",
+         "body": "~~~shop-request\nstep: turn\nquestion 1: Was work-queue#r1 enough?\n~~~\n"})
+    (shared / "gh-issues.json").write_text(json.dumps(found))
+    said = run(down, env, "sync")
+    assert "issuecomment-98" in record(down)
+    assert request_text.entries(record(down), "Questions") == ["1. Was work-queue#r1 enough?"]
+    printed = [line for line in said.splitlines() if line.startswith("q1")]
+    assert len(printed) == 1 and "delivered" in printed[0] and "waiting on" not in printed[0], said
