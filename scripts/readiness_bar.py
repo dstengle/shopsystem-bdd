@@ -121,7 +121,7 @@ def rested_on(root, blocks):
         if path.is_file():
             slugs |= {str(d).rstrip("/").rsplit("/", 1)[-1]
                       for d in spec_read.capability(path).frontmatter.get("rests_on") or ()}
-    return [d for d in model_decisions.decisions(root) if d.tier == "check" and d.ident.rsplit("/", 1)[-1] in slugs]
+    return [d for d in model_decisions.decisions(root) if d.runs and d.ident.rsplit("/", 1)[-1] in slugs]
 
 
 def decision_reasons(root, blocks):
@@ -137,8 +137,7 @@ def decision_reasons(root, blocks):
         if not decision.tests:
             reasons.append("design-decision %s (check) names no test" % slug)
             continue
-        why = "timed out after %s s" % ran.timeout if ran.code is None else "exit %d" % ran.code
-        reasons.append("design-decision %s (check) fails: %s: %s" % (slug, ", ".join(decision.tests), why))
+        reasons.append("design-decision %s (check) fails: %s: %s" % (slug, ", ".join(decision.tests), ran.why))
     return reasons
 
 

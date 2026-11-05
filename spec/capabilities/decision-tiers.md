@@ -55,24 +55,31 @@ to its tier, and keeps a superseded decision marked so.
 
 ## Implementation, may change
 
-- `w_untiered` is a warning while plan 6 sorts the 74 decisions into their tiers; a decision gives its tier as `tier:`
-  in its frontmatter.
+- `w_untiered` is a warning; a decision gives its tier as `tier:` in its frontmatter.
 - A decision gives its tier as `tier: check | requirement | judgement` and what enforces it as `enforced_by: [...]`:
   pytest node ids (`<path>.py` or `<path>.py::<name>`, relative to the root) for a `check` decision, requirement ids
-  (an entry holding `#`, as `model why` reads them) for a `requirement` decision, and none for a `judgement` one. A tier
-  outside the three, an entry of the wrong kind for its tier, `enforced_by` on a `judgement` decision and a test whose
-  file is not under the root are each a file problem; a requirement id that names nothing is an unresolved reference.
+  (an entry in the form `<capability>#r<n>` or `#r<a>-r<b>`, as `model why` reads them; any other entry, a
+  parametrised test id holding `#` among them, is a test) for a `requirement` decision, and none for a `judgement` one. A tier
+  outside the three, an entry of the wrong kind for its tier, `enforced_by` on a `judgement` decision and a test that is
+  an option or whose file is not under the root are each a file problem; a requirement id that names nothing is an unresolved reference.
   History needs no tier: a `superseded` or `rejected` decision gives none, and `w_untiered` does not name it (plan 6,
   D2, D3).
-- `model decisions --check` checks the index first and prints its line, then runs each `check` decision's tests, in
-  file order and up to 4 at a time: one `python -B -m pytest -q -p no:cacheprovider -o addopts= <entries>` a decision,
-  in the repository, with `PYTHONDONTWRITEBYTECODE=1` and a 600 s timeout, so a named test runs alone whatever the
-  repository's own `addopts` deselect, and nothing is written there. It prints `holds    <path> (<id>): <entries>` or
-  `failing  <path> (<id>): <entries>: exit <code>` (or `timed out after <n> s`, or `names no test`) with the last 20
-  lines of pytest's output, then `<n> check decisions: <h> hold, <f> failing`. A pytest exit other than 0 is failing
-  (4: a test not found, 5: nothing collected). It exits 1 when the index is stale or any decision fails (plan 6, D5).
-- design-model-check r52 (`--check` on a current index exits successfully) and r5 here are both kept: r5 is an
-  unwanted-behaviour line and takes precedence, and r52's repository has no `check` decision (plan 6, D6).
+- `model decisions --check` checks the index first and prints its line, then runs the tests of each `check` decision
+  in force (not `superseded` or `rejected`), in file order and up to 4 at a time: one `<python> -B -m pytest -q -p
+  no:cacheprovider -o addopts= <entries>` a decision, in the repository, with `PYTHONDONTWRITEBYTECODE=1` and a 600 s
+  timeout, so a named test runs alone whatever the repository's own `addopts` deselect. `<python>` is the project's
+  interpreter, found as `tools` finds it (`.venv/bin/python`, `venv/bin/python`, `$VIRTUAL_ENV`, else the one running
+  `model`). It writes nothing of its own there (no `.pytest_cache`, no bytecode); what a decision's tests write is the
+  tests'. It prints `holds    <path> (<id>): <entries>` or `failing  <path> (<id>): <entries>: <why>` with the last 20
+  lines of pytest's output, then `<n> check decisions: <h> hold, <f> failing`. `<why>` is `exit <code>` for a pytest
+  exit other than 0 (4: a test not found, 5: nothing collected), `timed out after <n> s`, `not run: <n> skipped` (or
+  `xfailed`, `xpassed`, `deselected`) or `nothing passed` for an exit of 0 whose summary line shows a test that did not
+  run, `not a test of this repository: <entry>` for an option or a file outside the root, which is never run, or
+  `names no test`. It exits 1 when the index is stale or any decision fails (plan 6, D5; plan 6's review, S1-S3, M2).
+- design-model-check r52 (`--check` on a decisions index exits successfully) and r5 here are both kept: r5 is an "If"
+  line on r52's trigger (the person runs `model decisions` with `--check`), so it takes precedence by the rule of
+  `spec/universal.md` ("An "If" line takes precedence", the person, 2026-11-04), as design-model-check r51 (a stale
+  index) does (plan 6, D6; plan 6's rulings, Q1).
 
 ## Not yet
 - None.

@@ -107,3 +107,17 @@ def test_the_decisions_come_after_the_lines(ready_repo, outside):
     assert done.returncode == 1, done.stdout
     reasons = [x for x in done.stderr.splitlines() if x.startswith("  ")]
     assert "frobnicate" in reasons[0] and "design-decision c (check) fails" in reasons[-1], done.stderr
+
+
+def test_a_superseded_check_decision_is_not_run(ready_repo, outside):
+    """Review M2: a decision no longer in force refuses no item."""
+    rest_on(ready_repo, outside)
+    path = ready_repo / "spec" / "decisions" / "c.md"
+    path.write_text(path.read_text().replace("status: accepted", "status: superseded"))
+    assert readiness_bar.rested_on(ready_repo, backlog_lines_of(ready_repo)) == []
+
+
+def backlog_lines_of(repo):
+    shaped(repo)
+    item = backlog_items.find(repo, "b1")
+    return readiness_bar.backlog_lines.read(item, readiness_bar.rel_of(item.name))

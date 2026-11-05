@@ -173,3 +173,55 @@ def test_the_decisions_run_side_by_side(repo, outside):
     took = time.monotonic() - start
     assert [x.holds for x in found] == [True] * 3, found
     assert took < 2.5, took
+
+
+@pytest.mark.parametrize("case", ["skipped", "xfailed"])
+def test_a_test_that_is_skipped_or_xfailed_is_failing(repo, outside, case):
+    """Review S1: a skip or an xfail exits 0 and enforces nothing, so it does not hold."""
+    body = "__import__('pytest').skip('no tool')" if case == "skipped" else "assert False"
+    head = "" if case == "skipped" else "import pytest\n\n\n@pytest.mark.xfail\n"
+    decision(repo, "a", enforced_by=[a_test(repo, outside, "a", body=body, head=head)])
+    r = check(repo)
+    assert r.returncode == 1, r.stdout
+    assert "failing  spec/decisions/a.md (%s): tests/test_a.py::test_a: not run: 1 %s" % (ident("a"), case) \
+        in r.stdout, r.stdout
+
+
+@pytest.mark.parametrize("entry", ["--co", "../outside.py"])
+def test_an_entry_that_is_not_a_test_of_the_repository_is_failing(repo, outside, entry):
+    """Review S2: an option, or a file outside the root, is never run and never holds."""
+    a_test(repo, outside, "a")
+    write(repo.parent, "outside.py", "def test_o():\n    pass\n")
+    decision(repo, "a", enforced_by=[entry])
+    r = check(repo)
+    assert r.returncode == 1, r.stdout
+    assert "failing  spec/decisions/a.md (%s): %s: not a test of this repository: %s" % (ident("a"), entry, entry) \
+        in r.stdout, r.stdout
+    assert model_decisions.wrong(repo, "check", [entry], []) == ["enforced_by %s: not a file of this repository"
+                                                                  % entry]
+
+
+def test_the_tests_run_under_the_projects_interpreter(repo, outside):
+    """Review S3: a project's `.venv/bin/python` runs its decisions' tests."""
+    stub = write(repo, ".venv/bin/python", "#!/bin/sh\necho stub-python-ran \"$@\" >> %s\nexec %s \"$@\"\n"
+                 % (outside / "python", sys.executable))
+    stub.chmod(0o755)
+    decision(repo, "a", enforced_by=[a_test(repo, outside, "a")])
+    found = model_decisions.check_tests(repo)
+    assert [x.holds for x in found] == [True], found
+    assert "stub-python-ran" in (outside / "python").read_text()
+
+
+@pytest.mark.parametrize("status", ["superseded", "rejected"])
+def test_a_decision_not_in_force_is_not_run(repo, outside, status):
+    """Review M2: history's tests never refuse anything."""
+    decision(repo, "a", enforced_by=[a_test(repo, outside, "a", body="assert False")])
+    path = repo / "spec/decisions/a.md"
+    path.write_text(path.read_text().replace("status: accepted", "status: %s" % status))
+    assert model_decisions.check_tests(repo) == []
+
+
+def test_a_test_id_holding_a_hash_is_a_test():
+    """Review M3: only `<capability>#r<n>` or `#r<a>-r<b>` is a requirement."""
+    tests, reqs = model_decisions.split(["tests/test_c.py::test_c[a#b]", "work-queue#r1", "dmc#r22-r24"])
+    assert (tests, reqs) == (["tests/test_c.py::test_c[a#b]"], ["work-queue#r1", "dmc#r22-r24"])
