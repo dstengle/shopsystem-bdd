@@ -7,10 +7,10 @@ import batch_plan
 import measure_defect
 import pytest
 from backlog_testing import git, state, work, write_item
-from measure_read import Refused
 from review_testing import ok, published
 from test_batch_tasks import resumed
 from test_measure_batch import figures, measure, merged, store  # noqa: F401  (the fixtures)
+from transcripts import Refused
 
 TODAY = datetime.date.today().isoformat()
 

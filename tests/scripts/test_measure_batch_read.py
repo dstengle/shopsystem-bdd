@@ -7,7 +7,7 @@ import backlog_testing  # noqa: F401  (the scripts directory on the path)
 import measure_batch_read
 import pytest
 from measure_batch_testing import store_rows, write_agent, write_session
-from measure_read import Refused
+from transcripts import Refused
 
 T0, T1 = "2026-11-05T10:00:00.500Z", "2026-11-05T10:00:01Z"
 

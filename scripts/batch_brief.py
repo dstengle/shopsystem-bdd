@@ -19,7 +19,7 @@ import backlog_lines
 import batch_findings
 import batch_fix
 import batch_plan
-import workqueue
+import shop_files
 from batch_git import (
     SCRIPTS,
     current_branch,
@@ -32,7 +32,7 @@ from batch_git import (
     tree_for,
     trees_dir,
 )
-from workqueue import Refused
+from shop_files import Refused
 
 COMMAND = "work batch brief"
 SIZE = 1000
@@ -46,7 +46,7 @@ def judgement(root):
     """(rel, summary) of each `spec/decisions/*.md` whose frontmatter has `tier: judgement` (D6)."""
     found = []
     for path in sorted((Path(root) / "spec" / "decisions").glob("*.md")):
-        data, _ = workqueue.frontmatter(workqueue.read(path, root))
+        data, _ = shop_files.frontmatter(shop_files.read(path, root))
         if data.get("tier") == "judgement":
             found.append((path.relative_to(root).as_posix(), str(data.get("summary") or "").strip()))
     return found

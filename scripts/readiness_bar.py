@@ -13,11 +13,11 @@ from pathlib import Path
 import backlog_lines
 import features_generate
 import model_decisions
+import request_moves
 import request_text
 import spec_grammar
 import spec_read
 import spec_solve
-import workqueue_request
 from backlog_items import rel_of
 
 
@@ -27,7 +27,7 @@ def request_lines(root, item):
     request = getattr(item, "request", None)
     if request is None:
         return []
-    found = workqueue_request.sections(root, request)
+    found = request_moves.sections(root, request)
     outcomes = found["Outcomes"]
     return [(int(n), found["Lines"][n], outcomes.get(n)) for n in sorted(found["Lines"], key=int)
             if outcomes.get(n) != "rewritten"]

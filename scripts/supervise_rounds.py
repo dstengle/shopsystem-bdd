@@ -10,11 +10,11 @@ import json
 import shutil
 import subprocess
 
+import request_moves
 import supervise_glossary
 import supervise_outputs
 import workqueue
 import workqueue_done
-import workqueue_request
 from supervise_change import BadChanges, Changes, entries
 from supervise_faults import Fault, ended_of, fault_of
 from supervise_formulate import Formulate
@@ -51,7 +51,7 @@ class Rounds(Changes, Raises, Formulate):
         if self.initiative not in left and data.get("fulfils") and (data.get("status") == "proposed" or (     # r79: no request, no lines to integrate
                 data.get("status") == "started" and not self.proposals() and not self.glossary_proposals() and not self.items())):     # r93
             try:     # a request the queue lacks gives no round, before anything moves
-                workqueue_request.accepted_lines(self.root, str(data["fulfils"]).rsplit("/", 1)[-1])
+                request_moves.accepted_lines(self.root, str(data["fulfils"]).rsplit("/", 1)[-1])
                 return (self.initiative, "integrate", "started")
             except Refused:
                 pass

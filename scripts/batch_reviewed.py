@@ -12,10 +12,10 @@ import batch_brief
 import batch_findings
 import batch_gh
 import batch_plan
-import workqueue
+import shop_files
 from batch_findings import Review
 from batch_git import current_branch, git, locked
-from workqueue import Refused
+from shop_files import Refused
 
 COMMAND = "work batch reviewed"
 
@@ -75,7 +75,7 @@ def reviewed(root, name):
         for m, finding in enumerate(found, first):
             finding.fid = "f%d" % m
         review = Review(number=k, batch=batch.name,
-                        ident="review/%s/%s/review-%d" % (workqueue.context_path(root), batch.name, k),
+                        ident="review/%s/%s/review-%d" % (shop_files.context_path(root), batch.name, k),
                         pull_request=batch.pull_request, head=head,
                         range="%s..%s" % (done[-1].head if done else batch.forked_from, head),
                         result="fix-now", verdict=verdict, findings=found, earlier=earlier)

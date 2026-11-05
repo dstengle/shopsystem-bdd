@@ -40,7 +40,7 @@ from batch_tasks import (
     uncited,
     under_shop,
 )
-from workqueue import Refused
+from shop_files import Refused
 
 COMMAND = "work batch review"
 

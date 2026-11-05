@@ -14,12 +14,12 @@ import backlog_items
 import backlog_lines
 import batch_pick
 import features_generate
+import shop_files
 import spec_read
 import spec_unbuilt
-import workqueue
 from batch_git import add_tree, current_branch, git, locked, remove_tree, trees_dir
 from batch_plan import Batch, Task, commit, next_name, open_batch
-from workqueue import Refused
+from shop_files import Refused
 
 
 def labels(items):
@@ -83,7 +83,7 @@ def _returns(root, returned):
     def write():
         for item, _ in returned:
             (Path(root) / backlog_items.rel_of(item.name)).write_text(backlog_items.render(item), encoding="utf-8")
-    workqueue.committed(root, rels, "work batch start: no batch; %s -> shaped" % labels(i for i, _ in returned),
+    shop_files.committed(root, rels, "work batch start: no batch; %s -> shaped" % labels(i for i, _ in returned),
                         write)
 
 
@@ -96,7 +96,7 @@ def _build(root, base, picked, returned):
         changed = lay_lines(tree, picked)
         git(tree, "add", "--", *changed)
         git(tree, "commit", "-q", "-m", "%s: the requirement lines of %s\n%s" % (name, labels(picked), cites(picked)))
-        context = workqueue.context_path(root)
+        context = shop_files.context_path(root)
         batch = Batch(name=name, ident="batch/%s/%s" % (context, name), status="building", base=base,
                       forked_from=forked, branch=name, pull_request=None,
                       tasks=[Task("t%d" % k, i.name, "pending", "%s-%s" % (name, i.name)) for k, i in enumerate(picked, 1)])

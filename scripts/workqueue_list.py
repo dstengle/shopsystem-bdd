@@ -101,8 +101,8 @@ def work_item(root, target, as_json):
 def request_parts(root, name, turn):
     """What `work show <request>` prints after its first line (r59): whose turn it is, each line with its line outcome,
     each question with its answer, the resolution."""
-    import workqueue_request
-    parts = workqueue_request.sections(root, name)
+    import request_moves
+    parts = request_moves.sections(root, name)
     print("it is the %s's turn" % turn)
     for number, text in sorted(parts["Lines"].items(), key=lambda e: int(e[0])):
         print("  line %s: %s - %s" % (number, parts["Outcomes"].get(number, "unsettled"), text))

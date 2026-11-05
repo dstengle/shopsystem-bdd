@@ -25,7 +25,7 @@ import re
 
 import pytest
 import spec_unbuilt
-from supervise_outputs import is_guarantees
+from spec_read import is_guarantees
 
 
 def pytest_addoption(parser):

@@ -19,7 +19,7 @@ import workqueue
 import workqueue_answer
 import workqueue_list
 import workqueue_note
-import workqueue_request
+import request_moves
 import workqueue_start
 import workqueue_status
 
@@ -82,8 +82,8 @@ def cmd_status(args):
 
 
 def cmd_request(args):
-    workqueue_request.gate(args.root, args.asker, args.source, args.thread, args.raised_for)
-    print(workqueue_request.request(args.root, args.title, args.asker, args.lines, args.source, args.thread, args.delegation,
+    request_moves.gate(args.root, args.asker, args.source, args.thread, args.raised_for)
+    print(request_moves.request(args.root, args.title, args.asker, args.lines, args.source, args.thread, args.delegation,
                                      args.raised_for))
     return 0
 
@@ -94,32 +94,32 @@ def cmd_outcome(args):
         intake_moves.outcome(args.root, args.request, args.line, args.outcome, args.into, args.group, args.reason,
                              args.text)
         return 0
-    workqueue_request.outcome(args.root, args.request, args.line, args.outcome)
+    request_moves.outcome(args.root, args.request, args.line, args.outcome)
     return 0
 
 
 def cmd_ask(args):
-    workqueue_request.ask(args.root, args.request, args.line, args.question)
+    request_moves.ask(args.root, args.request, args.line, args.question)
     return 0
 
 
 def cmd_reply(args):
-    workqueue_request.reply(args.root, args.request, args.question, args.answer)
+    request_moves.reply(args.root, args.request, args.question, args.answer)
     return 0
 
 
 def cmd_turn(args):
-    workqueue_request.turn(args.root, args.request)
+    request_moves.turn(args.root, args.request)
     return 0
 
 
 def cmd_resolve(args):
-    workqueue_request.resolve(args.root, args.request, [(int(n), req, version) for n, req, version in args.line])
+    request_moves.resolve(args.root, args.request, [(int(n), req, version) for n, req, version in args.line])
     return 0
 
 
 def cmd_delegate(args):
-    workqueue_request.delegate(args.root, args.request, args.delegation)
+    request_moves.delegate(args.root, args.request, args.delegation)
     return 0
 
 

@@ -15,11 +15,10 @@ import batch_pick
 import batch_plan
 import measure_batch_read
 import measure_batch_sessions
-import measure_build
 import measure_cost
 import measure_defect
-import workqueue
-from measure_read import Refused, moment
+import shop_files
+from transcripts import Refused, moment
 
 
 def now():
@@ -92,7 +91,7 @@ def figures_of(root, name, sessions_dir=None):
     """D9's figures of the batch `name`; a batch file refused by `work` is refused here."""
     try:
         return _figures(root, name, sessions_dir)
-    except workqueue.Refused as why:
+    except shop_files.Refused as why:
         raise Refused(str(why)) from None
 
 
@@ -127,10 +126,10 @@ def _figures(root, name, sessions_dir):
     return {"batch": name, "status": batch.status, "pull_request": batch.pull_request,
             "items": [{"item": i.name, "title": i.title, "status": i.status} for i in items],
             "window": window, "wall_time_seconds": wall,
-            "wall_time": measure_build.duration(wall) if wall is not None else None,
+            "wall_time": measure_cost.duration(wall) if wall is not None else None,
             "waiting_for_merge_seconds": _seconds(at["built"], at["closed"]),
-            "session_time_seconds": seconds, "session_time": measure_build.duration(seconds),
-            "tokens": {k: sum(s[k] for s in sessions) for k in measure_build.KINDS},
+            "session_time_seconds": seconds, "session_time": measure_cost.duration(seconds),
+            "tokens": {k: sum(s[k] for s in sessions) for k in measure_cost.KINDS},
             "cost": cost, "unpriced": unpriced, "prices_as_of": measure_cost.AS_OF,
             "cost_by_role": measure_batch_sessions.roles_of(sessions),
             "sessions": sessions, "sessions_from": str(directory),

@@ -1,13 +1,13 @@
 """Intake (capability intake; workflow simplification plan 3, D10-D12): a request of this context taken in as an item
 (`work intake`), and the item side of `work outcome` on a request an item was taken in from. The request files are
-the ones workqueue_request.py keeps; `work intake` changes nothing in the request."""
+the ones request_moves.py keeps; `work intake` changes nothing in the request."""
 import re
 from pathlib import Path
 
 import backlog_lines
-import workqueue
-import workqueue_lines
-import workqueue_request
+import request_lines
+import request_moves
+import shop_files
 from backlog_items import (
     Item,
     Refused,
@@ -28,7 +28,7 @@ OUTCOMES = ("accepted", "rewritten", "refused", "question", "withdrawn")    # th
 
 def provenance_of(root, asker):
     """`own` for this context's own asker, `product` for the product, `peer` for any other bounded context (D10)."""
-    if asker == "internal" or asker in workqueue_request.own_askers(root):
+    if asker == "internal" or asker in request_moves.own_askers(root):
         return "own"
     return "product" if (asker or "").startswith("product/") else "peer"
 
@@ -52,12 +52,12 @@ def intake(root, request):
     """Write the `shaped` item request `request` is taken in as, and commit it alone (D10): titled by the request's
     heading, asked by its asker, its provenance read off the asker. A request already taken in, and one that is not in
     the upstream's turn, and this context's own request to its upstream (taken in there), are refused."""
-    text = workqueue.read(workqueue_request.path_of(root, request), root)
+    text = shop_files.read(request_moves.path_of(root, request), root)
     had = linked(root, request)
     if had is not None:
         raise Refused("work intake: %s was taken in already, as %s" % (named(request, text), label(had)))
-    asker, upstreams = field(text, "asker"), workqueue_request.upstreams(root)
-    if upstreams and asker in workqueue_request.own_askers(root) and field(text, "source") is None:
+    asker, upstreams = field(text, "asker"), request_moves.upstreams(root)
+    if upstreams and asker in request_moves.own_askers(root) and field(text, "source") is None:
         raise Refused("work intake: %s is a request to the upstream %s; it is taken in there"
                       % (named(request, text), upstreams[0]))
     status = field(text, "status")
@@ -68,7 +68,7 @@ def intake(root, request):
         raise Refused("work intake: %s is in the asker's turn; work intake takes a request in the upstream's turn"
                       % named(request, text))
     name = next_name(root)
-    item = Item(name=name, ident="item/%s/%s" % (workqueue.context_path(root), name),
+    item = Item(name=name, ident="item/%s/%s" % (shop_files.context_path(root), name),
                 title=one_line(title_of(text), "request's title"), status="shaped",
                 provenance=provenance_of(root, asker), request=request, asked_by=asker,
                 sections={"Notes": "taken in from request %s" % named(request, text)})
@@ -86,7 +86,7 @@ def handles(args):
 
 def _refusals(root, ident, text, number, word, item, into, group, reason, line):
     """Refuse, before anything is written, an outcome intake does not take (D12); the old refusals first."""
-    workqueue_request.refuse_upstream_part(root, text, ident, "the line outcomes")
+    request_moves.refuse_upstream_part(root, text, ident, "the line outcomes")
     if word not in OUTCOMES:
         raise Refused("work outcome: %s is not a line outcome; give one of %s" % (word, ", ".join(OUTCOMES)))
     if field(text, "turn") == "asker":
@@ -111,8 +111,8 @@ def outcome(root, ident, number, word, into=None, group=None, reason=None, line=
     """`work outcome` on a request taken in as an item, or with one of intake's options (D12): the line outcome, a
     reason under `## Reasons`, a counter-proposal appended to `## Lines` with the turn passed to the asker, and, on a
     request taken in, the accepted line written into the item and a note; one commit of the request and the item."""
-    path = workqueue_request.path_of(root, ident)
-    text = workqueue.read(path, root)
+    path = request_moves.path_of(root, ident)
+    text = shop_files.read(path, root)
     item = linked(root, ident)
     reason = text_line(reason, "reason") if reason is not None else None
     _refusals(root, ident, text, number, word, item, into, group, reason, line)
@@ -121,7 +121,7 @@ def outcome(root, ident, number, word, into=None, group=None, reason=None, line=
     if line is not None:
         line = text_line(line, "counter-proposal")
         try:
-            workqueue_lines.check(root, [line])
+            request_lines.check(root, [line])
         except Refused as refused:
             said, head = str(refused), "line 1 does not parse in the upstream's requirement grammar: "
             if not said.startswith(head):
@@ -154,5 +154,5 @@ def outcome(root, ident, number, word, into=None, group=None, reason=None, line=
         path.write_text(after)
         if item is not None:
             (Path(root) / rel_of(item.name)).write_text(render(item))
-    workqueue.committed(root, rels, message, write)
+    shop_files.committed(root, rels, message, write)
 

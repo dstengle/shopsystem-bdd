@@ -9,7 +9,7 @@ import subprocess
 import tomllib
 from pathlib import Path
 
-from workqueue import Refused
+from shop_files import Refused
 
 SCRIPTS = Path(__file__).resolve().parent
 TREES = Path(".shop") / "worktrees"

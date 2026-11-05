@@ -9,9 +9,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import backlog_items
-import workqueue
+import shop_files
 from batch_git import current_branch
-from workqueue import Refused
+from shop_files import Refused
 
 BATCHES = Path(".shop") / "batches"
 STATUSES = ("building", "in-review", "awaiting-merge", "merged", "abandoned")
@@ -92,7 +92,7 @@ def _tasks(text, rel):
 
 
 def parse(text, rel):
-    data, body = workqueue.frontmatter(text)
+    data, body = shop_files.frontmatter(text)
     ident = data.get("id")
     if not isinstance(ident, str) or not ident.startswith("batch/") or not is_batch(ident.rsplit("/", 1)[-1]):
         raise Refused("%s: id %r is not batch/<context path>/batch-<n>" % (rel, ident))
@@ -133,7 +133,7 @@ def names(root):
 
 def load(root, name):
     rel = rel_of(name)
-    batch = parse(workqueue.read(Path(root) / rel, root), rel)
+    batch = parse(shop_files.read(Path(root) / rel, root), rel)
     if batch.name != name:
         raise Refused("%s: id %s does not end in %s" % (rel, batch.ident, name))
     return batch
@@ -193,4 +193,4 @@ def commit(root, batch, items, message, files=None):
         for rel, text in files.items():
             (Path(root) / rel).parent.mkdir(parents=True, exist_ok=True)
             (Path(root) / rel).write_text(text, encoding="utf-8")
-    workqueue.committed(root, rels, message, write)
+    shop_files.committed(root, rels, message, write)

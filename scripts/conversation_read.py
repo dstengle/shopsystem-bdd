@@ -10,7 +10,7 @@ import re
 from dataclasses import dataclass
 from datetime import datetime
 
-from measure_read import Refused, json_rows, moment
+from transcripts import Refused, json_rows, moment
 
 AROUND = 2
 REMINDER = re.compile(r"<system-reminder>.*?</system-reminder>", re.DOTALL)

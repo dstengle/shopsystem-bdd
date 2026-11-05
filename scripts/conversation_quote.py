@@ -10,10 +10,10 @@ from pathlib import Path
 
 import conversation_prompt
 import conversation_read as C
-import workqueue
-from measure_read import Refused as ReadRefused
-from measure_read import json_rows, moment, store_dir
-from workqueue import Refused
+import shop_files
+from shop_files import Refused
+from transcripts import Refused as ReadRefused
+from transcripts import json_rows, moment, store_dir
 
 QUOTES = Path(".shop") / "quotes"
 LIMIT = 2000
@@ -64,7 +64,7 @@ def find(root, name):
     if not is_quote(name) or not (Path(root) / rel_of(name)).is_file():
         raise Refused("there is no quote %s in %s/" % (name, QUOTES.as_posix()))
     rel = rel_of(name)
-    quote = parse(workqueue.read(Path(root) / rel, root), rel)
+    quote = parse(shop_files.read(Path(root) / rel, root), rel)
     if quote.name != name:
         raise Refused("%s: id %s does not end in %s" % (rel, quote.ident, name))
     return quote
@@ -97,7 +97,7 @@ def render(quote):
 
 def parse(text, rel):
     """The quote of a file's text; any other shape is refused as `<rel>: <field> ...` (D3)."""
-    data, body = workqueue.frontmatter(text)
+    data, body = shop_files.frontmatter(text)
     ident = data.get("id")
     if not isinstance(ident, str) or not re.fullmatch(r"quote/.+/quote-[1-9]\d*", ident):
         raise Refused("%s: id %r is not quote/<context path>/quote-<n>" % (rel, ident))
@@ -207,7 +207,7 @@ def write(root, words, session=None, transcript=None):
     near = [_cut(m, found[index]) for m in C.around(found, index)]
     name = next_name(root)
     date = found[index].at.astimezone(datetime.UTC).date().isoformat()
-    quote = Quote(name, "quote/%s/%s" % (workqueue.context_path(root), name), session, found[index].ident, date,
+    quote = Quote(name, "quote/%s/%s" % (shop_files.context_path(root), name), session, found[index].ident, date,
                   words.strip(), near)
     rel = rel_of(name)
 
@@ -215,7 +215,7 @@ def write(root, words, session=None, transcript=None):
         target = Path(root) / rel
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(render(quote), encoding="utf-8")
-    workqueue.committed(root, [rel], "quote: %s from the session %s" % (name, session[:8]), put)
+    shop_files.committed(root, [rel], "quote: %s from the session %s" % (name, session[:8]), put)
     return quote
 
 

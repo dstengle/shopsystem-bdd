@@ -5,8 +5,8 @@ of the request's lines and passes the turn, with `work outcome` and `work turn`.
 import os
 import subprocess
 
+import request_moves
 import workqueue
-import workqueue_request
 from supervise import Run
 from supervise_brief import normal_form
 from supervise_faults import Fault, fault_of
@@ -91,7 +91,7 @@ class Intake(Run):
                 try:     # r100: the questions are written while the request is in the upstream's turn, then merged
                     for question in data.get("questions") or []:
                         number, text = str(question).split(". ", 1)
-                        workqueue_request.ask(self.root, name, int(number), text)
+                        request_moves.ask(self.root, name, int(number), text)
                     git(self.root, "merge", "-q", "--no-edit", branch)
                 except (Refused, ValueError, GitFailed) as error:
                     subprocess.run(["git", "merge", "--abort"], cwd=self.root, capture_output=True)

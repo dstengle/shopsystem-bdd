@@ -6,7 +6,7 @@ import batch_plan
 import pytest
 from backlog_testing import git, write_item
 from batch_findings import Finding, Review
-from workqueue import Refused
+from shop_files import Refused
 
 REL = "batch-1-review-2/findings.md"
 

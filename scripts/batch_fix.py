@@ -6,7 +6,7 @@ finding's task its worktree back (`trees`) and prints where to fix it (`said`)."
 import backlog_items
 import batch_findings
 from batch_git import git, is_tree, tree_for, trees_dir
-from workqueue import Refused
+from shop_files import Refused
 
 
 def cited_findings(root, since, branch):

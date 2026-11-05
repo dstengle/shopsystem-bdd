@@ -12,9 +12,9 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 sys.path.insert(0, str(ROOT / "tests"))
+import request_moves
+import shop_files
 import toolchain
-import workqueue
-import workqueue_request
 
 GLOSSARY = ROOT / "tests" / "scripts" / "fixtures" / "glossary" / "spec" / "index.md"
 GOOD = "When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to `started`."
@@ -61,13 +61,13 @@ def written(repo):
 
 
 def test_lines_that_parse_are_written(codified):
-    name = workqueue_request.request(codified, "t", "internal", lines(codified, GOOD), ["observation/o1"], None)
+    name = request_moves.request(codified, "t", "internal", lines(codified, GOOD), ["observation/o1"], None)
     assert GOOD in (codified / ".shop/work/requests" / (name + ".md")).read_text()
 
 
 def test_a_line_that_does_not_parse_is_refused_naming_it_and_nothing_is_written(codified):
-    with pytest.raises(workqueue.Refused) as refused:
-        workqueue_request.request(codified, "t", "internal", lines(codified, GOOD, BAD), ["observation/o1"], None)
+    with pytest.raises(shop_files.Refused) as refused:
+        request_moves.request(codified, "t", "internal", lines(codified, GOOD, BAD), ["observation/o1"], None)
     text = str(refused.value)
     assert "line 2" in text and "`drafted`" in text and BAD in text
     assert "parsed up to" in text, text
@@ -84,8 +84,8 @@ def test_the_command_exits_1_and_writes_no_file(codified):
 
 
 def test_an_upstream_whose_index_is_not_codified_is_refused_naming_migrate_upgrade(legacy):
-    with pytest.raises(workqueue.Refused) as refused:
-        workqueue_request.request(legacy, "t", "internal", lines(legacy, LEGACY), ["observation/o1"], None)
+    with pytest.raises(shop_files.Refused) as refused:
+        request_moves.request(legacy, "t", "internal", lines(legacy, LEGACY), ["observation/o1"], None)
     assert "spec/index.md is not codified: run `migrate upgrade`" in str(refused.value)
     assert written(legacy) == []
 
@@ -93,8 +93,8 @@ def test_an_upstream_whose_index_is_not_codified_is_refused_naming_migrate_upgra
 def test_an_upstream_with_an_uncodified_capability_is_refused_naming_it(codified):
     (codified / "spec/capabilities").mkdir()
     (codified / "spec/capabilities/old.md").write_text(UNCODIFIED)
-    with pytest.raises(workqueue.Refused) as refused:
-        workqueue_request.request(codified, "t", "internal", lines(codified, GOOD), ["observation/o1"], None)
+    with pytest.raises(shop_files.Refused) as refused:
+        request_moves.request(codified, "t", "internal", lines(codified, GOOD), ["observation/o1"], None)
     assert "spec/capabilities/old.md is not codified: run `migrate upgrade`" in str(refused.value)
     assert written(codified) == []
 
@@ -104,7 +104,7 @@ def test_no_grammar_tools_refuses_naming_tools_install(codified, monkeypatch):
     monkeypatch.setattr(spec_grammar, "gf_binary", lambda: None)
     monkeypatch.setattr(spec_grammar, "_loaded", {})
     monkeypatch.setenv("XDG_CACHE_HOME", str(codified / "empty-cache"))
-    with pytest.raises(workqueue.Refused, match="tools install"):
-        workqueue_request.request(codified, "t", "internal", lines(codified, GOOD), ["observation/o1"], None)
+    with pytest.raises(shop_files.Refused, match="tools install"):
+        request_moves.request(codified, "t", "internal", lines(codified, GOOD), ["observation/o1"], None)
     assert written(codified) == []
     shutil.rmtree(codified / "empty-cache", ignore_errors=True)

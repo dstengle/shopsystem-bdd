@@ -5,7 +5,7 @@
 from pathlib import Path
 
 import spec_read
-from workqueue import Refused
+from shop_files import Refused
 
 
 def uncodified(root):

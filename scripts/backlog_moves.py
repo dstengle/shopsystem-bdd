@@ -1,6 +1,6 @@
 """The commands that change an item of the backlog (capability backlog), each one commit of that item's file, with a
 message naming the item by its label (workflow simplification plan 2, D3, D5)."""
-import workqueue
+import shop_files
 from backlog_items import (
     PROVENANCES,
     RATINGS,
@@ -39,7 +39,7 @@ def idea(root, title, provenance="own", note=None):
         raise Refused("the provenance %s is not one of %s" % (provenance, ", ".join(PROVENANCES)))
     sections = {"Notes": text_line(note, "note")} if note is not None else {}
     name = next_name(root)
-    item = Item(name=name, ident="item/%s/%s" % (workqueue.context_path(root), name), title=title, status="idea",
+    item = Item(name=name, ident="item/%s/%s" % (shop_files.context_path(root), name), title=title, status="idea",
                 provenance=provenance, sections=sections)
     commit(root, item, "work idea: %s idea" % label(item))
     return item

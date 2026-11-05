@@ -4,7 +4,7 @@ import json
 
 import backlog_items
 import pytest
-import workqueue
+import shop_files
 import workqueue_list
 from backlog_testing import git, state, work, write_item
 
@@ -128,5 +128,5 @@ def test_label_names_the_item_by_id_and_title():
 
 
 def test_find_refuses_a_missing_item(backlog_repo):
-    with pytest.raises(workqueue.Refused, match="there is no item b2 in .shop/backlog/"):
+    with pytest.raises(shop_files.Refused, match="there is no item b2 in .shop/backlog/"):
         backlog_items.find(backlog_repo, "b2")

@@ -11,7 +11,7 @@ import tempfile
 from pathlib import Path
 
 from batch_git import git
-from workqueue import Refused
+from shop_files import Refused
 
 UNBUILT = re.compile(r"(?m)^unbuilt:[ \t]*\[(.*)\][ \t]*$")
 MARK = "unbuilt: [<set aside by work batch review>]"

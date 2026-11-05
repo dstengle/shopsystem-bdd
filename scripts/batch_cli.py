@@ -11,7 +11,7 @@ import batch_review
 import batch_reviewed
 import batch_start
 import batch_tasks
-from workqueue import Refused
+from shop_files import Refused
 
 
 def add_parsers(sub):

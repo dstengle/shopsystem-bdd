@@ -12,8 +12,8 @@ from pathlib import Path
 import backlog_items
 import batch_git
 import batch_plan
-import workqueue
-from workqueue import Refused
+import shop_files
+from shop_files import Refused
 
 GRADES = ("Critical", "Important", "Minor")
 TRIAGES = ("fix now", "observation", "drop")
@@ -209,7 +209,7 @@ def render(review):
 
 
 def parse(text, rel):
-    data, body = workqueue.frontmatter(text)
+    data, body = shop_files.frontmatter(text)
     ident = data.get("id")
     m = re.fullmatch(r"review/.+/(batch-[1-9]\d*)/review-([1-9]\d*)", ident or "") if isinstance(ident, str) else None
     if not m:
@@ -242,7 +242,7 @@ def reviews(root, batch):
         rel = path.relative_to(root).as_posix()
         if not re.fullmatch(r"review-[1-9]\d*\.md", path.name):
             raise Refused("%s: id: the file name is not review-<k>.md" % rel)
-        found.append(parse(workqueue.read(path, root), rel))
+        found.append(parse(shop_files.read(path, root), rel))
     return sorted(found, key=lambda r: r.number)
 
 

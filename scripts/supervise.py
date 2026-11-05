@@ -13,8 +13,8 @@ import shutil
 import threading
 from pathlib import Path
 
+import request_moves
 import workqueue
-import workqueue_request
 from supervise_analysis import Analyses
 from supervise_answers import Answers
 from supervise_brief import Briefs
@@ -283,7 +283,7 @@ class Run(Workers, Briefs, Merge, Faults, Reviews, Pool, Drafts, Rounds, Analyse
 def asked(root, code):
     """Print each request whose asker is this context and which waits in the asker's turn, with its open questions; such
     a request makes a successful exit an error (r101)."""
-    waiting = workqueue_request.asked_here(root)
+    waiting = request_moves.asked_here(root)
     for name, open_questions in waiting:
         print("%s awaiting-asker" % name)
         for question in open_questions:

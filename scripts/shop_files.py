@@ -1,0 +1,90 @@
+"""The plumbing of .shop/ that every command shares: the one refusal, frontmatter read with scripts/model's own reader
+(so the two never disagree on a file), the context's path, a file's text, git, a commit of named files only, and an
+append to a log whole or not at all. Standard library only."""
+import importlib.machinery
+import importlib.util
+import os
+import subprocess
+from pathlib import Path
+
+# Unicode's mandatory line breaks: LF, VT, FF, CR, NEL, LS, PS.
+LINE_BREAKS = "\n\x0b\x0c\r\x85  "
+
+
+def _load_model():
+    path = Path(__file__).resolve().with_name("model")
+    loader = importlib.machinery.SourceFileLoader("shopsystem_model", str(path))
+    spec = importlib.util.spec_from_loader(loader.name, loader)
+    module = importlib.util.module_from_spec(spec)
+    loader.exec_module(module)
+    return module
+
+
+frontmatter = _load_model().frontmatter
+
+
+class Refused(Exception):
+    """What was asked cannot be done; the message says why, and nothing was changed."""
+
+
+def context_path(root):
+    """The <owner>/<product>/<context name> of spec/index.md's bounded-context id."""
+    index = Path(root) / "spec" / "index.md"
+    if not index.is_file():
+        raise Refused("spec/index.md, which names the context, is missing")
+    data, _ = frontmatter(read(index, root))
+    ident = data.get("id")
+    if not isinstance(ident, str) or "/" not in ident:
+        raise Refused("spec/index.md gives no bounded-context id (bounded-context/<owner>/<product>/<context>)")
+    return ident.split("/", 1)[1]
+
+
+def read(path, root):
+    """The text of `path`; a file that is not UTF-8 text is refused, naming it."""
+    try:
+        return path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        raise Refused("%s is not UTF-8 text" % path.relative_to(root)) from None
+
+
+def append(log, data):
+    """Append `data` to `log` whole or not at all: a write that fails part-way is cut back to the size before it."""
+    fd = os.open(log, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o644)
+    try:
+        size = os.fstat(fd).st_size
+        try:
+            written = 0
+            while written < len(data):
+                written += os.write(fd, data[written:])
+        except OSError:
+            os.ftruncate(fd, size)
+            raise
+    finally:
+        os.close(fd)
+
+
+def git(root, *args):
+    """Run git in `root`; a git that fails is refused, with git's first line of complaint."""
+    done = subprocess.run(["git", *args], cwd=root, capture_output=True, text=True)
+    if done.returncode != 0:
+        said = (done.stderr.strip() or done.stdout.strip() or "exit %d" % done.returncode).splitlines()[0]
+        raise Refused("git %s failed: %s" % (args[0], said))
+    return done.stdout
+
+
+def committed(root, rels, message, write):
+    """Make the change `write` makes to the files `rels` (relative to `root`), then commit them, and only them, on the
+    current branch. A repository git cannot commit in is refused before anything is written, and a commit that fails
+    puts the files back as they were."""
+    git(root, "rev-parse", "--is-inside-work-tree")
+    paths = [Path(root) / rel for rel in rels]
+    before = [p.read_bytes() if p.exists() else None for p in paths]
+    write()
+    try:
+        git(root, "add", "--", *rels)
+        git(root, "commit", "-q", "-m", message, "--", *rels)
+    except Refused:
+        for path, data in zip(paths, before):
+            path.unlink(missing_ok=True) if data is None else path.write_bytes(data)
+        subprocess.run(["git", "reset", "-q", "--", *rels], cwd=root, capture_output=True)
+        raise

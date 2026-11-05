@@ -9,38 +9,40 @@ import json
 import re
 from pathlib import Path
 
-import workqueue
+import request_lines
+import shop_files
 import workqueue_done
-import workqueue_lines
 from request_text import (  # noqa: F401  (SETTLED: imported from here)
     SETTLED,
+    WORK_REQUESTS,
     entries,
     field,
     numbered,
+    requests,
     turned,
     with_entries,
     with_field,
 )
-from workqueue import Refused
+from shop_files import Refused
 
 
 def path_of(root, ident):
-    path = Path(root) / workqueue.WORK / "requests" / (ident + ".md")
+    path = Path(root) / WORK_REQUESTS / (ident + ".md")
     if "/" in ident or not path.is_file():
-        raise Refused("there is no request %s under %s" % (ident, workqueue.WORK / "requests"))
+        raise Refused("there is no request %s under %s" % (ident, WORK_REQUESTS))
     return path
 
 
 def sections(root, ident):
     """Request `ident`'s Lines, Outcomes, Questions, Answers and Resolution, each as {number: text}."""
-    text = workqueue.read(path_of(root, ident), root)
+    text = shop_files.read(path_of(root, ident), root)
     return {name: dict(e.split(". ", 1) for e in entries(text, name) if ". " in e)
             for name in ("Lines", "Outcomes", "Questions", "Answers", "Resolution")}
 
 
 def accepted_lines(root, ident):
     """(number, text) of each line of request `ident` whose line outcome is accepted."""
-    text = workqueue.read(path_of(root, ident), root)
+    text = shop_files.read(path_of(root, ident), root)
     outcomes = dict(e.split(". ", 1) for e in entries(text, "Outcomes") if ". " in e)
     lines = dict(e.split(". ", 1) for e in entries(text, "Lines") if ". " in e)
     return [(int(n), lines[n]) for n in sorted(lines, key=int) if outcomes.get(n) == "accepted"]
@@ -50,12 +52,12 @@ def asked_here(root):
     """(name, open questions) of each request whose asker is this context and whose status is awaiting-asker (supervision
     r101): a question is open when no answer of the same number is under `## Answers`."""
     try:
-        mine = ("internal", "bounded-context/" + workqueue.context_path(root))
+        mine = ("internal", "bounded-context/" + shop_files.context_path(root))
     except Refused:
         mine = ("internal",)
     found = []
-    for name, status, _, _ in workqueue.requests(root):
-        text = workqueue.read(path_of(root, name), root)
+    for name, status, _, _ in requests(root):
+        text = shop_files.read(path_of(root, name), root)
         if status == "awaiting-asker" and field(text, "asker") in mine:
             answered = {e.split(". ", 1)[0] for e in entries(text, "Answers") if ". " in e}
             found.append((name, [e.split(". ", 1)[1] for e in entries(text, "Questions")
@@ -66,9 +68,9 @@ def asked_here(root):
 def _change(root, ident, message, edit):
     """Rewrite request `ident` as `edit` makes it from its text, and commit it, and only it."""
     path = path_of(root, ident)
-    text = workqueue.read(path, root)
+    text = shop_files.read(path, root)
     after = edit(text)
-    workqueue.committed(root, [str(path.relative_to(root))], "work %s: %s" % (message, ident), lambda: path.write_text(after))
+    shop_files.committed(root, [str(path.relative_to(root))], "work %s: %s" % (message, ident), lambda: path.write_text(after))
 
 
 def upstreams(root):
@@ -81,7 +83,7 @@ def upstreams(root):
 
 def own_askers(root):
     """The spellings of this repository's own asker: its context path, its last part and its bounded-context id (r32)."""
-    path = workqueue.context_path(root)
+    path = shop_files.context_path(root)
     return {path, path.rsplit("/", 1)[-1], "bounded-context/" + path}
 
 
@@ -112,7 +114,7 @@ def request(root, title, asker, lines_file, sources, thread, delegation=None, ra
 
     A request that names neither an origin nor a job-thread is refused (r3), and so is one with a line the upstream
     would not read (r2): one that does not parse in its requirement grammar, or, where its index is not codified, one
-    not in the strict form `model check` holds (workqueue_lines); a refusal writes nothing.
+    not in the strict form `model check` holds (request_lines); a refusal writes nothing.
     """
     if delegation is not None and not delegation.strip():
         raise Refused("the delegation is empty")
@@ -120,25 +122,25 @@ def request(root, title, asker, lines_file, sources, thread, delegation=None, ra
         raise Refused("the request names neither an origin (--source) nor a job-thread (--thread)")
     if not Path(lines_file).is_file():
         raise Refused("the file %s does not exist" % lines_file)
-    lines = [line.strip() for line in workqueue.read(Path(lines_file), Path(lines_file).parent).splitlines() if line.strip()]
-    workqueue_lines.check(root, lines)
-    directory = Path(root) / workqueue.WORK / "requests"
+    lines = [line.strip() for line in shop_files.read(Path(lines_file), Path(lines_file).parent).splitlines() if line.strip()]
+    request_lines.check(root, lines)
+    directory = Path(root) / WORK_REQUESTS
     taken = [int(m.group(1)) for p in directory.glob("q*.md") if (m := re.fullmatch(r"q(\d+)\.md", p.name))]
     name = "q%d" % (max(taken, default=0) + 1)
     origin = ["part_of: %s" % thread] if thread is not None else ["source: [%s]" % ", ".join(sources)] if sources else []
     if raised_for is not None and re.fullmatch(r"q\d+", raised_for):     # a bare q<n> names a request of this context
-        raised_for = "request/%s/%s" % (workqueue.context_path(root), raised_for)
+        raised_for = "request/%s/%s" % (shop_files.context_path(root), raised_for)
     origin = "\n".join(origin + (["raised_for: %s" % raised_for] if raised_for is not None else []))
     given = "delegation: %s\n" % json.dumps(delegation) if delegation is not None else ""
     text = ("---\nid: request/%s/%s\nkind: request\nasker: %s\n%s\nstatus: open\nturn: upstream\n%s---\n\n# %s\n\n## Lines\n%s\n"
             "## Questions\n\n## Answers\n\n## Outcomes\n\n## Resolution\n"
-            % (workqueue.context_path(root), name, asker, origin, given, title,"".join("%d. %s\n" % e for e in enumerate(lines, 1))))
+            % (shop_files.context_path(root), name, asker, origin, given, title,"".join("%d. %s\n" % e for e in enumerate(lines, 1))))
     path = directory / (name + ".md")
 
     def write():
         directory.mkdir(parents=True, exist_ok=True)
         path.write_text(text)
-    workqueue.committed(root, [str(path.relative_to(root))], "work request: %s" % name, write)
+    shop_files.committed(root, [str(path.relative_to(root))], "work request: %s" % name, write)
     return name
 
 
@@ -208,7 +210,7 @@ def resolve(root, ident, lines):
         text = with_field(with_entries(text, "Resolution", held), "status", "delivered")
         return with_field(text, "turn", "asker")  # r24
     path = path_of(root, ident)
-    after =edit(workqueue.read(path, root))
+    after =edit(shop_files.read(path, root))
     done = [d for d in workqueue_done.naming(root, ident) if workqueue_done.becomes(root, d, {ident: "delivered"})]
 
     def write():
@@ -216,4 +218,4 @@ def resolve(root, ident, lines):
         for directory in done:
             workqueue_done.mark(directory, root)
     rels = [str(p.relative_to(root)) for p in [path] + [d / "initiative.md" for d in done]]
-    workqueue.committed(root, rels, "work resolve: %s" % ident, write)
+    shop_files.committed(root, rels, "work resolve: %s" % ident, write)

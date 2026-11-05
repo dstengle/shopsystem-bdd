@@ -3,7 +3,7 @@ totals side by side with the ratio of the second to the first. Standard library 
 import json
 from pathlib import Path
 
-from measure_read import Refused
+from transcripts import Refused
 
 TOTALS = (("stages", "stages"), ("sessions", "sessions"), ("output tokens", "output_tokens"),
           ("new input tokens", "new_input_tokens"), ("cache-read tokens", "cache_read_tokens"), ("cost", "cost"),

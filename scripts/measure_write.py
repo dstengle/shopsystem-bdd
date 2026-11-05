@@ -4,8 +4,8 @@ import datetime
 import json
 from pathlib import Path
 
-import workqueue
-from measure_read import Refused
+import shop_files
+from transcripts import Refused
 
 DIRECTORY = Path(".shop") / "records" / "measurements"
 
@@ -28,8 +28,8 @@ def check_unwritten(root, name, date, replace):
 
 def text_of(root, name, date, figures, summary=""):
     try:
-        context = workqueue.context_path(root)
-    except workqueue.Refused as why:
+        context = shop_files.context_path(root)
+    except shop_files.Refused as why:
         raise Refused(str(why)) from None
     head = ("---\nid: measurement/%s/%s-%s\nkind: measurement\nabout: bounded-context/%s\ndate: %s\n---\n\n"
             % (context, date, name, context, date))

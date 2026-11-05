@@ -10,8 +10,8 @@ from pathlib import Path
 import backlog_items
 import batch_git
 import batch_plan
-import workqueue
-from measure_read import Refused
+import shop_files
+from transcripts import Refused
 
 COMMAND = "measure defect"
 
@@ -37,8 +37,8 @@ def render(defect):
 
 def parse(text, rel):
     try:
-        data, body = workqueue.frontmatter(text)
-    except workqueue.Refused as why:
+        data, body = shop_files.frontmatter(text)
+    except shop_files.Refused as why:
         raise Refused("%s: %s" % (rel, why)) from None
     ident = data.get("id")
     m = re.fullmatch(r"defect/.+/(batch-[1-9]\d*)/(d[1-9]\d*)", ident) if isinstance(ident, str) else None
@@ -71,7 +71,7 @@ def defects(root, batch_name):
         rel = path.relative_to(root).as_posix()
         if not re.fullmatch(r"defect-[1-9]\d*\.md", path.name):
             raise Refused("%s: id: the file name is not defect-<k>.md" % rel)
-        found.append(parse(workqueue.read(path, root), rel))
+        found.append(parse(shop_files.read(path, root), rel))
     return sorted(found, key=lambda d: int(d.name[1:]))
 
 
@@ -80,7 +80,7 @@ def record(root, item_name, says):
     nothing, for empty `says`, an item in no batch, or an item not delivered or of a batch not merged."""
     try:
         return _record(root, item_name, says)
-    except workqueue.Refused as why:
+    except shop_files.Refused as why:
         raise Refused(str(why)) from None
 
 
@@ -97,7 +97,7 @@ def _record(root, item_name, says):
             raise Refused("%s is %s in %s, which is %s; a defect is of a delivered item of a merged batch" % (
                 backlog_items.label(item), item.status, batch.name, batch.status))
         k = max((int(d.name[1:]) for d in defects(root, batch.name)), default=0) + 1
-        context = workqueue.context_path(root)
+        context = shop_files.context_path(root)
         defect = Defect("d%d" % k, "defect/%s/%s/d%d" % (context, batch.name, k), batch.name, item.name,
                         datetime.date.today().isoformat(), says.strip())
         rel = rel_of(batch.name, k)
@@ -106,6 +106,6 @@ def _record(root, item_name, says):
             path = Path(root) / rel
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(render(defect), encoding="utf-8")
-        workqueue.committed(root, [rel], "%s: %s %s of %s" % (COMMAND, batch.name, defect.name,
+        shop_files.committed(root, [rel], "%s: %s %s of %s" % (COMMAND, batch.name, defect.name,
                                                              backlog_items.label(item)), write)
     return rel

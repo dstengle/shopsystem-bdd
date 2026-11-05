@@ -41,7 +41,7 @@ def test_a_counter_proposed_request_closes(taken):
 
 
 def old_turn(text):
-    """The turn's edit before plan 4 (workqueue_request.turn at 3be6b387), kept here as it was written."""
+    """The turn's edit before plan 4 (request_moves.turn at 3be6b387), kept here as it was written."""
     field, _with_field, _entries, SETTLED = (request_text.field, request_text.with_field, request_text.entries,
                                              request_text.SETTLED)
     if field(text, "turn") == "asker":

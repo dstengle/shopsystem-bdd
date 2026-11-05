@@ -10,8 +10,8 @@ import backlog_items
 import backlog_lines
 import pytest
 import readiness_bar
+import request_moves
 import request_text
-import workqueue_request
 from backlog_testing import REPO, git, state, work, write_request
 from test_backlog_lines import ABANDON, FROBNICATE
 
@@ -91,7 +91,7 @@ def test_rewritten_with_a_line_passes_the_turn(ready_repo):
     assert entries(text, "Lines") == ["1. %s" % ASKED, "2. %s" % COUNTER]
     assert entries(text, "Outcomes") == ["1. rewritten"]
     assert entries(text, "Reasons") == ["1. rewritten as line 2"]
-    assert (workqueue_request.field(text, "status"), workqueue_request.field(text, "turn")) == ("awaiting-asker",
+    assert (request_moves.field(text, "status"), request_moves.field(text, "turn")) == ("awaiting-asker",
                                                                                                "asker")
     assert committed(ready_repo) == [".shop/work/requests/q2.md"]
 
@@ -137,7 +137,7 @@ def test_old_outcome_is_unchanged(ready_repo, tmp_path):
     write_request(ready_repo, "q2", lines=(ABANDON,))
     copy = tmp_path / "copy"
     shutil.copytree(ready_repo, copy, ignore=shutil.ignore_patterns("*.lock"))
-    workqueue_request.outcome(copy, "q2", 1, "accepted")
+    request_moves.outcome(copy, "q2", 1, "accepted")
     done = work(ready_repo, "outcome", "q2", "1", "accepted")
     assert done.returncode == 0 and done.stdout == "", done.stderr
     assert committed(ready_repo) == committed(copy)

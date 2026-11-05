@@ -5,8 +5,8 @@ transcript carries tokens and the model, never dollars: a request of a model wit
 or a Sonnet 4 or Haiku 4 other than 4.6 and 4.5, which the table does not state) costs None and is named, never
 guessed (0018). Standard library only."""
 import batch_git
-from measure_read import Refused, number
-from workqueue import Refused as WorkRefused
+from shop_files import Refused as WorkRefused
+from transcripts import Refused, number
 
 AS_OF = "2026-10-06"
 PRICES = {
@@ -23,6 +23,23 @@ WRITE_5M = 1.25
 WRITE_1H = 2.0
 FIELDS = ("input", "output", "cache_read")
 TOKENS = ("input_tokens", "cache_write_5m_tokens", "cache_write_1h_tokens", "cache_read_tokens", "output_tokens")
+
+# The token kinds a measurement sums, and a time span in words.
+KINDS = ("output_tokens", "new_input_tokens", "cache_read_tokens")
+
+
+def duration(seconds):
+    """'1 hour 45 minutes', '12 minutes', '30 seconds'."""
+    hours, rest = divmod(round(seconds), 3600)
+    minutes, secs = divmod(rest, 60)
+    parts = []
+    if hours:
+        parts.append("%d hour%s" % (hours, "" if hours == 1 else "s"))
+    if minutes:
+        parts.append("%d minute%s" % (minutes, "" if minutes == 1 else "s"))
+    if secs or not parts:
+        parts.append("%d second%s" % (secs, "" if secs == 1 else "s"))
+    return " ".join(parts)
 
 
 def prices(root):

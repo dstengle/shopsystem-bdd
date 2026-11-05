@@ -4,6 +4,7 @@ import re
 import subprocess
 from pathlib import Path
 
+from measure_cost import KINDS, duration
 from measure_read import (
     Refused,
     read_log,
@@ -12,22 +13,6 @@ from measure_read import (
     request_of,
     round_trips,
 )
-
-KINDS = ("output_tokens", "new_input_tokens", "cache_read_tokens")
-
-
-def duration(seconds):
-    """'1 hour 45 minutes', '12 minutes', '30 seconds'."""
-    hours, rest = divmod(round(seconds), 3600)
-    minutes, secs = divmod(rest, 60)
-    parts = []
-    if hours:
-        parts.append("%d hour%s" % (hours, "" if hours == 1 else "s"))
-    if minutes:
-        parts.append("%d minute%s" % (minutes, "" if minutes == 1 else "s"))
-    if secs or not parts:
-        parts.append("%d second%s" % (secs, "" if secs == 1 else "s"))
-    return " ".join(parts)
 
 
 def stages_of(rows, sessions, empty=frozenset()):

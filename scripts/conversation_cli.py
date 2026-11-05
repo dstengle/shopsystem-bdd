@@ -8,8 +8,8 @@ from pathlib import Path
 import conversation_names
 import conversation_prompt
 import conversation_quote
-from measure_read import Refused as ReadRefused
-from workqueue import Refused
+from shop_files import Refused
+from transcripts import Refused as ReadRefused
 
 is_quote = conversation_quote.is_quote
 

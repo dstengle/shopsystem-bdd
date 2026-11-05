@@ -5,7 +5,7 @@ import backlog_testing  # noqa: F401  (the scripts directory on the path)
 import conversation_read as C
 import pytest
 import transcript_testing as T
-from measure_read import Refused
+from transcripts import Refused
 
 
 def read(tmp_path, rows):

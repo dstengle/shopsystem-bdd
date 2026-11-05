@@ -6,8 +6,8 @@ import importlib.util
 import sys
 from pathlib import Path
 
+import request_moves
 import request_text
-import workqueue_request
 from vocab import handler
 
 
@@ -52,7 +52,7 @@ def asked_by(step):
     request = step.repo / W.node_rel(step.context, step.context["taken_in"])
     asker = W.field(request, "asker")
     assert W.field(item, "asked_by") == asker, (step.text, W.field(item, "asked_by"), asker)
-    assert asker not in workqueue_request.own_askers(step.repo) and asker != "internal", (step.text, asker)
+    assert asker not in request_moves.own_askers(step.repo) and asker != "internal", (step.text, asker)
 
 
 @local("ThenExitsErr", "request line")

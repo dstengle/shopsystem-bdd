@@ -8,9 +8,8 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
-import workqueue
-from workqueue import Refused
-from workqueue_answer import LINE_BREAKS
+import shop_files
+from shop_files import LINE_BREAKS, Refused
 
 BACKLOG = Path(".shop") / "backlog"
 STATUSES = ("idea", "shaped", "ready", "in-batch", "delivered", "needs-input", "refused", "withdrawn")
@@ -88,7 +87,7 @@ def _body(text, rel):
 
 def parse(text, rel):
     """The item of a file's text; a malformed file is refused as `<rel>: <field> ...` (D16)."""
-    data, body = workqueue.frontmatter(text)
+    data, body = shop_files.frontmatter(text)
     ident = data.get("id")
     if not isinstance(ident, str) or not ident.startswith("item/"):
         raise Refused("%s: id %r is not item/<context path>/b<n>" % (rel, ident))
@@ -142,7 +141,7 @@ def items(root):
 
 def load(root, name):
     rel = rel_of(name)
-    item = parse(workqueue.read(Path(root) / rel, root), rel)
+    item = parse(shop_files.read(Path(root) / rel, root), rel)
     if item.name != name:
         raise Refused("%s: id %s does not end in %s" % (rel, item.ident, name))
     return item
@@ -183,4 +182,4 @@ def commit(root, item, message):
         path = Path(root) / rel
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(render(item), encoding="utf-8")
-    workqueue.committed(root, [rel], message, write)
+    shop_files.committed(root, [rel], message, write)

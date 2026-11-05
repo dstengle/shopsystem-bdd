@@ -6,7 +6,11 @@ A section holds one entry a line, `<n>. <text>`. `## Counter-proposals` holds `<
 `work outcome ... rewritten --line` rewrote as its counter-proposal, line m: line n is no longer proposed, line m is
 (requests r20-r22 read the lines proposed in the request). A request without the section reads as before."""
 import re
+from pathlib import Path
 
+from shop_files import frontmatter, read
+
+WORK_REQUESTS = Path(".shop") / "work" / "requests"
 SETTLED = ("accepted", "refused", "withdrawn")
 COUNTERS = "Counter-proposals"
 
@@ -61,3 +65,13 @@ def turned(text):
     else:
         text = with_field(text, "status", "awaiting-asker")
     return with_field(text, "turn", "asker")
+
+
+def requests(root):
+    """Each request under .shop/work/requests/: (name, status, turn, source), by the number in its name."""
+    def number(path):
+        return [int(w) if w.isdigit() else w for w in re.split(r"(\d+)", path.stem)]
+    for path in sorted((Path(root) / WORK_REQUESTS).glob("q*.md"), key=number):
+        data, _ = frontmatter(read(path, root))
+        if data.get("kind") == "request":
+            yield path.stem, data.get("status"), data.get("turn"), data.get("source")

@@ -5,7 +5,7 @@ import batch_plan
 import pytest
 from backlog_testing import git
 from batch_plan import Batch, Task
-from workqueue import Refused
+from shop_files import Refused
 
 ONE = """---
 id: batch/ex.com/prod/ctx/batch-1

@@ -200,3 +200,10 @@ def restated(root):
     """spec/restated.json: each 0.29 id `<capability>#r<n>` with its `text` and `line`, frozen from 96818f71."""
     path = Path(root) / "spec" / "restated.json"
     return json.loads(path.read_text()) if path.is_file() else {}
+
+
+def is_guarantees(root, capability):
+    """Whether spec/capabilities/<capability>.md under `root` has `group: guarantees` in its frontmatter."""
+    path = Path(root) / "spec" / "capabilities" / (capability + ".md")
+    head = path.read_text().split("---\n")[1:2] if path.is_file() else []
+    return bool(head) and re.search(r"(?m)^group: guarantees$", head[0]) is not None

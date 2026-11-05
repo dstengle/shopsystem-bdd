@@ -7,9 +7,9 @@ import datetime
 import json
 import re
 
+import request_moves
 import workqueue
 import workqueue_answer
-import workqueue_request
 from supervise_faults import Fault, ended_of, fault_of
 from supervise_worker import SCRIPTS, GitFailed, git
 from workqueue import Refused
@@ -37,11 +37,11 @@ class Answers:
     def delegation(self):
         """The delegation of the request the initiative fulfils, else None."""
         try:
-            fulfils = workqueue_request.field(workqueue.read(self.dir / "initiative.md", self.root), "fulfils")
+            fulfils = request_moves.field(workqueue.read(self.dir / "initiative.md", self.root), "fulfils")
             if not fulfils:
                 return None
-            path = workqueue_request.path_of(self.root, fulfils.rsplit("/", 1)[-1])
-            value = workqueue_request.field(workqueue.read(path, self.root), "delegation")
+            path = request_moves.path_of(self.root, fulfils.rsplit("/", 1)[-1])
+            value = request_moves.field(workqueue.read(path, self.root), "delegation")
         except (Refused, OSError):
             return None
         if value and value.startswith('"') and value.endswith('"') and len(value) > 1:

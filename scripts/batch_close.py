@@ -13,7 +13,7 @@ import batch_gh
 import batch_plan
 from batch_git import locked, remove_tree, trees_path
 from batch_tasks import refuse_loose
-from workqueue import Refused
+from shop_files import Refused
 
 
 def _items(root, batch, status):

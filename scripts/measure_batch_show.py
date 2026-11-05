@@ -5,8 +5,8 @@ import re
 from pathlib import Path
 
 import measure_write
-from measure_read import Refused
 from measure_show import cell, ratio, table
+from transcripts import Refused
 
 TOTALS = (("wall time", "wall_time"), ("session time", "session_time"), ("waiting for merge", "waiting_for_merge"),
           ("output tokens", "output_tokens"), ("new input tokens", "new_input_tokens"),
@@ -18,8 +18,8 @@ ROLE_HEAD = ("role", "sessions", "session time", "output tokens", "new input tok
 
 
 def _duration(seconds):
-    import measure_build
-    return None if seconds is None else measure_build.duration(seconds)
+    import measure_cost
+    return None if seconds is None else measure_cost.duration(seconds)
 
 
 def _totals(figures):

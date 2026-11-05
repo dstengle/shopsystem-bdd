@@ -5,7 +5,7 @@ from types import SimpleNamespace
 import backlog_testing  # noqa: F401  (the scripts directory on the path)
 import measure_cost
 import pytest
-from measure_read import Refused
+from transcripts import Refused
 
 M = 1_000_000
 

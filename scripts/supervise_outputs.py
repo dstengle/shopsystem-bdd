@@ -8,6 +8,8 @@ import shutil
 import tempfile
 from pathlib import Path
 
+from spec_read import is_guarantees  # noqa: F401  (supervise_formulate imports it from here)
+
 UNCODIFIED = "The drafted requirements are refused by the grammar or the logic check"
 
 
@@ -53,13 +55,6 @@ def sent_back(kind, data):
         unheld = data.get("unheld_answers") if isinstance(data, dict) else None
         return gives_nothing(data) or (isinstance(unheld, list) and bool(unheld))
     return False
-
-
-def is_guarantees(root, capability):
-    """Whether spec/capabilities/<capability>.md under `root` has `group: guarantees` in its frontmatter."""
-    path = root / "spec" / "capabilities" / (capability + ".md")
-    head = path.read_text().split("---\n")[1:2] if path.is_file() else []
-    return bool(head) and re.search(r"(?m)^group: guarantees$", head[0]) is not None
 
 
 def question(role, what):

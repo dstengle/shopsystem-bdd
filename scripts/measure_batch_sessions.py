@@ -4,7 +4,6 @@ and cost, and the totals by role. Standard library only."""
 import re
 from itertools import pairwise
 
-import measure_build
 import measure_cost
 
 IDLE = 300
@@ -90,7 +89,7 @@ def roles_of(sessions):
         mine = [s for s in sessions if s["role"] == role]
         seconds = sum(s["session_time_seconds"] for s in mine)
         out[role] = {"sessions": len(mine), "session_time_seconds": seconds,
-                     "session_time": measure_build.duration(seconds),
-                     **{k: sum(s[k] for s in mine) for k in measure_build.KINDS},
+                     "session_time": measure_cost.duration(seconds),
+                     **{k: sum(s[k] for s in mine) for k in measure_cost.KINDS},
                      "cost": round(sum(s["cost"] or 0 for s in mine), 6)}
     return out

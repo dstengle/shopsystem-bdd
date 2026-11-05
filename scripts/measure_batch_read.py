@@ -1,7 +1,7 @@
 """The transcripts of a batch's sessions (capability telemetry; workflow simplification plan 7, D2, D4, D6): each
 distinct request of every transcript under a directory with its model and tokens, each subagent's type and
 description from its meta file, and the root's own project directory in Claude Code's store. Rows are read through
-measure_read, so a shape not known is refused, naming the file and line (0018). No message text is read. Standard
+transcripts, so a shape not known is refused, naming the file and line (0018). No message text is read. Standard
 library only."""
 import json
 import re
@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
-from measure_read import Refused, assistant_rows, moment, request_key, store_dir
+from transcripts import Refused, assistant_rows, moment, request_key, store_dir
 
 WRITES = ("cache_write_5m_tokens", "cache_write_1h_tokens")
 

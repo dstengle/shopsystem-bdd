@@ -30,7 +30,7 @@ from batch_git import (
     trees_dir,
     uncommitted,
 )
-from workqueue import Refused
+from shop_files import Refused
 
 TESTS = "python3 -m pytest -q -p work_items"
 SHOP = (".shop/backlog", ".shop/batches")

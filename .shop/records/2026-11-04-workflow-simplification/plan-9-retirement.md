@@ -283,7 +283,7 @@ A refactor with no behaviour change. After it, no kept module imports a module t
     `spec_read.is_guarantees(root, capability) -> bool`.
 - Later tasks rely on these names only.
 
-- [ ] **Step 1: Write the failing test** `tests/scripts/test_kept_modules.py::test_no_kept_module_imports_an_old_module`.
+- [x] **Step 1: Write the failing test** `tests/scripts/test_kept_modules.py::test_no_kept_module_imports_an_old_module`.
   - It parses (with `ast`) every file in a `KEPT` list and asserts that none imports a name in `OLD`.
   - `KEPT` is `backlog_*`, `batch_*`, `conversation_*`, `intake_moves`, `readiness_bar`, `request_*`, `measure_cost`,
     `measure_defect`, `measure_batch*`, `measure_show`, `measure_write`, `transcripts`, `shop_files`, `spec_*`,
@@ -296,14 +296,14 @@ A refactor with no behaviour change. After it, no kept module imports a module t
   - `scripts/work`, `scripts/measure`, `scripts/migrate` and `migrate_upgrade.py` still import some of `OLD` today,
     because their commands are deleted later. They are listed in an
     `ALLOWED = {file: {modules}}` that Tasks 3-7 empty, entry by entry.
-- [ ] **Step 2: Run it.** `python3 -m pytest tests/scripts/test_kept_modules.py -q`. Expected: FAIL, naming e.g.
+- [x] **Step 2: Run it.** `python3 -m pytest tests/scripts/test_kept_modules.py -q`. Expected: FAIL, naming e.g.
   `scripts/batch_git.py imports workqueue`.
-- [ ] **Step 3: Move the names** as the Interfaces block says. Every caller uses the new module. `workqueue.py` and
+- [x] **Step 3: Move the names** as the Interfaces block says. Every caller uses the new module. `workqueue.py` and
   `measure_read.py` keep working for the old code, by importing from the new modules.
-- [ ] **Step 4: Run the test and the gate.** The test passes. The gate's figures are the baselines exactly: `1583 passed`
+- [x] **Step 4: Run the test and the gate.** The test passes. The gate's figures are the baselines exactly: `1583 passed`
   (the baseline's 1582 and the new test), the same `model check`, `logic`, `restates`. The collection diff removes nothing: the
   renamed test files' ids reappear under their new names.
-- [ ] **Step 5: Commit.**
+- [x] **Step 5: Commit.**
   ```bash
   git add -A scripts tests CLAUDE.md
   git commit -m "plumbing: shop_files, transcripts and the request modules, so no kept module imports the old queue (plan 9, Task 1)"

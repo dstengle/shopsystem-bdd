@@ -12,9 +12,9 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 sys.path.insert(0, str(ROOT / "tests"))
+import request_moves
+import shop_files
 import toolchain
-import workqueue
-import workqueue_request
 
 CONTEXT = "ex.com/prod/ctx"
 GLOSSARY = (ROOT / "tests" / "scripts" / "fixtures" / "glossary" / "spec" / "index.md").read_text()
@@ -45,16 +45,16 @@ def repo(tmp_path):
 
 @pytest.mark.parametrize("asker", ["internal", "bounded-context/" + CONTEXT, CONTEXT, "ctx"])
 def test_this_repository_raises_under_each_spelling_of_its_own_asker(repo, asker):
-    workqueue_request.gate(repo, asker, ["observation/o1"], None, None)
+    request_moves.gate(repo, asker, ["observation/o1"], None, None)
 
 
 def test_another_asker_is_refused_naming_it(repo):
-    with pytest.raises(workqueue.Refused, match="bounded-context/ex.com/prod/other"):
-        workqueue_request.gate(repo, "bounded-context/ex.com/prod/other", ["observation/o1"], None, None)
+    with pytest.raises(shop_files.Refused, match="bounded-context/ex.com/prod/other"):
+        request_moves.gate(repo, "bounded-context/ex.com/prod/other", ["observation/o1"], None, None)
 
 
 def test_a_bare_raised_for_is_written_as_the_full_request_id(repo):
-    name = workqueue_request.request(repo, "t", "internal", str(repo / "lines.md"), ["observation/o1"], None,
+    name = request_moves.request(repo, "t", "internal", str(repo / "lines.md"), ["observation/o1"], None,
                                      raised_for="q7")
     text = (repo / ".shop/work/requests" / (name + ".md")).read_text()
     assert re.search(r"(?m)^raised_for: request/%s/q7$" % re.escape(CONTEXT), text), text
@@ -62,6 +62,6 @@ def test_a_bare_raised_for_is_written_as_the_full_request_id(repo):
 
 def test_a_full_raised_for_is_written_as_given(repo):
     full = "request/ex.com/prod/app/q3"
-    name = workqueue_request.request(repo, "t", "internal", str(repo / "lines.md"), ["observation/o1"], None,
+    name = request_moves.request(repo, "t", "internal", str(repo / "lines.md"), ["observation/o1"], None,
                                      raised_for=full)
     assert "\nraised_for: %s\n" % full in (repo / ".shop/work/requests" / (name + ".md")).read_text()

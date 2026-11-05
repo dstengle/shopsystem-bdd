@@ -11,7 +11,7 @@ import pytest
 import supervise_worker
 from backlog_testing import git
 from batch_testing import gh_calls
-from workqueue import Refused
+from shop_files import Refused
 
 
 def test_git_still_imports_from_supervise_worker():

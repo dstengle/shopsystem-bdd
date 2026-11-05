@@ -43,7 +43,7 @@ def write_item(repo, name="b1", commit=True, **fields):
 
 def request_text(name="q1", asker="bounded-context/ex.com/prod/peer", status="open", turn="upstream",
                  lines=(), outcomes=(), title="Archive old items"):
-    """A request's file in the form `workqueue_request.request` writes it, with the line outcomes given."""
+    """A request's file in the form `request_moves.request` writes it, with the line outcomes given."""
     numbered = "".join("%d. %s\n" % e for e in enumerate(lines, 1))
     settled = "".join("%d. %s\n" % e for e in enumerate(outcomes, 1) if e[1])
     return ("---\nid: request/ex.com/prod/ctx/%s\nkind: request\nasker: %s\npart_of: job-thread/ex.com/prod/t1\n"

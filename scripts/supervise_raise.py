@@ -5,8 +5,8 @@ raised for the request the initiative fulfils and with its delegation; each is r
 held while any request raised with it is not delivered. Standard library only; a part of supervise.Run."""
 import json
 
+import request_moves
 import workqueue
-import workqueue_request
 from workqueue import Refused
 
 RECORD = "raised.jsonl"
@@ -40,7 +40,7 @@ class Raises:
                     raise Refused("%s is not an upstream of spec/index.md" % upstream)
                 lines = stage / ("request-lines-%d.md" % number)
                 lines.write_text("".join("%s\n" % l for l in each["lines"]))
-                request = workqueue_request.request(
+                request = request_moves.request(
                     where, "%s: what %s needs of %s" % (self.initiative, self.initiative, upstream.rsplit("/", 1)[-1]),
                     me.get("id"), str(lines), [], None, delegation, raised_for=asked)
             except Refused as why:
@@ -62,8 +62,8 @@ class Raises:
         """Whether the request a record line names reads as delivered in its upstream; one that cannot be read does not."""
         where = self.upstream_root(record.get("upstream"))
         try:
-            path = workqueue_request.path_of(where, str(record.get("request")))
-            return workqueue_request.field(workqueue.read(path, where), "status") == "delivered"
+            path = request_moves.path_of(where, str(record.get("request")))
+            return request_moves.field(workqueue.read(path, where), "status") == "delivered"
         except (Refused, OSError, TypeError):
             return False
 
