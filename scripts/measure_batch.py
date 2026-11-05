@@ -49,11 +49,13 @@ def window_of(root, batch):
 
 
 def findings_of(root, batch):
-    """D7: the reviews, each finding, and the findings by grade and by triage (every one, 0 included)."""
+    """D7: the reviews, each with the lines its own range changed, each finding, and the findings by grade and by
+    triage (every one, 0 included)."""
     reviews = batch_findings.reviews(root, batch.name)
     found = [{"finding": f.fid, "review": r.number, "grade": f.grade, "triage": f.triage, "item": f.item}
              for r in reviews for f in r.findings]
-    return {"reviews": [{"review": r.number, "result": r.result, "findings": len(r.findings)} for r in reviews],
+    return {"reviews": [{"review": r.number, "result": r.result, "findings": len(r.findings),
+                         "lines": changed_lines(root, r.range)} for r in reviews],
             "findings": found,
             "findings_by_grade": {g: sum(f["grade"] == g for f in found) for g in batch_findings.GRADES},
             "findings_by_triage": {t: sum(f["triage"] == t for f in found) for t in batch_findings.TRIAGES}}
@@ -67,9 +69,10 @@ def changed_lines(root, rng):
 
 
 def knobs_of(root, batch, reviews):
-    """D10: the knobs as the batch ran with them; nothing here sets one."""
+    """D10: the knobs as the batch ran with them; nothing here sets one. The changed lines are the whole batch as last
+    reviewed, its fork to the last review's head (plan 7 review S1, Q3)."""
     return {"batch_size": batch_pick.batch_size(root), "items": len(batch.tasks),
-            "changed_lines": changed_lines(root, reviews[-1].range) if reviews else None,
+            "changed_lines": changed_lines(root, "%s..%s" % (batch.forked_from, reviews[-1].head)) if reviews else None,
             "size_limit": batch_git.delivery(root).get("review", {}).get("size", batch_brief.SIZE),
             "reviews": len(reviews), "readiness_bar": "mechanical"}
 

@@ -57,6 +57,8 @@ knobs (batch size, review depth, the readiness bar) are tuned against these figu
 - A role is planning for a main session, review for a `pr-reviewer` or a subagent described `batch-<n> review`,
   fixing for `batch-<n> fix`, implementing for `batch-<n> t<k>`, else implementing before the first review and fixing
   after it.
+- The changed lines, a knob, are the batch's from its fork to the last review's head, `.shop/` left out; each review
+  gives its own range's lines beside it.
 - The measurement is the record `.shop/records/measurements/<date>-batch-<n>.md`, its summary tables before its JSON
   block, not written over without `--replace`.
 - `measure defect <item> --says "<the fault and how to reproduce it>"` writes `.shop/batches/<n>/defect-<k>.md`

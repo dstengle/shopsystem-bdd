@@ -6,6 +6,7 @@ import json
 import subprocess
 import sys
 
+import batch_plan
 import measure_batch
 import measure_batch_read
 import measure_batch_sessions as S
@@ -184,16 +185,24 @@ def test_the_cost_by_role_sums_to_the_cost(merged):
     assert "batch-1 t1" not in (merged / RECORD).read_text()
 
 
+def numstat(repo, rng):
+    out = git(repo, "diff", "--numstat", rng, "--", ".", ":(exclude).shop").splitlines()
+    return sum(int(a) + int(b) for a, b, _ in (line.split("\t") for line in out) if a != "-")
+
+
 def test_the_knobs_are_given(merged):
+    """Plan 7 review S1 and the rulings' Q3: the changed lines are the whole batch as last reviewed, its fork to the
+    last review's head; each review keeps its own range's lines."""
     ok(measure(merged, "batch", "batch-1"))
-    knobs = figures(merged)["knobs"]
-    rng = git(merged, "log", "-1", "--format=%H", "--", ".shop/batches/1/review-2.md")
-    last = (merged / ".shop/batches/1/review-2.md").read_text().split("range: ", 1)[1].split("\n", 1)[0]
-    numstat = git(merged, "diff", "--numstat", last, "--", ".", ":(exclude).shop").splitlines()
-    want = sum(int(a) + int(b) for a, b, _ in (line.split("\t") for line in numstat) if a != "-")
-    assert rng and want > 0
-    assert knobs == {"batch_size": 4, "items": 2, "changed_lines": want, "size_limit": 1000, "reviews": 2,
-                     "readiness_bar": "mechanical"}
+    found = figures(merged)
+    record = lambda k, key: (merged / (".shop/batches/1/review-%d.md" % k)).read_text().split(
+        key + ": ", 1)[1].split("\n", 1)[0]
+    forked = batch_plan.find(merged, "batch-1").forked_from
+    want = numstat(merged, "%s..%s" % (forked, record(2, "head")))
+    assert want > numstat(merged, record(2, "range")) > 0
+    assert found["knobs"] == {"batch_size": 4, "items": 2, "changed_lines": want, "size_limit": 1000, "reviews": 2,
+                              "readiness_bar": "mechanical"}
+    assert [r["lines"] for r in found["reviews"]] == [numstat(merged, record(k, "range")) for k in (1, 2)]
 
 
 def test_an_open_batch_is_measured_so_far(batch_repo, store, monkeypatch):
