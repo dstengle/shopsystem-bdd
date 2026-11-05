@@ -20,6 +20,20 @@ pytest_plugins = ["work_items"]
 _durations = {}
 
 
+def _quiet_git():
+    """No background maintenance in the suite's repositories (plan 5 review, S6): every git a test runs, `work`'s
+    included, inherits `maintenance.auto=false` and `gc.auto=0`, added after any `GIT_CONFIG_*` already set."""
+    count = int(os.environ.get("GIT_CONFIG_COUNT", "0") or 0)
+    for key, value in (("maintenance.auto", "false"), ("gc.auto", "0")):
+        os.environ["GIT_CONFIG_KEY_%d" % count], os.environ["GIT_CONFIG_VALUE_%d" % count] = key, value
+        count += 1
+    os.environ["GIT_CONFIG_COUNT"] = str(count)
+
+
+if "maintenance.auto" not in {v for k, v in os.environ.items() if k.startswith("GIT_CONFIG_KEY_")}:
+    _quiet_git()
+
+
 def _ceiling():
     return float(os.environ.get("SHOPSYSTEM_TEST_CEILING", "10"))
 

@@ -133,7 +133,7 @@ def awaiting_work_item(repo):
 def test_work_answer_on_a_work_item_is_unchanged(backlog_repo, tmp_path_factory):
     awaiting_work_item(backlog_repo)
     direct = tmp_path_factory.mktemp("direct") / "repo"
-    shutil.copytree(backlog_repo, direct)
+    shutil.copytree(backlog_repo, direct, ignore=shutil.ignore_patterns("*.lock"))
     done = work(backlog_repo, "answer", "w1", "x", "--change")
     assert done.returncode == 0, done.stderr
     assert done.stdout == "w1 %s\n" % workqueue_answer.answer(direct, "w1", "x", change=True)

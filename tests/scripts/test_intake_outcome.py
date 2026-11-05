@@ -136,7 +136,7 @@ def test_the_asker_turn_still_refuses(ready_repo):
 def test_old_outcome_is_unchanged(ready_repo, tmp_path):
     write_request(ready_repo, "q2", lines=(ABANDON,))
     copy = tmp_path / "copy"
-    shutil.copytree(ready_repo, copy)
+    shutil.copytree(ready_repo, copy, ignore=shutil.ignore_patterns("*.lock"))
     workqueue_request.outcome(copy, "q2", 1, "accepted")
     done = work(ready_repo, "outcome", "q2", "1", "accepted")
     assert done.returncode == 0 and done.stdout == "", done.stderr
