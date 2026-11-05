@@ -583,7 +583,7 @@ Builds `batches#r5` and `r6`.
     batch done batch-1 t1, or work batch park batch-1 b3 --question <text>`;
   - `t2 b4 "…": done`, or `t2 b4 "…": parked (needs-input)`.
 
-- [ ] **Step 1: Write the failing script tests** (`test_batch_tasks.py`, on a batch started from `batch_repo`):
+- [x] **Step 1: Write the failing script tests** (`test_batch_tasks.py`, on a batch started from `batch_repo`):
   - `test_resume_makes_worktrees_and_runs_pending_tasks`: both tasks are `running`, both worktrees exist on
     `batch-1-b1`/`batch-1-b2` at the lines commit, the plan's commit is on `main`, and a second `resume` changes
     nothing and commits nothing.
@@ -612,17 +612,17 @@ Builds `batches#r5` and `r6`.
     `resume`/`done`/`park` on an `abandoned` batch (written by hand), `park` of an item not in the batch, and
     `done` from a checkout on another branch. Each is refused naming it, with nothing changed.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_batch_tasks.py -q`
   Expected: FAIL; `batch_tasks` does not exist.
 
-- [ ] **Step 3: Implement `batch_tasks.py` and the three parsers.**
+- [x] **Step 3: Implement `batch_tasks.py` and the three parsers.**
 
-- [ ] **Step 4: Run them.**
+- [x] **Step 4: Run them.**
   Run: `python3 -m pytest tests/scripts/test_batch_tasks.py -q | tail -1`
   Expected: all pass.
 
-- [ ] **Step 5: The handlers, and r5 and r6 out of `unbuilt:`.**
+- [x] **Step 5: The handlers, and r5 and r6 out of `unbuilt:`.**
   - r5's `ThenDoes use` is the run naming `plan.md`, every task of the plan by `t<k>`, and its pending task now
     `running` with a worktree.
   - `ThenDoesNot ask` is readiness's `asks_nothing`.
@@ -632,13 +632,13 @@ Builds `batches#r5` and `r6`.
   Run: `python3 -m pytest tests/scenarios/test_batches.py -q -rxX -n 0 | tail -12`
   Expected: r1-r6 passed; r7-r13 xfailed.
 
-- [ ] **Step 6: Mutations,** each reverted: `resume` printing `Carry on?` fails r5, and `park` setting the batch
+- [x] **Step 6: Mutations,** each reverted: `resume` printing `Carry on?` fails r5, and `park` setting the batch
   `abandoned` fails r6. Record them.
 
-- [ ] **Step 7: The baselines** (Task 3's Step 7 command).
+- [x] **Step 7: The baselines** (Task 3's Step 7 command).
   Expected: `21 xfailed`, no failures.
 
-- [ ] **Step 8: Commit.**
+- [x] **Step 8: Commit.**
   ```bash
   git add scripts/batch_tasks.py scripts/batch_cli.py tests/scenarios/batches_handlers*.py tests/scripts/test_batch_tasks.py \
     spec/capabilities/batches.md CLAUDE.md

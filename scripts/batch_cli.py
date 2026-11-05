@@ -6,6 +6,7 @@ import json
 import backlog_items
 import batch_plan
 import batch_start
+import batch_tasks
 from workqueue import Refused
 
 
@@ -16,6 +17,15 @@ def add_parsers(sub):
     s = cmds.add_parser("status", help="where a batch stands (default: the open one): its items and its tasks")
     s.add_argument("batch", nargs="?")
     s.add_argument("--json", action="store_true", help="print one JSON object instead of lines")
+    s = cmds.add_parser("resume", help="give each pending task its worktree and print what each running task builds")
+    s.add_argument("batch")
+    s = cmds.add_parser("done", help="set a running task done, once its ids are built and the tests pass in its worktree")
+    s.add_argument("batch")
+    s.add_argument("task")
+    s = cmds.add_parser("park", help="set an item of the batch needs-input with its question; the rest carries on")
+    s.add_argument("batch")
+    s.add_argument("item")
+    s.add_argument("--question", required=True)
 
 
 def _item(root, name):
@@ -68,8 +78,26 @@ def start(args):
     return 0
 
 
+def resume(args):
+    batch, out = batch_tasks.resume(args.root, args.batch)
+    print(batch_tasks.resume_said(args.root, batch, out))
+    return 0
+
+
+def done(args):
+    task = batch_tasks.done(args.root, args.batch, args.task)
+    print("%s %s: done" % (args.batch, batch_tasks.task_label(args.root, task)))
+    return 0
+
+
+def park(args):
+    item = batch_tasks.park(args.root, args.batch, args.item, args.question)
+    print("%s %s -> needs-input: %s" % (args.batch, backlog_items.label(item), item.question))
+    return 0
+
+
 def cmd_batch(args):
-    return {"start": start, "status": status}[args.batch_cmd](args)
+    return {"start": start, "status": status, "resume": resume, "done": done, "park": park}[args.batch_cmd](args)
 
 
 COMMANDS = {"batch": cmd_batch}

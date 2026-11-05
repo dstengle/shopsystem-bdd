@@ -117,11 +117,11 @@ def ensure_batch(step, resume=False):
     for name in named(step, "task"):
         tasks.setdefault(name, {})
     first = next(iter(step.context["given"]["batch"]))
-    for name, found in step.context.get("given", {}).get("item", {}).items():
+    for name, found in step.context["given"].setdefault("item", {}).items():
         found.setdefault("batch", first)
-    in_batch = [n for n, f in step.context["given"].get("item", {}).items() if status_of(step, n) == "in-batch"]
+    in_batch = [n for n in step.context["given"]["item"] if status_of(step, n) == "in-batch"]
     for name in [n for n in step.context.get("items", {}) if status_of(step, n) == "in-batch"]:
-        if name not in step.context["given"].setdefault("item", {}):
+        if name not in step.context["given"]["item"]:
             step.context["given"]["item"][name] = {"batch": first}
             in_batch.append(name)
     if not in_batch:

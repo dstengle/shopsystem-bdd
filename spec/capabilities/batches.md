@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: [r5, r6, r7, r8, r9, r10, r11, r12, r13]
+unbuilt: [r7, r8, r9, r10, r11, r12, r13]
 ---
 
 # Batches
@@ -105,3 +105,10 @@ question while building parks its item and the rest of the batch carries on. The
   picked stays `ready`. An item's ids that collide with its capability's or with an item picked before it are
   renumbered, with a `## Notes` line naming each change. One batch is open (`building`, `in-review` or
   `awaiting-merge`) at a time.
+- A commit cites an item when its message has the line `Item: b<j>` (a git trailer). `work batch done` and `work
+  batch review` refuse a commit on an item's branch since the lines commit that cites no item, and one that changes
+  `.shop/backlog/` or `.shop/batches/`, naming the commit as `<short sha> "<subject>"` or the path.
+- A task is done when its item's ids have left `unbuilt:` in its worktree and the tests pass there: `[batch] tests` of
+  `.shop/delivery.toml`, default `python3 -m pytest -q -p work_items`, run with the plugin's scripts on PYTHONPATH.
+  `work batch resume` gives each pending task of an `in-batch` item its worktree `batch-<n>-t<k>` and sets it
+  `running`; a parked item's task goes back to `pending`, its branch kept for when the item returns.
