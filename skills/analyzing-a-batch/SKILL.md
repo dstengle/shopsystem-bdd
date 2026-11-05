@@ -19,7 +19,7 @@ Scripts: this plugin's `scripts/`, at `<this skill's base directory>/../../scrip
    - **Each `fix now` finding** of the pull request's review (its record `review-<k>.md`): the earliest point that could have caught it (the item's lines, its task, the review), with why.
    - **Each defect after the merge** (its `defect-<k>.md`, recorded with `measure defect`): what let it through the review.
    - **Each parked item**: its question, and whether the readiness bar could have caught it before the batch.
-4. **Write the report** to `.shop/records/` as a record, in the shape below, and commit it with the measurement.
+4. **Write the report** in the shape below to a scratch file, then keep it as a record: `python3 <scripts>/work record "<repository>, <batch>: analysis" --kind analysis --summary "<one line for the records index>" --body <file>` writes `.shop/records/<date>-<slug>.md`, adds its row to `.shop/records/README.md` and commits both. Commit the measurement with `git` if it is not committed yet.
 
 An initiative of plugin 1.x's frozen queue keeps the measurement it was given: `measure show` and `measure compare` still read it, with its work-items for the batch's items.
 
@@ -56,7 +56,7 @@ Every section is present; one with nothing in it says "none". A table row with n
 
 - **Numbers are the script's.** A number in the report is in the measurement, or is arithmetic on two that are, shown. Tokens are given as the measurement gives them (output, new input, cache read), never added into one figure.
 - **An observation is something the measurement shows**, not what should be done about it: "the implementers' cache reads were 31M, more than the researchers' 29M".
-- **A candidate that changes a knob** (`batch_size`, `[review] size` or `[review] checks`, the readiness bar) is made as a design-decision giving the figures of `measure compare` before and after and the goal it trades (design-decision/a-knob-is-changed-by-a-decision); the candidate says so.
+- **A candidate that changes a knob** (`batch_size`, `[review] size` or `[review] checks`, the readiness bar) is made as a design-decision giving the figures of `measure compare` before and after and the goal it trades (design-decision/a-knob-is-changed-by-a-decision), written with `work decision "<title>" --summary "<one sentence>" --tier judgement --decision "<text>"`; the candidate says so.
 - **A candidate names what to try and the figure that would show it worked**, the figure of the measurement the change should move. Three at most, the ones the observations bear out most. Wording the rule, naming the skill or agent to edit, and deciding whether to release are the shopsystem-bdd session's.
 
 ## Common Mistakes

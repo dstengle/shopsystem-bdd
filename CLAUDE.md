@@ -10,7 +10,11 @@
   an upstream's. It is never kept only in a session's memory or in a record's findings.
 - Every report a session or an agent writes (an analysis, an investigation, research with recommendations) is kept
   as `.shop/records/<date>-<topic>.md`, supporting files in a folder of the same name, indexed in
-  `.shop/records/README.md` and committed. A committed record is never edited.
+  `.shop/records/README.md` and committed, all by `work record "<title>" --kind analysis --summary "<the index row>"
+  --body <file>`. A committed record is never edited.
+- A design-decision is written by `work decision "<title>" --summary "<one sentence>" --tier <tier> --decision
+  "<text>"`, never by hand. `model forms` names the command that writes each other file form; copy no existing file
+  to learn a form.
 - A design or a plan is a record too, under `.shop/records/<date>-<topic>/` (`design.md`, `plan-*.md`), in place of
   a skill's default `docs/superpowers/` path: nothing writes under `docs/superpowers/` (design-decision/final-layout).
 - A plan is carried out by one fresh agent that implements every task in order, then one fresh reviewer of the whole
