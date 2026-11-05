@@ -15,6 +15,7 @@ DELETED_SKILLS = ("delivering-an-initiative", "formulating-features", "integrati
 DELETED_NAMES = ("work run", "--work-item", "supervise_", "work add", "work status", "work note", "work start",
                  "work delegate", "work retry", "migrate prompting", "migrate compacting")
 HISTORY = re.compile(r"^## \d+\.\d+\.\d+:")
+OLD_EXAMPLE = "plugin 1.x's vocabulary"     # the note above a fenced example of docs/capability-format.md it allows
 
 
 def work(*args):
@@ -39,12 +40,31 @@ def readme_less_history():
     return "\n".join(kept)
 
 
+def doc_less_old_examples(path):
+    """A doc's lines, each fenced block that a line naming plugin 1.x's vocabulary introduces blanked (kept as an
+    illustration, plan-9 review M3); the line numbers stay."""
+    kept, fenced, allowed, noted = [], False, False, False
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.startswith("```"):
+            if not fenced:
+                allowed = noted
+            fenced = not fenced
+            kept.append(line)
+            continue
+        kept.append("" if fenced and allowed else line)
+        if line.strip():
+            noted = OLD_EXAMPLE in line
+    return "\n".join(kept)
+
+
 def texts():
-    for path in sorted((REPO / "skills").rglob("*")) + sorted((REPO / "agents").rglob("*")):
+    paths = sorted((REPO / "skills").rglob("*")) + sorted((REPO / "agents").rglob("*"))
+    for path in paths + sorted((REPO / ".claude-plugin").glob("*")):
         if path.is_file():
             yield path.relative_to(REPO).as_posix(), path.read_text(encoding="utf-8")
     yield "README.md", readme_less_history()
     yield "CLAUDE.md", (REPO / "CLAUDE.md").read_text(encoding="utf-8")
+    yield "docs/capability-format.md", doc_less_old_examples(REPO / "docs" / "capability-format.md")
 
 
 def test_no_kept_skill_or_agent_names_a_deleted_one():
@@ -53,6 +73,15 @@ def test_no_kept_skill_or_agent_names_a_deleted_one():
             for n, line in enumerate(text.splitlines(), 1) for name in names
             if re.search(r"(?<![\w-])%s%s" % (re.escape(name), r"(?![\w-])" if name[-1].isalnum() else ""), line)]
     assert hits == [], "\n".join(hits)
+
+
+def test_the_marketplace_describes_the_plugin_as_plugin_json_does():
+    """The marketplace listing shows marketplace.json's description (plan-9 review S1): it is plugin.json's."""
+    import json
+    plugin = json.loads((REPO / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8"))
+    market = json.loads((REPO / ".claude-plugin" / "marketplace.json").read_text(encoding="utf-8"))
+    listed = [p["description"] for p in market["plugins"] if p["name"] == plugin["name"]]
+    assert listed == [plugin["description"]]
 
 
 def test_the_module_map_is_whole():
