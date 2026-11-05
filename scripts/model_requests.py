@@ -8,7 +8,7 @@ from model_parse import as_list, frontmatter, section
 from model_work import WORK
 
 REQUESTS = "requests"
-SECTIONS = {"Lines", "Outcomes", "Questions", "Answers", "Resolution", "Reasons"}
+SECTIONS = {"Lines", "Outcomes", "Questions", "Answers", "Resolution", "Reasons", "Counter-proposals"}
 
 
 class RequestReading:

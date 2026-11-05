@@ -6,6 +6,7 @@ import importlib.util
 import sys
 from pathlib import Path
 
+import request_text
 import workqueue_request
 from vocab import handler
 
@@ -100,7 +101,7 @@ def request_of(step, line):
 def line_outcome(step):
     """The request's `## Outcomes` entry for the line's number is (is not) the value."""
     path, number = request_of(step, step.names[0])
-    got = workqueue_request._entries(path.read_text(), "Outcomes")
+    got = request_text.entries(path.read_text(), "Outcomes")
     has = "%d. %s" % (number, step.values[0].strip("`")) in got
     assert (not has) if " is not " in step.text else has, (step.text, got)
 
@@ -123,8 +124,8 @@ def writes_line(step):
     path, _ = request_of(step, next(iter(step.context["line_of"])))
     rel = path.relative_to(step.repo).as_posix()
     assert rel in W.runs(step)[-1]["changed"], (step.text, W.runs(step)[-1]["changed"])
-    had = workqueue_request._entries(W.git(step.repo, "show", "%s:%s" % (step.context["head"], rel)), "Lines")
-    now = workqueue_request._entries(path.read_text(), "Lines")
+    had = request_text.entries(W.git(step.repo, "show", "%s:%s" % (step.context["head"], rel)), "Lines")
+    now = request_text.entries(path.read_text(), "Lines")
     assert len(now) == len(had) + 1, (step.text, had, now)
     step.context["line_of"][step.names[0]] = (step.context["line_of"][next(iter(step.context["line_of"]))][0],
                                               int(now[-1].split(".", 1)[0]))

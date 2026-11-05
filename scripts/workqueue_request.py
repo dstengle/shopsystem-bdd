@@ -3,7 +3,7 @@
 
 A request's `## Lines`, `## Questions`, `## Answers`, `## Outcomes` and `## Resolution` hold one entry a line,
 `<n>. <text>`; the resolution's text is the requirement id and the version. A question's text is `line <l>: <words>`;
-answer n answers question n.
+answer n answers question n. The text helpers and the turn rule are request_text's (plan 4, D24, D25).
 """
 import json
 import re
@@ -12,9 +12,16 @@ from pathlib import Path
 import workqueue
 import workqueue_done
 import workqueue_lines
+from request_text import (  # noqa: F401  (SETTLED: imported from here)
+    SETTLED,
+    entries,
+    field,
+    numbered,
+    turned,
+    with_entries,
+    with_field,
+)
 from workqueue import Refused
-
-SETTLED = ("accepted", "refused", "withdrawn")
 
 
 def path_of(root, ident):
@@ -24,23 +31,18 @@ def path_of(root, ident):
     return path
 
 
-def _entries(text, name):
-    found = re.search(r"(?ms)^## %s\n(.*?)(?=^## |\Z)" % name, text)
-    return [line for line in found.group(1).splitlines() if line.strip()] if found else []
-
-
 def sections(root, ident):
     """Request `ident`'s Lines, Outcomes, Questions, Answers and Resolution, each as {number: text}."""
     text = workqueue.read(path_of(root, ident), root)
-    return {name: dict(e.split(". ", 1) for e in _entries(text, name) if ". " in e)
+    return {name: dict(e.split(". ", 1) for e in entries(text, name) if ". " in e)
             for name in ("Lines", "Outcomes", "Questions", "Answers", "Resolution")}
 
 
 def accepted_lines(root, ident):
     """(number, text) of each line of request `ident` whose line outcome is accepted."""
     text = workqueue.read(path_of(root, ident), root)
-    outcomes = dict(e.split(". ", 1) for e in _entries(text, "Outcomes") if ". " in e)
-    lines = dict(e.split(". ", 1) for e in _entries(text, "Lines") if ". " in e)
+    outcomes = dict(e.split(". ", 1) for e in entries(text, "Outcomes") if ". " in e)
+    lines = dict(e.split(". ", 1) for e in entries(text, "Lines") if ". " in e)
     return [(int(n), lines[n]) for n in sorted(lines, key=int) if outcomes.get(n) == "accepted"]
 
 
@@ -55,27 +57,10 @@ def asked_here(root):
     for name, status, _, _ in workqueue.requests(root):
         text = workqueue.read(path_of(root, name), root)
         if status == "awaiting-asker" and field(text, "asker") in mine:
-            answered = {e.split(". ", 1)[0] for e in _entries(text, "Answers") if ". " in e}
-            found.append((name, [e.split(". ", 1)[1] for e in _entries(text, "Questions")
+            answered = {e.split(". ", 1)[0] for e in entries(text, "Answers") if ". " in e}
+            found.append((name, [e.split(". ", 1)[1] for e in entries(text, "Questions")
                                  if ". " in e and e.split(". ", 1)[0] not in answered]))
     return found
-
-
-def _with_entries(text, name, entries):
-    body = "## %s\n%s\n" % (name, "".join(entry + "\n" for entry in entries))
-    if re.search(r"(?m)^## %s\n" % name, text):
-        return re.sub(r"(?ms)^## %s\n.*?(?=^## |\Z)" % name, lambda _: body, text, count=1)
-    return text.rstrip("\n") + "\n\n" + body
-
-
-def _with_field(text, field, value):
-    end = text.find("\n---", 4)
-    return re.sub(r"(?m)^%s:.*$" % field, lambda _: "%s: %s" % (field, value), text[:end], count=1) + text[end:]
-
-
-def field(text, field):
-    found = re.search(r"(?m)^%s: *(.*)$" % field, text[:text.find("\n---", 4)])
-    return found.group(1).strip() if found else None
 
 
 def _change(root, ident, message, edit):
@@ -84,11 +69,6 @@ def _change(root, ident, message, edit):
     text = workqueue.read(path, root)
     after = edit(text)
     workqueue.committed(root, [str(path.relative_to(root))], "work %s: %s" % (message, ident), lambda: path.write_text(after))
-
-
-def _numbered(entries, number, text):
-    kept = [e for e in entries if not e.startswith("%d. " % number)] + ["%d. %s" % (number, text)]
-    return sorted(kept, key=lambda e: int(e.split(".", 1)[0]))
 
 
 def upstreams(root):
@@ -118,7 +98,7 @@ def gate(root, asker, sources, thread, raised_for):
             raise Refused("the request names neither a request it is raised for (--raised-for) nor a job-thread (--thread)")
 
 
-def _refuse_upstream_part(root, text, ident, part):
+def refuse_upstream_part(root, text, ident, part):
     """r34: refuse, naming the upstream, a write of `part` of a request to an upstream from this repository. A request is
     to an upstream when its asker is this repository's own id, the repository lists upstreams and the request names no
     origin; an internal request (asker the upstream itself) is written by this repository as either side (r44, r15, r25)."""
@@ -165,21 +145,21 @@ def request(root, title, asker, lines_file, sources, thread, delegation=None, ra
 def outcome(root, ident, number, word):
     """Write line `number`'s outcome `word` (r12, r15); in the asker's turn it is refused, writing nothing (r16)."""
     def edit(text):
-        _refuse_upstream_part(root, text, ident, "the line outcomes")
+        refuse_upstream_part(root, text, ident, "the line outcomes")
         if field(text, "turn") == "asker":
             raise Refused("%s is in the asker's turn; the upstream writes a line outcome only in its own turn" % ident)
-        return _with_entries(text, "Outcomes", _numbered(_entries(text, "Outcomes"), number, word))
+        return with_entries(text, "Outcomes", numbered(entries(text, "Outcomes"), number, word))
     _change(root, ident, "outcome", edit)
 
 
 def ask(root, ident, number, question):
     """Write the next question, on line `number`, as `<n>. line <number>: <question>` (r20); the asker's turn refuses it."""
     def edit(text):
-        _refuse_upstream_part(root, text, ident, "the questions")
+        refuse_upstream_part(root, text, ident, "the questions")
         if field(text, "turn") == "asker":
             raise Refused("%s is in the asker's turn; the upstream asks a question only in its own turn" % ident)
-        entries = _entries(text, "Questions")
-        return _with_entries(text, "Questions", entries + ["%d. line %d: %s" % (len(entries) + 1, number, question)])
+        asked = entries(text, "Questions")
+        return with_entries(text, "Questions", asked + ["%d. line %d: %s" % (len(asked) + 1, number, question)])
     _change(root, ident, "ask", edit)
 
 
@@ -188,26 +168,13 @@ def reply(root, ident, number, answer):
     def edit(text):
         if field(text, "turn") == "upstream":
             raise Refused("%s is in the upstream's turn; the asker answers a question only in its own turn" % ident)
-        return _with_entries(text, "Answers", _numbered(_entries(text, "Answers"), number, answer))
+        return with_entries(text, "Answers", numbered(entries(text, "Answers"), number, answer))
     _change(root, ident, "reply", edit)
 
 
 def turn(root, ident):
-    """Pass the turn to the other side (r7); to the upstream it sets awaiting-upstream (r18). To the asker, the upstream
-    ending its turn with every line settled sets the status (r8, r9), else awaiting-asker (r17)."""
-    def edit(text):
-        if field(text, "turn") == "asker":
-            return _with_field(_with_field(text, "status", "awaiting-upstream"), "turn", "upstream")
-        words = [e.split(". ", 1)[1] for e in _entries(text, "Outcomes") if ". " in e]
-        if len(words) == len(_entries(text, "Lines")) and all(w in SETTLED for w in words):
-            if field(text, "status") != "delivered":
-                text = _with_field(text, "status", "accepted" if "accepted" in words else "refused")
-                if "accepted" in words:
-                    return text  # r23: the upstream's end that sets accepted keeps the turn
-        else:
-            text = _with_field(text, "status", "awaiting-asker")
-        return _with_field(text, "turn", "asker")
-    _change(root, ident, "turn", edit)
+    """Pass the turn to the other side (r7, r8, r9, r17, r18, r23): `request_text.turned`."""
+    _change(root, ident, "turn", turned)
 
 
 def delegate(root, ident, text):
@@ -222,7 +189,7 @@ def delegate(root, ident, text):
             raise Refused("%s is %s; work delegate writes a delegation only in a request whose negotiation has not ended" % (ident, status))
         value = json.dumps(text)
         if field(old, "delegation") is not None:
-            return _with_field(old, "delegation", value)
+            return with_field(old, "delegation", value)
         end = old.find("\n---", 4)
         return old[:end] + "\ndelegation: %s" % value + old[end:]
     _change(root, ident, "delegate", edit)
@@ -232,14 +199,14 @@ def resolve(root, ident, lines):
     """Write each accepted line's requirement and version, `lines` being (number, requirement, version), and set the
     status to delivered (r10, r11); a request that is not accepted is refused."""
     def edit(text):
-        _refuse_upstream_part(root, text, ident, "the resolution")
+        refuse_upstream_part(root, text, ident, "the resolution")
         if field(text, "status") != "accepted":
             raise Refused("%s is %s, not accepted; work resolve resolves only an accepted request" % (ident, field(text, "status")))
-        entries = []
+        held = []
         for number, requirement, version in lines:
-            entries = _numbered(entries, number, "%s %s" % (requirement, version))
-        text = _with_field(_with_entries(text, "Resolution", entries), "status", "delivered")
-        return _with_field(text, "turn", "asker")  # r24
+            held = numbered(held, number, "%s %s" % (requirement, version))
+        text = with_field(with_entries(text, "Resolution", held), "status", "delivered")
+        return with_field(text, "turn", "asker")  # r24
     path = path_of(root, ident)
     after =edit(workqueue.read(path, root))
     done = [d for d in workqueue_done.naming(root, ident) if workqueue_done.becomes(root, d, {ident: "delivered"})]

@@ -11,6 +11,7 @@ from pathlib import Path
 
 import backlog_lines
 import features_generate
+import request_text
 import spec_grammar
 import spec_read
 import spec_solve
@@ -33,7 +34,7 @@ def request_lines(root, item):
 def unsettled(root, item):
     """A reason for each request line of the item that is not settled."""
     return ["line %d of request %s is %s, not settled: %s" % (n, item.request, outcome or "unanswered", text)
-            for n, text, outcome in request_lines(root, item) if outcome not in workqueue_request.SETTLED]
+            for n, text, outcome in request_lines(root, item) if outcome not in request_text.SETTLED]
 
 
 def _parses(copy, blocks):

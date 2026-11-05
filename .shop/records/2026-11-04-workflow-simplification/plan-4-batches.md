@@ -881,7 +881,7 @@ Builds no new requirement (D24). It closes plan-3 S4, the doubled turn rule and 
 - `turned(text) -> str`: `turn`'s edit, verbatim, but with the lines in `countered(text)` left out of the
   Lines/Outcomes count.
 
-- [ ] **Step 1: Failing tests** (`test_request_counter.py`, on `ready_repo` with a peer's request taken in):
+- [x] **Step 1: Failing tests** (`test_request_counter.py`, on `ready_repo` with a peer's request taken in):
   - `test_a_counter_proposed_request_closes`:
     1. line 1 is `rewritten --line <ABANDON>`, so line 2 appears and `## Counter-proposals` holds `1. 2`;
     2. the asker's `work turn`;
@@ -893,19 +893,19 @@ Builds no new requirement (D24). It closes plan-3 S4, the doubled turn rule and 
   - `test_the_rewritten_path_and_turn_share_one_rule`: `intake_moves` holds no `"awaiting-asker"` literal.
   - `test_model_check_takes_the_section`: `model --root <repo> check` names no problem with `q1.md`.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_request_counter.py -q`
   Expected: FAIL.
 
-- [ ] **Step 3: Implement.**
+- [x] **Step 3: Implement.**
 
-- [ ] **Step 4: Run every request and intake test.**
+- [x] **Step 4: Run every request and intake test.**
   Run: `python3 -m pytest tests/scripts/test_request_counter.py tests/scripts/test_intake_outcome.py tests/scripts/test_intake_moves.py tests/scenarios/test_requests.py tests/scenarios/test_intake.py tests/scripts/test_work_*.py -q | tail -1`
   Expected: all pass.
 
-- [ ] **Step 5: The baselines,** with `model check` (it reads request sections). Expected: at baseline, `14 xfailed`.
+- [x] **Step 5: The baselines,** with `model check` (it reads request sections). Expected: at baseline, `14 xfailed`.
 
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
   ```bash
   git add scripts/request_text.py scripts/workqueue_request.py scripts/intake_moves.py scripts/readiness_bar.py scripts/model_requests.py \
     tests/scripts/test_request_counter.py tests/scripts/test_intake_outcome.py tests/scenarios/intake_handlers.py \

@@ -10,6 +10,7 @@ import backlog_items
 import backlog_lines
 import pytest
 import readiness_bar
+import request_text
 import workqueue_request
 from backlog_testing import REPO, git, state, work, write_request
 from test_backlog_lines import ABANDON, FROBNICATE
@@ -36,7 +37,7 @@ def request(repo, name="q1"):
 
 
 def entries(text, section):
-    return workqueue_request._entries(text, section)
+    return request_text.entries(text, section)
 
 
 def committed(repo):

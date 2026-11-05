@@ -183,6 +183,10 @@ Restates: work-queue#r59@0.29.
   (U3). A delivered request's turn is the asker's.
 - `work turn` from the upstream keeps the turn the upstream's when it sets the request `accepted`.
 - A question is written under `## Questions`, an answer under `## Answers`, the n-th answering the n-th.
+- `## Counter-proposals` holds `<n>. <m>` for each line n that the upstream's `work outcome <request> <n> rewritten
+  --line <text>` rewrote as its line m. Line n is then no longer a request line proposed in the request, and its
+  counter-proposal m is: `work turn` counts and reads the lines proposed, so a request whose counter-proposals are
+  settled reaches `accepted` or `refused`. A request without the section is read as before.
 - The asker ids the upstream allows for each asker are a setting of the upstream's repository
   (design-decision/an-asker-is-told-by-its-registered-asker-id).
 

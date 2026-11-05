@@ -56,8 +56,9 @@ person in the loop unless the two sides cannot agree. The brainstorming route is
 - `work outcome <request> <n> <word>` with `--into`, `--group`, `--reason` or `--line`, or on a request an item was
   taken in from, keeps the old refusals (the asker's turn, the upstream's part) and: `accepted` writes the line into
   the item's `## Requirements` under `--into <capability>`; `refused` needs `--reason`; `rewritten --line <text>`
-  checks the counter-proposal in the context's grammar, appends it to the request's `## Lines` and passes the turn to
-  the asker (`awaiting-asker`). On a request taken in, a word that is not a `line outcome` is refused, and the item gains a note naming the line and its outcome, and the
+  checks the counter-proposal in the context's grammar, appends it to the request's `## Lines` as line m, writes
+  `<n>. <m>` under the request's `## Counter-proposals` and passes the turn to the asker (`awaiting-asker`), by the
+  one turn rule `work turn` follows. On a request taken in, a word that is not a `line outcome` is refused, and the item gains a note naming the line and its outcome, and the
   request and the item are one commit. Without these options, on a request no item was taken in from, `work outcome`
   is as before.
 - A reason (`--reason`, or `rewritten as line <m>`) is written under the request's `## Reasons` as `<n>. <text>`, a
@@ -69,6 +70,3 @@ person in the loop unless the two sides cannot agree. The brainstorming route is
 - The intake session started by `work backlog` (design: "a session started when the backlog command runs intake"):
   waits for plan 4's batches, which build the `claude -p` plumbing. Until then the skill `taking-in-a-request` is that
   session's instructions, run by any session.
-- A request whose counter-proposal is settled closing: `work turn` counts a `rewritten` line as unsettled, so such a
-  request returns to `awaiting-asker` and never reaches `accepted`. A requests line in plan 4 counts a rewritten line
-  whose counter-proposal is settled as settled (workflow simplification plan-3 review S4).

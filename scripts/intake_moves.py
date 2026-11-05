@@ -20,7 +20,7 @@ from backlog_items import (
     render,
 )
 from backlog_moves import CLOSED, add_note, text_line
-from workqueue_request import _entries, _numbered, _with_entries, _with_field, field
+from request_text import COUNTERS, entries, field, numbered, turned, with_entries
 
 TAKES = ("open", "awaiting-upstream")      # the upstream's turn
 OUTCOMES = ("accepted", "rewritten", "refused", "question", "withdrawn")    # the glossary's `line outcome`
@@ -86,12 +86,12 @@ def handles(args):
 
 def _refusals(root, ident, text, number, word, item, into, group, reason, line):
     """Refuse, before anything is written, an outcome intake does not take (D12); the old refusals first."""
-    workqueue_request._refuse_upstream_part(root, text, ident, "the line outcomes")
+    workqueue_request.refuse_upstream_part(root, text, ident, "the line outcomes")
     if word not in OUTCOMES:
         raise Refused("work outcome: %s is not a line outcome; give one of %s" % (word, ", ".join(OUTCOMES)))
     if field(text, "turn") == "asker":
         raise Refused("%s is in the asker's turn; the upstream writes a line outcome only in its own turn" % ident)
-    if str(number) not in {e.split(". ", 1)[0] for e in _entries(text, "Lines")}:
+    if str(number) not in {e.split(". ", 1)[0] for e in entries(text, "Lines")}:
         raise Refused("work outcome: %s has no line %d" % (named(ident, text), number))
     if (into is not None or group is not None) and (item is None or word != "accepted"):
         raise Refused("work outcome: --into and --group write an accepted line into the item taken in from the "
@@ -116,7 +116,7 @@ def outcome(root, ident, number, word, into=None, group=None, reason=None, line=
     item = linked(root, ident)
     reason = text_line(reason, "reason") if reason is not None else None
     _refusals(root, ident, text, number, word, item, into, group, reason, line)
-    after = _with_entries(text, "Outcomes", _numbered(_entries(text, "Outcomes"), number, word))
+    after = with_entries(text, "Outcomes", numbered(entries(text, "Outcomes"), number, word))
     note = "line %d of request %s %s" % (number, ident, word)
     if line is not None:
         line = text_line(line, "counter-proposal")
@@ -128,17 +128,18 @@ def outcome(root, ident, number, word, into=None, group=None, reason=None, line=
                 raise
             raise Refused("work outcome: the counter-proposal does not parse in this context's requirement grammar: "
                           + said[len(head):]) from None
-        lines = _entries(text, "Lines")
+        lines = entries(text, "Lines")
         at = max(int(e.split(".", 1)[0]) for e in lines) + 1
-        after = _with_entries(after, "Lines", lines + ["%d. %s" % (at, line)])
-        # a rewritten line is never settled, so `work turn` from the upstream sets awaiting-asker (requests r17)
-        after = _with_field(_with_field(after, "status", "awaiting-asker"), "turn", "asker")
+        after = with_entries(after, "Lines", lines + ["%d. %s" % (at, line)])
+        after = with_entries(after, COUNTERS, numbered(entries(after, COUNTERS), number, str(at)))
+        # its counter-proposal has no outcome yet, so the turn passes to the asker (requests r17)
+        after = turned(after)
         reason = reason or "rewritten as line %d" % at
         note += " as line %d" % at
     if reason is not None:
-        after = _with_entries(after, "Reasons", _numbered(_entries(after, "Reasons"), number, reason))
+        after = with_entries(after, "Reasons", numbered(entries(after, "Reasons"), number, reason))
     if item is not None and word == "accepted":
-        written = dict(e.split(". ", 1) for e in _entries(text, "Lines"))[str(number)]
+        written = dict(e.split(". ", 1) for e in entries(text, "Lines"))[str(number)]
         note += " into %s" % backlog_lines.add_line_to(root, item, into, written, group, command="work outcome")
     if reason is not None and line is None:
         note += ": %s" % reason
