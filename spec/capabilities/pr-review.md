@@ -6,7 +6,7 @@ group: guarantees
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: [r1, r2, r3, r4, r6, r8]
+unbuilt: [r1, r2]
 ---
 
 # Pull request review
@@ -73,3 +73,7 @@ branch and the review re-reads what the fix changed; a clean pull request waits 
   committed on the base with the batch file, and posts it on the pull request (`gh pr comment`). A finding still
   `fix now` sets the batch `building`; a clean review sets it `awaiting-merge` and marks the pull request ready
   (`gh pr ready`).
+- `pr-reviewer` (`agents/pr-reviewer.md`: Read, Glob, Grep and Write, no shell) reads the brief `work batch brief`
+  writes in the ignored worktrees directory: the range's commits and `change.diff`, the items' lines (first review)
+  or the open findings with the commits for each (re-review), the `tier: judgement` decisions, `CLAUDE.md`, the size
+  and the runs of `[review] checks`. It writes one findings file, each finding graded and triaged.

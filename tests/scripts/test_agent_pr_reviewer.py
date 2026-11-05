@@ -1,0 +1,54 @@
+"""The `pr-reviewer` agent (workflow simplification plan 5, Task 5, D2, D9, D24): the one review of a batch's pull
+request, from the brief `work batch brief` wrote. Its pinned sentences hold pr-review r3, r4, r6 and r8, and its tools
+keep it to reading and writing its findings file."""
+import re
+
+import batch_findings
+from test_agents import AGENTS, definition
+
+PATH = AGENTS / "pr-reviewer.md"
+
+
+def text():
+    return " ".join(PATH.read_text().split())
+
+
+def has(sentence):
+    assert " ".join(sentence.split()) in text(), sentence
+
+
+def test_r3_the_reviewer_reads_the_items_lines_and_only_the_batchs_commits():
+    has("Read every requirement the brief's `## Items` gives and every commit its `## Commits` lists, with their "
+        "change in `change.diff`; read no other commit.")
+    has("You have no shell: a commit the brief does not give is outside the batch, and you do not read it.")
+    assert definition(PATH)["tools"] == ["Read", "Glob", "Grep", "Write"]
+
+
+def test_r4_the_reviewer_reads_every_judgement_decision():
+    has("Read every design-decision the brief's `## Judgement decisions` lists, and check the change against each.")
+
+
+def test_r6_the_re_review_reads_every_commit_for_each_finding():
+    has("On a re-review, read every commit the brief lists under each finding of `## Earlier findings`, and write "
+        "`fixed` or `not fixed: <why>` for each.")
+    has("On a re-review, a new finding is `fix now` only when the fix's own change is wrong.")
+
+
+def example():
+    """The first fenced block after the findings file's heading."""
+    body = PATH.read_text().split("## The findings file", 1)[1]
+    return re.search(r"```[a-z]*\n(.*?)```", body, re.DOTALL).group(1)
+
+
+def test_r8_each_finding_is_graded_and_written_to_the_findings_file():
+    has("Give every finding a grade (`Critical`, `Important` or `Minor`) and a triage (`fix now`, `observation` or "
+        "`drop`), and write them to the findings file the brief names.")
+    verdict, found, earlier = batch_findings.parse_findings(example(), "pr-reviewer.md", {"b1"}, {"b1"}, {"f1"})
+    assert verdict and found and earlier == {"f1": "fixed"}
+    assert all(f.grade in batch_findings.GRADES for f in found)
+
+
+def test_the_reviewer_changes_nothing_and_starts_no_agent():
+    one = definition(PATH)
+    assert not {"Edit", "NotebookEdit", "Agent", "Task", "Bash"} & set(one["tools"])
+    assert one["model"] == "opus" and one["name"] == "pr-reviewer"

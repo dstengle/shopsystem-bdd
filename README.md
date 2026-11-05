@@ -9,7 +9,7 @@ Skills: `raising-a-request`, `integrating-a-proposal`, `formulating-features`, `
 `bdd-red-green`, `checking-spec-consistency`, `migrating-to-capabilities`, `analyzing-a-batch`, `shaping-items`,
 `taking-in-a-request`, `building-a-batch`.
 Agents: `capability-writer`, `initiative-round`, `spec-checker`, `code-scout`, `bdd-planner`, `bdd-implementer`,
-`bdd-task-reviewer`, `bdd-branch-reviewer`, `architecture-reviewer`, `trial-runner`, `batch-analyst`,
+`bdd-task-reviewer`, `bdd-branch-reviewer`, `pr-reviewer`, `architecture-reviewer`, `trial-runner`, `batch-analyst`,
 `delegation-answerer`.
 Format: `docs/capability-format.md`. The design model it keeps: `docs/design-model/` (version 5).
 This repository's own spec: `spec/index.md`; check it with `python3 scripts/model check`.
@@ -139,6 +139,7 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 | `bdd-implementer` | Read, Edit, Write, Glob, Grep, Bash, Skill | sonnet | a work-item, red-green under `bdd-red-green`, in its worktree and branch |
 | `bdd-task-reviewer` | Read, Glob, Grep, Bash, Write | opus | a done work-item's review for `work run`; changes nothing |
 | `bdd-branch-reviewer` | Read, Glob, Grep, Write | opus | an initiative's branch review, from its base, over every work-item; changes nothing |
+| `pr-reviewer` | Read, Glob, Grep, Write | opus | a batch's pull request review, from its brief: the batch's own commits, its items' lines, the judgement decisions; changes nothing |
 | `architecture-reviewer` | Read, Glob, Grep, Bash, Write | opus | an architecture review when the person asks for one |
 | `trial-runner` | Read, Glob, Grep, Bash, Write | sonnet | one trial of a plugin tool or `work run` on a target; writes only one measurement record |
 | `batch-analyst` | Read, Glob, Grep, Bash, Write, Skill | opus | what a closed batch cost and why, under `analyzing-a-batch` |

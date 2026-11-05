@@ -625,7 +625,7 @@ as items):
     `drop`), and write them to the findings file the brief names."
   - D24: "On a re-review, a new finding is `fix now` only when the fix's own change is wrong."
 
-- [ ] **Step 1: Write the failing tests** (`test_agent_pr_reviewer.py`):
+- [x] **Step 1: Write the failing tests** (`test_agent_pr_reviewer.py`):
   - `test_r3_the_reviewer_reads_the_items_lines_and_only_the_batchs_commits`: both r3 sentences are there, and its
     tools are exactly `Read, Glob, Grep, Write` (no Bash).
   - `test_r4_the_reviewer_reads_every_judgement_decision`: the r4 sentence.
@@ -636,20 +636,20 @@ as items):
   - `test_the_reviewer_changes_nothing_and_starts_no_agent`: no `Edit`, `Agent`, `Task` or `Bash` in its tools; model
     `opus`.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_agent_pr_reviewer.py -q`
   Expected: FAIL; the agent does not exist.
 
-- [ ] **Step 3: Write the agent; add it to `REVIEWERS` and README.**
+- [x] **Step 3: Write the agent; add it to `REVIEWERS` and README.**
 
-- [ ] **Step 4: Take r3, r4, r6, r8 out of `unbuilt:`, then run the agent, role-boundaries and trace tests.**
+- [x] **Step 4: Take r3, r4, r6, r8 out of `unbuilt:`, then run the agent, role-boundaries and trace tests.**
   Run: `python3 -m pytest tests/scripts/test_agent_pr_reviewer.py tests/scripts/test_agents.py tests/scripts/test_pr_review_trace.py -q | tail -1`
   Expected: all pass (r1 of role-boundaries still names only `initiative-round`).
 
-- [ ] **Step 5: The baselines.** Expected: at baseline, with subtests now 134 (`test_agents`' two rows for
+- [x] **Step 5: The baselines.** Expected: at baseline, with subtests now 134 (`test_agents`' two rows for
   `pr-reviewer`); unbuilt 17.
 
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
   ```bash
   git add agents/pr-reviewer.md tests/scripts/test_agent_pr_reviewer.py tests/scripts/test_agents.py README.md spec/capabilities/pr-review.md
   git commit -m "agents: pr-reviewer, the one review of a batch's pull request, from its brief (pr-review r3, r4, r6, r8)"

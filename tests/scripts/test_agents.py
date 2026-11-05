@@ -3,7 +3,7 @@ import pathlib
 import unittest
 
 AGENTS = pathlib.Path(__file__).resolve().parents[2] / "agents"
-REVIEWERS = ("bdd-task-reviewer", "bdd-branch-reviewer", "architecture-reviewer")
+REVIEWERS = ("bdd-task-reviewer", "bdd-branch-reviewer", "architecture-reviewer", "pr-reviewer")
 SPEC_WRITERS = ("capability-writer",)
 SKILLS = AGENTS.parent / "skills"
 FORMULATOR = "feature-" + "formulator"     # spelled so, the plan's grep for it finds no file
