@@ -104,6 +104,7 @@ def test_a_counter_proposal_that_does_not_parse_is_refused_and_named_so(taken):
     done = work(taken, "outcome", "q1", "1", "rewritten", "--line", FROBNICATE)
     assert done.returncode == 1 and "the counter-proposal does not parse" in done.stderr, done.stderr
     assert "parsed up to:" in done.stderr, done.stderr
+    assert "line 1 does not parse" not in done.stderr, done.stderr
     assert state(taken) == before
 
 
