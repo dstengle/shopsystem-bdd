@@ -9,15 +9,12 @@ import spec_read
 from model_parse import as_list, frontmatter, mention, scenarios
 from model_requests import RequestReading
 from model_spec import SpecReading
-from model_work import PART_KINDS, WorkReading
+from model_work import FROZEN_KINDS, WorkReading
 
 REF = re.compile(r"^(?P<cap>[\w.-]+(?:/[\w.-]+)*)#r(?P<n>\d+)(?P<old>@0\.29)?$")
 KINDS = {"bounded-context", "capability", "design-decision", "requirement", "requirement-group", "scenario", "term",
-         "universal-condition", "initiative", "capability-proposal", "glossary-proposal", "job-proposal",
-         "map-proposal", "vision-proposal", "job-thread", "map-escalation", "work-item", "observation", "measurement",
-         "review-finding", "decision-argument", "initiative-archive", "job", "context-seam", "product-vision",
-         "request"}
-WORK_KINDS = PART_KINDS | {"initiative", "request"}      # the kinds kept in .shop/work/
+         "universal-condition", "job-thread", "observation", "measurement", "review-finding", "decision-argument",
+         "initiative-archive", "job", "context-seam", "product-vision", "request"} | FROZEN_KINDS
 NAME = r"[a-z0-9]+(?:-[a-z0-9]+)*"
 CONTEXT_PATH =rf"{NAME}(?:\.{NAME})*/{NAME}/{NAME}"     # <owner>/<product>/<context name>; the owner may be a domain
 NOT_PROSE = re.compile(r'`[^`]*`|"[^"]*"|(?<!\w)@[\w-]+')
@@ -35,9 +32,6 @@ class Model(SpecReading, WorkReading, RequestReading):
         self.context = None     # bounded-context/<path>
         self.path = None        # <owner>/<product>/<context name>
         self.caps = {}          # capability id -> {"name", "reqs": {n: node id}, "group"}
-        self.proposals = {}     # part id -> frontmatter
-        self.parents = {}       # part id -> part_of
-        self.sources = {}       # initiative id -> [record ids]
         self.req_text = {}
         self.sc_text = {}       # scenario id -> its title and steps
         self.retired = set()    # (capability id, n)
@@ -82,9 +76,9 @@ class Model(SpecReading, WorkReading, RequestReading):
         return ref
 
     def foreign(self, ref):
-        """r117: an id of a kind kept in .shop/work/ with another context's path is a `foreign` fact."""
+        """r117: a request id with another context's path is a `foreign` fact (the frozen kinds are history: D5)."""
         head, _, rest = ref.partition("/")
-        if head in WORK_KINDS and re.fullmatch(rf"{CONTEXT_PATH}/{NAME}", rest) and not rest.startswith(self.path + "/"):
+        if head == "request" and re.fullmatch(rf"{CONTEXT_PATH}/{NAME}", rest) and not rest.startswith(self.path + "/"):
             self.fact("foreign", ref)
 
     def check_id(self, ident, kind, where):
@@ -110,15 +104,6 @@ class Model(SpecReading, WorkReading, RequestReading):
         self.nodes.setdefault(q, "0.29 id")       # looked up, never a node: no fact is written for it
         self.fact("old_ref", q)
         return q
-
-    def read_accepts(self, w, ref, status, where):
-        """accepts(W, <cap>#r<n>@0.29): a 0.29 id is history, so no scenario need name it."""
-        m = REF.match(str(ref).strip())
-        if not (m and m.group("old")):
-            return super().read_accepts(w, ref, status, where)
-        q = self.resolve_req(ref, where)
-        if q:
-            self.fact("accepts", w, q)
 
     def term(self, word, n, avoided):
         """A glossary entry: the term node term/<path>/<word, spaces as hyphens>, its entry number and its Not: words."""
@@ -257,6 +242,10 @@ class Model(SpecReading, WorkReading, RequestReading):
 
     def check_refs(self):
         for ident, kind, where in getattr(self, "_wanted", []):
+            if str(ident).partition("/")[0] in FROZEN_KINDS:
+                continue        # a reference into the frozen .shop/work/ is history, never resolved (D5)
+            if str(ident).endswith("@0.29") and kind is None:
+                self.resolve_req(ident, where)      # a 0.29 id is history, looked up by its form alone
             if kind is None and ident not in self.nodes:
                 self.dangling.append(f"{where}: {ident} names nothing in this repository")
             elif kind is not None and self.nodes.get(ident) != kind:

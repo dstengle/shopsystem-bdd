@@ -1,14 +1,13 @@
-"""decisions, why, parse, lexicon and logic of scripts/model: the generated index of spec/decisions/, a requirement's
-trace to its initiative's sources and to the 0.29 ids its group restates, and the requirement language's tools (the GF
-conversion's design §15)."""
+"""decisions, parse, lexicon and logic of scripts/model: the generated index of spec/decisions/ and the requirement
+language's tools (the GF conversion's design §15). `model why` went with the capability-proposals it traced (plan 9,
+D16)."""
 
-import json
 import os
 from pathlib import Path
 
 import model_decisions
 from model_facts import Model
-from model_parse import DECISIONS, as_list, decision_files, expand, frontmatter
+from model_parse import DECISIONS, as_list, decision_files, frontmatter
 
 
 def render_decisions(root):
@@ -48,70 +47,6 @@ def cmd_decisions(args):
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(text)
     print(f"wrote {target.relative_to(args.root) if not os.path.isabs(args.root) else target}")
-    return 0
-
-
-def why_old(model, q, as_json):
-    """The trace of a 0.29 id: its text in spec/restated.json and the groups that restate it."""
-    key = q.rsplit("/", 1)[-1]
-    text = model.restated[key[:-len("@0.29")]]["text"]
-    by = model.restated_by.get(key, [])
-    if as_json:
-        print(json.dumps({"requirement": q, "text": text, "restated_by": by}, indent=1))
-        return 0
-    print(f"{key}: {text}")
-    for g in by:
-        print(f"  restated by {g}: {model.groups[g].title}")
-    if not by:
-        print("  restated by no group")
-    return 0
-
-
-def cmd_why(args):
-    model = Model(args.root).read()
-    q = model.resolve_req(args.ref, "why")
-    if not q:
-        print("\n".join(model.dangling))
-        return 2
-    if q.endswith("@0.29"):
-        return why_old(model, q, getattr(args, "json", False))
-    text = model.req_text.get(q)
-    group = model.group_of.get(q)
-    restates = [{"id": f"{c}#r{n}@0.29", "text": model.restated.get(f"{c}#r{n}", {}).get("text")}
-                for c, n in (model.groups[group].restates if group else [])]
-    traced = []
-    for p, data in sorted(model.proposals.items(), key=lambda t: str(t[1].get("date", ""))):
-        rels = [rel for rel in ("adds", "changes", "removes")
-                if q in [model.resolve_req(r, p) for r in expand(as_list(data.get(rel)))]]
-        if rels:
-            traced.append((p, data, rels))
-    if getattr(args, "json", False):
-        print(json.dumps({"requirement": q, "text": text, "group": group, "restates": restates, "proposals": [
-            {"id": p, "relation": rels, "status": data.get("status"), "date": str(data["date"]) if data.get("date") else None}
-            for p, data, rels in traced]}, indent=1))
-        return 0
-    print(f"{q}: {text}" if text is not None else f"{q}: no capability has this requirement now")
-    if group:
-        print(f"  in group {group}: {model.groups[group].title}")
-    for old in restates:
-        print(f"  restates {old['id']}: {old['text']}")
-    found = False
-    for p, data, rels in traced:
-        found = found or bool(set(rels) & {"adds", "changes"})
-        print(f"  {'/'.join(rels)} by capability-proposal {p} ({data.get('status')}, {data.get('date', 'undated')})")
-        chain, cur, seen = [], model.parents.get(p), set()
-        while cur and cur not in seen:
-            seen.add(cur)
-            chain.append(cur)
-            cur = model.parents.get(cur)
-        for c in chain:
-            kind = model.nodes.get(c, "?")
-            print(f"    part_of {kind} {c}")
-            if kind == "initiative":
-                for s in model.sources.get(c, []):
-                    print(f"      source {model.nodes.get(s, '?')} {s}")
-    if not found:
-        print("  no capability-proposal adds or changes it")
     return 0
 
 

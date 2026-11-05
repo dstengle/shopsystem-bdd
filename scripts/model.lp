@@ -23,7 +23,7 @@
 #defined under/2.     #defined for/2.        #defined accepts/2.   #defined check/2.
 #defined blocked_by/2.   #defined wi_depends/2.   #defined about/2.
 #defined asker/2.     #defined req_part_of/2.   #defined req_source/2.  #defined fulfils/2.
-#defined date/2.      #defined foreign/1.
+#defined date/2.      #defined foreign/1.   #defined cited/1.
 #defined req_thread/1.   #defined req_raised_for/2.
 #defined upstream/2.  #defined line/3.       #defined outcome/3.   #defined resolution_of_line/2.   % a request (C20)
 #defined authored_depends_on/2.   % the parse of "CAP depends on X" (v4)
@@ -140,26 +140,6 @@ standing_edge(U, D) :- using(U, _, D).
 label("v7c", "an upstream names a downstream client").
 v7c(U, D) :- in(U, X), in(D, Y), pins(Y, X, _), standing_edge(U, D).
 
-label("v8", "a work-item names no capability").
-v8(W) :- node(W, "work-item"), not has_cap(W).
-
-% 9. every part has exactly one part_of reaching a root (C23); priority and source only where v4 allows them
-label("v9a", "a part has no part_of").
-v9a(P) :- node(P, K), part(K), not has_part_of(P).
-label("v9b", "a part has two part_of").
-v9b(P) :- part_of(P, A), part_of(P, B), A != B.
-label("v9c", "a part reaches no root").
-v9c(P) :- node(P, K), part(K), not has_top(P).
-label("v9d", "a priority on something that is not an initiative, a request or a job-thread").
-v9d(X) :- priority(X, _), not node(X, "initiative"), not node(X, "request"), not node(X, "job-thread").
-label("v9e", "a source on a part").
-v9e(X) :- source(X, _), node(X, K), part(K).
-label("v9f", "a root is part of something").
-v9f(I) :- part_of(I, _), node(I, K), root_kind(K).
-po_tc(A, B) :- part_of(A, B).
-po_tc(A, C) :- po_tc(A, B), part_of(B, C).
-label("v9g", "a part_of cycle").
-v9g(P) :- po_tc(P, P).
 
 label("v10a", "a source that is not an origin").
 v10a(I, R) :- source(I, R), nonorigin(R).
@@ -192,15 +172,6 @@ label("v15c", "a retired id is used again").
 v15c(Q)     :- req_id(Q, C, N), retired_id(C, N).
 label("v15d", "a requirement id outside its capability").
 v15d(Q, C)  :- req_id(Q, C, _), not has_req(C, Q).
-% Only a drafted or approved proposal; a formulated or withdrawn one may name a retired id. `changes` applies to groups
-% and terms: a changed requirement is `removes` old and `adds` new (C18), judged where it sits in a group.
-label("v15e", "a proposal changes a requirement no capability has, or a requirement of a group").
-v15e(P, Q)  :- changes(P, Q), not has_any(Q), status(P, S), S = ("drafted"; "approved").
-v15e(P, Q)  :- changes(P, Q), grouped(Q), status(P, S), S = ("drafted"; "approved").
-label("v15f", "a formulated proposal leaves a group without a scenario").
-named(P, X) :- adds(P, X).   named(P, X) :- changes(P, X).
-v15f(P)     :- status(P, "formulated"), named(P, X), group_of(X, G), in(G, C), not has_scenario(G), not logic_only(G),
-               not group(C, "guarantees").
 label("v15g", "a group has no id, or shares one").
 v15g(G)     :- node(G, "requirement-group"), not has_group_id(G).
 v15g(G)     :- group_id(G, C, N), group_id(G2, C, N), G != G2.
@@ -222,24 +193,6 @@ label("v15n", "two groups of a capability share features, condition and trigger"
 v15n(G1, G2) :- group_id(G1, C, _), group_id(G2, C, _), member_of(Q1, G1), member_of(Q2, G2), pre(Q1, K),
                 pre(Q2, K), G1 < G2.
 
-% initiative kinds fix the first part (the rules of the job and job-path kinds are gone: C22)
-label("v_k3", "a capability-change initiative's first part is not a proposal").
-v_k3(I) :- ikind(I, "capability-change"), part_of(P, I), node(P, K), not proposal(K).
-label("v_k4", "a defect initiative's first part is not a work-item").
-v_k4(I) :- ikind(I, "defect"),            part_of(P, I), not node(P, "work-item").
-% A capability-change initiative may have several proposals, one per capability; every other kind one first part.
-label("v_k5", "an initiative has more than one first part").
-v_k5(I) :- node(I, "initiative"), part_of(P1, I), part_of(P2, I), P1 != P2, not ikind(I, "capability-change").
-label("v_k6", "a capability-proposal argues more than one capability").                 % C16
-v_k6(P) :- node(P, "capability-proposal"), argues(P, A1), argues(P, A2), A1 < A2.
-
-% breakdown shape: work-items only under capability-proposals (or a defect initiative); a job-thread owns neither
-defect_init(X) :- node(X, "initiative"), ikind(X, "defect").
-label("v_b1", "a work-item is part of something other than a capability-proposal").
-v_b1(W) :- node(W, "work-item"), part_of(W, X), not node(X, "capability-proposal"), not defect_init(X).
-label("v_b3", "a job-thread has a capability-proposal or a work-item as a part").
-v_b3(T) :- node(T, "job-thread"), part_of(P, T), node(P, K), K = ("capability-proposal"; "work-item").
-
 % scenarios: one per group, generated (C4, C6, C28)
 label("v_s1", "a scenario names no group").
 v_s1(S) :- node(S, "scenario"), not generated(S).
@@ -251,33 +204,11 @@ label("v_s4", "a requirement of a codified capability is in no group, or in two"
 v_s4(Q) :- req_id(Q, C, _), codified(C), not grouped(Q).
 v_s4(Q) :- member_of(Q, G1), member_of(Q, G2), G1 != G2.
 
-blk_tc(A, B) :- blocked_by(A, B).
-blk_tc(A, C) :- blk_tc(A, B), blocked_by(B, C).
-label("v_w1", "a blocked_by cycle").
-v_w1(W)      :- blk_tc(W, W).
-label("v_w2", "a ready work-item is blocked by one not green").
-v_w2(W)      :- status(W, "ready"), blocked_by(W, B), not status(B, "green").
-label("v_w3", "two claimed work-items claim one file").
-v_w3(W1, W2) :- status(W1, "claimed"), status(W2, "claimed"), W1 < W2, fileset(W1, P), fileset(W2, P).
-label("v_w4", "a work-item has no acceptance and no check").
-v_w4(W)      :- node(W, "work-item"), not status(W, "withdrawn"), not has_accepts(W), not has_check(W).
-
-% 19. done-ness (r114: a request this context raised to itself, whose part_of or source names the initiative)
-label("v_d1", "a done initiative has a part or a request of its own open").
-v_d1(I) :- status(I, "done"), root(P, I), not closed(P).
-own_request(Q, I) :- req_part_of(Q, I), own_asker(Q).
-own_request(Q, I) :- req_source(Q, I),  own_asker(Q).
-own_asker(Q)    :- asker(Q, "internal").
-own_asker(Q)    :- asker(Q, C), node(C, "bounded-context").
-v_d1(I) :- status(I, "done"), own_request(Q, I), not status(Q, "delivered").
+% 19. done-ness of a job-thread and a request (the initiatives' rules went with the frozen queue: plan 9, D16)
 label("v_d2", "a built job-thread has a request not delivered").                            % §7.2: v4's
 v_d2(T) :- status(T, "built"), node(T, "job-thread"), req_part_of(Q, T), node(Q, "request"), not status(Q, "delivered").
-label("v_d3", "a delivered request whose initiative is not done").
-v_d3(Q) :- status(Q, "delivered"), fulfils(I, Q), not status(I, "done").
 label("v_d4", "a delivered request has an accepted line its resolution does not name").
 v_d4(Q, N) :- status(Q, "delivered"), outcome(Q, N, "accepted"), line(Q, N, _), not resolution_of_line(Q, N).
-label("v_d5", "an abandoned initiative has a part open").                                   % §7.2: the live v_d2
-v_d5(I) :- status(I, "abandoned"), root(P, I), not closed(P).
 
 % decision tiers (decision-tiers r2, r3, r6; plan 6 D4): a check decision names a test, a requirement decision a
 % requirement, and an accepted decision supersedes none still accepted. A proposed superseder fires nothing.
@@ -290,24 +221,13 @@ v_d7(D) :- tier(D, "requirement"), not has_req_entry(D).
 label("v_d8", "an accepted decision supersedes one still accepted").
 v_d8(Old, New) :- supersedes(New, Old), status(New, "accepted"), status(Old, "accepted").
 
-% 16-18. requests (r113, r115, r117, r121). §7.2 drops v16a's date cutoff once old initiatives are compacted; until
-% then it stays, so that the initiatives from before requests existed are not reported (the release compacts them).
-label("v16a", "an initiative dated after 2026-10-23 that fulfils no request").
-has_fulfils(I) :- fulfils(I, _).
-v16a(I) :- node(I, "initiative"), date(I, D), D > "2026-10-23", not has_fulfils(I).
+% 16-18. requests (r113, r115, r117, r121).
 label("v17", "a request that is part of no job-thread, cites no origin and is raised for no request").
 in_thread(Q)    :- req_part_of(Q, T), node(T, "job-thread").
 in_thread(Q)    :- req_thread(Q).
 cites_origin(Q) :- req_source(Q, O), node(O, K), origin(K).
 raises_a_request(Q) :- req_raised_for(Q, _).
 v17(Q) :- node(Q, "request"), not in_thread(Q), not cites_origin(Q), not raises_a_request(Q).
-label("v18a", "a part is part of something kept by another context").
-v18a(P, X) :- part_of(P, X), node(P, K), part(K), at(P, C1), at(X, C2), C1 != C2.
-label("v18b", "a part is part of a request").
-v18b(P, Q) :- part_of(P, Q), node(Q, "request").
-label("v18c", "a blocked_by or for across contexts").
-v18c(A, B) :- blocked_by(A, B), at(A, C1), at(B, C2), C1 != C2.
-v18c(A, B) :- for(A, B), at(A, C1), at(B, C2), C1 != C2.
 label("v18d", "an id of a kind kept in .shop/work/ with another context's path, other than the request a request is raised for").
 raised_for_any(R) :- req_raised_for(_, R).
 v18d(X) :- foreign(X), not raised_for_any(X).
@@ -353,14 +273,9 @@ seam_used(R)       :- seam(R, Up, Down), in(C, Down), in(D, Up), depends_on(C, D
 label("w_seam_unused", "a seam nothing crosses").
 w_seam_unused(R)   :- seam(R, _, _), not seam_used(R).
 label("w_uncited_obs", "an observation no initiative cites").
-w_uncited_obs(O)   :- node(O, "observation"), not source(_, O).
+w_uncited_obs(O)   :- node(O, "observation"), not source(_, O), not cited(O).   % cited: a frozen source (plan 9, D6)
 label("w_many_requests", "more than five open requests to one upstream").                 % §7.2: v4's
 w_many_requests(X) :- upstream(_, X), #count{ Q : upstream(Q, X), status(Q, "open") } > 5.
-label("w_stale_intake", "a request accepted more than 90 days ago that no initiative fulfils").   % §7.2: v4's
-w_stale_intake(Q)  :- status(Q, "accepted"), node(Q, "request"), not fulfilled(Q), age(Q, Days), Days > 90.
-fulfilled(Q)       :- fulfils(_, Q).
-label("w_stale_proposed", "an initiative proposed more than 90 days ago").                 % §7.2: the live w_stale_intake
-w_stale_proposed(I) :- status(I, "proposed"), node(I, "initiative"), age(I, Days), Days > 90.
 label("w_untiered", "a decision in force gives no tier").                                  % decision-tiers r1, D3
 tiered(D)          :- tier(D, _).
 w_untiered(D)      :- node(D, "design-decision"), not status(D, "superseded"), not status(D, "rejected"), not tiered(D).
@@ -368,18 +283,15 @@ w_untiered(D)      :- node(D, "design-decision"), not status(D, "superseded"), n
 #show.
 #show label/2.
 #show v2/2.  #show v3/2.  #show v4/2.  #show v5/2.  #show v6/2.  #show v6b/1. #show v7/1.  #show v7c/2.
-#show v8/1.  #show v9a/1. #show v9b/1. #show v9c/1. #show v9d/1. #show v9e/1. #show v9f/1. #show v9g/1.
 #show v10a/2. #show v10b/1. #show v10c/1. #show v11/1. #show v12a/1. #show v12b/1. #show v13/1.
-#show v15a/1. #show v15b/2. #show v15c/1. #show v15d/2. #show v15e/2. #show v15f/1.
+#show v15a/1. #show v15b/2. #show v15c/1. #show v15d/2.
 #show v15g/1. #show v15h/1. #show v15i/1. #show v15j/2. #show v15k/1.
 #show v15l/1. #show v15m/2. #show v15n/2.
-#show v_k3/1. #show v_k4/1. #show v_k5/1. #show v_k6/1. #show v_b1/1. #show v_b3/1.
 #show v_s1/1. #show v_s2/1. #show v_s3/1. #show v_s4/1.
-#show v_w1/1. #show v_w2/1. #show v_w3/2. #show v_w4/1.
-#show v_d1/1. #show v_d2/1. #show v_d3/1. #show v_d4/2. #show v_d5/1.
+#show v_d2/1. #show v_d4/2.
 #show v_d6/1. #show v_d7/1. #show v_d8/2.
-#show v16a/1. #show v17/1. #show v18a/2. #show v18b/2. #show v18c/2. #show v18d/1.
+#show v17/1. #show v18d/1.
 #show v_t1/3. #show v_t2/1. #show v_t3/1. #show v_t4/1. #show v_t5/1. #show v_t6/2.
 #show v_p0/1. #show v_p1/2. #show v_p2/1. #show v_p3/2.
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
-#show w_many_requests/1. #show w_stale_intake/1. #show w_stale_proposed/1. #show w_untiered/1.
+#show w_many_requests/1. #show w_untiered/1.

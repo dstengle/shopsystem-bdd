@@ -542,23 +542,23 @@ Spec only, plus the helper and `model restates`' qualified entries. Nothing that
 - Produces: `model check --json` with no row whose subject is a `.shop/work/` node; `model rules` without D16's
   codes.
 
-- [ ] **Step 1: Write the failing tests** (`tests/scripts/test_model.py`).
+- [x] **Step 1: Write the failing tests** (`tests/scripts/test_model.py`).
   - `test_frozen_work_is_not_read`: a fixture with `.shop/work/i1/initiative.md` (started, citing an unknown source),
     `w1.md` (no `part_of`), `proposal.md` (`adds: [cart#r9]`), and `.shop/work/i57/` naming `backlog#r1`. It expects
     0 violations and 0 unresolved.
   - `test_an_observation_a_frozen_initiative_cites_is_cited`: no `w_uncited_obs` for it, and one for an observation
     nobody cites.
   - `test_the_rules_of_the_old_queue_are_gone`: no D16 code in `model rules`.
-- [ ] **Step 2: Run them.** Expected: FAIL (`v9a`, `v10a`, unresolved `backlog#r1`).
-- [ ] **Step 3: Retire the lines**, then make the modifications. Run `python3 scripts/model decisions` and
+- [x] **Step 2: Run them.** Expected: FAIL (`v9a`, `v10a`, unresolved `backlog#r1`).
+- [x] **Step 3: Retire the lines**, then make the modifications. Run `python3 scripts/model decisions` and
   `python3 scripts/features generate`.
-- [ ] **Step 4: The gate.** Expected:
+- [x] **Step 4: The gate.** Expected:
   - `model check`: `25 violations, 16 warnings, 0 unresolved references, 0 file problems`. The 25 are the `v17` of
     the requests still read from `.shop/work/requests/` until Task 6.
   - Suite: no failure.
   - `decisions --check`: 4 hold. `test_the_live_decisions_keep_their_tiers` holds.
   - Collection diff: design-model-check's 23 scenarios, and each deleted model test named.
-- [ ] **Step 5: Commit.**
+- [x] **Step 5: Commit.**
   ```bash
   git add -A scripts tests spec features CLAUDE.md
   git commit -m "model check reads no .shop/work/: the old kinds' lines and rules retired, model why gone, 0027/0036/0047 re-pointed (plan 9, Task 5)"

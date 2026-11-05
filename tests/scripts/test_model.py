@@ -162,28 +162,41 @@ class DecisionsTest(ModelTest):
 
 
 @unittest.skipUnless(HAVE_CLINGO, "clingo is needed to solve")
-class WithdrawnTest(ModelTest):
-    """r58-r59: a withdrawn part is closed; an abandoned initiative has no open part."""
+class FrozenTest(ModelTest):
+    """Plan 9, D5, D6: `model check` reads nothing of the frozen `.shop/work/` but its initiatives' and requests'
+    `source` ids, as citations of observations."""
 
-    def breakdown(self, initiative, proposal, item):
+    def test_frozen_work_is_not_read(self):
         self.good()
-        self.observation()
-        self.initiative(status=initiative)
-        self.proposal(status=proposal, adds="[thing#r1]")
-        self.work_item(status=item, part_of="capability-proposal/p1")
-
-    def about_initiative(self, found):
-        return [v for v in found["violations"] if I1 in v[1]]
-
-    def test_r59(self):
-        self.breakdown("abandoned", "withdrawn", "drafted")
-        found, r = self.check_json()
-        self.assertEqual(self.violated(found, "v_d5"), [[I1]], found)
-        self.assertEqual(r.returncode, 1)
-        self.reset()
-        self.breakdown("abandoned", "withdrawn", "withdrawn")
+        self.initiative(source="[observation/unknown]")
+        self.write(".shop/work/i1/w1.md", "---\nid: work-item/x/w1\nkind: work-item\nstatus: drafted\n---\n")
+        self.proposal(adds="[thing#r9]")
+        self.write(".shop/work/i57/initiative.md", "---\nid: %s\nkind: capability-change\nstatus: done\n"
+                   "source: [backlog#r1]\n---\n" % full("initiative", "i57"))
+        self.write(".shop/work/i57/p1.md", "---\nid: %s\nkind: capability-proposal\npart_of: initiative/i57\n"
+                   "status: merged\nadds: [backlog#r1]\n---\n" % full("capability-proposal", "p57"))
         found, _ = self.check_json()
-        self.assertEqual(self.about_initiative(found), [], found)
+        self.assertEqual(found["violations"], [], found)
+        self.assertEqual(found["unresolved"], [], found)
+
+    def test_an_observation_a_frozen_initiative_cites_is_cited(self):
+        self.good()
+        self.write(".shop/records/observations.md", "# Observations\n\n" + "".join(
+            f"## {full('observation', n)}\nabout: {CONTEXT}\nby: someone\ndate: 2026-10-15\n\nSeen.\n\n"
+            for n in ("obs-1", "obs-2")))
+        self.initiative(source="[%s]" % full("observation", "obs-1"), status="done")
+        found, _ = self.check_json()
+        uncited = [a for name, a in found["warnings"] if name == "w_uncited_obs"]
+        self.assertEqual(uncited, [[full("observation", "obs-2")]], found)
+
+    def test_the_rules_of_the_old_queue_are_gone(self):
+        r = subprocess.run([sys.executable, str(SCRIPT), "rules"], capture_output=True, text=True)
+        codes = {line.split()[0] for line in r.stdout.splitlines() if line.strip()}
+        gone = {"v8", "v9a", "v9b", "v9c", "v9d", "v9e", "v9f", "v9g", "v_k3", "v_k4", "v_k5", "v_k6", "v_b1", "v_b3",
+                "v_w1", "v_w2", "v_w3", "v_w4", "v_d1", "v_d3", "v_d5", "v15e", "v15f", "v16a", "v18a", "v18b", "v18c",
+                "w_stale_intake", "w_stale_proposed"}
+        self.assertEqual(codes & gone, set(), r.stdout)
+        self.assertIn("v18d", codes)
 
 
 class Facts:
@@ -205,7 +218,6 @@ def solve(text):
 CAP = 'node("c","capability"). narrator("c","n"). in("c","x"). node("x","bounded-context"). '
 GROUP = CAP + 'node("g","requirement-group"). in("g","c"). group_id("g","c",1). node("q","requirement"). req_id("q","c",1). member_of("q","g"). '
 TESTED = GROUP + 'node("s","scenario"). generates("g","s"). '
-WI = 'node("i","initiative"). status("i","started"). node("p","capability-proposal"). part_of("p","i"). status("p","drafted"). '
 REQ = 'node("r","request"). asker("r","internal"). upstream("r","x"). req_source("r","o"). node("o","observation"). '
 V5 = [   # (facts, code, the rows it gives)
     (TESTED, None, []),
@@ -225,23 +237,14 @@ V5 = [   # (facts, code, the rows it gives)
     (TESTED + 'value_of("v","k","a"). value_of("v","k","b").', "v_t5", [["v"]]),
     (TESTED + 'node("v","term"). category("v","value").', "v_t5", [["v"]]),
     (TESTED + 'linearises("t1","x y"). linearises("t2","x y").', "v_t6", [["t1", "t2"]]),
-    (GROUP + WI + 'status("p","formulated"). adds("p","q").', "v15f", [["p"]]),
-    (TESTED + WI + 'changes("p","q").', "v15e", [["p", "q"]]), (TESTED + WI + 'changes("p","g").', "v15e", []),
     (TESTED + 'resolution("r","s"). node("r","request"). status("r","accepted").', "v3", [["r", "s"]]),
-    (WI + 'status("i","abandoned").', "v_d5", [["i"]]),
     (REQ + 'node("t","job-thread"). status("t","built"). req_part_of("r","t"). status("r","accepted").', "v_d2", [["t"]]),
     (REQ + 'status("r","delivered"). outcome("r",1,"accepted"). line("r",1,"x"). outcome("r",2,"accepted"). '
            'line("r",2,"y"). resolution_of_line("r",2).', "v_d4", [["r", 1]]),
     (REQ + 'asker("r2","bounded-context/a"). upstream("r2","x"). node("r2","request").', "v7", []),
     (REQ + 'asker("r2","bounded-context/a"). upstream("r2","x"). node("r2","request"). node("m","context-seam").', "v7", [["r2"]]),
-    (REQ + 'node("t","job-thread"). node("p","capability-proposal"). part_of("p","t").', "v_b3", [["t"]]),
-    (REQ + 'node("t","job-thread"). node("p","map-escalation"). part_of("p","t").', "v9c", []),
-    (REQ + 'node("p","work-item"). part_of("p","r").', "v18b", [["p", "r"]]),
     ('foreign("request/a/b/c/q1").', "v18d", [["request/a/b/c/q1"]]),
-    (WI + 'status("i","proposed"). age("i",91).', "w_stale_proposed", [["i"]]),
-    (REQ + 'status("r","accepted"). age("r",91).', "w_stale_intake", [["r"]]),
     (" ".join(f'node("r{n}","request"). upstream("r{n}","x"). status("r{n}","open").' for n in range(6)), "w_many_requests", [["x"]]),
-    (WI + 'date("i","2026-10-24").', "v16a", [["i"]]), (WI + 'date("i","2026-10-23").', "v16a", []),
 ]
 
 
@@ -260,7 +263,7 @@ class V5RulesTest(unittest.TestCase):
         r = subprocess.run([sys.executable, str(SCRIPT), "rules"], capture_output=True, text=True)
         codes = {line.split()[0] for line in r.stdout.splitlines()}
         self.assertFalse(codes & {"v1", "v7b", "v_k1", "v_k2", "v_b2", "v18"}, r.stdout)
-        self.assertTrue({"v_d5", "w_stale_proposed", "v18d", "v15g", "v15h", "v15i", "v15j", "v15k", "v_t4", "v_t5",
+        self.assertTrue({"v18d", "v15g", "v15h", "v15i", "v15j", "v15k", "v_t4", "v_t5",
                          "v_t6", "v_s4", "v_d4"} <= codes, r.stdout)
         self.assertNotIn("cross-context-request", LP.read_text())
 

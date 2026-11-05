@@ -1,14 +1,9 @@
 """The registry's handlers of the (template, term) keys whose one registry handler was supervision's, retired in
 plugin 2.0.0 (workflow simplification plan 9, Task 3). A feature's own handler (`work_queue_world.local`) takes each
-of these steps first; these are what is left when none does. The two Givens record nothing, as supervision's recorded
+of these steps first; these are what is left when none does. The Given records nothing, as supervision's recorded
 nothing another feature read: the When's handler reads the scenario's text. A Then or a When no feature's handler
 took fails, naming the step, so that no step passes unchecked."""
 from vocab import handler
-
-
-@handler("GivenK", "question")
-def given_question(step):
-    """`a question q1`: what the question is on and asks is said by the steps after it."""
 
 
 @handler("GivenR", "on")

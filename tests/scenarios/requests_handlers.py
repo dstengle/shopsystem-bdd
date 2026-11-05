@@ -37,12 +37,6 @@ def says(step, key, word):
     step.context.setdefault("says", {})[key] = word
 
 
-@handler("GivenK_A", "delegation")
-def given_delegation(step):
-    step.context["delegation"] = step.values[0].strip("`")
-    says(step, step.names[0], "empty")
-
-
 @handler("GivenK", "request line")
 def given_line(step):
     step.context.setdefault("lines", {})[step.names[0]] = None
@@ -150,13 +144,6 @@ def work_request(step):
     run_work(step, *args)
 
 
-@handler("WhenRuns", "`work delegate`")
-def work_delegate(step):
-    prepare(step, step.names[0])
-    text = "" if step.context.get("delegation") == "empty" else 'The person, 2026-10-29: "answer any question"'
-    run_work(step, "delegate", step.names[0], text)
-
-
 @handler("WhenRuns", "`work outcome`")
 @handler("WhenRuns", "`work ask`")
 @handler("WhenRuns", "`work reply`")
@@ -187,15 +174,6 @@ def then_changes(step):
 @handler("ThenDoesNot", "change")
 def then_changes_not(step):
     assert not changed(step), step.text
-
-
-@handler("GivenR", "raised for")
-def given_raised_for(step):
-    """A request raised for another: its `raised_for`; a request the trace says is raised for itself, nothing."""
-    request, other = step.names
-    if request != other:
-        path = step.repo / W.node_rel(step.context, request)
-        path.write_text(path.read_text().replace("\n---\n", "\nraised_for: request/ex.com/prod/ctx/%s\n---\n" % other, 1))
 
 
 @handler("ThenR", "raised for")

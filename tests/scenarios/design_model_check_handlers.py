@@ -139,11 +139,6 @@ def model_rules(step):
     run_model(step, "rules", *flag(step, "--json"))
 
 
-@handler("WhenRuns", "`model why`")
-def model_why(step):
-    run_model(step, "why", step.context.get("says", {}).get(step.names[0], step.names[0]), *flag(step, "--json"))
-
-
 # What an instance no Given named is printed as, by its kind and number: `model facts` and `model rules` print every
 # one, so a trace's f1 and f2 (r1 and r2) are two of them.
 PRINTED = {"fact": ['node("capability/', 'node("bounded-context/'], "rule": ["v15a", "w_uncited_obs"]}
@@ -198,18 +193,3 @@ def given_index(step):
 @handler("GivenK", "feature")
 def given_nothing(step):
     pass
-
-
-@handler("GivenR", "fulfils")
-def fulfils(step):
-    initiative, request = step.names
-    path = step.repo / ".shop" / "work" / initiative / "initiative.md"
-    path.write_text(path.read_text().replace("\n---\n", "\nfulfils: %s\n---\n" % full("request", request), 1))
-
-
-@handler("GivenR", "adds")
-def adds(step):
-    proposal = step.names[0]
-    rel = step.context["nodes"][proposal][1]
-    path = step.repo / rel
-    path.write_text(re.sub(r"^adds: .*$", "adds: [thing#r1]", path.read_text(), flags=re.MULTILINE))

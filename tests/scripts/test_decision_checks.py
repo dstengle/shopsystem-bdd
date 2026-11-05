@@ -47,7 +47,7 @@ def test_the_sort_holds_its_totals():
     assert len(found) == 80, len(found)
     assert collections.Counter(d.status for d in found) == {"accepted": 28, "superseded": 50, "rejected": 2}
     tiers = collections.Counter(d.tier for d in found if d.status == "accepted")
-    assert tiers == {"check": 4, "requirement": 15, "judgement": 9}, tiers
+    assert tiers == {"check": 4, "requirement": 14, "judgement": 10}, tiers
     assert [d.rel for d in found if d.status != "accepted" and d.tier] == []
 
 
@@ -57,7 +57,8 @@ def test_the_judgement_decisions_reach_the_brief():
     assert "spec/decisions/0079-a-knob-is-changed-by-a-decision.md" in found, found
     assert "spec/decisions/0080-the-old-workflow-retired.md" in found, found
     assert "spec/decisions/0065-workflow-capabilities-are-guarantees.md" not in found, found
-    assert len(found) == 9, found
+    assert "spec/decisions/0036-one-requirement-form.md" in found, found
+    assert len(found) == 10, found
 
 
 def test_0060_is_superseded_by_measure_a_batch():

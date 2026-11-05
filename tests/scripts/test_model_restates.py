@@ -1,5 +1,4 @@
-"""Unit tests of `model restates` (scripts/model_restates) and of `model why` following `restates` (the GF
-conversion's design §8.3, §15). The fixture builders are test_model_spec's."""
+"""Unit tests of `model restates` (scripts/model_restates) (the GF conversion's design §8.3, §15). The fixture builders are test_model_spec's."""
 
 import json
 import subprocess
@@ -90,20 +89,6 @@ class RestatesTest(CodifiedTest):
         missing = sorted(row["id"] for row in found["ids"] if row["state"] == "missing")
         self.assertEqual(missing, ["other#r1", "wq#r2", "wq#r4"])
         self.assertEqual([row["by"] for row in found["ids"] if row["id"] == "wq#r1"], [[f"{WQ}#g1"]])
-
-    def test_why_follows_restates_to_the_0_29_text(self):
-        self.write("spec/capabilities/wq.md", codified("wq", self.group("r3@0.29")))
-        r = self.run_model("why", "wq#r1")
-        self.assertEqual(r.returncode, 0, r.stderr)
-        self.assertIn(START, r.stdout)
-        self.assertIn(f"{WQ}#g1", r.stdout)
-        self.assertIn("wq#r3@0.29: old 3", r.stdout)
-        old = self.run_model("why", "wq#r3@0.29")
-        self.assertEqual(old.returncode, 0, old.stderr)
-        self.assertIn("old 3", old.stdout)
-        self.assertIn(f"restated by {WQ}#g1", old.stdout)
-        data = json.loads(self.run_model("why", "--json", "wq#r1").stdout)
-        self.assertEqual(data["restates"], [{"id": "wq#r3@0.29", "text": "old 3"}])
 
 
 class LiveRestatesTest(unittest.TestCase):

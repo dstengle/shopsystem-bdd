@@ -4,7 +4,9 @@ file whose frontmatter does not read is passed over, never refused. Standard lib
 import re
 from pathlib import Path
 
-from shop_files import frontmatter
+from model_parse import (
+    frontmatter,  # the reader scripts/model uses; model_work imports this module
+)
 
 WORK = Path(".shop") / "work"
 IDENT = re.compile(r"[a-z-]+/[\w./-]+")

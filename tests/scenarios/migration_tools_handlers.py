@@ -191,10 +191,3 @@ def renames(step):
         assert "id: work-item/%s/w1\n" % CONTEXT in text and "\n# size-check\n" in text, text
     else:
         assert (step.repo / ".shop/work/i1/runs/w1/1-research/notes.md").is_file()
-
-
-@handler("ThenDoes", "append")
-def appends(step):
-    assert step.context["done"].returncode == 0, said(step)
-    last = read(step, ".shop/work/i1/ledger.md").splitlines()[-1]
-    assert re.fullmatch(r"- \d{4}-\d{2}-\d{2} \d{2}:\d{2}: %s" % step.nps[0].strip('"'), last), last

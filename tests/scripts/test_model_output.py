@@ -67,11 +67,6 @@ class OtherCommandsTest(ModelTest):
         self.write("spec/decisions/index.md", "# hand written\n")
         self.assertEqual(self.run_model("decisions", "--check").returncode, 1)
 
-    def test_exit_codes_of_why(self):
-        self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] One."]))
-        self.assertEqual(self.run_model("why", "thing#r1").returncode, 0, "no proposal adds or changes it is an answer")
-        self.assertEqual(self.run_model("why", "thing").returncode, 2, "not a requirement reference")
-
     def test_bad_usage_exits_2(self):
         self.assertEqual(self.run_model("banana").returncode, 2)
 

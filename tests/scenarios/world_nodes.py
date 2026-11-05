@@ -8,7 +8,7 @@ import textwrap
 from vocab import handler
 
 PATH = "ex.com/prod/ctx"
-NODE_KINDS = ("initiative", "work-item", "capability-proposal", "glossary-proposal", "request")
+NODE_KINDS = ("request",)     # the frozen queue's kinds are written only as citations (work_queue_world.cite)
 
 
 def full(kind, name):
@@ -109,26 +109,6 @@ for _kind in NODE_KINDS:
         assert (status != wanted) if " is not " in step.text else (status == wanted), (step.text, status)
 
 
-@handler("GivenR", "under")
-def under(step):
-    item, proposal = step.names
-    _, rel = step.context["nodes"][item]
-    path = step.repo / rel
-    path.write_text(re.sub(r"^under: .*$", "under: %s" % proposal, path.read_text(), flags=re.MULTILINE))
-
-
-@handler("GivenR", "part of")
-def part_of(step):
-    part, initiative = step.names
-    step.context.setdefault("part_of", {})[part] = initiative
-    if part in step.context.get("nodes", {}):
-        kind, rel = step.context["nodes"][part]
-        text = (step.repo / rel).read_text().replace("initiative/%s" % initiative_of(step.context),
-                                                      "initiative/%s" % initiative)
-        (step.repo / rel).unlink()
-        write_node(step, kind, part, frontmatter_field(text, "status"))
-
-
 @handler("GivenK", "capability")
 def given_capability(step):
     index(step.repo)
@@ -167,10 +147,3 @@ def given_decision(step):
     name = bare(step.names[0])
     write(step.repo, "spec/decisions/%s.md" % name, "---\nid: design-decision/%s/%s\nstatus: accepted\n---\n# %s\n"
           % (PATH, name, name))
-
-
-@handler("GivenK", "record")
-def given_record(step):
-    name = bare(step.names[0])
-    write(step.repo, ".shop/records/%s.md" % name, "---\nid: record/%s/%s\nkind: design\nabout: bounded-context/%s\n"
-          "date: 2026-10-15\n---\n# %s\n" % (PATH, name, PATH, name))

@@ -51,33 +51,6 @@ def capability(step):
     H.says(step, name, "%s.md" % name)
 
 
-@handler("GivenK_C", "capability-proposal")
-@handler("GivenK_C", "glossary-proposal")
-def proposal(step):
-    name, word = step.names[0], condition(step)
-    path = node_path(step, name)
-    if word == "reaching":
-        edit(path, r"^changes: .*$", "changes: [thing#r9]")
-    elif word == "unformulated":
-        H.write(step.repo, "spec/capabilities/thing.md", H.cap("thing", ["- [r1] **When** asked, `thing` shall answer.",
-                                                                         "- [r2] **When** told, `thing` shall nod."]))
-        H.write(step.repo, "features/thing.feature", H.feature("thing", "@r1"))
-        edit(path, r"^status: .*$", "status: formulated")
-        edit(path, r"^adds: .*$", "adds: [thing#r2]")
-    elif word == "plural":
-        H.write(step.repo, "spec/capabilities/other.md", H.cap("other", ["- [r1] **When** asked, `other` shall answer."]))
-        H.write(step.repo, "features/other.feature", H.feature("other", "@r1"))
-        edit(path, r"^argues: .*$", "argues: [thing, other]")
-    elif word == "dangling":
-        edit(path, r"^adds: .*$", "adds: [thing#r9]")
-        H.says(step, name, "thing#r9")
-    elif word == "termless":
-        text = path.read_text()
-        path.write_text(re.sub(r"^adds: .*$", "adds: [term/nothing]", text, flags=re.MULTILINE) if "\nadds:" in text
-                        else text.replace("\n---\n", "\nadds: [term/nothing]\n---\n", 1))
-        H.says(step, name, "term/%s/nothing" % H.PATH)
-
-
 @handler("GivenK_C", "requirement")
 def requirement(step):
     word, repo = condition(step), step.repo
@@ -123,58 +96,6 @@ def term(step):
     elif word == "malformed":
         path.write_text(text + "- %s, written with no bold term\n" % name)
         H.says(step, name, "glossary bullet")
-
-
-@handler("GivenK_C", "work-item")
-def work_item(step):
-    name, word = step.names[0], condition(step)
-    path = node_path(step, name)
-    if word == "out of step":     # work-queue's: `work` refuses its transition
-        step.context.setdefault("out_of_step", set()).add(name)
-    elif word in ("not open", "closed"):     # supervision's: a node work run does not take
-        edit(path, r"^status: .*$", "status: withdrawn")
-    elif word == "parentless":
-        edit(path, r"^part_of: .*\n", "")
-    elif word == "uncommitted":
-        edit(path, r"^check: .*\n", "")
-    elif word == "misnumbered":
-        path.rename(path.with_name("item-1.md"))
-        H.says(step, name, "item-1.md")
-    elif word == "alien":
-        edit(path, r"^part_of: .*$", "part_of: initiative/ex.org/other/ctx/i1")
-    elif word == "misreferenced":
-        path.write_text(path.read_text().replace("\n---\n", "\naccepts: [thing#x1]\n---\n", 1))
-        H.says(step, name, "thing#x1")
-    elif word == "unresolving":
-        edit(path, r"^under: .*$", "under: nothing")
-        H.says(step, name, "nothing")
-    elif word == "misidentified":
-        edit(path, r"^id: .*$", "id: %s" % H.full("initiative", name))
-    elif word == "homeless":
-        step.context["homeless"] = True
-        H.says(step, name, path.parent.name)
-
-
-@handler("GivenK_C", "initiative")
-def initiative(step):
-    name, word = step.names[0], condition(step)
-    path = node_path(step, name)
-    if word == "crowded":
-        path.write_text(H.initiative_text(name, kind="defect"))
-        for item in ("w1", "w2"):
-            H.write(step.repo, ".shop/work/%s/%s.md" % (name, item), "---\nid: %s\nkind: work-item\npart_of: "
-                    "initiative/%s\nstatus: drafted\nunder: thing\ncheck: true\n---\n" % (H.full("work-item", item), name))
-    elif word == "unrequested":
-        path.write_text(H.initiative_text(name, date="2026-11-01"))
-    elif word == "unwaiting":
-        path.write_text(H.initiative_text(name, status="done"))
-        H.write(step.repo, ".shop/work/requests/q9.md", "---\nid: %s\nkind: request\nasker: internal\nsource: "
-                "[%s]\nstatus: open\nturn: upstream\n---\n\n# q9\n\n## Lines\n1. line 1\n\n## Outcomes\n\n"
-                "## Resolution\n" % (H.full("request", "q9"), H.full("initiative", name)))
-    elif word == "jobbed":
-        path.write_text(H.initiative_text(name, kind="job"))
-    elif word == "not open" and not re.search(r"^status: (done|abandoned)$", path.read_text(), re.MULTILINE):
-        edit(path, r"^status: .*$", "status: abandoned")
 
 
 @handler("GivenK_C", "request")

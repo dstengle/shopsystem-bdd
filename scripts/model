@@ -2,19 +2,26 @@
 """Check a repository's files against design model v5: the graph's rules, and the requirement language's parse."""
 # The command; its parts are the sibling modules model_parse (the files' forms), model_facts, model_spec (codified
 # files) and model_work (the facts), model_check (check and rules), model_report
-# (decisions, why, parse, lexicon, logic) and model_restates (restates).
+# (decisions, parse, lexicon, logic) and model_restates (restates).
 
 import argparse
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from model_check import check, needing_clingo, rules  # noqa: E402
-from model_facts import Model  # noqa: E402
+from model_check import check, needing_clingo, rules
+from model_facts import Model
+
 # what scripts/migrate, scripts/shop_files and the migration steps read by loading this file
-from model_parse import as_list, frontmatter, scenarios, section  # noqa: E402,F401
-from model_report import cmd_decisions, cmd_lexicon, cmd_logic, cmd_parse, cmd_why, render_decisions  # noqa: E402,F401
-from model_restates import cmd_restates  # noqa: E402
+from model_parse import as_list, frontmatter, scenarios, section  # noqa: F401
+from model_report import (  # noqa: F401
+    cmd_decisions,
+    cmd_lexicon,
+    cmd_logic,
+    cmd_parse,
+    render_decisions,
+)
+from model_restates import cmd_restates
 
 CONTRACT = """\
 contract:
@@ -53,9 +60,11 @@ contract:
     spec/decisions/*.md but index.md, one design-decision each (frontmatter
     id, summary, date, status, supersedes, revisit_when, revisit_signal,
     tier, enforced_by);
-    .shop/work/<initiative>/initiative.md and .shop/work/<initiative>/<part>.md;
     .shop/work/requests/q<n>.md, one request each (a file not of the form
-    `work request` writes is a file problem);
+    `work request` writes is a file problem); .shop/work/ is otherwise
+    frozen, read only for the observations its initiatives' and requests'
+    `source` cite (cited), and a reference to one of its kinds (initiative,
+    work-item, proposal) is history, never resolved;
     .shop/records/observations.md (one `## <id>` heading an observation) and
     any other Markdown under .shop/records/ whose frontmatter has an `id`.
     It reads no other layout: spec/decisions.md and a decisions/, work/ or
@@ -78,7 +87,7 @@ contract:
     lists ids the capability used and retired. A reference is written
     <capability>#r<n> (a list may write <capability>#r<a>-r<b>);
     <capability>#r<n>@0.29 names a 0.29 id: it is history, never read
-    against the live spec, and `why` finds its text in spec/restated.json.
+    against the live spec; its text is in spec/restated.json.
   - Every statement of a codified file and of spec/universal.md is parsed in
     the context's requirement grammar (spec_grammar): parsed, unparsed (v_p1)
     or ambiguous (v_p2); a group's statements share their trigger and
@@ -116,10 +125,6 @@ contract:
     active virtualenv's bin/, /usr/local/bin/python3 and /usr/bin/python3
     whose `-c "import clingo"` succeeds; when none does, it says so with the
     command that installs clingo and each interpreter it tried, and exits 2.
-  - A capability-proposal or work-item may be `withdrawn`: no longer pursued,
-    and closed. v_d5 names an `abandoned` initiative with a part, at any
-    depth, neither closed nor withdrawn; abandoning an initiative means
-    withdrawing what is open under it.
   - A decision's tier is check, requirement or judgement; enforced_by lists
     pytest node ids (<path>.py[::<name>...]) for a check decision and
     requirement ids (an entry with #) for a requirement decision, and a
@@ -138,16 +143,7 @@ contract:
     then the count; a skipped, xfailed, xpassed or deselected test, or an
     entry that is not a test of the repository, is failing; it exits 1 when
     the index is stale or any decision fails.
-  - why <capability>#r<n> prints the trace the model gives for a
-    requirement: the requirement, its group and the 0.29 ids the group
-    restates with their text, each capability-proposal that adds or changes
-    it, the part_of chain to its initiative, and the initiative's sources.
-    When no proposal adds or changes the id it says so and exits 0; it exits
-    2 when the argument is not a requirement reference. why
-    <capability>#r<n>@0.29 prints the 0.29 text and the groups that restate
-    it. why --json prints one object: "requirement", "text", "group",
-    "restates" and "proposals", each with its "id", "relation", "status" and
-    "date". rules --json prints one object, "rules", each {"code", "label",
+  - rules --json prints one object, "rules", each {"code", "label",
     "kind": "violation" or "warning"}.
   - parse <line> | --file F [--grammar Req|Steps|Def] prints the line's tree in
     the context's grammar and exits 0; a refused line prints the refusal (the
@@ -195,9 +191,6 @@ def main(argv=None):
     c.add_argument("--limit", type=int, default=10, help="rows shown per relation")
     d = sub.add_parser("decisions", help="write spec/decisions/index.md from spec/decisions/")
     d.add_argument("--check", action="store_true")
-    w = sub.add_parser("why", help="trace a requirement to its initiative's sources and its 0.29 ids")
-    w.add_argument("ref")
-    w.add_argument("--json", action="store_true")
     p = sub.add_parser("parse", help="parse a line in the context's grammar: its tree, or its refusal with a hint")
     p.add_argument("line", nargs="?")
     p.add_argument("--file")
@@ -213,7 +206,7 @@ def main(argv=None):
     args = ap.parse_args(argv)
     if args.cmd == "parse" and (args.line is None) == (args.file is None):
         ap.error("parse takes a line or --file, not both")
-    return {"facts": cmd_facts, "check": cmd_check, "rules": cmd_rules, "decisions": cmd_decisions, "why": cmd_why,
+    return {"facts": cmd_facts, "check": cmd_check, "rules": cmd_rules, "decisions": cmd_decisions,
             "parse": cmd_parse, "lexicon": cmd_lexicon, "logic": cmd_logic, "restates": cmd_restates}[args.cmd](args)
 
 
