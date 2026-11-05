@@ -86,6 +86,7 @@ def test_a_batch_and_an_initiative_do_not_compare(backlog_repo):
     done = measure(backlog_repo, "compare", "batch-2", "m1.md")
     assert done.returncode == 1, done.stdout
     assert "is a batch's measurement and" in done.stderr, done.stderr
+    assert done.stderr.startswith("measure compare: ") and done.stderr.count("measure compare") == 1, done.stderr
 
 
 def test_show_prints_a_batch(backlog_repo):

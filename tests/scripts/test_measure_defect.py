@@ -68,7 +68,14 @@ def test_a_defect_needs_a_delivered_item_of_a_merged_batch(request, batch_repo, 
     done = measure(repo, "defect", item, "--says", says)
     assert done.returncode == 1, done.stdout
     assert named in done.stderr, done.stderr
+    assert done.stderr.startswith("measure defect: ") and done.stderr.count("measure") == 1, done.stderr  # review M9
     assert state(repo) == before
+
+
+def test_an_unknown_item_is_refused_naming_the_command(merged):  # noqa: F811
+    """Plan 7 review M9: the subcommand is named once."""
+    done = measure(merged, "defect", "b9", "--says", "the fault")
+    assert done.returncode == 1 and done.stderr.startswith("measure defect: ") and "b9" in done.stderr, done.stderr
 
 
 def test_the_next_defect_is_numbered_on(merged):  # noqa: F811

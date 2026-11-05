@@ -103,7 +103,7 @@ def compare(first, second):
         return measure_batch_show.compare(given[0]["batch"], given[0], given[1]["batch"], given[1])
     if any(kinds):
         one, other = (first, second) if kinds[0] else (second, first)
-        raise Refused("measure compare: %s is a batch's measurement and %s is not" % (one, other))
+        raise Refused("%s is a batch's measurement and %s is not" % (one, other))
     one, two = given[0].get("totals", {}), given[1].get("totals", {})
     rows = []
     for name, key in totals_of(one, two):

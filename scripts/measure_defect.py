@@ -86,16 +86,16 @@ def record(root, item_name, says):
 
 def _record(root, item_name, says):
     if not says.strip():
-        raise Refused("%s: --says is empty; say the fault and how to reproduce it" % COMMAND)
+        raise Refused("--says is empty; say the fault and how to reproduce it")
     item = backlog_items.find(root, item_name)
     with batch_git.locked(root):
         batch = batch_plan.of_item(root, item.name)
         if batch is None:
-            raise Refused("%s: %s is in no batch; a defect is of a delivered item of a merged batch" % (
-                COMMAND, backlog_items.label(item)))
+            raise Refused("%s is in no batch; a defect is of a delivered item of a merged batch" %
+                          backlog_items.label(item))
         if item.status != "delivered" or batch.status != "merged":
-            raise Refused("%s: %s is %s in %s, which is %s; a defect is of a delivered item of a merged batch" % (
-                COMMAND, backlog_items.label(item), item.status, batch.name, batch.status))
+            raise Refused("%s is %s in %s, which is %s; a defect is of a delivered item of a merged batch" % (
+                backlog_items.label(item), item.status, batch.name, batch.status))
         k = max((int(d.name[1:]) for d in defects(root, batch.name)), default=0) + 1
         context = workqueue.context_path(root)
         defect = Defect("d%d" % k, "defect/%s/%s/d%d" % (context, batch.name, k), batch.name, item.name,
