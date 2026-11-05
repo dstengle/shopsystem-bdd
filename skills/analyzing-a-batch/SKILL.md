@@ -21,7 +21,7 @@ Scripts: this plugin's `scripts/`, at `<this skill's base directory>/../../scrip
    - **Each parked item**: its question, and whether the readiness bar could have caught it before the batch.
 4. **Write the report** to `.shop/records/` as a record, in the shape below, and commit it with the measurement.
 
-An initiative of the old queue (`work run`) is still measured with `measure initiative <initiative>` until plan 9 retires it; its report has the same shape, with its work-items for the batch's items.
+An initiative of plugin 1.x's frozen queue keeps the measurement it was given: `measure show` and `measure compare` still read it, with its work-items for the batch's items.
 
 ## The Report
 
@@ -67,8 +67,8 @@ Every section is present; one with nothing in it says "none". A table row with n
 | Adding the roles' costs by hand | `cost by role` in the measurement |
 | Opening a transcript to count something the measurement lacks | Say it is not counted, under Not counted. A count the script does not make is a request for the script |
 | "About 3M tokens" | The three figures as the measurement gives them |
-| A cause given from the hand-back's title alone | Read the work-item's stage report and its plan; cite both |
-| "The plan should require…", "add a rule to bdd-implementer that…" | A candidate: what to try, what it rests on, the figure that moves |
+| A cause given from the hand-back's title alone | Read the item's notes and its task's commits; cite both |
+| "The plan should require…", "add a rule to the batch's subagent brief that…" | A candidate: what to try, what it rests on, the figure that moves |
 | Seven candidates | Three. The report is read to choose one change for one release |
 | A comparison across batches of different size, by totals alone | Say the sizes (items, changed lines: the knobs) beside the ratio `measure compare` prints, and compare defects per item |
 | Running `measure batch` again where a measurement exists | Read it with `measure show`. The script refuses to write over it without `--replace`: the transcripts it was made from may be gone |

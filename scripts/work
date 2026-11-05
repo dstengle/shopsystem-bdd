@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Keep the work-queue of a bounded context in .shop/work/: draft work-items and show them (capability work-queue),
-return a failed work-item (`work retry`), and run an initiative's work-items through their stages (`work run`, capability supervision).
+and return a failed work-item (`work retry`).
 Keep the backlog in .shop/backlog/: an item from an idea to its delivery, named `b<n>` (capability backlog).
 Keep the person's words with the turns around them in .shop/quotes/, named `quote-<n>` (capability conversation)."""
 import argparse
@@ -13,8 +13,6 @@ import backlog_cli
 import backlog_items
 import batch_cli
 import conversation_cli
-import supervise
-import supervise_all
 import workqueue
 import workqueue_answer
 import workqueue_list
@@ -128,12 +126,6 @@ def cmd_start(args):
     return 0
 
 
-def cmd_run(args):
-    if args.initiative is None:
-        return supervise_all.run_all(args.root)
-    return supervise.run(args.root, args.initiative)
-
-
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="work", description=__doc__)
     ap.add_argument("--root", default=".", help="the repository (default: the current directory)")
@@ -151,8 +143,6 @@ def main(argv=None):
     s.add_argument("--json", action="store_true", help="print one JSON object instead of lines")
     w = sub.add_parser("withdraw", help="move a work-item that is neither claimed nor green, or an item b<n>, to withdrawn")
     w.add_argument("name")
-    r = sub.add_parser("run", help="take an initiative's work-items through their stages, one claude -p worker at a time")
-    r.add_argument("initiative", nargs="?", help="the initiative (default: every one that is neither done nor abandoned)")
     t = sub.add_parser("retry", help="return a failed work-item to the status before that log.jsonl gives in its transition into failed")
     t.add_argument("name")
     n = sub.add_parser("answer", help="answer the question of an awaiting-answer work-item (returning it to the stage that asked), a capability-proposal or an item b<n> that is needs-input")
@@ -205,7 +195,7 @@ def main(argv=None):
     conversation_cli.add_parsers(sub)
     args = ap.parse_args(argv)
     try:
-        return {"add": cmd_add, "show": cmd_show, "list": cmd_list, "run": cmd_run, "retry": cmd_retry, "answer": cmd_answer,
+        return {"add": cmd_add, "show": cmd_show, "list": cmd_list, "retry": cmd_retry, "answer": cmd_answer,
                 "withdraw": cmd_withdraw, "note": cmd_note, "status": cmd_status,
                 "request": cmd_request, "outcome": cmd_outcome, "ask": cmd_ask, "reply": cmd_reply, "turn": cmd_turn, "resolve": cmd_resolve,
                 "delegate": cmd_delegate, "start": cmd_start, **backlog_cli.COMMANDS, **batch_cli.COMMANDS,

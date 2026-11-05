@@ -1,11 +1,11 @@
 ---
 name: trial-runner
-description: Runs one trial of a plugin tool or of `work run` on a real target or a fixture repository, and records what it measured in one measurement record. Started by a session that wants a trial run; reads only the target and the plugin's scripts.
+description: Runs one trial of a plugin tool or command on a real target or a fixture repository, and records what it measured in one measurement record. Started by a session that wants a trial run; reads only the target and the plugin's scripts.
 tools: Read, Glob, Grep, Bash, Write
 model: sonnet
 ---
 
-You run one trial and record what it measured. Your input prompt names the trial: a plugin tool or `work run`, the target (a real repository or a fixture repository), and what to measure. It gives `Scripts:`, the plugin's scripts.
+You run one trial and record what it measured. Your input prompt names the trial: a plugin tool or command, the target (a real repository or a fixture repository), and what to measure. It gives `Scripts:`, the plugin's scripts.
 
 ## What you may read
 

@@ -409,7 +409,7 @@ Spec only, plus the helper and `model restates`' qualified entries. Nothing that
   - `test_agents.REVIEWERS == ("architecture-reviewer", "pr-reviewer")` and `AGENTS_2_0 = ("architecture-reviewer",
     "pr-reviewer", "trial-runner")`.
 
-- [ ] **Step 1: Write the failing tests.**
+- [x] **Step 1: Write the failing tests.**
   - `test_features_generate.py::test_a_service_capability_with_no_group_has_no_feature`. In a fixture, a codified
     service capability with no group has a stale `features/x.feature`. `generate` removes it and prints `removed
     features/x.feature`. `--check` before the removal prints `differs: features/x.feature` and exits 1.
@@ -426,16 +426,16 @@ Spec only, plus the helper and `model restates`' qualified entries. Nothing that
       `## <version>:` history sections) and `CLAUDE.md` for each D12 name and for `work run`, `--work-item` and
       `supervise_`, and expects no hit. It grows in Task 4 by `work add`, `work status`, `work note`, `work start`,
       `work delegate`, `work retry`, `migrate prompting` and `migrate compacting`.
-- [ ] **Step 2: Run them.** Expected: the generate test fails (the empty Feature is written), `test_the_agents_are_the_2_0_set`
+- [x] **Step 2: Run them.** Expected: the generate test fails (the empty Feature is written), `test_the_agents_are_the_2_0_set`
   fails listing 13 agents, and the grep test fails naming `work run` in README.
-- [ ] **Step 3: Retire supervision** with the helper, then delete the files listed and make the modifications.
+- [x] **Step 3: Retire supervision** with the helper, then delete the files listed and make the modifications.
   - `scripts/work`'s `run` and `supervise`/`supervise_all` imports go.
   - `work_items.py` keeps only the unbuilt mark.
   - Write 0083 and supersede 0053. Run `python3 scripts/model decisions`.
   - Run `python3 scripts/features generate`: it removes `features/supervision.feature`.
   - Delete only the scenario handlers that no remaining step uses. Drop a module, run `features vocab --check`, and
     keep in it only the handlers of the steps that check then names.
-- [ ] **Step 4: The gate.** Expected:
+- [x] **Step 4: The gate.** Expected:
   - Suite: no failure. The ceiling list loses both entries.
   - `model logic`: no L6, and no finding that names supervision.
   - `decisions --check`: `4 check decisions: 4 hold` (0048, 0076, 0006, 0083).
@@ -445,7 +445,7 @@ Spec only, plus the helper and `model restates`' qualified entries. Nothing that
   - Collection diff: supervision's 80 scenarios, the deleted test files' ids, and `test_work_items`' `--work-item`
     tests, each named in the report.
   - `ls agents` lists 3 files, and `ls skills` lists 5 directories.
-- [ ] **Step 5: Commit.**
+- [x] **Step 5: Commit.**
   ```bash
   git add -A scripts tests spec skills agents features README.md CLAUDE.md
   git commit -m "work run retired: supervision's lines, supervise*, the stages' agents and skills; the 2.0 agents (0083, superseding 0053) (plan 9, Task 3)"

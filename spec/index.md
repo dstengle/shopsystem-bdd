@@ -62,7 +62,6 @@ Tools the skills and agents run:
 | `design-model-check` | a person or session verifying a repository against the design model | service |
 | `requests` | a context taking in or raising a request | service |
 | `work-queue` | a person, session or script reading work-items or writing their transitions | service |
-| `supervision` | the person who started `work run` | service |
 | `migration-tools` | a person or session migrating a repository to the final layout or upgrading it between plugin releases | service |
 
 The simplified workflow (plan 1, unbuilt):
@@ -93,6 +92,7 @@ The simplified workflow (plan 1, unbuilt):
 | `red-green` | the script `work run`, which started the implementer | guarantees |
 | `review` | the script `work run`, closing a work-item or an initiative | guarantees |
 | `role-boundaries` | the person using the workflow | guarantees |
+| `supervision` | the person who started `work run` | service |
 
 ## Testing
 

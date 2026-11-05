@@ -17,8 +17,9 @@ def test_a_candidate_that_changes_a_knob_is_a_decision():
     assert "a-knob-is-changed-by-a-decision" in SKILL.read_text()
 
 
-def test_an_initiative_is_still_measured_until_plan_9():
-    assert "measure initiative" in SKILL.read_text()
+def test_an_initiative_measurement_is_still_read():
+    """Plan 9: `measure initiative` is retired; an initiative's measurement is still shown and compared."""
+    assert "`measure show` and `measure compare` still read it" in SKILL.read_text()
 
 
 def test_it_reads_the_measurement_building_a_batch_wrote():

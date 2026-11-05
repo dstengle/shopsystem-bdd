@@ -1,5 +1,5 @@
-"""`--work-item <name>`: run only the scenarios tagged with a requirement the work-item accepts. The option is the
-plugin's own pytest plugin, scripts/work_items.py, the one `work run` loads in a repository it delivers.
+"""The plugin's own pytest plugin, scripts/work_items.py, is loaded here as a batch's tests load it: a scenario of an
+`unbuilt:` requirement is a strict xfail.
 
 The ceiling (design-r3 §7): each test whose setup, call and teardown together take longer than
 `$SHOPSYSTEM_TEST_CEILING` seconds (10 by default) is listed at the end of the run, slowest first. Under xdist the

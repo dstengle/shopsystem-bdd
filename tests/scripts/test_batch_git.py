@@ -1,5 +1,4 @@
-"""The batches' git and gh plumbing (workflow simplification plan 4, Task 1, D11, D17, D19, D20): `git` moved from
-supervise_worker, the worktrees directory ignoring itself, worktrees on new and existing branches, the push to the
+"""The batches' git and gh plumbing (workflow simplification plan 4, Task 1, D11, D17, D19, D20): `git`, the worktrees directory ignoring itself, worktrees on new and existing branches, the push to the
 bare remote, the lock, and gh through the stand-in."""
 import json
 import subprocess
@@ -8,14 +7,9 @@ import sys
 import batch_gh
 import batch_git
 import pytest
-import supervise_worker
 from backlog_testing import git
 from batch_testing import gh_calls
 from shop_files import Refused
-
-
-def test_git_still_imports_from_supervise_worker():
-    assert supervise_worker.git is batch_git.git and supervise_worker.GitFailed is batch_git.GitFailed
 
 
 def test_delivery_reads_the_toml(batch_repo, batch_outside):

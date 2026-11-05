@@ -15,23 +15,9 @@ import toolchain
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
 
-# the questions of the live findings (report-S11.md, report-checker-gaps.md); Q_STAGE, Q_RELEASE, Q_LINES and Q_CLOSED
-# were answered (report-answers.md)
-Q_CODIFIED = ("question: codified and uncodified (of a change list) stay prose, so one change list may be both: the "
-              "lexicon has no relation from a capability to a change list (report-answers.md); add a row `capability "
-              "| named in | change list` and define them with `codified` of a capability?")
-Q_RESULT = ("question: one stage is with one result (the check reads `stage with result` as functional), so the "
-            "pair fires only on a DONE result that is also fixing, strange, unparsing or unheld; are those "
-            "exclusive of DONE (define the condition, or name the exception in r43, r57, r63, r76)?")
-
-
-EXPECTED: dict[str, str] = {
-    "L6 supervision#r42 supervision#r43": Q_RESULT,
-    "L6 supervision#r57 supervision#r61": Q_RESULT,
-    "L6 supervision#r62 supervision#r63": Q_RESULT,
-    "L6 supervision#r73 supervision#r76": Q_RESULT,
-    "L6 supervision#r76 supervision#r77": Q_CODIFIED,
-}
+# the questions of the live findings (report-S11.md, report-checker-gaps.md); every one was answered
+# (report-answers.md) or went with supervision, retired in 2.0.0 (workflow simplification plan 9)
+EXPECTED: dict[str, str] = {}
 
 
 @pytest.fixture(scope="session")

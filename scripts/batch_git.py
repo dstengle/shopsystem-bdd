@@ -1,7 +1,7 @@
 """The git plumbing of a batch (capability batches; workflow simplification plan 4, D11, D17, D19): git run in a
 repository, `.shop/delivery.toml`, the lock every committing batch command holds, the worktrees a batch's tasks are
-built in, and the push of a batch's branch. `git` and `GitFailed` are `work run`'s, moved here; supervise_worker
-imports them back. Standard library only."""
+built in, and the push of a batch's branch. `git` and `GitFailed` were `work run`'s, moved here. Standard library
+only."""
 import contextlib
 import fcntl
 import os
@@ -16,7 +16,7 @@ TREES = Path(".shop") / "worktrees"
 
 
 class GitFailed(Refused):
-    """A git command that failed: work run's refusal before any stage (r10), the work-item's fault during one (r41)."""
+    """A git command that failed, refused with git's first line of complaint."""
 
 
 def git(root, *args):

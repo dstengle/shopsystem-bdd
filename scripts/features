@@ -55,7 +55,11 @@ contract:
     A service capability that is not codified, named or not, exits 2 ('...
     is not codified: run `migrate upgrade`') and nothing is written; a
     requirement that does not parse exits 1 naming <capability>#r<n>. --check
-    regenerates in memory and exits 1 naming each file that differs. --preview <file>
+    regenerates in memory and exits 1 naming each file that differs. A service
+    capability whose every line is retired (no group, ids in `retired:`) has
+    no feature file: generate
+    removes it ('removed features/<c>.feature') and --check names it while it
+    exists. --preview <file>
     prints the feature of a draft capability file and writes nothing.
   - vocab prints the step vocabulary: each (template, kind) pattern of the
     Steps grammar. vocab --check [--tests DIR] [<feature>...] imports DIR's
@@ -79,6 +83,9 @@ def cmd_generate(args):
     out_dir = args.dir if os.path.isabs(args.dir) else os.path.join(root, args.dir)
     def service(path):
         return frontmatter(read(path))[0].get("group") == "service"
+    def retired(path):
+        cap = spec_read.capability(path)
+        return not cap.groups and bool(cap.retired)
     try:
         if args.preview:
             sys.stdout.write(features_generate.generate(root, args.preview))
@@ -95,7 +102,10 @@ def cmd_generate(args):
         if refused:
             sys.stderr.write("features: %s\n" % refused)
             return 2
-        texts = {os.path.basename(path)[:-3]: features_generate.generate(root, path) for path in paths}
+        # A service capability whose every line is retired (no group, ids in `retired:`) has no feature file
+        # (plan 9, D4): None.
+        texts = {os.path.basename(path)[:-3]: None if retired(path) else features_generate.generate(root, path)
+                 for path in paths}
     except (features_generate.GenerateError, features_vocab.StepError) as err:
         sys.stderr.write("features: %s\n" % err)
         return 1
@@ -103,7 +113,14 @@ def cmd_generate(args):
     for name, text in texts.items():
         target = os.path.join(out_dir, "%s.feature" % name)
         shown = os.path.relpath(target, root)
-        if not args.check:
+        if text is None:
+            if os.path.isfile(target) and args.check:
+                print("differs: %s" % shown)
+                differs = 1
+            elif os.path.isfile(target):
+                os.remove(target)
+                print("removed %s" % shown)
+        elif not args.check:
             os.makedirs(out_dir, exist_ok=True)
             with open(target, "w") as f:
                 f.write(text)
