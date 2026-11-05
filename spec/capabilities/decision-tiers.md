@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: []
+unbuilt: [r7, r8]
 ---
 
 # Decision tiers
@@ -52,6 +52,12 @@ to its tier, and keeps a superseded decision marked so.
 ### [g6] A superseded decision is `superseded`
 - [r6] While a design-decision that is `accepted` supersedes a design-decision that is `accepted`, if the person runs `model check`, then
   `model` shall exit with an error naming `v_d8`.
+
+### [g7] `work decision` writes and commits a decision
+- [r7] When the person runs `work decision`, `work` shall write a design-decision, write the decisions index and commit the design-decision.
+
+### [g8] `work decision` refuses a decision with no tier
+- [r8] If the person runs `work decision` on a design-decision that is untiered, then `work` shall exit with an error naming `--tier` and change nothing.
 
 ## Implementation, may change
 

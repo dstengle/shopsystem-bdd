@@ -6,6 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/query-commands-answer-in-their-output, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items, design-decision/work-items-named-by-ids, design-decision/the-glossary-is-a-target-of-spec-work]
 retired: [r8, r9, r12, r13, r14, r15, r16, r17, r18, r21, r26, r27, r29, r31, r32, r33, r34, r35, r37, r39, r45, r46, r53]
+unbuilt: [r55, r56]
 ---
 
 # Design model check
@@ -64,6 +65,8 @@ context: product-level artifacts are read only where the files contain them.
 - **repeating** (condition of requirement group): a requirement group whose statement has the features, condition and trigger of another group's statement in its capability.
 - **unexampled** (condition of requirement group): a requirement group with a given line that is not example data.
 - **headless** (condition of design-decision): a design-decision with no `id` or no `## Decision` section.
+
+- **file form** (kind): one kind of file a bounded context keeps, with its path and the command that writes it. Plural: file forms.
 
 ## Behaviour
 
@@ -187,6 +190,12 @@ Restates: r37@0.29.
 ### [g54] `model rules` prints every rule
 Restates: r65@0.29.
 - [r54] When the person runs `model rules`, `model` shall print every rule and exit successfully.
+
+### [g55] `model forms` lists every file form
+- [r55] When the person runs `model forms`, `model` shall print every file form and exit successfully.
+
+### [g56] `work record` writes and commits a record
+- [r56] When the person runs `work record`, `work` shall write a record and commit the record.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a
