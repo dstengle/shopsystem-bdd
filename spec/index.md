@@ -6,45 +6,40 @@ language: codified-1
 
 # shopsystem-bdd
 
-**Where it stands.** Plugin 0.22.0: the final layout (design-decision/final-layout), delivery by work-items and `work run`,
-and `scripts/migrate`; slicing, `scripts/plan` and the superpowers dependency are removed
-(design-decision/superpowers-not-a-dependency). Requirements have ids from the start (design model v3). The gate of
-2026-10-21 (observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-21-release-gate) approved every capability's
-Behaviour lines, i10's, i11's and i8's among them: every Behaviour line is approved, and one the plugin does not do yet
-has a drafted work-item. `Not yet` holds what no gate has approved.
-The conversion to design model v5 (`.shop/records/2026-11-03-gf-conversion/`) is under way: the glossary below is
-typed, `spec/universal.md` holds the universal conditions U1-U10, and `spec/restated.json` freezes the 0.29 ids. A
-capability file is codified when its own frontmatter says `language: codified-1`; until then it is read as 0.29 lines.
-Verify with `python3 scripts/model check`; the decisions index, `spec/decisions/index.md`, is written by `python3 scripts/model decisions`;
-`python3 scripts/model rules` lists every rule with its label.
-The workflow simplified (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified,
-`.shop/records/2026-11-04-workflow-simplification/`): items, a backlog, batches and one review at the pull request are
-written below as codified capabilities whose requirements are `unbuilt:` until a later plan builds them.
+**Where it stands.** Plugin 2.0.0: the workflow simplified
+(design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified,
+`.shop/records/2026-11-04-workflow-simplification/`). Work is items in a backlog, readied against the codified spec
+and built in batches, each closed by one review at its pull request. The old workflow of plugin 1.x (`work run`, its
+stages, initiatives, work-items, proposals and delegations) is retired
+(design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired), its capabilities kept as the
+record of their ids, and `.shop/work/` is frozen as history. Every capability file is codified (design model v5): the
+glossary below is typed, `spec/universal.md` holds the universal conditions, and `spec/restated.json` freezes the
+0.29 ids. Verify with `python3 scripts/model check`; the decisions index, `spec/decisions/index.md`, is written by
+`python3 scripts/model decisions`; `python3 scripts/model rules` lists every rule with its label.
 
 ## Purpose
 
 A Claude Code plugin that runs a behaviour-driven workflow in a consuming repository: one spec of
-capability files per bounded context, Gherkin feature files paired with them as the contract, work-items
-taken through their stages by `work run`, implementation red-green, review, and measurement of
-what an initiative's deliveries cost. One human gate,
-on the spec's Behaviour lines and glossary entries. It is not a test runner, not a project manager, and keeps nothing of its
-own outside the consuming repository's files.
+capability files per bounded context, Gherkin feature files generated from them as the contract, a backlog of items,
+items built in batches closed by one reviewed pull request, and measurement of what each batch cost. It is not a test
+runner, not a project manager, and keeps nothing of its own outside the consuming repository's files.
 
 ## Constraints
 
 - The design model, version 5 (design model v5, `docs/design-model/`): the graph of standing artifacts, initiatives
   and parts, records, checked by `model check`, and the requirement language (the grammar, this glossary as its
   lexicon, the logic check `model logic`); grammar.md's rules are kept by this repository's files, in the layout of
-  design-decision/final-layout.
+  design-decision/final-layout. Plugin 2.0 builds on design model v5 with items in place of initiatives.
 - Claude Code's plugin format: skills, agents with tool lists, `skills` preloading; a plugin agent's hooks
-  and permissionMode are ignored, so a role's rules are enforced by its tools (design-decision/the-v3-agents).
+  and permissionMode are ignored, so a role's rules are enforced by its tools (design-decision/the-2-0-agents).
 - The dependencies the plugin needs, named in its documentation: clingo, pytest, pytest-bdd
   (design-decision/plugin-takes-the-dependencies-it-needs; the solver: design-decision/model-check-solves-with-clingo).
 
 ## Composition
 
 The capabilities of plugin 1.x's stages are retired
-(design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired) and kept as records of their ids.
+(design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired) and kept as records of their ids;
+`batch-measurement`, `requests`, `design-model-check` and `migration-tools` keep the lines that 2.0 still holds.
 
 Measurement:
 
@@ -61,10 +56,9 @@ Tools the skills and agents run:
 | `analysis-tools` | a session researching or reviewing a project's code | service |
 | `design-model-check` | a person or session verifying a repository against the design model | service |
 | `requests` | a context taking in or raising a request | service |
-| `work-queue` | a person, session or script reading work-items or writing their transitions | service |
 | `migration-tools` | a person or session migrating a repository to the final layout or upgrading it between plugin releases | service |
 
-The simplified workflow (plan 1, unbuilt):
+The simplified workflow:
 
 | capability | narrator | group |
 |---|---|---|
@@ -93,6 +87,7 @@ The simplified workflow (plan 1, unbuilt):
 | `review` | the script `work run`, closing a work-item or an initiative | guarantees |
 | `role-boundaries` | the person using the workflow | guarantees |
 | `supervision` | the person who started `work run` | service |
+| `work-queue` | a person, session or script reading work-items or writing their transitions | service |
 
 ## Testing
 
@@ -107,14 +102,14 @@ The simplified workflow (plan 1, unbuilt):
 ## Glossary
 
 - **the person** (actor): the human who asks, answers and approves.
-- **`work run`** (actor): the supervisor that runs nodes through their transitions by starting stages, one session each.
+- **`work run`** (actor): the supervisor of plugin 1.x that ran an initiative's work-items through their stages, removed in 2.0.0 with its record frozen under `.shop/work/`.
 - **`work`** (actor): the command that writes statuses, transitions and requests.
 - **`features`** (actor): the tool that reads, edits and reports on feature files.
 - **`tools`** (actor): the tool that installs and probes the project's interpreter and grammar toolchain, and maps code to tests.
-- **`measure`** (actor): the tool that measures an initiative's deliveries and shows and compares measurements.
+- **`measure`** (actor): the tool that measures a merged batch, records a defect found after a merge, and shows and compares measurements.
 - **`migrate`** (actor): the tool that migrates a repository to the final layout and upgrades it between plugin releases.
 - **`model`** (actor): the tool that checks a repository against the design model and reads its requirements.
-- **tool** (kind): any of the commands `work`, `work run`, `features`, `tools`, `measure`, `migrate` and `model`.
+- **tool** (kind): any of the commands `work`, `features`, `tools`, `measure`, `migrate` and `model`.
 - **worker** (kind): a session `work run` starts with `claude -p` for one stage of one work-item, as that stage's agent.
 
 - **bounded context** (kind): one repository's spec, with its index, capabilities, decisions and glossary.
@@ -158,7 +153,7 @@ The simplified workflow (plan 1, unbuilt):
 - **result** (kind): the file `result.json` a stage writes, giving its outcome, its summary and the files it names. Not: return.
 - **report** (kind): the implementer's file in its stage directory, beside its result, naming the files it touched, the tests whose setup it changed and its open questions. Not: write-up.
 - **hand-back** (kind): an implementer's stop with the outcome `HAND-BACK`, giving the condition and its evidence word for word. Not: handback.
-- **review** (kind): a reviewer's reading of commits against the plan, the spec and the repository's rules, written as graded findings: a work-item review, a branch review or an architecture review. Not: audit.
+- **review** (kind): a reviewer's reading of commits against the spec and the repository's rules, written as graded findings: a pull request review or an architecture review. Not: audit.
 - **review finding** (kind): one graded finding of a review.
 - **stage directory** (kind): the directory `runs/<node>/<k>-<stage>/` that holds one stage's brief, result, report and session. Plural: stage directories. Not: run directory.
 - **compaction** (kind): Claude Code's replacement of a session's earlier messages by a summary, recorded in its transcript.
@@ -327,9 +322,11 @@ The simplified workflow (plan 1, unbuilt):
 
 ## Where things live
 
-`spec/` (this index, `capabilities/`, `decisions/` with its generated `index.md`), `features/`, `.shop/work/`,
+`spec/` (this index, `capabilities/`, `decisions/` with its generated `index.md`), `features/`, `.shop/backlog/` (the
+items), `.shop/batches/` (the batches), `.shop/requests/` (the requests), `.shop/quotes/` (the person's words kept),
 `.shop/records/` (observations, measurements, review-findings, decision-arguments, archive), `.shop/delivery.toml`
-(`work run`'s settings), `.shop/plugin-version` (the repository's plugin version), `.shop/scratch/` and
-`.shop/worktrees/` (drafts, notes and the implementers' worktrees, ignored by git), `docs/design-model/` (the model),
-`docs/capability-format.md` (the format the plugin teaches consuming repositories), `spec/universal.md` (the universal
-conditions), `spec/restated.json` (the 0.29 ids, frozen), `grammar/` (the plugin's core grammars and their corpus).
+(the batch settings and prices), `.shop/plugin-version` (the repository's plugin version), `.shop/work/` (plugin
+1.x's queue, frozen), `.shop/scratch/` and `.shop/worktrees/` (drafts, notes and the batches' worktrees, ignored by
+git), `docs/design-model/` (the model), `docs/capability-format.md` (the format the plugin teaches consuming
+repositories), `spec/universal.md` (the universal conditions), `spec/restated.json` (the 0.29 ids, frozen), `grammar/`
+(the plugin's core grammars and their corpus).

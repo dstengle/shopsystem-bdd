@@ -32,7 +32,10 @@ spec/
 features/
   identity.feature      generated, one per service capability, same name
 .shop/                  how the context is changed and what was noticed
-  work/  records/       initiatives and their parts; observations, measurements, review findings, archive
+  backlog/  batches/    the items, and the batches that build them
+  requests/  quotes/    requests between contexts; the person's words kept
+  records/              observations, measurements, review findings, archive
+  work/                 plugin 1.x's queue of initiatives and work-items, frozen as history
   scratch/              drafts and notes of a session; git-ignored, never read as the model
 ```
 
@@ -194,8 +197,8 @@ logic-only, checked by `model logic` alone.
   frontmatter's `retired: [r<n>, g<n>, ...]` and the new statement takes a new id. A group's title and membership
   may change; its id stays.
 - A requirement is named `capability/<context path>/<name>#r<n>`, `capability/<name>#r<n>` or `<name>#r<n>`
-  inside its own context; a group `…#g<n>`. A work-item's `accepts` may name either (a group means its members),
-  and a scenario is tagged with its group and each member (`@g3 @r7 @r8`).
+  inside its own context; a group `…#g<n>`. An item's `## Requirements` writes the lines it adds into a
+  capability, and a scenario is tagged with its group and each member (`@g3 @r7 @r8`).
 - A reference written before the conversion names a 0.29 id; it reads `<capability>#r<n>@0.29` and is resolved
   through `spec/restated.json`, never against the live spec.
 
@@ -268,9 +271,9 @@ A relation is no term entry: it is a row of `## Relations` (below).
 A condition is defined when every word of its sentence is a lexicon word and the sentence parses; otherwise it is
 primitive. There is no prose `Means` field (v_t9).
 
-A term is standing, approved at the gate like a requirement. Its id is `term/<context path>/<term>`, lowercased
-with spaces as hyphens. A term change rides with the proposal that needs it: a glossary-proposal lists it in
-`adds`, `changes` or `removes`, and adds to `spec/index.md` unless it names a capability.
+A term is standing, approved like a requirement. Its id is `term/<context path>/<term>`, lowercased with spaces as
+hyphens. A term change rides with the item that needs it, as a term bullet of its `## Requirements` (`work line
+<item> --into <cap> --term`), and adds to `spec/index.md` unless it names a capability.
 
 The grammar itself — the EARS forms, the verb phrases, the typed slots — is the plugin's (`grammar/`), and grows
 only in the plugin. A context grows its language by glossary entries and relation rows only.
@@ -344,7 +347,7 @@ no step words gets no scenario: `features generate` names the group and the reas
 `model check`'s row for a group with no scenario (v_s3) is its error. `features generate` exits 1 on a requirement
 that does not parse or an example-data line the step grammar refuses.
 
-A scenario that looks wrong is a wrong requirement (back to the spec, at the gate) or a defect of the plugin's
+A scenario that looks wrong is a wrong requirement (back to the spec, in an item) or a defect of the plugin's
 grammar or generator (a request to the plugin) — never an edit to the feature file. Step definitions are
 handlers, one per (template, term), under `tests/scenarios/<capability>_handlers*.py`.
 
@@ -352,11 +355,11 @@ handlers, one per (template, term), under `tests/scenarios/<capability>_handlers
 
 Lessons from 0.22.0's blind formulation that still apply when the grammar refuses what is ambiguous:
 
-1. **Behaviour reaches code only through a requirement.** A fix work-item that adds behaviour writes its
-   requirement first, at the gate; a review grades code no requirement asks for Important.
+1. **Behaviour reaches code only through a requirement.** A fix item that adds behaviour writes its requirement
+   first, readied before its batch; a review grades code no requirement asks for Important.
 2. **Requirements that touch one thing say which wins, and a requirement names its reach.** Two triggers that can
    both be true at one step and set different values are a contradiction `model logic` reports (L1); name the
-   reach ("every pytest command `work run` starts") rather than leave it to be inferred.
+   reach ("every pytest command `work batch done` runs") rather than leave it to be inferred.
 3. **Anything with states is written as a lifecycle:** each way into and out of each state is a row of its
    attribute's `Transitions:`, and a requirement names the row rather than restating it. `model logic` reports a
    status set by no row (L3) and a pre-state no path reaches (L4).

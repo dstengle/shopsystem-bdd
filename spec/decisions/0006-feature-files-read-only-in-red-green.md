@@ -2,9 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/feature-files-read-only-in-red-green
 summary: "The implementer never edits a feature file; a wrong scenario is a stop condition and a hand-back, never a fix."
 date: 2026-09-22
-status: accepted
-tier: check
-enforced_by: [tests/scripts/test_decision_checks.py::test_the_features_are_what_features_generate_writes]
+status: superseded
 source: [decision-argument/2026-09-22-bdd-workflow-design]
 ---
 

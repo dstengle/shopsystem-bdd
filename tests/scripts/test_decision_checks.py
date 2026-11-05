@@ -44,10 +44,10 @@ def test_the_live_decisions_keep_their_tiers():
 
 def test_the_sort_holds_its_totals():
     found = model_decisions.decisions(ROOT)
-    assert len(found) == 80, len(found)
-    assert collections.Counter(d.status for d in found) == {"accepted": 28, "superseded": 50, "rejected": 2}
+    assert len(found) == 82, len(found)
+    assert collections.Counter(d.status for d in found) == {"accepted": 29, "superseded": 51, "rejected": 2}
     tiers = collections.Counter(d.tier for d in found if d.status == "accepted")
-    assert tiers == {"check": 5, "requirement": 13, "judgement": 10}, tiers
+    assert tiers == {"check": 5, "requirement": 13, "judgement": 11}, tiers
     assert [d.rel for d in found if d.status != "accepted" and d.tier] == []
 
 
@@ -58,7 +58,8 @@ def test_the_judgement_decisions_reach_the_brief():
     assert "spec/decisions/0080-the-old-workflow-retired.md" in found, found
     assert "spec/decisions/0065-workflow-capabilities-are-guarantees.md" not in found, found
     assert "spec/decisions/0036-one-requirement-form.md" in found, found
-    assert len(found) == 10, found
+    assert "spec/decisions/0081-the-2-0-layout.md" in found, found
+    assert len(found) == 11, found
 
 
 def test_0060_is_superseded_by_measure_a_batch():

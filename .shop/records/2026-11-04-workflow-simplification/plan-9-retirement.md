@@ -673,21 +673,21 @@ This repository's own requests are not moved here: Task 10's `migrate upgrade` m
     `{check: 5, requirement: 13, judgement: 11}`, the brief's judgement decisions 11).
 - Test: `tests/scripts/test_retirement.py::test_the_module_map_is_whole`.
 
-- [ ] **Step 1: Write the failing test** `test_the_module_map_is_whole`. Each backticked `scripts/…` or `tests/…`
+- [x] **Step 1: Write the failing test** `test_the_module_map_is_whole`. Each backticked `scripts/…` or `tests/…`
   path or glob in `CLAUDE.md`'s table matches a tracked file. Each tracked `scripts/*.py` and each extensionless
   script in `scripts/` is named by some row, by name or glob.
-- [ ] **Step 2: Run it.** Expected: FAIL only if an earlier task missed a row. Otherwise it passes, and the report
+- [x] **Step 2: Run it.** Expected: FAIL only if an earlier task missed a row. Otherwise it passes, and the report
   says it held from the start.
-- [ ] **Step 3: Write 0081 and 0082, supersede 0006, regenerate the index, and edit the glossary, index, docs,
+- [x] **Step 3: Write 0081 and 0082, supersede 0006, regenerate the index, and edit the glossary, index, docs,
   README and CLAUDE.md.**
-- [ ] **Step 4: The gate.** Expected:
+- [x] **Step 4: The gate.** Expected:
   - `lexicon --check`: `401 terms, 0 problems`, since definitions change but no term is added.
   - `decisions --check`: `5 check decisions: 5 hold` (0048, 0076, 0083, 0018, 0082).
   - `test_the_sort_holds_its_totals`: 82 decisions.
   - `features generate --check`: exits 0. No glossary change alters a generated step; if one does, the regenerated
     features are part of this commit and the report names them.
   - `model logic`: as after Task 7.
-- [ ] **Step 5: Commit.**
+- [x] **Step 5: Commit.**
   ```bash
   git add -A spec docs README.md CLAUDE.md tests/scripts features
   git commit -m "spec and docs for 2.0: the glossary's review and measure, the 2.0 layout (0081), feature files only by features generate (0082, superseding 0006) (plan 9, Task 8)"

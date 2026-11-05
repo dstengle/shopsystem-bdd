@@ -15,7 +15,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/tools_refs.py` | `refs` |
 | `scripts/tools_check.py` | `check`: ruff, vulture, import-linter |
 | `scripts/tools_size.py` | `size`: tracked Python files over a line limit |
-| `scripts/features*.py` | the `features` command: Gherkin reading, bindings, reports |
+| `scripts/features` with `scripts/features*.py` | the `features` command: Gherkin reading, bindings, reports, and `generate`'s removal of a retired service capability's feature |
 | `scripts/features_generate.py` | `features generate`: a codified capability's groups written as scenarios read off their facts by `spec_steps`, with no solver, example data first, byte-stable, and the groups no step words given to a caller (`skipped`); an uncodified capability refused, naming `migrate upgrade` |
 | `scripts/features_vocab.py` | the step vocabulary: a step read back into its template, kind and term, the (template, kind) patterns (design §14.1, §14.3) |
 | `scripts/features_vocab_gf.py` | the generated StepsTyped module: for each kind its instance mention and Given templates, and for each attribute slot its Given (design-r2 §4.4) |
@@ -41,7 +41,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/conversation_prompt.py` | the UserPromptSubmit hook's `work quote --hook`: the session and its transcript kept in the git dir for `work quote`, never committed, never failing (conversation) |
 | `scripts/conversation_hook` | the conversation's two hooks, `quote` (UserPromptSubmit) and `names` (SessionStart), apart from `work`: only the standard library and the conversation's modules imported, any error exiting 0 silently (conversation) |
 | `scripts/conversation_names.py` | `work names`: every item and batch with its name beside its id, and the SessionStart hook's `--hook`, silent with nothing to show and never failing (conversation) |
-| `scripts/model*.py` | the `model` command: parsing, facts, checks, work, reports |
+| `scripts/model` with `scripts/model*.py` | the `model` command: parsing, facts, checks, decisions and records, the frozen queue's citations, reports |
 | `scripts/model_decisions.py` | the tiers of `spec/decisions/`: the `enforced_by` entries told apart, and `model decisions --check`'s runs of each `check` decision's tests (decision-tiers) |
 | `scripts/model_requests.py` | the reading of requests by `model`: `.shop/work/requests/q<n>.md` |
 | `scripts/model_spec.py` | `model`'s reading of the codified spec: groups, requirements and their parse, universal conditions, `restated.json`, the typed glossary, generated scenarios (`@g<n>`), and a file without `language: codified-1` (v_p0) |
@@ -78,10 +78,10 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/measure` with `scripts/measure_*.py` | the `measure` command: `batch` (`measure_batch*.py`), `defect` (`measure_defect.py`), the record (`measure_write.py`) and `show`, `compare` (`measure_show.py`, a batch's `measure_batch_show.py`), which still read a plugin 1.x initiative's record |
 | `scripts/transcripts.py` | Claude Code's transcripts read, raw or the slim export: `json_rows`, `moment`, `assistant_rows` checked, `request_key`, `store_dir`; a shape not known refused, naming file and line |
 | `scripts/measure_cost.py` | the token kinds a measurement sums (`KINDS`), a time span in words (`duration`), and the price of a request: the dated table of each model's input, output and cache-read price, `.shop/delivery.toml`'s `[prices]` over it, cache writes by their time to live, and an unpriced model named, never guessed (telemetry) |
-| `scripts/measure_batch_read.py` | the transcripts of a batch's sessions: each distinct request with its model and tokens, each subagent's type and description from its meta file, and the root's project directory in Claude Code's store (telemetry) |
-| `scripts/measure_batch.py` with `scripts/measure_batch_sessions.py` | `measure batch`: a batch's window from git, its sessions in the window with their role and session time, its review findings, defects and knobs (telemetry) |
+| `scripts/measure_batch_read.py` | the transcripts of a batch's sessions: each distinct request with its model and tokens, each subagent's type and description from its meta file, the agent that dispatched each (`parents`), and the root's project directory in Claude Code's store (telemetry) |
+| `scripts/measure_batch.py` with `scripts/measure_batch_sessions.py` | `measure batch`: a batch's window from git, its sessions in the window with their role and session time (a subagent that dispatched a counted one is the batch's driver, counted as planning), its review findings, defects and knobs (telemetry) |
 | `scripts/measure_defect.py` | `measure defect`: a fault found after the merge, written `.shop/batches/<n>/defect-<k>.md` against its delivered item and committed, and the defects of a batch read back (telemetry) |
-| `scripts/migrate*.py` | the `migrate` command |
+| `scripts/migrate` with `scripts/migrate*.py` | the `migrate` command |
 | `scripts/migrate_upgrade*.py` | `migrate status` and `migrate upgrade`: the upgrade steps between plugin releases, one module a step |
 | `scripts/migrate_upgrade_codified.py` | the 1.0.0 upgrade step "codified requirements": `spec/restated.json`, the scaffold of each uncodified capability, `@deprecated` scenarios deleted, old references written `<cap>#r<n>@0.29`, and what is left reported |
 | `hooks/hooks.json` | the plugin's hooks: SessionStart (`migrate status --hook`, `conversation_hook names`), UserPromptSubmit (`conversation_hook quote`) |

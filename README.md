@@ -108,6 +108,21 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 No agent has the Agent tool (design-decision/the-2-0-agents). A plugin agent's `hooks` and `permissionMode` are
 ignored, so a role's limits are its tools.
 
+## 2.0.0: the workflow simplified
+
+- **One item, a backlog, batches, one review at the pull request** (design-decision/the-workflow-simplified): work is
+  an item in `.shop/backlog/`, shaped and readied against the codified spec (`work idea`, `shape`, `line`, `ready`),
+  built with other ready items in a batch (`work batch`), and reviewed once, by `pr-reviewer`, at the batch's pull
+  request. A peer's request is taken in as an item (`work intake`). `measure batch` measures a merged batch.
+- **The old workflow retired** (design-decision/the-old-workflow-retired): `work run` and its stages, initiatives,
+  work-items, capability- and glossary-proposals, delegations, `work add`, `retry`, `note`, `status`, `start` and
+  `delegate`, `measure initiative` and `model why` are gone, with ten agents and six skills; their capabilities keep
+  their files as the record of their ids. The agents are `pr-reviewer`, `architecture-reviewer` and `trial-runner`
+  (design-decision/the-2-0-agents).
+- **`.shop/work/` frozen** (design-decision/the-2-0-layout): nothing writes it, and `model check` reads only the
+  `source` of its initiatives and requests, as citations of observations. Live requests are `.shop/requests/q<n>.md`,
+  numbered above the frozen ones.
+
 ## 1.0.0: codified requirements
 
 - **Requirements are written in a controlled language** (design model v5, `docs/design-model/`): the glossary of

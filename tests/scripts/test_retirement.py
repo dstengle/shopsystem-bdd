@@ -53,3 +53,18 @@ def test_no_kept_skill_or_agent_names_a_deleted_one():
             for n, line in enumerate(text.splitlines(), 1) for name in names
             if re.search(r"(?<![\w-])%s%s" % (re.escape(name), r"(?![\w-])" if name[-1].isalnum() else ""), line)]
     assert hits == [], "\n".join(hits)
+
+
+def test_the_module_map_is_whole():
+    """CLAUDE.md's module map (plan 9, Task 8): each backticked scripts/ or tests/ path or glob of its table names a
+    tracked file (a `<placeholder>` read as `*`), and each tracked scripts/*.py and extensionless script in scripts/ is named by some row."""
+    import fnmatch
+    tracked = subprocess.run(["git", "ls-files"], cwd=REPO, capture_output=True, text=True, check=True).stdout.split()
+    rows = [line for line in (REPO / "CLAUDE.md").read_text(encoding="utf-8").splitlines() if line.startswith("| `")]
+    named = [re.sub(r"<[^>]+>", "*", p.rstrip("/")) for row in rows
+             for p in re.findall(r"`((?:scripts|tests)/[^`\s]*)`", row.split(" | ")[0])]
+    missing = [p for p in named if not any(fnmatch.fnmatch(t, p) or t.startswith(p + "/") for t in tracked)]
+    assert missing == [], missing
+    modules = [t for t in tracked if re.fullmatch(r"scripts/[^/]+", t) and (t.endswith(".py") or "." not in t[8:])]
+    unnamed = [m for m in modules if not any(fnmatch.fnmatch(m, p) for p in named)]
+    assert unnamed == [], unnamed
