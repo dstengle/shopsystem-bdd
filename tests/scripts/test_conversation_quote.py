@@ -9,6 +9,7 @@ import conversation_quote as Q
 import pytest
 import transcript_testing as T
 from backlog_testing import git, work
+import conversation_read as C
 from conversation_read import Message
 from measure_batch_read import project_dir
 from workqueue import Refused
@@ -157,3 +158,12 @@ def test_show_of_an_item_or_initiative_is_unchanged(quoting):
     assert done.returncode == 0 and done.stdout.startswith('b1 "Fix the parser"'), done.stderr
     done = work(quoting, "show")
     assert done.returncode == 0 and done.stdout == "", (done.stdout, done.stderr)
+
+
+def test_a_carriage_return_reads_back_from_the_file(backlog_repo, store):
+    """Review M2: the messages of the file are those of the transcript."""
+    rows = [T.person("a\r\nb", "u1", T.at(1)), T.session_text("c\rd", "a1", T.at(2)),
+            T.person("cite\r\nme", "u2", T.at(3))]
+    path = T.write(project_dir(backlog_repo), "s-1", rows)
+    assert quote(backlog_repo, "cite me", "--session", "s-1").returncode == 0
+    assert Q.find(backlog_repo, "quote-1").messages == C.messages(path)
