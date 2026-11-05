@@ -44,8 +44,8 @@ def test_the_live_decisions_keep_their_tiers():
 
 def test_the_sort_holds_its_totals():
     found = model_decisions.decisions(ROOT)
-    assert len(found) == 75, len(found)
-    assert collections.Counter(d.status for d in found) == {"accepted": 27, "superseded": 46, "rejected": 2}
+    assert len(found) == 76, len(found)
+    assert collections.Counter(d.status for d in found) == {"accepted": 27, "superseded": 47, "rejected": 2}
     tiers = collections.Counter(d.tier for d in found if d.status == "accepted")
     assert tiers == {"check": 4, "requirement": 15, "judgement": 8}, tiers
     assert [d.rel for d in found if d.status != "accepted" and d.tier] == []

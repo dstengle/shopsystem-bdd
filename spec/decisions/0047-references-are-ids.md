@@ -4,7 +4,7 @@ summary: "Frontmatter names other files by id, never by path: a capability's fea
 date: 2026-10-19
 status: accepted
 tier: requirement
-enforced_by: [design-model-check#r31, design-model-check#r32, design-model-check#r33]
+enforced_by: [design-model-check#r31, design-model-check#r33]
 source: [observation/2026-10-19-final-state-only]
 by: "the person, 2026-10-19"
 ---

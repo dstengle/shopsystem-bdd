@@ -4,7 +4,7 @@ summary: "The plugin's agents on design model v3, each with exactly its role's t
 date: 2026-10-19
 status: accepted
 tier: check
-enforced_by: [tests/scripts/test_agents.py]
+enforced_by: [tests/scripts/test_agents.py::RoleBoundaries]
 supersedes: [design-decision/rules-held-by-agent-tools, design-decision/model-pinned-in-agent-definitions]
 source: [initiative/i10]
 by: "the coordinator, 2026-10-19, on the i10 drafter's question 6 (ledger, ruling Q6); the person approves at the gate"

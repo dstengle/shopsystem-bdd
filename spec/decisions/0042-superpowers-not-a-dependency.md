@@ -2,8 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/superpowers-not-a-dependency
 summary: "The plugin declares no dependency on superpowers and invokes none of its skills; a brainstorming note stays one possible source of a proposal."
 date: 2026-10-19
-status: accepted
-tier: judgement
+status: superseded
 supersedes: design-decision/superpowers-dependency
 source: [initiative/i10]
 by: "the person, 2026-10-19"
