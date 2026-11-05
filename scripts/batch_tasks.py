@@ -9,6 +9,7 @@ with uncommitted changes is refused unless `--discard` (plan 4 review, S2). A pa
 is that worktree on its branch (`batch_git.is_tree`, S1). Each
 change is one commit of the batch file (and the item) on the base branch, made under the lock. The checks shared with
 `work batch review` are here: the lines commit, uncited commits, commits that change `.shop/`, the tests."""
+import re
 import shlex
 import subprocess
 
@@ -46,13 +47,15 @@ def lines_commit(root, batch):
 def uncited(root, since, branch, names):
     """`<short sha> "<subject>"` of each commit on `branch` after `since` with no `Item: <item>` line for one of the
     item names `names` (D10)."""
-    out = git(root, "log", "--format=%h%x00%s%x00%(trailers:key=Item,valueonly,separator=%x2c)%x1e",
+    out = git(root, "log", "--format=%h%x00%s%x00%(trailers:key=Item,valueonly,separator=%x2c)%x00%B%x1e",
               "%s..%s" % (since, branch)).stdout
     found = []
     for entry in filter(str.strip, out.split("\x1e")):
-        sha, subject, cited = entry.strip("\n").split("\x00")
+        sha, subject, cited, body = entry.strip("\n").split("\x00")
         if not set(names) & {c.strip() for c in cited.split(",")}:
-            found.append('%s "%s"' % (sha, subject))
+            unread = re.search(r"(?m)^Item: ", body) and not cited.strip()
+            found.append('%s "%s"%s' % (sha, subject, " (its Item: line is not in the message's last paragraph, "
+                                        "and git reads trailers from the last paragraph only)" if unread else ""))
     return found
 
 

@@ -202,3 +202,9 @@ def test_the_brief_gives_each_commit_its_own_patch(fixing):
     assert "src/fix.txt" in own and "src/b1.txt" not in own and sha in own
     merges = [c.split()[1] for c in section(text, "Commits").splitlines() if c.startswith("- ") and "patch: " not in c]
     assert len(merges) == 1 and head(fixing).startswith(merges[0]), merges
+
+
+def test_an_item_line_git_does_not_read_is_explained(fixing, batch_outside):
+    """Review M3: `-m "Item: b1" -m "Finding: f1"` leaves `Item:` out of the last paragraph."""
+    fix(fixing, "fix b1\n\nItem: b1\n\nFinding: f1")
+    refused_with_nothing_done(fixing, batch_outside, ["cites no item", "git reads trailers from the last paragraph"])

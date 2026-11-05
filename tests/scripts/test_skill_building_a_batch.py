@@ -93,3 +93,16 @@ def test_the_fix_loop_cites_item_and_finding():
 def test_the_review_loop_asks_nothing():
     text = process(SKILL)[review_step()].lower()
     assert "ask the person" not in text and "wait for" not in text, text
+
+
+def test_each_refusal_of_the_review_loop_has_its_way_through():
+    """Plan 5 review, S3, M3, and the rulings' Q1 and Q3."""
+    text = process(SKILL)[review_step()]
+    for said in ("A refused `reviewed`", "run `work batch brief` again", "a fresh `pr-reviewer`",
+                 "never edit the findings file",                          # S3: a malformed findings file
+                 "no item is left in-batch", "work batch abandon",        # S3: every item parked
+                 ".shop/batches/<n>/review-<k>.md",                       # S3: where a finding's text is
+                 '--trailer "Item: b<j>" --trailer "Finding: f<m>"',      # M3
+                 "another item's open finding",                           # Q1: a merged-in fix
+                 "work idea"):                                            # Q3: an observation
+        assert said in text, (said, text)
