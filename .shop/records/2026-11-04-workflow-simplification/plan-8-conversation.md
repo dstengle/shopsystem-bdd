@@ -614,7 +614,7 @@ test in the task named.
 
   The local `ThenPrints batch` checks that the batch's row is in stdout, holding the item's label.
 
-- [ ] **Step 1: Write the failing tests** (`test_conversation_names.py`).
+- [x] **Step 1: Write the failing tests** (`test_conversation_names.py`).
   - `test_the_table_names_every_item_and_batch`: items b1 (`shaped`) and b2 (`delivered`), and batch-1 of b1, give
     rows `| b1 | Fix the parser | shaped |`, `| b2 | Exit | delivered |` and `| batch-1 | b1 "Fix the parser" |
     building |`, in that order.
@@ -632,25 +632,25 @@ test in the task named.
   - `test_the_names_hook_is_fast` (`@pytest.mark.timing`, Review Focus 3): 200 items and 20 batches, a median under
     1.0 s over 3 runs. The output has 221 table lines.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_conversation_names.py -q -m "timing or not timing" -n 0 | tail -3`
   Expected: FAIL. `work` has no subcommand `names` (exit 2).
 
-- [ ] **Step 3: Implement** `conversation_names.py`, the parser and the hooks.json entry.
+- [x] **Step 3: Implement** `conversation_names.py`, the parser and the hooks.json entry.
 
-- [ ] **Step 4: The r4 handlers; take r4 out of `unbuilt:`.**
+- [x] **Step 4: The r4 handlers; take r4 out of `unbuilt:`.**
   Run: `python3 -m pytest tests/scenarios/test_conversation.py tests/scenarios/test_backlog.py tests/scenarios/test_batches.py tests/scripts/test_conversation_names.py -q | tail -1; python3 -m pytest -m timing -n 0 -q tests/scripts/test_conversation_names.py | tail -1; python3 scripts/features vocab --check | tail -1`
   Expected: conversation `4 passed`; backlog and batches as before; `1 passed`; `every step has one handler`.
 
-- [ ] **Step 5: Mutations, each reverted.** Each must turn its test red:
+- [x] **Step 5: Mutations, each reverted.** Each must turn its test red:
   - leaving batches out fails `test_the_table_names_every_item_and_batch` and the r4 scenario;
   - letting `Refused` escape the hook fails `test_the_names_hook_never_fails`.
 
-- [ ] **Step 6: The baselines.**
+- [x] **Step 6: The baselines.**
   Run: `python3 -m pytest -q | tail -1; python3 -m pytest -m timing -n 0 -q | tail -1; python3 scripts/features generate --check; echo $?; python3 scripts/tools size --limit 300; python3 scripts/tools check scripts/conversation_names.py scripts/conversation_cli.py tests/scripts/test_conversation_names.py tests/scenarios/conversation_handlers.py`
   Expected: no `xfailed` in the summary, no failures; timing `4 passed`; exit 0; silent; clean.
 
-- [ ] **Step 7: Commit.**
+- [x] **Step 7: Commit.**
   ```bash
   git add scripts/conversation_names.py scripts/conversation_cli.py hooks/hooks.json tests/scripts/test_conversation_names.py \
     tests/scenarios/conversation_handlers.py spec/capabilities/conversation.md CLAUDE.md

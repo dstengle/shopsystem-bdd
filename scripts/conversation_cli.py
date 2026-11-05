@@ -1,10 +1,11 @@
-"""The conversation's commands of `work` (capability conversation; workflow simplification plan 8): `work quote` and
-`work show quote-<n>`, their parsers and dispatch, so that scripts/work stays small. A quote is named by its label,
-`quote-1 "<its words>"` (design goal 10)."""
+"""The conversation's commands of `work` (capability conversation; workflow simplification plan 8): `work quote`,
+`work show quote-<n>` and `work names`, their parsers and dispatch, so that scripts/work stays small. A quote is
+named by its label, `quote-1 "<its words>"` (design goal 10)."""
 import json
 import sys
 from pathlib import Path
 
+import conversation_names
 import conversation_prompt
 import conversation_quote
 from measure_read import Refused as ReadRefused
@@ -22,6 +23,9 @@ def add_parsers(sub):
     p.add_argument("--transcript", help="the transcript file itself")
     p.add_argument("--hook", action="store_true", help="the UserPromptSubmit hook: keep the session and transcript "
                                                        "its stdin gives for work quote, printing nothing")
+    p = sub.add_parser("names", help="every item and batch with its name beside its id, one table")
+    p.add_argument("--hook", action="store_true", help="the SessionStart hook: the table under one line, nothing when "
+                                                       "there is nothing to name, never failing")
 
 
 def refused(command, why):
@@ -62,4 +66,14 @@ def show(args):
     return 0
 
 
-COMMANDS = {"quote": quote}
+def names(args):
+    if args.hook:
+        text = conversation_names.hook_text(Path.cwd())
+        if text:
+            print(text)
+        return 0
+    print(conversation_names.table(args.root))
+    return 0
+
+
+COMMANDS = {"quote": quote, "names": names}

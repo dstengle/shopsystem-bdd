@@ -14,6 +14,7 @@ import re
 import sys
 from pathlib import Path
 
+import batch_plan
 import conversation_prompt
 import conversation_quote
 import measure_batch_read
@@ -128,9 +129,9 @@ def hook(step, event, sub, stdin):
     script = Path(argv[1])
     assert argv[0] == "python3" and script.parent == HERE.parents[1] / "scripts", argv
     B.index(step)
-    shop = step.repo / ".shop" / "README.md"
-    shop.parent.mkdir(parents=True, exist_ok=True)
-    shop.write_text("The repository's .shop/.\n")
+    if not (step.repo / ".shop").is_dir():
+        (step.repo / ".shop").mkdir(parents=True)
+        (step.repo / ".shop" / "README.md").write_text("The repository's .shop/.\n")
     step.context["head"] = W.init(step.repo)
     step.context["result"] = step.run(script.name, *argv[2:], input=json.dumps(stdin), env=env(step))
     return step.context["result"]
@@ -208,4 +209,47 @@ def prints_message(step):
     done = step.context["result"]
     assert done.returncode == 0, done.stderr
     assert talk(step)["texts"][step.names[0]] in done.stdout and ", cited:" in done.stdout, (step.text, done.stdout)
+    return None
+
+
+@handler("WhenRuns", "`work names`")
+def names_hook(step):
+    """The SessionStart hook in a repository of one item for each item the scenario's Thens name (`i1`, titled `Fix
+    the parser`, shaped) and one batch for each batch they name, its one task for the first item."""
+    talk(step)
+    texts = W.scenario_texts(step)
+    items = sorted({n for t in texts for n in re.findall(r"\bthe item (i\d+)\b", t)})
+    for name in items:
+        B.write_item(step, name, title="Fix the parser" if name == "i1" else "Title of %s" % name, status="shaped")
+    for name in sorted({n for t in texts for n in re.findall(r"\bthe batch ([a-z]+\d+)\b", t)}):
+        number = int(re.sub(r"^\D+", "", name))
+        task = batch_plan.Task("t1", B.ident(items[0]), "pending", "batch-%d-%s" % (number, B.ident(items[0])))
+        found = batch_plan.Batch("batch-%d" % number, "batch/ex.com/prod/ctx/batch-%d" % number, "building", "main",
+                                 "0" * 40, "batch-%d" % number, None, [task])
+        path = step.repo / batch_plan.rel_of(found.name)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(batch_plan.render(found))
+        talk(step).setdefault("batches", {})[name] = found.name
+    hook(step, "SessionStart", "names", {"session_id": "s", "hook_event_name": "SessionStart", "source": "startup"})
+
+
+@local("ThenPrints", "item")
+def prints_named_item(step):
+    """An item's row of the names table, `| b1 | <title> | <status> |` (backlog's own reads a `work backlog` row)."""
+    if not step.context.get("conversation"):
+        return False
+    done, b = step.context["result"], B.ident(step.names[0])
+    assert done.returncode == 0, done.stderr
+    assert any(B.cells(line)[:1] == [b] for line in done.stdout.splitlines() if line.startswith("|")), done.stdout
+    return None
+
+
+@local("ThenPrints", "batch")
+def prints_batch(step):
+    if not step.context.get("conversation"):
+        return False
+    done, name = step.context["result"], talk(step)["batches"][step.names[0]]
+    row = next((line for line in done.stdout.splitlines() if line.startswith("| %s |" % name)), None)
+    assert row is not None, (step.text, done.stdout)
+    assert any(label in row for label in step.context["says"].values()), (step.text, row)
     return None
