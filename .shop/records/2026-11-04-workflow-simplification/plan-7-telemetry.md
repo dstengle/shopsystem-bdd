@@ -351,7 +351,7 @@ test in the task named.
     `ThenR measurement` (`of`: `figures()["batch"] == T.batch_name(step, b1)`) and `ThenDoes review finding`
     (`include`: `figures()["findings_by_grade"]["Important"] >= 1`, and the record's text holds `Important`).
 
-- [ ] **Step 1: Write the failing script tests** (`test_measure_batch.py`).
+- [x] **Step 1: Write the failing script tests** (`test_measure_batch.py`).
   - The repository is the one `review_testing.published` builds: `batch_repo`, two items, the batch reviewed and
     published.
   - Records are added with `work batch reviewed` (FIX_NOW_B1, then FIXED_F1 after a fix, as `test_batch_fix_loop.py`
@@ -398,17 +398,17 @@ test in the task named.
     `--replace` it exits 0.
   - `test_an_unknown_batch_is_refused`: `measure batch batch-9` exits 1 naming `batch-9` and writes nothing.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_measure_batch.py -q | tail -3`
   Expected: FAIL. `measure` has no subcommand `batch` (exit 2), and there is no `measure_batch_sessions`.
 
-- [ ] **Step 3: Implement D3, D4, D6-D10** in the three modules, then `measure_write` and the `batch` subcommand.
+- [x] **Step 3: Implement D3, D4, D6-D10** in the three modules, then `measure_write` and the `batch` subcommand.
 
-- [ ] **Step 4: Run them, and the measure scenarios.**
+- [x] **Step 4: Run them, and the measure scenarios.**
   Run: `python3 -m pytest tests/scripts/test_measure_batch.py tests/scripts/test_measure_cost.py tests/scripts/test_measure_batch_read.py tests/scenarios/test_batch_measurement.py -q | tail -1`
   Expected: all pass. batch-measurement's records are unchanged by the `summary=""` default.
 
-- [ ] **Step 5: The r1 and r2 handlers; take r1 and r2 out of `unbuilt:`.** Switch `test_telemetry.py` to
+- [x] **Step 5: The r1 and r2 handlers; take r1 and r2 out of `unbuilt:`.** Switch `test_telemetry.py` to
   `bind_all`.
   Run: `python3 -m pytest tests/scenarios/test_telemetry.py tests/scenarios/test_batches.py tests/scenarios/test_supervision.py tests/scenarios/test_batch_measurement.py -q | tail -1; python3 scripts/features vocab --check | tail -1`
   Expected:
@@ -417,13 +417,13 @@ test in the task named.
     (supervision's "commits the measurement m1" included);
   - `every step has one handler`.
 
-- [ ] **Step 6: Mutations, each reverted.** Each must turn its test red:
+- [x] **Step 6: Mutations, each reverted.** Each must turn its test red:
   - counting an `observation` as a review defect fails `test_the_findings_are_counted_by_grade`;
   - dropping the window filter for main sessions fails `test_only_the_windows_requests_count`;
   - dropping rule 3 of D6 fails the `batch-1 review 2` case;
   - r2 left in `unbuilt:` fails the suite as `XPASS(strict)`.
 
-- [ ] **Step 7: The baselines.**
+- [x] **Step 7: The baselines.**
   Run: `python3 -m pytest -q | tail -1; python3 scripts/features generate --check; echo $?; python3 scripts/model check | tail -1; python3 scripts/tools size --limit 300; python3 scripts/tools check scripts/measure scripts/measure_write.py scripts/measure_batch.py scripts/measure_batch_sessions.py scripts/measure_batch_show.py tests/scripts/test_measure_batch.py tests/scenarios/telemetry_handlers.py tests/scenarios/test_telemetry.py`
   Expected:
   - the suite: `6 xfailed`, no failures;
@@ -432,7 +432,7 @@ test in the task named.
   - `size` silent, with `scripts/measure` ≤ 150 and `measure_write.py` ≤ 50;
   - `check` clean.
 
-- [ ] **Step 8: Commit.**
+- [x] **Step 8: Commit.**
   ```bash
   git add scripts/measure scripts/measure_write.py scripts/measure_batch.py scripts/measure_batch_sessions.py \
     scripts/measure_batch_show.py tests/scripts/test_measure_batch.py tests/scenarios/telemetry_handlers.py \
