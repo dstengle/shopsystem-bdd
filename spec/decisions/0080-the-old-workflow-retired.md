@@ -29,6 +29,8 @@ These codified lines are retired in plugin 2.0.0, each id written into its capab
 - `design-model-check` r8, r9, r12-r18, r21, r26, r27, r29, r31-r35, r37, r39, r45, r46 and r53 (work-items,
   initiatives, proposals and `model why`'s proposals);
 - `migration-tools` r22 and r23 (the hooks' initiative text).
+- `universal` U1, U2, U6, U9 and U10 (the guarantees of `work run`, its stages and initiatives), added by the plan-9
+  review's S2; U7 is kept.
 
 A capability whose every line is retired keeps its file: its Purpose opens with the notice of the retirement, its
 Terms, Relations and `rests_on` stay (so the lexicon does not move), its Behaviour is empty, and each of its 0.29 ids

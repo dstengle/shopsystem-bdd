@@ -170,13 +170,15 @@ def capability(path):
 
 
 def read_universal(root):
-    """spec/universal.md: its frontmatter, its `- [U<n>] <statement>` conditions and its problems."""
+    """spec/universal.md: its frontmatter, its `- [U<n>] <statement>` conditions and its problems (a U<n> of its
+    `retired:` used again among them)."""
     path = Path(root) / "spec" / "universal.md"
     if not path.is_file():
         return UniversalFile(path, {}, [], [])
     text = path.read_text()
     data, _ = frontmatter(text)
     problems, found, seen = [], [], set()
+    retired = {str(r) for r in data.get("retired") or []} if isinstance(data.get("retired") or [], list) else set()
     if str(data.get("language", "")).strip() != MARKER:
         problems.append(f"universal.md is not codified (no language: {MARKER})")
     for n, item in items(numbered(text, "Behaviour")):
@@ -185,6 +187,8 @@ def read_universal(root):
             problems.append(f"{n}: a universal condition is not '- [U<n>] <statement>'")
         elif m.group(1) in seen:
             problems.append(f"{n}: {m.group(1)} appears a second time")
+        elif m.group(1) in retired:
+            problems.append(f"{n}: {m.group(1)} is retired")
         else:
             seen.add(m.group(1))
             found.append(Universal(m.group(1), m.group(2).strip(), n))

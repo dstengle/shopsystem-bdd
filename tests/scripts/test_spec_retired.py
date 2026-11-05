@@ -64,3 +64,12 @@ def test_the_spec_integration_steps_are_gone():
     scenarios = REPO / "tests" / "scenarios"
     assert not list(scenarios.glob("spec_integration_*.py"))
     assert not (scenarios / "test_spec_integration.py").exists()
+
+
+def test_the_universal_conditions_of_work_run_are_retired():
+    """U1, U2, U6, U9 and U10 stated guarantees of `work run` and initiatives (plan-9 review S2, the-old-workflow-retired);
+    U7 is kept until a line on a batch's task subagent is written (plan-9 rulings Q1)."""
+    doc = spec_read.read_universal(REPO)
+    assert doc.problems == []
+    assert doc.frontmatter["retired"] == ["U1", "U2", "U6", "U9", "U10"]
+    assert [u.id for u in doc.conditions] == ["U3", "U4", "U5", "U7", "U8"]
