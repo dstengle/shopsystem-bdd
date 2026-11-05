@@ -674,7 +674,7 @@ test in the task named.
 **Interfaces:**
 - Consumes: `work quote` (Tasks 3-4).
 
-- [ ] **Step 1: Write the failing tests.**
+- [x] **Step 1: Write the failing tests.**
   - `test_r3_a_quote_is_written_with_work_quote` (D14): in `process(SHAPING)`, step 1 names `work quote` in
     `commands(…, "work")`, before `shape`. The skill's text holds `quote-<n>`, and does not hold `Until \`work\`
     keeps quotes`.
@@ -682,12 +682,12 @@ test in the task named.
     not in `spec_unbuilt.unbuilt(REPO).get("brainstorming", set())` has a function `test_r<n>_…` in this file, read
     with `ast`, and each listed id has none.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_skill_shaping_items.py -q | tail -3`
   Expected: `test_r3_…` FAILS, since the skill names quotes only in words. `test_each_built_…` FAILS, since r3 is
   still listed and has a test.
 
-- [ ] **Step 3: Rewrite step 1 of the skill:**
+- [x] **Step 3: Rewrite step 1 of the skill:**
   > 1. **Write the item.** `python3 <scripts>/work idea "<title>"`. For each thing the person said that the item rests
   > on, run `python3 <scripts>/work quote "<their words, exactly as they wrote them>"`. It prints `quote-<n> "…"`; on
   > a refusal, copy the words again from their message, or give `--session <id>` for an earlier session. Then
@@ -696,14 +696,14 @@ test in the task named.
   Add one Red Flags row: `| The person's words pasted into a note with no quote | \`work quote\` keeps the turns
   around them; cite quote-<n> (step 1) |`. Take r3 out of `unbuilt:` and remove `## Not yet`.
 
-- [ ] **Step 4: Run them, and the skill and spec checks.**
+- [x] **Step 4: Run them, and the skill and spec checks.**
   Run: `python3 -m pytest tests/scripts/test_skill_shaping_items.py tests/scripts/test_spec_unbuilt.py -q | tail -1; python3 scripts/model check | tail -1; python3 scripts/model logic | tail -1`
   Expected: all pass; `53 violations, 16 warnings, 19 unresolved references, 0 file problems`; `11 findings: 6 L5, 5
   L6`.
 
-- [ ] **Step 5: Mutation, reverted.** Putting `r3` back in `unbuilt:` fails `test_each_built_brainstorming_line_has_its_test`.
+- [x] **Step 5: Mutation, reverted.** Putting `r3` back in `unbuilt:` fails `test_each_built_brainstorming_line_has_its_test`.
 
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
   ```bash
   git add skills/shaping-items/SKILL.md tests/scripts/test_skill_shaping_items.py spec/capabilities/brainstorming.md README.md
   git commit -m "shaping-items: the person's words are quoted with work quote (brainstorming r3); README: quotes and names"

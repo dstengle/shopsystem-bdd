@@ -1,12 +1,16 @@
-"""brainstorming r1, r2 (workflow simplification plan 3, Task 5, D15), checked by reading the skills as test_agents.py
+"""brainstorming r1, r2 (workflow simplification plan 3, Task 5, D15) and r3 (plan 8, D14), checked by reading the skills as test_agents.py
 reads the agents: the brainstorming session writes an item's lines and runs `work ready`, and nothing after it waits
 on the person; the intake session's skill names only commands `work` and `model` have."""
+import ast
 import re
 import subprocess
 import sys
 from pathlib import Path
 
 import pytest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+import spec_unbuilt  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
 SKILLS = REPO / "skills"
@@ -44,6 +48,28 @@ def test_r2_nothing_waits_on_the_person():
     ready = next(n for n, s in enumerate(steps) if "ready" in commands(s, "work"))
     for step in steps[ready:]:
         assert "ask the person" not in step.lower() and not re.search(r"\bwait", step.lower()), step
+
+
+def test_r3_a_quote_is_written_with_work_quote():
+    """The brainstorming session quotes the person's words with `work quote`, before `work shape`, and cites the quote
+    in the item's note."""
+    steps = process(SHAPING)
+    first = next(n for n, s in enumerate(steps) if "quote" in commands(s, "work"))
+    shape = next(n for n, s in enumerate(steps) if "shape" in commands(s, "work"))
+    assert first <= shape, (first, shape)
+    assert steps[first].index("work quote") < steps[first].index("work shape"), steps[first]
+    text = SHAPING.read_text()
+    assert "quote-<n>" in text and "Until `work` keeps quotes" not in text
+
+
+def test_each_built_brainstorming_line_has_its_test():
+    """The strict xfail of a guarantees capability: each brainstorming id out of `unbuilt:` has a `test_r<n>_` here,
+    and each id in it has none."""
+    ids = set(re.findall(r"(?m)^- \[(r\d+)\] ", (REPO / "spec/capabilities/brainstorming.md").read_text()))
+    unbuilt = spec_unbuilt.unbuilt(REPO).get("brainstorming", set())
+    tested = {m.group(1) for node in ast.parse(Path(__file__).read_text()).body if isinstance(node, ast.FunctionDef)
+              for m in [re.match(r"test_(r\d+)_", node.name)] if m}
+    assert ids and ids - unbuilt == tested & ids, (ids, unbuilt, tested)
 
 
 @pytest.mark.parametrize("script", ["work", "model"])

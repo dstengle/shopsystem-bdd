@@ -6,7 +6,7 @@ group: guarantees
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: [r3]
+unbuilt: []
 ---
 
 # Brainstorming
@@ -32,7 +32,3 @@ reading. The person's words an item cites keep the conversation turns around the
 
 ### [g3] A quote keeps its turns
 - [r3] When the brainstorming session writes a quote, the brainstorming session shall use `work quote`.
-
-## Not yet
-- r3: `work quote` waits for plan 8, which builds the conversation hook. Until then the skill `shaping-items` says to
-  cite the person's words in the item's note, with the date.
