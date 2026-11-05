@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: [r1, r2, r3, r4]
+unbuilt: [r2, r3, r4]
 ---
 
 # Conversation
@@ -45,7 +45,14 @@ of every item and batch a session names (design goal 10).
 
 ## Implementation, may change
 
-- A quote keeps the person's words with its session id and its message, and the two messages before it and the two
-  after it, the person's and the session's, without tool uses, under `.shop/`.
+- A quote is the file `.shop/quotes/<n>.md`, named `quote-<n>`: its frontmatter holds the session id, the cited
+  message's id and its date, and its body the person's words and then each message in a fence longer than any
+  backtick run in its text.
+- The words are matched, whitespace collapsed, against the person's messages of the session's transcript, the newest
+  holding them cited, with the two messages before it and the two after it, of either side; a message is the
+  person's prompt or the session's text of one turn, without tool uses, tool results, thinking or reminders, and one
+  other than the cited message is cut at 2,000 characters.
+- `work quote "<words>"` prints the quote's label, `quote-<n> "<its words>"`, and commits the quote's file alone on the
+  current branch; words that match nothing write nothing.
 - `work quote --session <id> --transcript <path>` is how the UserPromptSubmit hook passes them.
 - `work names` is the SessionStart hook's table of the items' and batches' names beside their ids.

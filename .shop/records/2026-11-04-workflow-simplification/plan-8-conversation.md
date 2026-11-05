@@ -381,7 +381,7 @@ test in the task named.
     `B.in_commits`) and `ThenR quote` (`from`: frontmatter `session` is s1's id; `cites`: frontmatter `message` is
     m1's id, and its heading ends `, cited`).
 
-- [ ] **Step 1: Write the failing script tests** (`test_conversation_quote.py`). The repository is a `git init` with
+- [x] **Step 1: Write the failing script tests** (`test_conversation_quote.py`). The repository is a `git init` with
   `spec/index.md` from `tests/scripts/fixtures/generate/repo`, giving the context `ex.com/prod/ctx`.
   `CLAUDE_CONFIG_DIR` is `tmp_path / "store"`.
   - `test_a_quote_keeps_its_turns`: words from the 3rd of 6 messages give `.shop/quotes/1.md`. It has
@@ -401,32 +401,32 @@ test in the task named.
   - `test_a_transcript_given_is_read_as_given`: `--transcript <path>` with no `--session` takes the rows' `sessionId`.
   - `test_a_malformed_quote_file_is_refused_naming_its_field`: `kind: note` gives `.shop/quotes/1.md: kind …`.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_conversation_quote.py -q | tail -3`
   Expected: FAIL. There is no module `conversation_quote`, and `work` has no subcommand `quote` (exit 2).
 
-- [ ] **Step 3: Implement** `conversation_quote.py`, `conversation_cli.py` and the three lines of `scripts/work`.
+- [x] **Step 3: Implement** `conversation_quote.py`, `conversation_cli.py` and the three lines of `scripts/work`.
 
-- [ ] **Step 4: Run them.**
+- [x] **Step 4: Run them.**
   Run: `python3 -m pytest tests/scripts/test_conversation_quote.py tests/scripts/test_conversation_read.py tests/scripts/test_skill_shaping_items.py -q | tail -1`
   Expected: all pass. `test_the_skills_name_only_commands_work_has` still passes: `quote` is now one more choice.
 
-- [ ] **Step 5: The r1 handlers; take r1 out of `unbuilt:`.** Switch `test_conversation.py` to `bind_all`.
+- [x] **Step 5: The r1 handlers; take r1 out of `unbuilt:`.** Switch `test_conversation.py` to `bind_all`.
   Run: `python3 -m pytest tests/scenarios/test_conversation.py tests/scenarios/test_backlog.py tests/scenarios/test_supervision.py tests/scenarios/test_work_queue.py -q | tail -1; python3 scripts/features vocab --check | tail -1`
   Expected: conversation `1 passed, 3 xfailed`; the others pass as before, since the locals return `False` for
   them; `every step has one handler`.
 
-- [ ] **Step 6: Mutations, each reverted.** Each must turn its test red:
+- [x] **Step 6: Mutations, each reverted.** Each must turn its test red:
   - a fence of a fixed 3 backticks fails `test_a_quote_reads_back_whatever_its_text_holds`;
   - committing before the words are matched (the file written for a quote that matches nothing) fails
     `test_a_quote_that_matches_nothing_writes_nothing`;
   - writing the first message's ident as `message:` fails the r1 scenario's `cites`.
 
-- [ ] **Step 7: The baselines.**
+- [x] **Step 7: The baselines.**
   Run: `python3 -m pytest -q | tail -1; python3 scripts/features generate --check; echo $?; python3 scripts/tools size --limit 300; wc -l scripts/work; python3 scripts/tools check scripts/conversation_quote.py scripts/conversation_cli.py scripts/work tests/scripts/test_conversation_quote.py tests/scenarios/conversation_handlers.py`
   Expected: `3 xfailed`, no failures; exit 0; silent; `scripts/work` ≤ 225; clean.
 
-- [ ] **Step 8: Commit.**
+- [x] **Step 8: Commit.**
   ```bash
   git add scripts/conversation_quote.py scripts/conversation_cli.py scripts/work tests/scripts/test_conversation_quote.py \
     tests/scenarios/conversation_handlers.py tests/scenarios/test_conversation.py spec/capabilities/conversation.md CLAUDE.md
