@@ -45,9 +45,9 @@ def ok(done):
     return done
 
 
-def published(repo):
+def published(repo, park=False):
     """`batch_repo` with b1 and b2 ready, a batch started and resumed, both tasks built (b1 with `src/b1.txt`) and
-    done, and the batch reviewed: its pull request's URL."""
+    done (b2 parked instead when `park`), and the batch reviewed: its pull request's URL."""
     ready_item(repo, "b1", "Abandon", ABANDON, value="high-value", urgency="high-urgency", size="small")
     ready_item(repo, "b2", "Exit", SECOND)
     ok(work(repo, "batch", "start"))
@@ -55,7 +55,9 @@ def published(repo):
     build(repo, "t1", "b1", ["r5"])
     commit_on(repo, "batch-1-b1", "src/b1.txt", "abandoned\n", "b1's code\n\nItem: b1")
     build(repo, "t2", "b2", ["r6"])
-    for task in ("t1", "t2"):
+    if park:
+        ok(work(repo, "batch", "park", "batch-1", "b2", "--question", "Which?"))
+    for task in ("t1",) if park else ("t1", "t2"):
         ok(work(repo, "batch", "done", "batch-1", task))
     return ok(work(repo, "batch", "review", "batch-1")).stdout.strip().splitlines()[-1]
 

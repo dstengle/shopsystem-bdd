@@ -4,6 +4,7 @@ dispatch, so that scripts/work stays small. An item is named by its label, a bat
 import json
 
 import backlog_items
+import batch_brief
 import batch_close
 import batch_plan
 import batch_review
@@ -36,6 +37,8 @@ def add_parsers(sub):
     s.add_argument("--discard", action="store_true", help="discard the uncommitted changes of its task worktrees")
     s = cmds.add_parser("review", help="merge the in-batch items into the batch branch, test, push and publish its pull request")
     s.add_argument("batch")
+    cmds.add_parser("brief", help="write the brief of the next review of a batch's pull request, for pr-reviewer"
+                    ).add_argument("batch")
 
 
 def _item(root, name):
@@ -111,6 +114,14 @@ def review(args):
     return 0
 
 
+def brief(args):
+    path, removed = batch_brief.brief(args.root, args.batch)
+    for name in removed:
+        print("removed an old %s" % name)
+    print(path)
+    return 0
+
+
 def merged(args):
     batch = batch_close.merged(args.root, args.batch)
     print("%s merged" % batch.name)
@@ -125,7 +136,7 @@ def abandon(args):
 
 def cmd_batch(args):
     return {"start": start, "status": status, "resume": resume, "done": done, "park": park, "review": review,
-            "merged": merged, "abandon": abandon}[args.batch_cmd](args)
+            "brief": brief, "merged": merged, "abandon": abandon}[args.batch_cmd](args)
 
 
 COMMANDS = {"batch": cmd_batch}

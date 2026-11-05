@@ -374,7 +374,7 @@ Builds no requirement on its own. It is r3's and r4's mechanism; they leave `unb
   `## Size`, `## Runs`, `## Commits`, `## Change`.
 - `work batch brief <batch>` prints the brief's path, after one `removed an old findings.md` line when there was one.
 
-- [ ] **Step 1: Write the failing tests** (`test_batch_brief.py`, on `review_testing.published`, with
+- [x] **Step 1: Write the failing tests** (`test_batch_brief.py`, on `review_testing.published`, with
   `[review] checks = ["python3 -c \"print('ran')\""]` added to the fixture's `delivery.toml` and committed):
   - `test_the_first_brief_gives_the_batchs_range_and_no_other_commit` (Review Focus 3):
     - `Range:` is `<forked_from>..<batch-1 head>`.
@@ -397,21 +397,21 @@ Builds no requirement on its own. It is r3's and r4's mechanism; they leave `unb
   - `test_a_second_brief_starts_fresh`: with a `findings.md` written, a second `brief` prints `removed an old
     findings.md`, and the file is gone.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_batch_brief.py -q`
   Expected: FAIL; `work batch` has no `brief`.
 
-- [ ] **Step 3: Implement `batch_brief.py`, `remote_head` and the parser.** The runs and the diff are made in the batch
+- [x] **Step 3: Implement `batch_brief.py`, `remote_head` and the parser.** The runs and the diff are made in the batch
   worktree. Run text is indented four spaces, so no line of it starts a brief field.
 
-- [ ] **Step 4: Run them and plan 4's review tests.**
+- [x] **Step 4: Run them and plan 4's review tests.**
   Run: `python3 -m pytest tests/scripts/test_batch_brief.py tests/scripts/test_batch_review.py -q | tail -1`
   Expected: all pass.
 
-- [ ] **Step 5: The baselines** (Task 1's Step 5 command, with this task's files).
+- [x] **Step 5: The baselines** (Task 1's Step 5 command, with this task's files).
   Expected: `14 xfailed`, no failures; `size` silent; `check` clean.
 
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
   ```bash
   git add scripts/batch_brief.py scripts/batch_git.py scripts/batch_review.py scripts/batch_cli.py tests/scripts/test_batch_brief.py CLAUDE.md
   git commit -m "batches: work batch brief gives the pull request's reviewer the batch's own commits, its items' lines and the judgement decisions"

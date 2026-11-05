@@ -155,6 +155,13 @@ def remote(root, branch):
     return done.stdout.strip() if done.returncode == 0 and done.stdout.strip() else "origin"
 
 
+def remote_head(root, remote_name, branch):
+    """The sha `branch` is at on `remote_name`, or None when it is not there (or the remote cannot be read)."""
+    done = subprocess.run(["git", "ls-remote", remote_name, "refs/heads/%s" % branch], cwd=root, capture_output=True,
+                          text=True)
+    return done.stdout.split()[0] if done.returncode == 0 and done.stdout.split() else None
+
+
 def push(root, remote_name, branch, command="work batch"):
     """`git push -u <remote> <branch>`; refused under `command`, naming the branch, the remote and git's reason."""
     done = subprocess.run(["git", "push", "-q", "-u", remote_name, branch], cwd=root, capture_output=True, text=True)

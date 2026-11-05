@@ -22,6 +22,7 @@ from batch_git import (
     locked,
     push,
     remote,
+    remote_head,
     remove_tree,
     tree_for,
     trees_dir,
@@ -100,12 +101,6 @@ def _take_out_parked(root, tree, batch):
             batch.name, batch_start.labels(parked), batch_start.cites(parked)))
 
 
-def _remote_head(root, name, branch):
-    done = subprocess.run(["git", "ls-remote", name, "refs/heads/%s" % branch], cwd=root, capture_output=True,
-                          text=True)
-    return done.stdout.split()[0] if done.returncode == 0 and done.stdout.split() else None
-
-
 def _put_back(root, tree, before, name, branch, remote_before, pushed):
     git(tree, "reset", "-q", "--hard", before)
     if pushed:
@@ -128,7 +123,7 @@ def review(root, name):
             raise
         before = git(tree, "rev-parse", "HEAD").stdout.strip()
         where = remote(root, batch.base)
-        remote_before, pushed = _remote_head(root, where, batch.branch), False
+        remote_before, pushed = remote_head(root, where, batch.branch), False
         try:
             _take_out_parked(root, tree, batch)
             for task, item in mine:
