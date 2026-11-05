@@ -126,7 +126,9 @@ ignored, so a role's limits are its tools.
   commit. It writes `.shop/work/FROZEN.md`, moves each open request of a peer to `.shop/requests/` with `git mv`, and
   rewrites `spec/decisions/index.md`. Nothing is deleted. It names each open initiative, each proposal never applied
   and each internal request not closed, to be shaped as items with `work idea`. A 0.29.x repository reaches 2.0.0
-  through the 1.0.0 step in the same commit.
+  through the 1.0.0 step in the same commit. From 0.29.x, write each scaffold's requirements and the typed glossary
+  as `docs/capability-format.md` § Doing it says, checking with `model parse`, `model check`, `model logic` and
+  `model restates`, then run `features generate`.
 
 ## 1.0.0: codified requirements
 

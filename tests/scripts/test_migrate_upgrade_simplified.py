@@ -174,9 +174,16 @@ class OtherRepositories(unittest.TestCase):
                                           "---\n# Cart\n## Behaviour\n- [r1] **When** the shopper applies a code, "
                                           "`cart` shall take ten percent off.\n"),
             "features/cart.feature": "Feature: Cart\n  @r1 @deprecated\n  Scenario: a code (deprecated)\n    Given a cart\n",
-            ".shop/work/i1/w2.md": "---\nid: work-item/example.org/acme/shop/w2\nkind: work-item\naccepts: [cart#r1]\n---\n# w2\n"})
+            ".shop/work/i1/w2.md": "---\nid: work-item/example.org/acme/shop/w2\nkind: work-item\naccepts: [cart#r1]\n---\n# w2\n",
+            ".shop/work/i1/cart.md": "---\nkind: capability-proposal\nstatus: awaiting-answer\n---\n# cart\n"})
         code, said = upgraded(root)
         self.assertEqual(code, 0, said)
+        # the 2.0.0 step names the proposal; the 1.0.0 step's "left for a session to write" of it would contradict
+        # FROZEN.md (plan-9 review S5)
+        message = git(root, "log", "-1", "--format=%B")
+        for text in (said, message):
+            self.assertIn("the lines of proposal .shop/work/i1/cart.md were never applied", text)
+            self.assertNotIn("left for a session to write: .shop/work/", text)
         self.assertEqual(git(root, "rev-list", "--count", "HEAD").strip(), "2")
         self.assertIn("migrate upgrade: 0.29.0 to 2.0.0", git(root, "log", "-1", "--format=%B"))
         self.assertTrue((root / "spec/restated.json").is_file())

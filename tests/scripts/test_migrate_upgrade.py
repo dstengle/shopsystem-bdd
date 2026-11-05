@@ -1,5 +1,6 @@
 """`migrate upgrade` on repositories the scenarios do not build: the move check (migration-tools r7)."""
 import atexit
+import os
 import shutil
 import subprocess
 import sys
@@ -86,6 +87,29 @@ class TheStaging(unittest.TestCase):
         staged = subprocess.run(["git", "diff", "--cached", "--name-only"], cwd=self.root, capture_output=True,
                                 text=True).stdout.split()
         self.assertEqual(sorted(staged), ["a.md", "b.md", "spec/index.md"])
+
+
+class NoIdentity(unittest.TestCase):
+    """With no git identity to commit with, `migrate upgrade` refuses before it plans a step (plan-9 review M1)."""
+
+    def test_no_identity_is_refused_before_any_step_naming_git_config(self):
+        root = repository({"spec/index.md": INDEX, ".shop/plugin-version": "1.0.0\n", ".shop/work/README.md": "q\n"})
+        subprocess.run(["git", "config", "--unset", "user.name"], cwd=root, check=True)
+        subprocess.run(["git", "config", "--unset", "user.email"], cwd=root, check=True)
+        env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_") and k != "EMAIL"}
+        env.update(HOME=str(root / ".git" / "home"), XDG_CONFIG_HOME=str(root / ".git" / "home"),
+                   GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_COUNT="1", GIT_CONFIG_KEY_0="user.useConfigOnly",
+                   GIT_CONFIG_VALUE_0="true")
+        head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True).stdout
+        done = subprocess.run([sys.executable, str(SCRIPTS / "migrate"), "upgrade"], cwd=root, capture_output=True,
+                              text=True, env=env)
+        self.assertEqual(done.returncode, 1, done.stdout)
+        self.assertEqual(done.stderr.strip(), 'migrate changed nothing; git has no identity to commit with: set one '
+                                              'with git config user.name "…" and git config user.email "…"')
+        self.assertEqual(status_of(root), "")
+        self.assertFalse((root / ".shop/work/FROZEN.md").exists())
+        self.assertEqual(subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True,
+                                        text=True).stdout, head)
 
 
 if __name__ == "__main__":

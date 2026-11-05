@@ -126,6 +126,12 @@ def move_failures(root, changes):
     return list(dict.fromkeys(checked.failures))
 
 
+def identity(root):
+    """Whether git has an author and a committer to commit the upgrade with (plan-9 review M1)."""
+    return all(subprocess.run(["git", "var", var], cwd=root, capture_output=True).returncode == 0
+               for var in ("GIT_AUTHOR_IDENT", "GIT_COMMITTER_IDENT"))
+
+
 def upgrade(root):
     held = no_version(root)
     if held:
@@ -140,6 +146,10 @@ def upgrade(root):
     if not steps:
         print("no upgrade step is pending")
         return 0
+    if not identity(root):
+        print('migrate changed nothing; git has no identity to commit with: set one with git config user.name "…" '
+              'and git config user.email "…"', file=sys.stderr)
+        return 1
     before = repository_version(root)
     refused, notes = [], []
     try:
@@ -155,6 +165,8 @@ def upgrade(root):
             subprocess.run(["git", "clean", "-fdq"], cwd=root, capture_output=True)
             print("migrate changed nothing; it could not make every change:\n" + "\n".join(refused), file=sys.stderr)
             return 1
+        if any(step[3] is migrate_upgrade_simplified for step in steps):
+            notes = [note for note in notes if not migrate_upgrade_simplified.superseded(note)]
         (root / VERSION_FILE).write_text(plugin_version() + "\n")
         git(root, "add", "-f", "--", VERSION_FILE)
         git(root, "commit", "-q", "-m", "migrate upgrade: %s to %s\n\n%s" % (

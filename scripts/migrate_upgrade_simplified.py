@@ -28,6 +28,13 @@ OPEN = ("open", "awaiting-asker", "awaiting-upstream", "accepted")
 CLOSED_INITIATIVE = ("done", "abandoned")
 APPLIED = ("formulated", "approved", "merged", "withdrawn")
 PROPOSALS = ("capability-proposal", "glossary-proposal")
+EARLIER = "left for a session to write: %s/" % WORK.as_posix()   # an earlier step's note on the queue this one freezes
+
+
+def superseded(note):
+    """Whether an earlier step's note (1.0.0's proposal "in 0.29 lines") asks for a write into the queue this step
+    freezes: in the same upgrade it is dropped, since `FROZEN.md` says nothing writes there (plan-9 review S5)."""
+    return note.startswith(EARLIER)
 
 
 def title(data, body):

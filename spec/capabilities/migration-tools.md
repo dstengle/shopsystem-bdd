@@ -522,7 +522,11 @@ the tracked file `.shop/work/requests/q2.md` holds:
   name and id unchanged; a destination that exists is a change it cannot make. When `spec/decisions/` exists, it
   rewrites `spec/decisions/index.md` as `model decisions` writes it. Nothing is deleted, and nothing else under
   `.shop/work/` changes. It prints, and the commit message lists, each initiative neither `done` nor `abandoned`, each
-  capability- or glossary-proposal never applied, each internal request not closed, and each request moved.
+  capability- or glossary-proposal never applied, each internal request not closed, and each request moved. In the
+  same upgrade as the 1.0.0 step, the 1.0.0 step's "left for a session to write" of a proposal under `.shop/work/` is
+  dropped: the queue is frozen, and the 2.0.0 step's note names the proposal.
+- `migrate upgrade` refuses, before it plans any step, when git has no author or committer identity
+  (`git var GIT_AUTHOR_IDENT`, `GIT_COMMITTER_IDENT`), naming `git config user.name` and `user.email`.
 - `migrate status` and `migrate upgrade` refuse a `.shop/plugin-version` that holds no version, naming an empty file
   as empty and otherwise what it holds; the SessionStart hook tells the session the same.
 
