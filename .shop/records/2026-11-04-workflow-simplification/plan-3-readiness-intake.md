@@ -619,11 +619,11 @@ Meets `brainstorming#r1` and `r2`; `r3` stays unbuilt (D15).
 - Create: `.shop/records/2026-11-04-workflow-simplification/plan-3-implementation.md`
 - Modify: `.shop/records/README.md` (a row for the report); this plan (every box ticked)
 
-- [ ] **Step 1: Every requirement of the plan is built.**
+- [x] **Step 1: Every requirement of the plan is built.**
   Run: `python3 -c "import sys; sys.path.insert(0,'scripts'); import pathlib, spec_unbuilt as u; d=u.unbuilt(pathlib.Path('.')); print('readiness' in d, 'intake' in d, sorted(d.get('brainstorming', ())), sum(map(len,d.values())), u.problems(pathlib.Path('.')))"`
   Expected: `False False ['r3'] 36 []`.
   (36 = 48 − 4 readiness − 6 intake − 2 brainstorming.)
-- [ ] **Step 2: The baselines, all at once.**
+- [x] **Step 2: The baselines, all at once.**
   Run: `python3 -m pytest -q | tail -2; python3 scripts/model check | tail -1; python3 scripts/model logic | tail -1; python3 scripts/model lexicon --check | tail -1; python3 scripts/features generate --check; python3 scripts/features vocab --check | tail -1; python3 scripts/features bindings --unbound; python3 scripts/tools size --limit 300; python3 scripts/tools check $(git diff --name-only 3d9e2a91...HEAD -- '*.py' scripts/work)`
   Expected:
   - the suite: `27 xfailed`, no failures, passed = 1067 + 10 + the new script tests;
@@ -632,7 +632,7 @@ Meets `brainstorming#r1` and `r2`; `r3` stays unbuilt (D15).
   - the lexicon: `401 terms, 0 problems`;
   - `generate --check`: exit 0; `vocab --check`: `every step has one handler`; `bindings --unbound`: `every binding
     names a scenario`; `size`: silent; `check`: nothing to report.
-- [ ] **Step 3: A smoke run in a scratch repository,** both ways in:
+- [x] **Step 3: A smoke run in a scratch repository,** both ways in:
   ```bash
   d=$(mktemp -d) && git -C "$d" init -q -b main && git -C "$d" config user.name t && git -C "$d" config user.email t@example.com
   cp -r tests/scripts/fixtures/generate/repo/spec "$d/" && rm "$d/spec/capabilities/legacy.md"
@@ -655,15 +655,15 @@ Meets `brainstorming#r1` and `r2`; `r3` stays unbuilt (D15).
   - the first `W ready b2` refused naming `line 1 of request q1`; the second readies b2;
   - `work backlog`'s `ready` table holds b1 and b2, b2 with provenance `peer`;
   - `git -C "$d" status --porcelain` empty, and `git -C "$d" diff --stat "$(git -C "$d" rev-list --max-parents=0 HEAD)" HEAD -- spec` empty.
-- [ ] **Step 4: Write the implementation report** at
+- [x] **Step 4: Write the implementation report** at
   `.shop/records/2026-11-04-workflow-simplification/plan-3-implementation.md`, in `plan-2-implementation.md`'s form
   (no frontmatter): Final state (each Step 2 figure as measured, and the smoke run's `work ready` time); the commits,
   a table of each task's commit, what was done and its verification; deviations, each with its reason; D1-D19, each
   kept or changed; open problems for plan 4 and later; files.
-- [ ] **Step 5: Index the records.** Add a row to `.shop/records/README.md` after the row for `plan-2-rulings.md`:
+- [x] **Step 5: Index the records.** Add a row to `.shop/records/README.md` after the row for `plan-2-rulings.md`:
   `| \`2026-11-04-workflow-simplification/plan-3-implementation.md\` | plan 3 executed: readiness and intake built (an item's requirement lines and \`work line\`, \`work ready\` checking the bar on a copy of \`spec/\`, \`work intake\`, \`work outcome\` accepting into the item, refusing with a reason and counter-proposing), the shaping-items and taking-in-a-request skills, 12 requirements out of \`unbuilt:\` | report |`.
   Tick every box of this plan.
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
   ```bash
   git add .shop/records/2026-11-04-workflow-simplification/plan-3-implementation.md .shop/records/README.md \
     .shop/records/2026-11-04-workflow-simplification/plan-3-readiness-intake.md
