@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: [r7, r8, r9, r10, r11, r12, r13]
+unbuilt: [r9, r10]
 ---
 
 # Batches
@@ -112,3 +112,10 @@ question while building parks its item and the rest of the batch carries on. The
   `.shop/delivery.toml`, default `python3 -m pytest -q -p work_items`, run with the plugin's scripts on PYTHONPATH.
   `work batch resume` gives each pending task of an `in-batch` item its worktree `batch-<n>-t<k>` and sets it
   `running`; a parked item's task goes back to `pending`, its branch kept for when the item returns.
+- `work batch review` merges each `in-batch` item's branch into `batch-<n>` with `--no-ff`, in plan order, in the
+  batch's worktree; two items of one capability each take their own ids out of its one `unbuilt:` line, and that
+  conflict alone is settled by the merge, any other refuses. It runs the tests there, pushes `batch-<n>` with `git
+  push -u` to the base branch's upstream remote (else `origin`), and creates a draft pull request with `gh pr create
+  --draft`, its body naming each `in-batch` item with its requirement ids and each parked one; a batch that has a
+  pull request already is pushed only. gh is `$SHOPSYSTEM_WORK_GH`, else `gh`. A review refused while merging,
+  testing, pushing or creating puts the batch branch, and the remote's, back where they were.

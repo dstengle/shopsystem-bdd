@@ -75,11 +75,16 @@ def has_branch(root, branch):
                           capture_output=True).returncode == 0
 
 
-def trees_dir(root):
+def trees_path(root):
     """Where a batch's worktrees go: `[batch] worktrees` of `.shop/delivery.toml` (relative to the root, or
-    absolute), else `.shop/worktrees/`; made with a `.gitignore` of `*`, so the base checkout stays clean (D19)."""
+    absolute), else `.shop/worktrees/` (D19)."""
     given = delivery(root).get("batch", {}).get("worktrees")
-    path = Path(root) / (given if given else TREES)
+    return Path(root) / (given if given else TREES)
+
+
+def trees_dir(root):
+    """`trees_path`, made with a `.gitignore` of `*`, so the base checkout stays clean (D19)."""
+    path = trees_path(root)
     path.mkdir(parents=True, exist_ok=True)
     ignore = path / ".gitignore"
     if not ignore.is_file():

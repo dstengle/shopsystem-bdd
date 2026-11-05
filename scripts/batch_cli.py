@@ -5,6 +5,7 @@ import json
 
 import backlog_items
 import batch_plan
+import batch_review
 import batch_start
 import batch_tasks
 from workqueue import Refused
@@ -26,6 +27,8 @@ def add_parsers(sub):
     s.add_argument("batch")
     s.add_argument("item")
     s.add_argument("--question", required=True)
+    s = cmds.add_parser("review", help="merge the in-batch items into the batch branch, test, push and publish its pull request")
+    s.add_argument("batch")
 
 
 def _item(root, name):
@@ -96,8 +99,14 @@ def park(args):
     return 0
 
 
+def review(args):
+    print(batch_review.review(args.root, args.batch))
+    return 0
+
+
 def cmd_batch(args):
-    return {"start": start, "status": status, "resume": resume, "done": done, "park": park}[args.batch_cmd](args)
+    return {"start": start, "status": status, "resume": resume, "done": done, "park": park,
+            "review": review}[args.batch_cmd](args)
 
 
 COMMANDS = {"batch": cmd_batch}

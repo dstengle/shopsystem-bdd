@@ -63,3 +63,88 @@ def question_on_item(step):
         return False
     assert step.context["questions_written"][question] == item, (step.text, step.context["questions_written"])
     assert W.field(B.item_file(step, item), "status") == "needs-input", step.text
+
+
+@handler("WhenRuns", "`work batch review`")
+def batch_review(step):
+    T.prepare(step)
+    T.ensure_batch(step)
+    T.run_batch(step, "review", T.batch_name(step, step.names[-1]))
+
+
+@handler("GivenK", "commit")
+def given_commit(step):
+    T.given(step, "commit", step.names[0])
+
+
+@handler("GivenK_C", "commit")
+def given_uncited(step):
+    assert step.text.endswith(" is uncited"), step.text
+    T.given(step, "commit", step.names[0])["uncited"] = True
+
+
+@handler("GivenK", "pull request")
+def given_pull_request(step):
+    T.given(step, "pull request", step.names[0])
+
+
+def commit_of(step):
+    commit, item = step.names
+    T.given(step, "commit", commit)["item"] = item
+
+
+def pull_request_of(step):
+    pr, batch = step.names
+    T.given(step, "batch", batch)
+    T.given(step, "pull request", pr)["batch"] = batch
+
+
+B.OF_GIVENS["commit"] = commit_of
+B.OF_GIVENS["pull request"] = pull_request_of
+
+
+def created(step):
+    """The argv of the stand-in gh's last `pr create`."""
+    calls = [c for c in T.gh_calls(step) if c[:2] == ["pr", "create"]]
+    assert calls, ("no pull request was created", T.gh_calls(step))
+    return calls[-1]
+
+
+def remote_head(step, branch):
+    found = T.git(step, "ls-remote", "origin", "refs/heads/%s" % branch).split()
+    return found[0] if found else None
+
+
+@handler("ThenDoes", "publish")
+def publishes(step):
+    """The run created a pull request through gh and pushed the batch's branch, as it is, to the remote."""
+    done = step.context["result"]
+    assert done.returncode == 0, done.stderr
+    call = created(step)
+    head = call[call.index("--head") + 1]
+    assert remote_head(step, head) == T.git(step, "rev-parse", head).strip(), (step.text, head)
+    step.context.setdefault("prs", {})[step.names[0]] = done.stdout.strip().splitlines()[-1]
+
+
+@handler("ThenDoesNot", "publish")
+def publishes_not(step):
+    """The command exited 0 and the commit is not reachable from the remote's batch branch."""
+    done = step.context["result"]
+    assert done.returncode == 0, done.stderr
+    sha = step.context["commits"][step.names[0]]
+    pushed = remote_head(step, created(step)[created(step).index("--head") + 1])
+    assert pushed and sha not in T.git(step, "rev-list", pushed).split(), (step.text, sha)
+
+
+@local("ThenR", "pull request")
+def pull_request_of_batch(step):
+    if step.term != "of":
+        return False
+    call = created(step)
+    assert call[call.index("--head") + 1] == T.batch_name(step, step.names[1]), (step.text, call)
+
+
+@handler("ThenR", "cites")
+def pull_request_cites(step):
+    call = created(step)
+    assert step.context["says"][step.names[1]] in call[call.index("--body") + 1], (step.text, call)

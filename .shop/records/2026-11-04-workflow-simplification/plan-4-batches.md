@@ -683,7 +683,7 @@ Builds `batches#r7`, `r8`, `r11`, `r12` and `r13`.
 - `batch_review.title(batch, items) -> str`: `batch-1: <title>; <title>`. `batch_review.body(root, batch) -> str`
   (D11).
 
-- [ ] **Step 1: Write the failing script tests** (`test_batch_review.py`, on a batch with both tasks done):
+- [x] **Step 1: Write the failing script tests** (`test_batch_review.py`, on a batch with both tasks done):
   - `test_review_publishes_the_pull_request`:
     - Exit 0, printing `https://github.com/ex/ctx/pull/1`.
     - The batch is `in-review` with that `pull_request`.
@@ -706,17 +706,17 @@ Builds `batches#r7`, `r8`, `r11`, `r12` and `r13`.
     (the fix) is pushed, no `pr create` call is made, and the batch is `in-review`.
   - `test_review_leaves_the_checkout_alone` (Review Focus 2).
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_batch_review.py -q`
   Expected: FAIL; `review` does not exist.
 
-- [ ] **Step 3: Implement `batch_review.py` and the parser.**
+- [x] **Step 3: Implement `batch_review.py` and the parser.**
 
-- [ ] **Step 4: Run them.**
+- [x] **Step 4: Run them.**
   Run: `python3 -m pytest tests/scripts/test_batch_review.py -q | tail -1`
   Expected: all pass.
 
-- [ ] **Step 5: The handlers, and r7, r8, r11, r12, r13 out of `unbuilt:`.**
+- [x] **Step 5: The handlers, and r7, r8, r11, r12, r13 out of `unbuilt:`.**
   - `ThenDoes publish`: the stand-in's `pr create` call, and the remote's `batch-1`.
   - `ThenR of pull request`: its `--head` is the batch's branch.
   - `ThenDoesNot publish commit`: the commit's sha is not reachable from the remote's `batch-1`, and the command
@@ -728,15 +728,15 @@ Builds `batches#r7`, `r8`, `r11`, `r12` and `r13`.
   Run: `python3 -m pytest tests/scenarios/test_batches.py -q -rxX -n 0 | tail -6`
   Expected: r1-r8 and r11-r13 passed; r9, r10 xfailed.
 
-- [ ] **Step 6: Mutations,** each reverted:
+- [x] **Step 6: Mutations,** each reverted:
   - merging a parked item's branch fails r7;
   - leaving the label out of the body fails r11;
   - skipping the task check fails r12;
   - skipping `uncited` fails r13.
 
-- [ ] **Step 7: The baselines.** Expected: `16 xfailed`, no failures.
+- [x] **Step 7: The baselines.** Expected: `16 xfailed`, no failures.
 
-- [ ] **Step 8: Commit.**
+- [x] **Step 8: Commit.**
   ```bash
   git add scripts/batch_review.py scripts/batch_cli.py tests/scenarios/batches_handlers*.py tests/scripts/test_batch_review.py \
     spec/capabilities/batches.md CLAUDE.md
