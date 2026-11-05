@@ -1,5 +1,21 @@
 # CLAUDE.md
 
+## Working rules
+
+- A request's lines only propose. Write accepted lines in this context's own terms, and keep how a request is kept
+  or exchanged out of every line (design-decision/requests-only-propose).
+- A requirement is never edited in place. A changed one gets a new id and the old id goes to `retired:`
+  (design-decision/requirements-retired-never-edited).
+- A stated intention goes into the backlog in the same turn: `work idea` for this context's own, `work request` for
+  an upstream's. It is never kept only in a session's memory or in a record's findings.
+- Every report a session or an agent writes (an analysis, an investigation, research with recommendations) is kept
+  as `.shop/records/<date>-<topic>.md`, supporting files in a folder of the same name, indexed in
+  `.shop/records/README.md` and committed. A committed record is never edited.
+- A plan is carried out by one fresh agent that implements every task in order, then one fresh reviewer of the whole
+  branch; not an implementer and a reviewer per task, and not inside a long main session.
+- Requirement lines are what the rest of the system stands on: when work touches spec lines or requests, weigh
+  their clarity and checkability first.
+
 ## Size limit
 
 Code and test files, every tracked Python file, stay at 300 lines or fewer. `python3 scripts/tools size --limit 300` prints each one over it with its line count and exits 1 when there is any. A change does not push a file over the limit; a file that is over it already is split by the work that names it.
