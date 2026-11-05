@@ -47,8 +47,9 @@ person in the loop unless the two sides cannot agree. The brainstorming route is
 - `work intake <request>` writes a `shaped` item and changes nothing in the request: titled by the request's heading,
   with `request: q<n>` and `asked_by: <the request's asker>` in its frontmatter, its provenance read off the asker
   (this context's own asker: `own`; a `product/` id: `product`; any other: `peer`), and the note `taken in from
-  request q<n> "<title>"`. It takes a request in the upstream's turn (`open` or `awaiting-upstream`), and refuses one
-  another item was already taken in from, naming that item.
+  request q<n> "<title>"`. It takes a request in the upstream's turn (`open` or `awaiting-upstream`, with `turn:
+  upstream`), and refuses one another item was already taken in from, naming that item, and this context's own
+  request to its upstream (taken in there).
 - The request lines of an item are the lines of its request whose line outcome is not `rewritten`: a rewritten line is
   no longer the item's, its counter-proposal is. So every request line of the item is settled once each is `accepted`,
   `refused` or `withdrawn`.
@@ -56,7 +57,7 @@ person in the loop unless the two sides cannot agree. The brainstorming route is
   taken in from, keeps the old refusals (the asker's turn, the upstream's part) and: `accepted` writes the line into
   the item's `## Requirements` under `--into <capability>`; `refused` needs `--reason`; `rewritten --line <text>`
   checks the counter-proposal in the context's grammar, appends it to the request's `## Lines` and passes the turn to
-  the asker (`awaiting-asker`). On a request taken in, the item gains a note naming the line and its outcome, and the
+  the asker (`awaiting-asker`). On a request taken in, a word that is not a `line outcome` is refused, and the item gains a note naming the line and its outcome, and the
   request and the item are one commit. Without these options, on a request no item was taken in from, `work outcome`
   is as before.
 - A reason (`--reason`, or `rewritten as line <m>`) is written under the request's `## Reasons` as `<n>. <text>`, a
@@ -68,3 +69,6 @@ person in the loop unless the two sides cannot agree. The brainstorming route is
 - The intake session started by `work backlog` (design: "a session started when the backlog command runs intake"):
   waits for plan 4's batches, which build the `claude -p` plumbing. Until then the skill `taking-in-a-request` is that
   session's instructions, run by any session.
+- A request whose counter-proposal is settled closing: `work turn` counts a `rewritten` line as unsettled, so such a
+  request returns to `awaiting-asker` and never reaches `accepted`. A requests line in plan 4 counts a rewritten line
+  whose counter-proposal is settled as settled (workflow simplification plan-3 review S4).

@@ -169,7 +169,7 @@ def main(argv=None):
     q.add_argument("--thread")
     q.add_argument("--raised-for", dest="raised_for", help="the request of the asker this one is raised for")
     q.add_argument("--delegation")
-    q = sub.add_parser("outcome", help="write the outcome of a line of a request")
+    q = sub.add_parser("outcome", help="write the outcome of a line of a request", allow_abbrev=False)
     q.add_argument("request")
     q.add_argument("line", type=int)
     q.add_argument("outcome")

@@ -146,6 +146,49 @@ def test_old_outcome_is_unchanged(ready_repo, tmp_path):
 
 def test_model_check_accepts_reasons(taken):
     assert work(taken, "outcome", "q1", "1", "refused", "--reason", "out of scope").returncode == 0
-    done = subprocess.run([sys.executable, str(REPO / "scripts" / "model"), "check", "--root", str(taken)],
+    done = subprocess.run([sys.executable, str(REPO / "scripts" / "model"), "--root", str(taken), "check"],
                           capture_output=True, text=True)
-    assert "a section other than" not in done.stdout + done.stderr, done.stdout
+    assert done.returncode != 2, done.stderr
+    assert [n for n in (done.stdout + done.stderr).splitlines() if "q1.md" in n] == [], done.stdout
+
+
+def test_a_word_that_is_not_a_line_outcome_is_refused(taken):
+    """plan-3 review M1: the glossary's `line outcome` values only, on a request taken in."""
+    before = state(taken)
+    done = work(taken, "outcome", "q1", "1", "bogus")
+    assert done.returncode == 1 and "bogus" in done.stderr and "withdrawn" in done.stderr, done.stderr
+    assert state(taken) == before
+
+
+def test_outcome_takes_no_abbreviated_option(taken):
+    """plan-3 review M2: `--in` (work line's) is not read as `--into`."""
+    before = state(taken)
+    done = work(taken, "outcome", "q1", "1", "accepted", "--in", "g1")
+    assert done.returncode == 2 and "--in" in done.stderr, done.stderr
+    assert state(taken) == before
+
+
+def test_a_counter_proposal_that_does_not_parse_is_named_so(taken):
+    """plan-3 review M7: the refusal names the counter-proposal, not a line of the request."""
+    done = work(taken, "outcome", "q1", "1", "rewritten", "--line", FROBNICATE)
+    assert done.returncode == 1 and "the counter-proposal does not parse" in done.stderr, done.stderr
+    assert "line 1 does not parse" not in done.stderr, done.stderr
+
+
+def test_the_note_puts_into_before_the_reason(taken):
+    """plan-3 review M10."""
+    done = work(taken, "outcome", "q1", "1", "accepted", "--into", "work-queue", "--reason", "fits")
+    assert done.returncode == 0, done.stderr
+    assert backlog_items.find(taken, "b1").sections["Notes"].splitlines()[-1] == (
+        "line 1 of request q1 accepted into work-queue#r5: fits")
+
+
+def test_a_malformed_backlog_is_refused_not_passed_over(taken):
+    """plan-3 review M11: `work outcome` does not take a taken-in request down the old path when the backlog is bad."""
+    item = taken / ".shop" / "backlog" / "b1.md"
+    item.write_text(item.read_text().replace("status: shaped", "status: nonsense"))
+    git(taken, "commit", "-qam", "break b1")
+    before = state(taken)
+    done = work(taken, "outcome", "q1", "1", "accepted")
+    assert done.returncode == 1 and "b1.md" in done.stderr, done.stderr
+    assert state(taken) == before

@@ -52,18 +52,31 @@ def test_intake_refuses_a_request_taken_in(asked):
     assert state(repo) == before
 
 
-@pytest.mark.parametrize("status, taken", [("awaiting-asker", False), ("delivered", False),
-                                           ("awaiting-upstream", True)])
-def test_intake_refuses_a_request_out_of_turn(ready_repo, status, taken):
-    write_request(ready_repo, "q1", lines=(ABANDON,), status=status,
-                  turn="upstream" if status == "awaiting-upstream" else "asker")
+@pytest.mark.parametrize("status, turn, taken, named", [("awaiting-asker", "asker", False, "awaiting-asker"),
+                                                         ("delivered", "asker", False, "delivered"),
+                                                         ("open", "asker", False, "in the asker's turn"),
+                                                         ("awaiting-upstream", "upstream", True, "")])
+def test_intake_refuses_a_request_out_of_turn(ready_repo, status, turn, taken, named):
+    write_request(ready_repo, "q1", lines=(ABANDON,), status=status, turn=turn)
     before = state(ready_repo)
     done = work(ready_repo, "intake", "q1")
     if taken:
         assert done.returncode == 0, done.stderr
     else:
-        assert done.returncode == 1 and status in done.stderr, done.stderr
+        assert done.returncode == 1 and named in done.stderr, done.stderr
         assert state(ready_repo) == before
+
+
+def test_intake_refuses_this_contexts_own_request_to_an_upstream(ready_repo):
+    """plan-3 review S1: a request this context asks its upstream is taken in there, not here."""
+    index = ready_repo / "spec" / "index.md"
+    index.write_text(index.read_text() + "\n## Upstreams\n\n- bounded-context/ex.com/prod/up: the upstream.\n")
+    write_request(ready_repo, "q1", lines=(ABANDON,), asker="bounded-context/ex.com/prod/ctx")
+    before = state(ready_repo)
+    done = work(ready_repo, "intake", "q1")
+    assert done.returncode == 1, done.stdout
+    assert 'q1 "Archive old items" is a request to the upstream up; it is taken in there' in done.stderr, done.stderr
+    assert state(ready_repo) == before
 
 
 def test_intake_refuses_a_request_there_is_not(ready_repo):

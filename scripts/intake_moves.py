@@ -4,7 +4,9 @@ the ones workqueue_request.py keeps; `work intake` changes nothing in the reques
 import re
 from pathlib import Path
 
+import backlog_lines
 import workqueue
+import workqueue_lines
 import workqueue_request
 from backlog_items import (
     Item,
@@ -21,6 +23,7 @@ from backlog_moves import CLOSED, add_note, text_line
 from workqueue_request import _entries, _numbered, _with_entries, _with_field, field
 
 TAKES = ("open", "awaiting-upstream")      # the upstream's turn
+OUTCOMES = ("accepted", "rewritten", "refused", "question", "withdrawn")    # the glossary's `line outcome`
 
 
 def provenance_of(root, asker):
@@ -48,16 +51,22 @@ def named(request, text):
 def intake(root, request):
     """Write the `shaped` item request `request` is taken in as, and commit it alone (D10): titled by the request's
     heading, asked by its asker, its provenance read off the asker. A request already taken in, and one that is not in
-    the upstream's turn, are refused."""
+    the upstream's turn, and this context's own request to its upstream (taken in there), are refused."""
     text = workqueue.read(workqueue_request.path_of(root, request), root)
     had = linked(root, request)
     if had is not None:
         raise Refused("work intake: %s was taken in already, as %s" % (named(request, text), label(had)))
-    status = workqueue_request.field(text, "status")
+    asker, upstreams = field(text, "asker"), workqueue_request.upstreams(root)
+    if upstreams and asker in workqueue_request.own_askers(root) and field(text, "source") is None:
+        raise Refused("work intake: %s is a request to the upstream %s; it is taken in there"
+                      % (named(request, text), upstreams[0]))
+    status = field(text, "status")
     if status not in TAKES:
         raise Refused("work intake: %s is %s; work intake takes a request that is open or awaiting-upstream"
                       % (named(request, text), status))
-    asker = workqueue_request.field(text, "asker")
+    if field(text, "turn") != "upstream":
+        raise Refused("work intake: %s is in the asker's turn; work intake takes a request in the upstream's turn"
+                      % named(request, text))
     name = next_name(root)
     item = Item(name=name, ident="item/%s/%s" % (workqueue.context_path(root), name),
                 title=one_line(title_of(text), "request's title"), status="shaped",
@@ -69,18 +78,17 @@ def intake(root, request):
 
 def handles(args):
     """Whether `work outcome` is intake's: one of its options given (`--line` is `text`, `line` the line's number),
-    or an item taken in from the request."""
+    or an item taken in from the request. A malformed backlog is refused, not read as no item."""
     if any(getattr(args, k, None) is not None for k in ("into", "group", "reason", "text")):
         return True
-    try:
-        return linked(args.root, args.request) is not None
-    except Refused:
-        return False
+    return linked(args.root, args.request) is not None
 
 
 def _refusals(root, ident, text, number, word, item, into, group, reason, line):
     """Refuse, before anything is written, an outcome intake does not take (D12); the old refusals first."""
     workqueue_request._refuse_upstream_part(root, text, ident, "the line outcomes")
+    if word not in OUTCOMES:
+        raise Refused("work outcome: %s is not a line outcome; give one of %s" % (word, ", ".join(OUTCOMES)))
     if field(text, "turn") == "asker":
         raise Refused("%s is in the asker's turn; the upstream writes a line outcome only in its own turn" % ident)
     if str(number) not in {e.split(". ", 1)[0] for e in _entries(text, "Lines")}:
@@ -112,7 +120,14 @@ def outcome(root, ident, number, word, into=None, group=None, reason=None, line=
     note = "line %d of request %s %s" % (number, ident, word)
     if line is not None:
         line = text_line(line, "counter-proposal")
-        workqueue_lines_check(root, line)
+        try:
+            workqueue_lines.check(root, [line])
+        except Refused as refused:
+            said, head = str(refused), "line 1 does not parse in the upstream's requirement grammar: "
+            if not said.startswith(head):
+                raise
+            raise Refused("work outcome: the counter-proposal does not parse in this context's requirement grammar: "
+                          + said[len(head):]) from None
         lines = _entries(text, "Lines")
         at = max(int(e.split(".", 1)[0]) for e in lines) + 1
         after = _with_entries(after, "Lines", lines + ["%d. %s" % (at, line)])
@@ -120,14 +135,13 @@ def outcome(root, ident, number, word, into=None, group=None, reason=None, line=
         after = _with_field(_with_field(after, "status", "awaiting-asker"), "turn", "asker")
         reason = reason or "rewritten as line %d" % at
         note += " as line %d" % at
-    elif reason is not None:
-        note += ": %s" % reason
     if reason is not None:
         after = _with_entries(after, "Reasons", _numbered(_entries(after, "Reasons"), number, reason))
     if item is not None and word == "accepted":
-        import backlog_lines
         written = dict(e.split(". ", 1) for e in _entries(text, "Lines"))[str(number)]
-        note += " into %s" % backlog_lines.add_line_to(root, item, into, written, group)
+        note += " into %s" % backlog_lines.add_line_to(root, item, into, written, group, command="work outcome")
+    if reason is not None and line is None:
+        note += ": %s" % reason
     rels = [str(path.relative_to(root))]
     message = "work outcome: %s line %d %s" % (ident, number, word)
     if item is not None:
@@ -141,8 +155,3 @@ def outcome(root, ident, number, word, into=None, group=None, reason=None, line=
             (Path(root) / rel_of(item.name)).write_text(render(item))
     workqueue.committed(root, rels, message, write)
 
-
-def workqueue_lines_check(root, line):
-    """The counter-proposal checked in this context's grammar, as `work request` checks a line (requests r2)."""
-    import workqueue_lines
-    workqueue_lines.check(root, [line])
