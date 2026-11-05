@@ -81,7 +81,8 @@ def thing(step, name):
 PATHS = {"work-item": r"\.shop/work/[^/]+/w\d+\.md", "initiative": r"\.shop/work/[^/]+/initiative\.md",
          "request": r"\.shop/requests/q\d+\.md", "capability-proposal": r"\.shop/work/[^/]+/[^/]+\.md",
          "glossary-proposal": r"\.shop/work/[^/]+/[^/]+\.md", "transition": r"\.shop/work/[^/]+/log\.jsonl",
-         "ledger": r"\.shop/work/[^/]+/ledger\.md"}
+         "ledger": r"\.shop/work/[^/]+/ledger\.md", "design-decision": r"spec/decisions/\d{4}-[^/]+\.md",
+         "record": r"\.shop/records/\d{4}-\d\d-\d\d-[^/]+\.md"}
 
 
 SECTIONS = {"answer": "## Answers", "question": "## Questions", "resolution": "## Resolution",

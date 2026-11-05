@@ -80,8 +80,10 @@ def given_decision_is(step):
 def given_unenforced(step):
     """untiered, untested and unrequired: the decision as written gives no tier, no test, no requirement. Any other
     condition (design-model-check's headless) goes on to the registry."""
-    if step.text.rsplit(" is ", 1)[1] not in ("untiered", "untested", "unrequired"):
+    condition = step.text.rsplit(" is ", 1)[1]
+    if condition not in ("untiered", "untested", "unrequired"):
         return False
+    step.context.setdefault(condition, set()).add(bare(step.names[0]))
 
 
 @handler("GivenR", "supersedes")
@@ -153,3 +155,28 @@ def uses_test(step):
     assert any(line.startswith(("holds ", "failing ")) and said in line for line in done.stdout.splitlines()), \
         (said, done.stdout)
     assert name in (outside(step) / "ran").read_text().split(), done.stdout
+
+
+@handler("WhenRuns", "`work decision`")
+def work_decision(step):
+    """`work decision` in the repository, committed first, with a title, a summary and the decision's text: given the
+    tier `judgement`, or no `--tier` where the step names a decision a Given made untiered."""
+    H.base(step.repo, step.context)
+    step.context["head"] = W.init(step.repo)
+    named = [bare(n) for n in step.names]
+    tier = [] if set(named) & step.context.get("untiered", set()) else ["--tier", "judgement"]
+    step.context["work_decision"] = True
+    step.context["result"] = step.run("work", "decision", named[0] if named else "Decided once", "--summary",
+                                      "One sentence.", "--decision", "So it is.", *tier)
+
+
+@local("ThenExitsErr")
+def decision_refused(step):
+    """After `work decision`: an error naming each code the step names (`--tier`)."""
+    if not step.context.get("work_decision"):
+        return False
+    done = step.context["result"]
+    assert done.returncode != 0, done.stdout
+    for np in step.nps:
+        for word in (w.strip("`") for w in np.split() if w.startswith("`")):
+            assert word in done.stderr, (word, done.stderr)
