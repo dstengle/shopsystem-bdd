@@ -784,7 +784,7 @@ This repository's own requests are not moved here: Task 10's `migrate upgrade` m
 
 ### Task 10: This repository on 2.0.0, its open work entered again
 
-- [ ] **Step 1: Upgrade.** With a clean tree, run `python3 scripts/migrate upgrade`.
+- [x] **Step 1: Upgrade.** With a clean tree, run `python3 scripts/migrate upgrade`.
   - Before it, count what the notes must name:
     `grep -L '^status: \(done\|abandoned\)' .shop/work/*/initiative.md | wc -l` (open initiatives) and
     `grep -l '^status: \(open\|awaiting-asker\|awaiting-upstream\|accepted\)' .shop/work/requests/q*.md | xargs grep -l '^asker: internal' | wc -l`
@@ -794,23 +794,23 @@ This repository's own requests are not moved here: Task 10's `migrate upgrade` m
     `moved request q14 to .shop/requests/`.
   - migrate makes the one commit.
   - Save the output to `/home/vscode/.claude/jobs/7e9ba079/tmp/p9/upgrade.txt` for the report.
-- [ ] **Step 2: Verify the upgrade.**
+- [x] **Step 2: Verify the upgrade.**
   - `git show --stat HEAD` lists `.shop/plugin-version`, `.shop/work/FROZEN.md`, the rename of
     `.shop/work/requests/q14.md`, and nothing deleted.
   - `spec/decisions/index.md` is unchanged, since it was already current.
   - `python3 scripts/migrate status` lists no pending step.
   - `python3 scripts/model check | tail -1` gives `0 violations, 16 warnings, 0 unresolved references, 0 file
     problems`. If q14 brings a violation, stop, name it in the report, and do not edit q14.
-- [ ] **Step 3: Enter the surviving work** (D20), one command each, with `python3 scripts/work idea "<title>" --note
+- [x] **Step 3: Enter the surviving work** (D20), one command each, with `python3 scripts/work idea "<title>" --note
   "from <source> of the frozen queue (.shop/work/…)"`. Each commits itself.
-- [ ] **Step 4: Measure the names table** (plan-8 Q2). Run `python3 scripts/conversation_hook names | wc -l` and
+- [x] **Step 4: Measure the names table** (plan-8 Q2). Run `python3 scripts/conversation_hook names | wc -l` and
   `time python3 scripts/conversation_hook names`. Expected: 4 item rows, under 0.2 s. Record both. No narrowing,
   because it is under 50 rows.
-- [ ] **Step 5: The gate**, all figures as the Intended baselines, then `git status --porcelain` empty.
+- [x] **Step 5: The gate**, all figures as the Intended baselines, then `git status --porcelain` empty.
 
 ### Task 11: Verification, the implementation report and the records
 
-- [ ] **Step 1: The full verification.** Run:
+- [x] **Step 1: The full verification.** Run:
   - the gate;
   - `python3 -m pytest -m timing -n 0 -q | tail -1` (expected `4 passed`);
   - `python3 -m pytest -q -p no:cacheprovider` twice more, recording any flaky failure by name;
@@ -821,7 +821,7 @@ This repository's own requests are not moved here: Task 10's `migrate upgrade` m
 
   Each figure must be as the Intended baselines. Where `model logic` differs from the expected 4 L5, list each
   finding.
-- [ ] **Step 2: The smoke run on a copy** under `/home/vscode/.claude/jobs/7e9ba079/tmp/p9/smoke`. Make it with
+- [x] **Step 2: The smoke run on a copy** under `/home/vscode/.claude/jobs/7e9ba079/tmp/p9/smoke`. Make it with
   `git clone -q . <dir>`, never `cp` with `rm`. In it, check out `19e9fee5`: a real 1.0 repository
   (`.shop/plugin-version` holds `1.0.0`) with 66 initiatives and 49 requests. Then:
   1. from that directory, run this branch's `migrate upgrade` by the absolute path of the worktree's
@@ -830,7 +830,7 @@ This repository's own requests are not moved here: Task 10's `migrate upgrade` m
      Task 10 printed.
 
   Record the wall time.
-- [ ] **Step 3: Write `plan-9-implementation.md`** in this folder, in `plan-8-implementation.md`'s form (no
+- [x] **Step 3: Write `plan-9-implementation.md`** in this folder, in `plan-8-implementation.md`'s form (no
   frontmatter):
   - final state: each figure as measured, beside the baseline;
   - the commits: a table of each task's commit, what was done, its verification and its collection-diff count;
@@ -840,12 +840,12 @@ This repository's own requests are not moved here: Task 10's `migrate upgrade` m
   - the "Every item left for plan 9" table, each row settled (with its commit) or open (with its reason);
   - open problems: the 4 open rows, the requests left out by D20 (q14 to resolve), and anything found;
   - files.
-- [ ] **Step 4: Index the records.** Add rows to `.shop/records/README.md` after `plan-8-rulings.md`'s:
+- [x] **Step 4: Index the records.** Add rows to `.shop/records/README.md` after `plan-8-rulings.md`'s:
   - `| \`2026-11-04-workflow-simplification/plan-9-implementation.md\` | plan 9 executed: the old workflow retired (271 lines of 16 capabilities under the-old-workflow-retired, \`work run\`, the queue's commands, \`measure initiative\`, ten agents and six skills deleted), \`.shop/work/\` frozen, live requests in \`.shop/requests/\`, \`migrate upgrade\` 2.0.0 and this repository upgraded, plugin 2.0.0 | report |`;
   - `| \`2026-11-04-workflow-simplification/plan-9-retire.py.txt\` | the helper plan 9 retired requirement lines with: each id into \`retired:\`, its emptied groups removed, their 0.29 ids under \`## Dropped\` | script |`.
 
   Tick every box of this plan.
-- [ ] **Step 5: Commit.**
+- [x] **Step 5: Commit.**
   ```bash
   git add .shop/records/2026-11-04-workflow-simplification/plan-9-implementation.md .shop/records/README.md \
     .shop/records/2026-11-04-workflow-simplification/plan-9-retirement.md
