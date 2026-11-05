@@ -655,11 +655,11 @@ test in the task named.
 - Create: `.shop/records/2026-11-04-workflow-simplification/plan-6-implementation.md`
 - Modify: `.shop/records/README.md` (a row for the report); this plan (every box ticked)
 
-- [ ] **Step 1: Every requirement of the plan is built.**
+- [x] **Step 1: Every requirement of the plan is built.**
   Run: `python3 -c "import sys; sys.path.insert(0,'scripts'); import pathlib, spec_unbuilt as u; d=u.unbuilt(pathlib.Path('.')); print('decision-tiers' in d, sum(map(len,d.values())), u.problems(pathlib.Path('.')))"`
   Expected: `False 9 []`.
 
-- [ ] **Step 2: The baselines, all at once.**
+- [x] **Step 2: The baselines, all at once.**
   Run: `python3 -m pytest -q | tail -2; python3 -m pytest -m timing -n 0 -q | tail -1; python3 scripts/model check | tail -1; python3 scripts/model logic | tail -1; python3 scripts/model lexicon --check | tail -1; time python3 scripts/model decisions --check | tail -1; python3 scripts/features generate --check; python3 scripts/features vocab --check | tail -1; python3 scripts/features bindings --unbound; python3 scripts/tools size --limit 300; python3 scripts/tools check $(git diff --name-only 95178ceb...HEAD -- '*.py')`
   Expected:
   - the suite: `8 xfailed`, no failures. Passed = 1356 + 6 decision-tiers scenarios + the new script tests, and the
@@ -676,7 +676,7 @@ test in the task named.
   - `size`: silent;
   - `check`: clean.
 
-- [ ] **Step 3: A smoke run of the bar's tier-1 check**, in bash, in a scratch repository under the job's tmp
+- [x] **Step 3: A smoke run of the bar's tier-1 check**, in bash, in a scratch repository under the job's tmp
   directory. Each `cp` and each `rm` is its own command (the person's rule).
   ```bash
   d=$(mktemp -d -p /home/vscode/.claude/jobs/7e9ba079/tmp) && git -C "$d" init -q -b main && git -C "$d" config user.name t && git -C "$d" config user.email t@example.com
@@ -702,7 +702,7 @@ test in the task named.
 
   Record the time of each `ready`.
 
-- [ ] **Step 4: Write the implementation report** at `plan-6-implementation.md`, in `plan-5-implementation.md`'s form
+- [x] **Step 4: Write the implementation report** at `plan-6-implementation.md`, in `plan-5-implementation.md`'s form
   (no frontmatter):
   - Final state: each Step 2 figure as measured, and the smoke run's times.
   - The commits: a table of each task's commit, what was done and its verification, the mutations included.
@@ -717,11 +717,11 @@ test in the task named.
     - `model decisions --check` has no `--json` (D18).
   - Files.
 
-- [ ] **Step 5: Index the records.** Add a row to `.shop/records/README.md` after the row for `plan-6-decision-tiers.md`:
+- [x] **Step 5: Index the records.** Add a row to `.shop/records/README.md` after the row for `plan-6-decision-tiers.md`:
   `| \`2026-11-04-workflow-simplification/plan-6-implementation.md\` | plan 6 executed: decisions in tiers (\`tier\`, \`enforced_by\`, \`w_untiered\`, \`v_d6\`-\`v_d8\`, \`model decisions --check\` running the check decisions' tests), the 73 decisions sorted and the old process's superseded by the-workflow-simplified, tier 1 in the readiness bar and the review's checks, 6 requirements out of \`unbuilt:\` | report |`.
   Tick every box of this plan.
 
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
   ```bash
   git add .shop/records/2026-11-04-workflow-simplification/plan-6-implementation.md .shop/records/README.md \
     .shop/records/2026-11-04-workflow-simplification/plan-6-decision-tiers.md
