@@ -270,7 +270,7 @@ The simplified workflow (plan 1, unbuilt):
 - **tier** (attribute of design-decision): Values: `check`, `requirement`, `judgement`.
 - **dependency** (kind): one item's need of another item, written in the item that needs it. Plural: dependencies.
 - **blocked** (condition of item): an item with a dependency on an item that is not `delivered` and is not in the same batch.
-- **well-formed** (condition of item): an item whose every requirement parses, has no L0 or L1 finding of `model logic` with the item's lines laid over `spec/`, and has its scenarios written by `features generate`.
+- **well-formed** (condition of item): an item whose every requirement parses, has no L0 or L1 finding of `model logic` with the item's lines laid over `spec/`, and has its scenarios written by `features generate`, and whose capabilities' `check` design-decisions pass their tests.
 - **passing** (condition of item): An item is passing when the item is well-formed and every request line of the item is settled.
 - **clean** (condition of pull request): A pull request is clean when no review finding on the pull request is `fix now`.
 - **pick** (event): `work batch start` takes a ready item into a batch, or returns it to `shaped` when it is no longer passing. Forms: picks, picked.

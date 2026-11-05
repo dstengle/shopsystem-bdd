@@ -63,6 +63,12 @@ def test_each_refusal_of_review_has_its_way_through():
         assert said in text, (said, text)
 
 
+def test_the_subagent_reads_the_judgement_decisions():
+    """Plan 6, D15: the batch's tasks are its plan, and the judgement decisions go to it as context."""
+    text = step("Dispatch")
+    assert "tier: judgement" in text, text
+
+
 def review_step():
     """The first step naming `pr-reviewer`."""
     return next(n for n, s in enumerate(process(SKILL)) if "pr-reviewer" in s)

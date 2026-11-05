@@ -48,6 +48,10 @@ the item is settled. `work ready` checks the bar and asks nobody.
   is not `shaped` is refused first, naming its status, with no check run.
 - `features generate` is run only on a `service` capability: each of the item's groups comes out as a scenario unless
   it is logic-only, and a group with a fact no step words is a reason. A `guarantees` capability has no scenarios.
+- Each `check` design-decision that a capability of the item's lines rests on (`rests_on:`, matched by the id's last
+  segment) runs its tests on the root checkout, as `model decisions --check` runs them, once a process: a failing one is
+  the reason `design-decision <slug> (check) fails: <tests>: exit <code>` (or `names no test`), after the well-formed
+  reasons. A decision no capability of the item rests on is not run (decision-tiers; plan 6, D13).
 
 ## Not yet
 - A new capability, and a term for the glossary of `spec/index.md`, proposed by an item: its lines go only into a

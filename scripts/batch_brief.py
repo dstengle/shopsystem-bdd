@@ -37,7 +37,8 @@ from workqueue import Refused
 COMMAND = "work batch brief"
 SIZE = 1000
 CHECKS = ("python3 {scripts}/tools size --limit 300", "python3 {scripts}/tools check --base {forked_from}",
-          "python3 {scripts}/features generate --check", "python3 {scripts}/features bindings --unbound")
+          "python3 {scripts}/features generate --check", "python3 {scripts}/features bindings --unbound",
+          "python3 {scripts}/model decisions --check")
 TAIL = 40
 
 

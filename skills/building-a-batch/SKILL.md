@@ -19,6 +19,7 @@ Scripts: `<this skill's base directory>/../../scripts/`. Every `work batch` comm
 4. **Dispatch the running tasks, all at once:** one subagent for each running task, in parallel, each in its own task's worktree. Give each this brief, and nothing of `work run`'s:
    - its worktree and branch, and the item's file `.shop/backlog/b<j>.md`;
    - its requirement ids: the scenarios tagged `@r<n>` in `features/<cap>.feature` are its acceptance tests, run in its worktree with `python3 -m pytest -q tests/scenarios/test_<cap>.py -m r<n>`;
+   - the `tier: judgement` design-decisions (`grep -l '^tier: judgement' spec/decisions/*.md`), to follow in the code it writes;
    - the repository's `CLAUDE.md`, and these rules of `bdd-red-green`: one scenario at a time, red first (see it fail on its Then line before writing its handler or code), never edit a `.feature` file, and an existing test changed only in its setup;
    - "There is no brief or result file: reply with what you built, or with your one question. `work batch done` runs the whole suite in your worktree and refuses with its last lines, so a test you broke anywhere comes back to you."
    - for an item that returns to a batch after a park, the old branch its notes name (`## Notes`: `its work is on branch batch-<n>-b<j>`): cherry-pick from it what still applies, keeping each commit's `Item: b<j>` line.

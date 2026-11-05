@@ -75,6 +75,4 @@ to its tier, and keeps a superseded decision marked so.
   unwanted-behaviour line and takes precedence, and r52's repository has no `check` decision (plan 6, D6).
 
 ## Not yet
-- The tier-1 decision checks in the readiness bar: the design's bar includes "the tier-1 decision checks hold for any
-  constraint the item states", but `passing` leaves them out until plan 6 builds `model decisions --check`; plan 6 adds
-  them to the bar.
+- None.

@@ -601,7 +601,7 @@ test in the task named.
   - `check(root, item, others=())` returns `unsettled + well-formed reasons + decision_reasons` as reasons. The
     warnings are unchanged.
 
-- [ ] **Step 1: Write the failing tests** (`test_readiness_decisions.py`, on `ready_repo`). Each test writes
+- [x] **Step 1: Write the failing tests** (`test_readiness_decisions.py`, on `ready_repo`). Each test writes
   `spec/decisions/c.md` (`tier: check`, `enforced_by: [tests/test_c.py::test_c]`) and `tests/test_c.py`, makes the
   fixture's `work-queue` capability rest on it, and commits:
   - `test_a_failing_check_decision_the_capability_rests_on_is_a_reason`, parametrised over the `rests_on` forms
@@ -621,27 +621,27 @@ test in the task named.
   `tier: judgement`. In `test_batch_brief.py` nothing changes; add to `test_decision_checks.py`
   `test_the_review_runs_the_check_decisions`: `"python3 {scripts}/model decisions --check" in batch_brief.CHECKS`.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_readiness_decisions.py tests/scripts/test_skill_building_a_batch.py tests/scripts/test_decision_checks.py -q | tail -3`
   Expected: FAIL. No decision reason exists, step 4 says nothing of tiers, and `CHECKS` has four entries.
 
-- [ ] **Step 3: Implement D13-D15**, and edit `well-formed`, readiness' Implementation bullet and decision-tiers'
+- [x] **Step 3: Implement D13-D15**, and edit `well-formed`, readiness' Implementation bullet and decision-tiers'
   `## Not yet`.
 
-- [ ] **Step 4: Run them, the bar's and the batch's tests, and the readiness and batches scenarios.**
+- [x] **Step 4: Run them, the bar's and the batch's tests, and the readiness and batches scenarios.**
   Run: `python3 -m pytest tests/scripts/test_readiness_decisions.py tests/scripts/test_readiness_bar.py tests/scripts/test_batch_pick.py tests/scripts/test_batch_brief.py tests/scripts/test_skill_building_a_batch.py tests/scripts/test_decision_checks.py tests/scenarios/test_readiness.py tests/scenarios/test_batches.py -q | tail -1`
   Expected: all pass. The fixture's capabilities rest on no `check` decision, so no earlier test changes.
 
-- [ ] **Step 5: Mutations, each reverted.** Each must turn its test red:
+- [x] **Step 5: Mutations, each reverted.** Each must turn its test red:
   - matching `rests_on` by the full id only fails the short-form case;
   - dropping the cache fails `test_each_decision_runs_once_a_process`.
 
-- [ ] **Step 6: The baselines.**
+- [x] **Step 6: The baselines.**
   Run: `python3 -m pytest -q | tail -1; python3 scripts/model lexicon --check | tail -1; python3 scripts/model logic | tail -1; python3 scripts/features generate --check; python3 scripts/tools size --limit 300; python3 scripts/tools check scripts/readiness_bar.py scripts/batch_brief.py tests/scripts/test_readiness_decisions.py tests/scripts/test_skill_building_a_batch.py tests/scripts/test_decision_checks.py`
   Expected: `8 xfailed`, no failures; `401 terms, 0 problems`; `11 findings: 6 L5, 5 L6` (the `well-formed` edit is
   prose); exit 0; silent, with `readiness_bar.py` ≤ 160; clean.
 
-- [ ] **Step 7: Commit.**
+- [x] **Step 7: Commit.**
   ```bash
   git add scripts/readiness_bar.py scripts/batch_brief.py skills/building-a-batch/SKILL.md \
     tests/scripts/test_readiness_decisions.py tests/scripts/test_skill_building_a_batch.py tests/scripts/test_decision_checks.py \

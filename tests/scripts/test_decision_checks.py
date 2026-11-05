@@ -55,3 +55,8 @@ def test_the_judgement_decisions_reach_the_brief():
     found = [rel for rel, _ in batch_brief.judgement(ROOT)]
     assert "spec/decisions/0074-the-workflow-simplified.md" in found, found
     assert len(found) == 8, found
+
+
+def test_the_review_runs_the_check_decisions():
+    """Plan 6, D14: every pull request brief gives `model decisions --check`'s exit at the head and at the base."""
+    assert "python3 {scripts}/model decisions --check" in batch_brief.CHECKS

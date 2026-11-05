@@ -2,7 +2,8 @@
 request line of the item is settled and its requirement lines are well-formed: they parse in the context's grammar,
 `model logic` finds no L0 and no L1 naming them, and `features generate` writes a scenario for each of their groups
 that is not logic-only. The lines are checked on a copy of `spec/` under the temporary directory with the item's lines
-laid in, removed afterwards whatever happens; `spec/` itself is never written."""
+laid in, removed afterwards whatever happens; `spec/` itself is never written. The `check` design-decisions that a
+capability of the item's lines rests on run their tests on the root checkout, each once a process (plan 6, D13)."""
 import contextlib
 import io
 import shutil
@@ -11,6 +12,7 @@ from pathlib import Path
 
 import backlog_lines
 import features_generate
+import model_decisions
 import request_text
 import spec_grammar
 import spec_read
@@ -107,8 +109,43 @@ def well_formed(root, item, others=()):
         shutil.rmtree(copy, ignore_errors=True)
 
 
+_RAN = {}     # (resolved root, decision's path): its run, once a process (D13)
+
+
+def rested_on(root, blocks):
+    """The `check` decisions that a capability of the blocks rests on, matched by the id's last segment (a capability
+    writes `design-decision/<slug>` or the full id), in file order, each once."""
+    slugs = set()
+    for block in blocks:
+        path = backlog_lines.capability_file(root, block.capability)
+        if path.is_file():
+            slugs |= {str(d).rstrip("/").rsplit("/", 1)[-1]
+                      for d in spec_read.capability(path).frontmatter.get("rests_on") or ()}
+    return [d for d in model_decisions.decisions(root) if d.tier == "check" and d.ident.rsplit("/", 1)[-1] in slugs]
+
+
+def decision_reasons(root, blocks):
+    """A reason for each `check` decision the item's capabilities rest on whose tests do not hold (D13)."""
+    reasons = []
+    for decision in rested_on(root, blocks):
+        key = (str(Path(root).resolve()), decision.rel)
+        if key not in _RAN:
+            _RAN[key] = model_decisions.run(Path(root), decision)
+        ran, slug = _RAN[key], decision.ident.rsplit("/", 1)[-1]
+        if ran.holds:
+            continue
+        if not decision.tests:
+            reasons.append("design-decision %s (check) names no test" % slug)
+            continue
+        why = "timed out after %s s" % ran.timeout if ran.code is None else "exit %d" % ran.code
+        reasons.append("design-decision %s (check) fails: %s: %s" % (slug, ", ".join(decision.tests), why))
+    return reasons
+
+
 def check(root, item, others=()):
-    """(reasons, warnings): the request lines not settled, then the well-formed reasons (D8), laid over `others`; the
-    item's own ids are the only ones whose L1 refuses."""
+    """(reasons, warnings): the request lines not settled, then the well-formed reasons (D8), laid over `others`, then
+    the `check` decisions the item's capabilities rest on that fail (D13); the item's own ids are the only ones whose
+    L1 refuses."""
     reasons, warnings = well_formed(root, item, others)
-    return unsettled(root, item) + reasons, warnings
+    blocks = backlog_lines.read(item, rel_of(item.name))
+    return unsettled(root, item) + reasons + decision_reasons(root, blocks), warnings
