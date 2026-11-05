@@ -17,6 +17,8 @@ In this repository this skill wins over superpowers:brainstorming's ending: when
 
 No command rewords or removes an item's line yet: `work line` only adds one. A line is reworded by editing its `- [r<n>]` bullet in the item's `## Requirements` (same id) and committing the item, or the item is withdrawn and shaped again.
 
+- A bug in what a delivered item built: `python3 <scripts>/measure defect <item> --says "<the fault and how to reproduce it>"` first, then shape its fix as an item.
+
 ## Process
 
 1. **Write the item.** `python3 <scripts>/work idea "<title>"`, then `python3 <scripts>/work shape <b> --note "<the context to work from>"`. Until `work` keeps quotes (brainstorming r3), cite the person's words in the note with the date: `The person, 2026-11-04: "<their words>"`.

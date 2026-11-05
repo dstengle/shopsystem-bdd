@@ -44,17 +44,30 @@ def test_the_live_decisions_keep_their_tiers():
 
 def test_the_sort_holds_its_totals():
     found = model_decisions.decisions(ROOT)
-    assert len(found) == 76, len(found)
-    assert collections.Counter(d.status for d in found) == {"accepted": 27, "superseded": 47, "rejected": 2}
+    assert len(found) == 78, len(found)
+    assert collections.Counter(d.status for d in found) == {"accepted": 28, "superseded": 48, "rejected": 2}
     tiers = collections.Counter(d.tier for d in found if d.status == "accepted")
-    assert tiers == {"check": 4, "requirement": 15, "judgement": 8}, tiers
+    assert tiers == {"check": 4, "requirement": 15, "judgement": 9}, tiers
     assert [d.rel for d in found if d.status != "accepted" and d.tier] == []
 
 
 def test_the_judgement_decisions_reach_the_brief():
     found = [rel for rel, _ in batch_brief.judgement(ROOT)]
     assert "spec/decisions/0074-the-workflow-simplified.md" in found, found
-    assert len(found) == 8, found
+    assert "spec/decisions/0079-a-knob-is-changed-by-a-decision.md" in found, found
+    assert len(found) == 9, found
+
+
+def test_0060_is_superseded_by_measure_a_batch():
+    """Plan 7, D15."""
+    by = {d.rel: d for d in model_decisions.decisions(ROOT)}
+    old = by["spec/decisions/0060-measure-an-initiative.md"]
+    assert old.status == "superseded" and not old.tier
+    new = by["spec/decisions/0078-measure-a-batch.md"]
+    assert new.status == "accepted" and new.tier == "requirement"
+    assert list(new.requirements) == ["telemetry#r1", "telemetry#r2", "telemetry#r3", "telemetry#r4"]
+    head = (ROOT / "spec/capabilities/telemetry.md").read_text().split("\n---", 1)[0]
+    assert "design-decision/missingmass.io/shopsystem/shopsystem-bdd/measure-a-batch" in head
 
 
 def test_the_review_runs_the_check_decisions():

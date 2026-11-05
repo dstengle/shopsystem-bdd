@@ -115,3 +115,16 @@ def test_each_refusal_of_the_review_loop_has_its_way_through():
                  "another item's open finding",                           # Q1: a merged-in fix
                  "work idea"):                                            # Q3: an observation
         assert said in text, (said, text)
+
+
+def test_each_subagent_is_described_for_its_role():
+    """Plan 7, D14: the descriptions `measure batch` reads a subagent's role from."""
+    text = SKILL.read_text()
+    for words in ("batch-<n> t<k> b<j>", "batch-<n> review <k>", "batch-<n> fix f<m>"):
+        assert words in text, words
+
+
+def test_a_merged_batch_is_measured():
+    text = SKILL.read_text()
+    merged = text.index("work batch merged <batch>")
+    assert "measure batch <batch>" in text[merged:], text[merged:]

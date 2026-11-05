@@ -2,9 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/measure-an-initiative
 summary: "`measure initiative` measures one initiative's deliveries from what `work run` records, and the old system's `measure batch` is removed with every line of it."
 date: 2026-10-22
-status: accepted
-tier: requirement
-enforced_by: [batch-measurement#r1]
+status: superseded
 source: [initiative/i12, observation/2026-10-19-final-state-only]
 by: "the person, 2026-10-22, delegating the drafting decisions to the coordinator's recommendations"
 ---

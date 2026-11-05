@@ -126,6 +126,9 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
   this layout in one run; `migrate upgrade` takes it from an earlier plugin release to this one.
 - `scripts/measure`: write an initiative's measurement from `work run`'s log, its sessions and git (`measure initiative`), print one as tables (`measure show`) and
   two side by side with their ratio (`measure compare`).
+  - `measure batch <batch>` writes a batch's measurement from git and its sessions' transcripts (wall time, session
+    time, tokens and cost by role, the pull request's findings by grade, defects, knobs); `measure defect <item>
+    --says "<fault>"` records a fault found after the merge; `measure compare batch-2 batch-3` takes batch names.
 
 ## Agents: rules enforced by tools
 

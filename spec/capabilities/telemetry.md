@@ -4,7 +4,7 @@ title: Telemetry
 narrator: a session measuring a batch
 group: service
 language: codified-1
-rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
+rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified, design-decision/missingmass.io/shopsystem/shopsystem-bdd/measure-a-batch]
 retired: []
 unbuilt: []
 ---
@@ -69,4 +69,7 @@ knobs (batch size, review depth, the readiness bar) are tuned against these figu
 
 ## Not yet
 
-- None.
+- Recurring findings across batches (plan-5 D21): counted by reading `measure compare`'s rows; a count over many
+  batches waits for there being many.
+- The third-review park (plan-5 D23) is revisited with the figures of real batches.
+- A price table read from a source: the table is dated (`prices_as_of`) and `.shop/delivery.toml` overrides it.

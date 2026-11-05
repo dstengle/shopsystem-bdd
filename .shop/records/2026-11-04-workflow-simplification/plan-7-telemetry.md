@@ -616,7 +616,7 @@ test in the task named.
   - "The third-review park (plan-5 D23) is revisited with the figures of real batches.";
   - "A price table read from a source: the table is dated (`prices_as_of`) and `.shop/delivery.toml` overrides it."
 
-- [ ] **Step 1: Write the failing tests.**
+- [x] **Step 1: Write the failing tests.**
   - In `test_decision_checks.py`, change the pinned totals of `test_the_sort_holds_its_totals` to 78 decisions, status
     `{"accepted": 28, "superseded": 48, "rejected": 2}` and tiers `{"check": 4, "requirement": 15, "judgement": 9}`.
     Change `test_the_judgement_decisions_reach_the_brief` to 9 entries, with
@@ -634,11 +634,11 @@ test in the task named.
     - `test_a_merged_batch_is_measured`: it names `measure batch <batch>` after `work batch merged`.
   - In `test_skill_shaping_items.py`, `test_a_bug_in_delivered_work_is_a_defect_first`: it names `measure defect`.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_decision_checks.py tests/scripts/test_skill_analyzing_a_batch.py tests/scripts/test_skill_building_a_batch.py tests/scripts/test_skill_shaping_items.py -q | tail -3`
   Expected: FAIL. The totals are 76, 0060 is accepted, and no skill names `measure batch`.
 
-- [ ] **Step 3: Write the decisions, 0060's frontmatter and telemetry's `rests_on` and `## Not yet`; then the skills.**
+- [x] **Step 3: Write the decisions, 0060's frontmatter and telemetry's `rests_on` and `## Not yet`; then the skills.**
   - **analyzing-a-batch:**
     - step 1 becomes `measure batch <batch>` (it writes the record, reading git and the sessions' transcripts;
       `--sessions` for another directory);
@@ -658,7 +658,7 @@ test in the task named.
     --says "<the fault and how to reproduce it>"` first, then shape its fix as an item."
   - **README:** under `scripts/measure`, one bullet for `measure batch`, `measure defect` and `compare` by batch name.
 
-- [ ] **Step 4: Regenerate the index; run the checks.**
+- [x] **Step 4: Regenerate the index; run the checks.**
   Run: `python3 scripts/model decisions && python3 scripts/model decisions --check | tail -1; python3 scripts/model check | tail -1; python3 -m pytest tests/scripts/test_decision_checks.py tests/scripts/test_skill_analyzing_a_batch.py tests/scripts/test_skill_building_a_batch.py tests/scripts/test_skill_shaping_items.py tests/scripts/test_batch_brief.py -q | tail -1`
   Expected:
   - `spec/decisions/index.md is current`, and `4 check decisions: 4 hold, 0 failing`;
@@ -666,16 +666,16 @@ test in the task named.
     no tier;
   - all pass.
 
-- [ ] **Step 5: Mutations, each reverted.** Each must turn its test red:
+- [x] **Step 5: Mutations, each reverted.** Each must turn its test red:
   - leaving 0060's `tier: requirement` fails `test_the_sort_holds_its_totals`;
   - 0078 with `enforced_by: [telemetry#r9]` gives an unresolved reference.
 
-- [ ] **Step 6: The baselines.**
+- [x] **Step 6: The baselines.**
   Run: `python3 -m pytest -q | tail -1; python3 scripts/features generate --check; echo $?; python3 scripts/model logic | tail -1; python3 scripts/model lexicon --check | tail -1; python3 scripts/tools size --limit 300; python3 scripts/tools check tests/scripts/test_decision_checks.py tests/scripts/test_skill_analyzing_a_batch.py tests/scripts/test_skill_building_a_batch.py tests/scripts/test_skill_shaping_items.py`
   Expected: `4 xfailed`, no failures; exit 0 (`rests_on` changes no step); `11 findings: 6 L5, 5 L6`; `401 terms, 0
   problems`; silent; clean.
 
-- [ ] **Step 7: Commit.**
+- [x] **Step 7: Commit.**
   ```bash
   git add spec/decisions spec/capabilities/telemetry.md tests/scripts/test_decision_checks.py \
     tests/scripts/test_skill_analyzing_a_batch.py tests/scripts/test_skill_building_a_batch.py tests/scripts/test_skill_shaping_items.py \

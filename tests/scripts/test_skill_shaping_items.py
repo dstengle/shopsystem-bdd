@@ -61,3 +61,8 @@ def test_each_skill_has_a_use_when_description(name):
     head = text.split("---\n")[1]
     assert re.search(r"(?m)^name: %s$" % name, head), head
     assert re.search(r"(?m)^description: Use when ", head), head
+
+
+def test_a_bug_in_delivered_work_is_a_defect_first():
+    """Plan 7, D14: a fault in what a delivered item built is recorded against it before its fix is shaped."""
+    assert "measure defect <item>" in SHAPING.read_text()
