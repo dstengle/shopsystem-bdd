@@ -51,3 +51,26 @@ def test_delivery_overrides_a_price(tmp_path):
     toml.write_text('[prices."claude-opus-5-5"]\ninput = "x"\noutput = 2\ncache_read = 0.1\n')
     with pytest.raises(Refused, match=r"prices\.claude-opus-5-5"):
         measure_cost.prices(tmp_path)
+
+
+@pytest.mark.parametrize("model", ["claude-opus-4-20250514", "claude-opus-4-1-20250805", "claude-opus-4-5-20251101"])
+def test_an_opus_4_the_table_states_no_price_for_is_unpriced(model):
+    """Plan 7 review M3: the table (the claude-api skill's, 2026-10-06) prices Opus 4.6 to 4.8; an older Opus 4 is
+    named, never priced by a guess."""
+    assert measure_cost.price_of(model, measure_cost.PRICES) is None
+
+
+def test_opus_4_6_to_4_8_are_priced():
+    for model in ("claude-opus-4-6", "claude-opus-4-7", "claude-opus-4-8"):
+        assert measure_cost.price_of(model, measure_cost.PRICES) == (5.0, 25.0, 0.50), model
+
+
+def test_haiku_5_5_over_a_100k_prompt_takes_its_long_rate():
+    """Plan 7 review M3: $0.50 / $2.50 when the prompt (new input, cache writes and reads) is over 100K tokens, cache
+    reads 0.1 x input, as the claude-api skill gives it."""
+    short = request("claude-haiku-5-5", input_tokens=40_000, cache_read_tokens=60_000, output_tokens=M)
+    assert measure_cost.cost(short, measure_cost.PRICES) == pytest.approx((40_000 * 0.10 + 60_000 * 0.01) / M + 0.50)
+    long = request("claude-haiku-5-5", input_tokens=40_000, cache_write_5m_tokens=1, cache_read_tokens=60_000,
+                   output_tokens=M)
+    want = (40_000 * 0.50 + 1 * 0.50 * 1.25 + 60_000 * 0.05) / M + 2.50
+    assert measure_cost.cost(long, measure_cost.PRICES) == pytest.approx(want)
