@@ -1,8 +1,8 @@
 """`work list` and `work show <request>` (capability requests, r25, r26; workflow simplification plan 9, D6, D9).
 
 `list` gives each request with its status, and each observation of `.shop/records/observations.md` that no request's
-nor any frozen initiative's `source` names (shop_frozen); `show` gives one request: its status, whose turn it is,
-each line with its line outcome, each question with its answer, the resolution. Both only read. Plugin 1.x's
+nor any frozen initiative's `source` names (shop_frozen); `show` gives one request: its status, whose turn it is
+and the URL of its issue, each line with its line outcome, each question with its answer, the resolution. Both only read. Plugin 1.x's
 initiatives and work-items are frozen under `.shop/work/` and read as files, never listed."""
 import json
 import re
