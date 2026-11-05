@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/held-scenario-formulates-no-requirement
 summary: "A deprecated scenario keeps the @r<n> tag it had, as the trace of the line it was, and is no acceptance-scenario: model check reads it as none."
 date: 2026-10-16
-status: accepted
+status: superseded
 source: [initiative/i3, design-decision/held-scenarios]
 by: "(its open question)"
 ---

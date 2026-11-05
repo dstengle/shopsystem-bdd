@@ -517,7 +517,7 @@ test in the task named.
   - 0076: "Every tracked Python file stays at 300 lines or fewer; `tools size --limit 300` prints each one over it and
     exits 1, and the suite fails on it."
 
-- [ ] **Step 1: Write the failing tests** (`test_decision_checks.py`, on the repository root):
+- [x] **Step 1: Write the failing tests** (`test_decision_checks.py`, on the repository root):
   - `test_every_tracked_python_file_is_300_lines_or_fewer` (D10): `tools size --limit 300` exits 0 and prints
     nothing.
   - `test_the_features_are_what_features_generate_writes` (D10): `toolchain.require()`, then
@@ -533,7 +533,7 @@ test in the task named.
   - `test_the_judgement_decisions_reach_the_brief`: `batch_brief.judgement(ROOT)` lists
     `spec/decisions/0074-the-workflow-simplified.md` among 8 entries.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_decision_checks.py -q | tail -3`
   Expected:
   - The size and generate tests pass. Each is the new form of a rule that holds already. Note this in the report as
@@ -541,7 +541,7 @@ test in the task named.
   - The tiers test fails with 71 `w_untiered` and 19 `v_d8` rows.
   - The totals and judgement tests fail.
 
-- [ ] **Step 3: Apply the sort.**
+- [x] **Step 3: Apply the sort.**
   - For each row of the table, set `status:` (and `tier:`/`enforced_by:` where given) in its frontmatter, adding a
     field after `status:` and touching no other line.
   - Write 0074's `supersedes:` as the 27 "0074" slugs in the short form `design-decision/<slug>`, one list.
@@ -551,27 +551,27 @@ test in the task named.
     - for each **bold** entry, run `python3 scripts/model why <entry>` to see the line.
   - A row whose evidence fails drops to `judgement`, and its row in the report says why.
 
-- [ ] **Step 4: Regenerate the index; run the check decisions live.**
+- [x] **Step 4: Regenerate the index; run the check decisions live.**
   Run: `python3 scripts/model decisions && time python3 scripts/model decisions --check`
   Expected: `spec/decisions/index.md is current`; four `holds` lines (0006, 0048, 0053, 0076);
   `4 check decisions: 4 hold, 0 failing`; exit 0. Record the wall time; it is expected to be under 30 s.
 
-- [ ] **Step 5: Run the tests again, and `model check`.**
+- [x] **Step 5: Run the tests again, and `model check`.**
   Run: `python3 -m pytest tests/scripts/test_decision_checks.py tests/scripts/test_batch_brief.py -q | tail -1; python3 scripts/model check | tail -1`
   Expected: all pass; `53 violations, 16 warnings, 19 unresolved references, 0 file problems`, back to the baseline
   as planned, since the only rows left are the `.shop/work/` ones.
 
-- [ ] **Step 6: Mutations, each reverted.** Each must turn its test red:
+- [x] **Step 6: Mutations, each reverted.** Each must turn its test red:
   - 0012's status set back to `accepted` gives one `v_d8` row and fails the tiers test;
   - 0076's `enforced_by` removed gives `v_d6`;
   - a temporary 301-line Python file, `git add`ed, fails both 0076's test and `model decisions --check`, which names
     0076. Take it out with `git rm -f` on its own (the person's rule).
 
-- [ ] **Step 7: The baselines.**
+- [x] **Step 7: The baselines.**
   Run: `python3 -m pytest -q | tail -1; python3 scripts/model logic | tail -1; python3 scripts/model lexicon --check | tail -1; python3 scripts/features generate --check; python3 scripts/tools size --limit 300; python3 scripts/tools check tests/scripts/test_decision_checks.py`
   Expected: `8 xfailed`, no failures; `11 findings: 6 L5, 5 L6`; `401 terms, 0 problems`; exit 0; silent; clean.
 
-- [ ] **Step 8: Commit.**
+- [x] **Step 8: Commit.**
   ```bash
   git add spec/decisions tests/scripts/test_decision_checks.py
   git commit -m "spec: the decisions sorted into tiers; the old process's decisions superseded by the-workflow-simplified; 0075 and 0076"

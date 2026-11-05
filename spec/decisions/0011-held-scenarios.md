@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/held-scenarios
 summary: "A scenario that passes today is deprecated, tagged @deprecated, when its line is re-worded or removed, and retired by the work that turns its replacement green."
 date: 2026-10-11
-status: accepted
+status: superseded
 source: [decision-argument/2026-10-11-green-suite-design]
 by: "0.14.0"
 ---

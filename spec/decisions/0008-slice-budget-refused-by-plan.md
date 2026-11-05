@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/slice-budget-refused-by-plan
 summary: "A slice lands in at most 8 production and 4 test modules, and `plan` refuses a slice whose Lands: line is over that."
 date: 2026-10-10
-status: accepted
+status: superseded
 revisit_when: "the Lands count is exceeded in more than half of a measured batch's slices"
 revisit_signal: measurement/kb-batches-32-35
 source: [decision-argument/2026-10-10-small-slices-and-steps-design]

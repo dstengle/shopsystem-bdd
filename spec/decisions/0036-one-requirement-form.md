@@ -3,6 +3,8 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/one-requirement-for
 summary: "A requirement is written and read in one form only, capability/<name>#r<n>; #behaviour/r<n> is no longer accepted."
 date: 2026-10-19
 status: accepted
+tier: requirement
+enforced_by: [design-model-check#r31]
 by: "the person, 2026-10-19"
 ---
 

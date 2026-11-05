@@ -3,6 +3,8 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/behaviour-lines-are
 summary: "Every Behaviour line is one EARS requirement in one of EARS's patterns, with \"shall\", one system response, one sentence."
 date: 2026-10-19
 status: accepted
+tier: requirement
+enforced_by: [design-model-check#r25]
 source: [observation/2026-10-19-lines-not-ears]
 by: "the person, 2026-10-19"
 ---

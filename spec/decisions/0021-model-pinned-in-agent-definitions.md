@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/model-pinned-in-agent-definitions
 summary: "Each agent's model is set in its definition: Opus for spec writers and reviewers, Sonnet for the implementer and initiative-round, Haiku for the scout."
 date: 2026-10-10
-status: accepted
+status: superseded
 revisit_when: "a measured batch runs an agent on a model other than its definition's in more than half of its dispatches"
 revisit_signal: measurement/kb-batches-32-35
 by: "README, Models; agents/*.md"

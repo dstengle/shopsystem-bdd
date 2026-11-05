@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/one-batch-one-session
 summary: "The controller stops when a batch is archived and measured; the next batch starts in a new session."
 date: 2026-10-11
-status: accepted
+status: superseded
 revisit_when: "the controller's share of a measured batch's cache reads stays above 40%"
 revisit_signal: measurement/kb-batches-32-35
 source: [decision-argument/2026-10-11-rules-adjusted-design]

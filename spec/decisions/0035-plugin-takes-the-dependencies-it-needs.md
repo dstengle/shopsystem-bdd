@@ -3,6 +3,7 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/plugin-takes-the-de
 summary: "The plugin and its scripts take the dependencies they need (clingo, pytest, pytest-bdd), each named in the plugin's documentation."
 date: 2026-10-19
 status: accepted
+tier: judgement
 supersedes: design-decision/scripts-stdlib-only
 by: "the person, 2026-10-19"
 ---

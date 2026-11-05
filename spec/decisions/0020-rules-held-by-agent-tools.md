@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/rules-held-by-agent-tools
 summary: "Each role is an agent whose tools are exactly the role's; only initiative-round may start agents, and no reviewer can edit."
 date: 2026-09-27
-status: accepted
+status: superseded
 by: "0.7.0 (a53d21b); README, Agents"
 ---
 

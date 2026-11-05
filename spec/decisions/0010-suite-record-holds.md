@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/suite-record-holds
 summary: "A whole-suite run is recorded once in the plan's log and stands while nothing outside the plans directory has changed since its commit."
 date: 2026-10-07
-status: accepted
+status: superseded
 by: "0.10.0 (72d33af)"
 ---
 
