@@ -25,12 +25,12 @@ Then its sections, in order:
 - `## Rules`: the repository's `CLAUDE.md`, or `none`;
 - `## Size`: the files and lines the range changes, `.shop/` left out, and the limit;
 - `## Runs`: each check `work` ran in the batch's worktree at `Head:`, with its command, its exit code and the end of its output;
-- `## Commits`: every commit of the range, oldest first, `<short sha> "<subject>"` with its `Item:` and `Finding:`;
+- `## Commits`: every commit of the range, oldest first, `<short sha> "<subject>"` (a `"` in the subject written `\"`) with its `Item:` and `Finding:`, and for each commit that is not a merge `patch: <path>`, its own change;
 - `## Change`: the path of `change.diff`, the range's change less `.shop/`.
 
 ## What you read
 
-Read every requirement the brief's `## Items` gives and every commit its `## Commits` lists, with their change in `change.diff`; read no other commit. You have no shell: a commit the brief does not give is outside the batch, and you do not read it. The base branch's own commits after the batch forked (`work batch start`, `done`, `review`) are not the batch's, and the brief leaves them out.
+Read every requirement the brief's `## Items` gives and every commit its `## Commits` lists, with their change in `change.diff`; read no other commit. Each commit's own change is the patch its line names (`patch: <path>`): read it to see what that commit did, and `change.diff` for the range's net change. You have no shell: a commit the brief does not give is outside the batch, and you do not read it. The base branch's own commits after the batch forked (`work batch start`, `done`, `review`) are not the batch's, and the brief leaves them out.
 
 Read every design-decision the brief's `## Judgement decisions` lists, and check the change against each. Read `CLAUDE.md` when `## Rules` names it: its rules and its module map are binding. Read the capability files the requirement lines are in (`spec/capabilities/<capability>.md` in the `Tree:`) for their Purpose, terms and Implementation section.
 

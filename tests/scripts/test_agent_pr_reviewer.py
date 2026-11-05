@@ -52,3 +52,9 @@ def test_the_reviewer_changes_nothing_and_starts_no_agent():
     one = definition(PATH)
     assert not {"Edit", "NotebookEdit", "Agent", "Task", "Bash"} & set(one["tools"])
     assert one["model"] == "opus" and one["name"] == "pr-reviewer"
+
+
+def test_the_reviewer_reads_each_commits_own_patch():
+    """Review S4."""
+    has("Each commit's own change is the patch its line names (`patch: <path>`): read it to see what that commit "
+        "did, and `change.diff` for the range's net change.")

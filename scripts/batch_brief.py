@@ -48,9 +48,9 @@ def judgement(root):
     return found
 
 
-def commits(root, rng):
-    """`<short sha> "<subject>" Item: b1 Finding: f1` of each commit of `rng`, oldest first; a missing trailer is
-    left out of its line."""
+def commits(root, rng, patches=None):
+    """`<short sha> "<subject>" Item: b1 Finding: f1` of each commit of `rng`, oldest first, with `; patch: <path>`
+    when `patches` has its own (review S4); a missing trailer is left out of its line."""
     out = git(root, "log", "--reverse", "--format=%h%x00%s%x00%(trailers:key=Item,valueonly,separator=%x2c)%x00"
               "%(trailers:key=Finding,valueonly,separator=%x2c)%x1e", rng).stdout
     lines = []
@@ -60,8 +60,23 @@ def commits(root, rng):
         for key, value in (("Item", item), ("Finding", finding)):
             if value.strip():
                 line += " %s: %s" % (key, ", ".join(v.strip() for v in value.split(",") if v.strip()))
-        lines.append(line)
+        lines.append(line + ("; patch: %s" % patches[sha] if sha in (patches or {}) else ""))
     return lines
+
+
+def patches(tree, rng, where):
+    """{short sha: path} of each non-merge commit of `rng`, its own change less `.shop/` written to
+    `<where>/commits/<short sha>.patch` (review S4)."""
+    folder = Path(where) / "commits"
+    folder.mkdir(parents=True, exist_ok=True)
+    for old in folder.glob("*.patch"):
+        old.unlink()
+    found = {}
+    for sha in git(tree, "log", "--reverse", "--no-merges", "--format=%h", rng).stdout.split():
+        found[sha] = folder / ("%s.patch" % sha)
+        found[sha].write_text(git(tree, "show", "--format=commit %H%nAuthor: %an%n%n%B", sha, "--", ".",
+                                  ":(exclude).shop").stdout, encoding="utf-8")
+    return found
 
 
 def size(root, rng):
@@ -147,14 +162,16 @@ def _header(batch, k, rng, head, tree, where, first):
             "Range: %s" % rng, "Head: %s" % head, "Tree: %s" % tree, "Findings file: %s" % (where / "findings.md")]
 
 
-def _earlier(root, batch):
-    """Each open finding with its text, its item's file and the commits for it (D5)."""
+def _earlier(root, batch, own):
+    """Each open finding with its text, its item's file and the commits for it, each with its patch (D5, S4)."""
     found, out = batch_fix.for_finding(root, batch), []
     for f in batch_findings.open_findings(root, batch.name):
         item = backlog_items.find(root, f.item)
+        listed = ["  - %s%s" % (c, "; patch: %s" % own[c.split()[0]] if c.split()[0] in own else "")
+                  for c in found.get(f.fid, [])]
         out.append("### %s %s %s: %s\n\n- item: %s, %s\n- where: %s\n- commits for it:\n%s%s" % (
             f.fid, f.grade, f.triage, f.title, backlog_items.label(item), backlog_items.rel_of(item.name),
-            f.where or "-", "\n".join("  - %s" % c for c in found.get(f.fid, [])) or "  - none",
+            f.where or "-", "\n".join(listed) or "  - none",
             "\n\n%s" % f.body if f.body else ""))
     return "\n\n".join(out) or "none: no finding is open"
 
@@ -174,12 +191,13 @@ def brief(root, name):
         (where / "findings.md").unlink()
         removed.append("findings.md")
     (where / "change.diff").write_text(git(tree, "diff", rng, "--", ".", ":(exclude).shop").stdout, encoding="utf-8")
+    own = patches(tree, rng, where)
     decisions = judgement(root)
-    sections = [("Items", _items(root, batch)) if first else ("Earlier findings", _earlier(root, batch)),
+    sections = [("Items", _items(root, batch)) if first else ("Earlier findings", _earlier(root, batch, own)),
                 ("Judgement decisions", "\n".join("- %s: %s" % d for d in decisions)
                  or "none: no design-decision is tier: judgement"),
                 ("Rules", _rules(tree)), ("Size", _size(root, tree, rng)), ("Runs", _runs(root, tree, batch)),
-                ("Commits", "\n".join("- %s" % c for c in commits(tree, rng)) or "none"),
+                ("Commits", "\n".join("- %s" % c for c in commits(tree, rng, own)) or "none"),
                 ("Change", "%s: `git diff %s -- . ':(exclude).shop'`" % (where / "change.diff", rng))]
     text = "\n".join(_header(batch, k, rng, head, tree, where, first)) + "".join(
         "\n\n## %s\n\n%s" % s for s in sections) + "\n"

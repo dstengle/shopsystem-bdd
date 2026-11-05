@@ -187,3 +187,18 @@ def test_a_fix_may_merge_another_items_fix_to_resolve_a_conflict(batch_repo):
     git(tree, "commit", "-q", "-m", "merge b1's fix\n\nItem: b2\nFinding: f3")
     ok(work(batch_repo, "batch", "review", "batch-1"))
     assert batch_plan.find(batch_repo, "batch-1").status == "in-review"
+
+
+def test_the_brief_gives_each_commit_its_own_patch(fixing):
+    """Review S4: each non-merge commit of the range has its patch, named in `## Commits` and under its finding."""
+    sha = fix(fixing)
+    ok(work(fixing, "batch", "review", "batch-1"))
+    text = brief_text(fixing)
+    patch = scratch(fixing, 2) / "commits" / ("%s.patch" % sha[:7])
+    assert "patch: %s" % patch in section(text, "Earlier findings")
+    line = next(c for c in section(text, "Commits").splitlines() if c.startswith("- %s " % sha[:7]))
+    assert line.endswith("patch: %s" % patch)
+    own = patch.read_text()
+    assert "src/fix.txt" in own and "src/b1.txt" not in own and sha in own
+    merges = [c.split()[1] for c in section(text, "Commits").splitlines() if c.startswith("- ") and "patch: " not in c]
+    assert len(merges) == 1 and head(fixing).startswith(merges[0]), merges
