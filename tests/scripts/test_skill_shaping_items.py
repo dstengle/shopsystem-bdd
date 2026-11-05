@@ -62,6 +62,13 @@ def test_r3_a_quote_is_written_with_work_quote():
     assert "quote-<n>" in text and "Until `work` keeps quotes" not in text
 
 
+def test_r3_the_skill_says_where_an_earlier_sessions_id_is():
+    """Plan 8's review, M6: `--session <id>` is advised only with where the id is found."""
+    step = next(s for s in process(SHAPING) if "quote" in commands(s, "work"))
+    assert "--session <id>" in step and "`<id>.jsonl`" in step and "~/.claude/projects/" in step, step
+    assert "--transcript <path>" in step, step
+
+
 def test_each_built_brainstorming_line_has_its_test():
     """The strict xfail of a guarantees capability: each brainstorming id out of `unbuilt:` has a `test_r<n>_` here,
     and each id in it has none."""
