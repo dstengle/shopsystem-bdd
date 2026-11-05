@@ -174,6 +174,16 @@ def test_open_findings_follow_the_reviews(tmp_path):
     assert batch_findings.next_fid(tmp_path, "batch-2") == 1
 
 
+@pytest.mark.parametrize("status", ["merged", "abandoned"])
+def test_a_closed_batch_has_no_open_finding(tmp_path, status):
+    """Review M2: a closed batch's finding is not open, though its item is in-batch again in a later batch."""
+    from test_batch_plan import batch
+    records(tmp_path, "not fixed: still started")
+    (tmp_path / batch_plan.rel_of("batch-1")).write_text(batch_plan.render(batch(status=status,
+                                                                                   pull_request="https://x/pull/1")))
+    assert batch_findings.open_findings(tmp_path, "batch-1") == []
+
+
 def test_a_review_file_not_numbered_is_refused(tmp_path):
     path = tmp_path / ".shop/batches/1/review-x.md"
     path.parent.mkdir(parents=True)

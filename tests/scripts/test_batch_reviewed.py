@@ -94,8 +94,25 @@ def test_reviewed_refuses_a_malformed_findings_file(briefed, batch_outside, case
     before, calls = state(briefed), gh_calls(batch_outside)
     done = reviewed(briefed, MALFORMED[case])
     assert done.returncode == 1 and "findings.md" in done.stderr, done.stderr
+    assert done.stderr.startswith("work: work batch reviewed: batch-1: "), done.stderr
     assert state(briefed) == before and gh_calls(batch_outside) == calls
     assert batch_plan.find(briefed, "batch-1").status == "in-review"
+
+
+def test_reviewed_refuses_without_a_brief(briefed):
+    """Review M6: a findings file with no brief is refused as that, not as a moved branch."""
+    (scratch(briefed) / "brief.md").unlink()
+    before = state(briefed)
+    done = reviewed(briefed, CLEAN)
+    assert done.returncode == 1 and "has no brief %s" % (scratch(briefed) / "brief.md") in done.stderr, done.stderr
+    assert "moved" not in done.stderr and "run work batch brief batch-1" in done.stderr
+    assert state(briefed) == before
+
+
+def test_one_finding_is_said_in_the_singular(briefed):
+    """Review M4."""
+    one = CLEAN.replace("None.", "### Minor observation: a note\n- item: -\n- where: -\nA note.")
+    assert ok(reviewed(briefed, one)).stdout.startswith("batch-1 review 1: 1 finding -> awaiting-merge")
 
 
 def test_reviewed_refuses_a_stale_brief(briefed, batch_outside):

@@ -52,6 +52,11 @@ def _name(batch):
     return getattr(batch, "name", batch)
 
 
+def quoted(subject):
+    """A commit's subject in one pair of quotes, a `"` or `\\` in it escaped (review M4)."""
+    return '"%s"' % subject.replace("\\", "\\\\").replace('"', '\\"')
+
+
 def rel_of(batch_name, k):
     return (batch_plan.BATCHES / str(batch_plan.number(_name(batch_name))) / ("review-%d.md" % k)).as_posix()
 
@@ -249,7 +254,11 @@ def _still_in(root, item):
 
 
 def open_findings(root, batch):
-    """The `fix now` findings no later review said `fixed` of, whose item is still `in-batch` (D10, D22)."""
+    """The `fix now` findings no later review said `fixed` of, whose item is still `in-batch` (D10, D22); none of a
+    batch that is merged or abandoned (review M2)."""
+    plan = Path(root) / batch_plan.rel_of(_name(batch))
+    if plan.is_file() and batch_plan.find(root, _name(batch)).status not in batch_plan.OPEN:
+        return []
     found = {}
     for review in reviews(root, batch):
         for fid, said in review.earlier.items():

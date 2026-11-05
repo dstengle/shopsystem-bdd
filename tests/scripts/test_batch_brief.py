@@ -1,6 +1,8 @@
 """`work batch brief` (workflow simplification plan 5, Task 2, D3-D8): what `pr-reviewer` reads of a published batch,
 its own commits and change, its items' requirement lines, the judgement decisions, the rules, the size and the runs,
 written in the ignored worktrees directory with nothing committed."""
+import re
+
 import batch_plan
 import pytest
 from backlog_testing import git, state, work
@@ -139,3 +141,11 @@ def test_a_second_brief_starts_fresh(pub):
     done, _, _ = brief(pub)
     assert done.stdout.splitlines()[0] == "removed an old findings.md"
     assert not findings(pub).exists()
+
+
+def test_a_commit_subject_with_quotes_is_escaped(pub):
+    """Review M4: `## Commits` gives each subject in one pair of quotes, a `"` in it escaped."""
+    listed = [line for line in section(brief(pub)[2], "Commits").splitlines() if line.startswith("- ")]
+    shape = re.compile(r'^- [0-9a-f]{7,} "(?:[^"\\]|\\.)*"(?: Item: [^"]*)?(?: Finding: [^"]*)?$')
+    assert all(shape.match(line) for line in listed), listed
+    assert any('\\"' in line for line in listed), listed

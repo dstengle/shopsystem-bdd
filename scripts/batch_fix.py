@@ -36,7 +36,7 @@ def for_finding(root, batch):
     found = {}
     for finding in batch_findings.open_findings(root, batch.name):
         branch = _branch(batch, finding)
-        found[finding.fid] = ['%s "%s"' % (sha, subject) for sha, subject, cited in cited_findings(root, since, branch)
+        found[finding.fid] = ["%s %s" % (sha, batch_findings.quoted(subject)) for sha, subject, cited in cited_findings(root, since, branch)
                               if finding.fid in cited] if since and branch else []
     return found
 

@@ -56,13 +56,21 @@ def reviewed(root, name):
             raise Refused("%s: %s has no findings file %s; run work batch brief %s, then the pr-reviewer agent on "
                           "its brief %s" % (COMMAND, batch.name, path, batch.name, where / "brief.md"))
         head = git(root, "rev-parse", batch.branch).stdout.strip()
-        if not (where / "brief.md").is_file() or batch_brief.head_of(where / "brief.md") != head:
+        if not (where / "brief.md").is_file():
+            raise Refused("%s: %s has no brief %s; run work batch brief %s, then the pr-reviewer agent on it" % (
+                COMMAND, batch.name, where / "brief.md", batch.name))
+        if batch_brief.head_of(where / "brief.md", COMMAND) != head:
             raise Refused("%s: %s: the batch branch moved since the brief; run work batch brief %s again" % (
                 COMMAND, batch.name, batch.name))
         items = {t.item: backlog_items.find(root, t.item) for t in batch.tasks}
+        in_batch = {n for n, i in items.items() if i.status == "in-batch"}
         before = batch_findings.open_findings(root, batch.name)
-        verdict, found, earlier = batch_findings.parse_findings(
-            path.read_text(encoding="utf-8", errors="replace"), str(path), set(items), {n for n, i in items.items() if i.status == "in-batch"}, {f.fid for f in before})
+        try:
+            verdict, found, earlier = batch_findings.parse_findings(
+                path.read_text(encoding="utf-8", errors="replace"), str(path), set(items), in_batch,
+                {f.fid for f in before})
+        except Refused as refused:
+            raise Refused("%s: %s: %s" % (COMMAND, batch.name, refused)) from None
         first = batch_findings.next_fid(root, batch.name)
         for m, finding in enumerate(found, first):
             finding.fid = "f%d" % m
@@ -90,11 +98,11 @@ def said(root, review):
     """What `work batch reviewed` prints (D12), right after it: the findings still open."""
     still = batch_findings.open_findings(root, review.batch)
     fix = sum(f.triage == "fix now" for f in review.findings)
+    count = "%d finding%s" % (len(review.findings), "" if len(review.findings) == 1 else "s")
     if not still:
-        return "%s review %d: %d findings -> awaiting-merge; the pull request %s is ready for the person's merge" % (
-            review.batch, review.number, len(review.findings), review.pull_request)
-    lines = ["%s review %d: %d findings, %d fix now -> building" % (review.batch, review.number, len(review.findings),
-                                                                    fix)]
+        return "%s review %d: %s -> awaiting-merge; the pull request %s is ready for the person's merge" % (
+            review.batch, review.number, count, review.pull_request)
+    lines = ["%s review %d: %s, %d fix now -> building" % (review.batch, review.number, count, fix)]
     lines += ["  open %s %s %s %s: %s" % (f.fid, f.grade, _label(root, f), f.where or "-", f.title) for f in still]
     return "\n".join(lines)
 

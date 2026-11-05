@@ -56,7 +56,7 @@ def commits(root, rng):
     lines = []
     for entry in filter(str.strip, out.split("\x1e")):
         sha, subject, item, finding = entry.strip("\n").split("\x00")
-        line = '%s "%s"' % (sha, subject)
+        line = "%s %s" % (sha, batch_findings.quoted(subject))
         for key, value in (("Item", item), ("Finding", finding)):
             if value.strip():
                 line += " %s: %s" % (key, ", ".join(v.strip() for v in value.split(",") if v.strip()))
@@ -72,12 +72,12 @@ def size(root, rng):
     return tuple(counts)
 
 
-def head_of(brief_path):
+def head_of(brief_path, command=COMMAND):
     """The `Head:` the brief was written at."""
     for line in Path(brief_path).read_text(encoding="utf-8").splitlines():
         if line.startswith("Head: "):
             return line[len("Head: "):].strip()
-    raise Refused("%s has no Head: line" % brief_path)
+    raise Refused("%s: %s has no Head: line; run work batch brief again" % (command, brief_path))
 
 
 def _indented(text):
