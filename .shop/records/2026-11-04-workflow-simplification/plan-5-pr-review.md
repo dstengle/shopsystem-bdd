@@ -723,11 +723,11 @@ batch review`. Nothing in this step asks the person.
 - Create: `.shop/records/2026-11-04-workflow-simplification/plan-5-implementation.md`
 - Modify: `.shop/records/README.md` (a row for the report); this plan (every box ticked)
 
-- [ ] **Step 1: Every requirement of the plan is built.**
+- [x] **Step 1: Every requirement of the plan is built.**
   Run: `python3 -c "import sys; sys.path.insert(0,'scripts'); import pathlib, spec_unbuilt as u; d=u.unbuilt(pathlib.Path('.')); print('pr-review' in d, sorted(d.get('brainstorming', ())), sum(map(len,d.values())), u.problems(pathlib.Path('.')))"`
   Expected: `False ['r3'] 15 []`.
 
-- [ ] **Step 2: The baselines, all at once.**
+- [x] **Step 2: The baselines, all at once.**
   Run: `python3 -m pytest -q | tail -2; python3 -m pytest -m timing -n 0 -q | tail -1; python3 scripts/model check | tail -1; python3 scripts/model logic | tail -1; python3 scripts/model lexicon --check | tail -1; python3 scripts/features generate --check; python3 scripts/features vocab --check | tail -1; python3 scripts/features bindings --unbound; python3 scripts/tools size --limit 300; python3 scripts/tools check $(git diff --name-only fbbd1466...HEAD -- '*.py')`
   Expected:
   - the suite: `14 xfailed`, no failures, passed = 1277 + the new script tests, and subtests 134;
@@ -741,7 +741,7 @@ batch review`. Nothing in this step asks the person.
   - `size`: silent;
   - `check`: clean.
 
-- [ ] **Step 3: A smoke run of the review loop**, in bash, in a scratch repository under the job's tmp directory.
+- [x] **Step 3: A smoke run of the review loop**, in bash, in a scratch repository under the job's tmp directory.
   Each `cp` and each `rm` is its own command (the person's rule). The test's own hand stands in for `pr-reviewer`.
   ```bash
   d=$(mktemp -d -p /home/vscode/.claude/jobs/7e9ba079/tmp) && git -C "$d" init -q -b main && git -C "$d" config user.name t && git -C "$d" config user.email t@example.com
@@ -785,7 +785,7 @@ batch review`. Nothing in this step asks the person.
 
   Record the time of each `brief` and `reviewed`.
 
-- [ ] **Step 4: Write the implementation report** at `plan-5-implementation.md`, in `plan-4-implementation.md`'s form
+- [x] **Step 4: Write the implementation report** at `plan-5-implementation.md`, in `plan-4-implementation.md`'s form
   (no frontmatter):
   - Final state: each Step 2 figure as measured, and the smoke run's times.
   - The commits: a table of each task's commit, what was done and its verification, the mutations included.
@@ -799,11 +799,11 @@ batch review`. Nothing in this step asks the person.
     - a rerun after a failed `pr ready` posts a second comment.
   - Files.
 
-- [ ] **Step 5: Index the records.** Add a row to `.shop/records/README.md` after the row for `plan-5-pr-review.md`:
+- [x] **Step 5: Index the records.** Add a row to `.shop/records/README.md` after the row for `plan-5-pr-review.md`:
   `| \`2026-11-04-workflow-simplification/plan-5-implementation.md\` | plan 5 executed: the pull request review built (\`work batch brief\`, \`reviewed\`, the fix loop's \`Finding:\` commits and re-review, the \`pr-reviewer\` agent, building-a-batch's review step), a fix-now finding back to \`building\` and a clean review to \`awaiting-merge\`, 8 requirements out of \`unbuilt:\` | report |`.
   Tick every box of this plan.
 
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
   ```bash
   git add .shop/records/2026-11-04-workflow-simplification/plan-5-implementation.md .shop/records/README.md \
     .shop/records/2026-11-04-workflow-simplification/plan-5-pr-review.md
