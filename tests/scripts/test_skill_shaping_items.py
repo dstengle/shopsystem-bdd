@@ -11,7 +11,7 @@ import pytest
 REPO = Path(__file__).resolve().parents[2]
 SKILLS = REPO / "skills"
 SHAPING = SKILLS / "shaping-items" / "SKILL.md"
-NAMES = ("shaping-items", "taking-in-a-request")
+NAMES = ("shaping-items", "taking-in-a-request", "building-a-batch")
 PINNED = "Do not ask the person to approve the lines: nothing waits on their reading."
 
 

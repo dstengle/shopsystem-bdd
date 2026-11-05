@@ -7,7 +7,7 @@ implementation and review.
 
 Skills: `raising-a-request`, `integrating-a-proposal`, `formulating-features`, `delivering-an-initiative`,
 `bdd-red-green`, `checking-spec-consistency`, `migrating-to-capabilities`, `analyzing-a-batch`, `shaping-items`,
-`taking-in-a-request`.
+`taking-in-a-request`, `building-a-batch`.
 Agents: `capability-writer`, `initiative-round`, `spec-checker`, `code-scout`, `bdd-planner`, `bdd-implementer`,
 `bdd-task-reviewer`, `bdd-branch-reviewer`, `architecture-reviewer`, `trial-runner`, `batch-analyst`,
 `delegation-answerer`.

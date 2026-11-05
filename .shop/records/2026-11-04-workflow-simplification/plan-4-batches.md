@@ -947,7 +947,7 @@ Builds no requirement. It is how the loop runs without a person (D2).
   7. A later session starts again at step 2.
 - **The rule:** nothing waits on the person between steps 1 and 6.
 
-- [ ] **Step 1: Failing test** (`test_skill_building_a_batch.py`):
+- [x] **Step 1: Failing test** (`test_skill_building_a_batch.py`):
   - `test_the_process_runs_the_batch_commands_in_order`: `work batch start`, `work batch resume`, `work batch done`,
     `work batch park` and `work batch review` are named in that order in the Process.
   - `test_tasks_are_dispatched_in_parallel_with_their_trailer`: it says `subagent`, `worktree`, `in parallel` (or `at
@@ -956,17 +956,17 @@ Builds no requirement. It is how the loop runs without a person (D2).
     "wait for".
   - `test_description_starts_use_when` (name equals the directory).
 
-- [ ] **Step 2: Run it to verify it fails.**
+- [x] **Step 2: Run it to verify it fails.**
   Run: `python3 -m pytest tests/scripts/test_skill_building_a_batch.py -q`
   Expected: FAIL.
 
-- [ ] **Step 3: Write the skill.**
+- [x] **Step 3: Write the skill.**
 
-- [ ] **Step 4: Run it, the skills' command check and the agents' test.**
+- [x] **Step 4: Run it, the skills' command check and the agents' test.**
   Run: `python3 -m pytest tests/scripts/test_skill_building_a_batch.py tests/scripts/test_skill_shaping_items.py tests/scripts/test_agents.py -q | tail -1`
   Expected: all pass.
 
-- [ ] **Step 5: Commit.**
+- [x] **Step 5: Commit.**
   ```bash
   git add skills/building-a-batch/SKILL.md tests/scripts/test_skill_building_a_batch.py tests/scripts/test_skill_shaping_items.py \
     README.md spec/capabilities/intake.md

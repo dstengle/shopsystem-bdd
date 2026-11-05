@@ -68,5 +68,6 @@ person in the loop unless the two sides cannot agree. The brainstorming route is
 - The item tied to the request's asker: r1 writes an item asked by a bounded context, but the grammar cannot yet say
   that this bounded context is the request's asker, nor that the request's upstream is this bounded context.
 - The intake session started by `work backlog` (design: "a session started when the backlog command runs intake"):
-  waits for plan 4's batches, which build the `claude -p` plumbing. Until then the skill `taking-in-a-request` is that
-  session's instructions, run by any session.
+  `work` starts no session (workflow simplification plan 4, D2). The batch session takes the requests in first: the
+  first step of the skill `building-a-batch` follows `taking-in-a-request` for each request in this context's turn,
+  and any session may run that skill on its own.
