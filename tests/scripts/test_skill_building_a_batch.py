@@ -32,3 +32,29 @@ def test_description_starts_use_when():
     head = SKILL.read_text().split("---\n")[1]
     assert re.search(r"(?m)^name: building-a-batch$", head), head
     assert re.search(r"(?m)^description: Use when ", head), head
+
+
+def step(word):
+    return next(s for s in process(SKILL) if word in s)
+
+
+def test_the_subagent_gets_a_brief_of_its_own():
+    """Plan 4 review, S4: no `work run` brief or result file; `work batch done` runs the whole suite."""
+    text = step("Dispatch")
+    assert "no brief or result file" in text and "`work batch done` runs the whole suite" in text, text
+    assert "red first" in text and "never edit" in text and "one scenario at a time" in text, text
+    assert "tests/scenarios/test_<cap>.py" in text and "@r<n>" in text, text
+
+
+def test_a_returning_item_cherry_picks_its_old_branch():
+    """Plan 4 rulings, Q1."""
+    text = step("Dispatch")
+    assert "cherry-pick" in text and "notes" in text, text
+
+
+def test_each_refusal_of_review_has_its_way_through():
+    """Plan 4 review, S3, and the rulings' Q2."""
+    text = step("work batch review")
+    for said in ("conflict", "merge the earlier item's branch", "park one of the two", "tests fail",
+                 "push or gh", "safe to run again"):
+        assert said in text, (said, text)
