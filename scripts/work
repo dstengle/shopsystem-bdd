@@ -10,6 +10,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import backlog_cli
 import backlog_items
+import batch_cli
 import supervise
 import supervise_all
 import workqueue
@@ -196,12 +197,13 @@ def main(argv=None):
     q = sub.add_parser("start", help="write the initiative an accepted request begins, proposed")
     q.add_argument("request")
     backlog_cli.add_parsers(sub)
+    batch_cli.add_parsers(sub)
     args = ap.parse_args(argv)
     try:
         return {"add": cmd_add, "show": cmd_show, "list": cmd_list, "run": cmd_run, "retry": cmd_retry, "answer": cmd_answer,
                 "withdraw": cmd_withdraw, "note": cmd_note, "status": cmd_status,
                 "request": cmd_request, "outcome": cmd_outcome, "ask": cmd_ask, "reply": cmd_reply, "turn": cmd_turn, "resolve": cmd_resolve,
-                "delegate": cmd_delegate, "start": cmd_start, **backlog_cli.COMMANDS}[args.cmd](args)
+                "delegate": cmd_delegate, "start": cmd_start, **backlog_cli.COMMANDS, **batch_cli.COMMANDS}[args.cmd](args)
     except workqueue.Refused as refused:
         print("work: %s" % refused, file=sys.stderr)
         return 1

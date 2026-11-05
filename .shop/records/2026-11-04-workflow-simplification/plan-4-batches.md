@@ -489,7 +489,7 @@ Builds `batches#r1`-`r4`.
     status word.
   - The `start` handler sets `context["strict_not"]`.
 
-- [ ] **Step 1: Write the failing script tests** (`test_batch_start.py`, on `batch_repo`):
+- [x] **Step 1: Write the failing script tests** (`test_batch_start.py`, on `batch_repo`):
   - `test_start_writes_the_batch_the_branch_and_the_lines`: b1 `ABANDON` and b2 `SECOND`, both ready.
     - Exit 0. HEAD's commit holds exactly `.shop/batches/1/plan.md`, `.shop/backlog/b1.md` and
       `.shop/backlog/b2.md`. Both items are `in-batch`, and the plan has t1 b1 and t2 b2 `pending`.
@@ -506,21 +506,21 @@ Builds `batches#r1`-`r4`.
     exit 0, `no batch started`, b1 `shaped`, no `.shop/batches/`, and no branch `batch-1`.
   - `test_status_prints_items_tasks_and_their_statuses`, and `test_status_json_is_one_object`.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_batch_start.py -q`
   Expected: FAIL; `work` has no `batch` command.
 
-- [ ] **Step 3: Implement `batch_start.py`, `batch_cli.py`'s `start` and `status`, and the `scripts/work` lines.**
+- [x] **Step 3: Implement `batch_start.py`, `batch_cli.py`'s `start` and `status`, and the `scripts/work` lines.**
 
-- [ ] **Step 4: Run the script tests.**
+- [x] **Step 4: Run the script tests.**
   Run: `python3 -m pytest tests/scripts/test_batch_start.py tests/scripts/test_batch_pick.py -q | tail -1`
   Expected: all pass.
 
-- [ ] **Step 5: Write the world and the handlers, bind `test_batches.py`, and remove r1-r4 from `unbuilt:`.**
+- [x] **Step 5: Write the world and the handlers, bind `test_batches.py`, and remove r1-r4 from `unbuilt:`.**
   Run: `python3 -m pytest tests/scenarios/test_batches.py -q -rxX -n 0 | tail -15`
   Expected: r1-r4 passed; r5-r13 xfailed (no XPASS).
 
-- [ ] **Step 6: Check that each scenario fails for its point** (in a scratch edit, reverted):
+- [x] **Step 6: Check that each scenario fails for its point** (in a scratch edit, reverted):
   - With `start` not moving items, r1 fails.
   - With the bar's alone-check skipped, r2 fails.
   - With `blocked` ignored, r3 fails, on exit 0 and the item `in-batch`.
@@ -528,11 +528,11 @@ Builds `batches#r1`-`r4`.
 
   Record each in the report.
 
-- [ ] **Step 7: The baselines.**
+- [x] **Step 7: The baselines.**
   Run: `python3 -m pytest -q | tail -1; python3 scripts/model check | tail -1; python3 scripts/features vocab --check | tail -1; python3 scripts/features generate --check; python3 scripts/tools size --limit 300`
   Expected: `23 xfailed`, no failures; the rest at baseline; `size` silent.
 
-- [ ] **Step 8: Commit.**
+- [x] **Step 8: Commit.**
   ```bash
   git add scripts/batch_start.py scripts/batch_cli.py scripts/work tests/scenarios/batches_world.py tests/scenarios/batches_handlers*.py \
     tests/scenarios/work_queue_world.py tests/scenarios/backlog_handlers.py tests/scenarios/test_batches.py \

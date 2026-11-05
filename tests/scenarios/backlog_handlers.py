@@ -63,6 +63,7 @@ def item_is(step):
     done = step.context.get("result")
     if " is not " in step.text and done is not None:
         assert done.returncode != 2, (step.text, "the command is not there", done.stderr)
+        assert done.returncode == 0 or not step.context.get("strict_not"), (step.text, done.stderr)   # plan 4, D21
     assert (got != wanted) if " is not " in step.text else (got == wanted), (step.text, got)
 
 

@@ -182,8 +182,11 @@ LOCAL = {}
 
 
 def local(template, kind=None):
+    """A second registration of one key chains (plan 4, D23): the new handler is tried first, the earlier one when it
+    returns False."""
     def mark(fn):
-        LOCAL[(template, kind)] = fn
+        earlier = LOCAL.get((template, kind))
+        LOCAL[(template, kind)] = fn if earlier is None else (lambda step: earlier(step) if fn(step) is False else None)
         return fn
     return mark
 

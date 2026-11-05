@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13]
+unbuilt: [r5, r6, r7, r8, r9, r10, r11, r12, r13]
 ---
 
 # Batches
@@ -90,3 +90,18 @@ question while building parks its item and the rest of the batch carries on. The
   `batch_size` of `.shop/delivery.toml` (a new key, default 4).
 - A batch keeps each item's commits apart (one worktree or one commit series an item); a parked item's commits stay on
   its own branch for when it returns.
+- The batch and its plan are one file, `.shop/batches/<n>/plan.md`: frontmatter `id`, `kind: batch`, `status`,
+  `base` (the branch `work batch start` ran on), `forked_from` (the base's commit the batch branch starts at),
+  `branch` and `pull_request`; a `# batch-<n>` heading; a `## Tasks` table `| task | item | status | branch |`, one
+  task `t<k>` for each item in pick order; and a `## Plan` kept as written. It is committed on the base branch only,
+  with the items it moves; the batch and item branches never change `.shop/backlog/` or `.shop/batches/`.
+- `work batch start` makes the branch `batch-<n>` at the base's HEAD and, in a worktree of its own under
+  `.shop/worktrees/` (`[batch] worktrees` of `.shop/delivery.toml`), commits on it every picked item's lines laid
+  into `spec/`, their ids appended to the capability's `unbuilt:`, and each service capability's feature generated
+  again, with one `Item: b<j>` line for each item. Each item's task builds on the branch `batch-<n>-b<j>`, which
+  starts at that commit; the item branches are merged into `batch-<n>` only by `work batch review`.
+- Each picked item is checked by the readiness bar again, alone and then laid over the items picked before it; one
+  that no longer passes alone goes back to `shaped` with its reasons under `## Notes`, one that clashes with those
+  picked stays `ready`. An item's ids that collide with its capability's or with an item picked before it are
+  renumbered, with a `## Notes` line naming each change. One batch is open (`building`, `in-review` or
+  `awaiting-merge`) at a time.
