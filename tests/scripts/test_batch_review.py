@@ -102,7 +102,7 @@ def gh_fails(repo, monkeypatch):
 
 
 CAUSES = {"conflict": (conflict, 'b2 "Exit"'), "tests": (failing, "exit 4"),
-          "push": (no_remote, "the push of batch-1 to origin failed"), "gh": (gh_fails, "gh pr create failed")}
+          "push": (no_remote, "the push of batch-1 to origin failed"), "gh": (gh_fails, "work batch review: gh pr create failed")}
 
 
 @pytest.mark.parametrize("cause", sorted(CAUSES))
@@ -159,3 +159,14 @@ def test_a_failed_review_removes_the_worktree_it_made(both_done):
     assert not tree.exists()
     again = work(both_done, "batch", "status", "batch-1")
     assert "batch-1 building" in again.stdout
+
+
+def test_a_pull_request_created_by_a_failing_gh_is_kept(both_done, batch_outside, monkeypatch):
+    """Plan 4 review, M5: gh created the pull request, then failed; the review finds it and does not put back."""
+    monkeypatch.setenv("STUB_GH_LATE", "pr create")
+    done = work(both_done, "batch", "review", "batch-1")
+    assert done.returncode == 0, done.stderr
+    assert done.stdout.strip().splitlines()[-1] == URL
+    assert batch_plan.find(both_done, "batch-1").pull_request == URL
+    assert remote_head(both_done) == git(both_done, "rev-parse", "batch-1").strip()
+    assert len(creates(batch_outside)) == 1

@@ -203,3 +203,40 @@ def test_batch_commands_refuse_off_the_base_branch(started):
         assert done.returncode == 1, (args, done.stderr)
         assert "batch-1 is built from main; run it on main, not elsewhere" in done.stderr, done.stderr
     assert state(started) == before
+
+
+def test_done_takes_a_merge_of_an_earlier_in_batch_items_branch(started):
+    """Plan 4 rulings, Q2: a later item's branch may merge an earlier in-batch item's, to resolve a conflict."""
+    resumed(started)
+    build(started, "t1", "b1", ["r5"])
+    git(tree(started, "t2"), "merge", "-q", "--no-ff", "batch-1-b1", "-m", "merge b1\n\nItem: b2")
+    build(started, "t2", "b2", ["r6"])
+    done = work(started, "batch", "done", "batch-1", "t2")
+    assert done.returncode == 0, done.stderr
+
+
+def test_done_refuses_a_merge_of_a_parked_items_branch(started):
+    resumed(started)
+    build(started, "t1", "b1", ["r5"])
+    git(tree(started, "t2"), "merge", "-q", "--no-ff", "batch-1-b1", "-m", "merge b1\n\nItem: b2")
+    build(started, "t2", "b2", ["r6"])
+    assert work(started, "batch", "park", "batch-1", "b1", "--question", "Which?").returncode == 0
+    done = work(started, "batch", "done", "batch-1", "t2")
+    assert done.returncode == 1 and '"build b1"' in done.stderr, done.stderr
+
+
+def test_done_refuses_an_edit_made_while_its_tests_ran(started):
+    """Plan 4 review, M2: the worktree is checked again under the lock."""
+    (started / ".shop" / "delivery.toml").write_text(
+        "[batch]\ntests = \"python3 -c \\\"open('notes.txt', 'w').write('late')\\\"\"\n")
+    git(started, "commit", "-q", "-am", "tests that write")
+    resumed(started)
+    build(started, "t1", "b1", ["r5"])
+    done = work(started, "batch", "done", "batch-1", "t1")
+    assert done.returncode == 1 and "changed while its tests ran" in done.stderr, done.stderr
+    assert tasks(started)["t1"] == "running"
+
+
+def test_done_of_a_task_not_in_the_batch_names_the_command(started):
+    done = work(started, "batch", "done", "batch-1", "t9")
+    assert done.returncode == 1 and "work batch done: batch-1 has no task t9" in done.stderr, done.stderr

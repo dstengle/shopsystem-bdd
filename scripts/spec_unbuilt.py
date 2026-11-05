@@ -65,6 +65,17 @@ def with_unbuilt(text, ids):
     return text[:at] + "\n" + listed + text[at:]
 
 
+def without_unbuilt(text, ids):
+    """A capability file's text with `ids` taken out of its `unbuilt: [...]` (plan 4 review, B1); a file with no
+    `unbuilt:` is given back as it is."""
+    head_end = text.find("\n---", 4)
+    found = re.search(r"(?m)^unbuilt:[ \t]*\[(.*)\][ \t]*$", text[:head_end])
+    if not found:
+        return text
+    kept = [one.strip() for one in found.group(1).split(",") if one.strip() and one.strip() not in set(ids)]
+    return text[:found.start()] + "unbuilt: [%s]" % ", ".join(kept) + text[found.end():]
+
+
 def mark(items, root):
     """A strict xfail on each scenario item whose feature's capability lists one of the item's r<n> marks."""
     found = unbuilt(root)

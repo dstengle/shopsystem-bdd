@@ -4,13 +4,15 @@ D14): a batch closed, in one commit on the base branch.
 The person merges the pull request; `merged` records it once gh says it is `MERGED` and its merge commit is in the
 base's history (else `git pull` first): every `in-batch` item `delivered`, the batch `merged`, its worktrees removed
 and the merged item branches deleted. `abandon` closes the pull request when there is one, returns every `in-batch`
-item to `ready` and removes the worktrees; the branches are kept."""
+item to `ready` and removes the worktrees; the branches are kept. It refuses while a task worktree has uncommitted
+changes, unless `--discard`; `merged` removes them as they are, their work merged."""
 import subprocess
 
 import backlog_items
 import batch_gh
 import batch_plan
 from batch_git import locked, remove_tree, trees_path
+from batch_tasks import refuse_loose
 from workqueue import Refused
 
 
@@ -40,7 +42,7 @@ def merged(root, name):
         batch = _open(root, name, command, ("in-review", "awaiting-merge"))
         if not batch.pull_request:
             raise Refused("%s: %s has no pull request" % (command, batch.name))
-        state, oid = batch_gh.state(root, batch.pull_request)
+        state, oid = batch_gh.state(root, batch.pull_request, command)
         if state != "MERGED" or not oid:
             raise Refused("%s: the pull request %s of %s is %s, not merged" % (command, batch.pull_request, batch.name,
                                                                              state))
@@ -61,13 +63,16 @@ def merged(root, name):
         return batch
 
 
-def abandon(root, name):
-    """The batch `abandoned`, its pull request closed, its in-batch items `ready` (D14)."""
+def abandon(root, name, discard=False):
+    """The batch `abandoned`, its pull request closed, its in-batch items `ready` (D14); refused while a task
+    worktree has uncommitted changes, unless `discard` (S2)."""
     command = "work batch abandon"
     with locked(root):
         batch = _open(root, name, command, ("building", "in-review"))
+        if not discard:
+            refuse_loose(root, batch, batch.tasks, command)
         if batch.pull_request:
-            batch_gh.close(root, batch.pull_request)
+            batch_gh.close(root, batch.pull_request, command)
         items = _items(root, batch, "in-batch")
         for item in items:
             item.status = "ready"

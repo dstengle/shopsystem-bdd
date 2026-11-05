@@ -4,7 +4,9 @@ D15-D18): one task for each item, built on its branch `batch-<n>-b<j>` in the wo
 `resume` gives each pending task of an `in-batch` item its worktree and sets it `running`, and gives a running task
 whose worktree is gone its worktree back on its branch, with the commits made so far; it reads no input. `done`
 checks the task's worktree and branch and runs the tests there before it sets the task `done`. `park` sets an item
-`needs-input` with its question and its task back to `pending`, its branch kept and its worktree removed. Each
+`needs-input` with its question and its task back to `pending`, its branch kept and its worktree removed; a worktree
+with uncommitted changes is refused unless `--discard` (plan 4 review, S2). A path is used as a worktree only when it
+is that worktree on its branch (`batch_git.is_tree`, S1). Each
 change is one commit of the batch file (and the item) on the base branch, made under the lock. The checks shared with
 `work batch review` are here: the lines commit, uncited commits, commits that change `.shop/`, the tests."""
 import shlex
@@ -16,13 +18,15 @@ import backlog_moves
 import batch_plan
 import spec_unbuilt
 from batch_git import (
-    add_tree,
     delivery,
     git,
+    is_tree,
     locked,
     remove_tree,
     scripts_env,
+    tree_for,
     trees_dir,
+    uncommitted,
 )
 from workqueue import Refused
 
@@ -38,14 +42,15 @@ def lines_commit(root, batch):
     return found.split()[0]
 
 
-def uncited(root, since, branch, item_name):
-    """`<short sha> "<subject>"` of each commit on `branch` after `since` with no `Item: <item>` line (D10)."""
+def uncited(root, since, branch, names):
+    """`<short sha> "<subject>"` of each commit on `branch` after `since` with no `Item: <item>` line for one of the
+    item names `names` (D10)."""
     out = git(root, "log", "--format=%h%x00%s%x00%(trailers:key=Item,valueonly,separator=%x2c)%x1e",
               "%s..%s" % (since, branch)).stdout
     found = []
     for entry in filter(str.strip, out.split("\x1e")):
         sha, subject, cited = entry.strip("\n").split("\x00")
-        if item_name not in [c.strip() for c in cited.split(",")]:
+        if not set(names) & {c.strip() for c in cited.split(",")}:
             found.append('%s "%s"' % (sha, subject))
     return found
 
@@ -79,6 +84,13 @@ def tree_of(root, batch, task):
     return trees_dir(root) / ("%s-%s" % (batch.name, task.task))
 
 
+def citable(root, batch, task):
+    """The items a commit on the task's branch may cite (plan 4 rulings, Q2): its own, and each `in-batch` item of a
+    task before it in plan order, so that a later branch may merge an earlier one's; never a parked item."""
+    earlier = batch.tasks[:batch.tasks.index(task)]
+    return [task.item] + [t.item for t in earlier if backlog_items.find(root, t.item).status == "in-batch"]
+
+
 def task_label(root, task):
     return "%s %s" % (task.task, backlog_items.label(backlog_items.find(root, task.item)))
 
@@ -103,9 +115,9 @@ def resume(root, name):
             if item.status != "in-batch" or task.status not in ("pending", "running"):
                 out.append((task, None))
                 continue
-            if not tree.exists():
+            if not is_tree(tree, task.branch):
                 lines = lines or lines_commit(root, batch)
-                add_tree(root, tree, task.branch, lines)
+                tree_for(root, tree, task.branch, "work batch resume", lines)
             if task.status == "pending":
                 task.status = "running"
                 moved.append(task.task)
@@ -138,10 +150,9 @@ def checked(root, batch, task):
     if task.status != "running":
         raise Refused("%s: %s is %s; %s takes a task that is running" % (command, label, task.status, command))
     tree = tree_of(root, batch, task)
-    if not tree.is_dir():
-        raise Refused("%s: %s has no worktree; run work batch resume %s" % (command, label, batch.name))
-    loose = [line[3:] for line in git(tree, "status", "--porcelain", "--untracked-files=all").stdout.splitlines()
-             if not line[3:].startswith(".shop/scratch")]
+    if not is_tree(tree, task.branch):
+        raise Refused("%s: %s has no worktree at %s; run work batch resume %s" % (command, label, tree, batch.name))
+    loose = uncommitted(tree)
     if loose:
         raise Refused("%s: %s has uncommitted changes in %s: %s" % (command, label, tree, ", ".join(loose)))
     since = lines_commit(root, batch)
@@ -149,7 +160,7 @@ def checked(root, batch, task):
     if shop:
         raise Refused("%s: %s: a commit on %s changes %s, which only the base branch's batch commands change" % (
             command, label, task.branch, ", ".join(shop)))
-    bare = uncited(root, since, task.branch, task.item)
+    bare = uncited(root, since, task.branch, citable(root, batch, task))
     if bare:
         raise Refused("%s: %s: a commit on %s cites no item (an `Item: %s` line): %s" % (
             command, label, task.branch, task.item, "; ".join(bare)))
@@ -166,21 +177,38 @@ def checked(root, batch, task):
 def done(root, name, tid):
     """The task `done` (D16's `done`): checked and tested outside the lock, then, under it, committed if the task is
     still running at the head that was tested."""
-    batch = building(root, name, "work batch done")
-    head = checked(root, batch, batch_plan.task(batch, tid))
+    command = "work batch done"
+    batch = building(root, name, command)
+    head = checked(root, batch, batch_plan.task(batch, tid, command))
     with locked(root):
-        batch = building(root, name, "work batch done")
-        task = batch_plan.task(batch, tid)
-        if task.status != "running" or git(root, "rev-parse", task.branch).stdout.strip() != head:
+        batch = building(root, name, command)
+        task = batch_plan.task(batch, tid, command)
+        tree = tree_of(root, batch, task)
+        if task.status != "running" or git(root, "rev-parse", task.branch).stdout.strip() != head or (
+                not is_tree(tree, task.branch) or uncommitted(tree)):
             raise Refused("work batch done: %s changed while its tests ran; run it again" % task_label(root, task))
         task.status = "done"
         batch_plan.commit(root, batch, [], "work batch done: %s %s" % (batch.name, task_label(root, task)))
         return task
 
 
-def park(root, name, item_name, question):
+def refuse_loose(root, batch, tasks, command):
+    """Refused while a worktree of `tasks` has uncommitted changes, naming the files and the worktree (S2)."""
+    said = []
+    for task in tasks:
+        tree = tree_of(root, batch, task)
+        loose = uncommitted(tree) if is_tree(tree) else []
+        if loose:
+            said.append("%s: %s has uncommitted changes in %s: %s; commit them on %s with `Item: %s`, or pass "
+                        "--discard" % (command, task_label(root, task), tree, ", ".join(loose), task.branch, task.item))
+    if said:
+        raise Refused("\n".join(said))
+
+
+def park(root, name, item_name, question, discard=False):
     """`in-batch` -> `needs-input` (D15): the question under `## Question`, a note naming the branch; its task back to
-    `pending`, its worktree removed and its branch kept."""
+    `pending`, its worktree removed and its branch kept. Refused while the worktree has uncommitted changes, unless
+    `discard`."""
     question = backlog_moves.text_line(question, "question")
     with locked(root):
         batch = building(root, name, "work batch park")
@@ -191,6 +219,8 @@ def park(root, name, item_name, question):
         if item.status != "in-batch":
             raise Refused("work batch park: %s is %s; work batch park takes an item that is in-batch" % (
                 backlog_items.label(item), item.status))
+        if not discard:
+            refuse_loose(root, batch, [task], "work batch park")
         item.status = "needs-input"
         item.sections["Question"] = question
         backlog_moves.add_note(item, "parked from %s; its work is on branch %s" % (batch.name, task.branch))

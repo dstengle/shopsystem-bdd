@@ -129,12 +129,17 @@ def publishes(step):
 
 @handler("ThenDoesNot", "publish")
 def publishes_not(step):
-    """The command exited 0 and the commit is not reachable from the remote's batch branch."""
+    """The command exited 0, the commit is not reachable from the remote's batch branch, and the lines of its item are
+    not in that branch's spec (plan 4 review, B1: the lines commit laid them)."""
     done = step.context["result"]
     assert done.returncode == 0, done.stderr
     sha = step.context["commits"][step.names[0]]
     pushed = remote_head(step, created(step)[created(step).index("--head") + 1])
     assert pushed and sha not in T.git(step, "rev-list", pushed).split(), (step.text, sha)
+    item = step.context["given"]["commit"][step.names[0]]["item"]
+    spec = T.git(step, "show", "%s:%s" % (pushed, T.CAP))
+    for group in step.context["laid"][item]:
+        assert "### [%s] " % group not in spec, (step.text, group, spec)
 
 
 @local("ThenR", "pull request")

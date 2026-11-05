@@ -158,10 +158,10 @@ def next_name(root):
     return "batch-%d" % (max(map(number, names(root)), default=0) + 1)
 
 
-def task(batch, tid):
+def task(batch, tid, command="work batch"):
     found = next((t for t in batch.tasks if t.task == tid), None)
     if found is None:
-        raise Refused("%s has no task %s" % (batch.name, tid))
+        raise Refused("%s: %s has no task %s" % (command, batch.name, tid))
     return found
 
 

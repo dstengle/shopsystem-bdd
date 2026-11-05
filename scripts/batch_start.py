@@ -21,8 +21,6 @@ from batch_git import add_tree, current_branch, git, locked, remove_tree, trees_
 from batch_plan import Batch, Task, commit, next_name, open_batch
 from workqueue import Refused
 
-NOTE = "renumbered by work batch start: "
-
 
 def labels(items):
     return ", ".join(backlog_items.label(i) for i in items)
@@ -44,19 +42,39 @@ def lay_lines(tree, picked):
     for capability, listed in ids.items():
         path = backlog_lines.capability_file(tree, capability)
         path.write_text(spec_unbuilt.with_unbuilt(path.read_text(), listed))
-        changed.append(path.relative_to(tree).as_posix())
-        if spec_read.capability(path).frontmatter.get("group") == "guarantees":
-            continue
-        try:
-            with contextlib.redirect_stderr(io.StringIO()):     # the groups it skips are the bar's to name
-                text = features_generate.generate(tree, path)
-        except features_generate.GenerateError as err:
-            raise Refused("work batch start: features generate of %s failed: %s" % (capability, err)) from None
-        feature = Path(tree) / "features" / ("%s.feature" % capability)
-        feature.parent.mkdir(parents=True, exist_ok=True)
-        feature.write_text(text)
-        changed.append(feature.relative_to(tree).as_posix())
+        changed += _generated(tree, capability, "work batch start")
     return changed
+
+
+def _generated(tree, capability, command):
+    """The capability file's path and, for a service capability, its feature written again from it."""
+    path = backlog_lines.capability_file(tree, capability)
+    changed = [path.relative_to(tree).as_posix()]
+    if spec_read.capability(path).frontmatter.get("group") == "guarantees":
+        return changed
+    try:
+        with contextlib.redirect_stderr(io.StringIO()):     # the groups it skips are the bar's to name
+            text = features_generate.generate(tree, path)
+    except features_generate.GenerateError as err:
+        raise Refused("%s: features generate of %s failed: %s" % (command, capability, err)) from None
+    feature = Path(tree) / "features" / ("%s.feature" % capability)
+    feature.parent.mkdir(parents=True, exist_ok=True)
+    feature.write_text(text)
+    return changed + [feature.relative_to(tree).as_posix()]
+
+
+def unlay_lines(tree, items, command):
+    """Every item's lines taken out of the worktree's `spec/` and their ids out of `unbuilt:`, and the feature of each
+    service capability changed written again (plan 4 review, B1); the paths changed."""
+    changed = []
+    for item in items:
+        ids = backlog_lines.ids(backlog_lines.read(item, backlog_items.rel_of(item.name)))
+        for capability in backlog_lines.unlay(tree, item):
+            path = backlog_lines.capability_file(tree, capability)
+            path.write_text(spec_unbuilt.without_unbuilt(
+                path.read_text(), [i.split("#")[1] for i in ids if i.split("#")[0] == capability]))
+            changed += _generated(tree, capability, command)
+    return list(dict.fromkeys(changed))
 
 
 def _returns(root, returned):
@@ -100,6 +118,11 @@ def start(root):
         if base is None:
             raise Refused("work batch start: the checkout is on a detached HEAD; run it on the branch the batch is to be "
                           "built from")
+        loose = git(root, "status", "--porcelain", "--untracked-files=all", "--", "spec", "features").stdout
+        if loose.strip():
+            raise Refused("work batch start: spec/ or features/ has uncommitted changes, and the lines are laid on the "
+                          "commit: %s; commit them or put them away first" % ", ".join(
+                              line[3:] for line in loose.splitlines()))
         found = open_batch(root)
         if found is not None:
             raise Refused("work batch start: %s is %s; one batch is open at a time" % (found.name, found.status))
@@ -124,6 +147,7 @@ def said(batch, pick):
     out += ["%s -> shaped: %s" % (backlog_items.label(i), r[0]) for i, r in pick.returned]
     out += ["%s left out: %s" % (backlog_items.label(i), r[0]) for i, r in pick.left_out]
     for item in pick.picked:
-        notes = [n for n in item.sections.get("Notes", "").splitlines() if n.startswith(NOTE)]
-        out += ["%s renumbered: %s" % (backlog_items.label(item), notes[-1][len(NOTE):])] if notes else []
+        pairs = pick.renumbered.get(item.name)
+        out += ["%s renumbered: %s" % (backlog_items.label(item), ", ".join("%s -> %s" % p for p in pairs))] if pairs \
+            else []
     return "\n".join(out)

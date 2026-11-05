@@ -18,9 +18,17 @@ def calls():
     return [json.loads(line) for line in path.read_text().splitlines()] if path.is_file() else []
 
 
+def made():
+    """The URLs of the creates before this call that did not fail, each with its head."""
+    found = [c["argv"] for c in calls() if c["argv"][:2] == ["pr", "create"] and not c.get("failed")]
+    return [(a[a.index("--head") + 1] if "--head" in a else None, "https://github.com/ex/ctx/pull/%d" % k)
+            for k, a in enumerate(found, 1)]
+
+
 def main(argv):
     failed = os.environ.get("STUB_GH_FAIL") == " ".join(argv[:2])
-    creates = sum(1 for c in calls() if c["argv"][:2] == ["pr", "create"] and not c.get("failed"))
+    late = os.environ.get("STUB_GH_LATE") == " ".join(argv[:2])
+    creates = len(made())
     with open(os.environ["STUB_GH_CALLS"], "a") as out:
         out.write(json.dumps(dict({"argv": argv}, **({"failed": True} if failed else {}))) + "\n")
     if failed:
@@ -32,6 +40,13 @@ def main(argv):
         path = Path(os.environ.get("STUB_GH_STATE", ""))
         states = json.loads(path.read_text()) if path.is_file() else {}
         print(json.dumps(states.get(argv[2], {"state": "OPEN", "mergeCommit": None})))
+    elif argv[:2] == ["pr", "list"]:
+        head = argv[argv.index("--head") + 1] if "--head" in argv else None
+        closed = {c["argv"][2] for c in calls() if c["argv"][:2] == ["pr", "close"] and not c.get("failed")}
+        print(json.dumps([{"url": url} for h, url in made() if h == head and url not in closed]))
+    if late:
+        print("stand-in gh: timed out", file=sys.stderr)
+        return 1
     return 0
 
 

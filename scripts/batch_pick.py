@@ -17,7 +17,7 @@ import readiness_bar
 from batch_git import delivery
 
 SIZE = 4
-Pick = namedtuple("Pick", "picked returned left_out")
+Pick = namedtuple("Pick", "picked returned left_out renumbered", defaults=({},))
 
 
 def batch_size(root):
@@ -42,13 +42,14 @@ def _alone(root, item):
 
 
 def pick(root, size=None):
-    """The Pick (D7): `picked` in pick order, renumbered (each with its `## Notes` line); `returned` and `left_out` as
-    (item, reasons), the returned set `shaped` with the note."""
+    """The Pick (D7): `picked` in pick order, renumbered (each with its `## Notes` line, and the pairs of this pick
+    under its name in `renumbered`, plan 4 review M1); `returned` and `left_out` as (item, reasons), the returned set
+    `shaped` with the note."""
     size = batch_size(root) if size is None else size
     everything = backlog_items.items(root)
     by_name = {i.name: i for i in everything}
     ready = next((its for state, its in backlog_view.ordered(everything) if state == "ready"), [])
-    picked, returned, left_out, taken, done = [], [], [], {}, set()
+    picked, returned, left_out, taken, done, renumbered = [], [], [], {}, set(), {}
     while len(picked) < size:
         before = len(done)
         for item in ready:
@@ -70,10 +71,11 @@ def pick(root, size=None):
                 left_out.append((item, reasons))
                 continue
             if pairs:
+                renumbered[trial.name] = pairs
                 backlog_moves.add_note(trial, "renumbered by work batch start: %s" % ", ".join(
                     "%s -> %s" % pair for pair in pairs))
             taken = trial_taken
             picked.append(trial)
         if len(done) == before:
             break
-    return Pick(picked, returned, left_out)
+    return Pick(picked, returned, left_out, renumbered)

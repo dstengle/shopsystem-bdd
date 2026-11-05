@@ -174,6 +174,10 @@ def _append(text, heading, body, before="Behaviour"):
     return text[:found.start(1)] + joined + text[found.end(1):]
 
 
+def _laid(group):
+    return "### [%s] %s" % (group.id, group.title) + "".join("\n- [%s] %s" % r for r in group.requirements)
+
+
 def lay_onto(into, item):
     """The item's blocks laid over `into/spec`: term bullets at the end of the capability file's `## Terms`, groups
     (headings raised to `### `) at the end of its `## Behaviour`. The names of the capabilities laid."""
@@ -184,11 +188,31 @@ def lay_onto(into, item):
         if block.terms:
             text = _append(text, "Terms", "\n".join(block.terms))
         if block.groups:
-            text = _append(text, "Behaviour", "\n\n".join(
-                "### [%s] %s" % (g.id, g.title) + "".join("\n- [%s] %s" % r for r in g.requirements)
-                for g in block.groups))
+            text = _append(text, "Behaviour", "\n\n".join(_laid(g) for g in block.groups))
         path.write_text(text)
     return [b.capability for b in blocks]
+
+
+def _cut(text, chunk):
+    """`text` less the first `chunk` that is a whole run of lines, with the blank line after it; unchanged when there
+    is none."""
+    found = re.search(r"(?m)^%s(?:\n\n|\n|\Z)" % re.escape(chunk), text)
+    return text if found is None else text[:found.start()] + text[found.end():]
+
+
+def unlay(into, item):
+    """The reverse of `lay_onto` (plan 4 review, B1): the item's groups and term bullets taken out of `into/spec`
+    where they are as `lay_onto` laid them. The names of the capabilities whose file changed."""
+    changed = []
+    for block in read(item, "the item %s" % item.name):
+        path = capability_file(into, block.capability)
+        text = was = path.read_text()
+        for chunk in [_laid(g) for g in block.groups] + block.terms:
+            text = _cut(text, chunk)
+        if text != was:
+            path.write_text(text.rstrip("\n") + "\n")
+            changed.append(block.capability)
+    return changed
 
 
 def lay(root, item, into, others=()):

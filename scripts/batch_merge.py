@@ -3,8 +3,8 @@ D6), in the batch's worktree, with `--no-ff` and a message citing the item.
 
 Every item's ids are in its capability's `unbuilt:` on the batch branch, and each task takes its own out. Two items
 of one capability so change the same line of the same file, which git cannot merge; that conflict alone is settled
-here: when a conflicted file merges cleanly with its `unbuilt:` line set aside, the line is written with the ids
-still unbuilt on both sides. Any other conflict aborts the merge and is refused."""
+here: when a conflicted file merges cleanly with its `unbuilt:` line set aside, the line is written with the base's
+ids still unbuilt on both sides, then each id either side added (plan 4 review, M6). Any other conflict aborts the merge and is refused."""
 import re
 import subprocess
 import tempfile
@@ -41,7 +41,9 @@ def settled(tree, path):
         done = subprocess.run(["git", "merge-file", "-p", *map(str, files)], capture_output=True, text=True)
     if done.returncode != 0:
         return None
-    left = [one for one in _ids(ours) if one in _ids(theirs)]
+    was, mine, other = _ids(base), _ids(ours), _ids(theirs)
+    left = [one for one in was if one in mine and one in other]
+    left += [one for one in mine + other if one not in was and one not in left]
     return done.stdout.replace(MARK, "unbuilt: [%s]" % ", ".join(left), 1)
 
 

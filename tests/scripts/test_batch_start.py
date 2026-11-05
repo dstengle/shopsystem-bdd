@@ -127,3 +127,22 @@ def test_status_json_is_one_object(two):
     assert found["items"][0] == {"id": "b1", "title": "Abandon", "status": "in-batch"}
     assert found["tasks"][1] == {"task": "t2", "item": "b2", "status": "pending", "branch": "batch-1-b2"}
     assert found["plan"] == ".shop/batches/1/plan.md" and found["base"] == "main"
+
+
+def test_start_refuses_uncommitted_spec_or_features(two):
+    """Plan 4 review, M3: the pick reads the checkout's spec/, the lines are laid on its HEAD."""
+    path = two / "spec" / "index.md"
+    path.write_text(path.read_text() + "\nmine\n")
+    before, had = state(two), branches(two)
+    done = work(two, "batch", "start")
+    assert done.returncode == 1 and "spec/index.md" in done.stderr and "uncommitted" in done.stderr, done.stderr
+    assert state(two) == before and branches(two) == had
+
+
+def test_start_prints_only_the_renumbering_it_made(two):
+    """Plan 4 review, M1."""
+    assert "renumbered" in work(two, "batch", "start").stdout
+    assert work(two, "batch", "abandon", "batch-1").returncode == 0
+    again = work(two, "batch", "start")
+    assert again.returncode == 0 and again.stdout.startswith("batch-2 building"), again.stderr
+    assert "renumbered" not in again.stdout, again.stdout

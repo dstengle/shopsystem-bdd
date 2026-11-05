@@ -28,9 +28,12 @@ def add_parsers(sub):
     s.add_argument("batch")
     s.add_argument("item")
     s.add_argument("--question", required=True)
-    for word, said in (("merged", "record the merge of a batch's pull request: its in-batch items delivered"),
-                       ("abandon", "abandon a batch: its pull request closed, its in-batch items ready again")):
-        cmds.add_parser(word, help=said).add_argument("batch")
+    s.add_argument("--discard", action="store_true", help="discard the uncommitted changes of the item's worktree")
+    cmds.add_parser("merged", help="record the merge of a batch's pull request: its in-batch items delivered"
+                    ).add_argument("batch")
+    s = cmds.add_parser("abandon", help="abandon a batch: its pull request closed, its in-batch items ready again")
+    s.add_argument("batch")
+    s.add_argument("--discard", action="store_true", help="discard the uncommitted changes of its task worktrees")
     s = cmds.add_parser("review", help="merge the in-batch items into the batch branch, test, push and publish its pull request")
     s.add_argument("batch")
 
@@ -98,7 +101,7 @@ def done(args):
 
 
 def park(args):
-    item = batch_tasks.park(args.root, args.batch, args.item, args.question)
+    item = batch_tasks.park(args.root, args.batch, args.item, args.question, args.discard)
     print("%s %s -> needs-input: %s" % (args.batch, backlog_items.label(item), item.question))
     return 0
 
@@ -115,7 +118,7 @@ def merged(args):
 
 
 def abandon(args):
-    batch = batch_close.abandon(args.root, args.batch)
+    batch = batch_close.abandon(args.root, args.batch, args.discard)
     print("%s abandoned" % batch.name)
     return 0
 

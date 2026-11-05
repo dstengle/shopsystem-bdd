@@ -17,11 +17,17 @@ import subprocess
 import sys
 from pathlib import Path
 
+import backlog_items
+import backlog_lines
+import batch_start
+import spec_unbuilt
+
 STUB = Path(__file__).resolve().parents[1] / "scripts" / "stub_gh.py"
 DELIVERY = '[batch]\ntests = "python3 -c pass"\n'
 SECOND = "When the person runs `work abandon` on an initiative that is `started`, `work` shall exit successfully."
 OWN_START, OWN_IN = "i92", "i93"
 URL = "https://github.com/ex/ctx/pull/%d"
+CAP = "spec/capabilities/work-queue.md"
 
 
 def W():
@@ -139,20 +145,49 @@ def ensure_batch(step, resume=False):
         make_batch(step, name)
 
 
+def give_batch_lines(step, items):
+    """Each item of a batch that has no lines given one, in work-queue, with a group and an id of its own."""
+    for item in items:
+        if has_lines(step, item):
+            continue
+        k = step.context["laid_count"] = step.context.get("laid_count", 0) + 1
+        fields = step.context["item_fields"][item]
+        lines = "### work-queue\n\n#### [g%d] %s\n- [r%d] %s" % (3 + k, fields["title"], 4 + k, (R().PASSING, SECOND)[k % 2])
+        B().write_item(step, item, sections=dict(fields.get("sections", {}), Requirements=lines))
+
+
+def lay(step, tree, items):
+    """The lines commit of a batch, as `work batch start` makes it: every item's lines laid, their ids unbuilt, the
+    features written again, citing each item (plan 4 review, B1)."""
+    found = [backlog_items.find(step.repo, B().ident(i)) for i in items]
+    changed = batch_start.lay_lines(tree, found)
+    git(step, "add", "--", *changed, cwd=tree)
+    git(step, "commit", "-q", "-m", "%s: the requirement lines\n%s" % (tree.name, batch_start.cites(found)), cwd=tree)
+    step.context.setdefault("laid", {}).update(
+        {i: [g.id for b in backlog_lines.read(f, i) for g in b.groups] for i, f in zip(items, found)})
+
+
+def built(tree, item):
+    """The item's ids taken out of `unbuilt:` in the worktree, as its task's commits would."""
+    path = tree / CAP
+    ids = [r.split("#")[1] for r in backlog_lines.ids(backlog_lines.read(item, item.name))]
+    path.write_text(spec_unbuilt.without_unbuilt(path.read_text(), ids))
+
+
 def make_batch(step, name):
-    """The batch `name` written by hand: `batch-<n>` made from main with a lines commit citing its items, one branch
-    for each item with one commit adding `src/b<j>.txt` (citing it unless a Given made the commit uncited), and
-    `plan.md` with its tasks, committed on main."""
+    """The batch `name` written by hand: `batch-<n>` made from main with the lines commit of its items (`lay`), one
+    branch for each item with one commit adding `src/b<j>.txt` and taking its ids out of `unbuilt:` (citing it unless
+    a Given made the commit uncited), and `plan.md` with its tasks, committed on main."""
     n, found = batch_name(step, name), step.context["given"]["batch"][name]
     items = [i for i, f in step.context["given"]["item"].items() if f["batch"] == name]
     tasks = [(t, f) for t, f in step.context["given"]["task"].items() if f["batch"] == name]
+    give_batch_lines(step, items)
     W().init(step.repo)
     forked = git(step, "rev-parse", "HEAD").strip()
     git(step, "branch", n, forked)
-    tree = outside(step) / ("lines-%s" % n)
+    tree = outside(step) / n
     git(step, "worktree", "add", "-q", str(tree), n)
-    git(step, "commit", "-q", "--allow-empty", "-m", "%s: the requirement lines\n\n%s" % (
-        n, "\n".join("Item: %s" % B().ident(i) for i in items)), cwd=tree)
+    lay(step, tree, items)
     git(step, "worktree", "remove", "--force", str(tree))
     commits = step.context.setdefault("commits", {})
     for item in items:
@@ -163,6 +198,7 @@ def make_batch(step, name):
         git(step, "worktree", "add", "-q", str(tree), branch)
         (tree / "src").mkdir(exist_ok=True)
         (tree / "src" / ("%s.txt" % b)).write_text("built %s\n" % b)
+        built(tree, backlog_items.find(step.repo, b))
         git(step, "add", "-A", cwd=tree)
         mine = [c for c, f in step.context["given"].get("commit", {}).items() if f.get("item") == item]
         cited = not any(step.context["given"]["commit"][c].get("uncited") for c in mine)

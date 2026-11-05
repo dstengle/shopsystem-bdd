@@ -103,11 +103,49 @@ def add_tree(root, path, branch, start=None):
     return Path(path)
 
 
+def _top(path):
+    done = subprocess.run(["git", "-C", str(path), "rev-parse", "--show-toplevel"], capture_output=True, text=True)
+    return Path(done.stdout.strip()).resolve() if done.returncode == 0 and done.stdout.strip() else None
+
+
+def is_tree(path, branch=None):
+    """Whether `path` is itself a worktree (not a directory inside another checkout), on `branch` when one is given
+    (plan 4 review, S1)."""
+    path = Path(path)
+    if not path.is_dir() or _top(path) != path.resolve():
+        return False
+    return branch is None or current_branch(path) == branch
+
+
+def tree_for(root, path, branch, command, start=None):
+    """The worktree of `branch` at `path`, made when it is not there: an empty directory there is replaced, anything
+    else that is not that worktree is refused, naming the path. Whether it was made."""
+    path = Path(path)
+    if is_tree(path, branch):
+        return False
+    if path.exists():
+        if not path.is_dir() or any(path.iterdir()):
+            raise Refused("%s: %s is not the worktree of %s; move it away, then run %s again" % (
+                command, path, branch, command))
+        path.rmdir()
+    add_tree(root, path, branch, start)
+    return True
+
+
+def uncommitted(tree):
+    """The paths a worktree has changed and not committed, untracked files included (`.shop/scratch/` left out)."""
+    out = git(tree, "status", "--porcelain", "--untracked-files=all").stdout.splitlines()
+    return [line[3:] for line in out if not line[3:].startswith(".shop/scratch")]
+
+
 def remove_tree(root, path):
     """The worktree at `path` removed, its changes with it, and git's record of it pruned; a missing path is no
-    error."""
-    if Path(path).exists():
+    error, an empty directory is removed, and a directory that is not a worktree is left alone (S1)."""
+    path = Path(path)
+    if is_tree(path):
         git(root, "worktree", "remove", "--force", str(path))
+    elif path.is_dir() and not any(path.iterdir()):
+        path.rmdir()
     git(root, "worktree", "prune")
 
 
@@ -117,9 +155,9 @@ def remote(root, branch):
     return done.stdout.strip() if done.returncode == 0 and done.stdout.strip() else "origin"
 
 
-def push(root, remote_name, branch):
-    """`git push -u <remote> <branch>`; refused naming the branch, the remote and git's reason."""
+def push(root, remote_name, branch, command="work batch"):
+    """`git push -u <remote> <branch>`; refused under `command`, naming the branch, the remote and git's reason."""
     done = subprocess.run(["git", "push", "-q", "-u", remote_name, branch], cwd=root, capture_output=True, text=True)
     if done.returncode != 0:
         said = (done.stderr.strip() or done.stdout.strip() or "exit %d" % done.returncode).splitlines()[0]
-        raise Refused("work batch: the push of %s to %s failed: %s" % (branch, remote_name, said))
+        raise Refused("%s: the push of %s to %s failed: %s" % (command, branch, remote_name, said))
