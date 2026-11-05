@@ -103,3 +103,28 @@ def test_an_initiatives_records_compare_as_before(tmp_path):
     done = measure(tmp_path, "compare", "m1.md", "m3.md")
     assert done.returncode == 0, done.stderr
     assert done.stdout == BEFORE
+
+
+def test_a_batch_record_compare_cannot_read_is_refused(backlog_repo):
+    """Plan 7 review M6: a record of a batch missing a figure compare reads is refused, naming it (0018)."""
+    write_measurement(backlog_repo, "2026-11-01", batch("batch-2", 1.0))
+    write_measurement(backlog_repo, "2026-11-02", {"batch": "batch-5", "cost_by_role": {}})
+    done = measure(backlog_repo, "compare", "batch-2", "batch-5")
+    assert done.returncode == 1, done.stdout
+    assert "batch-5" in done.stderr and "tokens" in done.stderr, done.stderr
+
+
+def test_compare_gives_the_sizes_beside_the_ratio(backlog_repo):
+    """Plan 7 review M7: 0079 asks a knob's decision for compare's figures, and the sizes are knobs."""
+    write_measurement(backlog_repo, "2026-11-01", batch("batch-2", 1.0))
+    write_measurement(backlog_repo, "2026-11-02", dict(batch("batch-3", 2.0), knobs=dict(
+        FIGURES["knobs"], items=4, changed_lines=100, reviews=3)))
+    rows = lines(ok_compare(backlog_repo))
+    assert rows["items"] == ["2", "4", "2"] and rows["changed lines"] == ["40", "100", "2.5"], rows
+    assert rows["reviews"] == ["1", "3", "3"], rows
+
+
+def ok_compare(repo):
+    done = measure(repo, "compare", "batch-2", "batch-3")
+    assert done.returncode == 0, done.stderr
+    return done.stdout

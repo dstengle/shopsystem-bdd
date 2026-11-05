@@ -58,8 +58,9 @@ contract:
   - compare <a> <b> prints the two measurements' totals side by side with the
     ratio of b to a. Each is a record or batch-<n>, the batch's newest
     measurement; two batches give wall time, session time, tokens, cost,
-    defects per item, each role's cost and the findings by grade. A batch's
-    measurement is not compared with an initiative's.
+    defects per item, each role's cost, the findings by grade and the sizes
+    (items, changed lines, reviews). A batch's measurement is not compared
+    with an initiative's, nor a batch's record lacking a figure compare reads.
 
 exit status: 0 success, 1 refused, 2 bad usage.
 """

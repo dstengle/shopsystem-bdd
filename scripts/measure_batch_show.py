@@ -13,6 +13,7 @@ TOTALS = (("wall time", "wall_time"), ("session time", "session_time"), ("waitin
           ("cache-read tokens", "cache_read_tokens"), ("cost", "cost"))
 SESSION_HEAD = ("session", "agent type", "role", "started", "requests", "session time", "output tokens",
                 "new input tokens", "cache-read tokens", "cost")
+COMPARED = ("tokens", "cost", "defects", "findings_by_grade", "knobs")
 ROLE_HEAD = ("role", "sessions", "session time", "output tokens", "new input tokens", "cache-read tokens", "cost")
 
 
@@ -86,7 +87,7 @@ def show(figures):
 
 
 def _rows(figures):
-    """(name, shown, value the ratio is of) of each row of `compare`."""
+    """(name, shown, value the ratio is of) of each row of `compare`, the sizes (knobs) last (plan 7 review M7)."""
     tokens, defects = figures.get("tokens", {}), figures.get("defects", {})
     out = [("wall time", figures.get("wall_time"), figures.get("wall_time_seconds")),
            ("session time", figures.get("session_time"), figures.get("session_time_seconds"))]
@@ -95,11 +96,20 @@ def _rows(figures):
             ("defects per item", defects.get("per_item"), defects.get("per_item"))]
     out += [("%s cost" % role, r.get("cost"), r.get("cost")) for role, r in figures.get("cost_by_role", {}).items()]
     out += [("%s findings" % grade, n, n) for grade, n in figures.get("findings_by_grade", {}).items()]
+    knobs = figures.get("knobs", {})
+    sizes = (("items", "items"), ("changed lines", "changed_lines"), ("reviews", "reviews"))
+    out += [(name, knobs.get(key), knobs.get(key)) for name, key in sizes]
     return out
 
 
 def compare(a_name, a, b_name, b):
-    """Two batches' totals, costs by role and findings by grade side by side, with the ratio of b to a."""
+    """Two batches' totals, costs by role, findings by grade and sizes side by side, with the ratio of b to a; a batch's
+    record without a figure of COMPARED is refused, naming it (plan 7 review M6)."""
+    for name, figures in ((a_name, a), (b_name, b)):
+        missing = [key for key in COMPARED if key not in figures]
+        if missing:
+            raise Refused("%s's measurement has no %s; measure it again with measure batch %s --replace" % (
+                name, ", ".join(missing), name))
     second = {name: (shown, value) for name, shown, value in _rows(b)}
     rows = [(name, cell(shown), cell(second.get(name, (None, None))[0]), ratio(value, second.get(name, (None, None))[1]))
             for name, shown, value in _rows(a)]
