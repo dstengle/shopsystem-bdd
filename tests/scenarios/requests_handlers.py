@@ -12,16 +12,16 @@ from pathlib import Path
 from vocab import handler
 
 
-def shared():
-    name = "shop_work_queue_world"
+def shared(name="shop_work_queue_world", file="work_queue_world.py"):
     if name not in sys.modules:
-        spec = importlib.util.spec_from_file_location(name, Path(__file__).with_name("work_queue_world.py"))
+        spec = importlib.util.spec_from_file_location(name, Path(__file__).with_name(file))
         sys.modules[name] = module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
     return sys.modules[name]
 
 
 W = shared()
+Q = shared("shop_requests_world", "requests_world.py")
 OWN = "bounded-context/ex.com/prod/ctx"
 FIXTURE = (Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "glossary" / "spec" / "index.md").read_text()
 # The context's index is codified, with the typed glossary of tests/scripts/fixtures/glossary/, so GOOD parses.
@@ -29,6 +29,8 @@ INDEX = "---\nid: %s\nlanguage: codified-1\n---\n# ctx\n\n%s" % (OWN, FIXTURE[FI
 GOOD = "When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to `started`."
 BAD = "the queue is nice and quick"
 FOREIGN = "ctx-elsewhere"
+THING = ("---\nid: capability/ex.com/prod/ctx/thing\ntitle: Thing\nnarrator: a client\ngroup: service\n"
+         "language: codified-1\nrests_on: []\nretired: []\n---\n\n# Thing\n\n## Purpose\nSomething.\n\n## Behaviour\n")
 SIDE = {"awaiting-asker": "asker", "delivered": "asker", "refused": "asker"}
 FIELDS = {"status": "status", "side": "turn"}
 
@@ -84,8 +86,13 @@ def given_context(step):
     if not index.is_file():
         index.parent.mkdir(parents=True, exist_ok=True)
         index.write_text(INDEX)
-    index.write_text(index.read_text() + "\n## Upstreams\n- bounded-context/ex.com/prod/up: the upstream.\n")
+    unhosted = step.text.endswith(" unhosted")      # an upstream whose bullet names no GitHub repository (r28)
+    index.write_text(index.read_text() + "\n## Upstreams\n- bounded-context/ex.com/prod/up: the upstream%s.\n"
+                     % ("" if unhosted else ", github: ex/up"))
     step.context["downstream"] = True
+    if unhosted:
+        step.context["unhosted"] = True
+        says(step, step.names[0], "bounded-context/ex.com/prod/up")
 
 
 @handler("GivenK", "observation")
@@ -102,6 +109,7 @@ def prepare(step, name):
     """The request `name` as the command will find it: its side from its status, the context's own request where the
     context is downstream, its line outcomes from the Givens; and its fields before the command, for `change`."""
     path = step.repo / W.node_rel(step.context, name)
+    Q.with_issue(step, path)
     text = path.read_text()
     status = W.field(path, "status")
     text = text.replace("turn: upstream", "turn: %s" % SIDE.get(status, "upstream"))
@@ -122,18 +130,19 @@ def run_work(step, *args):
     elif "language: codified-1" not in index.read_text():      # world_nodes' index: the fixture glossary instead
         index.write_text(INDEX + index.read_text().partition("## Glossary\n")[2])
     step.context["head"] = W.init(step.repo)
-    step.context["result"] = step.run("work", *args)
+    Q.hosted(step.repo)
+    step.context["result"] = step.run("work", *args, env=Q.env(step))
 
 
 @handler("WhenRuns", "`work request`")
 def work_request(step):
-    lines = step.repo / "lines.md"
-    lines.write_text((BAD if step.context.get("unparsed") else GOOD) + "\n")
     flags = step.context.get("flags", [])
     command = step.context.get("command")
     asker = FOREIGN if command == "foreign" else OWN if step.context.get("downstream") else "internal"
-    args = ["request", "a request", "--from", asker, "--lines", "lines.md"]
-    if command == "sourced":
+    args = ["request", "a request", "--from", asker, "--ask", "I need to do something like this"]
+    if step.context.get("unhosted"):      # a request to the upstream, raised in a job-thread
+        args += ["--thread", "job-thread/ex.com/prod/t1"]
+    elif command == "sourced":
         args += ["--source", "observation/ex.com/prod/ctx/obs-1", "--thread", "job-thread/ex.com/prod/t1"]
     elif command != "originless" and "--raised-for" not in flags:
         args += ["--source", "observation/ex.com/prod/ctx/obs-1"]
@@ -153,7 +162,13 @@ def work_request_command(step):
     name = step.names[0]
     prepare(step, name)
     word = step.term.strip("`").split()[1]
-    rest = {"outcome": ["1", "accepted"], "ask": ["1", "Which queue?"], "reply": ["1", "The work queue"],
+    if word == "outcome":     # an accepted line parses here and names the capability it goes into
+        path = step.repo / W.node_rel(step.context, name)
+        path.write_text(path.read_text().replace("1. line 1\n", "1. %s\n" % GOOD, 1))
+        cap = step.repo / "spec" / "capabilities" / "thing.md"
+        cap.parent.mkdir(parents=True, exist_ok=True)
+        cap.write_text(THING)
+    rest = {"outcome": ["1", "accepted", "--into", "thing"], "ask": ["1", "Which queue?"], "reply": ["1", "The work queue"],
             "turn": [], "resolve": ["--line", "1", "thing#r1", "1.0.0"]}[word]
     run_work(step, word, name, *rest)
 

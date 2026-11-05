@@ -5,6 +5,7 @@
 `EXPECTED` is {"<code> <id> <id>": why} of the live findings that are known and open; the tests pass over them. A
 finding is keyed by its code and ids, not its text, whose witness pre-state is one model of many (plan-r3 S12). Each
 why is a question for the person (plan-r3 S11, `report-S11.md`); answering one removes its findings from here."""
+import os
 import pathlib
 import sys
 
@@ -14,6 +15,9 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import toolchain
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
+
+# The tests against GitHub run only when they are given a repository to write to (requests r27-r41).
+collect_ignore = [] if os.environ.get("SHOPSYSTEM_TEST_GITHUB_REPO") else ["test_request_github.py"]
 
 # the questions of the live findings (report-S11.md, report-checker-gaps.md); every one was answered
 # (report-answers.md) or went with supervision, retired in 2.0.0 (workflow simplification plan 9)

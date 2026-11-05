@@ -13,7 +13,7 @@ Scripts: `<this skill's base directory>/../../scripts/`. Every `work batch` comm
 
 ## Process
 
-1. **Take in the requests first.** For each request of a peer or the product in this context's turn (`python3 <scripts>/work list`), follow `taking-in-a-request`, so that what is ready can join the batch.
+1. **Take in the requests first.** `python3 <scripts>/work sync` records what was posted on each request's issue; for each request waiting on this context as its upstream, follow `taking-in-a-request`, so that what is ready can join the batch.
 2. **Start, or find the open batch.** `python3 <scripts>/work batch start` picks the ready, unblocked, passing items in rank order and lays their lines on `batch-<n>`; it prints the batch and its tasks, and each item it returned to `shaped` or left out, with the reason. With a batch already open, `python3 <scripts>/work batch status` names it. With nothing picked, the session ends there and says so.
 3. **Resume.** `python3 <scripts>/work batch resume <batch>` gives each pending task its worktree and prints, for each running task, its worktree, its branch and the requirement ids it builds.
 4. **Dispatch the running tasks, all at once:** one subagent for each running task, in parallel, each in its own task's worktree, with the description `batch-<n> t<k> b<j>` (its batch, task and item: `measure batch` reads a subagent's role from it). Give each this brief:

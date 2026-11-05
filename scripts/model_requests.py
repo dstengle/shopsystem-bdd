@@ -1,5 +1,5 @@
-"""The reading of requests by scripts/model: .shop/requests/q<n>.md, in the form `work request` writes (r19, r112);
-the frozen .shop/work/requests/ is not read (workflow simplification plan 9, D7). Its lines, their outcomes and its upstream are facts (design model v5, C20): line/3, outcome/3, upstream/2."""
+"""The reading of requests by scripts/model: .shop/requests/q<n>.md, in the form `work request` and `work sync` write
+(r19, r112; requests r27, r32: a request another context asked on its issue names the issue, not an origin); the frozen .shop/work/requests/ is not read (workflow simplification plan 9, D7). Its lines, their outcomes and its upstream are facts (design model v5, C20): line/3, outcome/3, upstream/2."""
 
 import datetime
 import re
@@ -8,7 +8,8 @@ from pathlib import Path
 from model_parse import as_list, frontmatter, section
 
 REQUESTS = Path(".shop") / "requests"
-SECTIONS = {"Lines", "Outcomes", "Questions", "Answers", "Resolution", "Reasons", "Counter-proposals"}
+SECTIONS = {"Ask", "Offer", "Lines", "Outcomes", "Questions", "Answers", "Resolution", "Reasons", "Counter-proposals",
+            "Into", "Comments"}
 
 
 class RequestReading:
@@ -58,8 +59,8 @@ class RequestReading:
                 if m:
                     text = m.group(2).strip()
                     self.fact(fact, ident, int(m.group(1)), re.split(r"[\s:]", text)[0] if fact == "outcome" else text)
-        if self.context:
-            self.fact("upstream", ident, self.context)
+        if data.get("upstream") or self.context:     # a request to an upstream names it (requests r27)
+            self.fact("upstream", ident, str(data.get("upstream") or self.context).strip())
         try:
             self.fact("age", ident, (self.today - datetime.date.fromisoformat(str(data["date"]))).days)
         except (KeyError, ValueError):
@@ -76,8 +77,8 @@ class RequestReading:
             if not data.get(key):
                 return f"no {key}"
         raised = data.get("raised_for") and str(data["asker"]).strip() != "internal"
-        if not (data.get("part_of") or data.get("source") or raised):
-            return "neither part_of nor source"
+        if not (data.get("part_of") or data.get("source") or raised or data.get("issue")):
+            return "neither part_of nor source nor issue"
         if data.get("turn") not in ("asker", "upstream"):
             return "turn is not asker or upstream"
         sections = [l[3:].strip() for l in body.splitlines() if l.startswith("## ")]

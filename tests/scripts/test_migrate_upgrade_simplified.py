@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT / "tests" / "scripts"))
 import migrate_upgrade
 import migrate_upgrade_simplified as step
 import model_report
+from request_testing import hosted
 from test_migrate_upgrade_codified import git, repository
 
 INDEX = (ROOT / "tests/scripts/fixtures/glossary/spec/index.md").read_text()
@@ -68,9 +69,9 @@ def upgraded(root):
     return code, out.getvalue() + err.getvalue()
 
 
-def script(root, name, *args):
+def script(root, name, *args, env=None):
     return subprocess.run([sys.executable, str(ROOT / "scripts" / name), "--root", str(root), *args],
-                          capture_output=True, text=True)
+                          capture_output=True, text=True, env=env)
 
 
 class AQueuedRepository(unittest.TestCase):
@@ -131,9 +132,9 @@ class AQueuedRepository(unittest.TestCase):
         self.assertIn("q2", listed)
         self.assertIn("q4", listed)
         self.assertNotIn("q1", listed)
-        (self.root.parent / (self.root.name + "-lines.md")).write_text(LINE + "\n")
-        asked = script(self.root, "work", "request", "x", "--from", "internal", "--lines",
-                       str(self.root.parent / (self.root.name + "-lines.md")), "--source", "observation/%s/o1" % CTX)
+        env = hosted(self.root, self.root.parent / (self.root.name + "-gh"))
+        asked = script(self.root, "work", "request", "x", "--from", "internal", "--source", "observation/%s/o1" % CTX,
+                       env=env)
         self.assertEqual(asked.returncode, 0, asked.stdout + asked.stderr)
         self.assertTrue((self.root / ".shop/requests/q5.md").is_file())
         self.assertEqual(upgraded(self.root), (0, "no upgrade step is pending\n"))
