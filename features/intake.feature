@@ -56,3 +56,14 @@ Feature: Intake
     When the session s1 runs `work ready` on the item i1
     Then `work` exits with an error naming the request line r1
     And `work` changes nothing
+
+  @g7 @r7
+  Scenario: A counter-proposal passes the turn to the asker, posted
+    Given a request line r1
+    And a request q1
+    And the request line r1 is proposed in the request q1
+    When the session s1 runs `work outcome rewritten` on the request line r1
+    Then the request line r1 is `rewritten`
+    And `work` writes the request line r2
+    And `work` changes the side of the request q1
+    And `work` posts the comment c1

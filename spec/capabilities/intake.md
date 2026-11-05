@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: []
+unbuilt: [r7]
 ---
 
 # Intake
@@ -42,6 +42,9 @@ person in the loop unless the two sides cannot agree. The brainstorming route is
 ### [g6] An item with a request line that is not settled is not readied
 - [r6] While an item is `shaped` and a request line of the item is not settled, if a session runs `work ready` on the
   item, then `work` shall exit with an error naming the request line and change nothing.
+
+### [g7] A counter-proposal passes the turn to the asker, posted
+- [r7] When a session runs `work outcome rewritten` on a request line proposed in a request, `work` shall set the line outcome of the request line to `rewritten`, write a request line, change the side of the request and post a comment.
 
 ## Implementation, may change
 - `work intake <request>` writes a `shaped` item and changes nothing in the request: titled by the request's heading,

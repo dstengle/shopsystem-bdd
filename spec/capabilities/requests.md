@@ -6,6 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/requests-written-through-work, design-decision/exits-are-successful-or-errors, design-decision/an-asker-is-told-by-its-registered-asker-id]
 retired: [r3, r4, r10, r11, r12, r13]
+unbuilt: [r27, r28, r29, r30, r31, r32, r33, r34, r35, r36, r37, r38, r39, r40, r41]
 ---
 
 # Requests
@@ -29,6 +30,14 @@ that fulfils a request (work-queue).
 - **sourced** (condition of command): a command that gives `--source` with `--thread` or `--raised-for`.
 - **foreign** (condition of command): a command that gives `--from` an asker other than the bounded context it is run in.
 - **downstream** (condition of bounded context): a bounded context whose `spec/index.md` lists an upstream under `## Upstreams`.
+
+- **issue** (kind): the GitHub issue, on the GitHub repository of a request's upstream, that carries the request's conversation.
+- **comment** (kind): one step of a request's conversation, posted on its issue, read only as the one block of fields it holds.
+- **post** (event): `work` puts an issue or a comment on GitHub. Forms: posts, posted.
+- **close** (event): `work` closes the issue of a request on GitHub. Forms: closes, closed.
+- **unrecorded** (condition of comment): a comment on the issue of a request that the request does not yet hold.
+- **unreadable** (condition of comment): a comment whose block of fields does not parse.
+- **unhosted** (condition of bounded context): an upstream whose entry under `## Upstreams` names no GitHub repository.
 
 ## Behaviour
 
@@ -132,6 +141,51 @@ Restates: r50@0.29, r64@0.29.
 Restates: work-queue#r59@0.29.
 - [r26] When the person runs `work show` on a request, `work` shall print the status of the request and every
   request line proposed in the request.
+
+### [g27] `work request` opens the request's issue
+- [r27] When the person runs `work request`, `work` shall post an issue, write a request that is `open` and commit the request.
+
+### [g28] `work request` refuses an upstream with no GitHub repository
+- [r28] While a bounded context is unhosted, if the person runs `work request`, then `work` shall exit with an error naming the bounded context and change nothing.
+
+### [g29] `work offer` answers an ask with what may serve it
+- [r29] When a session runs `work offer` on a request that is `open`, `work` shall post a comment, set the status of the request to `awaiting-asker` and commit the request.
+
+### [g30] `work fits` ends a request an offer serves
+- [r30] When the person runs `work fits` on a request that is `awaiting-asker`, `work` shall set the status of the request to `delivered`, write a resolution, post a comment, close an issue and commit the request.
+
+### [g31] `work propose` writes the asker's lines
+- [r31] When the person runs `work propose` on a request that is `awaiting-asker`, `work` shall write a request line and commit the request.
+
+### [g32] `work sync` records what the other side posted
+- [r32] When a session runs `work sync`, `work` shall write every comment that is unrecorded and print every request.
+
+### [g33] `work sync` acts on no comment it cannot read
+- [r33] While a comment is unreadable, when a session runs `work sync`, `work` shall print the comment, and `work` shall not write the comment.
+
+### [g34] `work turn` posts the asker's turn
+- [r34] When the person runs `work turn` on a request that is `awaiting-asker`, `work` shall set its status to `awaiting-upstream`, change the side of the request and post a comment.
+
+### [g35] The upstream's turn ends with a line not settled, posted
+- [r35] While a request is `open` and a request line proposed in the request is not settled, when the person runs `work turn` on the request, `work` shall set the status of the request to `awaiting-asker` and post a comment.
+
+### [g36] The upstream's turn ends with every line settled and one accepted, posted for the person to accept
+- [r36] While a request is `open` and every request line proposed in the request is settled and a request line proposed in the request is `accepted`, when the person runs `work turn` on the request, `work` shall post a comment, and `work` shall not change the side of the request.
+
+### [g37] The upstream's turn ends with every line refused, and the issue closed
+- [r37] While a request is `open` and a request line proposed in the request is `refused` and every request line proposed in the request is `refused`, when the person runs `work turn` on the request, `work` shall set the status of the request to `refused`, post a comment and close an issue.
+
+### [g38] A line that does not parse is not accepted
+- [r38] While a request line is unparsed, if a session runs `work outcome accepted` on the request line, then `work` shall exit with an error naming the request line and change nothing.
+
+### [g39] `work accept` accepts a request and writes its item
+- [r39] While a request is `open` and every request line proposed in the request is settled and a request line proposed in the request is `accepted`, when the person runs `work accept` on the request, `work` shall set the status of the request to `accepted`, write an item that is `shaped`, post a comment and commit the request.
+
+### [g40] `work accept` refuses a request with a line not settled
+- [r40] While a request line proposed in a request is not settled, if the person runs `work accept` on the request, then `work` shall exit with an error naming the request line and change nothing.
+
+### [g41] `work resolve` posts the resolution and closes the issue
+- [r41] When the person runs `work resolve` on a request that is `accepted`, `work` shall set its status to `delivered`, write a resolution, change the side of the request, post a comment, close an issue and commit the request.
 
 ## Implementation, may change
 - `work request`, `work outcome`, `work ask`, `work reply`, `work turn` and `work resolve` are commands of
