@@ -18,6 +18,7 @@ from workqueue import Refused
 GRADES = ("Critical", "Important", "Minor")
 TRIAGES = ("fix now", "observation", "drop")
 RESULTS = ("fix-now", "clean")
+SECTIONS = ("Verdict", "Findings", "Earlier findings")
 HEADING = re.compile(r"^### (?:(f[1-9]\d*) )?(\S+) (.+?):(?: (.*))?$")
 EARLIER = re.compile(r"^- (f[1-9]\d*): (fixed|not fixed: \S.*)$")
 
@@ -60,11 +61,31 @@ def scratch(root, batch, k):
     return batch_git.trees_dir(root) / ("%s-review-%d" % (_name(batch), k))
 
 
+def _fenced(lines):
+    """(line, whether it is text in a fenced block) of each line; a fence's own lines are text too (review S2)."""
+    fence = None
+    for line in lines:
+        mark = re.match(r"^ {0,3}(`{3,}|~{3,})", line)
+        if fence is None and mark:
+            fence = mark.group(1)
+            yield line, True
+        elif fence is not None:
+            if mark and mark.group(1)[0] == fence[0] and len(mark.group(1)) >= len(fence) and \
+                    not line.strip()[len(mark.group(1)):].strip():
+                fence = None
+            yield line, True
+        else:
+            yield line, False
+
+
 def _sections(text, rel):
     found, heading = {}, None
-    for line in text.split("\n"):
-        if line.startswith("## "):
+    for line, fenced in _fenced(text.split("\n")):
+        if line.startswith("## ") and not fenced:
             heading = line[3:].strip()
+            if heading not in SECTIONS:
+                raise Refused("%s: ## %s is not a section of a findings file (%s)" % (
+                    rel, heading, ", ".join("## %s" % s for s in SECTIONS)))
             if heading in found:
                 raise Refused("%s: ## %s is there twice" % (rel, heading))
             found[heading] = []
@@ -86,8 +107,8 @@ def _findings(text, rel, numbered):
     if text.strip() == "None.":
         return []
     found, current = [], None
-    for line in text.split("\n"):
-        if line.startswith("### "):
+    for line, fenced in _fenced(text.split("\n")):
+        if line.startswith("### ") and not fenced:
             m = HEADING.match(line)
             if not m or (numbered and not m.group(1)) or (not numbered and m.group(1)):
                 raise Refused("%s: the heading %r is not `### %s<grade> <triage>: <title>`" % (
@@ -113,7 +134,11 @@ def _findings(text, rel, numbered):
         if len(rest) < 2:
             raise Refused("%s: %s: the finding has no `- item:` and `- where:` lines" % (rel, line))
         item, where = _value(rest[0], "item", rel), _value(rest[1], "where", rel)
-        out.append(Finding(fid, grade, triage, title, item, where, "\n".join(rest[2:]).strip("\n")))
+        body = "\n".join(rest[2:]).strip("\n")
+        if triage == "fix now" and not body.strip():
+            raise Refused("%s: %s: a fix now finding has no text after its `- where:` line: say what is wrong, why it "
+                          "matters and the fix" % (rel, line))
+        out.append(Finding(fid, grade, triage, title, item, where, body))
     return out
 
 

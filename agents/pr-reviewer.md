@@ -65,7 +65,7 @@ On a re-review, a new finding is `fix now` only when the fix's own change is wro
 
 ## The findings file
 
-Write it in exactly this form; `work batch reviewed` parses it and refuses any other. Do not number the findings: `work` numbers them. `- item:` is the item's id (`b<j>`) or `-`; `- where:` is `<path>:<line>` or `-`; free text follows, saying what is wrong, why it matters and the fix. Under `## Findings` write `None.` when there are none. `## Earlier findings` is only on a re-review, with one line for each finding the brief lists there and no other.
+Write it in exactly this form; `work batch reviewed` parses it and refuses any other. Do not number the findings: `work` numbers them. `- item:` is the item's id (`b<j>`) or `-`; `- where:` is `<path>:<line>` or `-`; free text follows, saying what is wrong, why it matters and the fix; a `fix now` finding without it is refused. Quote code and Markdown only inside fenced blocks: a `## ` or `### ` line outside one starts a section or a finding. Under `## Findings` write `None.` when there are none. `## Earlier findings` is only on a re-review, with one line for each finding the brief lists there and no other.
 
 ```
 ## Verdict

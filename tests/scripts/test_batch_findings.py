@@ -60,6 +60,9 @@ MALFORMED = {
     "fix now on a parked item": (FIRST.replace("- item: b1", "- item: b2"), ("b1",), "- item: b2"),
     "no title": (FIRST.replace(": abandon leaves the initiative started", ":"), (), "### Important fix now:"),
     "earlier on a first review": (EXAMPLE, (), "f1"),
+    "an unknown section": (FIRST + "\n## Notes\n\nMore.\n", (), "## Notes"),
+    "fix now with no text": (FIRST.replace("The line says `abandoned`; the code writes `started`. Fix: set the status.\n",
+                                           ""), (), "abandon leaves the initiative started"),
 }
 
 
@@ -70,6 +73,26 @@ def test_malformed_findings_are_refused(case):
         parse(text, open_ids=(), in_batch=in_batch or ("b1", "b2"))
     said = str(refused.value)
     assert said.startswith(REL + ": ") and named in said, said
+
+
+FENCED = """The diff:
+
+```
+## Behaviour
+### [g1] Abandon
+- [r5] An initiative is abandoned.
+```
+
+The heading is the spec's."""
+
+
+def test_a_fenced_heading_is_the_findings_text():
+    """Review S2: a `## ` or `### ` line inside a fenced block is text, in the file and in the record."""
+    text = FIRST.replace("Fix: set the status.", "Fix: set the status.\n\n" + FENCED)
+    _, findings, _ = parse(text, open_ids=())
+    assert len(findings) == 2 and findings[0].body.endswith(FENCED)
+    r = review(findings=[Finding("f2", "Important", "fix now", "t", "b1", None, FENCED)])
+    assert batch_findings.parse(batch_findings.render(r), "x") == r
 
 
 def test_none_is_no_findings():
