@@ -689,11 +689,11 @@ test in the task named.
 - Create: `.shop/records/2026-11-04-workflow-simplification/plan-7-implementation.md`
 - Modify: `.shop/records/README.md` (a row for the report); this plan (every box ticked)
 
-- [ ] **Step 1: Every requirement of the plan is built.**
+- [x] **Step 1: Every requirement of the plan is built.**
   Run: `python3 -c "import sys; sys.path.insert(0,'scripts'); import pathlib, spec_unbuilt as u; d=u.unbuilt(pathlib.Path('.')); print('telemetry' in d, sum(map(len,d.values())), u.problems(pathlib.Path('.')))"`
   Expected: `False 5 []`.
 
-- [ ] **Step 2: The baselines, all at once.**
+- [x] **Step 2: The baselines, all at once.**
   Run: `python3 -m pytest -q | tail -2; python3 -m pytest -m timing -n 0 -q | tail -1; python3 scripts/model check | tail -1; python3 scripts/model logic | tail -1; python3 scripts/model lexicon --check | tail -1; python3 scripts/model decisions --check | tail -1; python3 scripts/features generate --check; python3 scripts/features vocab --check | tail -1; python3 scripts/features bindings --unbound; python3 scripts/tools size --limit 300; python3 scripts/tools check $(git diff --name-only 9d765bb8...HEAD -- '*.py' scripts/measure)`
   Expected:
   - the suite: `4 xfailed`, no failures. Passed = 1402 + 4 telemetry scenarios + the new script tests, and the
@@ -709,7 +709,7 @@ test in the task named.
   - `size`: silent;
   - `check`: clean.
 
-- [ ] **Step 3: The smoke run with a real review** (D18), in a scratch repository under
+- [x] **Step 3: The smoke run with a real review** (D18), in a scratch repository under
   `/home/vscode/.claude/jobs/7e9ba079/tmp/smoke7/`. Each `cp` and each `rm` is its own command (the person's rule).
   1. **Build the scratch batch.** Follow plan 5's smoke loop (`plan-5-implementation.md`, "Figures after the fixes")
      and the recipe in `tests/scripts/review_testing.py::published`:
@@ -746,7 +746,7 @@ test in the task named.
   If no subagent can be dispatched, record that in the report as not measured, with why, and run the rest with
   transcripts written by `measure_batch_testing`.
 
-- [ ] **Step 4: Write the implementation report** at `plan-7-implementation.md`, in `plan-6-implementation.md`'s form
+- [x] **Step 4: Write the implementation report** at `plan-7-implementation.md`, in `plan-6-implementation.md`'s form
   (no frontmatter):
   - Final state: each Step 2 figure as measured.
   - The smoke run: the reviewer's tokens, cost, session time and wall time; the batch's cost by role; the record's
@@ -763,11 +763,11 @@ test in the task named.
     - plan-5 D21 and D23 wait for real batches' figures.
   - Files.
 
-- [ ] **Step 5: Index the records.** Add a row to `.shop/records/README.md` after the row for `plan-7-telemetry.md`:
+- [x] **Step 5: Index the records.** Add a row to `.shop/records/README.md` after the row for `plan-7-telemetry.md`:
   `| \`2026-11-04-workflow-simplification/plan-7-implementation.md\` | plan 7 executed: telemetry (\`measure batch\` from git and the sessions' transcripts, cost by role, findings by grade, knobs; \`measure defect\`; \`compare\` by batch name), 0060 superseded by measure-a-batch, knob changes as decisions, a real review measured, 4 requirements out of \`unbuilt:\` | report |`.
   Tick every box of this plan.
 
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
   ```bash
   git add .shop/records/2026-11-04-workflow-simplification/plan-7-implementation.md .shop/records/README.md \
     .shop/records/2026-11-04-workflow-simplification/plan-7-telemetry.md
