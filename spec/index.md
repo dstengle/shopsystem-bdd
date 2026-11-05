@@ -265,7 +265,7 @@ The simplified workflow (plan 1, unbuilt):
 - **urgency** (attribute of item): Values: `low-urgency`, `medium-urgency`, `high-urgency`.
 - **size** (attribute of item): Values: `small`, `medium`, `large`.
 - **status** (attribute of batch): Values: `building`, `in-review`, `awaiting-merge`, `merged`, `abandoned`.
-  Transitions: `building` → `in-review`: `work batch review`; `in-review` → `building`: a fix-now finding; `in-review` → `awaiting-merge`: a clean review; `awaiting-merge` → `merged`: merge; `building` → `abandoned`: `work batch abandon`; `in-review` → `abandoned`: `work batch abandon`.
+  Transitions: `building` → `in-review`: `work batch review`; `in-review` → `building`: a fix-now finding; `in-review` → `awaiting-merge`: a clean review; `awaiting-merge` → `merged`: merge; `in-review` → `merged`: merge; `building` → `abandoned`: `work batch abandon`; `in-review` → `abandoned`: `work batch abandon`.
 - **status** (attribute of task): Values: `pending`, `running`, `done`, `failed`.
 - **tier** (attribute of design-decision): Values: `check`, `requirement`, `judgement`.
 - **dependency** (kind): one item's need of another item, written in the item that needs it. Plural: dependencies.

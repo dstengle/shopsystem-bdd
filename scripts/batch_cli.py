@@ -4,6 +4,7 @@ dispatch, so that scripts/work stays small. An item is named by its label, a bat
 import json
 
 import backlog_items
+import batch_close
 import batch_plan
 import batch_review
 import batch_start
@@ -27,6 +28,9 @@ def add_parsers(sub):
     s.add_argument("batch")
     s.add_argument("item")
     s.add_argument("--question", required=True)
+    for word, said in (("merged", "record the merge of a batch's pull request: its in-batch items delivered"),
+                       ("abandon", "abandon a batch: its pull request closed, its in-batch items ready again")):
+        cmds.add_parser(word, help=said).add_argument("batch")
     s = cmds.add_parser("review", help="merge the in-batch items into the batch branch, test, push and publish its pull request")
     s.add_argument("batch")
 
@@ -104,9 +108,21 @@ def review(args):
     return 0
 
 
+def merged(args):
+    batch = batch_close.merged(args.root, args.batch)
+    print("%s merged" % batch.name)
+    return 0
+
+
+def abandon(args):
+    batch = batch_close.abandon(args.root, args.batch)
+    print("%s abandoned" % batch.name)
+    return 0
+
+
 def cmd_batch(args):
-    return {"start": start, "status": status, "resume": resume, "done": done, "park": park,
-            "review": review}[args.batch_cmd](args)
+    return {"start": start, "status": status, "resume": resume, "done": done, "park": park, "review": review,
+            "merged": merged, "abandon": abandon}[args.batch_cmd](args)
 
 
 COMMANDS = {"batch": cmd_batch}

@@ -1,5 +1,6 @@
 """More handlers of features/batches.feature (workflow simplification plan 4): `work batch resume` and a park (Task
 4), over the world batches_handlers.py loads; see there."""
+import json
 import sys
 
 from vocab import handler
@@ -148,3 +149,27 @@ def pull_request_of_batch(step):
 def pull_request_cites(step):
     call = created(step)
     assert step.context["says"][step.names[1]] in call[call.index("--body") + 1], (step.text, call)
+
+
+@local("WhenHappens", "pull request")
+def merges_pull_request(step):
+    """The person merges: `batch-<n>` merged into main with `--no-ff`, gh's state `MERGED` at that merge, then `work
+    batch merged`. A local, not the registry's `merge`: supervision's fallback `WhenHappens` takes its own merges."""
+    if step.term != "merge":
+        return False
+    T.prepare(step)
+    T.ensure_batch(step)
+    batch = next(f["batch"] for p, f in step.context["given"]["pull request"].items() if p == step.names[0])
+    name = T.batch_name(step, batch)
+    T.git(step, "merge", "-q", "--no-ff", name, "-m", "merge the pull request of %s" % name)
+    oid = T.git(step, "rev-parse", "HEAD").strip()
+    (T.outside(step) / "gh-state.json").write_text(json.dumps(
+        {step.context["prs"][step.names[0]]: {"state": "MERGED", "mergeCommit": {"oid": oid}}}))
+    T.run_batch(step, "merged", name)
+
+
+@handler("WhenRuns", "`work batch abandon`")
+def batch_abandon(step):
+    T.prepare(step)
+    T.ensure_batch(step)
+    T.run_batch(step, "abandon", T.batch_name(step, step.names[-1]))

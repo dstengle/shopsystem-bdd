@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: [r9, r10]
+unbuilt: []
 ---
 
 # Batches
@@ -119,3 +119,17 @@ question while building parks its item and the rest of the batch carries on. The
   --draft`, its body naming each `in-batch` item with its requirement ids and each parked one; a batch that has a
   pull request already is pushed only. gh is `$SHOPSYSTEM_WORK_GH`, else `gh`. A review refused while merging,
   testing, pushing or creating puts the batch branch, and the remote's, back where they were.
+- The merge is recorded by `work batch merged <batch>`, on a batch that is `in-review` or `awaiting-merge`: gh must
+  say the pull request is `MERGED`, and its merge commit must be in the base branch's history (else `git pull`
+  first). It sets every `in-batch` item `delivered` and the batch `merged`, removes the batch's worktrees and
+  deletes the merged item branches. `work batch abandon` takes a batch that is `building` or `in-review`: it closes
+  the pull request when there is one (refused, with nothing changed, if gh fails), sets every `in-batch` item `ready`
+  and the batch `abandoned`, removes the worktrees and keeps the branches.
+
+## Not yet
+- Tasks finer than an item: a batch has one task for each item, and the batch session splits a task further among
+  its own subagents.
+- A task set `failed` by a command.
+- The request a delivered item was taken in from resolved (`work resolve`) at the merge.
+- A session `work` starts itself: the batch session is a Claude Code session following the `building-a-batch`
+  skill, and `work batch` keeps the state.

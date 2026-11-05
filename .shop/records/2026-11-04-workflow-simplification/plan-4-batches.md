@@ -770,7 +770,7 @@ Builds `batches#r9` and `r10`.
   is one commit on the base: `work batch merged: batch-1 -> merged; <labels> delivered`, or `work batch abandon:
   batch-1 -> abandoned; <labels> -> ready`.
 
-- [ ] **Step 1: Write the failing script tests:**
+- [x] **Step 1: Write the failing script tests:**
   - `test_merged_delivers_the_in_batch_items`:
     - After a review, the test merges `batch-1` into `main` and writes the stand-in's state.
     - `merged` gives b1 and b2 `delivered` and the batch `merged`; a parked b3 stays `needs-input`.
@@ -784,24 +784,24 @@ Builds `batches#r9` and `r10`.
     refused and nothing is changed.
   - `test_abandon_refuses_a_merged_batch`.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_batch_close.py -q`
   Expected: FAIL.
 
-- [ ] **Step 3: Implement, and the glossary transition.**
+- [x] **Step 3: Implement, and the glossary transition.**
   Run: `python3 scripts/model logic | tail -1; python3 scripts/model lexicon --check | tail -1`
   Expected: `11 findings: 6 L5, 5 L6` and `401 terms, 0 problems`, as measured by the planner.
 
-- [ ] **Step 4: The handlers, and r9, r10 out of `unbuilt:`.**
+- [x] **Step 4: The handlers, and r9, r10 out of `unbuilt:`.**
   Run: `python3 -m pytest tests/scripts/test_batch_close.py tests/scenarios/test_batches.py -q -rxX -n 0 | tail -3`
   Expected: all pass; all 13 batches scenarios passed.
 
-- [ ] **Step 5: Mutations,** each reverted: `merged` not moving items fails r9; `abandon` leaving items `in-batch`
+- [x] **Step 5: Mutations,** each reverted: `merged` not moving items fails r9; `abandon` leaving items `in-batch`
   fails r10.
 
-- [ ] **Step 6: The baselines.** Expected: `14 xfailed`, no failures; `model check` at baseline.
+- [x] **Step 6: The baselines.** Expected: `14 xfailed`, no failures; `model check` at baseline.
 
-- [ ] **Step 7: Commit.**
+- [x] **Step 7: Commit.**
   ```bash
   git add scripts/batch_close.py scripts/batch_cli.py spec/index.md tests/scenarios/batches_handlers*.py \
     tests/scripts/test_batch_close.py spec/capabilities/batches.md CLAUDE.md
