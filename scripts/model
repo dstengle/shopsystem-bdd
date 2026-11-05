@@ -11,6 +11,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from model_check import check, needing_clingo, rules
 from model_facts import Model
+from model_forms import cmd_forms
 
 # what scripts/migrate, scripts/shop_files and the migration steps read by loading this file
 from model_parse import as_list, frontmatter, scenarios, section  # noqa: F401
@@ -157,6 +158,10 @@ contract:
     v_t10 two relation rows with one (from, word, to).
   - logic [--json] [<capability>] runs the temporal check (spec_solve) and
     prints its report, with its exit code.
+  - forms [--json] prints one line for each file form a bounded context
+    keeps: its name, its path pattern and the command that writes it (or
+    the plugin's item that will give it one, or "by hand"), and exits 0;
+    --json prints {"forms": [{"name", "path", "writer"}]}.
   - restates [--json] [<capability>] exits 0 when every 0.29 id (of the
     capability, or of every one) is restated by a group, dropped, or moved
     (a move into a codified capability must be restated there; one into an
@@ -203,11 +208,14 @@ def main(argv=None):
     s = sub.add_parser("restates", help="whether every 0.29 id is restated, dropped or moved")
     s.add_argument("capability", nargs="?")
     s.add_argument("--json", action="store_true")
+    f = sub.add_parser("forms", help="print every file form: its name, its path pattern and the command that writes it")
+    f.add_argument("--json", action="store_true")
     args = ap.parse_args(argv)
     if args.cmd == "parse" and (args.line is None) == (args.file is None):
         ap.error("parse takes a line or --file, not both")
     return {"facts": cmd_facts, "check": cmd_check, "rules": cmd_rules, "decisions": cmd_decisions,
-            "parse": cmd_parse, "lexicon": cmd_lexicon, "logic": cmd_logic, "restates": cmd_restates}[args.cmd](args)
+            "parse": cmd_parse, "lexicon": cmd_lexicon, "logic": cmd_logic, "restates": cmd_restates,
+            "forms": cmd_forms}[args.cmd](args)
 
 
 if __name__ == "__main__":

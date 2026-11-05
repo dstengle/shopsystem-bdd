@@ -83,13 +83,15 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 - `scripts/model`: read a bounded context's spec, feature files, decisions and records as the facts of the
   design model's grammar (`facts`), check them with clingo (`check`), list the rules (`rules`), write the decisions
   index (`decisions`), parse a line in the context's grammar (`parse`), list the lexicon (`lexicon`), check the
-  logic of the groups (`logic`) and the coverage of the 0.29 ids (`restates`).
+  logic of the groups (`logic`), the coverage of the 0.29 ids (`restates`) and every file form a context keeps with
+  the command that writes it (`forms`).
 - `scripts/features`: `generate` writes (or `--check`s) each codified capability's feature file from its groups;
   `vocab` checks the fixed step vocabulary; `count`, `list`, `bindings` and `deprecated` read feature files without
   the test runner.
 - `scripts/work`: the backlog (`idea`, `shape`, `line`, `rate`, `depend`, `refuse`, `ready`, `backlog`), the
   batches (`batch`), the requests between contexts (`request`, `offer`, `fits`, `propose`, `outcome`, `ask`,
-  `reply`, `turn`, `accept`, `resolve`, `sync`), and `list` and `show`.
+  `reply`, `turn`, `accept`, `resolve`, `sync`), a design-decision (`decision`) and a record with its index row
+  (`record`), and `list` and `show`.
   - `work quote "<the person's words>"` copies the person's message with the two messages before and after it (no
     tool output) into `.shop/quotes/` and commits it. `work show quote-<n>` prints it. `work names` is the table of
     items and batches by name. The UserPromptSubmit hook keeps the session for `work quote`
