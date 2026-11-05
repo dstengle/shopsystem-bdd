@@ -69,17 +69,18 @@ branch and the review re-reads what the fix changed; a clean pull request waits 
 - The review's findings are written under `.shop/batches/<n>/`, each with its grade. Findings that keep recurring are
   a signal for a new decision, a new check or a higher readiness bar.
 - The size of the change and the repository's rules (`CLAUDE.md`) are read with the `judgement` decisions.
-- `work batch reviewed <batch>` records the findings file `pr-reviewer` wrote as `.shop/batches/<n>/review-<k>.md`,
+- `work batch reviewed <batch>` records the findings file, `pr-reviewer`'s reply saved by the batch session, as `.shop/batches/<n>/review-<k>.md`,
   committed on the base with the batch file, and posts it on the pull request (`gh pr comment`). A finding still
   `fix now` sets the batch `building`; a clean review sets it `awaiting-merge` and marks the pull request ready
   (`gh pr ready`).
-- `pr-reviewer` (`agents/pr-reviewer.md`: Read, Glob, Grep and Write, no shell) reads the brief `work batch brief`
+- `pr-reviewer` (`agents/pr-reviewer.md`: Read, Glob and Grep, no shell and no Write) reads the brief `work batch brief`
   writes in the ignored worktrees directory: the range's commits, each with its own patch, and `change.diff`, the
   items' lines (first review) or the open findings with the commits for each (re-review), the `tier: judgement`
   decisions, `CLAUDE.md`, the size and the runs of `[review] checks`, each with its exit code at the head and, run
-  once a batch, at `forked_from`. It writes one findings file, each finding graded and triaged.
+  once a batch, at `forked_from`. Its reply is one findings file's content, each finding graded and triaged: the harness refuses a subagent's Write of a
+  findings file, so the batch session saves the reply byte for byte at the brief's `Findings file:` path.
 - The loop is the batch session's (skill `building-a-batch`): after `work batch review`, `work batch brief`, one
-  fresh `pr-reviewer` on the brief, then `work batch reviewed`. On `building`, each open finding is fixed on its
+  fresh `pr-reviewer` on the brief, its reply saved, then `work batch reviewed`. On `building`, each open finding is fixed on its
   item's branch by commits ending `Item: b<j>` and `Finding: f<m>`; `work batch review` checks and pushes them, and
   the next brief is a re-review of only the commits after the last review. No review is written when a task becomes
   `done`.

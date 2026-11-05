@@ -38,7 +38,7 @@ def add_parsers(sub):
     s.add_argument("--discard", action="store_true", help="discard the uncommitted changes of its task worktrees")
     s = cmds.add_parser("review", help="merge the in-batch items into the batch branch, test, push and publish its pull request")
     s.add_argument("batch")
-    cmds.add_parser("reviewed", help="record the findings file pr-reviewer wrote: back to building, or awaiting-merge"
+    cmds.add_parser("reviewed", help="record the findings file (pr-reviewer's reply, saved): back to building, or awaiting-merge"
                     ).add_argument("batch")
     cmds.add_parser("brief", help="write the brief of the next review of a batch's pull request, for pr-reviewer"
                     ).add_argument("batch")

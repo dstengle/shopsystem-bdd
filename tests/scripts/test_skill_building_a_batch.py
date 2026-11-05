@@ -109,6 +109,8 @@ def test_each_refusal_of_the_review_loop_has_its_way_through():
     text = process(SKILL)[review_step()]
     for said in ("A refused `reviewed`", "run `work batch brief` again", "a fresh `pr-reviewer`",
                  "never edit the findings file",                          # S3: a malformed findings file
+                 "byte for byte at the brief's `Findings file:` path",    # plan 7 B1: the reply saved
+                 "Saving is not editing",
                  "no item is left in-batch", "work batch abandon",        # S3: every item parked
                  ".shop/batches/<n>/review-<k>.md",                       # S3: where a finding's text is
                  '--trailer "Item: b<j>" --trailer "Finding: f<m>"',      # M3

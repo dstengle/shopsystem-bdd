@@ -45,6 +45,8 @@ def test_the_first_brief_gives_the_batchs_range_and_no_other_commit(pub):
     assert lines[:3] == ["# The review of batch-1's pull request", "", "Review: 1 (first; the pull request is unreviewed)"]
     assert "Range: %s..%s" % (forked, head) in lines and "Head: %s" % head in lines
     assert "Findings file: %s" % (scratch(pub) / "findings.md") in lines
+    reply = lines[lines.index("Findings file: %s" % (scratch(pub) / "findings.md")) + 1]
+    assert reply.startswith("Reply: the findings file's content and nothing else"), reply  # plan 7 review, B1
     want = git(pub, "rev-list", "--reverse", "%s..batch-1" % forked).split()
     listed = [line.split()[1] for line in section(text, "Commits").splitlines() if line.startswith("- ")]
     assert len(listed) == len(want) and all(w.startswith(s) for s, w in zip(listed, want)), (listed, want)

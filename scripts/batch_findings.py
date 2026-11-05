@@ -1,6 +1,6 @@
 """The pull request review's findings (capability pr-review r8; workflow simplification plan 5, D9, D10, D13, D22):
-the findings file `pr-reviewer` writes, parsed and refused when a finding is ungraded or malformed, and the record
-`.shop/batches/<n>/review-<k>.md` that `work batch reviewed` renders from it.
+the findings file (`pr-reviewer`'s reply, saved by the batch session), parsed and refused when a finding is ungraded
+or malformed, and the record `.shop/batches/<n>/review-<k>.md` that `work batch reviewed` renders from it.
 
 A finding is `### <grade> <triage>: <title>` with `- item:` and `- where:` lines and free text; the record numbers it
 `### f<m> ...`. A finding is open from its review on while it is `fix now`, until a later review says `fixed` or its

@@ -142,7 +142,7 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 | `bdd-implementer` | Read, Edit, Write, Glob, Grep, Bash, Skill | sonnet | a work-item, red-green under `bdd-red-green`, in its worktree and branch |
 | `bdd-task-reviewer` | Read, Glob, Grep, Bash, Write | opus | a done work-item's review for `work run`; changes nothing |
 | `bdd-branch-reviewer` | Read, Glob, Grep, Write | opus | an initiative's branch review, from its base, over every work-item; changes nothing |
-| `pr-reviewer` | Read, Glob, Grep, Write | opus | a batch's pull request review, from its brief: the batch's own commits, its items' lines, the judgement decisions; changes nothing |
+| `pr-reviewer` | Read, Glob, Grep | opus | a batch's pull request review, from its brief: the batch's own commits, its items' lines, the judgement decisions; changes nothing, and replies with the findings file the batch session saves |
 | `architecture-reviewer` | Read, Glob, Grep, Bash, Write | opus | an architecture review when the person asks for one |
 | `trial-runner` | Read, Glob, Grep, Bash, Write | sonnet | one trial of a plugin tool or `work run` on a target; writes only one measurement record |
 | `batch-analyst` | Read, Glob, Grep, Bash, Write, Skill | opus | what a closed batch cost and why, under `analyzing-a-batch` |

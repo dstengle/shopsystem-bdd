@@ -54,7 +54,7 @@ def reviewed(root, name):
         path = where / "findings.md"
         if not path.is_file():
             raise Refused("%s: %s has no findings file %s; run work batch brief %s, then the pr-reviewer agent on "
-                          "its brief %s" % (COMMAND, batch.name, path, batch.name, where / "brief.md"))
+                          "its brief %s, and save its reply there" % (COMMAND, batch.name, path, batch.name, where / "brief.md"))
         head = git(root, "rev-parse", batch.branch).stdout.strip()
         if not (where / "brief.md").is_file():
             raise Refused("%s: %s has no brief %s; run work batch brief %s, then the pr-reviewer agent on it" % (
