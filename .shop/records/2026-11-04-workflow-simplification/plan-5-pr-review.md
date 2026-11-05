@@ -687,7 +687,7 @@ Builds `pr-review#r1` and `r2`. pr-review's `unbuilt:` becomes `[]`.
 The step also says: no review is written when a task becomes `done`; the reviewer is dispatched only after `work
 batch review`. Nothing in this step asks the person.
 
-- [ ] **Step 1: Write the failing tests** (in `test_skill_building_a_batch.py`):
+- [x] **Step 1: Write the failing tests** (in `test_skill_building_a_batch.py`):
   - `test_r1_the_published_pull_request_is_reviewed`: the first step naming `pr-reviewer` comes after the step naming
     `work batch review`. In it, `work batch brief`, `pr-reviewer` and `work batch reviewed` appear in that order.
   - `test_r2_no_review_after_a_task`: no step naming `work batch done` names `pr-reviewer` or `work batch brief`.
@@ -696,22 +696,22 @@ batch review`. Nothing in this step asks the person.
   - `test_the_review_loop_asks_nothing`: the review step holds neither "ask the person" nor "wait for".
   - `test_the_process_runs_the_batch_commands_in_order` passes with the longer `ORDER`.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_skill_building_a_batch.py -q`
   Expected: FAIL. There is no review step, and the trace test fails once `test_r1_`/`test_r2_` exist while r1 and r2
   are unbuilt.
 
-- [ ] **Step 3: Write the step and its Red Flags.** Red Flags gain these rows:
+- [x] **Step 3: Write the step and its Red Flags.** Red Flags gain these rows:
   - a reviewer dispatched after a task's `done`;
   - a reviewer given the session's context;
   - a fix commit with no `Finding:`;
   - a finding argued with instead of fixed or parked.
 
-- [ ] **Step 4: Take r1 and r2 out of `unbuilt:`, then run the skill, command and trace tests.**
+- [x] **Step 4: Take r1 and r2 out of `unbuilt:`, then run the skill, command and trace tests.**
   Run: `python3 -m pytest tests/scripts/test_skill_building_a_batch.py tests/scripts/test_skill_shaping_items.py tests/scripts/test_pr_review_trace.py tests/scripts/test_agents.py -q | tail -1`
   Expected: all pass.
 
-- [ ] **Step 5: Commit.**
+- [x] **Step 5: Commit.**
   ```bash
   git add skills/building-a-batch/SKILL.md tests/scripts/test_skill_building_a_batch.py spec/capabilities/pr-review.md
   git commit -m "skills: building-a-batch reviews the published pull request with pr-reviewer and fixes each finding (pr-review r1, r2)"

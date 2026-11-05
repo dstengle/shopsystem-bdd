@@ -1,12 +1,14 @@
 """The batch session's skill, building-a-batch (workflow simplification plan 4, Task 9, D2): `work batch` keeps the
 state and the session orchestrates, one subagent for each running task, in parallel, with nothing waiting on the
-person before the pull request; checked by reading the skill as test_skill_shaping_items.py reads its skills."""
+person before the pull request, then the pull request's one review by `pr-reviewer` and its fixes (plan 5, Task 6,
+pr-review r1, r2); checked by reading the skill as test_skill_shaping_items.py reads its skills."""
 import re
 
 from test_skill_shaping_items import SKILLS, process
 
 SKILL = SKILLS / "building-a-batch" / "SKILL.md"
-ORDER = ("work batch start", "work batch resume", "work batch done", "work batch park", "work batch review")
+ORDER = ("work batch start", "work batch resume", "work batch done", "work batch park", "work batch review",
+         "work batch brief", "work batch reviewed")
 
 
 def test_the_process_runs_the_batch_commands_in_order():
@@ -58,3 +60,36 @@ def test_each_refusal_of_review_has_its_way_through():
     for said in ("conflict", "merge the earlier item's branch", "park one of the two", "tests fail",
                  "push or gh", "safe to run again"):
         assert said in text, (said, text)
+
+
+def review_step():
+    """The first step naming `pr-reviewer`."""
+    return next(n for n, s in enumerate(process(SKILL)) if "pr-reviewer" in s)
+
+
+def test_r1_the_published_pull_request_is_reviewed():
+    steps = process(SKILL)
+    publish = next(n for n, s in enumerate(steps) if "work batch review" in s)
+    at = review_step()
+    assert at > publish, (at, publish)
+    text = steps[at]
+    found = [text.find(said) for said in ("work batch brief", "pr-reviewer", "work batch reviewed")]
+    assert -1 not in found and found == sorted(found), found
+
+
+def test_r2_no_review_after_a_task():
+    for one in process(SKILL):
+        if "work batch done" in one:
+            assert "pr-reviewer" not in one and "work batch brief" not in one, one
+
+
+def test_the_fix_loop_cites_item_and_finding():
+    text = process(SKILL)[review_step()]
+    for said in ("Item: b", "Finding: f", "work batch resume"):
+        assert said in text, (said, text)
+    assert "at once" in text or "in parallel" in text, text
+
+
+def test_the_review_loop_asks_nothing():
+    text = process(SKILL)[review_step()].lower()
+    assert "ask the person" not in text and "wait for" not in text, text

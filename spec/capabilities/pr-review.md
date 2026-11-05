@@ -6,7 +6,7 @@ group: guarantees
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: [r1, r2]
+unbuilt: []
 ---
 
 # Pull request review
@@ -77,3 +77,15 @@ branch and the review re-reads what the fix changed; a clean pull request waits 
   writes in the ignored worktrees directory: the range's commits and `change.diff`, the items' lines (first review)
   or the open findings with the commits for each (re-review), the `tier: judgement` decisions, `CLAUDE.md`, the size
   and the runs of `[review] checks`. It writes one findings file, each finding graded and triaged.
+- The loop is the batch session's (skill `building-a-batch`): after `work batch review`, `work batch brief`, one
+  fresh `pr-reviewer` on the brief, then `work batch reviewed`. On `building`, each open finding is fixed on its
+  item's branch by commits ending `Item: b<j>` and `Finding: f<m>`; `work batch review` checks and pushes them, and
+  the next brief is a re-review of only the commits after the last review. No review is written when a task becomes
+  `done`.
+
+## Not yet
+- A cap on review rounds in code: `building-a-batch` parks each item an open finding names after the third review
+  that leaves one open.
+- Findings posted as inline comments on the pull request's lines: each review is one comment.
+- Recurring findings counted, as a signal for a new decision, check or readiness bar (plan 7's telemetry).
+- A transition `awaiting-merge` -> `abandoned`: `work batch abandon` still refuses an `awaiting-merge` batch.

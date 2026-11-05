@@ -25,13 +25,21 @@ Scripts: `<this skill's base directory>/../../scripts/`. Every `work batch` comm
 
    Each builds its scenarios one at a time, takes each id out of its capability's `unbuilt:` in the same commit that makes the scenario pass, and ends every commit message with the line `Item: b<j>`. It changes nothing under `.shop/backlog/` or `.shop/batches/`. A subagent that cannot go on without an answer returns its question instead of guessing.
 5. **Close each task as its subagent returns**, from the base checkout: `python3 <scripts>/work batch done <batch> <task>`, which checks the worktree, the commits and the ids and runs the tests there. A refused `done` goes back to the same subagent with the refusal. A subagent that returned a question: `python3 <scripts>/work batch park <batch> <item> --question "<its question>"`; the item leaves the batch as `needs-input`, its branch kept, and the rest carries on.
-6. **Publish.** When every task of an in-batch item is done, `python3 <scripts>/work batch review <batch>` takes the parked items' lines out of `batch-<n>`, merges the in-batch items' branches into it, runs the tests, pushes it and opens the draft pull request; give the person its link. The person merges it, and `python3 <scripts>/work batch merged <batch>` then delivers the items. A refused review changes nothing and is safe to run again once its cause is fixed:
+6. **Publish.** When every task of an in-batch item is done, `python3 <scripts>/work batch review <batch>` takes the parked items' lines out of `batch-<n>`, merges the in-batch items' branches into it, runs the tests, pushes it and opens the draft pull request, then prints the next step: its review (step 7). A refused review changes nothing and is safe to run again once its cause is fixed:
    - a conflict between two items' branches: have the later item's subagent merge the earlier item's branch into its own and resolve it there, in a commit citing its own item (a branch may carry an earlier in-batch item's commits), then `done` it again; or park one of the two;
    - the tests fail on the merged branch: send the failure to the subagent of the item that broke them, fix it on that item's branch, `done` it again;
    - a push or gh failure: fix the cause (the remote, gh's login), then run the review again.
-7. **A later session** starts again at step 2: `work batch status` finds the batch, and `work batch resume` gives back any worktree that was lost, with its commits.
+7. **Review and fix.** The published pull request gets one review, and no review is written when a task becomes `done`: the reviewer is dispatched only after `work batch review`, each time by a fresh agent. Nothing in this step goes to the person until the pull request is clean.
+   - After `work batch review`, run `python3 <scripts>/work batch brief <batch>`; it prints the brief's path.
+   - Dispatch one fresh `pr-reviewer` agent (`subagent_type` `shopsystem-bdd:pr-reviewer`) with the brief's path as its whole prompt, and no other context: not this session's notes, not the subagents' replies. It writes the findings file the brief names.
+   - Run `python3 <scripts>/work batch reviewed <batch>`. It records the review under `.shop/batches/<n>/`, posts it on the pull request, and prints `-> awaiting-merge` or `-> building` with each open finding.
+   - On `-> awaiting-merge`, give the person the pull request's link; it is marked ready. The person merges it, and `python3 <scripts>/work batch merged <batch>` then delivers the items.
+   - On `-> building`, run `python3 <scripts>/work batch resume <batch>`: it prints each open finding with its task's worktree and branch. Dispatch one subagent for each item an open finding names, all at once, each in that task's worktree, with the finding's text and this rule: fix only what the finding says, red first where a test can show it, and end each commit with the two lines `Item: b<j>` and `Finding: f<m>`.
+   - Then run `python3 <scripts>/work batch review <batch>` again, which checks that each fix commit cites an open finding and each open finding has one, and pushes only; then `work batch brief` again, which is a re-review of what the fixes changed, and so on.
+   - After the third review that leaves a finding open, park each item an open finding names (`work batch park <batch> <item> --question "<the finding's title>"`), and review again: its findings close with it.
+8. **A later session** starts again at step 2: `work batch status` finds the batch, and `work batch resume` gives back any worktree that was lost, with its commits.
 
-The rule: nothing waits on the person between steps 1 and 6. A question goes onto its item with `work batch park`, never to the person.
+The rule: nothing waits on the person between steps 1 and 7, until the pull request is clean. A question goes onto its item with `work batch park`, never to the person.
 
 ## Red Flags
 
@@ -44,3 +52,7 @@ The rule: nothing waits on the person between steps 1 and 6. A question goes ont
 | A task's commit that edits `.shop/backlog/` or `.shop/batches/` | Only the base branch's batch commands write those |
 | A question put to the person mid-batch | `work batch park` the item with the question; the batch carries on |
 | An id left in `unbuilt:` after its scenario passes | The strict xfail fails the suite; take it out in the same commit |
+| A `pr-reviewer` dispatched after a task's `done` | The one review is of the published pull request: `work batch review`, then `work batch brief` |
+| A reviewer given the session's context | Give it the brief's path and nothing else; a fresh agent each review |
+| A fix commit with no `Finding: f<m>` line | `review` refuses it; amend the message on the item's branch |
+| A finding argued with instead of fixed or parked | Fix it on its item's branch, or park the item with the finding as its question |
