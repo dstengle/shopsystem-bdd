@@ -629,20 +629,20 @@ This repository's own requests are not moved here: Task 10's `migrate upgrade` m
 - Consumes: Task 1's `transcripts`, `measure_cost.KINDS` and `measure_cost.duration`.
 - Produces: `measure show <record>` and `measure compare <a> <b>`, unchanged for both kinds of record.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
   `test_measure_show_old.py::test_an_initiative_measurement_is_still_shown_and_compared`. It copies one real 1.x
   record from `.shop/records/measurements/` (the newest `*-i<n>-*.md`) into a temporary repository. Then
   `measure show` prints `stages` and `totals`, and `measure compare <it> <it>` prints `ratio`, both exiting 0.
   `measure initiative i1` exits 2, naming the subcommand as unknown (argparse).
-- [ ] **Step 2: Run it.** Expected: FAIL on the last assertion (`initiative` still parses).
-- [ ] **Step 3: Retire r1-r17**, delete and modify as listed, then run `features generate` and `model decisions`.
-- [ ] **Step 4: The gate.** Expected:
+- [x] **Step 2: Run it.** Expected: FAIL on the last assertion (`initiative` still parses).
+- [x] **Step 3: Retire r1-r17**, delete and modify as listed, then run `features generate` and `model decisions`.
+- [x] **Step 4: The gate.** Expected:
   - `decisions --check`: `5 check decisions: 5 hold` (0018's two tests among them).
   - `model check`: 0/16/0/0.
   - Collection diff: batch-measurement's 17 scenarios and `test_measure_runs`' 2.
   - `ls scripts/measure*` lists `measure`, `measure_batch.py`, `measure_batch_read.py`, `measure_batch_sessions.py`,
     `measure_batch_show.py`, `measure_cost.py`, `measure_defect.py`, `measure_show.py` and `measure_write.py`.
-- [ ] **Step 5: Commit.**
+- [x] **Step 5: Commit.**
   ```bash
   git add -A scripts tests spec features README.md CLAUDE.md
   git commit -m "measure initiative retired: batch-measurement r1-r17, measure_build and measure_read; show and compare keep 1.x records; 0018 a check (plan 9, Task 7)"

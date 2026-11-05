@@ -47,7 +47,7 @@ def test_the_sort_holds_its_totals():
     assert len(found) == 80, len(found)
     assert collections.Counter(d.status for d in found) == {"accepted": 28, "superseded": 50, "rejected": 2}
     tiers = collections.Counter(d.tier for d in found if d.status == "accepted")
-    assert tiers == {"check": 4, "requirement": 14, "judgement": 10}, tiers
+    assert tiers == {"check": 5, "requirement": 13, "judgement": 10}, tiers
     assert [d.rel for d in found if d.status != "accepted" and d.tier] == []
 
 

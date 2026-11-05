@@ -5,7 +5,7 @@ narrator: a session measuring an initiative's deliveries
 group: service
 language: codified-1
 rests_on: [design-decision/measure-an-initiative, design-decision/measure-refuses-unknown-shapes, design-decision/plugin-takes-the-dependencies-it-needs]
-retired: []
+retired: [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17]
 ---
 
 # Measurement of an initiative's deliveries
@@ -43,89 +43,6 @@ not know rather than guessing at it.
 | logged stage | has | session file | one |
 
 ## Behaviour
-
-### [g1] `measure initiative` writes one measurement named by the day and the initiative, each ended stage with how long it took and its session's figures
-Restates: r39@0.29, r40@0.29.
-- [r1] While a logged stage is `ended`, when the person runs `measure initiative i7-cart`, `measure` shall print `.shop/records/measurements/2026-10-22-i7-cart.md`, include "12 minutes", include "output_tokens", include "cache_read_tokens", include "cost" and exit successfully.
-
-### [g2] `measure initiative` refuses an initiative with no `log.jsonl`
-Restates: r46@0.29, r50@0.29.
-- [r2] While an initiative log is unwritten, if the person runs `measure initiative i7-cart`, then `measure` shall exit with an error naming `log.jsonl` and change nothing.
-
-### [g3] `measure initiative` refuses an initiative fulfilling a request the queue does not hold
-Restates: r65@0.29.
-- [r3] While a fulfilled request is `unheld`, if the person runs `measure initiative i7-cart`, then `measure` shall exit with an error naming the fulfilled request and change nothing.
-
-### [g4] `measure initiative` refuses an initiative fulfilling a request with no asker
-Restates: r66@0.29.
-- [r4] While a fulfilled request is `askerless`, if the person runs `measure initiative i7-cart`, then `measure` shall exit with an error naming the fulfilled request and change nothing.
-
-### [g5] `measure initiative` refuses an initiative fulfilling more than one request
-Restates: r67@0.29.
-- [r5] While an initiative log is overfulfilling, if the person runs `measure initiative i7-cart`, then `measure` shall exit with an error naming "more than one request" and change nothing.
-
-### [g6] `measure initiative` refuses a `session.json` of a shape it does not know, naming it
-Restates: r47@0.29.
-- [r6] While a session file is `garbled`, if the person runs `measure initiative i7-cart`, then `measure` shall exit with an error naming the session file and change nothing.
-
-### [g7] `measure initiative --sessions` refuses a transcript of a shape it does not know, naming it
-Restates: r47@0.29.
-- [r7] While a transcript is `unreadable`, if the person runs `measure initiative i7-cart --sessions sessions`, then `measure` shall exit with an error naming the transcript and change nothing.
-
-### [g8] each stage is given with its session's round trips, a line break inside a transcript's JSON string not splitting its line
-Restates: r53@0.29, r58@0.29.
-- [r8] While a logged stage has a transcript that is `found`, when the person runs `measure initiative i7-cart`, `measure` shall include "round_trips" for the logged stage and exit successfully.
-
-### [g9] each work-item is given with its transitions, its counts of `awaiting-answer` and `failed`, and its commits, and the totals span the first transition to the last, a time ending in `Z` read as a time in UTC
-Restates: r41@0.29, r42@0.29, r59@0.29.
-- [r9] When the person runs `measure initiative i7-cart`, `measure` shall include "transitions", include "awaiting_answer", include "commits", include "totals", include "time_seconds" and include "1 hour 45 minutes".
-
-```given
-the initiative log `i7-cart` holds:
-  {"time": "2026-10-22T07:55:00Z", "work-item": "cart-1", "before": "drafted", "after": "researched"}
-  {"time": "2026-10-22T08:30:00Z", "work-item": "cart-1", "before": "researched", "after": "awaiting-answer"}
-  {"time": "2026-10-22T11:40:00+02:00", "work-item": "cart-1", "before": "awaiting-answer", "after": "researched"}
-```
-
-### [g10] `measure initiative` does not write over a measurement without `--replace`
-Restates: r48@0.29.
-- [r10] While a measurement is present, if the person runs `measure initiative i7-cart`, then `measure` shall exit with an error naming the measurement and change nothing.
-
-### [g11] `measure initiative --replace` writes over the measurement
-Restates: r52@0.29.
-- [r11] While a measurement is present, when the person runs `measure initiative i7-cart --replace`, `measure` shall print `.shop/records/measurements/2026-10-22-i7-cart.md` and include "12 minutes".
-
-### [g12] a stage with a start and no end is given without how long it took
-Restates: r51@0.29.
-- [r12] While a logged stage is `unended` and the logged stage has a session file that is `filled`, when the person runs `measure initiative i7-cart`, `measure` shall include "turns" for the logged stage, and `measure` shall not include "took" for the logged stage.
-
-### [g13] a stage whose `session.json` is empty is given without its session's figures, named as such
-Restates: r57@0.29.
-- [r13] While a logged stage has a session file that is `empty`, when the person runs `measure initiative i7-cart`, `measure` shall include "session_json" for the logged stage, and `measure` shall not include "turns" for the logged stage.
-
-### [g14] a stage whose session has no transcript is given without its round trips
-Restates: r55@0.29.
-- [r14] While a logged stage has a transcript that is `lost`, when the person runs `measure initiative i7-cart`, `measure` shall not include "round_trips" for the logged stage.
-
-### [g15] the request an initiative fulfils is given as internal or external
-Restates: r63@0.29.
-- [r15] While a fulfilled request is `internal`, when the person runs `measure initiative i7-cart`, `measure` shall include "internal".
-
-### [g16] an initiative that fulfils no request is measured without an origin
-Restates: r64@0.29.
-- [r16] While an initiative log is requestless, when the person runs `measure initiative i7-cart`, `measure` shall not include "origin".
-
-### [g17] `--sessions` gives the sessions active inside the window and the sessions they dispatched, each with its round trips, tool uses, dispatches and compactions, and no prompt, reply or tool content
-Restates: r43@0.29, r49@0.29, r60@0.29.
-- [r17] When the person runs `measure initiative i7-cart --sessions sessions`, `measure` shall include "s-9", include "s-11", include "tool_uses" and include "compactions", and `measure` shall not include "s-7", include "a secret reply" or include "a secret prompt".
-
-```given
-the initiative log `i7-cart` holds:
-  {"time": "2026-10-22T09:55:00+00:00", "work-item": "cart-1", "before": "drafted", "after": "researched"}
-  {"time": "2026-10-22T10:00:00+00:00", "event": "start", "work-item": "cart-1", "stage": "research", "session": "s-1"}
-  {"time": "2026-10-22T10:12:00+00:00", "event": "end", "work-item": "cart-1", "stage": "research", "session": "s-1"}
-  {"time": "2026-10-22T11:40:00+00:00", "work-item": "cart-1", "before": "researched", "after": "planned"}
-```
 
 ### [g18] `measure show` prints a measurement's figures as tables, a stage's round trips beside its turns
 Restates: r44@0.29, r54@0.29.
@@ -176,25 +93,8 @@ the measurement `m3` holds:
 
 ## Implementation, may change
 - A measurement is a record whose frontmatter id is of kind `measurement`; its figures are one JSON block in its
-  body, which `show` and `compare` read back.
-- A stage's start and end, and a work-item's transitions, are read from the initiative's `log.jsonl`; a stage's
-  session's turns, tokens and cost from its stage directory's `session.json`.
-- A stage's turns are its `session.json`'s `num_turns`, which is not the unit `--max-turns` limits
-  (measurement/2026-10-22-research-at-the-limit); its round trips (r8) are that unit.
-- r8: a stage's session's transcript is read from the path its `session.json` records (supervision r62).
-- The initiative's window runs from the first transition `log.jsonl` gives to the last.
-- Tokens are output, new input (input and cache writes) and cache read.
-- `--sessions` reads Claude Code's raw transcripts or the slim export of dstengle/shopsystem-records; the sessions
-  it finds are those that did the spec work around the delivery: the coordinator, its rounds and its direct
-  dispatches.
-- r12: a stage with a start and no end is given with everything r1 gives, its session's figures included where its
-  `session.json` is there, except how long it took.
-- r9: the commits merged for a work-item are the commits of its work-item branch that its merge brought into the
-  initiative branch.
-- r9: the totals are over the stages' sessions only, with or without `--sessions`, and a stage with a start and no
-  end counts in them.
-- r17: each session it dispatched is each session dispatched by a session found inside the window, wherever its
-  dispatches fall in time.
+  body, which `show` and `compare` read back. `measure initiative`, which wrote an initiative's, was retired in
+  plugin 2.0.0 with r1-r17 (the-old-workflow-retired); the records it wrote are still shown and compared.
 
 ## Not yet
 - Figures beyond what `work run` already records: the skeleton grows from the measurements of 0.21.0's, 0.22.0's
@@ -202,3 +102,26 @@ the measurement `m3` holds:
   give.
 
 ## Dropped
+- r39@0.29: retired with batch-measurement#r1 in 2.0.0 (the-old-workflow-retired).
+- r40@0.29: retired with batch-measurement#r1 in 2.0.0 (the-old-workflow-retired).
+- r41@0.29: retired with batch-measurement#r9 in 2.0.0 (the-old-workflow-retired).
+- r42@0.29: retired with batch-measurement#r9 in 2.0.0 (the-old-workflow-retired).
+- r43@0.29: retired with batch-measurement#r17 in 2.0.0 (the-old-workflow-retired).
+- r46@0.29: retired with batch-measurement#r2 in 2.0.0 (the-old-workflow-retired).
+- r47@0.29: retired with batch-measurement#r6, #r7 in 2.0.0 (the-old-workflow-retired).
+- r48@0.29: retired with batch-measurement#r10 in 2.0.0 (the-old-workflow-retired).
+- r49@0.29: retired with batch-measurement#r17 in 2.0.0 (the-old-workflow-retired).
+- r50@0.29: retired with batch-measurement#r2 in 2.0.0 (the-old-workflow-retired).
+- r51@0.29: retired with batch-measurement#r12 in 2.0.0 (the-old-workflow-retired).
+- r52@0.29: retired with batch-measurement#r11 in 2.0.0 (the-old-workflow-retired).
+- r53@0.29: retired with batch-measurement#r8 in 2.0.0 (the-old-workflow-retired).
+- r55@0.29: retired with batch-measurement#r14 in 2.0.0 (the-old-workflow-retired).
+- r57@0.29: retired with batch-measurement#r13 in 2.0.0 (the-old-workflow-retired).
+- r58@0.29: retired with batch-measurement#r8 in 2.0.0 (the-old-workflow-retired).
+- r59@0.29: retired with batch-measurement#r9 in 2.0.0 (the-old-workflow-retired).
+- r60@0.29: retired with batch-measurement#r17 in 2.0.0 (the-old-workflow-retired).
+- r63@0.29: retired with batch-measurement#r15 in 2.0.0 (the-old-workflow-retired).
+- r64@0.29: retired with batch-measurement#r16 in 2.0.0 (the-old-workflow-retired).
+- r65@0.29: retired with batch-measurement#r3 in 2.0.0 (the-old-workflow-retired).
+- r66@0.29: retired with batch-measurement#r4 in 2.0.0 (the-old-workflow-retired).
+- r67@0.29: retired with batch-measurement#r5 in 2.0.0 (the-old-workflow-retired).
