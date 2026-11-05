@@ -3,6 +3,7 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/query-commands-answ
 summary: "A query command answers in its output and exits with an error only when it cannot answer; an empty answer exits successfully, and `--json` prints the whole result as one JSON object."
 date: 2026-10-22
 status: accepted
+tier: judgement
 supersedes: [design-decision/exits-are-successful-or-errors]
 source: [design-decision/exits-are-successful-or-errors]
 by: "the person, 2026-10-22, delegated drafting decisions to the coordinator's recommendations"

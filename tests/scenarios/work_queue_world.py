@@ -79,7 +79,7 @@ def thing(step, name):
 
 
 PATHS = {"work-item": r"\.shop/work/[^/]+/w\d+\.md", "initiative": r"\.shop/work/[^/]+/initiative\.md",
-         "request": r"\.shop/work/requests/q\d+\.md", "capability-proposal": r"\.shop/work/[^/]+/[^/]+\.md",
+         "request": r"\.shop/requests/q\d+\.md", "capability-proposal": r"\.shop/work/[^/]+/[^/]+\.md",
          "glossary-proposal": r"\.shop/work/[^/]+/[^/]+\.md", "transition": r"\.shop/work/[^/]+/log\.jsonl",
          "ledger": r"\.shop/work/[^/]+/ledger\.md"}
 
@@ -101,6 +101,8 @@ def matches(repo, context, np, rel):
     an answer, a delegation or a transition. An instance the scenario has not written yet (the trace's name for what
     the command writes) is matched as any of its kind."""
     path = Path(repo) / rel
+    if re.fullmatch(r"`[^`]+`", np):      # a file named by its path (migration-tools' `.shop/work/FROZEN.md`)
+        return rel == np.strip("`")
     if re.fullmatch(r"(a|the) decisions index( \S+)?", np):
         return rel == "spec/decisions/index.md"
     ledger = re.match(r"the ledger of the initiative (\S+)$", np)
@@ -182,8 +184,11 @@ LOCAL = {}
 
 
 def local(template, kind=None):
+    """A second registration of one key chains (plan 4, D23): the new handler is tried first, the earlier one when it
+    returns False."""
     def mark(fn):
-        LOCAL[(template, kind)] = fn
+        earlier = LOCAL.get((template, kind))
+        LOCAL[(template, kind)] = fn if earlier is None else (lambda step: earlier(step) if fn(step) is False else None)
         return fn
     return mark
 

@@ -3,6 +3,8 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/a-scenario-names-on
 summary: "A scenario names exactly one requirement by its @r<n> tag; a requirement has at least one scenario; scenarios share step definitions in code."
 date: 2026-10-21
 status: accepted
+tier: requirement
+enforced_by: [design-model-check#r10, design-model-check#r11]
 supersedes: design-decision/a-scenario-may-name-several-requirements
 source: [observation/2026-10-21-one-requirement-per-scenario]
 by: "the person, 2026-10-21"

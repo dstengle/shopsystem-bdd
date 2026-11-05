@@ -1,21 +1,21 @@
-"""The reading of requests by scripts/model: .shop/work/requests/q<n>.md, in the form `work request` writes (r19, r112).
-Its lines, their outcomes and its upstream are facts (design model v5, C20): line/3, outcome/3, upstream/2."""
+"""The reading of requests by scripts/model: .shop/requests/q<n>.md, in the form `work request` writes (r19, r112);
+the frozen .shop/work/requests/ is not read (workflow simplification plan 9, D7). Its lines, their outcomes and its upstream are facts (design model v5, C20): line/3, outcome/3, upstream/2."""
 
 import datetime
 import re
+from pathlib import Path
 
 from model_parse import as_list, frontmatter, section
-from model_work import WORK
 
-REQUESTS = "requests"
-SECTIONS = {"Lines", "Outcomes", "Questions", "Answers", "Resolution"}
+REQUESTS = Path(".shop") / "requests"
+SECTIONS = {"Lines", "Outcomes", "Questions", "Answers", "Resolution", "Reasons", "Counter-proposals"}
 
 
 class RequestReading:
-    """Model's reading of .shop/work/requests/."""
+    """Model's reading of .shop/requests/."""
 
     def read_requests(self):
-        for path in sorted((self.root / WORK / REQUESTS).glob("*.md")):
+        for path in sorted((self.root / REQUESTS).glob("*.md")):
             data, body = frontmatter(path.read_text())
             where = self.rel(path)
             wrong = self.request_form(data, body, path)

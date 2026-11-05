@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+"""The conversation's two hooks (capability conversation; plan 8's review, S2), apart from `work` so that they import
+only what they need, the standard library and the conversation's own modules, and so run under any `python3`, site
+packages or none:
+- `conversation_hook quote`, the UserPromptSubmit hook: keep the session and transcript its stdin gives for
+  `work quote`, printing nothing (`work quote --hook` does the same);
+- `conversation_hook names`, the SessionStart hook: the names table under one line, nothing when there is nothing to
+  name (`work names --hook` does the same).
+Whatever goes wrong, an import included, the hook prints nothing more and exits 0: a hook never fails a prompt or a
+session's start."""
+import os
+import sys
+
+USAGE = "usage: conversation_hook quote|names"
+
+
+def main(argv):
+    if argv not in (["quote"], ["names"]):
+        print(USAGE, file=sys.stderr)
+        return 2
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from pathlib import Path
+        if argv == ["quote"]:
+            import conversation_prompt
+            conversation_prompt.keep(Path.cwd(), sys.stdin.read())
+            return 0
+        import conversation_names
+        text = conversation_names.hook_text(Path.cwd())
+        if text:
+            print(text)
+    except BaseException:  # noqa: BLE001  (a hook never fails: D5, D8)
+        return 0
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

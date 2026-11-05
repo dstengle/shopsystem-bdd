@@ -3,6 +3,8 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/measure-refuses-unk
 summary: "measure refuses a transcript whose shape it does not know, naming the file and what was missing, rather than guess a number."
 date: 2026-10-11
 status: accepted
+tier: check
+enforced_by: [tests/scripts/test_measure_batch_read.py::test_an_unknown_row_is_refused_naming_it, tests/scripts/test_conversation_read.py::test_a_row_with_no_type_is_refused]
 source: [decision-argument/2026-10-11-measuring-a-batch-design]
 by: "0.12.0"
 ---

@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-glossary-is-a-target-of-spec-work
 summary: "The glossary is a target of spec work in its own right, beside the capabilities: its terms are proposed by a glossary-proposal of their own, approved at the gate before they are applied to spec/index.md, and its questions are always the person's."
 date: 2026-10-28
-status: proposed
+status: superseded
 supersedes: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/glossary-terms-are-standing]
 source: [request/missingmass.io/shopsystem/shopsystem-bdd/q30]
 by: "the person's ruling, given as the accepted lines of q30, 2026-10-28"

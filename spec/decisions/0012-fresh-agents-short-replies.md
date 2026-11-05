@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/fresh-agents-short-replies
 summary: "No agent is resumed; the controller passes paths and reads short replies, never diffs, reports or source."
 date: 2026-10-10
-status: accepted
+status: superseded
 source: [decision-argument/2026-10-10-small-slices-and-steps-design]
 by: "0.11.0"
 ---

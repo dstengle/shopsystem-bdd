@@ -3,6 +3,7 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/an-asker-is-told-by
 summary: "For now `work` tells one asker from another by the asker id its repository is registered under, and the upstream's allow list holds those asker ids."
 date: 2026-10-27
 status: accepted
+tier: judgement
 source: [request/missingmass.io/shopsystem/shopsystem-bdd/q14, initiative/missingmass.io/shopsystem/shopsystem-bdd/i39]
 by: "the answer to question 1 of request q14 (product/missingmass.io/subscriptions-viewer), on its line 21"
 ---

@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/work-list-and-work-show-replace-work-status
 summary: "`work status` and `work show` are consolidated into `work list`, which lists all work (initiatives, requests and work-items) with its status, and `work show <id>`, which shows the detail of one initiative, request or work-item; `work status` is retired."
 date: 2026-10-27
-status: proposed
+status: superseded
 source: [capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r34@0.29, capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r35@0.29, capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r36@0.29, capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r37@0.29, capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r38@0.29, capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue#r39@0.29, design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-context-runs-without-a-coordinator]
 by: "the person's answers of 2026-10-27 to the question against spec/capabilities/work-queue.md (answers 1 and 2)"
 ---

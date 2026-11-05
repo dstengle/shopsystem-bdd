@@ -3,7 +3,9 @@
 Every id of `spec/restated.json` (keyed `<cap>#r<n>`) is restated by a group of a codified capability, listed under
 its own capability's `## Dropped` with a reason, or listed there as `moved to <cap>`; a moved id must be restated by a
 group of `<cap>` once `<cap>` is codified, and is pending until then. An uncodified capability has nothing dropped, so
-its ids are missing until it is converted."""
+its ids are missing until it is converted. An id that another capability's `## Dropped` lists qualified
+(`<cap>#r<n>@0.29: <reason>`, a reason that is not a move) is dropped with that reason, as a capability retired in
+2.0.0 records the ids moved into it (workflow simplification plan 9, D11); restated by a group still wins."""
 
 import json
 import re
@@ -26,7 +28,7 @@ def coverage(root, capability=None):
     root = Path(root)
     files = {p.stem: p for p in sorted((root / "spec" / "capabilities").glob("*.md"))}
     docs = {name: spec_read.capability(p) for name, p in files.items() if spec_read.codified(p)}
-    by, gone = {}, {}
+    by, gone, elsewhere = {}, {}, {}
     for name, doc in docs.items():
         ident = frontmatter(files[name].read_text())[0].get("id") or name
         for g in doc.groups:
@@ -35,6 +37,8 @@ def coverage(root, capability=None):
         for cap, n, why in doc.dropped:
             if cap == name:
                 gone[(cap, n)] = why
+            elif not MOVED.match(why):
+                elsewhere.setdefault((cap, n), why)
     rows = []
     for old in sorted(spec_read.restated(root), key=_key):
         cap, n = _key(old)
@@ -48,10 +52,14 @@ def coverage(root, capability=None):
                 row["state"] = "pending"
             elif any(g.split("/")[-1].startswith(f"{target}#") for g in row["by"]):
                 row["state"] = "restated"
+            if row["state"] != "restated" and (cap, n) in elsewhere:
+                row["state"], row["reason"] = "dropped", elsewhere[(cap, n)]
         elif row["by"]:
             row["state"] = "restated"
         elif row["reason"]:
             row["state"] = "dropped"
+        elif (cap, n) in elsewhere:
+            row["state"], row["reason"] = "dropped", elsewhere[(cap, n)]
         rows.append(row)
     return rows
 

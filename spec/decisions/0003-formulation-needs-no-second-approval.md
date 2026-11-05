@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/formulation-needs-no-second-approval
 summary: "Scenarios formulated from approved Behaviour lines need no approval of their own; a line with two readings returns as a question."
 date: 2026-09-29
-status: accepted
+status: superseded
 source: [decision-argument/2026-09-29-capability-spec-design]
 by: "0.8.0"
 ---

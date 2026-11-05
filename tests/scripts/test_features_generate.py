@@ -182,6 +182,26 @@ def test_a_guarantees_capability_has_no_feature(repo):
     assert "guarantees" in done.stderr
 
 
+def test_a_service_capability_with_no_group_has_no_feature(repo):
+    """Plan 9, D4: a codified service capability whose every line is retired has no feature file."""
+    (repo / "spec" / "capabilities" / "legacy.md").unlink()
+    (repo / "spec" / "capabilities" / "x.md").write_text(
+        "---\nid: capability/example.org/fixture/x\ntitle: X\nnarrator: the person\ngroup: service\n"
+        "language: codified-1\nrests_on: []\nretired: [r1]\n---\n\n# X\n\n## Purpose\nRetired.\n\n## Behaviour\n\n"
+        "## Not yet\n- None.\n")
+    (repo / "features").mkdir(exist_ok=True)
+    (repo / "features" / "x.feature").write_text("# generated from spec/capabilities/x.md by features generate; do not edit\n"
+                                                 "Feature: X\n  Narrator: the person\n")
+    check = features(repo, "generate", "--check", "x")
+    assert check.returncode == 1, check.stdout + check.stderr
+    assert "differs: features/x.feature" in check.stdout
+    done = features(repo, "generate", "x")
+    assert done.returncode == 0, done.stderr
+    assert "removed features/x.feature" in done.stdout
+    assert not (repo / "features" / "x.feature").exists()
+    assert features(repo, "generate", "--check", "x").returncode == 0
+
+
 def test_a_requirement_that_does_not_parse_is_refused_naming_it(tmp_path):
     toolchain.require()
     shutil.copytree(FIXTURES / "broken", tmp_path / "broken")

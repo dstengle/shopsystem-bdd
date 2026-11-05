@@ -6,59 +6,40 @@ language: codified-1
 
 # shopsystem-bdd
 
-**Where it stands.** Plugin 0.22.0: the final layout (design-decision/final-layout), delivery by work-items and `work run`,
-and `scripts/migrate`; slicing, `scripts/plan` and the superpowers dependency are removed
-(design-decision/superpowers-not-a-dependency). Requirements have ids from the start (design model v3). The gate of
-2026-10-21 (observation/missingmass.io/shopsystem/shopsystem-bdd/2026-10-21-release-gate) approved every capability's
-Behaviour lines, i10's, i11's and i8's among them: every Behaviour line is approved, and one the plugin does not do yet
-has a drafted work-item. `Not yet` holds what no gate has approved.
-The conversion to design model v5 (`.shop/records/2026-11-03-gf-conversion/`) is under way: the glossary below is
-typed, `spec/universal.md` holds the universal conditions U1-U10, and `spec/restated.json` freezes the 0.29 ids. A
-capability file is codified when its own frontmatter says `language: codified-1`; until then it is read as 0.29 lines.
-Verify with `python3 scripts/model check`; the decisions index, `spec/decisions/index.md`, is written by `python3 scripts/model decisions`;
-`python3 scripts/model rules` lists every rule with its label.
+**Where it stands.** Plugin 2.0.0: the workflow simplified
+(design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified,
+`.shop/records/2026-11-04-workflow-simplification/`). Work is items in a backlog, readied against the codified spec
+and built in batches, each closed by one review at its pull request. The old workflow of plugin 1.x (`work run`, its
+stages, initiatives, work-items, proposals and delegations) is retired
+(design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired), its capabilities kept as the
+record of their ids, and `.shop/work/` is frozen as history. Every capability file is codified (design model v5): the
+glossary below is typed, `spec/universal.md` holds the universal conditions, and `spec/restated.json` freezes the
+0.29 ids. Verify with `python3 scripts/model check`; the decisions index, `spec/decisions/index.md`, is written by
+`python3 scripts/model decisions`; `python3 scripts/model rules` lists every rule with its label.
 
 ## Purpose
 
 A Claude Code plugin that runs a behaviour-driven workflow in a consuming repository: one spec of
-capability files per bounded context, Gherkin feature files paired with them as the contract, work-items
-taken through their stages by `work run`, implementation red-green, review, and measurement of
-what an initiative's deliveries cost. One human gate,
-on the spec's Behaviour lines and glossary entries. It is not a test runner, not a project manager, and keeps nothing of its
-own outside the consuming repository's files.
+capability files per bounded context, Gherkin feature files generated from them as the contract, a backlog of items,
+items built in batches closed by one reviewed pull request, and measurement of what each batch cost. It is not a test
+runner, not a project manager, and keeps nothing of its own outside the consuming repository's files.
 
 ## Constraints
 
 - The design model, version 5 (design model v5, `docs/design-model/`): the graph of standing artifacts, initiatives
   and parts, records, checked by `model check`, and the requirement language (the grammar, this glossary as its
   lexicon, the logic check `model logic`); grammar.md's rules are kept by this repository's files, in the layout of
-  design-decision/final-layout.
+  design-decision/final-layout. Plugin 2.0 builds on design model v5 with items in place of initiatives.
 - Claude Code's plugin format: skills, agents with tool lists, `skills` preloading; a plugin agent's hooks
-  and permissionMode are ignored, so a role's rules are enforced by its tools (design-decision/the-v3-agents).
+  and permissionMode are ignored, so a role's rules are enforced by its tools (design-decision/the-2-0-agents).
 - The dependencies the plugin needs, named in its documentation: clingo, pytest, pytest-bdd
   (design-decision/plugin-takes-the-dependencies-it-needs; the solver: design-decision/model-check-solves-with-clingo).
 
 ## Composition
 
-The spec side, with the person:
-
-| capability | narrator | group |
-|---|---|---|
-| `spec-integration` | the person at the gate | guarantees |
-| `formulation` | the person who approved the lines | guarantees |
-| `spec-migration` | the person migrating a repository onto spec/ | guarantees |
-| `spec-consistency` | the person keeping a spec | guarantees |
-
-The build side, started by `work run`:
-
-| capability | narrator | group |
-|---|---|---|
-| `delivery` | the person delivering an initiative | guarantees |
-| `code-research` | the script `work run`, which started the researcher | guarantees |
-| `planning` | the script `work run`, which started the planner | guarantees |
-| `red-green` | the script `work run`, which started the implementer | guarantees |
-| `review` | the script `work run`, closing a work-item or an initiative | guarantees |
-| `role-boundaries` | the person using the workflow | guarantees |
+The capabilities of plugin 1.x's stages are retired
+(design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired) and kept as records of their ids;
+`batch-measurement`, `requests`, `design-model-check` and `migration-tools` keep the lines that 2.0 still holds.
 
 Measurement:
 
@@ -75,9 +56,38 @@ Tools the skills and agents run:
 | `analysis-tools` | a session researching or reviewing a project's code | service |
 | `design-model-check` | a person or session verifying a repository against the design model | service |
 | `requests` | a context taking in or raising a request | service |
-| `work-queue` | a person, session or script reading work-items or writing their transitions | service |
-| `supervision` | the person who started `work run` | service |
 | `migration-tools` | a person or session migrating a repository to the final layout or upgrading it between plugin releases | service |
+
+The simplified workflow:
+
+| capability | narrator | group |
+|---|---|---|
+| `backlog` | a person or session keeping the backlog | service |
+| `readiness` | a person or session readying an item | service |
+| `intake` | a session answering a peer bounded context's request | service |
+| `batches` | a person or session building a batch | service |
+| `pr-review` | the person who merges a batch's pull request | guarantees |
+| `brainstorming` | the person shaping work in a conversation | guarantees |
+| `decision-tiers` | a person or session keeping the decisions | service |
+| `telemetry` | a session measuring a batch | service |
+| `conversation` | the person reading why a piece of work was asked for | service |
+
+### Retired in 2.0.0
+
+| capability | narrator | group |
+|---|---|---|
+| `spec-integration` | the person at the gate | guarantees |
+| `formulation` | the person who approved the lines | guarantees |
+| `spec-migration` | the person migrating a repository onto spec/ | guarantees |
+| `spec-consistency` | the person keeping a spec | guarantees |
+| `delivery` | the person delivering an initiative | guarantees |
+| `code-research` | the script `work run`, which started the researcher | guarantees |
+| `planning` | the script `work run`, which started the planner | guarantees |
+| `red-green` | the script `work run`, which started the implementer | guarantees |
+| `review` | the script `work run`, closing a work-item or an initiative | guarantees |
+| `role-boundaries` | the person using the workflow | guarantees |
+| `supervision` | the person who started `work run` | service |
+| `work-queue` | a person, session or script reading work-items or writing their transitions | service |
 
 ## Testing
 
@@ -85,23 +95,21 @@ Tools the skills and agents run:
   definitions, one module per feature file under `tests/scenarios/`, and `features bindings --unbound`
   fails the suite when a scenario has no test or two (design-decision/plugin-scenarios-run-as-pytest-bdd).
   Unit tests that bind no scenario are `unittest` tests under `tests/scripts/`.
-- The workflow capabilities (agents and skills: spec-integration, spec-migration, spec-consistency, review,
-  delivery, formulation, red-green, code-research, planning, trials) are guarantees, checked by `measure` on real
-  batches, not by scenarios (design-decision/workflow-capabilities-are-guarantees); `model check`'s v_s3 and
-  design-model-check r27 leave guarantees capabilities out.
-- `role-boundaries` is guarantees: verified against `agents/*.md`, not by scenarios.
+- The guarantees capabilities left (`trials`, `pr-review`, `brainstorming`) are checked by script tests under
+  `tests/scripts/`, not by scenarios (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired);
+  `model check`'s v_s3 and design-model-check r27 leave guarantees capabilities out.
 
 ## Glossary
 
 - **the person** (actor): the human who asks, answers and approves.
-- **`work run`** (actor): the supervisor that runs nodes through their transitions by starting stages, one session each.
+- **`work run`** (actor): the supervisor of plugin 1.x that ran an initiative's work-items through their stages, removed in 2.0.0 with its record frozen under `.shop/work/`.
 - **`work`** (actor): the command that writes statuses, transitions and requests.
 - **`features`** (actor): the tool that reads, edits and reports on feature files.
 - **`tools`** (actor): the tool that installs and probes the project's interpreter and grammar toolchain, and maps code to tests.
-- **`measure`** (actor): the tool that measures an initiative's deliveries and shows and compares measurements.
+- **`measure`** (actor): the tool that measures a merged batch, records a defect found after a merge, and shows and compares measurements.
 - **`migrate`** (actor): the tool that migrates a repository to the final layout and upgrades it between plugin releases.
 - **`model`** (actor): the tool that checks a repository against the design model and reads its requirements.
-- **tool** (kind): any of the commands `work`, `work run`, `features`, `tools`, `measure`, `migrate` and `model`.
+- **tool** (kind): any of the commands `work`, `features`, `tools`, `measure`, `migrate` and `model`.
 - **worker** (kind): a session `work run` starts with `claude -p` for one stage of one work-item, as that stage's agent.
 
 - **bounded context** (kind): one repository's spec, with its index, capabilities, decisions and glossary.
@@ -145,7 +153,7 @@ Tools the skills and agents run:
 - **result** (kind): the file `result.json` a stage writes, giving its outcome, its summary and the files it names. Not: return.
 - **report** (kind): the implementer's file in its stage directory, beside its result, naming the files it touched, the tests whose setup it changed and its open questions. Not: write-up.
 - **hand-back** (kind): an implementer's stop with the outcome `HAND-BACK`, giving the condition and its evidence word for word. Not: handback.
-- **review** (kind): a reviewer's reading of commits against the plan, the spec and the repository's rules, written as graded findings: a work-item review, a branch review or an architecture review. Not: audit.
+- **review** (kind): a reviewer's reading of commits against the spec and the repository's rules, written as graded findings: a pull request review or an architecture review. Not: audit.
 - **review finding** (kind): one graded finding of a review.
 - **stage directory** (kind): the directory `runs/<node>/<k>-<stage>/` that holds one stage's brief, result, report and session. Plural: stage directories. Not: run directory.
 - **compaction** (kind): Claude Code's replacement of a session's earlier messages by a summary, recorded in its transcript.
@@ -174,7 +182,7 @@ Tools the skills and agents run:
 - **suite** (kind): every test `python3 -m pytest` runs from the root by default. Not: fast suite.
 
 - **record** (kind): a file under `.shop/records/` whose frontmatter id has a record kind. Not: log entry.
-- **measurement** (kind): a record under `.shop/records/measurements/` that `measure` writes for one initiative's deliveries, or that a trial writes. Not: facts file.
+- **measurement** (kind): a record under `.shop/records/measurements/` of the figures of one batch, of one earlier delivery or of a trial, written by `measure` or by the trial. Not: facts file.
 - **trial** (kind): one run by the `trial-runner` of a plugin tool or `work run` on a real target or a fixture repository, measuring what its input names.
 - **plugin version** (kind): the plugin release a repository on the final layout is on, recorded as one line in `.shop/plugin-version`.
 - **upgrade** (kind): what `migrate upgrade` does to a repository on the final layout to take it from one plugin release to the next: it applies the pending upgrade steps.
@@ -233,6 +241,36 @@ Tools the skills and agents run:
 - **turn** (resource, exclusive): one for each request, held by the side whose part of the request is to be written next.
 - **checkout** (resource, exclusive): the repository's main working tree, held by one delivery of `work run`.
 
+- **item** (kind): one entry of the backlog, work this bounded context may do, with its requirement lines, its provenance and its ratings, named by its id `b<n>` and its title.
+- **backlog** (kind): every item of a bounded context, kept in `.shop/backlog/`.
+- **batch** (kind): ready items built together on one branch and closed by its pull request, named `batch-<n>`. Plural: batches.
+- **batch plan** (kind): the file `.shop/batches/<n>/plan.md`, with a batch's tasks and their statuses.
+- **task** (kind): one unit of a batch plan, built in its own worktree.
+- **pull request** (kind): the GitHub pull request of a batch's branch.
+- **quote** (kind): the person's words cited by a file, with its session, its message and the messages around it.
+- **message** (kind): one turn of the person or of a session in a transcript, without its tool uses.
+- **status** (attribute of item): Values: `idea`, `shaped`, `ready`, `in-batch`, `delivered`, `needs-input`, `refused`, `withdrawn`.
+  Transitions: `idea` → `shaped`: `work shape`; `shaped` → `ready`: `work ready`; `ready` → `shaped`: pick; `ready` → `in-batch`: pick; `in-batch` → `delivered`: merge; `in-batch` → `needs-input`: park; `in-batch` → `ready`: `work batch abandon`; `needs-input` → `shaped`: `work answer`; `idea` → `refused`: `work refuse`; `shaped` → `refused`: `work refuse`; `idea` → `withdrawn`: `work withdraw`; `shaped` → `withdrawn`: `work withdraw`; `ready` → `withdrawn`: `work withdraw`; `needs-input` → `withdrawn`: `work withdraw`.
+- **provenance** (attribute of item): where an item came from: this bounded context, a peer bounded context or the product. Values: `own`, `peer`, `product`.
+- **value** (attribute of item): Values: `low-value`, `medium-value`, `high-value`.
+- **urgency** (attribute of item): Values: `low-urgency`, `medium-urgency`, `high-urgency`.
+- **size** (attribute of item): Values: `small`, `medium`, `large`.
+- **status** (attribute of batch): Values: `building`, `in-review`, `awaiting-merge`, `merged`, `abandoned`.
+  Transitions: `building` → `in-review`: `work batch review`; `in-review` → `building`: a fix-now finding; `in-review` → `awaiting-merge`: a clean review; `awaiting-merge` → `merged`: merge; `in-review` → `merged`: merge; `building` → `abandoned`: `work batch abandon`; `in-review` → `abandoned`: `work batch abandon`.
+- **status** (attribute of task): Values: `pending`, `running`, `done`, `failed`.
+- **tier** (attribute of design-decision): Values: `check`, `requirement`, `judgement`.
+- **dependency** (kind): one item's need of another item, written in the item that needs it. Plural: dependencies.
+- **blocked** (condition of item): an item with a dependency on an item that is not `delivered` and is not in the same batch.
+- **well-formed** (condition of item): an item whose every requirement parses, has no L0 or L1 finding of `model logic` with the item's lines laid over `spec/`, and has its scenarios written by `features generate`, and whose capabilities' `check` design-decisions pass their tests.
+- **passing** (condition of item): An item is passing when the item is well-formed and every request line of the item is settled.
+- **clean** (condition of pull request): A pull request is clean when no review finding on the pull request is `fix now`.
+- **pick** (event): `work batch start` takes a ready item into a batch, or returns it to `shaped` when it is no longer passing. Forms: picks, picked.
+- **park** (event): a batch sets an item it cannot finish without an answer to `needs-input`. Forms: parks, parked.
+- **publish** (event): `work` puts a batch's branch on GitHub as a pull request. Forms: publishes, published.
+- **triage** (attribute of review finding): what a review asks of its finding: fixed on the branch before the merge, kept as an observation, or dropped. Values: `fix now`, `observation`, `drop`.
+- **defect** (kind): a fault in the behaviour of the repository's code, with its reproduction, found by a review or after a merge.
+- **failing** (condition of test): the test fails when it runs.
+
 ## Relations
 
 | from | word | to | cardinality |
@@ -268,12 +306,27 @@ Tools the skills and agents run:
 | stage | for | node |  |
 | stage | with | result |  |
 | request line | proposed in | request | one |
+| dependency | of | item | one |
+| dependency | on | item | one |
+| request line | of | item |  |
+| question | on | item |  |
+| item | proposes | requirement |  |
+| item | in | batch | one |
+| item | asked by | bounded context |  |
+| task | of | batch | one |
+| pull request | of | batch | one |
+| review finding | on | pull request |  |
+| quote | from | session | one |
+| quote | cites | message |  |
+| design-decision | enforced by | test |  |
 
 ## Where things live
 
-`spec/` (this index, `capabilities/`, `decisions/` with its generated `index.md`), `features/`, `.shop/work/`,
+`spec/` (this index, `capabilities/`, `decisions/` with its generated `index.md`), `features/`, `.shop/backlog/` (the
+items), `.shop/batches/` (the batches), `.shop/requests/` (the requests), `.shop/quotes/` (the person's words kept),
 `.shop/records/` (observations, measurements, review-findings, decision-arguments, archive), `.shop/delivery.toml`
-(`work run`'s settings), `.shop/plugin-version` (the repository's plugin version), `.shop/scratch/` and
-`.shop/worktrees/` (drafts, notes and the implementers' worktrees, ignored by git), `docs/design-model/` (the model),
-`docs/capability-format.md` (the format the plugin teaches consuming repositories), `spec/universal.md` (the universal
-conditions), `spec/restated.json` (the 0.29 ids, frozen), `grammar/` (the plugin's core grammars and their corpus).
+(the batch settings and prices), `.shop/plugin-version` (the repository's plugin version), `.shop/work/` (plugin
+1.x's queue, frozen), `.shop/scratch/` and `.shop/worktrees/` (drafts, notes and the batches' worktrees, ignored by
+git), `docs/design-model/` (the model), `docs/capability-format.md` (the format the plugin teaches consuming
+repositories), `spec/universal.md` (the universal conditions), `spec/restated.json` (the 0.29 ids, frozen), `grammar/`
+(the plugin's core grammars and their corpus).

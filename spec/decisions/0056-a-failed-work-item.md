@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/a-failed-work-item
 summary: "A fault outside a work-item's work moves it to `failed`, checked for before a stage starts; its work stays committed and pushed, and `work retry` returns it."
 date: 2026-10-22
-status: accepted
+status: superseded
 source: [observation/2026-10-21-one-requirement-per-scenario]
 by: "the person, 2026-10-22"
 ---

@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/work-item-lifecycle-as-run
 summary: "work run moves work-items drafted → researched → planned → ready → claimed → done → green, with awaiting-ruling for every question to the person, and runs the suite itself before an item is done; a stopped or refused implementer releases its claim."
 date: 2026-10-19
-status: accepted
+status: superseded
 supersedes: design-decision/suite-record-holds
 source: [initiative/i10]
 by: "docs/design-model/grammar.md v3 section 5"

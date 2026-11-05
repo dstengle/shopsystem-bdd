@@ -3,6 +3,7 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/an-experiment-is-a-
 summary: "One change to the workflow per release, run on a real batch and compared with the batch before."
 date: 2026-10-11
 status: accepted
+tier: judgement
 source: [decision-argument/2026-10-11-measuring-a-batch-design]
 by: "0.12.0"
 ---

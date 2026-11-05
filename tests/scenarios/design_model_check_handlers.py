@@ -79,11 +79,12 @@ def base(repo, context):
         if directory.name != "requests" and not (directory / "initiative.md").is_file() and \
                 not context.get("homeless"):
             write(repo, ".shop/work/%s/initiative.md" % directory.name, initiative_text(directory.name))
-    for path in sorted((work / "requests").glob("q*.md")) if work.is_dir() else ():
+    live = repo / ".shop" / "requests"
+    for path in sorted(live.glob("q*.md")) if live.is_dir() else ():
         text = path.read_text()
         if not re.search(r"^(part_of|source|raised_for): ", text, re.MULTILINE):
             path.write_text(text.replace("\n---\n", "\nsource: [observation/obs-1]\n---\n", 1))
-    if work.is_dir() and not (repo / ".shop" / "records" / "observations.md").is_file():
+    if (work.is_dir() or live.is_dir()) and not (repo / ".shop" / "records" / "observations.md").is_file():
         write(repo, ".shop/records/observations.md", "# Observations\n\n## %s\nabout: bounded-context/%s\nby: someone"
               "\ndate: 2026-10-15\n\nSeen.\n" % (full("observation", "obs-1"), PATH))
 
@@ -137,11 +138,6 @@ def model_decisions(step):
 @handler("WhenRuns", "`model rules`")
 def model_rules(step):
     run_model(step, "rules", *flag(step, "--json"))
-
-
-@handler("WhenRuns", "`model why`")
-def model_why(step):
-    run_model(step, "why", step.context.get("says", {}).get(step.names[0], step.names[0]), *flag(step, "--json"))
 
 
 # What an instance no Given named is printed as, by its kind and number: `model facts` and `model rules` print every
@@ -198,18 +194,3 @@ def given_index(step):
 @handler("GivenK", "feature")
 def given_nothing(step):
     pass
-
-
-@handler("GivenR", "fulfils")
-def fulfils(step):
-    initiative, request = step.names
-    path = step.repo / ".shop" / "work" / initiative / "initiative.md"
-    path.write_text(path.read_text().replace("\n---\n", "\nfulfils: %s\n---\n" % full("request", request), 1))
-
-
-@handler("GivenR", "adds")
-def adds(step):
-    proposal = step.names[0]
-    rel = step.context["nodes"][proposal][1]
-    path = step.repo / rel
-    path.write_text(re.sub(r"^adds: .*$", "adds: [thing#r1]", path.read_text(), flags=re.MULTILINE))

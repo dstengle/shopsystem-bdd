@@ -1,0 +1,192 @@
+"""Plan 9's retirement helper (workflow simplification, D10), kept as a record: run from the repository's root as
+
+    python3 .shop/records/2026-11-04-workflow-simplification/plan-9-retire.py.txt <cap> [r<n> ...]
+
+With no ids it retires every id of spec/capabilities/<cap>.md. For each id it removes the `- [r<n>]` bullet (with its
+continuation lines) from `## Behaviour`, and every group left with no requirement (heading, `Restates:`, prose and
+given block); writes the ids into `retired:`, merged and sorted by number; and covers each 0.29 id of a removed group's
+`Restates:` that no remaining group of any capability restates, under this capability's `## Dropped`:
+    - r<n>@0.29: retired with <cap>#r<m>[, #r<k>] in 2.0.0 (the-old-workflow-retired).
+for an id of this capability, and the same qualified, `- <cap0>#r<n>@0.29: ...`, for an id of another capability
+(one its own `## Dropped` moved here, or one this capability's group restated). When it retires every id it writes the
+retirement notice as Purpose's first paragraph, `- None: retired in plugin 2.0.0.` as Implementation and `- None.` as
+Not yet. It prints what it did, and refuses an id the capability does not have, changing nothing."""
+import re
+import sys
+from pathlib import Path
+
+NOTICE = ("**Retired in plugin 2.0.0** (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired): "
+          "every requirement of this capability is retired, and the file is kept as the record of its ids and of where "
+          "its 0.29 lines went.")
+GROUP = re.compile(r"^### \[g\d+\]")
+BULLET = re.compile(r"^- \[r(\d+)\]")
+TOKEN = re.compile(r"^(?:([a-z0-9]+(?:-[a-z0-9]+)*)#)?r(\d+)@0\.29$")
+DROPPED = re.compile(r"^- (?:([a-z0-9]+(?:-[a-z0-9]+)*)#)?r(\d+)@0\.29: (.*)$")
+CAPS = Path("spec") / "capabilities"
+
+
+def sections(lines):
+    """[(heading or None, [lines])] split on `## ` headings."""
+    out = [(None, [])]
+    for line in lines:
+        if line.startswith("## "):
+            out.append((line, []))
+        else:
+            out[-1][1].append(line)
+    return out
+
+
+def groups(body):
+    """The preamble lines and [[lines]] of each group of a Behaviour body."""
+    pre, found = [], []
+    for line in body:
+        if GROUP.match(line):
+            found.append([line])
+        elif found:
+            found[-1].append(line)
+        else:
+            pre.append(line)
+    return pre, found
+
+
+def bullets(group):
+    """[(id or None, [lines])]: the group's lines cut into requirement bullets (with continuations) and the rest."""
+    out, fenced = [], False
+    for line in group:
+        if line.startswith("```"):
+            fenced = not fenced
+        m = None if fenced else BULLET.match(line)
+        if m:
+            out.append((int(m.group(1)), [line]))
+        elif out and out[-1][0] is not None and line.startswith("  ") and not fenced:
+            out[-1][1].append(line)
+        else:
+            out.append((None, [line]))
+    return out
+
+
+def restates(group, cap):
+    for line in group:
+        if line.startswith("Restates:"):
+            for token in line[len("Restates:"):].strip().rstrip(".").split(","):
+                m = TOKEN.match(token.strip())
+                if m:
+                    yield (m.group(1) or cap, int(m.group(2)))
+
+
+def behaviour_ids(body):
+    return [n for g in groups(body)[1] for n, _ in bullets(g) if n is not None]
+
+
+def restated_elsewhere(skip):
+    """Every 0.29 id a group of a capability other than `skip` restates."""
+    found = set()
+    for path in sorted(CAPS.glob("*.md")):
+        if path.stem == skip:
+            continue
+        for heading, body in sections(path.read_text(encoding="utf-8").split("\n")):
+            if heading == "## Behaviour":
+                for g in groups(body)[1]:
+                    found |= set(restates(g, path.stem))
+    return found
+
+
+def moved_here(cap):
+    """The (cap0, n) of other capabilities whose own `## Dropped` says `moved to <cap>`."""
+    found = set()
+    for path in sorted(CAPS.glob("*.md")):
+        for heading, body in sections(path.read_text(encoding="utf-8").split("\n")):
+            if heading == "## Dropped":
+                for line in body:
+                    m = DROPPED.match(line)
+                    if m and (m.group(1) or path.stem) == path.stem and re.match(r"moved to %s\b" % re.escape(cap), m.group(3)):
+                        found.add((path.stem, int(m.group(2))))
+    return found
+
+
+def main(argv):
+    cap, asked = argv[0], argv[1:]
+    path = CAPS / (cap + ".md")
+    text = path.read_text(encoding="utf-8")
+    head, rest = text.split("\n---\n", 1)
+    parts = sections(rest.split("\n"))
+    index = {h: i for i, (h, _) in enumerate(parts)}
+    have = behaviour_ids(parts[index["## Behaviour"]][1])
+    ids = sorted(have) if not asked else sorted(int(a.lstrip("r")) for a in asked)
+    unknown = [n for n in ids if n not in have]
+    if unknown or (asked and not ids):
+        sys.exit("%s has no %s; nothing changed" % (path, ", ".join("r%d" % n for n in unknown) or "requirement"))
+    pre, found = groups(parts[index["## Behaviour"]][1])
+    kept, removed = [], []  # removed: [(group lines, [ids])]
+    for g in found:
+        cut = bullets(g)
+        left = [(n, ls) for n, ls in cut if n is None or n not in ids]
+        if any(n is not None for n, _ in left):
+            kept.append([line for _, ls in left for line in ls])
+        else:
+            removed.append((g, [n for n, _ in cut if n is not None]))
+    body = pre + [line for g in kept for line in g]
+    while len(body) > 1 and body[-1] == "" and body[-2] == "":
+        body.pop()
+    if body and body[-1] != "":
+        body.append("")
+    parts[index["## Behaviour"]] = ("## Behaviour", body)
+    # The 0.29 ids the removed groups restated, that nothing kept restates.
+    still = restated_elsewhere(cap) | {t for g in kept for t in restates(g, cap)}
+    moved = moved_here(cap)
+    dropped_body = parts[index["## Dropped"]][1] if "## Dropped" in index else []
+    listed = set()
+    for line in dropped_body:
+        m = DROPPED.match(line)
+        if m and not m.group(3).startswith("moved to"):
+            listed.add((m.group(1) or cap, int(m.group(2))))
+    cover = {}
+    for g, rids in removed:
+        for t in restates(g, cap):
+            if t not in still and t not in listed:
+                cover.setdefault(t, []).extend(r for r in rids if r not in cover.get(t, []))
+    own = sorted((t for t in cover if t[0] == cap), key=lambda t: t[1])
+    other = sorted((t for t in cover if t[0] != cap))
+    new = []
+    for t in own + other:
+        rids = sorted(cover[t])
+        by = "%s#r%d" % (cap, rids[0]) + "".join(", #r%d" % r for r in rids[1:])
+        name = "r%d@0.29" % t[1] if t[0] == cap else "%s#r%d@0.29" % t
+        new.append("- %s: retired with %s in 2.0.0 (the-old-workflow-retired)." % (name, by))
+    unmoved = sorted(m for m in moved if m not in cover and m not in still and m not in listed)
+    if unmoved:
+        print("note: moved here and not restated by a removed group: %s" % ", ".join("%s#r%d" % m for m in unmoved))
+    if new:
+        if "## Dropped" not in index:
+            at = index["## Not yet"] + 1 if "## Not yet" in index else len(parts)
+            parts.insert(at, ("## Dropped", []))
+            index = {h: i for i, (h, _) in enumerate(parts)}
+        dropped_body = parts[index["## Dropped"]][1]
+        while dropped_body and dropped_body[-1] == "":
+            dropped_body.pop()
+        dropped_body.extend(new + [""])
+    every = not behaviour_ids(body)
+    if every:
+        purpose = parts[index["## Purpose"]][1]
+        if NOTICE not in purpose:
+            parts[index["## Purpose"]] = ("## Purpose", [NOTICE, ""] + purpose)
+        parts[index["## Implementation, may change"]] = ("## Implementation, may change", ["- None: retired in plugin 2.0.0.", ""])
+        parts[index["## Not yet"]] = ("## Not yet", ["- None.", ""])
+    m = re.search(r"(?m)^retired: \[(.*)\]$", head)
+    old = [int(x.strip().lstrip("r")) for x in m.group(1).split(",") if x.strip()]
+    merged = sorted(set(old) | set(ids))
+    head = head[:m.start()] + "retired: [%s]" % ", ".join("r%d" % n for n in merged) + head[m.end():]
+    lines = []
+    for h, b in parts:
+        if h is not None:
+            lines.append(h)
+        lines.extend(b)
+    out = head + "\n---\n" + "\n".join(lines)
+    out = out.rstrip("\n") + "\n"
+    path.write_text(out, encoding="utf-8")
+    print("%s: retired %s; removed %d group(s); dropped %d 0.29 id(s)%s" % (
+        path, ", ".join("r%d" % n for n in ids), len(removed), len(new), "; every id retired" if every else ""))
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

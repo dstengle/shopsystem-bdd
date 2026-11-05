@@ -218,6 +218,14 @@ def test_universal_without_the_marker_or_the_file(tmp_path):
     assert spec_read.universal(tmp_path / "nowhere") == []
 
 
+def test_a_retired_universal_condition_used_again_is_a_problem(tmp_path):
+    """A U<n> in universal.md's `retired:` is never used again (retire, never edit; plan-9 review S2)."""
+    (tmp_path / "spec").mkdir()
+    write(tmp_path / "spec", UNIVERSAL.replace("language: codified-1\n", "language: codified-1\nretired: [U2, U3]\n"),
+          "universal.md")
+    assert "14: U2 is retired" in spec_read.read_universal(tmp_path).problems
+
+
 def test_restated(tmp_path):
     (tmp_path / "spec").mkdir()
     (tmp_path / "spec" / "restated.json").write_text(json.dumps({"work-queue#r3": {"text": "x", "line": 40}}))

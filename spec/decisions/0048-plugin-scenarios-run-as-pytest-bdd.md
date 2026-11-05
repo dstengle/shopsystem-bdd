@@ -3,6 +3,8 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/plugin-scenarios-ru
 summary: "In this repository a script capability's scenarios run under pytest-bdd: one scenarios() call binds its feature file, its steps are step definitions under tests/scenarios/, and features bindings --unbound fails the suite when a scenario is bound by no test or by two."
 date: 2026-10-19
 status: accepted
+tier: check
+enforced_by: [tests/scripts/test_bound.py::BoundTest::test_every_scenario_has_exactly_one_test]
 source: [observation/2026-10-19-final-state-only]
 by: "the person, 2026-10-19, rejecting design-decision/plugin-scenarios-run-as-unittest"
 ---

@@ -1,35 +1,29 @@
-"""The reading of scripts/model for decisions, records and the work under .shop/work/: a part of Model (model_facts)."""
+"""The reading of scripts/model for decisions and records, and of the frozen `.shop/work/` only the `source` ids its
+initiatives and requests cite (plan 9, D5, D6): a part of Model (model_facts)."""
 
-import datetime
 import re
 from pathlib import Path
 
-from model_parse import as_list, decision_files, expand, frontmatter, scalar
+import model_decisions
+import shop_frozen
+from model_parse import as_list, decision_files, frontmatter, scalar
 
-STATUSES = {     # design model v5's lifecycles (GF conversion design §7.1: C11, C13-C15)
-    "initiative": {"proposed", "started", "done", "abandoned"},
-    "capability-proposal": {"drafted", "awaiting-answer", "approved", "formulated", "withdrawn"},
-    "work-item": {"drafted", "researched", "planned", "ready", "claimed", "done", "green", "awaiting-answer", "failed",
-                  "withdrawn"},
-    "glossary-proposal": {"drafted", "awaiting-answer", "approved", "withdrawn"},   # the glossary's term `status` (r124)
+STATUSES = {     # design model v5's lifecycles of what is still read (GF conversion design §7.1: C13, C14)
     "request": {"open", "awaiting-asker", "awaiting-upstream", "accepted", "refused", "delivered", "withdrawn"},
     "design-decision": {"proposed", "accepted", "rejected", "superseded"},
 }
-LEGACY = {"capability-proposal": {"merged"}}     # 0.29's, kept readable only under a done or abandoned initiative (C11)
-CLOSED_INITIATIVE = {"done", "abandoned"}
-SETTLED = {"merged", "formulated", "withdrawn"}     # a capability-proposal that may name a retired id (r5, r23)
-PART_KINDS = {"job-proposal", "map-proposal", "vision-proposal", "capability-proposal", "map-escalation", "work-item",
-              "glossary-proposal"}     # a job-thread is a root (C23); cross-context-request is gone (C22)
+# The kinds of plugin 1.x's queue, frozen under .shop/work/ (plan 9, D5): a reference to one is history, never resolved.
+FROZEN_KINDS = {"initiative", "work-item", "capability-proposal", "glossary-proposal", "job-proposal", "map-proposal",
+                "vision-proposal", "map-escalation"}
 RECORD_KINDS = {"observation", "measurement", "review-finding", "decision-argument", "initiative-archive",
                 "design", "analysis"}     # design and analysis are history (C21)
 HISTORY = {"design": "record", "analysis": "record"}     # their ids are record/<path>/<name>
-GROUP_REF = re.compile(r"^(?P<cap>[\w.-]+(?:/[\w.-]+)*)#g(?P<n>\d+)$")
 WORK = Path(".shop") / "work"
 RECORDS = Path(".shop") / "records"
 
 
 class WorkReading:
-    """Model's reading of spec/decisions/, .shop/records/ and .shop/work/."""
+    """Model's reading of spec/decisions/, .shop/records/ and the frozen .shop/work/'s citations."""
 
     def read_decisions(self):
         for path in decision_files(self.root):
@@ -55,6 +49,19 @@ class WorkReading:
                 self.want(self.qualify(s), None, self.rel(path))
             if data.get("revisit_signal"):
                 self.fact("revisit_signal", d, self.qualify(data["revisit_signal"]))   # "requests" stays as written
+            self.read_tier(d, data, self.rel(path))
+
+    def read_tier(self, d, data, where):
+        """tier/2, enforced_test/2 and enforced_req/2 (decision-tiers D2); an entry of the wrong form is a file problem."""
+        tier, (tests, reqs) = data.get("tier"), model_decisions.split(as_list(data.get("enforced_by")))
+        self.problems += [f"{where}: {p}" for p in model_decisions.wrong(self.root, tier, tests, reqs)]
+        if tier in model_decisions.TIERS:
+            self.fact("tier", d, tier)
+        for t in tests:
+            self.fact("enforced_test", d, t)
+        for q in filter(None, (self.resolve_req(ref, where) for ref in reqs)):
+            self.fact("enforced_req", d, q)
+            self.want(q, "requirement", where)
 
     def read_records(self):
         obs = self.root / RECORDS / "observations.md"
@@ -89,178 +96,18 @@ class WorkReading:
                 self.fact("about", data["id"], a)
                 self.want(a, None, self.rel(path))
 
-    def check_work_item_name(self, path, where, held, ident):
-        """r110: a work-item's id is the w<n> of its file name, and no two work-items hold one."""
-        if not re.fullmatch(r"w\d+", path.stem) or str(ident).rsplit("/", 1)[-1] != path.stem:
-            self.problems.append(f"{where}: a work-item's file is named w<n>.md, the w<n> of its id")
-        elif ident in held:
-            self.problems.append(f"{where}: the work-item id {path.stem} is already held by {held[ident]}")
-        else:
-            held[ident] = where
-
-    def judge_glossary_refs(self):
-        """r122: a glossary-proposal's term the glossary lacks is unresolved, unless an approved glossary-proposal removes it."""
-        for where, rel, t in self.glossary_refs:
-            if self.nodes.get(t) != "term" and t not in self.glossary_removed:
-                self.dangling.append(f"{where}: {rel} {t}, which the glossary does not have")
-
     def read_work(self):
-        self.glossary_refs, self.glossary_removed = [], set()
-        self.read_initiatives()
-        self.judge_glossary_refs()
-
-    def read_initiatives(self):
-        held = {}
-        for idir in sorted(p for p in (self.root / WORK).glob("*") if p.is_dir() and p.name != "requests"):
-            ipath = idir / "initiative.md"
-            if not ipath.exists():
-                self.problems.append(f"{self.rel(idir)}: no initiative.md")
-                continue
-            data, _ = frontmatter(ipath.read_text())
-            i = data.get("id")
-            if not i:
-                self.problems.append(f"{self.rel(ipath)}: no frontmatter id")
-                continue
-            self.check_id(i, "initiative", self.rel(ipath))
-            self.node(i, "initiative")
-            self.closed_initiative = data.get("status") in CLOSED_INITIATIVE
-            self.status(i, "initiative", data.get("status"), ipath)
-            if data.get("kind"):
-                self.fact("ikind", i, data["kind"])
-                if data["kind"] in ("job", "job-path"):
-                    self.problems.append(f"{self.rel(ipath)}: kind {data['kind']!r} is not a kind an initiative may have")
-            if data.get("priority") is not None:
-                try:
-                    self.fact("priority", i, int(data["priority"]))
-                except ValueError:
-                    self.problems.append(f"{self.rel(ipath)}: priority {data['priority']!r} is not a number")
-            self.sources[i] = [self.qualify(s) for s in as_list(data.get("source"))]
-            for s in self.sources[i]:
-                self.fact("source", i, s)
-                self.want(s, None, self.rel(ipath))
-            if data.get("fulfils"):
-                self.fact("fulfils", i, self.qualify(data["fulfils"], "request"))
-            if data.get("date"):
-                try:
-                    days = (self.today - datetime.date.fromisoformat(str(data["date"]))).days
-                    self.fact("age", i, days)
-                    self.fact("date", i, str(data["date"]))
-                except ValueError:
-                    self.problems.append(f"{self.rel(ipath)}: date {data['date']!r} is not YYYY-MM-DD")
-            for ppath in sorted(idir.glob("*.md")):
-                if ppath.name not in ("initiative.md", "ledger.md"):
-                    self.read_part(ppath, held)
-
-    def read_part(self, path, held):
-        data, _ = frontmatter(path.read_text())
-        p, kind = data.get("id"), data.get("kind")
-        where = self.rel(path)
-        if not p or kind not in PART_KINDS:
-            self.problems.append(f"{where}: needs an id and a kind among {', '.join(sorted(PART_KINDS))}")
-            return
-        self.check_id(p, kind, where)
-        self.node(p, kind)
-        self.status(p, kind, data.get("status"), path)
-        self.unread(data, path)
-        if data.get("part_of"):
-            parent = self.qualify(data["part_of"])
-            self.fact("part_of", p, parent)
-            self.parents[p] = parent
-            self.want(parent, None, where)
-        for a in as_list(data.get("argues")):
-            a = self.qualify(a, "capability")
-            self.fact("argues", p, a)
-            self.want(a, None, where)
-        if kind == "capability-proposal":
-            self.proposals[p] = data
-            for rel in ("adds", "changes", "removes"):
-                for ref in expand(as_list(data.get(rel))):
-                    if str(ref).strip().startswith("term/"):     # a glossary term, not a requirement (r66)
-                        head, _, name = str(ref).strip().rpartition("/")
-                        t = self.qualify(f"{head}/{name.lower()}")      # r48: a term's id is lowercased
-                        if self.nodes.get(t) != "term" and not (rel == "removes" and data.get("status") in ("merged", "formulated")):
-                            self.dangling.append(f"{where}: {rel} {t}, which the glossary does not have")
-                        continue
-                    q = self.resolve_req(ref, where)
-                    if not q:
-                        continue
-                    self.fact(rel, p, q)
-                    if q.endswith("@0.29") or q in self.nodes:      # a 0.29 id is history (§13.4)
-                        continue
-                    cap, n = q.rsplit("#r", 1)
-                    if (cap, int(n)) in self.retired and data.get("status") in SETTLED:
-                        continue                                # a merged, formulated or withdrawn proposal may name it (r5, r23)
-                    if rel == "adds" and (cap, int(n)) in self.retired:
-                        self.fact("req_id", q, cap, int(n))   # grammar.md's refusal table: v15c
-                    elif rel != "changes":                     # changes: v15e reports it
-                        self.dangling.append(f"{where}: {rel} {q}, which no capability has")
-        if kind == "glossary-proposal":
-            for rel in ("adds", "changes", "removes"):
-                for ref in expand(as_list(data.get(rel))):
-                    if str(ref).strip().startswith("term/"):
-                        head, _, name = str(ref).strip().rpartition("/")
-                        t = self.qualify(f"{head}/{name.lower()}")
-                        self.glossary_refs.append((where, rel, t))
-                        if rel == "removes" and data.get("status") == "approved":
-                            self.glossary_removed.add(t)
-        if kind == "work-item":
-            self.check_work_item_name(path, where, held, p)
-            if data.get("wkind"):
-                self.fact("wkind", p, data["wkind"])
-            if data.get("under"):
-                c = self.qualify(data["under"], "capability")
-                self.fact("under", p, c)
-                self.want(c, "capability", where)
-            if data.get("for"):
-                f = self.qualify(data["for"])
-                self.fact("for", p, f)
-                self.want(f, "work-item", where)
-            if data.get("check"):
-                self.fact("check", p, data["check"])
-            for ref in expand(as_list(data.get("accepts"))):
-                self.read_accepts(p, ref, data.get("status"), where)
-            for b in as_list(data.get("blocked_by")):
-                b = self.qualify(b)
-                self.fact("blocked_by", p, b)
-                self.want(b, "work-item", where)
-            for d in as_list(data.get("depends_on")):
-                d = self.qualify(d, "capability")
-                self.fact("wi_depends", p, d)
-                self.want(d, "capability", where)
-            for f in as_list(data.get("fileset")):
-                self.fact("fileset", p, f)
-
-    def read_accepts(self, w, ref, status, where):
-        """accepts(W, X), X a requirement or a group (C17), from the field whether or not a scenario names it (r106);
-        a file problem when no scenario tests it yet, unless W is withdrawn (r27, r36)."""
-        m = GROUP_REF.match(str(ref).strip())
-        if m:
-            x = f"{self.qualify(m.group('cap'), 'capability')}#g{m.group('n')}"
-            if self.nodes.get(x) != "requirement-group":
-                self.dangling.append(f"{where}: accepts {x}, which no capability has")
-                return
-        else:
-            x = self.resolve_req(ref, where)
-            if not x:
-                return
-        self.fact("accepts", w, x)
-        facts = {(name, tuple(args)) for name, args in self.facts}
-        groups = [a[1] for name, a in facts if name == "member_of" and a[0] == x] + ([x] if m else [])
-        tested = {a[0] for name, a in facts if name in ("generates", "logic_only")}
-        cap = x.rpartition("#")[0]
-        found = [a for name, a in facts if name == "has_sc" and a[0] == x] or [g for g in groups if g in tested]
-        exempt = (("group", (cap, "guarantees")) in facts
-                  or (not m and status == "green" and (cap, int(x.rpartition("#r")[2])) in self.retired))
-        if not found and status != "withdrawn" and not exempt:
-            self.problems.append(f"{where}: accepts {x}, which no scenario names yet")
+        """cited(O) for each id a frozen initiative or request names in its `source` (D6): no node, part or reference
+        of the frozen queue is read."""
+        for ident in sorted(shop_frozen.sources(self.root)):
+            head, _, rest = ident.partition("/")
+            self.fact("cited", f"{head}/{self.path}/{rest}" if self.path and "/" not in rest else ident)
 
     def status(self, ident, kind, value, path):
         if value is None:
             self.problems.append(f"{self.rel(path)}: no status")
             return
         allowed = STATUSES.get(kind)
-        if value in LEGACY.get(kind, ()) and getattr(self, "closed_initiative", False):
-            allowed = None
         if allowed and value not in allowed:
             self.problems.append(f"{self.rel(path)}: status {value!r} is not one of {', '.join(sorted(allowed))}")
         self.fact("status", ident, value)

@@ -36,7 +36,13 @@ class Refused(Exception):
 def interpreter(args):
     if args.python:
         return args.python, "--python"
-    candidates = [".venv/bin/python", "venv/bin/python"]
+    return project_python(".")
+
+
+def project_python(root):
+    """(interpreter, how found): the project's virtualenv under `root` (`.venv`, `venv`, then `$VIRTUAL_ENV`), else the
+    interpreter running this script."""
+    candidates = [os.path.join(root, ".venv/bin/python"), os.path.join(root, "venv/bin/python")]
     if os.environ.get("VIRTUAL_ENV"):
         candidates.append(os.path.join(os.environ["VIRTUAL_ENV"], "bin", "python"))
     for path in candidates:

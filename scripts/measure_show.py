@@ -3,7 +3,7 @@ totals side by side with the ratio of the second to the first. Standard library 
 import json
 from pathlib import Path
 
-from measure_read import Refused
+from transcripts import Refused
 
 TOTALS = (("stages", "stages"), ("sessions", "sessions"), ("output tokens", "output_tokens"),
           ("new input tokens", "new_input_tokens"), ("cache-read tokens", "cache_read_tokens"), ("cost", "cost"),
@@ -55,7 +55,10 @@ def section(title, head, found):
 
 
 def show(path):
+    import measure_batch_show
     figures = figures_of(path)
+    if measure_batch_show.is_batch(figures):
+        return measure_batch_show.show(figures)
     totals = figures.get("totals", {})
     stages = figures.get("stages", [])
     head = STAGES
@@ -93,7 +96,14 @@ def ratio(first, second):
 
 
 def compare(first, second):
+    import measure_batch_show
     given = figures_of(first), figures_of(second)
+    kinds = [measure_batch_show.is_batch(g) for g in given]
+    if all(kinds):
+        return measure_batch_show.compare(given[0]["batch"], given[0], given[1]["batch"], given[1])
+    if any(kinds):
+        one, other = (first, second) if kinds[0] else (second, first)
+        raise Refused("%s is a batch's measurement and %s is not" % (one, other))
     one, two = given[0].get("totals", {}), given[1].get("totals", {})
     rows = []
     for name, key in totals_of(one, two):

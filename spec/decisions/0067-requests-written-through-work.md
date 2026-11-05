@@ -3,6 +3,7 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/requests-written-th
 summary: "Each side writes its part of a request only through `work`, each part by its own command, the asker its lines and answers and the upstream each line outcome, its questions and the resolution, never by editing what the request is kept in; `work turn` only passes the turn, and how `work` keeps a request is its own and may change."
 date: 2026-10-23
 status: accepted
+tier: judgement
 revisit_when: the person gives the detail of turns they reserved at the Approval of 2026-10-23
 source: [observation/2026-10-23-open-initiatives-closed, observation/2026-10-21-session-keeps-the-gate]
 by: "the person, 2026-10-23, approving the design note 2026-10-23-requests-and-the-context-loop-design (its Approval: \"The request is written through a tool\"); the coordinator, 2026-10-24, under the person's delegation (\"Please get everying delivered. Do not stop to ask me questions or permission.\"), answering gate B round 1 on how a turn is sealed"

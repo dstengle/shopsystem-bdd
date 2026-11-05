@@ -6,6 +6,10 @@
           {
             "type": "command",
             "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/migrate\" status --hook"
+          },
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/conversation_hook\" names"
           }
         ]
       }
@@ -15,17 +19,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/migrate\" prompting"
-          }
-        ]
-      }
-    ],
-    "PreCompact": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/migrate\" compacting"
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/conversation_hook\" quote"
           }
         ]
       }

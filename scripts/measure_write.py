@@ -1,11 +1,11 @@
-"""measure's record: one measurement as a record of kind `measurement`, its figures one JSON block in its body.
-Standard library only."""
+"""measure's record: one measurement as a record of kind `measurement`, its figures one JSON block in its body, a
+batch's with its summary before it. Standard library only."""
 import datetime
 import json
 from pathlib import Path
 
-import workqueue
-from measure_read import Refused
+import shop_files
+from transcripts import Refused
 
 DIRECTORY = Path(".shop") / "records" / "measurements"
 
@@ -14,26 +14,27 @@ def today():
     return datetime.date.today().isoformat()
 
 
-def path_of(root, initiative, date):
-    return Path(root) / DIRECTORY / ("%s-%s.md" % (date, initiative))
+def path_of(root, name, date):
+    return Path(root) / DIRECTORY / ("%s-%s.md" % (date, name))
 
 
-def check_unwritten(root, initiative, date, replace):
+def check_unwritten(root, name, date, replace):
     """The path of the measurement; refused when it exists and `replace` is not given."""
-    path = path_of(root, initiative, date)
+    path = path_of(root, name, date)
     if path.exists() and not replace:
         raise Refused("the measurement %s exists; --replace writes over it" % path.relative_to(root))
     return path
 
 
-def text_of(root, initiative, date, figures):
+def text_of(root, name, date, figures, summary=""):
     try:
-        context = workqueue.context_path(root)
-    except workqueue.Refused as why:
+        context = shop_files.context_path(root)
+    except shop_files.Refused as why:
         raise Refused(str(why)) from None
     head = ("---\nid: measurement/%s/%s-%s\nkind: measurement\nabout: bounded-context/%s\ndate: %s\n---\n\n"
-            % (context, date, initiative, context, date))
-    return "%s# Measurement of %s\n\n```json\n%s\n```\n" % (head, initiative, json.dumps(figures, indent=2))
+            % (context, date, name, context, date))
+    tables = "## Summary\n\n%s\n" % summary if summary else ""
+    return "%s# Measurement of %s\n\n%s```json\n%s\n```\n" % (head, name, tables, json.dumps(figures, indent=2))
 
 
 def write(path, text):

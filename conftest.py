@@ -1,5 +1,5 @@
-"""`--work-item <name>`: run only the scenarios tagged with a requirement the work-item accepts. The option is the
-plugin's own pytest plugin, scripts/work_items.py, the one `work run` loads in a repository it delivers.
+"""The plugin's own pytest plugin, scripts/work_items.py, is loaded here as a batch's tests load it: a scenario of an
+`unbuilt:` requirement is a strict xfail.
 
 The ceiling (design-r3 §7): each test whose setup, call and teardown together take longer than
 `$SHOPSYSTEM_TEST_CEILING` seconds (10 by default) is listed at the end of the run, slowest first. Under xdist the
@@ -18,6 +18,20 @@ if SCRIPTS not in sys.path:
 
 pytest_plugins = ["work_items"]
 _durations = {}
+
+
+def _quiet_git():
+    """No background maintenance in the suite's repositories (plan 5 review, S6): every git a test runs, `work`'s
+    included, inherits `maintenance.auto=false` and `gc.auto=0`, added after any `GIT_CONFIG_*` already set."""
+    count = int(os.environ.get("GIT_CONFIG_COUNT", "0") or 0)
+    for key, value in (("maintenance.auto", "false"), ("gc.auto", "0")):
+        os.environ["GIT_CONFIG_KEY_%d" % count], os.environ["GIT_CONFIG_VALUE_%d" % count] = key, value
+        count += 1
+    os.environ["GIT_CONFIG_COUNT"] = str(count)
+
+
+if "maintenance.auto" not in {v for k, v in os.environ.items() if k.startswith("GIT_CONFIG_KEY_")}:
+    _quiet_git()
 
 
 def _ceiling():

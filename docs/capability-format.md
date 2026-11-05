@@ -32,7 +32,10 @@ spec/
 features/
   identity.feature      generated, one per service capability, same name
 .shop/                  how the context is changed and what was noticed
-  work/  records/       initiatives and their parts; observations, measurements, review findings, archive
+  backlog/  batches/    the items, and the batches that build them
+  requests/  quotes/    requests between contexts; the person's words kept
+  records/              observations, measurements, review findings, archive
+  work/                 plugin 1.x's queue of initiatives and work-items, frozen as history
   scratch/              drafts and notes of a session; git-ignored, never read as the model
 ```
 
@@ -49,35 +52,35 @@ refused, naming `migrate upgrade`.
 
 ```markdown
 ---
-id: capability/missingmass.io/shopsystem/shopsystem-bdd/work-queue
-title: Work queue
-narrator: the person
+id: capability/missingmass.io/shopsystem/shopsystem-bdd/backlog
+title: Backlog
+narrator: a person or session keeping the backlog
 group: service
 language: codified-1
-rests_on: [design-decision/work-file-forms]
+rests_on: [design-decision/the-workflow-simplified]
 retired: []
 ---
 
-# Work queue
+# Backlog
 
 ## Purpose
 One paragraph: what this is, and what it isn't.
 
 ## Terms
-- **ledger** (kind): the tracked file `.shop/work/<initiative>/ledger.md` of one initiative.
+- **title** (kind): the name of an item that the person reads beside its id.
 
 ## Relations
 
 | from | word | to |
 |---|---|---|
-| ledger | of | initiative |
+| title | of | item |
 
 ## Behaviour
 
-### [g1] `work start` starts a proposed initiative
+### [g2] `work shape` shapes an idea
 Restates: r3@0.29, r4@0.29.
-- [r1] When the person runs `work start` on an initiative that is `proposed`, `work` shall set the status of the
-  initiative to `started` and print the initiative.
+- [r2] When the person runs `work shape` on an item that is `idea`, `work` shall set the status of the item to
+  `shaped` and print the item.
 
 ## Implementation, may change
 Mechanism. Non-binding. Nothing here gets a scenario.
@@ -124,16 +127,16 @@ A refusal is unwanted behaviour. Behaviour that lasts for a period is state-driv
 option or configuration is optional. Only what is true with no trigger at all is ubiquitous.
 
 **One statement for each trigger and condition.** Everything that happens under one Where, While and When/If is
-one statement: its verb phrases are joined by `and` (`work run` shall set the status of the work-item to
-`awaiting-answer` and ask a question on the work-item), and responses whose subjects differ by `, and` (`R1, and
+one statement: its verb phrases are joined by `and` (`work` shall set the status of the item to `shaped`
+and print the item), and responses whose subjects differ by `, and` (`R1, and
 R2`). Each verb phrase is its own Then in the scenario and its own conjunct in the logic, under the one requirement
 id. A list response ("shall print the id and the title") is one verb phrase with a coordinated object. A condition
 may join its clauses by `and` or by `or`.
 
 **Only lexicon words.** Every word of a requirement is a glossary word, a grammar word (the forms, `shall`, the
-articles, `and`, `or`, `not`, `every`, `at most`), a backticked code (`` `work start` ``, `` `.shop/work/` ``), a
-double-quoted string or a number. A value goes only in its own attribute's slot: "an initiative that is
-`drafted`" does not parse, because `drafted` is a value of a work-item's status. Where a word is missing, the line
+articles, `and`, `or`, `not`, `every`, `at most`), a backticked code (`` `work shape` ``, `` `.shop/backlog/` ``), a
+double-quoted string or a number. A value goes only in its own attribute's slot: "an item that is
+`building`" does not parse, because `building` is a value of a batch's status. Where a word is missing, the line
 asks for a glossary entry; a synonym never stands in for it.
 
 **Check while writing.** `model parse "<line>"` (or `--file <lines>`) prints the tree, or the refusal with the
@@ -144,8 +147,8 @@ by category. A request's lines are checked the same way by `work request`.
 
 - A refusal changes nothing, a transition is committed and pushed, `--json` prints one object: these are
   universal conditions (`spec/universal.md`), checked on every trace and never restated in a requirement.
-- Exclusivity is never "one at a time, except …": a stage's need for a resource is a requirement (`When
-  `work run` starts an integrate round, the round shall hold the spec lock.`) and U2 does the rest.
+- Exclusivity is never "one at a time, except …": a resource of the glossary is `exclusive` or `counted by`
+  its number, and what holds it is a requirement.
 - Exits are in words (`shall exit successfully`, `shall exit with an error naming …`), never a code
   (design-decision/exits-are-successful-or-errors).
 
@@ -194,8 +197,8 @@ logic-only, checked by `model logic` alone.
   frontmatter's `retired: [r<n>, g<n>, ...]` and the new statement takes a new id. A group's title and membership
   may change; its id stays.
 - A requirement is named `capability/<context path>/<name>#r<n>`, `capability/<name>#r<n>` or `<name>#r<n>`
-  inside its own context; a group `…#g<n>`. A work-item's `accepts` may name either (a group means its members),
-  and a scenario is tagged with its group and each member (`@g3 @r7 @r8`).
+  inside its own context; a group `…#g<n>`. An item's `## Requirements` writes the lines it adds into a
+  capability, and a scenario is tagged with its group and each member (`@g3 @r7 @r8`).
 - A reference written before the conversion names a 0.29 id; it reads `<capability>#r<n>@0.29` and is resolved
   through `spec/restated.json`, never against the live spec.
 
@@ -209,7 +212,8 @@ the context name (`missingmass.io/shopsystem/shop-kb`). The bounded context is `
 ## The glossary is the lexicon
 
 A context's terms are its words. The glossary is the union of `spec/index.md`'s `## Glossary` and each
-capability's `## Terms`, in one entry form, each entry with a **category** — the grammar slot the word fills:
+capability's `## Terms`, in one entry form, each entry with a **category** — the grammar slot the word fills.
+The example below is from plugin 1.x's vocabulary, kept as an illustration of every category:
 
 ```markdown
 - **node** (kind): a root or a part of the work queue.
@@ -239,9 +243,9 @@ A relation is no term entry: it is a row of `## Relations` (below).
 - **One sentence for each entry** (v_t7). The gloss is the text after the entry's `:` and before its first field.
   Code spans, quoted strings, `e.g.`, `i.e.`, `etc.` and `vs.` are not counted; a sentence ends at `.`, `!` or `?`
   before a space or the end, and at `;`; a `:` does not end one. The gloss says what the word picks out, never what
-  the thing contains or does: "**worker brief** (kind): the brief `work run` gives a worker." What a brief, a list
-  or a log holds, and what happens to it, are requirements of the capability ("When `work run` starts a stage for
-  a work-item, `work run` shall give the stage a worker brief that names the work-item.").
+  the thing contains or does: "**title** (kind): the name of an item that the person reads beside its id." What an
+  item, a list or a log holds, and what happens to it, are requirements of the capability ("When the person runs
+  `work idea`, `work` shall write an item that is `idea` and commit the item.").
 - The fields are data, not sentences: `Values:` and `Transitions:` (an attribute), `Forms:` and `Plural:` (only
   where English is irregular), `Not:` (avoided words) and `Kind of:` (a kind's supertype). There is no other field.
 - The category is required (v_t4). An attribute or condition names its kind: `of <kind>`.
@@ -268,9 +272,9 @@ A relation is no term entry: it is a row of `## Relations` (below).
 A condition is defined when every word of its sentence is a lexicon word and the sentence parses; otherwise it is
 primitive. There is no prose `Means` field (v_t9).
 
-A term is standing, approved at the gate like a requirement. Its id is `term/<context path>/<term>`, lowercased
-with spaces as hyphens. A term change rides with the proposal that needs it: a glossary-proposal lists it in
-`adds`, `changes` or `removes`, and adds to `spec/index.md` unless it names a capability.
+A term is standing, approved like a requirement. Its id is `term/<context path>/<term>`, lowercased with spaces as
+hyphens. A term change rides with the item that needs it, as a term bullet of its `## Requirements` (`work line
+<item> --into <cap> --term`), and adds to `spec/index.md` unless it names a capability.
 
 The grammar itself — the EARS forms, the verb phrases, the typed slots — is the plugin's (`grammar/`), and grows
 only in the plugin. A context grows its language by glossary entries and relation rows only.
@@ -344,7 +348,7 @@ no step words gets no scenario: `features generate` names the group and the reas
 `model check`'s row for a group with no scenario (v_s3) is its error. `features generate` exits 1 on a requirement
 that does not parse or an example-data line the step grammar refuses.
 
-A scenario that looks wrong is a wrong requirement (back to the spec, at the gate) or a defect of the plugin's
+A scenario that looks wrong is a wrong requirement (back to the spec, in an item) or a defect of the plugin's
 grammar or generator (a request to the plugin) — never an edit to the feature file. Step definitions are
 handlers, one per (template, term), under `tests/scenarios/<capability>_handlers*.py`.
 
@@ -352,11 +356,11 @@ handlers, one per (template, term), under `tests/scenarios/<capability>_handlers
 
 Lessons from 0.22.0's blind formulation that still apply when the grammar refuses what is ambiguous:
 
-1. **Behaviour reaches code only through a requirement.** A fix work-item that adds behaviour writes its
-   requirement first, at the gate; a review grades code no requirement asks for Important.
+1. **Behaviour reaches code only through a requirement.** A fix item that adds behaviour writes its requirement
+   first, readied before its batch; a review grades code no requirement asks for Important.
 2. **Requirements that touch one thing say which wins, and a requirement names its reach.** Two triggers that can
    both be true at one step and set different values are a contradiction `model logic` reports (L1); name the
-   reach ("every pytest command `work run` starts") rather than leave it to be inferred.
+   reach ("every pytest command `work batch done` runs") rather than leave it to be inferred.
 3. **Anything with states is written as a lifecycle:** each way into and out of each state is a row of its
    attribute's `Transitions:`, and a requirement names the row rather than restating it. `model logic` reports a
    status set by no row (L3) and a pre-state no path reaches (L4).

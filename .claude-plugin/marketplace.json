@@ -5,7 +5,7 @@
     {
       "name": "shopsystem-bdd",
       "source": "./",
-      "description": "BDD workflow for the shopsystem harness: keep one spec of capability files, formulate one Gherkin feature per capability, deliver an initiative's work-items with work run, implement red-green, and migrate existing repositories."
+      "description": "BDD workflow for the shopsystem harness: keep one spec of capability files, write requirements in a controlled language (GF), logic-check them, generate one Gherkin feature per capability, keep a backlog of items, build ready items in batches closed by one reviewed pull request, measure each batch, and upgrade repositories between releases."
     }
   ]
 }

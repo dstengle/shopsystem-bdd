@@ -3,6 +3,8 @@ id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/retired-ids-in-capa
 summary: "A capability's retired requirement ids are listed in its frontmatter as retired: [r<n>, ...]."
 date: 2026-10-15
 status: accepted
+tier: requirement
+enforced_by: [design-model-check#r4]
 by: "docs/design-model/design-model.md v3 section 2 ('retired ids kept in the capability's ledger')"
 ---
 

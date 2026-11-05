@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/scripts-stdlib-only
 summary: "The plugin's scripts are plain Python 3 on the standard library; --help is each one's contract."
 date: 2026-10-07
-status: accepted
+status: superseded
 revisit_when: "a script needs an engine the standard library lacks"
 revisit_signal: requests
 by: "0.10.0 (72d33af); README, Scripts"

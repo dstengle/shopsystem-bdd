@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/plans-carry-intent-not-code
 summary: "A plan says which scenarios go green, why they are red today and what was decided; it contains no code, file contents or diffs."
 date: 2026-09-27
-status: accepted
+status: superseded
 source: [decision-argument/2026-09-22-bdd-workflow-design]
 by: "0.6.0 (0b18857)"
 ---

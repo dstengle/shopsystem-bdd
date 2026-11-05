@@ -1,5 +1,4 @@
-"""Unit tests of `model restates` (scripts/model_restates) and of `model why` following `restates` (the GF
-conversion's design §8.3, §15). The fixture builders are test_model_spec's."""
+"""Unit tests of `model restates` (scripts/model_restates) (the GF conversion's design §8.3, §15). The fixture builders are test_model_spec's."""
 
 import json
 import subprocess
@@ -62,6 +61,26 @@ class RestatesTest(CodifiedTest):
                                                                      f"- [r1] {OTHER}"]))
         self.assertEqual(self.run_model("restates", "wq").returncode, 0)
 
+    def test_a_moved_id_retired_in_its_target_is_dropped(self):
+        self.write("spec/capabilities/wq.md", codified("wq", self.group("r1@0.29, r2@0.29, r3@0.29"),
+                                                       dropped=["- r4@0.29: moved to other."]))
+        why = "retired with other#r3 in 2.0.0 (the-old-workflow-retired)."
+        self.write("spec/capabilities/other.md", codified("other", ["### [g1] Abandon", "Restates: other#r1@0.29.",
+                                                                     f"- [r1] {OTHER}"], dropped=[f"- wq#r4@0.29: {why}"]))
+        r = self.run_model("restates", "--json")
+        rows = {row["id"]: row for row in json.loads(r.stdout)["ids"]}
+        self.assertEqual((rows["wq#r4"]["state"], rows["wq#r4"]["reason"]), ("dropped", why))
+        self.assertEqual(r.returncode, 0, r.stdout)
+
+    def test_a_moved_id_restated_by_its_target_is_still_restated(self):
+        self.write("spec/capabilities/wq.md", codified("wq", self.group("r1@0.29, r2@0.29, r3@0.29"),
+                                                       dropped=["- r4@0.29: moved to other."]))
+        self.write("spec/capabilities/other.md", codified("other", ["### [g1] Abandon",
+                                                                     "Restates: other#r1@0.29, wq#r4@0.29.",
+                                                                     f"- [r1] {OTHER}"]))
+        rows = {row["id"]: row for row in json.loads(self.run_model("restates", "--json").stdout)["ids"]}
+        self.assertEqual(rows["wq#r4"]["state"], "restated")
+
     def test_json_and_every_capability(self):
         self.write("spec/capabilities/wq.md", codified("wq", self.group("r1@0.29"), dropped=["- r3@0.29: gone."]))
         r = self.run_model("restates", "--json")
@@ -70,20 +89,6 @@ class RestatesTest(CodifiedTest):
         missing = sorted(row["id"] for row in found["ids"] if row["state"] == "missing")
         self.assertEqual(missing, ["other#r1", "wq#r2", "wq#r4"])
         self.assertEqual([row["by"] for row in found["ids"] if row["id"] == "wq#r1"], [[f"{WQ}#g1"]])
-
-    def test_why_follows_restates_to_the_0_29_text(self):
-        self.write("spec/capabilities/wq.md", codified("wq", self.group("r3@0.29")))
-        r = self.run_model("why", "wq#r1")
-        self.assertEqual(r.returncode, 0, r.stderr)
-        self.assertIn(START, r.stdout)
-        self.assertIn(f"{WQ}#g1", r.stdout)
-        self.assertIn("wq#r3@0.29: old 3", r.stdout)
-        old = self.run_model("why", "wq#r3@0.29")
-        self.assertEqual(old.returncode, 0, old.stderr)
-        self.assertIn("old 3", old.stdout)
-        self.assertIn(f"restated by {WQ}#g1", old.stdout)
-        data = json.loads(self.run_model("why", "--json", "wq#r1").stdout)
-        self.assertEqual(data["restates"], [{"id": "wq#r3@0.29", "text": "old 3"}])
 
 
 class LiveRestatesTest(unittest.TestCase):

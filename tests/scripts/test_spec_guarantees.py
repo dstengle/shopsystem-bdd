@@ -1,7 +1,8 @@
-"""The 11 guarantees capabilities, converted (the GF conversion's design §16, plan P9): each file is codified, every
+"""The guarantees capabilities, converted (the GF conversion's design §16, plan P9): each file is codified, every
 statement parses to exactly one tree in the live `Req` grammar, `model logic` finds no error in it (the one live run,
 `live_logic`, less its known findings), `model
-restates` finds every 0.29 id restated, dropped or moved, and none of them has a feature file."""
+restates` finds every 0.29 id restated, dropped or moved, and none of them has a feature file. Of the 11 converted,
+only `trials` is left; the others are retired in 2.0.0 (test_spec_retired)."""
 import pathlib
 import sys
 
@@ -18,8 +19,7 @@ import toolchain
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
 RECORDS = REPO / ".shop" / "records" / "2026-11-03-gf-conversion"
-GUARANTEES = ("code-research", "delivery", "formulation", "planning", "red-green", "review", "role-boundaries",
-              "spec-consistency", "spec-integration", "spec-migration", "trials")
+GUARANTEES = ("trials",)
 
 
 def path(cap):
@@ -37,7 +37,7 @@ def test_the_capability_is_codified_and_well_formed(cap):
     assert spec_read.codified(path(cap)), f"{cap} has no `language: codified-1`"
     doc = spec_read.capability(path(cap))
     assert doc.problems == []
-    assert doc.groups or cap == "formulation", f"{cap} has no group"
+    assert doc.groups, f"{cap} has no group"
     assert doc.frontmatter.get("group") == "guarantees"
 
 
@@ -72,30 +72,6 @@ def test_a_guarantees_capability_has_no_feature(cap):
     assert not (REPO / "features" / f"{cap}.feature").exists()
 
 
-def test_formulation_keeps_no_line_of_its_own():
-    """No formulator: each formulation line is dropped or moved to supervision (design §16.2)."""
-    doc = spec_read.capability(path("formulation"))
-    reasons = [why for cap, _, why in doc.dropped if cap == "formulation"]
-    assert len(reasons) == 14
-    assert doc.groups == []
-    moved = sorted(n for cap, n, why in doc.dropped if why.startswith("moved to supervision"))
-    assert moved == [1, 2, 6, 7, 11, 22]
-
-
-def test_spec_integration_moves_its_script_lines():
-    """A spec-integration line about a script goes to the capability owning the script (design §16.2)."""
-    moved = {n: why for cap, n, why in spec_read.capability(path("spec-integration")).dropped
-             if cap == "spec-integration" and why.startswith("moved to ")}
-    assert {n for n, why in moved.items() if why.startswith("moved to supervision")} == {44, 45, 46, 54, 55}
-    assert {n for n, why in moved.items() if why.startswith("moved to design-model-check")} == {16, 22}
-
-
-def test_the_spec_integration_steps_are_gone():
-    scenarios = REPO / "tests" / "scenarios"
-    assert not list(scenarios.glob("spec_integration_*.py"))
-    assert not (scenarios / "test_spec_integration.py").exists()
-
-
 def test_the_lexicon_has_no_problem(grammar):
     assert spec_lexicon.problems(spec_lexicon.read(REPO)) == []
 
@@ -123,7 +99,7 @@ def test_no_two_groups_share_features_condition_and_trigger(grammar, cap):
     assert shared == []
 
 
-@pytest.mark.parametrize("cap", [c for c in GUARANTEES if c != "formulation"])
+@pytest.mark.parametrize("cap", GUARANTEES)
 def test_the_id_map_gives_every_id_the_capability_has(cap):
     """ids-<cap>.tsv (design-r2 §9.1): old codified id, tab, new id; its new ids are exactly the file's."""
     rows = [line.split("\t") for line in (RECORDS / f"ids-{cap}.tsv").read_text().splitlines()]
@@ -133,8 +109,9 @@ def test_the_id_map_gives_every_id_the_capability_has(cap):
     assert {new for _, new in rows} == {f"{cap}#{x}" for g in groups for x in [g.id] + [r.id for r in g.requirements]}
 
 
+@pytest.mark.usefixtures("grammar")
 @pytest.mark.parametrize("u, conjuncts", [("U3", ["ExitErr", "ChangeNothing"]), ("U4", ["Do", "Do"])])
-def test_u3_and_u4_are_one_statement_of_joined_verb_phrases(grammar, u, conjuncts):
+def test_u3_and_u4_are_one_statement_of_joined_verb_phrases(u, conjuncts):
     """U3 and U4 by VP coordination (design-r2 §5.6): one `shall`, its verb phrases joined by `and`."""
     text = {c.id: c.text for c in spec_read.universal(REPO)}[u]
     resp = spec_tree.parts(spec_grammar.parse(REPO, text).tree)["resp"]

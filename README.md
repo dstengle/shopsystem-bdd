@@ -1,16 +1,13 @@
 # shopsystem-bdd
 Claude Code plugin for the shopsystem harness: a behaviour-driven workflow with one spec of capability files per
 bounded context, written as codified requirements in a controlled language (a GF grammar built from the glossary),
-logic-checked with clingo, Gherkin feature files generated from them as the contract, one human gate on the
-spec's requirements, and delivery by work-items that a script, `work run`, pulls through research, plan,
-implementation and review.
+logic-checked with clingo, Gherkin feature files generated from them as the contract, a backlog of items readied
+against that spec, and ready items built in batches, each closed by one reviewed pull request.
 
-Skills: `raising-a-request`, `integrating-a-proposal`, `formulating-features`, `delivering-an-initiative`,
-`bdd-red-green`, `checking-spec-consistency`, `migrating-to-capabilities`, `analyzing-a-batch`.
-Agents: `capability-writer`, `initiative-round`, `spec-checker`, `code-scout`, `bdd-planner`, `bdd-implementer`,
-`bdd-task-reviewer`, `bdd-branch-reviewer`, `architecture-reviewer`, `trial-runner`, `batch-analyst`,
-`delegation-answerer`.
-Format: `docs/capability-format.md`. The design model it keeps: `docs/design-model/` (version 5).
+Skills: `shaping-items`, `taking-in-a-request`, `raising-a-request`, `building-a-batch`, `analyzing-a-batch`.
+Agents: `pr-reviewer`, `architecture-reviewer`, `trial-runner`.
+Format: `docs/capability-format.md`. The design model it keeps: `docs/design-model/` (version 5; 2.0 builds on it
+with items in place of initiatives).
 This repository's own spec: `spec/index.md`; check it with `python3 scripts/model check`.
 
 ## Requires
@@ -23,9 +20,8 @@ The plugin depends on no other plugin. It needs, in the consuming repository's P
   `tools probe` shows what is installed;
 - pytest and pytest-bdd, for the scenarios;
 - pytest-xdist, optional, to run the tests in parallel (`pytest.ini`'s `addopts = -n auto`; `-n 0` runs them in one
-  process). `work run` runs the tests with `-n auto` where it is installed.
-
-`work run` also needs the `claude` CLI on the PATH (or `$SHOPSYSTEM_WORK_CLAUDE`).
+  process);
+- `gh`, for a batch's pull request.
 
 ## Install
 
@@ -42,18 +38,19 @@ A consuming repository keeps (design-decision/final-layout):
 
 - `spec/`: `index.md` (the bounded context: purpose, constraints, composition, glossary), `capabilities/<name>.md`,
   and `decisions/`, one file a decision with its index `decisions/index.md`, written by `model decisions`;
-- `features/<name>.feature`, one a capability, the file of its own name;
-- `.shop/work/<initiative>/`: the initiative, its proposals and its work-items, and `runs/`, what `work run`'s
-  workers left;
+- `features/<name>.feature`, one a capability, the file of its own name, written by `features generate`;
+- `.shop/backlog/b<n>.md`, the items; `.shop/batches/<n>/`, the batches; `.shop/requests/q<n>.md`, the requests
+  between contexts; `.shop/quotes/<n>.md`, the person's words kept;
 - `.shop/records/`: observations, measurements, review findings, decision arguments and the archive;
-- `.shop/delivery.toml`, `work run`'s settings, optional;
-- `.shop/scratch/` and `.shop/worktrees/`, drafts, notes and the implementers' worktrees, both git-ignored.
+- `.shop/delivery.toml`, the batch settings and prices, optional;
+- `.shop/work/`, plugin 1.x's queue, frozen as history;
+- `.shop/scratch/` and `.shop/worktrees/`, drafts, notes and the batches' worktrees, both git-ignored.
 
 ## The workflow
 
-- **A proposal becomes lines.** `integrating-a-proposal` has the `capability-writer` (blind to the code) merge an
-  approved note into `spec/` and stops at the one gate: the added, changed and removed Behaviour lines with their
-  ids, glossary entries and decisions. Nothing is written to `spec/` before the person's yes.
+- **Work comes in as items.** `shaping-items` turns what the person wants into an item of the backlog
+  (`work idea`, `work shape`), its requirement lines written into it (`work line`); `taking-in-a-request` answers a
+  peer context's request (`work intake`), and `raising-a-request` raises one into an upstream.
 - **Requests are codified.** `raising-a-request` turns what the person says into lines of the upstream's
   requirement grammar (`model lexicon`, `model parse`), and `work request` refuses a line that does not parse,
   with the longest prefix that parsed and the nearest lexicon words.
@@ -63,88 +60,75 @@ A consuming repository keeps (design-decision/final-layout):
   `U<n>`. Each grammar fun translates to facts about its requirement, and `model logic` checks them in one clingo
   solve of `grammar/check.lp` over the pairs of requirements that share vocabulary: clashes (L1), duplicates (L2),
   sets no transition allows and unreachable values (L3, L4), untriggered event obligations (L5).
+- **An item is ready when its lines pass the bar.** `work ready` checks them: they parse, the logic check finds
+  nothing new, and every question is answered.
 - **Groups become scenarios.** `features generate` writes one scenario a group, tagged `@g<n> @r<n>…`, read off
-  its requirements' facts with no solver: no session writes a feature file, and the formulate round of `work run`
-  is a script.
-- **Scenarios are delivered.** `delivering-an-initiative` drafts the initiative's work-items from the spec alone
-  (`work add`), commits them and starts `work run <initiative>`. `work run` takes each work-item through its stages,
-  one fresh `claude -p` worker a stage: `code-scout` researches, `bdd-planner` plans (intent, never code),
-  `bdd-implementer` implements red-green under `bdd-red-green` in its own worktree, and `bdd-task-reviewer`
-  reviews. It writes every status itself, merges a branch only when the work-item's scenarios and the whole suite
-  pass on it, and ends printing each work-item's status and each question for the person. Exit 0: every work-item
-  green; 3: a question awaits the person; 1: it stopped, saying why.
-- **The spec checks itself.** `checking-spec-consistency` and the `spec-checker` judge lines against scenarios and
-  against the glossary; `model check` checks the whole repository against the design model.
-
-## `work run`
-
-Each worker runs with `--permission-mode acceptEdits`, the plugin's directory as `--plugin-dir`, and
-`--allowedTools` set for its stage: no bare Write or Edit (a worker's writes stay in the worktree it starts in), and
-Bash only for `python3 -m pytest`, the plugin's scripts by path and the git commands the stage needs. Nothing runs
-with permissions bypassed.
-
-The tests it runs load the plugin's own pytest plugin, `scripts/work_items.py` (`-p work_items`, the scripts
-directory on `PYTHONPATH`): `--work-item <name>` for the work-item's scenarios, and `--whole-suite` for the suite
-before a merge, where a failing scenario counts as expected while another work-item that is neither `green` nor
-`withdrawn` accepts its requirement. Where pytest-xdist is installed, `-n auto` is added. A repository can name its
-own commands in `.shop/delivery.toml` (`[tests]`, with `{work_item}` replaced by the name; its `suite` command needs
-`--whole-suite` for expected red to work). `[allowed_tools]`, a list for a stage, replaces that stage's list
-(`research`, `plan`, `implement`, `review`); a bare Write or Edit in it is still dropped. Git-ignore `.shop/scratch/`
-and `.shop/worktrees/`.
-
-Before you run it:
-
-- The initiative branch needs a remote it can push to. `work run` checks the push before every worker starts and
-  pushes after every commit it makes.
-- Run `work run` with the same credentials as your `git push` (for example inside the credential wrapper you push
-  with). Without them its push check fails and the work-item goes to `failed`.
-- Commit `.shop/work/` first: `work run` refuses to start over uncommitted changes there.
-
-A fault (a refused push, a git failure, a worker changing `.shop/work/`, a worker ending in an error or at its turn
-limit, or with no readable result) moves the work-item to `failed` and the run exits with an error naming it. Fix the
-cause, then `work retry <work-item>` brings it back to where its stage started. Workers write their result first, as
-`PARTIAL`, and keep it current.
+  its requirements' facts with no solver: no session writes a feature file.
+- **Ready items are built in batches.** `building-a-batch` starts a batch of ready items (`work batch start`),
+  dispatches one subagent a task in its own worktree, closes each task (`work batch done`), and publishes one pull
+  request (`work batch review`), reviewed once by `pr-reviewer`; `measure batch` measures it once merged.
+- **The spec checks itself.** `model check` checks the whole repository against the design model.
 
 ## Scripts
 
 Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests: `python3 -m pytest`.
 
-- `scripts/model`: read a bounded context's spec, feature files, decisions, work and records as the facts of the
+- `scripts/model`: read a bounded context's spec, feature files, decisions and records as the facts of the
   design model's grammar (`facts`), check them with clingo (`check`), list the rules (`rules`), write the decisions
-  index (`decisions`), trace a requirement to why it exists (`why`), parse a line in the context's grammar
-  (`parse`), list the lexicon (`lexicon`), check the logic of the groups (`logic`) and the coverage of the 0.29 ids
-  (`restates`).
+  index (`decisions`), parse a line in the context's grammar (`parse`), list the lexicon (`lexicon`), check the
+  logic of the groups (`logic`) and the coverage of the 0.29 ids (`restates`).
 - `scripts/features`: `generate` writes (or `--check`s) each codified capability's feature file from its groups;
   `vocab` checks the fixed step vocabulary; `count`, `list`, `bindings` and `deprecated` read feature files without
   the test runner.
-- `scripts/work`: `add` drafts a work-item, `show` lists every work-item with its status (`--json`), `retry`
-  returns a `failed` work-item, `withdraw` withdraws one, `run` delivers an initiative.
+- `scripts/work`: the backlog (`idea`, `shape`, `line`, `rate`, `depend`, `refuse`, `ready`, `backlog`), the
+  batches (`batch`), the requests between contexts (`request`, `outcome`, `ask`, `reply`, `turn`, `resolve`,
+  `intake`), and `list` and `show`.
+  - `work quote "<the person's words>"` copies the person's message with the two messages before and after it (no
+    tool output) into `.shop/quotes/` and commits it. `work show quote-<n>` prints it. `work names` is the table of
+    items and batches by name. The UserPromptSubmit hook keeps the session for `work quote`
+    (`conversation_hook quote`), and the SessionStart hook prints the names table (`conversation_hook names`); each
+    imports only what it needs and never fails. `work quote --hook` and `work names --hook` do the same.
 - `scripts/tools`: the project's analysis tools behind one interface: `probe`, `install` (also the grammar tools), `map`, `tests-of`,
   `untested`, `refs`, `check`, and `size`, the tracked Python files over a line limit.
 - `scripts/migrate`: `migrate run --context <owner/product/context>` takes a repository from the old system to
   this layout in one run; `migrate upgrade` takes it from an earlier plugin release to this one.
-- `scripts/measure`: write an initiative's measurement from `work run`'s log, its sessions and git (`measure initiative`), print one as tables (`measure show`) and
-  two side by side with their ratio (`measure compare`).
+- `scripts/measure`: `measure batch <batch>` writes a batch's measurement from git and its sessions' transcripts
+  (wall time, session time, tokens and cost by role, the pull request's findings by grade, defects, knobs);
+  `measure defect <item> --says "<fault>"` records a fault found after the merge; `measure show` prints one as
+  tables and `measure compare batch-2 batch-3` two side by side with their ratio.
 
 ## Agents: rules enforced by tools
 
 | agent | tools | model | for |
 |---|---|---|---|
-| `capability-writer` | Read, Glob, Grep, Write | opus | integrating a note into `spec/`, and a repository's first `spec/`, blind to the code; writes only drafts |
-| `initiative-round` | Read, Glob, Grep, Bash, Write, Edit, Agent | sonnet | one round of spec work for the session that keeps the gate; dispatches only `capability-writer` |
-| `spec-checker` | Read, Glob, Grep, Write | sonnet | judging a spec against itself, blind to the code; writes only its findings file |
-| `code-scout` | Read, Glob, Grep, Bash, Write | haiku | a work-item's research for `work run`: why its scenarios are red, its file set, the tests it may break |
-| `bdd-planner` | Read, Glob, Grep, Write | opus | a work-item's plan for `work run`, from the research notes, intent and never code |
-| `bdd-implementer` | Read, Edit, Write, Glob, Grep, Bash, Skill | sonnet | a work-item, red-green under `bdd-red-green`, in its worktree and branch |
-| `bdd-task-reviewer` | Read, Glob, Grep, Bash, Write | opus | a done work-item's review for `work run`; changes nothing |
-| `bdd-branch-reviewer` | Read, Glob, Grep, Write | opus | an initiative's branch review, from its base, over every work-item; changes nothing |
-| `architecture-reviewer` | Read, Glob, Grep, Bash, Write | opus | an architecture review when the person asks for one |
-| `trial-runner` | Read, Glob, Grep, Bash, Write | sonnet | one trial of a plugin tool or `work run` on a target; writes only one measurement record |
-| `batch-analyst` | Read, Glob, Grep, Bash, Write, Skill | opus | what a closed batch cost and why, under `analyzing-a-batch` |
-| `delegation-answerer` | Read, Glob, Grep, Write | sonnet | one question answered under a request's delegation, for `work run` |
+| `pr-reviewer` | Read, Glob, Grep | opus | a batch's pull request review, from its brief: the batch's own commits, its items' lines, the judgement decisions; changes nothing, and replies with the findings file the batch session saves |
+| `architecture-reviewer` | Read, Glob, Grep, Bash | opus | an architecture review when the person asks for one, of the commits or the batch it is given; changes nothing, and replies with the findings file the session saves |
+| `trial-runner` | Read, Glob, Grep, Bash, Write | sonnet | one trial of a plugin tool or command on a target; writes only one measurement record |
 
-Only `initiative-round` has the Agent tool. A plugin agent's `hooks` and `permissionMode` are ignored, so a role's
-limits are its tools; under `work run` they are also its `--allowedTools`.
+No agent has the Agent tool (design-decision/the-2-0-agents). A plugin agent's `hooks` and `permissionMode` are
+ignored, so a role's limits are its tools.
+
+## 2.0.0: the workflow simplified
+
+- **One item, a backlog, batches, one review at the pull request** (design-decision/the-workflow-simplified): work is
+  an item in `.shop/backlog/`, shaped and readied against the codified spec (`work idea`, `shape`, `line`, `ready`),
+  built with other ready items in a batch (`work batch`), and reviewed once, by `pr-reviewer`, at the batch's pull
+  request. A peer's request is taken in as an item (`work intake`). `measure batch` measures a merged batch.
+- **The old workflow retired** (design-decision/the-old-workflow-retired): `work run` and its stages, initiatives,
+  work-items, capability- and glossary-proposals, delegations, `work add`, `retry`, `note`, `status`, `start` and
+  `delegate`, `measure initiative` and `model why` are gone, with ten agents and six skills; their capabilities keep
+  their files as the record of their ids. The agents are `pr-reviewer`, `architecture-reviewer` and `trial-runner`
+  (design-decision/the-2-0-agents).
+- **`.shop/work/` frozen** (design-decision/the-2-0-layout): nothing writes it, and `model check` reads only the
+  `source` of its initiatives and requests, as citations of observations. Live requests are `.shop/requests/q<n>.md`,
+  numbered above the frozen ones.
+- **`migrate upgrade` 2.0.0, "the workflow simplified"**: a 1.0.x repository is moved to the new workflow in one
+  commit. It writes `.shop/work/FROZEN.md`, moves each open request of a peer to `.shop/requests/` with `git mv`, and
+  rewrites `spec/decisions/index.md`. Nothing is deleted. It names each open initiative, each proposal never applied
+  and each internal request not closed, to be shaped as items with `work idea`. A 0.29.x repository reaches 2.0.0
+  through the 1.0.0 step in the same commit. From 0.29.x, write each scaffold's requirements and the typed glossary
+  as `docs/capability-format.md` § Doing it says, checking with `model parse`, `model check`, `model logic` and
+  `model restates`, then run `features generate`.
 
 ## 1.0.0: codified requirements
 

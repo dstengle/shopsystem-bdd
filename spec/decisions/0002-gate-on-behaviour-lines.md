@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/gate-on-behaviour-lines
 summary: "The person approves the added, changed and removed Behaviour lines of a proposal; nothing is written to spec/ before that yes."
 date: 2026-09-29
-status: accepted
+status: superseded
 source: [decision-argument/2026-09-29-capability-spec-design]
 by: "0.8.0 (d034b50)"
 ---
