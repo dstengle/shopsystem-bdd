@@ -4,6 +4,7 @@ person before the pull request, then the pull request's one review by `pr-review
 pr-review r1, r2); checked by reading the skill as test_skill_shaping_items.py reads its skills."""
 import re
 
+import pytest
 from test_skill_shaping_items import SKILLS, process
 
 SKILL = SKILLS / "building-a-batch" / "SKILL.md"
@@ -67,6 +68,7 @@ def review_step():
     return next(n for n, s in enumerate(process(SKILL)) if "pr-reviewer" in s)
 
 
+@pytest.mark.requirement("pr-review#r1")
 def test_r1_the_published_pull_request_is_reviewed():
     steps = process(SKILL)
     publish = next(n for n, s in enumerate(steps) if "work batch review" in s)
@@ -77,6 +79,7 @@ def test_r1_the_published_pull_request_is_reviewed():
     assert -1 not in found and found == sorted(found), found
 
 
+@pytest.mark.requirement("pr-review#r2")
 def test_r2_no_review_after_a_task():
     for one in process(SKILL):
         if "work batch done" in one:
