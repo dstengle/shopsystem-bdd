@@ -445,7 +445,7 @@ Builds `pr-review#r5` and `r7`. It also adds the trace test (D19).
 
   Each lists the offending ids.
 
-- [ ] **Step 1: Write the failing tests** (`test_batch_reviewed.py`, on `published` and a brief):
+- [x] **Step 1: Write the failing tests** (`test_batch_reviewed.py`, on `published` and a brief):
   - `test_r5_a_fix_now_finding_sends_the_batch_back_to_building`, with `FIX_NOW_B1`:
     - exit 0, and the batch is `building`;
     - HEAD's commit holds exactly `.shop/batches/1/plan.md` and `.shop/batches/1/review-1.md`, with the subject
@@ -473,30 +473,30 @@ Builds `pr-review#r5` and `r7`. It also adds the trace test (D19).
 
   And `test_pr_review_trace.py` as above.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_batch_reviewed.py tests/scripts/test_pr_review_trace.py -q`
   Expected: FAIL. `reviewed` does not exist, and the trace test names r5 and r7 as tests of unbuilt ids.
 
-- [ ] **Step 3: Implement `batch_reviewed.py`, the parser and `status`.**
+- [x] **Step 3: Implement `batch_reviewed.py`, the parser and `status`.**
 
-- [ ] **Step 4: Run the reviewed tests.**
+- [x] **Step 4: Run the reviewed tests.**
   Run: `python3 -m pytest tests/scripts/test_batch_reviewed.py -q | tail -1`
   Expected: all pass.
 
-- [ ] **Step 5: Take r5 and r7 out of `pr-review.md`'s `unbuilt:`, and run the trace test.**
+- [x] **Step 5: Take r5 and r7 out of `pr-review.md`'s `unbuilt:`, and run the trace test.**
   Run: `python3 -m pytest tests/scripts/test_pr_review_trace.py -q | tail -1`
   Expected: 2 passed.
 
-- [ ] **Step 6: Mutations,** each in a scratch edit, reverted, and recorded in the report:
+- [x] **Step 6: Mutations,** each in a scratch edit, reverted, and recorded in the report:
   - `reviewed` setting `in-review` → `building` on a clean review fails `test_r7_…`;
   - skipping the `Head:` check fails `test_reviewed_refuses_a_stale_brief`;
   - leaving `r5` in `unbuilt:` fails the trace test.
 
-- [ ] **Step 7: The baselines.**
+- [x] **Step 7: The baselines.**
   Run: `python3 -m pytest -q | tail -1; python3 scripts/model check | tail -1; python3 scripts/model logic | tail -1; python3 scripts/tools size --limit 300`
   Expected: `14 xfailed`, no failures; `model check` and `logic` at baseline; `size` silent. Unbuilt ids: 21.
 
-- [ ] **Step 8: Commit.**
+- [x] **Step 8: Commit.**
   ```bash
   git add scripts/batch_reviewed.py scripts/batch_cli.py tests/scripts/stub_gh.py tests/scripts/test_batch_reviewed.py \
     tests/scripts/test_pr_review_trace.py spec/capabilities/pr-review.md CLAUDE.md

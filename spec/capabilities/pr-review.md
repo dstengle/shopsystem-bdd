@@ -6,7 +6,7 @@ group: guarantees
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: [r1, r2, r3, r4, r5, r6, r7, r8]
+unbuilt: [r1, r2, r3, r4, r6, r8]
 ---
 
 # Pull request review
@@ -69,3 +69,7 @@ branch and the review re-reads what the fix changed; a clean pull request waits 
 - The review's findings are written under `.shop/batches/<n>/`, each with its grade. Findings that keep recurring are
   a signal for a new decision, a new check or a higher readiness bar.
 - The size of the change and the repository's rules (`CLAUDE.md`) are read with the `judgement` decisions.
+- `work batch reviewed <batch>` records the findings file `pr-reviewer` wrote as `.shop/batches/<n>/review-<k>.md`,
+  committed on the base with the batch file, and posts it on the pull request (`gh pr comment`). A finding still
+  `fix now` sets the batch `building`; a clean review sets it `awaiting-merge` and marks the pull request ready
+  (`gh pr ready`).

@@ -5,7 +5,8 @@ in the suite, so no test reaches a network.
 Each call appends `{"argv": [...]}` to the file `$STUB_GH_CALLS`. `pr create` prints
 `https://github.com/ex/ctx/pull/<k>`, k counting the creates that did not fail. `pr view <url> --json
 state,mergeCommit` prints the entry for `<url>` of the JSON file `$STUB_GH_STATE`, else `{"state": "OPEN",
-"mergeCommit": null}`. `pr close` prints nothing. When `$STUB_GH_FAIL` equals the call's first two words (`pr
+"mergeCommit": null}`. `pr close`, `pr comment` and `pr ready` (the pull request review's, plan 5)
+print nothing. When `$STUB_GH_FAIL` equals the call's first two words (`pr
 create`), the call exits 1 with `stand-in gh: refused` on stderr (and is recorded with `"failed": true`)."""
 import json
 import os

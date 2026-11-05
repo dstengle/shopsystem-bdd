@@ -8,6 +8,7 @@ import batch_brief
 import batch_close
 import batch_plan
 import batch_review
+import batch_reviewed
 import batch_start
 import batch_tasks
 from workqueue import Refused
@@ -37,6 +38,8 @@ def add_parsers(sub):
     s.add_argument("--discard", action="store_true", help="discard the uncommitted changes of its task worktrees")
     s = cmds.add_parser("review", help="merge the in-batch items into the batch branch, test, push and publish its pull request")
     s.add_argument("batch")
+    cmds.add_parser("reviewed", help="record the findings file pr-reviewer wrote: back to building, or awaiting-merge"
+                    ).add_argument("batch")
     cmds.add_parser("brief", help="write the brief of the next review of a batch's pull request, for pr-reviewer"
                     ).add_argument("batch")
 
@@ -56,6 +59,8 @@ def task_label(root, task):
 def status_text(root, batch):
     out = ["%s %s, base %s, pull request %s" % (batch.name, batch.status, batch.base, batch.pull_request or "-"),
            "plan: %s" % batch_plan.rel_of(batch.name)]
+    if batch.pull_request:      # a batch with no pull request has no review to show (plan 4's lines kept)
+        out.append(batch_reviewed.status_line(root, batch))
     for task in batch.tasks:
         item = _item(root, task.item)
         out.append("  %s %s" % (backlog_items.label(item), item.status) if item else "  %s missing" % task.item)
@@ -70,7 +75,7 @@ def as_json(root, batch):
                       "items": [{"id": n, "title": i.title if i else None, "status": i.status if i else None}
                                 for n, i in items],
                       "tasks": [{"task": t.task, "item": t.item, "status": t.status, "branch": t.branch}
-                                for t in batch.tasks]}}
+                                for t in batch.tasks], **batch_reviewed.as_json(root, batch)}}
 
 
 def status(args):
@@ -122,6 +127,11 @@ def brief(args):
     return 0
 
 
+def reviewed(args):
+    print(batch_reviewed.said(args.root, batch_reviewed.reviewed(args.root, args.batch)))
+    return 0
+
+
 def merged(args):
     batch = batch_close.merged(args.root, args.batch)
     print("%s merged" % batch.name)
@@ -136,7 +146,7 @@ def abandon(args):
 
 def cmd_batch(args):
     return {"start": start, "status": status, "resume": resume, "done": done, "park": park, "review": review,
-            "brief": brief, "merged": merged, "abandon": abandon}[args.batch_cmd](args)
+            "brief": brief, "reviewed": reviewed, "merged": merged, "abandon": abandon}[args.batch_cmd](args)
 
 
 COMMANDS = {"batch": cmd_batch}
