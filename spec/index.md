@@ -43,25 +43,8 @@ own outside the consuming repository's files.
 
 ## Composition
 
-The spec side, with the person:
-
-| capability | narrator | group |
-|---|---|---|
-| `spec-integration` | the person at the gate | guarantees |
-| `formulation` | the person who approved the lines | guarantees |
-| `spec-migration` | the person migrating a repository onto spec/ | guarantees |
-| `spec-consistency` | the person keeping a spec | guarantees |
-
-The build side, started by `work run`:
-
-| capability | narrator | group |
-|---|---|---|
-| `delivery` | the person delivering an initiative | guarantees |
-| `code-research` | the script `work run`, which started the researcher | guarantees |
-| `planning` | the script `work run`, which started the planner | guarantees |
-| `red-green` | the script `work run`, which started the implementer | guarantees |
-| `review` | the script `work run`, closing a work-item or an initiative | guarantees |
-| `role-boundaries` | the person using the workflow | guarantees |
+The capabilities of plugin 1.x's stages are retired
+(design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired) and kept as records of their ids.
 
 Measurement:
 
@@ -96,17 +79,30 @@ The simplified workflow (plan 1, unbuilt):
 | `telemetry` | a session measuring a batch | service |
 | `conversation` | the person reading why a piece of work was asked for | service |
 
+### Retired in 2.0.0
+
+| capability | narrator | group |
+|---|---|---|
+| `spec-integration` | the person at the gate | guarantees |
+| `formulation` | the person who approved the lines | guarantees |
+| `spec-migration` | the person migrating a repository onto spec/ | guarantees |
+| `spec-consistency` | the person keeping a spec | guarantees |
+| `delivery` | the person delivering an initiative | guarantees |
+| `code-research` | the script `work run`, which started the researcher | guarantees |
+| `planning` | the script `work run`, which started the planner | guarantees |
+| `red-green` | the script `work run`, which started the implementer | guarantees |
+| `review` | the script `work run`, closing a work-item or an initiative | guarantees |
+| `role-boundaries` | the person using the workflow | guarantees |
+
 ## Testing
 
 - The suite: `python3 -m pytest` from the root. A script capability's scenarios run as pytest-bdd step
   definitions, one module per feature file under `tests/scenarios/`, and `features bindings --unbound`
   fails the suite when a scenario has no test or two (design-decision/plugin-scenarios-run-as-pytest-bdd).
   Unit tests that bind no scenario are `unittest` tests under `tests/scripts/`.
-- The workflow capabilities (agents and skills: spec-integration, spec-migration, spec-consistency, review,
-  delivery, formulation, red-green, code-research, planning, trials) are guarantees, checked by `measure` on real
-  batches, not by scenarios (design-decision/workflow-capabilities-are-guarantees); `model check`'s v_s3 and
-  design-model-check r27 leave guarantees capabilities out.
-- `role-boundaries` is guarantees: verified against `agents/*.md`, not by scenarios.
+- The guarantees capabilities left (`trials`, `pr-review`, `brainstorming`) are checked by script tests under
+  `tests/scripts/`, not by scenarios (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired);
+  `model check`'s v_s3 and design-model-check r27 leave guarantees capabilities out.
 
 ## Glossary
 

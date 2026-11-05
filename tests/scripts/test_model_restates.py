@@ -62,6 +62,26 @@ class RestatesTest(CodifiedTest):
                                                                      f"- [r1] {OTHER}"]))
         self.assertEqual(self.run_model("restates", "wq").returncode, 0)
 
+    def test_a_moved_id_retired_in_its_target_is_dropped(self):
+        self.write("spec/capabilities/wq.md", codified("wq", self.group("r1@0.29, r2@0.29, r3@0.29"),
+                                                       dropped=["- r4@0.29: moved to other."]))
+        why = "retired with other#r3 in 2.0.0 (the-old-workflow-retired)."
+        self.write("spec/capabilities/other.md", codified("other", ["### [g1] Abandon", "Restates: other#r1@0.29.",
+                                                                     f"- [r1] {OTHER}"], dropped=[f"- wq#r4@0.29: {why}"]))
+        r = self.run_model("restates", "--json")
+        rows = {row["id"]: row for row in json.loads(r.stdout)["ids"]}
+        self.assertEqual((rows["wq#r4"]["state"], rows["wq#r4"]["reason"]), ("dropped", why))
+        self.assertEqual(r.returncode, 0, r.stdout)
+
+    def test_a_moved_id_restated_by_its_target_is_still_restated(self):
+        self.write("spec/capabilities/wq.md", codified("wq", self.group("r1@0.29, r2@0.29, r3@0.29"),
+                                                       dropped=["- r4@0.29: moved to other."]))
+        self.write("spec/capabilities/other.md", codified("other", ["### [g1] Abandon",
+                                                                     "Restates: other#r1@0.29, wq#r4@0.29.",
+                                                                     f"- [r1] {OTHER}"]))
+        rows = {row["id"]: row for row in json.loads(self.run_model("restates", "--json").stdout)["ids"]}
+        self.assertEqual(rows["wq#r4"]["state"], "restated")
+
     def test_json_and_every_capability(self):
         self.write("spec/capabilities/wq.md", codified("wq", self.group("r1@0.29"), dropped=["- r3@0.29: gone."]))
         r = self.run_model("restates", "--json")

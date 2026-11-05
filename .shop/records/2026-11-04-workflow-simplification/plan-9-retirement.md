@@ -335,7 +335,7 @@ Spec only, plus the helper and `model restates`' qualified entries. Nothing that
   - the helper's command line (D10), used again in Tasks 3, 4, 5 and 7;
   - `model_restates.coverage(root, capability=None)`, with the same rows; a qualified dropped entry now counts.
 
-- [ ] **Step 1: Write the failing tests.**
+- [x] **Step 1: Write the failing tests.**
   - `test_model_restates.py::test_a_moved_id_retired_in_its_target_is_dropped`. In a fixture, `a.md`'s `## Dropped`
     says `- r1@0.29: moved to b`. `b.md` has no group restating it, and its `## Dropped` says `- a#r1@0.29: retired
     with b#r3 in 2.0.0 (the-old-workflow-retired).` Then `a#r1`'s state is `dropped` and its reason is b's.
@@ -346,19 +346,19 @@ Spec only, plus the helper and `model restates`' qualified entries. Nothing that
       notice;
     - `test_no_id_of_a_retired_capability_is_missing` checks that `model_restates.coverage(REPO, cap)` has no
       `missing` or `pending`.
-- [ ] **Step 2: Run them.** `python3 -m pytest tests/scripts/test_model_restates.py tests/scripts/test_spec_retired.py -q`.
+- [x] **Step 2: Run them.** `python3 -m pytest tests/scripts/test_model_restates.py tests/scripts/test_spec_retired.py -q`.
   Expected: the restates test fails with the state `pending`, and the retired tests fail on groups.
-- [ ] **Step 3: Implement D11** in `model_restates.coverage`.
-- [ ] **Step 4: Write the helper** (D10), then retire the ten capabilities, one command each:
+- [x] **Step 3: Implement D11** in `model_restates.coverage`.
+- [x] **Step 4: Write the helper** (D10), then retire the ten capabilities, one command each:
   `python3 .shop/records/2026-11-04-workflow-simplification/plan-9-retire.py.txt review` (and so on).
-- [ ] **Step 5: Write 0080, supersede 0065, regenerate the index, and update `spec/index.md` and the two test
+- [x] **Step 5: Write 0080, supersede 0065, regenerate the index, and update `spec/index.md` and the two test
   modules.**
   - 0080's `## Decision` lists D2's retired lines, says that each retired capability keeps its file (D3), and says
     which guarantees remain.
   - The Composition text before the tables gains one sentence: "The capabilities of plugin 1.x's stages are retired
     (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired) and kept as records of
     their ids."
-- [ ] **Step 6: The gate.** Expected:
+- [x] **Step 6: The gate.** Expected:
   - Suite: no failure.
   - `model restates`: 0 missing, and the dropped figure grows by the 0.29 ids of these ten.
   - `model logic`: the findings naming review, delivery, spec-consistency, spec-integration and spec-migration go.
@@ -367,7 +367,7 @@ Spec only, plus the helper and `model restates`' qualified entries. Nothing that
   - `decisions --check`: 4 hold.
   - `model check`: 53/16/19/0.
   - Collection diff: only `test_spec_guarantees` ids of the ten capabilities, each replaced in `test_spec_retired`.
-- [ ] **Step 7: Commit.**
+- [x] **Step 7: Commit.**
   ```bash
   git add .shop/records/2026-11-04-workflow-simplification/plan-9-retire.py.txt spec scripts/model_restates.py tests/scripts
   git commit -m "spec: the old stages' guarantees retired under the-old-workflow-retired (0080, superseding 0065) (plan 9, Task 2)"

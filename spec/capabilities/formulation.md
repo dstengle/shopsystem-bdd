@@ -11,6 +11,8 @@ retired: []
 # Formulation
 
 ## Purpose
+**Retired in plugin 2.0.0** (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired): every requirement of this capability is retired, and the file is kept as the record of its ids and of where its 0.29 lines went.
+
 Formulation is no longer a session's work. A scenario is the generated linearisation of one requirement group
 (design model v5), so `work run`'s formulate round runs `features generate` as a script, with no session and no
 question (supervision). What the 0.29 lines of this capability guaranteed is either said by that script, and moved to
@@ -21,7 +23,7 @@ record of where its lines went.
 ## Behaviour
 
 ## Implementation, may change
-- `skills/formulating-features/` explains generation; `scripts/supervise_formulate.py` is the formulate round.
+- None: retired in plugin 2.0.0.
 
 ## Not yet
 - None.
