@@ -88,6 +88,9 @@ def test_line_refuses_an_unknown_group_and_text_with_a_line_break(ready_repo):
     assert done.returncode == 1 and "g4" in done.stderr, done.stderr
     done = work(ready_repo, "line", "b1", "--into", "work-queue", ABANDON + "\nmore")
     assert done.returncode == 1 and "line break" in done.stderr, done.stderr
+    done = work(ready_repo, "line", "b1", "--into", "work-queue", "# " + ABANDON)
+    assert done.returncode == 1 and 'work line: b1 "' in done.stderr and "starts with #" in done.stderr, (
+        done.stderr)
     assert state(ready_repo) == before
 
 
@@ -133,3 +136,11 @@ def test_lay_puts_the_block_into_a_copy_of_spec(ready_repo, tmp_path):
     assert TERM in copied.split("## Terms", 1)[1].split("## Behaviour", 1)[0]
     assert (ready_repo / "spec" / "capabilities" / "work-queue.md").read_bytes() == live
     assert git(ready_repo, "status", "--porcelain", "--", "spec") == ""
+
+
+def test_a_line_after_a_double_dash_is_the_line(ready_repo):
+    """plan-3 review M9: `work line b1 --into CAP -- TEXT`, for a text that starts with `-`."""
+    write_item(ready_repo, "b1", status="shaped")
+    done = work(ready_repo, "line", "b1", "--into", "work-queue", "--", "-x " + ABANDON)
+    assert done.returncode == 0, done.stderr
+    assert [r for b in blocks(ready_repo) for g in b.groups for r in g.requirements] == [("r5", "-x " + ABANDON)]

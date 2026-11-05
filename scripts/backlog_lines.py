@@ -101,10 +101,10 @@ def _takes(item, command="work line"):
                                                                                command))
 
 
-def _text(text, what):
+def _text(text, what, item, command="work line"):
     text = one_line(text, what)
     if text.startswith("#"):
-        raise Refused("the %s starts with #, which would read as a heading" % what)
+        raise Refused("%s: %s: the %s starts with #, which would read as a heading" % (command, label(item), what))
     return text
 
 
@@ -116,12 +116,12 @@ def _block(blocks, capability):
     return found
 
 
-def add_line_to(root, item, capability, text, group=None, in_group=None):
+def add_line_to(root, item, capability, text, group=None, in_group=None, command="work line"):
     """Write one requirement into the item's block for `capability`, in the group `in_group` or a new group titled
-    `group` (else the item's title); nothing is committed. Its `<capability>#r<n>`."""
-    _takes(item)
+    `group` (else the item's title); nothing is committed. Its `<capability>#r<n>`. `command` names the refusals."""
+    _takes(item, command)
     capability_file(root, capability)
-    text = _text(text, "line")
+    text = _text(text, "line", item, command)
     rel = "the item %s" % item.name
     blocks = read(item, rel)
     g_next, r_next = next_ids(root, capability, blocks)
@@ -131,7 +131,7 @@ def add_line_to(root, item, capability, text, group=None, in_group=None):
         if target is None:
             raise Refused("work line: %s has no group %s in %s" % (label(item), in_group, capability))
     else:
-        target = Group(g_next, _text(group, "group title") if group is not None else item.title, [])
+        target = Group(g_next, _text(group, "group title", item, command) if group is not None else item.title, [])
         block.groups.append(target)
     target.requirements.append((r_next, text))
     item.sections[SECTION] = render(blocks)

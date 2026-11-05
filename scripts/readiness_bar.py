@@ -5,7 +5,6 @@ that is not logic-only. The lines are checked on a copy of `spec/` under the tem
 laid in, removed afterwards whatever happens; `spec/` itself is never written."""
 import contextlib
 import io
-import re
 import shutil
 import tempfile
 from pathlib import Path
@@ -72,18 +71,17 @@ def _scenarios(copy, blocks):
         path = backlog_lines.capability_file(copy, block.capability)
         if spec_read.capability(path).frontmatter.get("group") == "guarantees" or not block.groups:
             continue
-        said = io.StringIO()
+        skipped = {}
         try:
-            with contextlib.redirect_stderr(said):
-                text = features_generate.generate(copy, path)
+            with contextlib.redirect_stderr(io.StringIO()):
+                features_generate.generate(copy, path, skipped)
         except features_generate.GenerateError as err:
             reasons.append("%s: %s" % (block.capability, err))
             continue
         for group in block.groups:
             gid = "%s#%s" % (block.capability, group.id)
-            why = re.search(r"(?m)^features generate: %s: no scenario: (.*)$" % re.escape(gid), said.getvalue())
-            if not re.search(r"(?m)^  @%s(?:\s|$)" % group.id, text) and why:
-                reasons.append("%s has no scenario: %s" % (gid, why.group(1)))
+            if gid in skipped:
+                reasons.append("%s has no scenario: %s" % (gid, skipped[gid]))
     return reasons
 
 

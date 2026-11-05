@@ -16,7 +16,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/tools_check.py` | `check`: ruff, vulture, import-linter |
 | `scripts/tools_size.py` | `size`: tracked Python files over a line limit |
 | `scripts/features*.py` | the `features` command: Gherkin reading, bindings, reports |
-| `scripts/features_generate.py` | `features generate`: a codified capability's groups written as scenarios read off their facts by `spec_steps`, with no solver, example data first, byte-stable; an uncodified capability refused, naming `migrate upgrade` |
+| `scripts/features_generate.py` | `features generate`: a codified capability's groups written as scenarios read off their facts by `spec_steps`, with no solver, example data first, byte-stable, and the groups no step words given to a caller (`skipped`); an uncodified capability refused, naming `migrate upgrade` |
 | `scripts/features_vocab.py` | the step vocabulary: a step read back into its template, kind and term, the (template, kind) patterns (design §14.1, §14.3) |
 | `scripts/features_vocab_gf.py` | the generated StepsTyped module: for each kind its instance mention and Given templates, and for each attribute slot its Given (design-r2 §4.4) |
 | `grammar/` | the plugin's GF sources: the core requirement grammar (`Core`, `Req`) and the step grammar (`Steps`), each with its English; `check.lp`, the fixed meta-encoding of `model logic` over a context's facts (two states, candidate pairs, unification with functional relations and definites, `every`/`no` read through a `Def`, L1, L3-L6); `corpus/`, the sentences the grammar must parse and refuse |
@@ -66,13 +66,13 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/supervise_done.py` | `work run`'s done: an initiative whose delivery is closed set `done` and committed |
 | `scripts/supervise_intake.py` | `work run`'s intake rounds: a request this context is the upstream of, given to a session that writes its line outcomes and passes its turn |
 | `scripts/supervise_draft.py` | `work run`'s drafting: the work-items of a formulated capability-proposal and of a branch review's fix-now findings |
-| `scripts/backlog_items.py` | one item of the backlog: its file `.shop/backlog/b<n>.md` read (`parse`, a malformed file refused naming the file and the field) and written (`render`), its label `b<n> "<title>"`, numbering and its one-path commit |
-| `scripts/backlog_moves.py` | the commands that change an item (`work idea`, `shape`, `refuse`, `withdraw`, `answer`, `rate`, `depend`), each one commit of its file; a dependency that closes a cycle refused |
+| `scripts/backlog_items.py` | one item of the backlog: its file `.shop/backlog/b<n>.md` read (`parse`, a malformed file refused naming the file and the field) and written (`render`), its label `b<n> "<title>"`, numbering and its one-path commit; the request an item was taken in from (`request`, `asked_by`) |
+| `scripts/backlog_moves.py` | the commands that change an item (`work idea`, `shape`, `refuse`, `withdraw`, `answer`, `rate`, `depend`, `ready`), each one commit of its file; a dependency that closes a cycle refused, and `work ready` refused with the bar's reasons |
 | `scripts/backlog_cli.py` | the backlog's commands of `work`: their parsers, dispatch and what they print, `work show b<n>` |
 | `scripts/backlog_view.py` | `work backlog`: the score, the rank within a state, an item's blockers, the tables by state and the JSON |
 | `scripts/backlog_lines.py` | an item's requirement lines: its `## Requirements` blocks read and written, `work line` giving a line (or a term bullet) the next ids of its codified capability, and the blocks laid over a copy of `spec/` (`lay`) |
 | `scripts/readiness_bar.py` | the readiness bar: an item's request lines settled, and its lines well-formed (they parse, `model logic` finds no L0 nor an L1 naming them, `features generate` writes their groups' scenarios), checked on a temporary copy of `spec/` with the lines laid in; the reasons `work ready` names |
-| `scripts/intake_moves.py` | intake: `work intake`, a request of this context taken in as a `shaped` item (its provenance read off the asker), the item a request was taken in from (`linked`), and the item side of `work outcome` |
+| `scripts/intake_moves.py` | intake: `work intake`, a request of this context taken in as a `shaped` item (its provenance read off the asker), the item a request was taken in from (`linked`), and the item side of `work outcome`; this context's own request to its upstream, and a word that is not a line outcome, refused |
 | `scripts/work_items.py` | the pytest plugin of `--work-item`, loaded by `work run`'s tests and this repository's conftest |
 | `scripts/measure` with `scripts/measure_*.py` | the `measure` command: `initiative` (reading `measure_read.py`, figures `measure_build.py`, the record `measure_write.py`) and `show`, `compare` (`measure_show.py`) |
 | `scripts/migrate*.py` | the `migrate` command |

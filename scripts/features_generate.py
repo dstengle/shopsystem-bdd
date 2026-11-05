@@ -42,8 +42,9 @@ def _example(v, cap, group):
     return out
 
 
-def scenario_text(v, ctx, cap, group):
-    """A group's scenario, or None for a logic-only group or one with a fact no step words."""
+def scenario_text(v, ctx, cap, group, skipped=None):
+    """A group's scenario, or None for a logic-only group or one with a fact no step words (its reason kept in
+    `skipped`, by group id, when given)."""
     gid = "%s#%s" % (cap.name, group.id)
     for req in group.requirements:
         ident = "%s#%s" % (cap.name, req.id)
@@ -56,6 +57,8 @@ def scenario_text(v, ctx, cap, group):
         steps = spec_steps.read([ctx.facts[s.id] for s in mine], ctx.vocab, v)
     except spec_steps.TraceError as err:
         _warn(gid, "no scenario: %s" % err)
+        if skipped is not None:
+            skipped[gid] = str(err)
         return None
     lines = _example(v, cap, group) + [(k, v.text(t), None) for k, t in steps]
     out = ["  " + " ".join("@" + x for x in [group.id] + [r.id for r in group.requirements]),
@@ -71,8 +74,9 @@ def scenario_text(v, ctx, cap, group):
     return "\n".join(out)
 
 
-def generate(root, path):
-    """The feature text of one codified capability file (a draft outside spec/capabilities/ is read beside them)."""
+def generate(root, path, skipped=None):
+    """The feature text of one codified capability file (a draft outside spec/capabilities/ is read beside them);
+    `skipped`, when given, gets the reason of each group with a fact no step words, by group id."""
     v, cap, path = fv.load(root), spec_read.capability(path), Path(path).resolve()
     if cap.problems:
         raise GenerateError("; ".join("%s: %s" % (path.name, p) for p in cap.problems))
@@ -82,7 +86,7 @@ def generate(root, path):
     out = [HEADER % path.stem, "Feature: %s" % cap.frontmatter.get("title", cap.name),
            "  Narrator: %s" % cap.frontmatter.get("narrator", "")]
     for group in groups:
-        text = scenario_text(v, ctx, cap, group)
+        text = scenario_text(v, ctx, cap, group, skipped)
         out += ["", text] if text else []
     return "\n".join(out) + "\n"
 
