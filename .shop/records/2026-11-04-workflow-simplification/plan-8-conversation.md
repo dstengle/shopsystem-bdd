@@ -285,7 +285,7 @@ test in the task named.
   - `CONVERSATION`: a list of rows giving 6 messages (person, session, person, session, person, session), with a tool
     use and its result inside the second session turn.
 
-- [ ] **Step 1: Write the failing tests** (`test_conversation_read.py`, on `tmp_path`).
+- [x] **Step 1: Write the failing tests** (`test_conversation_read.py`, on `tmp_path`).
   - `test_a_conversation_reads_as_its_messages`: `CONVERSATION` gives 6 messages alternating `person`/`session`,
     with `ident`s and texts as written.
   - `test_only_the_words_are_messages` (Review Focus 1), parametrised. Each row is added inside `CONVERSATION` and
@@ -313,27 +313,27 @@ test in the task named.
   - `test_around_is_clipped_at_both_ends`: on 6 messages, `around(m, 0)` has 3 messages, `around(m, 2)` has 5 and
     `around(m, 5)` has 3.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_conversation_read.py -q | tail -3`
   Expected: FAIL with `ModuleNotFoundError: No module named 'conversation_read'`.
 
-- [ ] **Step 3: Implement** `conversation_read.py` (D2, D4). It iterates `json_rows(path)` once. A person's message
+- [x] **Step 3: Implement** `conversation_read.py` (D2, D4). It iterates `json_rows(path)` once. A person's message
   closes the open session turn.
 
-- [ ] **Step 4: Run them.**
+- [x] **Step 4: Run them.**
   Run: `python3 -m pytest tests/scripts/test_conversation_read.py -q | tail -1`
   Expected: all pass.
 
-- [ ] **Step 5: Mutations, each reverted.** Each must turn its test red:
+- [x] **Step 5: Mutations, each reverted.** Each must turn its test red:
   - keeping `tool_result` text fails `test_only_the_words_are_messages`;
   - one message per assistant row fails `test_a_turn_split_over_rows_is_one_message`;
   - citing the first match fails `test_the_newest_message_is_cited`.
 
-- [ ] **Step 6: The baselines.**
+- [x] **Step 6: The baselines.**
   Run: `python3 -m pytest -q | tail -1; python3 scripts/tools size --limit 300; python3 scripts/tools check scripts/conversation_read.py tests/scripts/transcript_testing.py tests/scripts/test_conversation_read.py`
   Expected: `4 xfailed`, no failures; `size` silent; `check` clean.
 
-- [ ] **Step 7: Commit.**
+- [x] **Step 7: Commit.**
   ```bash
   git add scripts/conversation_read.py tests/scripts/transcript_testing.py tests/scripts/test_conversation_read.py CLAUDE.md
   git commit -m "conversation: the messages of a session's transcript, without tool output, and the one a quote's words cite"

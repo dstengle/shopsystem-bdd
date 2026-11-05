@@ -38,6 +38,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/spec_steps.py` with `scripts/spec_steps_facts.py` | a group's requirements as Gherkin steps (design-r3 §5): each requirement's facts read into atoms (`spec_steps_facts`: instances, fluents, the trigger, responses, the contrast of an `every` role) and the atoms into Givens, a When and Thens by the table from atom predicate to Steps fun, instances named in order of first mention |
 | `scripts/migrate_session.py` | the hooks' text about initiatives: `work status` at SessionStart, `migrate compacting` at PreCompact |
 | `scripts/migrate_prompt.py` | the UserPromptSubmit hook's text (`migrate prompting`): a session writes a delegation the person gives with `work delegate` (requests r72) |
+| `scripts/conversation_read.py` | the messages of a session's transcript: the person's prompts and the session's text of each turn, without tool uses, tool results, thinking, reminders, meta or subagent rows; the message a quote's words cite and the messages around it (conversation) |
 | `scripts/model*.py` | the `model` command: parsing, facts, checks, work, reports |
 | `scripts/model_decisions.py` | the tiers of `spec/decisions/`: the `enforced_by` entries told apart, and `model decisions --check`'s runs of each `check` decision's tests (decision-tiers) |
 | `scripts/model_requests.py` | the reading of requests by `model`: `.shop/work/requests/q<n>.md` |
