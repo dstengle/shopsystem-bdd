@@ -88,3 +88,32 @@ def ready_repo(backlog_repo):
     for args in (("add", "-A"), ("commit", "-q", "-m", "a codified spec")):
         subprocess.run(["git", *args], cwd=backlog_repo, capture_output=True, text=True, check=True)
     return backlog_repo
+
+
+@pytest.fixture
+def batch_outside(tmp_path_factory):
+    """The directory beside a batch repository: its bare remote, the stand-in gh and the stand-in's files."""
+    return tmp_path_factory.mktemp("outside")
+
+
+@pytest.fixture
+def batch_repo(ready_repo, batch_outside, monkeypatch):
+    """`ready_repo` with a bare repository in `batch_outside` as its `origin` (`main` pushed) and a committed
+    `.shop/delivery.toml` whose `[batch] tests` is `python3 -c pass`; `gh` is the stand-in (D20), and no git or gh
+    reaches a network or asks for a password (plan 4, Task 1)."""
+    import subprocess
+
+    from batch_testing import gh_env
+
+    def git(*args):
+        subprocess.run(["git", *args], cwd=ready_repo, capture_output=True, text=True, check=True)
+    (ready_repo / ".shop").mkdir(exist_ok=True)
+    (ready_repo / ".shop" / "delivery.toml").write_text('[batch]\ntests = "python3 -c pass"\n')
+    git("add", "-A")
+    git("commit", "-q", "-m", "delivery")
+    subprocess.run(["git", "init", "-q", "--bare", str(batch_outside / "origin.git")], check=True, capture_output=True)
+    git("remote", "add", "origin", str(batch_outside / "origin.git"))
+    git("push", "-q", "origin", "main")
+    for key, value in gh_env(batch_outside).items():
+        monkeypatch.setenv(key, value)
+    return ready_repo

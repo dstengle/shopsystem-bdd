@@ -288,7 +288,7 @@ Builds no requirement. Every later task stands on it.
   `.shop/delivery.toml` holding `[batch]` with `tests = "python3 -c pass"`. With `monkeypatch`, it sets
   `SHOPSYSTEM_WORK_GH` to a script running `stub_gh.py`, and `GH_TOKEN=`, `GIT_TERMINAL_PROMPT=0`.
 
-- [ ] **Step 1: Write the failing tests.**
+- [x] **Step 1: Write the failing tests.**
   - `test_batch_plan.py`:
     - `test_render_round_trips`: a Batch with two tasks and a two-line `## Plan`; `parse(render(b), rel) == b`, and
       the text equals the format above for the one-task case.
@@ -314,22 +314,22 @@ Builds no requirement. Every later task stands on it.
       None)`, then after writing the state file `("MERGED", "abc")`; with `STUB_GH_FAIL="pr create"` it is refused
       naming `gh pr create`.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_batch_plan.py tests/scripts/test_batch_git.py -q`
   Expected: FAIL; the modules do not exist.
 
-- [ ] **Step 3: Implement the three modules and `stub_gh.py`, then move `git`/`GitFailed`.** `stub_gh.py` follows
+- [x] **Step 3: Implement the three modules and `stub_gh.py`, then move `git`/`GitFailed`.** `stub_gh.py` follows
   D20 and its docstring says so.
 
-- [ ] **Step 4: Run them, and the suite's supervision tests (the move).**
+- [x] **Step 4: Run them, and the suite's supervision tests (the move).**
   Run: `python3 -m pytest tests/scripts/test_batch_plan.py tests/scripts/test_batch_git.py tests/scenarios/test_supervision.py -q | tail -1`
   Expected: all pass.
 
-- [ ] **Step 5: The baselines.**
+- [x] **Step 5: The baselines.**
   Run: `python3 -m pytest -q | tail -1; python3 scripts/tools size --limit 300; python3 scripts/tools check scripts/batch_git.py scripts/batch_gh.py scripts/batch_plan.py scripts/supervise_worker.py tests/scripts/stub_gh.py tests/scripts/batch_testing.py tests/scripts/test_batch_plan.py tests/scripts/test_batch_git.py tests/scripts/conftest.py`
   Expected: `27 xfailed`, no failures, passed = 1153 + the new tests; `size` silent; `check` clean.
 
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
   ```bash
   git add scripts/batch_git.py scripts/batch_gh.py scripts/batch_plan.py scripts/supervise_worker.py tests/scripts/stub_gh.py \
     tests/scripts/batch_testing.py tests/scripts/test_batch_plan.py tests/scripts/test_batch_git.py tests/scripts/conftest.py CLAUDE.md

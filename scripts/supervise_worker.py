@@ -11,8 +11,8 @@ from pathlib import Path
 
 import supervise_outputs as outputs
 import workqueue
+from batch_git import GitFailed, git  # noqa: F401  (GitFailed is imported from here by work run's modules)
 from supervise_faults import NO_RESULT, Fault, cut_short, how_ended, session_end
-from workqueue import Refused
 
 AGENT_PREFIX = "shopsystem-bdd:"
 SCRIPTS = Path(__file__).resolve().parent
@@ -61,19 +61,6 @@ ROLE = {"code-scout": "researcher", "bdd-planner": "planner", "bdd-implementer":
         "batch-analyst": "analyst", "delegation-answerer": "answerer"}
 # Set in each worker's environment: a `work run` that finds it was started by a worker (r21).
 WORKER = "SHOPSYSTEM_WORK_RUN_WORKER"
-
-
-class GitFailed(Refused):
-    """A git command that failed: work run's refusal before any stage (r10), the work-item's fault during one (r41)."""
-
-
-def git(root, *args):
-    """Run git in `root`; a git that fails raises GitFailed, with git's first line of complaint."""
-    done = subprocess.run(["git", *args], cwd=root, capture_output=True, text=True)
-    if done.returncode != 0:
-        said = (done.stderr.strip() or done.stdout.strip() or "exit %d" % done.returncode).splitlines()[0]
-        raise GitFailed("git %s failed: %s" % (" ".join(args), said))
-    return done
 
 
 def with_scripts(plugin=False, work_item=None, rounds=False):

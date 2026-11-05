@@ -73,6 +73,9 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/backlog_lines.py` | an item's requirement lines: its `## Requirements` blocks read and written, `work line` giving a line (or a term bullet) the next ids of its codified capability, and the blocks laid over a copy of `spec/` (`lay`) |
 | `scripts/readiness_bar.py` | the readiness bar: an item's request lines settled, and its lines well-formed (they parse, `model logic` finds no L0 nor an L1 naming them, `features generate` writes their groups' scenarios), checked on a temporary copy of `spec/` with the lines laid in; the reasons `work ready` names |
 | `scripts/intake_moves.py` | intake: `work intake`, a request of this context taken in as a `shaped` item (its provenance read off the asker), the item a request was taken in from (`linked`), and the item side of `work outcome`; this context's own request to its upstream, and a word that is not a line outcome, refused |
+| `scripts/batch_git.py` | a batch's git plumbing: `git` and `GitFailed` (moved from `supervise_worker`, which imports them back), `.shop/delivery.toml` (`delivery`), the lock every committing batch command holds (`locked`), the worktrees directory and its worktrees, the remote and the push |
+| `scripts/batch_gh.py` | a batch's `gh` calls through `$SHOPSYSTEM_WORK_GH`: a draft pull request created, its state and merge commit read, it closed |
+| `scripts/batch_plan.py` | the batch and its plan, `.shop/batches/<n>/plan.md`: read (`parse`, a malformed file refused naming the file and the field) and written (`render`), the batches found by name, the open one and an item's, the base-branch check, and the commit of the plan with the items it moves |
 | `scripts/work_items.py` | the pytest plugin of `--work-item`, loaded by `work run`'s tests and this repository's conftest |
 | `scripts/measure` with `scripts/measure_*.py` | the `measure` command: `initiative` (reading `measure_read.py`, figures `measure_build.py`, the record `measure_write.py`) and `show`, `compare` (`measure_show.py`) |
 | `scripts/migrate*.py` | the `migrate` command |
@@ -87,6 +90,6 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `tests/scenarios/migration_tools_handlers_conditions.py` | migration-tools' condition Givens: a repository's primitive conditions checked against the scenario's example data, and the untracked file built |
 | `tests/scenarios/<capability>_world.py` and the like | a capability's scenario repository: `analysis_tools_world.py`; `work_queue_world.py` (the repository in version control, noun phrases matched against files, `bind_all`); `supervision_world.py`, `supervision_build.py` and `supervision_plans.py` (the repository `work run` runs in, built from the Givens, and what the stand-in claude does in it); `backlog_world.py` (items written as `.shop/backlog/` files, the scenario's `i<n>` as `b<n>`, the items a scenario names written before its command); `readiness_world.py` (the codified spec of the generate fixture written over `spec/`, an item given requirement lines, `work` run with no input) |
 | `tests/toolchain.py` | the grammar tools the suite needs: `require()` fails a test, never skips it, naming `tools install` |
-| `tests/scripts/` | tests of the scripts that no scenario drives |
+| `tests/scripts/` | tests of the scripts that no scenario drives; `stub_gh.py`, the stand-in `gh` the batch tests run as `$SHOPSYSTEM_WORK_GH`, and `batch_testing.py`, what they share |
 
 A new concern gets a new module and a row here.
