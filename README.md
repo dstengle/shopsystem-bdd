@@ -102,7 +102,7 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 | agent | tools | model | for |
 |---|---|---|---|
 | `pr-reviewer` | Read, Glob, Grep | opus | a batch's pull request review, from its brief: the batch's own commits, its items' lines, the judgement decisions; changes nothing, and replies with the findings file the batch session saves |
-| `architecture-reviewer` | Read, Glob, Grep, Bash, Write | opus | an architecture review when the person asks for one |
+| `architecture-reviewer` | Read, Glob, Grep, Bash | opus | an architecture review when the person asks for one, of the commits or the batch it is given; changes nothing, and replies with the findings file the session saves |
 | `trial-runner` | Read, Glob, Grep, Bash, Write | sonnet | one trial of a plugin tool or command on a target; writes only one measurement record |
 
 No agent has the Agent tool (design-decision/the-2-0-agents). A plugin agent's `hooks` and `permissionMode` are

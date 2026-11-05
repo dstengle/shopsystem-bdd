@@ -1,6 +1,6 @@
 """The 2.0 agents (design-decision/the-2-0-agents, 0083), checked by reading the agent definitions under agents/:
-`pr-reviewer` (opus; no Edit, Write or shell), `architecture-reviewer` (opus; no Edit) and `trial-runner` (sonnet),
-and no agent can start an agent."""
+`pr-reviewer` (opus; no Edit, Write or shell), `architecture-reviewer` (opus; no Edit or Write) and `trial-runner`
+(sonnet), and no agent can start an agent. A reviewer's findings are its reply (plan-9 rulings Q2)."""
 import pathlib
 import unittest
 
@@ -57,6 +57,15 @@ class RoleBoundaries(unittest.TestCase):
 
     def test_pr_reviewer_has_no_write_or_shell(self):
         self.assertFalse(set(EDIT + WRITE + SHELL) & set(self.named("pr-reviewer")["tools"]))
+
+    def test_architecture_reviewer_has_no_write_and_replies_with_its_findings(self):
+        """The harness refuses a subagent's Write of a findings file (plan-7 Q1), so the findings are the reply."""
+        self.assertFalse(set(EDIT + WRITE) & set(self.named("architecture-reviewer")["tools"]))
+        text = (AGENTS / "architecture-reviewer.md").read_text()
+        self.assertIn("your reply is the findings", text.lower())
+        for old in ("work-item", "initiative", "branch review"):
+            with self.subTest(word=old):
+                self.assertNotIn(old, text)
 
     def test_each_agent_names_its_model(self):
         expected = {"architecture-reviewer": "opus", "pr-reviewer": "opus", "trial-runner": "sonnet"}
