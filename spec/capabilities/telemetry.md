@@ -53,8 +53,8 @@ knobs (batch size, review depth, the readiness bar) are tuned against these figu
 - A main session's requests count inside the window from started to built (else closed, else now), a subagent's
   whole when its first request is inside it; each request once, and session time is the sum of gaps of at most 300 s.
 - Cost is computed from a dated price table per model, which `.shop/delivery.toml` `[prices."<model>"]` overrides; a
-  request of a model with no price (an Opus 4 before 4.6 among them) is counted in tokens and named under `unpriced`,
-  never guessed. Claude Haiku 5.5 is priced at its long rate when a request's prompt is over 100K tokens.
+  request of a model with no price (an Opus 4 before 4.6, a Sonnet 4 before 4.6 and a Haiku 4 before 4.5 among
+  them) is counted in tokens and named under `unpriced`, never guessed. Claude Haiku 5.5 is priced at its long rate when a request's prompt is over 100K tokens.
 - A role is planning for a main session and for the subagent that drove the batch (one begun before the window that
   dispatched a subagent counted in it, by its meta file's `parentAgentId`), its requests inside the window counted;
   review for a `pr-reviewer` or a subagent described `batch-<n> review`, fixing for `batch-<n> fix`, implementing for

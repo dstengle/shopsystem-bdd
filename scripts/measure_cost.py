@@ -2,7 +2,8 @@
 input, output and cache-read price in dollars per million tokens, `.shop/delivery.toml`'s `[prices."<model>"]` over
 it, cache writes priced by their time to live, and a model with a second rate for a long prompt priced by it. A
 transcript carries tokens and the model, never dollars: a request of a model with no price (an Opus 4 before 4.6,
-which the table does not state) costs None and is named, never guessed (0018). Standard library only."""
+or a Sonnet 4 or Haiku 4 other than 4.6 and 4.5, which the table does not state) costs None and is named, never
+guessed (0018). Standard library only."""
 import batch_git
 from measure_read import Refused, number
 from workqueue import Refused as WorkRefused
@@ -11,8 +12,8 @@ AS_OF = "2026-10-06"
 PRICES = {
     "claude-opus-5-5": (4.0, 20.0, 0.20), "claude-opus-5": (5.0, 25.0, 0.50),
     "claude-opus-4-8": (5.0, 25.0, 0.50), "claude-opus-4-7": (5.0, 25.0, 0.50), "claude-opus-4-6": (5.0, 25.0, 0.50),
-    "claude-sonnet-5-5": (2.0, 10.0, 0.20), "claude-sonnet-5": (2.0, 10.0, 0.20), "claude-sonnet-4": (3.0, 15.0, 0.30),
-    "claude-haiku-5-5": (0.10, 0.50, 0.01), "claude-haiku-4": (1.0, 5.0, 0.10),
+    "claude-sonnet-5-5": (2.0, 10.0, 0.20), "claude-sonnet-5": (2.0, 10.0, 0.20), "claude-sonnet-4-6": (3.0, 15.0, 0.30),
+    "claude-haiku-5-5": (0.10, 0.50, 0.01), "claude-haiku-4-5": (1.0, 5.0, 0.10),
     "claude-fable-5-1": (10.0, 50.0, 0.25), "claude-fable-5": (10.0, 50.0, 1.00),
 }
 # {model key: (prompt tokens, price)}: a request whose prompt (new input, cache writes and reads) is over that many

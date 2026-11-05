@@ -74,3 +74,16 @@ def test_haiku_5_5_over_a_100k_prompt_takes_its_long_rate():
                    output_tokens=M)
     want = (40_000 * 0.50 + 1 * 0.50 * 1.25 + 60_000 * 0.05) / M + 2.50
     assert measure_cost.cost(long, measure_cost.PRICES) == pytest.approx(want)
+
+
+@pytest.mark.parametrize("model", ["claude-sonnet-4-20250514", "claude-sonnet-4-5-20250929"])
+def test_a_sonnet_4_the_table_states_no_price_for_is_unpriced(model):
+    """Plan 8 D15: only the Sonnet 4 the claude-api skill's table lists (4.6) is priced."""
+    assert measure_cost.cost(request(model=model, output_tokens=M), measure_cost.PRICES) is None
+
+
+def test_sonnet_4_6_and_haiku_4_5_are_priced():
+    table = measure_cost.PRICES
+    assert measure_cost.cost(request(model="claude-sonnet-4-6", output_tokens=M), table) == pytest.approx(15.0)
+    assert measure_cost.cost(request(model="claude-haiku-4-5-20251001", output_tokens=M), table) == pytest.approx(5.0)
+    assert measure_cost.cost(request(model="claude-sonnet-4-6", cache_read_tokens=M), table) == pytest.approx(0.30)

@@ -228,30 +228,30 @@ test in the task named.
 - Produces: `measure_cost.PRICES` with the keys `claude-sonnet-4-6` and `claude-haiku-4-5` in place of
   `claude-sonnet-4` and `claude-haiku-4`.
 
-- [ ] **Step 1: Write the failing tests.**
+- [x] **Step 1: Write the failing tests.**
   - `test_a_sonnet_4_the_table_states_no_price_for_is_unpriced`, parametrised over `claude-sonnet-4-20250514` and
     `claude-sonnet-4-5-20250929`: `cost(<request with 1,000,000 output tokens>, PRICES) is None`.
   - `test_sonnet_4_6_and_haiku_4_5_are_priced`: 1,000,000 output tokens of `claude-sonnet-4-6` cost 15.0, and of
     `claude-haiku-4-5-20251001` cost 5.0. 1,000,000 cache-read tokens of `claude-sonnet-4-6` cost 0.30.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_measure_cost.py -q | tail -3`
   Expected: the Sonnet 4.0 and 4.5 cases FAIL (`15.0 is not None`). `test_sonnet_4_6_and_haiku_4_5_are_priced`
   already passes.
 
-- [ ] **Step 3: Change the two keys, the docstring, the telemetry sentence and the CLAUDE.md row.**
+- [x] **Step 3: Change the two keys, the docstring, the telemetry sentence and the CLAUDE.md row.**
 
-- [ ] **Step 4: Run the measure tests.**
+- [x] **Step 4: Run the measure tests.**
   Run: `python3 -m pytest tests/scripts/test_measure_cost.py tests/scripts/test_measure_batch.py tests/scripts/test_measure_batch_show.py tests/scenarios/test_telemetry.py -q | tail -1`
   Expected: all pass. No fixture uses a Sonnet 4 or Haiku 4 id (`grep -rn "sonnet-4\|haiku-4" tests/` finds only
   the new tests).
 
-- [ ] **Step 5: The baselines.**
+- [x] **Step 5: The baselines.**
   Run: `python3 -m pytest -q | tail -1; python3 scripts/features generate --check; echo $?; python3 scripts/tools check scripts/measure_cost.py tests/scripts/test_measure_cost.py`
   Expected: `1484 passed, 1 skipped, 4 xfailed`. Generate exits 0: an Implementation sentence changes no scenario.
   `check` is clean.
 
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
   ```bash
   git add CLAUDE.md scripts/measure_cost.py spec/capabilities/telemetry.md tests/scripts/test_measure_cost.py
   git commit -m "measure: only the Sonnet 4 and Haiku 4 the table lists are priced; CLAUDE.md: the findings file is pr-reviewer's reply (plan 7 left-overs)"
