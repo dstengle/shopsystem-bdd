@@ -715,11 +715,11 @@ test in the task named.
 - Create: `.shop/records/2026-11-04-workflow-simplification/plan-8-implementation.md`
 - Modify: `.shop/records/README.md` (a row for the report); this plan (every box ticked)
 
-- [ ] **Step 1: Every requirement is built.**
+- [x] **Step 1: Every requirement is built.**
   Run: `python3 -c "import sys; sys.path.insert(0,'scripts'); import pathlib, spec_unbuilt as u; d=u.unbuilt(pathlib.Path('.')); print(d, sum(map(len,d.values())), u.problems(pathlib.Path('.')))"`
   Expected: `{} 0 []`. If any id is left, the report explains each one.
 
-- [ ] **Step 2: The baselines, all at once.**
+- [x] **Step 2: The baselines, all at once.**
   Run: `python3 -m pytest -q | tail -2; python3 -m pytest -m timing -n 0 -q | tail -1; python3 scripts/model check | tail -1; python3 scripts/model logic | tail -1; python3 scripts/model lexicon --check | tail -1; python3 scripts/model decisions --check | tail -1; python3 scripts/features generate --check; echo $?; python3 scripts/features vocab --check | tail -1; python3 scripts/features bindings --unbound; python3 scripts/tools size --limit 300; python3 scripts/tools check $(git diff --name-only a7aeb4c2...HEAD -- '*.py' scripts/work)`
   Expected:
   - the suite: no `xfailed`, no failures. Passed = 1481 + 4 conversation scenarios + the new script tests, and the
@@ -735,7 +735,7 @@ test in the task named.
   - `size`: silent;
   - `check`: clean.
 
-- [ ] **Step 3: The smoke run on a real transcript,** in a scratch repository under
+- [x] **Step 3: The smoke run on a real transcript,** in a scratch repository under
   `/home/vscode/.claude/jobs/7e9ba079/tmp/smoke8/`. Each `cp` and each `rm` is its own command (the person's rule).
   The person's store is only read here, never written. Steps:
   1. **Build the repository:** `git init`, the fixture spec of `tests/scripts/fixtures/generate/repo`, two items
@@ -760,7 +760,7 @@ test in the task named.
   If no transcript can be found, record that in the report as not run, with why, and run the rest on
   `transcript_testing.CONVERSATION`.
 
-- [ ] **Step 4: Write the implementation report** at `plan-8-implementation.md`, in `plan-7-implementation.md`'s form
+- [x] **Step 4: Write the implementation report** at `plan-8-implementation.md`, in `plan-7-implementation.md`'s form
   (no frontmatter):
   - Final state: each Step 2 figure as measured.
   - The smoke run: the quote's message count, the hooks' wall times, and what the grep found.
@@ -775,11 +775,11 @@ test in the task named.
     - D2's rules for a slash command's rows depend on Claude Code's transcript shape, which may change.
   - Files.
 
-- [ ] **Step 5: Index the records.** Add a row to `.shop/records/README.md` after the row for `plan-8-conversation.md`:
+- [x] **Step 5: Index the records.** Add a row to `.shop/records/README.md` after the row for `plan-8-conversation.md`:
   `| \`2026-11-04-workflow-simplification/plan-8-implementation.md\` | plan 8 executed: conversation (\`work quote\` with the turns around the person's words committed in \`.shop/quotes/\`, the UserPromptSubmit hook keeping the session, \`work show quote-<n>\`, \`work names\` at SessionStart), brainstorming r3 through shaping-items, Sonnet 4 and Haiku 4 priced only as the table lists, 5 requirements out of \`unbuilt:\`, none left | report |`.
   Tick every box of this plan.
 
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
   ```bash
   git add .shop/records/2026-11-04-workflow-simplification/plan-8-implementation.md .shop/records/README.md \
     .shop/records/2026-11-04-workflow-simplification/plan-8-conversation.md

@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
-import spec_unbuilt  # noqa: E402
+import spec_unbuilt
 
 REPO = Path(__file__).resolve().parents[2]
 SKILLS = REPO / "skills"
