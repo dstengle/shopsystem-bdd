@@ -230,7 +230,7 @@ test in the task named.
   - `write_agent(project, session, agent, text, agent_type=None, description=None)` writes
     `<project>/<session>/subagents/agent-<agent>.jsonl` and, when either value is given, its `.meta.json`.
 
-- [ ] **Step 1: Write the failing tests.**
+- [x] **Step 1: Write the failing tests.**
   `test_measure_cost.py`:
   - `test_a_request_is_priced_by_its_model`: 1,000,000 output tokens of `claude-opus-5-5` cost 20.0, and 1,000,000
     input tokens cost 4.0.
@@ -257,30 +257,30 @@ test in the task named.
     `/s/projects/-home-x-re-po--claude-w`.
   - `test_a_missing_directory_has_no_requests`: `[]`.
 
-- [ ] **Step 2: Run them to verify they fail.**
+- [x] **Step 2: Run them to verify they fail.**
   Run: `python3 -m pytest tests/scripts/test_measure_cost.py tests/scripts/test_measure_batch_read.py -q | tail -3`
   Expected: FAIL with `ModuleNotFoundError: No module named 'measure_cost'`.
 
-- [ ] **Step 3: Implement** `measure_cost.py` and `measure_batch_read.py` (D2, D4-D6). `requests_of` iterates
+- [x] **Step 3: Implement** `measure_cost.py` and `measure_batch_read.py` (D2, D4-D6). `requests_of` iterates
   `sorted(Path(directory).rglob("*.jsonl"))`, as `read_transcripts` does.
 
-- [ ] **Step 4: Run them, and the measure tests.**
+- [x] **Step 4: Run them, and the measure tests.**
   Run: `python3 -m pytest tests/scripts/test_measure_cost.py tests/scripts/test_measure_batch_read.py tests/scripts/test_measure_runs.py tests/scenarios/test_batch_measurement.py -q | tail -1`
   Expected: all pass. batch-measurement's 22 scenarios are unchanged.
 
-- [ ] **Step 5: Mutations, each reverted.** Each must turn its test red:
+- [x] **Step 5: Mutations, each reverted.** Each must turn its test red:
   - taking the sum, not the max, over a request's rows fails `test_a_request_in_several_rows_is_counted_once`;
   - pricing 1 h writes at 1.25 fails `test_one_hour_cache_writes_cost_twice_the_input`;
   - a shortest-key match fails `test_a_dated_model_takes_the_longest_key`.
 
-- [ ] **Step 6: The baselines.**
+- [x] **Step 6: The baselines.**
   Run: `python3 -m pytest -q | tail -1; python3 scripts/tools size --limit 300; python3 scripts/tools check scripts/measure_cost.py scripts/measure_batch_read.py tests/scripts/measure_batch_testing.py tests/scripts/test_measure_cost.py tests/scripts/test_measure_batch_read.py`
   Expected:
   - the suite: `8 xfailed`, no failures, passed = 1402 + the new tests;
   - `size` silent;
   - `check` clean.
 
-- [ ] **Step 7: Commit.**
+- [x] **Step 7: Commit.**
   ```bash
   git add scripts/measure_cost.py scripts/measure_batch_read.py tests/scripts/measure_batch_testing.py \
     tests/scripts/test_measure_cost.py tests/scripts/test_measure_batch_read.py CLAUDE.md
