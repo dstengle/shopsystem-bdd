@@ -178,3 +178,28 @@ def batch_abandon(step):
     T.prepare(step)
     T.ensure_batch(step)
     T.run_batch(step, "abandon", T.batch_name(step, step.names[-1]))
+
+
+@handler("GivenK", "review folder")
+def given_review_folder(step):
+    T.given(step, "review folder", step.names[0])
+
+
+def review_folder_of(step):
+    folder, batch = step.names
+    T.given(step, "batch", batch)
+    T.given(step, "review folder", folder)["batch"] = batch
+
+
+B.OF_GIVENS["review folder"] = review_folder_of
+
+
+@local("ThenDoes", "review folder")
+def removes_review_folder(step):
+    """The run exited 0 and the review folder the world made for the batch is gone."""
+    if step.term != "remove":
+        return False
+    done = step.context["result"]
+    assert done.returncode == 0, done.stderr
+    path = step.context["review_folders"][step.names[0]]
+    assert not path.exists(), (step.text, sorted(p.name for p in path.iterdir()))

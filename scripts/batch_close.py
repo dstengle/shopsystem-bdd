@@ -5,7 +5,10 @@ The person merges the pull request; `merged` records it once gh says it is `MERG
 base's history (else `git pull` first): every `in-batch` item `delivered`, the batch `merged`, its worktrees removed
 and the merged item branches deleted. `abandon` closes the pull request when there is one, returns every `in-batch`
 item to `ready` and removes the worktrees; the branches are kept. It refuses while a task worktree has uncommitted
-changes, unless `--discard`; `merged` removes them as they are, their work merged."""
+changes, unless `--discard`; `merged` removes them as they are, their work merged. Both remove the batch's review
+folders, `batch-<n>-review-<k>` beside its worktrees, whose findings the review's record already holds (r15, r16)."""
+import re
+import shutil
 import subprocess
 
 import backlog_items
@@ -33,6 +36,9 @@ def _remove_trees(root, batch):
     trees = trees_path(root)
     for tree in [trees / batch.name] + [trees / ("%s-%s" % (batch.name, t.task)) for t in batch.tasks]:
         remove_tree(root, tree)
+    for folder in trees.glob("%s-review-*" % batch.name):
+        if re.fullmatch(r"%s-review-[1-9]\d*" % re.escape(batch.name), folder.name) and folder.is_dir():
+            shutil.rmtree(folder)
 
 
 def merged(root, name):
