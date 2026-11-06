@@ -37,7 +37,7 @@ def _remove_trees(root, batch):
     trees = trees_path(root)
     for tree in [trees / batch.name] + [trees / ("%s-%s" % (batch.name, t.task)) for t in batch.tasks]:
         remove_tree(root, tree)
-    shutil.rmtree(trees / ("%s-driver" % batch.name), ignore_errors=True)     # the batch brief (r14)
+    shutil.rmtree(trees / ("%s-driver" % batch.name), ignore_errors=True)     # the batch brief's folder
     for folder in trees.glob("%s-review-*" % batch.name):
         if re.fullmatch(r"%s-review-[1-9]\d*" % re.escape(batch.name), folder.name) and folder.is_dir():
             shutil.rmtree(folder)

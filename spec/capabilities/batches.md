@@ -124,7 +124,8 @@ question while building parks its item and the rest of the batch carries on. The
   directory, never committed, and prints its path: the batch, its base checkout, each task with its worktree, branch,
   item and requirement ids, the skill `building-a-batch`, the prefix of every push and gh call (`[batch] push` of
   `.shop/delivery.toml`, a string, when given), the rules every subagent is given, where the agent stops
-  (`awaiting-merge`: no merge, no `work batch merged`) and what it replies.
+  (`awaiting-merge`: no merge, no `work batch merged`) and what it replies. `work batch merged` and
+  `work batch abandon` remove the folder `batch-<n>-driver/` with the batch's worktrees.
 - Each picked item is checked by the readiness bar again, alone and then laid over the items picked before it; one
   that no longer passes alone goes back to `shaped` with its reasons under `## Notes`, one that clashes with those
   picked stays `ready`. An item's ids that collide with its capability's or with an item picked before it are
