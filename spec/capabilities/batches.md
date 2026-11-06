@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: []
+unbuilt: [r14, r16, r15, r17, r18]
 ---
 
 # Batches
@@ -20,14 +20,19 @@ question while building parks its item and the rest of the batch carries on. The
 ## Terms
 - **uncited** (condition of commit): A commit is uncited when the commit cites no item.
 
-## Relations
+- **batch brief** (kind): the brief `work batch start` writes for the one fresh agent that runs the batch: the batch, its tasks and worktrees, the skill it follows, the rules and the lessons, and where it stops.
 
+- **review folder** (kind): the scratch directory `batch-<n>-review-<k>` under the batch's worktrees directory, which `work batch brief` writes a review's brief and change into and where the review's findings are saved; never committed.
+
+## Relations
 | from | word | to | cardinality |
 |---|---|---|---|
 | commit | of | item | one |
 | pull request | with | commit | |
 | pull request | cites | item | |
 | commit | cites | item | |
+| review folder | of | batch | one |
+| scenario | of | item |  |
 
 ## Behaviour
 
@@ -83,6 +88,21 @@ question while building parks its item and the rest of the batch carries on. The
 ### [g13] `work batch review` refuses a commit that cites no item
 - [r13] While a commit of an item in a batch is uncited, if the person runs `work batch review` on the batch, then
   `work` shall exit with an error naming the commit and change nothing.
+
+### [g14] `work batch start` writes the batch brief for a fresh agent
+- [r14] When the person runs `work batch start`, `work` shall write a batch brief and print the batch brief.
+
+### [g16] The merge removes the batch's review folders
+- [r16] When the person merges the pull request of a batch, `work` shall remove every review folder of the batch.
+
+### [g15] `work batch abandon` removes the batch's review folders
+- [r15] When the person runs `work batch abandon` on a batch, `work` shall remove every review folder of the batch.
+
+### [g17] A park takes the parked item's lines out of the batch
+- [r17] While an item that is `in-batch` proposes a requirement, when a batch parks the item, `work` shall remove the requirement.
+
+### [g18] A parked item's failing scenario does not hold up another task
+- [r18] While an item in a batch is `needs-input` and a scenario of the item is not passing, when a session runs `work batch done` on a task of the batch that is `running`, `work` shall set the status of the task to `done`.
 
 ## Implementation, may change
 

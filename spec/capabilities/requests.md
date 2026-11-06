@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/requests-written-through-work, design-decision/exits-are-successful-or-errors, design-decision/an-asker-is-told-by-its-registered-asker-id]
 retired: [r1, r3, r4, r5, r10, r11, r12, r13, r19, r20, r21, r22, r23, r42, g42]
-unbuilt: []
+unbuilt: [r52, r53]
 ---
 
 # Requests
@@ -46,6 +46,15 @@ a request (backlog, batches).
 
 - **received** (condition of request): a request whose record is kept in the repository of its upstream and whose asker is another bounded context.
 - **sent** (condition of request): a request whose record is kept in the repository of its asker and whose upstream is another bounded context.
+
+- **foreign entry** (kind): an entry of a comment (`<field> <n>: <text>`) of the part of the side that did not post the comment's step: an entry of the upstream's part (`question`, `outcome`, `counter`, `reason`, `into`, and `resolution` but on a `fits`) in a step of the asker (`ask`, `fits`, or a `turn` posted in the asker's turn), or an entry of the asker's part (`line`, `answer`) in a step of the upstream (`offer`, `accept`, `resolve`, or a `turn` posted in the upstream's turn).
+
+## Relations
+
+| from | word | to | cardinality |
+|---|---|---|---|
+| comment | holds | foreign entry |  |
+| comment | on | request | one |
 
 ## Behaviour
 
@@ -193,6 +202,12 @@ Restates: r10@0.29, r11@0.29, r12@0.29, r24@0.29.
 
 ### [g48] The asker's `work turn` refuses a turn it has passed
 - [r48] While a request is sent and the request is `awaiting-upstream`, if the person runs `work turn` on the request, then `work` shall exit with an error naming the request.
+
+### [g52] `work sync` writes no entry of the other side's part
+- [r52] While a comment that is unrecorded holds a foreign entry, when a session runs `work sync`, `work` shall write the comment, and `work` shall not write the foreign entry.
+
+### [g53] `work sync` reopens no closed request
+- [r53] While a request is closed and a comment on the request is unrecorded, when a session runs `work sync`, `work` shall write the comment, and `work` shall not change the status of the request or change the side of the request.
 
 ## Implementation, may change
 - A request between two bounded contexts, each in its own git repository, is one conversation on one GitHub issue on
