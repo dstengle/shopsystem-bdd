@@ -79,3 +79,29 @@ def test_no_hook_names_the_old_queue(tmp_path):
                           capture_output=True, text=True, timeout=60)
     assert done.returncode == 0, done.stderr
     assert "i1" not in done.stdout, done.stdout
+
+
+REQUEST = ("---\nid: request/q1\nkind: request\nupstream: bounded-context/ex.com/prod/up\n"
+           "asker: bounded-context/ex.com/prod/ctx\nstatus: %s\nturn: upstream\n---\n\n# Old items\n")
+
+
+@pytest.mark.parametrize(("status", "named"), [("awaiting-upstream", True), ("delivered", False)])
+def test_the_requests_hook_names_a_waiting_request_with_no_site_packages(tmp_path, status, named):
+    """r54, r56 under a bare `python3`: `work` itself imports clingo, so hooks.json runs request_hook."""
+    for rel, text in {"spec/index.md": "---\nid: bounded-context/ex.com/prod/ctx\nkind: bounded-context\n---\n",
+                      ".shop/requests/q1.md": REQUEST % status}.items():
+        (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
+        (tmp_path / rel).write_text(text)
+    done = run(_one("SessionStart", "request_hook"), tmp_path, "SessionStart")
+    assert (done.returncode, done.stderr) == (0, ""), done.stderr
+    assert ("q1 awaiting-upstream: Old items" in done.stdout) == named, done.stdout
+    assert ("work watch --forward" in done.stdout) == named, done.stdout
+
+
+def test_the_requests_hook_exits_0_when_its_modules_are_missing(tmp_path):
+    alone = tmp_path / "alone"
+    alone.mkdir()
+    (alone / "request_hook").write_text((ROOT / "scripts" / "request_hook").read_text())
+    done = subprocess.run([sys.executable, "-S", str(alone / "request_hook"), "watch"], cwd=tmp_path, input="{}",
+                          capture_output=True, text=True, timeout=60)
+    assert (done.returncode, done.stdout, done.stderr) == (0, "", "")

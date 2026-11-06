@@ -1,5 +1,5 @@
 """The commands of `work` for the steps of a request's conversation on its issue (capability requests, r29-r33,
-r39, r43, r44, r57, r58): `offer`, `fits`, `propose`, `accept`, `sync` and `watch`, their parsers, dispatch and what they print."""
+r39, r43, r44, r54-r58): `offer`, `fits`, `propose`, `accept`, `sync` and `watch`, their parsers, dispatch and what they print."""
 import request_accept
 import request_forward
 import request_steps
@@ -27,6 +27,7 @@ def add_parsers(sub):
     p.add_argument("--forward", action="store_true",
                    help="wake on GitHub's events (gh webhook forward), polling GitHub's notifications where it cannot;"
                         " --every is then the longest wait, --polls the waits")
+    p.add_argument("--hook", action="store_true", help="the SessionStart hook: the requests waiting on the other side")
 
 
 def cmd_offer(args):
@@ -56,6 +57,9 @@ def cmd_sync(args):
 
 
 def cmd_watch(args):
+    if args.hook:
+        import request_watch_hook
+        return request_watch_hook.hook(args.root)
     try:
         if args.forward:
             return request_forward.forward(args.root, args.every, args.polls)
