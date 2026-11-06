@@ -34,7 +34,7 @@ def _remove_trees(root, batch):
     trees = trees_path(root)
     for tree in [trees / batch.name] + [trees / ("%s-%s" % (batch.name, t.task)) for t in batch.tasks]:
         remove_tree(root, tree)
-    shutil.rmtree(trees / ("%s-driver" % batch.name), ignore_errors=True)     # the batch brief (r14)
+    shutil.rmtree(trees / ("%s-driver" % batch.name), ignore_errors=True)     # the batch brief's folder
 
 
 def merged(root, name):
