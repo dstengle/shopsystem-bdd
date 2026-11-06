@@ -124,8 +124,8 @@ class Notifications:
             print("%s: gh api notifications failed: %s" % (COMMAND, (done.stderr.strip() or "no status")
                                                           .splitlines()[0]), file=sys.stderr)
             return False
-        headers = dict((k.strip().lower(), v.strip()) for k, _, v in
-                       (line.partition(":") for line in head.splitlines()[1:]))
+        headers = {k.strip().lower(): v.strip() for k, _, v in
+                   (line.partition(":") for line in head.splitlines()[1:])}
         interval = headers.get("x-poll-interval", "")
         self.due = time.time() + (int(interval) if interval.isdigit() else self.interval)
         if status.group(1) != "200":
