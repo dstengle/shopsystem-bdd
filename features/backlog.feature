@@ -127,3 +127,14 @@ Feature: Backlog
     Then `work` prints the item i1
     And `work` prints the question q1
     And the question q1 is on the item i1
+
+  @g18 @r18
+  Scenario: `work idea` keeps its commit and names a remote it cannot push to
+    Given a remote r1
+    And the remote r1 is unpushable
+    When the person runs `work idea`
+    Then `work` writes the item i1
+    And the item i1 is `idea`
+    And `work` commits the item i1
+    And `work` prints the remote r1
+    And `work` exits successfully

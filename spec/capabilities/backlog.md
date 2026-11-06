@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: []
+unbuilt: [r18]
 ---
 
 # Backlog
@@ -93,6 +93,9 @@ item. Adding an idea starts no work. The person reads an item by its title, not 
 ### [g17] `work backlog` prints the question of an item that needs input
 - [r17] While an item is `needs-input`, when the person runs `work backlog`, `work` shall print the item and print the
   question on the item.
+
+### [g18] `work idea` keeps its commit and names a remote it cannot push to
+- [r18] While a remote is unpushable, when the person runs `work idea`, `work` shall write an item that is `idea`, commit the item, print the remote and exit successfully.
 
 ## Implementation, may change
 - Each item is the file `.shop/backlog/b<n>.md`, and each change to it is one commit of that file, whose history is
