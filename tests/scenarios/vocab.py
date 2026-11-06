@@ -100,7 +100,8 @@ def branch_head(repo):
 
 def unpushed(repo, before):
     """The remote a run's commit on the branch checked out is not pushed to (U4), or None: none when the run made no
-    commit there or the repository has no remote for the branch (its upstream's, else `origin`)."""
+    commit there or the repository has no remote for the branch (its upstream's, else `origin`). The commit is looked
+    for on the branch's upstream branch there (`branch.<b>.merge`), else on the branch of its own name."""
     after = branch_head(repo)
     if after is None or after == before:
         return None
@@ -108,7 +109,8 @@ def unpushed(repo, before):
     remote = _git(repo, "config", "branch.%s.remote" % branch) or "origin"
     if remote not in (_git(repo, "remote") or "").split():
         return None
-    return None if _git(repo, "rev-parse", "-q", "--verify", "refs/remotes/%s/%s" % (remote, branch)) == head else remote
+    upstream = (_git(repo, "config", "branch.%s.merge" % branch) or branch).removeprefix("refs/heads/")
+    return None if _git(repo, "rev-parse", "-q", "--verify", "refs/remotes/%s/%s" % (remote, upstream)) == head else remote
 
 
 def u_problems(records, unpushable=False):
