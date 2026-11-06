@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/requests-written-through-work, design-decision/exits-are-successful-or-errors, design-decision/an-asker-is-told-by-its-registered-asker-id]
 retired: [r1, r3, r4, r5, r10, r11, r12, r13, r19, r20, r21, r22, r23, r42, g42]
-unbuilt: [r52, r53]
+unbuilt: []
 ---
 
 # Requests
@@ -256,9 +256,12 @@ Restates: r10@0.29, r11@0.29, r12@0.29, r24@0.29.
   version that holds it, posts the resolution and closes the issue; `work resolve` on a request that is not
   `accepted` is refused (U3). A delivered request's turn is the asker's.
 - `work sync` lists the open issues of this context's own repository and writes a record for each `ask` no record
-  holds, then reads the issue of every record, closed or not, and applies each comment it does not hold: its
-  entries written into their sections by number, its status and turn set, an offer quoted under `## Offer`. That is
-  a copy of what the issue holds, not a write of the other side's part. An unreadable comment is printed and never
+  holds, then reads the issue of every record, closed or not, and records each comment it does not hold, applying
+  only the part of the side that posted its step (r52): its entries written into their sections by number, its
+  status and turn set, an offer quoted under `## Offer`. The poster is the asker of an `ask` or a `fits`, the
+  upstream of an `offer`, an `accept` or a `resolve`, and of a `turn` the side whose turn the request was; a foreign
+  entry is recorded with its comment, so no watch wakes on it again, and never applied. A comment on a closed
+  request sets neither its status nor its turn (r53), so a late comment reopens no request. An unreadable comment is printed and never
   recorded. The records changed are one commit, on the current branch; then every request is printed with its status
   and, unless it is `delivered`, `refused` or `withdrawn`, whose move it waits on.
 - `work watch [--every <seconds>] [--polls <n>]` polls GitHub every `--every` seconds (default 60), as `work sync`

@@ -4,9 +4,12 @@ a conversation along ("check your requests").
 
 A request this context answers that has no record yet is an open issue on this context's own GitHub repository whose
 body is an `ask` form (request_form); it is written as a new `q<n>`. For each record with an issue, closed or not,
-each comment it does not yet hold (`## Comments`, request_post) is read as its block of fields: the block's entries
-are written into their sections, by number, and its status and turn set; an offer is kept under `## Offer`. That is a
-copy of what the issue holds, not a write of the other side's part. A comment whose block does not parse, or that
+each comment it does not yet hold (`## Comments`, request_post) is read as its block of fields and recorded: only
+the part of the side that posted its step is applied (r52), its entries written into their sections, by number, its
+status and turn set, an offer kept under `## Offer`. The poster is the asker of an `ask` or a `fits`, the upstream of
+an `offer`, an `accept` or a `resolve`, and of a `turn` the side whose turn the request was; an entry of the other
+side's part (`own`) is recorded with its comment and never applied. A closed request's status and turn are never
+set by a comment (r53), so a late comment reopens no request. A comment whose block does not parse, or that
 holds none, is printed and never recorded, so it is printed again on the next sync. A comment recorded already is
 passed over: sync is safe to run again. A record with no issue whose issue was opened but its URL never committed
 (b36, f6) is given it, before the asks are read, so that it is not taken as a new request. The changed records are
@@ -34,17 +37,43 @@ CLOSED = ("delivered", "refused", "withdrawn")
 COMMAND = "work sync"
 
 
+ASKER_STEPS, UPSTREAM_STEPS = ("ask", "fits"), ("offer", "accept", "resolve")
+
+
+def poster(text, step):
+    """The side that posted `step` on the record `text`: 'asker' or 'upstream'; a turn is the side's whose turn the
+    request was."""
+    if step in ASKER_STEPS or step in UPSTREAM_STEPS:
+        return "asker" if step in ASKER_STEPS else "upstream"
+    return "asker" if field(text, "turn") == "asker" else "upstream"
+
+
+def own(text, form, section, number):
+    """Whether entry `number` of `section` in the comment `form` is of the part of the side that posted it, not a
+    foreign entry: the asker's part is its lines and answers, and the resolution of a `fits`; the upstream's is the
+    rest, and the lines its counter-proposals are."""
+    if poster(text, form.step) == "asker":
+        return section in request_post.ASKER_PART or (section == "Resolution" and form.step == "fits")
+    if section == "Lines":
+        counters = set(request_post.numbered(text, request_post.COUNTERS).values())
+        return number in counters | set(form.sections.get(request_post.COUNTERS, {}).values())
+    return section not in request_post.ASKER_PART
+
+
 def applied(text, form, url):
-    """The record `text` with the readable comment `form`, posted at `url`, written into it and recorded."""
+    """The record `text` with the readable comment `form`, posted at `url`, recorded, and the poster's part of it
+    written into it: a foreign entry is passed over, and a closed request keeps its status and turn."""
+    before = text
     for section, given in form.sections.items():
         held = entries(text, section)
-        for number in sorted(given, key=int):
+        for number in sorted((n for n in given if own(before, form, section, n)), key=int):
             held = numbered(held, int(number), given[number].replace("\n", " "))
-        text = with_entries(text, section, held)
+        if held != entries(text, section):
+            text = with_entries(text, section, held)
     for name in ("status", "turn"):
-        if form.fields.get(name):
+        if form.fields.get(name) and field(before, "status") not in CLOSED:
             text = with_field(text, name, form.fields[name].strip())
-    if form.fields.get("offer"):
+    if form.fields.get("offer") and poster(before, form.step) == "upstream":
         text = request_steps.with_offer(text, form.fields["offer"])
     return request_post.with_comment(text, url, form.step)
 
