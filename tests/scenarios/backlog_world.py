@@ -132,8 +132,24 @@ def run_work(step, *args, **kwargs):
     if args[0] not in ("idea", "intake"):     # the item a Then names is the one the command writes
         ensure_items(step)
     step.context["head"] = W().init(step.repo)
+    attach_remotes(step)
     step.context["result"] = step.run("work", *args, **kwargs)
     return step.context["result"]
+
+
+def attach_remotes(step):
+    """Each remote the scenario gave, once the repository is in git: a bare repository beside it under the remote's
+    name, the upstream remote of `main`; an unpushable one refuses every push in its pre-receive hook."""
+    for name, unpushable in step.context.get("remotes", {}).items():
+        bare_repo = step.request.getfixturevalue("tmp_path_factory").mktemp("remote") / ("%s.git" % name)
+        W().git(bare_repo.parent, "init", "-q", "--bare", str(bare_repo))
+        if unpushable:
+            hook = bare_repo / "hooks" / "pre-receive"
+            hook.write_text("#!/bin/sh\necho 'this remote takes no push' >&2\nexit 1\n")
+            hook.chmod(0o755)
+        W().git(step.repo, "remote", "add", name, str(bare_repo))
+        W().git(step.repo, "config", "branch.main.remote", name)
+        W().git(step.repo, "config", "branch.main.merge", "refs/heads/main")
 
 
 def row(stdout, name):

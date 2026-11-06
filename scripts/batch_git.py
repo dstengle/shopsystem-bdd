@@ -9,7 +9,7 @@ import subprocess
 import tomllib
 from pathlib import Path
 
-from shop_files import Refused
+from shop_files import Refused, push_failure, remote  # noqa: F401 -- `remote` is batch_git's to its importers
 
 SCRIPTS = Path(__file__).resolve().parent
 TREES = Path(".shop") / "worktrees"
@@ -149,12 +149,6 @@ def remove_tree(root, path):
     git(root, "worktree", "prune")
 
 
-def remote(root, branch):
-    """The remote `branch` pushes to: its upstream's, else `origin` (D11)."""
-    done = subprocess.run(["git", "config", "branch.%s.remote" % branch], cwd=root, capture_output=True, text=True)
-    return done.stdout.strip() if done.returncode == 0 and done.stdout.strip() else "origin"
-
-
 def remote_head(root, remote_name, branch):
     """The sha `branch` is at on `remote_name`, or None when it is not there (or the remote cannot be read)."""
     done = subprocess.run(["git", "ls-remote", remote_name, "refs/heads/%s" % branch], cwd=root, capture_output=True,
@@ -164,7 +158,6 @@ def remote_head(root, remote_name, branch):
 
 def push(root, remote_name, branch, command="work batch"):
     """`git push -u <remote> <branch>`; refused under `command`, naming the branch, the remote and git's reason."""
-    done = subprocess.run(["git", "push", "-q", "-u", remote_name, branch], cwd=root, capture_output=True, text=True)
-    if done.returncode != 0:
-        said = (done.stderr.strip() or done.stdout.strip() or "exit %d" % done.returncode).splitlines()[0]
+    said = push_failure(root, remote_name, branch)
+    if said is not None:
         raise Refused("%s: the push of %s to %s failed: %s" % (command, branch, remote_name, said))

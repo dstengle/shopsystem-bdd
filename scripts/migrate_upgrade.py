@@ -12,6 +12,7 @@ import migrate_upgrade_answers
 import migrate_upgrade_codified
 import migrate_upgrade_ids
 import migrate_upgrade_simplified
+import shop_files
 from migrate_write import check_moves, git, top_level, uncommitted
 
 SCRIPTS = Path(__file__).resolve().parent
@@ -177,6 +178,7 @@ def upgrade(root):
         print("migrate put the repository back as it was; it could not make every change: %s"
               % (getattr(error, "stderr", None) or error), file=sys.stderr)
         return 1
+    shop_files.pushed(root)   # U4: after the try, so a push git refuses keeps the upgrade's commit
     print("upgraded to %s: %s" % (plugin_version(), ", ".join(s[1] for s in steps)))
     for note in notes:
         print(note)
