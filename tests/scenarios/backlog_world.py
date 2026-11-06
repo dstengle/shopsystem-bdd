@@ -133,6 +133,8 @@ def run_work(step, *args, **kwargs):
         ensure_items(step)
     step.context["head"] = W().init(step.repo)
     attach_remotes(step)
+    for prepare in step.context.get("before_run", []):   # what a Given does once the repository is in git
+        prepare(step)
     step.context["result"] = step.run("work", *args, **kwargs)
     return step.context["result"]
 

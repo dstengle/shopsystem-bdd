@@ -168,6 +168,8 @@ def refused_quietly(step):
 
 @local("ThenExitsErr", "task")
 def refused_naming_task(step):
+    if batch_run(step) is None:
+        return False
     said = refused_quietly(step)
     found = step.context["given"]["task"][step.names[0]]
     assert "%s %s" % (T.task_id(step, step.names[0]), step.context["says"][found["item"]]) in said, (step.text, said)
