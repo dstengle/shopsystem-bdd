@@ -1,10 +1,10 @@
-"""Handlers of features/requests.feature's conversation on an issue (requests r27-r41, intake r7): `work offer`,
+"""Handlers of features/requests.feature's conversation on an issue (requests r27-r41, r44, intake r7): `work offer`,
 `fits`, `propose`, `accept` and `sync` run on the requests world_nodes.py writes, each on the issue requests_world.py
 gives it in the stand-in gh; what `work` posted and closed is read back from the stand-in's calls.
 
 A comment a Given names is a comment on the issue of the request q1 (written when no Given wrote it): `unrecorded`
 is a readable comment the request does not hold, `not unrecorded` one it holds already, `unreadable` one whose block
-of fields does not parse."""
+of fields does not parse, `not unreadable` a readable one."""
 import importlib.util
 import sys
 from pathlib import Path
@@ -55,7 +55,8 @@ def given_comment(step):
 
 @handler("GivenK_C", "comment")
 def given_comment_condition(step):
-    """unrecorded: as written; not unrecorded: held under the request's `## Comments`; unreadable: its block broken."""
+    """unrecorded and not unreadable: as written (readable, not held); not unrecorded: held under the request's
+    `## Comments`; unreadable: its block broken; any other word refused."""
     word, url = step.text.split(" is ", 1)[1], step.context["comments"][step.names[0]]
     if word == "not unrecorded":
         path = request_path(step)
@@ -66,6 +67,8 @@ def given_comment_condition(step):
             if comment["url"] == url:
                 comment["body"] = UNREADABLE
         Q.write_issues(step, found)
+    elif word not in ("unrecorded", "not unreadable"):
+        raise AssertionError("no comment condition %r" % word)
 
 
 @handler("GivenK", "issue")

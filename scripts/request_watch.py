@@ -1,4 +1,4 @@
-"""`work watch` (capability requests, r42, r43): a session's wait on the other side of its requests. Every `--every`
+"""`work watch` (capability requests, r43, r44): a session's wait on the other side of its requests. Every `--every`
 seconds it polls GitHub, through request_gh as `work sync` reads it (request_sync's `unheld_comments` and
 `unheld_issues`), for the issue of each request that is not closed and for the open issues of this context's own
 repository. After the first poll that finds a comment a request does not hold or an untaken ask (an issue whose body

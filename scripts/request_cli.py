@@ -1,5 +1,5 @@
 """The commands of `work` for the steps of a request's conversation on its issue (capability requests, r29-r33,
-r39, r42, r43): `offer`, `fits`, `propose`, `accept`, `sync` and `watch`, their parsers, dispatch and what they print."""
+r39, r43, r44): `offer`, `fits`, `propose`, `accept`, `sync` and `watch`, their parsers, dispatch and what they print."""
 import request_accept
 import request_steps
 import request_sync

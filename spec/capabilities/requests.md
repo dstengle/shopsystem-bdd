@@ -5,7 +5,7 @@ narrator: a context taking in or raising a request
 group: service
 language: codified-1
 rests_on: [design-decision/requests-written-through-work, design-decision/exits-are-successful-or-errors, design-decision/an-asker-is-told-by-its-registered-asker-id]
-retired: [r1, r3, r4, r5, r10, r11, r12, r13, r19, r20, r21, r22, r23]
+retired: [r1, r3, r4, r5, r10, r11, r12, r13, r19, r20, r21, r22, r23, r42, g42]
 unbuilt: []
 ---
 
@@ -162,8 +162,8 @@ Restates: r2@0.29, r59@0.29.
 Restates: r10@0.29, r11@0.29, r12@0.29, r24@0.29.
 - [r41] When the person runs `work resolve` on a request that is `accepted`, `work` shall set its status to `delivered`, write a resolution, change the side of the request, post a comment, close an issue and commit the request.
 
-### [g42] `work watch` wakes on a comment the request does not hold
-- [r42] While a comment is unrecorded, when a session runs `work watch`, `work` shall print the comment and exit successfully, and `work` shall not write the comment.
+### [g44] `work watch` wakes on a readable comment the request does not hold
+- [r44] While a comment is unrecorded and the comment is not unreadable, when a session runs `work watch`, `work` shall print the comment and exit successfully, and `work` shall not write the comment.
 
 ### [g43] `work watch` wakes on a new ask
 - [r43] While an issue is untaken, when a session runs `work watch`, `work` shall print the issue and exit successfully.
@@ -225,9 +225,9 @@ Restates: r10@0.29, r11@0.29, r12@0.29, r24@0.29.
   own repository. After the first poll that finds a comment a request does not hold or an `ask` no record holds, it
   prints one line for each and exits successfully, so a session runs it in the background and is woken when it ends;
   the session then runs `work sync` and starts the watch again. A readable comment and an untaken ask are printed by
-  every watch that finds them, until `work sync` records or takes them in. An unreadable comment, which `work sync`
-  prints and never records, is printed by one watch and passed over by later ones, so it does not wake a session in a
-  loop: its URL is kept in `<git dir>/shopsystem/watched.json`, the file holding only unreadable comments, never
+  every watch that finds them, until `work sync` records or takes them in (r44, r43). An unreadable comment, which
+  `work sync` prints and never records (r33), is printed by one watch only and passed over by later ones, so it does
+  not wake a session in a loop; r44's condition leaves it out: its URL is kept in `<git dir>/shopsystem/watched.json`, the file holding only unreadable comments, never
   committed. A poll whose `gh` fails is said on stderr and tried again at the next. `--polls <n>` makes a bounded
   watch, used by the tests: it stops after n polls that found nothing and exits 1, so a caller tells "nothing new"
   from a wake. `work watch` writes nothing in the repository and commits nothing.
