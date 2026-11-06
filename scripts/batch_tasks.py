@@ -17,6 +17,7 @@ import backlog_items
 import backlog_lines
 import backlog_moves
 import batch_fix
+import batch_parked
 import batch_plan
 import spec_unbuilt
 from batch_git import (
@@ -231,6 +232,11 @@ def park(root, name, item_name, question, discard=False):
         backlog_moves.add_note(item, "parked from %s; its work is on branch %s" % (batch.name, task.branch))
         task.status = "pending"
         remove_tree(root, tree_of(root, batch, task))
-        batch_plan.commit(root, batch, [item], "work batch park: %s %s -> needs-input" % (
-            batch.name, backlog_items.label(item)))
+        before = batch_parked.take_out(root, batch, [item], "work batch park")     # at once (r17)
+        try:
+            batch_plan.commit(root, batch, [item], "work batch park: %s %s -> needs-input" % (
+                batch.name, backlog_items.label(item)))
+        except BaseException:
+            batch_parked.put_back(root, batch, before)
+            raise
         return item
