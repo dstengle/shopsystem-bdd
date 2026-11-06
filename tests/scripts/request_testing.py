@@ -1,5 +1,5 @@
 """What the request tests share (capability requests, r27-r41): a repository on GitHub as `ex/<name>` (its `origin`,
-never reached), the stand-in gh in its environment (`hosted` gives the whole environment to run `work` in) (batch_testing.gh_env, its issues in `gh-issues.json` beside its
+never reached: it pushes to a bare repository in `where`), the stand-in gh in its environment (`hosted` gives the whole environment to run `work` in) (batch_testing.gh_env, its issues in `gh-issues.json` beside its
 calls), and the issues and calls read back."""
 import json
 import os
@@ -14,6 +14,10 @@ def hosted(repo, where, name="ctx", monkeypatch=None):
     subprocess.run(["git", "remote", "add", "origin", "https://github.com/ex/%s.git" % name], cwd=repo, check=True,
                    capture_output=True)
     Path(where).mkdir(parents=True, exist_ok=True)
+    pushes = Path(where) / ("%s-origin.git" % name)     # the commits `work` pushes (U4) never reach GitHub
+    if not pushes.exists():
+        subprocess.run(["git", "init", "-q", "--bare", str(pushes)], check=True)
+    subprocess.run(["git", "remote", "set-url", "--push", "origin", str(pushes)], cwd=repo, check=True)
     env = gh_env(where)
     for key, value in env.items():
         if monkeypatch is not None:

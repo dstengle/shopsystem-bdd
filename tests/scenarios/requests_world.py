@@ -43,10 +43,14 @@ def write_issues(step, found):
 
 
 def hosted(repo):
-    """The repository's `origin` on GitHub, once it is a git repository."""
+    """The repository's `origin` on GitHub, once it is a git repository; it pushes to a bare repository beside it, so
+    the commits `work` pushes (U4) never reach GitHub."""
     have = subprocess.run(["git", "remote"], cwd=repo, capture_output=True, text=True).stdout.split()
     if "origin" not in have:
         subprocess.run(["git", "remote", "add", "origin", "https://github.com/%s.git" % OWN_REPO], cwd=repo, check=True)
+        pushes = Path(repo).parent / ("%s-origin.git" % Path(repo).name)
+        subprocess.run(["git", "init", "-q", "--bare", str(pushes)], check=True)
+        subprocess.run(["git", "remote", "set-url", "--push", "origin", str(pushes)], cwd=repo, check=True)
 
 
 def with_issue(step, path, url=ISSUE):

@@ -1,10 +1,11 @@
 """The plumbing of .shop/ that every command shares: the one refusal, frontmatter read with scripts/model's own reader
-(so the two never disagree on a file), the context's path, a file's text, git, a commit of named files only, and an
-append to a log whole or not at all. Standard library only."""
+(so the two never disagree on a file), the context's path, a file's text, git, a commit of named files only and its
+push (U4, backlog r18), and an append to a log whole or not at all. Standard library only."""
 import importlib.machinery
 import importlib.util
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 # Unicode's mandatory line breaks: LF, VT, FF, CR, NEL, LS, PS.
@@ -88,3 +89,36 @@ def committed(root, rels, message, write):
             path.unlink(missing_ok=True) if data is None else path.write_bytes(data)
         subprocess.run(["git", "reset", "-q", "--", *rels], cwd=root, capture_output=True)
         raise
+    pushed(root)
+
+
+def remote(root, branch):
+    """The remote `branch` pushes to: its upstream's, else `origin` (D11)."""
+    done = subprocess.run(["git", "config", "branch.%s.remote" % branch], cwd=root, capture_output=True, text=True)
+    return done.stdout.strip() if done.returncode == 0 and done.stdout.strip() else "origin"
+
+
+def push_failure(root, remote_name, branch):
+    """`git push -u <remote> <branch>`, never asking for credentials: None when it is pushed, else git's first line of
+    complaint."""
+    done = subprocess.run(["git", "push", "-q", "-u", remote_name, branch], cwd=root, capture_output=True, text=True,
+                          env=dict(os.environ, GIT_TERMINAL_PROMPT="0"))
+    if done.returncode == 0:
+        return None
+    return (done.stderr.strip() or done.stdout.strip() or "exit %d" % done.returncode).splitlines()[0]
+
+
+def pushed(root):
+    """The branch checked out in `root` pushed to its remote (U4); nothing on a detached HEAD or when the repository has
+    no such remote. A push git refuses keeps the commit: it is printed on stderr as `not pushed: <remote>: <git's
+    reason>` and the command goes on to succeed (backlog r18)."""
+    found = subprocess.run(["git", "symbolic-ref", "-q", "--short", "HEAD"], cwd=root, capture_output=True, text=True)
+    branch = found.stdout.strip()
+    if found.returncode != 0 or not branch:
+        return
+    name = remote(root, branch)
+    if name not in git(root, "remote").split():
+        return
+    said = push_failure(root, name, branch)
+    if said is not None:
+        print("not pushed: %s: %s" % (name, said), file=sys.stderr)
