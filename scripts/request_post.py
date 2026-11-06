@@ -108,7 +108,7 @@ def turn_posting(before, after, command):
 def committed(root, path, message, after, posted=None, others=(), write=None):
     """Commit the record `after` at `path`, with the files `others` that `write` writes, and only then post `posted`
     on the record's issue and commit the comment's URL under `## Comments` (b36, r45-r47): a commit git refuses posts
-    nothing. A comment GitHub refuses puts the files back, in a commit, and is refused. Return the record."""
+    nothing; a record `after` leaves unchanged is committed empty before it is posted. A comment GitHub refuses puts the files back, in a commit, and is refused. Return the record."""
     path = Path(path)
     rels = [str(path.relative_to(root))] + list(others)
     before = [(Path(root) / rel).read_bytes() if (Path(root) / rel).exists() else None for rel in rels]
@@ -122,6 +122,8 @@ def committed(root, path, message, after, posted=None, others=(), write=None):
         shop_files.committed(root, rels, message, write_all)
     if posted is None:
         return after
+    if not changed:  # a step that leaves the record as it was (r36) is still committed, empty, before it is posted
+        shop_files.committed(root, rels[:1], message, lambda: None, empty=True)
     url = field(after, "issue")
     try:
         said = request_gh.comment(root, url, body(root, after, posted.step, posted.sections, posted.fields,

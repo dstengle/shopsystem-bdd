@@ -78,10 +78,10 @@ def git(root, *args):
     return done.stdout
 
 
-def committed(root, rels, message, write):
+def committed(root, rels, message, write, empty=False):
     """Make the change `write` makes to the files `rels` (relative to `root`), then commit them, and only them, on the
-    current branch. A repository git cannot commit in is refused before anything is written, and a commit that fails
-    puts the files back as they were."""
+    current branch; with `empty`, the commit is made though they did not change. A repository git cannot commit in is
+    refused before anything is written, and a commit that fails puts the files back as they were."""
     git(root, "rev-parse", "--is-inside-work-tree")
     refuse_task_branch(root)
     paths = [Path(root) / rel for rel in rels]
@@ -89,7 +89,7 @@ def committed(root, rels, message, write):
     write()
     try:
         git(root, "add", "--", *rels)
-        git(root, "commit", "-q", "-m", message, "--", *rels)
+        git(root, "commit", "-q", *(["--allow-empty"] if empty else []), "-m", message, "--", *rels)
     except Refused:
         for path, data in zip(paths, before):
             path.unlink(missing_ok=True) if data is None else path.write_bytes(data)

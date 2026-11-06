@@ -1,5 +1,6 @@
 """A request's record is committed before its step is posted (b36, requests r45-r47): in a repository whose git
-refuses the commit, `work offer`, `accept`, `resolve` and `outcome rewritten` post nothing; a post GitHub refuses
+refuses the commit, `work offer`, `accept`, `resolve`, `outcome rewritten` and a
+`turn` that leaves the record unchanged post nothing; a post GitHub refuses
 puts the record back, in a commit, so that no record is left with a step it did not post."""
 import json
 import pathlib
@@ -46,6 +47,7 @@ def uncommittable(repo):
     (("resolve", "q1", "--line", "1", "work-queue#r1", "1.0.0"), {"lines": (ABANDON,), "outcomes": ("accepted",),
                                                                   "status": "accepted"}, ""),
     (("outcome", "q1", "1", "rewritten", "--line", ABANDON), {"lines": (ASKED,)}, ""),
+    (("turn", "q1"), {"lines": (ABANDON,), "outcomes": ("accepted",)}, ""),  # r36: a turn that changes nothing
 ])
 def test_an_uncommittable_repository_posts_nothing(on_issue, command, fields, extra):
     repo, where, write = on_issue
