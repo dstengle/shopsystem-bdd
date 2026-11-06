@@ -72,7 +72,7 @@ def prepare(step):
         return
     R().codify(step)
     (step.repo / ".shop").mkdir(exist_ok=True)
-    (step.repo / ".shop" / "delivery.toml").write_text(DELIVERY)
+    (step.repo / ".shop" / "delivery.toml").write_text(step.context.get("delivery", DELIVERY))
     B().index(step)
     B().ensure_items(step)
     W().init(step.repo)

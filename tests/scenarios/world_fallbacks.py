@@ -15,5 +15,6 @@ def untaken(step):
     raise AssertionError("no handler of this scenario's feature took the step: %s" % step.text)
 
 
-for _template, _term in (("ThenDoes", "keep"), ("ThenR", "for"), ("ThenR", "on"), ("WhenHappens", "merge")):
+for _template, _term in (("ThenDoes", "keep"), ("ThenR", "for"), ("ThenR", "on"), ("WhenHappens", "merge"),
+                       ("ThenDoes", "remove")):     # a key more than one feature's locals take (b47)
     handler(_template, _term)(untaken)

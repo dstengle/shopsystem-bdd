@@ -36,3 +36,52 @@ def removes_requirement(step):
     for rid in ids:
         assert "[%s]" % rid not in spec and rid not in unbuilt.replace("[", " ").replace(",", " ").split(), (
             step.text, rid, spec)
+
+
+def scenario_of(step):
+    scenario, item = step.names
+    step.context.setdefault("scenario_of", {})[scenario] = item
+
+
+B.OF_GIVENS["scenario"] = scenario_of
+
+
+@local("GivenK_C", "scenario")
+def scenario_not_passing(step):
+    """The batch's tests fail while the feature holds the scenario of the item (its group, titled as the item is)."""
+    if step.text.split(" is ", 1)[1] != "not passing":
+        return False
+    step.context["failing"] = step.context["scenario_of"][step.names[0]]
+
+
+def failing_tests(step):
+    """`[batch] tests` that exit 1 while `features/work-queue.feature` holds the failing item's scenario."""
+    title = step.context["item_fields"][step.context["failing"]]["title"]
+    check = "import pathlib, sys; sys.exit(%r in pathlib.Path('features/work-queue.feature').read_text())" % (
+        "Scenario: %s\n" % title)
+    return "[batch]\ntests = '''python3 -c \"%s\"'''\n" % check
+
+
+@handler("WhenRuns", "`work batch done`")
+def batch_done(step):
+    """`work batch done` on the task, each running task given its worktree on its branch first."""
+    if step.context.get("failing"):
+        step.context["delivery"] = failing_tests(step)
+    T.prepare(step)
+    T.ensure_batch(step)
+    task = step.names[-1]
+    for name, found in step.context["given"]["task"].items():
+        if found["status"] == "running":
+            batch = T.batch_name(step, found["batch"])
+            tree = step.repo / ".shop" / "worktrees" / ("%s-%s" % (batch, T.task_id(step, name)))
+            T.git(step, "worktree", "add", "-q", str(tree), "%s-%s" % (batch, B.ident(found["item"])))
+    batch = T.batch_name(step, step.context["given"]["task"][task]["batch"])
+    T.run_batch(step, "done", batch, T.task_id(step, task))
+
+
+@handler("ThenK_A", "task")
+def task_is(step):
+    status, _ = T.task_row(step, step.names[0])
+    wanted = B.bare(step.values[0])
+    assert (status != wanted) if " is not " in step.text else (status == wanted), (step.text, status,
+                                                                                  step.context["result"].stderr)
