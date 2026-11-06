@@ -4,6 +4,7 @@ import argparse
 import json
 import sys
 
+import backlog_forms
 import backlog_items
 import backlog_lines
 import backlog_moves
@@ -48,15 +49,22 @@ def add_parsers(sub):
     on.add_argument("--drop", help="an item it depends on, the dependency to drop")
     p = sub.add_parser("ready", help="move an item that is shaped to ready, when it passes the readiness bar")
     p.add_argument("name")
-    p = sub.add_parser("line", help="write a requirement line (or a term bullet) into an item's ## Requirements, and commit it")
+    p = sub.add_parser("line", help="write a requirement line (or a term bullet, relation row, given block, universal "
+                       "condition or upstream entry) into an item's ## Requirements, and commit it")
     p.__class__ = _LineParser
     p.add_argument("name")
-    p.add_argument("--into", required=True, help="the codified capability the line goes into")
+    p.add_argument("--into", help="the codified capability the line (term, relation row, given block) goes into")
     where = p.add_mutually_exclusive_group()
     where.add_argument("--group", help="the title of the new group the line opens (default: the item's title)")
     where.add_argument("--in", dest="in_group", help="the item's group g<n> the line joins")
     p.add_argument("text", nargs="?", help="the requirement line (or --term)")
     p.add_argument("--term", help="a term bullet for the capability's ## Terms, in place of a line")
+    p.add_argument("--relation", help="a row `| from | word | to | cardinality |` for the capability's ## Relations")
+    p.add_argument("--given", nargs=2, metavar=("GROUP", "BLOCK"),
+                   help="the given block of the item's group g<n> in the capability: example data, one line a row")
+    p.add_argument("--universal", help="a universal condition for spec/universal.md, with no --into")
+    p.add_argument("--upstream", help="an upstream entry `bounded-context/<path>: ..., github: <owner>/<name>` for "
+                   "spec/index.md's ## Upstreams, with no --into")
 
 
 def cmd_idea(args):
@@ -95,16 +103,38 @@ def cmd_depend(args):
     return 0
 
 
+PIECES = ("text", "term", "relation", "given", "universal", "upstream")
+
+
 def cmd_line(args):
-    """`work line`: it parses nothing; `work ready` is the check (D5)."""
-    if (args.text is None) == (args.term is None):
-        raise backlog_items.Refused("work line: give either a requirement line or --term, not both or neither")
-    if args.term is not None:
-        item = backlog_lines.add_term(args.root, args.name, args.into, args.term)
-        print("%s: a term of %s" % (backlog_items.label(item), args.into))
-    else:
+    """`work line`: it parses nothing; `work ready` is the check (D5). One piece a run: a line, or one flag's piece."""
+    given = [k for k in PIECES if getattr(args, k) is not None]
+    if len(given) != 1:
+        raise backlog_items.Refused("work line: give one of a requirement line, --term, --relation, --given, "
+                                    "--universal or --upstream")
+    piece = given[0]
+    if (args.into is None) != (piece in ("universal", "upstream")):
+        raise backlog_items.Refused("work line: %s %s --into <capability>" % (
+            "--" + piece if piece != "text" else "a requirement line", "takes no" if args.into else "takes"))
+    if piece == "text":
         item, ident = backlog_lines.add_line(args.root, args.name, args.into, args.text, args.group, args.in_group)
         print("%s: %s" % (backlog_items.label(item), ident))
+        return 0
+    if piece == "universal":
+        item, ident = backlog_forms.add_universal(args.root, args.name, args.universal)
+        print("%s: universal#%s" % (backlog_items.label(item), ident))
+        return 0
+    if piece == "term":
+        item, said = backlog_lines.add_term(args.root, args.name, args.into, args.term), "a term of %s" % args.into
+    elif piece == "relation":
+        item = backlog_forms.add_relation(args.root, args.name, args.into, args.relation)
+        said = "a relation row of %s" % args.into
+    elif piece == "given":
+        item = backlog_forms.add_given(args.root, args.name, args.into, *args.given)
+        said = "a given block of %s#%s" % (args.into, args.given[0])
+    else:
+        item, said = backlog_forms.add_upstream(args.root, args.name, args.upstream), "an upstream entry"
+    print("%s: %s" % (backlog_items.label(item), said))
     return 0
 
 
