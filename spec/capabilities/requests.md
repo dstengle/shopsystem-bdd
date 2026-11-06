@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/requests-written-through-work, design-decision/exits-are-successful-or-errors, design-decision/an-asker-is-told-by-its-registered-asker-id]
 retired: [r1, r3, r4, r5, r10, r11, r12, r13, r19, r20, r21, r22, r23, r42, g42]
-unbuilt: []
+unbuilt: [r54, r55, r56, r57, r58]
 ---
 
 # Requests
@@ -208,6 +208,21 @@ Restates: r10@0.29, r11@0.29, r12@0.29, r24@0.29.
 
 ### [g53] `work sync` reopens no closed request
 - [r53] While a request is closed and a comment on the request is unrecorded, when a session runs `work sync`, `work` shall write the comment, and `work` shall not change the status of the request or change the side of the request.
+
+### [g54] The SessionStart hook names a sent request awaiting the upstream
+- [r54] While a request is sent and the request is `awaiting-upstream`, when the SessionStart hook runs `work watch --hook`, `work` shall print the request.
+
+### [g55] The SessionStart hook names a received request awaiting the asker
+- [r55] While a request is received and the request is `awaiting-asker`, when the SessionStart hook runs `work watch --hook`, `work` shall print the request.
+
+### [g56] The SessionStart hook is silent with every request closed
+- [r56] While every request is closed, when the SessionStart hook runs `work watch --hook`, `work` shall exit successfully, and `work` shall not print a request.
+
+### [g57] `work watch --forward` wakes on a readable comment the request does not hold
+- [r57] While a comment is unrecorded and the comment is not unreadable, when a session runs `work watch --forward`, `work` shall print the comment and exit successfully, and `work` shall not write the comment.
+
+### [g58] `work watch --forward` wakes on a new ask
+- [r58] While an issue is untaken, when a session runs `work watch --forward`, `work` shall print the issue and exit successfully.
 
 ## Implementation, may change
 - A request between two bounded contexts, each in its own git repository, is one conversation on one GitHub issue on
