@@ -1,7 +1,7 @@
 """`work decision` (capability decision-tiers r7, r8): a design-decision written whole from its arguments as
 `spec/decisions/<nnnn>-<slug>.md`, the next number after the highest there, the decisions index rewritten as
-`model decisions` writes it, and the two committed together. A decision with no tier is refused before anything is
-written."""
+`model decisions` writes it, and the two committed together. A decision missing --summary, --decision or --tier is
+refused before anything is written, every one absent named in one error (r9)."""
 import datetime
 import re
 import sys
@@ -37,8 +37,9 @@ The file written:
 
 --context, --decision and --alternatives take the text, or @<file> for the text of a file. A check decision names
 the tests that enforce it (--enforced-by <path>.py::<test>), a requirement decision the requirements
-(--enforced-by <capability>#r<n>), a judgement decision none (design-decision/decision-tiers). With no --tier the
-command is refused and writes nothing. It prints the path written."""
+(--enforced-by <capability>#r<n>), a judgement decision none (design-decision/decision-tiers). With any of --summary,
+--decision and --tier missing the command is refused, naming each one missing, and writes nothing. It prints the path
+written."""
 
 
 def add_parser(sub):
@@ -46,9 +47,9 @@ def add_parser(sub):
     p = sub.add_parser("decision", help=HELP, description=HELP + ".", epilog=EPILOG,
                        formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("title", help="the decision's title, its heading; the slug of its file and id comes from it")
-    p.add_argument("--summary", required=True, help="one sentence, the index's summary")
+    p.add_argument("--summary", help="one sentence, the index's summary (required)")
     p.add_argument("--tier", choices=TIERS, help="check, requirement or judgement (required)")
-    p.add_argument("--decision", required=True, help="the ## Decision section: what is decided (text or @<file>)")
+    p.add_argument("--decision", help="the ## Decision section: what is decided (text or @<file>) (required)")
     p.add_argument("--context", help="the ## Context section: why it came up (text or @<file>)")
     p.add_argument("--alternatives", help="the ## Alternatives section: what else was weighed (text or @<file>)")
     p.add_argument("--enforced-by", dest="enforced_by", action="append", default=[],
@@ -106,8 +107,11 @@ def render(number, title, ident, args, sections, date):
 def write(args):
     """Write the decision and the index, commit both; the decision's path, relative to the root."""
     root = Path(args.root)
-    if args.tier is None:
-        raise shop_files.Refused("a design-decision gives its tier: --tier check, requirement or judgement")
+    absent = [option for option, value in (("--summary", args.summary), ("--decision", args.decision),
+                                           ("--tier", args.tier)) if value is None]
+    if absent:
+        tiers = " (--tier check, requirement or judgement)" if args.tier is None else ""
+        raise shop_files.Refused("a design-decision gives %s%s" % (", ".join(absent), tiers))
     title = args.title.strip()
     if not title or any(ch in title for ch in shop_files.LINE_BREAKS):
         raise shop_files.Refused("the title is one line of text")
