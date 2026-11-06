@@ -1,6 +1,6 @@
 """`work accept` (requests r39, r40): the upstream's person accepts a request whose lines proposed are all settled with
 one accepted; the item is written `shaped` with each accepted line under the capability its outcome named, the request
-is `accepted` in the upstream's turn, the acceptance is posted, and the request and the item are one commit."""
+is `accepted` in the upstream's turn, the request and the item are one commit, and the acceptance is posted after it."""
 import json
 
 import backlog_items
@@ -48,8 +48,9 @@ def test_accept_writes_the_shaped_item_with_its_lines_and_posts(asked):
     text = path.read_text()
     assert (request_text.field(text, "status"), request_text.field(text, "turn")) == ("accepted", "upstream")
     assert len(calls(where, "issue", "comment")) == 1 and "step: accept" in calls(where, "issue", "comment")[0][-1]
-    assert sorted(git(repo, "show", "--name-only", "--format=", "HEAD").split()) == [".shop/backlog/b1.md",
-                                                                                      ".shop/requests/q1.md"]
+    assert sorted(git(repo, "show", "--name-only", "--format=", "HEAD~1").split()) == [".shop/backlog/b1.md",
+                                                                                        ".shop/requests/q1.md"]
+    assert git(repo, "show", "--name-only", "--format=", "HEAD").split() == [".shop/requests/q1.md"]  # the URL (b36)
     done = work(repo, "ready", "b1")
     assert done.returncode == 0, done.stderr
 
