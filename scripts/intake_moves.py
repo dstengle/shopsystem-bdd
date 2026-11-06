@@ -46,7 +46,7 @@ def parsed(root, line, said):
                       % (said, why[len(head):])) from None
 
 
-def _refusals(root, ident, text, number, word, into, group, line):
+def _refusals(root, ident, text, number, word, into, group, line, reason):
     """Refuse, before anything is written, an outcome intake does not take (D12); the old refusals first."""
     request_moves.refuse_upstream_part(root, text, ident, "the line outcomes")
     if word not in OUTCOMES:
@@ -60,6 +60,8 @@ def _refusals(root, ident, text, number, word, into, group, line):
         raise Refused("work outcome: --into and --group name where an accepted line goes; give them with accepted")
     if line is not None and word != "rewritten":
         raise Refused("work outcome: --line is a counter-proposal; give it with rewritten")
+    if word == "refused" and reason is None:
+        raise Refused("work outcome: a refused line is written with its reason: give --reason <text>")
     if word == "rewritten" and line is None:
         raise Refused("work outcome: a rewritten line is written with its counter-proposal: give --line <text>")
     if word == "accepted":
@@ -71,15 +73,16 @@ def _refusals(root, ident, text, number, word, into, group, line):
 
 
 def outcome(root, ident, number, word, into=None, group=None, reason=None, line=None):
-    """`work outcome`: the line outcome, a reason under `## Reasons`, an accepted line's capability (and group)
-    under `## Into` (r38: a line that does not parse is not accepted), and a counter-proposal appended to `## Lines`
-    with the turn passed to the asker and posted (intake r7); one commit of the request."""
+    """`work outcome`: the line outcome, a reason under `## Reasons` (a refused line's is required, intake r8 and r9),
+    an accepted line's capability (and group) under `## Into` (r38: a line that does not parse is not accepted), and a
+    counter-proposal appended to `## Lines` with the turn passed to the asker and posted (intake r7); one commit of
+    the request."""
     path = request_moves.path_of(root, ident)
     text = shop_files.read(path, root)
     reason = text_line(reason, "reason") if reason is not None else None
     into = text_line(into, "capability") if into is not None else None
     group = text_line(group, "group") if group is not None else None
-    _refusals(root, ident, text, number, word, into, group, line)
+    _refusals(root, ident, text, number, word, into, group, line, reason)
     after = with_entries(text, "Outcomes", numbered(entries(text, "Outcomes"), number, word))
     if into is not None:
         after = with_entries(after, "Into", numbered(entries(after, "Into"), number,
