@@ -1,5 +1,5 @@
 """`work watch` (requests r42, r43): one poll of the requests' issues through the stand-in gh, what it prints, what it
-keeps in the git dir and never commits, a gh failure tried again, and nothing printed twice."""
+keeps in the git dir (only an unreadable comment) and never commits, and a gh failure tried again."""
 import json
 import subprocess
 import sys
@@ -43,23 +43,37 @@ def watch(repo, *args, env):
                            "--polls", "1", *args], capture_output=True, text=True, env=env, timeout=60)
 
 
-def test_a_comment_not_held_is_printed_once_and_nothing_is_written(backlog_repo, tmp_path_factory, monkeypatch):
+def test_a_comment_not_held_is_printed_by_every_watch_and_nothing_is_written(backlog_repo, tmp_path_factory,
+                                                                             monkeypatch):
     where = tmp_path_factory.mktemp("gh")
     request(backlog_repo, "q1", OTHER, held=[OTHER + "#issuecomment-1"])
     request(backlog_repo, "q2", OTHER.replace("/4", "/5"), status="delivered")
     env = world(backlog_repo, where, {
-        OTHER: issue(comments=[(OTHER + "#issuecomment-1", TURN), (OTHER + "#issuecomment-2", "no block")]),
+        OTHER: issue(comments=[(OTHER + "#issuecomment-1", TURN), (OTHER + "#issuecomment-2", TURN)]),
         OTHER.replace("/4", "/5"): issue(comments=[(OTHER.replace("/4", "/5") + "#issuecomment-3", TURN)])}, monkeypatch)
     before = git(backlog_repo, "rev-parse", "HEAD")
+    line = "q1 %s comment 2: %s#issuecomment-2 (`work sync` records it)" % (OTHER, OTHER)
+    for _ in range(2):      # still unrecorded, so a later watch prints it again
+        done = watch(backlog_repo, env=env)
+        assert done.returncode == 0, done.stderr
+        assert done.stdout.splitlines() == [line]
+    assert git(backlog_repo, "rev-parse", "HEAD") == before
+    assert git(backlog_repo, "status", "--porcelain") == ""
+    assert request_watch.kept(backlog_repo) == set()
+
+
+def test_an_unreadable_comment_is_printed_once(backlog_repo, tmp_path_factory, monkeypatch):
+    where = tmp_path_factory.mktemp("gh")
+    request(backlog_repo, "q1", OTHER)
+    env = world(backlog_repo, where, {OTHER: issue(comments=[(OTHER + "#issuecomment-2", "no block")])}, monkeypatch)
     done = watch(backlog_repo, env=env)
     assert done.returncode == 0, done.stderr
     assert done.stdout.splitlines() == [
         "q1 %s comment 2: %s#issuecomment-2 (`work sync` records it)" % (OTHER, OTHER)]
-    assert git(backlog_repo, "rev-parse", "HEAD") == before
-    assert git(backlog_repo, "status", "--porcelain") == ""
-    again = watch(backlog_repo, env=env)
+    again = watch(backlog_repo, env=env)        # sync never records it: a later watch passes over it
     assert again.returncode == 1 and again.stdout == "", again.stdout
     assert "nothing new after 1 poll" in again.stderr
+    assert git(backlog_repo, "status", "--porcelain") == ""
 
 
 def test_an_untaken_ask_is_printed_and_a_held_one_or_no_ask_is_not(backlog_repo, tmp_path_factory, monkeypatch):
@@ -89,4 +103,4 @@ def test_a_gh_failure_is_said_and_the_poll_tried_again(backlog_repo, tmp_path_fa
     out = capsys.readouterr()
     assert "gh issue view failed: offline; polling again in 5s" in out.err
     assert slept == [5] and "#issuecomment-7" in out.out
-    assert request_watch.kept(backlog_repo) == {OTHER + "#issuecomment-7"}
+    assert request_watch.kept(backlog_repo) == set()

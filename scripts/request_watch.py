@@ -5,11 +5,13 @@ repository. After the first poll that finds a comment a request does not hold or
 is an `ask` no request holds), it prints one line for each and exits 0, so a session starts it in the background and
 is woken when it ends: it runs `work sync`, the skill the request's turn calls for, and the watch again.
 
-It writes nothing in the repository and commits nothing; `work sync` records. What it has printed is kept by its URL
+It writes nothing in the repository and commits nothing; `work sync` records. A readable comment and an untaken ask
+are printed by every watch that finds them, until sync has recorded or taken them. An unreadable comment (its block of
+fields missing or not parsing, as sync reads it) is never recorded by sync, so it is printed once and kept by its URL
 in `<git dir>/shopsystem/watched.json` (the worktree's own git dir, as conversation_prompt keeps its pointer, never
-committed), and is not printed again by a later watch, so a comment sync never records (an unreadable one) does not
-wake the session in a loop. A poll whose gh fails is said on stderr and tried again at the next; it does not end the
-watch. `--polls <n>` ends a watch that has found nothing after n polls, exit 1: for tests and a bounded wait."""
+committed), and a later watch passes over it: it does not wake the session in a loop. A poll whose gh fails is said
+on stderr and tried again at the next; it does not end the watch. `--polls <n>` ends a watch that has found nothing
+after n polls, exit 1: for tests and a bounded wait."""
 import json
 import sys
 import time
@@ -31,7 +33,7 @@ def kept_path(root):
 
 
 def kept(root):
-    """The URLs earlier watches printed; none when the file is missing or cannot be read."""
+    """The URLs of the unreadable comments earlier watches printed; none when the file is missing or cannot be read."""
     path = kept_path(root)
     try:
         given = json.loads(path.read_text(encoding="utf-8")) if path is not None and path.is_file() else []
@@ -41,7 +43,7 @@ def kept(root):
 
 
 def keep(root, urls):
-    """`urls` added to what earlier watches printed, written whole (a temporary file replaced)."""
+    """`urls` added to the unreadable comments earlier watches printed, written whole (a temporary file replaced)."""
     path = kept_path(root)
     if path is None:
         return
@@ -59,12 +61,19 @@ def is_ask(body):
     return form is not None and form.step == "ask"
 
 
+def is_readable(body):
+    try:
+        return request_form.parse(body) is not None
+    except request_form.Unreadable:
+        return False
+
+
 def comment_number(url):
     return url.rsplit("#issuecomment-", 1)[1] if "#issuecomment-" in url else url
 
 
 def found(root):
-    """[(URL, line)] of one poll: each comment a live request does not hold, and each untaken ask."""
+    """[(URL, line, unreadable)] of one poll: each comment a live request does not hold, and each untaken ask."""
     out = []
     for name, status, _, _ in request_moves.requests(root):
         if status in request_sync.CLOSED:
@@ -73,28 +82,31 @@ def found(root):
         issue = field(text, "issue")
         if not issue:
             continue
-        for url, _ in request_sync.unheld_comments(root, text, COMMAND):
-            out.append((url, "%s %s comment %s: %s (`work sync` records it)" % (name, issue, comment_number(url), url)))
+        for url, body in request_sync.unheld_comments(root, text, COMMAND):
+            line = "%s %s comment %s: %s (`work sync` records it)" % (name, issue, comment_number(url), url)
+            out.append((url, line, not is_readable(body)))
     for url, title, body in request_sync.unheld_issues(root, COMMAND):
         if is_ask(body):
-            out.append((url, "ask %s %s (`work sync` takes it in)" % (url, " ".join(title.split()))))
+            out.append((url, "ask %s %s (`work sync` takes it in)" % (url, " ".join(title.split())), False))
     return out
 
 
 def watch(root, every=60, polls=None, sleep=time.sleep):
-    """Poll until something not printed before is found: print it, keep it, 0; nothing after `polls` polls: 1."""
+    """Poll until something is found: print it, keep the unreadable comments, 0; nothing after `polls` polls: 1."""
     done = 0
     while True:
         try:
             before = kept(root)
-            new = [(url, line) for url, line in found(root) if url not in before]
+            new = [(url, line, bad) for url, line, bad in found(root) if not (bad and url in before)]
         except shop_files.Refused as refused:
             print("%s; polling again in %ss" % (refused, every), file=sys.stderr)
             new = []
         done += 1
         if new:
-            keep(root, [url for url, _ in new])
-            for _, line in new:
+            unreadable = [url for url, _, bad in new if bad]
+            if unreadable:
+                keep(root, unreadable)
+            for _, line, _ in new:
                 print(line)
             return 0
         if polls is not None and done >= polls:
