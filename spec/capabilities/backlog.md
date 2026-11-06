@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: []
+unbuilt: [r19, r21, r20]
 ---
 
 # Backlog
@@ -19,6 +19,12 @@ item. Adding an idea starts no work. The person reads an item by its title, not 
 
 ## Terms
 - **title** (kind): the name of an item that the person reads beside its id.
+
+- **silent** (condition of remote): a remote that does not answer a push.
+
+- **upstream branch** (kind): the branch of a remote that the branch checked out in a repository pushes to.
+- **tracking** (condition of repository): a repository whose branch checked out has an upstream branch of another name.
+- **tasked** (condition of repository): a repository whose branch checked out is the branch of a task.
 
 ## Relations
 
@@ -96,6 +102,15 @@ item. Adding an idea starts no work. The person reads an item by its title, not 
 
 ### [g18] `work idea` keeps its commit and names a remote it cannot push to
 - [r18] While a remote is unpushable, when the person runs `work idea`, `work` shall write an item that is `idea`, commit the item, print the remote and exit successfully.
+
+### [g19] `work idea` keeps its commit and names a remote that does not answer
+- [r19] While a remote is silent, when the person runs `work idea`, `work` shall write an item that is `idea`, commit the item, print the remote and exit successfully.
+
+### [g21] `work idea` keeps the upstream branch of the branch checked out
+- [r21] While a repository is tracking, when the person runs `work idea`, `work` shall write an item that is `idea`, commit the item and keep the upstream branch.
+
+### [g20] `work idea` refuses the branch of a task
+- [r20] While a repository is tasked, if the person runs `work idea`, then `work` shall exit with an error naming the task and change nothing.
 
 ## Implementation, may change
 - Each item is the file `.shop/backlog/b<n>.md`, and each change to it is one commit of that file, whose history is

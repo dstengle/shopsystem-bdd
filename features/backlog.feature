@@ -138,3 +138,32 @@ Feature: Backlog
     And `work` commits the item i1
     And `work` prints the remote r1
     And `work` exits successfully
+
+  @g19 @r19
+  Scenario: `work idea` keeps its commit and names a remote that does not answer
+    Given a remote r1
+    And the remote r1 is silent
+    When the person runs `work idea`
+    Then `work` writes the item i1
+    And the item i1 is `idea`
+    And `work` commits the item i1
+    And `work` prints the remote r1
+    And `work` exits successfully
+
+  @g20 @r20
+  Scenario: `work idea` refuses the branch of a task
+    Given a repository r1
+    And the repository r1 is tasked
+    When the person runs `work idea`
+    Then `work` exits with an error naming the task t1
+    And `work` changes nothing
+
+  @g21 @r21
+  Scenario: `work idea` keeps the upstream branch of the branch checked out
+    Given a repository r1
+    And the repository r1 is tracking
+    When the person runs `work idea`
+    Then `work` writes the item i1
+    And the item i1 is `idea`
+    And `work` commits the item i1
+    And `work` keeps the upstream branch u1
