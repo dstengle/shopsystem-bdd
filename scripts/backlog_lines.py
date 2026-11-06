@@ -3,82 +3,29 @@
 section laid over a copy of `spec/`, where the bar checks it.
 
 The section holds one `### <capability>` block for each capability the lines go into, in the capability file's own
-syntax one heading level down: optional term bullets first, then `#### [g<n>] <title>` groups of `- [r<n>] <statement>`
-bullets, one line each. The lines stay on the item until its batch merges; `spec/` itself is never written here."""
+syntax one heading level down (backlog_section reads and writes it; the pieces beside the lines, relation rows, given
+blocks, universal conditions and upstream entries, are backlog_forms'). The lines stay on the item until its batch
+merges; `spec/` itself is never written here."""
 import re
 import shutil
-from collections import namedtuple
 from pathlib import Path
 
+import backlog_forms
 import spec_lexicon
 import spec_read
 from backlog_items import Refused, commit, find, label, one_line
-
-SECTION = "Requirements"
-Group = namedtuple("Group", "id title requirements")
-Block = namedtuple("Block", "capability terms groups")
-TAKES = ("idea", "shaped")
-
-CAP = re.compile(r"^### ([a-z0-9]+(?:-[a-z0-9]+)*)$")
-GROUP = re.compile(r"^#### \[(g[1-9]\d*)\] (\S.*)$")
-REQ = re.compile(r"^- \[(r[1-9]\d*)\] (\S.*)$")
-
-
-def read(item, rel):
-    """The blocks of the item's `## Requirements`, in file order; malformed text is refused, naming the file."""
-    def refuse(what):
-        raise Refused("%s: %s: %s" % (rel, SECTION, what))
-    blocks = []
-    for line in item.sections.get(SECTION, "").split("\n"):
-        if not line.strip():
-            continue
-        if (m := CAP.match(line)):
-            if any(b.capability == m.group(1) for b in blocks):
-                refuse("the capability %s has two blocks" % m.group(1))
-            blocks.append(Block(m.group(1), [], []))
-        elif (m := GROUP.match(line)):
-            if not blocks:
-                refuse("the group %s comes before any `### <capability>` heading" % m.group(1))
-            if any(g.id == m.group(1) for g in blocks[-1].groups):
-                refuse("the group %s is there twice" % m.group(1))
-            blocks[-1].groups.append(Group(m.group(1), m.group(2).strip(), []))
-        elif (m := REQ.match(line)):
-            if not blocks or not blocks[-1].groups:
-                refuse("the requirement %s comes before any `#### [g<n>]` heading" % m.group(1))
-            if m.group(1) in {r for g in blocks[-1].groups for r, _ in g.requirements}:
-                refuse("the requirement %s is there twice" % m.group(1))
-            blocks[-1].groups[-1].requirements.append((m.group(1), m.group(2).strip()))
-        elif line.startswith("- **"):
-            if not blocks or blocks[-1].groups:
-                refuse("a term bullet that is not before the groups of a `### <capability>` block: %s" % line)
-            blocks[-1].terms.append(line.strip())
-        else:
-            refuse("a line that is no heading, requirement or term bullet: %s" % line)
-    return blocks
-
-
-def render(blocks):
-    """The section's text, byte-stable: `read` of it gives `blocks` back."""
-    out = []
-    for block in blocks:
-        parts = ["### %s" % block.capability] + (["\n".join(block.terms)] if block.terms else [])
-        parts += ["#### [%s] %s" % (g.id, g.title) + "".join("\n- [%s] %s" % r for r in g.requirements)
-                  for g in block.groups]
-        out.append("\n\n".join(parts))
-    return "\n\n".join(out)
-
-
-def ids(blocks):
-    """`<capability>#r<n>` of each requirement, in file order."""
-    return ["%s#%s" % (b.capability, r) for b in blocks for g in b.groups for r, _ in g.requirements]
-
-
-def capability_file(root, capability):
-    """spec/capabilities/<capability>.md of `root`; refused when there is none, or it is not codified (D4)."""
-    path = Path(root) / "spec" / "capabilities" / ("%s.md" % capability)
-    if "/" in capability or not spec_read.codified(path):
-        raise Refused("there is no codified capability %s in spec/capabilities/" % capability)
-    return path
+from backlog_section import (
+    SECTION,
+    Block,
+    Blocks,
+    Group,
+    capability_file,
+    ids,  # noqa: F401  (backlog_lines.ids, as its callers read it)
+    laid_group,
+    read,
+    render,
+    takes,
+)
 
 
 def _number(ident):
@@ -93,12 +40,6 @@ def next_ids(root, capability, blocks):
     reqs = [r.id for g in cap.groups for r in g.requirements] + [r for r in cap.retired if re.fullmatch(r"r\d+", r)]
     reqs += [r for b in blocks if b.capability == capability for g in b.groups for r, _ in g.requirements]
     return "g%d" % (max(map(_number, groups), default=0) + 1), "r%d" % (max(map(_number, reqs), default=0) + 1)
-
-
-def _takes(item, command="work line"):
-    if item.status not in TAKES:
-        raise Refused("%s: %s is %s; %s takes an item that is idea or shaped" % (command, label(item), item.status,
-                                                                               command))
 
 
 def _text(text, what, item, command="work line"):
@@ -119,7 +60,7 @@ def _block(blocks, capability):
 def add_line_to(root, item, capability, text, group=None, in_group=None, command="work line"):
     """Write one requirement into the item's block for `capability`, in the group `in_group` or a new group titled
     `group` (else the item's title); nothing is committed. Its `<capability>#r<n>`. `command` names the refusals."""
-    _takes(item, command)
+    takes(item, command)
     capability_file(root, capability)
     text = _text(text, "line", item, command)
     rel = "the item %s" % item.name
@@ -149,7 +90,7 @@ def add_line(root, name, capability, text, group=None, in_group=None):
 def add_term(root, name, capability, bullet):
     """`work line --term`: one term bullet written into the item's block for `capability` and committed."""
     item = find(root, name)
-    _takes(item)
+    takes(item)
     capability_file(root, capability)
     bullet = one_line(bullet, "term bullet")
     if spec_lexicon.entry(bullet, capability) is None:
@@ -174,22 +115,23 @@ def _append(text, heading, body, before="Behaviour"):
     return text[:found.start(1)] + joined + text[found.end(1):]
 
 
-def _laid(group):
-    return "### [%s] %s" % (group.id, group.title) + "".join("\n- [%s] %s" % r for r in group.requirements)
-
-
-def lay_onto(into, item):
-    """The item's blocks laid over `into/spec`: term bullets at the end of the capability file's `## Terms`, groups
-    (headings raised to `### `) at the end of its `## Behaviour`. The names of the capabilities laid."""
+def lay_onto(into, item, files=None):
+    """The item's blocks laid over `into/spec`: term bullets at the end of the capability file's `## Terms`, relation
+    rows at the end of its `## Relations` table (made when it has none), groups (headings raised to `### `, each with
+    its given block) at the end of its `## Behaviour`; its universal conditions and upstream entries by
+    `backlog_forms.lay_spec`, the paths they change added to `files`. The names of the capabilities laid."""
     blocks = read(item, "the item %s" % item.name)
     for block in blocks:
         path = capability_file(into, block.capability)
         text = path.read_text()
         if block.terms:
             text = _append(text, "Terms", "\n".join(block.terms))
+        if block.relations:
+            text = backlog_forms.with_lines(text, "Relations", block.relations, backlog_forms.HEADER, "Behaviour")
         if block.groups:
-            text = _append(text, "Behaviour", "\n\n".join(_laid(g) for g in block.groups))
+            text = _append(text, "Behaviour", "\n\n".join(laid_group(g) for g in block.groups))
         path.write_text(text)
+    backlog_forms.lay_spec(into, blocks, [] if files is None else files)
     return [b.capability for b in blocks]
 
 
@@ -200,18 +142,22 @@ def _cut(text, chunk):
     return text if found is None else text[:found.start()] + text[found.end():]
 
 
-def unlay(into, item):
-    """The reverse of `lay_onto` (plan 4 review, B1): the item's groups and term bullets taken out of `into/spec`
-    where they are as `lay_onto` laid them. The names of the capabilities whose file changed."""
-    changed = []
-    for block in read(item, "the item %s" % item.name):
+def unlay(into, item, files=None):
+    """The reverse of `lay_onto` (plan 4 review, B1): the item's pieces taken out of `into/spec` where they are as
+    `lay_onto` laid them, the paths outside spec/capabilities/ changed added to `files`. The names of the
+    capabilities whose file changed."""
+    changed, blocks = [], read(item, "the item %s" % item.name)
+    for block in blocks:
         path = capability_file(into, block.capability)
         text = was = path.read_text()
-        for chunk in [_laid(g) for g in block.groups] + block.terms:
+        for chunk in [laid_group(g) for g in block.groups] + block.terms:
             text = _cut(text, chunk)
+        if block.relations:
+            text = backlog_forms.without_lines(text, "Relations", block.relations, backlog_forms.HEADER)
         if text != was:
             path.write_text(text.rstrip("\n") + "\n")
             changed.append(block.capability)
+    backlog_forms.unlay_spec(into, blocks, [] if files is None else files)
     return changed
 
 
@@ -237,11 +183,12 @@ def _fresh(old, capability, used, seen, pairs):
 
 
 def renumber(root, item, taken):
-    """New group and requirement ids for the item's wherever they collide with its capability in `spec/` (groups,
-    requirements, `retired:`) or with `taken` ({capability: ids} of the items picked before it), each the next free
-    in file order (plan 4, D8). `taken` gains the item's ids; the item's `## Requirements` is rewritten. The
-    (`<cap>#<old>`, `<cap>#<new>`) pairs."""
-    blocks, out, pairs = read(item, "the item %s" % item.name), [], []
+    """New group, requirement and universal ids for the item's wherever they collide with its capability in `spec/`
+    (groups, requirements, `retired:`), with `spec/universal.md`'s, or with `taken` ({capability, or "universal":
+    ids} of the items picked before it), each the next free in file order (plan 4, D8). `taken` gains the item's ids;
+    the item's `## Requirements` is rewritten. The (`<cap>#<old>`, `<cap>#<new>`) pairs."""
+    blocks, pairs = read(item, "the item %s" % item.name), []
+    out = Blocks(upstreams=blocks.upstreams)
     for block in blocks:
         cap = spec_read.capability(capability_file(root, block.capability))
         used = {g.id for g in cap.groups} | {r.id for g in cap.groups for r in g.requirements}
@@ -252,10 +199,15 @@ def renumber(root, item, taken):
         for g in block.groups:
             gid = _fresh(g.id, block.capability, used, seen, pairs)
             groups.append(Group(gid, g.title, [(_fresh(r, block.capability, used, seen, pairs), text)
-                                               for r, text in g.requirements]))
-        out.append(Block(block.capability, block.terms, groups))
+                                               for r, text in g.requirements], g.given))
+        out.append(block._replace(groups=groups))
         taken.setdefault(block.capability, set()).update(
             {g.id for g in groups} | {r for g in groups for r, _ in g.requirements})
+    if blocks.universal:
+        used = backlog_forms.universal_ids(root) | taken.get("universal", set())
+        seen = used | {u for u, _ in blocks.universal}
+        out.universal = [(_fresh(u, "universal", used, seen, pairs), text) for u, text in blocks.universal]
+        taken.setdefault("universal", set()).update(u for u, _ in out.universal)
     if pairs:
         item.sections[SECTION] = render(out)
     return pairs

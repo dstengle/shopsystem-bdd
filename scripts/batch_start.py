@@ -33,9 +33,9 @@ def cites(items):
 def lay_lines(tree, picked):
     """Every picked item's lines laid into the worktree's `spec/`, their ids appended to `unbuilt:`, and the feature
     of each service capability laid written again; the paths changed."""
-    ids = {}
+    ids, files = {}, []
     for item in picked:
-        backlog_lines.lay_onto(tree, item)
+        backlog_lines.lay_onto(tree, item, files)
         for block in backlog_lines.read(item, backlog_items.rel_of(item.name)):
             ids.setdefault(block.capability, []).extend(r for g in block.groups for r, _ in g.requirements)
     changed = []
@@ -43,7 +43,7 @@ def lay_lines(tree, picked):
         path = backlog_lines.capability_file(tree, capability)
         path.write_text(spec_unbuilt.with_unbuilt(path.read_text(), listed))
         changed += _generated(tree, capability, "work batch start")
-    return changed
+    return list(dict.fromkeys(changed + files))
 
 
 def _generated(tree, capability, command):
@@ -69,7 +69,7 @@ def unlay_lines(tree, items, command):
     changed = []
     for item in items:
         ids = backlog_lines.ids(backlog_lines.read(item, backlog_items.rel_of(item.name)))
-        for capability in backlog_lines.unlay(tree, item):
+        for capability in backlog_lines.unlay(tree, item, changed):
             path = backlog_lines.capability_file(tree, capability)
             path.write_text(spec_unbuilt.without_unbuilt(
                 path.read_text(), [i.split("#")[1] for i in ids if i.split("#")[0] == capability]))

@@ -17,6 +17,14 @@ that nothing asks the person while it is built. Its requirement lines parse in t
 finds no L0 or L1 with them laid over `spec/`, `features generate` writes their scenarios, and every request line of
 the item is settled. `work ready` checks the bar and asks nobody.
 
+## Terms
+- **relation row** (kind): a row of the `## Relations` table of a capability: from, word, to and cardinality.
+- **upstream entry** (kind): a bullet of the `## Upstreams` of `spec/index.md`: the id of a bounded context and the GitHub repository it is hosted on, if any.
+- **given block** (kind): the fenced `given` block of a requirement group, the example data its scenario starts from.
+- **malformed** (condition of relation row): a relation row that is not four cells of a `## Relations` table, or whose from or to is no kind of the lexicon.
+- **malformed** (condition of upstream entry): an upstream entry that does not start with a bounded-context id, or whose `github:` is not `<owner>/<name>`.
+- **malformed** (condition of given block): a given block that is not example data in the form `spec_read_given` reads.
+
 ## Behaviour
 
 ### [g1] `work ready` readies a passing item
@@ -33,6 +41,27 @@ the item is settled. `work ready` checks the bar and asks nobody.
 
 ### [g4] `work ready` asks no question
 - [r4] When the person runs `work ready` on an item, `work` shall not ask a question.
+
+### [g5] `work line --relation` writes a relation row onto an item
+- [r5] Where `--relation` is given, when the person runs `work line` on an item, `work` shall write a relation row and commit the item.
+
+### [g6] `work line --relation` refuses a malformed relation row
+- [r6] Where `--relation` is given, if the person runs `work line` on a relation row that is malformed, then `work` shall exit with an error naming the relation row and change nothing.
+
+### [g7] `work line --universal` writes a universal condition onto an item
+- [r7] Where `--universal` is given, when the person runs `work line` on an item, `work` shall write a universal condition and commit the item.
+
+### [g8] `work line --upstream` writes an upstream entry onto an item
+- [r8] Where `--upstream` is given, when the person runs `work line` on an item, `work` shall write an upstream entry and commit the item.
+
+### [g9] `work line --upstream` refuses a malformed upstream entry
+- [r9] Where `--upstream` is given, if the person runs `work line` on an upstream entry that is malformed, then `work` shall exit with an error naming the upstream entry and change nothing.
+
+### [g10] `work line --given` writes a given block onto an item
+- [r10] Where `--given` is given, when the person runs `work line` on an item, `work` shall write a given block and commit the item.
+
+### [g11] `work line --given` refuses a malformed given block
+- [r11] Where `--given` is given, if the person runs `work line` on a given block that is malformed, then `work` shall exit with an error naming the given block and change nothing.
 
 ## Implementation, may change
 - An item's requirement lines stay on the item until its batch merges: in the item file's `## Requirements`, one
