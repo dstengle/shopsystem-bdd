@@ -17,21 +17,21 @@ from shop_files import Refused
 SKILL = "shopsystem-bdd:building-a-batch"
 
 RULES = (
-    "Read the repository's CLAUDE.md in its worktree and follow it; the `tier: judgement` design-decisions "
-    "(`grep -l '^tier: judgement' spec/decisions/*.md`) are followed in the code it writes.",
+    ("Read the repository's CLAUDE.md in its worktree and follow it; the `tier: judgement` design-decisions "
+     "(`grep -l '^tier: judgement' spec/decisions/*.md`) are followed in the code it writes."),
     "One scenario at a time, red first: see it fail on its Then line before writing its handler or code.",
     "Never edit a `.feature` file; an existing test is changed only in its setup.",
     "Take each id out of its capability's `unbuilt:` in the same commit that makes its scenario pass.",
-    "End every commit message with the line `Item: b<j>` (`git commit -m \"<subject>\" --trailer \"Item: b<j>\"`); a "
-    "fix also `--trailer \"Finding: f<m>\"`, both in the message's last paragraph.",
+    ("End every commit message with the line `Item: b<j>` (`git commit -m \"<subject>\" --trailer \"Item: b<j>\"`); a "
+     "fix also `--trailer \"Finding: f<m>\"`, both in the message's last paragraph."),
     "Change nothing under `.shop/` (`.shop/backlog/`, `.shop/batches/` are the base checkout's batch commands' only).",
-    "Worktrees of older work (`.shop/worktrees/*` of other or earlier batches, `.claude/worktrees/`) are never "
-    "reference material: the reference is the base branch and its own worktree.",
+    ("Worktrees of older work (`.shop/worktrees/*` of other or earlier batches, `.claude/worktrees/`) are never "
+     "reference material: the reference is the base branch and its own worktree."),
     "Don't chain `cp` and `rm` in one shell command; keep shell variables few.",
     "Don't push and don't run `work` commands that commit.",
     "A scenario that passes before it is built (an XPASS) means a test step is too loose: say so in the reply.",
-    "There is no brief or result file: reply with what was built and its commits, or with one question, never a "
-    "guess. `work batch done` runs the whole suite in the worktree and refuses with its last lines.",
+    ("There is no brief or result file: reply with what was built and its commits, or with one question, never a "
+     "guess. `work batch done` runs the whole suite in the worktree and refuses with its last lines."),
 )
 
 
@@ -91,13 +91,13 @@ def text(root, batch, picked):
             "## The rules every subagent is given", ""]
     out += ["- %s" % r for r in RULES]
     out += ["", "## Where you stop", "",
-            "At `-> awaiting-merge`, once the pull request is clean and marked ready. You never merge the pull "
-            "request, and never run `work batch merged` nor `measure batch`: the session that started you does, "
-            "after the person merges it. A question you cannot settle goes onto its item with `work batch park`, "
-            "never to the person.", "",
+            ("At `-> awaiting-merge`, once the pull request is clean and marked ready. You never merge the pull "
+             "request, and never run `work batch merged` nor `measure batch`: the session that started you does, "
+             "after the person merges it. A question you cannot settle goes onto its item with `work batch park`, "
+             "never to the person."), "",
             "## What you reply", "",
-            "The pull request's URL, each item delivered in it and each item parked with its question, in a few "
-            "lines; or, if the batch was abandoned, that and why."]
+            ("The pull request's URL, each item delivered in it and each item parked with its question, in a few "
+             "lines; or, if the batch was abandoned, that and why.")]
     return "\n".join(out) + "\n"
 
 
