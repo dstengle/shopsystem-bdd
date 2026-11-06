@@ -6,6 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/requests-written-through-work, design-decision/exits-are-successful-or-errors, design-decision/an-asker-is-told-by-its-registered-asker-id]
 retired: [r1, r3, r4, r5, r10, r11, r12, r13, r19, r20, r21, r22, r23]
+unbuilt: [r42, r43]
 ---
 
 # Requests
@@ -38,6 +39,8 @@ a request (backlog, batches).
 - **unrecorded** (condition of comment): a comment on the issue of a request that the request does not yet hold.
 - **unreadable** (condition of comment): a comment whose block of fields does not parse.
 - **unhosted** (condition of bounded context): an upstream whose entry under `## Upstreams` names no GitHub repository.
+
+- **untaken** (condition of issue): an open issue on the GitHub repository of this bounded context whose body is an ask that no request holds.
 
 ## Behaviour
 
@@ -158,6 +161,12 @@ Restates: r2@0.29, r59@0.29.
 ### [g41] `work resolve` posts the resolution and closes the issue
 Restates: r10@0.29, r11@0.29, r12@0.29, r24@0.29.
 - [r41] When the person runs `work resolve` on a request that is `accepted`, `work` shall set its status to `delivered`, write a resolution, change the side of the request, post a comment, close an issue and commit the request.
+
+### [g42] `work watch` wakes on a comment the request does not hold
+- [r42] While a comment is unrecorded, when a session runs `work watch`, `work` shall print the comment and exit successfully, and `work` shall not write the comment.
+
+### [g43] `work watch` wakes on a new ask
+- [r43] While an issue is untaken, when a session runs `work watch`, `work` shall print the issue and exit successfully.
 
 ## Implementation, may change
 - A request between two bounded contexts, each in its own git repository, is one conversation on one GitHub issue on
