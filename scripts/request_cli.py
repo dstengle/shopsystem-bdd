@@ -1,5 +1,5 @@
 """The commands of `work` for the steps of a request's conversation on its issue (capability requests, r29-r33,
-r39, r43, r44): `offer`, `fits`, `propose`, `accept`, `sync` and `watch`, their parsers, dispatch and what they print."""
+r39, r43, r44, r54-r56): `offer`, `fits`, `propose`, `accept`, `sync` and `watch`, their parsers, dispatch and what they print."""
 import request_accept
 import request_steps
 import request_sync
@@ -23,6 +23,7 @@ def add_parsers(sub):
     p = sub.add_parser("watch", help="poll the requests' issues; print what `work sync` would take in, and exit")
     p.add_argument("--every", type=float, default=60, help="seconds between polls (default: 60)")
     p.add_argument("--polls", type=int, help="end, exit 1, after this many polls that find nothing (default: no end)")
+    p.add_argument("--hook", action="store_true", help="the SessionStart hook: the requests that wait on the other side")
 
 
 def cmd_offer(args):
@@ -52,6 +53,9 @@ def cmd_sync(args):
 
 
 def cmd_watch(args):
+    if args.hook:
+        import request_watch_hook
+        return request_watch_hook.hook(args.root)
     try:
         return request_watch.watch(args.root, args.every, args.polls)
     except KeyboardInterrupt:
