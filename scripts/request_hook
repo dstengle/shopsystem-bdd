@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+"""The requests' SessionStart hook (capability requests, r54-r56), apart from `work` as conversation_hook is: `work`
+imports the grammar's modules, which need site packages (clingo), and a hook runs under any `python3`, site packages
+or none. `request_hook watch` prints what `work watch --hook` prints, the requests that wait on the other side and the
+line to start `work watch --forward`, importing only the standard library and request_watch_hook's modules. Whatever
+goes wrong, an import included, it prints nothing more and exits 0: a hook never fails a session's start."""
+import os
+import sys
+
+USAGE = "usage: request_hook watch"
+
+
+def main(argv):
+    if argv != ["watch"]:
+        print(USAGE, file=sys.stderr)
+        return 2
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from pathlib import Path
+
+        import request_watch_hook
+        return request_watch_hook.hook(Path.cwd())
+    except BaseException:  # noqa: BLE001  (a hook never fails a session's start)
+        return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
