@@ -7,14 +7,15 @@ description: Use when the person asks to build, run or carry on a batch, or to b
 
 ## Overview
 
-A batch builds several ready items together, like a sprint: one branch `batch-<n>`, one task for each item, one pull request at the end. `work batch` keeps the state on disk (the batch file `.shop/batches/<n>/plan.md`, the items, the branches and worktrees) and runs the checks; this session orchestrates. It dispatches one subagent for each running task, all in parallel, the way superpowers' subagent-driven development does, and nothing waits on the person until the pull request is published. Any later session carries the batch on from where the last one stopped.
+A batch builds several ready items together, like a sprint: one branch `batch-<n>`, one task for each item, one pull request at the end. `work batch` keeps the state on disk (the batch file `.shop/batches/<n>/plan.md`, the items, the branches and worktrees) and runs the checks; one fresh agent, the batch's driver, orchestrates it from the batch brief `work batch start` writes, never the long main session. It dispatches one subagent for each running task, all in parallel, the way superpowers' subagent-driven development does, and nothing waits on the person until the pull request is published. Any later session carries the batch on from where the last one stopped.
 
 Scripts: `<this skill's base directory>/../../scripts/`. Every `work batch` command runs from the base checkout (the branch the batch was started on), never from a task's worktree.
 
 ## Process
 
 1. **Take in the requests first.** `python3 <scripts>/work sync` records what was posted on each request's issue; for each request waiting on this context as its upstream, follow `taking-in-a-request`, so that what is ready can join the batch. While a request waits on the other side, start `python3 <scripts>/work watch` in the background too; when it ends, run `work sync` and that skill, and start it again.
-2. **Start, or find the open batch.** `python3 <scripts>/work batch start` picks the ready, unblocked, passing items in rank order and lays their lines on `batch-<n>`; it prints the batch and its tasks, and each item it returned to `shaped` or left out, with the reason. With a batch already open, `python3 <scripts>/work batch status` names it. With nothing picked, the session ends there and says so.
+2. **Start, or find the open batch, and hand it to one fresh agent.** `python3 <scripts>/work batch start` picks the ready, unblocked, passing items in rank order and lays their lines on `batch-<n>`; it prints the batch and its tasks, each item it returned to `shaped` or left out, with the reason, and the path of the batch brief it wrote (`batch brief: <path>`, under `.shop/worktrees/batch-<n>-driver/`, never committed). With a batch already open, `python3 <scripts>/work batch status` names it. With nothing picked, the session ends there and says so.
+   The session that starts the batch does not run it: it dispatches one fresh `general-purpose` agent, the batch's driver, with the description `batch-<n> driver` and the brief's path as its whole prompt, and no other context. The driver follows steps 3 to 7 below, dispatching the task, fix and review subagents itself, and stops at `-> awaiting-merge` with the pull request's link. The starting session relays that link to the person and, after the merge, runs `work batch merged` and `measure batch` (step 7). If the driver cannot dispatch subagents, a fresh session per batch runs steps 3 to 7 instead, given the same brief.
 3. **Resume.** `python3 <scripts>/work batch resume <batch>` gives each pending task its worktree and prints, for each running task, its worktree, its branch and the requirement ids it builds.
 4. **Dispatch the running tasks, all at once:** one subagent for each running task, in parallel, each in its own task's worktree, with the description `batch-<n> t<k> b<j>` (its batch, task and item: `measure batch` reads a subagent's role from it). Give each this brief:
    - its worktree and branch, and the item's file `.shop/backlog/b<j>.md`;
@@ -61,6 +62,7 @@ Every commit `work`, `measure` and `migrate` make is pushed to the branch's upst
 | A `pr-reviewer` dispatched after a task's `done` | The one review is of the published pull request: `work batch review`, then `work batch brief` |
 | A reviewer given the session's context | Give it the brief's path and nothing else; a fresh agent each review |
 | `not pushed: <remote>: …` after a command | The commit is kept; fix the remote, then `git push` |
+| The main session running the batch's tasks itself | Dispatch one fresh driver with the batch brief's path (step 2) |
 | Asking the person whether to start the next batch | An item is `ready`: start it (step 1) |
 | A fix commit with no `Finding: f<m>` line | `review` refuses it; amend the message on the item's branch |
 | A finding argued with instead of fixed or parked | Fix it on its item's branch, or park the item with the finding as its question |
