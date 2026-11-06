@@ -22,3 +22,19 @@ Feature: Intake
     And `work` writes the request line r2
     And `work` changes the side of the request q1
     And `work` posts the comment c1
+
+  @g8 @r8
+  Scenario: `work outcome refused` writes the reason
+    Given a request line r1
+    And a request q1
+    And the request line r1 is proposed in the request q1
+    When the session s1 runs `work outcome refused` on the request line r1
+    Then the request line r1 is `refused`
+    And `work` writes the reason r2
+    And `work` commits the request q1
+
+  @g9 @r9
+  Scenario: `work outcome refused` refuses a refusal with no reason
+    Given the argument `--reason` is absent
+    When the session s1 runs `work outcome refused` on the request line r1
+    Then `work` exits with an error naming `--reason`

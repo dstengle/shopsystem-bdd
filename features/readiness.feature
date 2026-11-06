@@ -84,3 +84,10 @@ Feature: Readiness
     When the person runs `work line` on the given block g1
     Then `work` exits with an error naming the given block g1
     And `work` changes nothing
+
+  @g12 @r12
+  Scenario: `work ready` refuses an item with an unworded step
+    Given an item i1 that is `shaped`
+    And the item i1 is unworded
+    When the person runs `work ready` on the item i1
+    Then `work` exits with an error naming the step s1

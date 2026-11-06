@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/requests-written-through-work, design-decision/exits-are-successful-or-errors, design-decision/an-asker-is-told-by-its-registered-asker-id]
 retired: [r1, r3, r4, r5, r10, r11, r12, r13, r19, r20, r21, r22, r23, r42, g42]
-unbuilt: []
+unbuilt: [r45, r46, r47, r49, r50, r51, r48]
 ---
 
 # Requests
@@ -41,6 +41,11 @@ a request (backlog, batches).
 - **unhosted** (condition of bounded context): an upstream whose entry under `## Upstreams` names no GitHub repository.
 
 - **untaken** (condition of issue): an open issue on the GitHub repository of this bounded context whose body is an ask that no request holds.
+
+- **uncommittable** (condition of repository): a repository in which git refuses the commit of a request's record, as when a pre-commit hook fails or another process holds the index lock.
+
+- **received** (condition of request): a request whose record is kept in the repository of its upstream and whose asker is another bounded context.
+- **sent** (condition of request): a request whose record is kept in the repository of its asker and whose upstream is another bounded context.
 
 ## Behaviour
 
@@ -167,6 +172,27 @@ Restates: r10@0.29, r11@0.29, r12@0.29, r24@0.29.
 
 ### [g43] `work watch` wakes on a new ask
 - [r43] While an issue is untaken, when a session runs `work watch`, `work` shall print the issue and exit successfully.
+
+### [g45] `work request` opens no issue when its record is not committed
+- [r45] While a repository is uncommittable, if the person runs `work request`, then `work` shall not post an issue.
+
+### [g46] `work turn` posts nothing when its record is not committed
+- [r46] While a repository is uncommittable, if the person runs `work turn` on a request that is `open`, then `work` shall not post a comment or close an issue.
+
+### [g47] `work fits` posts nothing when its record is not committed
+- [r47] While a repository is uncommittable, if the person runs `work fits` on a request that is `awaiting-asker`, then `work` shall not post a comment or close an issue.
+
+### [g49] `work reply` refuses a request this context received
+- [r49] If the person runs `work reply` on a request that is received, then `work` shall exit with an error naming the request.
+
+### [g50] The upstream's `work turn` refuses the asker's turn
+- [r50] While a request is received and the request is `awaiting-asker`, if the person runs `work turn` on the request, then `work` shall exit with an error naming the request.
+
+### [g51] The asker's `work turn` refuses the upstream's turn
+- [r51] While a request is sent and the request is `open`, if the person runs `work turn` on the request, then `work` shall exit with an error naming the request.
+
+### [g48] The asker's `work turn` refuses a turn it has passed
+- [r48] While a request is sent and the request is `awaiting-upstream`, if the person runs `work turn` on the request, then `work` shall exit with an error naming the request.
 
 ## Implementation, may change
 - A request between two bounded contexts, each in its own git repository, is one conversation on one GitHub issue on

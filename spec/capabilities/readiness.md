@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: []
-unbuilt: []
+unbuilt: [r12]
 ---
 
 # Readiness
@@ -24,6 +24,8 @@ the item is settled. `work ready` checks the bar and asks nobody.
 - **malformed** (condition of relation row): a relation row that is not four cells of a `## Relations` table, or whose from or to is no kind of the lexicon.
 - **malformed** (condition of upstream entry): an upstream entry that does not start with a bounded-context id, or whose `github:` is not `<owner>/<name>`.
 - **malformed** (condition of given block): a given block that is not example data in the form `spec_read_given` reads.
+
+- **unworded** (condition of item): an item one of whose groups `features generate` writes as a scenario holding a step with a bracketed placeholder, a fact no step words.
 
 ## Behaviour
 
@@ -62,6 +64,9 @@ the item is settled. `work ready` checks the bar and asks nobody.
 
 ### [g11] `work line --given` refuses a malformed given block
 - [r11] Where `--given` is given, if the person runs `work line` on a given block that is malformed, then `work` shall exit with an error naming the given block and change nothing.
+
+### [g12] `work ready` refuses an item with an unworded step
+- [r12] While an item is `shaped` and the item is unworded, if the person runs `work ready` on the item, then `work` shall exit with an error naming the step.
 
 ## Implementation, may change
 - An item's requirement lines stay on the item until its batch merges: in the item file's `## Requirements`, one

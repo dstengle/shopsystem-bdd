@@ -6,6 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
 retired: [r1, r2, r3, r4, r5]
+unbuilt: [r8, r9]
 ---
 
 # Intake
@@ -26,6 +27,12 @@ capability's.
 
 ### [g7] A counter-proposal passes the turn to the asker, posted
 - [r7] When a session runs `work outcome rewritten` on a request line proposed in a request, `work` shall set the line outcome of the request line to `rewritten`, write a request line, change the side of the request and post a comment.
+
+### [g8] `work outcome refused` writes the reason
+- [r8] When a session runs `work outcome refused` on a request line proposed in a request, `work` shall set the line outcome of the request line to `refused`, write a reason and commit the request.
+
+### [g9] `work outcome refused` refuses a refusal with no reason
+- [r9] While the argument `--reason` is absent, if a session runs `work outcome refused` on a request line, then `work` shall exit with an error naming the argument `--reason`.
 
 ## Implementation, may change
 - A request asked of this context is a conversation on one GitHub issue on this context's own repository (the
