@@ -13,6 +13,7 @@ from pathlib import Path
 import request_form
 import request_gh
 import request_post
+import request_side
 import shop_files
 from backlog_items import one_line
 from request_text import (  # noqa: F401  (SETTLED: imported from here)
@@ -203,6 +204,7 @@ def ask(root, ident, number, question):
 def reply(root, ident, number, answer):
     """Write `answer` as the answer to question `number`, under the same number (r21); the upstream's turn refuses it."""
     def edit(text):
+        request_side.refuse_reply(root, text, ident)
         if field(text, "turn") == "upstream":
             raise Refused("%s is in the upstream's turn; the asker answers a question only in its own turn" % ident)
         return with_entries(text, "Answers", numbered(entries(text, "Answers"), number, answer))
@@ -212,7 +214,10 @@ def reply(root, ident, number, answer):
 def turn(root, ident):
     """Pass the turn to the other side (r7, r8, r9, r17, r18, r23): `request_text.turned`, and post the side's part of
     the turn on the issue, closing it when the turn refused the request (r34-r37)."""
-    _change(root, ident, "turn", turned, lambda text, after: request_post.turn_posting(text, after, "work turn"))
+    def edit(text):
+        request_side.refuse_turn(root, text, ident)
+        return turned(text)
+    _change(root, ident, "turn", edit, lambda text, after: request_post.turn_posting(text, after, "work turn"))
 
 
 def resolve(root, ident, lines):

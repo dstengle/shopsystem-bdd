@@ -61,3 +61,20 @@ def with_issue(step, path, url=ISSUE):
     found = issues(step)
     found.setdefault(url, {"title": "a request", "body": "", "state": "OPEN", "comments": []})
     write_issues(step, found)
+
+
+OWN = "bounded-context/ex.com/prod/ctx"
+UP = "bounded-context/ex.com/prod/up"
+
+
+def sided(path, word):
+    """The request at `path` received (kept in its upstream's repository, this one, asked by another context) or sent
+    (kept in its asker's, this one, to another upstream). A received request with no status Given is `awaiting-asker`,
+    so that its turn alone would let the asker's command run."""
+    text = path.read_text().replace("\nkind: request\n", "\nkind: request\nupstream: %s\n" % (OWN if word == "received" else UP), 1)
+    if word == "sent":
+        text = text.replace("\nasker: other\n", "\nasker: %s\n" % OWN, 1)
+    else:
+        text = text.replace("\nasker: other\n", "\nasker: bounded-context/ex.com/prod/other\n", 1)
+        text = text.replace("\nstatus: open\n", "\nstatus: awaiting-asker\n", 1)
+    path.write_text(text)
