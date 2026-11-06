@@ -40,16 +40,16 @@ def unsettled(root, item):
 
 
 def _parses(copy, blocks):
+    """A reason for each of the item's requirements, and universal conditions (b43), that does not parse."""
     reasons = []
-    for block in blocks:
-        for group in block.groups:
-            for rid, text in group.requirements:
-                parsed = spec_grammar.parse(copy, text)
-                if parsed.tree is None:
-                    hint = spec_grammar.hint(copy, text)
-                    reasons.append("%s#%s: %s; parsed up to: %s; nearest words: %s" % (
-                        block.capability, rid, parsed.refusal, hint["prefix"] or "nothing",
-                        ", ".join(hint["near"]) or "none"))
+    statements = [("%s#%s" % (b.capability, rid), text) for b in blocks for g in b.groups for rid, text in
+                  g.requirements] + [("universal#%s" % uid, text) for uid, text in blocks.universal]
+    for ident, text in statements:
+        parsed = spec_grammar.parse(copy, text)
+        if parsed.tree is None:
+            hint = spec_grammar.hint(copy, text)
+            reasons.append("%s: %s; parsed up to: %s; nearest words: %s" % (
+                ident, parsed.refusal, hint["prefix"] or "nothing", ", ".join(hint["near"]) or "none"))
     return reasons
 
 
@@ -100,6 +100,7 @@ def well_formed(root, item, others=()):
         backlog_lines.lay(root, item, copy, others)
         reasons = ["%s.md: %s" % (b.capability, p) for b in blocks
                    for p in spec_read.capability(backlog_lines.capability_file(copy, b.capability)).problems]
+        reasons += ["universal.md: %s" % p for p in spec_read.read_universal(copy).problems] if blocks.universal else []
         reasons = reasons or _parses(copy, blocks)
         if reasons:
             return reasons, []
