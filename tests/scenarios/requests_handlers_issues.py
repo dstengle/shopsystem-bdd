@@ -1,10 +1,10 @@
-"""Handlers of features/requests.feature's conversation on an issue (requests r27-r41, intake r7): `work offer`,
+"""Handlers of features/requests.feature's conversation on an issue (requests r27-r41, r44, intake r7): `work offer`,
 `fits`, `propose`, `accept` and `sync` run on the requests world_nodes.py writes, each on the issue requests_world.py
 gives it in the stand-in gh; what `work` posted and closed is read back from the stand-in's calls.
 
 A comment a Given names is a comment on the issue of the request q1 (written when no Given wrote it): `unrecorded`
 is a readable comment the request does not hold, `not unrecorded` one it holds already, `unreadable` one whose block
-of fields does not parse."""
+of fields does not parse, `not unreadable` a readable one."""
 import importlib.util
 import sys
 from pathlib import Path
@@ -27,6 +27,8 @@ NODES = next(m for m in list(sys.modules.values()) if getattr(m, "__file__", "")
 HANDLERS = next(m for m in list(sys.modules.values()) if getattr(m, "__file__", "").endswith("requests_handlers.py"))
 local = W.local
 READABLE = "~~~shop-request\nstep: turn\nstatus: awaiting-upstream\nturn: upstream\nanswer 1: The work queue\n~~~\n"
+ASK = ("~~~shop-request\nstep: ask\nrequest: request/ex.com/prod/other/q7\nasker: bounded-context/ex.com/prod/other\n"
+       "title: a new ask\nask: I need a thing\n~~~\n")
 UNREADABLE = "~~~shop-request\nstep: turn\nthis is no field\n~~~\n"
 
 
@@ -53,7 +55,8 @@ def given_comment(step):
 
 @handler("GivenK_C", "comment")
 def given_comment_condition(step):
-    """unrecorded: as written; not unrecorded: held under the request's `## Comments`; unreadable: its block broken."""
+    """unrecorded and not unreadable: as written (readable, not held); not unrecorded: held under the request's
+    `## Comments`; unreadable: its block broken; any other word refused."""
     word, url = step.text.split(" is ", 1)[1], step.context["comments"][step.names[0]]
     if word == "not unrecorded":
         path = request_path(step)
@@ -64,6 +67,25 @@ def given_comment_condition(step):
             if comment["url"] == url:
                 comment["body"] = UNREADABLE
         Q.write_issues(step, found)
+    elif word not in ("unrecorded", "not unreadable"):
+        raise AssertionError("no comment condition %r" % word)
+
+
+@handler("GivenK", "issue")
+def given_issue(step):
+    """An open issue on the repository's own GitHub repository (`ex/ctx`) whose body is an ask's block of fields."""
+    found = Q.issues(step)
+    url = "https://github.com/%s/issues/%d" % (Q.OWN_REPO, 50 + len(found))
+    found[url] = {"title": "a new ask", "body": ASK, "state": "OPEN", "comments": []}
+    Q.write_issues(step, found)
+    step.context.setdefault("issues", {})[step.names[0]] = url
+    step.context.setdefault("says", {})[step.names[0]] = url
+
+
+@handler("GivenK_C", "issue")
+def given_issue_condition(step):
+    """untaken: as written, an ask no request holds as its issue."""
+    assert step.text.split(" is ", 1)[1] == "untaken", step.text
 
 
 @handler("WhenRuns", "`work sync`")
@@ -71,6 +93,14 @@ def work_sync(step):
     for path in (step.repo / ".shop" / "requests").glob("q*.md"):
         step.context.setdefault("held_before", {})[path.name] = path.read_text()
     HANDLERS.run_work(step, "sync")
+
+
+@handler("WhenRuns", "`work watch`")
+def work_watch(step):
+    """One poll, at once, so no scenario can wait: `--every 0 --polls 1`."""
+    for path in (step.repo / ".shop" / "requests").glob("q*.md"):
+        step.context.setdefault("held_before", {})[path.name] = path.read_text()
+    HANDLERS.run_work(step, "watch", "--every", "0", "--polls", "1")
 
 
 @handler("WhenRuns", "`work offer`")

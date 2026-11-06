@@ -64,17 +64,29 @@ def unreadable(out, url, where, why, body):
     out.extend("    " + line for line in (body or "").strip().splitlines()[:20])
 
 
+def unheld_issues(root, command=COMMAND):
+    """[(URL, title, body)] of the open issues of this context's own repository whose body is a form (readable or
+    not) that no record holds as its issue; none without a GitHub repository of its own."""
+    try:
+        repo = request_gh.own_repo(root, command)
+    except shop_files.Refused:      # no GitHub repository of its own: no request can be asked of this context
+        return []
+    held = {field(shop_files.read(p, root), "issue") for p in (Path(root) / REQUESTS).glob("q*.md")}
+    return [(url, title, body) for url, title, body in request_gh.listed(root, repo, command)
+            if url not in held and request_form.is_form(body)]
+
+
+def unheld_comments(root, text, command=COMMAND):
+    """[(URL, body)] of the comments on the issue of the record `text` that it does not hold (`## Comments`)."""
+    _, comments, _ = request_gh.view(root, field(text, "issue"), command)
+    held = request_post.recorded(text)
+    return [(url, body) for url, body in comments if url not in held]
+
+
 def new_requests(root, writes, out):
     """The asks on this context's own repository that no record holds yet, written as new records."""
-    try:
-        repo = request_gh.own_repo(root, COMMAND)
-    except shop_files.Refused:      # no GitHub repository of its own: no request can be asked of this context
-        return
-    held = {field(shop_files.read(p, root), "issue") for p in (Path(root) / REQUESTS).glob("q*.md")}
     number = next_number(root)
-    for url, title, body in request_gh.listed(root, repo, COMMAND):
-        if url in held or not request_form.is_form(body):
-            continue
+    for url, title, body in unheld_issues(root):
         try:
             form = request_form.parse(body)
         except request_form.Unreadable as why:
@@ -90,11 +102,7 @@ def new_requests(root, writes, out):
 
 def caught_up(root, name, text, out):
     """`text` with each comment of its issue it does not hold yet that is readable recorded."""
-    _, comments, _ = request_gh.view(root, field(text, "issue"), COMMAND)
-    held = request_post.recorded(text)
-    for url, body in comments:
-        if url in held:
-            continue
+    for url, body in unheld_comments(root, text):
         try:
             form = request_form.parse(body)
             if form is None:

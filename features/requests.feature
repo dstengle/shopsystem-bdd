@@ -251,3 +251,21 @@ Feature: Requests
     And `work` posts the comment c1
     And `work` closes the issue i1
     And `work` commits the request q1
+
+  @g43 @r43
+  Scenario: `work watch` wakes on a new ask
+    Given an issue i1
+    And the issue i1 is untaken
+    When the session s1 runs `work watch`
+    Then `work` prints the issue i1
+    And `work` exits successfully
+
+  @g44 @r44
+  Scenario: `work watch` wakes on a readable comment the request does not hold
+    Given a comment c1
+    And the comment c1 is unrecorded
+    And the comment c1 is not unreadable
+    When the session s1 runs `work watch`
+    Then `work` prints the comment c1
+    And `work` exits successfully
+    And `work` does not write the comment c1

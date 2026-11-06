@@ -5,7 +5,8 @@ narrator: a context taking in or raising a request
 group: service
 language: codified-1
 rests_on: [design-decision/requests-written-through-work, design-decision/exits-are-successful-or-errors, design-decision/an-asker-is-told-by-its-registered-asker-id]
-retired: [r1, r3, r4, r5, r10, r11, r12, r13, r19, r20, r21, r22, r23]
+retired: [r1, r3, r4, r5, r10, r11, r12, r13, r19, r20, r21, r22, r23, r42, g42]
+unbuilt: []
 ---
 
 # Requests
@@ -38,6 +39,8 @@ a request (backlog, batches).
 - **unrecorded** (condition of comment): a comment on the issue of a request that the request does not yet hold.
 - **unreadable** (condition of comment): a comment whose block of fields does not parse.
 - **unhosted** (condition of bounded context): an upstream whose entry under `## Upstreams` names no GitHub repository.
+
+- **untaken** (condition of issue): an open issue on the GitHub repository of this bounded context whose body is an ask that no request holds.
 
 ## Behaviour
 
@@ -159,6 +162,12 @@ Restates: r2@0.29, r59@0.29.
 Restates: r10@0.29, r11@0.29, r12@0.29, r24@0.29.
 - [r41] When the person runs `work resolve` on a request that is `accepted`, `work` shall set its status to `delivered`, write a resolution, change the side of the request, post a comment, close an issue and commit the request.
 
+### [g44] `work watch` wakes on a readable comment the request does not hold
+- [r44] While a comment is unrecorded and the comment is not unreadable, when a session runs `work watch`, `work` shall print the comment and exit successfully, and `work` shall not write the comment.
+
+### [g43] `work watch` wakes on a new ask
+- [r43] While an issue is untaken, when a session runs `work watch`, `work` shall print the issue and exit successfully.
+
 ## Implementation, may change
 - A request between two bounded contexts, each in its own git repository, is one conversation on one GitHub issue on
   the upstream's GitHub repository; nothing reads or writes the other side's git repository. Each step is a comment a
@@ -211,6 +220,17 @@ Restates: r10@0.29, r11@0.29, r12@0.29, r24@0.29.
   a copy of what the issue holds, not a write of the other side's part. An unreadable comment is printed and never
   recorded. The records changed are one commit, on the current branch; then every request is printed with its status
   and, unless it is `delivered`, `refused` or `withdrawn`, whose move it waits on.
+- `work watch [--every <seconds>] [--polls <n>]` polls GitHub every `--every` seconds (default 60), as `work sync`
+  reads it: the issue of each request not `delivered`, `refused` or `withdrawn`, and the open issues of this context's
+  own repository. After the first poll that finds a comment a request does not hold or an `ask` no record holds, it
+  prints one line for each and exits successfully, so a session runs it in the background and is woken when it ends;
+  the session then runs `work sync` and starts the watch again. A readable comment and an untaken ask are printed by
+  every watch that finds them, until `work sync` records or takes them in (r44, r43). An unreadable comment, which
+  `work sync` prints and never records (r33), is printed by one watch only and passed over by later ones, so it does
+  not wake a session in a loop; r44's condition leaves it out: its URL is kept in `<git dir>/shopsystem/watched.json`, the file holding only unreadable comments, never
+  committed. A poll whose `gh` fails is said on stderr and tried again at the next. `--polls <n>` makes a bounded
+  watch, used by the tests: it stops after n polls that found nothing and exits 1, so a caller tells "nothing new"
+  from a wake. `work watch` writes nothing in the repository and commits nothing.
 - `work show <request>` prints the request's status and turn, then whose turn it is and, for a request on an issue,
   the issue's URL (`it is the <side>'s turn, on <URL>`), then each line with its line outcome, each question with its
   answer and the resolution.
@@ -232,8 +252,6 @@ Restates: r10@0.29, r11@0.29, r12@0.29, r24@0.29.
 - The upstream taking in what has been sent to it whatever a listing shows (0.29's r40, r56): `work sync` reads what
   gh's listing of open issues shows; telling askers apart by their registered asker id and leaving untaken what comes
   from an id not allowed (r42, r57), the backlog's b32 — trigger: that item.
-- A session that watches its request issues and wakes on a new comment, the backlog's b31: nothing polls; a person
-  nudges each side with "check your requests" (`work sync`) — trigger: that item.
 - `work list` printing whose turn each request is (r50), and `work show <request>` printing, in the asker's
   repository, that it is the asker's turn with each unanswered question (r51), that what the asker sent is not yet
   taken in (r52), that the asker has not seen what the upstream holds unsent (r53), and the resolution's requirement
