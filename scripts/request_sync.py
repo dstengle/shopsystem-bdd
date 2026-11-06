@@ -71,7 +71,7 @@ def applied(text, form, url):
         if held != entries(text, section):
             text = with_entries(text, section, held)
     for name in ("status", "turn"):
-        if form.fields.get(name):
+        if form.fields.get(name) and field(before, "status") not in CLOSED:
             text = with_field(text, name, form.fields[name].strip())
     if form.fields.get("offer") and poster(before, form.step) == "upstream":
         text = request_steps.with_offer(text, form.fields["offer"])
