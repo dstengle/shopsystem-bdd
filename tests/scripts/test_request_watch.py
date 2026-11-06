@@ -1,4 +1,4 @@
-"""`work watch` (requests r42, r43): one poll of the requests' issues through the stand-in gh, what it prints, what it
+"""`work watch` (requests r43, r44): one poll of the requests' issues through the stand-in gh, what it prints, what it
 keeps in the git dir (only an unreadable comment) and never commits, and a gh failure tried again."""
 import json
 import subprocess
