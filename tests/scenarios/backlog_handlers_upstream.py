@@ -4,8 +4,6 @@ task `t1` of `batch-1` in the plan committed on `main`. Each is made once the re
 (backlog_world.run_work's `before_run`)."""
 import sys
 
-from vocab import handler
-
 local = sys.modules["shop_work_queue_world"].local
 W = sys.modules["shop_work_queue_world"]
 
@@ -58,3 +56,18 @@ def refused_naming_task(step):
     said = done.stdout + done.stderr
     branch = step.context["task_branches"][step.names[0]]
     assert "task %s of batch-1" % step.names[0] in said and branch in said, (step.text, said)
+
+
+@local("ThenDoes", "upstream branch")
+def keeps_upstream(step):
+    """The upstream branch is the one the `tracking` Given set: `main` still tracks `trunk` of `origin`, and the run's
+    commit reached `trunk` there and made no `main` beside it."""
+    if step.term != "keep":
+        return False
+    step.context.setdefault("upstreams", {})[step.names[0]] = TRUNK
+    assert W.git(step.repo, "config", "branch.main.remote").strip() == "origin"
+    assert W.git(step.repo, "config", "branch.main.merge").strip() == "refs/heads/%s" % TRUNK
+    there = W.git(step.repo, "ls-remote", "origin").split("\n")
+    heads = {line.split()[1]: line.split()[0] for line in there if line.strip()}
+    assert heads.get("refs/heads/%s" % TRUNK) == W.head(step.repo), (heads, W.head(step.repo))
+    assert "refs/heads/main" not in heads, heads

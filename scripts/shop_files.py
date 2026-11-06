@@ -1,6 +1,7 @@
 """The plumbing of .shop/ that every command shares: the one refusal, frontmatter read with scripts/model's own reader
 (so the two never disagree on a file), the context's path, a file's text, git, a commit of named files only and its
-push (U4, backlog r18), and an append to a log whole or not at all. Standard library only."""
+push (U4, backlog r18; to the branch's upstream, r21; refused on a task's branch, r20), and an append to a log whole
+or not at all. Standard library only."""
 import importlib.machinery
 import importlib.util
 import os
@@ -102,10 +103,25 @@ def remote(root, branch):
     return done.stdout.strip() if done.returncode == 0 and done.stdout.strip() else "origin"
 
 
+def _config(root, key):
+    done = subprocess.run(["git", "config", key], cwd=root, capture_output=True, text=True)
+    return done.stdout.strip() if done.returncode == 0 else ""
+
+
+def refspec(root, remote_name, branch):
+    """What `git push` is given after the remote: a branch with an upstream on `remote_name` to that upstream,
+    `<branch>:<its merge ref>`, leaving its config alone; a branch with none `-u <branch>`, so it gets one (b57)."""
+    merge = _config(root, "branch.%s.merge" % branch)
+    if merge and _config(root, "branch.%s.remote" % branch) == remote_name:
+        return ["%s:%s" % (branch, merge)]
+    return ["-u", branch]
+
+
 def push_failure(root, remote_name, branch):
-    """`git push -u <remote> <branch>`, never asking for credentials: None when it is pushed, else git's first line of
-    complaint."""
-    done = subprocess.run(["git", "push", "-q", "-u", remote_name, branch], cwd=root, capture_output=True, text=True,
+    """`branch` pushed to `remote_name` (`refspec`), never asking for credentials: None when it is pushed, else git's
+    first line of complaint."""
+    argv = ["git", "push", "-q", remote_name, *refspec(root, remote_name, branch)]
+    done = subprocess.run(argv, cwd=root, capture_output=True, text=True,
                           env=dict(os.environ, GIT_TERMINAL_PROMPT="0"))
     if done.returncode == 0:
         return None
