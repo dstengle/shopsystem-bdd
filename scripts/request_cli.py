@@ -23,7 +23,7 @@ def add_parsers(sub):
     p = sub.add_parser("watch", help="poll the requests' issues; print what `work sync` would take in, and exit")
     p.add_argument("--every", type=float, default=60, help="seconds between polls (default: 60)")
     p.add_argument("--polls", type=int, help="end, exit 1, after this many polls that find nothing (default: no end)")
-    p.add_argument("--hook", action="store_true", help="the SessionStart hook: the requests that wait on the other side")
+    p.add_argument("--hook", action="store_true", help="the SessionStart hook: the requests waiting on the other side")
 
 
 def cmd_offer(args):

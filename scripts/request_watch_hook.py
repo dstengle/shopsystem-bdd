@@ -1,10 +1,11 @@
 """`work watch --hook` (capability requests, r54-r56), the SessionStart hook of the requests: the requests that wait on
 the other side, so that a session starts the watch a session that ended had left. A sent request (request_side's: this
 repository asked another context) waits on the other side while it is `awaiting-upstream`, a received one (this
-repository is its upstream, another context asked) while it is `awaiting-asker`. The hook prints one line for each such request and
-a line telling the session to start `work watch --forward` with the Monitor tool; with none it prints nothing. It reads
-only the records under .shop/requests/, never GitHub, and writes nothing. Whatever goes wrong, it prints nothing and
-exits 0: a hook never fails a session's start (as conversation_hook)."""
+repository is its upstream, another context asked) while it is `awaiting-asker`. The hook prints one line for each
+such request and a line telling the session to start `work watch --forward` with the Monitor tool; with none it prints
+nothing. It reads only the records under .shop/requests/, never GitHub, and writes nothing. Whatever goes wrong, it
+prints nothing and exits 0: a hook never fails a session's start (as conversation_hook). hooks/hooks.json runs it as
+`request_hook watch`, which imports this module and not `work`, whose grammar modules need site packages."""
 import re
 
 import request_moves
@@ -19,7 +20,9 @@ START = ("A request waits on the other side: start `work watch --forward` with t
 def waiting(root, text, status):
     """Whether the record `text` with `status` waits on the other side: sent and `awaiting-upstream`, or received and
     `awaiting-asker`."""
-    return status == "awaiting-upstream" and request_side.sent(root, text)
+    if status == "awaiting-upstream":
+        return request_side.sent(root, text)
+    return status == "awaiting-asker" and request_side.received(root, text)
 
 
 def title(text):
