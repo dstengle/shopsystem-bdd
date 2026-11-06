@@ -4,8 +4,11 @@ D14): a batch closed, in one commit on the base branch.
 The person merges the pull request; `merged` records it once gh says it is `MERGED` and its merge commit is in the
 base's history (else `git pull` first): every `in-batch` item `delivered`, the batch `merged`, its worktrees removed
 and the merged item branches deleted. `abandon` closes the pull request when there is one, returns every `in-batch`
-item to `ready` and removes the worktrees; the branches are kept. Both remove the batch brief's folder. It refuses while a task worktree has uncommitted
-changes, unless `--discard`; `merged` removes them as they are, their work merged."""
+item to `ready` and removes the worktrees; the branches are kept. It refuses while a task worktree has uncommitted
+changes, unless `--discard`; `merged` removes them as they are, their work merged. Both remove the batch brief's
+folder `batch-<n>-driver` (r14) and the batch's review folders, `batch-<n>-review-<k>` beside its worktrees, whose
+findings the review's record already holds (r15, r16)."""
+import re
 import shutil
 import subprocess
 
@@ -35,6 +38,9 @@ def _remove_trees(root, batch):
     for tree in [trees / batch.name] + [trees / ("%s-%s" % (batch.name, t.task)) for t in batch.tasks]:
         remove_tree(root, tree)
     shutil.rmtree(trees / ("%s-driver" % batch.name), ignore_errors=True)     # the batch brief (r14)
+    for folder in trees.glob("%s-review-*" % batch.name):
+        if re.fullmatch(r"%s-review-[1-9]\d*" % re.escape(batch.name), folder.name) and folder.is_dir():
+            shutil.rmtree(folder)
 
 
 def merged(root, name):
