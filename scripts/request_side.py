@@ -33,3 +33,5 @@ def refuse_turn(root, text, ident):
     asker's on one sent."""
     if received(root, text) and field(text, "turn") == "asker":
         raise Refused("%s is in the asker's turn; %s, its asker, passes it" % (ident, field(text, "asker")))
+    if sent(root, text) and field(text, "turn") != "asker":
+        raise Refused("%s is in the upstream's turn; %s, its upstream, passes it" % (ident, field(text, "upstream")))
