@@ -69,6 +69,15 @@ def test_no_tier_is_refused_naming_it(backlog_repo):
     assert not (backlog_repo / "spec/decisions").exists()
 
 
+def test_every_absent_argument_is_named_at_once(backlog_repo):
+    before = state(backlog_repo)
+    done = work(backlog_repo, "decision", "Decide the thing")
+    assert done.returncode == 1
+    assert all(option in done.stderr for option in ("--summary", "--decision", "--tier")), done.stderr
+    assert "--tier" not in work(backlog_repo, "decision", "Decide it", "--tier", "check").stderr
+    assert state(backlog_repo) == before
+
+
 def test_an_id_taken_is_refused(backlog_repo):
     assert decide(backlog_repo, "--tier", "judgement").returncode == 0
     before = state(backlog_repo)

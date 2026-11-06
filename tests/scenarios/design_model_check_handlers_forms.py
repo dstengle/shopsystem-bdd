@@ -45,13 +45,25 @@ def prints_every_form(step):
             (form, done.stdout)
 
 
+@handler("GivenK", "record")
+def given_record(step):
+    """The record `work record` is run on: its arguments, the defaults until a condition changes them."""
+    step.context.setdefault("record_about", [])
+
+
+@handler("GivenK_C", "record")
+def given_unattributed(step):
+    """unattributed: its `--about` is two lines, the second a frontmatter field of its own."""
+    step.context["record_about"] = ["--about", "capability/thing\nkind: forged"]
+
+
 @handler("WhenRuns", "`work record`")
 def work_record(step):
-    """`work record` in the repository, committed first, with a title, a kind, the index row's text and a body kept
-    outside the repository."""
+    """`work record` in the repository, committed first, with a title, a kind, the index row's text, a body kept
+    outside the repository and the `--about` a Given gave the record."""
     H.base(step.repo, step.context)
     step.context["head"] = W.init(step.repo)
     body = step.fixtures("tmp_path_factory").mktemp("body") / "body.md"
     body.write_text("What was found.\n")
     step.context["result"] = step.run("work", "record", "What was found", "--kind", "analysis", "--summary",
-                                      "what was found, in one row", "--body", str(body))
+                                      "what was found, in one row", "--body", str(body), *step.context.get("record_about", []))
