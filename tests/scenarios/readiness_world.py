@@ -14,6 +14,10 @@ PASSING = ("When the person runs `work abandon` on an initiative that is `starte
            "`abandoned`.")
 FAILING = ("When the person runs `work start` on an initiative that is `proposed`, `work` shall frobnicate the "
            "initiative.")
+# A line `features generate` writes with a step no Steps fun words (b46): a negated `exit with an error`, and the step.
+UNWORDED = ("When the person runs `work abandon` on an initiative that is `started`, `work` shall not exit with an "
+            "error naming the initiative.")
+UNWORDED_STEP = "`work` does not [exit_error] the initiative i1"
 # What `work` must answer with no person there: no stdin, and a ceiling on the run (D16).
 NO_INPUT = {"stdin": subprocess.DEVNULL, "timeout": 120}
 
