@@ -1,11 +1,12 @@
 """The plumbing of .shop/ that every command shares: the one refusal, frontmatter read with scripts/model's own reader
 (so the two never disagree on a file), the context's path, a file's text, git, a commit of named files only and its
-push (U4, backlog r18; to the branch's upstream, r21; refused on a task's branch, r20), and an append to a log whole
-or not at all. Standard library only."""
+push (U4, backlog r18; to the branch's upstream, r21; refused on a task's branch, r20), bounded in time (r19), and an
+append to a log whole or not at all. Standard library only."""
 import importlib.machinery
 import importlib.util
 import os
 import re
+import signal
 import subprocess
 import sys
 from pathlib import Path
@@ -118,20 +119,52 @@ def refspec(root, remote_name, branch):
 
 
 def push_failure(root, remote_name, branch):
-    """`branch` pushed to `remote_name` (`refspec`), never asking for credentials: None when it is pushed, else git's
-    first line of complaint."""
-    argv = ["git", "push", "-q", remote_name, *refspec(root, remote_name, branch)]
-    done = subprocess.run(argv, cwd=root, capture_output=True, text=True,
-                          env=dict(os.environ, GIT_TERMINAL_PROMPT="0"))
+    """`branch` pushed to `remote_name` (`refspec`), never asking for credentials nor waiting past the push's timeout
+    (backlog r19): None when it is pushed, else git's first line of complaint, or that it timed out."""
+    seconds = push_timeout()
+    done = bounded(["git", "push", "-q", remote_name, *refspec(root, remote_name, branch)], root, push_env(), seconds)
+    if done is None:
+        return "timed out after %d s" % seconds
     if done.returncode == 0:
         return None
     return (done.stderr.strip() or done.stdout.strip() or "exit %d" % done.returncode).splitlines()[0]
 
 
+def push_env():
+    """The environment of a push: no prompt for credentials, and ssh in batch mode (no passphrase nor host key asked),
+    the option appended to a `GIT_SSH_COMMAND` already set."""
+    ssh = os.environ.get("GIT_SSH_COMMAND", "").strip() or "ssh"
+    return dict(os.environ, GIT_TERMINAL_PROMPT="0", GIT_SSH_COMMAND=ssh + " -o BatchMode=yes")
+
+
+def push_timeout():
+    """The seconds a push may take: `$SHOPSYSTEM_PUSH_TIMEOUT`, a positive whole number, else 60."""
+    value = os.environ.get("SHOPSYSTEM_PUSH_TIMEOUT", "").strip()
+    return int(value) if value.isdigit() and int(value) > 0 else 60
+
+
+def bounded(argv, root, env, seconds):
+    """`argv` run in `root` in its own process group, its output captured: the completed process, or None when it ran
+    past `seconds`, the whole group killed (git's children, a remote's hook, hold the pipes open past git itself)."""
+    proc = subprocess.Popen(argv, cwd=root, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE, text=True, start_new_session=True)
+    try:
+        out, err = proc.communicate(timeout=seconds)
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(proc.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        proc.communicate()
+        return None
+    return subprocess.CompletedProcess(argv, proc.returncode, out, err)
+
+
 def pushed(root):
     """The branch checked out in `root` pushed to its remote (U4); nothing on a detached HEAD or when the repository has
     no such remote. A push git refuses keeps the commit: it is printed on stderr as `not pushed: <remote>: <git's
-    reason>` and the command goes on to succeed (backlog r18)."""
+    reason>` (`timed out after <n> s` for a remote that does not answer) and the command goes on to succeed (backlog
+    r18, r19)."""
     found = subprocess.run(["git", "symbolic-ref", "-q", "--short", "HEAD"], cwd=root, capture_output=True, text=True)
     branch = found.stdout.strip()
     if found.returncode != 0 or not branch:

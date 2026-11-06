@@ -141,13 +141,14 @@ def run_work(step, *args, **kwargs):
 
 def attach_remotes(step):
     """Each remote the scenario gave, once the repository is in git: a bare repository beside it under the remote's
-    name, the upstream remote of `main`; an unpushable one refuses every push in its pre-receive hook."""
-    for name, unpushable in step.context.get("remotes", {}).items():
+    name, the upstream remote of `main`, with the pre-receive hook the scenario gave it, if any (an unpushable or a
+    silent remote, backlog_handlers_remote.py)."""
+    for name, pre_receive in step.context.get("remotes", {}).items():
         bare_repo = step.request.getfixturevalue("tmp_path_factory").mktemp("remote") / ("%s.git" % name)
         W().git(bare_repo.parent, "init", "-q", "--bare", str(bare_repo))
-        if unpushable:
+        if pre_receive:
             hook = bare_repo / "hooks" / "pre-receive"
-            hook.write_text("#!/bin/sh\necho 'this remote takes no push' >&2\nexit 1\n")
+            hook.write_text(pre_receive)
             hook.chmod(0o755)
         W().git(step.repo, "remote", "add", name, str(bare_repo))
         W().git(step.repo, "config", "branch.main.remote", name)
