@@ -4,7 +4,8 @@ gives it in the stand-in gh; what `work` posted and closed is read back from the
 
 A comment a Given names is a comment on the issue of the request q1 (written when no Given wrote it): `unrecorded`
 is a readable comment the request does not hold, `not unrecorded` one it holds already, `unreadable` one whose block
-of fields does not parse, `not unreadable` a readable one."""
+of fields does not parse, `not unreadable` a readable one. A comment that holds a foreign entry is the upstream's
+offer holding an answer, an entry of the asker's part (r52)."""
 import importlib.util
 import sys
 from pathlib import Path
@@ -30,6 +31,7 @@ READABLE = "~~~shop-request\nstep: turn\nstatus: awaiting-upstream\nturn: upstre
 ASK = ("~~~shop-request\nstep: ask\nrequest: request/ex.com/prod/other/q7\nasker: bounded-context/ex.com/prod/other\n"
        "title: a new ask\nask: I need a thing\n~~~\n")
 UNREADABLE = "~~~shop-request\nstep: turn\nthis is no field\n~~~\n"
+OFFER = "~~~shop-request\nstep: offer\nstatus: awaiting-asker\nturn: asker\noffer: This may serve.\nanswer 1: %s\n~~~\n"
 
 
 def request_path(step, name="q1"):
@@ -71,6 +73,22 @@ def given_comment_condition(step):
         raise AssertionError("no comment condition %r" % word)
 
 
+@handler("GivenK", "foreign entry")
+def given_foreign_entry(step):
+    step.context.setdefault("foreign", {})[step.names[0]] = "a foreign answer %s" % step.names[0]
+
+
+@handler("GivenR", "holds")
+def given_holds(step):
+    """The comment becomes the upstream's offer holding the foreign entry, an answer (the asker's part)."""
+    comment, entry = step.names
+    found = Q.issues(step)
+    for each in found[Q.ISSUE]["comments"]:
+        if each["url"] == step.context["comments"][comment]:
+            each["body"] = OFFER % step.context["foreign"][entry]
+    Q.write_issues(step, found)
+
+
 @handler("GivenK", "issue")
 def given_issue(step):
     """An open issue on the repository's own GitHub repository (`ex/ctx`) whose body is an ask's block of fields."""
@@ -90,6 +108,8 @@ def given_issue_condition(step):
 
 @handler("WhenRuns", "`work sync`")
 def work_sync(step):
+    if W.node_rel(step.context, "q1"):      # q1's status and side before the run, for `change` (r53)
+        HANDLERS.prepare(step, "q1")
     for path in (step.repo / ".shop" / "requests").glob("q*.md"):
         step.context.setdefault("held_before", {})[path.name] = path.read_text()
     HANDLERS.run_work(step, "sync")
@@ -150,6 +170,12 @@ def writes_comment(step):
     if step.term != "write":
         return False
     assert held(step, step.names[0]) == 1, (step.text, held(step, step.names[0]))
+
+
+@local("ThenDoesNot", "foreign entry")
+def writes_not_foreign(step):
+    text = (step.repo / W.node_rel(step.context, "q1")).read_text()
+    assert step.context["foreign"][step.names[0]] not in text, (step.text, text)
 
 
 @handler("ThenDoesNot", "write")

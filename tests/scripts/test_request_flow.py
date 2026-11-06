@@ -143,7 +143,7 @@ def test_sync_writes_a_closed_requests_comment_and_prints_every_request(pair):
     found = issues(shared)
     found["https://github.com/ex/ctx/issues/1"]["comments"].append(
         {"url": "https://github.com/ex/ctx/issues/1#issuecomment-98",
-         "body": "~~~shop-request\nstep: turn\nquestion 1: Was work-queue#r1 enough?\n~~~\n"})
+         "body": "~~~shop-request\nstep: resolve\nquestion 1: Was work-queue#r1 enough?\n~~~\n"})
     (shared / "gh-issues.json").write_text(json.dumps(found))
     said = run(down, env, "sync")
     assert "issuecomment-98" in record(down)
