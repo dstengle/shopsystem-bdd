@@ -73,6 +73,14 @@ def work_sync(step):
     HANDLERS.run_work(step, "sync")
 
 
+@handler("WhenRuns", "`work watch`")
+def work_watch(step):
+    """One poll, at once, so no scenario can wait: `--every 0 --polls 1`."""
+    for path in (step.repo / ".shop" / "requests").glob("q*.md"):
+        step.context.setdefault("held_before", {})[path.name] = path.read_text()
+    HANDLERS.run_work(step, "watch", "--every", "0", "--polls", "1")
+
+
 @handler("WhenRuns", "`work offer`")
 @handler("WhenRuns", "`work fits`")
 @handler("WhenRuns", "`work propose`")

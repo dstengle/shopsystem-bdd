@@ -1,8 +1,9 @@
 """The commands of `work` for the steps of a request's conversation on its issue (capability requests, r29-r33,
-r39): `offer`, `fits`, `propose`, `accept` and `sync`, their parsers, dispatch and what they print."""
+r39, r42, r43): `offer`, `fits`, `propose`, `accept`, `sync` and `watch`, their parsers, dispatch and what they print."""
 import request_accept
 import request_steps
 import request_sync
+import request_watch
 
 
 def add_parsers(sub):
@@ -19,6 +20,9 @@ def add_parsers(sub):
     p = sub.add_parser("accept", help="the upstream's person: accept a request whose lines are settled, as an item")
     p.add_argument("request")
     sub.add_parser("sync", help="record what the other side of each request posted, and print every live request")
+    p = sub.add_parser("watch", help="poll the requests' issues; print what `work sync` would take in, and exit")
+    p.add_argument("--every", type=float, default=60, help="seconds between polls (default: 60)")
+    p.add_argument("--polls", type=int, help="end, exit 1, after this many polls that find nothing (default: no end)")
 
 
 def cmd_offer(args):
@@ -47,4 +51,12 @@ def cmd_sync(args):
     return request_sync.sync(args.root)
 
 
-COMMANDS = {"offer": cmd_offer, "fits": cmd_fits, "propose": cmd_propose, "accept": cmd_accept, "sync": cmd_sync}
+def cmd_watch(args):
+    try:
+        return request_watch.watch(args.root, args.every, args.polls)
+    except KeyboardInterrupt:
+        return 130
+
+
+COMMANDS = {"offer": cmd_offer, "fits": cmd_fits, "propose": cmd_propose, "accept": cmd_accept, "sync": cmd_sync,
+            "watch": cmd_watch}
