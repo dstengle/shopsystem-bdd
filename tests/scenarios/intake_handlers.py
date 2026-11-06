@@ -50,15 +50,18 @@ def refused_naming_line(step):
 
 
 # What each word of `work outcome` is run with (D12).
-OPTIONS = {"accepted": ["--into", "work-queue"], "rewritten": ["--line", R.COUNTER]}
+OPTIONS = {"accepted": ["--into", "work-queue"], "rewritten": ["--line", R.COUNTER],
+           "refused": ["--reason", "Out of this context's scope"]}
 
 
 @handler("WhenRuns", "`work outcome accepted`")
 @handler("WhenRuns", "`work outcome rewritten`")
+@handler("WhenRuns", "`work outcome refused`")
 def work_outcome(step):
     """`work outcome q<n> <k> <word>` on the line a Given placed, with the word's option, over the codified spec (the
     accepted line goes into one of its capabilities, a counter-proposal parses in its grammar). A line no Given placed
-    in a request is line 1 of the world's request q9, in the words a Given said it has; the request is on its issue."""
+    in a request is line 1 of the world's request q9, in the words a Given said it has; the request is on its issue.
+    An option a Given made absent (`--reason`) is left out."""
     if step.names[-1] not in step.context.get("line_of", {}):
         R.write_request(step)
         step.context.setdefault("line_of", {})[step.names[-1]] = (R.REQUEST, 1)
@@ -72,7 +75,8 @@ def work_outcome(step):
     path = step.repo / W.node_rel(step.context, request)
     Q.with_issue(step, path)
     step.context["before"] = {"status": W.field(path, "status"), "side": W.field(path, "turn")}
-    B.run_work(step, "outcome", request, str(number), word, *OPTIONS[word], env=Q.env(step), **R.NO_INPUT)
+    options = OPTIONS[word] if OPTIONS[word][0] not in step.context.get("absent", ()) else []
+    B.run_work(step, "outcome", request, str(number), word, *options, env=Q.env(step), **R.NO_INPUT)
 
 
 @local("GivenR", "request line")
@@ -110,3 +114,17 @@ def writes_line(step):
     assert len(now) == len(had) + 1, (step.text, had, now)
     step.context["line_of"][step.names[0]] = (step.context["line_of"][next(iter(step.context["line_of"]))][0],
                                               int(now[-1].split(".", 1)[0]))
+
+
+@local("ThenDoes", "reason")
+def writes_reason(step):
+    """The last run wrote the line's reason under its request's `## Reasons`, where there was none before."""
+    if step.term != "write" or not step.context.get("line_of"):
+        return False
+    path, number = request_of(step, next(iter(step.context["line_of"])))
+    rel = path.relative_to(step.repo).as_posix()
+    assert rel in W.runs(step)[-1]["changed"], (step.text, W.runs(step)[-1]["changed"])
+    had = request_text.entries(W.git(step.repo, "show", "%s:%s" % (step.context["head"], rel)), "Reasons")
+    now = request_text.entries(path.read_text(), "Reasons")
+    said = "%d. %s" % (number, OPTIONS["refused"][1])
+    assert said not in had and said in now, (step.text, had, now)

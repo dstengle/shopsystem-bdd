@@ -8,7 +8,9 @@ each comment it does not yet hold (`## Comments`, request_post) is read as its b
 are written into their sections, by number, and its status and turn set; an offer is kept under `## Offer`. That is a
 copy of what the issue holds, not a write of the other side's part. A comment whose block does not parse, or that
 holds none, is printed and never recorded, so it is printed again on the next sync. A comment recorded already is
-passed over: sync is safe to run again. The changed records are one commit."""
+passed over: sync is safe to run again. A record with no issue whose issue was opened but its URL never committed
+(b36, f6) is given it, before the asks are read, so that it is not taken as a new request. The changed records are
+one commit."""
 from pathlib import Path
 
 import intake_moves
@@ -83,10 +85,28 @@ def unheld_comments(root, text, command=COMMAND):
     return [(url, body) for url, body in comments if url not in held]
 
 
+def adopted(root, text):
+    """The record `text`, which has no issue, with the issue opened for it whose URL was never committed (f6); `text`
+    as it is when there is none, or its upstream is unhosted."""
+    if not field(text, "upstream") or field(text, "status") in CLOSED:
+        return text
+    try:
+        url = request_post.orphan_issue(root, text, COMMAND)
+    except shop_files.Refused:
+        return text
+    if url is None:
+        return text
+    upstream = "\nupstream: %s\n" % field(text, "upstream")
+    return request_post.with_comment(text.replace(upstream, upstream + "issue: %s\n" % url, 1), url, "ask")
+
+
 def new_requests(root, writes, out):
     """The asks on this context's own repository that no record holds yet, written as new records."""
     number = next_number(root)
+    taken_up = {field(t, "issue") for t in writes.values()}
     for url, title, body in unheld_issues(root):
+        if url in taken_up:
+            continue
         try:
             form = request_form.parse(body)
         except request_form.Unreadable as why:
@@ -126,10 +146,16 @@ def waiting(root, status, text):
 def sync(root):
     """Record what the other side posted, commit the records changed, and print every request."""
     writes, out = {}, []
-    new_requests(root, writes, out)
     for name, status, _, _ in request_moves.requests(root):
         path = request_moves.path_of(root, name)
         text = shop_files.read(path, root)
+        after = text if field(text, "issue") else adopted(root, text)
+        if after != text:
+            writes[path] = after
+    new_requests(root, writes, out)
+    for name, status, _, _ in request_moves.requests(root):
+        path = request_moves.path_of(root, name)
+        text = writes.get(path) or shop_files.read(path, root)
         if not field(text, "issue"):
             continue
         after = caught_up(root, name, text, out)

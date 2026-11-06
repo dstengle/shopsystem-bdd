@@ -269,3 +269,59 @@ Feature: Requests
     Then `work` prints the comment c1
     And `work` exits successfully
     And `work` does not write the comment c1
+
+  @g45 @r45
+  Scenario: `work request` opens no issue when its record is not committed
+    Given a repository r1
+    And the repository r1 is uncommittable
+    When the person runs `work request`
+    Then `work` does not post the issue i1
+
+  @g46 @r46
+  Scenario: `work turn` posts nothing when its record is not committed
+    Given a repository r1
+    And the repository r1 is uncommittable
+    And a request q1 that is `open`
+    When the person runs `work turn` on the request q1
+    Then `work` does not post the comment c1
+    And `work` does not close the issue i1
+
+  @g47 @r47
+  Scenario: `work fits` posts nothing when its record is not committed
+    Given a repository r1
+    And the repository r1 is uncommittable
+    And a request q1 that is `awaiting-asker`
+    When the person runs `work fits` on the request q1
+    Then `work` does not post the comment c1
+    And `work` does not close the issue i1
+
+  @g48 @r48
+  Scenario: The asker's `work turn` refuses a turn it has passed
+    Given a request q1
+    And the request q1 is sent
+    And the request q1 is `awaiting-upstream`
+    When the person runs `work turn` on the request q1
+    Then `work` exits with an error naming the request q1
+
+  @g49 @r49
+  Scenario: `work reply` refuses a request this context received
+    Given a request q1
+    And the request q1 is received
+    When the person runs `work reply` on the request q1
+    Then `work` exits with an error naming the request q1
+
+  @g50 @r50
+  Scenario: The upstream's `work turn` refuses the asker's turn
+    Given a request q1
+    And the request q1 is received
+    And the request q1 is `awaiting-asker`
+    When the person runs `work turn` on the request q1
+    Then `work` exits with an error naming the request q1
+
+  @g51 @r51
+  Scenario: The asker's `work turn` refuses the upstream's turn
+    Given a request q1
+    And the request q1 is sent
+    And the request q1 is `open`
+    When the person runs `work turn` on the request q1
+    Then `work` exits with an error naming the request q1

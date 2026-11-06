@@ -13,6 +13,7 @@ from pathlib import Path
 import request_form
 import request_gh
 import request_post
+import request_side
 import shop_files
 from backlog_items import one_line
 from request_text import (  # noqa: F401  (SETTLED: imported from here)
@@ -72,15 +73,15 @@ def asked_here(root):
     return found
 
 
-def _change(root, ident, message, edit):
-    """Rewrite request `ident` as `edit` makes it from its text, and commit it, and only it; an edit that changes
-    nothing (an upstream's turn that waits for `work accept`, on a request with no issue) commits nothing."""
+def _change(root, ident, message, edit, posting=None):
+    """Rewrite request `ident` as `edit` makes it from its text, and commit it, and only it, then post on its issue
+    what `posting` makes of the text before and after (request_post.committed); an edit that changes nothing (an
+    upstream's turn that waits for `work accept`, on a request with no issue) commits nothing."""
     path = path_of(root, ident)
     text = shop_files.read(path, root)
     after = edit(text)
-    if after == text:
-        return
-    shop_files.committed(root, [str(path.relative_to(root))], "work %s: %s" % (message, ident), lambda: path.write_text(after))
+    request_post.committed(root, path, "work %s: %s" % (message, ident), after,
+                           posting(text, after) if posting else None)
 
 
 def upstreams(root):
@@ -144,9 +145,11 @@ def upstream_of(root, sources, to):
 
 
 def request(root, title, asker, ask_text, sources, thread, raised_for=None, to=None):
-    """Post the request's issue on its upstream's GitHub repository and write the request, open in the upstream's
-    turn, `q<n>` one above the highest kept, with the issue's URL; return (q<n>, the URL) (r27). An upstream that names
-    no GitHub repository is refused before anything is posted (r28). The ask is the asker's own words; its lines
+    """Write the request, open in the upstream's turn, `q<n>` one above the highest kept, and commit it; then post
+    its issue on its upstream's GitHub repository and commit the issue's URL into it (b36, r45: a commit git refuses
+    opens no issue; an issue GitHub refuses takes the request out again; an issue whose URL git refuses is named, and
+    found again by `work sync` or the same request run again, never opened twice, f6); return (q<n>, the URL) (r27).
+    An upstream that names no GitHub repository is refused before anything is posted (r28). The ask is the asker's own words; its lines
     come later (`work propose`), checked by the upstream."""
     if not sources and thread is None and raised_for is None:
         raise Refused("the request names neither an origin (--source) nor a job-thread (--thread)")
@@ -156,24 +159,44 @@ def request(root, title, asker, ask_text, sources, thread, raised_for=None, to=N
     repo = request_gh.repo_of(root, upstream, "work request")
     shop_files.git(root, "rev-parse", "--is-inside-work-tree")
     directory = Path(root) / REQUESTS
-    name = "q%d" % next_number(root)
-    ident = "request/%s/%s" % (shop_files.context_path(root), name)
     origin = ["part_of: %s" % thread] if thread is not None else ["source: [%s]" % ", ".join(sources)] if sources else []
     if raised_for is not None and re.fullmatch(r"q\d+", raised_for):     # a bare q<n> names a request of this context
         raised_for = "request/%s/%s" % (shop_files.context_path(root), raised_for)
     origin = "".join(o + "\n" for o in origin + (["raised_for: %s" % raised_for] if raised_for is not None else []))
-    fields = {"step": "ask", "request": ident, "asker": asker, "upstream": upstream, "title": title, "ask": ask_text,
-              "status": "open", "turn": "upstream"}
-    url = request_gh.open_issue(root, repo, title, request_form.render(fields, None, ABOUT), "work request")
-    text = ("---\nid: %s\nkind: request\nasker: %s\nupstream: %s\nissue: %s\n%sstatus: open\nturn: upstream\n---\n\n"
-            "# %s\n\n## Ask\n%s\n## Lines\n\n## Questions\n\n## Answers\n\n## Outcomes\n\n## Resolution\n\n"
-            "## Comments\n1. %s ask\n" % (ident, asker, upstream, url, origin, title, request_post.quoted(ask_text), url))
+
+    def record(name, url=None):
+        """The record of `name`, with the issue's URL once it is opened."""
+        issue, comments = ("issue: %s\n" % url, "1. %s ask\n" % url) if url else ("", "")
+        return ("---\nid: %s\nkind: request\nasker: %s\nupstream: %s\n%s%sstatus: open\nturn: upstream\n---\n\n# %s\n\n"
+                "## Ask\n%s\n## Lines\n\n## Questions\n\n## Answers\n\n## Outcomes\n\n## Resolution\n\n## Comments\n%s"
+                % (ident(name), asker, upstream, issue, origin, title, request_post.quoted(ask_text), comments))
+
+    def ident(name):
+        return "request/%s/%s" % (shop_files.context_path(root), name)
+    # f6: the same request run again after its issue's URL was refused finds its committed record, which has no issue
+    again = next((p.stem for p in sorted(directory.glob("q*.md")) if p.read_text() == record(p.stem)), None)
+    name = again or "q%d" % next_number(root)
+    fields = {"step": "ask", "request": ident(name), "asker": asker, "upstream": upstream, "title": title,
+              "ask": ask_text, "status": "open", "turn": "upstream"}
     path = directory / (name + ".md")
+    rel = str(path.relative_to(root))
 
     def write():
         directory.mkdir(parents=True, exist_ok=True)
-        path.write_text(text)
-    shop_files.committed(root, [str(path.relative_to(root))], "work request: %s" % name, write)
+        path.write_text(record(name))
+    if again is None:
+        shop_files.committed(root, [rel], "work request: %s" % name, write)     # b36, r45: committed before it is posted
+    url = request_post.orphan_issue(root, record(name), "work request") if again else None
+    try:
+        url = url or request_gh.open_issue(root, repo, title, request_form.render(fields, None, ABOUT), "work request")
+    except Refused:
+        if again is None:
+            shop_files.committed(root, [rel], "work request: %s put back, its issue not opened" % name, path.unlink)
+        raise
+    try:
+        shop_files.committed(root, [rel], "work request: %s posted" % name, lambda: path.write_text(record(name, url)))
+    except Refused as why:
+        raise Refused(request_post.not_recorded(why, "the issue of %s" % name, url)) from None
     return name, url
 
 
@@ -191,6 +214,7 @@ def ask(root, ident, number, question):
 def reply(root, ident, number, answer):
     """Write `answer` as the answer to question `number`, under the same number (r21); the upstream's turn refuses it."""
     def edit(text):
+        request_side.refuse_reply(root, text, ident)
         if field(text, "turn") == "upstream":
             raise Refused("%s is in the upstream's turn; the asker answers a question only in its own turn" % ident)
         return with_entries(text, "Answers", numbered(entries(text, "Answers"), number, answer))
@@ -200,7 +224,10 @@ def reply(root, ident, number, answer):
 def turn(root, ident):
     """Pass the turn to the other side (r7, r8, r9, r17, r18, r23): `request_text.turned`, and post the side's part of
     the turn on the issue, closing it when the turn refused the request (r34-r37)."""
-    _change(root, ident, "turn", lambda text: request_post.posted_turn(root, text, turned(text), "work turn"))
+    def edit(text):
+        request_side.refuse_turn(root, text, ident)
+        return turned(text)
+    _change(root, ident, "turn", edit, lambda text, after: request_post.turn_posting(text, after, "work turn"))
 
 
 def resolve(root, ident, lines):
@@ -214,9 +241,6 @@ def resolve(root, ident, lines):
         for number, requirement, version in lines:
             held = numbered(held, number, "%s %s" % (requirement, version))
         text = with_field(with_entries(text, "Resolution", held), "status", "delivered")
-        text = with_field(text, "turn", "asker")  # r24
-        return request_post.post(root, text, "resolve", {"Resolution": request_post.numbered(text, "Resolution")},
-                                 "work resolve", close=True)   # r41
-    path = path_of(root, ident)
-    after = edit(shop_files.read(path, root))
-    shop_files.committed(root, [str(path.relative_to(root))], "work resolve: %s" % ident, lambda: path.write_text(after))
+        return with_field(text, "turn", "asker")  # r24
+    _change(root, ident, "resolve", edit, lambda _, after: request_post.posting(  # r41
+        after, "resolve", {"Resolution": request_post.numbered(after, "Resolution")}, "work resolve", close=True))
