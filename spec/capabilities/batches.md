@@ -20,14 +20,19 @@ question while building parks its item and the rest of the batch carries on. The
 ## Terms
 - **uncited** (condition of commit): A commit is uncited when the commit cites no item.
 
-## Relations
+- **batch brief** (kind): the brief `work batch start` writes for the one fresh agent that runs the batch: the batch, its tasks and worktrees, the skill it follows, the rules and the lessons, and where it stops.
 
+- **review folder** (kind): the scratch directory `batch-<n>-review-<k>` under the batch's worktrees directory, which `work batch brief` writes a review's brief and change into and where the review's findings are saved, and which is never committed.
+
+## Relations
 | from | word | to | cardinality |
 |---|---|---|---|
 | commit | of | item | one |
 | pull request | with | commit | |
 | pull request | cites | item | |
 | commit | cites | item | |
+| review folder | of | batch | one |
+| scenario | of | item |  |
 
 ## Behaviour
 
@@ -84,6 +89,21 @@ question while building parks its item and the rest of the batch carries on. The
 - [r13] While a commit of an item in a batch is uncited, if the person runs `work batch review` on the batch, then
   `work` shall exit with an error naming the commit and change nothing.
 
+### [g14] `work batch start` writes the batch brief for a fresh agent
+- [r14] When the person runs `work batch start`, `work` shall write a batch brief and print the batch brief.
+
+### [g16] The merge removes the batch's review folders
+- [r16] When the person merges the pull request of a batch, `work` shall remove every review folder of the batch.
+
+### [g15] `work batch abandon` removes the batch's review folders
+- [r15] When the person runs `work batch abandon` on a batch, `work` shall remove every review folder of the batch.
+
+### [g17] A park takes the parked item's lines out of the batch
+- [r17] While an item that is `in-batch` proposes a requirement, when a batch parks the item, `work` shall remove the requirement.
+
+### [g18] A parked item's failing scenario does not hold up another task
+- [r18] While an item in a batch is `needs-input` and a scenario of the item is not passing, when a session runs `work batch done` on a task of the batch that is `running`, `work` shall set the status of the task to `done`.
+
 ## Implementation, may change
 
 - `work batch start` takes the ready items in rank order (the backlog's WSJF, ties to the item added first), up to
@@ -100,6 +120,12 @@ question while building parks its item and the rest of the batch carries on. The
   into `spec/`, their ids appended to the capability's `unbuilt:`, and each service capability's feature generated
   again, with one `Item: b<j>` line for each item. Each item's task builds on the branch `batch-<n>-b<j>`, which
   starts at that commit; the item branches are merged into `batch-<n>` only by `work batch review`.
+- Once the batch is laid, `work batch start` writes the batch brief `batch-<n>-driver/brief.md` under the worktrees
+  directory, never committed, and prints its path: the batch, its base checkout, each task with its worktree, branch,
+  item and requirement ids, the skill `building-a-batch`, the prefix of every push and gh call (`[batch] push` of
+  `.shop/delivery.toml`, a string, when given), the rules every subagent is given, where the agent stops
+  (`awaiting-merge`: no merge, no `work batch merged`) and what it replies. `work batch merged` and
+  `work batch abandon` remove the folder `batch-<n>-driver/` with the batch's worktrees.
 - Each picked item is checked by the readiness bar again, alone and then laid over the items picked before it; one
   that no longer passes alone goes back to `shaped` with its reasons under `## Notes`, one that clashes with those
   picked stays `ready`. An item's ids that collide with its capability's or with an item picked before it are

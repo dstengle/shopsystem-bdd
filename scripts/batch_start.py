@@ -12,6 +12,7 @@ from pathlib import Path
 
 import backlog_items
 import backlog_lines
+import batch_driver
 import batch_pick
 import features_generate
 import shop_files
@@ -88,6 +89,7 @@ def _returns(root, returned):
 
 
 def _build(root, base, picked, returned):
+    batch_driver.push_prefix(root)      # a malformed `[batch] push` refused before anything is written
     name = next_name(root)
     forked = git(root, "rev-parse", "HEAD").stdout.strip()
     tree = trees_dir(root) / name
@@ -103,12 +105,13 @@ def _build(root, base, picked, returned):
         for item in picked:
             item.status = "in-batch"
         commit(root, batch, picked + [i for i, _ in returned], "work batch start: %s %s" % (name, labels(picked)))
-        return batch
     except BaseException:
         remove_tree(root, tree)
         if git(root, "branch", "--list", name).stdout.strip():
             git(root, "branch", "-D", name)
         raise
+    batch_driver.write(root, batch, picked)
+    return batch
 
 
 def start(root):
@@ -136,12 +139,13 @@ def start(root):
         return _build(root, base, pick.picked, pick.returned), pick
 
 
-def said(batch, pick):
+def said(root, batch, pick):
     """What `work batch start` prints."""
     out = []
     if batch is not None:
         out.append("%s building: %s" % (batch.name, ", ".join(
             "%s %s" % (t.task, backlog_items.label(i)) for t, i in zip(batch.tasks, pick.picked))))
+        out.append("batch brief: %s" % batch_driver.path(root, batch.name))
     else:
         out.append("no batch started")
     out += ["%s -> shaped: %s" % (backlog_items.label(i), r[0]) for i, r in pick.returned]

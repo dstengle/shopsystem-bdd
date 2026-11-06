@@ -47,6 +47,15 @@ a request (backlog, batches).
 - **received** (condition of request): a request whose record is kept in the repository of its upstream and whose asker is another bounded context.
 - **sent** (condition of request): a request whose record is kept in the repository of its asker and whose upstream is another bounded context.
 
+- **foreign entry** (kind): an entry of a comment (`<field> <n>: <text>`) of the part of the side that did not post the comment's step: an entry of the upstream's part (`question`, `outcome`, `counter`, `reason`, `into`, and `resolution` but on a `fits`) in a step of the asker (`ask`, `fits`, or a `turn` posted in the asker's turn), or an entry of the asker's part (`line`, `answer`) in a step of the upstream (`offer`, `accept`, `resolve`, or a `turn` posted in the upstream's turn).
+
+## Relations
+
+| from | word | to | cardinality |
+|---|---|---|---|
+| comment | holds | foreign entry |  |
+| comment | on | request | one |
+
 ## Behaviour
 
 ### [g2] `work request` writes the request it is raised for
@@ -194,6 +203,12 @@ Restates: r10@0.29, r11@0.29, r12@0.29, r24@0.29.
 ### [g48] The asker's `work turn` refuses a turn it has passed
 - [r48] While a request is sent and the request is `awaiting-upstream`, if the person runs `work turn` on the request, then `work` shall exit with an error naming the request.
 
+### [g52] `work sync` writes no entry of the other side's part
+- [r52] While a comment that is unrecorded holds a foreign entry, when a session runs `work sync`, `work` shall write the comment, and `work` shall not write the foreign entry.
+
+### [g53] `work sync` reopens no closed request
+- [r53] While a request is closed and a comment on the request is unrecorded, when a session runs `work sync`, `work` shall write the comment, and `work` shall not change the status of the request or change the side of the request.
+
 ## Implementation, may change
 - A request between two bounded contexts, each in its own git repository, is one conversation on one GitHub issue on
   the upstream's GitHub repository; nothing reads or writes the other side's git repository. Each step is a comment a
@@ -241,9 +256,12 @@ Restates: r10@0.29, r11@0.29, r12@0.29, r24@0.29.
   version that holds it, posts the resolution and closes the issue; `work resolve` on a request that is not
   `accepted` is refused (U3). A delivered request's turn is the asker's.
 - `work sync` lists the open issues of this context's own repository and writes a record for each `ask` no record
-  holds, then reads the issue of every record, closed or not, and applies each comment it does not hold: its
-  entries written into their sections by number, its status and turn set, an offer quoted under `## Offer`. That is
-  a copy of what the issue holds, not a write of the other side's part. An unreadable comment is printed and never
+  holds, then reads the issue of every record, closed or not, and records each comment it does not hold, applying
+  only the part of the side that posted its step (r52): its entries written into their sections by number, its
+  status and turn set, an offer quoted under `## Offer`. The poster is the asker of an `ask` or a `fits`, the
+  upstream of an `offer`, an `accept` or a `resolve`, and of a `turn` the side whose turn the request was; a foreign
+  entry is recorded with its comment, so no watch wakes on it again, and never applied. A comment on a closed
+  request sets neither its status nor its turn (r53), so a late comment reopens no request. An unreadable comment is printed and never
   recorded. The records changed are one commit, on the current branch; then every request is printed with its status
   and, unless it is `delivered`, `refused` or `withdrawn`, whose move it waits on.
 - `work watch [--every <seconds>] [--polls <n>]` polls GitHub every `--every` seconds (default 60), as `work sync`

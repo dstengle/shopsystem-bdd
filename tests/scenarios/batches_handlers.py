@@ -180,3 +180,15 @@ def refused_naming_commit(step):
     said = refused_quietly(step)
     sha = step.context["commits"][step.names[0]]
     assert sha[:7] in said, (step.text, sha, said)
+
+
+@local("ThenPrints", "batch brief")
+def prints_brief(step):
+    """The path of the batch brief the run wrote (bound by the Then that it writes it), printed whole."""
+    done = batch_run(step)
+    if done is None:
+        return False
+    assert done.returncode == 0, done.stderr
+    rel = W.node_rel(step.context, step.names[0])
+    assert rel, (step.text, "no batch brief was written")
+    assert str(step.repo.resolve() / rel) in done.stdout.split(), (step.text, rel, done.stdout)

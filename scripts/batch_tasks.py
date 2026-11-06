@@ -3,11 +3,12 @@ D15-D18): one task for each item, built on its branch `batch-<n>-b<j>` in the wo
 
 `resume` gives each pending task of an `in-batch` item its worktree and sets it `running`, and gives a running task
 whose worktree is gone its worktree back on its branch, with the commits made so far; it reads no input. `done`
-checks the task's worktree and branch and runs the tests there before it sets the task `done`. `park` sets an item
-`needs-input` with its question and its task back to `pending`, its branch kept and its worktree removed; a worktree
-with uncommitted changes is refused unless `--discard` (plan 4 review, S2). A path is used as a worktree only when it
-is that worktree on its branch (`batch_git.is_tree`, S1). Each
-change is one commit of the batch file (and the item) on the base branch, made under the lock. The checks shared with
+checks the task's worktree and branch and runs the tests there, every parked item's lines out (batches r18,
+`batch_parked`), before it sets the task `done`. `park` takes an item's lines out of `batch-<n>` at once (batches r17)
+and sets it `needs-input` with its question and its task back to `pending`, its branch kept and its worktree removed;
+a worktree with uncommitted changes is refused unless `--discard` (plan 4 review, S2). A path is used as a worktree
+only when it is that worktree on its branch (`batch_git.is_tree`, S1). Each change is one commit of the batch file
+(and the item) on the base branch, made under the lock. The checks shared with
 `work batch review` are here: the lines commit, uncited commits, commits that change `.shop/`, the tests."""
 import re
 import shlex
@@ -17,6 +18,7 @@ import backlog_items
 import backlog_lines
 import backlog_moves
 import batch_fix
+import batch_parked
 import batch_plan
 import spec_unbuilt
 from batch_git import (
@@ -175,7 +177,8 @@ def checked(root, batch, task):
     if unbuilt:
         raise Refused("%s: %s: still in unbuilt: %s" % (command, label, ", ".join(unbuilt)))
     head = git(tree, "rev-parse", "HEAD").stdout.strip()
-    tests_pass(root, tree, "%s: %s" % (command, label))
+    with batch_parked.tested_tree(root, batch, task, tree, head, command) as tested:     # no parked lines (r18)
+        tests_pass(root, tested, "%s: %s" % (command, label))
     return head
 
 
@@ -231,6 +234,11 @@ def park(root, name, item_name, question, discard=False):
         backlog_moves.add_note(item, "parked from %s; its work is on branch %s" % (batch.name, task.branch))
         task.status = "pending"
         remove_tree(root, tree_of(root, batch, task))
-        batch_plan.commit(root, batch, [item], "work batch park: %s %s -> needs-input" % (
-            batch.name, backlog_items.label(item)))
+        before = batch_parked.take_out(root, batch, [item], "work batch park")     # at once (r17)
+        try:
+            batch_plan.commit(root, batch, [item], "work batch park: %s %s -> needs-input" % (
+                batch.name, backlog_items.label(item)))
+        except BaseException:
+            batch_parked.put_back(root, batch, before)
+            raise
         return item

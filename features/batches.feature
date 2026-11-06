@@ -129,3 +129,50 @@ Feature: Batches
     When the person runs `work batch review` on the batch b1
     Then `work` exits with an error naming the commit c1
     And `work` changes nothing
+
+  @g14 @r14
+  Scenario: `work batch start` writes the batch brief for a fresh agent
+    When the person runs `work batch start`
+    Then `work` writes the batch brief b1
+    And `work` prints the batch brief b1
+
+  @g15 @r15
+  Scenario: `work batch abandon` removes the batch's review folders
+    Given a review folder r1
+    And a batch b1
+    And the review folder r1 is of the batch b1
+    When the person runs `work batch abandon` on the batch b1
+    Then `work` removes the review folder r1
+
+  @g16 @r16
+  Scenario: The merge removes the batch's review folders
+    Given a pull request p1
+    And a batch b1
+    And the pull request p1 is of the batch b1
+    And a review folder r1
+    And the review folder r1 is of the batch b1
+    When the person merges the pull request p1
+    Then `work` removes the review folder r1
+
+  @g17 @r17
+  Scenario: A park takes the parked item's lines out of the batch
+    Given an item i1 that is `in-batch`
+    And a requirement r1
+    And the item i1 proposes the requirement r1
+    When the batch b1 parks the item i1
+    Then `work` removes the requirement r1
+
+  @g18 @r18
+  Scenario: A parked item's failing scenario does not hold up another task
+    Given an item i1
+    And a batch b1
+    And the item i1 is in the batch b1
+    And the item i1 is `needs-input`
+    And a scenario s1
+    And the scenario s1 is of the item i1
+    And the scenario s1 is not passing
+    And a task t1
+    And the task t1 is of the batch b1
+    And the task t1 is `running`
+    When the session s2 runs `work batch done` on the task t1
+    Then the task t1 is `done`

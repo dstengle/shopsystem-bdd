@@ -92,7 +92,7 @@ def status(args):
 
 def start(args):
     batch, pick = batch_start.start(args.root)
-    print(batch_start.said(batch, pick))
+    print(batch_start.said(args.root, batch, pick))
     return 0
 
 

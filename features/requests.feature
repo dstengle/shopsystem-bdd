@@ -325,3 +325,25 @@ Feature: Requests
     And the request q1 is `open`
     When the person runs `work turn` on the request q1
     Then `work` exits with an error naming the request q1
+
+  @g52 @r52
+  Scenario: `work sync` writes no entry of the other side's part
+    Given a comment c1
+    And the comment c1 is unrecorded
+    And a foreign entry f1
+    And the comment c1 holds the foreign entry f1
+    When the session s1 runs `work sync`
+    Then `work` writes the comment c1
+    And `work` does not write the foreign entry f1
+
+  @g53 @r53
+  Scenario: `work sync` reopens no closed request
+    Given a request q1
+    And the request q1 is closed
+    And a comment c1
+    And the comment c1 is on the request q1
+    And the comment c1 is unrecorded
+    When the session s1 runs `work sync`
+    Then `work` writes the comment c1
+    And `work` does not change the status of the request q1
+    And `work` does not change the side of the request q1

@@ -19,6 +19,7 @@ from pathlib import Path
 
 import backlog_items
 import backlog_lines
+import batch_git
 import batch_start
 import spec_unbuilt
 
@@ -72,7 +73,7 @@ def prepare(step):
         return
     R().codify(step)
     (step.repo / ".shop").mkdir(exist_ok=True)
-    (step.repo / ".shop" / "delivery.toml").write_text(DELIVERY)
+    (step.repo / ".shop" / "delivery.toml").write_text(step.context.get("delivery", DELIVERY))
     B().index(step)
     B().ensure_items(step)
     W().init(step.repo)
@@ -220,7 +221,20 @@ def make_batch(step, name):
                     "branch: %s\npull_request:%s\n---\n\n# %s\n\n## Tasks\n\n| task | item | status | branch |\n"
                     "|---|---|---|---|%s\n\n## Plan\n\nThe world's batch.\n" % (
                         n, status, forked, n, " " + url if url else "", n, rows))
+    make_review_folders(step, name)
     W().init(step.repo)
+
+
+def make_review_folders(step, name):
+    """Each review folder of the batch `name`, `batch-<n>-review-<k>` in the ignored worktrees directory, with the
+    brief, change and findings a review leaves there."""
+    folders = [f for f, found in step.context["given"].get("review folder", {}).items() if found.get("batch") == name]
+    for k, folder in enumerate(folders, 1):
+        path = batch_git.trees_dir(step.repo) / ("%s-review-%d" % (batch_name(step, name), k))
+        path.mkdir()
+        for file in ("brief.md", "change.diff", "findings.md"):
+            (path / file).write_text("%s of %s\n" % (file, folder))
+        step.context.setdefault("review_folders", {})[folder] = path
 
 
 def task_id(step, name):
