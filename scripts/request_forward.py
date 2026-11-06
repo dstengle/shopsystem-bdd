@@ -21,6 +21,7 @@ import os
 import queue
 import re
 import shlex
+import signal
 import subprocess
 import sys
 import threading
@@ -172,14 +173,20 @@ class Watched:
         return self.can
 
     def end(self):
-        for proc in self.forwards.values():
-            if proc.poll() is None:
-                proc.terminate()
-        for proc in self.forwards.values():
-            try:
-                proc.wait(timeout=5)
-            except subprocess.TimeoutExpired:
-                proc.kill()
+        """Each forward's process group ended (gh runs the extension as its child), killed after 5 s."""
+        for sig in (signal.SIGTERM, signal.SIGKILL):
+            for proc in self.forwards.values():
+                try:
+                    os.killpg(proc.pid, sig)
+                except OSError:
+                    pass
+            for proc in self.forwards.values():
+                try:
+                    proc.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    continue
+            if all(proc.poll() is not None for proc in self.forwards.values()):
+                return
 
 
 def check(root):

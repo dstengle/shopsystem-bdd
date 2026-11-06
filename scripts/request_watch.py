@@ -11,7 +11,8 @@ fields missing or not parsing, as sync reads it) is never recorded by sync, so i
 in `<git dir>/shopsystem/watched.json` (the worktree's own git dir, as conversation_prompt keeps its pointer, never
 committed), and a later watch passes over it: it does not wake the session in a loop. A poll whose gh fails is said
 on stderr and tried again at the next; it does not end the watch. `--polls <n>` ends a watch that has found nothing
-after n polls, exit 1: for tests and a bounded wait."""
+after n polls, exit 1: for tests and a bounded wait. `--forward` waits on GitHub's events instead (request_forward),
+with the same check (`report`)."""
 import json
 import sys
 import time
