@@ -26,3 +26,10 @@ def refuse_reply(root, text, ident):
     if received(root, text):
         raise Refused("%s is a request this context received from %s; the asker replies" % (ident, field(text, "asker")))
 
+
+
+def refuse_turn(root, text, ident):
+    """r48, r50, r51: `work turn` passes only this side's own turn: the upstream's on a request received, the
+    asker's on one sent."""
+    if received(root, text) and field(text, "turn") == "asker":
+        raise Refused("%s is in the asker's turn; %s, its asker, passes it" % (ident, field(text, "asker")))

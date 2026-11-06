@@ -203,6 +203,7 @@ def turn(root, ident):
     """Pass the turn to the other side (r7, r8, r9, r17, r18, r23): `request_text.turned`, and post the side's part of
     the turn on the issue, closing it when the turn refused the request (r34-r37)."""
     def edit(text):
+        request_side.refuse_turn(root, text, ident)
         return request_post.posted_turn(root, text, turned(text), "work turn")
     _change(root, ident, "turn", edit)
 
