@@ -7,7 +7,9 @@ from shop_files import Refused
 
 
 def _own(root):
-    import request_moves      # request_moves calls this module
+    # imported here: request_moves calls this module
+    import request_moves
+
     return request_moves.own_askers(root)
 
 
@@ -25,7 +27,6 @@ def refuse_reply(root, text, ident):
     """r49: the asker answers in its own repository; a request this context received is not its to reply to."""
     if received(root, text):
         raise Refused("%s is a request this context received from %s; the asker replies" % (ident, field(text, "asker")))
-
 
 
 def refuse_turn(root, text, ident):
