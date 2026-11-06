@@ -122,7 +122,7 @@ def push_failure(root, remote_name, branch):
     """`branch` pushed to `remote_name` (`refspec`), never asking for credentials nor waiting past the push's timeout
     (backlog r19): None when it is pushed, else git's first line of complaint, or that it timed out."""
     seconds = push_timeout()
-    done = bounded(["git", "push", "-q", remote_name, *refspec(root, remote_name, branch)], root, push_env(), seconds)
+    done = bounded(["git", "push", "-q", remote_name, *refspec(root, remote_name, branch)], root, push_env(root), seconds)
     if done is None:
         return "timed out after %d s" % seconds
     if done.returncode == 0:
