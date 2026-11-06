@@ -170,9 +170,9 @@ def given_argument(step):
 
 @handler("GivenK_C", "argument")
 def given_absent(step):
-    """absent: `work decision` is run without it; not absent, with it."""
+    """absent: the command is run without it; not absent, with it. An argument no Given named is its option."""
     gone = step.context.setdefault("absent", set())
-    option = step.context["arguments"][bare(step.names[0])]
+    option = step.context.get("arguments", {}).get(bare(step.names[0]), bare(step.names[0]))
     if " is not " in step.text:
         gone.discard(option)
     else:
