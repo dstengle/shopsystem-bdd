@@ -111,6 +111,8 @@ def request(step):
         path.write_text(path.read_text().replace("## Lines\n", "## Things\n"))
     elif word == "closed":
         edit(path, r"^status: .*$", "status: delivered")
+    elif word in ("received", "sent"):     # the side of a request (requests)
+        _sibling("requests_world.py", "shop_requests_world").sided(path, word)
 
 
 @handler("GivenK_C", "design-decision")
