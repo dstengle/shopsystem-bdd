@@ -117,6 +117,22 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 No agent has the Agent tool (design-decision/the-2-0-agents). A plugin agent's `hooks` and `permissionMode` are
 ignored, so a role's limits are its tools.
 
+## 2.2.0: decisions and records written by command
+
+- **`work decision`** writes a design-decision whole from its arguments (b41, decision-tiers r7, r8): `work decision
+  "<title>" --summary "<one sentence>" --tier check|requirement|judgement --decision "<text>"`, with `--context`,
+  `--alternatives` (text, or `@<file>`), `--source`, `--by` and `--enforced-by`. It numbers the file after the
+  highest in `spec/decisions/`, rewrites the decisions index as `model decisions` does, and commits both. With no
+  `--tier` it is refused and writes nothing.
+- **`work record`** writes a record (design-model-check r56): `work record "<title>" --kind <kind> --summary "<the
+  index row>" --body <file>` writes `.shop/records/<date>-<slug>.md` with its frontmatter, adds its row to
+  `.shop/records/README.md`, and commits both. A record's supporting files, and a design's or plan's folder, are
+  still written by hand (b44).
+- **`model forms`** lists each kind of file a context keeps, with its path and the command that writes it
+  (design-model-check r55), so a session finds the command instead of copying an existing file. `--json` gives the
+  same as one object. The forms with no command yet name the plugin item that will give them one.
+- **No upgrade step.**
+
 ## 2.1.0: requests exchanged through GitHub issues
 
 - **A request is a conversation on one GitHub issue** on the upstream's repository (b26, requests r27-r41, intake
