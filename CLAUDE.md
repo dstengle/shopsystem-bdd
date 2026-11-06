@@ -10,8 +10,9 @@
   an upstream's. It is never kept only in a session's memory or in a record's findings.
 - Every report a session or an agent writes (an analysis, an investigation, research with recommendations) is kept
   as `.shop/records/<date>-<topic>.md`, supporting files in a folder of the same name, indexed in
-  `.shop/records/README.md` and committed, all by `work record "<title>" --kind analysis --summary "<the index row>"
-  --body <file>`. A committed record is never edited.
+  `.shop/records/README.md` and committed. `work record "<title>" --kind analysis --summary "<the index row>" --body
+  <file>` writes the record file and its index row and commits them; supporting files, and a design's or a plan's
+  folder (below), are still written by hand. A committed record is never edited.
 - A design-decision is written by `work decision "<title>" --summary "<one sentence>" --tier <tier> --decision
   "<text>"`, never by hand. `model forms` names the command that writes each other file form; copy no existing file
   to learn a form.
