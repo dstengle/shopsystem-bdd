@@ -1,6 +1,7 @@
 """The step vocabulary in pytest-bdd (design §14.3): one step definition for each (keyword, template, kind) of the
 context's Steps grammar, dispatching to the handler `features_vocab.lookup` finds, and the checks of the observable
-universal conditions after every generated scenario (design §8.4: U3, a refused command changes nothing; U8,
+universal conditions after every generated scenario (design §8.4: U3, a refused command changes nothing; U4, a commit
+a command makes in a repository with a remote is pushed, but under a remote the scenario made unpushable; U8,
 `--json` prints one JSON object).
 
 A step definition matches a step when the Steps grammar reads the step's text as its (template, kind); a cheap test
@@ -86,11 +87,38 @@ def snapshot(repo):
             for p in sorted(repo.rglob("*")) if p.is_file() and ".git" not in p.relative_to(repo).parts}
 
 
-def u_problems(records):
-    """The U3 and U8 failures of a scenario's runs, each record {args, returncode, stdout, changed}."""
+def _git(repo, *args):
+    done = subprocess.run(["git", *args], cwd=repo, capture_output=True, text=True)
+    return done.stdout.strip() if done.returncode == 0 else None
+
+
+def branch_head(repo):
+    """(branch, its commit) checked out in `repo`, or None outside git or on a detached HEAD."""
+    branch = (Path(repo) / ".git").exists() and _git(repo, "symbolic-ref", "-q", "--short", "HEAD")
+    return (branch, _git(repo, "rev-parse", "HEAD")) if branch else None
+
+
+def unpushed(repo, before):
+    """The remote a run's commit on the branch checked out is not pushed to (U4), or None: none when the run made no
+    commit there or the repository has no remote for the branch (its upstream's, else `origin`)."""
+    after = branch_head(repo)
+    if after is None or after == before:
+        return None
+    branch, head = after
+    remote = _git(repo, "config", "branch.%s.remote" % branch) or "origin"
+    if remote not in (_git(repo, "remote") or "").split():
+        return None
+    return None if _git(repo, "rev-parse", "-q", "--verify", "refs/remotes/%s/%s" % (remote, branch)) == head else remote
+
+
+def u_problems(records, unpushable=False):
+    """The U3, U4 and U8 failures of a scenario's runs, each record {args, returncode, stdout, changed, unpushed}; U4
+    is not asked under an unpushable remote."""
     out = []
     for r in records:
         command = " ".join(map(str, r["args"]))
+        if r["returncode"] == 0 and r.get("unpushed") and not unpushable:
+            out.append("U4: `%s` committed and did not push the commit to %s" % (command, r["unpushed"]))
         if r["returncode"] != 0 and r["changed"]:
             out.append("U3: `%s` was refused (exit %d) and changed %s" % (command, r["returncode"],
                                                                          ", ".join(r["changed"])))
@@ -109,14 +137,15 @@ def runner(repo, request, scripts=SCRIPTS):
     scenario each run is recorded for the U checks."""
     def _run(script, *args, cwd=None, **kwargs):
         record = generated(request.node)
-        before = snapshot(repo) if record else None
+        before, at = (snapshot(repo), branch_head(repo)) if record else (None, None)
         done = subprocess.run([sys.executable, str(Path(scripts) / script), *map(str, args)], capture_output=True,
                               text=True, cwd=cwd or repo, **kwargs)
         if record:
             after = snapshot(repo)
             changed = sorted(k for k in set(before) | set(after) if before.get(k) != after.get(k))
             request.node.__dict__.setdefault("_shop_runs", []).append(
-                {"args": [script, *args], "returncode": done.returncode, "stdout": done.stdout, "changed": changed})
+                {"args": [script, *args], "returncode": done.returncode, "stdout": done.stdout, "changed": changed,
+                 "unpushed": unpushed(repo, at)})
         return done
     return _run
 
@@ -128,7 +157,8 @@ def pytest_bdd_step_error(request):
 def pytest_bdd_after_scenario(request):
     if getattr(request.node, "_shop_failed", False) or not generated(request.node):
         return
-    problems = u_problems(request.node.__dict__.get("_shop_runs", []))
+    problems = u_problems(request.node.__dict__.get("_shop_runs", []),
+                          getattr(request.node, "_shop_unpushable", False))
     if problems:
         pytest.fail("\n".join(problems), pytrace=False)
 

@@ -26,6 +26,7 @@ No command rewords or removes an item's line yet: `work line` only adds one. A l
 3. **Rate it.** `python3 <scripts>/work rate <b> --value <v> --urgency <u> --size <s>`, with the reason for each in a note (`work shape`'s note, or the item's `## Notes`).
 4. **Ready it.** `python3 <scripts>/work ready <b>`. On a refusal, reword the lines it names from its reasons (a parse refusal's `parsed up to:` and nearest words, a logic finding's clash, a group with no scenario), by editing their bullets in the item's `## Requirements` as the Overview says (running `work line` again adds a second line beside the bad one), and run it again. A warning (an L3) does not refuse; read it, and reword when the line is wrong.
 5. **Tell the person afterwards** which items are ready and what their lines say, in the backlog's words: `python3 <scripts>/work backlog` and `python3 <scripts>/work show <b>`.
+6. **Build it.** With an item `ready` and no batch open, start building-a-batch without asking the person: readying an item is the decision to build it.
 
 ## Red Flags
 
@@ -36,6 +37,7 @@ No command rewords or removes an item's line yet: `work line` only adds one. A l
 | A line bent onto a nearby word because the right one is missing | A term bullet with `work line --term` (step 2) |
 | `spec/` edited to hold the item's lines | The lines live on the item until its batch merges; `work line` writes them there |
 | An item left `shaped` after a refusal | Reword from the reasons and run `work ready` again |
+| Asking the person whether to ready or batch an item | Ready it (step 4) and build it (step 6) |
 | `work line` run again to fix a refused line | It adds a line; edit the bullet in `## Requirements` instead |
 | Two lines with the same trigger and condition | One line, `shall A and B` |
 | The person's words pasted into a note with no quote | `work quote` keeps the turns around them; cite quote-<n> (step 1) |
