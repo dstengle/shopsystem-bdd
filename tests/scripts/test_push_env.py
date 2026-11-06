@@ -3,7 +3,6 @@ overriding the repository's `core.sshCommand` nor a `$GIT_SSH` (review 1 of batc
 import subprocess
 
 import pytest
-
 from shop_files import push_env
 
 
