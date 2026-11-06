@@ -4,8 +4,9 @@ D14): a batch closed, in one commit on the base branch.
 The person merges the pull request; `merged` records it once gh says it is `MERGED` and its merge commit is in the
 base's history (else `git pull` first): every `in-batch` item `delivered`, the batch `merged`, its worktrees removed
 and the merged item branches deleted. `abandon` closes the pull request when there is one, returns every `in-batch`
-item to `ready` and removes the worktrees; the branches are kept. It refuses while a task worktree has uncommitted
+item to `ready` and removes the worktrees; the branches are kept. Both remove the batch brief's folder. It refuses while a task worktree has uncommitted
 changes, unless `--discard`; `merged` removes them as they are, their work merged."""
+import shutil
 import subprocess
 
 import backlog_items
@@ -33,6 +34,7 @@ def _remove_trees(root, batch):
     trees = trees_path(root)
     for tree in [trees / batch.name] + [trees / ("%s-%s" % (batch.name, t.task)) for t in batch.tasks]:
         remove_tree(root, tree)
+    shutil.rmtree(trees / ("%s-driver" % batch.name), ignore_errors=True)     # the batch brief (r14)
 
 
 def merged(root, name):
