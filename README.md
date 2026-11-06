@@ -117,6 +117,21 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 No agent has the Agent tool (design-decision/the-2-0-agents). A plugin agent's `hooks` and `permissionMode` are
 ignored, so a role's limits are its tools.
 
+## 2.3.1: a batch runs in one fresh agent, and a parked item leaves the batch at once
+
+- **A batch runs in one fresh agent** (b55, batches r14): `work batch start` writes a batch brief,
+  `batch-<n>-driver/brief.md` under the worktrees directory (never committed), and prints its path. The session hands
+  that brief to one fresh agent, which runs the batch to a clean pull request (building-a-batch, step 2). An optional
+  `[batch] push` in `.shop/delivery.toml` gives the prefix the brief puts on every push and gh call.
+- **A parked item's lines leave at once** (b47, batches r17, r18): `work batch park` takes the item's lines out of
+  `batch-<n>`, and `work batch done` runs a task's tests with every parked item's lines out, so a park no longer
+  breaks the other tasks.
+- **`work batch merged` and `abandon` remove the batch's folders** (b58, batches r15, r16): each
+  `batch-<n>-review-<k>` folder, and the driver's brief folder.
+- **`work sync` applies only the poster's side of a comment** (b35, requests r52, r53): every comment is still
+  recorded, but a late comment no longer changes a delivered, refused or withdrawn request.
+- **No upgrade step.**
+
 ## 2.3.0: work pushes its commits, requests post after they commit, and work watch
 
 - **`work` pushes every commit it makes** (b51, b56, b57): to the branch's upstream remote, else `origin`. A refused
