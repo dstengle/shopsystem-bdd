@@ -111,11 +111,19 @@ def push_failure(root, remote_name, branch):
     return (done.stderr.strip() or done.stdout.strip() or "exit %d" % done.returncode).splitlines()[0]
 
 
-def push_env():
+def push_env(root=None):
     """The environment of a push: no prompt for credentials, and ssh in batch mode (no passphrase nor host key asked),
-    the option appended to a `GIT_SSH_COMMAND` already set."""
-    ssh = os.environ.get("GIT_SSH_COMMAND", "").strip() or "ssh"
-    return dict(os.environ, GIT_TERMINAL_PROMPT="0", GIT_SSH_COMMAND=ssh + " -o BatchMode=yes")
+    the option added to the command git would use: `$GIT_SSH_COMMAND`, else `core.sshCommand` of `root` (else of the
+    current directory); a `$GIT_SSH` with neither left alone; else `ssh`."""
+    env = dict(os.environ, GIT_TERMINAL_PROMPT="0")
+    ssh = os.environ.get("GIT_SSH_COMMAND", "").strip()
+    if not ssh:
+        done = subprocess.run(["git", "config", "core.sshCommand"], cwd=root, capture_output=True, text=True)
+        ssh = done.stdout.strip() if done.returncode == 0 else ""
+    if not ssh and os.environ.get("GIT_SSH", "").strip():
+        return env
+    env["GIT_SSH_COMMAND"] = (ssh or "ssh") + " -o BatchMode=yes"
+    return env
 
 
 def push_timeout():
