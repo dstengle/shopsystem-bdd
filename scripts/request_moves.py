@@ -147,8 +147,9 @@ def upstream_of(root, sources, to):
 def request(root, title, asker, ask_text, sources, thread, raised_for=None, to=None):
     """Write the request, open in the upstream's turn, `q<n>` one above the highest kept, and commit it; then post
     its issue on its upstream's GitHub repository and commit the issue's URL into it (b36, r45: a commit git refuses
-    opens no issue; an issue GitHub refuses takes the request out again); return (q<n>, the URL) (r27). An upstream that names
-    no GitHub repository is refused before anything is posted (r28). The ask is the asker's own words; its lines
+    opens no issue; an issue GitHub refuses takes the request out again; an issue whose URL git refuses is named, and
+    found again by `work sync` or the same request run again, never opened twice, f6); return (q<n>, the URL) (r27).
+    An upstream that names no GitHub repository is refused before anything is posted (r28). The ask is the asker's own words; its lines
     come later (`work propose`), checked by the upstream."""
     if not sources and thread is None and raised_for is None:
         raise Refused("the request names neither an origin (--source) nor a job-thread (--thread)")
@@ -158,35 +159,44 @@ def request(root, title, asker, ask_text, sources, thread, raised_for=None, to=N
     repo = request_gh.repo_of(root, upstream, "work request")
     shop_files.git(root, "rev-parse", "--is-inside-work-tree")
     directory = Path(root) / REQUESTS
-    name = "q%d" % next_number(root)
-    ident = "request/%s/%s" % (shop_files.context_path(root), name)
     origin = ["part_of: %s" % thread] if thread is not None else ["source: [%s]" % ", ".join(sources)] if sources else []
     if raised_for is not None and re.fullmatch(r"q\d+", raised_for):     # a bare q<n> names a request of this context
         raised_for = "request/%s/%s" % (shop_files.context_path(root), raised_for)
     origin = "".join(o + "\n" for o in origin + (["raised_for: %s" % raised_for] if raised_for is not None else []))
-    fields = {"step": "ask", "request": ident, "asker": asker, "upstream": upstream, "title": title, "ask": ask_text,
-              "status": "open", "turn": "upstream"}
 
-    def record(url=None):
-        """The record, with the issue's URL once it is opened."""
+    def record(name, url=None):
+        """The record of `name`, with the issue's URL once it is opened."""
         issue, comments = ("issue: %s\n" % url, "1. %s ask\n" % url) if url else ("", "")
-        return ("---\nid: %s\nkind: request\nasker: %s\nupstream: %s\n%s%sstatus: open\nturn: upstream\n---\n\n"
-                "# %s\n\n## Ask\n%s\n## Lines\n\n## Questions\n\n## Answers\n\n## Outcomes\n\n## Resolution\n\n"
-                "## Comments\n%s" % (ident, asker, upstream, issue, origin, title, request_post.quoted(ask_text), comments))
+        return ("---\nid: %s\nkind: request\nasker: %s\nupstream: %s\n%s%sstatus: open\nturn: upstream\n---\n\n# %s\n\n"
+                "## Ask\n%s\n## Lines\n\n## Questions\n\n## Answers\n\n## Outcomes\n\n## Resolution\n\n## Comments\n%s"
+                % (ident(name), asker, upstream, issue, origin, title, request_post.quoted(ask_text), comments))
+
+    def ident(name):
+        return "request/%s/%s" % (shop_files.context_path(root), name)
+    # f6: the same request run again after its issue's URL was refused finds its committed record, which has no issue
+    again = next((p.stem for p in sorted(directory.glob("q*.md")) if p.read_text() == record(p.stem)), None)
+    name = again or "q%d" % next_number(root)
+    fields = {"step": "ask", "request": ident(name), "asker": asker, "upstream": upstream, "title": title,
+              "ask": ask_text, "status": "open", "turn": "upstream"}
     path = directory / (name + ".md")
     rel = str(path.relative_to(root))
 
     def write():
         directory.mkdir(parents=True, exist_ok=True)
-        path.write_text(record())
-    shop_files.committed(root, [rel], "work request: %s" % name, write)     # b36, r45: committed before it is posted
+        path.write_text(record(name))
+    if again is None:
+        shop_files.committed(root, [rel], "work request: %s" % name, write)     # b36, r45: committed before it is posted
+    url = request_post.orphan_issue(root, record(name), "work request") if again else None
     try:
-        url = request_gh.open_issue(root, repo, title, request_form.render(fields, None, ABOUT), "work request")
+        url = url or request_gh.open_issue(root, repo, title, request_form.render(fields, None, ABOUT), "work request")
     except Refused:
-        shop_files.committed(root, [rel], "work request: %s put back, its issue not opened" % name, path.unlink)
+        if again is None:
+            shop_files.committed(root, [rel], "work request: %s put back, its issue not opened" % name, path.unlink)
         raise
-    shop_files.committed(root, [rel], "work request: %s posted" % name,
-                         lambda: path.write_text(record(url)))
+    try:
+        shop_files.committed(root, [rel], "work request: %s posted" % name, lambda: path.write_text(record(name, url)))
+    except Refused as why:
+        raise Refused(request_post.not_recorded(why, "the issue of %s" % name, url)) from None
     return name, url
 
 

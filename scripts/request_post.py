@@ -108,7 +108,9 @@ def turn_posting(before, after, command):
 def committed(root, path, message, after, posted=None, others=(), write=None):
     """Commit the record `after` at `path`, with the files `others` that `write` writes, and only then post `posted`
     on the record's issue and commit the comment's URL under `## Comments` (b36, r45-r47): a commit git refuses posts
-    nothing; a record `after` leaves unchanged is committed empty before it is posted. A comment GitHub refuses puts the files back, in a commit, and is refused. Return the record."""
+    nothing; a record `after` leaves unchanged is committed empty before it is posted. A comment GitHub refuses puts
+    the files back, in a commit, and is refused. A comment whose URL git then refuses is refused naming it, and found
+    again (`unrecorded`) by a run of the command again, never posted twice (f6). Return the record."""
     path = Path(path)
     rels = [str(path.relative_to(root))] + list(others)
     before = [(Path(root) / rel).read_bytes() if (Path(root) / rel).exists() else None for rel in rels]
@@ -125,18 +127,51 @@ def committed(root, path, message, after, posted=None, others=(), write=None):
     if not changed:  # a step that leaves the record as it was (r36) is still committed, empty, before it is posted
         shop_files.committed(root, rels[:1], message, lambda: None, empty=True)
     url = field(after, "issue")
-    try:
-        said = request_gh.comment(root, url, body(root, after, posted.step, posted.sections, posted.fields,
-                                                  posted.free), posted.command)
+    said_body = body(root, after, posted.step, posted.sections, posted.fields, posted.free)
+    try:   # a comment posted before whose URL was never committed (f6) is recorded, not posted again
+        said = unrecorded(root, after, said_body, posted.command) or request_gh.comment(root, url, said_body,
+                                                                                          posted.command)
     except Refused:
         if changed:
             shop_files.committed(root, rels, "%s: put back, not posted" % message, lambda: _put_back(root, rels, before))
         raise
     final = with_comment(after, said, posted.step)
-    shop_files.committed(root, rels[:1], "%s: posted" % message, lambda: path.write_text(final))
-    if posted.close:
-        request_gh.close(root, url, posted.command)
+    try:
+        shop_files.committed(root, rels[:1], "%s: posted" % message, lambda: path.write_text(final))
+    except Refused as why:
+        raise Refused(not_recorded(why, "the comment", said)) from None
+    finally:
+        if posted.close:
+            request_gh.close(root, url, posted.command)
     return final
+
+
+def not_recorded(why, what, url):
+    """The refusal of a commit of the URL of `what`, which GitHub took (f6): it names the URL and how to record it."""
+    return ("%s; %s %s is posted on GitHub but not recorded: `work sync`, or the command again, records it"
+            % (why, what, url))
+
+
+def unrecorded(root, text, said, command):
+    """The URL of a comment on the issue of the record `text` whose body is `said` and which the record does not
+    hold: one posted before whose URL was never committed (f6); None when there is none."""
+    _, comments, _ = request_gh.view(root, field(text, "issue"), command)
+    held = recorded(text)
+    return next((u for u, b in comments if u not in held and b.strip() == said.strip()), None)
+
+
+def orphan_issue(root, text, command):
+    """The URL of an open issue on the upstream's repository whose ask names the request of the record `text`, which
+    has no `issue`: one opened before whose URL was never committed (f6); None when there is none."""
+    repo = request_gh.repo_of(root, field(text, "upstream"), command)
+    for url, _, said in request_gh.listed(root, repo, command):
+        try:
+            form = request_form.parse(said)
+        except request_form.Unreadable:
+            continue
+        if form is not None and form.step == "ask" and form.fields.get("request") == field(text, "id"):
+            return url
+    return None
 
 
 def _put_back(root, rels, before):
