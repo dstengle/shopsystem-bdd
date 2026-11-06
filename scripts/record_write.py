@@ -1,13 +1,15 @@
 """`work record` (capability design-model-check r56): a record written whole as `.shop/records/<date>-<slug>.md`, its
 frontmatter (id, kind, about, date) and `# <title>` over the body a file gives, its row appended to the table of
 `.shop/records/README.md`, and the two committed together. A path that exists already is refused, since a committed
-record is never edited."""
+record is never edited, and so is an `--about` that is not one line or not the id of a kind of node `model` knows
+(r57)."""
 import datetime
 import re
 import sys
 from pathlib import Path
 
 import shop_files
+from model_facts import KINDS as NODE_KINDS
 
 RECORDS = Path(".shop") / "records"
 # The record kinds `model` reads under .shop/records/ (model_work.RECORD_KINDS) that a record file holds: an
@@ -45,7 +47,7 @@ def add_parser(sub):
     p.add_argument("--kind", required=True, choices=KINDS, help="the record's kind")
     p.add_argument("--summary", required=True, help="the text of its row in .shop/records/README.md, one line")
     p.add_argument("--body", required=True, help="a file whose text is the record's body, under its title")
-    p.add_argument("--about", help="the id the record is about (default: the bounded context)")
+    p.add_argument("--about", help="the id of the node the record is about, <kind>/<...> on one line (default: the bounded context)")
     p.add_argument("--slug", help="the file's name after its date (default: from the title)")
     p.add_argument("--date", help="the record's date, YYYY-MM-DD (default: today)")
 
@@ -55,6 +57,17 @@ def one_line(text, what):
     if not text or any(ch in text for ch in shop_files.LINE_BREAKS):
         raise shop_files.Refused("the %s is one line of text" % what)
     return text
+
+
+def attributed(about):
+    """An `--about` as the frontmatter holds it: one line, `<kind>/<...>` of a kind of node `model` knows (a design or
+    an analysis is `record/...`)."""
+    kind, _, rest = about.strip().partition("/")
+    if (any(ch in about for ch in shop_files.LINE_BREAKS) or not rest or not re.fullmatch(r"\S+", rest)
+            or kind not in NODE_KINDS | set(HISTORY.values())):
+        raise shop_files.Refused("--about %r is not one line naming a node: <kind>/<...>, the kind one of %s"
+                                 % (about, ", ".join(sorted(NODE_KINDS | set(HISTORY.values())))))
+    return about.strip()
 
 
 def with_row(readme, row):
@@ -85,7 +98,7 @@ def write(args):
     rel, readme = (RECORDS / ("%s.md" % name)).as_posix(), (RECORDS / "README.md").as_posix()
     if (root / rel).exists():
         raise shop_files.Refused("%s exists, and a committed record is never edited: give another --slug" % rel)
-    about = args.about or "bounded-context/%s" % path
+    about = attributed(args.about) if args.about is not None else "bounded-context/%s" % path
     text = ("---\nid: %s/%s/%s\nkind: %s\nabout: %s\ndate: %s\n---\n\n# %s\n\n%s\n"
             % (HISTORY.get(args.kind, args.kind), path, name, args.kind, about, date, title, body))
     row = "| `%s.md` | %s | %s |\n" % (name, summary, args.kind)
