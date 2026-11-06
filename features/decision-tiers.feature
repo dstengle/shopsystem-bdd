@@ -47,3 +47,18 @@ Feature: Decision tiers
     And the design-decision d1 supersedes the design-decision d2
     When the person runs `model check`
     Then `model` exits with an error naming `v_d8`
+
+  @g7 @r7
+  Scenario: `work decision` writes and commits a decision
+    When the person runs `work decision`
+    Then `work` writes the design-decision d1
+    And `work` writes the decisions index d2
+    And `work` commits the design-decision d1
+
+  @g8 @r8
+  Scenario: `work decision` refuses a decision with no tier
+    Given a design-decision d1
+    And the design-decision d1 is untiered
+    When the person runs `work decision` on the design-decision d1
+    Then `work` exits with an error naming `--tier`
+    And `work` changes nothing

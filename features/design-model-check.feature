@@ -214,3 +214,15 @@ Feature: Design model check
     When the person runs `model rules`
     Then `model` prints the rule r1
     And `model` exits successfully
+
+  @g55 @r55
+  Scenario: `model forms` lists every file form
+    When the person runs `model forms`
+    Then `model` prints the file form f1
+    And `model` exits successfully
+
+  @g56 @r56
+  Scenario: `work record` writes and commits a record
+    When the person runs `work record`
+    Then `work` writes the record r1
+    And `work` commits the record r1

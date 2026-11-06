@@ -11,7 +11,7 @@ A brainstorming ends in shaped items whose requirement lines pass the readiness 
 
 An item's lines stay on the item (its `## Requirements`) until its batch merges; `spec/` is not written. `work ready` checks them on a copy of `spec/`: every line parses in the context's grammar, `model logic` finds no L0 nor an L1 naming them, `features generate` writes their scenarios, and every request line of the item is settled.
 
-Scripts: `<this skill's base directory>/../../scripts/`. For larger work a design record is still written, beside the items, never in place of them.
+Scripts: `<this skill's base directory>/../../scripts/`. For larger work a design record is still written, beside the items, never in place of them. A design-decision it settles is written with `work decision` (`--help` gives its fields), and `model forms` names the command for any other file.
 
 In this repository this skill wins over superpowers:brainstorming's ending: when both fire, the brainstorming ends here, in items with lines, not in "write the design doc" and a plan. A design record may sit beside the items.
 

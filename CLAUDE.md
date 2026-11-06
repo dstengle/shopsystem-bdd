@@ -10,7 +10,12 @@
   an upstream's. It is never kept only in a session's memory or in a record's findings.
 - Every report a session or an agent writes (an analysis, an investigation, research with recommendations) is kept
   as `.shop/records/<date>-<topic>.md`, supporting files in a folder of the same name, indexed in
-  `.shop/records/README.md` and committed. A committed record is never edited.
+  `.shop/records/README.md` and committed. `work record "<title>" --kind analysis --summary "<the index row>" --body
+  <file>` writes the record file and its index row and commits them; supporting files, and a design's or a plan's
+  folder (below), are still written by hand. A committed record is never edited.
+- A design-decision is written by `work decision "<title>" --summary "<one sentence>" --tier <tier> --decision
+  "<text>"`, never by hand. `model forms` names the command that writes each other file form; copy no existing file
+  to learn a form.
 - A design or a plan is a record too, under `.shop/records/<date>-<topic>/` (`design.md`, `plan-*.md`), in place of
   a skill's default `docs/superpowers/` path: nothing writes under `docs/superpowers/` (design-decision/final-layout).
 - A plan is carried out by one fresh agent that implements every task in order, then one fresh reviewer of the whole
@@ -61,9 +66,12 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `scripts/conversation_names.py` | `work names`: every item and batch with its name beside its id, and the SessionStart hook's `--hook`, silent with nothing to show and never failing (conversation) |
 | `scripts/model` with `scripts/model*.py` | the `model` command: parsing, facts, checks, decisions and records, the frozen queue's citations, reports |
 | `scripts/model_decisions.py` | the tiers of `spec/decisions/`: the `enforced_by` entries told apart, and `model decisions --check`'s runs of each `check` decision's tests (decision-tiers) |
+| `scripts/decision_write.py` | `work decision`: a design-decision written whole from its arguments as `spec/decisions/<nnnn>-<slug>.md`, numbered after the highest, the index rewritten as `model decisions` does, both committed; refused with no `--tier` or on an id already taken (decision-tiers) |
+| `scripts/record_write.py` | `work record`: a record written whole as `.shop/records/<date>-<slug>.md` (id, kind, about, date, `# <title>` over a body file), its row appended to the table of `.shop/records/README.md`, both committed; an existing path refused (design-model-check) |
 | `scripts/model_requests.py` | the reading of requests by `model`: `.shop/requests/q<n>.md`, a request asked on an issue naming the issue in place of an origin, and its upstream |
 | `scripts/model_spec.py` | `model`'s reading of the codified spec: groups, requirements and their parse, universal conditions, `restated.json`, the typed glossary, generated scenarios (`@g<n>`), and a file without `language: codified-1` (v_p0) |
 | `scripts/model_restates.py` | `model restates`: the coverage of the 0.29 ids by groups, `## Dropped` and moves |
+| `scripts/model_forms.py` | `model forms`: every file form a context keeps (`FORMS`), its path pattern and the command that writes it, or the plugin's item that will give it one, or by hand; text or `--json` |
 | `scripts/work` | the `work` command: its contract, its parsers and dispatch to the backlog, batch, request and conversation modules |
 | `scripts/request_view.py` | `work list` (each request with its status, and each observation no source cites) and `work show <request>` (its turn and its issue's URL, lines with their outcomes, questions with their answers, resolution) |
 | `scripts/shop_frozen.py` | what is still read of plugin 1.x's frozen `.shop/work/`: the `source:` ids of its initiatives and requests (`sources`), as citations of observations |
@@ -115,6 +123,7 @@ Code and test files, every tracked Python file, stay at 300 lines or fewer. `pyt
 | `tests/scenarios/vocab.py` | the vocabulary in pytest-bdd: step definitions matched by grammar, the handler registry (`from vocab import handler`), the marks from the spec, the U3/U8 checks after a generated scenario |
 | `tests/scenarios/world_*.py` | shared handlers: the domain kinds' nodes and files (`world_nodes.py`), running a command and reading its result (`world_run.py`), and the registry's fallbacks of the keys whose one handler was supervision's (`world_fallbacks.py`) |
 | `tests/scenarios/<capability>_handlers*.py` | the handlers of a capability's generated feature (analysis-tools, backlog, batch-measurement, batches, conversation, decision-tiers, design-model-check, feature-file-tools, intake, migration-tools, readiness, requests, telemetry); `work_queue_handlers.py`, the `work` Thens they share, kept from the retired work-queue |
+| `tests/scenarios/design_model_check_handlers_forms.py` | design-model-check's handlers of the commands that write a file form: `model forms` and `work record` |
 | `tests/scenarios/migration_tools_handlers_conditions.py` | migration-tools' condition Givens: a repository's primitive conditions checked against the scenario's example data, and the untracked file built |
 | `tests/scenarios/<capability>_world.py` and the like | a capability's scenario repository: `analysis_tools_world.py`; `work_queue_world.py` (the repository in version control, noun phrases matched against files, `bind_all`, `local` handlers that chain); `backlog_world.py` (items written as `.shop/backlog/` files, the scenario's `i<n>` as `b<n>`, the items a scenario names written before its command); `readiness_world.py` (the codified spec of the generate fixture written over `spec/`, an item given requirement lines, `work` run with no input); `batches_world.py` (a bare remote and the stand-in gh beside the repository, and the batches, tasks, commits and pull requests a scenario names built before its command) |
 | `tests/scenarios/requests_world.py` | the requests' scenario repository: the stand-in gh beside it, its `origin` on GitHub (`ex/ctx`), a request given its issue; `requests_handlers_issues.py`, the handlers of the conversation on the issue |
