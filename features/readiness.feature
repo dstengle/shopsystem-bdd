@@ -29,3 +29,58 @@ Feature: Readiness
   Scenario: `work ready` asks no question
     When the person runs `work ready` on the item i1
     Then `work` does not ask the question q1
+
+  @g5 @r5
+  Scenario: `work line --relation` writes a relation row onto an item
+    Given `--relation` is given
+    When the person runs `work line` on the item i1
+    Then `work` writes the relation row r1
+    And `work` commits the item i1
+
+  @g6 @r6
+  Scenario: `work line --relation` refuses a malformed relation row
+    Given `--relation` is given
+    And a relation row r1
+    And the relation row r1 is malformed
+    When the person runs `work line` on the relation row r1
+    Then `work` exits with an error naming the relation row r1
+    And `work` changes nothing
+
+  @g7 @r7
+  Scenario: `work line --universal` writes a universal condition onto an item
+    Given `--universal` is given
+    When the person runs `work line` on the item i1
+    Then `work` writes the universal condition u1
+    And `work` commits the item i1
+
+  @g8 @r8
+  Scenario: `work line --upstream` writes an upstream entry onto an item
+    Given `--upstream` is given
+    When the person runs `work line` on the item i1
+    Then `work` writes the upstream entry u1
+    And `work` commits the item i1
+
+  @g9 @r9
+  Scenario: `work line --upstream` refuses a malformed upstream entry
+    Given `--upstream` is given
+    And an upstream entry u1
+    And the upstream entry u1 is malformed
+    When the person runs `work line` on the upstream entry u1
+    Then `work` exits with an error naming the upstream entry u1
+    And `work` changes nothing
+
+  @g10 @r10
+  Scenario: `work line --given` writes a given block onto an item
+    Given `--given` is given
+    When the person runs `work line` on the item i1
+    Then `work` writes the given block g1
+    And `work` commits the item i1
+
+  @g11 @r11
+  Scenario: `work line --given` refuses a malformed given block
+    Given `--given` is given
+    And a given block g1
+    And the given block g1 is malformed
+    When the person runs `work line` on the given block g1
+    Then `work` exits with an error naming the given block g1
+    And `work` changes nothing
