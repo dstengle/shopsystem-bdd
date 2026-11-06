@@ -2,7 +2,8 @@
 settled with one accepted, and the request becomes an item of the backlog. The item is written `shaped`, titled by the
 request, asked by its asker, its provenance read off the asker (`own`, `product`, `peer`), with each accepted line in
 its `## Requirements` under the capability (and group) its `work outcome accepted` named; the request is `accepted`,
-in the upstream's turn, and the acceptance is posted on its issue. The request and the item are one commit."""
+in the upstream's turn. The request and the item are one commit, and the acceptance is posted on its issue after it
+(b36)."""
 import re
 from pathlib import Path
 
@@ -77,14 +78,11 @@ def accept(root, ident):
                 sections={"Notes": "taken in from request %s" % intake_moves.named(ident, text)})
     _write_lines(root, item, accepted)
     after = with_field(text, "status", "accepted")
-    after = request_post.post(root, after, "accept", None, "work accept")
-    rels = [str(path.relative_to(root)), rel_of(name)]
 
     def write():
         target = Path(root) / rel_of(name)
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(render(item), encoding="utf-8")
-        path.write_text(after)
-    shop_files.committed(root, rels, "work accept: %s -> %s shaped" % (intake_moves.named(ident, text), label(item)),
-                         write)
+    request_post.committed(root, path, "work accept: %s -> %s shaped" % (intake_moves.named(ident, text), label(item)),
+                           after, request_post.posting(after, "accept", None, "work accept"), [rel_of(name)], write)
     return item

@@ -131,6 +131,8 @@ def run_work(step, *args):
         index.write_text(INDEX + index.read_text().partition("## Glossary\n")[2])
     step.context["head"] = W.init(step.repo)
     Q.hosted(step.repo)
+    for before in step.context.get("before_run", []):
+        before(step)
     step.context["result"] = step.run("work", *args, env=Q.env(step))
 
 
