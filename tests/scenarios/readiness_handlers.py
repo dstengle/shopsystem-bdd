@@ -32,8 +32,13 @@ def work_ready(step):
 @local("GivenK_C", "item")
 def given_passing(step):
     """passing: the item given a line that passes the bar; not passing: one that does not parse, whose refusal must
-    name the line's id and the word that stopped it. Any other condition (blocked) goes on to the backlog's."""
+    name the line's id and the word that stopped it; unworded: one whose scenario holds a step no Steps fun words,
+    which the refusal must name (b46). Any other condition (blocked) goes on to the backlog's."""
     word = step.text.split(" is ", 1)[1]
+    if word == "unworded":
+        R.give_lines(step, step.names[0], R.UNWORDED)
+        step.context["unworded"] = R.UNWORDED_STEP
+        return None
     if word not in ("passing", "not passing"):
         return False
     R.give_lines(step, step.names[0], R.PASSING if word == "passing" else R.FAILING)
@@ -92,3 +97,13 @@ def asks_nothing(step):
         assert not _asks(_before(step, rel), after), (step.text, rel)
     for said in (done.stdout + done.stderr).splitlines():
         assert not said.rstrip().endswith("?"), (step.text, said)
+
+
+@local("ThenExitsErr", "step")
+def refused_naming_step(step):
+    """The run was refused (exit 1), naming the unworded step a Given kept, whole (b46)."""
+    if "unworded" not in step.context:
+        return False
+    done = step.context["result"]
+    assert done.returncode == 1, (done.returncode, done.stdout, done.stderr)
+    assert step.context["unworded"] in done.stderr, (step.context["unworded"], done.stderr)
