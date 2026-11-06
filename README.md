@@ -117,6 +117,26 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 No agent has the Agent tool (design-decision/the-2-0-agents). A plugin agent's `hooks` and `permissionMode` are
 ignored, so a role's limits are its tools.
 
+## 2.3.0: work pushes its commits, requests post after they commit, and work watch
+
+- **`work` pushes every commit it makes** (b51, b56, b57): to the branch's upstream remote, else `origin`. A refused
+  push prints `not pushed: <remote>: <reason>` and keeps the commit; a push never prompts, and it gives up after
+  `$SHOPSYSTEM_PUSH_TIMEOUT` seconds (default 60). A command that commits is refused on a batch task's branch
+  `batch-<n>-b<j>`, naming the task.
+- **A request's step is committed before it is posted** (b36): a commit git refuses posts nothing, and a post GitHub
+  refuses puts the record back. When GitHub accepts a post and the commit of its URL then fails, the refusal names the
+  URL. `work sync`, or the same command run again, records it without posting it again.
+- **`work watch`** (b31) polls the issues of the requests not closed, and this context's own open issues, every
+  `--every` seconds. It prints each comment a request does not hold and each new ask, then exits, so a session started
+  on it wakes when the other side moves.
+- **`work reply` and `work turn` check the side** (b30): each is refused on the side of a request that is not this
+  repository's. A refused request line needs `--reason` again (b37).
+- **`work line --relation`, `--universal`, `--upstream` and `--given`** (b43) write a relation row, a universal
+  condition, an upstream entry or a given block onto an item, each checked for its shape.
+- **The readiness bar refuses a scenario with an unworded step** (b46), naming the step. `work decision` and `work
+  record` refuse an absent argument by name (b45).
+- **No upgrade step.**
+
 ## 2.2.0: decisions and records written by command
 
 - **`work decision`** writes a design-decision whole from its arguments (b41, decision-tiers r7, r8): `work decision
