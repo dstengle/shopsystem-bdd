@@ -94,9 +94,9 @@ def outcome(root, ident, number, word, into=None, group=None, reason=None, line=
         reason = reason or "rewritten as line %d" % at
     if reason is not None:
         after = with_entries(after, "Reasons", numbered(entries(after, "Reasons"), number, reason))
+    posted = None
     if line is not None:
-        # its counter-proposal has no outcome yet, so the turn passes to the asker (requests r35), posted
-        after = request_post.posted_turn(root, after, turned(after), "work outcome")
-    rel = str(path.relative_to(root))
-    shop_files.committed(root, [rel], "work outcome: %s line %d %s" % (ident, number, word),
-                         lambda: path.write_text(after))
+        # its counter-proposal has no outcome yet, so the turn passes to the asker (requests r35), posted once committed
+        before, after = after, turned(after)
+        posted = request_post.turn_posting(before, after, "work outcome")
+    request_post.committed(root, path, "work outcome: %s line %d %s" % (ident, number, word), after, posted)

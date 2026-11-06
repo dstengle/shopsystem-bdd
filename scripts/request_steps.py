@@ -42,11 +42,11 @@ def offer_text(root, capabilities, note):
     return "\n\n".join(parts)
 
 
-def _change(root, ident, message, edit):
+def _change(root, ident, message, edit, posting=None):
+    """The record as `edit` makes it committed, then what `posting` makes of it posted (request_post.committed)."""
     path = request_moves.path_of(root, ident)
     after = edit(shop_files.read(path, root))
-    shop_files.committed(root, [str(path.relative_to(root))], "work %s: %s" % (message, ident),
-                         lambda: path.write_text(after))
+    request_post.committed(root, path, "work %s: %s" % (message, ident), after, posting(after) if posting else None)
 
 
 def _in_turn(text, ident, side, status, command):
@@ -58,16 +58,18 @@ def _in_turn(text, ident, side, status, command):
 def offer(root, ident, capabilities, note=None):
     """`work offer` (r29): the upstream's offer on an open request posted, the request `awaiting-asker` in the
     asker's turn."""
+    said = {}
+
     def edit(text):
         request_moves.refuse_upstream_part(root, text, ident, "the offer")
         _in_turn(text, ident, "upstream", ("open",), "work offer")
-        said = offer_text(root, capabilities, note)
-        if len(said) > LIMIT:
+        said["offer"] = offer_text(root, capabilities, note)
+        if len(said["offer"]) > LIMIT:
             raise Refused("work offer: the offer is %d characters, over GitHub's limit: offer fewer capabilities"
-                          % len(said))
-        after = with_field(with_field(with_offer(text, said), "status", "awaiting-asker"), "turn", "asker")
-        return request_post.post(root, after, "offer", None, "work offer", fields={"offer": said})
-    _change(root, ident, "offer", edit)
+                          % len(said["offer"]))
+        return with_field(with_field(with_offer(text, said["offer"]), "status", "awaiting-asker"), "turn", "asker")
+    _change(root, ident, "offer", edit, lambda after: request_post.posting(
+        after, "offer", None, "work offer", fields=said))
 
 
 def refuse_asker_part(root, text, ident, part):
@@ -86,10 +88,9 @@ def fits(root, ident, serves):
         refuse_asker_part(root, text, ident, "that an offer fits")
         _in_turn(text, ident, "asker", ("awaiting-asker",), "work fits")
         held = ["%d. %s" % (n, one_line(s, "requirement")) for n, s in enumerate(serves, 1)]
-        after = with_field(with_entries(text, "Resolution", held), "status", "delivered")
-        return request_post.post(root, after, "fits", {"Resolution": request_post.numbered(after, "Resolution")},
-                                 "work fits", close=True)
-    _change(root, ident, "fits", edit)
+        return with_field(with_entries(text, "Resolution", held), "status", "delivered")
+    _change(root, ident, "fits", edit, lambda after: request_post.posting(
+        after, "fits", {"Resolution": request_post.numbered(after, "Resolution")}, "work fits", close=True))
 
 
 def propose(root, ident, lines):
