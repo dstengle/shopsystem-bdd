@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/query-commands-answer-in-their-output, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items, design-decision/work-items-named-by-ids, design-decision/the-glossary-is-a-target-of-spec-work]
 retired: [r8, r9, r12, r13, r14, r15, r16, r17, r18, r21, r26, r27, r29, r31, r32, r33, r34, r35, r37, r39, r45, r46, r53]
-unbuilt: []
+unbuilt: [r57]
 ---
 
 # Design model check
@@ -67,6 +67,8 @@ context: product-level artifacts are read only where the files contain them.
 - **headless** (condition of design-decision): a design-decision with no `id` or no `## Decision` section.
 
 - **file form** (kind): one kind of file a bounded context keeps, with its path and the command that writes it. Plural: file forms.
+
+- **unattributed** (condition of record): a record whose `--about` is not one line or is not the id of a node of the design model.
 
 ## Behaviour
 
@@ -196,6 +198,9 @@ Restates: r65@0.29.
 
 ### [g56] `work record` writes and commits a record
 - [r56] When the person runs `work record`, `work` shall write a record and commit the record.
+
+### [g57] `work record` refuses an unattributed record
+- [r57] If the person runs `work record` on a record that is unattributed, then `work` shall exit with an error naming `--about` and change nothing.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a

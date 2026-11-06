@@ -226,3 +226,11 @@ Feature: Design model check
     When the person runs `work record`
     Then `work` writes the record r1
     And `work` commits the record r1
+
+  @g57 @r57
+  Scenario: `work record` refuses an unattributed record
+    Given a record r1
+    And the record r1 is unattributed
+    When the person runs `work record` on the record r1
+    Then `work` exits with an error naming `--about`
+    And `work` changes nothing
