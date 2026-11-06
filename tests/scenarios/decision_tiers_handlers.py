@@ -157,22 +157,48 @@ def uses_test(step):
     assert name in (outside(step) / "ran").read_text().split(), done.stdout
 
 
+ARGUMENTS = (("--summary", "One sentence."), ("--decision", "So it is."), ("--tier", "judgement"))
+
+
+@handler("GivenK", "argument")
+def given_argument(step):
+    """The arguments `work decision` requires, in order of mention: --summary, --decision, --tier."""
+    have = step.context.setdefault("arguments", {})
+    have[bare(step.names[0])] = ARGUMENTS[len(have)][0]
+    says(step, bare(step.names[0]), have[bare(step.names[0])])
+
+
+@handler("GivenK_C", "argument")
+def given_absent(step):
+    """absent: `work decision` is run without it; not absent, with it."""
+    gone = step.context.setdefault("absent", set())
+    option = step.context["arguments"][bare(step.names[0])]
+    if " is not " in step.text:
+        gone.discard(option)
+    else:
+        gone.add(option)
+
+
 @handler("WhenRuns", "`work decision`")
 def work_decision(step):
-    """`work decision` in the repository, committed first, with a title, a summary and the decision's text: given the
-    tier `judgement`, or no `--tier` where the step names a decision a Given made untiered."""
+    """`work decision` in the repository, committed first, with a title, a summary, the decision's text and the tier
+    `judgement`: no `--tier` where the step names a decision a Given made untiered, and none of the arguments a Given
+    made absent."""
     H.base(step.repo, step.context)
     step.context["head"] = W.init(step.repo)
     named = [bare(n) for n in step.names]
-    tier = [] if set(named) & step.context.get("untiered", set()) else ["--tier", "judgement"]
+    gone = set(step.context.get("absent", ()))
+    if set(named) & step.context.get("untiered", set()):
+        gone.add("--tier")
+    title = named[0] if named and named[0] not in step.context.get("arguments", {}) else "Decided once"
+    given = [word for option, value in ARGUMENTS if option not in gone for word in (option, value)]
     step.context["work_decision"] = True
-    step.context["result"] = step.run("work", "decision", named[0] if named else "Decided once", "--summary",
-                                      "One sentence.", "--decision", "So it is.", *tier)
+    step.context["result"] = step.run("work", "decision", title, *given)
 
 
 @local("ThenExitsErr")
 def decision_refused(step):
-    """After `work decision`: an error naming each code the step names (`--tier`)."""
+    """After `work decision`: an error naming each code the step names (`--tier`) and each argument it names."""
     if not step.context.get("work_decision"):
         return False
     done = step.context["result"]
@@ -180,3 +206,5 @@ def decision_refused(step):
     for np in step.nps:
         for word in (w.strip("`") for w in np.split() if w.startswith("`")):
             assert word in done.stderr, (word, done.stderr)
+    for name in step.names:
+        assert step.context["says"][bare(name)] in done.stderr, (name, done.stderr)

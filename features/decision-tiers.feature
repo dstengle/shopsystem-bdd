@@ -62,3 +62,11 @@ Feature: Decision tiers
     When the person runs `work decision` on the design-decision d1
     Then `work` exits with an error naming `--tier`
     And `work` changes nothing
+
+  @g9 @r9
+  Scenario: `work decision` names an absent argument
+    Given an argument a1
+    And the argument a1 is absent
+    When the person runs `work decision` on the argument a1
+    Then `work` exits with an error naming the argument a1
+    And `work` changes nothing

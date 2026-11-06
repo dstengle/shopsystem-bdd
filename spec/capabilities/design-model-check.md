@@ -68,6 +68,8 @@ context: product-level artifacts are read only where the files contain them.
 
 - **file form** (kind): one kind of file a bounded context keeps, with its path and the command that writes it. Plural: file forms.
 
+- **unattributed** (condition of record): a record whose `--about` is not one line or is not the id of a node of the design model.
+
 ## Behaviour
 
 ### [g1] `model check` exits successfully on a sound context
@@ -196,6 +198,9 @@ Restates: r65@0.29.
 
 ### [g56] `work record` writes and commits a record
 - [r56] When the person runs `work record`, `work` shall write a record and commit the record.
+
+### [g57] `work record` refuses an unattributed record
+- [r57] If the person runs `work record` on a record that is unattributed, then `work` shall exit with an error naming `--about` and change nothing.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a

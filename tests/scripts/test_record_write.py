@@ -72,6 +72,15 @@ def test_an_existing_path_is_refused(backlog_repo, tmp_path_factory):
     assert record(backlog_repo, tmp_path_factory, "--slug", "found-again").returncode == 0
 
 
+def test_an_about_that_names_no_node_is_refused(backlog_repo, tmp_path_factory):
+    before = state(backlog_repo)
+    for about in ("capability/thing\nkind: forged", "thing", "widget/thing", "capability/"):
+        done = record(backlog_repo, tmp_path_factory, "--about", about)
+        assert done.returncode == 1 and "--about" in done.stderr, (about, done.stderr)
+    assert state(backlog_repo) == before
+    assert record(backlog_repo, tmp_path_factory, "--about", "record/ex.com/prod/ctx/2026-11-05-x").returncode == 0
+
+
 def test_help_says_what_it_writes():
     done = subprocess.run([sys.executable, str(SCRIPTS / "work"), "record", "--help"], capture_output=True,
                           text=True)

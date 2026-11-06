@@ -22,6 +22,9 @@ to its tier, and keeps a superseded decision marked so.
 - **untested** (condition of design-decision): A design-decision is untested when the design-decision is enforced by no test.
 - **unrequired** (condition of design-decision): A design-decision is unrequired when the design-decision is enforced by no requirement.
 
+- **argument** (kind): an option a command is given on its command line, such as `--tier`.
+- **absent** (condition of argument): an argument that a command requires and that is not given.
+
 ## Relations
 
 | from | word | to | cardinality |
@@ -58,6 +61,9 @@ to its tier, and keeps a superseded decision marked so.
 
 ### [g8] `work decision` refuses a decision with no tier
 - [r8] If the person runs `work decision` on a design-decision that is untiered, then `work` shall exit with an error naming `--tier` and change nothing.
+
+### [g9] `work decision` names an absent argument
+- [r9] If the person runs `work decision` on an argument that is absent, then `work` shall exit with an error naming the argument and change nothing.
 
 ## Implementation, may change
 
