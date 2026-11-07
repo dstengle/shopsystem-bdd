@@ -10,16 +10,20 @@ actors) as glossary terms:
 
 `frame(term, names)` reads one; `problems(lexicon)` gives v_t11 (a verb with no frame that reads) and v_t12 (a
 condition whose definition names with "the" a kind other than its own: a relation between two kinds written as a
-condition), and `guard(tree, lexicon)` the reason a parsed line uses a verb without a noun its frame takes, or with
-one it does not take, naming the verb's term.
+condition). A noun fills a role when its kind (or the actor) is the frame's or a kind of it (`below`: `Kind of:` of
+kinds and actors). The grammar types a verb's object, recipient and trigger subject (spec_typed_verbs), so a line
+that breaks a frame stops GF: `refusal` names the verb where it stopped and the role it breaks; `guard` checks the
+subject of a `shall` against the frames of its verbs.
 """
 import re
 from collections import namedtuple
 
 Frame = namedtuple("Frame", "subject object recipient")
-# the verb funs of `grammar/Req.gf`: (index of the event argument, objects given, recipient given)
-USES = {"Do": (1, True, False), "DoI": (1, False, False), "DoTo": (1, True, True), "Happens": (2, True, False),
-        "HappensI": (2, False, False)}
+# the words a noun phrase may start with before its noun: a refusal at the noun after them is the verb's
+DETS = {"a", "an", "the", "every", "no", "its", "only", "one", "at", "most", "to"}
+# where a clause starts: a verb before one of these is not the verb of the clause GF stopped in
+BOUNDARY = {",", ".", "shall", "when", "while", "if", "then", "where", "and", "or", "not"}
+ENDS = {".", ",", "and", "or"}
 _frames = {}
 
 
@@ -89,8 +93,10 @@ def relational(term, kinds):
 
 
 def problems(lexicon):
-    """v_t11 and v_t12 as (code, term, message)."""
+    """v_t11 and v_t12 as (code, term, message), and v_t4 for an actor whose `Kind of:` names no kind."""
     known, kinds, out = names(lexicon), lexicon.kind_names(), []
+    out += [("v_t4", t.term, "%s: Kind of: %s is not a kind" % (t.where, t.supertype)) for t in lexicon.of("actor")
+            if t.supertype and t.supertype not in kinds]
     for t in lexicon.of("event"):
         if frame(t, known) is None:
             out.append(("v_t11", t.term, "%s: the verb's entry gives no Frame: naming the kinds of its subject and "
@@ -103,39 +109,140 @@ def problems(lexicon):
     return out
 
 
+def supers(lexicon):
+    """{kind or actor: the kind its `Kind of:` names}."""
+    return {t.term: t.supertype for t in lexicon.terms if t.category in ("kind", "actor") and t.supertype}
+
+
+def below(lexicon):
+    """{kind or actor: itself and every kind and actor under it, at any depth}."""
+    up = supers(lexicon)
+    out = {n: {n} for n in names(lexicon)}
+    for n in out:
+        seen, at = {n}, up.get(n)
+        while at and at not in seen:
+            out.setdefault(at, {at}).add(n)
+            seen.add(at)
+            at = up.get(at)
+    return out
+
+
+def _forms(lexicon):
+    """[(tokens of a verb form, its entry)] of every verb, the longest first."""
+    import spec_typed
+    out = []
+    for t in lexicon.of("event"):
+        for form in set(spec_typed.event_forms(t)):
+            out.append((spec_typed.tokens(form), t))
+    return sorted(out, key=lambda x: -len(x[0]))
+
+
+def _verb_at(tokens, at, lexicon):
+    """(start, end, entry) of the verb of the clause GF stopped in at token `at`, or None."""
+    forms = _forms(lexicon)
+    for j in range(at, -1, -1):
+        noun = j and tokens[j - 1] in DETS - {"to"}       # "every commit": the kind, not the verb
+        for form, t in forms if not noun else ():
+            if tokens[j:j + len(form)] == form and (j == at or j + len(form) <= at):
+                return j, j + len(form), t
+        if j < at and tokens[j] in BOUNDARY:
+            return None
+    return None
+
+
+def _head(tokens, i, lexicon):
+    """The kind whose word (or plural) comes first in tokens[i:], before the clause ends; None when none does."""
+    import spec_typed
+    words = sorted(((spec_typed.tokens(w), t.term) for t in lexicon.of("kind")
+                    for w in {t.term, t.plural or spec_typed.plural(t.term)}), key=lambda x: -len(x[0]))
+    for j in range(i, len(tokens)):
+        if tokens[j] in BOUNDARY:
+            return None
+        for form, kind in words:
+            if tokens[j:j + len(form)] == form:
+                return kind
+    return None
+
+
+def _role(found, tokens, start, end, at, lexicon):
+    """The role of the verb at tokens[start:end] a refusal at token `at` breaks, or None when it is not the verb's."""
+    under, here = below(lexicon), tokens[at]
+    if at == start:
+        return "subject"
+    if at == end and here in ENDS:
+        return "object?" if found.object else None
+    if not found.object:
+        return "none" if at == end else None
+    to = [j for j in range(end, at + 1) if tokens[j] == "to"] if found.recipient else []
+    if to:
+        head = _head(tokens, to[-1] + 1, lexicon)
+        return "recipient" if head and head not in under.get(found.recipient, ()) else None
+    head = _head(tokens, end, lexicon)
+    if head and head not in under.get(found.object, ()):
+        return "object"
+    return "recipient?" if found.recipient and here in ENDS else None
+
+
+def refusal(tokens, at, lexicon):
+    """Why GF stopped at token `at` of a line (the end of the line when it ran out), naming the verb of the clause
+    it stopped in, or None when no verb's frame explains it."""
+    at = min(at, len(tokens) - 1)
+    hit = _verb_at(tokens, at, lexicon)
+    if hit is None:
+        return None
+    start, end, term = hit
+    found = frame(term, names(lexicon))
+    verb = term.term
+    if found is None:
+        return "the verb %s has no frame in the glossary (Frame: <subject> %s <object>.)" % (verb, s3(term))
+    role, said = _role(found, tokens, start, end, at, lexicon), " ".join(term.frame.split())
+    if role == "object?":
+        return "the verb %s takes an object: %s" % (verb, said)
+    if role == "recipient?":
+        return "the verb %s takes a recipient: %s" % (verb, said)
+    if role == "none":
+        return "the verb %s takes no object: %s" % (verb, said)
+    if role:
+        return "the verb %s takes as its %s %s or a kind of it: %s" % (verb, role, getattr(found, role), said)
+    return None
+
+
 def _of(lexicon):
-    """{event id: (term, Frame or None)} of a lexicon, kept while the lexicon is."""
+    """{event id: (term, Frame or None)} and {kind or actor id: its name}, kept while the lexicon is."""
     hit = _frames.get(id(lexicon))
     if hit is None or hit[0] is not lexicon:
         ids, known = lexicon.ids(), names(lexicon)
-        hit = _frames[id(lexicon)] = (lexicon, {ids[t.key]: (t, frame(t, known)) for t in lexicon.of("event")})
+        named = {ids[t.key]: t.term for t in lexicon.terms if t.category in ("kind", "actor")}
+        verbs = {ids[t.key]: (t, frame(t, known)) for t in lexicon.of("event")}
+        hit = _frames[id(lexicon)] = (lexicon, verbs, named, below(lexicon))
         if len(_frames) > 16:
             _frames.clear()
             _frames[id(lexicon)] = hit
-    return hit[1]
+    return hit[1:]
+
+
+def _subject(subj, named):
+    """The kind or actor a `shall`'s subject names, or None when it names none (a code)."""
+    if subj[0] == "ActorSubj":
+        return named.get(subj[1][0])
+    np = subj[1]
+    return named.get(np[0][:-len("_toNP")]) if np[0].endswith("_toNP") else None
 
 
 def guard(tree, lexicon):
-    """Why a tree's verb does not keep to its frame, naming the verb; None when every verb does."""
+    """Why the subject of a `shall` is not of the kind a frame of its verbs names, naming the verb; None when every
+    subject is."""
     import spec_tree
-    by_id = _of(lexicon)
+    verbs, named, under = _of(lexicon)
     for node in spec_tree.nodes(tree):
-        if node[0] not in USES:
+        if node[0] not in ("Shall", "ShallNot"):
             continue
-        at, has_object, has_recipient = USES[node[0]]
-        term, found = by_id.get(node[at][0], (None, None))
-        if term is None:
-            continue
-        verb = term.term
-        if found is None:
-            return "the verb %s has no frame in the glossary (Frame: <subject> %s <object>.)" % (verb, s3(term))
-        if found.object and not has_object:
-            return "the verb %s takes an object: %s %s %s" % (verb, found.subject, s3(term), found.object)
-        if not found.object and has_object:
-            return "the verb %s takes no object: %s %s" % (verb, found.subject, s3(term))
-        if found.recipient and not has_recipient:
-            return "the verb %s takes a recipient: %s %s %s to %s" % (verb, found.subject, s3(term), found.object,
-                                                                      found.recipient)
-        if has_recipient and not found.recipient:
-            return "the verb %s takes no recipient: %s %s %s" % (verb, found.subject, s3(term), found.object)
+        subject = _subject(node[1], named)
+        for vp in spec_tree.nodes(node[2]):
+            if subject is None or vp[0] not in ("Do", "DoI", "DoTo"):
+                continue
+            term, found = verbs.get(vp[1][0], (None, None))
+            if found and subject not in under.get(found.subject, ()):
+                return "the verb %s takes as its subject %s or a kind of it: %s" % (
+                    term.term, found.subject, " ".join(term.frame.split()))
     return None

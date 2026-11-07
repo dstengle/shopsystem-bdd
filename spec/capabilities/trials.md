@@ -18,7 +18,7 @@ decide on. A walking skeleton (design-decision/behaviour-lines-are-ears): it gro
 
 ## Terms
 
-- **target** (kind): the real target or the fixture repository a trial runs on, with the plugin's scripts.
+- **target** (kind): the real target or the fixture repository a trial runs on, with the plugin's scripts. Kind of: thing.
 
 ## Behaviour
 

@@ -13,6 +13,7 @@ import spec_lexicon
 import spec_relations
 import spec_typed
 import spec_typed_def
+import spec_typed_verbs
 
 CORE = {"Ubiq", "When", "While", "Where", "IfThen", "WhileWhen", "WhereWhen", "WhereWhile", "WhileIf", "WhereIf",
         "Shall", "ShallNot", "OneVP", "AndVP", "OneVPor", "OrVP", "OneResp", "AndResp", "ActorSubj", "NPSubj",
@@ -106,8 +107,9 @@ class Vocab:
         return None, None, None
 
     def covers(self, fun):
-        """True when the logic has a translation of the fun."""
-        return fun in CORE or self.decode(fun)[0] is not None
+        """True when the logic has a translation of the fun: a typed verb fun's is that of its normal form
+        (spec_typed_verbs)."""
+        return fun in CORE or spec_typed_verbs.SEP in fun or self.decode(fun)[0] is not None
 
     def define(self, cid):
         """Mark a condition as defined by a `Def` sentence: its literals stand in for it (design-r3 §3.2)."""

@@ -18,7 +18,7 @@ and readies the items; the person may skim the lines in the backlog and in the p
 reading. The person's words an item cites keep the conversation turns around them.
 
 ## Terms
-- **the brainstorming session** (actor): the session in which the person and Claude shape work into items.
+- **the brainstorming session** (actor): the session in which the person and Claude shape work into items. Kind of: session.
 
 ## Behaviour
 

@@ -18,9 +18,9 @@ finds no L0 or L1 with them laid over `spec/`, `features generate` writes their 
 the item is settled. `work ready` checks the bar and asks nobody.
 
 ## Terms
-- **relation row** (kind): a row of the `## Relations` table of a capability: from, word, to and cardinality.
-- **upstream entry** (kind): a bullet of the `## Upstreams` of `spec/index.md`: the id of a bounded context and the GitHub repository it is hosted on, if any.
-- **given block** (kind): the fenced `given` block of a requirement group, the example data its scenario starts from.
+- **relation row** (kind): a row of the `## Relations` table of a capability: from, word, to and cardinality. Kind of: text.
+- **upstream entry** (kind): a bullet of the `## Upstreams` of `spec/index.md`: the id of a bounded context and the GitHub repository it is hosted on, if any. Kind of: text.
+- **given block** (kind): the fenced `given` block of a requirement group, the example data its scenario starts from. Kind of: text.
 - **malformed** (condition of relation row): a relation row that is not four cells of a `## Relations` table, or whose from or to is no kind of the lexicon.
 - **malformed** (condition of upstream entry): an upstream entry that does not start with a bounded-context id, or whose `github:` is not `<owner>/<name>`.
 - **malformed** (condition of given block): a given block that is not example data in the form `spec_read_given` reads.

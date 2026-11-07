@@ -17,7 +17,8 @@ import spec_grammar
 import spec_lexicon
 import spec_tree
 import spec_typed
-from features_vocab_gf import attributes, modules
+import spec_typed_verbs
+from features_vocab_gf import attributes, modules, verb_rows
 
 GRAMMAR = "StepsTyped"
 NAME = re.compile(r"^(?:[a-z][a-z-]*[1-9]\d*|`[^`\s]+`)$")
@@ -59,6 +60,7 @@ class Vocab:
         for t, kind, tid in attributes(lex, self.ids):
             self.owner[tid] = ("attribute", t.term, kind, t.term)
         self.kind_id = {t.term: self.ids[t.key] for t in lex.of("kind")}
+        self.frames = spec_typed_verbs.frames(lex)
         self.relations = {}
         for k1, word, k2, _ in lex.relations():
             if k1 in self.kind_id and k2 in self.kind_id:
@@ -80,7 +82,8 @@ class Vocab:
         def expr(t):
             return pgf.readExpr("?") if t is META else pgf.Expr(t[0], [expr(a) for a in t[1:]]) if isinstance(
                 t, tuple) else spec_grammar._expr(t)
-        return detokenise(self.concr.linearize(expr(tree)))
+        return spec_typed_verbs.unframed(tree, self.frames, self.text) or detokenise(
+            self.concr.linearize(expr(spec_typed_verbs.typed(tree, self.frames, META))))
 
 
 def load(root):
@@ -140,7 +143,8 @@ def parse(vocab, keyword, text):
     tokens = spec_typed.tokens(text.strip())
     try:
         found = vocab.concr.parse(" ".join(t.replace(" ", spec_typed.PLACEHOLDER) for t in tokens))
-        trees = [spec_grammar._tree(e, vocab.gram) for _, e in islice(found, spec_grammar.LIMIT)]
+        trees = [spec_typed_verbs.normal(spec_grammar._tree(e, vocab.gram))
+                 for _, e in islice(found, spec_grammar.LIMIT)]
     except pgf.ParseError as err:
         at = len(tokens) if err.incomplete else spec_grammar._position(tokens, err.offset)
         where = "(it ends too soon)" if at >= len(tokens) else "at %s (token %d)" % (tokens[at], at + 1)
@@ -250,23 +254,21 @@ def rows(vocab):
     N, NP, M = ("NameLit", HOLE_N), ("CodeNP", ("CodeLit", HOLE_X)), META
     out = [("given", "GivenFeat", None, None, ("SFeat", M)),
            ("when", "WhenRuns", None, None, ("STrig", ("Runs", M, M))),
-           ("when", "WhenRuns", None, None, ("STrig", ("IsRun", M))),
-           ("when", "WhenHappens", None, None, ("STrig", ("HappensI", M, M)))]
+           ("when", "WhenRuns", None, None, ("STrig", ("IsRun", M)))]
     for f, template in THEN.items():
-        args = {"SDoes": (M, M, NP), "SDoesNot": (M, M, NP), "SDoesTo": (M, M, NP, NP), "SDoesI": (M, M),
-                "SDoesINot": (M, M), "SPrints": (M, ("OneNP", NP)),
-                "SPrintsNot": (M, ("OneNP", NP)), "SExitsErr": (M, NP)}.get(f, (M,))
+        if f.startswith("SDoes"):
+            continue
+        args = {"SPrints": (M, ("OneNP", NP)), "SPrintsNot": (M, ("OneNP", NP)), "SExitsErr": (M, NP)}.get(f, (M,))
         out.append(("then", template, None, None, (f,) + args))
+    out += verb_rows(vocab, NP, N, META, THEN)
     for kind, kid in sorted(vocab.kind_id.items()):
         inst = (kid + "_toNP", (kid + "_Inst", N))
         out += [("given", "GivenK", kind, None, (kid + "_Given", N)),
                 ("given", "GivenCode", kind, None, (kid + "_HoldsText", N, M)),
                 ("given", "GivenCodeText", kind, None, (kid + "_HoldsBlock", N)),
-                ("when", "WhenRuns", kind, None, ("STrig", ("RunsOn", M, M, inst))),
-                ("when", "WhenHappens", kind, None, ("STrig", ("Happens", M, M, inst)))]
+                ("when", "WhenRuns", kind, None, ("STrig", ("RunsOn", M, M, inst)))]
         out += [(k, k.capitalize() + "Holds", kind, None, ("SAtom", (h, inst, M))) for k in ("given", "then")
                 for h in ("Holds", "HoldsA")]
-        out += [("then", THEN[f], kind, None, (f, M, M, inst)) for f in ("SDoes", "SDoesNot")]
     for t, kind, tid in attributes(vocab.lex, vocab.ids):
         inst = (vocab.kind_id[kind] + "_Inst", N)
         out += [("given", "GivenK_A", kind, t.term, (tid + "_Given", N, M)),

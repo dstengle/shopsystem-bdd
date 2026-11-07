@@ -7,8 +7,9 @@ A term entry is a bullet of `spec/index.md`'s `## Glossary` or of a capability's
 Its category is the grammar slot the term fills (actor, kind, attribute, relation, event, resource, condition).
 Values belong to one attribute of one kind. `ident` names a term in GF (§9.6); `problems` gives v_t4–v_t10.
 The gloss is the text after the entry's `:` and before its first field, one sentence (v_t7, design-r2 §8); a kind's
-`Kind of:` names its supertype. Relations are rows (spec_relations): a relation entry is read only to be a problem
-(v_t8), and so is a `Means:` field (v_t9).
+or an actor's `Kind of:` names the kind it is one of (spec_frames: a noun fills a verb's role of that kind).
+Relations are rows (spec_relations): a relation entry is read only to be a problem (v_t8), and so is a `Means:`
+field (v_t9).
 """
 import re
 from collections import defaultdict
