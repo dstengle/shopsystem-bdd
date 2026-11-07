@@ -13,7 +13,8 @@ condition whose definition names with "the" a kind other than its own: a relatio
 condition). A noun fills a role when its kind (or the actor) is the frame's or a kind of it (`below`: `Kind of:` of
 kinds and actors). The grammar types a verb's object, recipient and trigger subject (spec_typed_verbs), so a line
 that breaks a frame stops GF: `refusal` names the verb where it stopped and the role it breaks; `guard` checks the
-subject of a `shall` against the frames of its verbs.
+subject of a `shall` against the frames of its verbs; `passive` names the verb of a passive with no agent, whose
+frame has a subject the line leaves out (b85).
 """
 import re
 from collections import namedtuple
@@ -189,7 +190,7 @@ def refusal(tokens, at, lexicon):
     at = min(at, len(tokens) - 1)
     hit = _verb_at(tokens, at, lexicon)
     if hit is None:
-        return None
+        return passive(tokens, at, lexicon)
     start, end, term = hit
     found = frame(term, names(lexicon))
     verb = term.term
@@ -204,7 +205,7 @@ def refusal(tokens, at, lexicon):
         return "the verb %s takes no object: %s" % (verb, said)
     if role:
         return "the verb %s takes as its %s %s or a kind of it: %s" % (verb, role, getattr(found, role), said)
-    return None
+    return passive(tokens, at, lexicon)
 
 
 def _of(lexicon):
@@ -245,4 +246,30 @@ def guard(tree, lexicon):
             if found and subject not in under.get(found.subject, ()):
                 return "the verb %s takes as its subject %s or a kind of it: %s" % (
                     term.term, found.subject, " ".join(term.frame.split()))
+    return None
+
+
+def participle(term):
+    """The past participle of a verb's term: its second `Forms:`, else its first word with -ed."""
+    if len(term.forms) == 2:
+        return term.forms[1]
+    head, _, rest = term.term.partition(" ")
+    head = head + "d" if head.endswith("e") else head[:-1] + "ied" if re.search(r"[^aeiou]y$", head) else head + "ed"
+    return (head + " " + rest).strip()
+
+
+def passive(tokens, at, lexicon):
+    """Why the clause GF stopped in at token `at` is refused when it is a passive with no agent ("a file is not
+    written", b85): the verb's frame names a subject the passive leaves out. None when the clause has none."""
+    import spec_typed
+    start = max([j for j in range(at) if tokens[j] in BOUNDARY - {"not"}], default=-1) + 1
+    end = next((j for j in range(at, len(tokens)) if tokens[j] in BOUNDARY - {"not"}), len(tokens))
+    conditions = {t.term for t in lexicon.of("condition")}
+    for j in range(start, end - 1):
+        k = j + 2 if tokens[j + 1] == "not" else j + 1
+        for t in lexicon.of("event") if tokens[j] in ("is", "are") else ():
+            form = spec_typed.tokens(participle(t))
+            if tokens[k:k + len(form)] == form and " ".join(form) not in conditions:
+                return "the verb %s takes a subject, which a passive leaves out: %s" % (
+                    t.term, " ".join(t.frame.split()))
     return None
