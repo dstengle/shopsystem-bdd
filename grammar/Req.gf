@@ -31,7 +31,8 @@ abstract Req = Typed ** {
     Runs : Subj -> Cmd -> Trig ;                 -- the person runs `work start`
     RunsOn : Subj -> Cmd -> NP -> Trig ;         -- the person runs `work start` on an initiative that is ...
     IsRun : Cmd -> Trig ;                        -- `tools size` is run
-    -- a verb's trigger, "a session writes a file", is a fun of its frame (spec_typed_verbs: e_write__Happens)
+    -- a verb's trigger, "a session writes a file", is a fun of its frame (spec_typed_verbs: e_write__Happens), and
+    -- with a recipient after "to", "a session gives a brief to a stage", e_give__HappensTo
     CondOne : Atom -> Cond ;
     CondAnd : Atom -> Cond -> Cond ;             -- A and B
     CondOr : Atom -> Cond -> Cond ;              -- A or B

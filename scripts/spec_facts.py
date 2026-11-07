@@ -84,6 +84,9 @@ class Walk(Scope):
         elif fun in ("Happens", "HappensI"):
             d = self.subject(t[1])
             self.emit("trig", "does", t[2][0], d, self.np(t[3]) if fun == "Happens" else "none")
+        elif fun == "HappensTo":     # its object and its recipient one term, as a response's (`respond`)
+            d = self.subject(t[1])
+            self.emit("trig", "does", t[2][0], d, "pair(%s,%s)" % (self.np(t[3]), self.np(t[4])))
         else:
             cat, base, part = self.decode(fun, "trigger")
             if cat != "attribute" or part != "Becomes":
