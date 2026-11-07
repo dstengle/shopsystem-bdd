@@ -89,7 +89,8 @@ class SpecReading:
             p = spec_grammar.parse(self.root, text)
         except (ImportError, spec_grammar.GrammarError) as err:      # no pgf, no gf, or gf refused the sources
             self._grammar = GRAMMAR_MISSING
-            self.problems.append(f"the codified statements are not parsed: {err}; run `python3 scripts/tools install`")
+            fix = "" if isinstance(err, spec_grammar.Unlabelled) else "; run `python3 scripts/tools install`"
+            self.problems.append(f"the codified statements are not parsed: {err}{fix}")
             return None
         if p.tree is not None:
             self.fact("parsed", ident)

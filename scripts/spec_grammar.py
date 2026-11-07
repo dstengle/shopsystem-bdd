@@ -34,6 +34,10 @@ class GrammarError(Exception):
     """The grammar could not be built: no gf, or gf refused the sources."""
 
 
+class Unlabelled(GrammarError):
+    """The lexicon has a term that names no part of speech (v_t4): it is refused before GF is given its modules."""
+
+
 @dataclass
 class Parse:
     """`tree` is set when exactly one tree is left after the guards; otherwise `refusal` says why (no tree, or
@@ -81,8 +85,12 @@ def _cache():
 
 def sources(root, lex=None):
     """{file name: text} of every GF source of the context's grammars: the core files and the generated ones. The
-    lexicon is read only when `lex` is not given."""
+    lexicon is read only when `lex` is not given; one with a term that names no part of speech is refused
+    (`Unlabelled`)."""
     lex = lex or spec_lexicon.read(root)
+    refused = spec_lexicon.unlabelled(lex)
+    if refused:
+        raise Unlabelled(refused)
     out = {p.name: p.read_text() for p in sorted(GRAMMARS.glob("*.gf"))}
     out.update(spec_typed.modules(lex))
     out.update(spec_typed_def.modules(lex))
