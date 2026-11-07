@@ -297,3 +297,10 @@ Feature: Design model check
     And the requirement r1 is addressed
     When the person runs `model parse` on the requirement r1
     Then `model` exits successfully
+
+  @g67 @r67
+  Scenario: `model check` refuses a term with no part of speech
+    Given a term t1
+    And the term t1 is unlabelled
+    When the person runs `model check` on the term t1
+    Then `model` exits with an error naming the term t1
