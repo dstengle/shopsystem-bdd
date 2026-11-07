@@ -20,16 +20,16 @@ fixed now becomes a fix work-item, and the rest an observation.
 
 ## Terms
 
-- **the branch reviewer** (actor): the session of a `branch review` stage, started as the agent `bdd-branch-reviewer`. Kind of: worker.
-- **the architecture reviewer** (actor): the agent `architecture-reviewer`, started when the person asks. Kind of: dispatch.
-- **find** (event): a review finds a thing in what it reads. Forms: finds, found. Frame: review finds review finding.
-- **unrequested behaviour** (kind): observable behaviour of code, such as an output, a file written, a status or a refusal, that no requirement asks for.
-- **fix work-item** (kind): a work-item drafted from a branch review's findings to fix now.
-- **refactor** (kind): a change of code's shape that keeps its behaviour.
-- **wall time** (kind): how long one run of the suite took.
-- **code shape** (kind): the code's fit to the rules `CLAUDE.md` gives.
-- **coupling** (kind): what the code relies on in the projects it depends on.
-- **agreement test** (kind): a randomized test that the dry-run mode and the real mode of one operation agree.
+- **the branch reviewer** (proper noun): the session of a `branch review` stage, started as the agent `bdd-branch-reviewer`. Kind of: worker.
+- **the architecture reviewer** (proper noun): the agent `architecture-reviewer`, started when the person asks. Kind of: dispatch.
+- **find** (verb): a review finds a thing in what it reads. Forms: finds, found. Frame: review finds review finding.
+- **unrequested behaviour** (noun): observable behaviour of code, such as an output, a file written, a status or a refusal, that no requirement asks for.
+- **fix work-item** (noun): a work-item drafted from a branch review's findings to fix now.
+- **refactor** (noun): a change of code's shape that keeps its behaviour.
+- **wall time** (noun): how long one run of the suite took.
+- **code shape** (noun): the code's fit to the rules `CLAUDE.md` gives.
+- **coupling** (noun): what the code relies on in the projects it depends on.
+- **agreement test** (noun): a randomized test that the dry-run mode and the real mode of one operation agree.
 - **reproduction** (attribute of review finding): Values: `reproduced`, `not run`.
 
 ## Relations

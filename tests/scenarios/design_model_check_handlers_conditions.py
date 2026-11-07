@@ -58,7 +58,7 @@ def requirement(step):
         H.write(repo, "spec/capabilities/thing.md", H.cap("thing", ["- [r1] **When** asked, `thing` shall answer."]))
         H.write(repo, "features/thing.feature", H.feature("thing"))
     elif word == "avoiding":
-        H.write(repo, "spec/index.md", H.INDEX + "- **answer** (kind): what `thing` gives back. Not: reply.\n")
+        H.write(repo, "spec/index.md", H.INDEX + "- **answer** (noun): what `thing` gives back. Not: reply.\n")
         H.write(repo, "spec/capabilities/thing.md", H.cap("thing", ["- [r1] When asked, `thing` shall reply."]))
         H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))
     elif word == "unparsed":
@@ -118,17 +118,19 @@ def term(step):
     name, word, path = step.names[0], condition(step), step.repo / "spec" / "index.md"
     text = path.read_text()
     if word == "duplicated":
-        path.write_text(text + "- **%s** (kind): a thing again.\n" % name)
+        path.write_text(text + "- **%s** (noun): a thing again.\n" % name)
     elif word == "selfavoiding":
-        path.write_text(text.replace("- **%s** (kind): a thing.\n" % name, "- **%s** (kind): a thing. Not: %s.\n" % (name, name)))
+        path.write_text(text.replace("- **%s** (noun): a thing.\n" % name, "- **%s** (noun): a thing. Not: %s.\n" % (name, name)))
     elif word == "malformed":
         path.write_text(text + "- %s, written with no bold term\n" % name)
         H.says(step, name, "glossary bullet")
     elif word == "frameless":
-        path.write_text(text.replace("- **%s** (kind): a thing.\n" % name, "- **%s** (event): a thing done.\n" % name))
+        path.write_text(text.replace("- **%s** (noun): a thing.\n" % name, "- **%s** (verb): a thing done.\n" % name))
+    elif word == "unlabelled":     # the category of plugin 2.x, which names no part of speech
+        path.write_text(text.replace("- **%s** (noun): a thing.\n" % name, "- **%s** (kind): a thing.\n" % name))
     elif word == "relational":     # a condition of a stage whose definition names the session
-        path.write_text(text.replace("- **%s** (kind): a thing.\n" % name,
-                                     "- **%s** (condition of stage): a stage that the session ends.\n" % name))
+        path.write_text(text.replace("- **%s** (noun): a thing.\n" % name,
+                                     "- **%s** (adjective of stage): a stage that the session ends.\n" % name))
 
 
 @handler("GivenK_C", "request")

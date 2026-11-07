@@ -18,12 +18,12 @@ runs with the suite and at the pull request; a `requirement` decision names the 
 to its tier, and keeps a superseded decision marked so.
 
 ## Terms
-- **untiered** (condition of design-decision): a design-decision that is not `superseded` or `rejected` and whose frontmatter gives no `tier`.
-- **untested** (condition of design-decision): A design-decision is untested when the design-decision is enforced by no test.
-- **unrequired** (condition of design-decision): A design-decision is unrequired when the design-decision is enforced by no requirement.
+- **untiered** (adjective of design-decision): a design-decision that is not `superseded` or `rejected` and whose frontmatter gives no `tier`.
+- **untested** (adjective of design-decision): A design-decision is untested when the design-decision is enforced by no test.
+- **unrequired** (adjective of design-decision): A design-decision is unrequired when the design-decision is enforced by no requirement.
 
-- **argument** (kind): an option a command is given on its command line, such as `--tier`.
-- **absent** (condition of argument): an argument that a command requires and that is not given.
+- **argument** (noun): an option a command is given on its command line, such as `--tier`.
+- **absent** (adjective of argument): an argument that a command requires and that is not given.
 
 ## Relations
 

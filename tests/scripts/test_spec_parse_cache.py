@@ -18,8 +18,8 @@ language: codified-1
 ---
 ## Glossary
 
-- **`work`** (actor): the queue's command.
-- **initiative** (kind): a delivery.
+- **`work`** (proper noun): the queue's command.
+- **initiative** (noun): a delivery.
 - **status** (attribute of initiative): Values: `proposed`, `started`.
 """
 LINE = "`work` shall set the status of every initiative to `started`."

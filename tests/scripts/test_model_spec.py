@@ -157,8 +157,8 @@ class FactsTest(CodifiedTest):
 
     def test_a_word_in_two_categories_is_two_terms(self):
         """The legacy reader keyed a word once; the lexicon gives a kind and a resource of one spelling two terms."""
-        text = GLOSSARY.read_text().replace("## Glossary\n", "## Glossary\n\n- **pool** (kind): a set of workers.\n"
-                                            "- **pool** (resource, exclusive): held by a round.\n", 1)
+        text = GLOSSARY.read_text().replace("## Glossary\n", "## Glossary\n\n- **pool** (noun): a set of workers.\n"
+                                            "- **pool** (noun, exclusive): held by a round.\n", 1)
         self.write("spec/index.md", text)
         f = self.facts()
         self.assertIn(f'category("term/{PATH}/pool", "kind").', f)

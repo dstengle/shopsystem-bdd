@@ -20,34 +20,34 @@ It does not judge a request's lines (the upstream's session and person do) and d
 a request (backlog, batches).
 
 ## Terms
-- **resolution** (kind): the requirement id and version of each accepted line, under a request's `## Resolution`. Kind of: text.
+- **resolution** (noun): the requirement id and version of each accepted line, under a request's `## Resolution`. Kind of: text.
 - **wording** (attribute of delegation): Values: `empty`, `written`.
-- **closed** (condition of request): A request is closed when the request is `delivered` or the request is `refused` or the request is `withdrawn`.
-- **unparsed** (condition of request line): a request line that does not parse in its upstream's requirement grammar.
-- **observation** (kind): an entry of `.shop/records/observations.md`, with its id and its date.
-- **uncited** (condition of observation): an observation that the `source` of no initiative and of no request names.
-- **origin** (kind): what a request is raised from: an observation `--source` names, a job-thread `--thread` names, or a request `--raised-for` names.
-- **originless** (condition of command): a command that gives none of `--source`, `--thread` and `--raised-for`.
-- **sourced** (condition of command): a command that gives `--source` with `--thread` or `--raised-for`.
-- **foreign** (condition of command): a command that gives `--from` an asker other than its own bounded context.
-- **downstream** (condition of bounded context): a bounded context whose `spec/index.md` lists an upstream under `## Upstreams`.
+- **closed** (adjective of request): A request is closed when the request is `delivered` or the request is `refused` or the request is `withdrawn`.
+- **unparsed** (adjective of request line): a request line that does not parse in its upstream's requirement grammar.
+- **observation** (noun): an entry of `.shop/records/observations.md`, with its id and its date.
+- **uncited** (adjective of observation): an observation that the `source` of no initiative and of no request names.
+- **origin** (noun): what a request is raised from: an observation `--source` names, a job-thread `--thread` names, or a request `--raised-for` names.
+- **originless** (adjective of command): a command that gives none of `--source`, `--thread` and `--raised-for`.
+- **sourced** (adjective of command): a command that gives `--source` with `--thread` or `--raised-for`.
+- **foreign** (adjective of command): a command that gives `--from` an asker other than its own bounded context.
+- **downstream** (adjective of bounded context): a bounded context whose `spec/index.md` lists an upstream under `## Upstreams`.
 
-- **issue** (kind): the GitHub issue, on the GitHub repository of a request's upstream, that carries the request's conversation. Kind of: text.
-- **comment** (kind): one step of a request's conversation, posted on its issue, read only as the one block of fields it holds. Kind of: text.
-- **post** (event): `work` puts an issue or a comment on GitHub. Forms: posts, posted. Frame: `work` posts text.
-- **close** (event): `work` closes the issue of a request on GitHub. Forms: closes, closed. Frame: `work` closes issue.
-- **unrecorded** (condition of comment): a comment on a request's issue that its request does not yet hold.
-- **unreadable** (condition of comment): a comment whose block of fields does not parse.
-- **unhosted** (condition of bounded context): an upstream whose entry under `## Upstreams` names no GitHub repository.
+- **issue** (noun): the GitHub issue, on the GitHub repository of a request's upstream, that carries the request's conversation. Kind of: text.
+- **comment** (noun): one step of a request's conversation, posted on its issue, read only as the one block of fields it holds. Kind of: text.
+- **post** (verb): `work` puts an issue or a comment on GitHub. Forms: posts, posted. Frame: `work` posts text.
+- **close** (verb): `work` closes the issue of a request on GitHub. Forms: closes, closed. Frame: `work` closes issue.
+- **unrecorded** (adjective of comment): a comment on a request's issue that its request does not yet hold.
+- **unreadable** (adjective of comment): a comment whose block of fields does not parse.
+- **unhosted** (adjective of bounded context): an upstream whose entry under `## Upstreams` names no GitHub repository.
 
-- **untaken** (condition of issue): an open issue on the GitHub repository of this bounded context whose body is an ask that no request holds.
+- **untaken** (adjective of issue): an open issue on the GitHub repository of this bounded context whose body is an ask that no request holds.
 
-- **uncommittable** (condition of repository): a repository in which git refuses to commit a request's record, as when a pre-commit hook fails or another process holds the index lock.
+- **uncommittable** (adjective of repository): a repository in which git refuses to commit a request's record, as when a pre-commit hook fails or another process holds the index lock.
 
-- **received** (condition of request): a request whose record is kept in its upstream's repository and whose asker is another bounded context.
-- **sent** (condition of request): a request whose record is kept in its asker's repository and whose upstream is another bounded context.
+- **received** (adjective of request): a request whose record is kept in its upstream's repository and whose asker is another bounded context.
+- **sent** (adjective of request): a request whose record is kept in its asker's repository and whose upstream is another bounded context.
 
-- **foreign entry** (kind): an entry of a comment (`<field> <n>: <text>`) of the part of the side that did not post the comment's step: an entry of the upstream's part (`question`, `outcome`, `counter`, `reason`, `into`, and `resolution` but on a `fits`) in a step of the asker (`ask`, `fits`, or a `turn` posted in the asker's turn), or an entry of the asker's part (`line`, `answer`) in a step of the upstream (`offer`, `accept`, `resolve`, or a `turn` posted in the upstream's turn). Kind of: text.
+- **foreign entry** (noun): an entry of a comment (`<field> <n>: <text>`) of the part of the side that did not post the comment's step: an entry of the upstream's part (`question`, `outcome`, `counter`, `reason`, `into`, and `resolution` but on a `fits`) in a step of the asker (`ask`, `fits`, or a `turn` posted in the asker's turn), or an entry of the asker's part (`line`, `answer`) in a step of the upstream (`offer`, `accept`, `resolve`, or a `turn` posted in the upstream's turn). Kind of: text.
 
 ## Relations
 

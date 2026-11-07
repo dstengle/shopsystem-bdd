@@ -47,7 +47,7 @@ class SpecReading:
         index = self.root / "spec" / "index.md"
         for n, bullet in enumerate(spec_lexicon._bullets(index.read_text(), "Glossary"), 1):
             if spec_lexicon.entry(bullet, "spec/index.md") is None:
-                self.problems.append(f"spec/index.md: glossary bullet {n} is not '- **<term>** (<category>): <text>'")
+                self.problems.append(f"spec/index.md: glossary bullet {n} is not '- **<term>** (<part of speech>): <text>'")
         lexicon = spec_lexicon.read(self.root)
         cats, n, terms = {}, 0, lexicon.terms
         words, known, kinds = Counter(t.term for t in terms), spec_frames.names(lexicon), lexicon.kind_names()
@@ -89,7 +89,8 @@ class SpecReading:
             p = spec_grammar.parse(self.root, text)
         except (ImportError, spec_grammar.GrammarError) as err:      # no pgf, no gf, or gf refused the sources
             self._grammar = GRAMMAR_MISSING
-            self.problems.append(f"the codified statements are not parsed: {err}; run `python3 scripts/tools install`")
+            fix = "" if isinstance(err, spec_grammar.Unlabelled) else "; run `python3 scripts/tools install`"
+            self.problems.append(f"the codified statements are not parsed: {err}{fix}")
             return None
         if p.tree is not None:
             self.fact("parsed", ident)

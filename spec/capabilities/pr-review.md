@@ -18,8 +18,8 @@ decisions and the size of the change. It reads only the batch's own commits. A f
 branch and the review re-reads what the fix changed; a clean pull request waits for the person's merge.
 
 ## Terms
-- **`pr-reviewer`** (actor): the agent that reviews a batch's pull request. Kind of: dispatch.
-- **unreviewed** (condition of pull request): a pull request that no review has been written of yet, so that its next review is its first.
+- **`pr-reviewer`** (proper noun): the agent that reviews a batch's pull request. Kind of: dispatch.
+- **unreviewed** (adjective of pull request): a pull request that no review has been written of yet, so that its next review is its first.
 
 ## Relations
 

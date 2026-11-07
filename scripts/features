@@ -8,6 +8,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import features_generate
 import features_vocab
+import spec_grammar
 import spec_read
 import spec_unbuilt
 from features_bindings import cmd_bindings
@@ -106,7 +107,7 @@ def cmd_generate(args):
         # (plan 9, D4): None.
         texts = {os.path.basename(path)[:-3]: None if retired(path) else features_generate.generate(root, path)
                  for path in paths}
-    except (features_generate.GenerateError, features_vocab.StepError) as err:
+    except (features_generate.GenerateError, features_vocab.StepError, spec_grammar.Unlabelled) as err:
         sys.stderr.write("features: %s\n" % err)
         return 1
     differs = 0
