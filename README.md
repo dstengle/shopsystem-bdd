@@ -117,6 +117,31 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 No agent has the Agent tool (design-decision/the-2-0-agents). A plugin agent's `hooks` and `permissionMode` are
 ignored, so a role's limits are its tools.
 
+## 3.0.0: verb frames, parts of speech in the glossary, and verbs typed by kind
+
+- **Every glossary term names its part of speech** (b83, design-model-check r67): `(noun)` for a kind, `(proper
+  noun)` for an actor, `(adjective of <kind>)` for a condition, `(attribute of <kind>)` for an attribute with values,
+  `(noun, exclusive)` for a resource and `(verb)` for an event. Plugin 2.x's categories (`kind`, `event`,
+  `condition of …`) are refused, each term named with the label it is to carry.
+- **A verb's entry gives its frame** (b82, r60): a `Frame:` field in the order the verb is read, its kinds glossary
+  terms: `Frame: caller requests video.`, `Frame: feed returns video to caller.`, `Frame: session ends.`. `model check`
+  refuses a verb with no frame (v_t11), and a condition whose definition names another kind (v_t12): a relation
+  between two kinds is a verb between them. `model parse` refuses a line whose verb is missing its object (r58) or its
+  recipient (r59), naming the verb.
+- **Verbs typed by kind** (b84, r63): the generic verb funs are gone; each verb's subject, object and recipient take
+  a noun of the frame's kind or a kind under it (`Kind of:`). A line that gives a verb a noun of another kind is
+  refused, naming the term.
+- **Verbs in conditions, positive and negated** (b85, r64): "a user does not subscribe to a channel" parses. **The
+  passive with no agent is refused** (r65): "a channel is not subscribed" names no subscriber; the active clause is
+  the one form.
+- **A trigger with a recipient** (b86, r66): "when a feed returns a video to a caller", object then "to" recipient,
+  the one order.
+- **`migrate upgrade` 3.0.0, "verb frames"** (b87, migration-tools r25): writes each glossary entry's and each
+  capability term's category as its part of speech, and prints each verb that needs a `Frame:` (v_t11), each
+  relational condition (v_t12) and each requirement that no longer parses, by file and id. It rewords no line. After
+  it, give each verb its frame, write each relational condition as a verb, and reword each line it names, a changed
+  line under a new id with its old id in `retired:`; then run `model check`, `model parse` and `features generate`.
+
 ## 2.4.0: the request watch wakes on GitHub's events and starts with the session
 
 - **`work watch --forward`** (b78, requests r57, r58) wakes on GitHub's events instead of a 60-second poll. On each
