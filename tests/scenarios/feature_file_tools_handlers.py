@@ -2,8 +2,8 @@
 capability into the scenario's repository as the given block holds them; a feature file's primitive condition
 (`the feature file `features/notes.feature` is nested`) writes the canned file CANNED gives that condition, unless the
 example data wrote the file already, when it checks that the file has the condition; a test module's condition checks
-the module the example data wrote. The command runs through world_run's `WhenRuns`; the Thens read what `features`
-printed.
+the module the example data wrote. The command runs through world_run's `WhenRuns`, `features generate` on a requirement on the capability
+that holds it; the Thens read what `features` printed.
 
 Each canned feature file comes with the number of scenarios `features count --by-tag` gives it."""
 import re
@@ -118,6 +118,19 @@ def given_capability(step):
     if not (step.repo / "spec" / "index.md").is_file():
         write(step, "spec/index.md", INDEX)
     write(step, "spec/capabilities/%s.md" % bare(step.names[0]), step.docstring + "\n")
+
+
+@handler("WhenRuns", "`features generate`")
+def generates(step):
+    """`features generate` on the capabilities the step names, a requirement (`on the requirement r1`) naming the
+    capability whose file holds it."""
+    caps = []
+    for name in step.names:
+        holding = [p.stem for p in sorted((step.repo / "spec" / "capabilities").glob("*.md"))
+                   if "- [%s] " % name in p.read_text()] if re.fullmatch(r"r\d+", name) else [bare(name)]
+        assert len(holding) == 1, (name, holding)
+        caps += holding
+    step.context["result"] = step.run("features", "generate", *caps, *step.context.get("flags", []))
 
 
 def result(step):

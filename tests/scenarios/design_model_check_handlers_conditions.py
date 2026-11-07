@@ -67,6 +67,8 @@ def requirement(step):
             "capability/example.org/fixture/thing", H.full("capability", "thing")))
         H.write(repo, "spec/index.md", (BROKEN / "index.md").read_text().replace(
             "bounded-context/example.org/fixture", "bounded-context/" + H.PATH))
+    elif word == "withholding":
+        withholding(step)
     elif word in FRAMED:
         H.write(repo, "spec/capabilities/thing.md", H.cap("thing", ["- [r1] " + FRAMED[word][0]]))
         H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))
@@ -95,6 +97,23 @@ FRAMED = {"objectless": ("When the person runs `work start`, `work` shall write.
           "agentless": ("While a file is not written, when the person runs `work start`, `work` shall write a file.",
                         "the verb write takes a subject"),
           "addressed": ("When `work` gives a brief to a stage, `work` shall write a file.", None)}
+
+
+# feature-file-tools' withholding requirement, `[r1] `shelf` shall not lend a book to a reader.`, which the example data
+# wrote: the feature `features generate` writes of its capability must hold its Then, "does not lend the book to the
+# reader" (the instances named as the scenario names them), kept for `ThenDoes write` under `holds`.
+WITHHOLDING = re.compile(r"^- \[r1\] .*shall not (\S+) an? ([\w-]+) to an? ([\w-]+)\.$", re.MULTILINE)
+
+
+def withholding(step):
+    found = [(p, m) for p in sorted((step.repo / "spec" / "capabilities").glob("*.md"))
+             for m in [WITHHOLDING.search(p.read_text())] if m]
+    assert len(found) == 1, found
+    path, (verb, thing, recipient) = found[0][0], found[0][1].groups()
+    # a verb with a recipient: its frame names one after `to`
+    assert re.search(r"\*\*%s\*\* \(verb\):.* Frame: .* to \S+\.$" % verb, path.read_text(), re.MULTILINE), verb
+    step.context.setdefault("holds", {})["features/%s.feature" % path.stem] = re.compile(
+        r"^\s*Then .* does not %s the %s\b.* to the %s\b" % (verb, thing, recipient), re.MULTILINE)
 
 
 @handler("GivenK_C", "scenario")

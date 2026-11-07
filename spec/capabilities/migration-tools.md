@@ -314,7 +314,7 @@ Restates: r27@0.29.
   step is pending" and change nothing.
 
 ```given
-the tracked file `.shop/plugin-version` holds "3.0.0"
+the tracked file `.shop/plugin-version` holds "3.0.1"
 ```
 
 ### [g15] the upgrade step after 0.24.0 renames `awaiting-ruling` to `awaiting-answer` and `## Rulings` to `## Answers`
@@ -395,7 +395,7 @@ Restates: r24@0.29.
   successfully, and `migrate` shall not print "migrate upgrade" or print "i1".
 
 ```given
-the tracked file `.shop/plugin-version` holds "3.0.0"
+the tracked file `.shop/plugin-version` holds "3.0.1"
 the tracked file `.shop/work/i1/initiative.md` holds:
   ---
   id: initiative/example.org/acme/shop/i1

@@ -318,3 +318,36 @@ Feature: Feature file tools
     When the person runs `features vocab --check`
     Then `features` exits with an error naming `features/shelf.feature`
     And `features` changes nothing
+
+  @g20 @r20
+  Scenario: `features generate` writes the scenario of a negated response with a recipient
+    Given the capability `shelf` holds:
+      """
+      ---
+      id: capability/ex.com/prod/ctx/shelf
+      title: shelf
+      narrator: a client
+      group: service
+      language: codified-1
+      rests_on: []
+      retired: []
+      ---
+      # shelf
+      ## Purpose
+      Something.
+      ## Terms
+      - **`shelf`** (proper noun): the service that lends books.
+      - **book** (noun): a thing a reader borrows.
+      - **reader** (noun): a person who borrows books.
+      - **lend** (verb): `shelf` hands a book to a reader. Forms: lends, lent. Frame: `shelf` lends book to reader.
+      ## Behaviour
+      ### [g1] `shelf` lends no book to a reader
+      - [r1] `shelf` shall not lend a book to a reader.
+      ## Not yet
+      ## Dropped
+      """
+    And a requirement r1
+    And the requirement r1 is withholding
+    When the person runs `features generate` on the requirement r1
+    Then `features` writes `features/shelf.feature`
+    And `features` exits successfully

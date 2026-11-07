@@ -25,15 +25,17 @@ NAME = re.compile(r"^(?:[a-z][a-z-]*[1-9]\d*|`[^`\s]+`)$")
 HOLE_N, HOLE_X, META = "\x01", "\x02", object()
 _loaded, _by_print = {}, {}
 ALLOWED = {"given": ("SAtom", "SFeat", "_Given", "_HoldsText", "_HoldsBlock"), "when": ("STrig",),
-           "then": ("SAtom", "SDoes", "SDoesNot", "SDoesTo", "SDoesI", "SDoesINot", "SPrints", "SPrintsNot", "SExitsOk", "SExitsErr",
+           "then": ("SAtom", "SDoes", "SDoesNot", "SDoesTo", "SDoesToNot", "SDoesI", "SDoesINot",
+                    "SPrints", "SPrintsNot", "SExitsOk", "SExitsErr",
                     "SChangesNothing")}
-THEN = {"SDoes": "ThenDoes", "SDoesNot": "ThenDoesNot", "SDoesTo": "ThenDoesTo", "SDoesI": "ThenDoes",
+THEN = {"SDoes": "ThenDoes", "SDoesNot": "ThenDoesNot", "SDoesTo": "ThenDoesTo", "SDoesToNot": "ThenDoesToNot",
+        "SDoesI": "ThenDoes",
         "SDoesINot": "ThenDoesNot", "SPrints": "ThenPrints",
         "SPrintsNot": "ThenPrintsNot", "SExitsOk": "ThenExitsOk", "SExitsErr": "ThenExitsErr",
         "SChangesNothing": "ThenChangesNothing"}
 TRIG = {"Runs": "WhenRuns", "RunsOn": "WhenRuns", "IsRun": "WhenRuns", "Happens": "WhenHappens",
         "HappensI": "WhenHappens", "HappensTo": "WhenHappens", "_Becomes": "WhenBecomes"}
-BY_EVENT = {"WhenHappens", "ThenDoes", "ThenDoesNot", "ThenDoesTo", "GivenDoes", "GivenDoesNot"}
+BY_EVENT = {"WhenHappens", "ThenDoes", "ThenDoesNot", "ThenDoesTo", "ThenDoesToNot", "GivenDoes", "GivenDoesNot"}
 VERB_ATOMS = ("Does", "DoesNot")     # a condition of a verb, "the session s1 does not write the file f1"
 BY_KIND = {"ThenK_A", "ThenK_C", "ThenHolds", "ThenFree"}
 
@@ -224,7 +226,7 @@ def step(vocab, keyword, text):
             call.command = vocab.text(node)
         elif node[0] in ("OneNP", "MoreNP"):
             call.nps.append(vocab.text(node[1]))
-    for i in {"SDoes": (3,), "SDoesNot": (3,), "SDoesTo": (3, 4), "SExitsErr": (2,)}.get(tree[0], ()):
+    for i in {"SDoes": (3,), "SDoesNot": (3,), "SDoesTo": (3, 4), "SDoesToNot": (3, 4), "SExitsErr": (2,)}.get(tree[0], ()):
         call.nps.append(vocab.text(tree[i]))
     if template in ("GivenDoes", "GivenDoesNot"):
         call.nps.append(vocab.text(tree[1][3]))

@@ -310,7 +310,7 @@ Feature: Migration tools
 
   @g14 @r14
   Scenario: `migrate upgrade` with no pending step says so and changes nothing
-    Given the tracked file `.shop/plugin-version` holds "3.0.0"
+    Given the tracked file `.shop/plugin-version` holds "3.0.1"
     And a repository r1
     And the repository r1 is current
     When the person runs `migrate upgrade`
@@ -403,7 +403,7 @@ Feature: Migration tools
 
   @g19 @r19
   Scenario: the SessionStart hook tells a session nothing when nothing is pending and no initiative is open
-    Given the tracked file `.shop/plugin-version` holds "3.0.0"
+    Given the tracked file `.shop/plugin-version` holds "3.0.1"
     And the tracked file `.shop/work/i1/initiative.md` holds:
       """
       ---

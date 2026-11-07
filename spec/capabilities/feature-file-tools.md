@@ -6,6 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/plugin-takes-the-dependencies-it-needs, design-decision/plugin-scenarios-run-as-pytest-bdd, design-decision/query-commands-answer-in-their-output]
 retired: []
+unbuilt: []
 ---
 
 # Feature file tools
@@ -31,6 +32,8 @@ and runs no test; it edits no feature file by hand, since the generator owns the
 - **dangling** (adjective of test module): a test module with a binding whose title no feature file has.
 - **sweeping** (adjective of test module): a test module that binds every scenario of a feature file with one `scenarios(...)` call.
 - **partial** (adjective of test module): a test module that leaves a scenario of its feature file unbound.
+
+- **withholding** (adjective of requirement): a requirement whose response says with `shall not` that a verb with a recipient does not happen.
 
 ## Behaviour
 
@@ -319,6 +322,35 @@ the feature file `features/shelf.feature` holds:
     @g1 @r1
     Scenario: Lending
       When the person lends a book
+```
+
+### [g20] `features generate` writes the scenario of a negated response with a recipient
+- [r20] When the person runs `features generate` on a requirement that is withholding, `features` shall write the feature `features/shelf.feature` and exit successfully.
+
+```given
+the capability `shelf` holds:
+  ---
+  id: capability/ex.com/prod/ctx/shelf
+  title: shelf
+  narrator: a client
+  group: service
+  language: codified-1
+  rests_on: []
+  retired: []
+  ---
+  # shelf
+  ## Purpose
+  Something.
+  ## Terms
+  - **`shelf`** (proper noun): the service that lends books.
+  - **book** (noun): a thing a reader borrows.
+  - **reader** (noun): a person who borrows books.
+  - **lend** (verb): `shelf` hands a book to a reader. Forms: lends, lent. Frame: `shelf` lends book to reader.
+  ## Behaviour
+  ### [g1] `shelf` lends no book to a reader
+  - [r1] `shelf` shall not lend a book to a reader.
+  ## Not yet
+  ## Dropped
 ```
 
 ## Implementation, may change
