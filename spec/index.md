@@ -125,7 +125,7 @@ The simplified workflow:
 - **deprecated scenario** (kind): a scenario kept in its feature file, tagged `@deprecated`, after its line is changed or removed, until its replacement passes. Not: held, holding, superseded.
 - **step** (kind): one Given, When or Then line of a scenario, the linearisation of one step function, bound to exactly one step definition.
 
-- **request** (kind): the one way work enters a bounded context, kept as a file under `.shop/requests/`: lines that its asker (another context, the product level, or the context itself) proposes to its upstream (the context asked). Kind of: file.
+- **request** (kind): the one way work enters a bounded context: lines that its asker (another context, the product level, or the context itself) proposes to its upstream (the context asked). Kind of: text.
 - **request line** (kind): one proposed statement of a request, with its line outcome. Kind of: text.
 - **initiative** (kind): the delivery of one request's accepted lines, named `i<n>`. Kind of: node.
 - **proposal** (kind): a part of an initiative that proposes changes to the spec in its `adds`, `changes` and `removes`: a capability-proposal or a glossary-proposal. Kind of: node.
