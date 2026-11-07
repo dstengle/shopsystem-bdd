@@ -58,3 +58,4 @@ Dated, never edited (design model v3, section 3a). Not design and not work. Path
 | `2026-11-06-shopsystem-bdd-batch-9-analysis.md` | batch-9: 74% of its wall time was a clean pull request awaiting merge, counted as building after the hand reopen; the test suite's share is not counted (about 189 s estimated of 4127 s session time) | analysis |
 
 A record file is a node for `scripts/model` only when its frontmatter has an `id`, a `kind` and `about`.
+| `2026-11-07-verb-frames/design.md` | b82: the controlled grammar built on basic English sentence structure: every term labelled with its part of speech, every verb with its frame, a verb used without a noun it takes refused, a relational condition written as a verb, `not` on a verb or relation, every line reworded, release 3.0.0 | design |
