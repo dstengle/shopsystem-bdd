@@ -1,7 +1,7 @@
 ---
 id: batch/missingmass.io/shopsystem/shopsystem-bdd/batch-14
 kind: batch
-status: building
+status: abandoned
 base: main
 forked_from: 79260921a642ce6e7a97c67ab77235ab9e33b917
 branch: batch-14
