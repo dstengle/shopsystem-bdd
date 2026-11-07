@@ -117,6 +117,20 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 No agent has the Agent tool (design-decision/the-2-0-agents). A plugin agent's `hooks` and `permissionMode` are
 ignored, so a role's limits are its tools.
 
+## 2.4.0: the request watch wakes on GitHub's events and starts with the session
+
+- **`work watch --forward`** (b78, requests r57, r58) wakes on GitHub's events instead of a 60-second poll. On each
+  repository the account administers, it forwards the repository's issue and comment events to a local port with
+  `gh webhook forward` (the `cli/gh-webhook` extension). On the others, such as an upstream's repository, it polls
+  GitHub's notifications, which cost no rate limit when nothing changed. `--every` is then the longest wait. It
+  prints each comment a request does not hold and each new ask, then exits, as `work watch` does.
+- **The skills start the watch with Claude Code's Monitor tool** (raising-a-request, taking-in-a-request,
+  building-a-batch), and start it again after each `work sync`.
+- **A SessionStart hook names the requests waiting on the other side** (b79, requests r54-r56): `request_hook watch`
+  (`work watch --hook`) prints each sent request awaiting the upstream and each received one awaiting the asker, so a
+  new session starts the watch. It prints nothing when every request is closed, and never fails a session start.
+- **No upgrade step.**
+
 ## 2.3.1: a batch runs in one fresh agent, and a parked item leaves the batch at once
 
 - **A batch runs in one fresh agent** (b55, batches r14): `work batch start` writes a batch brief,
