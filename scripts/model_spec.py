@@ -12,6 +12,7 @@ names its group by `@g<n>`: generates(G, S)."""
 import re
 from collections import Counter
 
+import spec_frames
 import spec_lexicon
 import spec_read
 import spec_read_given
@@ -47,8 +48,9 @@ class SpecReading:
         for n, bullet in enumerate(spec_lexicon._bullets(index.read_text(), "Glossary"), 1):
             if spec_lexicon.entry(bullet, "spec/index.md") is None:
                 self.problems.append(f"spec/index.md: glossary bullet {n} is not '- **<term>** (<category>): <text>'")
-        cats, n, terms = {}, 0, spec_lexicon.read(self.root).terms
-        words = Counter(t.term for t in terms)
+        lexicon = spec_lexicon.read(self.root)
+        cats, n, terms = {}, 0, lexicon.terms
+        words, known, kinds = Counter(t.term for t in terms), spec_frames.names(lexicon), lexicon.kind_names()
         for n, t in enumerate(terms, 1):
             word = " ".join(term_word(t, words[t.term] > 1).lower().split())
             ident = self.term_id(word)
@@ -59,6 +61,10 @@ class SpecReading:
             self.term(word, n, [" ".join(w.lower().split()) for w in t.nots])
             if t.category:
                 self.fact("category", ident, t.category)
+            if t.category == "event" and spec_frames.frame(t, known) is None:
+                self.fact("frameless", ident)
+            if t.category == "condition" and spec_frames.relational(t, kinds):
+                self.fact("relational", ident)
             self.fact("linearises", ident, f"{t.category} {t.term} ({', '.join(t.kinds)})")
             if t.category == "attribute":
                 for k in t.kinds:

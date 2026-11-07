@@ -1,6 +1,6 @@
 """One requirement's facts (`spec_facts`) as the atoms `spec_steps.Reader` reads (design-r3 §5): a role as the
 instance `o(K,V)`, a pre-state, object or set fact as a fluent (`attr`, `cond`, `rel`, `holds`, `over`, `given`), the
-trigger as `ran`, `ran_any`, `does`, `done_to` or `set_to`, a response as `does` (`holds` for a hold), and an
+trigger as `ran`, `ran_any`, `does` or `set_to`, a response as `does` (`holds` for a hold), and an
 `every` role's contrast.
 
 `own` keeps what a scenario reads of a requirement: its first way through when it is split, and a positive defined
@@ -97,8 +97,6 @@ def trigger(sym):
         return F("ran_any", [e]) if name_of(d) == "any" else F("ran", [d, e, x])
     if p.name == "does":
         return F("does", [d, e, x])
-    if p.name == "done_to":
-        return F("done_to", [e, x])
     return F("set_to", [x] + list(e.arguments))
 
 

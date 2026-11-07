@@ -4,7 +4,7 @@ title: Universal conditions
 narrator: every trace of every delivery and every tool
 group: guarantees
 language: codified-1
-retired: [U1, U2, U6, U9, U10]
+retired: [U1, U2, U3, U6, U9, U10]
 ---
 
 # Universal conditions
@@ -14,7 +14,7 @@ retired: [U1, U2, U6, U9, U10]
 The statements that are true in every state of every trace (design model v5, `docs/design-model/design-model.md`
 §2.5). Each is written once here, in the requirement grammar, and is never restated in a requirement: a line that only
 restated one is dropped with the U as its reason. `model logic` adds each as an `always` constraint to the background
-of every check, and where a U is observable in a test (U3, U8) the scenario conftest checks it after every scenario
+of every check, and where a U is observable in a test (U11, U8) the scenario conftest checks it after every scenario
 that makes its trigger true. They come from the domain model's §7 (`.shop/records/2026-11-02-domain-model/`), worded
 to parse. U1, U2, U6, U9 and U10 stated guarantees of `work run`, its stages and initiatives, and are retired in plugin
 2.0.0 (design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-old-workflow-retired): their ids are in
@@ -23,7 +23,7 @@ on that subagent is written.
 
 ## Behaviour
 
-- [U3] If a command is refused, then it shall exit with an error naming the reason and change nothing.
+- [U11] If a tool refuses a command, then the tool shall exit with an error naming the reason and change nothing.
 - [U4] `work` shall commit every transition and push the commit.
 - [U5] A session shall not write a status.
 - [U7] A worker shall change only files in its worktree.
@@ -32,12 +32,14 @@ on that subagent is written.
 ## Reading
 
 Each is one statement (design-r2 §4.1): what one condition asks is written as verb phrases joined by `and` under one
-`shall` (U3 "exit with an error naming the reason and change nothing", U4 "commit every transition and push the
+`shall` (U11 "exit with an error naming the reason and change nothing", U4 "commit every transition and push the
 commit"), and `model logic` reads each conjunct as its own constraint under the one U id. The wording is the
 grammar's corpus (`grammar/corpus/universal.txt`). Where the domain model's §7 said more, the rest is carried by the
 lexicon and the background theory of `model logic`, not by a second statement:
 
-- U3: a refused command changes nothing, whatever refused it (the glossary's *refuse* said so until revision 2).
+- U11: a refused command changes nothing, whatever tool refused it (the glossary's *refuse* said so until revision 2).
+  It is U3 reworded for verb frames (b82): U3's "a command is refused" is a passive with no agent, and *refuse*
+  takes a subject.
 - U4: the push of each commit on the initiative branch is the second conjunct of the statement; which remote it goes
   to is the meaning of *remote* in the glossary.
 - U5: `work` is the only writer of a status (the glossary's *`work`* said so until revision 2): a session writes

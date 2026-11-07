@@ -63,15 +63,6 @@ def _literals(tree, words):
     return None
 
 
-def _second_object(tree):
-    for node in nodes(tree):
-        if node[0] == "DoTo":
-            obj = node[3][1] if node[3][0] == "Only" else node[3]
-            if obj[0] in ("CodeNP", "QuotedNP"):
-                return "a code after a noun phrase names it (the second object of %s is a code)" % node[1][0]
-    return None
-
-
 def _repeats(tree):
     for node in nodes(tree):
         members = []
@@ -102,9 +93,8 @@ def _anaphora(tree):
 
 def guard(tree, words):
     """Why the tree is dropped (a reason), or None when it passes: literals (§9.4), no repeated list member, and
-    "it" only after a noun phrase of its kind (§9.3), and a code after a noun phrase is its name, not a second
-    object. `words` are the lexicon's spellings."""
-    return _literals(tree, words) or _repeats(tree) or _anaphora(tree) or _second_object(tree)
+    "it" only after a noun phrase of its kind (§9.3). `words` are the lexicon's spellings."""
+    return _literals(tree, words) or _repeats(tree) or _anaphora(tree)
 
 
 def _rebuild(members, one, more):

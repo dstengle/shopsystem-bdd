@@ -2,7 +2,7 @@
 entry, and the domain facts for `grammar/check.lp` (kinds, sub-kinds, actors, values, transitions, `initial/3`).
 
 The fun names are the ones `spec_typed.modules` gives: `<kind>_<det>`, `<attribute>_<part>`, `<condition>_<part>`,
-`rel_<k1>_<word>_<k2>` (a relation row's modifier) and its `_Atom` (its clause), a value's own id and `n_<word>` for an
+`rel_<k1>_<word>_<k2>` (a relation row's modifier), its `_Atom` (its clause) and `_AtomNot` (the clause negated), a value's own id and `n_<word>` for an
 attribute's bare word. An attribute or a condition of more than one kind is suffixed with the kind's id. A relation
 is named by its row's id (`spec_relations.rid`), shared by every row its `Kind of:` expansion gives.
 
@@ -16,8 +16,8 @@ import spec_typed_def
 
 CORE = {"Ubiq", "When", "While", "Where", "IfThen", "WhileWhen", "WhereWhen", "WhereWhile", "WhileIf", "WhereIf",
         "Shall", "ShallNot", "OneVP", "AndVP", "OneVPor", "OrVP", "OneResp", "AndResp", "ActorSubj", "NPSubj",
-        "Runs", "RunsOn", "IsRun", "Happens", "HappensI", "Undergoes", "CondOne", "CondAnd", "CondOr", "Holds",
-        "HoldsA", "IsFree", "FeatGiven", "FeatAtom", "Do", "DoTo", "Print", "ExitOk", "ExitErr", "ChangeNothing",
+        "Runs", "RunsOn", "IsRun", "Happens", "HappensI", "CondOne", "CondAnd", "CondOr", "Holds",
+        "HoldsA", "IsFree", "FeatGiven", "FeatAtom", "Do", "DoI", "DoTo", "Print", "ExitOk", "ExitErr", "ChangeNothing",
         "Hold", "HoldA", "HoldAtMost", "CodeNP", "QuotedNP", "QuotedFor", "Only", "OneNP", "MoreNP", "CodeLit", "CmdCode",
         "CmdActor", "QuotedLit", "CountNum", "CountCode"}
 KIND_PARTS = {"An", "Every", "The", "No", "AtMostOne", "One", "Pl", "Its", "Named", "It", "toNP", "NumberOf"}
@@ -90,6 +90,8 @@ class Vocab:
             return "relation", self.rels[fun], None
         if fun.endswith("_Atom") and fun[:-5] in self.rels:
             return "relation", self.rels[fun[:-5]], "Atom"
+        if fun.endswith("_AtomNot") and fun[:-8] in self.rels:
+            return "relation", self.rels[fun[:-8]], "AtomNot"
         for cat, names in (("kind", self.kinds), ("event", self.events), ("actor", self.actors),
                            ("resource", self.resources)):
             if fun in names:

@@ -2,8 +2,8 @@
 When the person runs `delivering-an-initiative` on an initiative, `delivering-an-initiative` shall start a delivery.
 `delivering-an-initiative` shall not merge a work-item branch.
 `delivering-an-initiative` shall not write a status.
-When a delivery ends, `delivering-an-initiative` shall show the status of the initiative.
-If a delivery is refused, then `delivering-an-initiative` shall show the reason.
+When `work run` ends a delivery, `delivering-an-initiative` shall show the status of the initiative.
+If `work run` refuses a delivery, then `delivering-an-initiative` shall show the reason.
 `delivering-an-initiative` shall not start a stage.
 When the person runs `delivering-an-initiative` on an initiative that is `proposed`, `delivering-an-initiative` shall exit with an error naming the initiative.
 While a delivery holds the initiative lock, `delivering-an-initiative` shall not start a delivery.

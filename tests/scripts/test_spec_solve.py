@@ -17,7 +17,7 @@ import toolchain
 REPO = pathlib.Path(__file__).resolve().parents[2]
 CLUSTER = REPO / "tests" / "scripts" / "fixtures" / "logic" / "cluster"
 SUPERVISION = "spec/capabilities/supervision.md"
-USE = "- **use** (event): Forms: uses, used.\n"
+USE = "- **use** (event): Forms: uses, used. Frame: `work run` uses question.\n"
 
 
 @pytest.fixture(scope="module")
@@ -192,7 +192,7 @@ def test_a_solve_past_its_limit_is_partial():
 
 
 def test_l0_is_an_error_and_its_report_exits_1(monkeypatch):
-    monkeypatch.setattr(spec_solve, "_solve", lambda ctl, limit, brave=True, focus=None: ([], False))
+    monkeypatch.setattr(spec_solve, "_solve", lambda *_args, **_kwargs: ([], False))
     found = spec_solve.run(CLUSTER)
     [l0] = of(found, "L0")
     assert l0.ids == [] and l0.text == "the check did not finish in 20 s; the findings so far are listed"

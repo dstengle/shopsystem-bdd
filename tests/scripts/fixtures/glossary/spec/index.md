@@ -145,33 +145,33 @@ category, for the tests of the lexicon and the requirement grammar. It is not th
 
 ### Events
 
-- **start** (event): a stage or a delivery begins.
-- **end** (event): a stage stops.
-- **write** (event): Forms: writes, written.
-- **commit** (event): Forms: commits, committed.
-- **refuse** (event): a command is not done.
-- **merge** (event): a branch is merged into another.
-- **rerun** (event): Forms: reruns, rerun.
-- **discard** (event): a stage's work is dropped.
-- **give** (event): Forms: gives, given.
-- **change** (event): a file or a status is changed.
-- **ask** (event): a question is asked.
-- **raise** (event): a request is raised into an upstream.
-- **read** (event): Forms: reads, read.
-- **show** (event): Forms: shows, shown.
-- **keep** (event): Forms: keeps, kept.
-- **push** (event): a commit is pushed.
-- **delete** (event): a file is removed.
-- **approve** (event): the person approves a proposal.
-- **withdraw** (event): Forms: withdraws, withdrawn.
-- **list** (event): a tool lists things.
-- **name** (event): a message names a thing.
-- **append** (event): a line is added at the end of a file.
-- **stop** (event): Forms: stops, stopped.
-- **relocate** (event): a path is moved with git.
-- **generate** (event): a file is generated.
-- **use** (event): a tool uses a thing.
-- **pull** (event): a work-item is pulled through its stages.
+- **start** (event): a stage or a delivery begins. Frame: `work run` starts stage.
+- **end** (event): a stage stops. Frame: session ends stage.
+- **write** (event): Forms: writes, written. Frame: `work` writes file.
+- **commit** (event): Forms: commits, committed. Frame: `work` commits file.
+- **refuse** (event): a command is not done. Frame: a tool refuses command.
+- **merge** (event): a branch is merged into another. Frame: `work run` merges work-item branch.
+- **rerun** (event): Forms: reruns, rerun. Frame: `work run` reruns stage.
+- **discard** (event): a stage's work is dropped. Frame: `work run` discards stage.
+- **give** (event): Forms: gives, given. Frame: `work run` gives brief to stage.
+- **change** (event): a file or a status is changed. Frame: `work` changes file.
+- **ask** (event): a question is asked. Frame: `work run` asks question.
+- **raise** (event): a request is raised into an upstream. Frame: the person raises request.
+- **read** (event): Forms: reads, read. Frame: the reviewer reads file.
+- **show** (event): Forms: shows, shown. Frame: `delivering-an-initiative` shows reason.
+- **keep** (event): Forms: keeps, kept. Frame: `work` keeps file.
+- **push** (event): a commit is pushed. Frame: `work` pushes commit.
+- **delete** (event): a file is removed. Frame: `work` deletes file.
+- **approve** (event): the person approves a proposal. Frame: the person approves capability-proposal.
+- **withdraw** (event): Forms: withdraws, withdrawn. Frame: the person withdraws capability-proposal.
+- **list** (event): a tool lists things. Frame: `work` lists work-item.
+- **name** (event): a message names a thing. Frame: `work` names file.
+- **append** (event): a line is added at the end of a file. Frame: `work` appends file.
+- **stop** (event): Forms: stops, stopped. Frame: `work run` stops stage.
+- **relocate** (event): a path is moved with git. Frame: `migrate` relocates file.
+- **generate** (event): a file is generated. Frame: `features` generates feature.
+- **use** (event): a tool uses a thing. Frame: `work run` uses interpreter.
+- **pull** (event): a work-item is pulled through its stages. Frame: `work run` pulls work-item.
 
 ### Resources
 
@@ -188,4 +188,4 @@ category, for the tests of the lexicon and the requirement grammar. It is not th
 - **settled** (condition of request line): its line outcome is `accepted`, `refused` or `withdrawn`.
 - **closed** (condition of capability-proposal): its status is `formulated` or `withdrawn`.
 - **free** (condition of resource): no session holds it.
-- **passing** (condition of scenario): it passes in the suite.
+- **passing** (condition of scenario): a scenario whose test passes.

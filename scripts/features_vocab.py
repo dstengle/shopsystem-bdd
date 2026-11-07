@@ -24,14 +24,15 @@ NAME = re.compile(r"^(?:[a-z][a-z-]*[1-9]\d*|`[^`\s]+`)$")
 HOLE_N, HOLE_X, META = "\x01", "\x02", object()
 _loaded, _by_print = {}, {}
 ALLOWED = {"given": ("SAtom", "SFeat", "_Given", "_HoldsText", "_HoldsBlock"), "when": ("STrig",),
-           "then": ("SAtom", "SDoes", "SDoesNot", "SDoesTo", "SPrints", "SPrintsNot", "SExitsOk", "SExitsErr",
+           "then": ("SAtom", "SDoes", "SDoesNot", "SDoesTo", "SDoesI", "SDoesINot", "SPrints", "SPrintsNot", "SExitsOk", "SExitsErr",
                     "SChangesNothing")}
-THEN = {"SDoes": "ThenDoes", "SDoesNot": "ThenDoesNot", "SDoesTo": "ThenDoesTo", "SPrints": "ThenPrints",
+THEN = {"SDoes": "ThenDoes", "SDoesNot": "ThenDoesNot", "SDoesTo": "ThenDoesTo", "SDoesI": "ThenDoes",
+        "SDoesINot": "ThenDoesNot", "SPrints": "ThenPrints",
         "SPrintsNot": "ThenPrintsNot", "SExitsOk": "ThenExitsOk", "SExitsErr": "ThenExitsErr",
         "SChangesNothing": "ThenChangesNothing"}
 TRIG = {"Runs": "WhenRuns", "RunsOn": "WhenRuns", "IsRun": "WhenRuns", "Happens": "WhenHappens",
-        "HappensI": "WhenHappens", "Undergoes": "WhenUndergoes", "_Becomes": "WhenBecomes"}
-BY_EVENT = {"WhenHappens", "WhenUndergoes", "ThenDoes", "ThenDoesNot", "ThenDoesTo"}
+        "HappensI": "WhenHappens", "_Becomes": "WhenBecomes"}
+BY_EVENT = {"WhenHappens", "ThenDoes", "ThenDoesNot", "ThenDoesTo"}
 BY_KIND = {"ThenK_A", "ThenK_C", "ThenHolds", "ThenFree"}
 
 
@@ -252,7 +253,8 @@ def rows(vocab):
            ("when", "WhenRuns", None, None, ("STrig", ("IsRun", M))),
            ("when", "WhenHappens", None, None, ("STrig", ("HappensI", M, M)))]
     for f, template in THEN.items():
-        args = {"SDoes": (M, M, NP), "SDoesNot": (M, M, NP), "SDoesTo": (M, M, NP, NP), "SPrints": (M, ("OneNP", NP)),
+        args = {"SDoes": (M, M, NP), "SDoesNot": (M, M, NP), "SDoesTo": (M, M, NP, NP), "SDoesI": (M, M),
+                "SDoesINot": (M, M), "SPrints": (M, ("OneNP", NP)),
                 "SPrintsNot": (M, ("OneNP", NP)), "SExitsErr": (M, NP)}.get(f, (M,))
         out.append(("then", template, None, None, (f,) + args))
     for kind, kid in sorted(vocab.kind_id.items()):
@@ -261,8 +263,7 @@ def rows(vocab):
                 ("given", "GivenCode", kind, None, (kid + "_HoldsText", N, M)),
                 ("given", "GivenCodeText", kind, None, (kid + "_HoldsBlock", N)),
                 ("when", "WhenRuns", kind, None, ("STrig", ("RunsOn", M, M, inst))),
-                ("when", "WhenHappens", kind, None, ("STrig", ("Happens", M, M, inst))),
-                ("when", "WhenUndergoes", kind, None, ("STrig", ("Undergoes", inst, M)))]
+                ("when", "WhenHappens", kind, None, ("STrig", ("Happens", M, M, inst)))]
         out += [(k, k.capitalize() + "Holds", kind, None, ("SAtom", (h, inst, M))) for k in ("given", "then")
                 for h in ("Holds", "HoldsA")]
         out += [("then", THEN[f], kind, None, (f, M, M, inst)) for f in ("SDoes", "SDoesNot")]

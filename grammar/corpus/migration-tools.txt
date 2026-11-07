@@ -1,7 +1,7 @@
 # migration-tools: sentences that parse with exactly one tree in the fixture glossary's grammar.
 When the person runs `migrate run`, `migrate` shall relocate `decisions/`.
-If `migrate upgrade` is refused, then `migrate` shall exit with an error naming the reason and change nothing.
-When a session starts, the SessionStart hook shall show the status of every open initiative.
+If `migrate` refuses `migrate upgrade`, then `migrate` shall exit with an error naming the reason and change nothing.
+When the person starts a session, the SessionStart hook shall show the status of every open initiative.
 When `migrate status` is run, `migrate` shall print every upgrade step.
 When `migrate upgrade` is run, `migrate` shall commit every upgrade step and push the commit.
 Where `--hook` is given, `migrate status` shall print `migrate upgrade`.

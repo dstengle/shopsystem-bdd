@@ -81,8 +81,12 @@ class Scope:
             for val in vals:
                 self.attr(x, tid, val, False, obj)
 
-    def rel(self, rid, x, y, obj):
-        if x in self.univ:
+    def rel(self, rid, x, y, obj, pos=True):
+        if not pos:
+            if obj or x in self.univ or y in self.univ:
+                raise ValueError("no translation of a negated relation %s there" % rid)
+            self.emit("crel", rid, x, y, "neg")
+        elif x in self.univ:
             self.emit("urel", rid, x, y)
         elif y in self.univ:
             self.ubad.add(y)

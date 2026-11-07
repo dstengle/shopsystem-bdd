@@ -28,9 +28,9 @@ what it needs to know at its start and before it is compacted.
 - **repository** (kind): the repository `migrate` runs in, with its working tree. Plural: repositories.
 - **release** (attribute of repository): the plugin release `.shop/plugin-version` names, against the plugin's own: `0.23.1` before work-items were named by ids, `0.24.0` before `awaiting-answer` replaced `awaiting-ruling`, `0.29.0` before requirements were codified, `1.0.0` before the workflow was simplified, `own` the plugin's own release and `newer` a release newer than the plugin's. Values: `0.23.1`, `0.24.0`, `0.29.0`, `1.0.0`, `own`, `newer`.
 - **codified** (condition of capability): a capability whose file has `language: codified-1` in its frontmatter.
-- **rewrite** (event): `migrate` changes the text of a file in place. Forms: rewrites, rewritten.
-- **rename** (event): `migrate` gives a file another name with git. Forms: renames, renamed.
-- **append** (event): Forms: appends, appended.
+- **rewrite** (event): `migrate` changes the text of a file in place. Forms: rewrites, rewritten. Frame: `migrate` rewrites file.
+- **rename** (event): `migrate` gives a file another name with git. Forms: renames, renamed. Frame: `migrate` renames file.
+- **append** (event): Forms: appends, appended. Frame: `migrate` appends file.
 - **uncommitted** (condition of untracked file): an untracked file whose text no commit holds.
 - **unmigrated** (condition of repository): a repository with a directory of the old layout at its root.
 - **ledgered** (condition of repository): a repository with the old system's ledger of decisions, `spec/decisions.md`.

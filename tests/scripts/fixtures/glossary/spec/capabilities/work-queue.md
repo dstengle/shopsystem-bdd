@@ -15,6 +15,6 @@ A capability with terms of its own, for the lexicon's reading of `## Terms`.
 ## Terms
 
 - **ledger** (kind): the log of one initiative.
-- **abandon** (event): an initiative is given up.
+- **abandon** (event): an initiative is given up. Frame: the person abandons initiative.
 
 ## Behaviour

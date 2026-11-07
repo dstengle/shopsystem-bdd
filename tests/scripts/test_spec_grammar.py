@@ -221,8 +221,8 @@ def test_a_guarded_core_line_is_refused_as_ambiguous_once_its_row_is_added(live)
 
 
 def test_the_and_coordinations_replace_refuse_err_and_commit_push(live):
-    p = spec_grammar.parse(live, "If a command is refused, then `work` shall exit with an error naming the reason "
-                                 "and change nothing.")
+    p = spec_grammar.parse(live, "If `work` refuses a command, then `work` shall exit with an error naming the "
+                                 "reason and change nothing.")
     assert p.tree and {n[0] for n in spec_tree.nodes(p.tree)} >= {"AndVP", "ExitErr", "ChangeNothing"}
     gf = (spec_grammar.GRAMMARS / "Req.gf").read_text() + (spec_grammar.GRAMMARS / "ReqEng.gf").read_text()
     assert "RefuseErr" not in gf and "CommitPush" not in gf
@@ -236,8 +236,8 @@ PP = """## Glossary
 - **work-item** (kind): a unit of delivery.
 - **result** (kind): what a stage writes.
 - **stage kind** (attribute of stage): Values: `plan`, `research`.
-- **end** (event): a stage stops.
-- **discard** (event): a stage's work is dropped.
+- **end** (event): a stage stops. Frame: session ends stage.
+- **discard** (event): a stage's work is dropped. Frame: `work run` discards stage.
 """
 PP_LINE = ("When a session ends a `plan` stage for a work-item with the result, `work run` shall discard the "
            "stage.")

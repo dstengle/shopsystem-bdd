@@ -234,3 +234,38 @@ Feature: Design model check
     When the person runs `work record` on the record r1
     Then `work` exits with an error naming `--about`
     And `work` changes nothing
+
+  @g58 @r58
+  Scenario: `model parse` refuses a verb with no object
+    Given a requirement r1
+    And the requirement r1 is objectless
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits with an error naming the term t1
+
+  @g59 @r59
+  Scenario: `model parse` refuses a verb with no recipient
+    Given a requirement r1
+    And the requirement r1 is recipientless
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits with an error naming the term t1
+
+  @g60 @r60
+  Scenario: `model check` refuses a verb with no frame
+    Given a term t1
+    And the term t1 is frameless
+    When the person runs `model check` on the term t1
+    Then `model` exits with an error naming the term t1
+
+  @g61 @r61
+  Scenario: `model check` refuses a condition that relates two kinds
+    Given a term t1
+    And the term t1 is relational
+    When the person runs `model check` on the term t1
+    Then `model` exits with an error naming the term t1
+
+  @g62 @r62
+  Scenario: `model parse` parses a negated verb or relation
+    Given a requirement r1
+    And the requirement r1 is negating
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully

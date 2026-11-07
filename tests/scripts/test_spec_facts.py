@@ -156,12 +156,12 @@ def test_the_other_triggers_and_verb_phrases(gvocab):
     assert 'trig("s#r1",ran,"`tools size`",any,none).' in out
     assert 'resp("s#r1",1,pos,print,a_tools,value(t_status_4,v1)).' in out
     assert 'resp("s#r1",2,pos,exit_ok,a_tools,none).' in out
-    out = of("When a work-item is refused, `work` shall exit with an error naming the work-item.")
-    assert out[-2:] == ['trig("s#r1",done_to,e_refuse,any,v1).', 'resp("s#r1",1,pos,exit_error,a_work,v1).']
+    out = of("When `work` refuses a work-item, `work` shall exit with an error naming the work-item.")
+    assert out[-2:] == ['trig("s#r1",does,e_refuse,a_work,v1).', 'resp("s#r1",1,pos,exit_error,a_work,v1).']
     out = of("When an initiative becomes `started`, `work` shall change nothing.")
     assert out[-2:] == ['trig("s#r1",becomes,set(t_status_4,v_started),any,v1).',
                         'resp("s#r1",1,pos,change_nothing,a_work,none).']
-    out = of("When the person runs `work run`, `work run` shall give the stage only a brief.")
+    out = of("When the person runs `work run`, `work run` shall give only a brief to the stage.")
     assert out[-1] == 'only("s#r1",1,k_brief).' and not any(f.startswith("resp(") for f in out)
     out = of("When the person runs `work start` on the initiative `i1`, `work` shall print the number of work-items "
              "that are `done`.")
@@ -173,9 +173,9 @@ def test_the_other_triggers_and_verb_phrases(gvocab):
 
 
 def test_a_quoted_figure_for_a_thing_is_an_event_on_that_thing(gvocab):
-    out = facts(gvocab, "s#r1", 'When the person runs `work start` on an initiative, `work` shall not give "turns" '
+    out = facts(gvocab, "s#r1", 'When the person runs `work start` on an initiative, `work` shall not show "turns" '
                                 'for the initiative.', GLOSSARY)
-    assert out[-1] == 'resp("s#r1",1,neg,for(e_give,"turns"),a_work,v1).'
+    assert out[-1] == 'resp("s#r1",1,neg,for(e_show,"turns"),a_work,v1).'
 
 
 def test_cond_or_splits_the_requirement(vocab):

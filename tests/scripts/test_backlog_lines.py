@@ -16,7 +16,7 @@ ABANDON = ("When the person runs `work abandon` on an initiative that is `starte
            "`abandoned`.")
 FROBNICATE = "When the person runs `work start` on an initiative that is `proposed`, `work` shall frobnicate the initiative."
 DONE = "When the person runs `work start` on an initiative that is `proposed`, `work` shall set its status to `done`."
-TERM = "- **frobnicate** (event): Forms: frobnicates, frobnicated."
+TERM = "- **frobnicate** (event): Forms: frobnicates, frobnicated. Frame: `work` frobnicates initiative."
 
 
 def blocks(repo, name="b1"):

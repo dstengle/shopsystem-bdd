@@ -8,7 +8,7 @@ the condition, the trigger and each response conjunct `I` in spoken order, each 
 - the pre-state: `feat(R,F)`, `cond(R,V,A,Val,Pol)`, `ccond(R,V,C,Pol)`, `crel(R,Rel,V,W,Pol)`, `holds(R,V,Res)`,
   `free(R,Res)`, `none`, `cnone`, `rnone` for a noun phrase under `no`, `uall` and its kin for one under `every`,
   `the(R,V)` for a definite with no antecedent (spec_facts_np);
-- the trigger: `trig(R,P,E,D,V)`, P one of `does`, `ran`, `done_to`, `becomes`; D an actor, a role or `any`;
+- the trigger: `trig(R,P,E,D,V)`, P one of `does`, `ran`, `becomes`; D an actor, a role or `any`;
 - each response: `resp(R,I,Pol,E,D,V)`, E `for(E0,Q)` and V the role X for `E0 "q" for X`; a positive `Set`
   also `set(R,I,V,A,Val)`; the object's restrictions `oattr`, `orel` (`onot`, `ocond`); `every(R,V)` for an
   `every` object or subject; `only(R,I,K)` for `only a K` (no `resp`); `count(R,Res,N)` for `hold at most`;
@@ -84,9 +84,6 @@ class Walk(Scope):
         elif fun in ("Happens", "HappensI"):
             d = self.subject(t[1])
             self.emit("trig", "does", t[2][0], d, self.np(t[3]) if fun == "Happens" else "none")
-        elif fun == "Undergoes":
-            x = self.np(t[1])
-            self.emit("trig", "done_to", t[2][0], "any", x)
         else:
             cat, base, part = self.decode(fun, "trigger")
             if cat != "attribute" or part != "Becomes":
@@ -148,12 +145,14 @@ class Walk(Scope):
                 raise ValueError("no translation of %s under %s" % (t[1][0], fun))
             else:
                 self.ccond(x, base, part == "Is", obj)
-        elif cat == "relation" and part == "Atom":
+        elif cat == "relation" and part in ("Atom", "AtomNot"):
             (x, kx), (y, ky) = self.arg(t[1], obj), self.arg(t[2], obj)
-            if kx or ky:
+            if (kx or ky) and part == "Atom":
                 self.emit("rnone", base, x or "kind(%s)" % kx, y or "kind(%s)" % ky)
+            elif kx or ky:
+                raise ValueError("no translation of `no` under %s" % fun)
             else:
-                self.rel(base, x, y, obj)
+                self.rel(base, x, y, obj, part == "Atom")
         else:
             raise ValueError("no translation of the clause %s" % fun)
 
@@ -178,6 +177,8 @@ class Walk(Scope):
             self.respond(i, shall, t[1][0], d, [t[2]])
         elif fun == "DoTo":
             self.respond(i, shall, t[1][0], d, [t[2], t[3]])
+        elif fun == "DoI":
+            self.emit("resp", i, "pos" if shall else "neg", t[1][0], d, "none")
         elif fun == "ExitErr":
             self.respond(i, shall, "exit_error", d, [t[1]])
         elif fun in ("ExitOk", "ChangeNothing"):

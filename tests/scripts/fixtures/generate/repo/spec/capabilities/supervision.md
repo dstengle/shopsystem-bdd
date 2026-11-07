@@ -24,7 +24,7 @@ Restates: r66@0.29.
 - [r3] `work run` shall hold at most `workers` worker slots at a time.
 
 ### [g3] a stage is given only a brief
-- [r4] When `work run` starts a stage, `work run` shall give the stage only a brief.
+- [r4] When `work run` starts a stage, `work run` shall give only a brief to the stage.
 
 ## Not yet
 ## Dropped

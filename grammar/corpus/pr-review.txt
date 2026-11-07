@@ -4,6 +4,6 @@ When a work-item becomes `done`, the reviewer shall not write a plan.
 The reviewer shall not push a commit.
 While a work-item is `done`, when the reviewer ends a stage, `work run` shall set the status of the work-item to `green`.
 When the reviewer writes a finding, the reviewer shall write a file.
-If a stage is refused, then the reviewer shall write the reason.
+If `work run` refuses a stage, then the reviewer shall write the reason.
 When the reviewer ends a stage, the reviewer shall write a result.
 While an initiative is `started`, when the reviewer ends a stage, `work run` shall not set the status of the initiative to `done`.

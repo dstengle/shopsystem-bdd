@@ -110,9 +110,9 @@ def test_the_id_map_gives_every_id_the_capability_has(cap):
 
 
 @pytest.mark.usefixtures("grammar")
-@pytest.mark.parametrize("u, conjuncts", [("U3", ["ExitErr", "ChangeNothing"]), ("U4", ["Do", "Do"])])
-def test_u3_and_u4_are_one_statement_of_joined_verb_phrases(u, conjuncts):
-    """U3 and U4 by VP coordination (design-r2 §5.6): one `shall`, its verb phrases joined by `and`."""
+@pytest.mark.parametrize("u, conjuncts", [("U11", ["ExitErr", "ChangeNothing"]), ("U4", ["Do", "Do"])])
+def test_u11_and_u4_are_one_statement_of_joined_verb_phrases(u, conjuncts):
+    """U11 (U3 reworded for verb frames) and U4 by VP coordination (design-r2 §5.6): one `shall`, its verb phrases joined by `and`."""
     text = {c.id: c.text for c in spec_read.universal(REPO)}[u]
     resp = spec_tree.parts(spec_grammar.parse(REPO, text).tree)["resp"]
     assert [vp[0] for _, _, vp in resp] == conjuncts
