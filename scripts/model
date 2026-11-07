@@ -31,7 +31,7 @@ contract:
     written bounded-context/<context path>, the path being
     <owner>/<product>/<context name>, and whose `## Glossary` bullets are
     the context's terms. When its frontmatter has `language: codified-1`
-    the glossary is typed: each bullet `- **<term>** (<category>): ...`,
+    the glossary is typed: each bullet `- **<term>** (<part of speech>): ...`,
     read by spec_lexicon, every capability's `## Terms` too; otherwise each
     bullet is `- **<term>**: <definition>. Not: <word>, <word>.`. A term is
     term/<context path>/<term lowercased, spaces as hyphens> (an attribute or

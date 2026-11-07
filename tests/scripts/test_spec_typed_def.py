@@ -35,7 +35,7 @@ def test_a_lexicon_with_no_condition_gives_an_empty_def_module_that_compiles(tmp
     assert "\n  fun\n" not in mods["Def.gf"] and "\n  lin\n" not in mods["DefEng.gf"]
     toolchain.require()
     (tmp_path / "spec").mkdir()
-    (tmp_path / "spec" / "index.md").write_text("## Glossary\n\n- **`work`** (actor): the queue.\n")
+    (tmp_path / "spec" / "index.md").write_text("## Glossary\n\n- **`work`** (proper noun): the queue.\n")
     assert "DefEng" in spec_grammar.load(tmp_path, "Def").languages
 
 

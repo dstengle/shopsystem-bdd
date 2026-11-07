@@ -8,7 +8,7 @@ FIXTURE = pathlib.Path(__file__).parent / "fixtures" / "glossary"
 
 
 def test_an_entry_gives_its_category_kinds_and_fields():
-    t = spec_lexicon.entry("- **initiative** (kind): the delivery of one request's accepted lines. Plural: "
+    t = spec_lexicon.entry("- **initiative** (noun): the delivery of one request's accepted lines. Plural: "
                            "initiatives. Not: epic.", "spec/index.md")
     assert (t.term, t.category, t.kinds, t.plural, t.nots) == ("initiative", "kind", (), "initiatives", ("epic",))
     t = spec_lexicon.entry("- **status** (attribute of initiative): Values: `proposed`, `started`, `done`, "
@@ -22,14 +22,14 @@ def test_an_entry_gives_its_category_kinds_and_fields():
 def test_relation_resource_condition_and_event_entries():
     t = spec_lexicon.entry("- **under** (relation work-item → capability-proposal): a work-item delivers.", "x")
     assert (t.category, t.kinds) == ("relation", ("work-item", "capability-proposal"))
-    t = spec_lexicon.entry("- **worker slot** (resource, counted by `workers`): held by every worker.", "x")
+    t = spec_lexicon.entry("- **worker slot** (noun, counted by `workers`): held by every worker.", "x")
     assert (t.category, t.resource) == ("resource", "counted by `workers`")
-    t = spec_lexicon.entry("- **open** (condition of initiative): the initiative's status is not `done`.", "x")
+    t = spec_lexicon.entry("- **open** (adjective of initiative): the initiative's status is not `done`.", "x")
     assert (t.category, t.kinds, spec_lexicon.gloss(t.text)) == ("condition", ("initiative",),
                                                                  "the initiative's status is not `done`.")
-    t = spec_lexicon.entry("- **write** (event): Forms: writes, written.", "x")
+    t = spec_lexicon.entry("- **write** (verb): Forms: writes, written.", "x")
     assert t.forms == ("writes", "written")
-    t = spec_lexicon.entry("- **`work run`** (actor): the supervisor.", "x")
+    t = spec_lexicon.entry("- **`work run`** (proper noun): the supervisor.", "x")
     assert (t.term, t.category) == ("`work run`", "actor")
 
 
@@ -37,6 +37,20 @@ def test_an_entry_without_a_category_is_read_with_none():
     t = spec_lexicon.entry("- **status**: an initiative's are `proposed` and `done`.", "spec/index.md")
     assert t.term == "status" and t.category == ""
     assert spec_lexicon.entry("not an entry", "x") is None
+
+
+def test_a_category_of_plugin_2_names_no_part_of_speech_and_relabel_gives_it():
+    for old, new in [("kind", "noun"), ("actor", "proper noun"), ("event", "verb"),
+                     ("condition of stage", "adjective of stage"), ("attribute of stage", "attribute of stage"),
+                     ("resource, exclusive", "noun, exclusive"),
+                     ("resource, counted by `workers`", "noun, counted by `workers`")]:
+        assert spec_lexicon.relabel(old) == new
+        before, after = (spec_lexicon.entry("- **x** (%s): a thing." % w, "x") for w in (old, new))
+        assert (before.category == "attribute") == (old == new) and after.category in spec_lexicon.CATEGORIES
+    assert spec_lexicon.relabel("noun") is None and spec_lexicon.relabel("relation a → b") is None
+    lex = spec_lexicon.Lexicon([spec_lexicon.entry("- **stage** (kind): a thing.", "spec/index.md")])
+    assert ("v_t4", "stage", "spec/index.md: the term does not name its part of speech; (kind) is written (noun)") \
+        in spec_lexicon.problems(lex)
 
 
 def test_read_takes_the_glossary_and_every_capabilitys_terms():
@@ -75,14 +89,14 @@ def _lexicon(glossary):
 def test_problems_give_v_t4_v_t5_and_v_t6():
     lex = _lexicon("""
         - **status**: no category.
-        - **initiative** (kind): one.
-        - **initiative** (kind): twice.
+        - **initiative** (noun): one.
+        - **initiative** (noun): twice.
         - **phase** (attribute of initiative): Values: `a`, `b`.
         - **state** (attribute of initiative): Values: `b`, `c`.
         - **colour** (attribute of balloon): Values: `red`.
-        - **a session** (actor): clashes with the kind.
-        - **session** (kind): a conversation.
-        - **print** (event): a core verb of the grammar.
+        - **a session** (proper noun): clashes with the kind.
+        - **session** (noun): a conversation.
+        - **print** (verb): a core verb of the grammar.
     """)
     codes = sorted((p[0], p[1]) for p in spec_lexicon.problems(lex))
     assert ("v_t4", "colour") in codes and ("v_t4", "status") in codes
@@ -98,34 +112,34 @@ def test_v_t7_a_gloss_is_one_sentence():
     """design-r2 §8's counting rule: code spans, quotes and e.g./i.e./etc./vs. are blanked first; `.!?` before a space
     or the end, and `;`, end a sentence; `:` does not; fields after the gloss are not counted."""
     passing = """
-        - **index** (kind): the file `spec/index.md. x` of a context.
-        - **brief** (kind): what a worker reads, e.g. the work-item and its tests.
-        - **ledger** (kind): the record of an initiative: its runs and their costs.
-        - **initiative** (kind): the delivery of one request. Plural: initiatives. Not: epic.
-        - **quoted** (kind): a line "that says. this" of a file.
+        - **index** (noun): the file `spec/index.md. x` of a context.
+        - **brief** (noun): what a worker reads, e.g. the work-item and its tests.
+        - **ledger** (noun): the record of an initiative: its runs and their costs.
+        - **initiative** (noun): the delivery of one request. Plural: initiatives. Not: epic.
+        - **quoted** (noun): a line "that says. this" of a file.
         - **status** (attribute of initiative): Values: `proposed`, `done`.
     """
     assert _codes(passing, "v_t7") == []
     failing = """
-        - **brief** (kind): what a worker reads. It names the work-item.
-        - **log** (kind): what a round writes; one line a step.
-        - **pool** (kind): the workers! Every one.
+        - **brief** (noun): what a worker reads. It names the work-item.
+        - **log** (noun): what a round writes; one line a step.
+        - **pool** (noun): the workers! Every one.
     """
     assert sorted(_codes(failing, "v_t7")) == ["brief", "log", "pool"]
 
 
 def test_v_t9_a_means_field():
-    assert _codes("- **open** (condition of initiative): Means: its status is not `done`.\n"
-                  "- **initiative** (kind): one.", "v_t9") == ["open"]
-    assert _codes("- **open** (condition of initiative): an initiative is open when the initiative is not `done`.\n"
-                  "- **initiative** (kind): one.", "v_t9") == []
+    assert _codes("- **open** (adjective of initiative): Means: its status is not `done`.\n"
+                  "- **initiative** (noun): one.", "v_t9") == ["open"]
+    assert _codes("- **open** (adjective of initiative): an initiative is open when the initiative is not `done`.\n"
+                  "- **initiative** (noun): one.", "v_t9") == []
 
 
 def test_the_definition_of_a_condition_is_its_gloss():
     lex = _lexicon("""
-        - **initiative** (kind): one. Kind of: node.
-        - **node** (kind): a thing.
-        - **open** (condition of initiative): An initiative is open when the initiative is not `done`.
+        - **initiative** (noun): one. Kind of: node.
+        - **node** (noun): a thing.
+        - **open** (adjective of initiative): An initiative is open when the initiative is not `done`.
     """)
     assert lex.definition("open") == "An initiative is open when the initiative is not `done`."
     assert lex.definition(lex.of("condition")[0]) == lex.definition("open")
@@ -136,10 +150,10 @@ def test_the_definition_of_a_condition_is_its_gloss():
 
 def test_same_named_conditions_have_their_own_definitions():
     lex = _lexicon("""
-        - **initiative** (kind): one.
-        - **work-item** (kind): one.
-        - **open** (condition of initiative): An initiative is open when the initiative is not `done`.
-        - **open** (condition of work-item): A work-item is open when the work-item is not `green`.
+        - **initiative** (noun): one.
+        - **work-item** (noun): one.
+        - **open** (adjective of initiative): An initiative is open when the initiative is not `done`.
+        - **open** (adjective of work-item): A work-item is open when the work-item is not `green`.
     """)
     initiative, item = sorted(lex.of("condition"), key=lambda t: t.kinds)
     assert lex.definition(item) == "A work-item is open when the work-item is not `green`."

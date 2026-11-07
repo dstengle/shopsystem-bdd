@@ -67,7 +67,7 @@ retired: []
 One paragraph: what this is, and what it isn't.
 
 ## Terms
-- **title** (kind): the name of an item that the person reads beside its id.
+- **title** (noun): the name of an item that the person reads beside its id.
 
 ## Relations
 
@@ -212,43 +212,46 @@ the context name (`missingmass.io/shopsystem/shop-kb`). The bounded context is `
 ## The glossary is the lexicon
 
 A context's terms are its words. The glossary is the union of `spec/index.md`'s `## Glossary` and each
-capability's `## Terms`, in one entry form, each entry with a **category** — the grammar slot the word fills.
+capability's `## Terms`, in one entry form, each entry naming its **part of speech** in parentheses, which gives the
+**category** — the grammar slot the word fills.
 The example below is from plugin 1.x's vocabulary, kept as an illustration of every category:
 
 ```markdown
-- **node** (kind): a root or a part of the work queue.
-- **initiative** (kind): the delivery of one request's accepted lines. Plural: initiatives. Kind of: node. Not: epic.
+- **node** (noun): a root or a part of the work queue.
+- **initiative** (noun): the delivery of one request's accepted lines. Plural: initiatives. Kind of: node. Not: epic.
 - **status** (attribute of initiative): an initiative's place in its lifecycle. Values: `proposed`, `started`, `done`, `abandoned`.
   Transitions: `proposed` → `started`: `work start`; `started` → `abandoned`: `work abandon`; `started` → `done`: complete.
-- **open** (condition of initiative): An initiative is open when the initiative is not `done` and the initiative is not `abandoned`.
-- **unfixed** (condition of initiative): an initiative whose kept branch review lists a finding to fix now.
-- **start** (event): the beginning of a stage. Forms: starts, started.
-- **spec lock** (resource, exclusive): the lock every integrate, apply and formulate round holds.
-- **worker slot** (resource, counted by `workers`): one of the workers `.shop/delivery.toml` allows.
-- **`work run`** (actor): the supervisor that runs nodes through their transitions.
+- **open** (adjective of initiative): An initiative is open when the initiative is not `done` and the initiative is not `abandoned`.
+- **unfixed** (adjective of initiative): an initiative whose kept branch review lists a finding to fix now.
+- **start** (verb): the beginning of a stage. Forms: starts, started.
+- **spec lock** (noun, exclusive): the lock every integrate, apply and formulate round holds.
+- **worker slot** (noun, counted by `workers`): one of the workers `.shop/delivery.toml` allows.
+- **`work run`** (proper noun): the supervisor that runs nodes through their transitions.
 ```
 
-| category | what it is | in a requirement |
-|---|---|---|
-| actor | what a `shall` is about | the subject of `shall` |
-| kind | a sort of thing with an identity | a noun: `an initiative`, `every work-item` |
-| attribute | a property of a kind with closed values | `whose status is …`, `that is `started`` |
-| value | one value of one attribute of one kind | only in its attribute's slot |
-| event | something that happens at one step | a trigger or a response |
-| resource | what a session holds while it runs | `holds`, `is free` |
-| condition | a named clause | one word for a long condition: `an open initiative` |
+| part of speech | category | what it is | in a requirement |
+|---|---|---|---|
+| `(proper noun)` | actor | what a `shall` is about | the subject of `shall` |
+| `(noun)` | kind | a sort of thing with an identity | a noun: `an initiative`, `every work-item` |
+| `(attribute of <kind>)` | attribute | a property of a kind with closed values | `whose status is …`, `that is `started`` |
+| (in `Values:`) | value | one value of one attribute of one kind | only in its attribute's slot |
+| `(verb)` | event | something that happens at one step, with its `Frame:` | a trigger or a response |
+| `(noun, exclusive)`, `(noun, counted by …)` | resource | what a session holds while it runs | `holds`, `is free` |
+| `(adjective of <kind>)` | condition | a named clause | one word for a long condition: `an open initiative` |
 
 A relation is no term entry: it is a row of `## Relations` (below).
 
 - **One sentence for each entry** (v_t7). The gloss is the text after the entry's `:` and before its first field.
   Code spans, quoted strings, `e.g.`, `i.e.`, `etc.` and `vs.` are not counted; a sentence ends at `.`, `!` or `?`
   before a space or the end, and at `;`; a `:` does not end one. The gloss says what the word picks out, never what
-  the thing contains or does: "**title** (kind): the name of an item that the person reads beside its id." What an
+  the thing contains or does: "**title** (noun): the name of an item that the person reads beside its id." What an
   item, a list or a log holds, and what happens to it, are requirements of the capability ("When the person runs
   `work idea`, `work` shall write an item that is `idea` and commit the item.").
 - The fields are data, not sentences: `Values:` and `Transitions:` (an attribute), `Forms:` and `Plural:` (only
   where English is irregular), `Not:` (avoided words) and `Kind of:` (a kind's supertype). There is no other field.
-- The category is required (v_t4). An attribute or condition names its kind: `of <kind>`.
+- The part of speech is required (v_t4); plugin 2.x's categories (`(kind)`, `(actor)`, `(event)`, `(condition of
+  …)`, `(resource, …)`) name none, and `model lexicon --check` gives each one's part of speech. An attribute or
+  condition names its kind: `of <kind>`.
 - A value belongs to exactly one attribute of one kind (v_t5); the same word in two attributes is two values, which
   the typed slots keep apart. No two terms of one category linearise the same (v_t6).
 - `Values:` and `Transitions:` (each `from → to: <event, command or condition>`) give an attribute's lifecycle;

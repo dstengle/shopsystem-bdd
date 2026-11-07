@@ -227,7 +227,7 @@ ignored, so a role's limits are its tools.
 ## 1.0.0: codified requirements
 
 - **Requirements are written in a controlled language** (design model v5, `docs/design-model/`): the glossary of
-  `spec/index.md` is typed (`- **<term>** (<category>): …`) and is the lexicon of a GF grammar; every Behaviour
+  `spec/index.md` is typed (`- **<term>** (<part of speech>): …`) and is the lexicon of a GF grammar; every Behaviour
   statement is an EARS requirement that parses to exactly one tree, in a requirement group `[g<n>]`; a capability
   file says `language: codified-1`. `spec/universal.md` holds the universal conditions `U<n>`.
 - **New tools:** `tools install` installs GF 3.12 and the pinned pgf and clingo; `model parse`, `model lexicon`,

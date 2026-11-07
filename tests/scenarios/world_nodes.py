@@ -139,7 +139,7 @@ def given_capability(step):
 @handler("GivenK", "term")
 def given_term(step):
     path = index(step.repo)
-    path.write_text(path.read_text() + "- **%s** (kind): a thing.\n" % bare(step.names[0]))
+    path.write_text(path.read_text() + "- **%s** (noun): a thing.\n" % bare(step.names[0]))
 
 
 @handler("GivenK", "design-decision")

@@ -18,13 +18,13 @@ item, shapes it, rates it and records what it depends on, and prints the backlog
 item. Adding an idea starts no work. The person reads an item by its title, not by its id (design goal 10).
 
 ## Terms
-- **title** (kind): the name of an item that the person reads beside its id.
+- **title** (noun): the name of an item that the person reads beside its id.
 
-- **silent** (condition of remote): a remote that does not answer a push.
+- **silent** (adjective of remote): a remote that does not answer a push.
 
-- **upstream branch** (kind): the branch of a remote that the branch checked out in a repository pushes to. Kind of: thing.
-- **tracking** (condition of repository): a repository whose branch checked out has an upstream branch of another name.
-- **tasked** (condition of repository): a repository whose branch checked out is the branch of a task.
+- **upstream branch** (noun): the branch of a remote that the branch checked out in a repository pushes to. Kind of: thing.
+- **tracking** (adjective of repository): a repository whose branch checked out has an upstream branch of another name.
+- **tasked** (adjective of repository): a repository whose branch checked out is the branch of a task.
 
 ## Relations
 

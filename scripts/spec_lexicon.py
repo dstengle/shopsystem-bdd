@@ -4,7 +4,8 @@ A term entry is a bullet of `spec/index.md`'s `## Glossary` or of a capability's
 
     - **status** (attribute of initiative): Values: `proposed`, `started`. Transitions: `proposed` → `started`: `work start`.
 
-Its category is the grammar slot the term fills (actor, kind, attribute, relation, event, resource, condition).
+The parentheses name the term's part of speech, read by PARTS into its category, the grammar slot the term fills
+(actor, kind, attribute, relation, event, resource, condition); plugin 2.x's categories name none (v_t4).
 Values belong to one attribute of one kind. `ident` names a term in GF (§9.6); `problems` gives v_t4–v_t10.
 The gloss is the text after the entry's `:` and before its first field, one sentence (v_t7, design-r2 §8); a kind's
 or an actor's `Kind of:` names the kind it is one of (spec_frames: a noun fills a verb's role of that kind).
@@ -45,6 +46,7 @@ class Term:
     resource: str = ""
     supertype: str = ""
     frame: str = ""
+    label: str = ""       # the text in the entry's parentheses, as written
 
     @property
     def key(self):
@@ -60,22 +62,40 @@ def _list(text):
     return tuple(w.strip() for w in text.split(",") if w.strip())
 
 
-def _category(raw):
-    """`attribute of initiative` -> ("attribute", ("initiative",), ""); `resource, exclusive` -> resource."""
+# The part of speech an entry names, and the grammar slot (category) it fills: the one table of both, which the
+# reader and an upgrade's relabelling of plugin 2.x's categories (`relabel`) share.
+PARTS = (("proper noun", "actor"), ("noun", "kind"), ("adjective", "condition"), ("attribute", "attribute"),
+         ("verb", "event"))
+SPEECH = {cat: part for part, cat in PARTS} | {"resource": "noun"}
+
+
+def relabel(raw):
+    """Plugin 2.x's category written as its part of speech: `kind` -> `noun`, `condition of stage` -> `adjective of
+    stage`, `resource, exclusive` -> `noun, exclusive`; None when `raw` is no such category (a relation's among
+    them, which is no term)."""
     raw = " ".join(raw.split())
-    cat, _, rest = raw.partition(" ")
-    cat = cat.rstrip(",")
-    if cat not in CATEGORIES:
-        return raw, (), ""
-    rest = rest.lstrip(", ").strip()
-    if cat in ("attribute", "condition") and rest.startswith("of "):
-        return cat, _list(rest[3:]), ""
-    if cat == "relation":
-        parts = re.split(r"\s*(?:→|->)\s*", rest)
-        return cat, tuple(p.strip() for p in parts if p.strip()), ""
-    if cat == "resource":
-        return cat, (), rest
-    return cat, (), ""
+    cat, sep, rest = raw.partition(" ")
+    if cat.rstrip(",") not in SPEECH or cat == "attribute" and not rest.startswith("of "):
+        return None
+    return SPEECH[cat.rstrip(",")] + (cat[len(cat.rstrip(",")):] + sep + rest if rest else "")
+
+
+def _category(raw):
+    """The part of speech of an entry as (category, kinds, resource): `noun` -> ("kind", (), ""), `attribute of
+    initiative` -> ("attribute", ("initiative",), ""), `noun, exclusive` -> ("resource", (), "exclusive"); a relation
+    entry (a problem, v_t8) as a relation; anything else, plugin 2.x's categories among them, as no category ("")."""
+    raw = " ".join(raw.split())
+    if raw.startswith("relation"):
+        parts = re.split(r"\s*(?:→|->)\s*", raw[len("relation"):].strip())
+        return "relation", tuple(p.strip() for p in parts if p.strip()), ""
+    for part, cat in PARTS:
+        if raw == part:
+            return cat, (), ""
+        if raw.startswith(part + " of ") and cat in ("attribute", "condition"):
+            return cat, _list(raw[len(part) + 4:]), ""
+        if raw.startswith(part + ", ") and part == "noun":
+            return "resource", (), raw[len(part) + 2:].strip()
+    return "", (), ""
 
 
 def entry(bullet, where):
@@ -83,7 +103,8 @@ def entry(bullet, where):
     found = ENTRY.match(" ".join(bullet.split()))
     if not found:
         return None
-    category, kinds, resource = _category(found.group("cat") or "")
+    label = " ".join((found.group("cat") or "").split())
+    category, kinds, resource = _category(label)
     text = found.group("text").strip()
     transitions = []
     for row in _field(text, "Transitions").split(";"):
@@ -93,7 +114,7 @@ def entry(bullet, where):
     return Term(term=found.group("term").strip(), category=category, kinds=kinds, text=text, where=where,
                 values=_list(_field(text, "Values")), transitions=tuple(transitions),
                 forms=_list(_field(text, "Forms")), plural=_field(text, "Plural"), nots=_list(_field(text, "Not")),
-                resource=resource, supertype=_field(text, "Kind of"), frame=_field(text, "Frame"))
+                resource=resource, supertype=_field(text, "Kind of"), frame=_field(text, "Frame"), label=label)
 
 
 def gloss(text):
@@ -201,7 +222,9 @@ def problems(lexicon):
     kinds = lexicon.kind_names()
     for t in lexicon.terms:
         if t.category not in LETTER or t.category == "value":
-            out.append(("v_t4", t.term, "%s: the term has no category" % t.where))
+            hint = relabel(t.label)
+            out.append(("v_t4", t.term, "%s: the term does not name its part of speech%s" % (
+                t.where, "; (%s) is written (%s)" % (t.label, hint) if hint else "")))
         elif t.category in ("attribute", "condition", "relation") and not t.kinds:
             out.append(("v_t4", t.term, "%s: the %s names no kind" % (t.where, t.category)))
         elif any(k not in kinds for k in t.kinds):

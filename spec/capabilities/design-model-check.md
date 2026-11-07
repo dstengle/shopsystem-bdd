@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/query-commands-answer-in-their-output, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items, design-decision/work-items-named-by-ids, design-decision/the-glossary-is-a-target-of-spec-work]
 retired: [r8, r9, r12, r13, r14, r15, r16, r17, r18, r21, r26, r27, r29, r31, r32, r33, r34, r35, r37, r39, r45, r46, r53]
-unbuilt: [r67]
+unbuilt: []
 ---
 
 # Design model check
@@ -19,71 +19,71 @@ a requirement to why it exists. It does not edit the spec, the work or the recor
 context: product-level artifacts are read only where the files contain them.
 
 ## Terms
-- **rule** (kind): a relation of `scripts/model.lp`, with its code and its plain label: a violation's or a warning's.
-- **decisions index** (kind): the generated file `spec/decisions/index.md`. Plural: decisions indexes. Kind of: file.
-- **interpreter** (kind): a `python3` that `model` runs under or tries.
-- **clingoless** (condition of interpreter): an interpreter that cannot import clingo, where a `python3` on `PATH` can.
-- **unfound** (condition of interpreter): an interpreter that cannot import clingo, where no interpreter `model` tries can.
-- **stale** (condition of decisions index): a decisions index that is not what `model decisions` would write.
-- **sound** (condition of bounded context): a bounded context in which `model check` finds no violation, unresolved reference or file problem.
-- **unmigrated** (condition of bounded context): a bounded context with `spec/decisions.md`, or with a `decisions/`, `work/` or `records/` directory at its root.
-- **unnumbered** (condition of capability): a capability with a requirement bullet in its Behaviour that has no `[r<n>]`.
-- **renumbered** (condition of capability): a capability two of whose requirements have the same id.
-- **reusing** (condition of capability): a capability that uses an id it lists as retired.
-- **misnamed** (condition of capability): a capability whose `id` is not `capability/<context path>/<file name>`, or that has no `## Behaviour`.
-- **untested** (condition of requirement): a requirement that no scenario names, of a capability that is not of the group `guarantees`.
-- **avoiding** (condition of requirement): a requirement that mentions a word its context's glossary lists after `Not:`.
-- **unparsed** (condition of requirement): a requirement that does not parse in its context's requirement grammar.
-- **overtagged** (condition of scenario): a scenario not tagged `@deprecated` that has more than one `@r<n>` tag.
-- **misreferring** (condition of scenario): a scenario that names a requirement its capability does not have.
-- **misfiled** (condition of feature): a feature that is not `features/<name>.feature` for a capability `<name>`.
-- **duplicated** (condition of term): a term that two glossary entries have as their term.
-- **selfavoiding** (condition of term): a term with a word after `Not:` that is a term of the context, or the term itself.
-- **malformed** (condition of term): a term whose bullet in the `## Glossary` of `spec/index.md` is in no form of a term entry.
-- **reaching** (condition of capability-proposal): a `drafted` or `approved` capability-proposal that changes a requirement no capability has.
-- **unformulated** (condition of capability-proposal): a `formulated` capability-proposal that adds a requirement with no scenario, of a capability that is not of the group `guarantees`.
-- **plural** (condition of capability-proposal): a capability-proposal that argues more than one capability.
-- **dangling** (condition of capability-proposal): a capability-proposal that adds or removes an id its capability neither has nor lists as retired.
-- **termless** (condition of capability-proposal): a capability-proposal whose `adds`, `changes` or `removes` names a `term/<term>` the glossary does not have.
-- **termless** (condition of glossary-proposal): a glossary-proposal whose `adds`, `changes` or `removes` names a `term/<term>` the glossary does not have.
-- **parentless** (condition of work-item): a work-item with no `part_of`.
-- **uncommitted** (condition of work-item): a work-item that is not `withdrawn` and has no `accepts` and no `check`.
-- **misnumbered** (condition of work-item): a work-item whose file name is not `w<n>.md`.
-- **alien** (condition of work-item): a work-item whose `part_of` has another context's path, on a kind kept in `.shop/work/`.
-- **misreferenced** (condition of work-item): a work-item whose `accepts` names a reference that is not `<capability>#r<n>`.
-- **unresolving** (condition of work-item): a work-item whose `under` names nothing in its repository.
-- **misidentified** (condition of work-item): a work-item whose `id` is not `<kind>/<context path>/<name>` with its own kind.
-- **homeless** (condition of work-item): a work-item whose directory has no `initiative.md`.
-- **crowded** (condition of initiative): an initiative that is not a capability-change and has more than one part directly under it.
-- **unrequested** (condition of initiative): an initiative dated after 2026-10-23 that fulfils no request.
-- **unwaiting** (condition of initiative): a `done` initiative while a request whose asker is its context and that names it is not `delivered`.
-- **jobbed** (condition of initiative): an initiative whose kind is `job` or `job-path`.
-- **unanchored** (condition of request): a request that is part of no job-thread, cites no origin and is raised for no request.
-- **misresolved** (condition of request): a `delivered` request whose resolution names a requirement the spec does not have.
-- **misformed** (condition of request): a request that is not of the form `work request` writes.
-- **compound** (condition of requirement group): a requirement group with more than one statement.
-- **repeating** (condition of requirement group): a requirement group whose statement has the features, condition and trigger of another group's statement in its capability.
-- **unexampled** (condition of requirement group): a requirement group with a given line that is not example data.
-- **headless** (condition of design-decision): a design-decision with no `id` or no `## Decision` section.
+- **rule** (noun): a relation of `scripts/model.lp`, with its code and its plain label: a violation's or a warning's.
+- **decisions index** (noun): the generated file `spec/decisions/index.md`. Plural: decisions indexes. Kind of: file.
+- **interpreter** (noun): a `python3` that `model` runs under or tries.
+- **clingoless** (adjective of interpreter): an interpreter that cannot import clingo, where a `python3` on `PATH` can.
+- **unfound** (adjective of interpreter): an interpreter that cannot import clingo, where no interpreter `model` tries can.
+- **stale** (adjective of decisions index): a decisions index that is not what `model decisions` would write.
+- **sound** (adjective of bounded context): a bounded context in which `model check` finds no violation, unresolved reference or file problem.
+- **unmigrated** (adjective of bounded context): a bounded context with `spec/decisions.md`, or with a `decisions/`, `work/` or `records/` directory at its root.
+- **unnumbered** (adjective of capability): a capability with a requirement bullet in its Behaviour that has no `[r<n>]`.
+- **renumbered** (adjective of capability): a capability two of whose requirements have the same id.
+- **reusing** (adjective of capability): a capability that uses an id it lists as retired.
+- **misnamed** (adjective of capability): a capability whose `id` is not `capability/<context path>/<file name>`, or that has no `## Behaviour`.
+- **untested** (adjective of requirement): a requirement that no scenario names, of a capability that is not of the group `guarantees`.
+- **avoiding** (adjective of requirement): a requirement that mentions a word its context's glossary lists after `Not:`.
+- **unparsed** (adjective of requirement): a requirement that does not parse in its context's requirement grammar.
+- **overtagged** (adjective of scenario): a scenario not tagged `@deprecated` that has more than one `@r<n>` tag.
+- **misreferring** (adjective of scenario): a scenario that names a requirement its capability does not have.
+- **misfiled** (adjective of feature): a feature that is not `features/<name>.feature` for a capability `<name>`.
+- **duplicated** (adjective of term): a term that two glossary entries have as their term.
+- **selfavoiding** (adjective of term): a term with a word after `Not:` that is a term of the context, or the term itself.
+- **malformed** (adjective of term): a term whose bullet in the `## Glossary` of `spec/index.md` is in no form of a term entry.
+- **reaching** (adjective of capability-proposal): a `drafted` or `approved` capability-proposal that changes a requirement no capability has.
+- **unformulated** (adjective of capability-proposal): a `formulated` capability-proposal that adds a requirement with no scenario, of a capability that is not of the group `guarantees`.
+- **plural** (adjective of capability-proposal): a capability-proposal that argues more than one capability.
+- **dangling** (adjective of capability-proposal): a capability-proposal that adds or removes an id its capability neither has nor lists as retired.
+- **termless** (adjective of capability-proposal): a capability-proposal whose `adds`, `changes` or `removes` names a `term/<term>` the glossary does not have.
+- **termless** (adjective of glossary-proposal): a glossary-proposal whose `adds`, `changes` or `removes` names a `term/<term>` the glossary does not have.
+- **parentless** (adjective of work-item): a work-item with no `part_of`.
+- **uncommitted** (adjective of work-item): a work-item that is not `withdrawn` and has no `accepts` and no `check`.
+- **misnumbered** (adjective of work-item): a work-item whose file name is not `w<n>.md`.
+- **alien** (adjective of work-item): a work-item whose `part_of` has another context's path, on a kind kept in `.shop/work/`.
+- **misreferenced** (adjective of work-item): a work-item whose `accepts` names a reference that is not `<capability>#r<n>`.
+- **unresolving** (adjective of work-item): a work-item whose `under` names nothing in its repository.
+- **misidentified** (adjective of work-item): a work-item whose `id` is not `<kind>/<context path>/<name>` with its own kind.
+- **homeless** (adjective of work-item): a work-item whose directory has no `initiative.md`.
+- **crowded** (adjective of initiative): an initiative that is not a capability-change and has more than one part directly under it.
+- **unrequested** (adjective of initiative): an initiative dated after 2026-10-23 that fulfils no request.
+- **unwaiting** (adjective of initiative): a `done` initiative while a request whose asker is its context and that names it is not `delivered`.
+- **jobbed** (adjective of initiative): an initiative whose kind is `job` or `job-path`.
+- **unanchored** (adjective of request): a request that is part of no job-thread, cites no origin and is raised for no request.
+- **misresolved** (adjective of request): a `delivered` request whose resolution names a requirement the spec does not have.
+- **misformed** (adjective of request): a request that is not of the form `work request` writes.
+- **compound** (adjective of requirement group): a requirement group with more than one statement.
+- **repeating** (adjective of requirement group): a requirement group whose statement has the features, condition and trigger of another group's statement in its capability.
+- **unexampled** (adjective of requirement group): a requirement group with a given line that is not example data.
+- **headless** (adjective of design-decision): a design-decision with no `id` or no `## Decision` section.
 
-- **file form** (kind): one kind of file a bounded context keeps, with its path and the command that writes it. Plural: file forms.
+- **file form** (noun): one kind of file a bounded context keeps, with its path and the command that writes it. Plural: file forms.
 
-- **unattributed** (condition of record): a record whose `--about` is not one line or is not the id of a node of the design model.
+- **unattributed** (adjective of record): a record whose `--about` is not one line or is not the id of a node of the design model.
 
-- **objectless** (condition of requirement): a requirement with a verb whose glossary entry gives it an object, used with no object.
-- **recipientless** (condition of requirement): a requirement with a verb whose glossary entry gives it a recipient, used with no recipient.
-- **frameless** (condition of term): a verb whose glossary entry does not name the kinds of its subject and object, nor say that it takes no object.
-- **relational** (condition of term): a condition whose definition names with `the` a kind other than the kind it is a condition of.
-- **negating** (condition of requirement): a requirement that says with `not` that a verb or a relation between two kinds does not hold.
+- **objectless** (adjective of requirement): a requirement with a verb whose glossary entry gives it an object, used with no object.
+- **recipientless** (adjective of requirement): a requirement with a verb whose glossary entry gives it a recipient, used with no recipient.
+- **frameless** (adjective of term): a verb whose glossary entry does not name the kinds of its subject and object, nor say that it takes no object.
+- **relational** (adjective of term): a condition whose definition names with `the` a kind other than the kind it is a condition of.
+- **negating** (adjective of requirement): a requirement that says with `not` that a verb or a relation between two kinds does not hold.
 
-- **mistyped** (condition of requirement): a requirement with a verb whose subject, object or recipient is not of the kind the verb's frame names.
+- **mistyped** (adjective of requirement): a requirement with a verb whose subject, object or recipient is not of the kind the verb's frame names.
 
-- **addressed** (condition of requirement): a requirement whose trigger is a verb with its object and, after `to`, its recipient.
+- **addressed** (adjective of requirement): a requirement whose trigger is a verb with its object and, after `to`, its recipient.
 
-- **verbal** (condition of requirement): a requirement whose condition is a verb between two kinds, positive or with `does not`.
-- **agentless** (condition of requirement): a requirement with a verb whose frame has a subject, used in the passive with no subject.
+- **verbal** (adjective of requirement): a requirement whose condition is a verb between two kinds, positive or with `does not`.
+- **agentless** (adjective of requirement): a requirement with a verb whose frame has a subject, used in the passive with no subject.
 
-- **unlabelled** (condition of term): a term whose entry does not name its part of speech.
+- **unlabelled** (adjective of term): a term whose entry does not name its part of speech.
 
 ## Behaviour
 

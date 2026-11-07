@@ -25,8 +25,8 @@ language: codified-1
 ---
 ## Glossary
 
-- **`work`** (actor): the queue's command.
-- **initiative** (kind): a delivery.
+- **`work`** (proper noun): the queue's command.
+- **initiative** (noun): a delivery.
 - **status** (attribute of initiative): Values: `proposed`, `started`.
 """
 
@@ -230,14 +230,14 @@ def test_the_and_coordinations_replace_refuse_err_and_commit_push(live):
 
 PP = """## Glossary
 
-- **`work run`** (actor): the supervisor.
-- **session** (kind): one conversation.
-- **stage** (kind): one session's part.
-- **work-item** (kind): a unit of delivery.
-- **result** (kind): what a stage writes.
+- **`work run`** (proper noun): the supervisor.
+- **session** (noun): one conversation.
+- **stage** (noun): one session's part.
+- **work-item** (noun): a unit of delivery.
+- **result** (noun): what a stage writes.
 - **stage kind** (attribute of stage): Values: `plan`, `research`.
-- **end** (event): a stage stops. Frame: session ends stage.
-- **discard** (event): a stage's work is dropped. Frame: `work run` discards stage.
+- **end** (verb): a stage stops. Frame: session ends stage.
+- **discard** (verb): a stage's work is dropped. Frame: `work run` discards stage.
 """
 PP_LINE = ("When a session ends a `plan` stage for a work-item with the result, `work run` shall discard the "
            "stage.")

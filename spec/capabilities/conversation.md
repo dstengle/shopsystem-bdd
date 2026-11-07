@@ -18,7 +18,7 @@ committed, so that any clone or session can show them. The person reads names, n
 of every item and batch a session names (design goal 10).
 
 ## Terms
-- **the UserPromptSubmit hook** (actor): the plugin's hook that runs when the person submits a prompt, and gives the session and its transcript to `work quote`.
+- **the UserPromptSubmit hook** (proper noun): the plugin's hook that runs when the person submits a prompt, and gives the session and its transcript to `work quote`.
 
 ## Relations
 

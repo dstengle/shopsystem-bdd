@@ -20,21 +20,21 @@ repository's spec.
 
 ## Glossary
 
-- **the person** (actor): the human who runs the commands.
-- **`work`** (actor): the queue's command. Kind of: agent.
-- **`work run`** (actor): the supervisor. Kind of: agent.
-- **agent** (kind): a session or a tool, as the one that does what a verb says.
+- **the person** (proper noun): the human who runs the commands.
+- **`work`** (proper noun): the queue's command. Kind of: agent.
+- **`work run`** (proper noun): the supervisor. Kind of: agent.
+- **agent** (noun): a session or a tool, as the one that does what a verb says.
 
-- **initiative** (kind): the delivery of one request.
-- **work-item** (kind): a unit of delivery.
-- **capability-proposal** (kind): a proposal of one capability.
-- **request** (kind): lines another context proposes.
-- **session** (kind): one conversation. Kind of: agent.
-- **stage** (kind): one session for a node. Kind of: session.
-- **file** (kind): a file of the repository.
-- **command** (kind): one run of a tool.
-- **reason** (kind): what an error names.
-- **brief** (kind): the input of a stage.
+- **initiative** (noun): the delivery of one request.
+- **work-item** (noun): a unit of delivery.
+- **capability-proposal** (noun): a proposal of one capability.
+- **request** (noun): lines another context proposes.
+- **session** (noun): one conversation. Kind of: agent.
+- **stage** (noun): one session for a node. Kind of: session.
+- **file** (noun): a file of the repository.
+- **command** (noun): one run of a tool.
+- **reason** (noun): what an error names.
+- **brief** (noun): the input of a stage.
 
 - **status** (attribute of initiative): Values: `proposed`, `started`, `done`, `abandoned`.
   Transitions: `proposed` → `started`: `work start`; `started` → `done`: complete; `started` → `abandoned`: `work abandon`.
@@ -43,14 +43,14 @@ repository's spec.
 - **status** (attribute of capability-proposal): Values: `drafted`, `approved`, `withdrawn`.
 - **status** (attribute of request): Values: `open`, `accepted`, `refused`.
 
-- **open** (condition of initiative): An initiative is open when the initiative is not `done` and the initiative is not `abandoned`.
+- **open** (adjective of initiative): An initiative is open when the initiative is not `done` and the initiative is not `abandoned`.
 
-- **start** (event): a stage begins. Frame: agent starts stage.
-- **end** (event): a session stops. Frame: agent ends session.
-- **take** (event): `work run` takes an initiative through its transitions. Forms: takes, taken. Frame: agent takes initiative.
-- **interleave** (event): `work run` runs initiatives side by side. Frame: `work run` interleaves initiative.
-- **give** (event): Forms: gives, given. Frame: `work run` gives brief to stage.
-- **refuse** (event): Forms: refuses, refused. Frame: agent refuses command.
+- **start** (verb): a stage begins. Frame: agent starts stage.
+- **end** (verb): a session stops. Frame: agent ends session.
+- **take** (verb): `work run` takes an initiative through its transitions. Forms: takes, taken. Frame: agent takes initiative.
+- **interleave** (verb): `work run` runs initiatives side by side. Frame: `work run` interleaves initiative.
+- **give** (verb): Forms: gives, given. Frame: `work run` gives brief to stage.
+- **refuse** (verb): Forms: refuses, refused. Frame: agent refuses command.
 
-- **spec lock** (resource, exclusive): held by every integrate round.
-- **worker slot** (resource, counted by `workers`): held by every worker.
+- **spec lock** (noun, exclusive): held by every integrate round.
+- **worker slot** (noun, counted by `workers`): held by every worker.

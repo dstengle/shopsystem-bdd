@@ -60,8 +60,8 @@ language: codified-1
 
 ## Glossary
 
-- **work-item** (kind): a unit of work.
-- **capability-proposal** (kind): a proposal of one capability.
+- **work-item** (noun): a unit of work.
+- **capability-proposal** (noun): a proposal of one capability.
 - **under** (relation work-item → capability-proposal): a work-item delivers part of a proposal.
 - **for** (relation work-item → capability-proposal): the proposal a work-item is for.
 """

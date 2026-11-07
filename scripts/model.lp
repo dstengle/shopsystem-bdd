@@ -246,7 +246,7 @@ label("v_t2", "a term has two entries").
 v_t2(T)       :- glossary_entry(T, N1, _), glossary_entry(T, N2, _), N1 < N2.
 label("v_t3", "an avoided word is a term").
 v_t3(W)       :- avoid(T, W), term_of(T, Ctx), glossary_entry(T2, _, W), term_of(T2, Ctx).
-label("v_t4", "a term of a typed glossary has no category").
+label("v_t4", "a term of a typed glossary does not name its part of speech").
 v_t4(T)       :- node(T, "term"), term_of(T, Ctx), typed(Ctx), not has_category(T).
 label("v_t5", "a value names no attribute, or more than one").
 v_t5(V)       :- category(V, "value"), not has_value_of(V).

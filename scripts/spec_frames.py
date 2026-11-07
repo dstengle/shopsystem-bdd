@@ -1,12 +1,12 @@
 """Verb frames (b82, `.shop/records/2026-11-07-verb-frames/design.md`): what a verb takes, read from its glossary
 entry, and the lines and entries that do not keep to it.
 
-A verb (an `event` entry) names its frame on a `Frame:` field, a clause in the order it is read, the kinds (or
+A verb (a `(verb)` entry, an event) names its frame on a `Frame:` field, a clause in the order it is read, the kinds (or
 actors) as glossary terms:
 
-    - **return** (event): Frame: `feed` returns video to caller.      subject, object, recipient
-    - **request** (event): Frame: caller requests video.               subject, object
-    - **end** (event): Frame: session ends.                            no object
+    - **return** (verb): Frame: `feed` returns video to caller.      subject, object, recipient
+    - **request** (verb): Frame: caller requests video.               subject, object
+    - **end** (verb): Frame: session ends.                            no object
 
 `frame(term, names)` reads one; `problems(lexicon)` gives v_t11 (a verb with no frame that reads) and v_t12 (a
 condition whose definition names with "the" a kind other than its own: a relation between two kinds written as a

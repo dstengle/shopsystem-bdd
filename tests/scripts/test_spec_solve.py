@@ -17,7 +17,7 @@ import toolchain
 REPO = pathlib.Path(__file__).resolve().parents[2]
 CLUSTER = REPO / "tests" / "scripts" / "fixtures" / "logic" / "cluster"
 SUPERVISION = "spec/capabilities/supervision.md"
-USE = "- **use** (event): Forms: uses, used. Frame: `work run` uses question.\n"
+USE = "- **use** (verb): Forms: uses, used. Frame: `work run` uses question.\n"
 
 
 @pytest.fixture(scope="module")
@@ -43,7 +43,7 @@ def copy(tmp_path, root=CLUSTER, path=SUPERVISION, add="", glossary=""):
     target.write_text(text[:end].rstrip() + "\n\n" + add + text[end:])
     if glossary:
         index = out / "spec" / "index.md"
-        index.write_text(index.read_text().replace("- **start** (event)", glossary + "- **start** (event)"))
+        index.write_text(index.read_text().replace("- **start** (verb)", glossary + "- **start** (verb)"))
     return out
 
 
@@ -245,7 +245,7 @@ def test_no_telingo_cone_pool_or_horizon():
     assert len(text.splitlines()) <= 200
 
 
-ODD = "- **odd** (condition of result): a result nobody reads.\n"
+ODD = "- **odd** (adjective of result): a result nobody reads.\n"
 ENDS = "When a session ends a stage with a result that is {}, `work run` shall not write a question."
 
 

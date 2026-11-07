@@ -20,9 +20,9 @@ work-item; it plans from the researcher's notes and gives intent, never code. A 
 
 ## Terms
 
-- **plan** (kind): the file `plan.md` a planner writes in its stage directory: intent, never code.
-- **plan decision** (kind): a decision a plan makes that the capability's requirements leave open, named with the requirement or design-decision it rests on.
-- **code block** (kind): code, file contents, a diff or a step-definition body written out in a plan.
+- **plan** (noun): the file `plan.md` a planner writes in its stage directory: intent, never code.
+- **plan decision** (noun): a decision a plan makes that the capability's requirements leave open, named with the requirement or design-decision it rests on.
+- **code block** (noun): code, file contents, a diff or a step-definition body written out in a plan.
 
 ## Relations
 
