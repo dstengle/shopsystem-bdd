@@ -65,3 +65,6 @@ When a session ends a trial, `work run` shall give only a grade.
 = refused: the verb give takes a recipient
 While a stage is not discarded, when the person runs `work start`, `work` shall exit successfully.
 = refused: the verb discard takes a subject
+# a trigger with a recipient (b86): the verb's object, then `to` its recipient
+When `work run` gives a grade to a review finding, `work run` shall write a file.
+= When (HappensTo (ActorSubj a_work_run) e_give n_grade (k_review_finding_toNP (k_review_finding_An k_review_finding))) (OneResp (Shall (ActorSubj a_work_run) (OneVP (Do e_write (k_file_toNP (k_file_An k_file))))))

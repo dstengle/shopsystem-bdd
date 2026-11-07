@@ -32,7 +32,7 @@ THEN = {"SDoes": "ThenDoes", "SDoesNot": "ThenDoesNot", "SDoesTo": "ThenDoesTo",
         "SPrintsNot": "ThenPrintsNot", "SExitsOk": "ThenExitsOk", "SExitsErr": "ThenExitsErr",
         "SChangesNothing": "ThenChangesNothing"}
 TRIG = {"Runs": "WhenRuns", "RunsOn": "WhenRuns", "IsRun": "WhenRuns", "Happens": "WhenHappens",
-        "HappensI": "WhenHappens", "_Becomes": "WhenBecomes"}
+        "HappensI": "WhenHappens", "HappensTo": "WhenHappens", "_Becomes": "WhenBecomes"}
 BY_EVENT = {"WhenHappens", "ThenDoes", "ThenDoesNot", "ThenDoesTo", "GivenDoes", "GivenDoesNot"}
 VERB_ATOMS = ("Does", "DoesNot")     # a condition of a verb, "the session s1 does not write the file f1"
 BY_KIND = {"ThenK_A", "ThenK_C", "ThenHolds", "ThenFree"}

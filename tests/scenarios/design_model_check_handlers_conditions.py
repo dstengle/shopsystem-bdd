@@ -82,6 +82,7 @@ def requirement(step):
 # A requirement of the fixture glossary for each frame condition, and how its refusal names the verb's term: `write`
 # takes an object (agent writes text), `give` a recipient (agent gives thing to thing), and a stage is no text;
 # a verb names its subject: "a file is not written" names no agent that writes it.
+# An addressed line gives its trigger's verb its object and, after `to`, its recipient.
 FRAMED = {"objectless": ("When the person runs `work start`, `work` shall write.", "the verb write takes an object"),
           "recipientless": ("When the person runs `work start`, `work run` shall give a brief.",
                             "the verb give takes a recipient"),
@@ -92,7 +93,8 @@ FRAMED = {"objectless": ("When the person runs `work start`, `work` shall write.
           "verbal": (("While a session writes a file and a session does not commit a file, when the person runs "
                       "`work start`, `work` shall commit a file."), None),
           "agentless": ("While a file is not written, when the person runs `work start`, `work` shall write a file.",
-                        "the verb write takes a subject")}
+                        "the verb write takes a subject"),
+          "addressed": ("When `work` gives a brief to a stage, `work` shall write a file.", None)}
 
 
 @handler("GivenK_C", "scenario")
