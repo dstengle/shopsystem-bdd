@@ -5,7 +5,8 @@ steps.
 `translate(vocab, ident, tree)` walks the tree once and gives its facts in a fixed order: `form`, then the feature,
 the condition, the trigger and each response conjunct `I` in spoken order, each with the roles it first mentions.
 
-- the pre-state: `feat(R,F)`, `cond(R,V,A,Val,Pol)`, `ccond(R,V,C,Pol)`, `crel(R,Rel,V,W,Pol)`, `holds(R,V,Res)`,
+- the pre-state: `feat(R,F)`, `cond(R,V,A,Val,Pol)`, `ccond(R,V,C,Pol)`, `crel(R,Rel,V,W,Pol)` (Rel a relation's
+  id, or a verb's for "a session does not write a file"), `holds(R,V,Res)`,
   `free(R,Res)`, `none`, `cnone`, `rnone` for a noun phrase under `no`, `uall` and its kin for one under `every`,
   `the(R,V)` for a definite with no antecedent (spec_facts_np);
 - the trigger: `trig(R,P,E,D,V)`, P one of `does`, `ran`, `becomes`; D an actor, a role or `any`;
@@ -84,6 +85,9 @@ class Walk(Scope):
         elif fun in ("Happens", "HappensI"):
             d = self.subject(t[1])
             self.emit("trig", "does", t[2][0], d, self.np(t[3]) if fun == "Happens" else "none")
+        elif fun == "HappensTo":     # its object and its recipient one term, as a response's (`respond`)
+            d = self.subject(t[1])
+            self.emit("trig", "does", t[2][0], d, "pair(%s,%s)" % (self.np(t[3]), self.np(t[4])))
         else:
             cat, base, part = self.decode(fun, "trigger")
             if cat != "attribute" or part != "Becomes":
@@ -124,6 +128,9 @@ class Walk(Scope):
             return
         if fun == "IsFree":
             self.emit("free", t[1][0])
+            return
+        if fun in ("Does", "DoesNot"):     # a verb between two kinds: a relation named by its verb (b85)
+            self.rel(t[2][0], self.subject(t[1]), self.np(t[3], obj), obj, fun == "Does")
             return
         cat, base, part = self.decode(fun, "clause")
         if cat in ("attribute", "condition") and part in ("Is", "IsNot") and self.universal_atom(t, cat, base, part,

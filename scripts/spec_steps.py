@@ -100,6 +100,8 @@ class Reader:
             return self.build(a[1].name + ("_Is" if positive else "_IsNot"), a[0], (a[2].name,))
         if sym.name == "cond":
             return self.build(a[0].name + ("_Is" if positive else "_IsNot"), a[1])
+        if sym.name == "rel" and a[0].name in self.logic.events:     # a verb between two kinds (b85)
+            return ("Does" if positive else "DoesNot"), self.subj(a[1]), (a[0].name,), self.np(a[2])
         if sym.name == "rel":
             return self.build(self.relation(a[0].name, a[1], a[2]) + ("_Atom" if positive else "_AtomNot"), a[1], a[2])
         if sym.name == "holds" and positive and is_instance(a[0]):
@@ -137,6 +139,9 @@ class Reader:
                              ("RunsOn", self.subj(a[0]), self.cmd(a[1]), self.np(a[2])))
         if sym.name == "ran_any":
             return "STrig", ("IsRun", self.cmd(a[0]))
+        if sym.name == "does" and name_of(a[2]) == "pair":
+            return "STrig", ("HappensTo", self.subj(a[0]), (a[1].name,), self.np(a[2].arguments[0]),
+                             self.np(a[2].arguments[1]))
         if sym.name == "does":
             return "STrig", (("HappensI", self.subj(a[0]), (a[1].name,)) if is_none(a[2]) else
                              ("Happens", self.subj(a[0]), (a[1].name,), self.np(a[2])))

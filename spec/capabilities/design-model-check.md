@@ -78,6 +78,11 @@ context: product-level artifacts are read only where the files contain them.
 
 - **mistyped** (condition of requirement): a requirement with a verb whose subject, object or recipient is not of the kind the verb's frame names.
 
+- **addressed** (condition of requirement): a requirement whose trigger is a verb with its object and, after `to`, its recipient.
+
+- **verbal** (condition of requirement): a requirement whose condition is a verb between two kinds, positive or with `does not`.
+- **agentless** (condition of requirement): a requirement with a verb whose frame has a subject, used in the passive with no subject.
+
 ## Behaviour
 
 ### [g1] `model check` exits successfully on a sound context
@@ -227,6 +232,15 @@ Restates: r65@0.29.
 
 ### [g63] `model parse` refuses a verb with a noun of the wrong kind
 - [r63] If the person runs `model parse` on a requirement that is mistyped, then `model` shall exit with an error naming the term.
+
+### [g66] `model parse` parses a trigger with a recipient
+- [r66] When the person runs `model parse` on a requirement that is addressed, `model` shall exit successfully.
+
+### [g64] `model parse` parses a verb between two kinds in a condition
+- [r64] When the person runs `model parse` on a requirement that is verbal, `model` shall exit successfully.
+
+### [g65] `model parse` refuses a passive with no agent
+- [r65] If the person runs `model parse` on a requirement that is agentless, then `model` shall exit with an error naming the term.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a

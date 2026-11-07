@@ -276,3 +276,24 @@ Feature: Design model check
     And the requirement r1 is mistyped
     When the person runs `model parse` on the requirement r1
     Then `model` exits with an error naming the term t1
+
+  @g64 @r64
+  Scenario: `model parse` parses a verb between two kinds in a condition
+    Given a requirement r1
+    And the requirement r1 is verbal
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g65 @r65
+  Scenario: `model parse` refuses a passive with no agent
+    Given a requirement r1
+    And the requirement r1 is agentless
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits with an error naming the term t1
+
+  @g66 @r66
+  Scenario: `model parse` parses a trigger with a recipient
+    Given a requirement r1
+    And the requirement r1 is addressed
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
