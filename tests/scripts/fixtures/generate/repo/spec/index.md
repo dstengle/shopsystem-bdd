@@ -44,12 +44,12 @@ repository's spec.
 
 - **open** (condition of initiative): An initiative is open when the initiative is not `done` and the initiative is not `abandoned`.
 
-- **start** (event): a stage begins.
-- **end** (event): a session stops.
-- **take** (event): `work run` takes an initiative through its transitions. Forms: takes, taken.
-- **interleave** (event): `work run` runs initiatives side by side.
-- **give** (event): Forms: gives, given.
-- **refuse** (event): Forms: refuses, refused.
+- **start** (event): a stage begins. Frame: `work run` starts stage.
+- **end** (event): a session stops. Frame: session ends stage.
+- **take** (event): `work run` takes an initiative through its transitions. Forms: takes, taken. Frame: `work run` takes initiative.
+- **interleave** (event): `work run` runs initiatives side by side. Frame: `work run` interleaves initiative.
+- **give** (event): Forms: gives, given. Frame: `work run` gives brief to stage.
+- **refuse** (event): Forms: refuses, refused. Frame: `work` refuses command.
 
 - **spec lock** (resource, exclusive): held by every integrate round.
 - **worker slot** (resource, counted by `workers`): held by every worker.

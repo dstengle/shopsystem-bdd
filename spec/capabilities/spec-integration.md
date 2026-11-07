@@ -28,8 +28,8 @@ It is not formulation and not planning; it writes nothing a client can run.
 - **fresh id** (kind): an id one above every id the capability, or `spec/decisions/`, has used or retired, and above every id other initiatives' drafts add on it.
 - **decision source** (kind): the `source` of a design-decision: records, initiatives and decisions by id, with the person, a date, a delegation or anything outside the repository in its `by`.
 - **recommended reading** (kind): the reading a gate question marks as recommended, with the statements it concerns in full.
-- **retire** (event): an id is added to its capability's `retired:` list. Forms: retires, retired.
-- **apply** (event): a round writes approved drafts into `spec/`. Forms: applies, applied.
+- **retire** (event): an id is added to its capability's `retired:` list. Forms: retires, retired. Frame: round retires requirement.
+- **apply** (event): a round writes approved drafts into `spec/`. Forms: applies, applied. Frame: round applies file.
 
 ## Relations
 

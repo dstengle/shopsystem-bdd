@@ -18,7 +18,7 @@ not know rather than guessing at it.
 
 ## Terms
 - **initiative log** (kind): the `log.jsonl` of an initiative.
-- **unwritten** (condition of initiative log): `work run` has written no `log.jsonl` for the initiative.
+- **unwritten** (condition of initiative log): an initiative log for which `work run` has written no `log.jsonl`.
 - **requestless** (condition of initiative log): the log's initiative fulfils no request.
 - **overfulfilling** (condition of initiative log): the log's initiative fulfils more than one request.
 - **session file** (kind): a stage's `session.json`, what `claude -p --output-format json` printed for its session.
@@ -32,8 +32,8 @@ not know rather than guessing at it.
   asker is this bounded context. Values: `internal`, `external`, `unheld`, `askerless`.
 - **logged stage** (kind): a stage the initiative log gives a start for, run in one session.
 - **ending** (attribute of logged stage): whether the initiative log gives the stage an end. Values: `ended`, `unended`.
-- **present** (condition of measurement): a measurement of the initiative on the day is already written.
-- **include** (event): `measure` puts a figure or a name into the measurement it writes. Forms: includes, included.
+- **present** (condition of measurement): a measurement that is already written for its initiative on its day.
+- **include** (event): `measure` puts a figure or a name into the measurement it writes. Forms: includes, included. Frame: `measure` includes measurement.
 
 ## Relations
 

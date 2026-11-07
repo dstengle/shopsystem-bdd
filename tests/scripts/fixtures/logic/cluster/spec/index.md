@@ -36,11 +36,11 @@ codified language, for the tests of `model logic` (`scripts/spec_solve.py`). It 
 - **session** (kind): a run of a worker.
 - **resource** (kind): what a session holds while it runs.
 - **free** (condition of resource): a resource no running session holds.
-- **start** (event): a stage or a round begins.
-- **end** (event): a stage or a round stops.
-- **ask** (event): Forms: asks, asked.
-- **take** (event): Forms: takes, taken.
-- **write** (event): Forms: writes, written.
+- **start** (event): a stage or a round begins. Frame: session starts stage.
+- **end** (event): a stage or a round stops. Frame: session ends stage.
+- **ask** (event): Forms: asks, asked. Frame: session asks question.
+- **take** (event): Forms: takes, taken. Frame: `work run` takes initiative.
+- **write** (event): Forms: writes, written. Frame: session writes result.
 - **spec lock** (resource, exclusive): held by every integrate, apply and formulate round.
 - **initiative lock** (resource, exclusive): held by every round of an initiative.
 - **worker slot** (resource, counted by `workers`): held by every research stage.

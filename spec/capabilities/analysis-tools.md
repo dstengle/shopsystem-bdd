@@ -19,7 +19,7 @@ file; it prints what the tools found and names a tool that is missing rather tha
 ## Terms
 - **Python interpreter** (kind): the Python `tools` runs the analysis tools with.
 - **environment** (attribute of Python interpreter): whether pip installs into a virtualenv. Values: `virtualenv`, `system`.
-- **present** (condition of Python interpreter): the interpreter's file exists.
+- **present** (condition of Python interpreter): a Python interpreter whose file exists.
 - **analysis tool** (kind): a package `tools` probes and installs.
 - **presence** (attribute of analysis tool): whether the interpreter has the tool, and whether pip can install it.
   Values: `installed`, `missing`, `uninstallable`.
@@ -31,8 +31,8 @@ file; it prints what the tools found and names a tool that is missing rather tha
 - **reference** (kind): a use of a name the project defines, written `path:line`.
 - **finding** (kind): what ruff, vulture or import-linter reports.
 - **dependency file** (kind): a file that lists a project's dependencies (`pyproject.toml`, `requirements.txt`, ...).
-- **install** (event): `tools` puts an analysis tool into the interpreter with pip. Forms: installs, installed.
-- **replace** (event): `tools` writes a new coverage map in place of the one before. Forms: replaces, replaced.
+- **install** (event): `tools` puts an analysis tool into the interpreter with pip. Forms: installs, installed. Frame: `tools` installs analysis tool.
+- **replace** (event): `tools` writes a new coverage map in place of the one before. Forms: replaces, replaced. Frame: `tools` replaces coverage map.
 
 ## Behaviour
 

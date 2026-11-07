@@ -12,7 +12,7 @@ A later requirement's role is the first requirement's role of the same kind and 
 first requirement's.
 
 `Reader(logic, steps)` is the atom table: one atom (a clingo symbol: `attr`, `cond`, `rel`, `given`, `holds`, `over`,
-`ran`, `ran_any`, `does`, `done_to`, `set_to`, over instances `o(K,V)`) as a Steps tree, with the instances named by
+`ran`, `ran_any`, `does`, `set_to`, over instances `o(K,V)`) as a Steps tree, with the instances named by
 their kind's letter and a counter in order of first mention. `logic` is spec_logic_vocab's Vocab, `steps`
 features_vocab's Vocab. An instance first mentioned in a Given is introduced by `<attribute>_Given` ("a work-item w1
 that is `drafted`") or `<kind>_Given` ("a result r1").
@@ -100,8 +100,8 @@ class Reader:
             return self.build(a[1].name + ("_Is" if positive else "_IsNot"), a[0], (a[2].name,))
         if sym.name == "cond":
             return self.build(a[0].name + ("_Is" if positive else "_IsNot"), a[1])
-        if sym.name == "rel" and positive:
-            return self.build(self.relation(a[0].name, a[1], a[2]) + "_Atom", a[1], a[2])
+        if sym.name == "rel":
+            return self.build(self.relation(a[0].name, a[1], a[2]) + ("_Atom" if positive else "_AtomNot"), a[1], a[2])
         if sym.name == "holds" and positive and is_instance(a[0]):
             exclusive = "exclusive" in getattr(self.logic.resources.get(a[1].name), "resource", "")
             return "Holds" if exclusive else "HoldsA", self.np(a[0]), (a[1].name,)
@@ -140,8 +140,6 @@ class Reader:
         if sym.name == "does":
             return "STrig", (("HappensI", self.subj(a[0]), (a[1].name,)) if is_none(a[2]) else
                              ("Happens", self.subj(a[0]), (a[1].name,), self.np(a[2])))
-        if sym.name == "done_to":
-            return "STrig", ("Undergoes", self.np(a[1]), (a[0].name,))
         if sym.name == "set_to":
             return "STrig", self.build(a[1].name + "_Becomes", a[0], (a[2].name,))
         raise TraceError("no When step for %s" % sym)
@@ -167,6 +165,8 @@ class Reader:
             return "SDoesTo", s, (event.name,), self.np(x.arguments[0]), self.np(x.arguments[1])
         if not is_none(x):
             return ("SDoes" if positive else "SDoesNot"), s, (event.name,), self.np(x)
+        if name_of(event) and not event.arguments:
+            return ("SDoesI" if positive else "SDoesINot"), s, (event.name,)
         raise TraceError("no Then step for %s%s" % ("" if positive else "not ", sym))
 
 

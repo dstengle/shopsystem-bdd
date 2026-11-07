@@ -67,6 +67,25 @@ def requirement(step):
             "capability/example.org/fixture/thing", H.full("capability", "thing")))
         H.write(repo, "spec/index.md", (BROKEN / "index.md").read_text().replace(
             "bounded-context/example.org/fixture", "bounded-context/" + H.PATH))
+    elif word in FRAMED:
+        H.write(repo, "spec/capabilities/thing.md", H.cap("thing", ["- [r1] " + FRAMED[word][0]]))
+        H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))
+        if FRAMED[word][1]:     # the scenario's term t1 is the verb the line leaves short: the refusal names it so
+            H.says(step, "t1", FRAMED[word][1])
+        if word == "negating":     # the relation the line negates, a row of `## Relations`
+            H.base(repo, step.context)
+            index = repo / "spec" / "index.md"
+            index.write_text(index.read_text() + "\n## Relations\n\n| from | word | to | cardinality |\n"
+                             "|---|---|---|---|\n| stage | for | work-item |  |\n")
+
+
+# A requirement of the fixture glossary for each frame condition, and how its refusal names the verb's term: `write`
+# takes an object (`work` writes file), `give` a recipient (`work run` gives brief to stage).
+FRAMED = {"objectless": ("When the person runs `work start`, `work` shall write.", "the verb write takes an object"),
+          "recipientless": ("When the person runs `work start`, `work run` shall give a brief.",
+                            "the verb give takes a recipient"),
+          "negating": (("While a stage is not for a work-item, when the person runs `work start`, `work` shall not "
+                        "write a file."), None)}
 
 
 @handler("GivenK_C", "scenario")
@@ -96,6 +115,11 @@ def term(step):
     elif word == "malformed":
         path.write_text(text + "- %s, written with no bold term\n" % name)
         H.says(step, name, "glossary bullet")
+    elif word == "frameless":
+        path.write_text(text.replace("- **%s** (kind): a thing.\n" % name, "- **%s** (event): a thing done.\n" % name))
+    elif word == "relational":     # a condition of a stage whose definition names the session
+        path.write_text(text.replace("- **%s** (kind): a thing.\n" % name,
+                                     "- **%s** (condition of stage): a stage that the session ends.\n" % name))
 
 
 @handler("GivenK_C", "request")

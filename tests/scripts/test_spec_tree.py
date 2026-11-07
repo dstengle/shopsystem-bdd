@@ -68,12 +68,10 @@ def test_a_code_literal_must_be_backticked_and_not_a_lexicon_word():
     assert spec_tree.guard(ubiq(("Print", ("OneNP", ("QuotedNP", ("QuotedLit", '"no initiative"'))))), WORDS) is None
 
 
-def test_a_code_after_a_noun_phrase_is_its_name_not_a_second_object():
+def test_a_recipient_after_its_object_passes_the_guards():
     interpreter = ("k_interpreter_toNP", ("k_interpreter_The", ("k_interpreter",)))
-    tree = ubiq(("DoTo", ("e_use",), interpreter, ("CodeNP", ("CodeLit", "`python3`"))))
-    assert "second object" in spec_tree.guard(tree, WORDS)
     brief = ("k_brief_toNP", ("k_brief_An", ("k_brief",)))
-    assert spec_tree.guard(ubiq(("DoTo", ("e_give",), interpreter, ("Only", brief))), WORDS) is None
+    assert spec_tree.guard(ubiq(("DoTo", ("e_give",), ("Only", brief), interpreter)), WORDS) is None
 
 
 def test_normal_sorts_value_lists_and_conjunctions():

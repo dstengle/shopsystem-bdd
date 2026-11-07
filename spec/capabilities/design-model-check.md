@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/query-commands-answer-in-their-output, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items, design-decision/work-items-named-by-ids, design-decision/the-glossary-is-a-target-of-spec-work]
 retired: [r8, r9, r12, r13, r14, r15, r16, r17, r18, r21, r26, r27, r29, r31, r32, r33, r34, r35, r37, r39, r45, r46, r53]
-unbuilt: [r58, r59, r60, r61, r62]
+unbuilt: []
 ---
 
 # Design model check
@@ -33,7 +33,7 @@ context: product-level artifacts are read only where the files contain them.
 - **misnamed** (condition of capability): a capability whose `id` is not `capability/<context path>/<file name>`, or that has no `## Behaviour`.
 - **untested** (condition of requirement): a requirement that no scenario names, of a capability that is not of the group `guarantees`.
 - **avoiding** (condition of requirement): a requirement that mentions a word its context's glossary lists after `Not:`.
-- **unparsed** (condition of requirement): a requirement that does not parse in the requirement grammar of its context.
+- **unparsed** (condition of requirement): a requirement that does not parse in its context's requirement grammar.
 - **overtagged** (condition of scenario): a scenario not tagged `@deprecated` that has more than one `@r<n>` tag.
 - **misreferring** (condition of scenario): a scenario that names a requirement its capability does not have.
 - **misfiled** (condition of feature): a feature that is not `features/<name>.feature` for a capability `<name>`.
@@ -51,7 +51,7 @@ context: product-level artifacts are read only where the files contain them.
 - **misnumbered** (condition of work-item): a work-item whose file name is not `w<n>.md`.
 - **alien** (condition of work-item): a work-item whose `part_of` has another context's path, on a kind kept in `.shop/work/`.
 - **misreferenced** (condition of work-item): a work-item whose `accepts` names a reference that is not `<capability>#r<n>`.
-- **unresolving** (condition of work-item): a work-item whose `under` names nothing in the repository.
+- **unresolving** (condition of work-item): a work-item whose `under` names nothing in its repository.
 - **misidentified** (condition of work-item): a work-item whose `id` is not `<kind>/<context path>/<name>` with its own kind.
 - **homeless** (condition of work-item): a work-item whose directory has no `initiative.md`.
 - **crowded** (condition of initiative): an initiative that is not a capability-change and has more than one part directly under it.

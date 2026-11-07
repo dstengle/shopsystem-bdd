@@ -30,7 +30,7 @@ and runs no test; it edits no feature file by hand, since the generator owns the
 - **resolving** (condition of test module): a test module each of whose bindings names a scenario a feature file has.
 - **dangling** (condition of test module): a test module with a binding whose title no feature file has.
 - **sweeping** (condition of test module): a test module that binds every scenario of a feature file with one `scenarios(...)` call.
-- **partial** (condition of test module): a test module that leaves a scenario of the feature file it binds unbound.
+- **partial** (condition of test module): a test module that leaves a scenario of its feature file unbound.
 
 ## Behaviour
 

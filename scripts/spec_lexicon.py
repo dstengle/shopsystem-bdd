@@ -15,6 +15,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import spec_frames
 import spec_relations
 
 CATEGORIES = ("actor", "kind", "attribute", "value", "relation", "event", "resource", "condition")
@@ -24,7 +25,7 @@ LETTER = {"actor": "a", "kind": "k", "attribute": "t", "value": "v", "relation":
 CORE_VERBS = {"run", "print", "hold", "exit", "become", "set", "be"}
 
 ENTRY = re.compile(r"^- \*\*(?P<term>.+?)\*\*\s*(?:\((?P<cat>[^)]*)\))?\s*:\s*(?P<text>.*)$", re.DOTALL)
-FIELDS = ("Values", "Transitions", "Means", "Forms", "Plural", "Not", "Kind of")
+FIELDS = ("Values", "Transitions", "Means", "Forms", "Frame", "Plural", "Not", "Kind of")
 FIELD = re.compile(r"(?:^|\s)(?:%s):" % "|".join(FIELDS))
 
 
@@ -42,6 +43,7 @@ class Term:
     nots: tuple = ()
     resource: str = ""
     supertype: str = ""
+    frame: str = ""
 
     @property
     def key(self):
@@ -90,7 +92,7 @@ def entry(bullet, where):
     return Term(term=found.group("term").strip(), category=category, kinds=kinds, text=text, where=where,
                 values=_list(_field(text, "Values")), transitions=tuple(transitions),
                 forms=_list(_field(text, "Forms")), plural=_field(text, "Plural"), nots=_list(_field(text, "Not")),
-                resource=resource, supertype=_field(text, "Kind of"))
+                resource=resource, supertype=_field(text, "Kind of"), frame=_field(text, "Frame"))
 
 
 def gloss(text):
@@ -192,8 +194,8 @@ def read(root):
 
 def problems(lexicon):
     """v_t4 (a term has a category, and its kinds are kinds), v_t5 (a value names one attribute of one kind),
-    v_t6 (no two terms linearise the same), v_t7 (a gloss of more than one sentence), v_t9 (a `Means:` field), and
-    spec_relations' v_t4, v_t8 and v_t10, as (code, term, message) sorted."""
+    v_t6 (no two terms linearise the same), v_t7 (a gloss of more than one sentence), v_t9 (a `Means:` field),
+    spec_relations' v_t4, v_t8 and v_t10, and spec_frames' v_t11 and v_t12, as (code, term, message) sorted."""
     out = []
     kinds = lexicon.kind_names()
     for t in lexicon.terms:
@@ -226,4 +228,4 @@ def problems(lexicon):
             for t in lexicon.terms if not one_sentence(gloss(t.text))]
     out += [("v_t9", t.term, "%s: the meaning is a Means: field; write one Def sentence, or a gloss" % t.where)
             for t in lexicon.terms if re.search(r"(?:^|\s)Means:", t.text)]
-    return sorted(set(out + spec_relations.problems(lexicon)))
+    return sorted(set(out + spec_relations.problems(lexicon) + spec_frames.problems(lexicon)))

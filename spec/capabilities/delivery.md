@@ -23,7 +23,7 @@ merges no branch itself, and reads what `work run` ends with, never what its wor
 
 - **`delivering-an-initiative`** (actor): the skill that has `work run` deliver an initiative and shows the person what it ends with.
 - **disallowed tool** (kind): a tool a worker needs that `work run` does not allow it.
-- **note** (event): a line naming an event is appended to an initiative's ledger with `work note`. Forms: notes, noted.
+- **note** (event): a line naming an event is appended to an initiative's ledger with `work note`. Forms: notes, noted. Frame: session notes ledger.
 
 ## Behaviour
 

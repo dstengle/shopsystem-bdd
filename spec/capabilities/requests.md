@@ -23,29 +23,29 @@ a request (backlog, batches).
 - **resolution** (kind): the requirement id and version of each accepted line, under a request's `## Resolution`.
 - **wording** (attribute of delegation): Values: `empty`, `written`.
 - **closed** (condition of request): A request is closed when the request is `delivered` or the request is `refused` or the request is `withdrawn`.
-- **unparsed** (condition of request line): a request line that does not parse in the requirement grammar of the upstream.
+- **unparsed** (condition of request line): a request line that does not parse in its upstream's requirement grammar.
 - **observation** (kind): an entry of `.shop/records/observations.md`, with its id and its date.
 - **uncited** (condition of observation): an observation that the `source` of no initiative and of no request names.
 - **origin** (kind): what a request is raised from: an observation `--source` names, a job-thread `--thread` names, or a request `--raised-for` names.
 - **originless** (condition of command): a command that gives none of `--source`, `--thread` and `--raised-for`.
 - **sourced** (condition of command): a command that gives `--source` with `--thread` or `--raised-for`.
-- **foreign** (condition of command): a command that gives `--from` an asker other than the bounded context it is run in.
+- **foreign** (condition of command): a command that gives `--from` an asker other than its own bounded context.
 - **downstream** (condition of bounded context): a bounded context whose `spec/index.md` lists an upstream under `## Upstreams`.
 
 - **issue** (kind): the GitHub issue, on the GitHub repository of a request's upstream, that carries the request's conversation.
 - **comment** (kind): one step of a request's conversation, posted on its issue, read only as the one block of fields it holds.
-- **post** (event): `work` puts an issue or a comment on GitHub. Forms: posts, posted.
-- **close** (event): `work` closes the issue of a request on GitHub. Forms: closes, closed.
-- **unrecorded** (condition of comment): a comment on the issue of a request that the request does not yet hold.
+- **post** (event): `work` puts an issue or a comment on GitHub. Forms: posts, posted. Frame: `work` posts comment.
+- **close** (event): `work` closes the issue of a request on GitHub. Forms: closes, closed. Frame: `work` closes issue.
+- **unrecorded** (condition of comment): a comment on a request's issue that its request does not yet hold.
 - **unreadable** (condition of comment): a comment whose block of fields does not parse.
 - **unhosted** (condition of bounded context): an upstream whose entry under `## Upstreams` names no GitHub repository.
 
 - **untaken** (condition of issue): an open issue on the GitHub repository of this bounded context whose body is an ask that no request holds.
 
-- **uncommittable** (condition of repository): a repository in which git refuses the commit of a request's record, as when a pre-commit hook fails or another process holds the index lock.
+- **uncommittable** (condition of repository): a repository in which git refuses to commit a request's record, as when a pre-commit hook fails or another process holds the index lock.
 
-- **received** (condition of request): a request whose record is kept in the repository of its upstream and whose asker is another bounded context.
-- **sent** (condition of request): a request whose record is kept in the repository of its asker and whose upstream is another bounded context.
+- **received** (condition of request): a request whose record is kept in its upstream's repository and whose asker is another bounded context.
+- **sent** (condition of request): a request whose record is kept in its asker's repository and whose upstream is another bounded context.
 
 - **foreign entry** (kind): an entry of a comment (`<field> <n>: <text>`) of the part of the side that did not post the comment's step: an entry of the upstream's part (`question`, `outcome`, `counter`, `reason`, `into`, and `resolution` but on a `fits`) in a step of the asker (`ask`, `fits`, or a `turn` posted in the asker's turn), or an entry of the asker's part (`line`, `answer`) in a step of the upstream (`offer`, `accept`, `resolve`, or a `turn` posted in the upstream's turn).
 
@@ -269,7 +269,7 @@ Restates: r10@0.29, r11@0.29, r12@0.29, r24@0.29.
   (`## Into`): it writes the `shaped` item, sets the request `accepted` and posts the acceptance, one commit.
 - `work resolve <request> --line <n> <requirement> <version>` writes each accepted line's requirement id and the
   version that holds it, posts the resolution and closes the issue; `work resolve` on a request that is not
-  `accepted` is refused (U3). A delivered request's turn is the asker's.
+  `accepted` is refused (U11). A delivered request's turn is the asker's.
 - `work sync` lists the open issues of this context's own repository and writes a record for each `ask` no record
   holds, then reads the issue of every record, closed or not, and records each comment it does not hold, applying
   only the part of the side that posted its step (r52): its entries written into their sections by number, its
