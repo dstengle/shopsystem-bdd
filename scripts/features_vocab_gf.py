@@ -49,6 +49,7 @@ def verb_rows(vocab, np, name, meta, then):
             out += [("then", then[f], None, None, (f, M, e)) for f in ("SDoesI", "SDoesINot")]
             continue
         if r:
+            out.append(("when", "WhenHappens", None, None, ("STrig", ("HappensTo", M, e, np, np))))
             out.append(("then", "ThenDoesTo", None, None, ("SDoesTo", M, e, np, np)))
             continue
         out += [("then", then[f], None, None, (f, M, e, np)) for f in ("SDoes", "SDoesNot")]

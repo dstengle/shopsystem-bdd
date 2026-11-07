@@ -137,6 +137,9 @@ class Reader:
                              ("RunsOn", self.subj(a[0]), self.cmd(a[1]), self.np(a[2])))
         if sym.name == "ran_any":
             return "STrig", ("IsRun", self.cmd(a[0]))
+        if sym.name == "does" and name_of(a[2]) == "pair":
+            return "STrig", ("HappensTo", self.subj(a[0]), (a[1].name,), self.np(a[2].arguments[0]),
+                             self.np(a[2].arguments[1]))
         if sym.name == "does":
             return "STrig", (("HappensI", self.subj(a[0]), (a[1].name,)) if is_none(a[2]) else
                              ("Happens", self.subj(a[0]), (a[1].name,), self.np(a[2])))
