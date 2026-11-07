@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/query-commands-answer-in-their-output, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items, design-decision/work-items-named-by-ids, design-decision/the-glossary-is-a-target-of-spec-work]
 retired: [r8, r9, r12, r13, r14, r15, r16, r17, r18, r21, r26, r27, r29, r31, r32, r33, r34, r35, r37, r39, r45, r46, r53]
-unbuilt: []
+unbuilt: [r58, r59, r60, r61, r62]
 ---
 
 # Design model check
@@ -69,6 +69,12 @@ context: product-level artifacts are read only where the files contain them.
 - **file form** (kind): one kind of file a bounded context keeps, with its path and the command that writes it. Plural: file forms.
 
 - **unattributed** (condition of record): a record whose `--about` is not one line or is not the id of a node of the design model.
+
+- **objectless** (condition of requirement): a requirement with a verb whose glossary entry gives it an object, used with no object.
+- **recipientless** (condition of requirement): a requirement with a verb whose glossary entry gives it a recipient, used with no recipient.
+- **frameless** (condition of term): a verb whose glossary entry does not name the kinds of its subject and object, nor say that it takes no object.
+- **relational** (condition of term): a condition whose definition names with `the` a kind other than the kind it is a condition of.
+- **negating** (condition of requirement): a requirement that says with `not` that a verb or a relation between two kinds does not hold.
 
 ## Behaviour
 
@@ -201,6 +207,21 @@ Restates: r65@0.29.
 
 ### [g57] `work record` refuses an unattributed record
 - [r57] If the person runs `work record` on a record that is unattributed, then `work` shall exit with an error naming `--about` and change nothing.
+
+### [g58] `model parse` refuses a verb with no object
+- [r58] If the person runs `model parse` on a requirement that is objectless, then `model` shall exit with an error naming the term.
+
+### [g59] `model parse` refuses a verb with no recipient
+- [r59] If the person runs `model parse` on a requirement that is recipientless, then `model` shall exit with an error naming the term.
+
+### [g60] `model check` refuses a verb with no frame
+- [r60] If the person runs `model check` on a term that is frameless, then `model` shall exit with an error naming the term.
+
+### [g61] `model check` refuses a condition that relates two kinds
+- [r61] If the person runs `model check` on a term that is relational, then `model` shall exit with an error naming the term.
+
+### [g62] `model parse` parses a negated verb or relation
+- [r62] When the person runs `model parse` on a requirement that is negating, `model` shall exit successfully.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a
