@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/query-commands-answer-in-their-output, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items, design-decision/work-items-named-by-ids, design-decision/the-glossary-is-a-target-of-spec-work]
 retired: [r8, r9, r12, r13, r14, r15, r16, r17, r18, r21, r26, r27, r29, r31, r32, r33, r34, r35, r37, r39, r45, r46, r53]
-unbuilt: []
+unbuilt: [r66, r64, r65]
 ---
 
 # Design model check
@@ -77,6 +77,11 @@ context: product-level artifacts are read only where the files contain them.
 - **negating** (condition of requirement): a requirement that says with `not` that a verb or a relation between two kinds does not hold.
 
 - **mistyped** (condition of requirement): a requirement with a verb whose subject, object or recipient is not of the kind the verb's frame names.
+
+- **addressed** (condition of requirement): a requirement whose trigger is a verb with its object and, after `to`, its recipient.
+
+- **verbal** (condition of requirement): a requirement whose condition is a verb between two kinds, positive or with `does not`.
+- **agentless** (condition of requirement): a requirement with a verb whose frame has a subject, used in the passive with no subject.
 
 ## Behaviour
 
@@ -227,6 +232,15 @@ Restates: r65@0.29.
 
 ### [g63] `model parse` refuses a verb with a noun of the wrong kind
 - [r63] If the person runs `model parse` on a requirement that is mistyped, then `model` shall exit with an error naming the term.
+
+### [g66] `model parse` parses a trigger with a recipient
+- [r66] When the person runs `model parse` on a requirement that is addressed, `model` shall exit successfully.
+
+### [g64] `model parse` parses a verb between two kinds in a condition
+- [r64] When the person runs `model parse` on a requirement that is verbal, `model` shall exit successfully.
+
+### [g65] `model parse` refuses a passive with no agent
+- [r65] If the person runs `model parse` on a requirement that is agentless, then `model` shall exit with an error naming the term.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a
