@@ -20,9 +20,10 @@ unless `$STUB_GH_NO_WEBHOOK` is set, and `extension install` prints nothing. Wha
 `gh-pending.json` beside the calls (the issues file's form: issues, and comments on issues) is brought back into the
 issues by `webhook forward --repo <r> --url <u>`, for `<r>`'s issues once a later call has listed issues (the end of the
 check at the watch's start), and posted to `<u>` as an `issues` event; the forward then stays, as gh's does, until it
-is killed (at most 60 s). `api --include ... notifications` with no If-Modified-Since prints a 200 with no
-notifications; with one, a 200 bringing all that is pending back, one notification a repository, else a 304 (exit
-1, as gh exits on a status over 299), each with `X-Poll-Interval: 0`. When `$STUB_GH_FAIL` equals the call's first two words (`pr
+is killed (at most 60 s). `api --include ... notifications` with no If-Modified-Since (the baseline) prints a 200
+with no notifications, or, when `$STUB_GH_BASELINE` is set, a 200 bringing all that is pending back (a comment that
+came before the baseline); with one, a 200 bringing all that is pending back, one notification a repository, else a
+304 (exit 1, as gh exits on a status over 299), each with `X-Poll-Interval: 0`. When `$STUB_GH_FAIL` equals the call's first two words (`pr
 create`), the call exits 1 with `stand-in gh: refused` on stderr (and is recorded with `"failed": true`)."""
 import json
 import os
@@ -115,7 +116,7 @@ def forward(argv):
 def notifications(argv):
     """A 200 (the baseline, or all that is pending brought back) or a 304; gh's exit code."""
     since = any(a.lower().startswith("if-modified-since:") for a in argv)
-    back = bring_back() if since else set()
+    back = bring_back() if since or os.environ.get("STUB_GH_BASELINE") else set()
     if since and not back:
         print("HTTP/2.0 304 Not Modified\nX-Poll-Interval: 0\n")
         return 1

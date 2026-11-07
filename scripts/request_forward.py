@@ -9,10 +9,11 @@ cannot forward (the extension will not install, or the forward ends), it polls G
 (`GET /notifications` with If-Modified-Since, at the interval its X-Poll-Interval asks; a 304 costs no rate limit),
 and says on stderr which repositories it polls.
 
-At its start, once the forwards run, it checks once as `work watch` polls (request_watch's `report`), for what came
-while no watch ran; then each event, and each notification of a polled repository, wakes the same check. What it
-finds it prints, and it exits 0, as `work watch` does: it writes nothing in the repository. One wait lasts at most
-`--every` seconds; `--polls <n>` ends a watch that has found nothing after n waits, exit 1. The forwards end with it.
+At its start, once the forwards run and the notifications' baseline is taken, it checks once as `work watch` polls
+(request_watch's `report`), for what came while no watch ran; then each event, and each notification of a polled
+repository, wakes the same check. What it finds it prints, and it exits 0, as `work watch` does: it writes nothing
+in the repository. One wait lasts at most `--every` seconds; `--polls <n>` ends a watch that has found nothing after
+n waits, exit 1. The forwards end with it.
 """
 import email.utils
 import http.server
@@ -205,6 +206,8 @@ def forward(root, every=60, polls=None):
     notes = Notifications(root)
     try:
         watched.arm()
+        if watched.polled:
+            notes.changed(watched.polled)       # the baseline, before the check that covers what came until it
         if check(root):
             return 0
         done = 0

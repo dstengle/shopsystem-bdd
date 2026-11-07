@@ -59,3 +59,16 @@ def test_a_watch_that_finds_nothing_ends_after_its_waits(backlog_repo, tmp_path_
     assert done.returncode == 1, done.stderr
     assert "nothing new after 2 waits" in done.stderr
     assert len(calls(where, "webhook", "forward")) == 2 and not calls(where, "api")     # both forwarded, none polled
+
+
+def test_a_comment_listed_by_the_notifications_baseline_wakes_the_watch(backlog_repo, tmp_path_factory, monkeypatch):
+    where = tmp_path_factory.mktemp("gh")
+    request(backlog_repo, "q1", OTHER)
+    env = world(backlog_repo, where, {OTHER: issue()}, monkeypatch)
+    env["STUB_GH_NOT_ADMIN"], env["STUB_GH_BASELINE"] = "ex/ctx,ex/up", "1"     # no forward's event
+    pending(where, {OTHER: issue(comments=[(OTHER + "#issuecomment-9", TURN)])})
+    done = watch(backlog_repo, env, "--every", "0.2", "--polls", "5")
+    assert done.returncode == 0, done.stderr
+    assert done.stdout.splitlines() == [
+        "q1 %s comment 9: %s#issuecomment-9 (`work sync` records it)" % (OTHER, OTHER)]
+    assert "If-Modified-Since" not in " ".join(calls(where, "api")[0])
