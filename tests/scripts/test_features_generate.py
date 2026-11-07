@@ -257,3 +257,14 @@ def test_byte_stable(tmp_path):
         assert proc.returncode == 0, err
     texts = [{p.name: p.read_bytes() for p in (tmp_path / seed / "features").glob("*.feature")} for seed in procs]
     assert texts[0] and texts[0] == texts[1]
+
+
+def test_a_glossary_in_plugin_2_categories_is_refused_naming_each_term_and_its_label(repo):
+    index = repo / "spec" / "index.md"
+    index.write_text(index.read_text().replace("(proper noun)", "(actor)").replace("(noun)", "(kind)"))
+    done = features(repo, "generate", "work-queue")
+    assert done.returncode == 1, done.stderr
+    assert "Traceback" not in done.stderr
+    assert "initiative (kind) is written (noun)" in done.stderr
+    assert "the person (actor) is written (proper noun)" in done.stderr
+    assert not (repo / "features").exists()

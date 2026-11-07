@@ -214,6 +214,29 @@ def read(root):
     return Lexicon(terms, spec_relations.read(root))
 
 
+def _unnamed(t):
+    return t.category not in LETTER or t.category == "value"
+
+
+def _relabelled(t):
+    hint = relabel(t.label)
+    return "(%s) is written (%s)" % (t.label, hint) if hint else ""
+
+
+def unlabelled(lexicon):
+    """The refusal of a lexicon with a term that names no part of speech (v_t4), each such term named with the
+    label it is to carry, or None: the grammars are built from the parts of speech, and such a term fills no slot."""
+    found = []
+    for t in lexicon.terms:
+        if _unnamed(t):
+            fix = _relabelled(t) or ("(%s) is no part of speech" % t.label if t.label else "names no part of speech")
+            found.append("%s: %s %s" % (t.where, t.term, fix))
+    if not found:
+        return None
+    return ("terms that do not name their part of speech (write each as (noun), (proper noun), (verb), "
+            "(adjective of <kind>), (attribute of <kind>) or (noun, <resource>)): " + "; ".join(found))
+
+
 def problems(lexicon):
     """v_t4 (a term has a category, and its kinds are kinds), v_t5 (a value names one attribute of one kind),
     v_t6 (no two terms linearise the same), v_t7 (a gloss of more than one sentence), v_t9 (a `Means:` field),
@@ -221,10 +244,10 @@ def problems(lexicon):
     out = []
     kinds = lexicon.kind_names()
     for t in lexicon.terms:
-        if t.category not in LETTER or t.category == "value":
-            hint = relabel(t.label)
+        if _unnamed(t):
+            hint = _relabelled(t)
             out.append(("v_t4", t.term, "%s: the term does not name its part of speech%s" % (
-                t.where, "; (%s) is written (%s)" % (t.label, hint) if hint else "")))
+                t.where, "; " + hint if hint else "")))
         elif t.category in ("attribute", "condition", "relation") and not t.kinds:
             out.append(("v_t4", t.term, "%s: the %s names no kind" % (t.where, t.category)))
         elif any(k not in kinds for k in t.kinds):
