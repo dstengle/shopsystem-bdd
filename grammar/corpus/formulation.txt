@@ -2,9 +2,9 @@
 When the person approves a capability-proposal, `formulating-features` shall generate the feature.
 When `work run` starts a formulate round, the round shall hold the spec lock.
 `formulating-features` shall not change a scenario that is passing.
-When a formulate round ends, `work` shall set the status of the capability-proposal to `formulated`.
-If a capability-proposal is withdrawn, then `formulating-features` shall keep every feature.
+When `work run` ends a formulate round, `work` shall set the status of the capability-proposal to `formulated`.
+If the person withdraws a capability-proposal, then `formulating-features` shall keep every feature.
 `formulating-features` shall not ask a question.
-When a formulate round for a capability-proposal ends, `formulating-features` shall commit the feature and push the commit.
+When `work run` ends a formulate round for a capability-proposal, `formulating-features` shall commit the feature and push the commit.
 While a capability-proposal is `approved`, `formulating-features` shall not write a requirement.
 When `formulating-features` generates a feature, `formulating-features` shall keep every scenario in the feature.

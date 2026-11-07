@@ -2,7 +2,7 @@
 When the person runs `tools install`, `tools` shall use the interpreter `.venv/bin/python`.
 Where `--json` is given, `tools tests-of` shall print one JSON object.
 When `tools size` is run, `tools` shall print `size limit` and the number of files.
-If a command is refused, then `tools` shall exit with an error naming the reason and change nothing.
+If `tools` refuses a command, then `tools` shall exit with an error naming the reason and change nothing.
 When the person runs `tools probe`, `tools` shall print the interpreter `python3` and "grammar".
 When the person runs `tools check`, `tools` shall print every violation.
 When `tools map` is run, `tools` shall write `.shop/tools/map.json`.

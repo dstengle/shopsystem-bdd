@@ -1,6 +1,6 @@
 """Fixtures every scenario step module shares, and the step vocabulary (design §14.3): the step definitions of the
 generated features, the marks registered from the spec, the handlers imported by glob (`world_*.py`,
-`*_handlers*.py`) and the U3/U8 checks after each generated scenario, all from `vocab.py`. Frozen after layer 2 of
+`*_handlers*.py`) and the U11/U8 checks after each generated scenario, all from `vocab.py`. Frozen after layer 2 of
 the GF conversion: a capability adds handlers in `<capability>_handlers*.py`, never here."""
 import json
 import pathlib
@@ -34,7 +34,7 @@ def run(repo, request):
     """Run one of the scripts (model, features, tools) with this Python; return the completed process.
 
     `run("model", "check", "--root", ...)`: the arguments go to the script as given; `cwd` defaults to the repository root.
-    In a generated scenario each run is recorded for the U3/U8 checks.
+    In a generated scenario each run is recorded for the U11/U8 checks.
     """
     return vocab.runner(repo, request, SCRIPTS)
 

@@ -1,6 +1,6 @@
 """The step vocabulary in pytest-bdd (design §14.3): one step definition for each (keyword, template, kind) of the
 context's Steps grammar, dispatching to the handler `features_vocab.lookup` finds, and the checks of the observable
-universal conditions after every generated scenario (design §8.4: U3, a refused command changes nothing; U4, a commit
+universal conditions after every generated scenario (design §8.4: U11, a refused command changes nothing; U4, a commit
 a command makes in a repository with a remote is pushed, but under a remote the scenario made unpushable; U8,
 `--json` prints one JSON object).
 
@@ -114,7 +114,7 @@ def unpushed(repo, before):
 
 
 def u_problems(records, unpushable=False):
-    """The U3, U4 and U8 failures of a scenario's runs, each record {args, returncode, stdout, changed, unpushed}; U4
+    """The U11, U4 and U8 failures of a scenario's runs, each record {args, returncode, stdout, changed, unpushed}; U4
     is not asked under an unpushable remote."""
     out = []
     for r in records:
@@ -122,7 +122,7 @@ def u_problems(records, unpushable=False):
         if r["returncode"] == 0 and r.get("unpushed") and not unpushable:
             out.append("U4: `%s` committed and did not push the commit to %s" % (command, r["unpushed"]))
         if r["returncode"] != 0 and r["changed"]:
-            out.append("U3: `%s` was refused (exit %d) and changed %s" % (command, r["returncode"],
+            out.append("U11: `%s` was refused (exit %d) and changed %s" % (command, r["returncode"],
                                                                          ", ".join(r["changed"])))
         if r["returncode"] == 0 and "--json" in map(str, r["args"]):
             try:

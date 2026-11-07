@@ -161,8 +161,8 @@ def test_an_instance_name_is_lower_case_for_a_capitalised_kind(repo):
 
 def test_a_quoted_figure_for_a_thing_is_a_then_naming_the_thing(repo):
     add_group(repo, "work-queue", "### [g9] a figure for a drafted work-item\n"
-              "- [r9] While a work-item is `drafted`, when the person runs `work list`, `work` shall give "
-              "\"turns\" for the work-item, and `work` shall not give \"took\" for the work-item.")
+              "- [r9] While a work-item is `drafted`, when the person runs `work list`, `work` shall take "
+              "\"turns\" for the work-item, and `work` shall not take \"took\" for the work-item.")
     assert [s for s in steps(repo, "work-queue#g9") if s[0] == "then"] == [
-        ("then", "`work` gives \"turns\" for the work-item w1"),
-        ("then", "`work` does not give \"took\" for the work-item w1")]
+        ("then", "`work` takes \"turns\" for the work-item w1"),
+        ("then", "`work` does not take \"took\" for the work-item w1")]

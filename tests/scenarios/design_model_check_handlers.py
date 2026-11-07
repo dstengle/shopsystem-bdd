@@ -140,6 +140,12 @@ def model_rules(step):
     run_model(step, "rules", *flag(step, "--json"))
 
 
+@handler("WhenRuns", "`model parse`")
+def model_parse(step):
+    """`model parse` on the capability file that holds the requirement: each of its statements."""
+    run_model(step, "parse", "--file", str(step.repo / "spec" / "capabilities" / "thing.md"))
+
+
 # What an instance no Given named is printed as, by its kind and number: `model facts` and `model rules` print every
 # one, so a trace's f1 and f2 (r1 and r2) are two of them.
 PRINTED = {"fact": ['node("capability/', 'node("bounded-context/'], "rule": ["v15a", "w_uncited_obs"]}

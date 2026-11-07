@@ -25,11 +25,11 @@ and analysis and commits them, and sets the initiative `done`, committing it, wh
 decide goes to the person as a question.
 
 ## Terms
-- **draft** (event): `work run` writes a node with `work add` or from a change list. Forms: drafts, drafted.
-- **take** (event): `work run` takes an initiative through the transitions its nodes can make. Forms: takes, took, taken.
-- **log** (event): `work run` appends a line to `.shop/work/<initiative>/log.jsonl`. Forms: logs, logged.
-- **restore** (event): `work run` puts a file back as its last commit has it, or removes it where that commit has none. Forms: restores, restored.
-- **remove** (event): `work run` removes a worktree it made. Forms: removes, removed.
+- **draft** (event): `work run` writes a node with `work add` or from a change list. Forms: drafts, drafted. Frame: `work run` drafts node.
+- **take** (event): `work run` takes an initiative through the transitions its nodes can make. Forms: takes, took, taken. Frame: `work run` takes initiative.
+- **log** (event): `work run` appends a line to `.shop/work/<initiative>/log.jsonl`. Forms: logs, logged. Frame: `work run` logs ledger.
+- **restore** (event): `work run` puts a file back as its last commit has it, or removes it where that commit has none. Forms: restores, restored. Frame: `work run` restores file.
+- **remove** (event): `work run` removes a worktree it made. Forms: removes, removed. Frame: `work run` removes file.
 - **output** (kind): what a stage's result gives as its stage's work.
 - **change list** (kind): the list an `integrate` or `apply` round's result gives of what it adds, changes and removes.
 - **draft** (kind): a file an `integrate` round writes under its drafts path, kept on the initiative branch. Plural: drafts.

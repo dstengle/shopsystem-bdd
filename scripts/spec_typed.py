@@ -2,7 +2,7 @@
 block of slots per kind, attribute, condition and relation row), each with its English.
 
 A relation row (from kind, word, to kind) gives a modifier fun `rel_<k1>_<word>_<k2>` and a clause fun of the same
-name with `_Atom` (design-r2 §4.2): a preposition between two kinds is the one row given for that pair, so PP
+name with `_Atom`, and its negation `_AtomNot` (design-r2 §4.2; b82): a preposition between two kinds is the one row given for that pair, so PP
 attachment is typed and a line where two attachments typecheck has two trees and is refused.
 
 A typed slot is what makes "an initiative that is `drafted`" fail to parse: a value is a fun of its own
@@ -148,14 +148,17 @@ def relation_fun(kid1, word, kid2):
 
 def _relation(word, k1, k2, fun):
     """The modifier ("a stage for the work-item") and the clause ("the stage is for the work-item") of one row."""
-    funs = ["%s : %s_CN -> %s_NP -> %s_CN ;" % (fun, k1, k2, k1), "%s_Atom : %s_NP -> %s_NP -> Atom ;" % (fun, k1, k2)]
+    funs = ["%s : %s_CN -> %s_NP -> %s_CN ;" % (fun, k1, k2, k1),
+            "%s_Atom, %s_AtomNot : %s_NP -> %s_NP -> Atom ;" % (fun, fun, k1, k2)]
     w = gf_str(word)
     if word.split()[-1] in PREPOSITIONS:
         return funs, ["%s cn x = post cn (same (%s ++ x.s)) ;" % (fun, w), "%s_Atom x y = x.s ++ be x ++ %s ++ y.s ;" % (
-            fun, w)]
+            fun, w), '%s_AtomNot x y = x.s ++ be x ++ "not" ++ %s ++ y.s ;' % (fun, w)]
     inf = gf_str(re.sub(r"has$", "have", word) if word.endswith("has") else word.removesuffix("s"))
     return funs, ["%s cn x = post cn (verbal %s %s x) ;" % (fun, w, inf),
-                  "%s_Atom x y = x.s ++ (case x.n of {Sg => %s ; Pl => %s}) ++ y.s ;" % (fun, w, inf)]
+                  "%s_Atom x y = x.s ++ (case x.n of {Sg => %s ; Pl => %s}) ++ y.s ;" % (fun, w, inf),
+                  '%s_AtomNot x y = x.s ++ (case x.n of {Sg => "does" ; Pl => "do"}) ++ "not" ++ %s ++ y.s ;' % (
+                      fun, inf)]
 
 
 def modules(lex):

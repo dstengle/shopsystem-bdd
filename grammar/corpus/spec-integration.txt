@@ -1,6 +1,6 @@
 # spec-integration: sentences that parse with exactly one tree in the fixture glossary's grammar.
 When `work run` starts an integrate round, the round shall hold the spec lock.
-When an integrate round ends, `work run` shall write a capability-proposal that is `drafted`.
+When `work run` ends an integrate round, `work run` shall write a capability-proposal that is `drafted`.
 When `integrating-a-proposal` writes a requirement, `integrating-a-proposal` shall show the requirement.
 Where a capability-proposal is `approved`, `integrating-a-proposal` shall not ask a question.
 When `initiative-round` ends a round, `initiative-round` shall append `work note`.

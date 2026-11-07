@@ -44,8 +44,8 @@ def example():
     return re.search(r"```[a-z]*\n(.*?)```", body, re.DOTALL).group(1)
 
 
-@pytest.mark.requirement("pr-review#r8")
-def test_r8_each_finding_is_graded_and_written_to_the_findings_file():
+@pytest.mark.requirement("pr-review#r9")
+def test_r9_each_finding_is_graded_and_written_to_the_findings_file():
     has("Give every finding a grade (`Critical`, `Important` or `Minor`) and a triage (`fix now`, `observation` or "
         "`drop`), and give them in the findings file's content, your reply.")
     verdict, found, earlier = batch_findings.parse_findings(example(), "pr-reviewer.md", {"b1"}, {"b1"}, {"f1"})

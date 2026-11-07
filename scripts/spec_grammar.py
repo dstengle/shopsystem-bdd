@@ -15,6 +15,7 @@ from dataclasses import dataclass, field
 from itertools import islice
 from pathlib import Path
 
+import spec_frames
 import spec_lexicon
 import spec_parse_cache
 import spec_tree
@@ -240,7 +241,8 @@ def parse(root, line, grammar="Req"):
     words = lex.words()
     kept, reasons = [], []
     for tree in trees:
-        reason = (grammar == "Def" and spec_typed_def.refusal(tree, lex)) or spec_tree.guard(tree, words)
+        reason = ((grammar == "Def" and spec_typed_def.refusal(tree, lex)) or spec_tree.guard(tree, words)
+                  or (grammar == "Req" and spec_frames.guard(tree, lex)))
         if reason:
             reasons.append(reason)
         elif tree not in kept:

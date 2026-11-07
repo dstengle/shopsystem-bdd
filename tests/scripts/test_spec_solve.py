@@ -17,7 +17,7 @@ import toolchain
 REPO = pathlib.Path(__file__).resolve().parents[2]
 CLUSTER = REPO / "tests" / "scripts" / "fixtures" / "logic" / "cluster"
 SUPERVISION = "spec/capabilities/supervision.md"
-USE = "- **use** (event): Forms: uses, used.\n"
+USE = "- **use** (event): Forms: uses, used. Frame: `work run` uses question.\n"
 
 
 @pytest.fixture(scope="module")

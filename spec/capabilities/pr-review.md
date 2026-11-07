@@ -5,7 +5,7 @@ narrator: the person who merges a batch's pull request
 group: guarantees
 language: codified-1
 rests_on: [design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-workflow-simplified]
-retired: []
+retired: [r8]
 unbuilt: []
 ---
 
@@ -61,7 +61,7 @@ branch and the review re-reads what the fix changed; a clean pull request waits 
   set the status of the batch to `awaiting-merge`.
 
 ### [g8] Findings recorded with their grade
-- [r8] When `pr-reviewer` writes a review finding, `pr-reviewer` shall give the review finding a grade and write a
+- [r9] When `pr-reviewer` writes a review finding, `pr-reviewer` shall give a grade to the review finding and write a
   file.
 
 ## Implementation, may change

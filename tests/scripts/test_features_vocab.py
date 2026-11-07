@@ -163,7 +163,7 @@ def load_vocab_module():
     return module
 
 
-def test_the_u3_and_u8_checks_after_a_scenario():
+def test_the_u11_and_u8_checks_after_a_scenario():
     vocab = load_vocab_module()
     refused = {"args": ["work", "start", "i1"], "returncode": 1, "stdout": "", "changed": [".shop/work/i1.md"]}
     json_ok = {"args": ["model", "check", "--json"], "returncode": 0, "stdout": '{"a": 1}\n', "changed": []}
@@ -171,7 +171,7 @@ def test_the_u3_and_u8_checks_after_a_scenario():
                 "changed": []}
     problems = vocab.u_problems([refused, json_ok, json_bad])
     assert len(problems) == 2
-    assert problems[0].startswith("U3:") and ".shop/work/i1.md" in problems[0]
+    assert problems[0].startswith("U11:") and ".shop/work/i1.md" in problems[0]
     assert problems[1].startswith("U8:")
     assert vocab.u_problems([json_ok, dict(refused, changed=[])]) == []
 

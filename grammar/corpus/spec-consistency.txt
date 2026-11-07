@@ -6,6 +6,6 @@ Where `--fix` is given, `checking-spec-consistency` shall ask a question.
 Where `--fix` is given, when the person approves a term, `checking-spec-consistency` shall change the term.
 `checking-spec-consistency` shall read every term.
 When the person runs `checking-spec-consistency`, `checking-spec-consistency` shall list every violation.
-If `model check` is refused, then `checking-spec-consistency` shall show the reason.
+If `model` refuses `model check`, then `checking-spec-consistency` shall show the reason.
 `checking-spec-consistency` shall not commit a requirement.
 When the person runs `checking-spec-consistency`, `checking-spec-consistency` shall start `model check` and show every violation.

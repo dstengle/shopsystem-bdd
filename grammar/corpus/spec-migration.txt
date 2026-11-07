@@ -1,6 +1,6 @@
 # spec-migration: sentences that parse with exactly one tree in the fixture glossary's grammar.
 While a work-item is `claimed`, if the person runs `migrating-to-capabilities`, then `migrating-to-capabilities` shall change nothing.
-When `migrating-to-capabilities` ends, `migrating-to-capabilities` shall show the number of scenarios.
+When `migrating-to-capabilities` ends a session, `migrating-to-capabilities` shall show the number of scenarios.
 `migrating-to-capabilities` shall not delete a scenario that is passing.
 When the person runs `migrating-to-capabilities` on a bounded context, `migrating-to-capabilities` shall relocate `docs/superpowers/`.
 When `migrating-to-capabilities` relocates a file, `migrating-to-capabilities` shall commit the file and push the commit.
@@ -9,4 +9,4 @@ While a scenario is not passing, `migrating-to-capabilities` shall not commit a 
 When `migrating-to-capabilities` writes a capability, `migrating-to-capabilities` shall write `language: codified-1`.
 Where `--dry-run` is given, `migrating-to-capabilities` shall change nothing.
 While a work-item is `claimed`, if the person runs `migrating-to-capabilities`, then `migrating-to-capabilities` shall change nothing and show the reason.
-When `migrating-to-capabilities` ends, `migrating-to-capabilities` shall show the number of scenarios, and `model` shall print no violation.
+When `migrating-to-capabilities` ends a session, `migrating-to-capabilities` shall show the number of scenarios, and `model` shall print no violation.

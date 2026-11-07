@@ -5,7 +5,7 @@ The reviewer shall not change a file.
 If the reviewer writes a finding that is Critical, then `work run` shall write a work-item that is `drafted`.
 The reviewer shall not merge a work-item branch.
 When a session ends a review stage with a result that is `DONE`, `work` shall set the status of the work-item to `green`.
-The reviewer shall give every finding a grade.
+The reviewer shall give a grade to every finding.
 If the reviewer refuses a plan, then the reviewer shall write a result that is `BLOCKED`.
 While a review stage holds a worker slot, the reviewer shall use only the brief.
 When the reviewer ends a review stage, the reviewer shall write a result and write every finding, and the reviewer shall not change a file or merge a work-item branch.
