@@ -242,7 +242,7 @@ Feature: Feature file tools
       ## Purpose
       Something.
       ## Terms
-      - **book** (kind): a thing.
+      - **book** (noun): a thing.
       ## Behaviour
       ## Not yet
       ## Dropped
@@ -268,7 +268,7 @@ Feature: Feature file tools
       ## Purpose
       Something.
       ## Terms
-      - **book** (kind): a thing.
+      - **book** (noun): a thing.
       ## Behaviour
       ## Not yet
       ## Dropped
@@ -301,7 +301,7 @@ Feature: Feature file tools
       ## Purpose
       Something.
       ## Terms
-      - **book** (kind): a thing.
+      - **book** (noun): a thing.
       ## Behaviour
       ## Not yet
       ## Dropped

@@ -25,7 +25,7 @@ Prose, not read.
 
 ## Terms
 
-- **initiative** (kind): not read here.
+- **initiative** (noun): not read here.
 
 ## Behaviour
 """

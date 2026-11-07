@@ -27,14 +27,14 @@ class GlossaryFactsTest(ModelTest):
         return r.stdout.splitlines()
 
     def test_a_definition_with_a_period_is_one_definition(self):
-        self.write("spec/index.md", index("- **store** (kind): where things are kept, e.g. a shelf."))
+        self.write("spec/index.md", index("- **store** (noun): where things are kept, e.g. a shelf."))
         lines = self.facts()
         self.assertIn(f'node("{term("store")}", "term").', lines)
         self.assertEqual([l for l in lines if l.startswith("avoid(")], [])
 
     def test_r51(self):
         """Only a scenario of no capability's feature is read for words; code spans and tags are no mentions."""
-        self.write("spec/index.md", index("- **store** (kind): where things are kept. Not: shelf."))
+        self.write("spec/index.md", index("- **store** (noun): where things are kept. Not: shelf."))
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] x"]))
         self.write("features/thing.feature", "Feature: thing\n\n  @g1 @r1\n  Scenario: one\n    Given a shelf\n")
         self.write("features/stray.feature", "Feature: stray\n\n  Scenario: the store answers\n"
@@ -44,13 +44,13 @@ class GlossaryFactsTest(ModelTest):
 
     def test_a_typed_entry_is_read_by_its_term_and_its_not_words(self):
         self.write("spec/index.md", index(
-            "- **initiative** (kind): the delivery of one request's accepted lines. Plural: initiatives. Not: epic.",
-            "- **`work run`** (actor): the supervisor that runs nodes through their transitions.",
+            "- **initiative** (noun): the delivery of one request's accepted lines. Plural: initiatives. Not: epic.",
+            "- **`work run`** (proper noun): the supervisor that runs nodes through their transitions.",
             "- **status** (attribute of initiative): a node's place in its lifecycle. Values: `proposed`, `started`.",
             "  Transitions: `proposed` → `started`: `work start`. Not: state.",
             "- **status** (attribute of work-item): Values: `drafted`, `ready`. Not: state.",
             "- **under** (relation work-item → capability-proposal): a work-item delivers part of a proposal.",
-            "- **spec lock** (resource, exclusive): held by every integrate, apply and formulate round."))
+            "- **spec lock** (noun, exclusive): held by every integrate, apply and formulate round."))
         lines = self.facts()
         entries = sorted(line.split(", ", 2)[2] for line in lines if line.startswith("glossary_entry("))
         self.assertEqual(entries, sorted(['"initiative").', '"work run").', '"status").', '"status of work-item").',
@@ -81,7 +81,7 @@ class GlossaryCheckTest(ModelTest):
         self.assertEqual(r.returncode, 0)
 
     def test_r52(self):
-        self.write("spec/index.md", index("- **slice** (kind): a unit of work. Not: chunk."))
+        self.write("spec/index.md", index("- **slice** (noun): a unit of work. Not: chunk."))
         self.write("spec/capabilities/thing.md", cap("thing", ["- [r1] x"]))
         self.write("features/thing.feature", feature("thing", ("@r1", "a chunk is planned"), ("@r1 @deprecated", "a chunk as it was")))
         self.write("features/stray.feature", "Feature: stray\n\n  Scenario: chunks are planned\n    Given a thing\n")

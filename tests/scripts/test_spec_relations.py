@@ -12,12 +12,12 @@ language: codified-1
 
 ## Glossary
 
-- **node** (kind): a thing work is done on.
-- **work-item** (kind): a unit of work. Kind of: node.
-- **initiative** (kind): the delivery of one request. Kind of: node.
-- **stage** (kind): one session's part of the work.
-- **result** (kind): what a stage gives.
-- **question** (kind): what a stage asks.
+- **node** (noun): a thing work is done on.
+- **work-item** (noun): a unit of work. Kind of: node.
+- **initiative** (noun): the delivery of one request. Kind of: node.
+- **stage** (noun): one session's part of the work.
+- **result** (noun): what a stage gives.
+- **question** (noun): what a stage asks.
 
 ## Relations
 

@@ -94,7 +94,7 @@ def add_term(root, name, capability, bullet):
     capability_file(root, capability)
     bullet = one_line(bullet, "term bullet")
     if spec_lexicon.entry(bullet, capability) is None:
-        raise Refused("work line: the term bullet %s is not a term entry `- **<term>** (<category>): <text>`" % bullet)
+        raise Refused("work line: the term bullet %s is not a term entry `- **<term>** (<part of speech>): <text>`" % bullet)
     blocks = read(item, "the item %s" % item.name)
     _block(blocks, capability).terms.append(bullet)
     item.sections[SECTION] = render(blocks)

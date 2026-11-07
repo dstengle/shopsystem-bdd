@@ -19,20 +19,20 @@ Bash can still write files through the shell, which is why `work run` verifies t
 
 ## Terms
 
-- **the researcher** (actor): the worker of a `research` stage, started as the agent `code-scout`. Kind of: worker.
-- **the planner** (actor): the worker of a `plan` stage, started as the agent `bdd-planner`. Kind of: worker.
-- **the implementer** (actor): the worker of an `implement` stage, started as the agent `bdd-implementer`. Kind of: worker.
-- **the reviewer** (actor): the worker of a `review` stage, started as the agent `bdd-task-reviewer`. Kind of: worker.
-- **`initiative-round`** (actor): the agent of every round. Kind of: dispatch.
-- **`capability-writer`** (actor): the agent a round dispatches to draft a capability's statements. Kind of: dispatch.
-- **`spec-checker`** (actor): the agent `checking-spec-consistency` dispatches to read the spec for findings. Kind of: dispatch.
-- **`trial-runner`** (actor): the agent that runs one trial. Kind of: dispatch.
-- **read** (event): a session or a tool reads a file, a commit or another thing. Forms: reads, read. Frame: agent reads thing.
-- **show** (event): a session shows the person a thing. Forms: shows, shown. Frame: session shows file.
-- **name** (event): a message or a file names a thing. Forms: names, named. Frame: agent names thing.
-- **list** (event): a session or a file lists things. Forms: lists, listed. Frame: session lists file.
-- **keep** (event): a session leaves a thing as it was. Forms: keeps, kept. Frame: agent keeps thing.
-- **delete** (event): a file or a scenario is removed. Forms: deletes, deleted. Frame: session deletes file.
+- **the researcher** (proper noun): the worker of a `research` stage, started as the agent `code-scout`. Kind of: worker.
+- **the planner** (proper noun): the worker of a `plan` stage, started as the agent `bdd-planner`. Kind of: worker.
+- **the implementer** (proper noun): the worker of an `implement` stage, started as the agent `bdd-implementer`. Kind of: worker.
+- **the reviewer** (proper noun): the worker of a `review` stage, started as the agent `bdd-task-reviewer`. Kind of: worker.
+- **`initiative-round`** (proper noun): the agent of every round. Kind of: dispatch.
+- **`capability-writer`** (proper noun): the agent a round dispatches to draft a capability's statements. Kind of: dispatch.
+- **`spec-checker`** (proper noun): the agent `checking-spec-consistency` dispatches to read the spec for findings. Kind of: dispatch.
+- **`trial-runner`** (proper noun): the agent that runs one trial. Kind of: dispatch.
+- **read** (verb): a session or a tool reads a file, a commit or another thing. Forms: reads, read. Frame: agent reads thing.
+- **show** (verb): a session shows the person a thing. Forms: shows, shown. Frame: session shows file.
+- **name** (verb): a message or a file names a thing. Forms: names, named. Frame: agent names thing.
+- **list** (verb): a session or a file lists things. Forms: lists, listed. Frame: session lists file.
+- **keep** (verb): a session leaves a thing as it was. Forms: keeps, kept. Frame: agent keeps thing.
+- **delete** (verb): a file or a scenario is removed. Forms: deletes, deleted. Frame: session deletes file.
 
 ## Behaviour
 

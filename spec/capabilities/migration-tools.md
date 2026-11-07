@@ -18,38 +18,38 @@ that knows the old layout, and it decides nothing that needs judgment. The plugi
 what it needs to know at its start and before it is compacted.
 
 ## Terms
-- **the SessionStart hook** (actor): the plugin's hook that runs `migrate status --hook` when a session starts, and
+- **the SessionStart hook** (proper noun): the plugin's hook that runs `migrate status --hook` when a session starts, and
   gives the session what it prints.
-- **the PreCompact hook** (actor): the plugin's hook that runs `migrate compacting` when a session is about to be
+- **the PreCompact hook** (proper noun): the plugin's hook that runs `migrate compacting` when a session is about to be
   compacted, and gives the session what it prints.
-- **tracked file** (kind): a file committed in the repository `migrate` runs in.
-- **untracked file** (kind): a file of the repository's working tree that git does not track, or a change not
+- **tracked file** (noun): a file committed in the repository `migrate` runs in.
+- **untracked file** (noun): a file of the repository's working tree that git does not track, or a change not
   committed.
-- **repository** (kind): the repository `migrate` runs in, with its working tree. Plural: repositories.
+- **repository** (noun): the repository `migrate` runs in, with its working tree. Plural: repositories.
 - **release** (attribute of repository): the plugin release `.shop/plugin-version` names, against the plugin's own: `0.23.1` before work-items were named by ids, `0.24.0` before `awaiting-answer` replaced `awaiting-ruling`, `0.29.0` before requirements were codified, `1.0.0` before the workflow was simplified, `own` the plugin's own release and `newer` a release newer than the plugin's. Values: `0.23.1`, `0.24.0`, `0.29.0`, `1.0.0`, `own`, `newer`.
-- **codified** (condition of capability): a capability whose file has `language: codified-1` in its frontmatter.
-- **rewrite** (event): `migrate` changes the text of a file in place. Forms: rewrites, rewritten. Frame: `migrate` rewrites file.
-- **rename** (event): `migrate` gives a file another name with git. Forms: renames, renamed. Frame: `migrate` renames file.
-- **append** (event): Forms: appends, appended. Frame: `migrate` appends file.
-- **uncommitted** (condition of untracked file): an untracked file whose text no commit holds.
-- **unmigrated** (condition of repository): a repository with a directory of the old layout at its root.
-- **ledgered** (condition of repository): a repository with the old system's ledger of decisions, `spec/decisions.md`.
-- **superseding** (condition of repository): a repository whose `spec/decisions.md` has an entry that supersedes another.
-- **qualified** (condition of repository): a repository whose `spec/decisions.md` has an entry that supersedes another in part.
-- **numberless** (condition of repository): a repository whose `spec/decisions.md` has an entry with no number.
-- **idless** (condition of repository): a repository with a capability that has a Behaviour line with no id.
-- **conflicting** (condition of repository): a repository with a file where `migrate run` would relocate another.
-- **unversioned** (condition of repository): a repository with `.shop/` and no `.shop/plugin-version`.
-- **misversioned** (condition of repository): a repository whose `.shop/plugin-version` holds no version.
-- **behind** (condition of repository): A repository is behind when the repository is `0.23.1`.
-- **outdated** (condition of repository): A repository is outdated when the repository is `0.24.0`.
-- **uncodified** (condition of repository): A repository is uncodified when the repository is `0.29.0` and a capability is not codified.
-- **queued** (condition of repository): A repository is queued when the repository is `1.0.0`.
-- **current** (condition of repository): A repository is current when the repository is `own`.
-- **ahead** (condition of repository): A repository is ahead when the repository is `newer`.
-- **idle** (condition of repository): A repository is idle when the repository is `own` and no initiative is open.
-- **busy** (condition of repository): a repository in which an initiative is open.
-- **shopless** (condition of repository): a repository without `.shop/`.
+- **codified** (adjective of capability): a capability whose file has `language: codified-1` in its frontmatter.
+- **rewrite** (verb): `migrate` changes the text of a file in place. Forms: rewrites, rewritten. Frame: `migrate` rewrites file.
+- **rename** (verb): `migrate` gives a file another name with git. Forms: renames, renamed. Frame: `migrate` renames file.
+- **append** (verb): Forms: appends, appended. Frame: `migrate` appends file.
+- **uncommitted** (adjective of untracked file): an untracked file whose text no commit holds.
+- **unmigrated** (adjective of repository): a repository with a directory of the old layout at its root.
+- **ledgered** (adjective of repository): a repository with the old system's ledger of decisions, `spec/decisions.md`.
+- **superseding** (adjective of repository): a repository whose `spec/decisions.md` has an entry that supersedes another.
+- **qualified** (adjective of repository): a repository whose `spec/decisions.md` has an entry that supersedes another in part.
+- **numberless** (adjective of repository): a repository whose `spec/decisions.md` has an entry with no number.
+- **idless** (adjective of repository): a repository with a capability that has a Behaviour line with no id.
+- **conflicting** (adjective of repository): a repository with a file where `migrate run` would relocate another.
+- **unversioned** (adjective of repository): a repository with `.shop/` and no `.shop/plugin-version`.
+- **misversioned** (adjective of repository): a repository whose `.shop/plugin-version` holds no version.
+- **behind** (adjective of repository): A repository is behind when the repository is `0.23.1`.
+- **outdated** (adjective of repository): A repository is outdated when the repository is `0.24.0`.
+- **uncodified** (adjective of repository): A repository is uncodified when the repository is `0.29.0` and a capability is not codified.
+- **queued** (adjective of repository): A repository is queued when the repository is `1.0.0`.
+- **current** (adjective of repository): A repository is current when the repository is `own`.
+- **ahead** (adjective of repository): A repository is ahead when the repository is `newer`.
+- **idle** (adjective of repository): A repository is idle when the repository is `own` and no initiative is open.
+- **busy** (adjective of repository): a repository in which an initiative is open.
+- **shopless** (adjective of repository): a repository without `.shop/`.
 
 ## Behaviour
 

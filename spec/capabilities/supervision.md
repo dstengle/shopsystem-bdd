@@ -25,48 +25,48 @@ and analysis and commits them, and sets the initiative `done`, committing it, wh
 decide goes to the person as a question.
 
 ## Terms
-- **draft** (event): `work run` writes a node with `work add` or from a change list. Forms: drafts, drafted. Frame: `work run` drafts node.
-- **take** (event): `work run` takes an initiative through the transitions its nodes can make. Forms: takes, took, taken. Frame: `work run` takes initiative.
-- **log** (event): `work run` appends a line to `.shop/work/<initiative>/log.jsonl`. Forms: logs, logged. Frame: `work run` logs ledger.
-- **restore** (event): `work run` puts a file back as its last commit has it, or removes it where that commit has none. Forms: restores, restored. Frame: `work run` restores file.
-- **remove** (event): a session or a tool removes a file, a directory or a text it wrote. Forms: removes, removed. Frame: agent removes text.
-- **output** (kind): what a stage's result gives as its stage's work.
-- **change list** (kind): the list an `integrate` or `apply` round's result gives of what it adds, changes and removes.
-- **draft** (kind): a file an `integrate` round writes under its drafts path, kept on the initiative branch. Plural: drafts.
-- **tool list** (kind): what `work run` gives a worker to work with.
-- **worker brief** (kind): the brief `work run` gives a worker. Kind of: brief.
-- **round brief** (kind): the brief `work run` gives a round. Kind of: brief.
-- **review brief** (kind): the brief `work run` gives a branch review. Kind of: brief.
-- **faulty** (condition of session): a session that ends in an error or at its turn limit, or leaves output that holds no JSON result.
-- **meddling** (condition of session): a session that changes a file under `.shop/work/` outside its stage directory.
-- **littering** (condition of session): a session during whose work a file under `.shop/work/` of the checkout changes and is left uncommitted.
-- **crossing** (condition of session): a session during whose work a session of another initiative that `work run` runs side by side commits a file of that other initiative and a change to a file of its own.
-- **outputless** (condition of result): A result is outputless when the result gives no question and the result gives no output.
-- **setless** (condition of result): a result that gives an empty file set.
-- **listless** (condition of result): A result is listless when the result gives no change list.
-- **glossarial** (condition of result): a result whose change list names the glossary.
-- **raising** (condition of result): a result that gives the lines of a request into an upstream.
-- **awaited** (condition of result): a result that gave the lines of a request into an upstream, where that request is not `delivered`.
-- **strange** (condition of result): a result whose change list names a capability that neither `spec/capabilities/` nor its drafts have.
-- **unheld** (condition of result): a result that gives an answer the drafts its stage applied do not hold.
-- **fixing** (condition of result): a result that gives a question listing review findings to fix now.
-- **unparsing** (condition of result): a result whose drafts hold a requirement that does not parse, or with whose drafts the logic check on the spec finds an L1 or an L3.
-- **naming** (condition of result): a result that names a report its session wrote in its worktree.
-- **unpushable** (condition of remote): a remote that refuses every push.
-- **ahead** (condition of initiative branch): an initiative branch with commits its remote does not have.
-- **reviewed** (condition of initiative branch): an initiative branch whose every commit but the kept branch reviews' own a kept branch review has read.
-- **gitless** (condition of initiative branch): an initiative branch whose repository would not be a git repository.
-- **lost** (condition of work-item branch): a work-item branch its implementer deleted before `work run` merged it.
-- **kept** (condition of work-item branch): a work-item branch `work run` kept when its work-item became `awaiting-answer`.
-- **flaky** (condition of work-item branch): a work-item branch on which a scenario fails once and passes on its second run alone.
-- **dirty** (condition of file): a file under `.shop/work/` that differs from its last commit.
-- **answered** (condition of question): a question with an answer written under its node's `## Answers`.
-- **bare** (condition of initiative): an initiative that fulfils a request and has no capability-proposal, no glossary-proposal and no work-item.
-- **waiting** (condition of work-item): A work-item is waiting when the work-item is blocked by a work-item that is not closed.
-- **unfulfilled** (condition of request): A request is unfulfilled when no initiative fulfils the request.
-- **itemless** (condition of initiative): an initiative in which no work-item is kept.
-- **codified** (condition of change list): a change list whose every capability has `language: codified-1` in its file.
-- **uncodified** (condition of change list): a change list that names a service capability with no `language: codified-1` in its file.
+- **draft** (verb): `work run` writes a node with `work add` or from a change list. Forms: drafts, drafted. Frame: `work run` drafts node.
+- **take** (verb): `work run` takes an initiative through the transitions its nodes can make. Forms: takes, took, taken. Frame: `work run` takes initiative.
+- **log** (verb): `work run` appends a line to `.shop/work/<initiative>/log.jsonl`. Forms: logs, logged. Frame: `work run` logs ledger.
+- **restore** (verb): `work run` puts a file back as its last commit has it, or removes it where that commit has none. Forms: restores, restored. Frame: `work run` restores file.
+- **remove** (verb): a session or a tool removes a file, a directory or a text it wrote. Forms: removes, removed. Frame: agent removes text.
+- **output** (noun): what a stage's result gives as its stage's work.
+- **change list** (noun): the list an `integrate` or `apply` round's result gives of what it adds, changes and removes.
+- **draft** (noun): a file an `integrate` round writes under its drafts path, kept on the initiative branch. Plural: drafts.
+- **tool list** (noun): what `work run` gives a worker to work with.
+- **worker brief** (noun): the brief `work run` gives a worker. Kind of: brief.
+- **round brief** (noun): the brief `work run` gives a round. Kind of: brief.
+- **review brief** (noun): the brief `work run` gives a branch review. Kind of: brief.
+- **faulty** (adjective of session): a session that ends in an error or at its turn limit, or leaves output that holds no JSON result.
+- **meddling** (adjective of session): a session that changes a file under `.shop/work/` outside its stage directory.
+- **littering** (adjective of session): a session during whose work a file under `.shop/work/` of the checkout changes and is left uncommitted.
+- **crossing** (adjective of session): a session during whose work a session of another initiative that `work run` runs side by side commits a file of that other initiative and a change to a file of its own.
+- **outputless** (adjective of result): A result is outputless when the result gives no question and the result gives no output.
+- **setless** (adjective of result): a result that gives an empty file set.
+- **listless** (adjective of result): A result is listless when the result gives no change list.
+- **glossarial** (adjective of result): a result whose change list names the glossary.
+- **raising** (adjective of result): a result that gives the lines of a request into an upstream.
+- **awaited** (adjective of result): a result that gave the lines of a request into an upstream, where that request is not `delivered`.
+- **strange** (adjective of result): a result whose change list names a capability that neither `spec/capabilities/` nor its drafts have.
+- **unheld** (adjective of result): a result that gives an answer the drafts its stage applied do not hold.
+- **fixing** (adjective of result): a result that gives a question listing review findings to fix now.
+- **unparsing** (adjective of result): a result whose drafts hold a requirement that does not parse, or with whose drafts the logic check on the spec finds an L1 or an L3.
+- **naming** (adjective of result): a result that names a report its session wrote in its worktree.
+- **unpushable** (adjective of remote): a remote that refuses every push.
+- **ahead** (adjective of initiative branch): an initiative branch with commits its remote does not have.
+- **reviewed** (adjective of initiative branch): an initiative branch whose every commit but the kept branch reviews' own a kept branch review has read.
+- **gitless** (adjective of initiative branch): an initiative branch whose repository would not be a git repository.
+- **lost** (adjective of work-item branch): a work-item branch its implementer deleted before `work run` merged it.
+- **kept** (adjective of work-item branch): a work-item branch `work run` kept when its work-item became `awaiting-answer`.
+- **flaky** (adjective of work-item branch): a work-item branch on which a scenario fails once and passes on its second run alone.
+- **dirty** (adjective of file): a file under `.shop/work/` that differs from its last commit.
+- **answered** (adjective of question): a question with an answer written under its node's `## Answers`.
+- **bare** (adjective of initiative): an initiative that fulfils a request and has no capability-proposal, no glossary-proposal and no work-item.
+- **waiting** (adjective of work-item): A work-item is waiting when the work-item is blocked by a work-item that is not closed.
+- **unfulfilled** (adjective of request): A request is unfulfilled when no initiative fulfils the request.
+- **itemless** (adjective of initiative): an initiative in which no work-item is kept.
+- **codified** (adjective of change list): a change list whose every capability has `language: codified-1` in its file.
+- **uncodified** (adjective of change list): a change list that names a service capability with no `language: codified-1` in its file.
 
 ## Relations
 

@@ -153,7 +153,7 @@ def test_a_split_requirement_gives_its_first_way_through(repo):
 
 
 def test_an_instance_name_is_lower_case_for_a_capitalised_kind(repo):
-    add_term(repo, "- **Python interpreter** (kind): the Python a command runs with.")
+    add_term(repo, "- **Python interpreter** (noun): the Python a command runs with.")
     add_group(repo, "work-queue", "### [g9] the interpreter is listed\n"
               "- [r9] When the person runs `work list`, `work` shall print every Python interpreter.")
     assert steps(repo, "work-queue#g9")[-1] == ("then", "`work` prints the Python interpreter p1")

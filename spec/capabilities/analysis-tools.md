@@ -17,22 +17,22 @@ references to a name, and the lint tools of `tools check`. It is not a test runn
 file; it prints what the tools found and names a tool that is missing rather than skipping it.
 
 ## Terms
-- **Python interpreter** (kind): the Python `tools` runs the analysis tools with.
+- **Python interpreter** (noun): the Python `tools` runs the analysis tools with.
 - **environment** (attribute of Python interpreter): whether pip installs into a virtualenv. Values: `virtualenv`, `system`.
-- **present** (condition of Python interpreter): a Python interpreter whose file exists.
-- **analysis tool** (kind): a package `tools` probes and installs.
+- **present** (adjective of Python interpreter): a Python interpreter whose file exists.
+- **analysis tool** (noun): a package `tools` probes and installs.
 - **presence** (attribute of analysis tool): whether the interpreter has the tool, and whether pip can install it.
   Values: `installed`, `missing`, `uninstallable`.
-- **coverage map** (kind): what `tools map` writes under `.shop/scratch/tools/coverage`, made at one commit.
-- **present** (condition of coverage map): `tools map` has written the coverage map.
-- **map commit** (kind): the commit the coverage map was made at.
-- **Python file** (kind): a tracked file with a `.py` extension or a `python` shebang, tests included.
-- **function** (kind): a function or method of a Python file.
-- **reference** (kind): a use of a name the project defines, written `path:line`.
-- **finding** (kind): what ruff, vulture or import-linter reports.
-- **dependency file** (kind): a file that lists a project's dependencies (`pyproject.toml`, `requirements.txt`, ...).
-- **install** (event): `tools` puts an analysis tool into the interpreter with pip. Forms: installs, installed. Frame: `tools` installs analysis tool.
-- **replace** (event): `tools` writes a new coverage map in place of the one before. Forms: replaces, replaced. Frame: `tools` replaces coverage map.
+- **coverage map** (noun): what `tools map` writes under `.shop/scratch/tools/coverage`, made at one commit.
+- **present** (adjective of coverage map): `tools map` has written the coverage map.
+- **map commit** (noun): the commit the coverage map was made at.
+- **Python file** (noun): a tracked file with a `.py` extension or a `python` shebang, tests included.
+- **function** (noun): a function or method of a Python file.
+- **reference** (noun): a use of a name the project defines, written `path:line`.
+- **finding** (noun): what ruff, vulture or import-linter reports.
+- **dependency file** (noun): a file that lists a project's dependencies (`pyproject.toml`, `requirements.txt`, ...).
+- **install** (verb): `tools` puts an analysis tool into the interpreter with pip. Forms: installs, installed. Frame: `tools` installs analysis tool.
+- **replace** (verb): `tools` writes a new coverage map in place of the one before. Forms: replaces, replaced. Frame: `tools` replaces coverage map.
 
 ## Behaviour
 

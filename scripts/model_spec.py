@@ -47,7 +47,7 @@ class SpecReading:
         index = self.root / "spec" / "index.md"
         for n, bullet in enumerate(spec_lexicon._bullets(index.read_text(), "Glossary"), 1):
             if spec_lexicon.entry(bullet, "spec/index.md") is None:
-                self.problems.append(f"spec/index.md: glossary bullet {n} is not '- **<term>** (<category>): <text>'")
+                self.problems.append(f"spec/index.md: glossary bullet {n} is not '- **<term>** (<part of speech>): <text>'")
         lexicon = spec_lexicon.read(self.root)
         cats, n, terms = {}, 0, lexicon.terms
         words, known, kinds = Counter(t.term for t in terms), spec_frames.names(lexicon), lexicon.kind_names()

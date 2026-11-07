@@ -18,19 +18,19 @@ one test binding it. It writes each codified service capability's feature file f
 and runs no test; it edits no feature file by hand, since the generator owns them.
 
 ## Terms
-- **feature file** (kind): a `*.feature` file under the directory `--dir` names (default `features`), read line by
+- **feature file** (noun): a `*.feature` file under the directory `--dir` names (default `features`), read line by
   line.
-- **test module** (kind): a Python file under the directory `--tests` names (default `tests`) that binds scenarios
+- **test module** (noun): a Python file under the directory `--tests` names (default `tests`) that binds scenarios
   with `scenario(<feature>, "<title>")` or `scenarios(<path>, ...)` calls.
-- **nested** (condition of feature file): a feature file with a docstring whose text has a tag and a `Scenario:` line.
-- **outlined** (condition of feature file): a feature file with a Scenario Outline of several Examples tables.
-- **sectioned** (condition of feature file): a feature file with a `Rule:` block.
-- **deprecating** (condition of feature file): a feature file with a scenario tagged `@deprecated` and its replacement.
-- **undeprecated** (condition of feature file): a feature file with no scenario tagged `@deprecated`.
-- **resolving** (condition of test module): a test module each of whose bindings names a scenario a feature file has.
-- **dangling** (condition of test module): a test module with a binding whose title no feature file has.
-- **sweeping** (condition of test module): a test module that binds every scenario of a feature file with one `scenarios(...)` call.
-- **partial** (condition of test module): a test module that leaves a scenario of its feature file unbound.
+- **nested** (adjective of feature file): a feature file with a docstring whose text has a tag and a `Scenario:` line.
+- **outlined** (adjective of feature file): a feature file with a Scenario Outline of several Examples tables.
+- **sectioned** (adjective of feature file): a feature file with a `Rule:` block.
+- **deprecating** (adjective of feature file): a feature file with a scenario tagged `@deprecated` and its replacement.
+- **undeprecated** (adjective of feature file): a feature file with no scenario tagged `@deprecated`.
+- **resolving** (adjective of test module): a test module each of whose bindings names a scenario a feature file has.
+- **dangling** (adjective of test module): a test module with a binding whose title no feature file has.
+- **sweeping** (adjective of test module): a test module that binds every scenario of a feature file with one `scenarios(...)` call.
+- **partial** (adjective of test module): a test module that leaves a scenario of its feature file unbound.
 
 ## Behaviour
 
@@ -254,7 +254,7 @@ the capability `shelf` holds:
   ## Purpose
   Something.
   ## Terms
-  - **book** (kind): a thing.
+  - **book** (noun): a thing.
   ## Behaviour
   ## Not yet
   ## Dropped
@@ -279,7 +279,7 @@ the capability `shelf` holds:
   ## Purpose
   Something.
   ## Terms
-  - **book** (kind): a thing.
+  - **book** (noun): a thing.
   ## Behaviour
   ## Not yet
   ## Dropped
@@ -308,7 +308,7 @@ the capability `shelf` holds:
   ## Purpose
   Something.
   ## Terms
-  - **book** (kind): a thing.
+  - **book** (noun): a thing.
   ## Behaviour
   ## Not yet
   ## Dropped
