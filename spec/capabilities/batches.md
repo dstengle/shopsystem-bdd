@@ -20,9 +20,9 @@ question while building parks its item and the rest of the batch carries on. The
 ## Terms
 - **uncited** (condition of commit): A commit is uncited when the commit cites no item.
 
-- **batch brief** (kind): the brief `work batch start` writes for the one fresh agent that runs the batch: the batch, its tasks and worktrees, the skill it follows, the rules and the lessons, and where it stops.
+- **batch brief** (kind): the brief `work batch start` writes for the one fresh agent that runs the batch: the batch, its tasks and worktrees, the skill it follows, the rules and the lessons, and where it stops. Kind of: file.
 
-- **review folder** (kind): the scratch directory `batch-<n>-review-<k>` under the batch's worktrees directory, which `work batch brief` writes a review's brief and change into and where the review's findings are saved, and which is never committed.
+- **review folder** (kind): the scratch directory `batch-<n>-review-<k>` under the batch's worktrees directory, which `work batch brief` writes a review's brief and change into and where the review's findings are saved, and which is never committed. Kind of: file.
 
 ## Relations
 | from | word | to | cardinality |

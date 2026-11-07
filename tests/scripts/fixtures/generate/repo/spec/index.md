@@ -21,15 +21,16 @@ repository's spec.
 ## Glossary
 
 - **the person** (actor): the human who runs the commands.
-- **`work`** (actor): the queue's command.
-- **`work run`** (actor): the supervisor.
+- **`work`** (actor): the queue's command. Kind of: agent.
+- **`work run`** (actor): the supervisor. Kind of: agent.
+- **agent** (kind): a session or a tool, as the one that does what a verb says.
 
 - **initiative** (kind): the delivery of one request.
 - **work-item** (kind): a unit of delivery.
 - **capability-proposal** (kind): a proposal of one capability.
 - **request** (kind): lines another context proposes.
-- **session** (kind): one conversation.
-- **stage** (kind): one session for a node.
+- **session** (kind): one conversation. Kind of: agent.
+- **stage** (kind): one session for a node. Kind of: session.
 - **file** (kind): a file of the repository.
 - **command** (kind): one run of a tool.
 - **reason** (kind): what an error names.
@@ -44,12 +45,12 @@ repository's spec.
 
 - **open** (condition of initiative): An initiative is open when the initiative is not `done` and the initiative is not `abandoned`.
 
-- **start** (event): a stage begins. Frame: `work run` starts stage.
-- **end** (event): a session stops. Frame: session ends stage.
-- **take** (event): `work run` takes an initiative through its transitions. Forms: takes, taken. Frame: `work run` takes initiative.
+- **start** (event): a stage begins. Frame: agent starts stage.
+- **end** (event): a session stops. Frame: agent ends session.
+- **take** (event): `work run` takes an initiative through its transitions. Forms: takes, taken. Frame: agent takes initiative.
 - **interleave** (event): `work run` runs initiatives side by side. Frame: `work run` interleaves initiative.
 - **give** (event): Forms: gives, given. Frame: `work run` gives brief to stage.
-- **refuse** (event): Forms: refuses, refused. Frame: `work` refuses command.
+- **refuse** (event): Forms: refuses, refused. Frame: agent refuses command.
 
 - **spec lock** (resource, exclusive): held by every integrate round.
 - **worker slot** (resource, counted by `workers`): held by every worker.

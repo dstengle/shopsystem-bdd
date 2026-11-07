@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/query-commands-answer-in-their-output, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items, design-decision/work-items-named-by-ids, design-decision/the-glossary-is-a-target-of-spec-work]
 retired: [r8, r9, r12, r13, r14, r15, r16, r17, r18, r21, r26, r27, r29, r31, r32, r33, r34, r35, r37, r39, r45, r46, r53]
-unbuilt: [r63]
+unbuilt: []
 ---
 
 # Design model check
@@ -20,7 +20,7 @@ context: product-level artifacts are read only where the files contain them.
 
 ## Terms
 - **rule** (kind): a relation of `scripts/model.lp`, with its code and its plain label: a violation's or a warning's.
-- **decisions index** (kind): the generated file `spec/decisions/index.md`. Plural: decisions indexes.
+- **decisions index** (kind): the generated file `spec/decisions/index.md`. Plural: decisions indexes. Kind of: file.
 - **interpreter** (kind): a `python3` that `model` runs under or tries.
 - **clingoless** (condition of interpreter): an interpreter that cannot import clingo, where a `python3` on `PATH` can.
 - **unfound** (condition of interpreter): an interpreter that cannot import clingo, where no interpreter `model` tries can.

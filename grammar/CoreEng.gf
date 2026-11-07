@@ -1,5 +1,5 @@
 -- English of the shared categories, and the opers the generated TypedEng uses. There is no RGL: records carry
--- agreement only where English needs it (number of a noun phrase, the forms of an event).
+-- agreement only where English needs it (number of a noun phrase).
 concrete CoreEng of Core = {
   param
     Number = Sg | Pl ;
@@ -9,7 +9,6 @@ concrete CoreEng of Core = {
     Req, Feat, Cond, Atom, Trig, Resp, Subj, VP, Code, Cmd, Quoted, Count, Actor = Str ;
     NP = NPr ;
     NPs = {s : Str ; m : Many} ;
-    Event = {inf, s3, part : Str} ;
     Resource = {s : Number => Str} ;
   oper
     NPr : Type = {s : Str ; p : Pron ; n : Number} ;
@@ -17,7 +16,6 @@ concrete CoreEng of Core = {
     Vs : Type = {s : Str ; m : Many} ;
     art : Str = pre { "a" ; "an" / strs { "a" ; "e" ; "i" ; "o" ; "u" ; "`a" ; "`e" ; "`i" ; "`o" ; "`u" } } ;
     mkCN : Str -> Str -> CN = \sg, pl -> {s = table {Sg => sg ; Pl => pl}} ;
-    mkEvent : Str -> Str -> Str -> {inf, s3, part : Str} = \i, s, p -> {inf = i ; s3 = s ; part = p} ;
     mkRes : Str -> Str -> {s : Number => Str} = \sg, pl -> {s = table {Sg => sg ; Pl => pl}} ;
     np : Str -> NPr = \s -> {s = s ; p = Full ; n = Sg} ;
     det : Str -> CN -> NPr = \d, cn -> np (d ++ cn.s ! Sg) ;
