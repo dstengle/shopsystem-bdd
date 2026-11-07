@@ -117,6 +117,14 @@ Python 3, in `scripts/`. `--help` is each one's contract; the plugin's own tests
 No agent has the Agent tool (design-decision/the-2-0-agents). A plugin agent's `hooks` and `permissionMode` are
 ignored, so a role's limits are its tools.
 
+## 3.0.1: `features generate` writes the scenario of a negated response with a recipient
+
+- **A negated response with a recipient gets its scenario** (b103, feature-file-tools r20): "`feed` shall not return
+  the video to the caller" is written as the Then "`feed` does not return the video v1 to the caller c1" (the step
+  template `ThenDoesToNot`). In 3.0.0 its group got no scenario and `model check` reported v_s3. Run `features
+  generate` again, and give a consumer's `ThenDoesToNot` steps their handler.
+- **No upgrade step.**
+
 ## 3.0.0: verb frames, parts of speech in the glossary, and verbs typed by kind
 
 - **Every glossary term names its part of speech** (b83, design-model-check r67): `(noun)` for a kind, `(proper
