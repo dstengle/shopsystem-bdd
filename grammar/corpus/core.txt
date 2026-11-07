@@ -55,6 +55,9 @@ When `work run` discards an `integrate` stage for an initiative with a result th
 # verb frames (b82): a relation negated, and a verb's recipient after its object with `to`
 While a stage is not for a work-item, when `work run` discards the stage, `pr-reviewer` shall give only a grade to a review finding.
 = WhileWhen (CondOne (rel_stage_for_work_item_AtomNot (k_stage_An k_stage) (k_work_item_An k_work_item))) (Happens (ActorSubj a_work_run) e_discard (k_stage_toNP (k_stage_The k_stage))) (OneResp (Shall (ActorSubj a_pr_reviewer) (OneVP (DoTo e_give (Only n_grade) (k_review_finding_toNP (k_review_finding_An k_review_finding))))))
+# verbs in conditions (b85): a verb between two kinds, positive and with `does not`
+While a session ends a stage and `work run` does not discard the stage, when the person runs `work start`, `work` shall exit successfully.
+= WhileWhen (CondAnd (Does (NPSubj (k_session_toNP (k_session_An k_session))) e_end (k_stage_toNP (k_stage_An k_stage))) (CondOne (DoesNot (ActorSubj a_work_run) e_discard (k_stage_toNP (k_stage_The k_stage))))) (Runs (ActorSubj a_the_person) (CmdCode (CodeLit "`work start`"))) (OneResp (Shall (ActorSubj a_work) (OneVP ExitOk)))
 # a verb short of a noun its frame takes, refused naming the verb
 When a session ends, `work run` shall discard the stage.
 = refused: the verb end takes an object
