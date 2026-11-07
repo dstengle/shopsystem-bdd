@@ -310,7 +310,7 @@ Feature: Migration tools
 
   @g14 @r14
   Scenario: `migrate upgrade` with no pending step says so and changes nothing
-    Given the tracked file `.shop/plugin-version` holds "2.4.0"
+    Given the tracked file `.shop/plugin-version` holds "3.0.0"
     And a repository r1
     And the repository r1 is current
     When the person runs `migrate upgrade`
@@ -403,7 +403,7 @@ Feature: Migration tools
 
   @g19 @r19
   Scenario: the SessionStart hook tells a session nothing when nothing is pending and no initiative is open
-    Given the tracked file `.shop/plugin-version` holds "2.4.0"
+    Given the tracked file `.shop/plugin-version` holds "3.0.0"
     And the tracked file `.shop/work/i1/initiative.md` holds:
       """
       ---
@@ -506,3 +506,26 @@ Feature: Migration tools
     And `migrate` prints "the workflow simplified"
     And `migrate` prints "i1"
     And `migrate` prints "q1"
+
+  @g25 @r25
+  Scenario: the upgrade step "verb frames" relabels each term with its part of speech and names each verb with no frame
+    Given the tracked file `.shop/plugin-version` holds "2.4.0"
+    And the tracked file `spec/index.md` holds:
+      """
+      ---
+      id: bounded-context/example.org/acme/shop
+      title: shop
+      language: codified-1
+      ---
+      # shop
+      ## Glossary
+      - **cart** (kind): the goods a shopper picks.
+      - **shopper** (kind): a person who buys.
+      - **pick** (event): a shopper puts goods in a cart. Forms: picks, picked.
+      """
+    And a repository r1
+    And the repository r1 is unframed
+    When the person runs `migrate upgrade`
+    Then `migrate` rewrites `spec/index.md`
+    And `migrate` prints "verb frames"
+    And `migrate` prints "v_t11"

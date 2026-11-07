@@ -6,6 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/migration-in-one-pass, design-decision/living-plan-to-work-items, design-decision/final-layout, design-decision/references-are-ids, design-decision/capability-ids-are-context-scoped, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/upgrades-between-plugin-releases, design-decision/work-items-named-by-ids, design-decision/answers-not-rulings, design-decision/the-ledger-is-tracked]
 retired: [r22, r23]
+unbuilt: []
 ---
 
 # Migration tools
@@ -50,6 +51,8 @@ what it needs to know at its start and before it is compacted.
 - **idle** (adjective of repository): A repository is idle when the repository is `own` and no initiative is open.
 - **busy** (adjective of repository): a repository in which an initiative is open.
 - **shopless** (adjective of repository): a repository without `.shop/`.
+
+- **unframed** (adjective of repository): a repository whose `.shop/plugin-version` names a release after 1.0.0 and before 3.0.0.
 
 ## Behaviour
 
@@ -311,7 +314,7 @@ Restates: r27@0.29.
   step is pending" and change nothing.
 
 ```given
-the tracked file `.shop/plugin-version` holds "2.4.0"
+the tracked file `.shop/plugin-version` holds "3.0.0"
 ```
 
 ### [g15] the upgrade step after 0.24.0 renames `awaiting-ruling` to `awaiting-answer` and `## Rulings` to `## Answers`
@@ -392,7 +395,7 @@ Restates: r24@0.29.
   successfully, and `migrate` shall not print "migrate upgrade" or print "i1".
 
 ```given
-the tracked file `.shop/plugin-version` holds "2.4.0"
+the tracked file `.shop/plugin-version` holds "3.0.0"
 the tracked file `.shop/work/i1/initiative.md` holds:
   ---
   id: initiative/example.org/acme/shop/i1
@@ -472,6 +475,24 @@ the tracked file `.shop/work/requests/q2.md` holds:
   turn: upstream
   ---
   # A peer's request
+```
+
+### [g25] the upgrade step "verb frames" relabels each term with its part of speech and names each verb with no frame
+- [r25] While the repository is unframed, when the person runs `migrate upgrade`, `migrate` shall rewrite `spec/index.md` and print "verb frames" and "v_t11".
+
+```given
+the tracked file `.shop/plugin-version` holds "2.4.0"
+the tracked file `spec/index.md` holds:
+  ---
+  id: bounded-context/example.org/acme/shop
+  title: shop
+  language: codified-1
+  ---
+  # shop
+  ## Glossary
+  - **cart** (kind): the goods a shopper picks.
+  - **shopper** (kind): a person who buys.
+  - **pick** (event): a shopper puts goods in a cart. Forms: picks, picked.
 ```
 
 ## Implementation, may change

@@ -149,10 +149,20 @@ def upgraded(step, rel):
     assert old.git("status", "--porcelain").stdout == ""
 
 
+def relabelled(step, rel):
+    """`spec/index.md` as `migrate run` writes it, or, when the scenario upgrades a repository (it holds a plugin
+    version) whose glossary is in plugin 2.x's categories, as "verb frames" rewrites it: each category its part of
+    speech, nothing else changed."""
+    text = read(step, rel)
+    if rel not in held(step) or ".shop/plugin-version" not in held(step):
+        return "id: bounded-context/%s\n" % CONTEXT in text
+    return text == held(step)[rel].replace("(kind)", "(noun)").replace("(event)", "(verb)") != held(step)[rel]
+
+
 EXPECTED = {
     "spec/decisions/index.md": lambda step, rel: ("0007-a" in read(step, rel) if "spec/decisions.md" in held(step)
                                                   else "| tier |" in read(step, rel) and "0001-one.md" in read(step, rel)),
-    "spec/index.md": lambda step, rel: "id: bounded-context/%s\n" % CONTEXT in read(step, rel),
+    "spec/index.md": relabelled,
     "README.md": lambda step, rel: ("(.shop/records/notes/one.md)" in read(step, rel)
                                     and ".shop/work/i1-cart/initiative.md" in read(step, rel)),
     "spec/capabilities/thing.md": lambda step, rel: (

@@ -79,6 +79,7 @@ CHECKS = {
     "outdated": lambda step: release(step) == (0, 24, 0),
     "uncodified": uncodified,
     "queued": lambda step: release(step) == (1, 0, 0),
+    "unframed": lambda step: release(step) is not None and (1, 0, 0) < release(step) < (3, 0, 0),
     "current": current,
     "ahead": lambda step: release(step) is not None and release(step) > number(plugin()[1]),
     "idle": lambda step: current(step) and not any(is_open(t) for t in initiatives(step)),
