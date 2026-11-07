@@ -209,6 +209,21 @@ Restates: r10@0.29, r11@0.29, r12@0.29, r24@0.29.
 ### [g53] `work sync` reopens no closed request
 - [r53] While a request is closed and a comment on the request is unrecorded, when a session runs `work sync`, `work` shall write the comment, and `work` shall not change the status of the request or change the side of the request.
 
+### [g54] The SessionStart hook names a sent request awaiting the upstream
+- [r54] While a request is sent and the request is `awaiting-upstream`, when the SessionStart hook runs `work watch --hook`, `work` shall print the request.
+
+### [g55] The SessionStart hook names a received request awaiting the asker
+- [r55] While a request is received and the request is `awaiting-asker`, when the SessionStart hook runs `work watch --hook`, `work` shall print the request.
+
+### [g56] The SessionStart hook is silent with every request closed
+- [r56] While every request is closed, when the SessionStart hook runs `work watch --hook`, `work` shall exit successfully, and `work` shall not print a request.
+
+### [g57] `work watch --forward` wakes on a readable comment the request does not hold
+- [r57] While a comment is unrecorded and the comment is not unreadable, when a session runs `work watch --forward`, `work` shall print the comment and exit successfully, and `work` shall not write the comment.
+
+### [g58] `work watch --forward` wakes on a new ask
+- [r58] While an issue is untaken, when a session runs `work watch --forward`, `work` shall print the issue and exit successfully.
+
 ## Implementation, may change
 - A request between two bounded contexts, each in its own git repository, is one conversation on one GitHub issue on
   the upstream's GitHub repository; nothing reads or writes the other side's git repository. Each step is a comment a
@@ -275,6 +290,27 @@ Restates: r10@0.29, r11@0.29, r12@0.29, r24@0.29.
   committed. A poll whose `gh` fails is said on stderr and tried again at the next. `--polls <n>` makes a bounded
   watch, used by the tests: it stops after n polls that found nothing and exits 1, so a caller tells "nothing new"
   from a wake. `work watch` writes nothing in the repository and commits nothing.
+- `work watch --forward [--every <seconds>] [--polls <n>]` waits on GitHub's events instead of polling the issues
+  (r57, r58). It watches this context's own repository and the repository of each request's issue not `delivered`,
+  `refused` or `withdrawn`, read again at each wake. On a repository whose `viewerPermission` is `ADMIN` it runs `gh
+  webhook forward` for the `issues` and `issue_comment` events to a listener on 127.0.0.1, first running `gh
+  extension install cli/gh-webhook` when `gh extension list` does not name it. On any other repository, or when the
+  extension does not install or a forward ends, it polls GitHub's notifications instead (`GET /notifications` with
+  If-Modified-Since, no sooner than its X-Poll-Interval asks, else 60 s), and says so on stderr: `work watch: polling
+  GitHub's notifications for <repositories>`. At its start it takes the notifications' baseline, then checks once as
+  `work watch` polls; each event, and each notification of a polled repository, wakes the same check, which prints
+  what it finds and exits successfully. Under `--forward`, `--every` (default 60) is the longest wait for an event,
+  and `--polls <n>` ends a watch whose n waits found nothing, printing `work watch: nothing new after <n> waits` on
+  stderr and exiting 1. Its forwards end with it, and it writes nothing in the repository.
+- `work watch --hook` is the requests' SessionStart hook (r54-r56): it prints each request that waits on the other
+  side, a sent request that is `awaiting-upstream` or a received one that is `awaiting-asker`, one line each as
+  `<name> <status>: <title> (<issue>)` (the issue left out of a request with none), then one line, last,
+  telling the session to start `work watch --forward` with the Monitor tool and to run `work sync` when it wakes.
+  With no request waiting it prints nothing. It reads only the records under `.shop/requests/`, never GitHub, and writes
+  nothing; whatever goes wrong, it prints nothing and exits 0, so a hook never fails a session's start.
+  `hooks/hooks.json` runs it as `request_hook watch`, an entry point apart from `work`: `work` imports the grammar's
+  modules, which need site packages (clingo), and a hook runs under any `python3`, with site packages or without.
+  `request_hook watch` prints what `work watch --hook` prints and, whatever goes wrong, an import included, exits 0.
 - `work show <request>` prints the request's status and turn, then whose turn it is and, for a request on an issue,
   the issue's URL (`it is the <side>'s turn, on <URL>`), then each line with its line outcome, each question with its
   answer and the resolution.

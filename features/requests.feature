@@ -347,3 +347,43 @@ Feature: Requests
     Then `work` writes the comment c1
     And `work` does not change the status of the request q1
     And `work` does not change the side of the request q1
+
+  @g54 @r54
+  Scenario: The SessionStart hook names a sent request awaiting the upstream
+    Given a request q1
+    And the request q1 is sent
+    And the request q1 is `awaiting-upstream`
+    When the SessionStart hook runs `work watch --hook`
+    Then `work` prints the request q1
+
+  @g55 @r55
+  Scenario: The SessionStart hook names a received request awaiting the asker
+    Given a request q1
+    And the request q1 is received
+    And the request q1 is `awaiting-asker`
+    When the SessionStart hook runs `work watch --hook`
+    Then `work` prints the request q1
+
+  @g56 @r56
+  Scenario: The SessionStart hook is silent with every request closed
+    When the SessionStart hook runs `work watch --hook`
+    Then `work` exits successfully
+    And `work` does not print the request q1
+
+  @g57 @r57
+  Scenario: `work watch --forward` wakes on a readable comment the request does not hold
+    Given a comment c1
+    And the comment c1 is unrecorded
+    And the comment c1 is not unreadable
+    When the session s1 runs `work watch --forward`
+    Then `work` prints the comment c1
+    And `work` exits successfully
+    And `work` does not write the comment c1
+
+  @g58 @r58
+  Scenario: `work watch --forward` wakes on a new ask
+    Given an issue i1
+    And the issue i1 is untaken
+    When the session s1 runs `work watch --forward`
+    Then `work` prints the issue i1
+    And `work` exits successfully

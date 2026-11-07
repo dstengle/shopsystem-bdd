@@ -123,6 +123,17 @@ def work_watch(step):
     HANDLERS.run_work(step, "watch", "--every", "0", "--polls", "1")
 
 
+@handler("WhenRuns", "`work watch --forward`")
+def work_watch_forward(step):
+    """GitHub's events through the stand-in's `gh webhook forward` (r57, r58): what the Givens wrote is taken out of
+    the stand-in's issues and kept pending (`gh-pending.json`), so the watch's check at its start finds nothing; the
+    stand-in's forward puts it back and posts the event once that check is done. One wait of at most 20 s."""
+    for path in (step.repo / ".shop" / "requests").glob("q*.md"):
+        step.context.setdefault("held_before", {})[path.name] = path.read_text()
+    step.context.setdefault("before_run", []).append(Q.pend)
+    HANDLERS.run_work(step, "watch", "--forward", "--every", "20", "--polls", "1")
+
+
 @handler("WhenRuns", "`work offer`")
 @handler("WhenRuns", "`work fits`")
 @handler("WhenRuns", "`work propose`")

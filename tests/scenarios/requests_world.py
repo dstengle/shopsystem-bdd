@@ -63,6 +63,21 @@ def with_issue(step, path, url=ISSUE):
     write_issues(step, found)
 
 
+def pend(step):
+    """What the Givens wrote on the stand-in's issues, its new issues and its comments, moved to `gh-pending.json`
+    (the issues file's form), for the stand-in's `webhook forward` or `api notifications` to bring back."""
+    found, pending = issues(step), {}
+    for url in step.context.get("issues", {}).values():
+        pending[url] = found.pop(url)
+    for url in step.context.get("comments", {}).values():
+        issue = found[url.split("#", 1)[0]]
+        comment = next(c for c in issue["comments"] if c["url"] == url)
+        issue["comments"].remove(comment)
+        pending.setdefault(url.split("#", 1)[0], dict(issue, comments=[]))["comments"].append(comment)
+    write_issues(step, found)
+    (outside(step) / "gh-pending.json").write_text(json.dumps(pending))
+
+
 OWN = "bounded-context/ex.com/prod/ctx"
 UP = "bounded-context/ex.com/prod/up"
 

@@ -11,7 +11,8 @@ fields missing or not parsing, as sync reads it) is never recorded by sync, so i
 in `<git dir>/shopsystem/watched.json` (the worktree's own git dir, as conversation_prompt keeps its pointer, never
 committed), and a later watch passes over it: it does not wake the session in a loop. A poll whose gh fails is said
 on stderr and tried again at the next; it does not end the watch. `--polls <n>` ends a watch that has found nothing
-after n polls, exit 1: for tests and a bounded wait."""
+after n polls, exit 1: for tests and a bounded wait. `--forward` waits on GitHub's events instead (request_forward),
+with the same check (`report`)."""
 import json
 import sys
 import time
@@ -91,24 +92,31 @@ def found(root):
     return out
 
 
+def report(root):
+    """One check: what it finds printed and its unreadable comments kept, True; nothing new, False. A gh that fails
+    is refused (shop_files.Refused)."""
+    before = kept(root)
+    new = [(url, line, bad) for url, line, bad in found(root) if not (bad and url in before)]
+    if not new:
+        return False
+    unreadable = [url for url, _, bad in new if bad]
+    if unreadable:
+        keep(root, unreadable)
+    for _, line, _ in new:
+        print(line)
+    return True
+
+
 def watch(root, every=60, polls=None, sleep=time.sleep):
     """Poll until something is found: print it, keep the unreadable comments, 0; nothing after `polls` polls: 1."""
     done = 0
     while True:
         try:
-            before = kept(root)
-            new = [(url, line, bad) for url, line, bad in found(root) if not (bad and url in before)]
+            if report(root):
+                return 0
         except shop_files.Refused as refused:
             print("%s; polling again in %ss" % (refused, every), file=sys.stderr)
-            new = []
         done += 1
-        if new:
-            unreadable = [url for url, _, bad in new if bad]
-            if unreadable:
-                keep(root, unreadable)
-            for _, line, _ in new:
-                print(line)
-            return 0
         if polls is not None and done >= polls:
             print("%s: nothing new after %d poll%s" % (COMMAND, done, "" if done == 1 else "s"), file=sys.stderr)
             return 1
