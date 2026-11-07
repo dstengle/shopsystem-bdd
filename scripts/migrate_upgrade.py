@@ -10,6 +10,7 @@ from pathlib import Path
 
 import migrate_upgrade_answers
 import migrate_upgrade_codified
+import migrate_upgrade_frames
 import migrate_upgrade_ids
 import migrate_upgrade_simplified
 import shop_files
@@ -27,7 +28,10 @@ STEPS = [("0.24.0", "work-items named by ids", "give every work-item the id w<n>
           "scenarios and write old references <cap>#r<n>@0.29"), migrate_upgrade_codified),
          ("2.0.0", "the workflow simplified",
           "freeze .shop/work/, move the live requests to .shop/requests/ and write the decisions index",
-          migrate_upgrade_simplified)]
+          migrate_upgrade_simplified),
+         ("3.0.0", "verb frames",
+          ("write each glossary entry's category as its part of speech and name each verb with no Frame:, each "
+           "relational condition and each requirement that no longer parses"), migrate_upgrade_frames)]
 
 
 def number(version):
