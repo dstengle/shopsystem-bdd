@@ -33,7 +33,8 @@ THEN = {"SDoes": "ThenDoes", "SDoesNot": "ThenDoesNot", "SDoesTo": "ThenDoesTo",
         "SChangesNothing": "ThenChangesNothing"}
 TRIG = {"Runs": "WhenRuns", "RunsOn": "WhenRuns", "IsRun": "WhenRuns", "Happens": "WhenHappens",
         "HappensI": "WhenHappens", "HappensTo": "WhenHappens", "_Becomes": "WhenBecomes"}
-BY_EVENT = {"WhenHappens", "ThenDoes", "ThenDoesNot", "ThenDoesTo"}
+BY_EVENT = {"WhenHappens", "ThenDoes", "ThenDoesNot", "ThenDoesTo", "GivenDoes", "GivenDoesNot"}
+VERB_ATOMS = ("Does", "DoesNot")     # a condition of a verb, "the session s1 does not write the file f1"
 BY_KIND = {"ThenK_A", "ThenK_C", "ThenHolds", "ThenFree"}
 
 
@@ -149,7 +150,8 @@ def parse(vocab, keyword, text):
         at = len(tokens) if err.incomplete else spec_grammar._position(tokens, err.offset)
         where = "(it ends too soon)" if at >= len(tokens) else "at %s (token %d)" % (tokens[at], at + 1)
         raise StepError("%r does not parse in Steps %s" % (text, where))
-    kept = {t: None for t in trees if t[0].endswith(ALLOWED[keyword]) and not _guard(vocab, t)}
+    kept = {t: None for t in trees if t[0].endswith(ALLOWED[keyword]) and not _guard(vocab, t)
+            and not (keyword == "then" and t[0] == "SAtom" and t[1][0] in VERB_ATOMS)}     # a verb's Then is SDoes
     if len(kept) != 1:
         raise StepError("%r does not parse as one %s step (%d trees)" % (text, keyword, len(kept)))
     return next(iter(kept))
@@ -187,6 +189,8 @@ def _template(vocab, keyword, tree):
         return "GivenFeat", None
     if fun == "SAtom":
         atom = tree[1][0]
+        if atom in VERB_ATOMS:     # a verb between two kinds (b85)
+            return "Given" + atom, None
         if atom in ("Holds", "HoldsA", "IsFree"):
             return keyword.capitalize() + ("Free" if atom == "IsFree" else "Holds"), None
         i_info, _ = vocab.of(atom)
@@ -222,6 +226,8 @@ def step(vocab, keyword, text):
             call.nps.append(vocab.text(node[1]))
     for i in {"SDoes": (3,), "SDoesNot": (3,), "SDoesTo": (3, 4), "SExitsErr": (2,)}.get(tree[0], ()):
         call.nps.append(vocab.text(tree[i]))
+    if template in ("GivenDoes", "GivenDoesNot"):
+        call.nps.append(vocab.text(tree[1][3]))
     if info and info[0] == "attribute":
         call.attribute = info[3]
     t = template

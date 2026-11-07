@@ -171,7 +171,6 @@ def test_the_other_triggers_and_verb_phrases(gvocab):
     assert 'cnone("s#r1",k_initiative,c_open).' in out
 
 
-
 def test_a_quoted_figure_for_a_thing_is_an_event_on_that_thing(gvocab):
     out = facts(gvocab, "s#r1", 'When the person runs `work start` on an initiative, `work` shall not show "turns" '
                                 'for the initiative.', GLOSSARY)
@@ -293,3 +292,9 @@ def test_a_relation_of_cardinality_one_or_a_preposition_is_functional(vocab):
     funs = {f for f in spec_logic_vocab.domain(vocab) if f.startswith("fun(")}
     assert "fun(r_stage_with_result)." in funs and "fun(r_stage_for_initiative)." in funs
     assert "fun(r_result_gives_question)." not in funs and "fun(r_stage_needs_resource)." not in funs
+
+
+def test_a_verb_in_a_condition_is_a_relation_named_by_the_verb(gvocab):
+    out = facts(gvocab, "s#r1", "While a session writes a file and a session does not commit the file, `work` shall "
+                                "exit successfully.", GLOSSARY)
+    assert 'crel("s#r1",e_write,v1,v2,pos).' in out and 'crel("s#r1",e_commit,v3,v2,neg).' in out

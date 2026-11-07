@@ -166,3 +166,16 @@ def test_a_quoted_figure_for_a_thing_is_a_then_naming_the_thing(repo):
     assert [s for s in steps(repo, "work-queue#g9") if s[0] == "then"] == [
         ("then", "`work` takes \"turns\" for the work-item w1"),
         ("then", "`work` does not take \"took\" for the work-item w1")]
+
+
+def test_a_verb_in_a_condition_is_a_given_of_the_verb_read_back_as_one_step(repo):
+    import features_vocab
+    add_group(repo, "work-queue", "### [g9] an initiative not taken\n"
+              "- [r9] While `work run` does not take an initiative, when the person runs `work list`, `work` shall "
+              "print the initiative.")
+    got = steps(repo, "work-queue#g9")
+    assert got[:2] == [("given", "an initiative i1"), ("given", "`work run` does not take the initiative i1")]
+    call = features_vocab.step(features_vocab.load(repo), "given", got[1][1])
+    assert (call.template, call.term, call.nps) == ("GivenDoesNot", "take", ["the initiative i1"])
+    assert features_vocab.step(features_vocab.load(repo), "then", "`work run` takes the initiative i1").template == (
+        "ThenDoes")

@@ -17,7 +17,8 @@ import spec_typed_verbs
 
 CORE = {"Ubiq", "When", "While", "Where", "IfThen", "WhileWhen", "WhereWhen", "WhereWhile", "WhileIf", "WhereIf",
         "Shall", "ShallNot", "OneVP", "AndVP", "OneVPor", "OrVP", "OneResp", "AndResp", "ActorSubj", "NPSubj",
-        "Runs", "RunsOn", "IsRun", "Happens", "HappensI", "HappensTo", "CondOne", "CondAnd", "CondOr", "Holds",
+        "Runs", "RunsOn", "IsRun", "Happens", "HappensI", "HappensTo", "Does", "DoesNot", "CondOne", "CondAnd",
+        "CondOr", "Holds",
         "HoldsA", "IsFree", "FeatGiven", "FeatAtom", "Do", "DoI", "DoTo", "Print", "ExitOk", "ExitErr", "ChangeNothing",
         "Hold", "HoldA", "HoldAtMost", "CodeNP", "QuotedNP", "QuotedFor", "Only", "OneNP", "MoreNP", "CodeLit", "CmdCode",
         "CmdActor", "QuotedLit", "CountNum", "CountCode"}

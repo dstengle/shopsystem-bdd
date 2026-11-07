@@ -5,12 +5,13 @@ Each kind or actor T a frame names as a subject gets the category `<T>_Sb`, and 
 A noun fills it when its kind (or the actor) is T or a kind of T (`spec_frames.below`); a noun phrase with no kind
 (a code or quoted literal, a quoted figure for a thing, an attribute's "the status of the item", "a status") fills any object slot, and a code any
 subject slot. A verb `e` with its frame gives `e__Happens` / `e__HappensI` / `e__HappensTo` (a trigger, its
-recipient after "to"), `e__Do` / `e__DoI` /
-`e__DoTo` (a verb phrase) and, for the step grammar, `e__SDoes`, `e__SDoesNot`, `e__SDoesTo`, `e__SDoesI`,
-`e__SDoesINot`.
+recipient after "to"), `e__Do` / `e__DoI` / `e__DoTo` (a verb phrase), `e__Does` / `e__DoesNot` (a condition
+between two kinds, "a session does not write a file"; b85) and, for the step grammar, `e__SDoes`, `e__SDoesNot`,
+`e__SDoesTo`, `e__SDoesI`, `e__SDoesINot`.
 
 The rest of the tools read a tree in its normal form (`normal`): the verb's clause as `Do e x`, `DoTo e x y`,
-`DoI e`, `Happens s e x`, `HappensI s e`, `HappensTo s e x y` (and `SDoes s e x` ...), a subject as `ActorSubj` / `NPSubj`, an object as
+`DoI e`, `Happens s e x`, `HappensI s e`, `HappensTo s e x y`, `Does s e x`, `DoesNot s e x` (and `SDoes s e x`
+...), a subject as `ActorSubj` / `NPSubj`, an object as
 the noun phrase it is (`k_item_toNP x`, `CodeNP c`, `Only x`). `typed` writes a normal tree back in the generated
 funs, for GF to linearise.
 """
@@ -21,7 +22,8 @@ import spec_typed
 SEP = "__"
 STEPS = ("SDoes", "SDoesNot", "SDoesTo", "SDoesI", "SDoesINot")
 # the normal form of each verb fun: (argument places of subject, object, recipient), the event placed after a subject
-SHAPES = {"Happens": "so", "HappensI": "s", "HappensTo": "sor", "Do": "o", "DoI": "", "DoTo": "or", "SDoes": "so", "SDoesNot": "so",
+SHAPES = {"Happens": "so", "HappensI": "s", "HappensTo": "sor", "Does": "so", "DoesNot": "so", "Do": "o", "DoI": "",
+          "DoTo": "or", "SDoes": "so", "SDoesNot": "so",
           "SDoesTo": "sor", "SDoesI": "s", "SDoesINot": "s"}
 
 
@@ -121,8 +123,11 @@ def modules(lex):
             lins += ['%s%sDoTo x y = %s ++ x.s ++ "to" ++ y.s ;' % (eid, SEP, i),
                      '%s%sHappensTo s x y = s ++ %s ++ x.s ++ "to" ++ y.s ;' % (eid, SEP, t)]
         elif o:
-            funs += ["%s%sDo : %s_Ob -> VP ;" % (eid, SEP, o), "%s%sHappens : %s_Sb -> %s_Ob -> Trig ;" % (eid, SEP, s, o)]
-            lins += ["%s%sDo x = %s ++ x.s ;" % (eid, SEP, i), "%s%sHappens s x = s ++ %s ++ x.s ;" % (eid, SEP, t)]
+            funs += ["%s%sDo : %s_Ob -> VP ;" % (eid, SEP, o), "%s%sHappens : %s_Sb -> %s_Ob -> Trig ;" % (eid, SEP, s, o),
+                     "%s%sDoes, %s%sDoesNot : %s_Sb -> %s_Ob -> Atom ;" % (eid, SEP, eid, SEP, s, o)]
+            lins += ["%s%sDo x = %s ++ x.s ;" % (eid, SEP, i), "%s%sHappens s x = s ++ %s ++ x.s ;" % (eid, SEP, t),
+                     "%s%sDoes s x = s ++ %s ++ x.s ;" % (eid, SEP, t),
+                     '%s%sDoesNot s x = s ++ "does" ++ "not" ++ %s ++ x.s ;' % (eid, SEP, i)]
         else:
             funs += ["%s%sDoI : VP ;" % (eid, SEP), "%s%sHappensI : %s_Sb -> Trig ;" % (eid, SEP, s)]
             lins += ["%s%sDoI = %s ;" % (eid, SEP, i), "%s%sHappensI s = s ++ %s ;" % (eid, SEP, t)]
