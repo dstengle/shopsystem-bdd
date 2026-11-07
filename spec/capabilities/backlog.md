@@ -22,7 +22,7 @@ item. Adding an idea starts no work. The person reads an item by its title, not 
 
 - **silent** (condition of remote): a remote that does not answer a push.
 
-- **upstream branch** (kind): the branch of a remote that the branch checked out in a repository pushes to.
+- **upstream branch** (kind): the branch of a remote that the branch checked out in a repository pushes to. Kind of: thing.
 - **tracking** (condition of repository): a repository whose branch checked out has an upstream branch of another name.
 - **tasked** (condition of repository): a repository whose branch checked out is the branch of a task.
 

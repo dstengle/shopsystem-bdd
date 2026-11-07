@@ -21,6 +21,7 @@ import spec_parse_cache
 import spec_tree
 import spec_typed
 import spec_typed_def
+import spec_typed_verbs
 import tools_grammar
 
 GRAMMARS = Path(__file__).resolve().parent.parent / "grammar"
@@ -192,7 +193,7 @@ def _position(tokens, offset):
 
 def _literal(words, text):
     """GF's String callback: a literal slot reads one token, but not a lexicon word, which the guard would refuse
-    there anyway; so a line of many backticked words is not read 3^n ways past LIMIT."""
+    there anyway, nor a mark of punctuation, which ends a clause; so a line of many backticked words is not read 3^n ways past LIMIT."""
     import pgf
 
     def read(_, start):  # offsets count characters
@@ -201,12 +202,13 @@ def _literal(words, text):
         end = text.find(" ", start)
         end = len(text) if end < 0 else end
         token = text[start:end]
-        return None if not token or token in words else (pgf.Expr(token), 0.0, end)
+        return None if not token or token in words or token in ",.;:" else (pgf.Expr(token), 0.0, end)
     return read
 
 
 def _raw(root, tokens, grammar):
-    """(trees, error index or None) of the parse before the guards, from `spec_parse_cache` when it has it."""
+    """(trees in their normal form, error index or None) of the parse before the guards; GF's own trees are kept in
+    `spec_parse_cache`."""
     lex, _, sha = _context(root)
     text, words = _gf_text(tokens), {w.replace(" ", spec_typed.PLACEHOLDER) for w in lex.words()}
     digest = spec_parse_cache.key(sha, grammar, text, words, LIMIT)
@@ -214,7 +216,7 @@ def _raw(root, tokens, grammar):
     if hit is None:
         hit = _gf_parse(root, tokens, grammar, text, words)
         spec_parse_cache.put(sha, grammar, digest, *hit)
-    return hit
+    return [spec_typed_verbs.normal(t) for t in hit[0]], hit[1]
 
 
 def _gf_parse(root, tokens, grammar, text, words):
@@ -234,6 +236,9 @@ def parse(root, line, grammar="Req"):
     tokens = tokenise(line)
     trees, at = _raw(root, tokens, grammar)
     if at is not None:
+        why = grammar != "Def" and spec_frames.refusal(tokens, at, _context(root)[0])
+        if why:
+            return Parse(refusal="refused: %s" % why)
         if at >= len(tokens):
             return Parse(refusal="the line ends before its sentence does (after %d tokens)" % len(tokens))
         return Parse(refusal="does not parse at %s (token %d of %d)" % (tokens[at], at + 1, len(tokens)))
@@ -257,8 +262,9 @@ def parse(root, line, grammar="Req"):
 
 
 def linearise(root, tree, grammar="Req"):
-    """A tree written back as a sentence of the context's grammar."""
+    """A tree (in its normal form, spec_typed_verbs) written back as a sentence of the context's grammar."""
     concr = load(root, grammar).languages["%sEng" % grammar]
+    tree = spec_typed_verbs.typed(tree, spec_typed_verbs.frames(_context(root)[0]))
     return detokenise(concr.linearize(_expr(tree)).split(" "))
 
 

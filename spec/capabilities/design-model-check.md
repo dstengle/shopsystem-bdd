@@ -20,7 +20,7 @@ context: product-level artifacts are read only where the files contain them.
 
 ## Terms
 - **rule** (kind): a relation of `scripts/model.lp`, with its code and its plain label: a violation's or a warning's.
-- **decisions index** (kind): the generated file `spec/decisions/index.md`. Plural: decisions indexes.
+- **decisions index** (kind): the generated file `spec/decisions/index.md`. Plural: decisions indexes. Kind of: file.
 - **interpreter** (kind): a `python3` that `model` runs under or tries.
 - **clingoless** (condition of interpreter): an interpreter that cannot import clingo, where a `python3` on `PATH` can.
 - **unfound** (condition of interpreter): an interpreter that cannot import clingo, where no interpreter `model` tries can.
@@ -75,6 +75,8 @@ context: product-level artifacts are read only where the files contain them.
 - **frameless** (condition of term): a verb whose glossary entry does not name the kinds of its subject and object, nor say that it takes no object.
 - **relational** (condition of term): a condition whose definition names with `the` a kind other than the kind it is a condition of.
 - **negating** (condition of requirement): a requirement that says with `not` that a verb or a relation between two kinds does not hold.
+
+- **mistyped** (condition of requirement): a requirement with a verb whose subject, object or recipient is not of the kind the verb's frame names.
 
 ## Behaviour
 
@@ -222,6 +224,9 @@ Restates: r65@0.29.
 
 ### [g62] `model parse` parses a negated verb or relation
 - [r62] When the person runs `model parse` on a requirement that is negating, `model` shall exit successfully.
+
+### [g63] `model parse` refuses a verb with a noun of the wrong kind
+- [r63] If the person runs `model parse` on a requirement that is mistyped, then `model` shall exit with an error naming the term.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a

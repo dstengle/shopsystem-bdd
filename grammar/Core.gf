@@ -3,5 +3,5 @@
 abstract Core = {
   cat
     Req ; Feat ; Cond ; Atom ; Trig ; Resp ; Subj ; VP ; NP ; NPs ; Code ; Cmd ; Quoted ; Count ;
-    Actor ; Event ; Resource ;
+    Actor ; Resource ;
 }

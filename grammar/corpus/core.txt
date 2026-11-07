@@ -8,43 +8,43 @@
 # row: result | gives | output
 #
 # AndVP: two verb phrases under one shall (U4 and U3 as coordinations; RefuseErr and CommitPush are gone)
-When `work run` merges a work-item branch, `work run` shall commit every transition and push the commit.
-= When (Happens (ActorSubj a_work_run) e_merge (k_work_item_branch_toNP (k_work_item_branch_An k_work_item_branch))) (OneResp (Shall (ActorSubj a_work_run) (AndVP (Do e_commit (k_transition_toNP (k_transition_Every k_transition))) (OneVP (Do e_push (k_commit_toNP (k_commit_The k_commit)))))))
+When the person merges a pull request, `work` shall commit every transition and push the commit.
+= When (Happens (ActorSubj a_the_person) e_merge (k_pull_request_toNP (k_pull_request_An k_pull_request))) (OneResp (Shall (ActorSubj a_work) (AndVP (Do e_commit (k_transition_toNP (k_transition_Every k_transition))) (OneVP (Do e_push (k_commit_toNP (k_commit_The k_commit)))))))
 If `work` refuses a command, then `work` shall exit with an error naming the reason and change nothing.
 = IfThen (Happens (ActorSubj a_work) e_refuse (k_command_toNP (k_command_An k_command))) (OneResp (Shall (ActorSubj a_work) (AndVP (ExitErr (k_reason_toNP (k_reason_The k_reason))) (OneVP ChangeNothing))))
 # the risky `and`: a list of noun phrases, then a verb phrase
 When `tools size` is run, `tools size` shall print the file and the line count and exit successfully.
 = When (IsRun (CmdCode (CodeLit "`tools size`"))) (OneResp (Shall (NPSubj (CodeNP (CodeLit "`tools size`"))) (AndVP (Print (MoreNP (k_file_toNP (k_file_The k_file)) (OneNP (k_line_count_toNP (k_line_count_The k_line_count))))) (OneVP ExitOk))))
 # three verb phrases: A, B and C
-When a session ends a stage, `work run` shall discard the stage, end the session and exit successfully.
-= When (Happens (NPSubj (k_session_toNP (k_session_An k_session))) e_end (k_stage_toNP (k_stage_An k_stage))) (OneResp (Shall (ActorSubj a_work_run) (AndVP (Do e_discard (k_stage_toNP (k_stage_The k_stage))) (AndVP (Do e_end (k_session_toNP (k_session_The k_session))) (OneVP ExitOk)))))
+When a session ends a trial, `work run` shall discard a stage, take an initiative and exit successfully.
+= When (Happens (NPSubj (k_session_toNP (k_session_An k_session))) e_end (k_trial_toNP (k_trial_An k_trial))) (OneResp (Shall (ActorSubj a_work_run) (AndVP (Do e_discard (k_stage_toNP (k_stage_An k_stage))) (AndVP (Do e_take (k_initiative_toNP (k_initiative_An k_initiative))) (OneVP ExitOk)))))
 # OrVP: shall not A or B
-When a session ends a stage, `work run` shall not merge a work-item branch or push a commit.
-= When (Happens (NPSubj (k_session_toNP (k_session_An k_session))) e_end (k_stage_toNP (k_stage_An k_stage))) (OneResp (ShallNot (ActorSubj a_work_run) (OrVP (Do e_merge (k_work_item_branch_toNP (k_work_item_branch_An k_work_item_branch))) (OneVPor (Do e_push (k_commit_toNP (k_commit_An k_commit)))))))
+When a session ends a trial, `work run` shall not discard a stage or push a commit.
+= When (Happens (NPSubj (k_session_toNP (k_session_An k_session))) e_end (k_trial_toNP (k_trial_An k_trial))) (OneResp (ShallNot (ActorSubj a_work_run) (OrVP (Do e_discard (k_stage_toNP (k_stage_An k_stage))) (OneVPor (Do e_push (k_commit_toNP (k_commit_An k_commit)))))))
 # AndResp: two responses whose subjects differ
-When the person runs `work run`, `work run` shall start every open initiative, and `work` shall exit successfully.
-= When (Runs (ActorSubj a_the_person) (CmdActor a_work_run)) (AndResp (Shall (ActorSubj a_work_run) (OneVP (Do e_start (k_initiative_toNP (k_initiative_Every c_open_Pre))))) (OneResp (Shall (ActorSubj a_work) (OneVP ExitOk))))
+When the person runs `work run`, `work run` shall take every open initiative, and `work` shall exit successfully.
+= When (Runs (ActorSubj a_the_person) (CmdActor a_work_run)) (AndResp (Shall (ActorSubj a_work_run) (OneVP (Do e_take (k_initiative_toNP (k_initiative_Every c_open_Pre))))) (OneResp (Shall (ActorSubj a_work) (OneVP ExitOk))))
 # CondOr
-While a work-item is `green` or a work-item is `withdrawn`, `work run` shall not start a stage for the work-item.
-= While (CondOr (t_status_Is (k_work_item_An k_work_item) v_green) (CondOne (t_status_Is (k_work_item_An k_work_item) v_withdrawn))) (OneResp (ShallNot (ActorSubj a_work_run) (OneVPor (Do e_start (k_stage_toNP (k_stage_An (rel_stage_for_work_item k_stage (k_work_item_The k_work_item))))))))
+While a work-item is `green` or a work-item is `withdrawn`, `work run` shall not discard a stage for the work-item.
+= While (CondOr (t_status_Is (k_work_item_An k_work_item) v_green) (CondOne (t_status_Is (k_work_item_An k_work_item) v_withdrawn))) (OneResp (ShallNot (ActorSubj a_work_run) (OneVPor (Do e_discard (k_stage_toNP (k_stage_An (rel_stage_for_work_item k_stage (k_work_item_The k_work_item))))))))
 # QuotedFor: a figure given for one thing (batch-measurement r8, r12-r14)
 When the person runs `measure initiative i7-cart`, `measure` shall not include "turns" for the logged stage.
 = When (Runs (ActorSubj a_the_person) (CmdCode (CodeLit "`measure initiative i7-cart`"))) (OneResp (ShallNot (ActorSubj a_measure) (OneVPor (Do e_include (QuotedFor (QuotedLit "\"turns\"") (k_logged_stage_toNP (k_logged_stage_The k_logged_stage)))))))
 # a relation as a clause (Atom), and a typed modifier for a subkind and for the supertype (check point 12)
-While a stage is for a work-item, when a session ends the stage, `work run` shall merge a work-item branch.
-= WhileWhen (CondOne (rel_stage_for_work_item_Atom (k_stage_An k_stage) (k_work_item_An k_work_item))) (Happens (NPSubj (k_session_toNP (k_session_An k_session))) e_end (k_stage_toNP (k_stage_The k_stage))) (OneResp (Shall (ActorSubj a_work_run) (OneVP (Do e_merge (k_work_item_branch_toNP (k_work_item_branch_An k_work_item_branch))))))
-When `work run` starts a stage for the work-item `w1`, `work run` shall exit successfully.
-= When (Happens (ActorSubj a_work_run) e_start (k_stage_toNP (k_stage_An (rel_stage_for_work_item k_stage (k_work_item_Named (CodeLit "`w1`")))))) (OneResp (Shall (ActorSubj a_work_run) (OneVP ExitOk)))
-When `work run` starts a stage for a node, `work run` shall exit successfully.
-= When (Happens (ActorSubj a_work_run) e_start (k_stage_toNP (k_stage_An (rel_stage_for_node k_stage (k_node_An k_node))))) (OneResp (Shall (ActorSubj a_work_run) (OneVP ExitOk)))
+While a stage is for a work-item, when the person merges a pull request, `work run` shall discard the stage.
+= WhileWhen (CondOne (rel_stage_for_work_item_Atom (k_stage_An k_stage) (k_work_item_An k_work_item))) (Happens (ActorSubj a_the_person) e_merge (k_pull_request_toNP (k_pull_request_An k_pull_request))) (OneResp (Shall (ActorSubj a_work_run) (OneVP (Do e_discard (k_stage_toNP (k_stage_The k_stage))))))
+When `work run` discards a stage for the work-item `w1`, `work run` shall exit successfully.
+= When (Happens (ActorSubj a_work_run) e_discard (k_stage_toNP (k_stage_An (rel_stage_for_work_item k_stage (k_work_item_Named (CodeLit "`w1`")))))) (OneResp (Shall (ActorSubj a_work_run) (OneVP ExitOk)))
+When `work run` discards a stage for a node, `work run` shall exit successfully.
+= When (Happens (ActorSubj a_work_run) e_discard (k_stage_toNP (k_stage_An (rel_stage_for_node k_stage (k_node_An k_node))))) (OneResp (Shall (ActorSubj a_work_run) (OneVP ExitOk)))
 # PP attachment is typed: "with the result" attaches to the stage, since no row joins a work-item to a result
 # guard: work-item | with | result
-While a result is outputless, when a session ends a `plan` stage for a work-item with the result, `work run` shall set the status of the work-item to `awaiting-answer` and ask a question on the work-item.
-= WhileWhen (CondOne (c_outputless_Is (k_result_An k_result))) (Happens (NPSubj (k_session_toNP (k_session_An k_session))) e_end (k_stage_toNP (k_stage_An (rel_stage_with_result (rel_stage_for_work_item (t_kind_Pre v_plan) (k_work_item_An k_work_item)) (k_result_The k_result))))) (OneResp (Shall (ActorSubj a_work_run) (AndVP (t_status_Set (k_work_item_The k_work_item) v_awaiting_answer) (OneVP (Do e_ask (k_question_toNP (k_question_An (rel_question_on_work_item k_question (k_work_item_The k_work_item)))))))))
+While a result is outputless, when `work run` discards a `plan` stage for a work-item with the result, `work run` shall set the status of the work-item to `awaiting-answer` and ask a question on the work-item.
+= WhileWhen (CondOne (c_outputless_Is (k_result_An k_result))) (Happens (ActorSubj a_work_run) e_discard (k_stage_toNP (k_stage_An (rel_stage_with_result (rel_stage_for_work_item (t_kind_Pre v_plan) (k_work_item_An k_work_item)) (k_result_The k_result))))) (OneResp (Shall (ActorSubj a_work_run) (AndVP (t_status_Set (k_work_item_The k_work_item) v_awaiting_answer) (OneVP (Do e_ask (k_question_toNP (k_question_An (rel_question_on_work_item k_question (k_work_item_The k_work_item)))))))))
 # q47's line 4 (check point 17)
 # guard: initiative | with | result
-When a session ends an `integrate` stage for an initiative with a result that is `DONE`, `work run` shall end the session.
-= When (Happens (NPSubj (k_session_toNP (k_session_An k_session))) e_end (k_stage_toNP (k_stage_An (rel_stage_with_result (rel_stage_for_initiative (t_kind_Pre v_integrate) (k_initiative_An k_initiative)) (k_result_An (t_outcome_ThatIs k_result v_done)))))) (OneResp (Shall (ActorSubj a_work_run) (OneVP (Do e_end (k_session_toNP (k_session_The k_session))))))
+When `work run` discards an `integrate` stage for an initiative with a result that is `DONE`, `work run` shall take the initiative.
+= When (Happens (ActorSubj a_work_run) e_discard (k_stage_toNP (k_stage_An (rel_stage_with_result (rel_stage_for_initiative (t_kind_Pre v_integrate) (k_initiative_An k_initiative)) (k_result_An (t_outcome_ThatIs k_result v_done)))))) (OneResp (Shall (ActorSubj a_work_run) (OneVP (Do e_take (k_initiative_toNP (k_initiative_The k_initiative))))))
 # definitions (design-r2 §4.3)
 [Def] A result is outputless when the result gives no question and the result gives no output.
 = c_outputless_k_result_Def (CondAnd (rel_result_gives_question_Atom (k_result_The k_result) (k_question_No k_question)) (CondOne (rel_result_gives_output_Atom (k_result_The k_result) (k_output_No k_output))))
@@ -53,10 +53,10 @@ When a session ends an `integrate` stage for an initiative with a result that is
 [Def] A result is outputless when it gives no question.
 = refused: a definition names its subject as the result
 # verb frames (b82): a relation negated, and a verb's recipient after its object with `to`
-While a stage is not for a work-item, when a session ends the stage, `work run` shall give only a brief to the stage.
-= WhileWhen (CondOne (rel_stage_for_work_item_AtomNot (k_stage_An k_stage) (k_work_item_An k_work_item))) (Happens (NPSubj (k_session_toNP (k_session_An k_session))) e_end (k_stage_toNP (k_stage_The k_stage))) (OneResp (Shall (ActorSubj a_work_run) (OneVP (DoTo e_give (Only (k_brief_toNP (k_brief_An k_brief))) (k_stage_toNP (k_stage_The k_stage))))))
+While a stage is not for a work-item, when `work run` discards the stage, `pr-reviewer` shall give only a grade to a review finding.
+= WhileWhen (CondOne (rel_stage_for_work_item_AtomNot (k_stage_An k_stage) (k_work_item_An k_work_item))) (Happens (ActorSubj a_work_run) e_discard (k_stage_toNP (k_stage_The k_stage))) (OneResp (Shall (ActorSubj a_pr_reviewer) (OneVP (DoTo e_give (Only n_grade) (k_review_finding_toNP (k_review_finding_An k_review_finding))))))
 # a verb short of a noun its frame takes, refused naming the verb
 When a session ends, `work run` shall discard the stage.
 = refused: the verb end takes an object
-When a session ends a stage, `work run` shall give only a brief.
+When a session ends a trial, `work run` shall give only a grade.
 = refused: the verb give takes a recipient

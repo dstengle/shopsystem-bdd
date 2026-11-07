@@ -102,59 +102,60 @@ The simplified workflow:
 ## Glossary
 
 - **the person** (actor): the human who asks, answers and approves.
-- **`work run`** (actor): the supervisor of plugin 1.x that ran an initiative's work-items through their stages, removed in 2.0.0 with its record frozen under `.shop/work/`.
-- **`work`** (actor): the command that writes statuses, transitions and requests.
-- **`features`** (actor): the tool that reads, edits and reports on feature files.
-- **`tools`** (actor): the tool that installs and probes the project's interpreter and grammar toolchain, and maps code to tests.
-- **`measure`** (actor): the tool that measures a merged batch, records a defect found after a merge, and shows and compares measurements.
-- **`migrate`** (actor): the tool that migrates a repository to the final layout and upgrades it between plugin releases.
-- **`model`** (actor): the tool that checks a repository against the design model and reads its requirements.
-- **tool** (kind): any of the commands `work`, `features`, `tools`, `measure`, `migrate` and `model`.
-- **worker** (kind): a session `work run` starts with `claude -p` for one stage of one work-item, as that stage's agent.
+- **`work run`** (actor): the supervisor of plugin 1.x that ran an initiative's work-items through their stages, removed in 2.0.0 with its record frozen under `.shop/work/`. Kind of: tool.
+- **`work`** (actor): the command that writes statuses, transitions and requests. Kind of: tool.
+- **`features`** (actor): the tool that reads, edits and reports on feature files. Kind of: tool.
+- **`tools`** (actor): the tool that installs and probes the project's interpreter and grammar toolchain, and maps code to tests. Kind of: tool.
+- **`measure`** (actor): the tool that measures a merged batch, records a defect found after a merge, and shows and compares measurements. Kind of: tool.
+- **`migrate`** (actor): the tool that migrates a repository to the final layout and upgrades it between plugin releases. Kind of: tool.
+- **`model`** (actor): the tool that checks a repository against the design model and reads its requirements. Kind of: tool.
+- **tool** (kind): any of the commands `work`, `features`, `tools`, `measure`, `migrate` and `model`. Kind of: agent.
+- **worker** (kind): a session `work run` starts with `claude -p` for one stage of one work-item, as that stage's agent. Kind of: stage.
 
 - **bounded context** (kind): one repository's spec, with its index, capabilities, decisions and glossary.
-- **capability** (kind): one file under `spec/capabilities/`, with a group and a narrator. Plural: capabilities.
+- **capability** (kind): one file under `spec/capabilities/`, with a group and a narrator. Plural: capabilities. Kind of: file.
 - **guarantees capability** (kind): a capability of the group `guarantees`, checked by `measure` on real batches and not by scenarios. Plural: guarantees capabilities.
-- **requirement** (kind): one codified statement of a capability, named `<capability>#r<n>`, that parses to one tree in the requirement grammar. Not: behaviour requirement, capability requirement, carry, carries, carried, carrying.
+- **requirement** (kind): one codified statement of a capability, named `<capability>#r<n>`, that parses to one tree in the requirement grammar. Not: behaviour requirement, capability requirement, carry, carries, carried, carrying. Kind of: text.
 - **requirement group** (kind): the requirements of a capability that together make one scenario, named `<capability>#g<n>`, with a title.
-- **universal condition** (kind): a statement of `spec/universal.md`, named `U<n>`, true in every state of every trace and never restated in a requirement.
+- **universal condition** (kind): a statement of `spec/universal.md`, named `U<n>`, true in every state of every trace and never restated in a requirement. Kind of: text.
 - **term** (kind): one entry of this glossary or of a capability's `## Terms`, with a category.
-- **design-decision** (kind): one file under `spec/decisions/`.
-- **feature** (kind): the generated file `features/<capability>.feature`, one scenario for each requirement group.
+- **design-decision** (kind): one file under `spec/decisions/`. Kind of: file.
+- **feature** (kind): the generated file `features/<capability>.feature`, one scenario for each requirement group. Kind of: file.
 - **scenario** (kind): a Gherkin scenario in `features/<capability>.feature`, generated from one requirement group, passing when the one test that binds it passes. Not: test case.
 - **deprecated scenario** (kind): a scenario kept in its feature file, tagged `@deprecated`, after its line is changed or removed, until its replacement passes. Not: held, holding, superseded.
 - **step** (kind): one Given, When or Then line of a scenario, the linearisation of one step function, bound to exactly one step definition.
 
-- **request** (kind): the one way work enters a bounded context: lines that its asker (another context, the product level, or the context itself) proposes to its upstream (the context asked).
-- **request line** (kind): one proposed statement of a request, with its line outcome.
+- **request** (kind): the one way work enters a bounded context: lines that its asker (another context, the product level, or the context itself) proposes to its upstream (the context asked). Kind of: text.
+- **request line** (kind): one proposed statement of a request, with its line outcome. Kind of: text.
 - **initiative** (kind): the delivery of one request's accepted lines, named `i<n>`. Kind of: node.
 - **proposal** (kind): a part of an initiative that proposes changes to the spec in its `adds`, `changes` and `removes`: a capability-proposal or a glossary-proposal. Kind of: node.
 - **capability-proposal** (kind): the proposal of an initiative that adds, changes and removes the requirements of one capability. Kind of: proposal.
 - **glossary-proposal** (kind): the part of an initiative, beside its capability-proposals, that proposes the terms the glossary of `spec/index.md` adds, changes and removes. Kind of: proposal.
 - **work-item** (kind): the unit of delivery under a capability-proposal, named by its id `w<n>`, that `work run` runs through its stages. Kind of: node.
-- **question** (kind): an open point on a node or a request line, with its readings and a recommended reading.
-- **answer** (kind): the answer to a question on a work-item, a capability-proposal, a glossary-proposal or a request, written in it in its answerer's words. Not: ruling.
+- **question** (kind): an open point on a node or a request line, with its readings and a recommended reading. Kind of: text.
+- **answer** (kind): the answer to a question on a work-item, a capability-proposal, a glossary-proposal or a request, written in it in its answerer's words. Not: ruling. Kind of: text.
 - **delegation** (kind): the person's words, given with a request, naming the questions a session may answer in the person's place.
 - **node** (kind): an initiative, a proposal or a work-item: anything with a status that `work run` runs through its transitions.
-- **transition** (kind): one change of a node's status, written by `work`. Not: move.
+- **transition** (kind): one change of a node's status, written by `work`. Not: move. Kind of: text.
 - **check** (kind): a command a work-item names in place of scenarios, whose exit code 0 shows its work complete. Not: criterion.
 - **gate** (kind): the person's approval of requirements and glossary entries before they are committed to `spec/`, with the questions they raise. Not: sign-off.
 - **ledger** (kind): the tracked file `.shop/work/<initiative>/ledger.md` of one initiative, one line an event, archived with the initiative.
 
 - **delivery** (kind): one invocation of `work run` on an initiative, from its start until it exits. Plural: deliveries.
-- **stage** (kind): one session `work run` starts for a node from its status: research, plan, implement and review by a worker, a round, an answering session, a branch review or an analysis. Not: phase.
-- **round** (kind): a stage of the kind `integrate`, `gate`, `apply`, `formulate` or `intake`, numbered under its drafts path. Not: iteration.
-- **session** (kind): one Claude Code conversation with its own id and transcript: the person's, a stage or a dispatch. Not: conversation, chat.
-- **dispatch** (kind): a session another session starts with its Agent tool, and the transcript it leaves. Plural: dispatches. Not: subagent.
-- **agent** (kind): a definition under `agents/` (its name, model, tools and skills) that a worker or a dispatch is started as. Not: persona.
+- **stage** (kind): one session `work run` starts for a node from its status: research, plan, implement and review by a worker, a round, an answering session, a branch review or an analysis. Not: phase. Kind of: session.
+- **round** (kind): a stage of the kind `integrate`, `gate`, `apply`, `formulate` or `intake`, numbered under its drafts path. Not: iteration. Kind of: stage.
+- **session** (kind): one Claude Code conversation with its own id and transcript: the person's, a stage or a dispatch. Not: conversation, chat. Kind of: agent.
+- **dispatch** (kind): a session another session starts with its Agent tool, and the transcript it leaves. Plural: dispatches. Not: subagent. Kind of: session.
+- **agent definition** (kind): a definition under `agents/` (its name, model, tools and skills) that a worker or a dispatch is started as. Not: persona.
+- **agent** (kind): a session or a tool, as the one that does what a verb says. Kind of: thing.
 - **brief** (kind): the input data `work run` writes for one stage in its stage directory, naming the node, the files to read, the worktree and where the result goes. Not: task file.
 - **input** (kind): what a session is started with: input data, such as a brief, or an input prompt, the text filled from a template.
 - **template** (kind): standing text in a skill or an agent definition that a session fills with input to start another session. Not: boilerplate.
 - **result** (kind): the file `result.json` a stage writes, giving its outcome, its summary and the files it names. Not: return.
 - **report** (kind): the implementer's file in its stage directory, beside its result, naming the files it touched, the tests whose setup it changed and its open questions. Not: write-up.
 - **hand-back** (kind): an implementer's stop with the outcome `HAND-BACK`, giving the condition and its evidence word for word. Not: handback.
-- **review** (kind): a reviewer's reading of commits against the spec and the repository's rules, written as graded findings: a pull request review or an architecture review. Not: audit.
-- **review finding** (kind): one graded finding of a review.
+- **review** (kind): a reviewer's reading of commits against the spec and the repository's rules, written as graded findings: a pull request review or an architecture review. Not: audit. Kind of: text.
+- **review finding** (kind): one graded finding of a review. Kind of: text.
 - **stage directory** (kind): the directory `runs/<node>/<k>-<stage>/` that holds one stage's brief, result, report and session. Plural: stage directories. Not: run directory.
 - **compaction** (kind): Claude Code's replacement of a session's earlier messages by a summary, recorded in its transcript.
 - **round trip** (kind): one assistant message of a session's transcript with its own request id, the unit `--max-turns` limits.
@@ -163,27 +164,29 @@ The simplified workflow:
 - **fact** (kind): one statement `model facts` gives clingo about the repository's files.
 
 - **worktree** (kind): a working tree `work run` makes for one stage.
-- **file** (kind): a file of the repository or of a worktree.
-- **command** (kind): one run of `work`, `work run` or another tool, with its arguments.
-- **reason** (kind): what an error names as the cause of a refused command.
+- **file** (kind): a file or a directory of the repository or of a worktree. Kind of: text.
+- **text** (kind): what a session or a tool writes: a file, or a part of one it writes whole, such as an entry, a line, a row, a block or a comment. Kind of: thing.
+- **thing** (kind): anything a requirement names, as what a verb such as keep, name, read or use takes.
+- **command** (kind): one run of `work`, `work run` or another tool, with its arguments. Kind of: thing.
+- **reason** (kind): what an error names as the cause of a refused command. Kind of: text.
 - **JSON object** (kind): the one object a tool prints on standard output when `--json` is given.
 - **resource** (kind): what a session holds while it runs: a lock, a claim, a worker slot, a turn, an initiative directory or the checkout.
 - **initiative branch** (kind): the branch `work run` commits each transition on and merges each work-item branch into, whose base is the commit it started from. Plural: initiative branches. Not: integration branch.
 - **work-item branch** (kind): the branch an implementer commits a work-item's work on, from the initiative branch's head, merged into the initiative branch and deleted when it is merged. Plural: work-item branches.
-- **commit** (kind): one git commit on a branch.
-- **commit** (event): a session, a tool or `work` records changed files as one git commit on the current branch. Forms: commits, committed. Frame: session commits file.
-- **push** (event): a commit is pushed to a remote. Forms: pushes, pushed. Frame: session pushes commit.
+- **commit** (kind): one git commit on a branch, with its message and its change. Kind of: thing.
+- **commit** (event): a session or a tool records changed files, or a text changed in one, as one git commit on the current branch. Forms: commits, committed. Frame: agent commits text.
+- **push** (event): a commit is pushed to a remote. Forms: pushes, pushed. Frame: agent pushes commit.
 - **relocate** (event): a file or directory is moved with git, keeping its history. Forms: relocates, relocated. Frame: `migrate` relocates file.
-- **use** (event): a session or a tool uses another tool, a model, an interpreter or a file. Forms: uses, used. Frame: session uses tool.
-- **test** (kind): one test of the repository's suite, a scenario's or a script's, by its pytest id.
+- **use** (event): a session or a tool uses another tool, a model, an interpreter or a file. Forms: uses, used. Frame: agent uses thing.
+- **test** (kind): one test of the repository's suite, a scenario's or a script's, by its pytest id. Kind of: thing.
 - **violation** (kind): a row of a rule `model check` finds, printed under the rule's code and plain label.
 - **remote** (kind): the remote `work run` pushes the initiative branch to: the branch's upstream remote, else `origin`.
 - **file set** (kind): the paths, globs or directories a work-item says its work changes. Not: fileset, scope.
 - **suite** (kind): every test `python3 -m pytest` runs from the root by default. Not: fast suite.
 
-- **record** (kind): a file under `.shop/records/` whose frontmatter id has a record kind. Not: log entry.
-- **measurement** (kind): a record under `.shop/records/measurements/` of the figures of one batch, of one earlier delivery or of a trial, written by `measure` or by the trial. Not: facts file.
-- **trial** (kind): one run by the `trial-runner` of a plugin tool or `work run` on a real target or a fixture repository, measuring what its input names.
+- **record** (kind): a file under `.shop/records/` whose frontmatter id has a record kind. Not: log entry. Kind of: file.
+- **measurement** (kind): a record under `.shop/records/measurements/` of the figures of one batch, of one earlier delivery or of a trial, written by `measure` or by the trial. Not: facts file. Kind of: record.
+- **trial** (kind): one run by the `trial-runner` of a plugin tool or `work run` on a real target or a fixture repository, measuring what its input names. Kind of: thing.
 - **plugin version** (kind): the plugin release a repository on the final layout is on, recorded as one line in `.shop/plugin-version`.
 - **upgrade** (kind): what `migrate upgrade` does to a repository on the final layout to take it from one plugin release to the next: it applies the pending upgrade steps.
 - **upgrade step** (kind): one change to a repository's files that the plugin holds with the version that introduced it and a one-line description.
@@ -218,18 +221,18 @@ The simplified workflow:
 - **green check** (condition of work-item branch): a work-item branch on which every test passes, its work-item's scenarios among them.
 
 
-- **start** (event): a stage begins to run, holding its resources. Frame: session starts stage.
-- **end** (event): a stage's session stops, with a result or without one. Frame: session ends stage.
-- **ask** (event): a stage raises a question, and its node becomes `awaiting-answer`. Frame: session asks question.
+- **start** (event): a session begins a thing it runs, such as a stage or a trial. Frame: session starts thing.
+- **end** (event): a session or a tool stops a thing it runs, such as a stage or a trial, with a result or without one. Frame: agent ends thing.
+- **ask** (event): a session or a tool raises a question that waits for an answer. Frame: agent asks question.
 - **approve** (event): the person approves a proposal at the gate. Frame: the person approves proposal.
 - **discard** (event): `work run` drops a stage that ended without a readable result. Frame: `work run` discards stage.
 - **merge** (event): `work run` merges a work-item branch into the initiative branch. Forms: merges, merged. Frame: the person merges pull request.
 - **rerun** (event): `work run` runs a failing scenario once more, alone. Forms: reruns, rerun. Frame: `work run` reruns scenario.
 - **raise** (event): an initiative raises a request into an upstream. Forms: raises, raised. Frame: initiative raises request.
 - **refuse** (event): a tool declines a command. Frame: tool refuses command.
-- **write** (event): a session or a tool writes a file or a field. Forms: writes, written. Frame: session writes file.
-- **change** (event): a session or a tool changes a file or a field. Frame: session changes file.
-- **give** (event): `work run` gives a stage its input. Forms: gives, given. Frame: `work run` gives input to stage.
+- **write** (event): a session or a tool writes a file or a field. Forms: writes, written. Frame: agent writes text.
+- **change** (event): a session or a tool changes a file or a field. Frame: agent changes file.
+- **give** (event): a session or a tool gives a text a thing it lacks, such as a grade to a review finding. Forms: gives, given. Frame: agent gives thing to text.
 
 - **spec lock** (resource, exclusive): one for each bounded context, held by every integrate, apply and formulate round.
 - **initiative lock** (resource, exclusive): one for each initiative, held by every stage of the initiative that is not a worker's.
@@ -241,13 +244,13 @@ The simplified workflow:
 - **turn** (resource, exclusive): one for each request, held by the side whose part of the request is to be written next.
 - **checkout** (resource, exclusive): the repository's main working tree, held by one delivery of `work run`.
 
-- **item** (kind): one entry of the backlog, work this bounded context may do, with its requirement lines, its provenance and its ratings, named by its id `b<n>` and its title.
+- **item** (kind): one file of the backlog, `.shop/backlog/b<n>.md`: work this bounded context may do, with its requirement lines, its provenance and its ratings, named by its id `b<n>` and its title. Kind of: file.
 - **backlog** (kind): every item of a bounded context, kept in `.shop/backlog/`.
-- **batch** (kind): ready items built together on one branch and closed by its pull request, named `batch-<n>`. Plural: batches.
-- **batch plan** (kind): the file `.shop/batches/<n>/plan.md`, with a batch's tasks and their statuses.
+- **batch** (kind): ready items built together on one branch and closed by its pull request, named `batch-<n>`, kept as the directory `.shop/batches/<n>/`. Plural: batches. Kind of: file.
+- **batch plan** (kind): the file `.shop/batches/<n>/plan.md`, with a batch's tasks and their statuses. Kind of: file.
 - **task** (kind): one unit of a batch plan, built in its own worktree.
-- **pull request** (kind): the GitHub pull request of a batch's branch.
-- **quote** (kind): the person's words cited by a file, with its session, its message and the messages around it.
+- **pull request** (kind): the GitHub pull request of a batch's branch. Kind of: thing.
+- **quote** (kind): a file under `.shop/quotes/` of the person's words cited by another file, with its session, its message and the messages around it. Kind of: file.
 - **message** (kind): one turn of the person or of a session in a transcript, without its tool uses.
 - **status** (attribute of item): Values: `idea`, `shaped`, `ready`, `in-batch`, `delivered`, `needs-input`, `refused`, `withdrawn`.
   Transitions: `idea` → `shaped`: `work shape`; `shaped` → `ready`: `work ready`; `ready` → `shaped`: pick; `ready` → `in-batch`: pick; `in-batch` → `delivered`: merge; `in-batch` → `needs-input`: park; `in-batch` → `ready`: `work batch abandon`; `needs-input` → `shaped`: `work answer`; `idea` → `refused`: `work refuse`; `shaped` → `refused`: `work refuse`; `idea` → `withdrawn`: `work withdraw`; `shaped` → `withdrawn`: `work withdraw`; `ready` → `withdrawn`: `work withdraw`; `needs-input` → `withdrawn`: `work withdraw`.
@@ -259,16 +262,16 @@ The simplified workflow:
   Transitions: `building` → `in-review`: `work batch review`; `in-review` → `building`: a fix-now finding; `in-review` → `awaiting-merge`: a clean review; `awaiting-merge` → `merged`: merge; `in-review` → `merged`: merge; `building` → `abandoned`: `work batch abandon`; `in-review` → `abandoned`: `work batch abandon`.
 - **status** (attribute of task): Values: `pending`, `running`, `done`, `failed`.
 - **tier** (attribute of design-decision): Values: `check`, `requirement`, `judgement`.
-- **dependency** (kind): one item's need of another item, written in the item that needs it. Plural: dependencies.
+- **dependency** (kind): one item's need of another item, written in the item that needs it. Plural: dependencies. Kind of: text.
 - **blocked** (condition of item): an item with a dependency on an item that is not `delivered` and is not in the same batch.
 - **well-formed** (condition of item): an item whose every requirement parses, has no L0 or L1 finding of `model logic` with the item's lines laid over `spec/`, and has its scenarios written by `features generate`, and whose capabilities' `check` design-decisions pass their tests.
 - **passing** (condition of item): An item is passing when the item is well-formed and every request line of the item is settled.
 - **clean** (condition of pull request): A pull request is clean when no review finding on the pull request is `fix now`.
 - **pick** (event): `work batch start` takes a ready item into a batch, or returns it to `shaped` when it is no longer passing. Forms: picks, picked. Frame: `work` picks item.
 - **park** (event): a batch sets an item it cannot finish without an answer to `needs-input`. Forms: parks, parked. Frame: batch parks item.
-- **publish** (event): `work` puts a batch's branch on GitHub as a pull request. Forms: publishes, published. Frame: `work` publishes pull request.
+- **publish** (event): `work` puts a thing on GitHub: a batch's branch as a pull request, with its commits. Forms: publishes, published. Frame: `work` publishes thing.
 - **triage** (attribute of review finding): what a review asks of its finding: fixed on the branch before the merge, kept as an observation, or dropped. Values: `fix now`, `observation`, `drop`.
-- **defect** (kind): a fault in the behaviour of the repository's code, with its reproduction, found by a review or after a merge.
+- **defect** (kind): a file of a batch that records a fault in the behaviour of the repository's code, with its reproduction, found by a review or after a merge. Kind of: file.
 - **failing** (condition of test): the test fails when it runs.
 
 ## Relations

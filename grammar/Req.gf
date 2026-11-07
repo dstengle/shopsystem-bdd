@@ -31,8 +31,7 @@ abstract Req = Typed ** {
     Runs : Subj -> Cmd -> Trig ;                 -- the person runs `work start`
     RunsOn : Subj -> Cmd -> NP -> Trig ;         -- the person runs `work start` on an initiative that is ...
     IsRun : Cmd -> Trig ;                        -- `tools size` is run
-    Happens : Subj -> Event -> NP -> Trig ;      -- a session ends a stage
-    HappensI : Subj -> Event -> Trig ;           -- research ends (a verb whose frame takes no object)
+    -- a verb's trigger, "a session writes a file", is a fun of its frame (spec_typed_verbs: e_write__Happens)
     CondOne : Atom -> Cond ;
     CondAnd : Atom -> Cond -> Cond ;             -- A and B
     CondOr : Atom -> Cond -> Cond ;              -- A or B
@@ -42,10 +41,7 @@ abstract Req = Typed ** {
     FeatGiven : Code -> Feat ;                   -- `--json` is given
     FeatAtom : Atom -> Feat ;
     -- verb phrases tied to no kind
-    -- a verb's clauses: spec_frames' guard keeps each to the verb's frame, naming the verb when a noun is missing
-    Do : Event -> NP -> VP ;                     -- start the stage
-    DoI : Event -> VP ;                          -- stop
-    DoTo : Event -> NP -> NP -> VP ;             -- give only a brief to the stage: the object, then to the recipient
+    -- a verb's phrase, "write a file", is a fun of its frame (spec_typed_verbs: e_write__Do, __DoI, __DoTo)
     Print : NPs -> VP ;                          -- print X, Y and Z
     ExitOk : VP ;                                -- exit successfully
     ExitErr : NP -> VP ;                         -- exit with an error naming X

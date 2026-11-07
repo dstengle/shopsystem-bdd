@@ -11,11 +11,7 @@ abstract Steps = Req ** {
     SAtom : Atom -> Step ;                         -- the initiative i1 is `started` / the session s1 holds the spec lock
     SFeat : Feat -> Step ;                         -- `--json` is given
     STrig : Trig -> Step ;                         -- the person runs `work start` on the initiative i1
-    SDoes : Subj -> Event -> NP -> Step ;          -- `work run` takes the initiative i1
-    SDoesNot : Subj -> Event -> NP -> Step ;       -- `work run` does not take the initiative i3
-    SDoesTo : Subj -> Event -> NP -> NP -> Step ;  -- `work run` gives only a brief to the stage s1
-    SDoesI : Subj -> Event -> Step ;               -- `work` stops
-    SDoesINot : Subj -> Event -> Step ;            -- `work` does not stop
+    -- a verb's step, "`work` writes the item i1", is a fun of its frame (spec_typed_verbs: e_write__SDoes ...)
     SPrints : Subj -> NPs -> Step ;                -- `work` prints the work-item w1
     SPrintsNot : Subj -> NPs -> Step ;             -- `work` does not print the work-item w2
     SExitsOk : Subj -> Step ;                      -- `work` exits successfully

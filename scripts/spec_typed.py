@@ -1,4 +1,4 @@
-"""The generated GF modules of a lexicon (design §9.1, §9.2): `Lex` (actors, events, resources) and `Typed` (one
+"""The generated GF modules of a lexicon (design §9.1, §9.2): `Lex` (actors, resources) and `Typed` (one
 block of slots per kind, attribute, condition and relation row), each with its English.
 
 A relation row (from kind, word, to kind) gives a modifier fun `rel_<k1>_<word>_<k2>` and a clause fun of the same
@@ -62,23 +62,17 @@ def plural(word):
     return _last(word, rule)
 
 
-def past(word):
-    if word.endswith("e"):
-        return word + "d"
-    if re.search(r"[^aeiou]y$", word):
-        return word[:-1] + "ied"
-    return word + "ed"
+def event_forms(term):
+    """(infinitive, third person singular) of a verb's entry: its two `Forms:`, else its term inflected."""
+    return term.term, term.forms[0] if len(term.forms) == 2 else plural(term.term)
 
 
 def _lex(lex, ids):
+    """Actors and resources; a verb has no fun of its own, only those of its frame (spec_typed_verbs)."""
     funs, lins = [], []
     for t in lex.of("actor"):
         funs.append("%s : Actor ;" % ids[t.key])
         lins.append("%s = %s ;" % (ids[t.key], gf_str(t.term)))
-    for t in lex.of("event"):
-        s3, part = t.forms if len(t.forms) == 2 else (plural(t.term), past(t.term))
-        funs.append("%s : Event ;" % ids[t.key])
-        lins.append("%s = mkEvent %s %s %s ;" % (ids[t.key], gf_str(t.term), gf_str(s3), gf_str(part)))
     for t in lex.of("resource"):
         funs.append("%s : Resource ;" % ids[t.key])
         lins.append("%s = mkRes %s %s ;" % (ids[t.key], gf_str(t.term), gf_str(t.plural or plural(t.term))))
@@ -202,6 +196,9 @@ def modules(lex):
                 f, li = _relation(word, kid1, kid2, fun)
                 funs += f
                 lins += li
+    import spec_typed_verbs
+    for acc, part in zip((cats, funs, lincats, lins), spec_typed_verbs.modules(lex)):
+        acc += part
 
     def block(head, *sections):
         body = "".join("  %s\n%s" % (kw, "".join("    %s\n" % x for x in xs)) for kw, xs in sections if xs)

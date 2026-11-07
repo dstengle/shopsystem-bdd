@@ -269,3 +269,10 @@ Feature: Design model check
     And the requirement r1 is negating
     When the person runs `model parse` on the requirement r1
     Then `model` exits successfully
+
+  @g63 @r63
+  Scenario: `model parse` refuses a verb with a noun of the wrong kind
+    Given a requirement r1
+    And the requirement r1 is mistyped
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits with an error naming the term t1
