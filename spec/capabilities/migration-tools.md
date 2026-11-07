@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/migration-in-one-pass, design-decision/living-plan-to-work-items, design-decision/final-layout, design-decision/references-are-ids, design-decision/capability-ids-are-context-scoped, design-decision/plugin-takes-the-dependencies-it-needs, design-decision/upgrades-between-plugin-releases, design-decision/work-items-named-by-ids, design-decision/answers-not-rulings, design-decision/the-ledger-is-tracked]
 retired: [r22, r23]
-unbuilt: [r25]
+unbuilt: []
 ---
 
 # Migration tools
@@ -314,7 +314,7 @@ Restates: r27@0.29.
   step is pending" and change nothing.
 
 ```given
-the tracked file `.shop/plugin-version` holds "2.4.0"
+the tracked file `.shop/plugin-version` holds "3.0.0"
 ```
 
 ### [g15] the upgrade step after 0.24.0 renames `awaiting-ruling` to `awaiting-answer` and `## Rulings` to `## Answers`
@@ -395,7 +395,7 @@ Restates: r24@0.29.
   successfully, and `migrate` shall not print "migrate upgrade" or print "i1".
 
 ```given
-the tracked file `.shop/plugin-version` holds "2.4.0"
+the tracked file `.shop/plugin-version` holds "3.0.0"
 the tracked file `.shop/work/i1/initiative.md` holds:
   ---
   id: initiative/example.org/acme/shop/i1
