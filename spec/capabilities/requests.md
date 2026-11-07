@@ -302,6 +302,15 @@ Restates: r10@0.29, r11@0.29, r12@0.29, r24@0.29.
   what it finds and exits successfully. Under `--forward`, `--every` (default 60) is the longest wait for an event,
   and `--polls <n>` ends a watch whose n waits found nothing, printing `work watch: nothing new after <n> waits` on
   stderr and exiting 1. Its forwards end with it, and it writes nothing in the repository.
+- `work watch --hook` is the requests' SessionStart hook (r54-r56): it prints each request that waits on the other
+  side, a sent request that is `awaiting-upstream` or a received one that is `awaiting-asker`, one line each as
+  `<name> <status>: <title> (<issue>)` (the issue left out of a request with none), then one line, last,
+  telling the session to start `work watch --forward` with the Monitor tool and to run `work sync` when it wakes.
+  With no request waiting it prints nothing. It reads only the records under `.shop/requests/`, never GitHub, and writes
+  nothing; whatever goes wrong, it prints nothing and exits 0, so a hook never fails a session's start.
+  `hooks/hooks.json` runs it as `request_hook watch`, an entry point apart from `work`: `work` imports the grammar's
+  modules, which need site packages (clingo), and a hook runs under any `python3`, with site packages or without.
+  `request_hook watch` prints what `work watch --hook` prints and, whatever goes wrong, an import included, exits 0.
 - `work show <request>` prints the request's status and turn, then whose turn it is and, for a request on an issue,
   the issue's URL (`it is the <side>'s turn, on <URL>`), then each line with its line outcome, each question with its
   answer and the resolution.
