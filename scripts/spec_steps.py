@@ -166,8 +166,8 @@ class Reader:
             return ("SExitsOk" if event.name == "exit_ok" else "SChangesNothing"), s
         if positive and event.name == "exit_error":
             return "SExitsErr", s, self.np(x)
-        if positive and name_of(x) == "pair":
-            return "SDoesTo", s, (event.name,), self.np(x.arguments[0]), self.np(x.arguments[1])
+        if name_of(x) == "pair":
+            return ("SDoesTo" if positive else "SDoesToNot"), s, (event.name,), self.np(x.arguments[0]), self.np(x.arguments[1])
         if not is_none(x):
             return ("SDoes" if positive else "SDoesNot"), s, (event.name,), self.np(x)
         if name_of(event) and not event.arguments:

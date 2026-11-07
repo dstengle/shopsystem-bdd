@@ -7,7 +7,7 @@ A noun fills it when its kind (or the actor) is T or a kind of T (`spec_frames.b
 subject slot. A verb `e` with its frame gives `e__Happens` / `e__HappensI` / `e__HappensTo` (a trigger, its
 recipient after "to"), `e__Do` / `e__DoI` / `e__DoTo` (a verb phrase), `e__Does` / `e__DoesNot` (a condition
 between two kinds, "a session does not write a file"; b85) and, for the step grammar, `e__SDoes`, `e__SDoesNot`,
-`e__SDoesTo`, `e__SDoesI`, `e__SDoesINot`.
+`e__SDoesTo`, `e__SDoesToNot` (b103), `e__SDoesI`, `e__SDoesINot`.
 
 The rest of the tools read a tree in its normal form (`normal`): the verb's clause as `Do e x`, `DoTo e x y`,
 `DoI e`, `Happens s e x`, `HappensI s e`, `HappensTo s e x y`, `Does s e x`, `DoesNot s e x` (and `SDoes s e x`
@@ -20,11 +20,11 @@ import spec_lexicon
 import spec_typed
 
 SEP = "__"
-STEPS = ("SDoes", "SDoesNot", "SDoesTo", "SDoesI", "SDoesINot")
+STEPS = ("SDoes", "SDoesNot", "SDoesTo", "SDoesToNot", "SDoesI", "SDoesINot")
 # the normal form of each verb fun: (argument places of subject, object, recipient), the event placed after a subject
 SHAPES = {"Happens": "so", "HappensI": "s", "HappensTo": "sor", "Does": "so", "DoesNot": "so", "Do": "o", "DoI": "",
           "DoTo": "or", "SDoes": "so", "SDoesNot": "so",
-          "SDoesTo": "sor", "SDoesI": "s", "SDoesINot": "s"}
+          "SDoesTo": "sor", "SDoesToNot": "sor", "SDoesI": "s", "SDoesINot": "s"}
 
 
 def _type_id(name, ids, lex):
@@ -140,8 +140,9 @@ def step_modules(lex):
     for eid, (inf, s3, (s, o, r)) in sorted(frames(lex).items()):
         i, t = spec_typed.gf_str(inf), spec_typed.gf_str(s3)
         if o and r:
-            funs.append("%s%sSDoesTo : %s_Sb -> %s_Ob -> %s_Ob -> Step ;" % (eid, SEP, s, o, r))
-            lins.append('%s%sSDoesTo s x y = s ++ %s ++ x.s ++ "to" ++ y.s ;' % (eid, SEP, t))
+            funs.append("%s%sSDoesTo, %s%sSDoesToNot : %s_Sb -> %s_Ob -> %s_Ob -> Step ;" % (eid, SEP, eid, SEP, s, o, r))
+            lins += ['%s%sSDoesTo s x y = s ++ %s ++ x.s ++ "to" ++ y.s ;' % (eid, SEP, t),
+                     '%s%sSDoesToNot s x y = s ++ "does" ++ "not" ++ %s ++ x.s ++ "to" ++ y.s ;' % (eid, SEP, i)]
         elif o:
             funs += ["%s%sSDoes, %s%sSDoesNot : %s_Sb -> %s_Ob -> Step ;" % (eid, SEP, eid, SEP, s, o)]
             lins += ["%s%sSDoes s x = s ++ %s ++ x.s ;" % (eid, SEP, t),

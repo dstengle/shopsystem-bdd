@@ -67,6 +67,9 @@ def then_writes(step):
         if hits:      # the trace's name for what the command wrote anew
             step.context.setdefault("nodes", {})[instance[1]] = (instance[0], hits[0])
     assert hits, (step.text, changed)
+    for rel in hits:      # what a Given said the file must hold (feature-file-tools' withholding requirement)
+        want = step.context.get("holds", {}).get(rel)
+        assert want is None or want.search((step.repo / rel).read_text()), (rel, want.pattern)
 
 
 @handler("ThenDoes", "commit")
