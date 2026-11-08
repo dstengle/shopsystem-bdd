@@ -1,0 +1,27 @@
+requests#r33	While a request comment does not conform to the comment schema, when a session runs `work sync`, `work` shall print the comment and not write the comment.
+requests#r38	While a request line does not conform to the requirement grammar of its upstream, if a session runs `work outcome accepted` on the request line, then `work` shall exit with an error naming the request line and change nothing.
+requests#r6	If the person runs `work request` with no origin option, then `work` shall exit with an error naming an origin and change nothing.
+requests#r24	While a request is not `accepted`, if the person runs `work resolve` on the request, then `work` shall exit with an error naming the status of the request and change nothing.
+batches#r8	While a batch is `building` and every task of the batch is `done`, when the person runs `work batch review` on the batch, `work` shall publish a pull request of the batch and set the status of the batch to `in-review`.
+batches#r13	While a commit on the branch of a task of a batch cites no item, if the person runs `work batch review` on the batch, then `work` shall exit with an error naming the commit and change nothing.
+batches#r17	While an item that is `in-batch` proposes a requirement, when a batch parks the item, `work` shall remove the requirement from the branch of the batch.
+batches#r16	When the person merges the pull request of a batch, `work` shall remove every review folder of the batch.
+backlog#r20	While a repository is on the branch of a task, if the person runs `work idea`, then `work` shall exit with an error naming the task and change nothing.
+backlog#r21	While a repository is on a branch whose upstream branch has a different name, when the person runs `work idea`, `work` shall write an item that is `idea`, commit the item and keep the upstream branch.
+migration-tools#r19	While the release of a repository is `own` and no initiative of the repository is open, when the SessionStart hook runs `migrate status --hook`, `migrate` shall exit successfully and not print "migrate upgrade" or the id of an initiative.
+migration-tools#r14	While the release of a repository is `own`, when the person runs `migrate upgrade`, `migrate` shall print "no upgrade step is pending" and change nothing.
+migration-tools#r25	While the plugin version of a repository is after `1.0.0` and before `3.0.0`, when the person runs `migrate upgrade`, `migrate` shall rewrite `spec/index.md` and print "verb frames" and "v_t11".
+migration-tools#r8	While no commit holds the text of an untracked file, if the person runs `migrate run` on a bounded context, then `migrate` shall exit with an error naming the untracked file and change nothing.
+migration-tools#r21	While the plugin version file of a repository holds no version, when the SessionStart hook runs `migrate status --hook`, `migrate` shall print "holds no version" and the text of the plugin version file.
+feature-file-tools#r3	While a feature file has a docstring whose text has a tag and a `Scenario:` line, when the person runs `features list` with the tag, `features` shall exit successfully and not print the feature file.
+feature-file-tools#r14	While a test module binds every scenario of a feature file with one `scenarios(...)` call, when the person runs `features bindings --unbound`, `features` shall exit successfully.
+trials#r1	When a session runs `trial-runner` on a trial, `trial-runner` shall start the trial.
+trials#r2	`trial-runner` shall read only files of its target.
+trials#r4	When `trial-runner` ends a trial, `trial-runner` shall write a measurement of the trial that names the target of the trial.
+design-model-check#r60	If the person runs `model check` on a verb whose glossary entry has no frame, then `model` shall exit with an error naming the verb.
+design-model-check#r69	When the person runs `model parse` on a requirement that uses a prepositional verb, `model` shall exit successfully.
+conversation#r2	When the UserPromptSubmit hook runs `work quote --hook`, `work` shall record the session in the git directory.
+telemetry#r1	While a batch is `merged`, when the person runs `measure batch` on the batch, `measure` shall write a measurement of the batch that includes "wall time", "session time", "tokens" and "cost by role".
+universal#U4	When `work` makes a transition, `work` shall commit the transition and push the commit.
+universal#U7	A worker shall change only files in its worktree.
+universal#U11	If a tool refuses a command for a reason, then the tool shall exit with an error naming the reason and change nothing.

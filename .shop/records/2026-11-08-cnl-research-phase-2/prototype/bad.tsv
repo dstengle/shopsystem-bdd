@@ -1,0 +1,17 @@
+agr-subject	When the person run `work idea`, `work` shall write an item.
+agr-copula	While every task of the batch are `done`, `work` shall change nothing.
+agr-shall	`work` shall prints the comment.
+agr-neg	While a request line do not conform to the comment schema, `work` shall change nothing.
+kind-subject	When a session parks the item, `work` shall remove the requirement from the branch of the batch.
+kind-object	While a commit cites no batch, `work` shall change nothing.
+kind-object2	When the person merges the pull request of a batch, `work` shall publish a commit of the batch.
+kind-value	While a batch is `done`, `work` shall change nothing.
+kind-value2	While the plugin version of a repository is `own`, `migrate` shall change nothing.
+kind-set	When the person runs `work batch review` on the batch, `work` shall set the status of the batch to `done`.
+kind-coord	While a feature file has a docstring whose text has a tag and a branch, `features` shall exit successfully.
+kind-whose	If the person runs `model check` on a verb whose frame has no glossary entry, then `model` shall exit successfully.
+passive	While the comment is written, `work` shall change nothing.
+passive2	While a request comment is printed, `work` shall change nothing.
+coined	While a comment is unreadable, when a session runs `work sync`, `work` shall print the comment.
+coined2	While an initiative is idle, `migrate` shall exit successfully.
+code-as-kind	`work` shall publish `spec/index.md`.
