@@ -145,6 +145,9 @@ def term(step):
         H.says(step, name, "glossary bullet")
     elif word == "frameless":
         path.write_text(text.replace("- **%s** (noun): a thing.\n" % name, "- **%s** (verb): a thing done.\n" % name))
+    elif word == "prepositional":     # the preposition between the verb and its object belongs to the verb
+        path.write_text(text.replace("- **%s** (noun): a thing.\n" % name,
+                                     "- **%s** (verb): a stage is followed. Frame: agent %ss to stage.\n" % (name, name)))
     elif word == "unlabelled":     # the category of plugin 2.x, which names no part of speech
         path.write_text(text.replace("- **%s** (noun): a thing.\n" % name, "- **%s** (kind): a thing.\n" % name))
     elif word == "relational":     # a condition of a stage whose definition names the session

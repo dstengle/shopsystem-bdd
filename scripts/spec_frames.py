@@ -19,7 +19,10 @@ frame has a subject the line leaves out (b85).
 import re
 from collections import namedtuple
 
-Frame = namedtuple("Frame", "subject object recipient")
+Frame = namedtuple("Frame", "subject object recipient prep", defaults=(None,))
+# the words that, right after a verb in its frame, are the verb's preposition before its object
+PREPOSITIONS = {"to", "for", "from", "on", "onto", "in", "into", "at", "with", "about", "of", "by", "over", "under",
+                "through", "after", "before", "against", "upon", "without"}
 # the words a noun phrase may start with before its noun: a refusal at the noun after them is the verb's
 DETS = {"a", "an", "the", "every", "no", "its", "only", "one", "at", "most", "to"}
 # where a clause starts: a verb before one of these is not the verb of the clause GF stopped in
@@ -50,25 +53,39 @@ def _noun(text, names):
     return bare if bare in names else None
 
 
-def frame(term, names):
-    """The Frame of an event entry, or None when it has none or it does not read: its subject, object and recipient
-    each one of `names` (the lexicon's kinds and actors)."""
+def read(term, names):
+    """(Frame, None) of an event entry whose `Frame:` reads, else (None, (the word it could not read, the role it
+    reads it as)); (None, None) when the entry gives no `Frame:`. A preposition after the verb is the verb's
+    (`Frame: viewer subscribes to channel.`): the object comes after it."""
     text = " ".join(term.frame.split())
     if not text:
-        return None
+        return None, None
     verb = s3(term)
     at = (" %s " % text).find(" %s " % verb)
     if at < 1:
-        return None
+        return None, (text, "verb %s after its subject" % verb)
     subject, rest = _noun(text[:at - 1], names), text[at - 1 + len(verb) + 1:].strip()
     if subject is None:
-        return None
+        return None, (text[:at - 1], "subject")
     if not rest:
-        return Frame(subject, None, None)
+        return Frame(subject, None, None), None
+    first, _, after = rest.partition(" ")
+    prep = first if first in PREPOSITIONS and after else None
+    rest = after if prep else rest
     obj, to, rec = rest.rpartition(" to ")
     if to and _noun(obj, names) and _noun(rec, names):
-        return Frame(subject, _noun(obj, names), _noun(rec, names))
-    return Frame(subject, _noun(rest, names), None) if _noun(rest, names) else None
+        return Frame(subject, _noun(obj, names), _noun(rec, names), prep), None
+    if _noun(rest, names):
+        return Frame(subject, _noun(rest, names), None, prep), None
+    if to and _noun(obj, names):
+        return None, (rec, "recipient")
+    return None, (obj if to and _noun(rec, names) else rest, "object")
+
+
+def frame(term, names):
+    """The Frame of an event entry, or None when it has none or it does not read: its subject, object and recipient
+    each one of `names` (the lexicon's kinds and actors), and the preposition the verb takes before its object."""
+    return read(term, names)[0]
 
 
 def names(lexicon):
