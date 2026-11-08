@@ -74,6 +74,10 @@ def requirement(step):
         H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))
         if FRAMED[word][1]:     # the scenario's term t1 is the verb the line leaves short: the refusal names it so
             H.says(step, "t1", FRAMED[word][1])
+        if word == "prepositioned":     # the verb whose preposition the line says before each of its objects
+            H.base(repo, step.context)
+            index = repo / "spec" / "index.md"
+            index.write_text(index.read_text() + "- **subscribe** (verb): Frame: agent subscribes to stage.\n")
         if word == "negating":     # the relation the line negates, a row of `## Relations`
             H.base(repo, step.context)
             index = repo / "spec" / "index.md"
@@ -96,6 +100,8 @@ FRAMED = {"objectless": ("When the person runs `work start`, `work` shall write.
                       "`work start`, `work` shall commit a file."), None),
           "agentless": ("While a file is not written, when the person runs `work start`, `work` shall write a file.",
                         "the verb write takes a subject"),
+          "prepositioned": (("While a session does not subscribe to a stage, when a session subscribes to a stage, "
+                             "`work` shall subscribe to a stage."), None),
           "addressed": ("When `work` gives a brief to a stage, `work` shall write a file.", None)}
 
 
@@ -145,6 +151,13 @@ def term(step):
         H.says(step, name, "glossary bullet")
     elif word == "frameless":
         path.write_text(text.replace("- **%s** (noun): a thing.\n" % name, "- **%s** (verb): a thing done.\n" % name))
+    elif word == "prepositional":     # the preposition between the verb and its object belongs to the verb
+        path.write_text(text.replace("- **%s** (noun): a thing.\n" % name,
+                                     "- **%s** (verb): a stage is followed. Frame: agent %ss to stage.\n" % (name, name)))
+    elif word == "misframed":     # a Frame: whose object is no kind: the refusal names the word it could not read
+        path.write_text(text.replace("- **%s** (noun): a thing.\n" % name,
+                                     "- **%s** (verb): a stage is followed. Frame: agent %ss widget.\n" % (name, name)))
+        H.says(step, name, '%s, the Frame: does not read at "widget"' % name)
     elif word == "unlabelled":     # the category of plugin 2.x, which names no part of speech
         path.write_text(text.replace("- **%s** (noun): a thing.\n" % name, "- **%s** (kind): a thing.\n" % name))
     elif word == "relational":     # a condition of a stage whose definition names the session

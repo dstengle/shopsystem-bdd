@@ -240,7 +240,7 @@ def unlabelled(lexicon):
 def problems(lexicon):
     """v_t4 (a term has a category, and its kinds are kinds), v_t5 (a value names one attribute of one kind),
     v_t6 (no two terms linearise the same), v_t7 (a gloss of more than one sentence), v_t9 (a `Means:` field),
-    spec_relations' v_t4, v_t8 and v_t10, and spec_frames' v_t11 and v_t12, as (code, term, message) sorted."""
+    spec_relations' v_t4, v_t8 and v_t10, and spec_frames' v_t11, v_t12 and v_t13, as (code, term, message) sorted."""
     out = []
     kinds = lexicon.kind_names()
     for t in lexicon.terms:
