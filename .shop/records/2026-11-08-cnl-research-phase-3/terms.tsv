@@ -1,0 +1,171 @@
+file	term	kind	defined	used	verdict	replacement	constructs	notes
+spec/index.md	open	initiative	y	0	dead	an initiative that is not `done` or `abandoned`		plugin 1.x kind; used only inside idle's and busy's definitions; open is also a status value of request and GitHub's issue state: three meanings
+spec/index.md	open	work-item	y	0	dead	a work-item that is not `green` or `withdrawn`		plugin 1.x kind; second sense of open
+spec/index.md	complete	initiative	y	0	dead	an initiative with a `green` work-item whose every work-item and capability-proposal is closed	WHOSE-REL	plugin 1.x; defined in terms of closed and unfixed
+spec/index.md	unfixed	initiative	n	0	dead	an initiative whose branch review lists a review finding that is `fix now`	WHOSE-REL, RC-SUBJ	used only inside complete's definition; plugin 1.x
+spec/index.md	settled	request line	y	5	keep	a request line whose line outcome is `accepted`, `refused` or `withdrawn`	WHOSE-REL, OF	a domain notion (the upstream has answered the line for good), used by 5 lines and already defined; settle also appears as the relation plan decision | settled by | requirement in another meaning
+spec/index.md	closed	capability-proposal	y	0	dead	a capability-proposal that is `formulated` or `withdrawn`		plugin 1.x; closed has 4 senses, one per kind, plus the verb close (`work` closes issue) whose participle is the same word
+spec/index.md	closed	glossary-proposal	y	0	dead	a glossary-proposal that is `approved` or `withdrawn`		plugin 1.x; see closed
+spec/index.md	closed	work-item	y	0	dead	a work-item that is `green` or `withdrawn`		plugin 1.x; see closed
+spec/index.md	failed	work-item	y	0	dead	a work-item that is `failed`		a pure synonym of the status value `failed` (merge); plugin 1.x
+spec/index.md	free	resource	n	0	dead	a resource that no session holds	RC-OBJ, NEG-EXIST, COUNT	plugin 1.x resources; common English word
+spec/index.md	green check	work-item branch	n	0	dead	a work-item branch on which every test passes	RC-SUBJ, SENSE	a noun phrase filed as an adjective
+spec/index.md	blocked	item	n	3	keep	an item with a dependency on an item that is not `delivered` and is not in its batch	RC-SUBJ, OF, POSS	a real backlog notion (`work backlog` lists blockers), plain English; its definition should parse once relative clauses exist; backlog#r7 restates the definition in its While and then uses blocked: circular
+spec/index.md	well-formed	item	n	0	dead	an item whose requirement lines conform to the requirement grammar, whose lines `model logic` finds no L0 or L1 in and whose scenarios `features generate` writes	WHOSE-REL, CONFORMS, RC-OBJ, NEG-EXIST	used only inside passing's definition; a bundle of four checks = the readiness bar, really an artifact test; names tools inside a definition
+spec/index.md	passing	item	y	4	structure	an item that passes the readiness bar	RC-SUBJ, SENSE	defined, but packs the readiness bar; passing has a second meaning for scenario (a test result)
+spec/index.md	clean	pull request	y	1	structure	a pull request on which no review finding is `fix now`	NEG-EXIST, OF	defined; common word with a git meaning already (a clean working tree)
+spec/index.md	failing	test	n	2	structure	a test that fails	RC-SUBJ	needs fail as an intransitive verb; the definition is the verb itself
+spec/capabilities/analysis-tools.md	present	Python interpreter	n	5	structure	while the file `.venv/bin/python` exists	EXISTS, EXAMPLE-DATA-OUT	two meanings of present (exists here; has been written for coverage map; already written for measurement); the paths are example data of an interpreter search order
+spec/capabilities/analysis-tools.md	present	coverage map	n	9	structure	while `tools map` has written the coverage map (or: while a coverage map exists)	HISTORY, EXISTS	definition is a history fluent; same word as present of Python interpreter in another meaning
+spec/capabilities/backlog.md	silent	remote	n	1	structure	a remote that does not answer a push	RC-SUBJ, SENSE	a test fixture state (a hanging remote); pairs with unpushable; common word
+spec/capabilities/backlog.md	tracking	repository	n	1	structure	a repository on a branch whose upstream branch has a different name	REL-COPULA, WHOSE-REL, COMPARE	phase 2 backlog#r21; tracking is git's word for having an upstream at all, not for a differently named one: domain meaning narrower than git's
+spec/capabilities/backlog.md	tasked	repository	n	1	structure	a repository on the branch of a task	REL-COPULA, OF	phase 2 backlog#r20
+spec/capabilities/batch-measurement.md	unwritten	initiative log	n	0	dead	an initiative log with no `log.jsonl`	HAS, NEG-EXIST	plugin 1.x
+spec/capabilities/batch-measurement.md	requestless	initiative log	n	0	dead	an initiative log whose initiative fulfils no request	WHOSE-REL, NEG-EXIST	plugin 1.x; relational (names another kind with the)
+spec/capabilities/batch-measurement.md	overfulfilling	initiative log	n	0	dead	an initiative log whose initiative fulfils more than one request	WHOSE-REL, COUNT	plugin 1.x
+spec/capabilities/batch-measurement.md	present	measurement	n	0	dead	a measurement of an initiative already written on its day	OF, HISTORY	third meaning of present
+spec/capabilities/batches.md	uncited	commit	y	1	structure	a commit that cites no item	NEG-EXIST	defined; the replacement parses today; uncited has a second meaning for observation
+spec/capabilities/decision-tiers.md	untiered	design-decision	n	2	structure	a design-decision that has no tier	HAS, NEG-EXIST	the 'not superseded or rejected' part is a scope of the check; in decision-tiers#r8 the state is really a missing --tier argument: WITH-ARG
+spec/capabilities/decision-tiers.md	untested	design-decision	y	1	structure	a design-decision that is enforced by no test	NEG-EXIST	defined; parses today; untested has a second meaning for requirement (no scenario names it)
+spec/capabilities/decision-tiers.md	unrequired	design-decision	y	1	structure	a design-decision that is enforced by no requirement	NEG-EXIST	defined; parses today; coined word that reads as 'not needed'
+spec/capabilities/decision-tiers.md	absent	argument	n	2	structure	if the person runs `work decision` without an argument it requires	WITH-ARG, NEG-EXIST, STATE-MOVE	a property of the command, not a state of the system; intake#r9 uses it for a named argument `--reason`
+spec/capabilities/design-model-check.md	clingoless	interpreter	n	1	structure	an interpreter that cannot import clingo while a `python3` on `PATH` can	RC-SUBJ, SENSE, ABILITY	environment fixture; needs can/cannot (ability), not on the list
+spec/capabilities/design-model-check.md	unfound	interpreter	n	1	structure	while no interpreter that `model` tries can import clingo	NEG-EXIST, RC-OBJ, ABILITY	fixture; coined word
+spec/capabilities/design-model-check.md	stale	decisions index	n	1	artifact	a decisions index that differs from what `model decisions` writes	COMPARE, RC-OBJ	conformance to a generated output, not to a schema; common word
+spec/capabilities/design-model-check.md	sound	bounded context	n	1	structure	a bounded context in which `model check` finds no violation, unresolved reference or file problem	SENSE, NEG-EXIST, NP-LIST, ADJUNCT-PP	sound has a fixed meaning in logic (a sound proof system); find's frame has review as subject: SENSE
+spec/capabilities/design-model-check.md	unmigrated	bounded context	n	1	artifact	a bounded context that does not conform to the final layout	CONFORMS	same meaning as unmigrated of repository (merge); the final layout is a named artifact (design-decision/final-layout)
+spec/capabilities/design-model-check.md	unnumbered	capability	n	1	artifact	a capability that has a requirement with no id	HAS, NEG-EXIST	a format rule of the capability file; CONFORMS alone would lose which rule the finding names
+spec/capabilities/design-model-check.md	renumbered	capability	n	1	structure	a capability two of whose requirements have the same id	WHOSE-REL, COUNT, COMPARE	misnomer: means duplicated ids, while renumber elsewhere (backlog_lines.renumber) is the fix for clashing ids
+spec/capabilities/design-model-check.md	reusing	capability	n	1	structure	a capability that uses an id that it lists as retired	RC-SUBJ, RC-OBJ, SENSE, ADJUNCT-PP	use's frame has an agent as subject
+spec/capabilities/design-model-check.md	misnamed	capability	n	1	artifact	a capability that does not conform to the capability form	CONFORMS	two rules in one word (id form, missing ## Behaviour)
+spec/capabilities/design-model-check.md	untested	requirement	n	1	structure	a requirement that no scenario names, of a capability that is not of the group `guarantees`	RC-OBJ, NEG-EXIST, SENSE, OF	second meaning of untested
+spec/capabilities/design-model-check.md	avoiding	requirement	n	1	structure	a requirement that uses a word that the glossary lists after `Not:`	RC-SUBJ, RC-OBJ, SENSE	misnomer: the requirement fails to avoid the word
+spec/capabilities/design-model-check.md	unparsed	requirement	n	1	artifact	a requirement that does not conform to the requirement grammar of its bounded context	CONFORMS, OF, POSS	same meaning as unparsed of request line (merge) with a different grammar owner
+spec/capabilities/design-model-check.md	overtagged	scenario	n	1	structure	a scenario that is not tagged `@deprecated` and has more than one `@r<n>` tag	HAS, COUNT	COUNT needs 'more than one'; the passive 'tagged' has no agent
+spec/capabilities/design-model-check.md	misreferring	scenario	n	1	structure	a scenario that names a requirement that its capability does not have	RC-SUBJ, RC-OBJ, SENSE, POSS, HAS	
+spec/capabilities/design-model-check.md	misfiled	feature	n	1	artifact	a feature whose path is not `features/<name>.feature` for a capability `<name>`	WHOSE-REL, CONFORMS	a path pattern: conformance to the file layout
+spec/capabilities/design-model-check.md	duplicated	term	n	1	structure	a term that two glossary entries have	RC-OBJ, HAS, COUNT	
+spec/capabilities/design-model-check.md	selfavoiding	term	n	1	structure	a term whose `Not:` list names a term of the context or the term itself	WHOSE-REL, SENSE, NP-LIST	coined word
+spec/capabilities/design-model-check.md	malformed	term	n	1	artifact	a glossary entry that does not conform to the term entry form	CONFORMS	malformed has 4 senses (term, relation row, upstream entry, given block), each a different form: one construct, four artifacts
+spec/capabilities/design-model-check.md	reaching	capability-proposal	n	0	dead	a capability-proposal that changes a requirement no capability has	RC-OBJ, NEG-EXIST	plugin 1.x
+spec/capabilities/design-model-check.md	unformulated	capability-proposal	n	0	dead	a `formulated` capability-proposal that adds a requirement no scenario names	RC-OBJ, NEG-EXIST	plugin 1.x; reads as contradicting its `formulated` status
+spec/capabilities/design-model-check.md	plural	capability-proposal	n	0	dead	a capability-proposal that argues more than one capability	COUNT	plugin 1.x; grammatical word given a domain meaning
+spec/capabilities/design-model-check.md	dangling	capability-proposal	n	0	dead	a capability-proposal that adds or removes an id its capability neither has nor lists as retired	RC-OBJ, POSS	plugin 1.x; dangling has another meaning for test module
+spec/capabilities/design-model-check.md	termless	capability-proposal	n	0	dead	a capability-proposal that names a term the glossary does not have	RC-OBJ, HAS	plugin 1.x; same meaning on glossary-proposal
+spec/capabilities/design-model-check.md	termless	glossary-proposal	n	0	dead	a glossary-proposal that names a term the glossary does not have	RC-OBJ, HAS	plugin 1.x
+spec/capabilities/design-model-check.md	parentless	work-item	n	0	dead	a work-item with no `part_of`	HAS, NEG-EXIST	plugin 1.x
+spec/capabilities/design-model-check.md	uncommitted	work-item	n	0	dead	a work-item that is not `withdrawn` and has no `accepts` and no `check`	HAS, NEG-EXIST	plugin 1.x; uncommitted means 'committed to nothing' here and 'in no git commit' for untracked file
+spec/capabilities/design-model-check.md	misnumbered	work-item	n	0	dead	a work-item whose file name is not `w<n>.md`	CONFORMS	plugin 1.x
+spec/capabilities/design-model-check.md	alien	work-item	n	0	dead	a work-item whose `part_of` names another context	WHOSE-REL, COMPARE	plugin 1.x
+spec/capabilities/design-model-check.md	misreferenced	work-item	n	0	dead	a work-item whose `accepts` names a reference that is not `<capability>#r<n>`	CONFORMS	plugin 1.x
+spec/capabilities/design-model-check.md	unresolving	work-item	n	0	dead	a work-item whose `under` names nothing in its repository	NEG-EXIST	plugin 1.x
+spec/capabilities/design-model-check.md	misidentified	work-item	n	0	dead	a work-item whose id does not conform to the id form	CONFORMS	plugin 1.x
+spec/capabilities/design-model-check.md	homeless	work-item	n	0	dead	a work-item whose directory has no `initiative.md`	WHOSE-REL, NEG-EXIST	plugin 1.x
+spec/capabilities/design-model-check.md	crowded	initiative	n	0	dead	an initiative with more than one part directly under it	COUNT	plugin 1.x
+spec/capabilities/design-model-check.md	unrequested	initiative	n	0	dead	an initiative dated after 2026-10-23 that fulfils no request	COMPARE, NEG-EXIST	plugin 1.x
+spec/capabilities/design-model-check.md	unwaiting	initiative	n	0	dead	a `done` initiative named by a request that is not `delivered`	RC-OBJ	plugin 1.x
+spec/capabilities/design-model-check.md	jobbed	initiative	n	0	dead	an initiative whose kind is `job` or `job-path`	OF	plugin 1.x; a value of an attribute
+spec/capabilities/design-model-check.md	unanchored	request	n	1	structure	a request that is part of no job-thread, cites no origin and is raised for no request	NEG-EXIST	frozen plugin 1.x fields (job-thread, origin)
+spec/capabilities/design-model-check.md	misresolved	request	n	1	structure	a `delivered` request whose resolution names a requirement that the spec does not have	WHOSE-REL, RC-OBJ, SENSE, HAS	
+spec/capabilities/design-model-check.md	misformed	request	n	1	artifact	a request that does not conform to the request form	CONFORMS	'not of the form `work request` writes' defines the form by a tool's output
+spec/capabilities/design-model-check.md	compound	requirement group	n	1	structure	a requirement group with more than one statement	HAS, COUNT	common word
+spec/capabilities/design-model-check.md	repeating	requirement group	n	1	structure	a requirement group whose statement has the condition and trigger of a statement of another group of its capability	WHOSE-REL, OF, COMPARE, POSS	hard: needs sameness of two parts of two statements
+spec/capabilities/design-model-check.md	unexampled	requirement group	n	1	artifact	a requirement group whose given block does not conform to the example-data form	WHOSE-REL, CONFORMS	same artifact as malformed given block
+spec/capabilities/design-model-check.md	headless	design-decision	n	1	artifact	a design-decision that does not conform to the design-decision form	CONFORMS	two rules (no id, no ## Decision)
+spec/capabilities/design-model-check.md	unattributed	record	n	1	structure	a record whose about is not one line naming a node of the design model	WHOSE-REL, OF, COUNT	
+spec/capabilities/design-model-check.md	objectless	requirement	n	1	structure	a requirement that uses a verb with no object where the verb's frame names one	RC-SUBJ, SENSE, NEG-EXIST	a rule about the requirement language: better a grammar finding than a domain term
+spec/capabilities/design-model-check.md	recipientless	requirement	n	1	structure	a requirement that uses a verb with no recipient where the verb's frame names one	RC-SUBJ, SENSE, NEG-EXIST	as objectless
+spec/capabilities/design-model-check.md	frameless	term	n	1	structure	a verb whose glossary entry has no frame	WHOSE-REL, HAS, NEG-EXIST	phase 2 design-model-check#r60; kind mismatch: condition of term, definition of verb
+spec/capabilities/design-model-check.md	relational	term	n	1	structure	a condition whose definition names with `the` a kind other than its own	WHOSE-REL, SENSE, COMPARE, ADJUNCT-PP	kind mismatch: of term, defines a condition; plain word given a narrow meaning
+spec/capabilities/design-model-check.md	negating	requirement	n	1	structure	a requirement that says with `not` that a relation does not hold	RC-SUBJ, SENSE, ADJUNCT-PP	describes a sentence form: a grammar finding
+spec/capabilities/design-model-check.md	mistyped	requirement	n	1	structure	a requirement with a verb whose subject or object is not of the kind its frame names	WHOSE-REL, POSS	a grammar finding
+spec/capabilities/design-model-check.md	addressed	requirement	n	1	structure	a requirement whose trigger is a verb with an object and a recipient	WHOSE-REL, HAS	a grammar finding; common word
+spec/capabilities/design-model-check.md	verbal	requirement	n	1	structure	a requirement whose condition is a verb between two kinds	WHOSE-REL	a grammar finding; grammatical word given a domain meaning
+spec/capabilities/design-model-check.md	agentless	requirement	n	1	structure	a requirement that uses a verb in the passive with no subject	RC-SUBJ, SENSE, NEG-EXIST	a grammar finding
+spec/capabilities/design-model-check.md	unlabelled	term	n	1	artifact	a term whose entry names no part of speech	WHOSE-REL, NEG-EXIST	conformance to the term entry form
+spec/capabilities/design-model-check.md	prepositional	term	n	1	keep	a verb whose frame puts a preposition before its object	WHOSE-REL	a grammatical term in its ordinary linguistic meaning (prepositional verb); phase 2 keeps it as a noun
+spec/capabilities/design-model-check.md	prepositioned	requirement	n	1	structure	a requirement that uses a prepositional verb	RC-SUBJ, SENSE	phase 2 design-model-check#r69; coined beside prepositional
+spec/capabilities/design-model-check.md	misframed	term	n	1	artifact	a verb whose `Frame:` does not conform to the frame form	WHOSE-REL, CONFORMS	
+spec/capabilities/feature-file-tools.md	nested	feature file	n	2	structure	a feature file with a docstring whose text has a tag and a `Scenario:` line	HAS, WHOSE-REL, NP-LIST	phase 2 feature-file-tools#r3
+spec/capabilities/feature-file-tools.md	outlined	feature file	n	1	structure	a feature file with a Scenario Outline that has more than one Examples table	HAS, COUNT	
+spec/capabilities/feature-file-tools.md	sectioned	feature file	n	1	structure	a feature file with a `Rule:` block	HAS	
+spec/capabilities/feature-file-tools.md	deprecating	feature file	n	1	structure	a feature file with a scenario tagged `@deprecated` and its replacement	HAS, NP-LIST, POSS	the passive 'tagged' has no agent
+spec/capabilities/feature-file-tools.md	undeprecated	feature file	n	1	structure	a feature file with no scenario tagged `@deprecated`	HAS, NEG-EXIST	
+spec/capabilities/feature-file-tools.md	resolving	test module	n	1	structure	a test module every binding of which names a scenario of a feature file	OF, SENSE	
+spec/capabilities/feature-file-tools.md	dangling	test module	n	1	structure	a test module with a binding whose title no feature file has	HAS, WHOSE-REL, NEG-EXIST	second meaning of dangling
+spec/capabilities/feature-file-tools.md	sweeping	test module	n	1	structure	a test module that binds every scenario of a feature file with one `scenarios(...)` call	OF, COUNT, ADJUNCT-PP	phase 2 feature-file-tools#r14
+spec/capabilities/feature-file-tools.md	partial	test module	n	1	structure	a test module that does not bind a scenario of its feature file	POSS, OF	common word
+spec/capabilities/feature-file-tools.md	withholding	requirement	n	1	structure	a requirement whose response is a `shall not` of a verb with a recipient	WHOSE-REL	a grammar finding
+spec/capabilities/migration-tools.md	codified	capability	n	0	dead	a capability whose file has `language: codified-1`	WHOSE-REL, HAS	used only inside uncodified's definition; a marker of a format version: artifact
+spec/capabilities/migration-tools.md	uncommitted	untracked file	n	2	structure	while no commit holds the text of an untracked file	NEG-EXIST, OF	phase 2 migration-tools#r8; second meaning of uncommitted
+spec/capabilities/migration-tools.md	unmigrated	repository	n	1	merge	a repository that has a directory of the old layout at its root	HAS, ADJUNCT-PP	same meaning as unmigrated of bounded context; both are non-conformance to the final layout
+spec/capabilities/migration-tools.md	ledgered	repository	n	1	structure	a repository that has the decisions ledger `spec/decisions.md`	HAS	
+spec/capabilities/migration-tools.md	superseding	repository	n	1	structure	a repository whose decisions ledger has an entry that supersedes another	WHOSE-REL, HAS, RC-SUBJ	
+spec/capabilities/migration-tools.md	qualified	repository	n	1	structure	a repository whose decisions ledger has an entry that supersedes another in part	WHOSE-REL, HAS, RC-SUBJ, ADJUNCT-PP	common word with an unrelated meaning
+spec/capabilities/migration-tools.md	numberless	repository	n	1	structure	a repository whose decisions ledger has an entry with no number	WHOSE-REL, HAS, NEG-EXIST	
+spec/capabilities/migration-tools.md	idless	repository	n	1	structure	a repository with a capability that has a Behaviour line with no id	HAS, NEG-EXIST	
+spec/capabilities/migration-tools.md	conflicting	repository	n	1	structure	a repository with a file onto which `migrate run` would relocate another file	RC-OBJ, ADJUNCT-PP, HYPOTHETICAL	needs a hypothetical (would): new construct
+spec/capabilities/migration-tools.md	unversioned	repository	n	1	structure	a repository that has `.shop/` and no plugin version file	HAS, NEG-EXIST, NP-LIST	
+spec/capabilities/migration-tools.md	misversioned	repository	n	2	structure	while the plugin version file of a repository holds no version	NEG-EXIST, OF	phase 2 migration-tools#r21
+spec/capabilities/migration-tools.md	behind	repository	y	3	value	the release of a repository is `0.23.1`	OF	defined; a pure synonym of one release value; common word
+spec/capabilities/migration-tools.md	outdated	repository	y	1	value	the release of a repository is `0.24.0`	OF	defined; synonym of one value
+spec/capabilities/migration-tools.md	uncodified	repository	y	1	structure	the release of a repository is `0.29.0` and a capability of the repository has no `language: codified-1`	OF, HAS, NEG-EXIST	defined, but its definition leans on the prose condition codified
+spec/capabilities/migration-tools.md	queued	repository	y	1	value	the release of a repository is `1.0.0`	OF	defined; synonym of one value; common word
+spec/capabilities/migration-tools.md	current	repository	y	1	value	the release of a repository is `own`	OF	defined; phase 2 migration-tools#r14
+spec/capabilities/migration-tools.md	ahead	repository	y	1	value	the release of a repository is `newer`	OF	defined; ahead has a second meaning for initiative branch (commits the remote lacks, git's meaning)
+spec/capabilities/migration-tools.md	idle	repository	y	1	structure	the release of a repository is `own` and no initiative of the repository is open	OF, NEG-EXIST	phase 2 migration-tools#r19; common word
+spec/capabilities/migration-tools.md	busy	repository	n	0	dead	a repository with an open initiative	HAS	common word
+spec/capabilities/migration-tools.md	shopless	repository	n	1	structure	a repository with no `.shop/` directory	HAS, NEG-EXIST	
+spec/capabilities/migration-tools.md	unframed	repository	n	1	structure	the release of a repository is after `1.0.0` and before `3.0.0`	OF, COMPARE	phase 2 migration-tools#r25; better 'the upgrade step "verb frames" is pending for a repository'
+spec/capabilities/pr-review.md	unreviewed	pull request	n	1	structure	while no review of the pull request exists	NEG-EXIST, OF, EXISTS	the definition names its own use (its next review is its first)
+spec/capabilities/readiness.md	malformed	relation row	n	1	artifact	a relation row that does not conform to the relation row form	CONFORMS	second sense of malformed
+spec/capabilities/readiness.md	malformed	upstream entry	n	1	artifact	an upstream entry that does not conform to the upstream entry form	CONFORMS	third sense of malformed
+spec/capabilities/readiness.md	malformed	given block	n	1	artifact	a given block that does not conform to the example-data form	CONFORMS	fourth sense of malformed; the definition names a module (`spec_read_given`)
+spec/capabilities/readiness.md	unworded	item	n	1	structure	an item whose scenario has a step with a bracketed placeholder	WHOSE-REL, HAS	
+spec/capabilities/red-green.md	passing	scenario	n	1	structure	a scenario that passes when it runs alone	RC-SUBJ, SENSE	second meaning of passing; the definition names `python3 -m pytest`; defined in the retired red-green capability, used by batches#r18
+spec/capabilities/red-green.md	large	work-item	n	0	dead	a work-item whose work touches more than 15 files	COUNT, COMPARE	collides with the size value `large` of item
+spec/capabilities/requests.md	closed	request	y	2	keep	a request that is `delivered`, `refused` or `withdrawn`		defined, derived from status values; but the word is also the participle of the verb close (`work` closes the issue of a request): 'a closed request' and 'a closed issue' differ
+spec/capabilities/requests.md	unparsed	request line	n	1	artifact	a request line that does not conform to the requirement grammar of its upstream	CONFORMS, OF, POSS	phase 2 requests#r38; merge with unparsed of requirement
+spec/capabilities/requests.md	uncited	observation	n	2	structure	an observation that no initiative and no request names as its source	NEG-EXIST, RC-OBJ, SENSE, ADJUNCT-PP	second meaning of uncited; frozen 1.x fields
+spec/capabilities/requests.md	originless	command	n	2	structure	if the person runs `work request` with no origin option	WITH-ARG, NEG-EXIST, STATE-MOVE	phase 2 requests#r6
+spec/capabilities/requests.md	sourced	command	n	1	structure	if the person runs `work request` with `--source` and with `--thread` or `--raised-for`	WITH-ARG, STATE-MOVE, NP-LIST	a property of the command; the options are example data of a refusal
+spec/capabilities/requests.md	foreign	command	n	1	structure	if the person runs `work request` with a `--from` that names another bounded context	WITH-ARG, STATE-MOVE, RC-SUBJ, COMPARE	foreign also names the kind foreign entry in another meaning
+spec/capabilities/requests.md	downstream	bounded context	n	3	keep	a bounded context that has an upstream	HAS	DDD's own word in its context-map meaning; its definition is a single relation and should parse
+spec/capabilities/requests.md	unrecorded	comment	n	5	structure	a comment that its request does not hold	RC-OBJ, POSS, HAS	used by 5 lines; the request (its record file) holds comments: holds needs a request subject
+spec/capabilities/requests.md	unreadable	comment	n	3	artifact	a comment that does not conform to the comment schema	CONFORMS	the owner's own example (requests#r33); unreadable is also a value of availability of transcript
+spec/capabilities/requests.md	unhosted	bounded context	n	1	structure	an upstream whose entry names no GitHub repository	WHOSE-REL, NEG-EXIST, SENSE	the definition is of 'an upstream', not of a bounded context
+spec/capabilities/requests.md	untaken	issue	n	2	structure	an issue on the repository of this bounded context whose body is an ask that no request holds	WHOSE-REL, RC-OBJ, NEG-EXIST, OF, INDEXICAL	'open issue' uses GitHub's open, a third meaning; 'this bounded context' is an indexical: new construct
+spec/capabilities/requests.md	uncommittable	repository	n	3	structure	a repository in which git refuses every commit	SENSE, ADJUNCT-PP	a fixture (pre-commit hook fails, index lock held): example data; git is no actor in the glossary
+spec/capabilities/requests.md	received	request	n	3	keep	a request whose upstream is this bounded context and whose asker is another bounded context	WHOSE-REL, INDEXICAL, COMPARE	the side this repository keeps is a domain notion the tool prints; participle of a verb the glossary does not have
+spec/capabilities/requests.md	sent	request	n	3	keep	a request whose asker is this bounded context and whose upstream is another bounded context	WHOSE-REL, INDEXICAL, COMPARE	as received
+spec/capabilities/supervision.md	faulty	session	n	0	dead	a session that ends in an error or at its turn limit		plugin 1.x supervision
+spec/capabilities/supervision.md	meddling	session	n	0	dead	a session that changes a file outside its stage directory	RC-SUBJ, ADJUNCT-PP	plugin 1.x
+spec/capabilities/supervision.md	littering	session	n	0	dead		HISTORY	plugin 1.x
+spec/capabilities/supervision.md	crossing	session	n	0	dead			plugin 1.x; a one-sentence race condition
+spec/capabilities/supervision.md	outputless	result	y	0	dead	a result that gives no question and no output	NEG-EXIST	plugin 1.x; defined
+spec/capabilities/supervision.md	setless	result	n	0	dead	a result that gives an empty file set		plugin 1.x
+spec/capabilities/supervision.md	listless	result	y	0	dead	a result that gives no change list	NEG-EXIST	plugin 1.x; defined; the owner's example of a coined adjective; common word with an unrelated meaning
+spec/capabilities/supervision.md	glossarial	result	n	0	dead	a result whose change list names the glossary	WHOSE-REL	plugin 1.x
+spec/capabilities/supervision.md	raising	result	n	0	dead	a result that gives the lines of a request		plugin 1.x
+spec/capabilities/supervision.md	awaited	result	n	0	dead		HISTORY	plugin 1.x
+spec/capabilities/supervision.md	strange	result	n	0	dead	a result whose change list names a capability that does not exist	WHOSE-REL, EXISTS	plugin 1.x; common word
+spec/capabilities/supervision.md	unheld	result	n	0	dead			plugin 1.x; unheld is also a value of standing of fulfilled request
+spec/capabilities/supervision.md	fixing	result	n	0	dead	a result that gives a question that lists review findings that are `fix now`	RC-SUBJ	plugin 1.x
+spec/capabilities/supervision.md	unparsing	result	n	0	dead		CONFORMS	plugin 1.x; third relative of unparsed
+spec/capabilities/supervision.md	naming	result	n	0	dead	a result that names a report its session wrote	RC-OBJ, POSS	plugin 1.x; participle of the verb name
+spec/capabilities/supervision.md	unpushable	remote	n	1	structure	a remote that refuses every push	RC-SUBJ, SENSE	refuse's frame has tool as subject; a fixture state
+spec/capabilities/supervision.md	ahead	initiative branch	n	0	dead	an initiative branch with commits its remote does not have	HAS, RC-OBJ, POSS	git's meaning of ahead; differs from ahead of repository
+spec/capabilities/supervision.md	reviewed	initiative branch	n	0	dead			plugin 1.x
+spec/capabilities/supervision.md	gitless	initiative branch	n	0	dead		HYPOTHETICAL	plugin 1.x
+spec/capabilities/supervision.md	lost	work-item branch	n	0	dead		HISTORY	plugin 1.x; lost is also a value of availability of transcript
+spec/capabilities/supervision.md	kept	work-item branch	n	0	dead		HISTORY	plugin 1.x; participle of the verb keep
+spec/capabilities/supervision.md	flaky	work-item branch	n	0	dead		HISTORY	plugin 1.x
+spec/capabilities/supervision.md	dirty	file	n	0	dead	a file that differs from its last commit	COMPARE	plugin 1.x; git's word
+spec/capabilities/supervision.md	answered	question	n	0	dead	a question with an answer	HAS	plugin 1.x
+spec/capabilities/supervision.md	bare	initiative	n	0	dead		NEG-EXIST	plugin 1.x; git's 'bare' means another thing
+spec/capabilities/supervision.md	waiting	work-item	y	0	dead	a work-item that is blocked by a work-item that is not closed		plugin 1.x; defined
+spec/capabilities/supervision.md	unfulfilled	request	y	0	dead	a request that no initiative fulfils	RC-OBJ, NEG-EXIST	plugin 1.x; defined
+spec/capabilities/supervision.md	itemless	initiative	n	0	dead		NEG-EXIST	plugin 1.x
+spec/capabilities/supervision.md	codified	change list	n	0	dead			plugin 1.x
+spec/capabilities/supervision.md	uncodified	change list	n	0	dead			plugin 1.x
+spec/capabilities/work-queue.md	out of step	work-item	n	0	dead		COMPARE	plugin 1.x; a phrase filed as an adjective
