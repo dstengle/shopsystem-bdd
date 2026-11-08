@@ -213,7 +213,10 @@ def refusal(tokens, at, lexicon):
     verb = term.term
     if found is None:
         return "the verb %s has no frame in the glossary (Frame: <subject> %s <object>.)" % (verb, s3(term))
-    role, said = _role(found, tokens, start, end, at, lexicon), " ".join(term.frame.split())
+    said = " ".join(term.frame.split())
+    if found.prep and at == end and tokens[at] != found.prep:
+        return "the verb %s takes its object after %s: %s" % (verb, found.prep, said)
+    role = _role(found, tokens, start, end, at, lexicon)
     if role == "object?":
         return "the verb %s takes an object: %s" % (verb, said)
     if role == "recipient?":

@@ -74,6 +74,10 @@ def requirement(step):
         H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))
         if FRAMED[word][1]:     # the scenario's term t1 is the verb the line leaves short: the refusal names it so
             H.says(step, "t1", FRAMED[word][1])
+        if word == "prepositioned":     # the verb whose preposition the line says before each of its objects
+            H.base(repo, step.context)
+            index = repo / "spec" / "index.md"
+            index.write_text(index.read_text() + "- **subscribe** (verb): Frame: agent subscribes to stage.\n")
         if word == "negating":     # the relation the line negates, a row of `## Relations`
             H.base(repo, step.context)
             index = repo / "spec" / "index.md"
@@ -96,6 +100,8 @@ FRAMED = {"objectless": ("When the person runs `work start`, `work` shall write.
                       "`work start`, `work` shall commit a file."), None),
           "agentless": ("While a file is not written, when the person runs `work start`, `work` shall write a file.",
                         "the verb write takes a subject"),
+          "prepositioned": (("While a session does not subscribe to a stage, when a session subscribes to a stage, "
+                             "`work` shall subscribe to a stage."), None),
           "addressed": ("When `work` gives a brief to a stage, `work` shall write a file.", None)}
 
 
