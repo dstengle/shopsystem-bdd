@@ -61,7 +61,10 @@ class SpecReading:
             self.term(word, n, [" ".join(w.lower().split()) for w in t.nots])
             if t.category:
                 self.fact("category", ident, t.category)
-            if t.category == "event" and spec_frames.frame(t, known) is None:
+            misread = t.category == "event" and spec_frames.misread(t, known)
+            if misread:
+                self.fact("misframed", ident, misread)
+            elif t.category == "event" and spec_frames.frame(t, known) is None:
                 self.fact("frameless", ident)
             if t.category == "condition" and spec_frames.relational(t, kinds):
                 self.fact("relational", ident)

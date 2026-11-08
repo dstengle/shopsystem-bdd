@@ -304,3 +304,24 @@ Feature: Design model check
     And the term t1 is unlabelled
     When the person runs `model check` on the term t1
     Then `model` exits with an error naming the term t1
+
+  @g68 @r68
+  Scenario: `model check` reads a prepositional verb's frame
+    Given a term t1
+    And the term t1 is prepositional
+    When the person runs `model check` on the term t1
+    Then `model` exits successfully
+
+  @g69 @r69
+  Scenario: `model parse` parses a prepositional verb with its preposition
+    Given a requirement r1
+    And the requirement r1 is prepositioned
+    When the person runs `model parse` on the requirement r1
+    Then `model` exits successfully
+
+  @g70 @r70
+  Scenario: `model check` refuses a frame that does not read
+    Given a term t1
+    And the term t1 is misframed
+    When the person runs `model check` on the term t1
+    Then `model` exits with an error naming the term t1

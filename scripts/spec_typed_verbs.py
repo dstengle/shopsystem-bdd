@@ -35,14 +35,15 @@ def _type_id(name, ids, lex):
 
 def frames(lex):
     """{event id: (inf, s3, (subject type id, object type id or None, recipient type id or None))} of every verb
-    whose frame reads."""
+    whose frame reads; a prepositional verb's forms end in its preposition ("subscribe to"), so each of its funs
+    says the preposition before its object."""
     ids, known, out = lex.ids(), spec_frames.names(lex), {}
     for t in lex.of("event"):
         found = spec_frames.frame(t, known)
         if found is None:
             continue
-        inf, s3 = spec_typed.event_forms(t)
-        out[ids[t.key]] = (inf, s3, tuple(_type_id(n, ids, lex) if n else None for n in found))
+        inf, s3 = ("%s %s" % (form, found.prep) if found.prep else form for form in spec_typed.event_forms(t))
+        out[ids[t.key]] = (inf, s3, tuple(_type_id(n, ids, lex) if n else None for n in found[:3]))
     return out
 
 

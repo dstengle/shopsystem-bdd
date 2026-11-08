@@ -16,6 +16,7 @@ from itertools import islice
 from pathlib import Path
 
 import spec_frames
+import spec_frames_refusal
 import spec_lexicon
 import spec_parse_cache
 import spec_tree
@@ -244,7 +245,7 @@ def parse(root, line, grammar="Req"):
     tokens = tokenise(line)
     trees, at = _raw(root, tokens, grammar)
     if at is not None:
-        why = grammar != "Def" and spec_frames.refusal(tokens, at, _context(root)[0])
+        why = grammar != "Def" and spec_frames_refusal.refusal(tokens, at, _context(root)[0])
         if why:
             return Parse(refusal="refused: %s" % why)
         if at >= len(tokens):

@@ -85,6 +85,10 @@ context: product-level artifacts are read only where the files contain them.
 
 - **unlabelled** (adjective of term): a term whose entry does not name its part of speech.
 
+- **prepositional** (adjective of term): a verb whose frame puts a preposition between the verb and its object, as in `Frame: viewer subscribes to channel.`.
+- **prepositioned** (adjective of requirement): a requirement with a prepositional verb followed by its preposition and its object, as in `a viewer subscribes to a channel`.
+- **misframed** (adjective of term): a verb whose glossary entry has a `Frame:` that does not read as its subject, the verb and the kinds the verb takes.
+
 ## Behaviour
 
 ### [g1] `model check` exits successfully on a sound context
@@ -246,6 +250,15 @@ Restates: r65@0.29.
 
 ### [g67] `model check` refuses a term with no part of speech
 - [r67] If the person runs `model check` on a term that is unlabelled, then `model` shall exit with an error naming the term.
+
+### [g68] `model check` reads a prepositional verb's frame
+- [r68] When the person runs `model check` on a term that is prepositional, `model` shall exit successfully.
+
+### [g69] `model parse` parses a prepositional verb with its preposition
+- [r69] When the person runs `model parse` on a requirement that is prepositioned, `model` shall exit successfully.
+
+### [g70] `model check` refuses a frame that does not read
+- [r70] If the person runs `model check` on a term that is misframed, then `model` shall exit with an error naming the term.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a
