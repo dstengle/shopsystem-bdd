@@ -325,24 +325,3 @@ Feature: Design model check
     And the term t1 is misframed
     When the person runs `model check` on the term t1
     Then `model` exits with an error naming the term t1
-
-  @g71 @r71
-  Scenario: `model parse` parses a noun with a relative clause
-    Given a requirement r1
-    And the requirement r1 is relative
-    When the person runs `model parse` on the requirement r1
-    Then `model` exits successfully
-
-  @g72 @r72
-  Scenario: `model parse` refuses a relative clause whose verb does not take the noun
-    Given a requirement r1
-    And the requirement r1 is misrelated
-    When the person runs `model parse` on the requirement r1
-    Then `model` exits with an error naming the term t1
-
-  @g73 @r73
-  Scenario: `model check` reads a condition defined through a relative clause
-    Given a term t1
-    And the term t1 is clausal
-    When the person runs `model check` on the term t1
-    Then `model` exits successfully

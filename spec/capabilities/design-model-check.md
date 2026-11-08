@@ -6,7 +6,7 @@ group: service
 language: codified-1
 rests_on: [design-decision/final-layout, design-decision/references-are-ids, design-decision/light-decisions, design-decision/model-check-solves-with-clingo, design-decision/a-scenario-names-one-requirement, design-decision/query-commands-answer-in-their-output, design-decision/retired-ids-in-capability-frontmatter, design-decision/work-file-forms, design-decision/capability-ids-are-context-scoped, design-decision/one-requirement-form, design-decision/review-of-work-items, design-decision/work-items-named-by-ids, design-decision/the-glossary-is-a-target-of-spec-work]
 retired: [r8, r9, r12, r13, r14, r15, r16, r17, r18, r21, r26, r27, r29, r31, r32, r33, r34, r35, r37, r39, r45, r46, r53]
-unbuilt: [r68, r69, r70, r71, r72, r73]
+unbuilt: [r68, r69, r70]
 ---
 
 # Design model check
@@ -88,10 +88,6 @@ context: product-level artifacts are read only where the files contain them.
 - **prepositional** (adjective of term): a verb whose frame puts a preposition between the verb and its object, as in `Frame: viewer subscribes to channel.`.
 - **prepositioned** (adjective of requirement): a requirement with a prepositional verb followed by its preposition and its object, as in `a viewer subscribes to a channel`.
 - **misframed** (adjective of term): a verb whose glossary entry has a `Frame:` that does not read as its subject, the verb and the kinds the verb takes.
-
-- **relative** (adjective of requirement): a requirement with a noun followed by `that`, a subject and a verb whose frame takes the noun's kind as its object, as in `a channel that a viewer subscribes to` or `the video list that the caller requests`.
-- **misrelated** (adjective of requirement): a requirement with a noun followed by `that`, a subject and a verb whose frame does not take the noun's kind as its object.
-- **clausal** (adjective of term): a condition whose definition has a noun followed by `that`, a subject and a verb, as in `no video is from a channel that the viewer subscribes to`.
 
 ## Behaviour
 
@@ -263,15 +259,6 @@ Restates: r65@0.29.
 
 ### [g70] `model check` refuses a frame that does not read
 - [r70] If the person runs `model check` on a term that is misframed, then `model` shall exit with an error naming the term.
-
-### [g71] `model parse` parses a noun with a relative clause
-- [r71] When the person runs `model parse` on a requirement that is relative, `model` shall exit successfully.
-
-### [g72] `model parse` refuses a relative clause whose verb does not take the noun
-- [r72] If the person runs `model parse` on a requirement that is misrelated, then `model` shall exit with an error naming the term.
-
-### [g73] `model check` reads a condition defined through a relative clause
-- [r73] When the person runs `model check` on a term that is clausal, `model` shall exit successfully.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a
