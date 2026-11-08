@@ -3,7 +3,7 @@ every change and writes none:
 - each term entry of `spec/index.md`'s `## Glossary` and of each capability's `## Terms` whose category is one of
   plugin 2.x's has it written as its part of speech, by `spec_lexicon.relabel` (`kind` -> `noun`, `event` -> `verb`,
   `condition of stage` -> `adjective of stage`); nothing else in a file changes;
-- `notes`, read off the relabelled spec laid on a copy of `spec/`: each verb that needs a `Frame:` (v_t11), each
+- `notes`, read off the relabelled spec laid on a copy of `spec/`: each verb that needs a `Frame:` (v_t11) or whose `Frame:` does not read (v_t13), each
   relational condition (v_t12) and each requirement, universal conditions among them, that no longer parses, by file
   and id. It rewords no line: a session writes the frames and rewords the lines, a changed line under a new id."""
 import re
@@ -39,9 +39,10 @@ def sources(root):
 
 
 def frames(lexicon):
-    """Each verb with no frame (v_t11) and each relational condition (v_t12): the message names its file."""
+    """Each verb with no frame (v_t11), each whose frame does not read (v_t13) and each relational condition (v_t12):
+    the message names its file."""
     return ["%s: %s %s, %s" % (NAME, code, term, message) for code, term, message in spec_lexicon.problems(lexicon)
-            if code in ("v_t11", "v_t12")]
+            if code in ("v_t11", "v_t12", "v_t13")]
 
 
 def statements(copy):

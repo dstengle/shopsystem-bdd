@@ -257,6 +257,8 @@ label("v_t11", "a verb's entry gives no frame: the kinds of its subject and obje
 v_t11(T)      :- frameless(T).
 label("v_t12", "a condition names another kind with `the`: a relation between two kinds is a verb").
 v_t12(T)      :- relational(T).
+label("v_t13", "a verb's Frame: does not read as its subject, the verb and the kinds it takes").
+v_t13(T, Why) :- misframed(T, Why).
 
 % ---------------------------------------------------------------- the parse (C2, C25)
 % Every file of the spec is codified (§13.4): the 0.29 reader is gone, so `migrate upgrade` converts one that is not.
@@ -297,7 +299,7 @@ w_untiered(D)      :- node(D, "design-decision"), not status(D, "superseded"), n
 #show v_d2/1. #show v_d4/2.
 #show v_d6/1. #show v_d7/1. #show v_d8/2.
 #show v17/1. #show v18d/1.
-#show v_t1/3. #show v_t2/1. #show v_t3/1. #show v_t4/1. #show v_t5/1. #show v_t6/2. #show v_t11/1. #show v_t12/1.
+#show v_t1/3. #show v_t2/1. #show v_t3/1. #show v_t4/1. #show v_t5/1. #show v_t6/2. #show v_t11/1. #show v_t12/1. #show v_t13/2.
 #show v_p0/1. #show v_p1/2. #show v_p2/1. #show v_p3/2.
 #show w_unserved_cap/1. #show w_unserved_job/1. #show w_seam_unused/1. #show w_uncited_obs/1.
 #show w_many_requests/1. #show w_untiered/1.

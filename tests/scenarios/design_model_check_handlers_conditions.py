@@ -154,6 +154,10 @@ def term(step):
     elif word == "prepositional":     # the preposition between the verb and its object belongs to the verb
         path.write_text(text.replace("- **%s** (noun): a thing.\n" % name,
                                      "- **%s** (verb): a stage is followed. Frame: agent %ss to stage.\n" % (name, name)))
+    elif word == "misframed":     # a Frame: whose object is no kind: the refusal names the word it could not read
+        path.write_text(text.replace("- **%s** (noun): a thing.\n" % name,
+                                     "- **%s** (verb): a stage is followed. Frame: agent %ss widget.\n" % (name, name)))
+        H.says(step, name, '%s, the Frame: does not read at "widget"' % name)
     elif word == "unlabelled":     # the category of plugin 2.x, which names no part of speech
         path.write_text(text.replace("- **%s** (noun): a thing.\n" % name, "- **%s** (kind): a thing.\n" % name))
     elif word == "relational":     # a condition of a stage whose definition names the session

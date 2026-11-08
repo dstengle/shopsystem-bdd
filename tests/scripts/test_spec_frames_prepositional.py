@@ -59,3 +59,13 @@ def test_a_line_without_the_preposition_is_refused_naming_it(root):
     parsed = spec_grammar.parse(root, "When the person runs `work start`, `work` shall subscribe a stage.")
     assert parsed.tree is None
     assert parsed.refusal == "refused: the verb subscribe takes its object after to: agent subscribes to stage"
+
+
+def test_a_misframed_verb_is_v_t13_naming_the_word_and_the_nearest_kinds(root):
+    lex = spec_lexicon.read(root)
+    found = [p for p in spec_lexicon.problems(lex) if p[1] == "subscribe"]
+    assert found == []
+    names = spec_frames.names(lex)
+    assert spec_frames.misread(entry("agent subscribes to stages"), names) == (
+        'the Frame: does not read at "stages": the verb\'s object is a kind or an actor of the glossary '
+        '(nearest: stage, step)')
