@@ -1,0 +1,55 @@
+--- /home/vscode/shopsystem-bdd/scripts/spec_solve.py	2026-11-05 17:11:45.844528115 +0000
++++ spec_solve_fast.py	2026-11-09 08:18:21.625751063 +0000
+@@ -103,8 +103,8 @@
+ 
+ def _clashes(ctl, words, clashes, maybes=()):
+     """The L1 of each pair of requirements, and of each requirement that contradicts itself; the L6 of each pair with
+-    a `maybe` and no `clash`. One focused normal solve a pair, on the one grounding, gives its witness's pre-state."""
+-    out, firm = [], set()
++    a `maybe` and no `clash`. Each pair's witness (its merged pre-state) comes from one normal solve for all of them."""
++    out, firm, chosen = [], set(), []
+     for code, external, found in (("L1", "focus", clashes), ("L6", "focusm", maybes)):
+         for pair, hits in _pairs(found):
+             if len(pair) == 1:
+@@ -113,16 +113,34 @@
+             if pair in firm:
+                 continue
+             firm.add(pair)
+-            a, b = min(hits)[:2]
+-            atoms, _ = _solve(ctl, LIMIT, brave=False, focus=(a, b), external=external)
+-            x, y = (a, b) if spec_facts.split(a) == pair[0] else (b, a)
+-            text = words.clash(x, y, sorted({h[2] for h in hits}), words.pre(a, b, atoms))
+-            if code == "L6":
+-                text = words.maybe(sorted({h[3] for h in hits}), text)
+-            out.append(Finding(code, list(pair), text))
++            chosen.append((code, external, pair, hits, min(hits)[:2]))
++    found = _witnesses(ctl, [(external, ab) for _, external, _, _, ab in chosen])
++    for code, external, pair, hits, (a, b) in chosen:
++        x, y = (a, b) if spec_facts.split(a) == pair[0] else (b, a)
++        text = words.clash(x, y, sorted({h[2] for h in hits}), words.pre(a, b, found[(a, b)]))
++        if code == "L6":
++            text = words.maybe(sorted({h[3] for h in hits}), text)
++        out.append(Finding(code, list(pair), text))
+     return out
+ 
+ 
++def _witnesses(ctl, focused):
++    """{pair: the pre/prec atoms of its witness}: the pairs as facts focus(A,B) (an L1) or focusm(A,B) (an L6) of
++    check.lp's part `witness`, ground on the check's own grounding, and one normal solve. Pairs share no atom, so the
++    one model holds a witness of each, the same one a solve focused on that pair alone finds."""
++    by = defaultdict(list)
++    if not focused:
++        return by
++    ctl.add("witness", [], "\n".join("%s." % clingo.Function(e, [clingo.String(a), clingo.String(b)]) for e, (a, b) in focused))
++    ctl.ground([("witness", [])])
++    atoms, _ = _solve(ctl, LIMIT, brave=False)
++    for atom in atoms:
++        sym = clingo.parse_term(atom)
++        if sym.name in ("pre", "prec"):
++            by[(sym.arguments[0].string, sym.arguments[1].string)].append(atom)
++    return by
++
++
+ def _findings(ctl, words, atoms):
+     syms = [clingo.parse_term(a) for a in atoms]
+     args = defaultdict(list)

@@ -1,0 +1,378 @@
+// check.lp's deterministic part in Soufflé: the vocabulary, kinds, the candidate-pair index (cc/can/kin/doerk/
+// cand/pair), a requirement against itself (L1 self), L3, L4, L5. Every term is a symbol: its clingo text.
+.type T <: symbol
+.decl role(r:T,x:T,k:T) .input role
+.decl named(r:T,x:T,c:T) .input named
+.decl cond(r:T,x:T,t:T,v:T,p:T) .input cond
+.decl ccond(r:T,x:T,c:T,p:T) .input ccond
+.decl crel(r:T,q:T,x:T,y:T,p:T) .input crel
+.decl holds(r:T,a:T,x:T) .input holds
+.decl free(r:T,x:T) .input free
+.decl trig(r:T,p:T,e:T,d:T,x:T) .input trig
+.decl resp(r:T,n:T,p:T,e:T,d:T,x:T) .input resp
+.decl oattr(r:T,x:T,t:T,v:T) .input oattr
+.decl orel(r:T,q:T,x:T,y:T) .input orel
+.decl set(r:T,n:T,x:T,t:T,v:T) .input set
+.decl none(r:T,k:T,t:T,v:T) .input none
+.decl cnone(r:T,k:T,c:T) .input cnone
+.decl uses(r:T,d:T,x:T) .input uses
+.decl nouse(r:T,d:T,x:T) .input nouse
+.decl form(r:T,f:T) .input form
+.decl sub(k:T,k2:T) .input sub
+.decl trans(k:T,t:T,u:T,v:T) .input trans
+.decl initial(k:T,t:T,v:T) .input initial
+.decl rnone_k1(r:T,q:T,k:T,y:T) .input rnone_k1
+.decl rnone_k2(r:T,q:T,x:T,k:T) .input rnone_k2
+.decl the(r:T,x:T) .input the
+.decl fun(q:T) .input fun
+.decl prose(c:T) .input prose
+.decl dalt(c:T,n:T) .input dalt
+.decl dlit(c:T,n:T,t:T,v:T,p:T) .input dlit
+.decl uall(r:T,u:T,k:T) .input uall
+.decl urel(r:T,q:T,u:T,w:T) .input urel
+.decl uattr(r:T,u:T,t:T,v:T) .input uattr
+.decl ucond(r:T,u:T,t:T,v:T,p:T) .input ucond
+.decl uccond(r:T,u:T,c:T,p:T) .input uccond
+.decl stative_in(e:T) .input stative_in
+
+.decl req(r:T)
+req(R) :- form(R,_).  req(R) :- role(R,_,_).  req(R) :- trig(R,_,_,_,_).  req(R) :- resp(R,_,_,_,_,_).
+.decl trg(r:T)
+trg(R) :- trig(R,_,_,_,_).
+.decl universal(r:T)
+universal(R) :- req(R), "\"U" <= R, R < "\"V".
+.decl term(r:T,x:T)
+term(R,X) :- role(R,X,_).      term(R,X) :- trig(R,_,_,X,_).  term(R,X) :- trig(R,_,_,_,X).
+term(R,X) :- resp(R,_,_,_,X,_). term(R,X) :- resp(R,_,_,_,_,X). term(R,X) :- set(R,_,X,_,_).
+term(R,X) :- uses(R,X,_).      term(R,X) :- uses(R,_,X).      term(R,X) :- nouse(R,X,_).  term(R,X) :- nouse(R,_,X).
+term(R,X) :- crel(R,_,X,_,_).  term(R,X) :- crel(R,_,_,X,_).  term(R,X) :- orel(R,_,_,X).
+term(R,X) :- holds(R,X,_).     term(R,X) :- holds(R,_,X).     term(R,X) :- free(R,X).
+term(R,X) :- urel(R,_,_,X).
+.decl subeq(k:T,k2:T)
+subeq(K,K) :- role(_,_,K).  subeq(K,K) :- none(_,K,_,_).  subeq(K,K) :- cnone(_,K,_).
+subeq(K,K3) :- sub(K,K2), subeq(K2,K3).
+.decl compat(k:T,k2:T)
+compat(K,K2) :- subeq(K,K2).  compat(K,K2) :- subeq(K2,K).
+
+.decl quiet(e:T)
+quiet("print"). quiet("exit_ok"). quiet("exit_error"). quiet("change_nothing").
+.decl own(r:T,e:T)
+own(R,E) :- resp(R,_,"pos",E,_,_).
+.decl cc(a:T,b:T)
+// idx2: the pairs worth asking first (shared trigger, an untriggered side's kind, a universal's vocabulary,
+// a use with a "shall not use"), and every response comparison only inside them
+.decl pre(a:T,b:T)
+.decl tp(a:T,b:T)
+tp(A,B) :- trig(A,P,E,_,_), trig(B,P,E,_,_), A != B.
+pre(A,B) :- tp(A,B).
+pre(A,B) :- trg(A), role(A,_,K), compat(K,K2), role(B,_,K2), !trg(B), A != B.
+pre(A,B) :- universal(A), names(A,N), names(B,N), A != B.
+pre(A,B) :- uses(A,_,_), nouse(B,_,_), A != B.
+pre(A,B) :- pre(B,A).
+cc(A,B) :- pre(A,B), resp(A,_,P,E,_,_), resp(B,_,Q,E,_,_), P != Q.
+cc(A,B) :- pre(A,B), set(A,_,_,T,V), set(B,_,_,T,W), V != W.
+cc(A,B) :- pre(A,B), resp(A,_,"pos","exit_ok",_,_), resp(B,_,"pos","exit_error",_,_).
+cc(A,B) :- pre(A,B), resp(A,_,"pos","change_nothing",_,_), resp(B,_,"pos",E,_,_), !quiet(E), !own(A,E).
+cc(A,B) :- pre(A,B), uses(A,_,_), nouse(B,_,_).
+.decl can(a:T,b:T)
+can(A,B) :- cc(A,B), A != B.  can(A,B) :- cc(B,A), A != B.
+.decl cand(a:T,b:T)
+.decl kin(a:T,b:T,x:T,y:T)
+.decl doerk(a:T,b:T,x:T,y:T)
+cand(A,B) :- can(A,B), trig(A,P,E,D1,X), trig(B,P,E,D2,Y), kin(A,B,X,Y), doerk(A,B,D1,D2).
+kin(A,B,X,Y) :- can(A,B), tp(A,B), trig(A,_,_,_,X), trig(B,_,_,_,Y), role(A,X,K), role(B,Y,K2), compat(K,K2).
+kin(A,B,X,X) :- can(A,B), tp(A,B), trig(A,_,_,_,X), trig(B,_,_,_,X), !role(A,X,_), !role(B,X,_).
+doerk(A,B,D1,D2) :- can(A,B), tp(A,B), trig(A,_,_,D1,_), trig(B,_,_,D2,_), role(A,D1,K), role(B,D2,K2), compat(K,K2).
+doerk(A,B,"any",D) :- can(A,B), tp(A,B), trig(A,_,_,"any",_), trig(B,_,_,D,_).
+doerk(A,B,D,"any") :- can(A,B), tp(A,B), trig(A,_,_,D,_), trig(B,_,_,"any",_).
+doerk(A,B,D,D) :- can(A,B), tp(A,B), trig(A,_,_,D,_), trig(B,_,_,D,_), !role(A,D,_).
+cand(A,B) :- can(A,B), trg(A), req(B), !trg(B), role(A,_,K), role(B,_,K2), compat(K,K2).
+.decl names(r:T,n:T)
+names(R,E) :- resp(R,_,_,E,_,_).  names(R,E) :- trig(R,_,E,_,_).
+names(R,T) :- cond(R,_,T,_,_).    names(R,T) :- set(R,_,_,T,_).
+cand(A,B) :- can(A,B), universal(A), names(A,N), names(B,N).
+cand(A,B) :- can(A,B), uses(A,_,_), nouse(B,_,_).
+.decl exc(r:T)
+exc(R) :- form(R,"if").  exc(R) :- form(R,"while_if").  exc(R) :- form(R,"where_if").
+.decl over(a:T,b:T)
+over(A,B) :- cand(A,B), exc(A), !exc(B).  over(A,B) :- cand(A,B), exc(B), !exc(A).
+.decl pair(a:T,b:T)
+pair(A,B) :- cand(A,B), A < B, !over(A,B).  pair(A,B) :- cand(B,A), A < B, !over(B,A).
+
+// a requirement against itself (L1 self), with canon
+.decl nrep(s:T,y:T)
+nrep(S,Y) :- named(S,Y,C), named(S,Y0,C), Y0 < Y.
+.decl canon(s:T,y:T,y0:T)
+canon(S,Y,Y0) :- named(S,Y,C), named(S,Y0,C), !nrep(S,Y0).  canon(S,Y,Y) :- role(S,Y,_), !named(S,Y,_).
+.decl cd(r:T,z:T,t:T,v:T,p:T)
+cd(R,Z,T,V,P) :- cond(R,X,T,V,P), canon(R,X,Z).
+.decl ccd(r:T,z:T,c:T,p:T)
+ccd(R,Z,C,P) :- ccond(R,X,C,P), canon(R,X,Z).
+.decl self(r:T)
+self(R) :- cd(R,X,T,V,"pos"), cd(R,X,T,W,"pos"), V < W.
+self(R) :- cd(R,X,T,V,"pos"), cd(R,X,T,V,"neg").
+self(R) :- ccd(R,X,C,"pos"), ccd(R,X,C,"neg").
+self(R) :- crel(R,Q,X,Y,"pos"), crel(R,Q,X,Y,"neg").
+self(R) :- none(R,K,T,V), role(R,X,K2), subeq(K2,K), cond(R,X,T,V,"pos").
+self(R) :- cnone(R,K,C), role(R,X,K2), subeq(K2,K), ccond(R,X,C,"pos").
+self(R) :- free(R,X), holds(R,_,X).
+self(R) :- set(R,_,X,T,V), set(R,_,X,T,W), V < W.
+self(R) :- resp(R,_,"pos",E,D,X), resp(R,_,"neg",E,D,X).
+.decl clash(a:T,b:T,w:T) .output clash
+clash(R,R,"self") :- self(R).
+
+.decl edge(t:T,u:T,v:T)
+edge(T,U,V) :- trans(_,T,U,V).
+.decl moving(t:T)
+moving(T) :- edge(T,_,_).
+.decl entered(t:T,v:T)
+entered(T,V) :- edge(T,_,V).
+.decl bad_set(r:T,t:T,u:T,v:T) .output bad_set
+bad_set(R,T,U,V) :- set(R,_,X,T,V), cond(R,X,T,U,"pos"), U != V, moving(T), !edge(T,U,V).
+.decl known(r:T,x:T,t:T)
+known(R,X,T) :- cond(R,X,T,_,"pos").
+bad_set(R,T,"none",V) :- set(R,_,X,T,V), !known(R,X,T), moving(T), !entered(T,V).
+.decl reach(t:T,v:T)
+reach(T,V) :- initial(_,T,V).  reach(T,W) :- reach(T,V), edge(T,V,W).
+.decl unreachable(r:T,t:T,v:T) .output unreachable
+unreachable(R,T,V) :- cond(R,_,T,V,"pos"), moving(T), !reach(T,V).
+.decl stative(e:T)
+stative(E) :- stative_in(E).  stative("change_nothing").
+.decl l5(r:T,e:T)
+l5(R,E) :- resp(R,_,"pos",E,_,_), !trg(R), !stative(E).
+.decl reacts(e:T)
+reacts(E) :- l5(_,E), trig(_,_,E,_,_).
+.decl lint(r:T,e:T,t:T) .output lint
+lint(R,E,T) :- l5(R,E), trig(T,_,E,_,_).
+lint(R,E,"none") :- l5(R,E), !reacts(E).
+// check.lp's search in Soufflé: every unification of each pair enumerated as a tuple uni(A,B,M) (M packs, 4 bits a
+// role of B in role order, 0 for unmapped or 1 + the index of the role of A it maps to), then every relation from
+// line 74 of check.lp on carries the unification I = [A,B,M]. clash/maybe hold when some unification gives them:
+// the brave consequences of check.lp (every pair has a unification, so the program is never UNSAT; `stuck` checks it).
+.type U = [a:T, b:T, m:number]
+.decl elig(s:T,y:T)
+elig(S,Y) :- role(S,Y,_), !nrep(S,Y).
+.decl inpair(s:T)
+inpair(S) :- pair(S,_).  inpair(S) :- pair(_,S).
+.decl ridx(s:T,y:T,n:number)
+ridx(S,Y,n) :- inpair(S), elig(S,Y), n = count : { elig(S,Y2), Y2 < Y }.
+.decl nel(s:T,n:number)
+nel(S,n) :- inpair(S), n = count : { elig(S,_) }.
+.decl toobig(s:T) .output toobig
+toobig(S) :- nel(S,n), n > 15.
+.decl bad70(a:T,b:T,y:T,x:T)
+bad70(A,B,Y,X) :- pair(A,B), named(A,X,C), named(B,Y,C2), C != C2.
+.decl bad72(a:T,b:T,y:T,x:T)
+bad72(A,B,Y,X) :- pair(A,B), oattr(A,X,T,V), oattr(B,Y,T,W), V != W.
+.decl opt(a:T,b:T,y:T,x:T)
+opt(A,B,Y,X) :- pair(A,B), elig(B,Y), role(B,Y,K2), elig(A,X), role(A,X,K), compat(K,K2), !bad70(A,B,Y,X), !bad72(A,B,Y,X).
+.decl forced(a:T,b:T,y:T,x:T)
+forced(A,B,Y,X) :- pair(A,B), named(A,X,C), named(B,Y,C), !nrep(A,X), !nrep(B,Y).
+.decl forcedY(a:T,b:T,y:T)
+forcedY(A,B,Y) :- forced(A,B,Y,_).
+.decl forcedX(a:T,b:T,x:T)
+forcedX(A,B,X) :- forced(A,B,_,X).
+.decl stuck(a:T,b:T) .output stuck
+stuck(A,B) :- forced(A,B,Y,X), !opt(A,B,Y,X).
+.decl part(a:T,b:T,i:number,m:number,used:number)
+part(A,B,0,0,0) :- pair(A,B).
+part(A,B,i+1,M,Us) :- part(A,B,i,M,Us), ridx(B,Y,i), !forcedY(A,B,Y).
+part(A,B,i+1,M bor ((j+1) bshl (4*i)), Us bor (1 bshl j)) :- part(A,B,i,M,Us), ridx(B,Y,i), forced(A,B,Y,X),
+    opt(A,B,Y,X), ridx(A,X,j), (Us band (1 bshl j)) = 0.
+part(A,B,i+1,M bor ((j+1) bshl (4*i)), Us bor (1 bshl j)) :- part(A,B,i,M,Us), ridx(B,Y,i), !forcedY(A,B,Y),
+    opt(A,B,Y,X), !forcedX(A,B,X), ridx(A,X,j), (Us band (1 bshl j)) = 0.
+.decl un(i:U,a:T,b:T)
+un([A,B,M],A,B) :- part(A,B,n,M,_), nel(B,n).
+.decl map(i:U,y:T,x:T)
+map(I,Y,X) :- un(I,A,B), I = [A,B,M], ridx(B,Y,i), d = (M bshr (4*i)) band 15, d > 0, ridx(A,X,d-1).
+
+.decl tdef(s:T,k:T)
+tdef(S,K) :- the(S,X), role(S,X,K).
+.decl named1(s:T,y:T)
+named1(S,Y) :- the(S,Y).  named1(S,Y) :- cond(S,Y,_,_,_).  named1(S,Y) :- ccond(S,Y,_,_).
+named1(S,Y) :- crel(S,_,Y,_,_).  named1(S,Y) :- crel(S,_,_,Y,_).  named1(S,Y) :- trig(S,_,_,Y,_).
+named1(S,Y) :- trig(S,_,_,_,Y).
+.decl tmap(i:U,y:T)
+tmap(I,Y) :- map(I,Y,X), un(I,A,_), the(A,X).
+.decl side(i:U,s:T)
+side(I,A) :- un(I,A,_).  side(I,B) :- un(I,_,B).
+.decl mapped(i:U,y:T)
+mapped(I,Y) :- map(I,Y,_).
+.decl at(i:U,s:T,y:T,z:T)
+at(I,A,X,Z) :- un(I,A,_), term(A,X), canon(A,X,Z).
+at(I,A,X,X) :- un(I,A,_), term(A,X), !role(A,X,_).
+at(I,B,Y,X) :- un(I,_,B), canon(B,Y,Y0), map(I,Y0,X).
+at(I,B,Y,cat("b(",Y0,")")) :- un(I,_,B), canon(B,Y,Y0), !mapped(I,Y0).
+at(I,B,Y,Y) :- un(I,_,B), term(B,Y), !role(B,Y,_).
+.decl same(i:U,x:T,y:T)
+same(I,X,Y) :- un(I,A,B), at(I,A,X,Z), at(I,B,Y,Z).
+.decl kindof(i:U,z:T,k:T)
+kindof(I,Z,K) :- side(I,S), role(S,Y,K), at(I,S,Y,Z).
+.decl doer(i:U,x:T,y:T)
+doer(I,X,Y) :- same(I,X,Y).
+doer(I,"any",Y) :- un(I,_,B), term(B,Y).  doer(I,X,"any") :- un(I,A,_), term(A,X).
+.decl fires(i:U)
+fires(I) :- un(I,A,B), trig(A,P,E,D1,X), trig(B,P,E,D2,Y), same(I,X,Y), doer(I,D1,D2).
+.decl out(i:U)
+out(I) :- clc(I), un(I,A,B), trg(A), trg(B), !fires(I).
+out(I) :- clc(I), un(I,A,B), tdef(A,K), named1(B,Y), role(B,Y,K), !tmap(I,Y).
+out(I) :- clc(I), un(I,A,B), tdef(B,K), the(B,Y), role(B,Y,K), named1(A,X), role(A,X,K), !map(I,Y,X).
+
+// full2: a clash is only possible where the responses meet under the unification (cl without ok): the states,
+// the out rules and the prose dependence are derived only for those unifications
+.decl clc0(i:U,w:T)
+clc0(I,"pos_neg") :- un(I,A,B), resp(A,_,"pos",E,D1,X), resp(B,_,"neg",E,D2,Y), doer(I,D1,D2), same(I,X,Y),
+    !gap(I,X,Y).
+
+clc0(I,"neg_pos") :- un(I,A,B), resp(A,_,"neg",E,D1,X), resp(B,_,"pos",E,D2,Y), doer(I,D1,D2), same(I,X,Y),
+    !pag(I,X,Y).
+
+clc0(I,"set") :- un(I,A,B), set(A,_,X,T,V), set(B,_,Y,T,W), same(I,X,Y), V != W.
+
+clc0(I,"exit") :- un(I,A,B), resp(A,_,"pos","exit_ok",D1,_), resp(B,_,"pos","exit_error",D2,_), doer(I,D1,D2).
+
+clc0(I,"exit") :- un(I,A,B), resp(A,_,"pos","exit_error",D1,_), resp(B,_,"pos","exit_ok",D2,_), doer(I,D1,D2).
+
+clc0(I,"change") :- un(I,A,B), resp(A,_,"pos","change_nothing",D1,_), resp(B,_,"pos",E,D2,_), !quiet(E),
+    !own(A,E), doer(I,D1,D2).
+
+clc0(I,"change") :- un(I,A,B), resp(B,_,"pos","change_nothing",D2,_), resp(A,_,"pos",E,D1,_), !quiet(E),
+    !own(B,E), doer(I,D1,D2).
+
+clc0(I,"use") :- un(I,A,B), uses(A,D1,X), nouse(B,D2,Y), doer(I,D1,D2), same(I,X,Y).
+
+clc0(I,"use") :- un(I,A,B), nouse(A,D1,X), uses(B,D2,Y), doer(I,D1,D2), same(I,X,Y).
+
+.decl clc(i:U)
+clc(I) :- clc0(I,_).
+.decl sidec(i:U,s:T)
+sidec(I,S) :- side(I,S), clc(I).
+.decl late(i:U,s:T)
+late(I,S) :- sidec(I,S), !trg(S), sidec(I,O), trg(O).
+.decl w0(i:U,z:T,t:T,v:T,p:T)
+w0(I,Z,T,V,P) :- sidec(I,S), !late(I,S), cond(S,Y,T,V,P), at(I,S,Y,Z).
+.decl n1(i:U,z:T,t:T,v:T,p:T)
+n1(I,Z,T,V,P) :- late(I,S), cond(S,Y,T,V,P), at(I,S,Y,Z).
+.decl put(i:U,z:T,t:T,v:T)
+put(I,Z,T,V) :- sidec(I,S), trg(S), set(S,_,Y,T,V), at(I,S,Y,Z).
+.decl moved(i:U,z:T,t:T)
+moved(I,Z,T) :- put(I,Z,T,_).
+.decl w1(i:U,z:T,t:T,v:T,p:T)
+w1(I,Z,T,V,"pos") :- put(I,Z,T,V).
+w1(I,Z,T,V,"pos") :- w0(I,Z,T,V,"pos"), !moved(I,Z,T).
+w1(I,Z,T,V,"neg") :- w0(I,Z,T,V,"neg"), !put(I,Z,T,V).
+out(I) :- w0(I,Z,T,V,"pos"), w0(I,Z,T,W,"pos"), V != W.
+out(I) :- w0(I,Z,T,V,"pos"), w0(I,Z,T,V,"neg").
+out(I) :- n1(I,Z,T,V,"pos"), w1(I,Z,T,W,"pos"), V != W.
+out(I) :- n1(I,Z,T,V,"pos"), n1(I,Z,T,W,"pos"), V != W.
+out(I) :- n1(I,Z,T,V,"pos"), w1(I,Z,T,V,"neg").  out(I) :- n1(I,Z,T,V,"neg"), w1(I,Z,T,V,"pos").
+out(I) :- n1(I,Z,T,V,"pos"), n1(I,Z,T,V,"neg").
+.decl cw(i:U,z:T,c:T,p:T)
+cw(I,Z,C,P) :- sidec(I,S), ccond(S,Y,C,P), at(I,S,Y,Z).
+out(I) :- cw(I,Z,C,"pos"), cw(I,Z,C,"neg").
+.decl rw(i:U,q:T,z1:T,z2:T,p:T)
+rw(I,Q,Z1,Z2,P) :- sidec(I,S), crel(S,Q,Y1,Y2,P), at(I,S,Y1,Z1), at(I,S,Y2,Z2).
+out(I) :- rw(I,Q,Z1,Z2,"pos"), rw(I,Q,Z1,Z2,"neg").
+out(I) :- sidec(I,S1), sidec(I,S2), free(S1,X1), holds(S2,_,X2), at(I,S1,X1,Z), at(I,S2,X2,Z).
+.decl pos(i:U,n:number,z:T,t:T,v:T)
+pos(I,0,Z,T,V) :- w0(I,Z,T,V,"pos").
+pos(I,1,Z,T,V) :- w1(I,Z,T,V,"pos").  pos(I,1,Z,T,V) :- n1(I,Z,T,V,"pos").
+.decl state(i:U,s:T,n:number)
+state(I,S,1) :- late(I,S).  state(I,S,0) :- sidec(I,S), !late(I,S).
+out(I) :- state(I,S,N), none(S,K,T,V), pos(I,N,Z,T,V), kindof(I,Z,K2), subeq(K2,K).
+out(I) :- sidec(I,S), cnone(S,K,C), cw(I,Z,C,"pos"), kindof(I,Z,K2), subeq(K2,K).
+out(I) :- sidec(I,S), rnone_k1(S,Q,K,Y), at(I,S,Y,Zy), rw(I,Q,Z,Zy,"pos"), kindof(I,Z,K2), subeq(K2,K).
+out(I) :- sidec(I,S), rnone_k2(S,Q,X,K), at(I,S,X,Zx), rw(I,Q,Zx,Z,"pos"), kindof(I,Z,K2), subeq(K2,K).
+.decl redge(i:U,q:T,z1:T,z2:T)
+redge(I,Q,Z1,Z2) :- rw(I,Q,Z1,Z2,"pos").
+redge(I,Q,Z1,Z2) :- sidec(I,S), orel(S,Q,Y1,Y2), at(I,S,Y1,Z1), at(I,S,Y2,Z2).
+out(I) :- fun(Q), redge(I,Q,Z,Z1), redge(I,Q,Z,Z2), Z1 != Z2.
+
+.decl has(i:U,n:number,z:T,t:T,v:T,p:T)
+has(I,0,Z,T,V,P) :- w0(I,Z,T,V,P).
+has(I,1,Z,T,V,P) :- w1(I,Z,T,V,P).  has(I,1,Z,T,V,P) :- n1(I,Z,T,V,P).
+.decl ask(i:U,n:number,z:T,c:T)
+ask(I,N,Z,C) :- sidec(I,S), state(I,S,N), cnone(S,K,C), kindof(I,Z,K2), subeq(K2,K), dalt(C,_).
+ask(I,N,Z,C) :- sidec(I,S), state(I,S,N), ccond(S,Y,C,"neg"), at(I,S,Y,Z), dalt(C,_).
+ask(I,N,Z,C) :- umatch(I,S,Q,Z), state(I,S,N), uccond(S,Q,C,_), dalt(C,_).
+.decl hasu(i:U,n:number,z:T,t:T,v:T,p:T)
+hasu(I,N,Z,T,V,P) :- has(I,N,Z,T,V,P).
+hasu(I,N,Z,T,V,"pos") :- umatch(I,S,Q,Z), state(I,S,N), ucond(S,Q,T,V,"pos").
+.decl unent(i:U,n:number,z:T,c:T,w:T)
+unent(I,N,Z,C,W) :- ask(I,N,Z,C), dlit(C,W,T,V,"pos"), !hasu(I,N,Z,T,V,"pos").
+.decl negd(i:U,n:number,z:T,t:T,v:T)
+negd(I,N,Z,T,V) :- has(I,N,Z,T,V,"neg").
+negd(I,N,Z,T,V) :- hasu(I,N,Z,T,W,"pos"), dlit(_,_,T,V,_), V != W.
+unent(I,N,Z,C,W) :- ask(I,N,Z,C), dlit(C,W,T,V,"neg"), !negd(I,N,Z,T,V).
+.decl ent(i:U,n:number,z:T,c:T)
+ent(I,N,Z,C) :- ask(I,N,Z,C), dalt(C,W), !unent(I,N,Z,C,W).
+.decl brk(i:U,n:number,z:T,c:T,w:T)
+brk(I,N,Z,C,W) :- ask(I,N,Z,C), dlit(C,W,T,V,"pos"), negd(I,N,Z,T,V).
+brk(I,N,Z,C,W) :- ask(I,N,Z,C), dlit(C,W,T,V,"neg"), hasu(I,N,Z,T,V,"pos").
+.decl live(i:U,n:number,z:T,c:T)
+live(I,N,Z,C) :- ask(I,N,Z,C), dalt(C,W), !brk(I,N,Z,C,W).
+.decl refuted(i:U,n:number,z:T,c:T)
+refuted(I,N,Z,C) :- ask(I,N,Z,C), !live(I,N,Z,C).
+out(I) :- sidec(I,S), state(I,S,N), cnone(S,K,C), kindof(I,Z,K2), subeq(K2,K), ent(I,N,Z,C).
+out(I) :- sidec(I,S), state(I,S,N), ccond(S,Y,C,"neg"), at(I,S,Y,Z), ent(I,N,Z,C).
+.decl ucand(i:U,s:T,q:T,z:T)
+ucand(I,S,Q,Z) :- sidec(I,S), uall(S,Q,K), kindof(I,Z,K2), subeq(K2,K).
+.decl umiss(i:U,s:T,q:T,z:T)
+umiss(I,S,Q,Z) :- ucand(I,S,Q,Z), urel(S,R,Q,W), at(I,S,W,Zw), !rw(I,R,Z,Zw,"pos").
+umiss(I,S,Q,Z) :- ucand(I,S,Q,Z), state(I,S,N), uattr(S,Q,T,V), !has(I,N,Z,T,V,"pos").
+.decl umatch(i:U,s:T,q:T,z:T)
+umatch(I,S,Q,Z) :- ucand(I,S,Q,Z), !umiss(I,S,Q,Z).
+out(I) :- umatch(I,S,Q,Z), state(I,S,N), ucond(S,Q,T,V,"pos"), has(I,N,Z,T,W,"pos"), V != W.
+out(I) :- umatch(I,S,Q,Z), state(I,S,N), ucond(S,Q,T,V,"pos"), has(I,N,Z,T,V,"neg").
+out(I) :- umatch(I,S,Q,Z), state(I,S,N), ucond(S,Q,T,V,"neg"), has(I,N,Z,T,V,"pos").
+out(I) :- umatch(I,S,Q,Z), uccond(S,Q,C,"pos"), cw(I,Z,C,"neg").
+out(I) :- umatch(I,S,Q,Z), uccond(S,Q,C,"neg"), cw(I,Z,C,"pos").
+out(I) :- umatch(I,S,Q,Z), state(I,S,N), uccond(S,Q,C,"pos"), refuted(I,N,Z,C).
+out(I) :- umatch(I,S,Q,Z), state(I,S,N), uccond(S,Q,C,"neg"), ent(I,N,Z,C).
+
+.decl ok(i:U)
+ok(I) :- clc(I), !out(I).
+.decl relby(i:U,x:T,q:T,z:T)
+relby(I,X,Q,Z) :- map(I,Y,X), un(I,A,B), orel(B,Q,Y,Z), orel(A,Q,X,X2), same(I,X2,Z).
+.decl relof(i:U,y:T,q:T,x2:T)
+relof(I,Y,Q,X2) :- map(I,Y,X), un(I,A,B), orel(A,Q,X,X2), orel(B,Q,Y,Z), same(I,X2,Z).
+.decl gap(i:U,x:T,y:T)
+gap(I,X,Y) :- map(I,Y,X), un(I,A,B), oattr(B,Y,T,W), !oattr(A,X,T,W).
+gap(I,X,Y) :- map(I,Y,X), un(I,_,B), orel(B,Q,Y,Z), !relby(I,X,Q,Z).
+.decl pag(i:U,x:T,y:T)
+pag(I,X,Y) :- map(I,Y,X), un(I,A,B), oattr(A,X,T,W), !oattr(B,Y,T,W).
+pag(I,X,Y) :- map(I,Y,X), un(I,A,_), orel(A,Q,X,X2), !relof(I,Y,Q,X2).
+.decl cl(i:U,w:T)
+cl(I,"pos_neg") :- ok(I), un(I,A,B), resp(A,_,"pos",E,D1,X), resp(B,_,"neg",E,D2,Y), doer(I,D1,D2), same(I,X,Y),
+    !gap(I,X,Y).
+cl(I,"neg_pos") :- ok(I), un(I,A,B), resp(A,_,"neg",E,D1,X), resp(B,_,"pos",E,D2,Y), doer(I,D1,D2), same(I,X,Y),
+    !pag(I,X,Y).
+cl(I,"set") :- ok(I), un(I,A,B), set(A,_,X,T,V), set(B,_,Y,T,W), same(I,X,Y), V != W.
+cl(I,"exit") :- ok(I), un(I,A,B), resp(A,_,"pos","exit_ok",D1,_), resp(B,_,"pos","exit_error",D2,_), doer(I,D1,D2).
+cl(I,"exit") :- ok(I), un(I,A,B), resp(A,_,"pos","exit_error",D1,_), resp(B,_,"pos","exit_ok",D2,_), doer(I,D1,D2).
+cl(I,"change") :- ok(I), un(I,A,B), resp(A,_,"pos","change_nothing",D1,_), resp(B,_,"pos",E,D2,_), !quiet(E),
+    !own(A,E), doer(I,D1,D2).
+cl(I,"change") :- ok(I), un(I,A,B), resp(B,_,"pos","change_nothing",D2,_), resp(A,_,"pos",E,D1,_), !quiet(E),
+    !own(B,E), doer(I,D1,D2).
+cl(I,"use") :- ok(I), un(I,A,B), uses(A,D1,X), nouse(B,D2,Y), doer(I,D1,D2), same(I,X,Y).
+cl(I,"use") :- ok(I), un(I,A,B), nouse(A,D1,X), uses(B,D2,Y), doer(I,D1,D2), same(I,X,Y).
+// lit(I,S,Z,L): L = c(T,V,P) | k(C,P) | r(Q,Z2,P) | i(Q,Z1,P), flattened to (tag, a, b, c)
+.decl lit(i:U,s:T,z:T,g:symbol,a:T,b:T,c:T)
+lit(I,S,Z,"c",T,V,P) :- sidec(I,S), cond(S,Y,T,V,P), at(I,S,Y,Z).
+lit(I,S,Z,"k",C,P,"-") :- sidec(I,S), ccond(S,Y,C,P), at(I,S,Y,Z).
+lit(I,S,Z1,"r",Q,Z2,P) :- sidec(I,S), crel(S,Q,Y1,Y2,P), at(I,S,Y1,Z1), at(I,S,Y2,Z2).
+lit(I,S,Z2,"i",Q,Z1,P) :- sidec(I,S), crel(S,Q,Y1,Y2,P), at(I,S,Y1,Z1), at(I,S,Y2,Z2).
+.decl dep(i:U,c:T)
+dep(I,C) :- lit(I,S,Z,"k",C,_,_), prose(C), sidec(I,S2), S2 != S, lit(I,S2,Z,G,X,Y,W), !lit(I,S,Z,G,X,Y,W).
+.decl depends(i:U)
+depends(I) :- dep(I,_).
+clash(A,B,W) :- cl(I,W), un(I,A,B), !depends(I).
+.decl maybe(a:T,b:T,w:T,c:T) .output maybe
+maybe(A,B,W,C) :- cl(I,W), un(I,A,B), dep(I,C).
+// stats
+.decl nuni(n:number) .output nuni
+nuni(n) :- n = count : { un(_,_,_) }.
+.decl perpair(a:T,b:T,n:number)
+perpair(A,B,n) :- pair(A,B), n = count : { un(_,A,B) }.
+.decl maxpair(a:T,b:T,n:number) .output maxpair
+maxpair(A,B,n) :- perpair(A,B,n), n = max m : { perpair(_,_,m) }.

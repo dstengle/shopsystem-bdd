@@ -1,0 +1,204 @@
+--- /home/vscode/shopsystem-bdd/grammar/check.lp	2026-11-05 17:11:45.836528062 +0000
++++ check_fast.lp	2026-11-09 08:18:14.932680439 +0000
+@@ -28,32 +28,48 @@
+ 
+ % ---- candidate pairs: the shared-vocabulary index, never the cross product ---------------------------------------
+ % A pair can clash only when its responses can: opposite polarities of one event, two values set of one attribute,
+-% exit_ok with exit_error, change_nothing with a changing response, a use with a "shall not use".
++% exit_ok with exit_error, change_nothing with a changing response, a use with a "shall not use". Each requirement's
++% clash keys (`key`) and the keys another needs to clash with it (`dem`) are found first; then every join below is on
++% a whole shared key (trigger and key, or an untriggered or universal requirement's own keys), so no rule ranges over
++% all pairs of requirements, and no join is bound on a word only (an event, a kind) that thousands of lines share.
+ quiet(print). quiet(exit_ok). quiet(exit_error). quiet(change_nothing).
+ % "D shall do E and change nothing" changes nothing but E: a requirement's own events are excepted from its own
+ % change nothing, and from another's change nothing when that one names the same event
+ own(R,E) :- resp(R,_,pos,E,_,_).
+-cc(A,B) :- resp(A,_,P,E,_,_), resp(B,_,Q,E,_,_), P != Q.
+-cc(A,B) :- set(A,_,_,T,V), set(B,_,_,T,W), V != W.
+-cc(A,B) :- resp(A,_,pos,exit_ok,_,_), resp(B,_,pos,exit_error,_,_).
+-cc(A,B) :- resp(A,_,pos,change_nothing,_,_), resp(B,_,pos,E,_,_), not quiet(E), not own(A,E).
+-cc(A,B) :- uses(A,_,_), nouse(B,_,_).
+-can(A,B) :- cc(A,B), A != B.  can(A,B) :- cc(B,A), A != B.
+-% two triggers of one event, a compatible doer, objects of compatible kinds (or one constant)
+-cand(A,B) :- can(A,B), trig(A,P,E,D1,X), trig(B,P,E,D2,Y), kin(A,B,X,Y), doerk(A,B,D1,D2).
+-kin(A,B,X,Y) :- can(A,B), trig(A,_,_,_,X), trig(B,_,_,_,Y), role(A,X,K), role(B,Y,K2), compat(K,K2).
+-kin(A,B,X,X) :- can(A,B), trig(A,_,_,_,X), trig(B,_,_,_,X), not role(A,X,_), not role(B,X,_).
+-doerk(A,B,D1,D2) :- can(A,B), trig(A,_,_,D1,_), trig(B,_,_,D2,_), role(A,D1,K), role(B,D2,K2), compat(K,K2).
+-doerk(A,B,any,D) :- can(A,B), trig(A,_,_,any,_), trig(B,_,_,D,_).
+-doerk(A,B,D,any) :- can(A,B), trig(A,_,_,D,_), trig(B,_,_,any,_).
+-doerk(A,B,D,D) :- can(A,B), trig(A,_,_,D,_), trig(B,_,_,D,_), not role(A,D,_).
+-% a triggered requirement with an untriggered one that binds one of its kinds
+-cand(A,B) :- can(A,B), trg(A), req(B), not trg(B), role(A,_,K), role(B,_,K2), compat(K,K2).
+-% a requirement with a U that shares an event or an attribute; a use with a "shall not use" (static, no trigger)
++key(R,ev(P,E)) :- resp(R,_,P,E,_,_).  key(R,at(T,V)) :- set(R,_,_,T,V).
++key(R,use) :- uses(R,_,_).  key(R,nouse) :- nouse(R,_,_).
++vals(T,V) :- set(_,_,_,T,V).  posev(E) :- resp(_,_,pos,E,_,_).
++dem(R,ev(neg,E)) :- key(R,ev(pos,E)).  dem(R,ev(pos,E)) :- key(R,ev(neg,E)).
++dem(R,at(T,W)) :- key(R,at(T,V)), vals(T,W), V != W.
++dem(R,ev(pos,exit_error)) :- key(R,ev(pos,exit_ok)).  dem(R,nouse) :- key(R,use).
++dem(R,ev(pos,E)) :- key(R,ev(pos,change_nothing)), posev(E), not quiet(E), not own(R,E).
++% cc(A,B) holds exactly when dem(A,K), key(B,K) for some K; a pair can clash when either way holds.
++% (1) two triggers of one event: joined on the trigger and the key at once
++tdem(A,P,E,K) :- trig(A,P,E,_,_), dem(A,K).  tkey(B,P,E,K) :- trig(B,P,E,_,_), key(B,K).
++tc(A,B,P,E) :- tdem(A,P,E,K), tkey(B,P,E,K), A != B.  tc(B,A,P,E) :- tdem(A,P,E,K), tkey(B,P,E,K), A != B.
++tp(A,B,X,Y,D1,D2) :- tc(A,B,P,E), trig(A,P,E,D1,X), trig(B,P,E,D2,Y).
++% a compatible doer, objects of compatible kinds (or one constant)
++kin(A,B,X,Y) :- tp(A,B,X,Y,_,_), role(A,X,K), role(B,Y,K2), compat(K,K2).
++kin(A,B,X,X) :- tp(A,B,X,X,_,_), not role(A,X,_), not role(B,X,_).
++doerk(A,B,D1,D2) :- tp(A,B,_,_,D1,D2), role(A,D1,K), role(B,D2,K2), compat(K,K2).
++doerk(A,B,any,D) :- tp(A,B,_,_,any,D).
++doerk(A,B,D,any) :- tp(A,B,_,_,D,any).
++doerk(A,B,D,D) :- tp(A,B,_,_,D,D), not role(A,D,_).
++cand(A,B) :- tp(A,B,X,Y,D1,D2), kin(A,B,X,Y), doerk(A,B,D1,D2).
++% (2) a triggered requirement with an untriggered one that binds one of its kinds: from the untriggered one's keys
++ureq(B) :- req(B), not trg(B).
++ukey(B,K) :- ureq(B), key(B,K).  udem(B,K) :- ureq(B), dem(B,K).
++uc(B,A) :- udem(B,K), key(A,K), trg(A).  uc(B,A) :- ukey(B,K), dem(A,K), trg(A).
++ukind(B,K) :- ureq(B), role(B,_,K2), compat(K,K2).
++cand(A,B) :- uc(B,A), role(A,_,K), ukind(B,K).
++% (3) a requirement with a U that shares an event or an attribute; a use with a "shall not use" (static, no trigger)
+ names(R,E) :- resp(R,_,_,E,_,_).  names(R,E) :- trig(R,_,E,_,_).
+ names(R,T) :- cond(R,_,T,_,_).    names(R,T) :- set(R,_,_,T,_).
+-cand(A,B) :- can(A,B), universal(A), names(A,N), names(B,N).
+-cand(A,B) :- can(A,B), uses(A,_,_), nouse(B,_,_).
++unames(A,N) :- universal(A), names(A,N).
++ukeyu(A,K) :- universal(A), key(A,K).  udemu(A,K) :- universal(A), dem(A,K).
++unc(A,B) :- udemu(A,K), key(B,K), A != B.  unc(A,B) :- ukeyu(A,K), dem(B,K), A != B.
++cand(A,B) :- unc(A,B), unames(A,N), names(B,N).
++cand(A,B) :- uses(A,_,_), nouse(B,_,_), A != B.
+ % the EARS unwanted-behaviour form ("If T, then ...") is the exception to the other requirements on its trigger: it
+ % wins over them, so an `if` requirement and a non-`if` one are never a pair (two of one form still are)
+ exc(R) :- form(R,if).  exc(R) :- form(R,while_if).  exc(R) :- form(R,where_if).
+@@ -67,9 +83,12 @@
+ canon(S,Y,Y0) :- named(S,Y,C), named(S,Y0,C), not nrep(S,Y0).  canon(S,Y,Y) :- role(S,Y,_), not named(S,Y,_).
+ { map(A,B,Y,X) : role(A,X,K), compat(K,K2), not nrep(A,X) } 1 :- pair(A,B), role(B,Y,K2), not nrep(B,Y).
+ :- map(A,B,Y1,X), map(A,B,Y2,X), Y1 < Y2.
+-:- map(A,B,Y,X), named(A,X,C), named(B,Y,C2), C != C2.
+-:- pair(A,B), named(A,X,C), named(B,Y,C), not nrep(A,X), not nrep(B,Y), not map(A,B,Y,X).
+-:- map(A,B,Y,X), oattr(A,X,T,V), oattr(B,Y,T,W), V != W.
++% (a side's codes and object attributes lifted to the pair first: never joined on a code or an attribute alone)
++na(A,B,X,C) :- pair(A,B), named(A,X,C).  nb(A,B,Y,C) :- pair(A,B), named(B,Y,C).
++:- map(A,B,Y,X), na(A,B,X,C), nb(A,B,Y,C2), C != C2.
++:- na(A,B,X,C), nb(A,B,Y,C), not nrep(A,X), not nrep(B,Y), not map(A,B,Y,X).
++oa(A,B,X,T,V) :- pair(A,B), oattr(A,X,T,V).  ob(A,B,Y,T,W) :- pair(A,B), oattr(B,Y,T,W).
++:- map(A,B,Y,X), oa(A,B,X,T,V), ob(A,B,Y,T,W), V != W.
+ % A definite noun phrase with no antecedent (`the(R,V)`: "the work-item" never introduced) is the one thing of its
+ % kind: when one side has one, each role of that kind the other side's pre-state or definites name is it, or the
+ % pair is out under this unification.
+@@ -90,10 +109,13 @@
+ doer(A,B,X,Y) :- same(A,B,X,Y).
+ doer(A,B,any,Y) :- pair(A,B), term(B,Y).  doer(A,B,X,any) :- pair(A,B), term(A,X).
+ % the triggers are one event: its doer and its object unify, or the pair is out under this unification
+-fires(A,B) :- pair(A,B), trig(A,P,E,D1,X), trig(B,P,E,D2,Y), same(A,B,X,Y), doer(A,B,D1,D2).
++ta(A,B,P,E,D,X) :- pair(A,B), trig(A,P,E,D,X).  tb(A,B,P,E,D,Y) :- pair(A,B), trig(B,P,E,D,Y).
++fires(A,B) :- ta(A,B,P,E,D1,X), tb(A,B,P,E,D2,Y), same(A,B,X,Y), doer(A,B,D1,D2).
+ out(A,B) :- pair(A,B), trg(A), trg(B), not fires(A,B).
+-out(A,B) :- pair(A,B), tdef(A,K), named1(B,Y), role(B,Y,K), not tmap(A,B,Y).
+-out(A,B) :- pair(A,B), tdef(B,K), the(B,Y), role(B,Y,K), named1(A,X), role(A,X,K), not map(A,B,Y,X).
++nk(S,Y,K) :- named1(S,Y), role(S,Y,K).  thek(S,Y,K) :- the(S,Y), role(S,Y,K).
++tda(A,B,K) :- pair(A,B), tdef(A,K).  tdb(A,B,K) :- pair(A,B), tdef(B,K).
++out(A,B) :- tda(A,B,K), nk(B,Y,K), not tmap(A,B,Y).
++out(A,B) :- tdb(A,B,K), thek(B,Y,K), nk(A,X,K), not map(A,B,Y,X).
+ 
+ % ---- the two states: 0 is the pre-state (the trigger happens there), 1 is 0 with the sets of the triggered side --
+ % An untriggered requirement paired with a triggered one is read at state 1 (its conditions there, its responses
+@@ -118,16 +140,21 @@
+ out(A,B) :- cw(A,B,Z,C,pos), cw(A,B,Z,C,neg).
+ rw(A,B,Q,Z1,Z2,P) :- side(A,B,S), crel(S,Q,Y1,Y2,P), at(A,B,S,Y1,Z1), at(A,B,S,Y2,Z2).
+ out(A,B) :- rw(A,B,Q,Z1,Z2,pos), rw(A,B,Q,Z1,Z2,neg).
+-out(A,B) :- side(A,B,S1), side(A,B,S2), free(S1,X1), holds(S2,_,X2), at(A,B,S1,X1,Z), at(A,B,S2,X2,Z).
++fr(A,B,Z) :- side(A,B,S), free(S,X), at(A,B,S,X,Z).  hd(A,B,Z) :- side(A,B,S), holds(S,_,X), at(A,B,S,X,Z).
++out(A,B) :- fr(A,B,Z), hd(A,B,Z).
+ % "no K is v" is universal over the merged state of its side (§3.3): no instance of K or a sub-kind there is v
+ pos(A,B,0,Z,T,V) :- w0(A,B,Z,T,V,pos).
+ pos(A,B,1,Z,T,V) :- w1(A,B,Z,T,V,pos).  pos(A,B,1,Z,T,V) :- n1(A,B,Z,T,V,pos).
+ state(A,B,S,1) :- late(A,B,S).  state(A,B,S,0) :- side(A,B,S), not late(A,B,S).
+-out(A,B) :- state(A,B,S,N), none(S,K,T,V), pos(A,B,N,Z,T,V), kindof(A,B,Z,K2), subeq(K2,K).
+-out(A,B) :- side(A,B,S), cnone(S,K,C), cw(A,B,Z,C,pos), kindof(A,B,Z,K2), subeq(K2,K).
++% (each `no` lifted to the pair, and an instance's kinds closed upwards per pair: `kup`)
++kup(A,B,Z,K) :- kindof(A,B,Z,K2), subeq(K2,K).
++nonep(A,B,N,K,T,V) :- state(A,B,S,N), none(S,K,T,V).
++out(A,B) :- nonep(A,B,N,K,T,V), pos(A,B,N,Z,T,V), kup(A,B,Z,K).
++cnonep(A,B,S,K,C) :- side(A,B,S), cnone(S,K,C).
++out(A,B) :- cnonep(A,B,_,K,C), cw(A,B,Z,C,pos), kup(A,B,Z,K).
+ % "no K is <rel> Y", "X is <rel> no K" (rnone): no instance of K is so related in the merged state
+-out(A,B) :- side(A,B,S), rnone(S,Q,kind(K),Y), at(A,B,S,Y,Zy), rw(A,B,Q,Z,Zy,pos), kindof(A,B,Z,K2), subeq(K2,K).
+-out(A,B) :- side(A,B,S), rnone(S,Q,X,kind(K)), at(A,B,S,X,Zx), rw(A,B,Q,Zx,Z,pos), kindof(A,B,Z,K2), subeq(K2,K).
++out(A,B) :- side(A,B,S), rnone(S,Q,kind(K),Y), at(A,B,S,Y,Zy), rw(A,B,Q,Z,Zy,pos), kup(A,B,Z,K).
++out(A,B) :- side(A,B,S), rnone(S,Q,X,kind(K)), at(A,B,S,X,Zx), rw(A,B,Q,Zx,Z,pos), kup(A,B,Z,K).
+ % a functional relation (`fun(Q)`: a relation row of cardinality one, or a preposition, spec_logic_vocab) relates a
+ % thing to one thing: two images under one unification are out
+ redge(A,B,Q,Z1,Z2) :- rw(A,B,Q,Z1,Z2,pos).
+@@ -139,7 +166,7 @@
+ has(A,B,0,Z,T,V,P) :- w0(A,B,Z,T,V,P).
+ has(A,B,1,Z,T,V,P) :- w1(A,B,Z,T,V,P).  has(A,B,1,Z,T,V,P) :- n1(A,B,Z,T,V,P).
+ % the instances a definition is asked of: (side's state N, instance Z, condition C)
+-ask(A,B,N,Z,C) :- side(A,B,S), state(A,B,S,N), cnone(S,K,C), kindof(A,B,Z,K2), subeq(K2,K), dalt(C,_).
++ask(A,B,N,Z,C) :- cnonep(A,B,S,K,C), state(A,B,S,N), kup(A,B,Z,K), dalt(C,_).
+ ask(A,B,N,Z,C) :- side(A,B,S), state(A,B,S,N), ccond(S,Y,C,neg), at(A,B,S,Y,Z), dalt(C,_).
+ ask(A,B,N,Z,C) :- umatch(A,B,S,U,Z), state(A,B,S,N), uccond(S,U,C,_), dalt(C,_).
+ % a way through C is entailed on Z when each of its literals is; broken when one is contradicted. What a side's
+@@ -156,10 +183,10 @@
+ brk(A,B,N,Z,C,W) :- ask(A,B,N,Z,C), dlit(C,W,T,V,neg), hasu(A,B,N,Z,T,V,pos).
+ live(A,B,N,Z,C) :- ask(A,B,N,Z,C), dalt(C,W), not brk(A,B,N,Z,C,W).
+ refuted(A,B,N,Z,C) :- ask(A,B,N,Z,C), not live(A,B,N,Z,C).
+-out(A,B) :- side(A,B,S), state(A,B,S,N), cnone(S,K,C), kindof(A,B,Z,K2), subeq(K2,K), ent(A,B,N,Z,C).
++out(A,B) :- cnonep(A,B,S,K,C), state(A,B,S,N), kup(A,B,Z,K), ent(A,B,N,Z,C).
+ out(A,B) :- side(A,B,S), state(A,B,S,N), ccond(S,Y,C,neg), at(A,B,S,Y,Z), ent(A,B,N,Z,C).
+ % "every K <restrictions> is C" (uall, urel, uattr; ucond, uccond): each instance of K with the restrictions is C
+-ucand(A,B,S,U,Z) :- side(A,B,S), uall(S,U,K), kindof(A,B,Z,K2), subeq(K2,K).
++ucand(A,B,S,U,Z) :- side(A,B,S), uall(S,U,K), kup(A,B,Z,K).
+ umiss(A,B,S,U,Z) :- ucand(A,B,S,U,Z), urel(S,Q,U,W), at(A,B,S,W,Zw), not rw(A,B,Q,Z,Zw,pos).
+ umiss(A,B,S,U,Z) :- ucand(A,B,S,U,Z), state(A,B,S,N), uattr(S,U,T,V), not has(A,B,N,Z,T,V,pos).
+ umatch(A,B,S,U,Z) :- ucand(A,B,S,U,Z), not umiss(A,B,S,U,Z).
+@@ -182,19 +209,25 @@
+ pag(A,B,X,Y) :- map(A,B,Y,X), oattr(A,X,T,W), not oattr(B,Y,T,W).
+ pag(A,B,X,Y) :- map(A,B,Y,X), orel(A,Q,X,X2), not relof(A,B,Y,Q,X2).
+ relof(A,B,Y,Q,X2) :- map(A,B,Y,X), orel(A,Q,X,X2), orel(B,Q,Y,Z), same(A,B,X2,Z).
+-cl(A,B,pos_neg) :- ok(A,B), resp(A,_,pos,E,D1,X), resp(B,_,neg,E,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y),
++% each side's responses lifted to the pair first (`ra`, `rb`, `sa`, `sb`, `ua`, `ub`, `xa`, `xb`), so a clash is joined on the pair and the
++% event at once, never on an event (print, exit_error) that thousands of lines share
++ra(A,B,P,E,D,X) :- pair(A,B), resp(A,_,P,E,D,X).  rb(A,B,P,E,D,Y) :- pair(A,B), resp(B,_,P,E,D,Y).
++sa(A,B,X,T,V) :- pair(A,B), set(A,_,X,T,V).        sb(A,B,Y,T,W) :- pair(A,B), set(B,_,Y,T,W).
++cl(A,B,pos_neg) :- ok(A,B), ra(A,B,pos,E,D1,X), rb(A,B,neg,E,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y),
+                       not gap(A,B,X,Y).
+-cl(A,B,neg_pos) :- ok(A,B), resp(A,_,neg,E,D1,X), resp(B,_,pos,E,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y),
++cl(A,B,neg_pos) :- ok(A,B), ra(A,B,neg,E,D1,X), rb(A,B,pos,E,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y),
+                       not pag(A,B,X,Y).
+-cl(A,B,set) :- ok(A,B), set(A,_,X,T,V), set(B,_,Y,T,W), same(A,B,X,Y), V != W.
+-cl(A,B,exit) :- ok(A,B), resp(A,_,pos,exit_ok,D1,_), resp(B,_,pos,exit_error,D2,_), doer(A,B,D1,D2).
+-cl(A,B,exit) :- ok(A,B), resp(A,_,pos,exit_error,D1,_), resp(B,_,pos,exit_ok,D2,_), doer(A,B,D1,D2).
+-cl(A,B,change) :- ok(A,B), resp(A,_,pos,change_nothing,D1,_), resp(B,_,pos,E,D2,_), not quiet(E),
++cl(A,B,set) :- ok(A,B), sa(A,B,X,T,V), sb(A,B,Y,T,W), same(A,B,X,Y), V != W.
++cl(A,B,exit) :- ok(A,B), ra(A,B,pos,exit_ok,D1,_), rb(A,B,pos,exit_error,D2,_), doer(A,B,D1,D2).
++cl(A,B,exit) :- ok(A,B), ra(A,B,pos,exit_error,D1,_), rb(A,B,pos,exit_ok,D2,_), doer(A,B,D1,D2).
++cl(A,B,change) :- ok(A,B), ra(A,B,pos,change_nothing,D1,_), rb(A,B,pos,E,D2,_), not quiet(E),
+                      not own(A,E), doer(A,B,D1,D2).
+-cl(A,B,change) :- ok(A,B), resp(B,_,pos,change_nothing,D2,_), resp(A,_,pos,E,D1,_), not quiet(E),
++cl(A,B,change) :- ok(A,B), rb(A,B,pos,change_nothing,D2,_), ra(A,B,pos,E,D1,_), not quiet(E),
+                      not own(B,E), doer(A,B,D1,D2).
+-cl(A,B,use) :- ok(A,B), uses(A,D1,X), nouse(B,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y).
+-cl(A,B,use) :- ok(A,B), nouse(A,D1,X), uses(B,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y).
++ua(A,B,D,X) :- pair(A,B), uses(A,D,X).   ub(A,B,D,Y) :- pair(A,B), uses(B,D,Y).
++xa(A,B,D,X) :- pair(A,B), nouse(A,D,X).  xb(A,B,D,Y) :- pair(A,B), nouse(B,D,Y).
++cl(A,B,use) :- ok(A,B), ua(A,B,D1,X), xb(A,B,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y).
++cl(A,B,use) :- ok(A,B), xa(A,B,D1,X), ub(A,B,D2,Y), doer(A,B,D1,D2), same(A,B,X,Y).
+ % a clash whose witness merges onto an instance a prose condition one side states (`prose(C)`: no Def) and something
+ % the other side states of it that the first does not: a definition of C could refute it, so it is L6, not L1
+ lit(A,B,S,Z,c(T,V,P)) :- side(A,B,S), cond(S,Y,T,V,P), at(A,B,S,Y,Z).
+@@ -240,10 +273,12 @@
+ #show lint/3.
+ 
+ % ---- the witness of one pair (a normal solve with focus(A,B)): it clashes, and its merged pre-state is shown -----
+-% focus/2 is an external, false unless a witness solve assigns it true, so the check and every witness share one grounding
+-% (focusm/2 the same for an L6: a witness that clashes and depends on a prose condition)
+-#external focus(A,B) : pair(A,B).  #external focusm(A,B) : pair(A,B).
++% The pairs a witness is asked of are facts focus(A,B) (an L1) and focusm(A,B) (an L6: a witness that clashes and
++% depends on a prose condition) of the part `witness`, ground on the same Control after the check's brave solve, for
++% every such pair at once: pairs share no atom, so one model holds a witness of each. (Externals, one per pair of
++% each kind, made every solve call cost the whole set of them.)
+ hit(A,B) :- clash(A,B,W), W != self.  hitm(A,B) :- maybe(A,B,_,_).
++#program witness.
+ :- focus(A,B), pair(A,B), not hit(A,B).
+ :- focusm(A,B), pair(A,B), not hitm(A,B).
+ foc(A,B) :- focus(A,B).  foc(A,B) :- focusm(A,B).
