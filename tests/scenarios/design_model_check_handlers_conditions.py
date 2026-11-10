@@ -23,6 +23,7 @@ def _sibling(name, module):
 # registrations repeat the same file and line, so no key is claimed twice.
 H = _sibling("design_model_check_handlers.py", "shop_design_model_check_handlers")
 C2 = _sibling("codified2_world.py", "shop_codified2_world")
+MIXED = _sibling("codified2_mixed.py", "shop_codified2_mixed")
 ROOT = Path(__file__).resolve().parents[2]
 BROKEN = ROOT / "tests" / "scripts" / "fixtures" / "generate" / "broken" / "spec"
 
@@ -58,10 +59,16 @@ def capability(step):
         H.write(repo, "features/%s.feature" % name, H.feature(name, "@r1", "@r2", "@r3", "@r4"))
         H.says(step, "r1", "%s#r1" % name)
         return
+    if word == "recodified":     # the mixed spec (I19): the scenario's capability is its codified-2 file
+        MIXED.mixed(repo, H.PATH)
+        step.context.setdefault("ids", {})[name] = MIXED.NAME
+        return
     if word in C2.CAPABILITIES:     # lines of grammar 4 that `model logic` reads through their logical form (I12a)
         C2.context(repo, H.PATH, C2.CAPABILITIES[word], name, C2.UNIVERSAL.get(word, ()))
         for k in range(1, len(C2.UNIVERSAL.get(word, ())) + 1):
             H.says(step, "u%d" % k, "U%d" % k)
+        if word in C2.GENERATED:     # what its feature holds and must not (feature-file-tools' overstated file)
+            step.context["generated"] = tuple(re.compile(p, re.MULTILINE) for p in C2.GENERATED[word])
         return
     lines = {"unnumbered": ["- **When** asked, `%s` shall answer." % name],
              "renumbered": ["- [r1] **When** asked, `%s` shall answer." % name] * 2,
@@ -95,6 +102,10 @@ def requirement(step):
         lines, universal = C2.REQUIREMENTS[word]
         C2.context(repo, H.PATH, lines, universal=universal)
         step.context.setdefault("ids", {})[step.names[0]] = "thing#r1"
+        for name, said in C2.SAYS.get(word, {}).items():
+            H.says(step, name, said)
+    elif word == "nonexistent":     # an id no capability holds: the base world's `thing` has r1 only
+        step.context.setdefault("ids", {})[step.names[0]] = "thing#r9"
     elif word == "exemplified":     # "banana" names no actor, command, option, value, rule or named instance
         H.write(repo, "spec/capabilities/thing.md", H.cap("thing", ["- [r1] " + EXEMPLIFIED]))
         H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))

@@ -11,6 +11,7 @@ import shutil
 from pathlib import Path
 
 import backlog_forms
+import backlog_recodify
 import backlog_retires
 import spec_lexicon
 import spec_read
@@ -100,6 +101,16 @@ def retire(root, name, ident, text, into=None, group=None, in_group=None):
     return item, new
 
 
+def recodify(root, name, capability):
+    """`work line --recodify <capability>`: the item's block for it given `language: codified-2` (backlog_recodify),
+    committed; refused, changing nothing, when the capability is in the new language already."""
+    item = find(root, name)
+    backlog_recodify.check(root, item, capability)
+    backlog_recodify.with_language(item, capability)
+    commit(root, item, "work line: %s recodifies %s" % (label(item), capability))
+    return item
+
+
 def add_term(root, name, capability, bullet):
     """`work line --term`: one term bullet written into the item's block for `capability` and committed."""
     item = find(root, name)
@@ -132,12 +143,14 @@ def lay_onto(into, item, files=None):
     """The item's blocks laid over `into/spec`: term bullets at the end of the capability file's `## Terms`, relation
     rows at the end of its `## Relations` table (made when it has none), the lines it retires out of its `## Behaviour`
     and into its `retired:` (backlog_retires), groups (headings raised to `### `, each with its given block) at the end
-    of its `## Behaviour`; its universal conditions and upstream entries by `backlog_forms.lay_spec`, the paths they
+    of its `## Behaviour`, its marker switched when the block says `language:` (backlog_recodify); its universal conditions and upstream entries by `backlog_forms.lay_spec`, the paths they
     change added to `files`. The names of the capabilities laid."""
     blocks = read(item, "the item %s" % item.name)
     for block in blocks:
         path = capability_file(into, block.capability)
         text = path.read_text()
+        if block.language:
+            text = backlog_recodify.lay(text)
         if block.retired:
             text = backlog_retires.lay(text, block.capability, block.retired)
         if block.terms:
@@ -172,6 +185,8 @@ def unlay(into, item, files=None):
             text = backlog_forms.without_lines(text, "Relations", block.relations, backlog_forms.HEADER)
         if block.retired:
             text = backlog_retires.unlay(path, text, block.retired)
+        if block.language:
+            text = backlog_recodify.unlay(text)
         if text != was:
             path.write_text(text.rstrip("\n") + "\n")
             changed.append(block.capability)

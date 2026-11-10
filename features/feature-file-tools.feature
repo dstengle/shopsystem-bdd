@@ -351,3 +351,17 @@ Feature: Feature file tools
     When the person runs `features generate` on the requirement r1
     Then `features` writes `features/shelf.feature`
     And `features` exits successfully
+
+  @g21 @r21
+  Scenario: `features generate` leaves out a Then that is entailed
+    Given a capability c1
+    And the capability c1 is declining
+    When the person runs `features generate` on the capability c1
+    Then `features` does not write the file f1
+
+  @g22 @r22
+  Scenario: `features generate` writes a capability in the new language
+    Given a capability c1
+    And the capability c1 is recodified
+    When the person runs `features generate` on the capability c1
+    Then `features` prints `features/shelf.feature`

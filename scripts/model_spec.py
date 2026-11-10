@@ -99,12 +99,16 @@ class SpecReading:
         for key in self.restated:
             self.fact("restated_id", f"{key}@0.29")
 
-    def parsed(self, ident, text):
-        """parsed, unparsed or ambiguous for one statement; its tree, or None."""
+    def parsed(self, ident, text, capability=None):
+        """parsed, unparsed or ambiguous for one statement, in its capability file's grammar (spec_language); its
+        tree, or None. A grammar 4 line's tree is none of the old grammar's: it is recorded, and None returned."""
         if self._grammar is GRAMMAR_MISSING:
             return None
         import spec_grammar
+        import spec_language
         try:
+            if spec_language.four(self.root, capability):
+                return self.parsed4(ident, spec_language.parse(self.root, text, capability))
             p = spec_grammar.parse(self.root, text)
         except (ImportError, spec_grammar.GrammarError) as err:      # no pgf, no gf, or gf refused the sources
             self._grammar = GRAMMAR_MISSING
@@ -118,6 +122,16 @@ class SpecReading:
         else:
             self.fact("unparsed", ident, p.refusal)
         return p.tree
+
+    def parsed4(self, ident, p):
+        """parsed, unparsed or ambiguous of a grammar 4 line (CNL 4's I19): a line of two meanings is ambiguous."""
+        if p.tree is not None:
+            self.fact("parsed", ident)
+            self.unmentioned.add(ident)
+        elif "more than one meaning" in (p.refusal or ""):
+            self.fact("ambiguous", ident)
+        else:
+            self.fact("unparsed", ident, p.refusal)
 
     def given(self, gid, lines):
         """given_unparsed(G, Line) for a given line the typed Steps grammar (features_vocab) refuses as a Given."""
@@ -168,7 +182,7 @@ class SpecReading:
                 entry["reqs"][n] = qid
                 self.req_text[qid] = q.text
                 self.group_of[qid] = gid
-                tree = self.parsed(qid, q.text)
+                tree = self.parsed(qid, q.text, path.stem)
                 for word in spec_example.parameters(q.text, self.example_constants()):     # w_example (I18)
                     self.fact("exemplified", qid, word)
                 if tree is not None:
@@ -184,8 +198,8 @@ class SpecReading:
                 if rid is not None:
                     self.fact("req_id", qid, cap, int(rid[1:]))
                 self.req_text[qid] = text
-            if g.given:
-                self.given(gid, g.given)
+            if g.given and not spec_read.codified(path, (spec_read.MARKER4,)):     # a codified-2 group's: in grammar 4,
+                self.given(gid, g.given)                                       # by features generate (I14a)
             for line, block in g.given:     # v15m: a condition the statement has, not example data
                 if not spec_read_given.example(line, block):
                     self.fact("given_condition", gid, line)

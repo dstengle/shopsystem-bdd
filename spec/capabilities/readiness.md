@@ -81,6 +81,9 @@ the item is settled. `work ready` checks the bar and asks nobody.
 ### [g15] `work ready` refuses an item whose lines bring a lexicon problem
 - [r15] While an item is `shaped` and the item is ill-termed, if the person runs `work ready` on the item, then `work` shall exit with an error naming the term.
 
+### [g16] `work line --recodify` switches a capability's language on an item
+- [r16] When the person runs `work line --recodify` on an item, `work` shall write a capability and commit the item.
+
 ## Implementation, may change
 - An item's requirement lines stay on the item until its batch merges: in the item file's `## Requirements`, one
   `### <capability>` block for each codified capability they go into, term bullets first, then `#### [g<n>]` groups of

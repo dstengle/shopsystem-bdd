@@ -152,6 +152,11 @@ context: product-level artifacts are read only where the files contain them.
 - **invariant** (adjective of requirement): a requirement with no trigger that says a thing always holds or never holds.
 - **forbidding** (adjective of capability): a capability with a line that forbids what another of its lines says an agent may do.
 
+- **recodified** (adjective of capability): a capability whose file has `language: codified-2` in its frontmatter.
+
+- **refusing** (adjective of requirement): a requirement whose response says that a tool shall refuse a command.
+- **overridden** (adjective of requirement): a When requirement over which an If requirement of the same trigger takes precedence.
+
 ## Behaviour
 
 ### [g1] `model check` exits successfully on a sound context
@@ -451,6 +456,21 @@ Restates: r65@0.29.
 
 ### [g144] `model logic` finds a line that forbids what another permits
 - [r144] When the person runs `model logic` on a capability that is forbidding, `model` shall print "L7".
+
+### [g145] `model logic` checks a capability in the new language
+- [r145] When the person runs `model logic` on a capability that is recodified, `model` shall exit successfully.
+
+### [g156] `model explain` prints a requirement
+- [r156] When the person runs `model explain` on a requirement, `model` shall print the requirement and exit successfully.
+
+### [g157] `model explain` prints what a refusal entails and where it comes from
+- [r157] When the person runs `model explain` on a requirement that is refusing, `model` shall print a universal condition and a term.
+
+### [g158] `model explain` prints the If requirement that takes precedence
+- [r158] When the person runs `model explain` on a requirement that is overridden, `model` shall print a requirement that is refusing.
+
+### [g159] `model explain` refuses an id that no capability holds
+- [r159] If the person runs `model explain` on a requirement that is nonexistent, then `model` shall exit with an error naming the requirement and change nothing.
 
 ## Implementation, may change
 - `scripts/model.lp` is design model v5's graph in clingo; facts use its relation names. Each rule's plain label is a

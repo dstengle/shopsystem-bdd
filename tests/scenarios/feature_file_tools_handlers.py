@@ -123,11 +123,11 @@ def given_capability(step):
 @handler("WhenRuns", "`features generate`")
 def generates(step):
     """`features generate` on the capabilities the step names, a requirement (`on the requirement r1`) naming the
-    capability whose file holds it."""
-    caps = []
+    capability whose file holds it, a capability by the name a Given gave its file (`ids`, a recodified one's)."""
+    caps, ids = [], step.context.get("ids", {})
     for name in step.names:
         holding = [p.stem for p in sorted((step.repo / "spec" / "capabilities").glob("*.md"))
-                   if "- [%s] " % name in p.read_text()] if re.fullmatch(r"r\d+", name) else [bare(name)]
+                   if "- [%s] " % name in p.read_text()] if re.fullmatch(r"r\d+", name) else [ids.get(name, bare(name))]
         assert len(holding) == 1, (name, holding)
         caps += holding
     step.context["result"] = step.run("features", "generate", *caps, *step.context.get("flags", []))
@@ -155,3 +155,16 @@ def prints_not(step):
     out = result(step).stdout
     for np in step.nps:
         assert bare(np.split()[-1]) not in out, (np, out)
+
+
+def unoverstated(step):
+    """`features does not write the file f1`, f1 overstated (r21): `features generate` wrote the capability's feature,
+    which holds the step the Given said it keeps and no step a universal condition entails from it."""
+    result(step)
+    assert step.context["result"].returncode == 0, step.context["result"].stderr
+    kept, entailed = step.context["generated"]
+    written = sorted((step.repo / "features").glob("*.feature"))
+    assert written, "features generate wrote no feature file"
+    texts = [p.read_text() for p in written]
+    assert any(kept.search(t) for t in texts), (kept.pattern, texts)
+    assert not any(entailed.search(t) for t in texts), (entailed.pattern, texts)
