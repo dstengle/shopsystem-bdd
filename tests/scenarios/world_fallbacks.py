@@ -71,3 +71,11 @@ for _template, _term in (("ThenDoes", "refuse"), ("ThenDoes", "name"), ("ThenDoe
                          ("GivenK", "step"), ("GivenK", "rule"), ("GivenK", "requirement id"),
                          ("GivenK", "universal condition id")):
     handler(_template, _term)(untaken)
+
+
+# The keys of grammar 4's steps that more than one codified-2 feature may say (b240): a feature's own `local` handler
+# takes its steps (design-model-check's in design_model_check_handlers_facts.py); these are what is left when none does.
+for _template, _term in (("GivenDoes", "has"), ("GivenDoes", "holds"), ("GivenDoes", "violate"),
+                         ("GivenDoesNot", "holds"), ("GivenK", "rule"), ("GivenK", "requirement id"),
+                         ("GivenK", "text"), ("ThenDoes", "refuse"), ("ThenDoes", "name")):
+    handler(_template, _term)(untaken)

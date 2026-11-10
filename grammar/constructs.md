@@ -65,7 +65,7 @@ a line that holds at every moment
 
 - Form: <subject> always|never <verb> <object>.
 - Functions: `Necessary|MAlways|MNever|k_\w+_Nec`
-- Cited by: no line
+- Cited by: design-model-check#r244, design-model-check#r259
 - Example and its reading:
 
 ```construct
@@ -206,7 +206,7 @@ a response the doer is permitted
 
 - Form: <doer> may <act>
 - Functions: `k_\w+_May`
-- Cited by: no line
+- Cited by: design-model-check#r258
 - Example and its reading:
 
 ```construct
@@ -277,7 +277,7 @@ a condition that does not hold
 
 - Form: <subject> does not <verb> ...; ... is not <value>
 - Functions: `PNeg`
-- Cited by: no line
+- Cited by: design-model-check#r209
 - Example and its reading:
 
 ```construct
@@ -432,7 +432,7 @@ a relative clause whose object is the noun
 
 - Form: <noun> that <subject> <verb>
 - Functions: `k_\w+_Obj_k_\w+|g_\w+|r\d+_\w+_Gap`
-- Cited by: no line
+- Cited by: design-model-check#r237
 - Example and its reading:
 
 ```construct
@@ -453,7 +453,7 @@ a relative clause on the noun's attribute
 
 - Form: <noun> whose <attribute> is <value>
 - Functions: `k_\w+_Whose_t_\w+`
-- Cited by: no line
+- Cited by: design-model-check#r238
 - Example and its reading:
 
 ```construct
@@ -554,7 +554,7 @@ each one
 
 - Form: every <noun>
 - Functions: `DetEvery`
-- Cited by: no line
+- Cited by: design-model-check#r248
 - Example and its reading:
 
 ```construct
@@ -574,7 +574,7 @@ a noun in the plural with no determiner
 
 - Form: <nouns>
 - Functions: `DetPl`
-- Cited by: no line
+- Cited by: design-model-check#r229
 - Example and its reading:
 
 ```construct
@@ -610,7 +610,7 @@ there is none
 
 - Form: no <noun>
 - Functions: `DetNo`
-- Cited by: no line
+- Cited by: design-model-check#r234
 - Example and its reading:
 
 ```construct
@@ -631,7 +631,7 @@ a number of them, bounded
 
 - Form: at least|at most|exactly|more than|fewer than <number> <nouns>
 - Functions: `DetCount|AtLeast|AtMost|Exactly|MoreThan|FewerThan`
-- Cited by: no line
+- Cited by: design-model-check#r252
 - Example and its reading:
 
 ```construct
@@ -794,7 +794,7 @@ nothing but these
 
 - Form: only <np>
 - Functions: `k_\w+_Only`
-- Cited by: no line
+- Cited by: design-model-check#r236, design-model-check#r247
 - Example and its reading:
 
 ```construct
@@ -834,7 +834,7 @@ the run's own thing
 
 - Form: this <noun>
 - Functions: `k_\w+_This`
-- Cited by: no line
+- Cited by: design-model-check#r241
 - Example and its reading:
 
 ```construct
@@ -926,7 +926,7 @@ an option with its argument
 
 - Form: the `<option>` option set to <thing>
 - Functions: `k_\w+_SetTo`
-- Cited by: no line
+- Cited by: design-model-check#r232
 - Example and its reading:
 
 ```construct
@@ -945,7 +945,7 @@ a noun of another by a relation row
 
 - Form: <noun> of|in <np>
 - Functions: `r\d+_\w+_Mod`
-- Cited by: no line
+- Cited by: design-model-check#r233
 - Example and its reading:
 
 ```construct
@@ -964,7 +964,7 @@ a noun before another, by a relation row "of"
 
 - Form: <noun2> <noun>
 - Functions: `r\d+_\w+_Cpd`
-- Cited by: no line
+- Cited by: design-model-check#r235
 - Example and its reading:
 
 ```construct
@@ -1204,7 +1204,7 @@ a moment before or after another
 
 - Form: <moment> is after|before <moment>
 - Functions: `k_moment_Cmp`
-- Cited by: no line
+- Cited by: design-model-check#r254
 - Example and its reading:
 
 ```construct

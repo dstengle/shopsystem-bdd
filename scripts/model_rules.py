@@ -99,7 +99,7 @@ def citing(root):
     out = {}
     for path in sorted((Path(root) / "spec" / "capabilities").glob("*.md")):
         for n, line in re.findall(r"^- \[r(\d+)\] (.*)$", path.read_text(), re.MULTILINE):
-            for code in re.findall(r"[`\"](v\w+|w_\w+)[`\"]", line):
+            for code in dict.fromkeys(re.findall(r"[`\"](v\w+|w_\w+)[`\"]", line)):    # a code named twice, cited once
                 out.setdefault(code, []).append("%s#r%s" % (path.stem, n))
     return out
 
