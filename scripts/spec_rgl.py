@@ -3,12 +3,12 @@ grammar (`grammar/Base.gf`), and its English `ContextEng` over the RGL, from a c
 
 Per kind K: its noun `K_N`, `K_CN`, a determiner's noun phrase `K_NP0`, and the noun phrase a slot of kind K takes,
 `K_NP`: K's own (`K_Simple`), a kind's under K (`<k>_Up_K`, one fun for each kind above, so a noun reaches a slot one
-way), or a code (`K_Code`). An actor is a `K_NP0` of its kind. A verb's frame gives its subject kind S a raw verb
-phrase, `S_V` for an action and `S_St` for a state; a trigger is `S_Event : S_NP -> S_V -> Trig`, a condition
-`S_Holds : Pol -> S_NP -> S_St -> Cond`, so the RGL makes the verb agree with its subject ("sessions write", "a
-session writes"). A response's subject is a doer D's own `D_NP0`: `D_Shall` over `D_Acts`, each act a `S_V` of D or a
-kind above it (`D_Act_S`), with its polarity. An attribute of K: `<t>_K_Is : Pol -> K_NP -> <t>_Val -> Cond` ("a
-stage is not `done`"), one `<t>_Val` fun per value.
+way), or a code (`K_Code`); a code before K's noun, "the `--json` option", is a `K_NP0` (`K_Named`). An actor is a
+`K_NP0` of its kind. A verb's frame gives its subject kind S a raw verb phrase, `S_V` for an action and `S_St` for a
+state; a trigger is `S_Event : S_NP -> S_V -> Trig`, a condition `S_Holds : Pol -> S_NP -> S_St -> Cond`, so the RGL
+makes the verb agree with its subject ("sessions write", "a session writes"). A response's subject is a doer D's own
+`D_NP0`: `D_Shall` over `D_Acts`, each act a `S_V` of D or a kind above it (`D_Act_S`), with its polarity. An
+attribute of K: `<t>_K_Is : Pol -> K_NP -> <t>_Val -> Cond` ("a stage is not `done`"), one `<t>_Val` fun per value.
 """
 import re
 
@@ -91,6 +91,7 @@ def kinds(w, vocab):
         w.fun(K + "_Det", "Det -> %s_CN -> %s_NP0" % (K, K), "mkNP d cn", "d cn")
         w.fun(K + "_Simple", "%s_NP0 -> %s_NP" % (K, K), "x", "x")
         w.fun(K + "_Code", "Code -> %s_NP" % K, "actor c.s", "c")
+        w.fun(K + "_Named", "Code -> %s_CN -> %s_NP0" % (K, K), "named c.s cn", "c cn")
         for above in vocab.ancestors(k)[1:]:
             w.fun("%s_Up_%s" % (K, kid(above)), "%s_NP0 -> %s_NP" % (K, kid(above)), "x", "x")
     w.fun("k_thing_Nothing", "k_thing_NP", "nothing_NP")

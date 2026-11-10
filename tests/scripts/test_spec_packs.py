@@ -4,7 +4,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 
-import spec_packs  # noqa: E402
+import spec_packs
 
 
 def context(tmp_path, imports, glossary, **packs):

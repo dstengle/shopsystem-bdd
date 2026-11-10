@@ -11,7 +11,11 @@ FIXTURE = Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "codifi
 # condition -> (the line r1 says, what the refusal names t1 by, or None)
 LINES = {"plural": ("When sessions write a file, `work` shall print the file.", None),
          "disagreeing": ("When sessions writes a file, `work` shall print the file.",
-                         "the verb write does not agree in number with its subject")}
+                         "the verb write does not agree in number with its subject"),
+         "optioned": ("When the person runs `work backlog` with the `--json` option, `work` shall exit successfully.",
+                      None),
+         "misaspected": ("When a session follows a stage, `work` shall print the stage.",
+                         "the verb follow is a state, and a trigger takes an action")}
 
 
 def capability(name, lines, path):
