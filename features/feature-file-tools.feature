@@ -365,3 +365,51 @@ Feature: Feature file tools
     And the capability c1 is recodified
     When the person runs `features generate` on the capability c1
     Then `features` prints `features/shelf.feature`
+
+  @g23 @r23
+  Scenario: `features generate` writes the steps of a frame with a kind behind a preposition after its object
+    Given a requirement r1
+    And the requirement r1 is oblique
+    When the person runs `features generate` on the requirement r1
+    Then `features` writes `features/shelf.feature`
+    And `features` exits successfully
+
+  @g24 @r24
+  Scenario: `features generate` writes the steps of a definite inside a modifier
+    Given a requirement r1
+    And the requirement r1 is embedding
+    When the person runs `features generate` on the requirement r1
+    Then `features` writes `features/shelf.feature`
+    And `features` exits successfully
+
+  @g25 @r25
+  Scenario: `features generate` writes a given line holding one value in the new language
+    Given a capability c1
+    And the capability c1 is quoted
+    When the person runs `features generate` on the capability c1
+    Then `features` writes `features/shelf.feature`
+    And `features` exits successfully
+
+  @g26 @r26
+  Scenario: `features generate` writes a given line holding a docstring in the new language
+    Given a capability c1
+    And the capability c1 is illustrated
+    When the person runs `features generate` on the capability c1
+    Then `features` writes `features/shelf.feature`
+    And `features` exits successfully
+
+  @g27 @r27
+  Scenario: `features generate` writes a given line holding a table in the new language
+    Given a capability c1
+    And the capability c1 is tabulated
+    When the person runs `features generate` on the capability c1
+    Then `features` writes `features/shelf.feature`
+    And `features` exits successfully
+
+  @g28 @r28
+  Scenario: `features generate` writes the steps of a state verb that takes no object
+    Given a requirement r1
+    And the requirement r1 is intransitive
+    When the person runs `features generate` on the requirement r1
+    Then `features` writes `features/shelf.feature`
+    And `features` exits successfully
