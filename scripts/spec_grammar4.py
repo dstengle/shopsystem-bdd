@@ -17,6 +17,7 @@ from pathlib import Path
 import model_parse
 import spec_grammar
 import spec_rgl
+import spec_rgl_np
 import spec_rgl_vocab
 import tools_grammar
 
@@ -47,7 +48,7 @@ def sources(root):
     """(vocab, {file name: text}) of grammar 4: the base grammar's files and the generated Context."""
     vocab = spec_rgl_vocab.read(root)
     out = {name: (spec_grammar.GRAMMARS / name).read_text() for name in BASE}
-    out.update(spec_rgl.modules(vocab))
+    out.update(spec_rgl.modules(vocab, spec_rgl_np.noun_phrases))
     return vocab, out
 
 

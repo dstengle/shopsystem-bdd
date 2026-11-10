@@ -15,7 +15,9 @@ LINES = {"plural": ("When sessions write a file, `work` shall print the file.", 
          "optioned": ("When the person runs `work backlog` with the `--json` option, `work` shall exit successfully.",
                       None),
          "misaspected": ("When a session follows a stage, `work` shall print the stage.",
-                         "the verb follow is a state, and a trigger takes an action")}
+                         "the verb follow is a state, and a trigger takes an action"),
+         "genitive": ("When a session ends a stage, `work` shall print the status of the stage and the worktree of the "
+                      "session.", None)}
 
 
 def capability(name, lines, path):
