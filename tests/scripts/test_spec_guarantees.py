@@ -12,6 +12,7 @@ import spec_grammar
 import spec_language
 import spec_lexicon
 import spec_read
+import spec_rgl_vocab
 import spec_solve
 import spec_tree
 
@@ -78,7 +79,8 @@ def test_a_guarantees_capability_has_no_feature(cap):
 
 
 def test_the_lexicon_has_no_problem(grammar):
-    assert spec_lexicon.problems(spec_lexicon.read(REPO)) == []
+    """The lexicon read with the kinds of its packs (`artifact` of the CLI pack), as `model check` reads it."""
+    assert spec_lexicon.problems(spec_lexicon.read(REPO), spec_rgl_vocab.outer(REPO)) == []
 
 
 @pytest.mark.parametrize("cap", GUARANTEES)

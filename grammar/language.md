@@ -1823,3 +1823,14 @@ worktree and the session has no worktree that holds a file whose version is not 
 steps that contradict each other, so `features generate` has no scenario of it ("no Given of no there"); `model
 logic` reads it. No line of b152-b159 has the shape (b240 phase 12's sweep). It says instead what the K it gives
 meets: "While a session has a worktree and every file in the worktree is `2.0.0`, ...".
+
+### #8: an attribute set to the value a command is given, and an attribute left as it was
+
+"set the T of X to `v`" sets a value the line names; the language has no form for the value a command is given as its
+argument ("set the line outcome of the request line to the outcome the command gives"), and no negated act on an
+attribute ("not change the side of the request": `change` takes a file, and an attribute is no thing). Lines: requests
+r63 (b153: `work outcome` writes the line outcome it is given), which says instead the case of one value, the value in
+the command's code: "When the person runs `work outcome accepted` on a request line proposed in the request, `work`
+shall set the line outcome of the request line to `accepted` ..." (r82 names the command so too); requests r80 and
+r96, which say "keep the side of the request" (role-boundaries' keep, an act of the agent, not the absence of a
+change), so `model logic` does not read them as leaving the value as it was.
