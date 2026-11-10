@@ -51,9 +51,12 @@ def capability(step):
         H.write(repo, "features/%s.feature" % name, H.feature(name, "@r1", "@r2", "@r3", "@r4"))
         H.says(step, "r1", "%s#r1" % name)
         return
-    if word == "recodified":     # the mixed spec (I19): the scenario's capability is its codified-2 file
+    if word in ("recodified", "old"):     # the mixed spec (I19): its codified-2 file, or `thing` in the old language
         MIXED.mixed(repo, H.PATH)
-        step.context.setdefault("ids", {})[name] = MIXED.NAME
+        step.context.setdefault("ids", {})[name] = MIXED.NAME if word == "recodified" else "thing"
+        if word == "old":       # each group its scenario, so the old language is all `model check` finds
+            H.write(repo, "features/%s.feature" % MIXED.NAME, H.feature(MIXED.NAME, "@r1", "@r2"))
+            H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))
         return
     if word in GIVEN.GIVEN:     # a given line of example data in grammar 4's steps (b218)
         step.context.setdefault("ids", {})[name] = GIVEN.capability(repo, H.PATH, word)

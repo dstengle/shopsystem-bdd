@@ -254,6 +254,7 @@ TABLE = [
     (("requirement add no consequence",), requirement("restating"), {}),
     (("requirement use refusal",), requirement("refusing"), {}),
     (("capability is `codified-2`",), capability("recodified"), {}),
+    (("capability is `codified-1`",), capability("old"), {}),
     (("capability has requirement", "requirement conform language reference"), capability("recodified"), {}),
     (("no capability holds requirement id",), old(C.requirement, "requirement id", "r1", "nonexistent"), {}),
 ]

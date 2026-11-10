@@ -907,3 +907,11 @@ Feature: Design model check
     And the design-decision d1 has no section
     When the person runs `model check`
     Then `model` exits with an error naming the design-decision d1
+
+  @g287 @r287
+  Scenario: `model check` refuses a capability in the old language, naming `migrate upgrade`
+    Given a capability c1
+    And the capability c1 is `codified-1`
+    When the person runs `model check` on the capability c1
+    Then `model` refuses `model check`
+    And `model` names `migrate upgrade`

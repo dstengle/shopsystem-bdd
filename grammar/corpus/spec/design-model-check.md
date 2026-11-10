@@ -1569,3 +1569,17 @@ shall [x3: agent the person (constant), x4: command `model check` (parameter), x
   response
     exit(e2, subject: x5, with an error naming: x1)
 ```
+
+## r287
+From: b160 r71, in the grammar 4 form b160's notes give. Not in the audit (b160 is no reword item); its coined "unrecodified" is said with the language attribute of the capability.
+
+```reading
+If the person runs `model check` on a capability whose language is `codified-1`, then `model` shall refuse the command and name `migrate upgrade`.
+shall [x1: agent the person (constant), x2: command `model check` (parameter), x4: tool `model` (constant), x5: thing `migrate upgrade` (parameter)]
+  if [x3: capability]
+    language(x3) = `codified-1`
+    run(e1, subject: x1, object: x2, on: x3)
+  response
+    refuse(e2, subject: x4, object: x2)
+    name(e3, subject: x4, object: x5)
+```
