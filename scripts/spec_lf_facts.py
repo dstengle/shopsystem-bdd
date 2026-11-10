@@ -23,6 +23,7 @@ import spec_lf_distinct
 import spec_lf_exist
 import spec_lf_modal
 import spec_lf_number
+import spec_lf_option
 import spec_lf_quant
 import spec_lf_set
 from spec_facts_np import const
@@ -104,18 +105,16 @@ class Walk(Terms):
         if len(events) != 1 and not spec_lf_distinct.one_act(events):
             raise ValueError("no translation of a trigger with %d events" % len(events))
         for event in events:     # the acts of "two Ks" (b240): one trigger each, one verb and one doer
-            self.trig(event)
+            self.trig(event, spec_lf_option.arguments(part.body))
         for item in part.body:
-            if item not in events:
+            if item not in events and getattr(item, "pred", None) != spec_lf_option.PRED:
                 self.literal(item)
 
-    def trig(self, event):
+    def trig(self, event, args=None):
         _, verb, _, roles = event.args
         subject, kinds, _ = self.slots(roles)
         if verb == "run" and kinds and kinds[0].origin in ("constant", "parameter"):
-            on = [r[1] for r in roles[1:] if len(r) == 2 and r[0] not in ("object", "with")]
-            options = [r[1].value for r in roles[1:] if len(r) == 2 and r[0] == "with"]
-            cmd = " ".join([kinds[0].value] + options)
+            cmd, on = spec_lf_option.command(roles, args or {})     # with its options (b240)
             self.emit("trig", "ran", const(cmd), self.term(subject), self.obj(on))
         else:
             e, d, x = self.event(event)

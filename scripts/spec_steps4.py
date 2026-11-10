@@ -26,6 +26,7 @@ import spec_facts
 import spec_lf
 import spec_lf_distinct
 import spec_lf_exist
+import spec_lf_option
 import spec_lf_order
 import spec_lf_set
 import spec_lf_values
@@ -46,6 +47,7 @@ class Reader:
         self.brought = []       # the Givens of the response's boxes: each K brought in, its restrictor
         self.dets, self.images = {}, {}     # a referent said "no K"; an image's "the T of x" (spec_steps4_boxes)
         self.numbers = {}       # a printed number's referent: its `number` box (spec_lf_number, b240)
+        self.arguments = {}     # an option's referent: its argument (spec_lf_option, b240)
         self.choices, self.taken, self.options = list(choices), [], []      # the case of each `or` box
         self.pre = []           # the first line's While, Where and trigger parts: what a value Given meets
         self.actors = {t: ("a_%s_%d" % (spec_rgl.slug(t), n + 1), k) for n, (t, k) in enumerate(vocab.actors)}
@@ -124,7 +126,7 @@ class Reader:
                 continue
             for m, (subject, pieces) in enumerate(v.frames, 1):
                 labels = [(" ".join(w) or "object") if k is not None else " ".join(w) for w, k in pieces]
-                if labels == [r[0] for r in roles[1:]]:
+                if labels == spec_lf_option.labels(roles):     # a slot of several options one label (b240)
                     return ("e_%s_%s_%d_%d" % (spec_rgl.slug(verb), v.aspect, n, m), subject,
                             [k for _, k in pieces if k is not None])
         raise TraceError("no frame of %s" % verb)
@@ -134,11 +136,11 @@ class Reader:
         said "a K"."""
         verb, sense, roles = atom.args[-3:]
         fun, subject, slots = self.frame(verb, sense, roles)
-        refs = [r[1] for r in roles[1:] if len(r) == 2]
-        if any(r.kind == "thing" and r in a for r in refs) and verb == "change" and len(refs) == 1:
+        refs = spec_lf_option.slots(roles)
+        if any(getattr(r, "kind", None) == "thing" and r in a for r in refs) and verb == "change" and len(refs) == 1:
             vp = (fun, ("k_thing_One", ("k_thing_Nothing",)))
-        else:
-            vp = (fun,) + tuple(self.arg(r, k, r in a) for r, k in zip(refs, slots))
+        else:     # a run's options as the line says them (b240)
+            vp = (fun,) + tuple(spec_lf_option.slot_arg(self, r, k) or self.arg(r, k, r in a) for r, k in zip(refs, slots))
         return subject, self.arg(roles[0][1], subject), vp
 
     def cond(self, item, pos=True):
@@ -181,6 +183,8 @@ class Reader:
         """The Given steps of a condition, each referent it mentions first brought in."""
         if isinstance(item, Box):
             return boxes.given(self, item, pos)
+        if item.pred == spec_lf_option.PRED:     # an option's argument, said with it in the When (b240)
+            return spec_lf_option.given(self, item)
         if boxes.image(self, item) or item.pred == spec_lf_distinct.PRED:      # two names are two things (b240)
             return []
         cond = self.cond(item, pos)

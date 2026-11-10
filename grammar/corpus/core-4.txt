@@ -170,3 +170,12 @@ While a file exist, when the person runs `work start`, `work` shall exit success
 = refused: does not parse at exist
 When a session exists, `work` shall print the session.
 = refused: the verb exist is a state, and a trigger takes an action
+# options (b240, construct #12): one, two, with on, set to an argument, not given
+When the person runs `work start` with the `--json` option, `work` shall exit successfully.
+If the person runs `work start` with the `--source` and `--thread` options, then `work` shall exit with an error naming `--source`.
+When the person runs `work start` with the `--json` option on a stage, `work` shall print the stage.
+When the person runs `work start` with the `--every` option set to `5`, `work` shall exit successfully.
+If the person runs `work start` without the `--summary` option, then `work` shall exit with an error naming `--summary`.
+If a session runs `work start` without the `--reason` option on a line, then `work` shall exit with an error naming `--reason`.
+When the person runs `work start` with the `--source` and `--thread` option, `work` shall exit successfully.
+= refused: does not parse at option

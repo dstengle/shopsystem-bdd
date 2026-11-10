@@ -4,8 +4,9 @@ grammar (`grammar/Base.gf`, through its time words `grammar/Time.gf`), and its E
 Per kind K: its noun `K_N`, `K_CN`, a determiner's noun phrase `K_NP0`, and the noun phrase a slot of kind K takes,
 `K_NP`: K's own (`K_Simple`), a kind's under K (`<k>_Up_K`, one fun for each kind above, so a noun reaches a slot one
 way), or a code (`K_Code`); a code before K's noun, "the `--json` option", is a `K_NP0` (`K_Named`), and so is "this
-K" of a kind whose entry has `This:` (`K_This`, call 6). A slot of kind K takes `K_Arg`: one `K_NP`, "only" one, or a
-list of them with and or or (`arguments`). An actor is a `K_NP0` of its kind. A verb's frame gives its subject kind S a raw verb phrase, `S_V` for an action and `S_St` for a
+K" of a kind whose entry has `This:` (`K_This`, call 6); the CLI pack's option set to its argument, "the `--every`
+option set to `5`" (`k_option_SetTo`, b240). A slot of kind K takes `K_Arg`: one `K_NP`, "only" one, a list of them
+with and or or, or codes before K's plural noun, "the `--x` and `--y` options" (`K_NamedAnd`, b240) (`arguments`). An actor is a `K_NP0` of its kind. A verb's frame gives its subject kind S a raw verb phrase, `S_V` for an action and `S_St` for a
 state; a trigger is `S_Event : S_Arg -> S_V -> Trig`, a condition `S_Holds : Pol -> S_Arg -> S_St -> Cond`, so the RGL
 makes the verb agree with its subject ("sessions write", "a session writes"); a necessity's clause is
 `S_Nec : Mod -> S_Arg -> S_St -> Nec` ("a session always follows a stage"). A response's subject is a doer D's own
@@ -19,6 +20,7 @@ import spec_frames
 import spec_typed
 
 TOKEN = spec_typed.PLACEHOLDER
+OPTION = "option"       # the CLI pack's noun: an option of a kind, "the `--x` option set to v" (b240)
 
 
 def slug(text):
@@ -97,6 +99,9 @@ def kinds(w, vocab):
         w.fun(K + "_Named", "Code -> %s_CN -> %s_NP0" % (K, K), "named c.s cn", "c cn")
         if k in vocab.this:     # "this K", the run's own K (call 6)
             w.fun(K + "_This", "%s_N -> %s_NP0" % (K, K), "mkNP this_Quant (mkCN n)", "n")
+        if k == OPTION and "thing" in vocab.kinds:     # the CLI pack's option with its argument (b240)
+            w.fun(K + "_SetTo", "Code -> %s_CN -> k_thing_Arg -> %s_NP0" % (K, K),
+                  'mkNP (named c.s cn) (SyntaxEng.mkAdv (mkPrep ("set" ++ "to")) x)', "c cn x")
         for above in vocab.ancestors(k)[1:]:
             w.fun("%s_Up_%s" % (K, kid(above)), "%s_NP0 -> %s_NP" % (K, kid(above)), "x", "x")
         arguments(w, K)
@@ -116,6 +121,7 @@ def arguments(w, K):
     w.fun(K + "_More", "%s_NP -> %s_NPs -> %s_NPs" % (K, K, K), "mkListNP x l", "x l")
     w.fun(K + "_And", "%s_NPs -> %s_Arg" % (K, K), "mkNP and_Conj l", "l")
     w.fun(K + "_Or", "%s_NPs -> %s_Arg" % (K, K), "mkNP or_Conj l", "l")
+    w.fun(K + "_NamedAnd", "Codes -> %s_CN -> %s_Arg" % (K, K), "namedPl l.s cn", "l cn")     # b240
 
 
 def verbs(w, vocab, states=()):

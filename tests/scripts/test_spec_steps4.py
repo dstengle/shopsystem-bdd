@@ -70,7 +70,7 @@ def test_generate_is_byte_stable_and_writes_no_scenario_of_a_permission(world):
 def test_the_steps_of_each_form(world):
     generate(world)
     found = {k: steps(v) for k, v in scenarios(world).items()}
-    assert found["g1 @r1"] == [("when", "the person runs `work backlog` with `--json`"),
+    assert found["g1 @r1"] == [("when", "the person runs `work backlog` with the `--json` option"),
                                ("then", "`work` exits successfully")]
     assert found["g2 @r2"] == [("given", "a session s1"), ("given", "a stage s2"),
                                ("given", "the session s1 follows the stage s2"),

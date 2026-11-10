@@ -67,7 +67,7 @@ class NP:
 
 @dataclass
 class NPList:
-    op: str                 # and, or
+    op: str                 # and, or; together: one argument of every member (a run's options, spec_lf_option)
     members: list
 
 
@@ -150,6 +150,15 @@ def _go(items, build, chosen, neg_at, i):
     if not items:
         return [], [build(chosen)]
     (a, main), rest = items[0], items[1:]
+    if isinstance(a, NPList) and a.op == "together":    # one argument of every member: a run's options (b240)
+        deps, members = [d for m in a.members for d in m.deps], [replace(m, deps=[]) for m in a.members]
+        if deps:
+            return _go([(d, False) for d in deps] + [(NPList("together", members), main)] + rest, build, chosen,
+                       neg_at, i)
+        refs, conds = _go(rest, build, chosen + [tuple(m.ref for m in members)] if main else chosen, neg_at,
+                          i + 1 if main else i)
+        own = [r for m in members for r in ([m.ref] if m.new else []) + m.inner]
+        return own + refs, [c for m in members for c in m.restr] + conds
     if isinstance(a, NPList):
         parts = [_go([(m, main)] + rest, build, chosen, neg_at, i) for m in a.members]
         if a.op == "and":

@@ -15,6 +15,7 @@ import re
 
 import spec_lf_core as core
 import spec_lf_distinct
+import spec_lf_option
 import spec_lf_read
 import spec_rgl
 import spec_typed
@@ -85,6 +86,8 @@ def np(st, tree):
             return found
         if rest in ("And", "Or"):
             return NPList(rest.lower(), members(st, a[0]))
+        if rest in ("NamedAnd", "SetTo"):     # options (b240)
+            return spec_lf_option.np(st, kind, rest, a)
         if rest in ("Code", "Named"):
             return code(st, kind, a[0])
         if rest == "This":

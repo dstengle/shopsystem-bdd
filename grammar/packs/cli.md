@@ -12,6 +12,8 @@ The command-line pack: the words of a tool that a person or a session runs. A bo
 - **output** (noun): what a tool prints.
 - **artifact** (noun): what a thing is written to follow: a form, a schema, a layout or a reference.
 - **run** (verb, action): an agent starts a command. Frame: agent runs command. Frame: agent runs command with option. Frame: agent runs command on thing.
+  Frame: agent runs command with option on thing. Frame: agent runs command without option. Frame: agent runs command
+  without option on thing.
 - **print** (verb, action): a tool writes a thing to its output. Frame: tool prints thing.
 - **exit** (verb, action): a tool ends, successfully or with an error naming a thing. Frame: tool exits successfully.
   Frame: tool exits with an error naming thing.

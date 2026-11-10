@@ -5,7 +5,7 @@ handler finds a codified-2 step as it finds a codified-1 one.
 The templates: a Given that brings in an instance `GivenK`; example data `GivenCodeText` (a block under the step)
 and `GivenCode` (one value, in `quoted`); a value `GivenK_A`, `ThenK_A`; the number of Ks compared `GivenCount`
 (its noun phrase the subject, the comparison its one noun phrase, b240); a state `GivenDoes`, `GivenDoesNot`,
-`ThenDoes`, `ThenDoesNot` ("x exists" of the verb exist, b240); a run `WhenRuns`, any other trigger `WhenHappens`;
+`ThenDoes`, `ThenDoesNot` ("x exists" of the verb exist, b240); a run `WhenRuns` (its options, spec_lf_option), any other trigger `WhenHappens`;
 an act `ThenPrints`, `ThenPrintsNot`, `ThenExitsOk`, `ThenExitsErr`, `ThenChangesNothing`, else `ThenDoes`,
 `ThenDoesNot`. A step of more than one reading under its keyword (the same text read with a code of two kinds is
 one) is refused.
@@ -13,6 +13,7 @@ one) is refused.
 import re
 
 import spec_lf_np
+import spec_lf_option
 import spec_rgl_np
 import spec_rgl_steps
 from features_vocab import Call, StepError
@@ -107,6 +108,8 @@ def step(root, keyword, text):
         call.subject = spec_rgl_steps.text(gram, clause[2])
         call.nps = [spec_rgl_steps.text(gram, a) for a in (clause[3:] if row else clause[3][1:])]
         call.event = _verb(names, clause[0] if row else clause[3])
+    if name == "WhenRuns":      # each option given with its argument, each not given (b240)
+        call.options, call.without = spec_lf_option.read(names, lambda t: spec_rgl_steps.text(gram, t), tree[1][2])
     if name == "WhenHappens":
         call.subject, call.event = spec_rgl_steps.text(gram, tree[1][1]), term
     call.term = (call.command if name == "WhenRuns" else call.subject if name.startswith("Then") and term is None

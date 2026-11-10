@@ -1470,6 +1470,160 @@ When a session exists, `work` shall print the session.
 refused: the verb exist is a state, and a trigger takes an action
 ```
 
+### "runs C with the `--x` option": an option with its argument
+
+A command's option is in the trigger, with the CLI pack's run: "runs C with the `--x` option", "with the `--x` and
+`--y` options" (or "with the `--x` option and the `--y` option"), "with the `--x` option on a K", "with the `--x`
+option set to v" (its argument: a code, or a thing the line says more of) and "without the `--x` option" (the option
+not given). The run is one atom, `run(e, subject: agent, object: command, with: option ..., without: option ...,
+on: thing)`, with every option it is given and every option it is not; an "and" list of options is one run with each
+of them (not a run for each, as "and" gives of any other argument), an "or" list a case for each. An option's
+argument is the atom `argument(option, v)` beside the run. In `model logic` the command a run runs is the command's
+code with each option given and its argument when that is a code (`work start --every 5`); an option not given is not
+in it, so the line pairs with every line on the command alone; a thing that an option is set to is what the run is on.
+In a scenario the When names each option and its argument as the line does, and the step's Call gives them to its
+handler (`options`: each option given with its argument, `without`: each option not given).
+
+Found by the audit in requests r59 ("`work request --raised-for` on a request": the option glued into the command
+code, which makes it a command apart from `work request`; with and on in one trigger were refused), r60 (none of
+three options given), r61, r102 ("with `--source` and `--thread`"), r62 ("`--from` on a text": the option's argument
+read as the run's object), r82 and r97-r101 (`work outcome accepted`, `work watch --hook`, `work watch --forward`),
+analysis-tools r36 (`tools probe --python` on a Python interpreter), U16 and backlog r27 ("with the `--json` option",
+one JSON object), and decision-tiers r20 and intake r13 ("an argument that `work decision` does not have": the option
+not given on this run said as a property of the command).
+
+One option (U16, backlog r27):
+
+```reading
+When the person runs `work start` with the `--json` option, `work` shall exit successfully.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--json` (parameter), x4: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2, with: x3)
+  response
+    exit(e2, subject: x4, successfully)
+```
+
+Two options of one run (requests r61, r102), said either way:
+
+```reading
+If the person runs `work start` with the `--source` and `--thread` options, then `work` shall exit with an error naming `--source`.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--source` (parameter), x4: option `--thread` (parameter), x5: tool `work` (constant)]
+  if
+    run(e1, subject: x1, object: x2, with: x3, with: x4)
+  response
+    exit(e2, subject: x5, with an error naming: x3)
+```
+
+```reading
+If the person runs `work start` with the `--source` option and the `--thread` option, then `work` shall exit with an error naming `--source`.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--source` (parameter), x4: option `--thread` (parameter), x5: tool `work` (constant)]
+  if
+    run(e1, subject: x1, object: x2, with: x3, with: x4)
+  response
+    exit(e2, subject: x5, with an error naming: x3)
+```
+
+An option and the thing the run is on (requests r59, analysis-tools r36):
+
+```reading
+When the person runs `work start` with the `--json` option on a stage, `work` shall print the stage.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--json` (parameter), x5: tool `work` (constant)]
+  when [x4: stage]
+    run(e1, subject: x1, object: x2, with: x3, on: x4)
+  response
+    print(e2, subject: x5, object: x4)
+```
+
+An option set to a code, its argument:
+
+```reading
+When the person runs `work start` with the `--every` option set to `5`, `work` shall exit successfully.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--every` (parameter), x4: thing `5` (parameter), x5: tool `work` (constant)]
+  when
+    argument(x3, x4)
+    run(e1, subject: x1, object: x2, with: x3)
+  response
+    exit(e2, subject: x5, successfully)
+```
+
+An option set to a thing the line says more of (requests r62):
+
+```reading
+If the person runs `work start` with the `--from` option set to a stage whose status is not `done`, then `work` shall exit with an error naming the stage.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--from` (parameter), x5: tool `work` (constant)]
+  if [x4: stage]
+    not
+      status(x4) = `done`
+    argument(x3, x4)
+    run(e1, subject: x1, object: x2, with: x3)
+  response
+    exit(e2, subject: x5, with an error naming: x4)
+```
+
+An option not given (decision-tiers r20), none of three (requests r60), and with the thing the run is on (intake
+r13):
+
+```reading
+If the person runs `work start` without the `--summary` option, then `work` shall exit with an error naming `--summary`.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--summary` (parameter), x4: tool `work` (constant)]
+  if
+    run(e1, subject: x1, object: x2, without: x3)
+  response
+    exit(e2, subject: x4, with an error naming: x3)
+```
+
+```reading
+If the person runs `work start` without the `--source`, `--thread` and `--raised-for` options, then `work` shall exit with an error naming `--source`.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: option `--source` (parameter), x4: option `--thread` (parameter), x5: option `--raised-for` (parameter), x6: tool `work` (constant)]
+  if
+    run(e1, subject: x1, object: x2, without: x3, without: x4, without: x5)
+  response
+    exit(e2, subject: x6, with an error naming: x3)
+```
+
+```reading
+If a session runs `work start` without the `--reason` option on a line, then `work` shall exit with an error naming `--reason`.
+shall [x2: command `work start` (parameter), x3: option `--reason` (parameter), x5: tool `work` (constant)]
+  if [x1: session, x4: line]
+    run(e1, subject: x1, object: x2, without: x3, on: x4)
+  response
+    exit(e2, subject: x5, with an error naming: x3)
+```
+
+The noun after two codes is plural: "with the `--source` and `--thread` option" does not parse (grammar/corpus/core-4.txt).
+
+### "the push of the command", "the commit that the command makes": the run's own things
+
+A thing a run makes is said as the image of the command by a row (`push | of | command | one`: "the push of the
+command", the push of the command the trigger runs) or, for a kind whose entry has `This:`, as the run's own K (R11:
+"the commit", "the commit that the command makes"). Nothing is built for them: each kind the audit names (the Python
+interpreter, the decisions index, the git directory, the transcript, the push the command makes) gets its row or its
+`This:` in the reword phase whose lines use it. These are the twins of each shape.
+
+Found by the audit in analysis-tools r43-r46 and r66 ("the dot-venv interpreter", the interpreter `tools` runs
+with), decision-tiers r19 ("a decisions index": the one index of the repository), conversation r6 (the git directory,
+the transcript) and the push and the commit a `work` command makes.
+
+```reading
+When the person runs `work start`, `work` shall print the push of the command.
+shall [x1: agent the person (constant), x2: command `work start` (parameter), x3: tool `work` (constant)]
+  when
+    run(e1, subject: x1, object: x2)
+  response [x4: push]
+    of(x4, x2)
+    print(e2, subject: x3, object: x4)
+```
+
+```reading
+When the person runs this command, `work` shall print the commit that the command makes.
+shall [x1: agent the person (constant), x2: command "the command the run runs" (indexical), x3: tool `work` (constant), x4: commit "the commit the run makes" (indexical)]
+  when
+    run(e1, subject: x1, object: x2)
+  response
+    make(subject: x2, object: x4)
+    print(e2, subject: x3, object: x4)
+```
+
 ## What the language cannot say yet
 
 The limits the rewording keeps, one subsection a limit: the construct the language has not, the lines that need it

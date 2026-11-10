@@ -15,6 +15,7 @@ import spec_lf_core as core
 import spec_lf_exist
 import spec_lf_np as nps
 import spec_lf_number
+import spec_lf_option
 import spec_lf_order
 import spec_lf_read
 import spec_lf_set
@@ -38,7 +39,9 @@ def frame_atom(st, n, m, slots):
     v = st.names.verbs[n]
     roles, it = [("subject", slots[0])], iter(slots[1:])
     for words, kind in v.frames[m - 1][1]:
-        roles.append((" ".join(words) or "object", next(it)) if kind is not None else (" ".join(words),))
+        x = next(it) if kind is not None else None
+        for y in (x if isinstance(x, tuple) else (x,)):     # every option of a run's slot (b240)
+            roles.append((" ".join(words) or "object", y) if kind is not None else (" ".join(words),))
     if v.aspect == "action":
         return Atom("event", (st.event(), v.term.term, sense(st, n), tuple(roles)))
     return Atom("state", (v.term.term, sense(st, n), tuple(roles)))
@@ -56,7 +59,8 @@ def vp(st, tree):
         return [nps.np(st, a[0])], lambda s, r: Atom("rel", (row[1], r[0], s))
     if name.startswith("e_"):
         n, m = numbers(name, 2)
-        return [nps.np(st, x) for x in a], lambda s, r: frame_atom(st, n, m, [s] + list(r))
+        found = spec_lf_option.together(st, n, m, [nps.np(st, x) for x in a])     # a run's options (b240)
+        return found, lambda s, r: frame_atom(st, n, m, [s] + list(r))
     return spec_lf_exist.vp(name) or spec_lf_set.vp(st, tree, nps.owner) or _unknown(tree)
 
 

@@ -3,7 +3,7 @@
 -- the one before what follows it. `actor`, `named`, `act`, `shall` and `may` are the opers the generated ContextEng uses.
 concrete BaseEng of Base = open SyntaxEng, ParadigmsEng, (E = ExtraEng), (R = ResEng), ParamX, Prelude in {
   lincat
-    Req, Pre, Resp, Code = {s : Str} ;
+    Req, Pre, Resp, Code, Codes = {s : Str} ;
     Resps = {s : Str} ;
     Cond, Trig, Nec = S ;
     Mod = AdV ;
@@ -17,6 +17,8 @@ concrete BaseEng of Base = open SyntaxEng, ParadigmsEng, (E = ExtraEng), (R = Re
     actor : Str -> NP = \s -> lin NP {s = \\_ => s ; a = R.agrP3 R.Sg} ;
     -- a thing named by a code before its noun: "the `--json` option"
     named : Str -> CN -> NP = \c, cn -> actor ("the" ++ c ++ cn.s ! R.Sg ! R.Nom) ;
+    -- things named by codes before their plural noun: "the `--x` and `--y` options" (b240)
+    namedPl : Str -> CN -> NP = \c, cn -> lin NP {s = \\_ => "the" ++ c ++ cn.s ! R.Pl ! R.Nom ; a = R.agrP3 R.Pl} ;
     -- a verb phrase after "shall", with its polarity: "write a file", "not write a file"
     act : SyntaxEng.Pol -> VP -> Str = \p, v -> p.s ++ R.infVP R.VVAux v False Simul p.p (R.agrP3 R.Sg) ;
     Acts : Type = {s : Str ; m : Bool} ;
@@ -49,6 +51,8 @@ concrete BaseEng of Base = open SyntaxEng, ParadigmsEng, (E = ExtraEng), (R = Re
     DetThePl = thePl_Det ;
     DetNo = mkDet no_Quant ;
     CodeLit s = s ;
+    CodeTwo a b = {s = a.s ++ "and" ++ b.s} ;
+    CodeMore a l = {s = a.s ++ "," ++ l.s} ;
     DetCount b n = mkDet (mkCard b n) ;
     DetOne = mkDet (mkCard n1_Numeral) ;
     DetSame = mkDet (mkQuant ("the" ++ "same") ("the" ++ "same")) ;
