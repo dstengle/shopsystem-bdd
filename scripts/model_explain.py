@@ -63,6 +63,10 @@ class Explain:
         return sorted(r for r in self.reqs if spec_facts.split(r) == ident)
 
     def term(self, L, x):
+        """A term of L's world in words: a code for a role named by one, a thing a premise M makes (`f(M,y,...)`) as
+        its kind, else as spec_findings writes it."""
+        if x.type == clingo.SymbolType.Function and x.name == "f" and len(x.arguments) >= 2:
+            return self.words.term(x.arguments[0].string, x.arguments[1])
         if x.type == clingo.SymbolType.Function and x.name == "t" and len(x.arguments) == 1:
             x = x.arguments[0]
             for y, c in self.words.of(L, "named"):
@@ -74,8 +78,9 @@ class Explain:
         """`<doer> shall [not] <event> <object>` in the lexicon's words."""
         who = self.term(L, d)
         rest = self.words.does(L, e, d, x)[len(self.words.term(L, d)) + len(" to "):]
-        if x.type == clingo.SymbolType.Function and x.name == "t":
-            rest = rest.replace(self.words.term(L, x.arguments[0]), self.term(L, x))
+        raw = self.words.term(L, x)
+        if rest.endswith(" " + raw):     # the object as this world names it
+            rest = rest[:-len(raw)] + self.term(L, x)
         return "%s shall %s%s" % (who, "" if p == "pos" else "not ", rest)
 
     def consequences(self, L):
