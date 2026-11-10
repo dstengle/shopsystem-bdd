@@ -46,6 +46,54 @@ shall [x3: tool `work` (constant)]
 The subject of a response with no trigger ("A session shall ...", U7) is a response referent here too; how the
 check reads an actor kind's line is I12a's.
 
+So "a K" in a response never names a K the line gave before: where the line means one it gave, it says "the K"
+(R2). The audit found two lines that say "a K" where an earlier one is meant: requests r63 ("`work` shall assign the
+line outcome of a request line proposed in the request", one line of the request, not a new one) and
+design-model-check r199 ("`model` shall use an interpreter that imports `clingo`", the interpreter it has, not a new
+one). Their twins, each read as it is said and as it is meant:
+
+```reading
+When a session ends a stage, `work` shall print the status of a stage.
+shall [x3: tool `work` (constant)]
+  when [x1: session, x2: stage]
+    end(e1, subject: x1, object: x2)
+  response [x4: stage, x5: status]
+    status(x4) = x5
+    print(e2, subject: x3, object: x5)
+```
+
+```reading
+When a session ends a stage, `work` shall print the status of the stage.
+shall [x3: tool `work` (constant)]
+  when [x1: session, x2: stage]
+    end(e1, subject: x1, object: x2)
+  response [x4: status]
+    status(x2) = x4
+    print(e2, subject: x3, object: x4)
+```
+
+```reading
+While a session follows a stage, when the person runs `work start`, `work` shall end a stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: session, x2: stage]
+    follow(subject: x1, object: x2)
+  when
+    run(e1, subject: x3, object: x4)
+  response [x6: stage]
+    end(e2, subject: x5, object: x6)
+```
+
+```reading
+While a session follows a stage, when the person runs `work start`, `work` shall end the stage.
+shall [x3: agent the person (constant), x4: command `work start` (parameter), x5: tool `work` (constant)]
+  while [x1: session, x2: stage]
+    follow(subject: x1, object: x2)
+  when
+    run(e1, subject: x3, object: x4)
+  response
+    end(e2, subject: x5, object: x2)
+```
+
 ## R2. "the K" binds to something the line gave, else it is refused
 
 "the K" binds to the latest earlier referent of kind K (or of a kind under K) in the line: one a part introduced, an
