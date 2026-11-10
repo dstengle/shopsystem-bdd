@@ -4,8 +4,7 @@ refusal of a number where a duration is due with no unit after it.
 
 The perfect of an action verb is a state, the history of that action (call 3): for each subject kind S of an action
 frame, `S_Done : Pol -> S_Arg -> S_V -> Cond`, "a session has ended a stage", "sessions have not written a file".
-Every kind K has "the newest K" and "the oldest K" (`K_Sup : Sup -> K_CN -> K_NP0`). With the time pack imported
-(the kind `moment`): each unit U, a kind of `unit`, gives a duration said, `u_<U>_Span : Amount -> Span`, "7 days";
+With the time pack imported (the kind `moment`): each unit U, a kind of `unit`, gives a duration said, `u_<U>_Span : Amount -> Span`, "7 days";
 a moment is compared, `k_moment_Cmp : Pol -> k_moment_NP -> Order -> k_moment_Arg -> Cond`, "a deadline of a stage
 is after `2026-01-01`", or put within the last span before now, `k_moment_Within : Pol -> k_moment_NP -> Span ->
 Cond`; and a history is since a moment, `S_DoneSince : Pol -> S_Arg -> S_V -> k_moment_Arg -> Cond`.
@@ -29,9 +28,6 @@ def actions(vocab):
 
 def constructs(w, vocab):
     """Every time construct of `vocab` written to `w` (a spec_rgl.Writer)."""
-    for k in vocab.kinds:
-        K = spec_rgl.kid(k)
-        w.fun(K + "_Sup", "Sup -> %s_CN -> %s_NP0" % (K, K), "sup s cn", "s cn")
     timed = MOMENT in vocab.kinds
     M = spec_rgl.kid(MOMENT)
     for s in actions(vocab):
