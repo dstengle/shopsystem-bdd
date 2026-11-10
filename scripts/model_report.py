@@ -54,12 +54,13 @@ def _statements(path):
     """A codified file's statements with their line numbers (spec_read); any other file's non-blank lines that are not
     `#` comments (a corpus file's)."""
     import spec_read
-    if not spec_read.codified(path):
+    markers = (spec_read.MARKER, "codified-2")
+    if not spec_read.codified(path, markers):
         return [(n, line) for n, line in enumerate(path.read_text().splitlines(), 1)
                 if line.strip() and not line.startswith("#")]
     if path.name == "universal.md":
         return [(u.line_no, u.text) for u in spec_read.read_universal(path.parent.parent).conditions]
-    return [(r.line_no, r.text) for g in spec_read.capability(path).groups for r in g.requirements]
+    return [(r.line_no, r.text) for g in spec_read.capability(path, markers).groups for r in g.requirements]
 
 
 def cmd_parse(args):
@@ -70,6 +71,9 @@ def cmd_parse(args):
         lines = _statements(Path(args.file))
     else:
         lines = [(None, args.line)]
+    import spec_grammar4
+    if spec_grammar4.marked(args.root):
+        return _parse4(args, lines)
     refused = 0
     for n, line in lines:
         head = f"{n}: " if n is not None else ""
@@ -87,6 +91,35 @@ def cmd_parse(args):
             print("  tree: " + spec_tree.show(tree))
         if not p.trees:
             h = spec_grammar.hint(args.root, line, args.grammar)
+            print(f"  parsed up to: {h['prefix']}")
+            print(f"  nearest words: {', '.join(h['near']) or '(none)'}")
+    return 1 if refused else 0
+
+
+def _parse4(args, lines):
+    """`model parse` in grammar 4, the context's `spec/index.md` saying `language: codified-2` (CNL 4's I7a)."""
+    import spec_grammar
+    import spec_grammar4
+    if args.grammar != "Req":
+        print(f"grammar 4 has no {args.grammar} grammar: a codified-2 context's lines are parsed as requirements")
+        return 2
+    refused = 0
+    for n, line in lines:
+        head = f"{n}: " if n is not None else ""
+        try:
+            p = spec_grammar4.parse(args.root, line)
+        except (ImportError, spec_grammar.GrammarError) as err:
+            print(f"grammar 4 could not be built: {err}")
+            return 2
+        if p.tree is not None:
+            print(head + p.tree)
+            continue
+        refused += 1
+        print(head + p.refusal)
+        for tree in p.trees:
+            print("  tree: " + tree)
+        if not p.trees:
+            h = spec_grammar4.hint(args.root, line)
             print(f"  parsed up to: {h['prefix']}")
             print(f"  nearest words: {', '.join(h['near']) or '(none)'}")
     return 1 if refused else 0

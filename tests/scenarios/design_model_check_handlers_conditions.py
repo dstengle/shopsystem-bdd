@@ -22,6 +22,7 @@ def _sibling(name, module):
 # The handlers module is loaded by vocab under another name: its helpers are read from this copy, whose handler
 # registrations repeat the same file and line, so no key is claimed twice.
 H = _sibling("design_model_check_handlers.py", "shop_design_model_check_handlers")
+C2 = _sibling("codified2_world.py", "shop_codified2_world")
 ROOT = Path(__file__).resolve().parents[2]
 BROKEN = ROOT / "tests" / "scripts" / "fixtures" / "generate" / "broken" / "spec"
 
@@ -85,6 +86,8 @@ def requirement(step):
             "bounded-context/example.org/fixture", "bounded-context/" + H.PATH))
     elif word == "withholding":
         withholding(step)
+    elif word in C2.LINES:      # a line of grammar 4, in the smallest codified-2 world
+        C2.requirement(step, word, H.PATH)
     elif word in FRAMED:
         H.write(repo, "spec/capabilities/thing.md", H.cap("thing", ["- [r1] " + FRAMED[word][0]]))
         H.write(repo, "features/thing.feature", H.feature("thing", "@r1"))

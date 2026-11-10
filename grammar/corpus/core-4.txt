@@ -1,0 +1,40 @@
+# core-4: the grammar 4 twin of core.txt (the CNL 4 design, I7a): one line for each construct of the base grammar,
+# parsed in the smallest codified-2 context (tests/scripts/fixtures/codified-2/: the CLI pack and a few words), each
+# with one tree that linearises back word for word; or a line followed by "= refused: <reason>", which grammar 4
+# refuses with that reason. Later grammar items add their constructs and refusals here.
+#
+# When, a trigger whose verb agrees with a singular subject, and a response of the CLI pack
+When the person runs `work start`, `work` shall exit successfully.
+When a session writes a file, `work` shall print the file.
+# agreement from the RGL: a plural subject (b113)
+When sessions write a file, `work` shall print the file.
+While sessions follow a stage, when the person runs `work start`, `work` shall end the stage.
+When sessions writes a file, `work` shall print the file.
+= refused: the verb write does not agree in number with its subject
+When a session write a file, `work` shall print the file.
+= refused: the verb write does not agree in number with its subject
+While a session follow a stage, when the person runs `work start`, `work` shall end the stage.
+= refused: the verb follow does not agree in number with its subject
+# If, then: two acts under one shall, an act with fixed words and a kind in its frame, and "nothing"
+If `work` refuses a command, then `work` shall exit with an error naming the reason and change nothing.
+# three acts, the last negated: A, B and not C; a frame with a preposition before its second kind
+When the person runs `work start` on a stage, `work` shall end the stage, print the stage and not write a file.
+# shall not
+When a session ends a stage, `work` shall not change the stage.
+# While with polarity: a state verb negated ("does not"), an attribute's value, and, or
+While a session does not follow a stage, when the person runs `work start`, `work` shall exit successfully.
+While a stage is not `done` and sessions follow the stage, when a session ends the stage, `work` shall print the stage.
+While a stage is `open` or a stage is `done`, when the person runs `work start`, `work` shall exit successfully.
+# two responses whose subjects differ
+When a session ends a stage, `work` shall exit successfully, and the person shall write a file.
+# Where, and Where with While; a line with no trigger
+Where a stage is `open`, when a session writes a file, `work` shall print every file.
+Where a stage is `open`, while sessions follow the stage, if a session ends the stage, then `work` shall exit with an error naming the stage.
+`work` shall not change `spec/index.md`.
+# determiners: a, the, every, a bare plural, the plural
+When the person runs `work start`, `work` shall print the files.
+# a noun of the wrong kind for its slot, and a state verb in a trigger, are not grammar 4 lines
+When a session writes a stage, `work` shall print the stage.
+= refused: does not parse at stage
+When a session follows a stage, `work` shall print the stage.
+= refused: does not parse at follows
