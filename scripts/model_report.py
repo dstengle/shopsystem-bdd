@@ -93,24 +93,29 @@ def cmd_parse(args):
 
 
 def cmd_lexicon(args):
-    """The terms by category; with --check, v_t4-v_t6 as a report, exit 1 when there is any."""
+    """The terms by category, an imported pack's marked with its layer and a redefining entry with the pack it
+    redefines; with --check, the lexicon's problems and the packs' (v_t16, v_t17) as a report, exit 1 when there is any."""
     import spec_lexicon
+    import spec_packs
     lexicon = spec_lexicon.read(args.root)
     if args.check:
-        found = spec_lexicon.problems(lexicon)
+        found = sorted(spec_lexicon.problems(lexicon) + spec_packs.problems(args.root, lexicon))
         for code, term, message in found:
             print(f"{code}  {term}  {message}")
         print(f"{len(lexicon.terms)} terms, {len(found)} problems")
         return 1 if found else 0
+    layered = spec_packs.layers(args.root, lexicon)     # an imported pack's terms first, each shown with its layer
     for cat in spec_lexicon.CATEGORIES + ("",):
-        terms = [t for t in lexicon.terms if t.category == cat or (not cat and t.category not in spec_lexicon.CATEGORIES)]
+        terms = [(layer, t) for layer, t in layered
+                 if t.category == cat or (not cat and t.category not in spec_lexicon.CATEGORIES)]
         if terms:
             print(f"{cat or 'no category'} ({len(terms)})")
-        for t in terms:
+        for layer, t in terms:
             more = {"attribute": f" (of {', '.join(t.kinds)}): {', '.join(t.values)}",
                     "condition": f" (of {', '.join(t.kinds)})", "relation": f" ({' → '.join(t.kinds)})",
                     "resource": f" ({t.resource})" if t.resource else ""}.get(t.category, "")
-            print(f"  {t.term}{more}")
+            marks = ([layer] if layer.startswith("pack ") else []) + [f"redefines {p}" for p in spec_packs.redefines(t)]
+            print(f"  {t.term}{more}" + (f"  [{'; '.join(marks)}]" if marks else ""))
     return 0
 
 
